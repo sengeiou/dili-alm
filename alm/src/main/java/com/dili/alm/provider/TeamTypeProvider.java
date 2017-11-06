@@ -1,13 +1,15 @@
 package com.dili.alm.provider;
 
+import com.dili.alm.domain.TeamType;
 import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValuePairImpl;
 import com.dili.ss.metadata.ValueProvider;
+import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.springframework.stereotype.Component;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -19,9 +21,9 @@ public class TeamTypeProvider implements ValueProvider {
 
     static {
         buffer = new ArrayList<ValuePair<?>>();
-        buffer.add(new ValuePairImpl("产品", "1"));
-        buffer.add(new ValuePairImpl("开发", "2"));
-        buffer.add(new ValuePairImpl("测试", "3"));
+        for(TeamType teamType : TeamType.values()) {
+            buffer.add(new ValuePairImpl(teamType.getName(), teamType.getCode()));
+        }
     }
 
     @Override

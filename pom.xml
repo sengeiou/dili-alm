@@ -6,7 +6,8 @@
 	<groupId>com.dili</groupId>
 	<artifactId>dili-alm</artifactId>
 	<name>dili-alm</name>
-	<version>0.0.1-SNAPSHOT</version>
+	<!--<version>0.0.1-SNAPSHOT</version>-->
+	<version>1.0.0.RELEASE</version>
 	<description>ALM项目</description>
 	<packaging>pom</packaging>
 
@@ -145,7 +146,7 @@
 					<dependency>
 						<groupId>com.dili</groupId>
 						<artifactId>sharp-sword</artifactId>
-						<version>1.5.5-SNAPSHOT</version>
+						<version>1.5.6-SNAPSHOT</version>
 						<!--<scope>system</scope> -->
 						<!--<systemPath>${\project.basedir}/lib/sharp-sword-1.0.0-SNAPSHOT.jar</systemPath> -->
 					</dependency>
