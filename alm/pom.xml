@@ -257,6 +257,12 @@
             <artifactId>jasypt-spring31</artifactId>
             <version>1.9.2</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.alibaba.rocketmq/rocketmq-client -->
+        <dependency>
+            <groupId>com.alibaba.rocketmq</groupId>
+            <artifactId>rocketmq-client</artifactId>
+            <version>3.5.8</version>
+        </dependency>
         <!--<dependency>-->
             <!--<groupId>org.springframework.boot</groupId>-->
             <!--<artifactId>spring-boot-devtools</artifactId>-->

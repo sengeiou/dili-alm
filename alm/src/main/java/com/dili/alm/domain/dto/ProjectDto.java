@@ -1,7 +1,6 @@
 package com.dili.alm.domain.dto;
 
 import com.dili.alm.domain.Project;
-import com.dili.ss.domain.annotation.Operator;
 
 import javax.persistence.Column;
 import javax.persistence.Table;
@@ -15,7 +14,7 @@ import java.util.List;
 @Table(name = "`project`")
 public interface ProjectDto extends Project {
     @Column(name = "`id`")
-    @Operator(Operator.IN)
+//    @Operator(Operator.IN)
     List<Long> getIds();
     void setIds(List<Long> ids);
 }

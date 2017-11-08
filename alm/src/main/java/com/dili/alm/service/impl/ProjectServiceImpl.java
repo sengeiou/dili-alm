@@ -23,8 +23,6 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.sysadmin.sdk.session.SessionContext;
-import com.mysql.fabric.xmlrpc.base.Member;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -169,15 +167,16 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 			// projectIds.add(Long.parseLong(t.get("dataId").toString()));
 		});
 		ProjectDto projectDto = DTOUtils.as(domain, ProjectDto.class);
-		if (projectIds.isEmpty()) {
-			return new EasyuiPageOutput(0, null);
-		}
-		// 刷新projectProvider缓存
-		List<Project> list = list(DTOUtils.newDTO(Project.class));
-		list.forEach(project -> {
-			AlmCache.projectMap.put(project.getId(), project);
-		});
-		projectDto.setIds(projectIds);
+		//去掉数据权限
+//		if (projectIds.isEmpty()) {
+//			return new EasyuiPageOutput(0, null);
+//		}
+//		// 刷新projectProvider缓存
+//		List<Project> list = list(DTOUtils.newDTO(Project.class));
+//		list.forEach(project -> {
+//			AlmCache.projectMap.put(project.getId(), project);
+//		});
+//		projectDto.setIds(projectIds);
 		return super.listEasyuiPageByExample(projectDto, useProvider);
 	}
 

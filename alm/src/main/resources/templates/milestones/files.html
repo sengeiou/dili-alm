@@ -3,7 +3,7 @@
             <table class="easyui-datagrid" id="filesGrid" fitColumns="true"
                    pagination="false" pageSize="30" pageNumber="1" pagePosition="both" rownumbers="true" remoteSort="false"
                    loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="name"
-                   align="center" fit="true" striped="true" toolbar="#filesToolbar" idField="id" data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
+                   align="center" fit="true" striped="true" toolbar="#filesToolbar" idField="id" data-options="onDblClickRow:downloadFiles, onHeaderContextMenu:headerContextMenu">
                 <thead>
                     <tr>
                         <th data-options="field:'name',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
