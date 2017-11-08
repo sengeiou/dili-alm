@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by asiamaster on 2017/10/19 0019.
  */
-@Restful("http://almadmin.dili.com:8084/almadmin")
+@Restful("http://almadmin.diligrp.com/almadmin")
 public interface UserRpc {
 	@POST("/userApi/list")
 	BaseOutput<List<User>> list(@VOBody User user);

@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.List;
 
@@ -171,8 +172,10 @@ public class FilesController {
 				byte[] buffer = new byte[bis.available()];
 				// 清空response
 				response.reset();
-				response.setContentType("application/force-download");//或者使用二进制下载多种类型的文件:application/octet-stream
-				response.setHeader("Content-Disposition", "attachment;fileName=" + new String(fileName.getBytes()));
+				// 设置为下载application/x-download
+				response.setContentType("application/x-download charset=UTF-8");
+//				response.setContentType("application/force-download");//或者使用二进制下载多种类型的文件:application/octet-stream
+				response.setHeader("Content-Disposition", "attachment;fileName=" + URLEncoder.encode(fileName, "UTF-8") );
 				response.addHeader("Content-Length", "" + file.length());
 				int i = bis.read(buffer);
 				while(i != -1){
