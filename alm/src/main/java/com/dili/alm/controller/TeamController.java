@@ -9,14 +9,16 @@ import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.TeamService;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
+import com.github.pagehelper.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -77,7 +79,7 @@ public class TeamController {
 	@ApiOperation(value = "查询Team", notes = "查询Team，返回列表信息")
 	@ApiImplicitParams({ @ApiImplicitParam(name = "Team", paramType = "form", value = "Team的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody List<Team> list(Team team) {
+	public @ResponseBody String list(Team team) {
 		refreshMember();
 		Map<Object, Object> metadata = new HashMap<>();
 
@@ -104,8 +106,10 @@ public class TeamController {
 
 		// 测试数据
 		List<Team> list = this.teamService.listByExample(team);
+		Page<T> page = (Page)list;
 		try {
-			return ValueProviderUtils.buildDataByProvider(metadata, list);
+			List results = ValueProviderUtils.buildDataByProvider(metadata, list);
+			return new EasyuiPageOutput(Integer.parseInt(String.valueOf(page.getTotal())), results).toString();
 		} catch (Exception e) {
 			return null;
 		}
