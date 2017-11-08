@@ -12,7 +12,6 @@ import com.dili.alm.domain.Team;
 import com.dili.alm.domain.TeamType;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
-import com.dili.alm.domain.dto.ProjectDto;
 import com.dili.alm.exceptions.ProjectException;
 import com.dili.alm.rpc.DataAuthRpc;
 import com.dili.alm.service.DataDictionaryService;
@@ -166,7 +165,6 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 			});
 			// projectIds.add(Long.parseLong(t.get("dataId").toString()));
 		});
-		ProjectDto projectDto = DTOUtils.as(domain, ProjectDto.class);
 		//去掉数据权限
 //		if (projectIds.isEmpty()) {
 //			return new EasyuiPageOutput(0, null);
@@ -177,7 +175,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 //			AlmCache.projectMap.put(project.getId(), project);
 //		});
 //		projectDto.setIds(projectIds);
-		return super.listEasyuiPageByExample(projectDto, useProvider);
+		return super.listEasyuiPageByExample(domain, useProvider);
 	}
 
 	@Transactional(rollbackFor = ProjectException.class)
