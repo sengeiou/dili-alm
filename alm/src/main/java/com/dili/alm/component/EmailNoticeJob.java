@@ -119,12 +119,15 @@ public class EmailNoticeJob implements ApplicationListener<ContextRefreshedEvent
 					FileSystemResource file = new FileSystemResource(new File(path + files1.getName()));
 					helper.addAttachment(files1.getName(), file);
 				}
+				Thread.sleep(2000);
 				mailSender.send(mimeMessage);
 			} catch (MessagingException e) {
+				log.error("MessagingException, 邮件发送失败, email:"+AlmCache.userMap.get(team.getMemberId()).getEmail());
 				e.printStackTrace();
 				log.error(e.getMessage());
 				return;
 			} catch (Exception e){
+				log.error("Exception, 邮件发送失败, email:"+AlmCache.userMap.get(team.getMemberId()).getEmail());
 				e.printStackTrace();
 				log.error(e.getMessage());
 				return;
