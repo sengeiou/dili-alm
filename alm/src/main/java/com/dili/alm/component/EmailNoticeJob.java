@@ -3,8 +3,11 @@ package com.dili.alm.component;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
+import com.dili.alm.dao.ProjectMapper;
+import com.dili.alm.dao.TeamMapper;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.Milestones;
+import com.dili.alm.domain.Project;
 import com.dili.alm.domain.Team;
 import com.dili.alm.domain.User;
 import com.dili.alm.rpc.UserRpc;
@@ -16,6 +19,9 @@ import com.dili.ss.quartz.domain.ScheduleJob;
 import com.dili.ss.quartz.domain.ScheduleMessage;
 import com.dili.ss.quartz.service.ScheduleJobService;
 import com.dili.ss.util.SystemConfigUtils;
+import com.google.common.collect.Lists;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +36,10 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by asiamaster on 2017/10/24 0024.
@@ -55,6 +64,11 @@ public class EmailNoticeJob implements ApplicationListener<ContextRefreshedEvent
 	@Autowired
 	private UserRpc userRpc;
 
+	@Autowired
+	private ProjectMapper projectMapper;
+	@Autowired
+	private TeamMapper teamMapper;
+
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
 		if (contextRefreshedEvent.getApplicationContext().getParent() == null) {
@@ -65,12 +79,12 @@ public class EmailNoticeJob implements ApplicationListener<ContextRefreshedEvent
 		}
 	}
 
-	public void initUserMap(){
-		//应用启动时初始化userMap
-		if(AlmCache.userMap.isEmpty()){
+	public void initUserMap() {
+		// 应用启动时初始化userMap
+		if (AlmCache.userMap.isEmpty()) {
 			BaseOutput<List<User>> output = userRpc.list(new User());
-			if(output.isSuccess()){
-				output.getData().forEach(user ->{
+			if (output.isSuccess()) {
+				output.getData().forEach(user -> {
 					AlmCache.userMap.put(user.getId(), user);
 				});
 			}
@@ -88,46 +102,52 @@ public class EmailNoticeJob implements ApplicationListener<ContextRefreshedEvent
 		MimeMessageHelper helper = null;
 		initUserMap();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Team teamCondition = DTOUtils.newDTO(Team.class);
-		teamCondition.setProjectId(milestones.getProjectId());
-		teamCondition.setMemberState(AlmConstants.MemberState.JOIN.getCode());
-		//获取团队成员
-		List<Team> teams = teamService.list(teamCondition);
+		// 获取团队成员
+		List<Project> projects = this.projectMapper.getChildProjects(milestones.getProjectId());
+		if (CollectionUtils.isEmpty(projects)) {
+			return;
+		}
+		List<Long> projectIds = new ArrayList<>(projects.size());
+		projects.forEach(p -> {
+			projectIds.add(p.getId());
+		});
+		List<Team> teams = this.teamMapper.listByProjectIds(projectIds);
+		// 这个地方用来去除重复的用户id
+		Set<Long> sentUserIds = new HashSet<>();
+
 		String path = "fileupload/milestones/" + milestones.getId() + "/";
-		//获取里程碑相关文件
+		// 获取里程碑相关文件
 		Files filesCondition = DTOUtils.newDTO(Files.class);
 		filesCondition.setMilestonesId(milestones.getId());
 		List<Files> files = filesService.list(filesCondition);
 		String from = SystemConfigUtils.getProperty("spring.mail.username");
 		for (Team team : teams) {
 			try {
+				if (sentUserIds.contains(team.getMemberId())) {
+					continue;
+				}
 				helper = new MimeMessageHelper(mimeMessage, true);
 				helper.setFrom(from);
 				helper.setTo(AlmCache.userMap.get(team.getMemberId()).getEmail());
 				helper.setSubject("主题：里程碑[" + milestones.getCode() + "]发布");
- 				helper.setText("里程碑[" + milestones.getCode() + "]发布, \r\n版本号:" + milestones.getVersion()
-						+ ", \r\n市场:" + milestones.getMarket()
-						+ ", \r\n文档地址:" + milestones.getDocUrl()
-						+ ", \r\ngit地址:" + milestones.getGit()
-						+ ", \r\n项目阶段:" + milestones.getProjectPhase()
-						+ ", \r\n发布人:" + AlmCache.userMap.get(milestones.getPublishMemberId()).getRealName()
-						+ ", \r\n发布时间:" + sdf.format(milestones.getReleaseTime())
-						+ ", \r\n访问地址:" + milestones.getVisitUrl()
-						+ ", \r\n备注:" + milestones.getNotes());
-				//给团队所有成员发送附件
+				helper.setText("里程碑[" + milestones.getCode() + "]发布, \r\n版本号:" + milestones.getVersion() + ", \r\n市场:" + milestones.getMarket() + ", \r\n文档地址:" + milestones.getDocUrl()
+						+ ", \r\ngit地址:" + milestones.getGit() + ", \r\n项目阶段:" + milestones.getProjectPhase() + ", \r\n发布人:" + AlmCache.userMap.get(milestones.getPublishMemberId()).getRealName()
+						+ ", \r\n发布时间:" + sdf.format(milestones.getReleaseTime()) + ", \r\n访问地址:" + milestones.getVisitUrl() + ", \r\n备注:" + milestones.getNotes());
+				// 给团队所有成员发送附件
 				for (Files files1 : files) {
 					FileSystemResource file = new FileSystemResource(new File(path + files1.getName()));
 					helper.addAttachment(files1.getName(), file);
 				}
 				Thread.sleep(2000);
 				mailSender.send(mimeMessage);
+				sentUserIds.add(team.getMemberId());
 			} catch (MessagingException e) {
-				log.error("MessagingException, 邮件发送失败, email:"+AlmCache.userMap.get(team.getMemberId()).getEmail());
+				log.error("MessagingException, 邮件发送失败, email:" + AlmCache.userMap.get(team.getMemberId()).getEmail());
 				e.printStackTrace();
 				log.error(e.getMessage());
 				return;
-			} catch (Exception e){
-				log.error("Exception, 邮件发送失败, email:"+AlmCache.userMap.get(team.getMemberId()).getEmail());
+			} catch (Exception e) {
+				log.error("Exception, 邮件发送失败, email:" + AlmCache.userMap.get(team.getMemberId()).getEmail());
 				e.printStackTrace();
 				log.error(e.getMessage());
 				return;

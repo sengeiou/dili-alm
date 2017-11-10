@@ -30,7 +30,7 @@ $.extend($.fn.validatebox.defaults.rules, {
 			},
 			cellphone : {
 				validator : function(value, param) {
-					return (/^1[3|4|5|8][0-9]\d{4,8}$/.test(value))
+					return (/^1[3|4|5|7|8][0-9]\d{4,8}$/.test(value))
 				},
 				message : '请输入正确的手机号码'
 			}
@@ -282,9 +282,6 @@ function onDblClickRow(index, row) {
 
 // 打开某一行的查看窗口
 function onUserDetailClicked(id) {
-	if (!dataAuth.viewUserDetail) {
-		return false;
-	}
 	var selected = null == id ? userGrid.datagrid("getSelected") : getRowById(id);
 	if (null == selected) {
 		$.messager.alert('警告', '请选中一条数据');
@@ -475,9 +472,6 @@ function onPageDownClicked() {
 }
 
 function onSaveClicked() {
-	if (!dataAuth.saveUser) {
-		return false;
-	}
 	if (!$('#_form').form("validate")) {
 		return;
 	}
@@ -716,7 +710,7 @@ saveUserDataAuth = function() {
 			});
 	$.ajax({
 				type : "POST",
-				url : '{contextPath!}/dataAuth/updateUserDataAuth.json',
+				url : '${contextPath!}/dataAuth/updateUserDataAuth.json',
 				contentType : "application/json; charset=utf-8",
 				data : JSON.stringify(submitData),
 				dataType : "json",

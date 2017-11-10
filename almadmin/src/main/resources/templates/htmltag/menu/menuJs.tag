@@ -537,7 +537,8 @@ function onBeginEdit(index, row) {
  * @param {}
  *            changes 当前行被修改的数据
  */
-function onAfterEdit(index, node, row, changes) {
+function onAfterEdit(index, row, changes) {
+	debugger;
 	var grid = $('#' + this.id);
 	var isValid = grid.datagrid('validateRow', index);
 	if (!isValid) {

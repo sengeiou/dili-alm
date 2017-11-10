@@ -113,15 +113,15 @@
 								required="true" validateOnCreate="false" /></td>
 						</tr>
 						<tr>
-							<td style="padding: 5px;"><input class="easyui-textbox" name="_cellphone" id="_cellphone" style="width: 100%" data-options="label:'手机号码:', validType:'cellphone',validateOnCreate:false,required:true"/></td>
+							<td style="padding: 5px;"><input class="easyui-textbox" name="_cellphone" id="_cellphone" style="width: 100%"
+								data-options="label:'手机号码:', validType:'cellphone',validateOnCreate:false,required:true" /></td>
 						</tr>
 						<tr>
 							<td style="padding: 5px;"><input class="easyui-textbox" name="_email" id="_email" style="width: 100%" data-options="label:'邮箱:', validType:'email',validateOnCreate:false,required:true" /></td>
 						</tr>
 						<tr>
 							<td style="padding: 5px;"><select class="easyui-combotree" name="_department" id="_department" style="width: 100%"
-								data-options="checkbox:true,cascadeCheck:true,multiple:true,loadFilter:treeLoadFilter, _idField:'id', _textField:'name', _parentIdField:'parentId',label:'所属部门:', url:'${contextPath!}/department/listTree.json',editable:false,required:true,validateOnCreate:false"
-								></select></td>
+								data-options="checkbox:true,cascadeCheck:true,multiple:true,loadFilter:treeLoadFilter, _idField:'id', _textField:'name', _parentIdField:'parentId',label:'所属部门:', url:'${contextPath!}/department/listTree.json',editable:false,required:true,validateOnCreate:false"></select></td>
 						</tr>
 						<tr>
 							<td style="padding: 5px;" id="_lastLoginIpTd"><input class="easyui-textbox" name="_lastLoginIp" id="_lastLoginIp" style="width: 100%"
@@ -189,18 +189,15 @@
 	var dataAuth = {
 		addUser : <%if(hasResource('addUser')){%>true<%}else{%>false<%}%>,
 		editUser : <%if(hasResource('editUser')){%>true<%}else{%>false<%}%>,
-		editRole : <%if(hasResource('editRole')){%>true<%}else{%>false<%}%>,
-		viewUserDetail : <%if(hasResource('viewUserDetail')){%>true<%}else{%>false<%}%>,
 		removeUser : <%if(hasResource('removeUser')){%>true<%}else{%>false<%}%>,
-		saveUser : <%if(hasResource('saveUser')){%>true<%}else{%>false<%}%>,
 		viewUserDataAuth : <%if(hasResource('viewUserDataAuth')){%>true<%}else{%>false<%}%>,
-		disableUser : <%if(hasResource('disableUser')){%>true<%}else{%>false<%}%>,
-		enableUser : <%if(hasResource('enableUser')){%>true<%}else{%>false<%}%>
+		changeUserStatus : <%if(hasResource('changeUserStatus')){%>true<%}else{%>false<%}%>,
 	};
 	<#user_indexJs />
 </script> <script type="text/javascript">
 	// 每一行的操作
 	function formatOptions(value, row, index) {
+		var content = '';
 		var changeStatusContext = "";
 		if (0 == row.$_status) {
 			// 0 是已停用，功能对应是 启用
@@ -212,9 +209,14 @@
 					'onChangeUserStatusClicked', row.id);
 		}
 
-		return getHyperlinkContext('查看', 'onUserDetailClicked', row.id)
-				+ getHyperlinkContext('数据权限', 'openDataAuth', row.id)
-				+ changeStatusContext;
+		content += getHyperlinkContext('查看', 'onUserDetailClicked', row.id)
+		if (dataAuth.viewUserDataAuth) {
+			content += getHyperlinkContext('数据权限', 'openDataAuth', row.id)
+		}
+		if (dataAuth.changeUserStatus) {
+			content += changeStatusContext;
+		}
+		return content;
 	}
 
 	$.messager.progress({
