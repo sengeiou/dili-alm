@@ -233,6 +233,12 @@ function onBeginEdit(row) {
 	}
 	var editor = projectGrid.treegrid('getEditor', {
 				id : row.id,
+				field : 'type'
+			});
+	editor.target.textbox('setValue', row.$_type);
+	editor.target.textbox('setText', row.type);
+	editor = projectGrid.treegrid('getEditor', {
+				id : row.id,
 				field : 'projectManager'
 			});
 	editor.target.textbox('setValue', row.$_projectManager);

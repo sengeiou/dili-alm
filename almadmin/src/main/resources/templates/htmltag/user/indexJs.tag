@@ -687,9 +687,9 @@ loadTree = function(userId, type) {
 							data : {
 								simpleData : {
 									enable : true,
-									idKey : 'id',
+									idKey : 'dataId',
 									pIdKey : 'parentId',
-									rootPId : -1
+									rootPId : 0
 								}
 							}
 						}, znodes);

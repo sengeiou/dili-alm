@@ -13,8 +13,10 @@
 					<tr>
 						<td style="padding: 5px;"><input name="projectId" id="projectId" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="所属项目:" /> <#comboProvider _id="projectId"
 								_provider='projectProvider' /></td>
-						<td style="padding: 5px;"><input name="memberId" id="memberId" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="所属成员:" data-options="onChange:_changeTextboxShowClear" /> <#comboProvider
-								_id="memberId" _provider='memberProvider' /></td>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="memberId" id="memberId" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="所属成员:"
+							data-options="editable:false,
+									buttonText:'选择',
+									onClickButton:selectMember,onChange:_changeTextboxShowClear" /></td>
 						<td style="padding: 5px;"><input name="type" id="type" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="团队类型:" /> <#comboProvider _id="type" _provider='teamTypeProvider' />
 
 						</td>

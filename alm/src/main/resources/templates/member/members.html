@@ -1,5 +1,5 @@
 <div style="margin: 5px 5px;">
-	真实姓名: <input id="searchTextbox" class="easyui-textbox" data-options="buttonText:'查询',buttonIcon:'icon-search',onClickButton:search" style="width: 300px">
+	真实姓名: <input id="searchTextbox" class="easyui-textbox" data-options="buttonText:'查询',buttonIcon:'icon-search',onClickButton:search" onkeyup="searchBoxOnKeyup();" style="width: 300px">
 </div>
 <table class="easyui-datagrid" id="smGridList" sortName="userName" sortOrder="asc" fitColumns="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="true"
 	align="center" fit="true" striped="true" idField="id" data-options="onDblClickRow:dbClickMembers">
@@ -15,8 +15,8 @@
 </table>
 
 <script type="text/javascript">
-	function dbClickMembers(index, row){
-        confirmMembersBtn("${textboxId}");
+	function dbClickMembers(index, row) {
+		confirmMembersBtn("${textboxId}");
 	}
 	function search() {
 		var opts = $("#smGridList").datagrid("options");
@@ -27,7 +27,11 @@
 		});
 	}
 
-    $(function () {
-    	$('#searchTextbox').textbox('addClearBtn', 'icon-clear');
-    })
+	$(function() {
+		$('#searchTextbox').textbox('addClearBtn', 'icon-clear');
+		$('#searchTextbox').textbox('textbox').focus();
+		$('#searchTextbox').textbox('textbox').bind('keydown', function(e) {
+			search();
+		});
+	})
 </script>

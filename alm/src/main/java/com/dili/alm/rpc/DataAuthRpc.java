@@ -10,7 +10,7 @@ import com.dili.ss.retrofitful.annotation.VOField;
 public interface DataAuthRpc {
 
 	@POST("/addDataAuth")
-	BaseOutput<DataDictionaryDto> addDataAuth(@VOField("dataId") String dataId, @VOField("type") String type, @VOField("name") String name);
+	BaseOutput<DataDictionaryDto> addDataAuth(@VOField("dataId") String dataId, @VOField("type") String type, @VOField("name") String name, @VOField("parentDataId") String parentDataId);
 
 	@POST("/deleteDataAuth")
 	BaseOutput<DataDictionaryDto> deleteDataAuth(@VOField("dataId") String dataId, @VOField("type") String type);

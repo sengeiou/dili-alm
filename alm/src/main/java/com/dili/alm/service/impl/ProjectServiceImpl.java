@@ -75,7 +75,8 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		// 同步更新缓存
 		AlmCache.projectMap.put(project.getId(), project);
 		// 向权限系统中添加项目数据权限
-		dataAuthRpc.addDataAuth(project.getId().toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName());
+		String parentId = project.getParentId() == null ? null : project.getParentId().toString();
+		dataAuthRpc.addDataAuth(project.getId().toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName(), parentId);
 		return i;
 	}
 
@@ -85,7 +86,8 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		// 同步更新缓存
 		AlmCache.projectMap.put(project.getId(), project);
 		// 向权限系统中添加项目数据权限
-		dataAuthRpc.addDataAuth(project.getId().toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName());
+		String parentId = project.getParentId() == null ? null : project.getParentId().toString();
+		dataAuthRpc.addDataAuth(project.getId().toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName(), parentId);
 		return i;
 	}
 
@@ -165,16 +167,16 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 			});
 			// projectIds.add(Long.parseLong(t.get("dataId").toString()));
 		});
-		//去掉数据权限
-//		if (projectIds.isEmpty()) {
-//			return new EasyuiPageOutput(0, null);
-//		}
-//		// 刷新projectProvider缓存
-//		List<Project> list = list(DTOUtils.newDTO(Project.class));
-//		list.forEach(project -> {
-//			AlmCache.projectMap.put(project.getId(), project);
-//		});
-//		projectDto.setIds(projectIds);
+		// 去掉数据权限
+		// if (projectIds.isEmpty()) {
+		// return new EasyuiPageOutput(0, null);
+		// }
+		// // 刷新projectProvider缓存
+		// List<Project> list = list(DTOUtils.newDTO(Project.class));
+		// list.forEach(project -> {
+		// AlmCache.projectMap.put(project.getId(), project);
+		// });
+		// projectDto.setIds(projectIds);
 		return super.listEasyuiPageByExample(domain, useProvider);
 	}
 

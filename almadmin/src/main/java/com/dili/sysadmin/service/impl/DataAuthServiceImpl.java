@@ -1,5 +1,18 @@
 package com.dili.sysadmin.service.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.beans.BeanCopier;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.alibaba.fastjson.JSON;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.constant.ResultCode;
@@ -10,23 +23,18 @@ import com.dili.sysadmin.dao.UserDataAuthMapper;
 import com.dili.sysadmin.domain.DataAuth;
 import com.dili.sysadmin.domain.RoleDataAuth;
 import com.dili.sysadmin.domain.UserDataAuth;
-import com.dili.sysadmin.domain.dto.*;
+import com.dili.sysadmin.domain.dto.DataAuthEditDto;
+import com.dili.sysadmin.domain.dto.DataAuthTypeDto;
+import com.dili.sysadmin.domain.dto.DataDictionaryDto;
+import com.dili.sysadmin.domain.dto.DataDictionaryValueDto;
+import com.dili.sysadmin.domain.dto.EditRoleDataAuthDto;
+import com.dili.sysadmin.domain.dto.EditUserDataAuthDto;
+import com.dili.sysadmin.domain.dto.UpdateRoleDataAuthDto;
+import com.dili.sysadmin.domain.dto.UpdateUserDataAuthDto;
 import com.dili.sysadmin.rpc.DataDictrionaryRPC;
 import com.dili.sysadmin.sdk.session.SessionConstants;
 import com.dili.sysadmin.sdk.util.ManageRedisUtil;
 import com.dili.sysadmin.service.DataAuthService;
-import org.apache.commons.collections4.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.beans.BeanCopier;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-07-04 15:24:51.
@@ -146,6 +154,7 @@ public class DataAuthServiceImpl extends BaseServiceImpl<DataAuth, Long> impleme
 		for (DataAuth dataAuth : dataAuths) {
 			DataAuthEditDto dto = new DataAuthEditDto();
 			dto.setId(dataAuth.getId());
+			dto.setDataId(Long.valueOf(dataAuth.getDataId()));
 			dto.setName(dataAuth.getName());
 			dto.setParentId(dataAuth.getParentDataId());
 			target.add(dto);
@@ -156,30 +165,32 @@ public class DataAuthServiceImpl extends BaseServiceImpl<DataAuth, Long> impleme
 	@Transactional
 	@Override
 	public BaseOutput<Object> updateUserDataAuth(UpdateUserDataAuthDto dto) {
-		int result = 0;
 		Map<String, Object> map = new HashMap<>();
 		map.put("userId", dto.getUserId());
 		map.put("type", dto.getType());
 		List<DataAuth> userDataAuths = this.dataAuthMapper.findByUserIdAndTypeAndDataId(map);
 		UserDataAuth userDataRecord = new UserDataAuth();
-		userDataRecord.setUserId(dto.getUserId());
-		for (DataAuth dataAuth : userDataAuths) {
-			userDataRecord.setDataAuthId(dataAuth.getId());
-			result += this.userDataAuthMapper.delete(userDataRecord);
+		if (CollectionUtils.isNotEmpty(userDataAuths)) {
+			userDataRecord.setUserId(dto.getUserId());
+			for (DataAuth dataAuth : userDataAuths) {
+				userDataRecord.setDataAuthId(dataAuth.getId());
+				this.userDataAuthMapper.delete(userDataRecord);
+			}
 		}
-		for (Long dataAuthId : dto.getDataAuthIds()) {
-			userDataRecord.setId(null);
-			userDataRecord.setDataAuthId(dataAuthId);
-			result += this.userDataAuthMapper.insertSelective(userDataRecord);
+		if (CollectionUtils.isNotEmpty(dto.getDataAuthIds())) {
+			for (Long dataAuthId : dto.getDataAuthIds()) {
+				userDataRecord.setId(null);
+				userDataRecord.setDataAuthId(dataAuthId);
+				this.userDataAuthMapper.insert(userDataRecord);
+			}
 		}
-		// return result > 0 ? BaseOutput.success("保存成功") : BaseOutput.failure("保存失败");
 		return BaseOutput.success("保存成功");
 	}
 
 	@Override
 	public List<DataAuthTypeDto> fetchDataAuthType() {
 		BaseOutput<DataDictionaryDto> output = this.dataDictrionaryRPC.findDataDictionaryByCode(DATA_AUTH_CODE);
-		log.info("收到返回:getit:"+output);
+		log.info("收到返回:getit:" + output);
 		if (!output.getCode().equals(ResultCode.OK)) {
 			log.error(output.getResult());
 			return null;
@@ -195,7 +206,7 @@ public class DataAuthServiceImpl extends BaseServiceImpl<DataAuth, Long> impleme
 			dto.setType(value.getValue());
 			target.add(dto);
 		}
-		log.info("获取到target:"+target);
+		log.info("获取到target:" + target);
 		return target;
 	}
 

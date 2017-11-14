@@ -3,6 +3,7 @@ package com.dili.sysadmin.domain.dto;
 public class DataAuthEditDto {
 
 	private Long id;
+	private Long dataId;
 	private String name;
 	private Long parentId;
 
@@ -12,6 +13,14 @@ public class DataAuthEditDto {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Long getDataId() {
+		return dataId;
+	}
+
+	public void setDataId(Long dataId) {
+		this.dataId = dataId;
 	}
 
 	public String getName() {
@@ -29,4 +38,5 @@ public class DataAuthEditDto {
 	public void setParentId(Long parentId) {
 		this.parentId = parentId;
 	}
+
 }

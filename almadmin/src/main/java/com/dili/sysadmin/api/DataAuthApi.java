@@ -35,7 +35,7 @@ public class DataAuthApi {
 	@ApiOperation("新增DataAuth")
 	@ApiImplicitParams({ @ApiImplicitParam(name = "DataAuth", paramType = "form", value = "DataAuth的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/addDataAuth", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput addDataAuth(@RequestBody DataAuth dataAuth) {
+	public @ResponseBody BaseOutput<Object> addDataAuth(@RequestBody DataAuth dataAuth) {
 		dataAuthService.insertSelective(dataAuth);
 		return BaseOutput.success("新增成功");
 	}
