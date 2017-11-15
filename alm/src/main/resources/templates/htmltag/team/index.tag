@@ -33,8 +33,14 @@ function openInsert() {
 		$.messager.alert('警告', '有数据正在编辑');
 		return;
 	}
-	editIndex = teamGrid.datagrid('getRows').length;
-	teamGrid.datagrid('appendRow', {});
+	editIndex = 0;
+	teamGrid.datagrid('insertRow', {
+				index : editIndex,
+				row : {
+					memberState : '加入',
+					$_memberState : 1
+				}
+			});
 	teamGrid.datagrid('selectRow', editIndex);
 	teamGrid.datagrid('beginEdit', editIndex);
 }
@@ -94,8 +100,9 @@ function del() {
 }
 
 var columnFormatter = function(value, row, index) {
-	var content = '<input type="button" id="btnSave' + index + '" style="margin:0px 4px;display:none;" value="保存" onclick="javascript:endEditing();">';
-	content += '<input type="button" id="btnCancel' + index + '" style="margin:0px 4px;display:none;" value="取消" onclick="javascript:cancelEdit();">';
+	var id = row.id && row.id > 0 ? row.id : 'Temp';
+	var content = '<input type="button" id="btnSave' + id + '" style="margin:0px 4px;display:none;" value="保存" onclick="javascript:endEditing();">';
+	content += '<input type="button" id="btnCancel' + id + '" style="margin:0px 4px;display:none;" value="取消" onclick="javascript:cancelEdit();">';
 	return content;
 };
 
@@ -113,7 +120,9 @@ function getKey(e) {
 			}
 			break;
 		case 13 :
-			endEditing();
+			if ($("#smDialog").parent().is(":hidden")) {
+				endEditing();
+			}
 			break;
 		case 27 :
 			cancelEdit();
@@ -226,7 +235,7 @@ function onBeginEdit(index, row) {
 	editor.target.textbox('setValue', row.$_memberState);
 	editor.target.textbox('setText', row.memberState);
 	resizeColumn();
-	hideCMAndShowOpt(index);
+	hideCMAndShowOpt(row.id);
 }
 
 /**
@@ -267,21 +276,22 @@ function resizeColumn(original) {
 	}
 }
 
-function hideCMAndShowOpt(index) {
-	showOptButtons(index);
+function hideCMAndShowOpt(id) {
+	showOptButtons(id);
 	teamGrid.datagrid('showColumn', 'opt');
 	teamGrid.treegrid('hideColumn', 'joinTime');
 	teamGrid.treegrid('hideColumn', 'leaveTime');
 }
 
-function showCMAndHideOpt(index) {
-	hideOptButtons(index);
+function showCMAndHideOpt(id) {
+	hideOptButtons(id);
 	teamGrid.datagrid('hideColumn', 'opt');
 	teamGrid.treegrid('showColumn', 'joinTime');
 	teamGrid.treegrid('showColumn', 'leaveTime');
 }
 
 function showOptButtons(id) {
+	id = id && id > 0 ? id : 'Temp';
 	$('#btnSave' + id + ',#btnCancel' + id).show();
 }
 
@@ -292,6 +302,7 @@ function showOptButtons(id) {
  *            index 行索引
  */
 function hideOptButtons(id) {
+	id = id && id > 0 ? id : 'Temp';
 	$('#btnSave' + id + ',#btnCancel' + id).hide();
 }
 
@@ -330,6 +341,8 @@ function insertOrUpdateMenu(index, row, changes) {
 				}
 				if (!row.id) {
 					row.id = data.data.id;
+					$('#btnSaveTemp').prop('id', 'btnSave' + row.id);
+					$('#btnCancelTemp').prop('id', 'btnCancel' + row.id);
 				}
 				if (data.data.joinTime) {
 					var date = new Date()

@@ -186,7 +186,9 @@ function getKey(e) {
 			}
 			break;
 		case 13 :
-			endEditing();
+			if ($("#smDialog").parent().is(":hidden")) {
+				endEditing();
+			}
 			break;
 		case 27 :
 			cancelEdit();
