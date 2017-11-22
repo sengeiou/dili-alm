@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.alm.dao.TaskExecutionInfoMapper">
+  <resultMap id="BaseResultMap" type="com.dili.alm.domain.TaskExecutionInfo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="task_id" jdbcType="BIGINT" property="taskId" />
+    <result column="work_hours" jdbcType="INTEGER" property="workHours" />
+    <result column="overtime_work_hours" jdbcType="INTEGER" property="overtimeWorkHours" />
+    <result column="work_content" jdbcType="VARCHAR" property="workContent" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, task_id, work_hours, overtime_work_hours, work_content
+  </sql>
+  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from task_execution_info
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <update id="updateBy" parameterType="com.dili.alm.domain.TaskExecutionInfo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update task_execution_info
+    <set>
+      <if test="taskId != null">
+        task_id = #{taskId,jdbcType=BIGINT},
+      </if>
+      <if test="workHours != null">
+        work_hours = #{workHours,jdbcType=INTEGER},
+      </if>
+      <if test="overtimeWorkHours != null">
+        overtime_work_hours = #{overtimeWorkHours,jdbcType=INTEGER},
+      </if>
+      <if test="workContent != null">
+        work_content = #{workContent,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

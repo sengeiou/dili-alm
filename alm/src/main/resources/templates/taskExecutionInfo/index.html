@@ -1,0 +1,299 @@
+ <#body>
+    <div class="easyui-layout" fit="true">
+        <!-- ====================================================================================================================== -->
+        <!-- 上方布局 -->
+        <!-- ====================================================================================================================== -->
+        <div region="north" height="auto" align="center">
+            <!-- =========================================================表单========================================================= -->
+            <div class="easyui-panel" style="width:100%;" align="left">
+                <form id="form" class="easyui-form" method="post" fit="true">
+                    <table style="padding:10px;">
+                        <tr>
+                            <td style="padding:5px;">
+                                <input class="easyui-numberbox" name="taskId" id="taskId" style="width:100%" data-options="label:'任务id:', validType:'length[0,19]'" />
+
+                            </td>
+                            <td style="padding:5px;">
+                                <input class="easyui-numberbox" name="workHours" id="workHours" style="width:100%" data-options="label:'任务工时:', validType:'length[0,10]'" />
+
+                            </td>
+                            <td style="padding:5px;">
+                                <input class="easyui-numberbox" name="overtimeWorkHours" id="overtimeWorkHours" style="width:100%" data-options="label:'加班工时:', validType:'length[0,10]'" />
+
+                            </td>
+                            <td style="padding:5px;">
+                                <input class="easyui-textbox" name="workContent" id="workContent" style="width:100%" data-options="label:'工作内容:', validType:'length[0,255]'" />
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
+                                   onclick="queryGrid()">查询</a>
+                                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">清除</a>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+        <!-- ====================================================================================================================== -->
+        <!-- 中央布局 -->
+        <!-- ====================================================================================================================== -->
+        <!-- 表格 -->
+        <div region="center" style="width:100%;" height="auto">
+            <!-- =========================================================表格========================================================= -->
+            <table class="easyui-datagrid" title="TaskExecutionInfo列表" id="grid" fitColumns="true"
+                   pagination="true" pageSize="30" pageNumber="1" pagePosition="both" rownumbers="true" remoteSort="false"
+                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="taskId"
+                   align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
+                <thead>
+                    <tr>
+                        <th data-options="field:'taskId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            任务id
+                        </th>
+                        <th data-options="field:'workHours',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            任务工时
+                        </th>
+                        <th data-options="field:'overtimeWorkHours',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            加班工时
+                        </th>
+                        <th data-options="field:'workContent',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            工作内容
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+            <!-- datagrid工具栏 -->
+            <div id="toolbar" style="padding:2px 5px;">
+                <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true"></a>
+                <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()" plain="true"></a>
+                <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true"></a>
+                <a href="#" class="easyui-linkbutton" iconCls="icon-export" onclick="doExport('grid')" plain="true"></a>
+                <div style="float:right">
+                边框显示:<select onchange="changeBorder('grid',this.value)">
+                    <option value="lines-both">全边框</option>
+                    <option value="lines-no">无边框</option>
+                    <option value="lines-right">右边框</option>
+                    <option value="lines-bottom">下边框</option>
+                </select>
+                行条纹:<input type="checkbox" checked="checked" onclick="$('#grid').datagrid({striped:$(this).is(':checked')})">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 隐藏编辑框 -->
+    <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="TaskExecutionInfo信息" style="padding:20px" modal="true" border="thin" closed="true"
+         data-options="
+				iconCls: 'icon-save',
+				height: 480,
+				buttons: [{
+					text:'Ok',
+					iconCls:'icon-ok',
+					handler:saveOrUpdate
+				},{
+					text:'取消',
+					handler:function(){
+						$('#dlg').dialog('close');
+					}
+				}]
+			">
+    <form id="_form" class="easyui-form" method="post" fit="true">
+        <input name="_id" id="_id" type="hidden">
+        <table width="360px">
+            <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-numberbox" name="_taskId" id="_taskId" style="width:100%" data-options="label:'任务id:'" 
+                        required="true" />
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-numberbox" name="_workHours" id="_workHours" style="width:100%" data-options="label:'任务工时:'" 
+                        required="true" />
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-numberbox" name="_overtimeWorkHours" id="_overtimeWorkHours" style="width:100%" data-options="label:'加班工时:'" />
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-textbox" name="_workContent" id="_workContent" style="width:100%" data-options="label:'工作内容:', validType:'length[0,255]'" 
+                        required="true" />
+                </td>
+            </tr>
+        </table>
+    </form>
+
+    </div>
+    <!-- ====================================================================================================================== -->
+    <!-- style & script 分隔线 -->
+    <!-- ====================================================================================================================== -->
+    <script type="text/javascript">
+        //打开新增窗口
+        function openInsert(){
+            $('#dlg').dialog('open');
+            $('#dlg').dialog('center');
+            $('#_form').form('clear');
+            formFocus("_form", "_taskId");
+        }
+
+        //打开修改窗口
+        function openUpdate(){
+            var selected = $("#grid").datagrid("getSelected");
+            if (null == selected) {
+                $.messager.alert('警告','请选中一条数据');
+                return;
+            }
+            $('#dlg').dialog('open');
+            $('#dlg').dialog('center');
+            formFocus("_form", "_taskId");
+            var formData = $.extend({},selected);
+            formData = addKeyStartWith(getOriginalData(formData),"_");
+            $('#_form').form('load', formData);
+        }
+
+        function saveOrUpdate(){
+            if(!$('#_form').form("validate")){
+                return;
+            }
+            var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
+            var _url = null;
+            //没有id就新增
+            if(_formData.id == null || _formData.id==""){
+                _url = "${contextPath}/taskExecutionInfo/insert";
+            }else{//有id就修改
+                _url = "${contextPath}/taskExecutionInfo/update";
+            }
+            $.ajax({
+                type: "POST",
+                url: _url,
+                data: _formData,
+                processData:true,
+                dataType: "json",
+                async : true,
+                success: function (data) {
+                    if(data.code=="200"){
+                        $("#grid").datagrid("reload");
+                        $('#dlg').dialog('close');
+                    }else{
+                        $.messager.alert('错误',data.result);
+                    }
+                },
+                error: function(){
+                    $.messager.alert('错误','远程访问失败');
+                }
+            });
+        }
+
+        //根据主键删除
+        function del() {
+            var selected = $("#grid").datagrid("getSelected");
+            if (null == selected) {
+                $.messager.alert('警告','请选中一条数据');
+                return;
+            }
+            $.messager.confirm('确认','您确认想要删除记录吗？',function(r){
+                if (r){
+                    $.ajax({
+                        type: "POST",
+                        url: "${contextPath}/taskExecutionInfo/delete",
+                        data: {id:selected.id},
+                        processData:true,
+                        dataType: "json",
+                        async : true,
+                        success: function (data) {
+                            if(data.code=="200"){
+                                $("#grid").datagrid("reload");
+                                $('#dlg').dialog('close');
+                            }else{
+                                $.messager.alert('错误',data.result);
+                            }
+                        },
+                        error: function(){
+                            $.messager.alert('错误','远程访问失败');
+                        }
+                    });
+                }
+            });
+
+        }
+        //表格查询
+        function queryGrid() {
+            var opts = $("#grid").datagrid("options");
+            if (null == opts.url || "" == opts.url) {
+                opts.url = "${contextPath}/taskExecutionInfo/listPage";
+            }
+            if(!$('#form').form("validate")){
+                return;
+            }
+            var param = bindMetadata("grid", true);
+            var formData = $("#form").serializeObject();
+            $.extend(param, formData);
+            $("#grid").datagrid("load", param);
+        }
+
+
+        //清空表单
+        function clearForm() {
+            $('#form').form('clear');
+        }
+
+        //表格表头右键菜单
+        function headerContextMenu(e, field){
+            e.preventDefault();
+            if (!cmenu){
+                createColumnMenu("grid");
+            }
+            cmenu.menu('show', {
+                left:e.pageX,
+                top:e.pageY
+            });
+        }
+
+        $.messager.progress({
+            title:"提示",
+            msg:"加载中,请稍候...",
+            value : '10',
+            text: '{value}%',
+            interval:200
+        });
+        $.parser.onComplete = function(){
+            $.messager.progress("close");
+        }
+        //全局按键事件
+        function getKey(e){
+            e = e || window.event;
+            var keycode = e.which ? e.which : e.keyCode;
+            if(keycode == 46){ //如果按下删除键
+                var selected = $("#grid").datagrid("getSelected");
+                if(selected && selected!= null){
+                    del();
+                }
+            }
+        }
+
+        /**
+         * 绑定页面回车事件，以及初始化页面时的光标定位
+         * @formId
+         *          表单ID
+         * @elementName
+         *          光标定位在指点表单元素的name属性的值
+         * @submitFun
+         *          表单提交需执行的任务
+         */
+        $(function () {
+            bindFormEvent("form", "taskId", queryGrid);
+            bindFormEvent("_form", "_taskId", saveOrUpdate, function (){$('#dlg').dialog('close');});
+            if (document.addEventListener) {
+                document.addEventListener("keyup",getKey,false);
+            } else if (document.attachEvent) {
+                document.attachEvent("onkeyup",getKey);
+            } else {
+                document.onkeyup = getKey;
+            }
+        })
+    </script>
+</#body>
