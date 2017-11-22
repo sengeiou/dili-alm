@@ -64,7 +64,8 @@ public class ProjectController {
 	@ApiOperation(value = "查询Project", notes = "查询Project，返回列表信息")
 	@ApiImplicitParams({ @ApiImplicitParam(name = "Project", paramType = "form", value = "Project的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody List<Project> list(Project project) {
+	public @ResponseBody
+	List<Map> list(Project project) {
 		refreshMember();
 		Map<Object, Object> metadata = new HashMap<>();
 
