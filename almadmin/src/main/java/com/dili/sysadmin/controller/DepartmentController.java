@@ -8,10 +8,12 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.ss.domain.BaseOutput;
 import com.dili.sysadmin.domain.Department;
+import com.dili.sysadmin.domain.dto.DepartmentUserCountDto;
 import com.dili.sysadmin.service.DepartmentService;
 
 import io.swagger.annotations.Api;
@@ -40,11 +42,13 @@ public class DepartmentController {
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<Department> list(Department department) {
 		List<Department> list = this.departmentService.list(department);
-		Department root = new Department();
-		root.setId(-1L);
-		root.setName("部门管理");
-		list.add(root);
 		return list;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/listDepartmentUserCount", method = { RequestMethod.GET, RequestMethod.POST })
+	public List<DepartmentUserCountDto> listDepartmentUserCount(Department department) {
+		return this.departmentService.listDepartmentUserCount(department);
 	}
 
 	@ResponseBody
@@ -80,5 +84,12 @@ public class DepartmentController {
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> delete(Long id) {
 		return departmentService.checkBeforeDelete(id);
+	}
+
+	@RequestMapping(value = "/updateDepartment.html", method = RequestMethod.GET)
+	public String updateDepartmentView(@RequestParam Long departmentId, ModelMap map) {
+		Department dept = this.departmentService.findById(departmentId);
+		map.addAttribute("model", dept);
+		return "department/updateDepartment";
 	}
 }

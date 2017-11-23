@@ -9,9 +9,9 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
-		<targetMapperPackage>com.dili.almadmin.dao</targetMapperPackage>
-		<targetModelPackage>com.dili.almadmin.domain</targetModelPackage>
-		<targetServicePackage>com.dili.almadmin.service</targetServicePackage>
+		<targetMapperPackage>com.dili.sysadmin.dao</targetMapperPackage>
+		<targetModelPackage>com.dili.sysadmin.domain</targetModelPackage>
+		<targetServicePackage>com.dili.sysadmin.service</targetServicePackage>
 		<targetControllerPackage>com.dili.sysadmin.controller</targetControllerPackage>
 	</properties>
 
@@ -62,7 +62,7 @@
 		<dependency>
 			<groupId>com.dili</groupId>
 			<artifactId>sharp-sword</artifactId>
-			<version>1.5.6-SNAPSHOT</version>
+			<version>1.5.7-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>

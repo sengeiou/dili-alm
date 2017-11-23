@@ -1,5 +1,6 @@
 
 <#body>
+<div id="win" style="display:none;"></div>
 <div class="easyui-layout" fit="true">
 	<!-- ====================================================================================================================== -->
 	<!-- 中央布局 -->
@@ -8,8 +9,8 @@
 	<div region="center" style="width: 100%;" height="auto">
 		<!-- =========================================================表格========================================================= -->
 		<table class="easyui-treegrid" title="部门列表" id="grid" sortName="id" sortOrder="asc" fitColumns="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="true"
-			sortName="id" align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" treeField="name" url="${contextPath!}/department/list"
-			data-options="loadFilter:loadFilter,onClickRow:onClickRow,onDblClickRow:onDblClickRow, onAfterEdit:onAfterEdit,onCancelEdit:onCancelEdit,onBeforeEdit:onBeforeEdit,onEndEdit:onEndEdit">
+			sortName="id" align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" treeField="name" url="${contextPath!}/department/listDepartmentUserCount"
+			data-options="_parentIdField:'parentId',loadFilter:treegridLoadFilter,onClickRow:onClickRow,onDblClickRow:onDblClickRow, onAfterEdit:onAfterEdit,onCancelEdit:onCancelEdit,onBeforeEdit:onBeforeEdit,onEndEdit:onEndEdit">
 			<thead>
 				<tr>
 					<th data-options="field:'id',hidden:true">id</th>
@@ -19,15 +20,17 @@
 									required : true
 								}
 							}">部门名称</th>
-					<th data-options="field:'notes',width:'60%',editor : 'textbox'">描述</th>
+					<th data-options="field:'notes',width:'50%',editor : 'textbox'">描述</th>
+					<th data-options="field:'userCount',width:'10%',formatter:userCountFomartter">部门人员</th>
 					<th data-options="field:'opt',width:'20%',hidden:true,formatter:columnFormatter">操作</th>
 				</tr>
 			</thead>
 		</table>
 		<div id="toolbar" style="padding: 2px 5px;">
-			<#resource code="addDept"> <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true"></a> </#resource>
-			<#resource code="editDept"> <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()" plain="true"></a> </#resource>
-			<#resource code="deleteDept"> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true"></a> </#resource>
+			<#resource code="addDept"> <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert(true)" plain="true">添加一级部门</a> </#resource>
+			<#resource code="addDept"> <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true">添加子集部门</a> </#resource>
+			<#resource code="editDept"> <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()" plain="true">修改部门信息</a> </#resource>
+			<#resource code="deleteDept"> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true">删除部门</a> </#resource>
 		</div>
 	</div>
 </div>

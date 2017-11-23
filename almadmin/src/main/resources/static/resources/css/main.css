@@ -18,4 +18,48 @@ body {
 .lines-bottom .datagrid-body td{
     border-right:1px dotted transparent;
 }
+
+/* easyui基础字体设置 */
+/*更改表格标题文字大小*/
+.datagrid-header span {     font-size: 15px !important; }  .datagrid-header-row {     /* background-color: #e3e3e3; */     /* color: #111 */     Height: 30px; }
+
+/*更改表格中单元格行间距*/
+#table .datagrid-btable tr{height: 60px;}
+
+/*更改表格标题的行间距*/
+.panel-title {
+    margin-top: 4px;
+    margin-bottom: 4px;
+    font-size: 15px;
+    color: inherit;
+}
+/*更改datagrid中的数据*/
+.datagrid-cell{
+    font-size: 14px;
+}
+/*更改treegrid的递归列*/
+.tree-title{
+    font-size: 14px;
+}
+/*textbox的label字体*/
+.textbox-label{
+    font-size: 14px;
+}
+/*按钮字体*/
+.l-btn-text{
+    font-size: 14px;
+}
+/*菜单字体*/
+.menu-text{
+    font-size: 14px;
+}
+/*tab字体*/
+.tabs-title{
+    font-size: 14px;
+}
+/*表格分页条字体*/
+.pagination-info{
+    font-size: 14px;
+}
+
 /* datagrid row border end */

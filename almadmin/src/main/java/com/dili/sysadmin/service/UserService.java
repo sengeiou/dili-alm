@@ -1,6 +1,7 @@
 package com.dili.sysadmin.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
@@ -42,7 +43,7 @@ public interface UserService extends BaseService<User, Long> {
 
 	void refreshUserPermission(Long userId);
 
-	List<User> listOnlineUsers(User user) throws Exception;
+	List<Map> listOnlineUsers(User user) throws Exception;
 
 	void kickUserOffline(Long userId);
 

@@ -1,7 +1,10 @@
 package com.dili.sysadmin.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,8 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.sysadmin.dao.DepartmentMapper;
+import com.dili.sysadmin.dao.UserDepartmentMapper;
 import com.dili.sysadmin.dao.UserMapper;
 import com.dili.sysadmin.domain.Department;
+import com.dili.sysadmin.domain.UserDepartment;
+import com.dili.sysadmin.domain.dto.DepartmentUserCountDto;
 import com.dili.sysadmin.service.DepartmentService;
 
 /**
@@ -21,6 +27,8 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department, Long> imp
 
 	@Autowired
 	private UserMapper userMapper;
+	@Autowired
+	private UserDepartmentMapper userDepartmentMapper;
 
 	public DepartmentMapper getActualDao() {
 		return (DepartmentMapper) getDao();
@@ -69,13 +77,46 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department, Long> imp
 		Department oldDept = this.getActualDao().selectOne(record);
 		if (oldDept != null && !oldDept.getId().equals(department.getId())) {
 			return BaseOutput.failure("存在相同名称的部门");
-		}
-		department.setNotes(department.getNotes());
-		department.setModified(new Date());
+		}		
+		oldDept.setName(department.getName());
+		oldDept.setNotes(department.getNotes());
+		oldDept.setModified(new Date());
 		int result = this.getActualDao().updateByPrimaryKey(department);
 		if (result > 0) {
 			return BaseOutput.success().setData(department);
 		}
 		return BaseOutput.failure("更新失败");
 	}
+
+	@Override
+	public List<DepartmentUserCountDto> listDepartmentUserCount(Department department) {
+		List<Department> departments = this.getActualDao().select(department);
+		if (CollectionUtils.isEmpty(departments)) {
+			return null;
+		}
+		List<DepartmentUserCountDto> dtos = new ArrayList<>(departments.size());
+		departments.forEach(d -> {
+			DepartmentUserCountDto dto = new DepartmentUserCountDto();
+			dto.setCode(d.getCode());
+			dto.setCreated(d.getCreated());
+			dto.setId(d.getId());
+			dto.setModified(d.getModified());
+			dto.setName(d.getName());
+			dto.setNotes(d.getNotes());
+			dto.setOperatorId(d.getOperatorId());
+			dto.setParentId(d.getParentId());
+			UserDepartment record = new UserDepartment();
+			record.setDepartmentId(d.getId());
+			Integer userCount = this.userMapper.countByDepartmentId(d.getId());
+			dto.setUserCount(userCount);
+			dtos.add(dto);
+		});
+		return dtos;
+	}
+
+	@Override
+	public Department findById(Long departmentId) {
+		return this.getActualDao().selectByPrimaryKey(departmentId);
+	}
+
 }

@@ -111,7 +111,7 @@ public class UserController {
 
 		try {
 			User user = userService.update(dto);
-			List<Object> list = ValueProviderUtils.buildDataByProvider(metadata, Lists.newArrayList(user));
+			List<Map> list = ValueProviderUtils.buildDataByProvider(metadata, Lists.newArrayList(user));
 			return BaseOutput.success("修改用户信息成功").setData(list.get(0));
 		} catch (Exception e) {
 			return BaseOutput.failure(e.getMessage());
@@ -208,7 +208,7 @@ public class UserController {
 	@ApiOperation(value = "查询在线User", notes = "查询在线User，返回列表信息")
 	@ApiImplicitParams({ @ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = false, dataType = "Long") })
 	@RequestMapping(value = "/listOnlineUsers", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody List<User> listOnlineUsers(User user) throws Exception {
+	public @ResponseBody List<Map> listOnlineUsers(User user) throws Exception {
 		return userService.listOnlineUsers(user);
 	}
 

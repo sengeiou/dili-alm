@@ -443,7 +443,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<User> listOnlineUsers(User user) throws Exception {
+	public List<Map> listOnlineUsers(User user) throws Exception {
 		List<User> userList = new ArrayList<>();
 		Long userId = user.getId();
 		if (userId != null) {
