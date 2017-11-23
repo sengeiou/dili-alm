@@ -12,9 +12,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
- * ÓÉMyBatis Generator¹¤¾ß×Ô¶¯Éú³É
+ * ç”±MyBatis Generatorå·¥å…·è‡ªåŠ¨ç”Ÿæˆ
  * 
- * This file was generated on 2017-11-22 15:55:41.
+ * This file was generated on 2017-11-23 10:23:05.
  */
 @Table(name = "`task`")
 public interface Task extends IBaseDomain {
@@ -70,35 +70,35 @@ public interface Task extends IBaseDomain {
     void setEndDate(Date endDate);
 
     @Column(name = "`before_task`")
-    @FieldDef(label="Ç°ÖÃÈÎÎñ")
+    @FieldDef(label="å‰ç½®ä»»åŠ¡")
     @EditMode(editor = FieldEditor.Number, required = false)
     Long getBeforeTask();
 
     void setBeforeTask(Long beforeTask);
 
     @Column(name = "`type`")
-    @FieldDef(label="ÈÎÎñÀàĞÍ")
+    @FieldDef(label="ä»»åŠ¡ç±»å‹")
     @EditMode(editor = FieldEditor.Number, required = false)
     Integer getType();
 
     void setType(Integer type);
 
     @Column(name = "`owner`")
-    @FieldDef(label="¸ºÔğÈË")
+    @FieldDef(label="è´Ÿè´£äºº")
     @EditMode(editor = FieldEditor.Number, required = false)
     Long getOwner();
 
     void setOwner(Long owner);
 
     @Column(name = "`plan_time`")
-    @FieldDef(label="¼Æ»®¹¤Ê±")
+    @FieldDef(label="è®¡åˆ’å·¥æ—¶")
     @EditMode(editor = FieldEditor.Text, required = false)
     Short getPlanTime();
 
     void setPlanTime(Short planTime);
 
     @Column(name = "`flow`")
-    @FieldDef(label="Á÷³Ì")
+    @FieldDef(label="æµç¨‹")
     @EditMode(editor = FieldEditor.Number, required = false)
     Boolean getFlow();
 
@@ -112,7 +112,7 @@ public interface Task extends IBaseDomain {
     void setChangeId(Long changeId);
 
     @Column(name = "`describe`")
-    @FieldDef(label="ÃèÊö", maxLength = 255)
+    @FieldDef(label="æè¿°", maxLength = 255)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getDescribe();
 

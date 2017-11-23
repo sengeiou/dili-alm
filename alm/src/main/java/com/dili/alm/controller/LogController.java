@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
- * ÓÉMyBatis Generator¹¤¾ß×Ô¶¯Éú³É
- * This file was generated on 2017-11-22 16:28:57.
+ * ç”±MyBatis Generatorå·¥å…·è‡ªåŠ¨ç”Ÿæˆ
+ * This file was generated on 2017-11-23 10:19:20.
  */
 @Api("/log")
 @Controller
@@ -26,57 +26,57 @@ public class LogController {
     @Autowired
     LogService logService;
 
-    @ApiOperation("Ìø×ªµ½LogÒ³Ãæ")
+    @ApiOperation("è·³è½¬åˆ°Logé¡µé¢")
     @RequestMapping(value="/index", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
         return "log/index";
     }
 
-    @ApiOperation(value="²éÑ¯Log", notes = "²éÑ¯Log£¬·µ»ØÁĞ±íĞÅÏ¢")
+    @ApiOperation(value="æŸ¥è¯¢Log", notes = "æŸ¥è¯¢Logï¼Œè¿”å›åˆ—è¡¨ä¿¡æ¯")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="Log", paramType="form", value = "LogµÄformĞÅÏ¢", required = false, dataType = "string")
+		@ApiImplicitParam(name="Log", paramType="form", value = "Logçš„formä¿¡æ¯", required = false, dataType = "string")
 	})
     @RequestMapping(value="/list", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody List<Log> list(Log log) {
         return logService.list(log);
     }
 
-    @ApiOperation(value="·ÖÒ³²éÑ¯Log", notes = "·ÖÒ³²éÑ¯Log£¬·µ»Øeasyui·ÖÒ³ĞÅÏ¢")
+    @ApiOperation(value="åˆ†é¡µæŸ¥è¯¢Log", notes = "åˆ†é¡µæŸ¥è¯¢Logï¼Œè¿”å›easyuiåˆ†é¡µä¿¡æ¯")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="Log", paramType="form", value = "LogµÄformĞÅÏ¢", required = false, dataType = "string")
+		@ApiImplicitParam(name="Log", paramType="form", value = "Logçš„formä¿¡æ¯", required = false, dataType = "string")
 	})
     @RequestMapping(value="/listPage", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String listPage(Log log) throws Exception {
         return logService.listEasyuiPageByExample(log, true).toString();
     }
 
-    @ApiOperation("ĞÂÔöLog")
+    @ApiOperation("æ–°å¢Log")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="Log", paramType="form", value = "LogµÄformĞÅÏ¢", required = true, dataType = "string")
+		@ApiImplicitParam(name="Log", paramType="form", value = "Logçš„formä¿¡æ¯", required = true, dataType = "string")
 	})
     @RequestMapping(value="/insert", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput insert(Log log) {
         logService.insertSelective(log);
-        return BaseOutput.success("ĞÂÔö³É¹¦");
+        return BaseOutput.success("æ–°å¢æˆåŠŸ");
     }
 
-    @ApiOperation("ĞŞ¸ÄLog")
+    @ApiOperation("ä¿®æ”¹Log")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="Log", paramType="form", value = "LogµÄformĞÅÏ¢", required = true, dataType = "string")
+		@ApiImplicitParam(name="Log", paramType="form", value = "Logçš„formä¿¡æ¯", required = true, dataType = "string")
 	})
     @RequestMapping(value="/update", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput update(Log log) {
         logService.updateSelective(log);
-        return BaseOutput.success("ĞŞ¸Ä³É¹¦");
+        return BaseOutput.success("ä¿®æ”¹æˆåŠŸ");
     }
 
-    @ApiOperation("É¾³ıLog")
+    @ApiOperation("åˆ é™¤Log")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="id", paramType="form", value = "LogµÄÖ÷¼ü", required = true, dataType = "long")
+		@ApiImplicitParam(name="id", paramType="form", value = "Logçš„ä¸»é”®", required = true, dataType = "long")
 	})
     @RequestMapping(value="/delete", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput delete(Long id) {
         logService.delete(id);
-        return BaseOutput.success("É¾³ı³É¹¦");
+        return BaseOutput.success("åˆ é™¤æˆåŠŸ");
     }
 }

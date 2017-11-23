@@ -12,9 +12,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
- * ÓÉMyBatis Generator¹¤¾ß×Ô¶¯Éú³É
+ * ç”±MyBatis Generatorå·¥å…·è‡ªåŠ¨ç”Ÿæˆ
  * 
- * This file was generated on 2017-11-22 16:28:57.
+ * This file was generated on 2017-11-23 10:19:20.
  */
 @Table(name = "`log`")
 public interface Log extends IBaseDomain {
@@ -28,28 +28,28 @@ public interface Log extends IBaseDomain {
     void setId(Long id);
 
     @Column(name = "`CREATED`")
-    @FieldDef(label="´´½¨Ê±¼ä")
+    @FieldDef(label="åˆ›å»ºæ—¶é—´")
     @EditMode(editor = FieldEditor.Datetime, required = true)
     Date getCreated();
 
     void setCreated(Date created);
 
     @Column(name = "`MODIFIED`")
-    @FieldDef(label="ĞŞ¸ÄÊ±¼ä")
+    @FieldDef(label="ä¿®æ”¹æ—¶é—´")
     @EditMode(editor = FieldEditor.Datetime, required = true)
     Date getModified();
 
     void setModified(Date modified);
 
     @Column(name = "`operator_id`")
-    @FieldDef(label="²Ù×÷Ô±")
+    @FieldDef(label="æ“ä½œå‘˜")
     @EditMode(editor = FieldEditor.Number, required = false)
     Long getOperatorId();
 
     void setOperatorId(Long operatorId);
 
     @Column(name = "`operator_name`")
-    @FieldDef(label="²Ù×÷Ô±Ãû³Æ", maxLength = 20)
+    @FieldDef(label="æ“ä½œå‘˜åç§°", maxLength = 20)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getOperatorName();
 
@@ -63,7 +63,7 @@ public interface Log extends IBaseDomain {
     void setIp(String ip);
 
     @Column(name = "`content`")
-    @FieldDef(label="ÄÚÈİ")
+    @FieldDef(label="å†…å®¹")
     @EditMode(editor = FieldEditor.Text, required = false)
     String getContent();
 

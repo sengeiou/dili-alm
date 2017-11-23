@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
- * ÓÉMyBatis Generator¹¤¾ß×Ô¶¯Éú³É
- * This file was generated on 2017-11-22 16:02:19.
+ * ç”±MyBatis Generatorå·¥å…·è‡ªåŠ¨ç”Ÿæˆ
+ * This file was generated on 2017-11-23 10:23:06.
  */
 @Api("/taskDetails")
 @Controller
@@ -26,57 +26,57 @@ public class TaskDetailsController {
     @Autowired
     TaskDetailsService taskDetailsService;
 
-    @ApiOperation("Ìø×ªµ½TaskDetailsÒ³Ãæ")
+    @ApiOperation("è·³è½¬åˆ°TaskDetailsé¡µé¢")
     @RequestMapping(value="/index", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
         return "taskDetails/index";
     }
 
-    @ApiOperation(value="²éÑ¯TaskDetails", notes = "²éÑ¯TaskDetails£¬·µ»ØÁĞ±íĞÅÏ¢")
+    @ApiOperation(value="æŸ¥è¯¢TaskDetails", notes = "æŸ¥è¯¢TaskDetailsï¼Œè¿”å›åˆ—è¡¨ä¿¡æ¯")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="TaskDetails", paramType="form", value = "TaskDetailsµÄformĞÅÏ¢", required = false, dataType = "string")
+		@ApiImplicitParam(name="TaskDetails", paramType="form", value = "TaskDetailsçš„formä¿¡æ¯", required = false, dataType = "string")
 	})
     @RequestMapping(value="/list", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody List<TaskDetails> list(TaskDetails taskDetails) {
         return taskDetailsService.list(taskDetails);
     }
 
-    @ApiOperation(value="·ÖÒ³²éÑ¯TaskDetails", notes = "·ÖÒ³²éÑ¯TaskDetails£¬·µ»Øeasyui·ÖÒ³ĞÅÏ¢")
+    @ApiOperation(value="åˆ†é¡µæŸ¥è¯¢TaskDetails", notes = "åˆ†é¡µæŸ¥è¯¢TaskDetailsï¼Œè¿”å›easyuiåˆ†é¡µä¿¡æ¯")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="TaskDetails", paramType="form", value = "TaskDetailsµÄformĞÅÏ¢", required = false, dataType = "string")
+		@ApiImplicitParam(name="TaskDetails", paramType="form", value = "TaskDetailsçš„formä¿¡æ¯", required = false, dataType = "string")
 	})
     @RequestMapping(value="/listPage", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String listPage(TaskDetails taskDetails) throws Exception {
         return taskDetailsService.listEasyuiPageByExample(taskDetails, true).toString();
     }
 
-    @ApiOperation("ĞÂÔöTaskDetails")
+    @ApiOperation("æ–°å¢TaskDetails")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="TaskDetails", paramType="form", value = "TaskDetailsµÄformĞÅÏ¢", required = true, dataType = "string")
+		@ApiImplicitParam(name="TaskDetails", paramType="form", value = "TaskDetailsçš„formä¿¡æ¯", required = true, dataType = "string")
 	})
     @RequestMapping(value="/insert", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput insert(TaskDetails taskDetails) {
         taskDetailsService.insertSelective(taskDetails);
-        return BaseOutput.success("ĞÂÔö³É¹¦");
+        return BaseOutput.success("æ–°å¢æˆåŠŸ");
     }
 
-    @ApiOperation("ĞŞ¸ÄTaskDetails")
+    @ApiOperation("ä¿®æ”¹TaskDetails")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="TaskDetails", paramType="form", value = "TaskDetailsµÄformĞÅÏ¢", required = true, dataType = "string")
+		@ApiImplicitParam(name="TaskDetails", paramType="form", value = "TaskDetailsçš„formä¿¡æ¯", required = true, dataType = "string")
 	})
     @RequestMapping(value="/update", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput update(TaskDetails taskDetails) {
         taskDetailsService.updateSelective(taskDetails);
-        return BaseOutput.success("ĞŞ¸Ä³É¹¦");
+        return BaseOutput.success("ä¿®æ”¹æˆåŠŸ");
     }
 
-    @ApiOperation("É¾³ıTaskDetails")
+    @ApiOperation("åˆ é™¤TaskDetails")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="id", paramType="form", value = "TaskDetailsµÄÖ÷¼ü", required = true, dataType = "long")
+		@ApiImplicitParam(name="id", paramType="form", value = "TaskDetailsçš„ä¸»é”®", required = true, dataType = "long")
 	})
     @RequestMapping(value="/delete", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput delete(Long id) {
         taskDetailsService.delete(id);
-        return BaseOutput.success("É¾³ı³É¹¦");
+        return BaseOutput.success("åˆ é™¤æˆåŠŸ");
     }
 }

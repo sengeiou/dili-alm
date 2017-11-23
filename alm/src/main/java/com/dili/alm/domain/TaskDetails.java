@@ -12,9 +12,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
- * 由MyBatis Generator工具自动生成
+ * 鐢盡yBatis Generator宸ュ叿鑷姩鐢熸垚
  * 
- * This file was generated on 2017-11-22 16:02:19.
+ * This file was generated on 2017-11-23 10:23:06.
  */
 @Table(name = "`task_details`")
 public interface TaskDetails extends IBaseDomain {
@@ -35,28 +35,28 @@ public interface TaskDetails extends IBaseDomain {
     void setTaskId(Long taskId);
 
     @Column(name = "`task_hour`")
-    @FieldDef(label="工时")
+    @FieldDef(label="宸ユ椂")
     @EditMode(editor = FieldEditor.Text, required = false)
     Short getTaskHour();
 
     void setTaskHour(Short taskHour);
 
     @Column(name = "`over_hour`")
-    @FieldDef(label="加班工时")
+    @FieldDef(label="鍔犵彮宸ユ椂")
     @EditMode(editor = FieldEditor.Text, required = false)
     Short getOverHour();
 
     void setOverHour(Short overHour);
 
     @Column(name = "`describe`")
-    @FieldDef(label="工作描述", maxLength = 255)
+    @FieldDef(label="宸ヤ綔鎻忚堪", maxLength = 255)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getDescribe();
 
     void setDescribe(String describe);
 
     @Column(name = "`task_time`")
-    @FieldDef(label="工时填写时间", maxLength = 255)
+    @FieldDef(label="宸ユ椂濉啓鏃堕棿", maxLength = 255)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getTaskTime();
 

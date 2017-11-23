@@ -7,8 +7,8 @@ import com.dili.ss.base.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 
 /**
- * 由MyBatis Generator工具自动生成
- * This file was generated on 2017-11-22 16:28:58.
+ * 鐢盡yBatis Generator宸ュ叿鑷姩鐢熸垚
+ * This file was generated on 2017-11-23 10:19:21.
  */
 @Service
 public class WorkScheduleServiceImpl extends BaseServiceImpl<WorkSchedule, Long> implements WorkScheduleService {

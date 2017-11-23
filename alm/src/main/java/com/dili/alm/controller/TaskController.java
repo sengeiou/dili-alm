@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
- * ÓÉMyBatis Generator¹¤¾ß×Ô¶¯Éú³É
- * This file was generated on 2017-11-22 15:55:41.
+ * ç”±MyBatis Generatorå·¥å…·è‡ªåŠ¨ç”Ÿæˆ
+ * This file was generated on 2017-11-23 10:23:05.
  */
 @Api("/task")
 @Controller
@@ -26,57 +26,57 @@ public class TaskController {
     @Autowired
     TaskService taskService;
 
-    @ApiOperation("Ìø×ªµ½TaskÒ³Ãæ")
+    @ApiOperation("è·³è½¬åˆ°Taské¡µé¢")
     @RequestMapping(value="/index", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
         return "task/index";
     }
 
-    @ApiOperation(value="²éÑ¯Task", notes = "²éÑ¯Task£¬·µ»ØÁĞ±íĞÅÏ¢")
+    @ApiOperation(value="æŸ¥è¯¢Task", notes = "æŸ¥è¯¢Taskï¼Œè¿”å›åˆ—è¡¨ä¿¡æ¯")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="Task", paramType="form", value = "TaskµÄformĞÅÏ¢", required = false, dataType = "string")
+		@ApiImplicitParam(name="Task", paramType="form", value = "Taskçš„formä¿¡æ¯", required = false, dataType = "string")
 	})
     @RequestMapping(value="/list", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody List<Task> list(Task task) {
         return taskService.list(task);
     }
 
-    @ApiOperation(value="·ÖÒ³²éÑ¯Task", notes = "·ÖÒ³²éÑ¯Task£¬·µ»Øeasyui·ÖÒ³ĞÅÏ¢")
+    @ApiOperation(value="åˆ†é¡µæŸ¥è¯¢Task", notes = "åˆ†é¡µæŸ¥è¯¢Taskï¼Œè¿”å›easyuiåˆ†é¡µä¿¡æ¯")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="Task", paramType="form", value = "TaskµÄformĞÅÏ¢", required = false, dataType = "string")
+		@ApiImplicitParam(name="Task", paramType="form", value = "Taskçš„formä¿¡æ¯", required = false, dataType = "string")
 	})
     @RequestMapping(value="/listPage", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String listPage(Task task) throws Exception {
         return taskService.listEasyuiPageByExample(task, true).toString();
     }
 
-    @ApiOperation("ĞÂÔöTask")
+    @ApiOperation("æ–°å¢Task")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="Task", paramType="form", value = "TaskµÄformĞÅÏ¢", required = true, dataType = "string")
+		@ApiImplicitParam(name="Task", paramType="form", value = "Taskçš„formä¿¡æ¯", required = true, dataType = "string")
 	})
     @RequestMapping(value="/insert", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput insert(Task task) {
         taskService.insertSelective(task);
-        return BaseOutput.success("ĞÂÔö³É¹¦");
+        return BaseOutput.success("æ–°å¢æˆåŠŸ");
     }
 
-    @ApiOperation("ĞŞ¸ÄTask")
+    @ApiOperation("ä¿®æ”¹Task")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="Task", paramType="form", value = "TaskµÄformĞÅÏ¢", required = true, dataType = "string")
+		@ApiImplicitParam(name="Task", paramType="form", value = "Taskçš„formä¿¡æ¯", required = true, dataType = "string")
 	})
     @RequestMapping(value="/update", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput update(Task task) {
         taskService.updateSelective(task);
-        return BaseOutput.success("ĞŞ¸Ä³É¹¦");
+        return BaseOutput.success("ä¿®æ”¹æˆåŠŸ");
     }
 
-    @ApiOperation("É¾³ıTask")
+    @ApiOperation("åˆ é™¤Task")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="id", paramType="form", value = "TaskµÄÖ÷¼ü", required = true, dataType = "long")
+		@ApiImplicitParam(name="id", paramType="form", value = "Taskçš„ä¸»é”®", required = true, dataType = "long")
 	})
     @RequestMapping(value="/delete", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput delete(Long id) {
         taskService.delete(id);
-        return BaseOutput.success("É¾³ı³É¹¦");
+        return BaseOutput.success("åˆ é™¤æˆåŠŸ");
     }
 }
