@@ -8,7 +8,7 @@
     <id column="ID" jdbcType="BIGINT" property="id" />
     <result column="number" jdbcType="VARCHAR" property="number" />
     <result column="name" jdbcType="VARCHAR" property="name" />
-    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
     <result column="pid" jdbcType="BIGINT" property="pid" />
     <result column="project_leader" jdbcType="BIGINT" property="projectLeader" />
     <result column="product_manager" jdbcType="BIGINT" property="productManager" />
@@ -65,7 +65,7 @@
         name = #{name,jdbcType=VARCHAR},
       </if>
       <if test="type != null">
-        type = #{type,jdbcType=INTEGER},
+        type = #{type,jdbcType=VARCHAR},
       </if>
       <if test="pid != null">
         pid = #{pid,jdbcType=BIGINT},

@@ -14,7 +14,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2017-11-22 15:25:10.
+ * This file was generated on 2017-11-23 18:19:46.
  */
 @Table(name = "`project_apply`")
 public interface ProjectApply extends IBaseDomain {
@@ -42,11 +42,11 @@ public interface ProjectApply extends IBaseDomain {
     void setName(String name);
 
     @Column(name = "`type`")
-    @FieldDef(label="项目类型")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Integer getType();
+    @FieldDef(label="项目类型", maxLength = 10)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getType();
 
-    void setType(Integer type);
+    void setType(String type);
 
     @Column(name = "`pid`")
     @FieldDef(label="父项目")

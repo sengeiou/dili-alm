@@ -1,67 +1,60 @@
 <#body>
 <div class="easyui-panel" title="New Topic" style="width:100%;max-width:400px;padding:30px 60px;">
-    <form id="ff" method="post">
+    <form id="ff" method="post" action="">
         <div style="margin-bottom:20px">
-            <input class="easyui-textbox" name="name" style="width:100%" data-options="label:'Name:',required:true">
+            <input name="type" id="_projectType" style="width:100%;" data-options="editable:false"
+                   panelWidth="auto" panelHeight="auto" label="项目类型:" required="true"/>
+            <#comboProvider _id="_projectType" _provider='projectTypeProvider'/>
         </div>
         <div style="margin-bottom:20px">
-            <input class="easyui-textbox" name="email" style="width:100%"
-                   data-options="label:'Email:',required:true,validType:'email'">
-        </div>
-        <div style="margin-bottom:20px">
-            <input class="easyui-textbox" name="subject" style="width:100%"
-                   data-options="label:'Subject:',required:true">
-        </div>
-        <div style="margin-bottom:20px">
-            <input class="easyui-textbox" name="message" style="width:100%;height:60px"
-                   data-options="label:'Message:',multiline:true">
-        </div>
-        <div style="margin-bottom:20px">
-            <select class="easyui-combobox" name="language" label="Language" style="width:100%">
-                <option value="ar">Arabic</option>
-                <option value="bg">Bulgarian</option>
-                <option value="ca">Catalan</option>
-                <option value="zh-cht">Chinese Traditional</option>
-                <option value="cs">Czech</option>
-                <option value="da">Danish</option>
-                <option value="nl">Dutch</option>
-                <option value="en" selected="selected">English</option>
-                <option value="et">Estonian</option>
-                <option value="fi">Finnish</option>
-                <option value="fr">French</option>
-                <option value="de">German</option>
-                <option value="el">Greek</option>
-                <option value="ht">Haitian Creole</option>
-                <option value="he">Hebrew</option>
-                <option value="hi">Hindi</option>
-                <option value="mww">Hmong Daw</option>
-                <option value="hu">Hungarian</option>
-                <option value="id">Indonesian</option>
-                <option value="it">Italian</option>
-                <option value="ja">Japanese</option>
-                <option value="ko">Korean</option>
-                <option value="lv">Latvian</option>
-                <option value="lt">Lithuanian</option>
-                <option value="no">Norwegian</option>
-                <option value="fa">Persian</option>
-                <option value="pl">Polish</option>
-                <option value="pt">Portuguese</option>
-                <option value="ro">Romanian</option>
-                <option value="ru">Russian</option>
-                <option value="sk">Slovak</option>
-                <option value="sl">Slovenian</option>
-                <option value="es">Spanish</option>
-                <option value="sv">Swedish</option>
-                <option value="th">Thai</option>
-                <option value="tr">Turkish</option>
-                <option value="uk">Ukrainian</option>
-                <option value="vi">Vietnamese</option>
+            <label class="textbox-label textbox-label-before">项目级别:</label>
+            <select id="cc" class="easyui-combobox" name="level" style="width: 150px;" data-options="editable:false"
+                    required="true">
+                <option value="">请选择</option>
+                <option value="1">一级项目</option>
+                <option value="2">二级项目</option>
             </select>
+        </div>
+        <div style="margin-bottom:20px;display: block;" id="child_div">
+            <input name="child" id="child" style="width:100%;" data-options="editable:false"
+                   panelWidth="auto" panelHeight="auto"/>
         </div>
     </form>
     <div style="text-align:center;padding:5px 0">
-        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()" style="width:80px">Submit</a>
-        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">Clear</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()" style="width:80px">下一步</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">返回</a>
     </div>
 </div>
+<script>
+    $('#child').combobox({
+        url: '${contextPath}/projectApply/getProjectList',
+        valueField: 'value',
+        textField: 'text'
+    });
+
+    function submitForm() {
+        $('#ff').form('submit', {
+            url: "${contextPath}/projectApply/insert",
+            onSubmit: function () {
+                // do some check
+                // return false to prevent submit;
+            },
+            success: function (data) {
+                var data = eval('(' + data + ')');
+                if(data.success==true){
+                    window.location.href="${contextPath}/projectApply/toStep/1/" + data.result;
+                }
+            }
+        });
+    }
+
+
+    $('#cc').combobox({
+        onChange: function (newValue, oldValue) {
+            if (newValue == 2) {
+                $("#child_div").show();
+            }
+        }
+    });
+</script>
 </#body>

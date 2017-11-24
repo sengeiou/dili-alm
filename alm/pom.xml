@@ -59,6 +59,17 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>springloaded</artifactId>
+                        <version>1.2.6.RELEASE</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
         </plugins>
     </build>
 
@@ -68,7 +79,7 @@
 		<dependency>
 			<groupId>com.dili</groupId>
 			<artifactId>sharp-sword</artifactId>
-			<version>1.5.7-SNAPSHOT</version>
+			<version>${sharp-sword.version}</version>
 		</dependency>
 
         <dependency>
@@ -321,6 +332,12 @@
             <artifactId>springloaded</artifactId>
             <version>${springloaded.version}</version>
         </dependency>
+        <!-- 热部署模块 -->
+        <!--<dependency>-->
+            <!--<groupId>org.springframework.boot</groupId>-->
+            <!--<artifactId>spring-boot-devtools</artifactId>-->
+            <!--<optional>true</optional>-->
+        <!--</dependency>-->
         <!-- 内部包  -->
         <dependency>
             <groupId>com.dili</groupId>

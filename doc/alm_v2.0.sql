@@ -16,7 +16,7 @@ CREATE TABLE `project_apply` (
   COMMENT '立项编号',
   `name`                 VARCHAR(255)    NULL
   COMMENT '项目名称',
-  `type`                 INT             NULL
+  `type`                 VARCHAR(10)     NULL
   COMMENT '项目类型',
   `pid`                  BIGINT          NULL
   COMMENT '父项目',

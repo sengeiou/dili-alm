@@ -28,14 +28,12 @@ import com.alibaba.fastjson.TypeReference;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.dao.DepartmentMapper;
 import com.dili.sysadmin.dao.UserDataAuthMapper;
 import com.dili.sysadmin.dao.UserDepartmentMapper;
 import com.dili.sysadmin.dao.UserMapper;
 import com.dili.sysadmin.dao.UserRoleMapper;
-import com.dili.sysadmin.domain.DataAuth;
 import com.dili.sysadmin.domain.Department;
 import com.dili.sysadmin.domain.User;
 import com.dili.sysadmin.domain.UserDataAuth;
@@ -63,7 +61,6 @@ import com.dili.sysadmin.service.UserService;
 import com.dili.sysadmin.service.ValidatePwdService;
 import com.dili.sysadmin.utils.MD5Util;
 import com.github.pagehelper.Page;
-import com.netflix.discovery.converters.Auto;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-07-04 15:24:50.
@@ -294,7 +291,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 			userStatusProvider.put("provider", "userStatusProvider");
 			metadata.put("status", userStatusProvider);
 
-			List<Map<Object, Object>> results = ValueProviderUtils.buildDataByProvider(metadata, singleUser);
+			List<Map> results = ValueProviderUtils.buildDataByProvider(metadata, singleUser);
 			return BaseOutput.success().setData(results.get(0));
 		} catch (Exception e) {
 		}
@@ -443,7 +440,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<User> listOnlineUsers(User user) throws Exception {
+	public List<Map> listOnlineUsers(User user) throws Exception {
 		List<User> userList = new ArrayList<>();
 		Long userId = user.getId();
 		if (userId != null) {
