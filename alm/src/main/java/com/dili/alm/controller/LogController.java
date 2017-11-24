@@ -49,17 +49,7 @@ public class LogController {
     public @ResponseBody String listPage(Log log) throws Exception {
         return logService.listEasyuiPageByExample(log, true).toString();
     }
-
-    @ApiOperation("新增Log")
-    @ApiImplicitParams({
-		@ApiImplicitParam(name="Log", paramType="form", value = "Log的form信息", required = true, dataType = "string")
-	})
-    @RequestMapping(value="/insert", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput insert(Log log) {
-        logService.insertSelective(log);
-        return BaseOutput.success("新增成功");
-    }
-
+    
     @ApiOperation("修改Log")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Log", paramType="form", value = "Log的form信息", required = true, dataType = "string")
