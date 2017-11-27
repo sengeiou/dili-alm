@@ -1,112 +1,117 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="mapper.ProjectMapper">
-  <resultMap id="BaseResultMap" type="com.dili.alm.domain.Project">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="serial_number" jdbcType="VARCHAR" property="serialNumber" />
-    <result column="parent_id" jdbcType="BIGINT" property="parentId" />
-    <result column="name" jdbcType="VARCHAR" property="name" />
-    <result column="type" jdbcType="VARCHAR" property="type" />
-    <result column="project_manager" jdbcType="BIGINT" property="projectManager" />
-    <result column="develop_manager" jdbcType="VARCHAR" property="developManager" />
-    <result column="test_manager" jdbcType="BIGINT" property="testManager" />
-    <result column="product_manager" jdbcType="BIGINT" property="productManager" />
-    <result column="created" jdbcType="TIMESTAMP" property="created" />
-    <result column="modified" jdbcType="TIMESTAMP" property="modified" />
-    <result column="start_date" jdbcType="TIMESTAMP" property="startDate" />
-    <result column="end_date" jdbcType="TIMESTAMP" property="endDate" />
-    <result column="actual_start_date" jdbcType="TIMESTAMP" property="actualStartDate" />
-    <result column="project_state" jdbcType="INTEGER" property="projectState" />
-    <result column="task_count" jdbcType="INTEGER" property="taskCount" />
-    <result column="member_count" jdbcType="INTEGER" property="memberCount" />
-    <result column="completed_progress" jdbcType="INTEGER" property="completedProgress" />
-    <result column="originator" jdbcType="BIGINT" property="originator" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    id, serial_number, parent_id, name, type, project_manager, develop_manager, test_manager, 
-    product_manager, created, modified, start_date, end_date, actual_start_date, project_state, 
-    task_count, member_count, completed_progress, originator
-  </sql>
-  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    select 
-    <include refid="Base_Column_List" />
-    from project
-    where id = #{id,jdbcType=BIGINT}
-  </select>
-  <update id="updateBy" parameterType="com.dili.alm.domain.Project">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    update project
-    <set>
-      <if test="serialNumber != null">
-        serial_number = #{serialNumber,jdbcType=VARCHAR},
-      </if>
-      <if test="parentId != null">
-        parent_id = #{parentId,jdbcType=BIGINT},
-      </if>
-      <if test="name != null">
-        name = #{name,jdbcType=VARCHAR},
-      </if>
-      <if test="type != null">
-        type = #{type,jdbcType=VARCHAR},
-      </if>
-      <if test="projectManager != null">
-        project_manager = #{projectManager,jdbcType=BIGINT},
-      </if>
-      <if test="developManager != null">
-        develop_manager = #{developManager,jdbcType=VARCHAR},
-      </if>
-      <if test="testManager != null">
-        test_manager = #{testManager,jdbcType=BIGINT},
-      </if>
-      <if test="productManager != null">
-        product_manager = #{productManager,jdbcType=BIGINT},
-      </if>
-      <if test="created != null">
-        created = #{created,jdbcType=TIMESTAMP},
-      </if>
-      <if test="modified != null">
-        modified = #{modified,jdbcType=TIMESTAMP},
-      </if>
-      <if test="startDate != null">
-        start_date = #{startDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="endDate != null">
-        end_date = #{endDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="actualStartDate != null">
-        actual_start_date = #{actualStartDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="projectState != null">
-        project_state = #{projectState,jdbcType=INTEGER},
-      </if>
-      <if test="taskCount != null">
-        task_count = #{taskCount,jdbcType=INTEGER},
-      </if>
-      <if test="memberCount != null">
-        member_count = #{memberCount,jdbcType=INTEGER},
-      </if>
-      <if test="completedProgress != null">
-        completed_progress = #{completedProgress,jdbcType=INTEGER},
-      </if>
-      <if test="originator != null">
-        originator = #{originator,jdbcType=BIGINT},
-      </if>
-    </set>
-    where id = #{id,jdbcType=BIGINT}
-  </update>
+	<resultMap id="BaseResultMap" type="com.dili.alm.domain.Project">
+		<!-- WARNING - @mbg.generated -->
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="serial_number" jdbcType="VARCHAR" property="serialNumber" />
+		<result column="parent_id" jdbcType="BIGINT" property="parentId" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="type" jdbcType="VARCHAR" property="type" />
+		<result column="project_manager" jdbcType="BIGINT" property="projectManager" />
+		<result column="develop_manager" jdbcType="VARCHAR" property="developManager" />
+		<result column="test_manager" jdbcType="BIGINT" property="testManager" />
+		<result column="product_manager" jdbcType="BIGINT" property="productManager" />
+		<result column="created" jdbcType="TIMESTAMP" property="created" />
+		<result column="modified" jdbcType="TIMESTAMP" property="modified" />
+		<result column="start_date" jdbcType="TIMESTAMP" property="startDate" />
+		<result column="end_date" jdbcType="TIMESTAMP" property="endDate" />
+		<result column="actual_start_date" jdbcType="TIMESTAMP"
+			property="actualStartDate" />
+		<result column="project_state" jdbcType="INTEGER" property="projectState" />
+		<result column="task_count" jdbcType="INTEGER" property="taskCount" />
+		<result column="member_count" jdbcType="INTEGER" property="memberCount" />
+		<result column="completed_progress" jdbcType="INTEGER"
+			property="completedProgress" />
+		<result column="originator" jdbcType="BIGINT" property="originator" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		<!-- WARNING - @mbg.generated -->
+		id, serial_number, parent_id, name, type, project_manager,
+		develop_manager, test_manager,
+		product_manager, created, modified, start_date, end_date, actual_start_date,
+		project_state,
+		task_count, member_count, completed_progress, originator
+	</sql>
+	<select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
+		<!-- WARNING - @mbg.generated -->
+		select
+		<include refid="Base_Column_List" />
+		from project
+		where id = #{id,jdbcType=BIGINT}
+	</select>
+	<update id="updateBy" parameterType="com.dili.alm.domain.Project">
+		<!-- WARNING - @mbg.generated -->
+		update project
+		<set>
+			<if test="serialNumber != null">
+				serial_number = #{serialNumber,jdbcType=VARCHAR},
+			</if>
+			<if test="parentId != null">
+				parent_id = #{parentId,jdbcType=BIGINT},
+			</if>
+			<if test="name != null">
+				name = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="type != null">
+				type = #{type,jdbcType=VARCHAR},
+			</if>
+			<if test="projectManager != null">
+				project_manager = #{projectManager,jdbcType=BIGINT},
+			</if>
+			<if test="developManager != null">
+				develop_manager = #{developManager,jdbcType=VARCHAR},
+			</if>
+			<if test="testManager != null">
+				test_manager = #{testManager,jdbcType=BIGINT},
+			</if>
+			<if test="productManager != null">
+				product_manager = #{productManager,jdbcType=BIGINT},
+			</if>
+			<if test="created != null">
+				created = #{created,jdbcType=TIMESTAMP},
+			</if>
+			<if test="modified != null">
+				modified = #{modified,jdbcType=TIMESTAMP},
+			</if>
+			<if test="startDate != null">
+				start_date = #{startDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="endDate != null">
+				end_date = #{endDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="actualStartDate != null">
+				actual_start_date = #{actualStartDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="projectState != null">
+				project_state = #{projectState,jdbcType=INTEGER},
+			</if>
+			<if test="taskCount != null">
+				task_count = #{taskCount,jdbcType=INTEGER},
+			</if>
+			<if test="memberCount != null">
+				member_count = #{memberCount,jdbcType=INTEGER},
+			</if>
+			<if test="completedProgress != null">
+				completed_progress = #{completedProgress,jdbcType=INTEGER},
+			</if>
+			<if test="originator != null">
+				originator = #{originator,jdbcType=BIGINT},
+			</if>
+		</set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
 
-  <select id="getChildProjects" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    {call getChildProjects(#{id})}
-  </select>
+	<select id="getChildProjects" parameterType="java.lang.Long"
+		resultMap="BaseResultMap">
+		{call getChildProjects(#{id})}
+	</select>
+
+	<select id="selectByTaskOwner" parameterType="Long" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM project p
+		where
+		p.id in (select t.project_id from task t where t.owner= #{ownerId})
+	</select>
 </mapper>

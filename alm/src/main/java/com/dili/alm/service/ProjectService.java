@@ -5,6 +5,7 @@ import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.exceptions.ProjectException;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
 
 import java.util.List;
 
@@ -30,4 +31,6 @@ public interface ProjectService extends BaseService<Project, Long> {
 	BaseOutput<Object> updateAfterCheck(Project project);
 
 	List<DataDictionaryValueDto> getPojectStates();
+
+	EasyuiPageOutput listPageMyProject();
 }

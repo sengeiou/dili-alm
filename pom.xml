@@ -43,6 +43,7 @@
 		<mapper.version>3.3.9</mapper.version>
 		<mysql.version>5.1.38</mysql.version>
 		<aspectj.version>1.8.10</aspectj.version>
+		<sharp-sword.version>1.5.7-SNAPSHOT</sharp-sword.version>
 	</properties>
 
 	<!--地利 -->
@@ -146,7 +147,7 @@
 					<dependency>
 						<groupId>com.dili</groupId>
 						<artifactId>sharp-sword</artifactId>
-						<version>1.5.8-SNAPSHOT</version>
+						<version>${sharp-sword.version}</version>
 						<!--<scope>system</scope> -->
 						<!--<systemPath>${\project.basedir}/lib/sharp-sword-1.0.0-SNAPSHOT.jar</systemPath> -->
 					</dependency>

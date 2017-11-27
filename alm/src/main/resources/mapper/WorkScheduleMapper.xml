@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.alm.dao.WorkScheduleMapper">
+  <resultMap id="BaseResultMap" type="com.dili.alm.domain.WorkSchedule">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="schedule_date" jdbcType="TIMESTAMP" property="scheduleDate" />
+    <result column="schedule_text" jdbcType="VARCHAR" property="scheduleText" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, schedule_date, schedule_text, user_id
+  </sql>
+  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from work_schedule
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <update id="updateBy" parameterType="com.dili.alm.domain.WorkSchedule">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update work_schedule
+    <set>
+      <if test="scheduleDate != null">
+        schedule_date = #{scheduleDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="scheduleText != null">
+        schedule_text = #{scheduleText,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

@@ -13,4 +13,6 @@ public interface ProjectMapper extends MyMapper<Project> {
 	 * @return
 	 */
 	List<Project> getChildProjects(Long id);
+
+	List<Project> selectByTaskOwner(Long ownerId);
 }

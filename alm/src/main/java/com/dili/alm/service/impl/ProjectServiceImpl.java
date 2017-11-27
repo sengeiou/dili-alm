@@ -1,5 +1,6 @@
 package com.dili.alm.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.constant.AlmConstants.MemberState;
@@ -16,12 +17,17 @@ import com.dili.alm.exceptions.ProjectException;
 import com.dili.alm.rpc.DataAuthRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.ProjectService;
+import com.dili.alm.service.TaskService;
 import com.dili.alm.service.TeamService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
+import com.github.pagehelper.Page;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -32,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,6 +62,8 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	DataAuthRpc dataAuthRpc;
 	@Autowired
 	private TeamService teamService;
+	@Autowired
+	private TaskService taskService;
 
 	public ProjectMapper getActualDao() {
 		return (ProjectMapper) getDao();
@@ -274,5 +283,37 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 			return null;
 		}
 		return dto.getValues();
+	}
+
+	public EasyuiPageOutput listPageMyProject() {
+		Project project = DTOUtils.newDTO(Project.class);
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		List<Project> projectList = taskService.selectByOwner(userTicket.getId());
+		Page<Project> page = (Page) projectList;
+
+		@SuppressWarnings("unchecked")
+		Map<Object, Object> metadata = null == project.getMetadata() ? new HashMap<>() : project.getMetadata();
+
+		JSONObject projectStatusProvider = new JSONObject();
+		projectStatusProvider.put("provider", "projectStatusProvider");
+		metadata.put("status", projectStatusProvider);
+
+		JSONObject provider = new JSONObject();
+		provider.put("provider", "datetimeProvider");
+		metadata.put("validTimeBegin", provider);
+		metadata.put("validTimeEnd", provider);
+		metadata.put("created", provider);
+		metadata.put("modified", provider);
+		project.setMetadata(metadata);
+
+		try {
+			@SuppressWarnings("unchecked")
+			List buildDataByProvider = ValueProviderUtils.buildDataByProvider(project, projectList);
+			return new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(page.getTotal()))), buildDataByProvider);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

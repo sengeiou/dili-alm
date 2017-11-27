@@ -10,12 +10,10 @@ import com.dili.sysadmin.domain.User;
 import com.dili.sysadmin.domain.dto.AddUserDto;
 import com.dili.sysadmin.domain.dto.UpdateUserDto;
 import com.dili.sysadmin.domain.dto.UpdateUserPasswordDto;
-import com.dili.sysadmin.domain.dto.UserDepartmentDto;
 import com.dili.sysadmin.exception.UserException;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.util.WebContent;
 import com.dili.sysadmin.service.UserService;
-import com.github.pagehelper.Page;
 import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -78,7 +76,7 @@ public class UserController {
 	@ApiOperation(value = "分页查询User", notes = "分页查询User，返回easyui分页信息")
 	@ApiImplicitParams({ @ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String listPage(@ModelAttribute User user) throws Exception {
+	public @ResponseBody String listPage(@ModelAttribute User user) {
 		return this.userService.listPageUserDto(user).toString();
 	}
 
@@ -148,7 +146,7 @@ public class UserController {
 	@ApiOperation("逻辑删除User")
 	@ApiImplicitParams({ @ApiImplicitParam(name = "id", paramType = "form", value = "User的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/logicDelete", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput<Object> logicDelete(Long id) throws UserException {
+	public @ResponseBody BaseOutput<Object> logicDelete(Long id) {
 		return userService.logicDelete(id);
 	}
 
@@ -201,7 +199,7 @@ public class UserController {
 	@ApiOperation("修改User密码")
 	@ApiImplicitParams({ @ApiImplicitParam(name = "pwd", paramType = "form", value = "User的主键", required = false, dataType = "string") })
 	@RequestMapping(value = "/changePwd", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput<Object> changePwd(UpdateUserPasswordDto userPasswordDto) throws UserException {
+	public @ResponseBody BaseOutput<Object> changePwd(UpdateUserPasswordDto userPasswordDto) {
 		return userService.updateUserPassword(userPasswordDto);
 	}
 
@@ -215,7 +213,7 @@ public class UserController {
 	@ApiOperation("强制下线User")
 	@ApiImplicitParams({ @ApiImplicitParam(name = "id", paramType = "form", value = "User的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/kickUserOffline", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput kickUserOffline(Long id) throws UserException {
+	public @ResponseBody BaseOutput kickUserOffline(Long id) {
 		userService.kickUserOffline(id);
 		return BaseOutput.success("下线成功");
 	}

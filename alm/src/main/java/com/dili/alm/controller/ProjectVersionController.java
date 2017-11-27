@@ -1,7 +1,9 @@
 package com.dili.alm.controller;
 
 import com.dili.alm.domain.Files;
+import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectVersion;
+import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.ProjectVersionService;
 import com.dili.ss.domain.BaseOutput;
 import io.swagger.annotations.Api;
@@ -28,6 +30,8 @@ import java.util.List;
 public class ProjectVersionController {
 	@Autowired
 	ProjectVersionService projectVersionService;
+	@Autowired
+	private ProjectService projectService;
 
 	@ApiOperation("跳转到Milestones页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
@@ -79,6 +83,8 @@ public class ProjectVersionController {
 
 	@RequestMapping(value = "/form", method = RequestMethod.GET)
 	public String versionForm(@RequestParam Long projectId, @RequestParam(required = false) Long id, ModelMap map) {
+		Project project = this.projectService.get(projectId);
+		map.addAttribute("project", project);
 		if (id != null) {
 			ProjectVersion version = this.projectVersionService.get(id);
 			map.addAttribute("model", version);
