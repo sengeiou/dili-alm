@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.alm.dao.MilestonesMapper">
+  <resultMap id="BaseResultMap" type="com.dili.alm.domain.Milestones">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="project_id" jdbcType="BIGINT" property="projectId" />
+    <result column="parent_id" jdbcType="BIGINT" property="parentId" />
+    <result column="git" jdbcType="VARCHAR" property="git" />
+    <result column="doc_url" jdbcType="VARCHAR" property="docUrl" />
+    <result column="version" jdbcType="VARCHAR" property="version" />
+    <result column="market" jdbcType="VARCHAR" property="market" />
+    <result column="project_phase" jdbcType="VARCHAR" property="projectPhase" />
+    <result column="notes" jdbcType="VARCHAR" property="notes" />
+    <result column="publish_member_id" jdbcType="BIGINT" property="publishMemberId" />
+    <result column="modify_member_id" jdbcType="BIGINT" property="modifyMemberId" />
+    <result column="created" jdbcType="TIMESTAMP" property="created" />
+    <result column="modified" jdbcType="TIMESTAMP" property="modified" />
+    <result column="release_time" jdbcType="TIMESTAMP" property="releaseTime" />
+    <result column="email_notice" jdbcType="INTEGER" property="emailNotice" />
+    <result column="host" jdbcType="VARCHAR" property="host" />
+    <result column="port" jdbcType="INTEGER" property="port" />
+    <result column="visit_url" jdbcType="VARCHAR" property="visitUrl" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, code, project_id, parent_id, git, doc_url, version, market, project_phase, notes, 
+    publish_member_id, modify_member_id, created, modified, release_time, email_notice, 
+    host, port, visit_url
+  </sql>
+  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from milestones
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <update id="updateBy" parameterType="com.dili.alm.domain.Milestones">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update milestones
+    <set>
+      <if test="code != null">
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="projectId != null">
+        project_id = #{projectId,jdbcType=BIGINT},
+      </if>
+      <if test="parentId != null">
+        parent_id = #{parentId,jdbcType=BIGINT},
+      </if>
+      <if test="git != null">
+        git = #{git,jdbcType=VARCHAR},
+      </if>
+      <if test="docUrl != null">
+        doc_url = #{docUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null">
+        version = #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="market != null">
+        market = #{market,jdbcType=VARCHAR},
+      </if>
+      <if test="projectPhase != null">
+        project_phase = #{projectPhase,jdbcType=VARCHAR},
+      </if>
+      <if test="notes != null">
+        notes = #{notes,jdbcType=VARCHAR},
+      </if>
+      <if test="publishMemberId != null">
+        publish_member_id = #{publishMemberId,jdbcType=BIGINT},
+      </if>
+      <if test="modifyMemberId != null">
+        modify_member_id = #{modifyMemberId,jdbcType=BIGINT},
+      </if>
+      <if test="created != null">
+        created = #{created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modified != null">
+        modified = #{modified,jdbcType=TIMESTAMP},
+      </if>
+      <if test="releaseTime != null">
+        release_time = #{releaseTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="emailNotice != null">
+        email_notice = #{emailNotice,jdbcType=INTEGER},
+      </if>
+      <if test="host != null">
+        host = #{host,jdbcType=VARCHAR},
+      </if>
+      <if test="port != null">
+        port = #{port,jdbcType=INTEGER},
+      </if>
+      <if test="visitUrl != null">
+        visit_url = #{visitUrl,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

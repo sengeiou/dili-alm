@@ -295,3 +295,11 @@ CREATE TABLE `weekly` (
   PRIMARY KEY (`id`)
 );
 
+CREATE TABLE `work_schedule` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `schedule_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '编辑时间',
+  `schedule_text` varchar(255) DEFAULT NULL COMMENT '编辑内容',
+  `user_id` bigint(20) DEFAULT NULL COMMENT '用户id',
+  PRIMARY KEY (`id`)
+);
+

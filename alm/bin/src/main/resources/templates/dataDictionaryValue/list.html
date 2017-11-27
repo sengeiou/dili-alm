@@ -1,0 +1,45 @@
+<div class="easyui-layout" fit="true">
+	<div region="west" style="width: 20%;" height="auto">
+		<div id="p" class="easyui-panel" style="width: 100%;" data-options="iconCls:'icon-save'">
+			<ul id="ddValueTree" class="easyui-tree" url="${contextPath}/dataDictionaryValue/listTree.json" lines="true"
+				data-options="onClick:queryDdValueGrid, loadFilter:treeLoadFilter, _idField:'id', _textField:'name', _parentIdField:'parentId',onLoadSuccess:onTreeLoadSuccess,queryParams:{ddId:${ddId!}}" />
+		</div>
+	</div>
+	<!-- ====================================================================================================================== -->
+	<!-- 中央布局 -->
+	<!-- ====================================================================================================================== -->
+	<!-- 表格 -->
+	<div region="center" style="width: 80%;" height="auto">
+		<!-- =========================================================表格========================================================= -->
+		<table class="easyui-datagrid" id="ddValueGrid" fitColumns="true" pagination="true" pageSize="30" pageNumber="1" pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..."
+			singleSelect="true" method="post" align="center" fit="true" toolbar="#ddValueToolbar" idField="id"
+			data-options="onDblClickRow:openUpdateDdValue,onBeginEdit:onBeginEditDdValue,onAfterEdit:onAfterEditDdValue,
+				onCancelEdit:onCancelEditDdValue">
+			<thead>
+				<tr>
+					<th data-options="field:'ddId',sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',hidden:true"></th>
+					<th data-options="field:'code',width:'10%',sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">编码</th>
+					<th data-options="field:'value',width:'10%',sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',
+							editor:{type : 'textbox',options : {required : true}}">值</th>
+					<th data-options="field:'notes',width:'40%',sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',
+						editor:{type : 'textbox',options : {required : true}}">备注</th>
+					<th
+						data-options="field:'periodBegin',width:'20%',_provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',
+						editor:{type:'datetimebox',options:{editable:false}}">生效时间</th>
+					<th
+						data-options="field:'periodEnd',width:'20%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',
+						editor:{type:'datetimebox',options:{editable:false}}">失效时间</th>
+					<th data-options="field:'opt',title:'操作',width:'20%',hidden : true,formatter:formatOpsDdValue"></th>
+				</tr>
+			</thead>
+		</table>
+		<!-- datagrid工具栏 -->
+		<div id="ddValueToolbar" style="padding: 2px 5px;">
+			<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsertDdValue()" plain="true"></a> <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdateDdValue()"
+				plain="true"></a> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="delDdValue()" plain="true"></a>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	<#dataDictionaryValue_listJs/>
+</script>

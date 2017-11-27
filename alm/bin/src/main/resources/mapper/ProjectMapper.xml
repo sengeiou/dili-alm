@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.alm.dao.ProjectMapper">
+  <resultMap id="BaseResultMap" type="com.dili.alm.domain.Project">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="parent_id" jdbcType="BIGINT" property="parentId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="project_manager" jdbcType="BIGINT" property="projectManager" />
+    <result column="test_manager" jdbcType="BIGINT" property="testManager" />
+    <result column="product_manager" jdbcType="BIGINT" property="productManager" />
+    <result column="created" jdbcType="TIMESTAMP" property="created" />
+    <result column="modified" jdbcType="TIMESTAMP" property="modified" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, parent_id, name, type, project_manager, test_manager, product_manager, created, 
+    modified
+  </sql>
+  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from project
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <update id="updateBy" parameterType="com.dili.alm.domain.Project">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update project
+    <set>
+      <if test="parentId != null">
+        parent_id = #{parentId,jdbcType=BIGINT},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="projectManager != null">
+        project_manager = #{projectManager,jdbcType=BIGINT},
+      </if>
+      <if test="testManager != null">
+        test_manager = #{testManager,jdbcType=BIGINT},
+      </if>
+      <if test="productManager != null">
+        product_manager = #{productManager,jdbcType=BIGINT},
+      </if>
+      <if test="created != null">
+        created = #{created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modified != null">
+        modified = #{modified,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="getChildProjects" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    {call getChildProjects(#{id})}
+  </select>
+</mapper>

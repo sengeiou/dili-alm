@@ -1,0 +1,154 @@
+
+<#body>
+<div class="easyui-layout" fit="true">
+	<div id="smDialog" style="display: none;"></div>
+	<!-- ====================================================================================================================== -->
+	<!-- 上方布局 -->
+	<!-- ====================================================================================================================== -->
+	<div region="north" height="auto" align="center">
+		<!-- =========================================================表单========================================================= -->
+		<div class="easyui-panel" style="width: 100%;" align="left">
+			<form id="form" class="easyui-form" method="post" fit="true">
+				<table style="padding: 10px;">
+					<tr>
+						<td style="padding: 5px;"><input name="projectId" id="projectId" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="所属项目:" /> <#comboProvider _id="projectId"
+								_provider='projectProvider' /></td>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="memberId" id="memberId" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="所属成员:"
+							data-options="editable:false,
+									buttonText:'选择',
+									onClickButton:selectMember,onChange:_changeTextboxShowClear" /></td>
+						<td style="padding: 5px;"><input name="type" id="type" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="团队类型:" /> <#comboProvider _id="type" _provider='teamTypeProvider' />
+
+						</td>
+						<td style="padding: 5px;"><input name="memberState" id="memberState" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="状态:" /> <#comboProvider _id="memberState"
+								_provider='memberStateProvider' /></td>
+						<td style="padding: 5px;"><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid()">查询</a> <a href="javascript:void(0)" class="easyui-linkbutton"
+							onclick="clearForm()">清除</a></td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>
+	<!-- ====================================================================================================================== -->
+	<!-- 中央布局 -->
+	<!-- ====================================================================================================================== -->
+	<!-- 表格 -->
+	<div region="center" style="width: 100%;" height="auto">
+		<!-- =========================================================表格========================================================= -->
+		<table class="easyui-datagrid" title="Team列表" id="grid" fitColumns="true" pagination="true" pageSize="30" pageNumber="1" pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..."
+			singleSelect="true" method="post" multiSort="false" sortName="projectId" align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" url="${contextPath!}/team/list"
+			data-options="onClickRow:onClickRow,
+			onDblClickRow:onDblClickRow,
+			onCancelEdit:onCancelEdit,
+			onBeginEdit:onBeginEdit,
+			onEndEdit:onEndEdit,
+			onAfterEdit:onAfterEdit">
+			<thead>
+				<tr>
+					<th data-options="field:'id',hidden:true"></th>
+					<th
+						data-options="width:'20%',field:'projectId',  _provider:'projectProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false', editor : {
+								type : 'combobox',
+								options : {
+									required : true,
+									url:'${contextPath}/project/list.json',
+									valueField:'id',
+									textField:'name',
+									editable:false
+								}
+							},formatter:function(value,row){
+									return row.projectId;
+								}">所属项目</th>
+					<th
+						data-options="width:'20%',field:'memberId',  _provider:'memberProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',editor : {
+								type : 'textbox',
+								options : {
+									required : true,
+									editable:false,
+									buttonText:'选择',
+									onClickButton:function(){
+										selectMember('editorCallback', 'memberId');
+									}
+								}
+							},formatter:function(value,row){
+									return row.memberId;
+								},onChange:_changeTextboxShowClear">所属成员</th>
+					<th
+						data-options="width:'10%',field:'type',  _provider:'teamTypeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false', editor : {
+								type : 'combobox',
+								options : {
+									required : true,
+									valueField:'value',
+									textField:'text',
+									editable:false,
+									data:[{
+										text:'产品',
+										value:1
+									},{
+										text:'开发',
+										value:2
+									},{
+										text:'测试',
+										value:3
+									},{
+										text:'运维',
+										value:4
+									}]
+								}
+							},formatter:function(value,row){
+									return row.type;
+								}">团队类型</th>
+					<th
+						data-options="width:'10%',field:'memberState',  _provider:'memberStateProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false', editor : {
+								type : 'combobox',
+								options : {
+									required : true,
+									textField:'text',
+									valueField:'value',
+									editable:false,
+									data: [{
+										text: '离开',
+										value: '0'
+									},{
+										text: '加入',
+										value: '1'
+									}]
+								}
+							},formatter:function(value,row){
+									return row.memberState;
+								}">状态</th>
+					<th data-options="width:'20%',field:'joinTime',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">加入时间</th>
+					<th data-options="width:'20%',field:'leaveTime',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">离开时间</th>
+					<th data-options="field:'opt',width:'20%',hidden:true,formatter:columnFormatter">操作</th>
+				</tr>
+			</thead>
+		</table>
+		<!-- datagrid工具栏 -->
+		<div id="toolbar" style="padding: 2px 5px;">
+			<#resource code="addTeam"> <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true">新增</a></#resource>
+			<#resource code="updateTeam"> <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()" plain="true">编辑</a> </#resource>
+			<#resource code="deleteTeam"> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true">删除</a></#resource>
+			<a href="#" class="easyui-linkbutton" iconCls="icon-export" onclick="doExport('grid')" plain="true">导出</a>
+			<div style="float: right">
+				边框显示:<select onchange="changeBorder('grid',this.value)">
+					<option value="lines-both">全边框</option>
+					<option value="lines-no">无边框</option>
+					<option value="lines-right">右边框</option>
+					<option value="lines-bottom">下边框</option>
+				</select> 行条纹:<input type="checkbox" checked="checked" onclick="$('#grid').datagrid({striped:$(this).is(':checked')})">
+			</div>
+		</div>
+	</div>
+</div>
+<!-- ====================================================================================================================== --> <!-- style & script 分隔线 --> <!-- ====================================================================================================================== -->
+<script type="text/javascript" src="${contextPath!}/resources/js/dateFormat.js"></script> <script type="text/javascript" src="${contextPath!}/resources/js/dateFormat.js"></script> <script
+	type="text/javascript">
+	var dataAuth = {
+		addTeam : <%if(hasResource('addTeam')){%>true<%}else{%>false<%}%>,
+		updateTeam : <%if(hasResource('updateTeam')){%>true<%}else{%>false<%}%>,
+		deleteTeam : <%if(hasResource('deleteTeam')){%>true<%}else{%>false<%}%>
+	};
+</script> <script type="text/javascript">
+	<#members_index/>
+	<#team_index />
+</script> </#body>
