@@ -22,8 +22,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,17 +56,18 @@ public class ProjectController {
 			AlmCache.userMap.put(u.getId(), u);
 		});
 	}
-	
+
 	@ApiOperation("跳转到Project页面")
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
 		return "project/index";
 	}
 
+	@SuppressWarnings("rawtypes")
 	@ApiOperation(value = "查询Project", notes = "查询Project，返回列表信息")
 	@ApiImplicitParams({ @ApiImplicitParam(name = "Project", paramType = "form", value = "Project的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody List<Project> list(Project project) {
+	public @ResponseBody List<Map> list(Project project) {
 		refreshMember();
 		Map<Object, Object> metadata = new HashMap<>();
 
@@ -136,6 +139,34 @@ public class ProjectController {
 	@RequestMapping(value = "/type.json", method = { RequestMethod.GET, RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public List<DataDictionaryValueDto> projectTypeJson() {
 		return this.projectService.getPojectTypes();
+	}
+
+	@RequestMapping(value = "/detail", method = RequestMethod.GET)
+	public String detail(@RequestParam Long id, ModelMap map) {
+		Project project = this.projectService.get(id);
+		Map<Object, Object> metadata = new HashMap<>();
+
+		JSONObject projectTypeProvider = new JSONObject();
+		projectTypeProvider.put("provider", "projectTypeProvider");
+		metadata.put("type", projectTypeProvider);
+
+		JSONObject datetimeProvider = new JSONObject();
+		datetimeProvider.put("provider", "datetimeProvider");
+		metadata.put("startDate", datetimeProvider);
+		metadata.put("actualStartDate", datetimeProvider);
+
+		JSONObject memberProvider = new JSONObject();
+		memberProvider.put("provider", "memberProvider");
+		metadata.put("projectManager", memberProvider);
+		metadata.put("testManager", memberProvider);
+		metadata.put("productManager", memberProvider);
+		try {
+			List<Map> list = ValueProviderUtils.buildDataByProvider(metadata, Arrays.asList(project));
+			map.addAttribute("model", list.get(0));
+		} catch (Exception e) {
+			return null;
+		}
+		return "project/detail";
 	}
 
 }

@@ -294,7 +294,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 			userStatusProvider.put("provider", "userStatusProvider");
 			metadata.put("status", userStatusProvider);
 
-			List<Map<Object, Object>> results = ValueProviderUtils.buildDataByProvider(metadata, singleUser);
+			List<Map> results = ValueProviderUtils.buildDataByProvider(metadata, singleUser);
 			return BaseOutput.success().setData(results.get(0));
 		} catch (Exception e) {
 		}

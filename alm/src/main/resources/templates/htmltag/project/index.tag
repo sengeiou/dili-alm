@@ -1,6 +1,15 @@
 // 编辑行索引
 var editId = undefined;
 
+function optFormatter(value, row) {
+	return '<a href="${contextPath!}/project/detail.html?id=' + row.id + '">管理</a>';
+}
+
+function progressFormatter(value, rowData, rowIndex) {
+	var htmlstr = '<div class="progressbar-text" style="width:100%;">' + value + '%</div><div class="progressbar-value" style="width:\'' + value + '%\';"> </div>';
+	return htmlstr;
+}
+
 function isEditing() {
 	return undefined != editId;
 }

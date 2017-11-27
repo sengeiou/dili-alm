@@ -43,86 +43,43 @@
 		<!-- =========================================================表格========================================================= -->
 		<table class="easyui-treegrid" title="Project列表" id="grid" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" sortName="created" align="center"
 			toolbar="#toolbar" fit="true" striped="false" idField="id" treeField="name"
-			data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu, onAfterEdit:onAfterEdit,onCancelEdit:onCancelEdit,
-			onBeforeEdit:onBeforeEdit,
-			onEndEdit:onEndEdit,
+			data-options="onHeaderContextMenu:headerContextMenu,
 			_parentIdField:'parentId',
 			idField:'id',
 			treeField:'name',
-			loadFilter:treegridLoadFilter,onBeginEdit:onBeginEdit">
+			loadFilter:treegridLoadFilter">
 			<thead>
 				<tr>
+				<th
+						data-options="field:'serialNumber',width:'10%', align:'left'">项目编号</th>
 					<th
-						data-options="field:'name',width:'15%', align:'left', editor : {
-								type : 'textbox',
-								options : {
-									required : true,
-									validType:'length[1,20]',
-									invalidMessage:'项目名称长度必须是1-20个字符'
-								}
-							}">项目名称</th>
+						data-options="field:'name',width:'10%', align:'left'">项目名称</th>
 					<th
-						data-options="field:'type',width:'15%', _provider:'projectTypeProvider', _table:'data_dictionary_value',_valueField:'value',_textField:'code',_queryParams:{'yn':1,'dd_id':3}, align:'center', editor : {
-								type : 'combobox',
-								options : {
-									editable:false,
-									url:'${contextPath}/project/type.json',
-									valueField:'value',
-									textField:'code'
-								}
-							}">
+						data-options="field:'type',width:'10%', _provider:'projectTypeProvider', _table:'data_dictionary_value',_valueField:'value',_textField:'code',_queryParams:{'yn':1,'dd_id':3}, align:'center'">
 						项目类型</th>
 					<th
-						data-options="field:'projectManager',width:'10%',  _provider:'memberProvider', align:'center', editor : {
-								type : 'textbox',
-								options : {
-									editable:false,
-									buttonText:'选择',
-									onClickButton:function(){
-										selectMember('editorCallback', 'projectManager');
-									}
-								}
-							},formatter:function(value,row){
-									return row.projectManager;
-								},onChange:_changeTextboxShowClear">开发负责人</th>
+						data-options="field:'startDate',width:'20%', _provider:'datetimeProvider', align:'center'">项目开始时间</th>
 					<th
-						data-options="field:'testManager',width:'10%',  _provider:'memberProvider', align:'center', editor : {
-								type : 'textbox',
-								options : {
-									editable:false,
-									buttonText:'选择',
-									onClickButton:function(){
-										selectMember('editorCallback', 'testManager');
-									}
-								}
-							},formatter:function(value,row){
-									return row.testManager;
-								},onChange:_changeTextboxShowClear">测试负责人</th>
+						data-options="field:'endDate',width:'20%', _provider:'datetimeProvider', align:'center'">项目结束时间</th>
 					<th
-						data-options="field:'productManager',width:'10%',  _provider:'memberProvider', align:'center',editor : {
-								type : 'textbox',
-								options : {
-									editable:false,
-									buttonText:'选择',
-									onClickButton:function(){
-										selectMember('editorCallback', 'productManager');
-									}
-								}
-							},formatter:function(value,row){
-									return row.productManager;
-								},onChange:_changeTextboxShowClear">产品负责人</th>
-					<th class="easyui-datetimebox" data-options="field:'created',width:'20%',  _provider:'datetimeProvider', align:'center'">创建时间</th>
-					<th class="easyui-datetimebox" data-options="field:'modified',width:'20%',  _provider:'datetimeProvider', align:'center'">修改时间</th>
-					<th data-options="field:'opt',width:'20%',hidden:true,formatter:columnFormatter">操作</th>
+						data-options="field:'actualStartTime',width:'20%', _provider:'datetimeProvider', align:'center'">实际开始时间</th>
+					<th
+						data-options="field:'projectState',width:'10%',  _provider:'projectStateProvider', align:'center'">项目状态</th>
+					<th data-options="field:'taskCount',width:'5%', align:'center'">任务数</th>
+					<th data-options="field:'memberCount',width:'5%', align:'center'">成员数</th>
+					<th data-options="field:'completedProgress',width:'20%', align:'center'">完成进度</th>
+					<th data-options="field:'originator',width:'15%', _provider:'memberProvider', align:'center'">项目发起人</th>
+					<!-- <th class="easyui-datetimebox" data-options="field:'modified',width:'20%',  _provider:'datetimeProvider', align:'center'">修改时间</th> -->
+					<th data-options="field:'opt',width:'10%',formatter:optFormatter">操作</th>
 				</tr>
 			</thead>
 		</table>
 		<!-- datagrid工具栏 -->
 		<div id="toolbar" style="padding: 2px 5px;">
-			<#resource code="addProject"> <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert(true)" plain="true">添加根项目</a></#resource>
+			<!-- <#resource code="addProject"> <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert(true)" plain="true">添加根项目</a></#resource>
 			<#resource code="addProject"> <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true">添加子项目</a></#resource>
 			<#resource code="updateProject"> <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()" plain="true">修改</a></#resource>
-			<#resource code="deleteProject"> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true">删除</a></#resource>
+			<#resource code="deleteProject"> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true">删除</a></#resource> -->
 			<a href="#" class="easyui-linkbutton" iconCls="icon-export" onclick="doExport('grid', true)" plain="true">导出</a>
 			<div style="float: right">
 				边框显示:<select onchange="changeBorder('grid',this.value)">

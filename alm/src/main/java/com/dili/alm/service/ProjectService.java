@@ -28,4 +28,6 @@ public interface ProjectService extends BaseService<Project, Long> {
 	BaseOutput<Object> insertAfterCheck(Project project) throws ProjectException;
 
 	BaseOutput<Object> updateAfterCheck(Project project);
+
+	List<DataDictionaryValueDto> getPojectStates();
 }

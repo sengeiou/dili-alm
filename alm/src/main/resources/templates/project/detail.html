@@ -1,0 +1,60 @@
+<#body>
+<style>
+#info tr td {
+	padding: 5px 10px;
+}
+</style>
+<script type="text/javascript">
+	<#project_detailJs />
+</script>
+<div id="win" style="display: none;"></div>
+<input type="hidden" id="projectId" value="${model.id!}">
+<div id="p" class="easyui-panel" title="My Panel" style="width: '100%'; height: '30%'; padding: 10px; background: #fafafa;" data-options="">
+	<table id="info">
+		<tr>
+			<td><label for="name">项目名称:</label></td>
+			<td><input class="easyui-textbox" type="text" name="name" value="${model.name!}" data-options="readonly:true" /></td>
+			<td><label for="type">项目类型:</label></td>
+			<td><input class="easyui-textbox" type="text" name="type" value="${model.type!}" data-options="readonly:true" /></td>
+		</tr>
+		<tr>
+			<td><label for="projectManager">项目负责人:</label></td>
+			<td><input class="easyui-textbox" type="text" name="projectManager" value="${model.projectManager!}" data-options="readonly:true" /></td>
+			<td><label for="developManager">研发经理:</label></td>
+			<td><input class="easyui-textbox" type="text" name="developManager" value="${model.developManager!}" data-options="readonly:true" /></td>
+		</tr>
+		<tr>
+			<td><label for="productManager">产品经理:</label></td>
+			<td><input class="easyui-textbox" type="text" name="projectManager" value="${model.projectManager!}" data-options="readonly:true" /></td>
+			<td><label for="testManager">测试经理:</label></td>
+			<td><input class="easyui-textbox" type="text" name="testManager" value="${model.testManager!}" data-options="readonly:true" /></td>
+		</tr>
+		<tr>
+			<td><label for="actualStartDate">实际开始时间:</label></td>
+			<td><input class="easyui-textbox" type="text" name="actualStartDate" value="${model.actualStartDate!}" data-options="readonly:true" /></td>
+			<td><label for="startDate">项目开始时间:</label></td>
+			<td><input class="easyui-textbox" type="text" name="startDate" value="${model.startDate!}" data-options="readonly:true" /></td>
+		</tr>
+	</table>
+</div>
+<!-- =========================================================表格========================================================= -->
+<table class="easyui-datagrid" title="项目版本信息" id="grid" fitColumns="true" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="code"
+	align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" data-options="">
+	<thead>
+		<tr>
+			<th data-options="field:'version',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">版本号</th>
+			<th data-options="field:'plannedStartDate',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">计划开始日期</th>
+			<th data-options="field:'plannedEndDate',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">计划结束日期</th>
+			<th data-options="field:'versionState',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">版本状态</th>
+			<th data-options="field:'actualStartDate',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">实际开始日期</th>
+			<th data-options="field:'online',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false,formatter:onlineFormatter'">上线</th>
+			<th data-options="field:'completedProgress',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">完成进度</th>
+			<td data-potions="formatter:versionOptFormatter">操作</td>
+		</tr>
+	</thead>
+</table>
+<!-- datagrid工具栏 -->
+<div id="toolbar" style="padding: 2px 5px;">
+	<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsertVersion()" plain="true">新建版本</a>
+</div>
+</#body>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.ProjectVersionMapper">
+  <resultMap id="BaseResultMap" type="com.dili.alm.domain.ProjectVersion">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="project_id" jdbcType="BIGINT" property="projectId" />
+    <result column="git" jdbcType="VARCHAR" property="git" />
+    <result column="redmine_url" jdbcType="VARCHAR" property="redmineUrl" />
+    <result column="version" jdbcType="VARCHAR" property="version" />
+    <result column="notes" jdbcType="VARCHAR" property="notes" />
+    <result column="creator_id" jdbcType="BIGINT" property="creatorId" />
+    <result column="modifier_id" jdbcType="BIGINT" property="modifierId" />
+    <result column="created" jdbcType="TIMESTAMP" property="created" />
+    <result column="modified" jdbcType="TIMESTAMP" property="modified" />
+    <result column="release_time" jdbcType="TIMESTAMP" property="releaseTime" />
+    <result column="email_notice" jdbcType="INTEGER" property="emailNotice" />
+    <result column="host" jdbcType="VARCHAR" property="host" />
+    <result column="port" jdbcType="INTEGER" property="port" />
+    <result column="visit_url" jdbcType="VARCHAR" property="visitUrl" />
+    <result column="version_state" jdbcType="INTEGER" property="versionState" />
+    <result column="planned_start_date" jdbcType="TIMESTAMP" property="plannedStartDate" />
+    <result column="planned_end_date" jdbcType="TIMESTAMP" property="plannedEndDate" />
+    <result column="planned_online_date" jdbcType="TIMESTAMP" property="plannedOnlineDate" />
+    <result column="actual_start_date" jdbcType="TIMESTAMP" property="actualStartDate" />
+    <result column="actual_end_date" jdbcType="TIMESTAMP" property="actualEndDate" />
+    <result column="completed_progress" jdbcType="INTEGER" property="completedProgress" />
+    <result column="online" jdbcType="TINYINT" property="online" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, code, project_id, git, redmine_url, version, notes, creator_id, modifier_id, 
+    created, modified, release_time, email_notice, host, port, visit_url, version_state, 
+    planned_start_date, planned_end_date, planned_online_date, actual_start_date, actual_end_date, 
+    completed_progress, online
+  </sql>
+  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from project_version
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <update id="updateBy" parameterType="com.dili.alm.domain.ProjectVersion">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update project_version
+    <set>
+      <if test="code != null">
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="projectId != null">
+        project_id = #{projectId,jdbcType=BIGINT},
+      </if>
+      <if test="git != null">
+        git = #{git,jdbcType=VARCHAR},
+      </if>
+      <if test="redmineUrl != null">
+        redmine_url = #{redmineUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null">
+        version = #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="notes != null">
+        notes = #{notes,jdbcType=VARCHAR},
+      </if>
+      <if test="creatorId != null">
+        creator_id = #{creatorId,jdbcType=BIGINT},
+      </if>
+      <if test="modifierId != null">
+        modifier_id = #{modifierId,jdbcType=BIGINT},
+      </if>
+      <if test="created != null">
+        created = #{created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modified != null">
+        modified = #{modified,jdbcType=TIMESTAMP},
+      </if>
+      <if test="releaseTime != null">
+        release_time = #{releaseTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="emailNotice != null">
+        email_notice = #{emailNotice,jdbcType=INTEGER},
+      </if>
+      <if test="host != null">
+        host = #{host,jdbcType=VARCHAR},
+      </if>
+      <if test="port != null">
+        port = #{port,jdbcType=INTEGER},
+      </if>
+      <if test="visitUrl != null">
+        visit_url = #{visitUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="versionState != null">
+        version_state = #{versionState,jdbcType=INTEGER},
+      </if>
+      <if test="plannedStartDate != null">
+        planned_start_date = #{plannedStartDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="plannedEndDate != null">
+        planned_end_date = #{plannedEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="plannedOnlineDate != null">
+        planned_online_date = #{plannedOnlineDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="actualStartDate != null">
+        actual_start_date = #{actualStartDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="actualEndDate != null">
+        actual_end_date = #{actualEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="completedProgress != null">
+        completed_progress = #{completedProgress,jdbcType=INTEGER},
+      </if>
+      <if test="online != null">
+        online = #{online,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

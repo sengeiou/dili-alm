@@ -1,26 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.dili.alm.dao.ProjectMapper">
+<mapper namespace="mapper.ProjectMapper">
   <resultMap id="BaseResultMap" type="com.dili.alm.domain.Project">
     <!--
       WARNING - @mbg.generated
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="serial_number" jdbcType="VARCHAR" property="serialNumber" />
     <result column="parent_id" jdbcType="BIGINT" property="parentId" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="type" jdbcType="VARCHAR" property="type" />
     <result column="project_manager" jdbcType="BIGINT" property="projectManager" />
+    <result column="develop_manager" jdbcType="VARCHAR" property="developManager" />
     <result column="test_manager" jdbcType="BIGINT" property="testManager" />
     <result column="product_manager" jdbcType="BIGINT" property="productManager" />
     <result column="created" jdbcType="TIMESTAMP" property="created" />
     <result column="modified" jdbcType="TIMESTAMP" property="modified" />
+    <result column="start_date" jdbcType="TIMESTAMP" property="startDate" />
+    <result column="end_date" jdbcType="TIMESTAMP" property="endDate" />
+    <result column="actual_start_date" jdbcType="TIMESTAMP" property="actualStartDate" />
+    <result column="project_state" jdbcType="INTEGER" property="projectState" />
+    <result column="task_count" jdbcType="INTEGER" property="taskCount" />
+    <result column="member_count" jdbcType="INTEGER" property="memberCount" />
+    <result column="completed_progress" jdbcType="INTEGER" property="completedProgress" />
+    <result column="originator" jdbcType="BIGINT" property="originator" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
       WARNING - @mbg.generated
     -->
-    id, parent_id, name, type, project_manager, test_manager, product_manager, created, 
-    modified
+    id, serial_number, parent_id, name, type, project_manager, develop_manager, test_manager, 
+    product_manager, created, modified, start_date, end_date, actual_start_date, project_state, 
+    task_count, member_count, completed_progress, originator
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -37,6 +48,9 @@
     -->
     update project
     <set>
+      <if test="serialNumber != null">
+        serial_number = #{serialNumber,jdbcType=VARCHAR},
+      </if>
       <if test="parentId != null">
         parent_id = #{parentId,jdbcType=BIGINT},
       </if>
@@ -49,6 +63,9 @@
       <if test="projectManager != null">
         project_manager = #{projectManager,jdbcType=BIGINT},
       </if>
+      <if test="developManager != null">
+        develop_manager = #{developManager,jdbcType=VARCHAR},
+      </if>
       <if test="testManager != null">
         test_manager = #{testManager,jdbcType=BIGINT},
       </if>
@@ -60,6 +77,30 @@
       </if>
       <if test="modified != null">
         modified = #{modified,jdbcType=TIMESTAMP},
+      </if>
+      <if test="startDate != null">
+        start_date = #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null">
+        end_date = #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="actualStartDate != null">
+        actual_start_date = #{actualStartDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="projectState != null">
+        project_state = #{projectState,jdbcType=INTEGER},
+      </if>
+      <if test="taskCount != null">
+        task_count = #{taskCount,jdbcType=INTEGER},
+      </if>
+      <if test="memberCount != null">
+        member_count = #{memberCount,jdbcType=INTEGER},
+      </if>
+      <if test="completedProgress != null">
+        completed_progress = #{completedProgress,jdbcType=INTEGER},
+      </if>
+      <if test="originator != null">
+        originator = #{originator,jdbcType=BIGINT},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

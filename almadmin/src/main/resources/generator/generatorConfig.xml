@@ -20,11 +20,11 @@
 		<!-- Mybatis配置文件生成插件 -->
 		<!-- targetProject和targetPackage必填 -->
 		<!-- fileName不填默认为mybatis-config.xml -->
-		<plugin type="${myMapperConfig.Plugin}">
+		<!-- <plugin type="${myMapperConfig.Plugin}">
 			<property name="targetProject" value="${targetResourcesProject}"></property>
 			<property name="targetPackage" value="/"></property>
 			<property name="fileName" value="mybatis-config.xml" />
-		</plugin>
+		</plugin> -->
 
 		<!-- Service生成插件 -->
 		<!-- targetProject和targetPackage必填 -->
@@ -78,7 +78,7 @@
 			targetProject="${targetJavaProject}" type="XMLMAPPER" />
 
 		<!-- 生成所有表模型 -->
-		<table tableName="team">
+		<table tableName="position">
 			<generatedKey column="id" sqlStatement="Mysql" identity="true" />
 		</table>
 		<!-- 生成指定表模型 -->

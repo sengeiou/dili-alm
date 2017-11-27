@@ -26,7 +26,7 @@ import com.dili.alm.cache.AlmCache;
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.dao.TeamMapper;
 import com.dili.alm.domain.Files;
-import com.dili.alm.domain.Milestones;
+import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.Team;
 import com.dili.alm.domain.User;
@@ -96,13 +96,13 @@ public class EmailNoticeJob implements ApplicationListener<ContextRefreshedEvent
 	 * @param scheduleMessage
 	 */
 	public void scan(ScheduleMessage scheduleMessage) {
-		Milestones milestones = JSONObject.parseObject(scheduleMessage.getJobData(), Milestones.class);
+		ProjectVersion projectVersion = JSONObject.parseObject(scheduleMessage.getJobData(), ProjectVersion.class);
 		MimeMessage mimeMessage = mailSender.createMimeMessage();
 		MimeMessageHelper helper = null;
 		initUserMap();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		// 获取团队成员
-		List<Project> projects = this.projectMapper.getChildProjects(milestones.getProjectId());
+		List<Project> projects = this.projectMapper.getChildProjects(projectVersion.getProjectId());
 		if (CollectionUtils.isEmpty(projects)) {
 			return;
 		}
@@ -114,10 +114,10 @@ public class EmailNoticeJob implements ApplicationListener<ContextRefreshedEvent
 		// 这个地方用来去除重复的用户id
 		Set<Long> sentUserIds = new HashSet<>();
 
-		String path = "fileupload/milestones/" + milestones.getId() + "/";
+		String path = "fileupload/milestones/" + projectVersion.getId() + "/";
 		// 获取里程碑相关文件
 		Files filesCondition = DTOUtils.newDTO(Files.class);
-		filesCondition.setMilestonesId(milestones.getId());
+		filesCondition.setMilestonesId(projectVersion.getId());
 		List<Files> files = filesService.list(filesCondition);
 		String from = SystemConfigUtils.getProperty("spring.mail.username");
 		for (Team team : teams) {
@@ -128,10 +128,10 @@ public class EmailNoticeJob implements ApplicationListener<ContextRefreshedEvent
 				helper = new MimeMessageHelper(mimeMessage, true);
 				helper.setFrom(from);
 				helper.setTo(AlmCache.userMap.get(team.getMemberId()).getEmail());
-				helper.setSubject("主题：里程碑[" + milestones.getCode() + "]发布");
-				helper.setText("里程碑[" + milestones.getCode() + "]发布, \r\n版本号:" + milestones.getVersion() + ", \r\n市场:" + milestones.getMarket() + ", \r\n文档地址:" + milestones.getDocUrl()
-						+ ", \r\ngit地址:" + milestones.getGit() + ", \r\n项目阶段:" + milestones.getProjectPhase() + ", \r\n发布人:" + AlmCache.userMap.get(milestones.getPublishMemberId()).getRealName()
-						+ ", \r\n发布时间:" + sdf.format(milestones.getReleaseTime()) + ", \r\n访问地址:" + milestones.getVisitUrl() + ", \r\n备注:" + milestones.getNotes());
+				helper.setSubject("主题：里程碑[" + projectVersion.getCode() + "]发布");
+				helper.setText("里程碑[" + projectVersion.getCode() + "]发布, \r\n版本号:" + projectVersion.getVersion() + ",\r\n文档地址:" + projectVersion.getRedmineUrl()
+						+ ", \r\ngit地址:" + projectVersion.getGit() + ", \r\n发布人:" + AlmCache.userMap.get(projectVersion.getCreatorId()).getRealName()
+						+ ", \r\n发布时间:" + sdf.format(projectVersion.getReleaseTime()) + ", \r\n访问地址:" + projectVersion.getVisitUrl() + ", \r\n备注:" + projectVersion.getNotes());
 				// 给团队所有成员发送附件
 				for (Files files1 : files) {
 					FileSystemResource file = new FileSystemResource(new File(path + files1.getName()));

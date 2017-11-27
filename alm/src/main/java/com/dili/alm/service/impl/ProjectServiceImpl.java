@@ -3,10 +3,10 @@ package com.dili.alm.service.impl;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.constant.AlmConstants.MemberState;
-import com.dili.alm.dao.MilestonesMapper;
+import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.dao.TeamMapper;
-import com.dili.alm.domain.Milestones;
+import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.Team;
 import com.dili.alm.domain.TeamType;
@@ -43,11 +43,12 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProjectServiceImpl.class);
 	private static final String PROJECT_TYPE_CODE = "project_type";
+	private static final String PROJECT_STATE_CODE = "project_state";
 
 	@Autowired
 	DataDictionaryService dataDictionaryService;
 	@Autowired
-	private MilestonesMapper milestonesMapper;
+	private ProjectVersionMapper projectVersionMapper;
 	@Autowired
 	private TeamMapper teamMapper;
 	@Autowired
@@ -119,9 +120,9 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	@Transactional
 	@Override
 	public BaseOutput<Object> deleteBeforeCheck(Long projectId) {
-		Milestones record = DTOUtils.newDTO(Milestones.class);
+		ProjectVersion record = DTOUtils.newDTO(ProjectVersion.class);
 		record.setProjectId(projectId);
-		int count = this.milestonesMapper.selectCount(record);
+		int count = this.projectVersionMapper.selectCount(record);
 		if (count > 0) {
 			return BaseOutput.failure("项目关联了里程碑，不能删除");
 		}
@@ -264,5 +265,14 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 			return BaseOutput.success().setData(project);
 		}
 		return BaseOutput.failure();
+	}
+
+	@Override
+	public List<DataDictionaryValueDto> getPojectStates() {
+		DataDictionaryDto dto = this.dataDictionaryService.findByCode(PROJECT_STATE_CODE);
+		if (dto == null) {
+			return null;
+		}
+		return dto.getValues();
 	}
 }
