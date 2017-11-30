@@ -1,11 +1,15 @@
 package com.dili.alm.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.domain.Files;
+import com.dili.alm.domain.InsertProjectVersionDto;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.ProjectVersionService;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.metadata.ValueProviderUtils;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -13,13 +17,18 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-10-20 11:02:17.
@@ -42,7 +51,7 @@ public class ProjectVersionController {
 	@ApiOperation("跳转到Files页面")
 	@RequestMapping(value = "/files.html", method = RequestMethod.GET)
 	public String files(Files files, ModelMap modelMap, HttpServletRequest request) {
-		request.setAttribute("milestonesId", files.getMilestonesId());
+		// request.setAttribute("milestonesId", files.getMilestonesId());
 		return "milestones/files";
 	}
 
@@ -56,15 +65,31 @@ public class ProjectVersionController {
 	@ApiOperation(value = "分页查询Milestones", notes = "分页查询Milestones，返回easyui分页信息")
 	@ApiImplicitParams({ @ApiImplicitParam(name = "Milestones", paramType = "form", value = "Milestones的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String listPage(ProjectVersion projectVersion) throws Exception {
-		return projectVersionService.listEasyuiPageByExample(projectVersion, true).toString();
+	public @ResponseBody List<Map> listPage(ProjectVersion projectVersion) throws Exception {
+		Map<Object, Object> metadata = new HashMap<>();
+
+		JSONObject projectStateProvider = new JSONObject();
+		projectStateProvider.put("provider", "projectStateProvider");
+		metadata.put("versionState", projectStateProvider);
+
+		JSONObject onlineProvider = new JSONObject();
+		onlineProvider.put("provider", "onlineProvider");
+		metadata.put("online", onlineProvider);
+
+		JSONObject datetimeProvider = new JSONObject();
+		datetimeProvider.put("provider", "datetimeProvider");
+		metadata.put("actualStartDate", datetimeProvider);
+		metadata.put("plannedStartDate", datetimeProvider);
+		metadata.put("plannedEndDate", datetimeProvider);
+		List<ProjectVersion> list = this.projectVersionService.listByExample(projectVersion);
+		return ValueProviderUtils.buildDataByProvider(metadata, list);
 	}
 
 	@ApiOperation("新增Milestones")
 	@ApiImplicitParams({ @ApiImplicitParam(name = "Milestones", paramType = "form", value = "Milestones的form信息", required = true, dataType = "string") })
-	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput insert(ProjectVersion projectVersion) {
-		return projectVersionService.insertSelectiveWithOutput(projectVersion);
+	@RequestMapping(value = "/insert", method = { RequestMethod.POST })
+	public @ResponseBody BaseOutput insert(@RequestBody InsertProjectVersionDto dto) {
+		return projectVersionService.insertSelectiveWithOutput(dto);
 	}
 
 	@ApiOperation("修改Milestones")

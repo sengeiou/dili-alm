@@ -1,5 +1,6 @@
 package com.dili.alm.service;
 
+import com.dili.alm.domain.InsertProjectVersionDto;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
@@ -11,10 +12,10 @@ import com.dili.ss.domain.BaseOutput;
 public interface ProjectVersionService extends BaseService<ProjectVersion, Long> {
 
 	/**
-	 * @param projectVersion
+	 * @param dto TODO
 	 * @return
 	 */
-	BaseOutput insertSelectiveWithOutput(ProjectVersion projectVersion);
+	BaseOutput insertSelectiveWithOutput(InsertProjectVersionDto dto);
 
 	/**
 	 * @param projectVersion

@@ -184,7 +184,7 @@ public interface ProjectVersion extends IBaseDomain {
     @Column(name = "`online`")
     @FieldDef(label="是否已上线，0未上线，1已上线")
     @EditMode(editor = FieldEditor.Text, required = true)
-    Byte getOnline();
+    Integer getOnline();
 
-    void setOnline(Byte online);
+    void setOnline(Integer online);
 }

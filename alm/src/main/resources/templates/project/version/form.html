@@ -1,38 +1,40 @@
-<form id="_form" class="easyui-form" method="post" fit="true">
-	<input name="_id" id="_id" type="hidden"> <input type="hidden" name="projectId" value="${project.id}">
+<link href="${contextPath!}/resources/css/uploadfile.css" rel="stylesheet">
+<script type="text/javascript" src="${contextPath!}/resources/js/jquery.uploadfile.min.js"></script>
+<form id="versionForm" action="${contextPath!}/project/version/insert" class="easyui-form" method="post" fit="true">
+	<input name="id" id="id" type="hidden" value="${model.id!}"> <input type="hidden" name="projectId" value="${project.id!}">
 	<table width="360px">
 		<tr>
 			<td style="padding: 5px;"><input class="easyui-textbox" style="width: 100%;" value="${project.name!}" panelWidth="auto" panelHeight="auto" label="项目名称:" readonly="readonly" /></td>
 		</tr>
 		<tr>
-			<td style="padding: 5px;"><input class="easyui-textbox" name="_git" id="_git" style="width: 100%" data-options="label:'git地址:', validType:'length[0,255]'" /></td>
+			<td style="padding: 5px;"><input class="easyui-textbox" name="git" id="git" style="width: 100%" data-options="label:'git地址:', validType:'length[0,255]'" /></td>
 		</tr>
 		<tr>
-			<td style="padding: 5px;"><input class="easyui-textbox" name="_redmineUrl" id="_redmineUrl" style="width: 100%" data-options="label:'redmine文档地址:', validType:'length[0,255]'" /></td>
+			<td style="padding: 5px;"><input class="easyui-textbox" name="redmineUrl" id="redmineUrl" style="width: 100%" data-options="label:'redmine文档地址:', validType:'length[0,255]'" /></td>
 		</tr>
 		<tr>
-			<td style="padding: 5px;"><input class="easyui-textbox" name="_version" id="_version" style="width: 100%" data-options="label:'版本号:', validType:'length[0,40]'" /></td>
+			<td style="padding: 5px;"><input class="easyui-textbox" name="version" id="version" style="width: 100%" data-options="label:'版本名称:',required:true, validType:'length[0,40]'" /></td>
 		</tr>
 		<tr>
-			<td style="padding: 5px;"><input class="easyui-textbox" name="_notes" id="_notes" style="width: 100%" data-options="label:'备注:', validType:'length[0,255]'" /></td>
+			<td style="padding: 5px;"><input class="easyui-textbox" name="notes" id="notes" style="width: 100%" data-options="label:'版本描述:', validType:'length[0,255]'" /></td>
 		</tr>
 		<tr>
-			<td style="padding: 5px;"><input class="easyui-textbox" name="_host" id="_host" style="width: 100%" data-options="label:'主机:', validType:'length[0,120]'" /></td>
+			<td style="padding: 5px;"><input class="easyui-textbox" name="host" id="host" style="width: 100%" data-options="label:'主机:', validType:'length[0,120]'" /></td>
 		</tr>
 		<tr>
-			<td style="padding: 5px;"><input class="easyui-numberbox" name="_port" id="_port" style="width: 100%" data-options="label:'端口:'" /></td>
+			<td style="padding: 5px;"><input class="easyui-numberbox" name="port" id="port" style="width: 100%" data-options="label:'端口:'" /></td>
 		</tr>
 		<tr>
-			<td style="padding: 5px;"><input class="easyui-textbox" name="_visitUrl" id="_visitUrl" style="width: 100%" data-options="label:'访问地址:', validType:'length[0,120]'" /></td>
+			<td style="padding: 5px;"><input class="easyui-textbox" name="visitUrl" id="visitUrl" style="width: 100%" data-options="label:'访问地址:', validType:'length[0,120]'" /></td>
 		</tr>
 		<tr>
-			<td style="padding: 5px;"><input class="easyui-datetimebox" name="_plannedStartDate" id="_plannedStartDate" style="width: 100%" data-options="label:'计划开始日期:'" required="true" /></td>
+			<td style="padding: 5px;"><input class="easyui-datetimebox" name="plannedStartDate" id="plannedStartDate" style="width: 100%" data-options="label:'计划开始日期:',editable:false" required="true" /></td>
 		</tr>
 		<tr>
-			<td style="padding: 5px;"><input class="easyui-datetimebox" name="_plannedEndDate" id="_plannedEndDate" style="width: 100%" data-options="label:'计划结束日期:'" required="true" /></td>
+			<td style="padding: 5px;"><input class="easyui-datetimebox" name="plannedEndDate" id="plannedEndDate" style="width: 100%" data-options="label:'计划结束日期:',editable:false" required="true" /></td>
 		</tr>
 		<tr>
-			<td style="padding: 5px;"><input class="easyui-datetimebox" name="_plannedOnlineDate" id="_plannedOnlineDate" style="width: 100%" data-options="label:'计划上线日期:'" required="true" /></td>
+			<td style="padding: 5px;"><input class="easyui-datetimebox" name="plannedOnlineDate" id="plannedOnlineDate" style="width: 100%" data-options="label:'计划上线日期:',editable:false" required="true" /></td>
 		</tr>
 		<tr>
 			<td style="padding: 5px;"><select editable="false" panelWidth="auto" panelHeight="auto" label="上线:" class="easyui-combobox" name="online" id="online" style="width: 100%;">
@@ -40,5 +42,12 @@
 					<option value="0">否</option>
 			</select></td>
 		</tr>
+		<tr>
+			<td style="padding: 5px;"><label style="margin-right: 49px;">文档：</label>
+				<div id="fileuploader">哈哈哈</div></td>
+		</tr>
 	</table>
 </form>
+<script type="text/javascript">
+	<#project_formJs />
+</script>
