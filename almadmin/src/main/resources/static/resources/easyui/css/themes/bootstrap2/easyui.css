@@ -141,11 +141,11 @@ body {
 
 .panel-header,
 .panel-body {
-    border-color: #D4D4D4;
+    border-color: #f0f0f0;
 }
 
 .panel-header {
-    background-color: #b1d1ff;
+    background-color: #f5f5f5;
     /*  background: -webkit-linear-gradient(top,#ffffff 0,#F2F2F2 100%);
   background: -moz-linear-gradient(top,#ffffff 0,#F2F2F2 100%);
   background: -o-linear-gradient(top,#ffffff 0,#F2F2F2 100%);
@@ -161,7 +161,7 @@ body {
 }
 
 .panel-body input:focus {
-    /* border-color:#579bff; */
+     border-color:#2a5d3f;
     /* border-width: 1px; */
     /* border-style: solid; */
     /* outline: none */
@@ -518,9 +518,9 @@ body {
 .window,
 .window-shadow {
     position: absolute;
-    -moz-border-radius: 5px 5px 5px 5px;
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 5px 5px 5px 5px;
+    -moz-border-radius: 3px 3px 3px 3px;
+    -webkit-border-radius: 3px 3px 3px 3px;
+    border-radius: 3px 3px 3px 3px;
 }
 
 .window-shadow {
@@ -905,13 +905,13 @@ body {
   background: linear-gradient(to bottom,#ffffff 0,#e6e6e6 100%);
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffff,endColorstr=#e6e6e6,GradientType=0);
-  -moz-border-radius: 5px 5px 5px 5px;
-  -webkit-border-radius: 5px 5px 5px 5px; */
-    border-radius: 5px 5px 5px 5px;
+  -moz-border-radius: 3px 3px 3px 3px;
+  -webkit-border-radius: 3px 3px 3px 3px; */
+    border-radius: 3px 3px 3px 3px;
 }
 
 .l-btn:hover {
-    background: #deebff;
+    background: #ecf2ef;
     /* color: #00438a; */
     border: 1px solid #ccc;
     filter: none;
@@ -930,12 +930,12 @@ body {
 }
 
 .l-btn-plain:hover {
-    background: #deebff;
+    background: #e2ebe6;
     color: #333;
-    border: 1px solid #ddd;
-    -moz-border-radius: 5px 5px 5px 5px;
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 5px 5px 5px 5px;
+    border: 1px solid #e2ebe6;
+    -moz-border-radius: 3px 3px 3px 3px;
+    -webkit-border-radius: 3px 3px 3px 3px;
+    border-radius: 3px 3px 3px 3px;
 }
 
 .l-btn-disabled,
@@ -991,13 +991,14 @@ body {
     white-space: nowrap;
     margin: 0;
     padding: 0;
-    -moz-border-radius: 5px 5px 5px 5px;
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 5px 5px 5px 5px;
+    outline: none;
+    -moz-border-radius: 3px 3px 3px 3px;
+    -webkit-border-radius: 3px 3px 3px 3px;
+    border-radius: 3px 3px 3px 3px;
 }
 
 .textbox:hover {
-    border-color: #579bff;
+    border-color: #299a58;
 }
 
 .textbox .textbox-text {
@@ -1009,9 +1010,9 @@ body {
     vertical-align: top;
     outline-style: none;
     resize: none;
-    -moz-border-radius: 5px 5px 5px 5px;
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 5px 5px 5px 5px;
+    -moz-border-radius: 3px 3px 3px 3px;
+    -webkit-border-radius: 3px 3px 3px 3px;
+    border-radius: 3px 3px 3px 3px;
 }
 
 
@@ -1257,12 +1258,12 @@ body {
 }
 
 .combobox-item-hover {
-    background-color: #deebff;
+    background-color: #e2ebe6;
     color: #333;
 }
 
 .combobox-item-selected {
-    background-color: #b1d1ff;
+    background-color: #d3ecde;
     /* color: #fff; */
 }
 
@@ -1290,9 +1291,9 @@ body {
     float: left;
     vertical-align: top;
     text-decoration: none;
-    -moz-border-radius: 5px 5px 5px 5px;
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 5px 5px 5px 5px;
+    -moz-border-radius: 3px 3px 3px 3px;
+    -webkit-border-radius: 3px 3px 3px 3px;
+    border-radius: 3px 3px 3px 3px;
     background: #deebff;
     color: #333;
 }
@@ -1483,19 +1484,19 @@ body {
 }
 
 .layout-split-north {
-    border-bottom: 5px solid #eee;
+    border-bottom: 5px solid #fafafa;
 }
 
 .layout-split-south {
-    border-top: 5px solid #eee;
+    border-top: 5px solid #fafafa;
 }
 
 .layout-split-east {
-    border-left: 5px solid #eee;
+    border-left: 5px solid #fafafa;
 }
 
 .layout-split-west {
-    border-right: 5px solid #eee;
+    border-right: 5px solid #fafafa;
 }
 
 .layout-expand {
@@ -1836,9 +1837,9 @@ body {
 }
 
 .tabs-header .tabs-pill li a.tabs-inner {
-    -moz-border-radius: 5px 5px 5px 5px;
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 5px 5px 5px 5px;
+    -moz-border-radius: 3px 3px 3px 3px;
+    -webkit-border-radius: 3px 3px 3px 3px;
+    border-radius: 3px 3px 3px 3px;
 }
 
 .tabs-header-narrow,
@@ -2231,7 +2232,7 @@ body {
 }
 
 .datagrid-view .datagrid-editable-input:focus {
-    border-color: #579bff
+    border-color: #299a58
 }
 
 .datagrid-view .validatebox-invalid {
@@ -2297,7 +2298,7 @@ body {
 
 .datagrid-toolbar,
 .datagrid-pager {
-    background: #F5F5F5;
+    background: #fff;/**/
 }
 
 .datagrid-header,
@@ -2326,13 +2327,13 @@ body {
 
 .datagrid-row-over,
 .datagrid-header td.datagrid-header-over {
-    background: #deebff;
+    background: #e2e6e6;
     color: #333;
     cursor: default;
 }
 
 .datagrid-row-selected {
-    background: #b1d1ff;
+    background: #d3ecde;
     /* color: #333; */
 }
 
@@ -2618,9 +2619,9 @@ body {
     line-height: 18px;
     font-size: 12px;
     cursor: pointer;
-    -moz-border-radius: 5px 5px 5px 5px;
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 5px 5px 5px 5px;
+    -moz-border-radius: 3px 3px 3px 3px;
+    -webkit-border-radius: 3px 3px 3px 3px;
+    border-radius: 3px 3px 3px 3px;
 }
 
 .calendar-prevmonth,
@@ -2634,9 +2635,9 @@ body {
     height: 14px;
     cursor: pointer;
     font-size: 1px;
-    -moz-border-radius: 5px 5px 5px 5px;
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 5px 5px 5px 5px;
+    -moz-border-radius: 3px 3px 3px 3px;
+    -webkit-border-radius: 3px 3px 3px 3px;
+    border-radius: 3px 3px 3px 3px;
 }
 
 .calendar-prevmonth {
@@ -2672,9 +2673,9 @@ body {
     border: 0;
     padding: 1px;
     cursor: pointer;
-    -moz-border-radius: 5px 5px 5px 5px;
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 5px 5px 5px 5px;
+    -moz-border-radius: 3px 3px 3px 3px;
+    -webkit-border-radius: 3px 3px 3px 3px;
+    border-radius: 3px 3px 3px 3px;
 }
 
 .calendar-other-month {
@@ -2716,9 +2717,9 @@ body {
     padding: 2px;
     font-weight: bold;
     font-size: 12px;
-    -moz-border-radius: 5px 5px 5px 5px;
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 5px 5px 5px 5px;
+    -moz-border-radius: 3px 3px 3px 3px;
+    -webkit-border-radius: 3px 3px 3px 3px;
+    border-radius: 3px 3px 3px 3px;
 }
 
 .calendar-menu-prev,
@@ -2728,9 +2729,9 @@ body {
     height: 21px;
     vertical-align: top;
     cursor: pointer;
-    -moz-border-radius: 5px 5px 5px 5px;
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 5px 5px 5px 5px;
+    -moz-border-radius: 3px 3px 3px 3px;
+    -webkit-border-radius: 3px 3px 3px 3px;
+    border-radius: 3px 3px 3px 3px;
 }
 
 .calendar-menu-prev {
@@ -2747,9 +2748,9 @@ body {
     text-align: center;
     cursor: pointer;
     font-weight: bold;
-    -moz-border-radius: 5px 5px 5px 5px;
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 5px 5px 5px 5px;
+    -moz-border-radius: 3px 3px 3px 3px;
+    -webkit-border-radius: 3px 3px 3px 3px;
+    border-radius: 3px 3px 3px 3px;
 }
 
 .calendar-body th,
@@ -2930,9 +2931,9 @@ body {
 .progressbar {
     border-width: 1px;
     border-style: solid;
-    -moz-border-radius: 5px 5px 5px 5px;
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 5px 5px 5px 5px;
+    -moz-border-radius: 3px 3px 3px 3px;
+    -webkit-border-radius: 3px 3px 3px 3px;
+    border-radius: 3px 3px 3px 3px;
     overflow: hidden;
     position: relative;
 }
@@ -3230,9 +3231,9 @@ body {
 }
 
 .menu-active {
-    -moz-border-radius: 5px 5px 5px 5px;
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 5px 5px 5px 5px;
+    -moz-border-radius: 3px 3px 3px 3px;
+    -webkit-border-radius: 3px 3px 3px 3px;
+    border-radius: 3px 3px 3px 3px;
 }
 
 .menu-item-disabled {
@@ -3248,9 +3249,9 @@ body {
 
 .menu-shadow {
     position: absolute;
-    -moz-border-radius: 5px 5px 5px 5px;
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 5px 5px 5px 5px;
+    -moz-border-radius: 3px 3px 3px 3px;
+    -webkit-border-radius: 3px 3px 3px 3px;
+    border-radius: 3px 3px 3px 3px;
     background: #ccc;
     -moz-box-shadow: 2px 2px 3px #cccccc;
     -webkit-box-shadow: 2px 2px 3px #cccccc;
@@ -3288,9 +3289,9 @@ body {
 }
 
 .menu-active {
-    border-color: #ddd;
-    color: #00438a;
-    background: #e6e6e6;
+    border-color: #d3ecde;
+    color: #333;
+    background: #d3ecde;
 }
 
 .menu-active-disabled {
@@ -3325,9 +3326,9 @@ body {
     padding: 0;
     border-width: 1px;
     border-style: solid;
-    -moz-border-radius: 5px 5px 5px 5px;
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 5px 5px 5px 5px;
+    -moz-border-radius: 3px 3px 3px 3px;
+    -webkit-border-radius: 3px 3px 3px 3px;
+    border-radius: 3px 3px 3px 3px;
 }
 
 .m-btn .l-btn-left .l-btn-text {
@@ -3670,13 +3671,13 @@ body {
 }
 
 .tree-node-hover {
-    background: #deebff;
+    background: #e2ebe6;
     color: #333;
 }
 
 .tree-node-selected {
-    background: #b1d1ff;
-    color: #000;
+    background: #d3ecde;
+    color: #333;
 }
 
 .tree-node-hidden {
@@ -3700,9 +3701,9 @@ body {
     border-width: 1px;
     border-style: solid;
     border-radius: 5px;
-    -moz-border-radius: 5px 5px 5px 5px;
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 5px 5px 5px 5px;
+    -moz-border-radius: 3px 3px 3px 3px;
+    -webkit-border-radius: 3px 3px 3px 3px;
+    border-radius: 3px 3px 3px 3px;
 }
 
 .tooltip-content {
@@ -3823,9 +3824,9 @@ body {
     cursor: pointer;
     background: #bbb;
     border: 1px solid #bbb;
-    -moz-border-radius: 5px 5px 5px 5px;
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 5px 5px 5px 5px;
+    -moz-border-radius: 3px 3px 3px 3px;
+    -webkit-border-radius: 3px 3px 3px 3px;
+    border-radius: 3px 3px 3px 3px;
 }
 
 .switchbutton-inner {
@@ -3844,9 +3845,9 @@ body {
     height: 100%;
     float: left;
     font-size: 12px;
-    -moz-border-radius: 5px 5px 5px 5px;
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 5px 5px 5px 5px;
+    -moz-border-radius: 3px 3px 3px 3px;
+    -webkit-border-radius: 3px 3px 3px 3px;
+    border-radius: 3px 3px 3px 3px;
 }
 
 .switchbutton-on {
@@ -3913,11 +3914,11 @@ body {
     color: #333;
 }
 
-.menu-active {
-    background-color: #579bff;
-    border-color: #579bff;
-    color: #fff;
-}
+/*.menu-active {*/
+    /*background-color: #579bff;*/
+    /*border-color: #579bff;*/
+    /*color: #fff;*/
+/*}*/
 
 .menu-active-disabled {
     border-color: transparent;
