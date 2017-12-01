@@ -141,6 +141,12 @@ public class ProjectController {
 		return this.projectService.getPojectTypes();
 	}
 
+	@ResponseBody
+	@RequestMapping(value = "/state.json", method = { RequestMethod.GET, RequestMethod.POST })
+	public List<DataDictionaryValueDto> projectStateJson() {
+		return this.projectService.getProjectStates();
+	}
+
 	@RequestMapping(value = "/detail", method = RequestMethod.GET)
 	public String detail(@RequestParam Long id, ModelMap map) {
 		Project project = this.projectService.get(id);

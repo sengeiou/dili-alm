@@ -30,7 +30,8 @@ public interface ProjectService extends BaseService<Project, Long> {
 
 	BaseOutput<Object> updateAfterCheck(Project project);
 
-	List<DataDictionaryValueDto> getPojectStates();
+	List<DataDictionaryValueDto> getProjectStates();
 
 	EasyuiPageOutput listPageMyProject();
+
 }

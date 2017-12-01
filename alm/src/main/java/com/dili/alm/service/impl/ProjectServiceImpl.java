@@ -277,7 +277,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	}
 
 	@Override
-	public List<DataDictionaryValueDto> getPojectStates() {
+	public List<DataDictionaryValueDto> getProjectStates() {
 		DataDictionaryDto dto = this.dataDictionaryService.findByCode(PROJECT_STATE_CODE);
 		if (dto == null) {
 			return null;
@@ -316,4 +316,5 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 			return null;
 		}
 	}
+
 }

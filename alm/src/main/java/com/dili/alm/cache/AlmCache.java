@@ -18,5 +18,7 @@ public class AlmCache {
 	public static final Map<String, String> projectTypeMap = new ConcurrentHashMap<>();
 	// 项目状态
 	public static final Map<String, String> projectStateMap = new ConcurrentHashMap<>();
+	// 阶段名称
+	public static final Map<String, String> phaseNameMap = new ConcurrentHashMap<>();
 
 }

@@ -1,0 +1,96 @@
+<link href="${contextPath!}/resources/css/uploadfile.css" rel="stylesheet">
+<script type="text/javascript" src="${contextPath!}/resources/js/jquery.uploadfile.min.js"></script>
+<form id="versionForm" action="${contextPath!}/project/version/insert" class="easyui-form" method="post" fit="true">
+	<input name="id" id="id" type="hidden" value="${model.id!}"> <input type="hidden" name="projectId" value="${project.id!}">
+	<table width="100%">
+		<tr>
+			<td style="padding: 5px;"><input class="easyui-textbox" style="width: 100%;" value="${project.name!}" panelWidth="auto" panelHeight="auto" label="项目名称:" readonly="readonly" /></td>
+		</tr>
+		<tr>
+			<td style="padding: 5px;"><input class="easyui-textbox" name="git" value="${model.git!}" id="git" style="width: 100%" readonly="readonly"
+				data-options="label:'git地址:', validType:'length[0,255]'" /></td>
+		</tr>
+		<tr>
+			<td style="padding: 5px;"><input class="easyui-textbox" name="redmineUrl" value="${model.redmineUrl!}" readonly="readonly" id="redmineUrl" style="width: 100%"
+				data-options="label:'redmine文档地址:', validType:'length[0,255]'" /></td>
+		</tr>
+		<tr>
+			<td style="padding: 5px;"><input class="easyui-textbox" name="version" id="version" readonly="readonly" value="${model.version!}" style="width: 100%"
+				data-options="label:'版本名称:',required:true, validType:'length[0,40]'" /></td>
+		</tr>
+		<tr>
+			<td style="padding: 5px;"><input class="easyui-textbox" name="notes" id="notes" readonly="readonly" value="${model.notes!}" style="width: 100%"
+				data-options="label:'版本描述:', validType:'length[0,255]'" /></td>
+		</tr>
+		<tr>
+			<td style="padding: 5px;"><input class="easyui-textbox" name="host" id="host" readonly="readonly" value="${model.host!}" style="width: 100%"
+				data-options="label:'主机:', validType:'length[0,120]'" /></td>
+		</tr>
+		<tr>
+			<td style="padding: 5px;"><input class="easyui-numberbox" name="port" id="port" readonly="readonly" value="${model.port!}" style="width: 100%" data-options="label:'端口:'" /></td>
+		</tr>
+		<tr>
+			<td style="padding: 5px;"><input class="easyui-textbox" name="visitUrl" id="visitUrl" readonly="readonly" value="${model.visitUrl!}" style="width: 100%"
+				data-options="label:'访问地址:', validType:'length[0,120]'" /></td>
+		</tr>
+		<tr>
+			<td style="padding: 5px;"><input class="easyui-datetimebox" name="plannedStartDate" readonly="readonly" id="plannedStartDate"
+				value="${model.plannedStartDate!,dateFormat='yyyy-MM-dd HH:mm:ss'}" style="width: 100%" data-options="label:'计划开始日期:',editable:false" required="true" /></td>
+		</tr>
+		<tr>
+			<td style="padding: 5px;"><input class="easyui-datetimebox" name="plannedEndDate" readonly="readonly" id="plannedEndDate" value="${model.plannedEndDate!,dateFormat='yyyy-MM-dd HH:mm:ss'}"
+				style="width: 100%" data-options="label:'计划结束日期:',editable:false" required="true" /></td>
+		</tr>
+		<tr>
+			<td style="padding: 5px;"><input class="easyui-datetimebox" name="plannedOnlineDate" readonly="readonly" id="plannedOnlineDate"
+				value="${model.plannedOnlineDate!,dateFormat='yyyy-MM-dd HH:mm:ss'}" style="width: 100%" data-options="label:'计划上线日期:',editable:false" required="true" /></td>
+		</tr>
+		<tr>
+			<td style="padding: 5px;"><input class="easyui-datetimebox" name="plannedStartDate" readonly="readonly" id="plannedStartDate"
+				value="${model.plannedStartDate!,dateFormat='yyyy-MM-dd HH:mm:ss'}" style="width: 100%" data-options="label:'实际开始日期:',editable:false" required="true" /></td>
+		</tr>
+		<tr>
+			<td style="padding: 5px;"><input class="easyui-datetimebox" name="plannedEndDate" readonly="readonly" id="plannedEndDate" value="${model.plannedEndDate!,dateFormat='yyyy-MM-dd HH:mm:ss'}"
+				style="width: 100%" data-options="label:'实际结束日期:',editable:false" required="true" /></td>
+		</tr>
+		<tr>
+			<td style="padding: 5px;"><input class="easyui-textbox" name="plannedEndDate" readonly="readonly" value="<%if(model.online == 0){%>否<%}else{%>是<%}%>" style="width: 100%"
+				data-options="label:'上线:',editable:false" required="true" /></td>
+		</tr>
+		<tr>
+			<td style="padding: 5px;">
+				<table class="easyui-datagrid" title="变更记录" id="versionFileGrid" fitColumns="true" pagination="false" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
+					align="center" fit="false" striped="true" idField="id" data-options="">
+					<thead>
+						<tr>
+							<th data-options="field:'name', width:'20%', align:'center', resizable:'true', fixed:'false'">变更名称</th>
+							<th data-options="field:'phaseId', width:'20%', align:'center', resizable:'true', fixed:'false'">阶段</th>
+						</tr>
+					</thead>
+					<tbody>
+						<%for(item in changes){%>
+						<tr>
+							<td>${item.name!}</td>
+							<td>${item.phaseId!}</td>
+						</tr>
+						<%}%>
+					</tbody>
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td><label>版本进度：</label>
+				<div id="p" class="easyui-progressbar" data-options="value:${model.completedProgress!}" style="width: 400px;"></div></td>
+		</tr>
+		<tr>
+			<td><select id="versionState" editable="false" panelWidth="auto" panelHeight="auto" label="版本状态:" class="easyui-combobox" name="online" id="online" style="width: 100%;">
+			<%for(item in states){%>
+					<option value="${item.value!}" <%if(model.versionState == parseInt(item.value)){%>selected="selected"<%}%>>${item.code!}</option>
+			<%}%>
+			</select></td>
+		</tr>
+	</table>
+</form>
+<script type="text/javascript">
+	
+</script>

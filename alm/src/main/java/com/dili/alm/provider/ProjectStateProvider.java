@@ -37,7 +37,7 @@ public class ProjectStateProvider implements ValueProvider, ApplicationListener<
 
 	public void init() {
 		if (AlmCache.projectStateMap.isEmpty()) {
-			List<DataDictionaryValueDto> list = projectService.getPojectStates();
+			List<DataDictionaryValueDto> list = projectService.getProjectStates();
 			list.forEach(type -> {
 				AlmCache.projectStateMap.put(type.getValue(), type.getCode());
 			});

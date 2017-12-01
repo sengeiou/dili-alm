@@ -1,34 +1,39 @@
 package com.dili.alm.controller;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.InsertProjectVersionDto;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectVersion;
+import com.dili.alm.domain.dto.DataDictionaryValueDto;
+import com.dili.alm.domain.dto.ProjectVersionChangeStateViewDto;
+import com.dili.alm.domain.dto.UpdateProjectVersionDto;
+import com.dili.alm.service.FilesService;
+import com.dili.alm.service.ProjectPhaseService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.ProjectVersionService;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletRequest;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-10-20 11:02:17.
@@ -41,6 +46,10 @@ public class ProjectVersionController {
 	ProjectVersionService projectVersionService;
 	@Autowired
 	private ProjectService projectService;
+	@Autowired
+	private FilesService filesService;
+	@Autowired
+	private ProjectPhaseService phaseService;
 
 	@ApiOperation("跳转到Milestones页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
@@ -88,15 +97,15 @@ public class ProjectVersionController {
 	@ApiOperation("新增Milestones")
 	@ApiImplicitParams({ @ApiImplicitParam(name = "Milestones", paramType = "form", value = "Milestones的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.POST })
-	public @ResponseBody BaseOutput insert(@RequestBody InsertProjectVersionDto dto) {
+	public @ResponseBody BaseOutput insert(InsertProjectVersionDto dto) {
 		return projectVersionService.insertSelectiveWithOutput(dto);
 	}
 
 	@ApiOperation("修改Milestones")
 	@ApiImplicitParams({ @ApiImplicitParam(name = "Milestones", paramType = "form", value = "Milestones的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput update(ProjectVersion projectVersion) {
-		return projectVersionService.updateSelectiveWithOutput(projectVersion);
+	public @ResponseBody BaseOutput update(UpdateProjectVersionDto dto) {
+		return projectVersionService.updateSelectiveWithOutput(dto);
 	}
 
 	@ApiOperation("删除Milestones")
@@ -106,14 +115,38 @@ public class ProjectVersionController {
 		return projectVersionService.deleteWithOutput(id);
 	}
 
-	@RequestMapping(value = "/form", method = RequestMethod.GET)
-	public String versionForm(@RequestParam Long projectId, @RequestParam(required = false) Long id, ModelMap map) {
+	@RequestMapping(value = "/add", method = RequestMethod.GET)
+	public String addView(@RequestParam Long projectId, ModelMap map) {
 		Project project = this.projectService.get(projectId);
 		map.addAttribute("project", project);
-		if (id != null) {
-			ProjectVersion version = this.projectVersionService.get(id);
-			map.addAttribute("model", version);
-		}
 		return "project/version/form";
+	}
+
+	@RequestMapping(value = "/edit", method = RequestMethod.GET)
+	public String editView(@RequestParam Long projectId, @RequestParam(required = false) Long id, ModelMap map) {
+		Project project = this.projectService.get(projectId);
+		map.addAttribute("project", project);
+		ProjectVersion version = this.projectVersionService.get(id);
+		map.addAttribute("model", version);
+		Files record = DTOUtils.newDTO(Files.class);
+		record.setVersionId(id);
+		List<Files> files = this.filesService.list(record);
+		map.addAttribute("files", files);
+		return "project/version/form";
+	}
+
+	@RequestMapping(value = "/changeState", method = RequestMethod.GET)
+	public String changeStateView(@RequestParam Long id, ModelMap map) {
+		ProjectVersionChangeStateViewDto model = this.projectVersionService.getChangeStateViewData(id);
+		Project project = this.projectService.get(model.getVersion().getProjectId());
+		List<DataDictionaryValueDto> states = this.projectService.getProjectStates();
+		map.addAttribute("model", model.getVersion()).addAttribute("changes", model.getChanges()).addAttribute("project", project).addAttribute("states", states);
+		return "project/version/changeState";
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/changeState", method = RequestMethod.POST)
+	public BaseOutput<Object> changeState(@RequestParam Long id, @RequestParam Integer versionState) {
+		return this.projectVersionService.changeState(id, versionState);
 	}
 }
