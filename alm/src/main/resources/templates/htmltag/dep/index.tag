@@ -1,33 +1,33 @@
 // 打开选择用户弹出框
-function selectMember(callback, args) {
+function selectDep(callback, args) {
 	if (callback) {
 		eval("(" + callback + "(args))");
 	} else {
-		showMembersDlg($(this)[0].id);
+		showDepDlg($(this)[0].id);
 	}
 }
 // 确认选择事件
-function confirmMembersBtn(id) {
+function confirmDepBtn(id) {
 	var selected = $('#smGridList').datagrid('getSelected');
 	$('#' + id).textbox('initValue', selected.id);
-	$('#' + id).textbox('setText', selected.realName);
+	$('#' + id).textbox('setText', selected.name);
 	$('#smDialog').dialog('close');
 }
 // 根据id打开用户选择
-function showMembersDlg(id) {
+function showDepDlg(id) {
 	$('#smDialog').dialog({
-				title : '用户选择',
+				title : '部门选择',
 				width : 800,
 				height : 400,
 				queryParams : {
 					textboxId : id
 				},
-				href : '${contextPath!}/member/members.html',
+				href : '${contextPath!}/department/departments.html',
 				modal : true,
 				buttons : [{
 							text : '确定',
 							handler : function() {
-								confirmMembersBtn(id);
+								confirmDepBtn(id);
 							}
 						}, {
 							text : '取消',
