@@ -5,6 +5,13 @@ body {
     margin: 0;
 }
 
+select{
+    outline: none;
+}
+select:focus{
+    border-color: #2a5d3f;
+}
+
 .panel {
     overflow: hidden;
     text-align: left;
@@ -161,10 +168,10 @@ body {
 }
 
 .panel-body input:focus {
-     border-color:#2a5d3f;
+    border-color:#2a5d3f;
     /* border-width: 1px; */
     /* border-style: solid; */
-    /* outline: none */
+    outline: none;
 }
 
 .panel-title {
@@ -378,11 +385,11 @@ body {
 }
 
 .accordion .accordion-header-selected {
-    background: #579bff;
+    background: #d3ecde;
 }
 
 .accordion .accordion-header-selected .panel-title {
-    color: #fff;
+    /*color: #fff;*/
 }
 
 .accordion .panel-last>.accordion-header {
@@ -1294,7 +1301,7 @@ body {
     -moz-border-radius: 3px 3px 3px 3px;
     -webkit-border-radius: 3px 3px 3px 3px;
     border-radius: 3px 3px 3px 3px;
-    background: #deebff;
+    background: #d3ecde;
     color: #333;
 }
 
@@ -1484,19 +1491,19 @@ body {
 }
 
 .layout-split-north {
-    border-bottom: 5px solid #fafafa;
+    border-bottom: 5px solid #fff;
 }
 
 .layout-split-south {
-    border-top: 5px solid #fafafa;
+    border-top: 5px solid #fff;
 }
 
 .layout-split-east {
-    border-left: 5px solid #fafafa;
+    border-left: 5px solid #fff;
 }
 
 .layout-split-west {
-    border-right: 5px solid #fafafa;
+    border-right: 5px solid #fff;
 }
 
 .layout-expand {
@@ -2799,7 +2806,7 @@ body {
 .calendar-hover,
 .calendar-nav-hover,
 .calendar-menu-hover {
-    background-color: #deebff;
+    background-color: #d3ecde;
     color: #00438a;
 }
 
@@ -2809,9 +2816,9 @@ body {
 }
 
 .calendar-selected {
-    background-color: #579bff;
+    background-color: #299a58;
     color: #fff;
-    border: 1px solid #579bff;
+    border: 1px solid #299a58;
     padding: 0;
 }
 
@@ -2962,7 +2969,7 @@ body {
 }
 
 .progressbar-value .progressbar-text {
-    background-color: #579bff;
+    background-color: #299a58;
     color: #fff;
 }
 
@@ -3851,7 +3858,7 @@ body {
 }
 
 .switchbutton-on {
-    background: #579bff;
+    background: #299a58;
     color: #fff;
 }
 
@@ -3915,9 +3922,9 @@ body {
 }
 
 /*.menu-active {*/
-    /*background-color: #579bff;*/
-    /*border-color: #579bff;*/
-    /*color: #fff;*/
+/*background-color: #579bff;*/
+/*border-color: #579bff;*/
+/*color: #fff;*/
 /*}*/
 
 .menu-active-disabled {
