@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.domain.Files;
-import com.dili.alm.domain.InsertProjectVersionDto;
+import com.dili.alm.domain.ProjectVersionFormDto;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
@@ -97,14 +97,14 @@ public class ProjectVersionController {
 	@ApiOperation("新增Milestones")
 	@ApiImplicitParams({ @ApiImplicitParam(name = "Milestones", paramType = "form", value = "Milestones的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.POST })
-	public @ResponseBody BaseOutput insert(InsertProjectVersionDto dto) {
+	public @ResponseBody BaseOutput insert(ProjectVersionFormDto dto) {
 		return projectVersionService.insertSelectiveWithOutput(dto);
 	}
 
 	@ApiOperation("修改Milestones")
 	@ApiImplicitParams({ @ApiImplicitParam(name = "Milestones", paramType = "form", value = "Milestones的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput update(UpdateProjectVersionDto dto) {
+	public @ResponseBody BaseOutput update(ProjectVersionFormDto dto) {
 		return projectVersionService.updateSelectiveWithOutput(dto);
 	}
 

@@ -9,6 +9,8 @@ import com.dili.ss.metadata.ValuePairImpl;
 import com.dili.ss.metadata.ValueProvider;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -19,7 +21,7 @@ import java.util.Map;
  * Created by asiamaster on 2017/5/31 0031.
  */
 @Component
-public class PhaseNameProvider implements ValueProvider {
+public class PhaseNameProvider implements ValueProvider, ApplicationListener<ContextRefreshedEvent> {
 
 	@Autowired
 	private ProjectPhaseService phaseService;
@@ -48,5 +50,10 @@ public class PhaseNameProvider implements ValueProvider {
 		if (obj == null || obj.equals(""))
 			return null;
 		return AlmCache.phaseNameMap.get(obj.toString());
+	}
+
+	@Override
+	public void onApplicationEvent(ContextRefreshedEvent arg0) {
+		this.init();
 	}
 }
