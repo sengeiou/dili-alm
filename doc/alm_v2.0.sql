@@ -40,19 +40,19 @@ CREATE TABLE `project_apply` (
   COMMENT '计划开始日期',
   `end_date`             DATETIME        NULL
   COMMENT '计划结束日期',
-  `resource_require`     VARCHAR(255)    NULL
+  `resource_require`     VARCHAR(1000)    NULL
   COMMENT '项目资源需求',
-  `description`          VARCHAR(255)    NULL
+  `description`          VARCHAR(1000)    NULL
   COMMENT '项目说明',
-  `goals_functions`      VARCHAR(255)    NULL
+  `goals_functions`      VARCHAR(1000)    NULL
   COMMENT '目标以及功能',
-  `plan`                 VARCHAR(255)    NULL
+  `plan`                 VARCHAR(1000)    NULL
   COMMENT '概要计划',
-  `roi`                  VARCHAR(255)    NULL
+  `roi`                  VARCHAR(1000)    NULL
   COMMENT 'ROI分析',
-  `impact`               VARCHAR(255)    NULL
+  `impact`               VARCHAR(1000)    NULL
   COMMENT '项目影响',
-  `risk`                 VARCHAR(255)    NULL
+  `risk`                 VARCHAR(1000)    NULL
   COMMENT '项目风险',
   `email`                VARCHAR(255)    NULL,
   `status`               TINYINT         NULL,
@@ -301,5 +301,10 @@ CREATE TABLE `work_schedule` (
   `schedule_text` varchar(255) DEFAULT NULL COMMENT '编辑内容',
   `user_id` bigint(20) DEFAULT NULL COMMENT '用户id',
   PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `sequence`
+(
+  number INT NULL
 );
 

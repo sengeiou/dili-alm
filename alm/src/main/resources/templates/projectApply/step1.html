@@ -1,31 +1,184 @@
 <#body>
-<h2>Load Panel Content</h2>
-<p>Click the refresh button on top right of panel to load content.</p>
-<div style="margin:20px 0 10px 0;"></div>
+<style>
+    td {
+        padding-left: 60px;
+    }
 
-<div class="easyui-panel" title="New Topic" style="width:100%;max-width:400px;padding:30px 60px;">
-    <form id="ff" method="post">
-        <h2>1.1项目基本信息</h2>
-        <div style="margin-bottom:20px">
-            <input class="easyui-textbox" name="name" style="width:100%" data-options="label:'Name:',required:true">
+    input[class^="easyui-"] {
+        width: 300px;
+    }
+
+    .title-first,
+    .title-second {
+        margin-top: 20px;
+        background: #f7f7f7;
+    }
+
+    .title-first {
+        padding-left: 0;
+    }
+
+    .title-second {
+        padding-left: 30px;
+    }
+</style>
+<div id="smDialog" style="display: none;"></div>
+<div class="easyui-panel" title="立项申请（第一步）">
+    <div style="padding:10px 60px 20px 60px">
+        <form id="ff" method="post" action="">
+            <input type="hidden" name="id" value="${apply.id}">
+            <table cellpadding="5" id="tb">
+                <tr>
+                    <td>项目编号</td>
+                    <td>${apply.number}</td>
+                    <td>项目类别</td>
+                    <td>${apply.type}</td>
+                </tr>
+                <tr>
+                    <td class="title-first" colspan="3">1项目内容及资源</td>
+                </tr>
+                <tr>
+                    <td class="title-second" colspan="3">1.1项目基本信息</td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input class="easyui-textbox" type="text" name="name"
+                                           data-options="required:true,validType:'length[1,10]',label:'*项目名称:'" style="width:600px"></td>
+                </tr>
+                <tr>
+                    <td><input class="easyui-textbox" name="projectLeader" id="project_leader" style="width: 100%;"
+                               panelWidth="auto" panelHeight="auto" label="*开发负责人:"
+                               data-options="required:true,
+									buttonText:'选择',
+									onClickButton:selectMember,onChange:_changeTextboxShowClear"/></td>
+                    <td><input class="easyui-textbox" type="text" name="productManager" id="productManager"
+                               data-options="required:true,label:'*产品经理:',buttonText:'选择',
+									onClickButton:selectMember,onChange:_changeTextboxShowClear"></td>
+                </tr>
+                <tr>
+                    <td><input class="easyui-textbox" type="text" name="developmentManager" id="developmentManager"
+                               data-options="required:true,label:'*研发经理:',buttonText:'选择',
+									onClickButton:selectMember,onChange:_changeTextboxShowClear"></td>
+                    <td><input class="easyui-textbox" type="text" name="testManager" id="testManager" data-options="required:true,label:'*测试经理:',buttonText:'选择',
+									onClickButton:selectMember,onChange:_changeTextboxShowClear"></td>
+                </tr>
+                <tr>
+                    <td><input class="easyui-textbox" type="text" name="businessOwner" id="businessOwner" data-options="required:true,label:'*业务负责人:',buttonText:'选择',
+									onClickButton:selectMember,onChange:_changeTextboxShowClear"></td>
+                    <td><input class="easyui-textbox" type="text" id="dep" name="dep" data-options="required:true,label:'*需求所属业务部门:',buttonText:'选择',
+									onClickButton:selectDep,onChange:_changeTextboxShowClear"></td>
+                </tr>
+                <tr>
+                    <td><input class="easyui-datetimebox" name="expectedLaunchDate" id=""
+                               data-options="required:true,label:'*业务期望上线日期:'"/></td>
+                    <td><input class="easyui-datetimebox" name="estimateLaunchDate" id=""
+                               data-options="required:true,label:'*预估最终上线日期:'"/></td>
+                </tr>
+                <tr>
+                    <td><input class="easyui-datetimebox" name="startDate" id=""
+                               data-options="required:true,label:'*计划开始日期:'"/>
+                    </td>
+                    <td><input class="easyui-datetimebox" name="endDate" id=""
+                               data-options="required:true,label:'*计划结束日期:'"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="title-second" colspan="3">1.2.项目资源需求</td>
+                </tr>
+                <tr>
+                    <td><input class="easyui-textbox" type="text" name="mainUser" id="mainUser"
+                               data-options="required:true,label:'*负责部门经理:',buttonText:'选择',
+									onClickButton:selectMember,onChange:_changeTextboxShowClear"></td>
+                    <td><input class="easyui-numberspinner" id="member" name="mainNumber" value=""
+                               data-options="required:true,increment:1,label:'*预估所需人员:',min:1"> 人
+                    </td>
+                    <td><input class="easyui-numberbox" type="text" id="workTime" name="mainWorkTime"
+                               data-options="required:true,label:'*预估工时:',min:1"> 人日
+                    </td>
+                </tr>
+                <tr>
+                    <td><input class="easyui-textbox" type="text" id="xiangguan" name="relatedResources[0].relatedUser"
+                               data-options="label:'相关部门经理:',buttonText:'选择',
+									onClickButton:selectMember,onChange:_changeTextboxShowClear"></td>
+                    <td><input class="easyui-numberspinner" id="relatedNumber" value="" name="relatedResources[0].relatedNumber"
+                               data-options="increment:1,label:'预估所需人员:',min:1">人
+                    </td>
+                    <td><input class="easyui-numberbox" type="text" id="relatedWorkTime" name="relatedResources[0].relatedWorkTime"
+                               data-options="label:'预估工时:',min:1"> 人日
+                    </td>
+                    <td><a href="javascript:void(0);" class="_add">新增</a></td>
+                </tr>
+            </table>
+        </form>
+        <div style="text-align:center;padding:5px;margin-top:50px;">
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="size:'large',width:'80px'"
+               onclick="submitForm()">下一步</a>
         </div>
-        <div style="margin-bottom:20px">
-            <input class="easyui-textbox" name="email" style="width:100%" data-options="label:'Email:',required:true,validType:'email'">
-        </div>
-        <h2>1.2.项目资源需求</h2>
-        <div style="margin-bottom:20px">
-            <input class="easyui-textbox" name="subject" style="width:100%" data-options="label:'Subject:',required:true">
-        </div>
-        <div style="margin-bottom:20px">
-            <input class="easyui-textbox" name="message" style="width:100%;height:60px" data-options="label:'Message:',multiline:true">
-        </div>
-        <div style="margin-bottom:20px">
-            <select class="easyui-combobox" name="language" label="Language" style="width:100%"><option value="ar">Arabic</option><option value="bg">Bulgarian</option><option value="ca">Catalan</option><option value="zh-cht">Chinese Traditional</option><option value="cs">Czech</option><option value="da">Danish</option><option value="nl">Dutch</option><option value="en" selected="selected">English</option><option value="et">Estonian</option><option value="fi">Finnish</option><option value="fr">French</option><option value="de">German</option><option value="el">Greek</option><option value="ht">Haitian Creole</option><option value="he">Hebrew</option><option value="hi">Hindi</option><option value="mww">Hmong Daw</option><option value="hu">Hungarian</option><option value="id">Indonesian</option><option value="it">Italian</option><option value="ja">Japanese</option><option value="ko">Korean</option><option value="lv">Latvian</option><option value="lt">Lithuanian</option><option value="no">Norwegian</option><option value="fa">Persian</option><option value="pl">Polish</option><option value="pt">Portuguese</option><option value="ro">Romanian</option><option value="ru">Russian</option><option value="sk">Slovak</option><option value="sl">Slovenian</option><option value="es">Spanish</option><option value="sv">Swedish</option><option value="th">Thai</option><option value="tr">Turkish</option><option value="uk">Ukrainian</option><option value="vi">Vietnamese</option></select>
-        </div>
-    </form>
-    <div style="text-align:center;padding:5px 0">
-        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()" style="width:80px">Submit</a>
-        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">Clear</a>
     </div>
 </div>
+<script>
+
+    function submitForm() {
+        $('#ff').form('submit', {
+            url: "${contextPath}/projectApply/insertStep1",
+            onSubmit: function () {
+                return $("#ff").form('validate');
+            },
+            success: function (data) {
+                var data = eval('(' + data + ')');
+                if (data.success == true) {
+                    if (data.success == true) {
+                        window.location.href = "${contextPath}/projectApply/toStep/2/" + data.result;
+                    }
+                }
+            }
+        });
+    }
+
+    $("._add").on("click", function () {
+        appendRelated();
+    });
+
+    function delRelated($_this) {
+        $($_this).closest("tr").remove();
+    }
+
+    function appendRelated(obj) {
+        var index = jQuery('.related').length + 1;
+        var parserId = "parser_" + new Date().getTime();
+        $("#tb").append("<tr class='related' id='" + parserId + "'><td><input class=\"easyui-textbox\" type=\"text\" id=\"" + index + "-user" + "\" name=\"relatedResources[" + index + "].relatedUser\" data-options=\"label:'相关部门经理:',buttonText:'选择', onClickButton:selectMember,onChange:_changeTextboxShowClear\"></td><td><input class=\"easyui-numberspinner\" id='" + index + "-number' name='relatedResources[" + index + "].relatedNumber' value=\"\" data-options=\"increment:1,label:'预估所需人员:',min:1\">人</td><td><input class=\"easyui-numberbox\" type=\"text\" id='" + index + "-time' name='relatedResources[" + index + "].relatedWorkTime' data-options=\"label:'预估工时:',min:1\"> 人日</td><td><a href=\"javascript:void(0);\" class=\"_del\" onclick='delRelated(this)'>删除</a></td></tr>");
+        $.parser.parse("#" + parserId);
+        if(obj!=undefined){
+            $("#" + index + "-user").textbox('initValue', obj['relatedUserValue']);
+            $("#" + index + "-user").textbox('setText', obj['relatedUserText']);
+            $("#" + index + "-number").textbox('initValue', obj['relatedNumber']);
+            $("#" + index + "-time").textbox('initValue', obj['relatedWorkTime']);
+        }
+    }
+
+    $(function () {
+        $('#ff').form('load', '${contextPath}/projectApply/loadApply?id=${apply.id}');
+        $("#mainUser").textbox('initValue', '${main.$_mainUser}');
+        $("#mainUser").textbox('setText', '${main.mainUser}');
+
+        $("#member").textbox("initValue", '${main.mainNumber}');
+        $("#workTime").textbox("initValue", '${main.mainWorkTime}');
+        <%
+        for (obj in related) {
+            if(objLP.first){
+        %>
+                $("#xiangguan").textbox('initValue', '${obj.$_relatedUser}');
+                $("#xiangguan").textbox('setText', '${obj.relatedUser}');
+                $("#relatedNumber").textbox('initValue', '${obj.relatedNumber}');
+                $("#relatedWorkTime").textbox('initValue', '${obj.relatedWorkTime}');
+            <% }else{ %>
+                var data = {'relatedUserText':'${obj.relatedUser}','relatedUserValue':'${obj.$_relatedUser}','relatedNumber':'${obj.relatedNumber}','relatedWorkTime':'${obj.relatedWorkTime}'};
+                appendRelated(data);
+        <%}}%>
+    })
+</script>
+
+<script type="text/javascript">
+    <#members_index/>
+    <;#dep_index/>
+</script>
 </#body>

@@ -1,10 +1,11 @@
 package com.dili.alm.cache;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
+import com.dili.alm.domain.Department;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.User;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by asiamaster on 2017/10/19 0019.
@@ -18,7 +19,16 @@ public class AlmCache {
 	public static final Map<String, String> projectTypeMap = new ConcurrentHashMap<>();
 	// 项目状态
 	public static final Map<String, String> projectStateMap = new ConcurrentHashMap<>();
-	// 阶段名称
-	public static final Map<String, String> phaseNameMap = new ConcurrentHashMap<>();
+
+    // 阶段名称
+    public static final Map<String, String> phaseNameMap = new ConcurrentHashMap<>();
+
+    public static final Map<String, String> APPLY_PLAN_PHASE_MAP = new ConcurrentHashMap<>();
+
+    public static final Map<String, String> PROJECT_IMPORTANCE_MAP = new ConcurrentHashMap<>();
+    public static final Map<String, String> KIND_RISK_MAP = new ConcurrentHashMap<>();
+
+    public static final Map<Long, Department> DEP_MAP = new ConcurrentHashMap<>();
+
 
 }

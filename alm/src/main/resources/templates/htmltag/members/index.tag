@@ -9,7 +9,7 @@ function selectMember(callback, args) {
 // 确认选择事件
 function confirmMembersBtn(id) {
 	var selected = $('#smGridList').datagrid('getSelected');
-	$('#' + id).textbox('setValue', selected.id);
+	$('#' + id).textbox('initValue', selected.id);
 	$('#' + id).textbox('setText', selected.realName);
 	$('#smDialog').dialog('close');
 }

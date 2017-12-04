@@ -8,8 +8,9 @@ public class AlmConstants {
 	//数据字典值表中的数据权限类型为项目
 	public static final String DATA_AUTH_TYPE_PROJECT = "Project";
 
+
 	//团队成员状态: 加入/离开
-	public static enum MemberState {
+	public enum MemberState {
 		LEAVE(0),
 		JOIN(1);
 
@@ -36,6 +37,16 @@ public class AlmConstants {
 
 		public int getCode() {
 			return code;
+		}
+	}
+
+	public enum ApplyState{
+		APPLY(1),APPROVE(2),PASS(3),NOPASS(4);
+
+		private int code;
+
+		ApplyState(int code) {
+			this.code = code;
 		}
 	}
 }
