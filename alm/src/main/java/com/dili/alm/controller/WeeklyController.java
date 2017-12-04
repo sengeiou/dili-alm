@@ -1,9 +1,11 @@
 package com.dili.alm.controller;
 
 import com.dili.alm.domain.Weekly;
+import com.dili.alm.domain.dto.ProjectWeeklyDto;
+import com.dili.alm.domain.dto.TaskDto;
 import com.dili.alm.domain.dto.WeeklyPara;
 import com.dili.alm.service.WeeklyService;
-
+import com.dili.alm.service.impl.WeeklyServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 
 import io.swagger.annotations.Api;
@@ -19,6 +21,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -90,8 +93,43 @@ public class WeeklyController  {
     
     @ApiOperation("跳转到getDescById页面")
     @RequestMapping(value="/getDescById", method = RequestMethod.GET)
-    public String getDescById(ModelMap modelMap) {
-        return "weekly/indexDesc";
+    public ModelAndView getDescById(String id) {
+    	ModelAndView mv = new ModelAndView();
+    	
+    	ProjectWeeklyDto pd=weeklyService.getProjectWeeklyDtoById(Long.parseLong(id));
+		mv.addObject("pd", pd);
+		
+		
+		// 本周项目版本
+		List<String> projectVersion=weeklyService.selectProjectVersion(Long.parseLong(pd.getProjectId()));
+		mv.addObject("pv", projectVersion);
+		
+		//本周项目阶段
+		List<String> projectPhase=weeklyService.selectProjectPhase(Long.parseLong(pd.getProjectId()));
+		mv.addObject("pp", projectPhase);
+		
+		//下周工作计划
+		Weekly wk=weeklyService.selectNextWeeklyProgress(Long.parseLong(pd.getProjectId()));
+		mv.addObject("wk", wk);
+		
+		//本周进展情况 
+		TaskDto td=weeklyService.selectWeeklyProgress(Long.parseLong(pd.getProjectId()));
+		mv.addObject("td", td);
+		
+		WeeklyPara weeklyPara=  new WeeklyPara();
+		weeklyPara.setId(Long.parseLong(id));
+		
+		//当前重要风险
+		String weeklyRist=weeklyService.selectWeeklyRist(weeklyPara);
+		mv.addObject("wr", weeklyRist);
+		
+		//当前重要风险
+		String weeklyQuestion=weeklyService.selectWeeklyQuestion(weeklyPara);
+	    mv.addObject("w", weeklyQuestion);
+		
+		mv.setViewName("weekly/indexDesc");
+        return mv;
     }
+   
     
 }

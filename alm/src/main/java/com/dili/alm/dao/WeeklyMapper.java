@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.dili.alm.domain.Weekly;
+import com.dili.alm.domain.dto.ProjectWeeklyDto;
 import com.dili.alm.domain.dto.WeeklyPara;
 import com.dili.ss.base.MyMapper;
+import com.dili.alm.domain.dto.TaskDto;
 
 public interface WeeklyMapper extends MyMapper<Weekly> {
 	
@@ -21,4 +23,43 @@ public interface WeeklyMapper extends MyMapper<Weekly> {
 	 * @return
 	 */
 	Integer selectPageByWeeklyParaCount(WeeklyPara weeklyPara);
+	
+	/***
+	 * 周报详情周报项目基本信息
+	 * @param id
+	 * @return
+	 */
+	ProjectWeeklyDto selectProjectWeeklyDto(Long ID );
+	
+	
+	
+	/** 
+	 * 当前重大问题 -
+	 * */
+	String  selectWeeklyQuestion(WeeklyPara weeklyPara);
+	/**   
+	 * 当前重要风险
+	 * */
+	String  selectWeeklyRist(WeeklyPara weeklyPara);
+	/** 
+	 * 本周进展情况 
+	 *  */
+	TaskDto  selectWeeklyProgress(Long id );
+	/**
+	 *  下周工作计划
+	 * */
+	Weekly  selectNextWeeklyProgress(Long id);
+	/** 
+	 * 本周项目阶段
+	 *   * */
+	List<String> selectProjectPhase(Long id);
+	/** 
+	 * 本周项目版本
+	 * */
+	List<String> selectProjectVersion(Long id );
+	
+	
 }
+	
+	
+	
