@@ -1,9 +1,8 @@
 package com.dili.alm.service;
 
-import com.dili.alm.domain.InsertProjectVersionDto;
 import com.dili.alm.domain.ProjectVersion;
+import com.dili.alm.domain.ProjectVersionFormDto;
 import com.dili.alm.domain.dto.ProjectVersionChangeStateViewDto;
-import com.dili.alm.domain.dto.UpdateProjectVersionDto;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
 
@@ -17,13 +16,13 @@ public interface ProjectVersionService extends BaseService<ProjectVersion, Long>
 	 * @param dto TODO
 	 * @return
 	 */
-	BaseOutput insertSelectiveWithOutput(InsertProjectVersionDto dto);
+	BaseOutput insertSelectiveWithOutput(ProjectVersionFormDto dto);
 
 	/**
 	 * @param dto
 	 * @return
 	 */
-	BaseOutput updateSelectiveWithOutput(UpdateProjectVersionDto dto);
+	BaseOutput updateSelectiveWithOutput(ProjectVersionFormDto dto);
 
 	/**
 	 *

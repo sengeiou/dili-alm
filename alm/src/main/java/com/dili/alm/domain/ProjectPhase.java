@@ -14,7 +14,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2017-11-30 16:05:32.
+ * This file was generated on 2017-12-01 11:13:51.
  */
 @Table(name = "`project_phase`")
 public interface ProjectPhase extends IBaseDomain {
@@ -89,6 +89,13 @@ public interface ProjectPhase extends IBaseDomain {
     Long getModifierId();
 
     void setModifierId(Long modifierId);
+
+    @Column(name = "`completed_progress`")
+    @FieldDef(label="完成进度")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Integer getCompletedProgress();
+
+    void setCompletedProgress(Integer completedProgress);
 
     @Column(name = "`created`")
     @FieldDef(label="创建时间")

@@ -5,6 +5,21 @@ function versionOptFormatter(value, row, index) {
 	return content;
 }
 
+function phaseOptFormatter(value, row, index) {
+	var content = '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="editPhase(' + row.id + ');">编辑</a>';
+	content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="deletePhase(' + row.id + ');">删除</a>';
+	return content;
+}
+
+function dateFormatter(value, row, index) {
+	if (value) {
+		var date = new Date();
+		date.setTime(value);
+		return date.Format('yyyy-MM-dd HH:mm:ss');
+	}
+	return '';
+}
+
 function progressFormatter(value, rowData, rowIndex) {
 	var htmlstr = '<div class="easyui-progressbar progressbar easyui-fluid" style="width: 100%; height: 20px;">'
 			+ '<div class="progressbar-value" style="width: 100%; height: 20px; line-height: 20px;"> ' + '<div class="progressbar-text" style="width: \'' + value
@@ -111,7 +126,6 @@ function editVersion(id) {
 											data : data,
 											success : function(data) {
 												if (data.code == 200) {
-													debugger;
 													var row = $('#versionGrid').datagrid('getSelected');
 													var index = $('#versionGrid').datagrid('getRowIndex', row);
 													$('#versionGrid').datagrid('updateRow', {
@@ -185,7 +199,6 @@ function changeVersionState(id) {
 											},
 											success : function(data) {
 												if (data.code == 200) {
-													debugger;
 													var row = $('#versionGrid').datagrid('getSelected');
 													var index = $('#versionGrid').datagrid('getRowIndex', row);
 													row.versionState = data.data.versionState;
@@ -212,5 +225,113 @@ function changeVersionState(id) {
 								$('#win').dialog('close');
 							}
 						}]
+			});
+}
+
+function openInsertPhase() {
+	$('#win').dialog({
+				title : '新建阶段',
+				width : 600,
+				height : '100%',
+				href : '${contextPath!}/project/phase/add?projectId=' + $('#projectId').val(),
+				modal : true,
+				buttons : [{
+							text : '保存',
+							handler : function() {
+								var data = $("#phaseForm").serializeArray();
+								$.ajax({
+											type : "POST",
+											url : '${contextPath!}/project/phase/insert',
+											data : data,
+											success : function(data) {
+												if (data.code == 200) {
+													$('#phaseGrid').datagrid('appendRow', data.data);
+													$('#phaseGrid').datagrid('acceptChanges');
+													$('#win').dialog('close');
+												} else {
+													$.messager.alert('错误', data.result);
+												}
+											},
+											error : function() {
+												$.messager.alert('错误', '远程访问失败');
+											}
+										});
+							}
+						}, {
+							text : '取消',
+							handler : function() {
+								$('#win').dialog('close');
+							}
+						}]
+			});
+}
+
+function editPhase(id) {
+	$('#win').dialog({
+				title : '编辑版本',
+				width : 600,
+				height : '100%',
+				href : '${contextPath!}/project/phase/edit?id=' + id,
+				modal : true,
+				buttons : [{
+							text : '保存',
+							handler : function() {
+								var data = $("#phaseForm").serializeArray();
+								$.ajax({
+											type : "POST",
+											url : '${contextPath!}/project/phase/update',
+											data : data,
+											success : function(data) {
+												if (data.code == 200) {
+													var row = $('#phaseGrid').datagrid('getSelected');
+													var index = $('#phaseGrid').datagrid('getRowIndex', row);
+													$('#phaseGrid').datagrid('updateRow', {
+																index : index,
+																row : data.data
+															});
+													$('#phaseGrid').datagrid('acceptChanges');
+													$('#win').dialog('close');
+												} else {
+													$.messager.alert('错误', data.result);
+												}
+											},
+											error : function() {
+												$.messager.alert('错误', '远程访问失败');
+											}
+										});
+							}
+						}, {
+							text : '取消',
+							handler : function() {
+								$('#win').dialog('close');
+							}
+						}]
+			});
+}
+
+function deletePhase(id) {
+	$.messager.confirm('提示', '确定要删除该阶段？', function(flag) {
+				if (!flag) {
+					return false;
+				}
+				$.ajax({
+							type : "POST",
+							url : '${contextPath!}/project/phase/delete',
+							data : {
+								id : id
+							},
+							success : function(data) {
+								if (data.code == 200) {
+									var index = $('#phaseGrid').datagrid('getRowIndex', $('#phaseGrid').datagrid('getSelected'));
+									$('#phaseGrid').datagrid('deleteRow', index);
+									$('#phaseGrid').datagrid('acceptChanges');
+								} else {
+									$.messager.alert('错误', data.result);
+								}
+							},
+							error : function() {
+								$.messager.alert('错误', '远程访问失败');
+							}
+						});
 			});
 }

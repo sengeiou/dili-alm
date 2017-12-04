@@ -1,6 +1,5 @@
 package com.dili.alm.service.impl;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -8,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,23 +15,18 @@ import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.domain.FileType;
 import com.dili.alm.domain.Files;
-import com.dili.alm.domain.InsertProjectVersionDto;
 import com.dili.alm.domain.ProjectChange;
 import com.dili.alm.domain.ProjectVersion;
+import com.dili.alm.domain.ProjectVersionFormDto;
 import com.dili.alm.domain.dto.ProjectVersionChangeStateViewDto;
-import com.dili.alm.domain.dto.UpdateProjectVersionDto;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.ProjectChangeService;
 import com.dili.alm.service.ProjectVersionService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.ValueProviderUtils;
-import com.dili.ss.quartz.domain.QuartzConstants;
-import com.dili.ss.quartz.domain.ScheduleJob;
 import com.dili.ss.quartz.service.ScheduleJobService;
-import com.dili.ss.util.CronDateUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
 
@@ -57,29 +50,23 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 
 	@Transactional
 	@Override
-	public BaseOutput insertSelectiveWithOutput(InsertProjectVersionDto dto) {
+	public BaseOutput<Object> insertSelectiveWithOutput(ProjectVersionFormDto dto) {
+		ProjectVersion query = DTOUtils.newDTO(ProjectVersion.class);
+		query.setProjectId(dto.getProjectId());
+		query.setVersion(dto.getVersion());
+		int count = this.getActualDao().selectCount(query);
+		if (count > 0) {
+			return BaseOutput.failure("版本已存在");
+		}
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
-		projectVersion.setGit(dto.getGit());
-		projectVersion.setHost(dto.getHost());
-		projectVersion.setNotes(dto.getNotes());
-		projectVersion.setOnline(dto.getOnline());
-		projectVersion.setPlannedEndDate(dto.getPlannedEndDate());
-		projectVersion.setPlannedOnlineDate(dto.getPlannedOnlineDate());
-		projectVersion.setPlannedStartDate(dto.getPlannedStartDate());
-		projectVersion.setPort(dto.getPort());
-		projectVersion.setProjectId(dto.getProjectId());
-		projectVersion.setRedmineUrl(dto.getRedmineUrl());
-		projectVersion.setVersion(dto.getVersion());
-		projectVersion.setVisitUrl(dto.getVisitUrl());
-		projectVersion.setCreatorId(userTicket.getId());
-		projectVersion.setCreated(new Date());
-		super.insert(projectVersion);
+		dto.setCreatorId(userTicket.getId());
+		dto.setCreated(new Date());
+		super.insertSelective(dto);
 		if (CollectionUtils.isNotEmpty(dto.getFileIds())) {
 			dto.getFileIds().forEach(id -> {
 				Files file = this.filesService.get(id);
-				file.setProjectId(projectVersion.getProjectId());
-				file.setVersionId(projectVersion.getId());
+				file.setProjectId(dto.getProjectId());
+				file.setVersionId(dto.getId());
 				file.setType(FileType.PROJECT_INTRODUCE.getValue());
 				this.filesService.updateSelective(file);
 			});
@@ -104,7 +91,7 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		// }
 
 		try {
-			Map<Object, Object> target = this.parseEasyUiModel(projectVersion);
+			Map<Object, Object> target = this.parseEasyUiModel(dto);
 			return BaseOutput.success("新增成功").setData(target);
 		} catch (Exception e) {
 			return BaseOutput.failure(e.getMessage());
@@ -112,29 +99,23 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 	}
 
 	@Override
-	public BaseOutput updateSelectiveWithOutput(UpdateProjectVersionDto dto) {
+	public BaseOutput<Object> updateSelectiveWithOutput(ProjectVersionFormDto dto) {
+		ProjectVersion query = DTOUtils.newDTO(ProjectVersion.class);
+		query.setProjectId(dto.getProjectId());
+		query.setVersion(dto.getVersion());
+		ProjectVersion version = this.getActualDao().selectOne(query);
+		if (version != null && !version.getId().equals(dto.getId())) {
+			return BaseOutput.failure("版本已存在");
+		}
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		ProjectVersion projectVersion = this.getActualDao().selectByPrimaryKey(dto.getId());
-		projectVersion.setGit(dto.getGit());
-		projectVersion.setHost(dto.getHost());
-		projectVersion.setNotes(dto.getNotes());
-		projectVersion.setOnline(dto.getOnline());
-		projectVersion.setPlannedEndDate(dto.getPlannedEndDate());
-		projectVersion.setPlannedOnlineDate(dto.getPlannedOnlineDate());
-		projectVersion.setPlannedStartDate(dto.getPlannedStartDate());
-		projectVersion.setPort(dto.getPort());
-		projectVersion.setProjectId(dto.getProjectId());
-		projectVersion.setRedmineUrl(dto.getRedmineUrl());
-		projectVersion.setVersion(dto.getVersion());
-		projectVersion.setVisitUrl(dto.getVisitUrl());
-		projectVersion.setModifierId(userTicket.getId());
-		projectVersion.setModified(new Date());
-		super.update(projectVersion);
+		dto.setModifierId(userTicket.getId());
+		dto.setModified(new Date());
+		super.update(dto);
 		if (CollectionUtils.isNotEmpty(dto.getFileIds())) {
 			dto.getFileIds().forEach(id -> {
 				Files file = this.filesService.get(id);
-				file.setProjectId(projectVersion.getProjectId());
-				file.setVersionId(projectVersion.getId());
+				file.setProjectId(dto.getProjectId());
+				file.setVersionId(dto.getId());
 				file.setType(FileType.PROJECT_INTRODUCE.getValue());
 				this.filesService.updateSelective(file);
 			});
@@ -176,7 +157,7 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		// super.updateSelective(dto);
 		Map<Object, Object> target;
 		try {
-			target = this.parseEasyUiModel(projectVersion);
+			target = this.parseEasyUiModel(dto);
 			return BaseOutput.success("修改成功").setData(target);
 		} catch (Exception e) {
 			return BaseOutput.failure(e.getMessage());
