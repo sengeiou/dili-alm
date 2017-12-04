@@ -1,0 +1,90 @@
+<#body>
+<style>
+    td {
+        padding-left: 60px;
+    }
+    input[class^="easyui-"] {
+        width: 300px;
+    }
+    .title-first,
+    .title-second {
+        margin-top: 20px;
+        background: #f7f7f7;
+    }
+    .title-first {
+        padding-left: 0;
+    }
+    .title-second {
+        padding-left: 30px;
+    }
+</style>
+<div class="easyui-panel" title="立项申请（第三步）" >
+    <div style="padding:10px 60px 20px 60px">
+        <form id="ff" method="post">
+            <input type="hidden" name="id" value="${apply.id}">
+            <table cellpadding="5">
+                <tr>
+                    <td>项目编号</td>
+                    <td>${apply.number}</td>
+                    <td>项目类别</td>
+                    <td>${apply.type}</td>
+                </tr>
+                <tr>
+                    <td class="title-first" colspan="4">3.项目目标以及功能描述</td>
+                </tr>
+                <tr>
+                    <td class="title-second" colspan="4">目标说明</td>
+                </tr>
+                <tr><td colspan="4"><input class="easyui-textbox" name="notes" id="" data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']" style="width:800px;height:120px" /></td>
+                </tr>
+                <tr>
+                    <td class="title-second" colspan="4">功能描述</td>
+                </tr>
+                <tr><td colspan="4"><input class="easyui-textbox" name="desc" id="" data-options="multiline:true,prompt:'限制输入500个字符串',validType:['length[0,500]']" style="width:800px;height:120px" /></td>
+                </tr>
+
+            </table>
+
+        </form>
+        <div style="text-align:center;padding:5px;margin-top:50px;">
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="size:'large',width:'80px'"
+               onclick="backForm()">上一步</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="size:'large',width:'80px'"
+               onclick="submitForm()">下一步</a>
+        </div>
+    </div>
+</div>
+<script>
+    function backForm() {
+        window.location.href = "${contextPath}/projectApply/toStep/2/${apply.id}";
+    }
+    function submitForm() {
+        $('#ff').form('submit', {
+            url: "${contextPath}/projectApply/insertStep3",
+            onSubmit: function () {
+                return $("#ff").form('validate');
+            },
+            success: function (data) {
+                var data = eval('(' + data + ')');
+                if(data.success==true){
+                    if(data.success==true){
+                        window.location.href="${contextPath}/projectApply/toStep/4/" + data.result;
+                    }
+                }
+            }
+        });
+    }
+    $(function () {
+        try {
+            var goalsFunctions = '${apply.goalsFunctions}';
+            if (goalsFunctions != '') {
+                goalsFunctions = eval('(' + goalsFunctions + ')');
+                $('#ff').form('load', goalsFunctions);
+            }
+        } catch (ex) {}
+    })
+</script>
+
+
+
+</#body>

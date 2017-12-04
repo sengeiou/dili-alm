@@ -195,11 +195,15 @@ public class ProjectApplyController {
 
     @RequestMapping("/loadFiles")
     @ResponseBody
-    public List<Files> loadFiles(Long applyId){
+    public List<Map> loadFiles(Long applyId) throws Exception {
         Files example = DTOUtils.newDTO(Files.class);
         example.setRecordId(applyId);
         example.setType(FileType.APPLY.getValue());
-        return filesService.listByExample(example);
+
+
+        Map<Object, Object> metadata = new HashMap<>();
+        metadata.put("created", JSON.parse("{provider:'datetimeProvider'}"));
+        return ValueProviderUtils.buildDataByProvider(metadata, Lists.newArrayList(filesService.listByExample(example)));
     }
 
     @RequestMapping("/loadPlan")
