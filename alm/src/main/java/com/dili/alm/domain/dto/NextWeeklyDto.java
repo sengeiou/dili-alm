@@ -5,7 +5,16 @@ public class NextWeeklyDto {
 	private String planTime;
 	private String owner;
 	private String describe;
-	private String end_date;
+	private String endDate;
+	private int number;
+	
+	
+	public int getNumber() {
+		return number;
+	}
+	public void setNumber(int number) {
+		this.number = number;
+	}
 	public String getName() {
 		return name;
 	}
@@ -30,12 +39,13 @@ public class NextWeeklyDto {
 	public void setDescribe(String describe) {
 		this.describe = describe;
 	}
-	public String getEnd_date() {
-		return end_date;
+	public String getEndDate() {
+		return endDate;
 	}
-	public void setEnd_date(String end_date) {
-		this.end_date = end_date;
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
 	}
+
 	
 	
 

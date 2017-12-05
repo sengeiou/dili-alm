@@ -1,24 +1,10 @@
 package com.dili.alm.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.dili.alm.domain.Weekly;
-import com.dili.alm.domain.WeeklyJson;
-import com.dili.alm.domain.dto.NextWeeklyDto;
-import com.dili.alm.domain.dto.ProjectWeeklyDto;
-import com.dili.alm.domain.dto.TaskDto;
-import com.dili.alm.domain.dto.WeeklyPara;
-import com.dili.alm.service.WeeklyService;
-import com.dili.alm.service.impl.WeeklyServiceImpl;
-import com.dili.ss.domain.BaseOutput;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +16,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.dili.alm.domain.Weekly;
+import com.dili.alm.domain.WeeklyDetails;
+import com.dili.alm.domain.WeeklyJson;
+import com.dili.alm.domain.dto.NextWeeklyDto;
+import com.dili.alm.domain.dto.ProjectWeeklyDto;
+import com.dili.alm.domain.dto.TaskDto;
+import com.dili.alm.domain.dto.WeeklyPara;
+import com.dili.alm.service.WeeklyDetailsService;
+import com.dili.alm.service.WeeklyService;
+import com.dili.ss.domain.BaseOutput;
+
 /**
  * 由MyBatis Generator工具自动生成
  * This file was generated on 2017-11-30 12:37:17.
@@ -40,6 +39,8 @@ import org.springframework.web.servlet.ModelAndView;
 public class WeeklyController  {
     @Autowired
     WeeklyService weeklyService;
+    @Autowired
+    WeeklyDetailsService  weeklyDetailsService;
 
     @ApiOperation("跳转到Weekly页面")
     @RequestMapping(value="/index", method = RequestMethod.GET)
@@ -102,14 +103,14 @@ public class WeeklyController  {
     @RequestMapping(value="/getDescById", method = RequestMethod.GET)
     public ModelAndView getDescById(String id) {
     	ModelAndView mv = new ModelAndView();
-    	
+    	//项目周报
     	ProjectWeeklyDto pd=weeklyService.getProjectWeeklyDtoById(Long.parseLong(id));
 		mv.addObject("pd", pd);
-		
 		
 		// 本周项目版本
 		List<String> projectVersion=weeklyService.selectProjectVersion(Long.parseLong(pd.getProjectId()));
 		mv.addObject("pv", StringUtils.join(projectVersion.toArray(),","));
+		
 		//本周项目阶段
 		List<String> projectPhase=weeklyService.selectProjectPhase(Long.parseLong(pd.getProjectId()));
 		mv.addObject("pp", StringUtils.join(projectPhase.toArray(),","));
@@ -118,15 +119,21 @@ public class WeeklyController  {
 		List<String> nextprojectPhase=weeklyService.selectNextProjectPhase(Long.parseLong(pd.getProjectId()));
 		mv.addObject("npp", StringUtils.join(nextprojectPhase.toArray(),","));
 		
+		
 		//本周进展情况 
 		List<TaskDto> td=weeklyService.selectWeeklyProgress(Long.parseLong(pd.getProjectId()));
+		for (int i = 0; i < td.size(); i++) {
+			td.get(i).setNumber(i+1);
+		}
 		mv.addObject("td", td);
 				
 		//下周工作计划
 		List<NextWeeklyDto> wk=weeklyService.selectNextWeeklyProgress(Long.parseLong(pd.getProjectId()));
+	
+		for (int i = 0; i < wk.size(); i++) {
+			wk.get(i).setNumber(i+1);
+		}
 		mv.addObject("wk", wk);
-		
-		
 		
 		WeeklyPara weeklyPara=  new WeeklyPara();
 		weeklyPara.setId(Long.parseLong(id));
@@ -140,38 +147,17 @@ public class WeeklyController  {
 		String weeklyQuestion=weeklyService.selectWeeklyQuestion(id);
 		JSONArray  weeklyQuestionJson=JSON.parseArray(weeklyQuestion);
 	    mv.addObject("wq", weeklyQuestionJson);
-		
+	    
+	    
+	    //项目总体情况描述
+	    WeeklyDetails wDetails=  weeklyDetailsService.getWeeklyDetailsByWeeklyId(Long.parseLong(id));
+	    mv.addObject("wDetails", wDetails);
+	    
 		mv.setViewName("weekly/indexDesc");
         return mv;
     }
-   public static void main(String[] args) {
-	   
-	
-	  WeeklyJson  wj=new WeeklyJson();
-	  wj.setDesc("sss");
-	  wj.setName("sssname");
-	  wj.setStatus("sssstatus");
-	  WeeklyJson  wj2=new WeeklyJson();
-	  wj2.setDesc("sss2");
-	  wj2.setName("sssname2");
-	  wj2.setStatus("sssstatus2");
-	  WeeklyJson  wj3=new WeeklyJson();
-	  wj3.setDesc("sss3");
-	  wj3.setName("sssname3");
-	  wj3.setStatus("sssstatus3");
-	  
-	  List<WeeklyJson> wjwww=new ArrayList<WeeklyJson>();
-	  wjwww.add(wj);
-	  wjwww.add(wj2);
-	  wjwww.add(wj3);
-	  
-	  Object  json =  JSON.toJSON(wjwww);
-	  System.out.println(json);
-	  JSONArray  ss=JSON.parseArray(json.toString());
-	System.out.println( ss.toJavaList(WeeklyJson.class) ); 
-	 // WeeklyJson stu2=JSONObject.to
-   } 
- 
+    
+    
    
     
 }
