@@ -16,7 +16,7 @@ import com.dili.ss.domain.BaseOutput;
 public interface ProjectVersionService extends BaseService<ProjectVersion, Long> {
 
 	/**
-	 * @param dto TODO
+	 * @param dto
 	 * @return
 	 */
 	BaseOutput insertSelectiveWithOutput(ProjectVersionFormDto dto);

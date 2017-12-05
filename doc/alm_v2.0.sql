@@ -44,19 +44,19 @@ CREATE TABLE `project_apply` (
   COMMENT '计划开始日期',
   `end_date`             DATETIME        NULL
   COMMENT '计划结束日期',
-  `resource_require`     VARCHAR(1000)    NULL
+  `resource_require`     VARCHAR(1000)   NULL
   COMMENT '项目资源需求',
-  `description`          VARCHAR(1000)    NULL
+  `description`          VARCHAR(1000)   NULL
   COMMENT '项目说明',
-  `goals_functions`      VARCHAR(1000)    NULL
+  `goals_functions`      VARCHAR(1000)   NULL
   COMMENT '目标以及功能',
-  `plan`                 VARCHAR(1000)    NULL
+  `plan`                 VARCHAR(1000)   NULL
   COMMENT '概要计划',
-  `roi`                  VARCHAR(1000)    NULL
+  `roi`                  VARCHAR(1000)   NULL
   COMMENT 'ROI分析',
-  `impact`               VARCHAR(1000)    NULL
+  `impact`               VARCHAR(1000)   NULL
   COMMENT '项目影响',
-  `risk`                 VARCHAR(1000)    NULL
+  `risk`                 VARCHAR(1000)   NULL
   COMMENT '项目风险',
   `email`                VARCHAR(255)    NULL,
   `status`               TINYINT         NULL,
@@ -68,16 +68,37 @@ CREATE TABLE `project_apply` (
 );
 
 CREATE TABLE `approve` (
-  `id`               BIGINT ZEROFILL NOT NULL AUTO_INCREMENT,
-  `project_apply_id` BIGINT          NULL,
-  `status`           TINYINT         NULL,
-  `description`      VARCHAR(255)    NULL,
-  `type`             TINYINT         NULL
+  `id`                   BIGINT ZEROFILL NOT NULL AUTO_INCREMENT,
+  `project_apply_id`     BIGINT          NULL,
+  `number`               VARCHAR(255)    NULL
+  COMMENT '项目编号',
+  `name`                 VARCHAR(255)    NULL
+  COMMENT '项目名称',
+  `project_type`         VARCHAR(255)    NULL
+  COMMENT '项目类型',
+  `project_leader`       BIGINT          NULL
+  COMMENT '项目负责人',
+  `business_owner`       BIGINT          NULL
+  COMMENT '业务负责人',
+  `dep`                  BIGINT          NULL
+  COMMENT '所属部门',
+  `start_date`           DATETIME        NULL
+  COMMENT '计划开始日期',
+  `end_date`             DATETIME        NULL
+  COMMENT '计划结束日期',
+  `expected_launch_date` DATETIME        NULL
+  COMMENT '期望上线日期',
+  `estimate_launch_date` DATETIME        NULL
+  COMMENT '预估上线日期',
+  `status`               INT             NULL,
+  `description`          VARCHAR(1000)   NULL,
+  `extend`               VARCHAR(1000)   NULL,
+  `type`                 VARCHAR(10)     NULL
   COMMENT '审批类型（立项，结项）',
-  `created`          TIMESTAMP       NULL     DEFAULT CURRENT_TIMESTAMP,
-  `modified`         TIMESTAMP       NULL     DEFAULT CURRENT_TIMESTAMP,
-  `create_member_id` BIGINT          NULL,
-  `modify_member_id` BIGINT          NULL,
+  `created`              TIMESTAMP       NULL     DEFAULT CURRENT_TIMESTAMP,
+  `modified`             TIMESTAMP       NULL     DEFAULT CURRENT_TIMESTAMP,
+  `create_member_id`     BIGINT          NULL,
+  `modify_member_id`     BIGINT          NULL,
   PRIMARY KEY (`id`)
 );
 
@@ -311,10 +332,14 @@ CREATE TABLE `log` (
 ) 
 
 CREATE TABLE `work_schedule` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `schedule_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '编辑时间',
-  `schedule_text` varchar(255) DEFAULT NULL COMMENT '编辑内容',
-  `user_id` bigint(20) DEFAULT NULL COMMENT '用户id',
+  `id`            BIGINT(20) NOT NULL AUTO_INCREMENT
+  COMMENT '主键',
+  `schedule_date` TIMESTAMP  NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  COMMENT '编辑时间',
+  `schedule_text` VARCHAR(255)        DEFAULT NULL
+  COMMENT '编辑内容',
+  `user_id`       BIGINT(20)          DEFAULT NULL
+  COMMENT '用户id',
   PRIMARY KEY (`id`)
 );
 

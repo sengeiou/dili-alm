@@ -2,6 +2,7 @@ package com.dili.alm.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.FileType;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.ProjectApply;
@@ -30,10 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -55,15 +53,11 @@ public class ProjectApplyController {
     @Autowired
     FilesService filesService;
 
+
     @ApiOperation("跳转到ProjectApply页面")
     @RequestMapping(value = "/index", method = RequestMethod.GET)
     public String index() {
         return "projectApply/index";
-    }
-
-    @RequestMapping(value = "/add", method = RequestMethod.GET)
-    public String add() {
-        return "projectApply/add";
     }
 
     @RequestMapping(value = "/toStep/{step}/{id}", method = RequestMethod.GET)
@@ -71,7 +65,7 @@ public class ProjectApplyController {
         ProjectApply projectApply = DTOUtils.newDTO(ProjectApply.class);
         projectApply.setId(id);
 
-        Map<Object, Object> metadata = new HashMap<>();
+        Map<Object, Object> metadata = new HashMap<>(2);
 
         JSONObject projectTypeProvider = new JSONObject();
         projectTypeProvider.put("provider", "projectTypeProvider");
@@ -80,21 +74,14 @@ public class ProjectApplyController {
         List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, projectApplyService.listByExample(projectApply));
 
         Map applyDTO = maps.get(0);
+        if(AlmConstants.ApplyState.APPROVE.check(applyDTO.get("status"))){
+            return "redirect:/projectApply/index.html";
+        }
         modelMap.put("apply", applyDTO);
         if (step == 1) {
             buildStepOne(modelMap,applyDTO);
         }
         return "projectApply/step" + step;
-    }
-
-    @ApiOperation(value = "查询ProjectApply", notes = "查询ProjectApply，返回列表信息")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "ProjectApply", paramType = "form", value = "ProjectApply的form信息", dataType = "string")
-    })
-    @RequestMapping(value = "/list", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody
-    List<ProjectApply> list(ProjectApply projectApply) {
-        return projectApplyService.list(projectApply);
     }
 
     @ApiOperation(value = "分页查询ProjectApply", notes = "分页查询ProjectApply，返回easyui分页信息")
@@ -161,24 +148,8 @@ public class ProjectApplyController {
 
     @RequestMapping(value = "/submit", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    BaseOutput submit(ProjectApply projectApply,ApplyFiles files) {
-        if(StringUtils.isNotBlank(files.getDels())){
-            List<Files> filesFromJson = JSON.parseArray(files.getDels(),Files.class);
-            filesFromJson.forEach(file ->{
-                filesService.delete(file.getId());
-            });
-        }
-        if(StringUtils.isNotBlank(files.getFiles())){
-            List<Files> filesFromJson = JSON.parseArray(files.getFiles(),Files.class);
-            filesFromJson.forEach(file ->{
-                    file.setType(FileType.APPLY.getValue());
-                    file.setRecordId(projectApply.getId());
-                    filesService.updateSelective(file);
-            });
-        }
-
-        projectApplyService.updateSelective(projectApply);
-        return BaseOutput.success(String.valueOf(projectApply.getId()));
+    BaseOutput submit(ProjectApply projectApply, ApplyFiles files) {
+        return projectApplyService.submit(projectApply, files);
     }
 
     @RequestMapping("/loadImpact")
@@ -199,7 +170,6 @@ public class ProjectApplyController {
         Files example = DTOUtils.newDTO(Files.class);
         example.setRecordId(applyId);
         example.setType(FileType.APPLY.getValue());
-
 
         Map<Object, Object> metadata = new HashMap<>();
         metadata.put("created", JSON.parse("{provider:'datetimeProvider'}"));
@@ -288,13 +258,13 @@ public class ProjectApplyController {
      */
     private void  buildStepOne(ModelMap modelMap,Map applyDTO) throws Exception {
         Map<Object, Object> metadata = new HashMap<>();
-        ApplyMajorResource resourceRequire = JSON.parseObject(applyDTO.get("resourceRequire").toString(), ApplyMajorResource.class);
+        ApplyMajorResource resourceRequire = JSON.parseObject(Optional.ofNullable(applyDTO.get("resourceRequire")).map(Object::toString).orElse("{}"), ApplyMajorResource.class);
         metadata.clear();
         metadata.put("mainUser", JSON.parse("{provider:'memberProvider'}"));
         List<Map> majorMap = ValueProviderUtils.buildDataByProvider(metadata, Lists.newArrayList(resourceRequire));
         metadata.clear();
         metadata.put("relatedUser", JSON.parse("{provider:'memberProvider'}"));
-        List<Map> relatedMap = ValueProviderUtils.buildDataByProvider(metadata, Lists.newArrayList(resourceRequire.getRelatedResources()));
+        List<Map> relatedMap = ValueProviderUtils.buildDataByProvider(metadata, Optional.ofNullable(resourceRequire.getRelatedResources()).orElse(new ArrayList<>()));
         modelMap.put("main",majorMap.get(0));
         modelMap.put("related",relatedMap);
     }
