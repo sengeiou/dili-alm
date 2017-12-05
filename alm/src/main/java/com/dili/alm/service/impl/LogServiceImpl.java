@@ -31,6 +31,9 @@ public class LogServiceImpl extends BaseServiceImpl<Log, Long> implements LogSer
 	@Override
 	public int insertLog(String logText) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		if(userTicket==null){
+			throw new RuntimeException("未登录");
+		}
 		Log record = DTOUtils.newDTO(Log.class);
 		record.setOperatorId(userTicket.getId());
 		record.setOperatorName(userTicket.getUserName());

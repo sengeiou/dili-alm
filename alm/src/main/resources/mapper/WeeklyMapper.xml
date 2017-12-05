@@ -74,6 +74,9 @@
   </update>
   
   
+  
+  <!-- 分页查询 -->
+  
   <select id="selectListPageByWeeklyPara" parameterType="com.dili.alm.domain.dto.WeeklyPara" resultType="com.dili.alm.domain.dto.WeeklyPara">
   
     select   p.serial_number as "serialNumber",p.`name` as "projectName" , w.id as 'id',
@@ -114,15 +117,13 @@
         
   </select>
   
-  
+  <!-- 分页查询总条数 -->
     <select id="selectPageByWeeklyParaCount" parameterType="com.dili.alm.domain.dto.WeeklyPara" resultType="int">
   
        select count(1)  as 'total' from   project p,weekly  w 
        
         <where>
              p.id=w.project_id
-          
-            
 	          <if test="startDate!=null and startDate!=''">
 		  	　 
 			   AND   w.start_date &gt;=  STR_TO_DATE(#{startDate},'YYYY-MM-DD HH24:mi:ss') 
@@ -133,6 +134,169 @@
 	        
 		 </where>       
         
-  </select>
+   </select>
+   
+   
+   
+   
+   <!-- 项目详情-->
+   <select id="selectProjectWeeklyDto" resultType="com.dili.alm.domain.dto.ProjectWeeklyDto" parameterType="Long">
   
+           select  p.project_manager  as "userName", p.serial_number  as  "serialNumber", p.`name` as "projectName",
+		           p.type  as "projectType" ,a.business_owner as "businessParty",a.expected_launch_date as  "planDate",
+		           a.dep  as "projectInDept",p.id as "projectId"
+		   from   project  p ,project_apply  a,weekly  w
+		   
+		 <where>
+		      a.ID=p.apply_id and  w.project_id=p.id
+		     <if test="_parameter != null">
+			    and w.id=#{_parameter,jdbcType=BIGINT}
+			</if>
+		  
+		</where> 
+   </select>
+   
+   
+   
+   <!-- 本周项目版本 -->
+    <select id="selectProjectVersion" resultType="String" parameterType="Long">
+    
+     select  v.version   from  project_version v
+          WHERE v.id in 
+         ( select     DISTINCT t.version_id   from  task t 
+		   <where>
+		           t.start_date &gt;= subdate(curdate(),date_format(curdate(),'%w')-1)
+		          and  t.end_date &lt;  subdate(curdate(),date_format(curdate(),'%w')-6)
+		          and  t.start_date &lt; t.end_date 
+		          
+		          
+		      <if test="_parameter != null">
+			     and   t.project_id=#{_parameter,jdbcType=BIGINT}
+			  </if>
+		   
+		   </where> 
+         )
+		
+		
+		
+   </select>
+     <!-- 本周项目阶段 -->
+    <select id="selectProjectPhase" resultType="String" parameterType="Long">
+  
+          select  v.name   from  project_phase v 
+          WHERE v.id in 
+         ( select     DISTINCT t.phase_id   from  task t 
+		   <where>
+		           t.start_date &gt;= subdate(curdate(),date_format(curdate(),'%w')-1)
+		          and  t.end_date &lt;  subdate(curdate(),date_format(curdate(),'%w')-6)
+		          and  t.start_date &lt; t.end_date 
+		          
+		          
+		      <if test="_parameter != null">
+			    and  t.project_id=#{_parameter,jdbcType=BIGINT}
+			  </if>
+		   
+		   </where> 
+         )
+   </select>
+      <!-- 下周项目阶段 -->
+    <select id="selectNextProjectPhase" resultType="String" parameterType="Long">
+  
+          select  v.name   from  project_phase v 
+          WHERE v.id in 
+         ( select     DISTINCT t.phase_id   from  task t 
+		   <where>
+		           t.start_date &gt;= subdate(curdate(),date_format(curdate(),'%w')-8)
+		          and  t.end_date &lt;  subdate(curdate(),date_format(curdate(),'%w')-13)
+		          and  t.start_date &lt; t.end_date 
+		          
+		          
+		      <if test="_parameter != null">
+			    and  t.project_id=#{_parameter,jdbcType=BIGINT}
+			  </if>
+		   
+		   </where> 
+         )
+   </select>
+   
+   
+   
+    <!-- 本周进展情况-->
+   <select id="selectWeeklyProgress"  resultType="com.dili.alm.domain.dto.TaskDto" parameterType="Long">
+       
+       select   t.`name`   ,t.phase_id ,t.plan_time ,
+		        t.`owner`, t.version_id   ,
+		        t.status ,t.start_date ,
+		        t.end_date,
+		        d.over_hour ,d.task_hour
+		
+		     from  task  t,task_details d
+		      <where>  t.id=d.task_id
+		      
+		         and   t.start_date &gt;= subdate(curdate(),date_format(curdate(),'%w')-1)
+		          and  t.end_date &lt;  subdate(curdate(),date_format(curdate(),'%w')-6)
+		          and  t.start_date &lt; t.end_date 
+		         <if test="_parameter != null">
+			           and  t.project_id=#{_parameter,jdbcType=BIGINT}
+			     </if>
+		       
+		      </where> 
+   </select>
+      <!-- 下周工作计划-->
+   <select id="selectNextWeeklyProgress"  resultType="com.dili.alm.domain.dto.NextWeeklyDto" parameterType="Long">
+       
+       select   t.`name`  ,t.plan_time ,
+		        t.`owner`, t.describe  ,t.end_date
+		
+		     from  task  t
+		      <where>  
+		           t.start_date &gt;= subdate(curdate(),date_format(curdate(),'%w')-8)
+		          and  t.end_date &lt;  subdate(curdate(),date_format(curdate(),'%w')-13)
+		          and  t.start_date &lt; t.end_date 
+		          
+		         <if test="_parameter != null">
+			           and  t.project_id=#{_parameter,jdbcType=BIGINT}
+			     </if>
+		       
+		      </where> 
+   </select>
+  <!--   当前重要风险 -->
+    <select id="selectWeeklyRist"  resultType="String" parameterType="String">
+       
+       select   w.risk
+		
+		     from    weekly  w
+		      <where>
+		      
+		        w.start_date &gt;= subdate(curdate(),date_format(curdate(),'%w')-1)
+		          and  w.end_date &lt;  subdate(curdate(),date_format(curdate(),'%w')-6)
+		          and  w.start_date &lt; w.end_date 
+			    <if test="_parameter != null">
+		         and      w.id = #{_parameter,jdbcType=VARCHAR}
+		        </if>
+		    
+		       
+		      </where> 
+   </select>
+   <!--   当前重大问题 -->
+    <select id="selectWeeklyQuestion"  resultType="String" parameterType="String">
+       
+       select   
+		    w.question  
+		         from  weekly  w
+		      <where>  
+		         
+		          w.start_date &gt;= subdate(curdate(),date_format(curdate(),'%w')-1)
+		          and  w.end_date &lt;  subdate(curdate(),date_format(curdate(),'%w')-6)
+		          and  w.start_date &lt; w.end_date 
+			    <if test="_parameter != null">
+		          and      w.id = #{_parameter,jdbcType=VARCHAR}
+		        </if>
+		       
+		       
+		      </where> 
+   </select>
+   
+   
+
 </mapper>

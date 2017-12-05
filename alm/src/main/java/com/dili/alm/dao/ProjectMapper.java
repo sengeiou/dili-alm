@@ -1,9 +1,11 @@
 package com.dili.alm.dao;
 
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.dto.WeeklyPara;
 import com.dili.ss.base.MyMapper;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public interface ProjectMapper extends MyMapper<Project> {
 
@@ -13,6 +15,8 @@ public interface ProjectMapper extends MyMapper<Project> {
 	 * @return
 	 */
 	List<Project> getChildProjects(Long id);
-
-	List<Project> selectByTaskOwner(Long ownerId);
+				  
+	List<Project> getProjectsByTaskOwner(Long owner);
+	
+	int getPageByProjectCount(Long owner);
 }

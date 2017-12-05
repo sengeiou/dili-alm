@@ -27,14 +27,14 @@ public interface Log extends IBaseDomain {
 
     void setId(Long id);
 
-    @Column(name = "`CREATED`")
+    @Column(name = "`created`")
     @FieldDef(label="创建时间")
     @EditMode(editor = FieldEditor.Datetime, required = true)
     Date getCreated();
 
     void setCreated(Date created);
 
-    @Column(name = "`MODIFIED`")
+    @Column(name = "`modified`")
     @FieldDef(label="修改时间")
     @EditMode(editor = FieldEditor.Datetime, required = true)
     Date getModified();

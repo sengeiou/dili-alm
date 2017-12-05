@@ -37,9 +37,15 @@ public class AlmHomeController {
 	@Autowired
 	private ProjectService projectService;
 	
+	@ApiOperation("跳转到首面")
+    @RequestMapping(value="/index", method = RequestMethod.GET)
+    public String index(ModelMap modelMap) {
+        return "home/index";
+    }
+
     @ApiOperation("跳转到我的项目页面")
     @RequestMapping(value="/myProjectIndex", method = RequestMethod.GET)
-    public String index(ModelMap modelMap) {
+    public String myProjectIndex(ModelMap modelMap) {
         return "home/myProjectIndex";
     }
 

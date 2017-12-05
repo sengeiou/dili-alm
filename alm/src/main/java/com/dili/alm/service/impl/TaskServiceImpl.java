@@ -18,15 +18,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements TaskService {
-	@Autowired
-	private ProjectMapper projectMapper;
 	
     public TaskMapper getActualDao() {
         return (TaskMapper)getDao();
     }
 
-	@Override
-	public List<Project> selectByOwner(Long ownerId) {
-		return this.projectMapper.selectByTaskOwner(ownerId);
-	}
 }

@@ -6,8 +6,8 @@
       WARNING - @mbg.generated
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="CREATED" jdbcType="TIMESTAMP" property="created" />
-    <result column="MODIFIED" jdbcType="TIMESTAMP" property="modified" />
+    <result column="created" jdbcType="TIMESTAMP" property="created" />
+    <result column="modified" jdbcType="TIMESTAMP" property="modified" />
     <result column="operator_id" jdbcType="BIGINT" property="operatorId" />
     <result column="operator_name" jdbcType="VARCHAR" property="operatorName" />
     <result column="ip" jdbcType="VARCHAR" property="ip" />
@@ -22,7 +22,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    id, CREATED, MODIFIED, operator_id, operator_name, ip
+    id, created, modified, operator_id, operator_name, ip
   </sql>
   <sql id="Blob_Column_List">
     <!--
@@ -48,10 +48,10 @@
     update log
     <set>
       <if test="created != null">
-        CREATED = #{created,jdbcType=TIMESTAMP},
+        created = #{created,jdbcType=TIMESTAMP},
       </if>
       <if test="modified != null">
-        MODIFIED = #{modified,jdbcType=TIMESTAMP},
+        created = #{modified,jdbcType=TIMESTAMP},
       </if>
       <if test="operatorId != null">
         operator_id = #{operatorId,jdbcType=BIGINT},
