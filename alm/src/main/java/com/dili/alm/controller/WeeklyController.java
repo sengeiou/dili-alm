@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
- * ÓÉMyBatis Generator¹¤¾ß×Ô¶¯Éú³É
+ * ç”±MyBatis Generatorå·¥å…·è‡ªåŠ¨ç”Ÿæˆ
  * This file was generated on 2017-11-30 12:37:17.
  */
 @Api("/weekly")
@@ -41,24 +41,24 @@ public class WeeklyController  {
     @Autowired
     WeeklyService weeklyService;
 
-    @ApiOperation("Ìø×ªµ½WeeklyÒ³Ãæ")
+    @ApiOperation("è·³è½¬åˆ°Weeklyé¡µé¢")
     @RequestMapping(value="/index", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
         return "weekly/index";
     }
 
-    @ApiOperation(value="²éÑ¯Weekly", notes = "²éÑ¯Weekly£¬·µ»ØÁĞ±íĞÅÏ¢")
+    @ApiOperation(value="æŸ¥è¯¢Weekly", notes = "æŸ¥è¯¢Weeklyï¼Œè¿”å›åˆ—è¡¨ä¿¡æ¯")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="Weekly", paramType="form", value = "WeeklyµÄformĞÅÏ¢", required = false, dataType = "string")
+		@ApiImplicitParam(name="Weekly", paramType="form", value = "Weeklyçš„formä¿¡æ¯", required = false, dataType = "string")
 	})
     @RequestMapping(value="/list", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody List<Weekly> list(Weekly weekly) {
         return weeklyService.list(weekly);
     }
 
-    @ApiOperation(value="·ÖÒ³²éÑ¯Weekly", notes = "·ÖÒ³²éÑ¯Weekly£¬·µ»Øeasyui·ÖÒ³ĞÅÏ¢")
+    @ApiOperation(value="åˆ†é¡µæŸ¥è¯¢Weekly", notes = "åˆ†é¡µæŸ¥è¯¢Weeklyï¼Œè¿”å›easyuiåˆ†é¡µä¿¡æ¯")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="Weekly", paramType="form", value = "WeeklyµÄformĞÅÏ¢", required = false, dataType = "string")
+		@ApiImplicitParam(name="Weekly", paramType="form", value = "Weeklyçš„formä¿¡æ¯", required = false, dataType = "string")
 	})
     @RequestMapping(value="/listPage", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String listPage(WeeklyPara weeklyPara) throws Exception {
@@ -67,38 +67,38 @@ public class WeeklyController  {
         return weeklyService.getListPage(weeklyPara).toString();
     }
 
-    @ApiOperation("ĞÂÔöWeekly")
+    @ApiOperation("æ–°å¢Weekly")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="Weekly", paramType="form", value = "WeeklyµÄformĞÅÏ¢", required = true, dataType = "string")
+		@ApiImplicitParam(name="Weekly", paramType="form", value = "Weeklyçš„formä¿¡æ¯", required = true, dataType = "string")
 	})
     @RequestMapping(value="/insert", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput insert(Weekly weekly) {
         weeklyService.insertSelective(weekly);
-        return BaseOutput.success("ĞÂÔö³É¹¦");
+        return BaseOutput.success("æ–°å¢æˆåŠŸ");
     }
 
-    @ApiOperation("ĞŞ¸ÄWeekly")
+    @ApiOperation("ä¿®æ”¹Weekly")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="Weekly", paramType="form", value = "WeeklyµÄformĞÅÏ¢", required = true, dataType = "string")
+		@ApiImplicitParam(name="Weekly", paramType="form", value = "Weeklyçš„formä¿¡æ¯", required = true, dataType = "string")
 	})
     @RequestMapping(value="/update", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput update(Weekly weekly) {
         weeklyService.updateSelective(weekly);
-        return BaseOutput.success("ĞŞ¸Ä³É¹¦");
+        return BaseOutput.success("ä¿®æ”¹æˆåŠŸ");
     }
 
-    @ApiOperation("É¾³ıWeekly")
+    @ApiOperation("åˆ é™¤Weekly")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="id", paramType="form", value = "WeeklyµÄÖ÷¼ü", required = true, dataType = "long")
+		@ApiImplicitParam(name="id", paramType="form", value = "Weeklyçš„ä¸»é”®", required = true, dataType = "long")
 	})
     @RequestMapping(value="/delete", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput delete(Long id) {
         weeklyService.delete(id);
-        return BaseOutput.success("É¾³ı³É¹¦");
+        return BaseOutput.success("åˆ é™¤æˆåŠŸ");
     }
     
     
-    @ApiOperation("Ìø×ªµ½getDescByIdÒ³Ãæ")
+    @ApiOperation("è·³è½¬åˆ°getDescByIdé¡µé¢")
     @RequestMapping(value="/getDescById", method = RequestMethod.GET)
     public ModelAndView getDescById(String id) {
     	ModelAndView mv = new ModelAndView();
@@ -107,22 +107,22 @@ public class WeeklyController  {
 		mv.addObject("pd", pd);
 		
 		
-		// ±¾ÖÜÏîÄ¿°æ±¾
+		// æœ¬å‘¨é¡¹ç›®ç‰ˆæœ¬
 		List<String> projectVersion=weeklyService.selectProjectVersion(Long.parseLong(pd.getProjectId()));
 		mv.addObject("pv", StringUtils.join(projectVersion.toArray(),","));
-		//±¾ÖÜÏîÄ¿½×¶Î
+		//æœ¬å‘¨é¡¹ç›®é˜¶æ®µ
 		List<String> projectPhase=weeklyService.selectProjectPhase(Long.parseLong(pd.getProjectId()));
 		mv.addObject("pp", StringUtils.join(projectPhase.toArray(),","));
 		
-		//ÏÂÖÜÏîÄ¿½×¶Î
+		//ä¸‹å‘¨é¡¹ç›®é˜¶æ®µ
 		List<String> nextprojectPhase=weeklyService.selectNextProjectPhase(Long.parseLong(pd.getProjectId()));
 		mv.addObject("npp", StringUtils.join(nextprojectPhase.toArray(),","));
 		
-		//±¾ÖÜ½øÕ¹Çé¿ö 
+		//æœ¬å‘¨è¿›å±•æƒ…å†µ 
 		List<TaskDto> td=weeklyService.selectWeeklyProgress(Long.parseLong(pd.getProjectId()));
 		mv.addObject("td", td);
 				
-		//ÏÂÖÜ¹¤×÷¼Æ»®
+		//ä¸‹å‘¨å·¥ä½œè®¡åˆ’
 		List<NextWeeklyDto> wk=weeklyService.selectNextWeeklyProgress(Long.parseLong(pd.getProjectId()));
 		mv.addObject("wk", wk);
 		
@@ -131,12 +131,12 @@ public class WeeklyController  {
 		WeeklyPara weeklyPara=  new WeeklyPara();
 		weeklyPara.setId(Long.parseLong(id));
 		
-		//µ±Ç°ÖØÒª·çÏÕ
+		//å½“å‰é‡è¦é£é™©
 		String weeklyRist=weeklyService.selectWeeklyRist(id);
 		JSONArray  weeklyRistJson=JSON.parseArray(weeklyRist);
 		mv.addObject("wr", weeklyRistJson.toJavaList(WeeklyJson.class));
 		
-		//µ±Ç°ÖØÒª·çÏÕ
+		//å½“å‰é‡è¦é£é™©
 		String weeklyQuestion=weeklyService.selectWeeklyQuestion(id);
 		JSONArray  weeklyQuestionJson=JSON.parseArray(weeklyQuestion);
 	    mv.addObject("wq", weeklyQuestionJson);
