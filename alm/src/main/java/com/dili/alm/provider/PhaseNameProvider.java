@@ -27,10 +27,10 @@ public class PhaseNameProvider implements ValueProvider, ApplicationListener<Con
 	private ProjectPhaseService phaseService;
 
 	public void init() {
-		if (AlmCache.phaseNameMap.isEmpty()) {
+		if (AlmCache.PHASE_NAME_MAP.isEmpty()) {
 			List<DataDictionaryValueDto> list = phaseService.getPhaseNames();
 			list.forEach(type -> {
-				AlmCache.phaseNameMap.put(type.getValue(), type.getCode());
+				AlmCache.PHASE_NAME_MAP.put(type.getValue(), type.getCode());
 			});
 		}
 	}
@@ -39,7 +39,7 @@ public class PhaseNameProvider implements ValueProvider, ApplicationListener<Con
 	public List<ValuePair<?>> getLookupList(Object obj, Map metaMap, FieldMeta fieldMeta) {
 		init();
 		List<ValuePair<?>> buffer = new ArrayList<ValuePair<?>>();
-		AlmCache.phaseNameMap.forEach((k, v) -> {
+		AlmCache.PHASE_NAME_MAP.forEach((k, v) -> {
 			buffer.add(new ValuePairImpl<String>(v, k));
 		});
 		return buffer;
@@ -49,7 +49,7 @@ public class PhaseNameProvider implements ValueProvider, ApplicationListener<Con
 	public String getDisplayText(Object obj, Map metaMap, FieldMeta fieldMeta) {
 		if (obj == null || obj.equals(""))
 			return null;
-		return AlmCache.phaseNameMap.get(obj.toString());
+		return AlmCache.PHASE_NAME_MAP.get(obj.toString());
 	}
 
 	@Override

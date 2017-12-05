@@ -1,10 +1,12 @@
 <#body>
+<link href="${contextPath!}/resources/css/uploadfile.css" rel="stylesheet">
 <style>
 #info tr td {
 	padding: 5px 10px;
 }
 </style>
-<script type="text/javascript" src="${contextPath!}/resources/js/dateFormat.js"></script> <script type="text/javascript">
+<script type="text/javascript" src="${contextPath!}/resources/js/jquery.uploadfile.min.js"></script> <script type="text/javascript" src="${contextPath!}/resources/js/dateFormat.js"></script> <script
+	type="text/javascript">
 	<#project_detailJs />
 </script>
 <div id="win" style="display: none;"></div>
@@ -39,7 +41,7 @@
 </div>
 <!-- =========================================================表格========================================================= -->
 <table class="easyui-datagrid" title="项目版本信息" id="versionGrid" fitColumns="true" rownumbers="true" pagination="false" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post"
-	multiSort="false" align="center" fit="false" striped="true" toolbar="#versionToolbar" idField="id" data-options="url:'${contextPath!}/project/version/listPage'">
+	multiSort="false" align="center" fit="false" striped="true" toolbar="#versionToolbar" idField="id" data-options="url:'${contextPath!}/project/version/listPage?projectId=${model.id!}'">
 	<thead>
 		<tr>
 			<th data-options="field:'version', width:'10%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">版本号</th>
@@ -59,15 +61,15 @@
 </div>
 
 <table class="easyui-datagrid" title="项目阶段信息" id="phaseGrid" fitColumns="true" rownumbers="true" pagination="false" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post"
-	multiSort="false" align="center" fit="false" striped="true" toolbar="#phaseToolbar" idField="id" data-options="url:'${contextPath!}/project/phase/list'">
+	multiSort="false" align="center" fit="false" striped="true" toolbar="#phaseToolbar" idField="id" data-options="url:'${contextPath!}/project/phase/list?projectId=${model.id!}'">
 	<thead>
 		<tr>
 			<th data-options="field:'name', width:'10%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">阶段名称</th>
 			<th data-options="field:'projectId', width:'10%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目</th>
 			<th data-options="field:'versionId', width:'10%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">版本</th>
-			<th data-options="field:'plannedStartDate', width:'15%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">计划开始日期</th>
-			<th data-options="field:'plannedEndDate', width:'15%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">计划结束日期</th>
-			<th data-options="field:'actualStartDate', width:'15%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">实际开始日期</th>
+			<th data-options="field:'plannedStartDate', width:'15%',  _provider:'almDateProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">计划开始日期</th>
+			<th data-options="field:'plannedEndDate', width:'15%',  _provider:'almDateProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">计划结束日期</th>
+			<th data-options="field:'actualStartDate', width:'15%',  _provider:'almDateProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">实际开始日期</th>
 			<th data-options="field:'completedProgress', width:'15%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:progressFormatter">完成进度</th>
 			<th data-options="field:'opt',width:'10%',formatter:phaseOptFormatter">操作</th>
 		</tr>
@@ -76,5 +78,24 @@
 <!-- datagrid工具栏 -->
 <div id="phaseToolbar" style="padding: 2px 5px;">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsertPhase()" plain="true">新建阶段</a>
+</div>
+<table class="easyui-datagrid" title="项目文档列表" id="fileGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1" pagePosition="both" rownumbers="true" remoteSort="false"
+	loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="name" align="center" fit="false" striped="true" toolbar="#fileToolbar" idField="id"
+	data-options="url:'${contextPath!}/files/list?projectId=${model.id!}'">
+	<thead>
+		<tr>
+			<th data-options="field:'name', width:'15%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">文件名</th>
+			<th data-options="field:'type', width:'15%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">文件类型</th>
+			<th data-options="field:'versionId', width:'15%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">所属版本</th>
+			<th data-options="field:'phaseId', width:'15%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">所属阶段</th>
+			<th data-options="field:'createMemberId', width:'15%',  _provider:'memberProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">创建人</th>
+			<th data-options="field:'created', width:'15%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">创建时间</th>
+			<th data-options="field:'opt',width:'10%',formatter:fileOptFormatter">操作</th>
+		</tr>
+	</thead>
+</table>
+<!-- datagrid工具栏 -->
+<div id="fileToolbar" style="padding: 2px 5px;">
+	<div id="uploadDiv" class="easyui-linkbutton" iconCls="icon-add" plain="true">上传文档</div>
 </div>
 </#body>

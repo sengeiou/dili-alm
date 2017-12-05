@@ -36,10 +36,10 @@ public class ProjectStateProvider implements ValueProvider, ApplicationListener<
 	}
 
 	public void init() {
-		if (AlmCache.projectStateMap.isEmpty()) {
+		if (AlmCache.PROJECT_STATE_MAP.isEmpty()) {
 			List<DataDictionaryValueDto> list = projectService.getProjectStates();
 			list.forEach(type -> {
-				AlmCache.projectStateMap.put(type.getValue(), type.getCode());
+				AlmCache.PROJECT_STATE_MAP.put(type.getValue(), type.getCode());
 			});
 		}
 	}
@@ -48,7 +48,7 @@ public class ProjectStateProvider implements ValueProvider, ApplicationListener<
 	public List<ValuePair<?>> getLookupList(Object obj, Map metaMap, FieldMeta fieldMeta) {
 		init();
 		List<ValuePair<?>> buffer = new ArrayList<ValuePair<?>>();
-		AlmCache.projectStateMap.forEach((k, v) -> {
+		AlmCache.PROJECT_STATE_MAP.forEach((k, v) -> {
 			buffer.add(new ValuePairImpl<String>(v, k));
 		});
 		return buffer;
@@ -58,6 +58,6 @@ public class ProjectStateProvider implements ValueProvider, ApplicationListener<
 	public String getDisplayText(Object obj, Map metaMap, FieldMeta fieldMeta) {
 		if (obj == null || obj.equals(""))
 			return null;
-		return AlmCache.projectStateMap.get(obj.toString());
+		return AlmCache.PROJECT_STATE_MAP.get(obj.toString());
 	}
 }

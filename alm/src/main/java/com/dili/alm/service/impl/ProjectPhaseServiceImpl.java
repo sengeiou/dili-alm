@@ -114,6 +114,7 @@ public class ProjectPhaseServiceImpl extends BaseServiceImpl<ProjectPhase, Long>
 			dto.getFileIds().forEach(id -> {
 				Files file = this.filesService.get(id);
 				file.setProjectId(dto.getProjectId());
+				file.setVersionId(dto.getVersionId());
 				file.setPhaseId(dto.getId());
 				file.setType(FileType.PROJECT_INTRODUCE.getValue());
 				this.filesService.updateSelective(file);
@@ -143,9 +144,10 @@ public class ProjectPhaseServiceImpl extends BaseServiceImpl<ProjectPhase, Long>
 	public BaseOutput<Object> updateProjectPhase(ProjectPhaseFormDto dto) {
 		ProjectPhase query = DTOUtils.newDTO(ProjectPhase.class);
 		query.setProjectId(dto.getProjectId());
+		query.setVersionId(dto.getVersionId());
 		query.setName(dto.getName());
 		ProjectPhase old = this.getActualDao().selectOne(query);
-		if (old != null && old.getName().equals(dto.getName())) {
+		if (old != null && !old.getId().equals(dto.getId())) {
 			return BaseOutput.failure("该项目已存在相同阶段");
 		}
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
@@ -191,11 +193,11 @@ public class ProjectPhaseServiceImpl extends BaseServiceImpl<ProjectPhase, Long>
 		projectVersionProvider.put("provider", "projectVersionProvider");
 		metadata.put("versionId", projectVersionProvider);
 
-		JSONObject datetimeProvider = new JSONObject();
-		datetimeProvider.put("provider", "datetimeProvider");
-		metadata.put("plannedStartDate", datetimeProvider);
-		metadata.put("plannedEndDate", datetimeProvider);
-		metadata.put("actualStartDate", datetimeProvider);
+		JSONObject almDateProvider = new JSONObject();
+		almDateProvider.put("provider", "almDateProvider");
+		metadata.put("plannedStartDate", almDateProvider);
+		metadata.put("plannedEndDate", almDateProvider);
+		metadata.put("actualStartDate", almDateProvider);
 
 		return ValueProviderUtils.buildDataByProvider(metadata, list);
 	}

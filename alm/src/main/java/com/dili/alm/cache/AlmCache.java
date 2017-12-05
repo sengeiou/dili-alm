@@ -12,23 +12,25 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class AlmCache {
 	// 缓存用户，key为主键id
-	public static final Map<Long, User> userMap = new ConcurrentHashMap<>();
+	public static final Map<Long, User> USER_MAP = new ConcurrentHashMap<>();
 	// 缓存项目，key为主键id
-	public static final Map<Long, Project> projectMap = new ConcurrentHashMap<>();
+	public static final Map<Long, Project> PROJECT_MAP = new ConcurrentHashMap<>();
 	// 缓存项目类型
-	public static final Map<String, String> projectTypeMap = new ConcurrentHashMap<>();
+	public static final Map<String, String> PROJECT_TYPE_MAP = new ConcurrentHashMap<>();
 	// 项目状态
-	public static final Map<String, String> projectStateMap = new ConcurrentHashMap<>();
+	public static final Map<String, String> PROJECT_STATE_MAP = new ConcurrentHashMap<>();
 
-    // 阶段名称
-    public static final Map<String, String> phaseNameMap = new ConcurrentHashMap<>();
+	// 阶段名称
+	public static final Map<String, String> PHASE_NAME_MAP = new ConcurrentHashMap<>();
 
-    public static final Map<String, String> APPLY_PLAN_PHASE_MAP = new ConcurrentHashMap<>();
+	public static final Map<String, String> APPLY_PLAN_PHASE_MAP = new ConcurrentHashMap<>();
 
-    public static final Map<String, String> PROJECT_IMPORTANCE_MAP = new ConcurrentHashMap<>();
-    public static final Map<String, String> KIND_RISK_MAP = new ConcurrentHashMap<>();
+	public static final Map<String, String> PROJECT_IMPORTANCE_MAP = new ConcurrentHashMap<>();
+	public static final Map<String, String> KIND_RISK_MAP = new ConcurrentHashMap<>();
 
-    public static final Map<Long, Department> DEP_MAP = new ConcurrentHashMap<>();
+	public static final Map<Long, Department> DEP_MAP = new ConcurrentHashMap<>();
 
+	// 文件类型
+	public static final Map<Integer, String> FILE_TYPE_MAP = new ConcurrentHashMap<>();
 
 }

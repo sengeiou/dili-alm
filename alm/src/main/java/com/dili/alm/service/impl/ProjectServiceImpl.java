@@ -51,6 +51,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProjectServiceImpl.class);
 	private static final String PROJECT_TYPE_CODE = "project_type";
 	private static final String PROJECT_STATE_CODE = "project_state";
+	private static final String PROJECT_FILE_TYPE_CODE = "project_file_type";
 
 	@Autowired
 	DataDictionaryService dataDictionaryService;
@@ -73,9 +74,10 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	public int update(Project condtion) {
 		// 同步更新缓存
 		if (StringUtils.isNotBlank(condtion.getName())) {
-			AlmCache.projectMap.get(condtion.getId()).setName(condtion.getName());
+			AlmCache.PROJECT_MAP.get(condtion.getId()).setName(condtion.getName());
 		}
-		dataAuthRpc.updateDataAuth(condtion.getId().toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT, condtion.getName());
+		dataAuthRpc.updateDataAuth(condtion.getId().toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT,
+				condtion.getName());
 		return super.update(condtion);
 	}
 
@@ -83,10 +85,11 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	public int insert(Project project) {
 		int i = super.insert(project);
 		// 同步更新缓存
-		AlmCache.projectMap.put(project.getId(), project);
+		AlmCache.PROJECT_MAP.put(project.getId(), project);
 		// 向权限系统中添加项目数据权限
 		String parentId = project.getParentId() == null ? null : project.getParentId().toString();
-		dataAuthRpc.addDataAuth(project.getId().toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName(), parentId);
+		dataAuthRpc.addDataAuth(project.getId().toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName(),
+				parentId);
 		return i;
 	}
 
@@ -94,16 +97,17 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	public int insertSelective(Project project) {
 		int i = super.insertSelective(project);
 		// 同步更新缓存
-		AlmCache.projectMap.put(project.getId(), project);
+		AlmCache.PROJECT_MAP.put(project.getId(), project);
 		// 向权限系统中添加项目数据权限
 		String parentId = project.getParentId() == null ? null : project.getParentId().toString();
-		dataAuthRpc.addDataAuth(project.getId().toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName(), parentId);
+		dataAuthRpc.addDataAuth(project.getId().toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName(),
+				parentId);
 		return i;
 	}
 
 	@Override
 	public int delete(Long id) {
-		AlmCache.projectMap.remove(id);
+		AlmCache.PROJECT_MAP.remove(id);
 		dataAuthRpc.deleteDataAuth(id.toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT);
 		return super.delete(id);
 	}
@@ -111,7 +115,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	@Override
 	public int delete(List<Long> ids) {
 		ids.forEach(id -> {
-			AlmCache.projectMap.remove(id);
+			AlmCache.PROJECT_MAP.remove(id);
 			dataAuthRpc.deleteDataAuth(id.toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT);
 		});
 		return super.delete(ids);
@@ -267,7 +271,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 
 		result = this.updateSelective(project);
 		// 刷新projectProvider缓存
-		AlmCache.projectMap.put(project.getId(), project);
+		AlmCache.PROJECT_MAP.put(project.getId(), project);
 
 		dataAuthRpc.updateDataAuth(project.getId().toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName());
 		if (result > 0) {
@@ -309,12 +313,22 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		try {
 			@SuppressWarnings("unchecked")
 			List buildDataByProvider = ValueProviderUtils.buildDataByProvider(project, projectList);
-			return new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(page.getTotal()))), buildDataByProvider);
+			return new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(page.getTotal()))),
+					buildDataByProvider);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	@Override
+	public List<DataDictionaryValueDto> getFileTypes() {
+		DataDictionaryDto dto = this.dataDictionaryService.findByCode(PROJECT_FILE_TYPE_CODE);
+		if (dto == null) {
+			return null;
+		}
+		return dto.getValues();
 	}
 
 }

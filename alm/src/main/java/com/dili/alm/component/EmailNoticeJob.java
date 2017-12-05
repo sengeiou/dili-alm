@@ -80,11 +80,11 @@ public class EmailNoticeJob implements ApplicationListener<ContextRefreshedEvent
 
 	public void initUserMap() {
 		// 应用启动时初始化userMap
-		if (AlmCache.userMap.isEmpty()) {
+		if (AlmCache.USER_MAP.isEmpty()) {
 			BaseOutput<List<User>> output = userRpc.list(new User());
 			if (output.isSuccess()) {
 				output.getData().forEach(user -> {
-					AlmCache.userMap.put(user.getId(), user);
+					AlmCache.USER_MAP.put(user.getId(), user);
 				});
 			}
 		}

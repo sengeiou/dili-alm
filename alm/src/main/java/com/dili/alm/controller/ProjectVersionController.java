@@ -16,12 +16,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.domain.Files;
-import com.dili.alm.domain.ProjectVersionFormDto;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectVersion;
+import com.dili.alm.domain.ProjectVersionFormDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectVersionChangeStateViewDto;
-import com.dili.alm.domain.dto.UpdateProjectVersionDto;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.ProjectPhaseService;
 import com.dili.alm.service.ProjectService;
@@ -148,5 +147,11 @@ public class ProjectVersionController {
 	@RequestMapping(value = "/changeState", method = RequestMethod.POST)
 	public BaseOutput<Object> changeState(@RequestParam Long id, @RequestParam Integer versionState) {
 		return this.projectVersionService.changeState(id, versionState);
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/file/list", method = { RequestMethod.GET, RequestMethod.POST })
+	public List<Files> listFiles(@RequestParam Long versionId) {
+		return this.projectVersionService.listFiles(versionId);
 	}
 }

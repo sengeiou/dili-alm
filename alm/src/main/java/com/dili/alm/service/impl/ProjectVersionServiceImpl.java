@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dili.alm.dao.FilesMapper;
 import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.domain.FileType;
 import com.dili.alm.domain.Files;
@@ -24,11 +25,16 @@ import com.dili.alm.service.ProjectChangeService;
 import com.dili.alm.service.ProjectVersionService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.quartz.service.ScheduleJobService;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+
+import tk.mybatis.mapper.entity.Example;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-10-20 11:02:17.
@@ -43,6 +49,8 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 	ScheduleJobService scheduleJobService;
 	@Autowired
 	private ProjectChangeService projectChangeService;
+	@Autowired
+	private FilesMapper filesMapper;
 
 	public ProjectVersionMapper getActualDao() {
 		return (ProjectVersionMapper) getDao();
@@ -259,16 +267,24 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		versionStateProvider.put("provider", "projectStateProvider");
 		metadata.put("versionState", versionStateProvider);
 
-		JSONObject datetimeProvider = new JSONObject();
-		datetimeProvider.put("provider", "datetimeProvider");
-		metadata.put("plannedStartDate", datetimeProvider);
-		metadata.put("plannedEndDate", datetimeProvider);
-		metadata.put("actualStartDate", datetimeProvider);
+		JSONObject almDateProvider = new JSONObject();
+		almDateProvider.put("provider", "almDateProvider");
+		metadata.put("plannedStartDate", almDateProvider);
+		metadata.put("plannedEndDate", almDateProvider);
+		metadata.put("actualStartDate", almDateProvider);
 
 		JSONObject onlineProvider = new JSONObject();
 		onlineProvider.put("provider", "onlineProvider");
 		metadata.put("online", onlineProvider);
 		return ValueProviderUtils.buildDataByProvider(metadata, list);
+	}
+
+	@Override
+	public List<Files> listFiles(Long versionId) {
+		Example example = new Example(Files.class);
+		Example.Criteria criteria = example.createCriteria();
+		criteria.andEqualTo("versionId", versionId).andIsNull("phaseId");
+		return this.filesMapper.selectByExample(example);
 	}
 
 }

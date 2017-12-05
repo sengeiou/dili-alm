@@ -34,4 +34,6 @@ public interface ProjectService extends BaseService<Project, Long> {
 
 	EasyuiPageOutput listPageMyProject();
 
+	List<DataDictionaryValueDto> getFileTypes();
+
 }

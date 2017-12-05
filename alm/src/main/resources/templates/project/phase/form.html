@@ -1,5 +1,3 @@
-<link href="${contextPath!}/resources/css/uploadfile.css" rel="stylesheet">
-<script type="text/javascript" src="${contextPath!}/resources/js/jquery.uploadfile.min.js"></script>
 <form id="phaseForm" action="${contextPath!}/project/phase/insert" class="easyui-form" method="post" fit="true">
 	<input name="id" id="id" type="hidden" value="${model.id!}"> <input type="hidden" name="projectId" value="${model.project.id!}">
 	<table width="100%">
@@ -32,13 +30,13 @@
 			<td style="padding: 5px;"><label style="margin-right: 49px;">文档：</label>
 				<div id="fileuploader"></div>
 				<table class="easyui-datagrid" title="阶段文档列表" id="phaseFileGrid" fitColumns="true" pagination="false" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
-					align="center" fit="false" striped="true" idField="id" data-options="<%if(has(model)){%>url:'${contextPath!}/files/list?phaseId=${model.id!}'<%}%>">
+					align="center" fit="false" striped="true" idField="id" data-options="<%if(model.id != null){%>url:'${contextPath!}/files/list?phaseId=${model.id!}'<%}%>">
 					<thead>
 						<tr>
 							<th data-options="field:'name', width:'20%', align:'center', resizable:'true', fixed:'false'">文件名</th>
 							<th data-options="field:'length', width:'20%', align:'center', resizable:'true', fixed:'false'">大小</th>
-							<th data-options="field:'created', width:'50%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false',formatter:dateFormatter">上传日期</th>
-							<th data-options="field:'opt', width:'10%', align:'center', resizable:'true', fixed:'false',formatter:versionFileOptFormatter">操作</th>
+							<th data-options="field:'created', width:'50%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">上传日期</th>
+							<th data-options="field:'opt', width:'10%', align:'center', resizable:'true', fixed:'false',formatter:phaseFileOptFormatter">操作</th>
 						</tr>
 					</thead>
 				</table></td>

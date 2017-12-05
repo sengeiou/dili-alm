@@ -1,5 +1,3 @@
-<link href="${contextPath!}/resources/css/uploadfile.css" rel="stylesheet">
-<script type="text/javascript" src="${contextPath!}/resources/js/jquery.uploadfile.min.js"></script>
 <form id="versionForm" action="${contextPath!}/project/version/insert" class="easyui-form" method="post" fit="true">
 	<input name="id" id="id" type="hidden" value="${model.id!}"> <input type="hidden" name="projectId" value="${project.id!}">
 	<table width="100%">
@@ -51,7 +49,8 @@
 			<td style="padding: 5px;"><label style="margin-right: 49px;">文档：</label>
 				<div id="fileuploader"></div>
 				<table class="easyui-datagrid" title="版本文档列表" id="versionFileGrid" fitColumns="true" pagination="false" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
-					align="center" fit="false" striped="true" idField="id" data-options="onLoadSuccess:onFileGridLoadSuccess<%if(has(model)){%>,url:'${contextPath!}/files/list?versionId=${model.id!}'<%}%>">
+					align="center" fit="false" striped="true" idField="id"
+					data-options="<%if(model.id != null){%>url:'${contextPath!}/project/version/file/list?versionId=${model.id!}'<%}%>">
 					<thead>
 						<tr>
 							<th data-options="field:'name', width:'20%', align:'center', resizable:'true', fixed:'false'">文件名</th>

@@ -22,5 +22,5 @@ public interface FilesService extends BaseService<Files, Long> {
 	 */
 	int delete(Files files);
 
-	List<Files> uploadFile(MultipartFile[] files);
+	List<Files> uploadFile(MultipartFile[] files, Long projectId);
 }

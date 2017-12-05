@@ -4,6 +4,7 @@ import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
+import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.ProjectService;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.FieldMeta;
@@ -25,7 +26,7 @@ import org.springframework.stereotype.Component;
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-10-24 14:31:10.
  */
 @Component
-public class ProjectTypeProvider implements ValueProvider, ApplicationListener<ContextRefreshedEvent> {
+public class FileTypeProvider implements ValueProvider, ApplicationListener<ContextRefreshedEvent> {
 
 	@Autowired
 	private ProjectService projectService;
@@ -36,10 +37,10 @@ public class ProjectTypeProvider implements ValueProvider, ApplicationListener<C
 	}
 
 	public void init() {
-		if (AlmCache.PROJECT_TYPE_MAP.isEmpty()) {
-			List<DataDictionaryValueDto> list = projectService.getPojectTypes();
+		if (AlmCache.FILE_TYPE_MAP.isEmpty()) {
+			List<DataDictionaryValueDto> list = projectService.getFileTypes();
 			list.forEach(type -> {
-				AlmCache.PROJECT_TYPE_MAP.put(type.getValue(), type.getCode());
+				AlmCache.FILE_TYPE_MAP.put(Integer.valueOf(type.getValue()), type.getCode());
 			});
 		}
 	}
@@ -48,8 +49,8 @@ public class ProjectTypeProvider implements ValueProvider, ApplicationListener<C
 	public List<ValuePair<?>> getLookupList(Object obj, Map metaMap, FieldMeta fieldMeta) {
 		init();
 		List<ValuePair<?>> buffer = new ArrayList<ValuePair<?>>();
-		AlmCache.PROJECT_TYPE_MAP.forEach((k, v) -> {
-			buffer.add(new ValuePairImpl<String>(v, k));
+		AlmCache.FILE_TYPE_MAP.forEach((k, v) -> {
+			buffer.add(new ValuePairImpl<Integer>(v, k));
 		});
 		return buffer;
 	}
@@ -58,6 +59,6 @@ public class ProjectTypeProvider implements ValueProvider, ApplicationListener<C
 	public String getDisplayText(Object obj, Map metaMap, FieldMeta fieldMeta) {
 		if (obj == null || obj.equals(""))
 			return null;
-		return AlmCache.PROJECT_TYPE_MAP.get(obj.toString());
+		return AlmCache.FILE_TYPE_MAP.get(obj);
 	}
 }

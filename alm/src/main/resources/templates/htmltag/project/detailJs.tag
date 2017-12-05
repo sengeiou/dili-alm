@@ -38,13 +38,24 @@ function onlineFormatter(value) {
 }
 
 function versionFileOptFormatter(value, row, index) {
-	return '<a href="javascript:void(0);" onclick="delFile(' + row.id + ');">删除</a>';
+	return '<a href="javascript:void(0);" onclick="delVersionFile(' + row.id + ');">删除</a>';
 }
 
-function onFileGridLoadSuccess(data) {
+function phaseFileOptFormatter(value, row, index) {
+	return '<a href="javascript:void(0);" onclick="delPhaseFile(' + row.id + ');">删除</a>';
 }
 
-function delFile(id) {
+function fileOptFormatter(value, row, index) {
+	var content = '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="downloadFile(' + row.id + ');">下载</a>';
+	content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="deleteFile(' + row.id + ');">删除</a>';
+	return content;
+}
+
+function downloadFile(id) {
+	window.open('${contextPath!}/files/download?id=' + id);
+}
+
+function deleteFile(id) {
 	$.messager.confirm('提示', '确定要删除该文档？', function(flag) {
 				if (!flag) {
 					return false;
@@ -57,8 +68,76 @@ function delFile(id) {
 							},
 							success : function(data) {
 								if (data.code == 200) {
-									var index = $('#versionFileGrid').datagrid('getRowIndex', $('#versionFileGrid').datagrid('getSelected'));
+									var selected = $('#fileGrid').datagrid('getSelected');
+									var index = $('#fileGrid').datagrid('getRowIndex', selected);
+									$('#fileGrid').datagrid('deleteRow', index);
+								} else {
+									$.messager.alert('错误', data.result);
+								}
+							},
+							error : function() {
+								$.messager.alert('错误', '远程访问失败');
+							}
+						});
+			});
+}
+
+function delVersionFile(id) {
+	$.messager.confirm('提示', '确定要删除该文档？', function(flag) {
+				if (!flag) {
+					return false;
+				}
+				$.ajax({
+							type : "POST",
+							url : '${contextPath!}/files/delete',
+							data : {
+								id : id
+							},
+							success : function(data) {
+								if (data.code == 200) {
+									var selected = $('#versionFileGrid').datagrid('getSelected');
+									var index = $('#versionFileGrid').datagrid('getRowIndex', selected);
 									$('#versionFileGrid').datagrid('deleteRow', index);
+									$($('#fileGrid').datagrid('getRows')).each(function(i, item) {
+												if (item.id == selected.id) {
+													$('#fileGrid').datagrid('deleteRow', i);
+													return false;
+												}
+											});
+									$('input[name=fileIds][value=' + id + ']').remove();
+								} else {
+									$.messager.alert('错误', data.result);
+								}
+							},
+							error : function() {
+								$.messager.alert('错误', '远程访问失败');
+							}
+						});
+			});
+}
+
+function delPhaseFile(id) {
+	$.messager.confirm('提示', '确定要删除该文档？', function(flag) {
+				if (!flag) {
+					return false;
+				}
+				$.ajax({
+							type : "POST",
+							url : '${contextPath!}/files/delete',
+							data : {
+								id : id
+							},
+							success : function(data) {
+								if (data.code == 200) {
+									var selected = $('#phaseFileGrid').datagrid('getSelected');
+									var index = $('#phaseFileGrid').datagrid('getRowIndex', selected);
+									$('#phaseFileGrid').datagrid('deleteRow', index);
+									$($('#fileGrid').datagrid('getRows')).each(function(i, item) {
+												if (item.id == selected.id) {
+													$('#fileGrid').datagrid('deleteRow', i);
+													return false;
+												}
+											});
 									$('input[name=fileIds][value=' + id + ']').remove();
 								} else {
 									$.messager.alert('错误', data.result);
@@ -90,6 +169,9 @@ function openInsertVersion() {
 												if (data.code == 200) {
 													$('#versionGrid').datagrid('appendRow', data.data);
 													$('#versionGrid').datagrid('acceptChanges');
+													if ($('#versionForm input[name=fileIds]').length > 0) {
+														$('#fileGrid').datagrid('reload');
+													}
 													$('#win').dialog('close');
 												} else {
 													$.messager.alert('错误', data.result);
@@ -124,15 +206,18 @@ function editVersion(id) {
 											type : "POST",
 											url : '${contextPath!}/project/version/update',
 											data : data,
-											success : function(data) {
-												if (data.code == 200) {
+											success : function(res) {
+												if (res.code == 200) {
 													var row = $('#versionGrid').datagrid('getSelected');
 													var index = $('#versionGrid').datagrid('getRowIndex', row);
 													$('#versionGrid').datagrid('updateRow', {
 																index : index,
-																row : data.data
+																row : res.data
 															});
 													$('#versionGrid').datagrid('acceptChanges');
+													if ($('#versionForm input[name=fileIds]').length > 0) {
+														$('#fileGrid').datagrid('reload');
+													}
 													$('#win').dialog('close');
 												} else {
 													$.messager.alert('错误', data.result);
@@ -247,6 +332,9 @@ function openInsertPhase() {
 												if (data.code == 200) {
 													$('#phaseGrid').datagrid('appendRow', data.data);
 													$('#phaseGrid').datagrid('acceptChanges');
+													if ($('#phaseForm input[name=fileIds]').length > 0) {
+														$('#fileGrid').datagrid('reload');
+													}
 													$('#win').dialog('close');
 												} else {
 													$.messager.alert('错误', data.result);
@@ -290,6 +378,9 @@ function editPhase(id) {
 																row : data.data
 															});
 													$('#phaseGrid').datagrid('acceptChanges');
+													if ($('#phaseForm input[name=fileIds]').length > 0) {
+														$('#fileGrid').datagrid('reload');
+													}
 													$('#win').dialog('close');
 												} else {
 													$.messager.alert('错误', data.result);
@@ -335,3 +426,26 @@ function deletePhase(id) {
 						});
 			});
 }
+
+$(function() {
+			var uploadObj = $("#uploadDiv").uploadFile({
+						url : "${contextPath!}/files/filesUpload?projectId=" + $('#projectId').val(), // 文件上传url
+						fileName : "file", // 提交到服务器的文件名
+						uploadStr : '上传文档',
+						// maxFileCount : 1, // 上传文件个数（多个时修改此处
+						returnType : 'json', // 服务返回数据
+						// allowedTypes : 'jpg,jpeg,png,gif', // 允许上传的文件式
+						showDone : false, // 是否显示"Done"(完成)按钮
+						showDelete : false, // 是否显示"Delete"(删除)按钮
+						showError : false,
+						showStatusAfterSuccess : false,
+						dragDrop : false,
+						onError : function(files, status, errMsg, pd) {
+							$.messager.alert('错误', '上传失败！');
+						},
+						onSuccess : function(files, data, xhr, pd) {
+							// 上传成功后的回调方法。本例中是将返回的文件名保到一个hidden类开的input中，以便后期数据处理
+							$('#fileGrid').datagrid('reload');
+						}
+					});
+		});

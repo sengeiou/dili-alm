@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -57,7 +56,7 @@ public class FilesServiceImpl extends BaseServiceImpl<Files, Long> implements Fi
 	}
 
 	@Override
-	public List<Files> uploadFile(MultipartFile[] files) {
+	public List<Files> uploadFile(MultipartFile[] files, Long projectId) {
 		if (files.length <= 0) {
 			return null;
 		}
@@ -91,9 +90,11 @@ public class FilesServiceImpl extends BaseServiceImpl<Files, Long> implements Fi
 					if (userTicket != null) {
 						tmpFiles.setCreateMemberId(userTicket.getId());
 					}
+					tmpFiles.setProjectId(projectId);
 					tmpFiles.setName(file.getOriginalFilename());
 					tmpFiles.setLength(file.getSize());
-					tmpFiles.setSuffix(file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1));
+					tmpFiles.setSuffix(
+							file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1));
 					tmpFiles.setUrl(path);
 					tmpFiles.setCreated(new Date());
 					this.getActualDao().insertSelective(tmpFiles);
@@ -101,9 +102,11 @@ public class FilesServiceImpl extends BaseServiceImpl<Files, Long> implements Fi
 					if (userTicket != null) {
 						tmpFiles.setModifyMemberId(userTicket.getId());
 					}
+					tmpFiles.setProjectId(projectId);
 					tmpFiles.setName(file.getOriginalFilename());
 					tmpFiles.setLength(file.getSize());
-					tmpFiles.setSuffix(file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1));
+					tmpFiles.setSuffix(
+							file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1));
 					tmpFiles.setUrl(path);
 					tmpFiles.setModified(new Date());
 					this.getActualDao().updateByPrimaryKey(tmpFiles);

@@ -41,8 +41,8 @@
 	<!-- 表格 -->
 	<div region="center" style="width: 100%;" height="auto">
 		<!-- =========================================================表格========================================================= -->
-		<table class="easyui-treegrid" title="Project列表" id="grid" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" sortName="created" align="center"
-			toolbar="#toolbar" fit="true" striped="false" idField="id" treeField="name"
+		<table class="easyui-treegrid" title="项目列表" id="grid" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" align="center" toolbar="#toolbar"
+			fit="true" striped="false" idField="id" treeField="name"
 			data-options="onHeaderContextMenu:headerContextMenu,
 			_parentIdField:'parentId',
 			idField:'id',
@@ -50,27 +50,19 @@
 			loadFilter:treegridLoadFilter">
 			<thead>
 				<tr>
-				<th
-						data-options="field:'serialNumber',width:'10%', align:'left'">项目编号</th>
-					<th
-						data-options="field:'name',width:'10%', align:'left'">项目名称</th>
-					<th
-						data-options="field:'type',width:'10%', _provider:'projectTypeProvider', _table:'data_dictionary_value',_valueField:'value',_textField:'code',_queryParams:{'yn':1,'dd_id':3}, align:'center'">
+					<th data-options="field:'serialNumber',width:'10%', align:'left'">项目编号</th>
+					<th data-options="field:'name',width:'10%', align:'left'">项目名称</th>
+					<th data-options="field:'type',width:'10%', _provider:'projectTypeProvider', _table:'data_dictionary_value',_valueField:'value',_textField:'code',_queryParams:{'yn':1,'dd_id':3}, align:'center'">
 						项目类型</th>
-					<th
-						data-options="field:'startDate',width:'20%', _provider:'datetimeProvider', align:'center'">项目开始时间</th>
-					<th
-						data-options="field:'endDate',width:'20%', _provider:'datetimeProvider', align:'center'">项目结束时间</th>
-					<th
-						data-options="field:'actualStartTime',width:'20%', _provider:'datetimeProvider', align:'center'">实际开始时间</th>
-					<th
-						data-options="field:'projectState',width:'10%',  _provider:'projectStateProvider', align:'center'">项目状态</th>
+					<th data-options="field:'startDate',width:'15%', _provider:'dateProvider', align:'center'">项目开始时间</th>
+					<th data-options="field:'endDate',width:'15%', _provider:'dateProvider', align:'center'">项目结束时间</th>
+					<th data-options="field:'actualStartTime',width:'15%', _provider:'dateProvider', align:'center'">实际开始时间</th>
+					<th data-options="field:'projectState',width:'5%',  _provider:'projectStateProvider', align:'center'">项目状态</th>
 					<th data-options="field:'taskCount',width:'5%', align:'center'">任务数</th>
 					<th data-options="field:'memberCount',width:'5%', align:'center'">成员数</th>
-					<th data-options="field:'completedProgress',width:'20%', align:'center'">完成进度</th>
-					<th data-options="field:'originator',width:'15%', _provider:'memberProvider', align:'center'">项目发起人</th>
-					<!-- <th class="easyui-datetimebox" data-options="field:'modified',width:'20%',  _provider:'datetimeProvider', align:'center'">修改时间</th> -->
-					<th data-options="field:'opt',width:'10%',formatter:optFormatter">操作</th>
+					<th data-options="field:'completedProgress',width:'10%', align:'center'">完成进度</th>
+					<th data-options="field:'originator',width:'5%', _provider:'memberProvider', align:'center'">项目发起人</th>
+					<th data-options="field:'opt',width:'5%',formatter:optFormatter">操作</th>
 				</tr>
 			</thead>
 		</table>

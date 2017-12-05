@@ -50,12 +50,12 @@ public class TeamController {
 	private void refreshProject() {
 		List<Project> list = projectService.list(DTOUtils.newDTO(Project.class));
 		list.forEach(project -> {
-			AlmCache.projectMap.put(project.getId(), project);
+			AlmCache.PROJECT_MAP.put(project.getId(), project);
 		});
 	}
 
 	private void refreshMember() {
-		AlmCache.userMap.clear();
+		AlmCache.USER_MAP.clear();
 		BaseOutput<List<User>> output = this.userRPC.list(new User());
 		if (!output.isSuccess()) {
 			return;
@@ -65,7 +65,7 @@ public class TeamController {
 			return;
 		}
 		users.forEach(u -> {
-			AlmCache.userMap.put(u.getId(), u);
+			AlmCache.USER_MAP.put(u.getId(), u);
 		});
 	}
 

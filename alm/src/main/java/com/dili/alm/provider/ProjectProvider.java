@@ -35,10 +35,10 @@ public class ProjectProvider implements ValueProvider, ApplicationListener<Conte
 	}
 
 	public void init(){
-		if(AlmCache.projectMap.isEmpty()){
+		if(AlmCache.PROJECT_MAP.isEmpty()){
 			List<Project> list = projectService.list(DTOUtils.newDTO(Project.class));
 			list.forEach(project -> {
-				AlmCache.projectMap.put(project.getId(), project);
+				AlmCache.PROJECT_MAP.put(project.getId(), project);
 			});
 		}
 	}
@@ -50,8 +50,8 @@ public class ProjectProvider implements ValueProvider, ApplicationListener<Conte
 		List<Map> dataauth = SessionContext.getSessionContext().dataAuth(AlmConstants.DATA_AUTH_TYPE_PROJECT);
 		dataauth.forEach(da -> {
 			Long key = Long.parseLong(da.get("dataId").toString());
-			if(AlmCache.projectMap.containsKey(key)) {
-				buffer.add(new ValuePairImpl(AlmCache.projectMap.get(key).getName(), key));
+			if(AlmCache.PROJECT_MAP.containsKey(key)) {
+				buffer.add(new ValuePairImpl(AlmCache.PROJECT_MAP.get(key).getName(), key));
 			}
 		});
 		return buffer;
@@ -61,7 +61,7 @@ public class ProjectProvider implements ValueProvider, ApplicationListener<Conte
 	public String getDisplayText(Object o, Map map, FieldMeta fieldMeta) {
 		if(o == null) return null;
 		init();
-		Project project = AlmCache.projectMap.get(o);
+		Project project = AlmCache.PROJECT_MAP.get(o);
 		return project == null ? null : project.getName();
 	}
 

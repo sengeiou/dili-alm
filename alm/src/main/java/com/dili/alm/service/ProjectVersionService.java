@@ -1,5 +1,8 @@
 package com.dili.alm.service;
 
+import java.util.List;
+
+import com.dili.alm.domain.Files;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.ProjectVersionFormDto;
 import com.dili.alm.domain.dto.ProjectVersionChangeStateViewDto;
@@ -34,4 +37,6 @@ public interface ProjectVersionService extends BaseService<ProjectVersion, Long>
 	ProjectVersionChangeStateViewDto getChangeStateViewData(Long id);
 
 	BaseOutput<Object> changeState(Long id, Integer versionState);
+
+	List<Files> listFiles(Long versionId);
 }

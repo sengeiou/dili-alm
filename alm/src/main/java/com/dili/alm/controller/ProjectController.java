@@ -43,7 +43,7 @@ public class ProjectController {
 	private UserRpc userRPC;
 
 	private void refreshMember() {
-		AlmCache.userMap.clear();
+		AlmCache.USER_MAP.clear();
 		BaseOutput<List<User>> output = this.userRPC.list(new User());
 		if (!output.isSuccess()) {
 			return;
@@ -53,7 +53,7 @@ public class ProjectController {
 			return;
 		}
 		users.forEach(u -> {
-			AlmCache.userMap.put(u.getId(), u);
+			AlmCache.USER_MAP.put(u.getId(), u);
 		});
 	}
 
