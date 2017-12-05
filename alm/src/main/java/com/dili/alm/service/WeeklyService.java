@@ -3,6 +3,7 @@ package com.dili.alm.service;
 import java.util.List;
 
 import com.dili.alm.domain.Weekly;
+import com.dili.alm.domain.dto.NextWeeklyDto;
 import com.dili.alm.domain.dto.ProjectWeeklyDto;
 import com.dili.alm.domain.dto.TaskDto;
 import com.dili.alm.domain.dto.WeeklyPara;
@@ -27,19 +28,25 @@ public interface WeeklyService extends BaseService<Weekly, Long> {
 	/** 
 	 * 当前重大问题 -
 	 * */
-	String  selectWeeklyQuestion(WeeklyPara weeklyPara);
+	String  selectWeeklyQuestion(String id);
 	/**   
 	 * 当前重要风险
 	 * */
-	String  selectWeeklyRist(WeeklyPara weeklyPara);
+	String  selectWeeklyRist(String id);
 	/** 
 	 * 本周进展情况 
 	 *  */
-	TaskDto  selectWeeklyProgress(Long id );
+	List<TaskDto>  selectWeeklyProgress(Long id );
 	/**
 	 *  下周工作计划
 	 * */
-	Weekly  selectNextWeeklyProgress(Long id);
+	List<NextWeeklyDto>   selectNextWeeklyProgress(Long id);
+	
+	/** 
+	 * 下周项目阶段
+	 *   * */
+	List<String> selectNextProjectPhase(Long id);
+	
 	/** 
 	 * 本周项目阶段
 	 *   * */

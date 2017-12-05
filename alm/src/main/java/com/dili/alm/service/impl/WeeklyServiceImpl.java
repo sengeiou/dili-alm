@@ -16,6 +16,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.dao.WeeklyMapper;
 import com.dili.alm.domain.Weekly;
+import com.dili.alm.domain.dto.NextWeeklyDto;
 import com.dili.alm.domain.dto.ProjectWeeklyDto;
 import com.dili.alm.domain.dto.TaskDto;
 import com.dili.alm.domain.dto.WeeklyPara;
@@ -71,8 +72,9 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	@Override
 	public ProjectWeeklyDto getProjectWeeklyDtoById(Long projectId) {
 		ProjectWeeklyDto pd = weeklyMapper.selectProjectWeeklyDto(projectId);
-		//pd.setPlanDate(pd.getPlanDate().substring(0,10));
-	//	pd.setBeginAndEndTime(getWeekFristDay()+"到"+getWeekFriday());
+		if(pd!=null&&pd.getPlanDate()!=null)
+		   pd.setPlanDate(pd.getPlanDate().substring(0,10));
+		 pd.setBeginAndEndTime(getWeekFristDay()+"到"+getWeekFriday());
 		return pd;
 	}
 
@@ -97,29 +99,36 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	 * 当前重大问题 -
 	 * */
 	@Override
-	public String selectWeeklyQuestion(WeeklyPara weeklyPara) {
-		return weeklyMapper.selectWeeklyQuestion(weeklyPara);
+	public String selectWeeklyQuestion(String id) {
+		return weeklyMapper.selectWeeklyQuestion(id);
 	}
 	/**   
 	 * 当前重要风险
 	 * */
 	@Override
-	public String selectWeeklyRist(WeeklyPara weeklyPara) {
-		return weeklyMapper.selectWeeklyRist(weeklyPara);
+	public String selectWeeklyRist(String id) {
+		return weeklyMapper.selectWeeklyRist(id);
 	}
 	/** 
 	 * 本周进展情况 
 	 *  */
 	@Override
-	public TaskDto selectWeeklyProgress(Long id) {
+	public List<TaskDto> selectWeeklyProgress(Long id) {
 		return weeklyMapper.selectWeeklyProgress(id);
 	}
 	/**
 	 *  下周工作计划
 	 * */
 	@Override
-	public Weekly selectNextWeeklyProgress(Long id) {
+	public List<NextWeeklyDto> selectNextWeeklyProgress(Long id) {
 		return weeklyMapper.selectNextWeeklyProgress(id);
+	}
+	/** 
+	 * 下周项目阶段
+	 * */
+	@Override
+	public List<String> selectNextProjectPhase(Long id) {
+		return weeklyMapper.selectNextProjectPhase(id);
 	}
 	/** 
 	 * 本周项目阶段
@@ -135,5 +144,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	public List<String> selectProjectVersion(Long id) {
 		return weeklyMapper.selectProjectVersion(id);
 	}
+
+	
 
 }
