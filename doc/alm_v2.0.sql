@@ -9,6 +9,10 @@ DROP TABLE `project_change`;
 DROP TABLE `verify_approval`;
 DROP TABLE `task_details`;
 DROP TABLE `weekly`;
+DROP TABLE `log`;
+DROP TABLE `work_schedule`;
+DROP TABLE `message`;
+
 
 CREATE TABLE `project_apply` (
   `ID`                   BIGINT ZEROFILL NOT NULL AUTO_INCREMENT,
@@ -295,6 +299,17 @@ CREATE TABLE `weekly` (
   PRIMARY KEY (`id`)
 );
 
+CREATE TABLE `log` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改时间',
+  `operator_id` bigint(20) DEFAULT NULL COMMENT '操作员',
+  `operator_name` varchar(20) DEFAULT NULL COMMENT '操作员名称',
+  `ip` varchar(20) DEFAULT NULL COMMENT 'IP',
+  `content` text COMMENT '内容',
+  PRIMARY KEY (`id`)
+) 
+
 CREATE TABLE `work_schedule` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `schedule_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '编辑时间',
@@ -308,3 +323,13 @@ CREATE TABLE `sequence`
   number INT NULL
 );
 
+CREATE TABLE `message` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `url` varchar(50) DEFAULT NULL COMMENT '跳转Url',
+  `sender` bigint(20) DEFAULT NULL COMMENT '发送人Id',
+  `recipient` bigint(20) DEFAULT NULL COMMENT '接收人Id',
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
+  `type` int(2) DEFAULT NULL COMMENT '消息类型',
+  `is_read` tinyint(1) DEFAULT '0' COMMENT '是否已读',
+  PRIMARY KEY (`id`)
+) 

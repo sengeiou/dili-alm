@@ -1,6 +1,5 @@
 package com.dili.alm.api;
 
-import freemarker.template.utility.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -8,12 +7,13 @@ import io.swagger.annotations.ApiOperation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.util.WebUtils;
 
-import com.dili.alm.domain.Log;
+
+
 import com.dili.alm.service.LogService;
 import com.dili.alm.utils.WebUtil;
 import com.dili.ss.domain.BaseOutput;
@@ -29,7 +29,7 @@ public class LogApi {
 	@ApiImplicitParam(name="Log", paramType="form", value = "Log的form信息", required = true, dataType = "string")
 	})
 	@RequestMapping(value="/saveLog", method = {RequestMethod.GET, RequestMethod.POST})
-	public @ResponseBody BaseOutput insert(String logText) {
+	public @ResponseBody BaseOutput insert(@RequestBody String logText) {
 		if(WebUtil.strIsEmpty(logText)){
 	        return BaseOutput.failure("新增失败,包含空值logText="+logText.toString());
         }else{
@@ -43,7 +43,7 @@ public class LogApi {
 			@ApiImplicitParam(name="Log", paramType="form", value = "Log的form信息", required = true, dataType = "string")
 		})
 	    @RequestMapping(value="/update", method = {RequestMethod.GET, RequestMethod.POST})
-	    public @ResponseBody BaseOutput update(Long logId,String logText) {
+	    public @ResponseBody BaseOutput update(@RequestBody Long logId,@RequestBody String logText) {
 	        if(WebUtil.strIsEmpty(logText)){
 		        return BaseOutput.failure("修改失败,包含空值logId="+logId+",logText="+logText.toString());
 	        }else{
@@ -57,7 +57,7 @@ public class LogApi {
 			@ApiImplicitParam(name="id", paramType="form", value = "Log的主键", required = true, dataType = "long")
 		})
 	    @RequestMapping(value="/delete", method = {RequestMethod.GET, RequestMethod.POST})
-	    public @ResponseBody BaseOutput delete(Long id) {
+	    public @ResponseBody BaseOutput delete(@RequestBody Long id) {
 	    	if(id == null){
 	    		return BaseOutput.failure("删除失败，id为空");
 	    	}else{
