@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.alm.dao.WeeklyDetailsMapper">
+  <resultMap id="BaseResultMap" type="com.dili.alm.domain.WeeklyDetails">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="overall_progress" jdbcType="VARCHAR" property="overallProgress" />
+    <result column="project_description" jdbcType="VARCHAR" property="projectDescription" />
+    <result column="expected_deviation" jdbcType="VARCHAR" property="expectedDeviation" />
+    <result column="other" jdbcType="VARCHAR" property="other" />
+    <result column="weekly_id" jdbcType="BIGINT" property="weeklyId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, overall_progress, project_description, expected_deviation, other, weekly_id
+  </sql>
+  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from weekly_details
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <update id="updateBy" parameterType="com.dili.alm.domain.WeeklyDetails">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update weekly_details
+    <set>
+      <if test="overallProgress != null">
+        overall_progress = #{overallProgress,jdbcType=VARCHAR},
+      </if>
+      <if test="projectDescription != null">
+        project_description = #{projectDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="expectedDeviation != null">
+        expected_deviation = #{expectedDeviation,jdbcType=VARCHAR},
+      </if>
+      <if test="other != null">
+        other = #{other,jdbcType=VARCHAR},
+      </if>
+      <if test="weeklyId != null">
+        weekly_id = #{weeklyId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="getWeeklyDetailsByWeeklyId" parameterType="Long" resultType="com.dili.alm.domain.WeeklyDetails">
+      
+         select 
+		   <include refid="Base_Column_List" />
+		   from weekly_details
+		   
+		   <where>
+		      <if test="_parameter != null">
+			     weekly_id=#{_parameter,jdbcType=BIGINT}
+			 </if>
+			
+		   </where>
+		 
+  
+  </select>
+</mapper>
