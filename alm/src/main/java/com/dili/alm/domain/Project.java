@@ -14,7 +14,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2017-11-24 17:50:14.
+ * This file was generated on 2017-12-06 10:09:59.
  */
 @Table(name = "`project`")
 public interface Project extends IBaseDomain {
@@ -26,6 +26,13 @@ public interface Project extends IBaseDomain {
     Long getId();
 
     void setId(Long id);
+
+    @Column(name = "`apply_id`")
+    @FieldDef(label="立项申请id")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Long getApplyId();
+
+    void setApplyId(Long applyId);
 
     @Column(name = "`serial_number`")
     @FieldDef(label="serialNumber", maxLength = 255)
