@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.dili.alm.domain.Weekly;
@@ -83,14 +84,25 @@ public class WeeklyController  {
     	weeklyDetailsService.createInsert(WeeklyDetails);
         return BaseOutput.success("保存成功");
     }
-    @RequestMapping(value="/saveMaxQu", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput saveMaxQu(String array) {
+    @RequestMapping(value="/updateWeeklyDetails", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput updateWeeklyDetails(WeeklyDetails WeeklyDetails) {
     	
-    	System.out.println(array);
+    	weeklyDetailsService.updateSelective(WeeklyDetails);
         return BaseOutput.success("保存成功");
     }
     
-    
+    @RequestMapping(value="/saveMaxQu", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput saveMaxQu(String str,String id) {
+    	long longid=Long.parseLong(id);
+    	weeklyService.updateMaxQuestion(str, longid);
+        return BaseOutput.success("保存成功");
+    }
+    @RequestMapping(value="/saveMaxRist", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput saveMaxRist(String str,String id) {
+    	long longid=Long.parseLong(id);
+    	weeklyService.updateMaxRist(str, longid);
+        return BaseOutput.success("保存成功");
+    }
     
     @ApiOperation("修改Weekly")
     @ApiImplicitParams({

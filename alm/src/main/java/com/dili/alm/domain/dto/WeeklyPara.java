@@ -7,6 +7,7 @@ public class WeeklyPara  {
     
 	
 	private  Long id ;
+	
 	private  String serialNumber;
     
 	private   String projectName ;
@@ -23,7 +24,24 @@ public class WeeklyPara  {
 
     private String date ;
     
-    
+	private String risk;//最大风险
+	private String question;//最大问题
+	
+	
+	public String getRisk() {
+		return risk;
+	}
+	public void setRisk(String risk) {
+		this.risk = risk;
+	}
+	public String getQuestion() {
+		return question;
+	}
+	public void setQuestion(String question) {
+		this.question = question;
+	}
+	
+	
     public String getDate() {
 		return date;
 	}
