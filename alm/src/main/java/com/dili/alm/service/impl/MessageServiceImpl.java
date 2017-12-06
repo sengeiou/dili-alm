@@ -2,7 +2,9 @@ package com.dili.alm.service.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -47,19 +49,22 @@ public class MessageServiceImpl extends BaseServiceImpl<Message, Long> implement
 	}
 
 	@Override
-	public List<Message> listMessagges() {
+	public Map<String,Object> mapMessagges() {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		if(userTicket==null){
-			throw new RuntimeException("未登录");
-		}
-		List<Message> list = new ArrayList<Message>();
+		Map<String,Object> map=new HashMap<String, Object>();
+//		if(userTicket==null){
+//			throw new RuntimeException("未登录");
+//		}
 		Message message=DTOUtils.newDTO(Message.class);
 		synchronized (this) {// 这个很重要，必须使用一个锁， 
-			message.setRecipient(userTicket.getId());
+			message.setRecipient(48L);
 			message.setIsRead(false);
-			list = this.getActualDao().select(message);
+			List<Message> list = this.getActualDao().select(message);
+			map.put("message", list);
+			int count = this.getActualDao().selectCount(message);
+			map.put("count", count);
 		}
-		return list;
+		return map;
 	}
 
 
