@@ -3,8 +3,6 @@ package com.dili.alm.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.constant.AlmConstants;
-import com.dili.alm.domain.FileType;
-import com.dili.alm.domain.Files;
 import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.apply.*;
@@ -84,6 +82,12 @@ public class ProjectApplyController {
         return "projectApply/step" + step;
     }
 
+    @RequestMapping(value = "/reApply/{id}", method = RequestMethod.GET)
+    public String reApply(@PathVariable("id") Long id) {
+        Long reApplyId = projectApplyService.reApply(id);
+        return "redirect:/projectApply/toStep/1/" + reApplyId;
+    }
+
 
     @RequestMapping(value = "/toDetails/{id}", method = RequestMethod.GET)
     public String toDetails(ModelMap modelMap, @PathVariable("id") Long id) throws Exception {
@@ -135,7 +139,7 @@ public class ProjectApplyController {
     @RequestMapping(value = "/insertStep1", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
     BaseOutput insertStep1(ProjectApply projectApply, ApplyMajorResource majorResource) {
-        if(majorResource.getRelatedResources().get(0).getRelatedUser() == null){
+        if (majorResource.getRelatedResources().get(0).getRelatedUser() == null) {
             majorResource.setRelatedResources(null);
         }
         projectApply.setResourceRequire(JSON.toJSONString(majorResource));
@@ -186,14 +190,11 @@ public class ProjectApplyController {
 
     @RequestMapping("/loadFiles")
     @ResponseBody
-    public List<Map> loadFiles(Long applyId) throws Exception {
-        Files example = DTOUtils.newDTO(Files.class);
-        example.setRecordId(applyId);
-        example.setType(FileType.APPLY.getValue());
+    public List<Map> loadFiles(Long id) throws Exception {
 
         Map<Object, Object> metadata = new HashMap<>();
         metadata.put("created", JSON.parse("{provider:'datetimeProvider'}"));
-        return ValueProviderUtils.buildDataByProvider(metadata, Lists.newArrayList(filesService.listByExample(example)));
+        return ValueProviderUtils.buildDataByProvider(metadata, Lists.newArrayList(projectApplyService.listFiles(id)));
     }
 
     @RequestMapping("/loadPlan")

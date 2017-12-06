@@ -117,8 +117,10 @@
     function formatStatus(value, row) {
         if (row.$_status == 1) {
             return '<a href="${contextPath}/projectApply/toStep/1/' + row.id + '">编辑</a><a href="javascript:void(0)" onclick="del(' + row.id + ')">删除</a>';
-        }else if(row.$_status == 2){
+        }else if(row.$_status == 2 || row.$_status == 3){
             return '<a>编辑</a><a>删除</a>';
+        }else if(row.$_status == 4){
+            return '<a href="${contextPath}/projectApply/reApply/' + row.id + '">重新申请</a>';
         }
     }
 

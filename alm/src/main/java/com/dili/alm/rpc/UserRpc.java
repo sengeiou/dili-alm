@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created by asiamaster on 2017/10/19 0019.
  */
-@Restful("http://alm.diligrp.com/almadmin")
+@Restful("http://127.0.0.1:8080/almadmin")
 public interface UserRpc {
 	@POST("/userApi/list")
 	BaseOutput<List<User>> list(@VOBody User user);

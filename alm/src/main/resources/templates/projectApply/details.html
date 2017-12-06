@@ -39,7 +39,7 @@
     }
 </style>
 <div id="smDialog" style="display: none;"></div>
-<div class="easyui-panel" title="立项申请（第一步）">
+<div class="easyui-panel" title="立项详情">
     <div style="padding:10px 60px 20px 60px">
         <form id="step1" method="post" action="">
             <table cellpadding="5" id="tb">
@@ -106,7 +106,7 @@
                     </td>
                 </tr>
 
-                <tr id="realtedShow" hide>
+                <tr id="realtedShow" style="display: none">
                     <td><input class="easyui-textbox" type="text" id="xiangguan" name="relatedResources[0].relatedUser"
                                data-options="label:'相关部门经理:'"></td>
                     <td><input class="easyui-numberspinner" id="relatedNumber" value=""
@@ -443,7 +443,7 @@
                 <thead>
                 <tr>
                     <th data-options="field:'id',width:80,hidden:true">ID</th>
-                    <th data-options="field:'name', width:'20%', align:'center', resizable:'true', fixed:'false'">文件名</th>
+                    <th data-options="field:'name', width:'20%', align:'center', formatter:formatDown,resizable:'true', fixed:'false'">文件名</th>
                     <th data-options="field:'length', width:'20%', align:'center', resizable:'true', fixed:'false',formatter:renderSize">大小</th>
                     <th data-options="field:'created', width:'50%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">上传日期</th>
                 </tr>
@@ -458,11 +458,20 @@
                         <input class="easyui-tagbox" id="tagbx" value="${apply.email}" label="Add a tag" style="width:100%">
                     </td>
             </table>
+            <div style="text-align:left;padding:5px;margin-top:10px;">
+                <a href="${contextPath}/projectApply/index.html" class="easyui-linkbutton"
+                   data-options="size:'large',width:'80px'">返回</a>
+            </div>
         </form>
+
     </div>
 </div>
 
 <script>
+
+    function formatDown(value, row) {
+        return "<a href='${contextPath!}/files/download?id=" + row.id + "'>" + value + "</a>";
+    }
     function renderSize(value){
         if(null==value||value==''){
             return "0 Bytes";

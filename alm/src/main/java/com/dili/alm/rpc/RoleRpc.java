@@ -11,9 +11,12 @@ import java.util.List;
 /**
  * Created by asiamaster on 2017/10/19 0019.
  */
-@Restful("http://alm.diligrp.com/almadmin")
+@Restful("http://127.0.0.1:8080/almadmin")
 public interface RoleRpc {
 
 	@POST("/roleApi/listRoleByUserId")
 	BaseOutput<List<Role>> listRoleByUserId(@VOSingleParameter Long id);
+
+	@POST("/roleApi/listRoleNameByUserId")
+	BaseOutput<String> listRoleNameByUserId(@VOSingleParameter Long id);
 }
