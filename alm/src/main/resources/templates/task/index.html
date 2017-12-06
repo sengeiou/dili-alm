@@ -36,10 +36,10 @@
                             </td>
                             <td style="padding:5px;">
 		                    <select  name="status" id="status" class="easyui-combobox" data-options="label:'流程:', validType:'length[0,3]'" style="width:100%">
-		                      <option value="0">未开始</option>
-		                      <option value="1">已开始</option>
-		                      <option value="2">已暂停</option>
-		                      <option value="3">已完成</option>
+		                      <option value=0>未开始</option>
+		                      <option value=1>已开始</option>
+		                      <option value=2>已暂停</option>
+		                      <option value=3>已完成</option>
 		                    </select>
                             </td>
                         </tr>
@@ -166,7 +166,12 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_type" id="_type" style="width:100%" data-options="label:'任务类型:'" />
+                     <select  name="_type" id="_type" class="easyui-combobox"  data-options="label:'任务类型:'"  style="width:100%">
+                      <option value="1">需求分析</option>
+                      <option value="2">测试任务</option>
+                      <option value="3">开发任务</option>
+                      <option value="4">上线任务</option>
+                    </select>
                 </td>
             </tr>
             <tr>
@@ -329,6 +334,19 @@
             	$("#doTask").hide();
             	$("#pauseTask").show();
             	$("#updateDetail").show();
+            	$('#detail_form').form('clear');
+            	$('#detail_form').form('load', {_taskHour:formData._planTime});
+            	getDetailInfo(formData._id);
+            }
+            
+            if(formData._status==3){
+            	$('#_progressShow').progressbar({
+            	    value: parseInt(formData._progress)
+            	});
+            	$("#task_detail").show();
+            	$("#doTask").hide();
+            	$("#pauseTask").hide();
+            	$("#updateDetail").hide();
             	$('#detail_form').form('clear');
             	$('#detail_form').form('load', {_taskHour:formData._planTime});
             	getDetailInfo(formData._id);
