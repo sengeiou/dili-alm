@@ -1,15 +1,13 @@
 package com.dili.alm.domain;
 
+import com.dili.ss.domain.annotation.Like;
 import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
 import com.dili.ss.metadata.annotation.FieldDef;
-import java.util.Date;
+
 import javax.persistence.*;
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import java.util.Date;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -36,12 +34,14 @@ public interface Approve extends IBaseDomain {
 
     @Column(name = "`number`")
     @FieldDef(label="项目编号", maxLength = 255)
+    @Like(Like.BOTH)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getNumber();
 
     void setNumber(String number);
 
     @Column(name = "`name`")
+    @Like(Like.BOTH)
     @FieldDef(label="项目名称", maxLength = 255)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getName();

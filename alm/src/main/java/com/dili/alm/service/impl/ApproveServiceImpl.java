@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.ApproveMapper;
 import com.dili.alm.domain.*;
-import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.apply.ApplyApprove;
 import com.dili.alm.rpc.UserRpc;
@@ -23,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+
+import static com.dili.alm.domain.ProjectState.NOT_START;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -88,7 +89,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
              */
             canOpt = approveList.stream()
                     .anyMatch(applyApprove -> Objects.equals(applyApprove.getUserId(), SessionContext.getSessionContext().getUserTicket().getId())
-                            && applyApprove.getResult() == null
+                            && applyApprove.getResult()     == null
                             && !Objects.equals(applyApprove.getUserId(), getApproveLeader()));
 
 
@@ -168,8 +169,12 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         build.setProductManager(apply.getProductManager());
         build.setStartDate(apply.getStartDate());
         build.setEndDate(apply.getEndDate());
-//        build.setProjectState(); //TODO fix status
-        projectService.insert(build);
+        build.setProjectState(NOT_START.getValue());
+        try {
+            projectService.insertSelective(build);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     /**

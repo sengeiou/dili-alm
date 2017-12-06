@@ -10,77 +10,29 @@
                     <table style="padding:10px;">
                         <tr>
                             <td style="padding:5px;">
-                                <input class="easyui-numberbox" name="projectApplyId" id="projectApplyId" style="width:100%" data-options="label:'projectApplyId:', validType:'length[0,19]'" />
+                                <input class="easyui-numberbox" name="number" id="number" style="width:100%" data-options="label:'项目编号:', validType:'length[0,19]'" />
 
                             </td>
                             <td style="padding:5px;">
-                                <input class="easyui-textbox" name="number" id="number" style="width:100%" data-options="label:'项目编号:', validType:'length[0,255]'" />
+                                <input class="easyui-textbox" name="name" id="name" style="width:100%" data-options="label:'项目名称:', validType:'length[0,255]'" />
 
                             </td>
                             <td style="padding:5px;">
                                 <input class="easyui-textbox" name="projectType" id="projectType" style="width:100%" data-options="label:'项目类型:', validType:'length[0,255]'" />
+                                <#comboProvider _id="projectType" _provider='projectTypeProvider'/>
+                            </td>
+                            <td style="padding:5px;">
+                                <input class="easyui-textbox" name="status" id="status" style="width:100%"
+                                       data-options="label:'项目审批状态:', validType:'length[0,3]'"/>
+                                <#comboProvider _id="status" _provider='approveStateProvider'/>
 
                             </td>
                             <td style="padding:5px;">
-                                <input class="easyui-numberbox" name="projectLeader" id="projectLeader" style="width:100%" data-options="label:'项目负责人:', validType:'length[0,19]'" />
+                                <input class="easyui-datetimebox" name="created" id="created" style="width:100%" data-options="label:'项目申请日期:'" />
 
                             </td>
                             <td style="padding:5px;">
-                                <input class="easyui-numberbox" name="productManager" id="productManager" style="width:100%" data-options="label:'产品经理:', validType:'length[0,19]'" />
-
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="padding:5px;">
-                                <input class="easyui-numberbox" name="developmentManager" id="developmentManager" style="width:100%" data-options="label:'研发经理:', validType:'length[0,19]'" />
-
-                            </td>
-                            <td style="padding:5px;">
-                                <input class="easyui-numberbox" name="testManager" id="testManager" style="width:100%" data-options="label:'测试经理:', validType:'length[0,19]'" />
-
-                            </td>
-                            <td style="padding:5px;">
-                                <input class="easyui-datetimebox" name="startDate" id="startDate" style="width:100%" data-options="label:'计划开始日期:'" />
-
-                            </td>
-                            <td style="padding:5px;">
-                                <input class="easyui-datetimebox" name="endDate" id="endDate" style="width:100%" data-options="label:'计划结束日期:'" />
-
-                            </td>
-                            <td style="padding:5px;">
-                                <input class="easyui-textbox" name="status" id="status" style="width:100%" data-options="label:'status:', validType:'length[0,3]'" />
-
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="padding:5px;">
-                                <input class="easyui-textbox" name="description" id="description" style="width:100%" data-options="label:'description:', validType:'length[0,1000]'" />
-
-                            </td>
-                            <td style="padding:5px;">
-                                <input class="easyui-textbox" name="extend" id="extend" style="width:100%" data-options="label:'extend:', validType:'length[0,1000]'" />
-
-                            </td>
-                            <td style="padding:5px;">
-                                <input class="easyui-textbox" name="type" id="type" style="width:100%" data-options="label:'审批类型（立项，结项）:', validType:'length[0,3]'" />
-
-                            </td>
-                            <td style="padding:5px;">
-                                <input class="easyui-datetimebox" name="created" id="created" style="width:100%" data-options="label:'created:'" />
-
-                            </td>
-                            <td style="padding:5px;">
-                                <input class="easyui-datetimebox" name="modified" id="modified" style="width:100%" data-options="label:'modified:'" />
-
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="padding:5px;">
-                                <input class="easyui-numberbox" name="createMemberId" id="createMemberId" style="width:100%" data-options="label:'createMemberId:', validType:'length[0,19]'" />
-
-                            </td>
-                            <td style="padding:5px;">
-                                <input class="easyui-numberbox" name="modifyMemberId" id="modifyMemberId" style="width:100%" data-options="label:'modifyMemberId:', validType:'length[0,19]'" />
+                                <input class="easyui-numberbox" name="createMemberId" id="createMemberId" style="width:100%" data-options="label:'项目发起人:', validType:'length[0,19]'" />
 
                             </td>
                         </tr>
@@ -103,60 +55,27 @@
             <!-- =========================================================表格========================================================= -->
             <table class="easyui-datagrid" title="Approve列表" id="grid" fitColumns="true"
                    pagination="true" pageSize="30" pageNumber="1" pagePosition="both" rownumbers="true" remoteSort="false"
-                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="projectApplyId"
+                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
                    align="center" fit="true" striped="true" toolbar="#toolbar" idField="id">
                 <thead>
                     <tr>
-                        <th data-options="field:'projectApplyId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            projectApplyId
-                        </th>
-                        <th data-options="field:'number',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'number', width:180,    order:'asc', align:'center', resizable:'true', fixed:'false'">
                             项目编号
                         </th>
-                        <th data-options="field:'projectType',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'name', width:180,    order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            项目名称
+                        </th>
+                        <th data-options="field:'projectType',_provider:'projectTypeProvider',  width:180,   order:'asc', align:'center', resizable:'true', fixed:'false'">
                             项目类型
                         </th>
-                        <th data-options="field:'projectLeader',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            项目负责人
+                        <th data-options="field:'status',  width:180,  _provider:'applyStateProvider', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            项目状态
                         </th>
-                        <th data-options="field:'productManager',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            产品经理
+                        <th data-options="field:'created',  width:180, _provider:'datetimeProvider',  order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            申请时间
                         </th>
-                        <th data-options="field:'developmentManager',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            研发经理
-                        </th>
-                        <th data-options="field:'testManager',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            测试经理
-                        </th>
-                        <th data-options="field:'startDate',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            计划开始日期
-                        </th>
-                        <th data-options="field:'endDate',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            计划结束日期
-                        </th>
-                        <th data-options="field:'status',   _provider:'applyStateProvider',sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            status
-                        </th>
-                        <th data-options="field:'description',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            description
-                        </th>
-                        <th data-options="field:'extend',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            extend
-                        </th>
-                        <th data-options="field:'type',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            审批类型（立项，结项）
-                        </th>
-                        <th data-options="field:'created',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            created
-                        </th>
-                        <th data-options="field:'modified',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            modified
-                        </th>
-                        <th data-options="field:'createMemberId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            createMemberId
-                        </th>
-                        <th data-options="field:'modifyMemberId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            modifyMemberId
+                        <th data-options="field:'createMemberId',  width:180, _provider:'memberProvider',  order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            项目发起人
                         </th>
                         <th data-options="field:'opt', width:150,formatter:formatStatus, align:'center', resizable:'true', fixed:'false'">
                             操作
@@ -357,6 +276,8 @@
             } else {
                 document.onkeyup = getKey;
             }
+
+            queryGrid();
         })
     </script>
 </#body>

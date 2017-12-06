@@ -94,7 +94,7 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
             as.setStatus(AlmConstants.ApplyState.APPROVE.getCode());
             as.setProjectLeader(as.getCreateMemberId());
             as.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
-            as.setProjectType(AlmCache.PROJECT_TYPE_MAP.get(as.getType()));
+            as.setProjectType(as.getType());
             as.setExtend(as.getDescription());
             as.setType(AlmConstants.ApproveType.APPLY.getCode());
 
