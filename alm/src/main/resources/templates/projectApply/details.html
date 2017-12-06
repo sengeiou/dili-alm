@@ -1,23 +1,35 @@
 <#body>
 <style>
-    td {
+    #step1 td {
         padding-left: 60px;
     }
-
     .datebox-button td {
         padding-left: 0;
     }
-
-    input[class^="easyui-"] {
-        width: 300px;
+    #step1 .textbox-label {
+        width: 110px;
+    }
+    #step1 input[class^="easyui-"] {
+        width: 250px;
     }
 
+    #step5 .textbox-text {
+        height: 28px;
+        line-height: 28px;
+    }
+    .textbox,
+    .textbox .textbox-text {
+        border-radius: 0;
+    }
+    #step1 .title-first,
+    #step1 .title-second,
     .title-first,
     .title-second {
         margin-top: 20px;
         background: #f7f7f7;
     }
 
+    #step1 .title-first,
     .title-first {
         padding-left: 0;
     }
@@ -32,10 +44,10 @@
         <form id="step1" method="post" action="">
             <table cellpadding="5" id="tb">
                 <tr>
-                    <td>项目编号</td>
-                    <td>${apply.number}</td>
-                    <td>项目类别</td>
-                    <td>${apply.type}</td>
+                    <th>项目编号</th>
+                    <th>${apply.number}</th>
+                    <th>项目类别</th>
+                    <th>${apply.type}</th>
                 </tr>
                 <tr>
                     <td class="title-first" colspan="3">1项目内容及资源</td>
@@ -46,10 +58,10 @@
                 <tr>
                     <td colspan="2"><input class="easyui-textbox" type="text" name="name"
                                            data-options="required:true,validType:'length[1,10]',label:'项目名称:'"
-                                           style="width:600px"></td>
+                                           style="width:576px"></td>
                 </tr>
                 <tr>
-                    <td><input class="easyui-textbox" name="projectLeader" id="project_leader" style="width: 100%;"
+                    <td><input class="easyui-textbox" name="projectLeader" id="project_leader"
                                panelWidth="auto" panelHeight="auto" label="*开发负责人:"/></td>
                     <td><input class="easyui-textbox" type="text" name="productManager" id="productManager"
                                data-options="label:'*产品经理:'"></td>
@@ -93,7 +105,8 @@
                                data-options="label:'*预估工时:'"> 人日
                     </td>
                 </tr>
-                <tr id="realtedShow" style="display: none;">
+
+                <tr id="realtedShow" hide>
                     <td><input class="easyui-textbox" type="text" id="xiangguan" name="relatedResources[0].relatedUser"
                                data-options="label:'相关部门经理:'"></td>
                     <td><input class="easyui-numberspinner" id="relatedNumber" value=""
@@ -171,9 +184,9 @@
         </form>
     </div>
 
-    <div style="padding:10px 60px 20px 60px">
+    <div style="padding:10px 60px 20px 60px" style="width: auto;">
         <form id="step4" method="post">
-            <table cellpadding="5" width="100%">
+            <table cellpadding="5">
                 <tr>
                     <td class="title-first" colspan="4">4.项目概要计划</td>
                 </tr>
@@ -240,9 +253,9 @@
                 </tr>
                 <tr>
                     <td style="background-color: #eee;text-align: center">实现时间</td>
-                    <td><input class="easyui-datetimebox" name="val10" id="" data-options="required:false" /></td>
-                    <td><input class="easyui-datetimebox" name="val11" id="" data-options="required:false" /></td>
-                    <td><input class="easyui-datetimebox" name="val12" id="" data-options="required:false" /></td>
+                    <td><input class="easyui-textbox" name="val10" id="" data-options="multiline:true,required:false" /></td>
+                    <td><input class="easyui-textbox" name="val11" id="" data-options="multiline:true,required:false" /></td>
+                    <td><input class="easyui-textbox" name="val12" id="" data-options="multiline:true,required:false" /></td>
                 </tr>
 
                 <tr style="background-color: #eee;">
@@ -271,14 +284,14 @@
                 </tr>
                 <tr>
                     <td style="background-color: #eee;text-align: center">实现时间</td>
-                    <td><input class="easyui-datetimebox" name="val22" id="" data-options="required:false" /></td>
-                    <td><input class="easyui-datetimebox" name="val23" id="" data-options="required:false" /></td>
-                    <td><input class="easyui-datetimebox" name="val24" id="" data-options="required:false" /></td>
+                    <td><input class="easyui-textbox" name="val22" id="" data-options="multiline:true,required:false" /></td>
+                    <td><input class="easyui-textbox" name="val23" id="" data-options="multiline:true,required:false" /></td>
+                    <td><input class="easyui-textbox" name="val24" id="" data-options="multiline:true,required:false" /></td>
                 </tr>
             </table>
             <table border="1" style="margin-top: 20px; border: 1px solid #eee;line-height: 32px;" cellspacing="0" cellpadding="0" >
                 <tr style="background-color: #eee;">
-                    <th rowspan="8">项目成本</th>
+                    <th rowspan="10">项目成本</th>
                     <th style="text-align:center">名称</th>
                     <th style="text-align:center">数量</th>
                     <th style="text-align:center">费率</th>
@@ -287,44 +300,44 @@
                 </tr>
                 <tr>
                     <td style="background-color: #eee;text-align: center">人天成本</td>
-                    <td><input class="easyui-numberbox" type="text" name="val25" data-options="min:0,max:999999" ></td>
-                    <td><input class="easyui-numberbox" type="text" name="val26" data-options="prompt:'格式:【1000元/人天】'" ></td>
-                    <td><input class="easyui-numberbox cal" type="text" name="val27" data-options="min:0,max:99999999" ></td>
+                    <td><input class="easyui-numberbox" type="text" name="val25" data-options="multiline:true,min:0,max:999999" ></td>
+                    <td><input class="easyui-numberbox" type="text" name="val26" data-options="multiline:true,prompt:'格式:【1000元/人天】'" ></td>
+                    <td><input class="easyui-numberbox cal" type="text" name="val27" data-options="multiline:true,min:0,max:99999999" ></td>
                     <td><input class="easyui-textbox" name="val48" id="" data-options="multiline:true,validType:['length[0,50]']"/></td>
                 </tr>
                 <tr>
                     <td style="background-color: #eee;text-align: center">软件成本</td>
-                    <td><input class="easyui-numberbox" type="text" name="val28" data-options="min:0,max:999999" ></td>
-                    <td><input class="easyui-numberbox" type="text" name="val29" data-options="prompt:'格式:【/】'" ></td>
-                    <td><input class="easyui-numberbox cal" type="text" name="val30" data-options="min:0,max:99999999" ></td>
+                    <td><input class="easyui-numberbox" type="text" name="val28" data-options="multiline:true,min:0,max:999999" ></td>
+                    <td><input class="easyui-numberbox" type="text" name="val29" data-options="multiline:true,prompt:'格式:【/】'" ></td>
+                    <td><input class="easyui-numberbox cal" type="text" name="val30" data-options="multiline:true,min:0,max:99999999" ></td>
                     <td><input class="easyui-textbox" name="val47" id="" data-options="multiline:true,validType:['length[0,50]']"/></td>
                 </tr>
                 <tr>
                     <td style="background-color: #eee;text-align: center">硬件成本.实体机</td>
-                    <td><input class="easyui-numberbox" type="text" name="val31" data-options="min:0,max:999999" ></td>
-                    <td><input class="easyui-numberbox" type="text" name="val32" data-options="prompt:'格式:【实体机 50000元/台VM 1H1G:1200元/年，2H2G：2400元/年，2H4G:4800元/年，4H4G:9600元/年；】'" ></td>
-                    <td><input class="easyui-numberbox cal" type="text" name="val33" data-options="min:0,max:99999999" ></td>
+                    <td><input class="easyui-numberbox" type="text" name="val31" data-options="multiline:true,min:0,max:999999" ></td>
+                    <td><input class="easyui-numberbox" type="text" name="val32" data-options="multiline:true,prompt:'格式:【实体机 50000元/台VM 1H1G:1200元/年，2H2G：2400元/年，2H4G:4800元/年，4H4G:9600元/年；】'" ></td>
+                    <td><input class="easyui-numberbox cal" type="text" name="val33" data-options="multiline:true,min:0,max:99999999" ></td>
                     <td><input class="easyui-textbox" name="val46" id="" data-options="multiline:true,validType:['length[0,50]']"/></td>
                 </tr>
                 <tr>
                     <td style="background-color: #eee;text-align: center">硬件成本.VM</td>
-                    <td><input class="easyui-numberbox" type="text" name="val34" data-options="min:0,max:999999" ></td>
-                    <td><input class="easyui-numberbox" type="text" name="val35" data-options="prompt:'格式:【实体机 50000元/台VM 1H1G:1200元/年，2H2G：2400元/年，2H4G:4800元/年，4H4G:9600元/年；】'" ></td>
-                    <td><input class="easyui-numberbox cal" type="text" name="val36" data-options="min:0,max:99999999" ></td>
+                    <td><input class="easyui-numberbox" type="text" name="val34" data-options="multiline:true,min:0,max:999999" ></td>
+                    <td><input class="easyui-numberbox" type="text" name="val35" data-options="multiline:true,prompt:'格式:【实体机 50000元/台VM 1H1G:1200元/年，2H2G：2400元/年，2H4G:4800元/年，4H4G:9600元/年；】'" ></td>
+                    <td><input class="easyui-numberbox cal" type="text" name="val36" data-options="multiline:true,min:0,max:99999999" ></td>
                     <td><input class="easyui-textbox" name="val37" id="" data-options="multiline:true,validType:['length[0,50]']"/></td>
                 </tr>
                 <tr>
                     <td style="background-color: #eee;text-align: center">差旅会议成本</td>
-                    <td><input class="easyui-numberbox" type="text" name="val38" data-options="min:0,max:999999" ></td>
-                    <td><input class="easyui-numberbox" type="text" name="val39" data-options="prompt:'格式:【机票：4000元/人，补助：600元/人/天；】'" ></td>
-                    <td><input class="easyui-numberbox cal" type="text" name="val40" data-options="min:0,max:99999999" ></td>
+                    <td><input class="easyui-numberbox" name="val38" data-options="multiline:true,min:0,max:999999" ></td>
+                    <td><input class="easyui-numberbox" name="val39" data-options="multiline:true,prompt:'格式:【机票：4000元/人，补助：600元/人/天；】'" ></td>
+                    <td><input class="easyui-numberbox cal" name="val40" data-options="multiline:true,min:0,max:99999999" ></td>
                     <td><input class="easyui-textbox" name="val45" id="" data-options="multiline:true,validType:['length[0,50]']"/></td>
                 </tr>
                 <tr>
                     <td style="background-color: #eee;text-align: center">其他成本</td>
-                    <td><input class="easyui-numberbox" type="text" name="val41" data-options="min:0,max:999999" ></td>
-                    <td><input class="easyui-numberbox" type="text" name="val42" data-options="prompt:'格式:【/】'" ></td>
-                    <td><input class="easyui-numberbox cal" type="text" name="val43" data-options="min:0,max:99999999" ></td>
+                    <td><input class="easyui-numberbox" name="val41" data-options="multiline:true,min:0,max:999999" ></td>
+                    <td><input class="easyui-numberbox" name="val42" data-options="multiline:true,prompt:'格式:【/】'" ></td>
+                    <td><input class="easyui-numberbox cal" name="val43" data-options="multiline:true,min:0,max:99999999" ></td>
                     <td><input class="easyui-textbox" name="val44" id="" data-options="multiline:true,validType:['length[0,50]']"/></td>
                 </tr>
                 <tr>
