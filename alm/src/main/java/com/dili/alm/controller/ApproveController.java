@@ -52,8 +52,9 @@ public class ApproveController {
     @ResponseBody
     public List<Map> loadDesc(Long id) throws Exception {
         Approve approve = approveService.get(id);
-        Map<Object, Object> metadata = new HashMap<>();
+        Map<Object, Object> metadata = new HashMap<>(2);
         metadata.put("userId", JSON.parse("{provider:'memberProvider'}"));
+        metadata.put("approveDate", JSON.parse("{provider:'datetimeProvider'}"));
         List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, JSON.parseArray(approve.getDescription(),ApplyApprove.class));
         return maps;
     }

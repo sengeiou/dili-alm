@@ -1,5 +1,6 @@
 package com.dili.alm.service;
 
+import com.dili.alm.domain.Files;
 import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.apply.ApplyFiles;
@@ -19,5 +20,8 @@ public interface ProjectApplyService extends BaseService<ProjectApply, Long> {
     List<DataDictionaryValueDto> getPlanPhase();
 
     BaseOutput submit(ProjectApply projectApply, ApplyFiles files);
+    Long reApply(Long id);
+
+    List<Files> listFiles(Long applyId);
 
 }

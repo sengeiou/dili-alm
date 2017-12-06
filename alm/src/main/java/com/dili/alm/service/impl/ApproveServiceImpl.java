@@ -58,6 +58,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         Map<Object, Object> metadata = new HashMap<>();
         metadata.put("projectLeader", JSON.parse("{provider:'memberProvider'}"));
         metadata.put("businessOwner", JSON.parse("{provider:'memberProvider'}"));
+        metadata.put("projectType", JSON.parse("{provider:'projectTypeProvider'}"));
         metadata.put("dep", JSON.parse("{provider:'depProvider'}"));
 
         Map dto = null;

@@ -1,7 +1,6 @@
 package com.dili.alm.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.dili.alm.cache.AlmCache;
 import com.dili.alm.cache.ProjectNumberGenerator;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.ProjectApplyMapper;
@@ -10,6 +9,7 @@ import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.apply.ApplyApprove;
 import com.dili.alm.domain.dto.apply.ApplyFiles;
+import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.DataDictionaryService;
@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Example;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -44,6 +45,9 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 
     @Autowired
     private UserRpc userRpc;
+
+    @Autowired
+    private RoleRpc roleRpc;
 
     @Autowired
     private ApproveService approveService;
@@ -86,6 +90,9 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
                 filesService.updateSelective(file);
             });
         }
+        /*
+           处理生成审批单
+         */
         if (projectApply.getStatus() == AlmConstants.ApplyState.APPROVE.getCode()) {
             Approve as = DTOUtils.as(this.get(projectApply.getId()), Approve.class);
             as.setId(null);
@@ -111,6 +118,7 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
                 userByRole.forEach(u -> {
                     ApplyApprove approve = new ApplyApprove();
                     approve.setUserId(u.getId());
+                    approve.setRole(roleRpc.listRoleNameByUserId(Long.valueOf(u.getId())).getData());
                     approveList.add(approve);
                 });
                 as.setDescription(JSON.toJSONString(approveList));
@@ -120,6 +128,36 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 
         this.updateSelective(projectApply);
         return BaseOutput.success(String.valueOf(projectApply.getId()));
+    }
+
+    @Override
+    public Long reApply(Long id) {
+        ProjectApply apply = get(id);
+        apply.setId(null);
+        apply.setCreated(new Date());
+        apply.setStatus(AlmConstants.ApplyState.APPLY.getCode());
+        apply.setCreated(new Date());
+        apply.setModified(null);
+        apply.setNumber(getProjectNumber(apply));
+        insert(apply);
+        buildFiles(id, apply.getId());
+        return apply.getId();
+    }
+
+    private void buildFiles(Long applyId, Long newId) {
+        listFiles(applyId).forEach( (Files files) -> {
+            files.setRecordId(newId);
+            files.setId(null);
+            filesService.insert(files);
+        });
+    }
+
+    @Override
+    public List<Files> listFiles(Long applyId) {
+        Example example = new Example(Files.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("recordId", applyId).andEqualTo("type",FileType.APPLY.getValue());
+        return this.filesService.selectByExample(example);
     }
 
     /**
