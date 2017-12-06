@@ -77,7 +77,21 @@ public class WeeklyController  {
         weeklyService.insertSelective(weekly);
         return BaseOutput.success("新增成功");
     }
-
+    @RequestMapping(value="/save", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput save(WeeklyDetails WeeklyDetails) {
+    	
+    	weeklyDetailsService.createInsert(WeeklyDetails);
+        return BaseOutput.success("保存成功");
+    }
+    @RequestMapping(value="/saveMaxQu", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput saveMaxQu(String array) {
+    	
+    	System.out.println(array);
+        return BaseOutput.success("保存成功");
+    }
+    
+    
+    
     @ApiOperation("修改Weekly")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Weekly", paramType="form", value = "Weekly的form信息", required = true, dataType = "string")
@@ -105,6 +119,7 @@ public class WeeklyController  {
     	ModelAndView mv = new ModelAndView();
     	//项目周报
     	ProjectWeeklyDto pd=weeklyService.getProjectWeeklyDtoById(Long.parseLong(id));
+    	pd.setId(id);
 		mv.addObject("pd", pd);
 		
 		// 本周项目版本
