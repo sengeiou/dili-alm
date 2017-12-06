@@ -17,7 +17,14 @@ public class  ProjectWeeklyDto {
 	private String planDate ;//计划上线日期
 	private String projectId ;//项目id
 	private String  beginAndEndTime;
+	private String id ;
 	
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
 	public String getProjectId() {
 		return projectId;
 	}

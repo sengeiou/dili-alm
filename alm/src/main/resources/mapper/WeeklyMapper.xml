@@ -298,5 +298,41 @@
    </select>
    
    
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+     <select id="getWeeklyDetailsByWeeklyId" parameterType="Long" resultType="com.dili.alm.domain.WeeklyDetails">
+      
+         select 
+		   <include refid="Base_Column_List" />
+		   from weekly_details
+		   
+		   <where>
+		      <if test="_parameter != null">
+			     weekly_id=#{_parameter,jdbcType=BIGINT}
+			 </if>
+			
+		   </where>
+		 
+  </select>
+  
+
+  
+ 
+
+
 
 </mapper>
