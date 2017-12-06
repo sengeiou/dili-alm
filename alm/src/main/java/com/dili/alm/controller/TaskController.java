@@ -80,7 +80,19 @@ public class TaskController {
     	//TODO:修改任务负责人的
         return taskService.listPageSelectTaskDto(task).toString();
     }
-
+    
+    @ApiOperation(value="分页查询Task,首页显示", notes = "分页查询Task，返回easyui分页信息")
+    @ApiImplicitParams({
+		@ApiImplicitParam(name="Task", paramType="form", value = "Task的form信息", required = false, dataType = "string")
+	})
+    @RequestMapping(value="/listTaskPageTab", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody String listTaskPageTab(Task task) throws Exception {
+		//TODO:加入系统后放开 taskService.listEasyuiPageByExample(task, true).toString();
+/*		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		task.setowner(userTicket.getId());*/
+    	//TODO:修改任务负责人的
+        return taskService.listPageSelectTaskDto(task).toString();
+    }
     
     @ApiOperation("新增Task")
     @ApiImplicitParams({

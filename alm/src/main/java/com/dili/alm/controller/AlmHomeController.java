@@ -48,6 +48,12 @@ public class AlmHomeController {
     public String myProjectIndex(ModelMap modelMap) {
         return "home/myProjectIndex";
     }
+    
+    @ApiOperation("跳转到我的任务")
+    @RequestMapping(value="/taskList", method = RequestMethod.GET)
+    public String taskList(ModelMap modelMap) {
+        return "home/taskList";
+    }
 
     @ApiOperation(value="分页查询我的项目", notes = "分页查询我的项目，返回easyui分页信息")
     @ApiImplicitParams({

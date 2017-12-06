@@ -1,0 +1,381 @@
+ <#body>
+    <div class="easyui-layout" fit="true">
+        <!-- 表格 -->
+        <div region="center" style="width:100%;" height="auto">
+            <!-- =========================================================表格========================================================= -->
+            <table class="easyui-datagrid" title="Task列表" id="grid" fitColumns="true"
+                   pagination="true" pageSize="30" pageNumber="1" pagePosition="both" rownumbers="true" remoteSort="false"
+                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="name"
+                   align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" data-options=" onHeaderContextMenu:headerContextMenu">
+                <thead>
+                    <tr>
+                        <th data-options="field:'name',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            任务名称
+                        </th>
+                        <th data-options="field:'projectName',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                           项目名称
+                        </th>
+                        <th data-options="field:'versionStr',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                           所属版本
+                        </th>
+                        <th data-options="field:'phaseStr',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            所属阶段
+                        </th>
+                        <th data-options="field:'owner',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            负责人
+                        </th>
+                        <th data-options="field:'planDays',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            计划工时
+                        </th>
+
+                        <th data-options="field:'statusStr',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            状态
+                        </th>
+                       <th data-options="field:'progress', formatter:progressFormatter,order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            进度
+                        </th>
+                        <th data-options="field:'flowStr',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            流程
+                        </th>
+                        <th data-options="field:'options', formatter:formatOptions, align:'center', resizable:'true', fixed:'false'">
+						操作</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+    //打开新增窗口
+    function openInsert(){
+    	$("#task_detail").hide();
+    	$("#dialog_toolbar").show();
+    	$("#dialog_toolbar_detail").hide();
+        $('#dlg').dialog('open');
+        $('#dlg').dialog('center');
+        $('#_form').form('clear');
+        formFocus("_form", "_name");
+    }
+
+    //打开修改窗口
+    function openUpdate(){
+    	$("#task_detail").hide();
+    	$("#dialog_toolbar").show();
+    	$("#dialog_toolbar_detail").hide();
+        var selected = $("#grid").datagrid("getSelected");
+        if (null == selected) {
+            $.messager.alert('警告','请选中一条数据');
+            return;
+        }
+        if(selected.status!=0){
+        	$.messager.alert('警告','此项任务已经执行，不能再进行编辑！');
+        	return;
+        }
+        $('#dlg').dialog('open');
+        $('#dlg').dialog('center');
+        formFocus("_form", "_name");
+        var formData = $.extend({},selected);
+        formData = addKeyStartWith(getOriginalData(formData),"_");
+        $('#_form').form('load', formData);
+        $('#_form').form('load', {taskHour:formData._planTime});
+    }
+    
+    //打开执行任务窗口
+    function openUpdateDetail(row){
+    	$("#task_detail").hide();
+    	$("#dialog_toolbar").hide();
+    	$("#dialog_toolbar_detail").show();
+		var selected=$("#grid").datagrid('getData').rows[row];
+		$("#task_detail").show();
+		
+
+        
+        $('#dlg').dialog('open');
+        $('#dlg').dialog('center');
+
+        $('#_form').form({editable:false});
+        formFocus("_form", "_name");
+        var formData = $.extend({},selected);
+        formData = addKeyStartWith(getOriginalData(formData),"_");
+        $('#_form').form('load', formData);
+        $('#_form').form('load', {planTimeStr:formData._planTime});
+        
+        
+/*             $('#_progress').progressbar({
+			    value: formData._progress;
+			}); */
+        if(formData._status==0){
+        	$("#task_detail").hide();
+        	$("#doTask").show();
+        	$("#pauseTask").hide();
+        	$("#updateDetail").hide();
+        }
+        if(formData._status==2){
+        	$("#task_detail").show();
+        	$("#doTask").show();
+        	$("#pauseTask").hide();
+        	$("#updateDetail").hide();
+        }
+        
+        if(formData._status==1){
+        	$('#_progressShow').progressbar({
+        	    value: parseInt(formData._progress)
+        	});
+        	$("#task_detail").show();
+        	$("#doTask").hide();
+        	$("#pauseTask").show();
+        	$("#updateDetail").show();
+        	$('#detail_form').form('clear');
+        	$('#detail_form').form('load', {_taskHour:formData._planTime});
+        	getDetailInfo(formData._id);
+        }
+        
+        if(formData._status==3){
+        	$('#_progressShow').progressbar({
+        	    value: parseInt(formData._progress)
+        	});
+        	$("#task_detail").show();
+        	$("#doTask").hide();
+        	$("#pauseTask").hide();
+        	$("#updateDetail").hide();
+        	$('#detail_form').form('clear');
+        	$('#detail_form').form('load', {_taskHour:formData._planTime});
+        	getDetailInfo(formData._id);
+        }
+    }
+
+    function saveOrUpdate(){
+    	$("#task_detail").hide();
+        if(!$('#_form').form("validate")){
+            return;
+        }
+        var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
+        var _url = null;
+        //没有id就新增
+        if(_formData.id == null || _formData.id==""){
+            _url = "${contextPath}/task/insert";
+        }else{//有id就修改
+            _url = "${contextPath}/task/update";
+        }
+        $.ajax({
+            type: "POST",
+            url: _url,
+            data: _formData,
+            processData:true,
+            dataType: "json",
+            async : true,
+            success: function (data) {
+                if(data.code=="200"){
+                    $("#grid").datagrid("reload");
+                    $('#dlg').dialog('close');
+                }else{
+                    $.messager.alert('错误',data.result);
+                }
+            },
+            error: function(){
+                $.messager.alert('错误','远程访问失败');
+            }
+        });
+    }
+
+    //根据主键删除
+    function del() {
+        var selected = $("#grid").datagrid("getSelected");
+        if (null == selected) {
+            $.messager.alert('警告','请选中一条数据');
+            return;
+        }
+        $.messager.confirm('确认','您确认想要删除记录吗？',function(r){
+            if (r){
+                $.ajax({
+                    type: "POST",
+                    url: "${contextPath}/task/delete",
+                    data: {id:selected.id},
+                    processData:true,
+                    dataType: "json",
+                    async : true,
+                    success: function (data) {
+                        if(data.code=="200"){
+                            $("#grid").datagrid("reload");
+                            $('#dlg').dialog('close');
+                        }else{
+                            $.messager.alert('错误',data.result);
+                        }
+                    },
+                    error: function(){
+                        $.messager.alert('错误','远程访问失败');
+                    }
+                });
+            }
+        });
+
+    }
+    //表格查询
+    function queryGrid() {
+        var opts = $("#grid").datagrid("options");
+        if (null == opts.url || "" == opts.url) {
+            opts.url = "${contextPath}/task/listPage";
+        }
+        if(!$('#form').form("validate")){
+            return;
+        }
+        var param = bindMetadata("grid", true);
+        var formData = $("#form").serializeObject();
+        $.extend(param, formData);
+        $("#grid").datagrid("load", param);
+        $('#detail_form').form('load', {_taskHour:formData._planTime});
+    }
+
+
+    //清空表单
+    function clearForm() {
+        $('#form').form('clear');
+    }
+
+    //表格表头右键菜单
+    function headerContextMenu(e, field){
+        e.preventDefault();
+        if (!cmenu){
+            createColumnMenu("grid");
+        }
+        cmenu.menu('show', {
+            left:e.pageX,
+            top:e.pageY
+        });
+    }
+
+    $.messager.progress({
+        title:"提示",
+        msg:"加载中,请稍候...",
+        value : '10',
+        text: '{value}%',
+        interval:200
+    });
+    $.parser.onComplete = function(){
+        $.messager.progress("close");
+    }
+    //全局按键事件
+    function getKey(e){
+        e = e || window.event;
+        var keycode = e.which ? e.which : e.keyCode;
+        if(keycode == 46){ //如果按下删除键
+            var selected = $("#grid").datagrid("getSelected");
+            if(selected && selected!= null){
+                del();
+            }
+        }
+    }
+
+    /**
+     * 绑定页面回车事件，以及初始化页面时的光标定位
+     * @formId
+     *          表单ID
+     * @elementName
+     *          光标定位在指点表单元素的name属性的值
+     * @submitFun
+     *          表单提交需执行的任务
+     */
+    $(function () {
+        bindFormEvent("form", "name", queryGrid);
+        bindFormEvent("_form", "_name", saveOrUpdate, function (){$('#dlg').dialog('close');});
+        if (document.addEventListener) {
+            document.addEventListener("keyup",getKey,false);
+        } else if (document.attachEvent) {
+            document.attachEvent("onkeyup",getKey);
+        } else {
+            document.onkeyup = getKey;
+        }
+        queryGrid();
+    })
+    
+    function formatOptions(value, row, index) {
+    	var content = '<span style="padding:5px;"><a href="javascript:void(0)" onclick="openUpdateDetail('+index+')">执行任务</a></span>';
+    	return content;
+    }
+    //进度条处理
+    function progressFormatter(value,rowData,rowIndex){  
+        var htmlstr = '<div  class="easyui-progressbar" style="width:100px;" value="'+rowData.progress+'">'+rowData.progress+'</div> ';  
+        return htmlstr;  
+    }  
+    function getDetailInfo(taskID){
+    	 var  htmlobj=$.ajax({url:"${contextPath}/task/listTaskDetail.json?id="+taskID,async:false});
+    	 var str=htmlobj.responseText;
+    	 var obj = $.parseJSON(str);
+    	 $('#detail_form').form('load', obj);
+    	 $('#detail_form').form('load', {taskHourStr:obj.taskHour,overHourStr:obj.overHour});
+    }
+    
+    function startTask(){
+    	var id=$("#_id").val();
+         $.ajax({
+            type: "POST",
+            url: "${contextPath}/task/updateTaskStatus?id="+id,
+            processData:true,
+            dataType: "json",
+            async : true,
+            success: function (data) {
+                if(data.code=="200"){
+                    $("#grid").datagrid("reload");
+                    $('#dlg').dialog('close');
+                }else{
+                    $.messager.alert('错误',data.result);
+                }
+            },
+            error: function(){
+                $.messager.alert('错误','远程访问失败');
+            }
+        });
+    	 
+    }
+    
+    function pauseTaskStatus(){
+    	var id=$("#_id").val();
+          $.ajax({
+            type: "POST",
+            url: "${contextPath}/task/pauseTaskStatus?id="+id,
+            processData:true,
+            dataType: "json",
+            async : true,
+            success: function (data) {
+                if(data.code=="200"){
+                    $("#grid").datagrid("reload");
+                    $('#dlg').dialog('close');
+                }else{
+                    $.messager.alert('错误',data.result);
+                }
+            },
+            error: function(){
+                $.messager.alert('错误','远程访问失败');
+            }
+        });
+    	  
+    }
+    
+    function saveTaskDetail(){
+    	var planTimeStr=$("#planTimeStr").val();
+    	var formDate=$("#detail_form").serialize();
+    	
+         $.ajax({
+            type: "POST",
+            url: "${contextPath}/task/updateTaskDetails?planTimeStr="+planTimeStr,
+            data: formDate,
+            processData:true,
+            dataType: "json",
+            async : true,
+            success: function (data) {
+                if(data.code=="200"){
+                    $("#grid").datagrid("reload");
+                    $('#dlg').dialog('close');
+                }else{
+                    $.messager.alert('错误',data.result);
+                }
+            },
+            error: function(){
+                $.messager.alert('错误','远程访问失败');
+            }
+        }); 
+    }
+
+    </script>
+</#body>
+
