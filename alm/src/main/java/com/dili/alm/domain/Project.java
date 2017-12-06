@@ -14,142 +14,149 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2017-11-24 17:50:14.
+ * This file was generated on 2017-12-06 10:09:59.
  */
 @Table(name = "`project`")
 public interface Project extends IBaseDomain {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "`id`")
-    @FieldDef(label="ID")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getId();
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "`id`")
+	@FieldDef(label = "ID")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Long getId();
 
-    void setId(Long id);
+	void setId(Long id);
 
-    @Column(name = "`serial_number`")
-    @FieldDef(label="serialNumber", maxLength = 255)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getSerialNumber();
+	@Column(name = "`apply_id`")
+	@FieldDef(label = "立项申请id")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Long getApplyId();
 
-    void setSerialNumber(String serialNumber);
+	void setApplyId(Long applyId);
 
-    @Column(name = "`parent_id`")
-    @FieldDef(label="上级项目id")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getParentId();
+	@Column(name = "`serial_number`")
+	@FieldDef(label = "serialNumber", maxLength = 255)
+	@EditMode(editor = FieldEditor.Text, required = false)
+	String getSerialNumber();
 
-    void setParentId(Long parentId);
+	void setSerialNumber(String serialNumber);
 
-    @Column(name = "`name`")
-    @FieldDef(label="项目名称", maxLength = 20)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getName();
+	@Column(name = "`parent_id`")
+	@FieldDef(label = "上级项目id")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Long getParentId();
 
-    void setName(String name);
+	void setParentId(Long parentId);
 
-    @Column(name = "`type`")
-    @FieldDef(label="项目类型", maxLength = 10)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getType();
+	@Column(name = "`name`")
+	@FieldDef(label = "项目名称", maxLength = 20)
+	@EditMode(editor = FieldEditor.Text, required = false)
+	String getName();
 
-    void setType(String type);
+	void setName(String name);
 
-    @Column(name = "`project_manager`")
-    @FieldDef(label="项目负责人")
-    @EditMode(editor = FieldEditor.Combo, required = false, params="{\"provider\":\"memberProvider\"}")
-    Long getProjectManager();
+	@Column(name = "`type`")
+	@FieldDef(label = "项目类型", maxLength = 10)
+	@EditMode(editor = FieldEditor.Text, required = false)
+	String getType();
 
-    void setProjectManager(Long projectManager);
+	void setType(String type);
 
-    @Column(name = "`develop_manager`")
-    @FieldDef(label="developManager", maxLength = 255)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getDevelopManager();
+	@Column(name = "`project_manager`")
+	@FieldDef(label = "项目负责人")
+	@EditMode(editor = FieldEditor.Combo, required = false, params = "{\"provider\":\"memberProvider\"}")
+	Long getProjectManager();
 
-    void setDevelopManager(String developManager);
+	void setProjectManager(Long projectManager);
 
-    @Column(name = "`test_manager`")
-    @FieldDef(label="测试负责人")
-    @EditMode(editor = FieldEditor.Combo, required = false, params="{\"provider\":\"memberProvider\"}")
-    Long getTestManager();
+	@Column(name = "`develop_manager`")
+	@FieldDef(label = "developManager")
+	@EditMode(editor = FieldEditor.Combo, required = false, params = "{\"provider\":\"memberProvider\"}")
+	Long getDevelopManager();
 
-    void setTestManager(Long testManager);
+	void setDevelopManager(Long developManager);
 
-    @Column(name = "`product_manager`")
-    @FieldDef(label="产品负责人")
-    @EditMode(editor = FieldEditor.Combo, required = false, params="{\"provider\":\"memberProvider\"}")
-    Long getProductManager();
+	@Column(name = "`test_manager`")
+	@FieldDef(label = "测试负责人")
+	@EditMode(editor = FieldEditor.Combo, required = false, params = "{\"provider\":\"memberProvider\"}")
+	Long getTestManager();
 
-    void setProductManager(Long productManager);
+	void setTestManager(Long testManager);
 
-    @Column(name = "`created`")
-    @FieldDef(label="创建时间")
-    @EditMode(editor = FieldEditor.Datetime, required = true)
-    Date getCreated();
+	@Column(name = "`product_manager`")
+	@FieldDef(label = "产品负责人")
+	@EditMode(editor = FieldEditor.Combo, required = false, params = "{\"provider\":\"memberProvider\"}")
+	Long getProductManager();
 
-    void setCreated(Date created);
+	void setProductManager(Long productManager);
 
-    @Column(name = "`modified`")
-    @FieldDef(label="修改时间")
-    @EditMode(editor = FieldEditor.Datetime, required = true)
-    Date getModified();
+	@Column(name = "`created`")
+	@FieldDef(label = "创建时间")
+	@EditMode(editor = FieldEditor.Datetime, required = true)
+	Date getCreated();
 
-    void setModified(Date modified);
+	void setCreated(Date created);
 
-    @Column(name = "`start_date`")
-    @FieldDef(label="项目开始日期")
-    @EditMode(editor = FieldEditor.Datetime, required = false)
-    Date getStartDate();
+	@Column(name = "`modified`")
+	@FieldDef(label = "修改时间")
+	@EditMode(editor = FieldEditor.Datetime, required = true)
+	Date getModified();
 
-    void setStartDate(Date startDate);
+	void setModified(Date modified);
 
-    @Column(name = "`end_date`")
-    @FieldDef(label="项目结束日期")
-    @EditMode(editor = FieldEditor.Datetime, required = false)
-    Date getEndDate();
+	@Column(name = "`start_date`")
+	@FieldDef(label = "项目开始日期")
+	@EditMode(editor = FieldEditor.Datetime, required = false)
+	Date getStartDate();
 
-    void setEndDate(Date endDate);
+	void setStartDate(Date startDate);
 
-    @Column(name = "`actual_start_date`")
-    @FieldDef(label="实际开始时间")
-    @EditMode(editor = FieldEditor.Datetime, required = false)
-    Date getActualStartDate();
+	@Column(name = "`end_date`")
+	@FieldDef(label = "项目结束日期")
+	@EditMode(editor = FieldEditor.Datetime, required = false)
+	Date getEndDate();
 
-    void setActualStartDate(Date actualStartDate);
+	void setEndDate(Date endDate);
 
-    @Column(name = "`project_state`")
-    @FieldDef(label="状态")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Integer getProjectState();
+	@Column(name = "`actual_start_date`")
+	@FieldDef(label = "实际开始时间")
+	@EditMode(editor = FieldEditor.Datetime, required = false)
+	Date getActualStartDate();
 
-    void setProjectState(Integer projectState);
+	void setActualStartDate(Date actualStartDate);
 
-    @Column(name = "`task_count`")
-    @FieldDef(label="任务数")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Integer getTaskCount();
+	@Column(name = "`project_state`")
+	@FieldDef(label = "状态")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Integer getProjectState();
 
-    void setTaskCount(Integer taskCount);
+	void setProjectState(Integer projectState);
 
-    @Column(name = "`member_count`")
-    @FieldDef(label="成员数")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Integer getMemberCount();
+	@Column(name = "`task_count`")
+	@FieldDef(label = "任务数")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Integer getTaskCount();
 
-    void setMemberCount(Integer memberCount);
+	void setTaskCount(Integer taskCount);
 
-    @Column(name = "`completed_progress`")
-    @FieldDef(label="完成进度，单位百分之")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Integer getCompletedProgress();
+	@Column(name = "`member_count`")
+	@FieldDef(label = "成员数")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Integer getMemberCount();
 
-    void setCompletedProgress(Integer completedProgress);
+	void setMemberCount(Integer memberCount);
 
-    @Column(name = "`originator`")
-    @FieldDef(label="项目发起人")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getOriginator();
+	@Column(name = "`completed_progress`")
+	@FieldDef(label = "完成进度，单位百分之")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Integer getCompletedProgress();
 
-    void setOriginator(Long originator);
+	void setCompletedProgress(Integer completedProgress);
+
+	@Column(name = "`originator`")
+	@FieldDef(label = "项目发起人")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Long getOriginator();
+
+	void setOriginator(Long originator);
 }

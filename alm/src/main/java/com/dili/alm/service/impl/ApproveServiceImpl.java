@@ -164,7 +164,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         build.setName(apply.getName());
         build.setType(apply.getType());
         build.setProductManager(apply.getProductManager());
-        build.setDevelopManager(apply.getDevelopmentManager().toString());
+        build.setDevelopManager(apply.getDevelopmentManager());
         build.setTestManager(apply.getTestManager());
         build.setProductManager(apply.getProductManager());
         build.setStartDate(apply.getStartDate());
