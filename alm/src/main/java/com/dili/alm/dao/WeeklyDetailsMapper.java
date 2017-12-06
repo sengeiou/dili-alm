@@ -5,5 +5,7 @@ import com.dili.ss.base.MyMapper;
 
 public interface WeeklyDetailsMapper extends MyMapper<WeeklyDetails> {
 	
-	WeeklyDetails getWeeklyDetailsByWeeklyId(Long id);
+
+    WeeklyDetails getWeeklyDetailsByWeeklyId(Long id);
+	Integer createInsert(WeeklyDetails weeklyDetails);
 }

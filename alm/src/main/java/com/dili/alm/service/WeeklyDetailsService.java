@@ -21,6 +21,6 @@ public interface WeeklyDetailsService extends BaseService<WeeklyDetails, Long> {
 	
 	WeeklyDetails  getWeeklyDetailsByWeeklyId(Long id);
 	
-	
+	Integer  createInsert(WeeklyDetails weeklyDetails);
 	
 }
