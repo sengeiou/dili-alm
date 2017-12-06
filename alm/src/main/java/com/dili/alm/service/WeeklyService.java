@@ -3,6 +3,7 @@ package com.dili.alm.service;
 import java.util.List;
 
 import com.dili.alm.domain.Weekly;
+import com.dili.alm.domain.WeeklyJson;
 import com.dili.alm.domain.dto.NextWeeklyDto;
 import com.dili.alm.domain.dto.ProjectWeeklyDto;
 import com.dili.alm.domain.dto.TaskDto;
@@ -55,5 +56,18 @@ public interface WeeklyService extends BaseService<Weekly, Long> {
 	 * 本周项目版本
 	 * */
 	List<String> selectProjectVersion(Long id );
+	/**
+	 * 保存当前重大问题 
+	 * @param list
+	 * @return
+	 */
+	Integer   updateMaxQuestion(String list,Long id );
+	/**
+	 * 
+	 * @param list
+	 * @return
+	 */
+	Integer   updateMaxRist(String list,Long id );
+	
 	
 }

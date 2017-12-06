@@ -241,6 +241,7 @@
 				       <tr>
 				             
 				              <td colspan="4"><button onclick="addMaxTr()">新增重大问题</button></td>
+				              <td><input id="sSubmit" type='hidden' value="${wDetails.isSubmit}"/></td>
 				       </tr>
 				     <tr>
 				        <td>预期偏差</td>
@@ -267,9 +268,9 @@
 			</table>
 			   <button>取消</button>
 			
-			   <button onclick="maxquSave()">保存</button>
+			   <button onclick="save(0)">保存</button>
 			
-			   <button>提交周报</button>
+			   <button onclick="save(1)">提交周报</button>
 			   
 			   </br>
 			   </br>
@@ -292,16 +293,17 @@
        
 
 		    function save(isSubmit){  
-		    	// var overallProgress=$("#overallProgress").val(); 
-			    // var  risk=	$("#_risk").val(); 
-			   //  var  expectedDeviation= $("#expectedDeviation").val(); 
-			   //  var  other=$("#other").val(); 
-		         
-			     var _url= "${contextPath}/weekly/save";
+		    	
+		    	
+		    	if($("#Submit").val()==1){//如果已经提交不可以修改和提交周报
+		    		return false;
+		    	}
+			   var _url= "${contextPath}/weekly/save";
 	           if(isSubmit==1){
 	        	   isSubmit=1
 	           }else{
 	        	   isSubmit=0
+	        	   _url= "${contextPath}/weekly/updateWeeklyDetails";
 	           }
 		         
 	            $.ajax({
@@ -328,6 +330,9 @@
 	                    $.messager.alert('错误','远程访问失败');
 	                }
 	            });
+	            maxquSave();
+	            maxRistSave();
+	            
 		      }
 		 
         
@@ -383,12 +388,15 @@
     	        
     	    });
     	  
-    	    alert(JSON.stringify(arr));
+    	 
     	    var _url= "${contextPath}/weekly/saveMaxQu";
     	      $.ajax({
 	                type: "POST",
 	                url: _url,
-	                data: JSON.stringify(arr),
+	                data: {
+	                	str:JSON.stringify(arr),
+	                	id:$("#inHidden").val()
+	                },
 	                async : true,
 	                success: function (data) {
 	                    if(data.code=="200"){
@@ -417,7 +425,27 @@
  	        
  	            arr.push(person);
    	      });
-   	    alert(arr.toString());
+   	   var _url= "${contextPath}/weekly/saveMaxRist";
+	      $.ajax({
+             type: "POST",
+             url: _url,
+             data: {
+             	str:JSON.stringify(arr),
+             	id:$("#inHidden").val()
+             	
+             },
+             async : true,
+             success: function (data) {
+                 if(data.code=="200"){
+                 	alert("保存成功"); 
+                 }else{
+                     $.messager.alert('错误',data.result);
+                 }
+             },
+             error: function(){
+                 $.messager.alert('错误','远程访问失败');
+             }
+         });
      }
      
       

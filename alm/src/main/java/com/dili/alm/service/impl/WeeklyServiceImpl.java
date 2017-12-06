@@ -12,6 +12,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.dao.ProjectMapper;
@@ -21,6 +22,8 @@ import com.dili.alm.dao.WeeklyMapper;
 import com.dili.alm.domain.ProjectPhase;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Weekly;
+import com.dili.alm.domain.WeeklyEntity;
+import com.dili.alm.domain.WeeklyJson;
 import com.dili.alm.domain.dto.NextWeeklyDto;
 import com.dili.alm.domain.dto.ProjectWeeklyDto;
 import com.dili.alm.domain.dto.TaskDto;
@@ -48,6 +51,9 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	
 	@Autowired
 	ProjectPhaseMapper   projectPhaseMapper;
+	
+	
+	
 	
 	public WeeklyMapper getActualDao() {
 		return (WeeklyMapper) getDao();
@@ -137,7 +143,6 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 
 			//责任人
 			
-			
 			//版本 
 			td.get(i).setVersionId(projectVersionMapper.selectByPrimaryKey(Long.parseLong(td.get(i).getVersionId())).getVersion());
 			//阶段 
@@ -185,6 +190,9 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	public List<String> selectProjectVersion(Long id) {
 		return weeklyMapper.selectProjectVersion(id);
 	}
+	
+	
+	
 	
 	
 	public static String getDatePoor(Date endDate, Date nowDate) {
@@ -235,6 +243,28 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		Date last = cal.getTime();
 		return formater.format(last);
 	}
+
+	@Override
+	public Integer updateMaxQuestion(String question,Long id ) {
+		
+		//JSONArray  weeklyQuestionJson=JSON.parseArray(question);
+    	//List<WeeklyJson> list=(List) weeklyQuestionJson.toJavaList(WeeklyJson.class);
+		WeeklyPara  weeklyPara=new WeeklyPara();
+		weeklyPara.setId(id);
+		weeklyPara.setQuestion(question);
+		return weeklyMapper.updateRiskOrByQuestion(weeklyPara);
+	}
+
+	@Override
+	public Integer updateMaxRist(String risk,Long id ) {
+		//JSONArray  weeklyQuestionJson=JSON.parseArray(question);
+    	//List<WeeklyJson> list=(List) weeklyQuestionJson.toJavaList(WeeklyJson.class);
+		WeeklyPara  weeklyPara=new WeeklyPara();
+		weeklyPara.setId(id);
+		weeklyPara.setRisk(risk);
+		return weeklyMapper.updateRiskOrByQuestion(weeklyPara);
+	}
+
 
 	
 

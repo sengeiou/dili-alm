@@ -19,6 +19,7 @@ public class  ProjectWeeklyDto {
 	private String  beginAndEndTime;
 	private String id ;
 	
+
 	public String getId() {
 		return id;
 	}

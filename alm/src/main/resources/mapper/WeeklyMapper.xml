@@ -297,41 +297,29 @@
 		      </where> 
    </select>
    
+   <update id="updateRiskOrByQuestion" parameterType="com.dili.alm.domain.dto.WeeklyPara">
    
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-     <select id="getWeeklyDetailsByWeeklyId" parameterType="Long" resultType="com.dili.alm.domain.WeeklyDetails">
-      
-         select 
-		   <include refid="Base_Column_List" />
-		   from weekly_details
-		   
-		   <where>
-		      <if test="_parameter != null">
-			     weekly_id=#{_parameter,jdbcType=BIGINT}
-			 </if>
-			
-		   </where>
-		 
-  </select>
+    update weekly
+    <set>
+     
+      <if test="risk != null">
+        risk = #{risk,jdbcType=VARCHAR},
+      </if>
+      <if test="question != null">
+        question = #{question,jdbcType=VARCHAR},
+      </if>
+     
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
   
 
+   
+   
   
- 
+
+
 
 
 
