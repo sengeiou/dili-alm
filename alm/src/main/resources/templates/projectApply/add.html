@@ -37,7 +37,7 @@
         url: '${contextPath}/projectApply/getProjectList',
         valueField: 'value',
         textField: 'text'
-    });
+    }).combobox('disable');
 
     $('#cc').combobox({
         onChange: function (newValue) {
@@ -52,7 +52,7 @@
 
     function submitForm() {
         $('#ff').form('submit', {
-            url: "${contextPath}/projectApply/insert11",
+            url: "${contextPath}/projectApply/insert",
             onSubmit: function () {
                 return $("#ff").form('validate');
             },

@@ -15,13 +15,11 @@
 
                         </td>
                         <td style="padding:5px;">
-                            <input class="easyui-numberbox" name="type" id="type" style="width:100%"
+                            <input class="easyui-textbox" name="type" id="type" style="width:100%"
                                    data-options="label:'项目类型:', validType:'length[0,10]'"/>
+                            <#comboProvider _id="type" _provider='applyStateProvider'/>
 
                         </td>
-                    </tr>
-
-                    <tr>
                         <td style="padding:5px;">
                             <input class="easyui-datetimebox" name="startDate" id="startDate" style="width:100%"
                                    data-options="label:'计划开始日期:'"/>
@@ -32,12 +30,10 @@
                                    data-options="label:'计划结束日期:'"/>
 
                         </td>
-                    </tr>
-
-                    <tr>
                         <td style="padding:5px;">
                             <input class="easyui-textbox" name="status" id="status" style="width:100%"
                                    data-options="label:'项目状态:', validType:'length[0,3]'"/>
+                            <#comboProvider _id="status" _provider='applyStateProvider'/>
 
                         </td>
                         <td style="padding:5px;">
@@ -65,27 +61,27 @@
         <!-- =========================================================表格========================================================= -->
         <table class="easyui-datagrid" title="ProjectApply列表" id="grid" fitColumns="true"
                pagination="true" pageSize="30" pageNumber="1" pagePosition="both" rownumbers="true" remoteSort="false"
-               loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="number"
+               loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
                align="center" fit="true" striped="true" toolbar="#toolbar" idField="id"
                data-options="onHeaderContextMenu:headerContextMenu">
             <thead>
             <tr>
-                <th data-options="field:'name',width:220,   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                <th data-options="field:'name',width:180,   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                     项目名称
                 </th>
-                <th data-options="field:'type',width:150,  _provider:'projectTypeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                <th data-options="field:'type',width:120,  _provider:'projectTypeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                     项目类型
                 </th>
-                <th data-options="field:'startDate',width:220,  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                <th data-options="field:'startDate',width:180,  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                     计划开始日期
                 </th>
-                <th data-options="field:'endDate',width:220,  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                <th data-options="field:'endDate',width:180,  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                     计划结束日期
                 </th>
                 <th data-options="field:'status',width:120,   _provider:'applyStateProvider',sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                     状态
                 </th>
-                <th data-options="field:'created',width:220,  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                <th data-options="field:'created',width:180,  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                     申请日期
                 </th>
                 <th data-options="field:'createMemberId',width:150, _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -100,9 +96,6 @@
         <!-- datagrid工具栏 -->
         <div id="toolbar" style="padding:2px 5px;">
             <a href="${contextPath}/projectApply/add" class="easyui-linkbutton" iconCls="icon-add" plain="true"></a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()" plain="true"></a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true"></a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-export" onclick="doExport('grid')" plain="true"></a>
             <div style="float:right">
                 边框显示:<select onchange="changeBorder('grid',this.value)">
                 <option value="lines-both">全边框</option>
@@ -123,23 +116,20 @@
 
     function formatStatus(value, row) {
         if (row.$_status == 1) {
-            return '<a href="${contextPath}/projectApply/toStep/1/' + row.id + '">编辑</a><a>删除</a>';
+            return '<a href="${contextPath}/projectApply/toStep/1/' + row.id + '">编辑</a><a href="javascript:void(0)" onclick="del(' + row.id + ')">删除</a>';
+        }else if(row.$_status == 2){
+            return '<a>编辑</a><a>删除</a>';
         }
     }
 
     //根据主键删除
-    function del() {
-        var selected = $("#grid").datagrid("getSelected");
-        if (null == selected) {
-            $.messager.alert('警告', '请选中一条数据');
-            return;
-        }
+    function del(id) {
         $.messager.confirm('确认', '您确认想要删除记录吗？', function (r) {
             if (r) {
                 $.ajax({
                     type: "POST",
                     url: "${contextPath}/projectApply/delete",
-                    data: {id: selected.id},
+                    data: {id: id},
                     processData: true,
                     dataType: "json",
                     async: true,
@@ -179,6 +169,7 @@
     //清空表单
     function clearForm() {
         $('#form').form('clear');
+        queryGrid();
     }
 
     //表格表头右键菜单
@@ -234,7 +225,7 @@
         } else {
             document.onkeyup = getKey;
         }
-        $("#queryBtn").click();
+        queryGrid();
     })
 </script>
 </#body>

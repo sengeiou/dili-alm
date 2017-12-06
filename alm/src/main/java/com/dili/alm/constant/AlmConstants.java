@@ -7,6 +7,9 @@ public class AlmConstants {
 
 	//数据字典值表中的数据权限类型为项目
 	public static final String DATA_AUTH_TYPE_PROJECT = "Project";
+	public static final String ROLE_CODE = "role_code";
+	public static final String ROLE_CODE_WYH = "wyh";
+	public static final String ROLE_CODE_WYH_LEADER = "wyh_leader";
 
 
 	//团队成员状态: 加入/离开
@@ -48,5 +51,31 @@ public class AlmConstants {
 		ApplyState(int code) {
 			this.code = code;
 		}
+
+		public int getCode() {
+			return code;
+		}
+
+		public boolean check(Object value){
+			try{
+				return Integer.parseInt(value.toString()) == this.code;
+			}catch (Exception ignored){}
+			return false;
+		}
+	}
+
+	public enum ApproveType{
+		APPLY("apply");
+
+		private String code;
+
+		ApproveType(String code) {
+			this.code = code;
+		}
+
+		public String getCode() {
+			return code;
+		}
+
 	}
 }

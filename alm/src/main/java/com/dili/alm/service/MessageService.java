@@ -1,6 +1,7 @@
 package com.dili.alm.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.dili.alm.domain.Message;
 import com.dili.ss.base.BaseService;
@@ -15,5 +16,5 @@ public interface MessageService extends BaseService<Message, Long> {
 	
 	int updateMessageIsRead( Long messageId);
 
-	List<Message> listMessagges();
+	Map<String,Object> mapMessagges();
 }

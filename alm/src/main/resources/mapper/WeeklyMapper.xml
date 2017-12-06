@@ -227,7 +227,7 @@
        select   t.`name`   ,t.phase_id ,t.plan_time ,
 		        t.`owner`, t.version_id   ,
 		        t.status ,t.start_date ,
-		        t.end_date,
+		        t.end_date,t.status,
 		        d.over_hour ,d.task_hour
 		
 		     from  task  t,task_details d

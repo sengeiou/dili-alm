@@ -3,11 +3,15 @@ package com.dili.alm.controller;
 import com.dili.alm.domain.Message;
 import com.dili.alm.service.MessageService;
 import com.dili.ss.domain.BaseOutput;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -37,7 +41,7 @@ public class MessageController {
 		@ApiImplicitParam(name="Message", paramType="form", value = "Message的form信息", required = false, dataType = "string")
 	})
     @RequestMapping(value="/list", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody List<Message> list() {
-        return messageService.listMessagges();
+    public @ResponseBody Map<String,Object> list() {
+        return messageService.mapMessagges();
     }
 }

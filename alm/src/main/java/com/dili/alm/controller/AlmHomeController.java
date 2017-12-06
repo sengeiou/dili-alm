@@ -54,7 +54,7 @@ public class AlmHomeController {
 		@ApiImplicitParam(name="project", paramType="form", value = "project的form信息", required = false, dataType = "string")
 	})
     @RequestMapping(value="/listPage", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody String listPage() throws Exception {
-    	return this.projectService.listPageMyProject().toString();
+    public @ResponseBody String listPage(Project project) throws Exception {
+    	return this.projectService.listPageMyProject(project).toString();
     }
 }

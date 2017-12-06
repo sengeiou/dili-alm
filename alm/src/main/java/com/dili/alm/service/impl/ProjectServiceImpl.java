@@ -3,8 +3,11 @@ package com.dili.alm.service.impl;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.text.html.HTMLDocument.HTMLReader.PreAction;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -14,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.constant.AlmConstants.MemberState;
@@ -38,6 +42,7 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
 
@@ -290,7 +295,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		return dto.getValues();
 	}
 
-	public EasyuiPageOutput listPageMyProject() {
+	public EasyuiPageOutput listPageMyProject(Project project) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		if (userTicket == null) {
 			throw new RuntimeException("未登录");
@@ -299,41 +304,51 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		List<Project> projectList = this.getActualDao().getProjectsByTaskOwner(userTicket.getId());
 		List<ProjectDto> projectDtoList = new ArrayList<ProjectDto>();
 		if (projectList != null && projectList.size() > 0) {
-			for (Project project : projectList) {
+			for (Project project1 : projectList) {
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				ProjectDto projectDto = new ProjectDto();
-				projectDto.setId(project.getId());
-				projectDto.setSerialNumber(project.getSerialNumber());
-				projectDto.setName(project.getName());
-				if (project.getType().equalsIgnoreCase("I")) {
-					projectDto.setType("内部项目");
-				} else if (project.getType().equalsIgnoreCase("K")) {
-					projectDto.setType("重点项目");
-				} else if (project.getType().equalsIgnoreCase("R")) {
-					projectDto.setType("预约项目");
-				} else if (project.getType().equalsIgnoreCase("G")) {
-					projectDto.setType("一般项目");
-				}
-				projectDto.setStartToEndDate(sdf.format(project.getCreated()) + "至" + sdf.format(project.getEndDate()));
-				projectDto.setActualStartDate(sdf.format(project.getActualStartDate()));
-				if (project.getProjectState() == 1) {
-					projectDto.setProjectState("进行中");
-				} else if (project.getProjectState() == 2) {
-					projectDto.setProjectState("已完成");
-				} else if (project.getProjectState() == 3) {
-					projectDto.setProjectState("暂停中");
-				} else if (project.getProjectState() == 4) {
-					projectDto.setProjectState("已关闭");
-				}
-				projectDto.setTaskCount(project.getTaskCount());
-				projectDto.setMemberCount(project.getMemberCount());
-				projectDto.setCompletedProgress(project.getCompletedProgress());
-				projectDto.setOriginator(project.getOriginator());
+				projectDto.setId(project1.getId());
+				projectDto.setSerialNumber(project1.getSerialNumber());
+				projectDto.setName(project1.getName());	
+				projectDto.setType(project1.getType());
+				projectDto.setStartToEndDate(sdf.format(project1.getCreated()) + "至" + sdf.format(project1.getEndDate()));
+				projectDto.setActualStartTime(sdf.format(project1.getActualStartDate()));
+				projectDto.setProjectState(project1.getProjectState());
+				projectDto.setTaskCount(project1.getTaskCount());
+				projectDto.setMemberCount(project1.getMemberCount());
+				projectDto.setCompletedProgress(project1.getCompletedProgress());
+				projectDto.setOriginator(project1.getOriginator());
 				projectDtoList.add(projectDto);
 			}
 		}
-		EasyuiPageOutput out = new EasyuiPageOutput(total, projectDtoList);
-		return out;
+		@SuppressWarnings("unchecked")
+		Map<Object, Object> metadata = null == project.getMetadata() ? new HashMap<>() : project.getMetadata();
+
+		JSONObject projectStatusProvider = new JSONObject();
+		projectStatusProvider.put("provider", "projectStatusProvider");
+		metadata.put("status", projectStatusProvider);
+		
+		JSONObject projectTypeProvider = new JSONObject();
+		projectTypeProvider.put("provider", "projectTypeProvider");
+		metadata.put("type", projectTypeProvider);
+		
+		JSONObject memberProvider = new JSONObject();
+		memberProvider.put("provider", "memberProvider");
+		metadata.put("originator", memberProvider);
+		
+		JSONObject provider = new JSONObject();
+		provider.put("provider", "datetimeProvider");
+		metadata.put("validTimeBegin", provider);
+		metadata.put("validTimeEnd", provider);
+		metadata.put("created", provider);
+		metadata.put("modified", provider);
+		project.setMetadata(metadata);
+		try {
+			List list = ValueProviderUtils.buildDataByProvider(project, projectDtoList);
+			return new EasyuiPageOutput(total, list);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	@Override

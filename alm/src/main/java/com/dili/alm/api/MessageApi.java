@@ -1,5 +1,8 @@
 package com.dili.alm.api;
 
+import java.util.List;
+import java.util.Map;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.dili.alm.domain.Message;
 import com.dili.alm.service.MessageService;
 import com.dili.alm.utils.WebUtil;
 import com.dili.ss.domain.BaseOutput;
@@ -51,4 +55,13 @@ public class MessageApi {
         }
 		
 	}
+	
+	@ApiOperation(value="查询Message", notes = "查询Message，返回列表信息")
+    @ApiImplicitParams({
+		@ApiImplicitParam(name="Message", paramType="form", value = "Message的form信息", required = false, dataType = "string")
+	})
+    @RequestMapping(value="/list", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody Map<String, Object> list() {
+        return messageService.mapMessagges();
+    }
 }

@@ -1,5 +1,7 @@
 package com.dili.alm.domain;
 
+import com.dili.ss.domain.annotation.Like;
+import com.dili.ss.domain.annotation.Operator;
 import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
@@ -32,6 +34,7 @@ public interface ProjectApply extends IBaseDomain {
     void setNumber(String number);
 
     @Column(name = "`name`")
+    @Like(Like.BOTH)
     @FieldDef(label="项目名称", maxLength = 255)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getName();
@@ -110,6 +113,7 @@ public interface ProjectApply extends IBaseDomain {
 
     @Column(name = "`start_date`")
     @FieldDef(label="计划开始日期")
+    @Operator(Operator.GREAT_EQUAL_THAN)
     @EditMode(editor = FieldEditor.Datetime, required = false)
     Date getStartDate();
 
@@ -117,6 +121,7 @@ public interface ProjectApply extends IBaseDomain {
 
     @Column(name = "`end_date`")
     @FieldDef(label="计划结束日期")
+    @Operator(Operator.LITTLE_EQUAL_THAN)
     @EditMode(editor = FieldEditor.Datetime, required = false)
     Date getEndDate();
 
@@ -183,7 +188,7 @@ public interface ProjectApply extends IBaseDomain {
     @EditMode(editor = FieldEditor.Number, required = false)
     Integer getStatus();
 
-    void setStatus(Byte status);
+    void setStatus(Integer status);
 
     @Column(name = "`created`")
     @FieldDef(label="created")
