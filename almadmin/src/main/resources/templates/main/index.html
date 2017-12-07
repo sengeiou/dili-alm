@@ -1,151 +1,277 @@
 <#body>
     <style>
-        td div div:first-child {
-            border: 0;
-            background-color: #EEEEEE;
-        }
-         body {
-             margin: 0;
-             padding: 0;
-         }
+    td div div:first-child {
+        border: 0;
+        background-color: #EEEEEE;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+    }
     </style>
-
-    <div class="easyui-layout" fit="true">
-        <!-- ====================================================================================================================== -->
-        <!-- 上方布局 -->
-        <!-- ====================================================================================================================== -->
-        <div region="north" height="auto" align="center">
-            <table width="100%" style="padding: 0px; margin:0px;border-spacing: 0; border: 0px inset #0092DC;background-color: #EEEEEE;" >
-                <tr>
-                    <td width="100%">
-                        <#menubutton _divId="mainMenu" _service="menuServiceImpl" _method="findUserMenu" _queryParams="${userid}"
-                                _textField="name" _idField="id" _parentIdField="parentId" plain="true" hasDownArrow="true"
-                                align="left" noline="true" onClick="menuClickHandler">
-                        </#menubutton>
-                    </td>
-
-                    <td style="align:right;">
-                        <div id="userMenu" class="easyui-panel" style="padding:5px; width: 100px;background-color: #EEEEEE;">
-                            <a id="menubutton_right" href="#" class="easyui-menubutton" data-options="menu:'#menu_right', plain:true, hasDownArrow:true">${username}</a>
-                        </div>
-                        <div id="menu_right" data-options="zIndex:'110000' , align:'left', noline:true, onClick:menuClickHandler">
-                            <div id="menu_userDetail" data-options="blankKey:'' ">
-                                用户信息
-                            </div>
-                            <div id="menu_changePwd" data-options="blankKey:'' ">
-                                修改密码
-                            </div>
-                            <div id="menu_logout" data-options="blankKey:'' ">
-                                注销
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-            </table>
-        </div>
-        <!-- ====================================================================================================================== -->
-        <!-- 中央布局 -->
-        <!-- ====================================================================================================================== -->
-        <div region="center" style="width:100%;" height="auto">
-            <div id="tabs" class="easyui-tabs" style="width: 100%; height: 100%" data-options="tabWidth:130, pill:true,onAdd:disableHover">
-                <!--<div title="主页" style="background-color:#24A6B1">-->
-                <!--</div>-->
+    <div id="page-layout" class="page-layout index-layout" >
+        <!--消息通知、用户信息-->
+        <div class="head" data-options="region:'north'" style="height:72px;border:none;">
+            <div class="info">
+                <!--用户设置-->
+                <div class="user-info show-list" data-id="user-menu">
+                    <div class="user-menu">
+                        <a class="user-img" href=""><img src="${contextPath}/resources/images/default-user.png" width="40" height="40" alt="头像"></a>
+                        <a class="user-name">${username} </a>
+                    </div>
+                </div>
+                <!--消息列表-->
+                <div class="msg show-list" data-id="news-list">
+                    <span id="messageCount"></span>
+                </div>
             </div>
+            <!--LOGO-->
+            <div class="logo">LOGO</div>
+            <!--顶部menu-->
+            <div class="menu-top">
+                <ul>
+                    <li class="on"><a href="${contextPath}/main/index.html">首页</a></li>
+                    <li><a href="">项目管理</a></li>
+                    <li><a href="">系统管理</a></li>
+                </ul>
+            </div>
+
+        </div>
+        <!--<div data-options="region:'south'" style="height:50px;"></div>-->
+        <!--左侧菜单栏-->
+        <div class="menu-left" data-options="region:'west'" style="width:251px;height:100%;border: none">
+            <div class="menu-name">
+                		首页
+            </div>
+ 			
+            <div id="menuList" class="easyui-accordion" data-options="multiple:true" style="width:251px;" >
+    			<% for(item in menu){ %>
+    				<div title="${item.name}" data-options="selected:true" style="overflow:auto;padding:10px 0;background: #f0f0f0;">
+		                <ul>
+		                    <% for(item1 in item.children){ %> 
+		                        <li>
+		                            <a href="javascript:void(0)" id="${item1.id }" rel="${item1.menuUrl}" onclick="menuClickHandler(this)">${item1.name}</a>
+		                        </li>     
+		                    <% } %>
+		                </ul>
+		             </div>
+		         <% } %>
+		     </div>
+		     
+    		
+
+        </div>
+        <!--页面主体内容-->
+        <div data-options="region:'center'" style="height:100%;padding:15px 15px 0;border: none;">
+           <iframe id="homeIndex" scrolling="auto" frameborder="0"  src="http://alm.diligrp.com:8083/alm/home/index" style="width:100%; height: 99.6%; display:block;"></iframe>
+           <div id="tabs" class="easyui-tabs"  fit="true" border="false" display="none">
+		   </div>
+	       
         </div>
     </div>
+    <!--用户菜单-->
+    <div class="menu-list" id="user-menu" data-index="0">
+        <ul>
+            <li><a href="javascript:void(0)" onclick="menuClickHandler(this)">用户信息</a></li>
+            <li><a  href="javascript:void(0)" onclick="menuClickHandler(this)">修改密码</a></li>
+            <li><a  href="javascript:void(0)" onclick="logout()">注销</a></li>
+        </ul>
+        <!--<span class="item dot-top"></span>-->
+    </div>
+    <!--消息列表-->
+    <div class="menu-list" id="news-list" data-index="1">
+        <ul id="messageList">
+        </ul>
+        <!--<span class="item dot-top"></span>-->
+    </div>
 
+
+
+    <script type="text/javascript">
+
+    $(function() {
+        $('#page-layout').layout();
+        //            setHeight();
+    });
+	
+	
+    function addItem() {
+        $('#page-layout').layout('panel', 'center').append('<p>More Panel Content.</p>');
+        setHeight();
+    }
+
+    function removeItem() {
+        $('#page-layout').layout('panel', 'center').find('p:last').remove();
+        setHeight();
+    }
+
+    function setHeight() {
+        var c = $('#page-layout');
+        var p = c.layout('panel', 'center'); // get the center panel
+        var oldHeight = p.panel('panel').outerHeight();
+        p.panel('resize', { height: 'auto' });
+        var newHeight = p.panel('panel').outerHeight();
+        c.layout('resize', {
+            height: (c.height() + newHeight - oldHeight)
+        });
+    }
+    </script>
     <!-- ====================================================================================================================== -->
     <!-- style & script 分隔线 -->
     <!-- ====================================================================================================================== -->
     <script type="text/javascript">
-
-        function menuClickHandler(item) {
-            var title = item.text;
-            var url = item.menuUrl;
-
-            if ("menu_logout" == item.id) {
-                logout();
-                return;
-            }
-
-            if ($('#tabs').tabs('exists', title)){
-                $('#tabs').tabs('select', title);
+    
+    function menuClickHandler(obj) {
+        var title = obj.text;
+        var url = obj.rel;
+		var id = obj.id;
+		
+		$("#homeIndex").css('display','none');
+		$("#tabs").css('display','block');
+		
+		$("li").removeClass("on");
+		console.log(id);
+		if(id!=null&&id!=''){
+			$("#"+id+"").parent().addClass("on");
+		}
+        if ("menu_logout" == id) {
+            logout();
+            return;
+        }
+		
+        if ($('#tabs').tabs('exists', title)) {
+            $('#tabs').tabs('select', title);
+        } else {
+            var tabs = $('#tabs').tabs("tabs");
+            if (4 > tabs.length) {
+                addOneTab(title, url);
             } else {
-                var tabs = $('#tabs').tabs("tabs");
-                if ( 4 > tabs.length) {
-                    addOneTab(title,url);
-                } else {
-                    $.messager.alert('提示','已打开的功能面板过多，请先关闭无用面板');
-                }
+                $.messager.alert('提示', '已打开的功能面板过多，请先关闭无用面板');
             }
         }
+    }
 
-        function panelLoaded(){
-            window.setTimeout(function() {
-                setHoverTabs();
-            }, 100);
+    function panelLoaded() {
+        window.setTimeout(function() {
+            setHoverTabs();
+        }, 100);
 
+    }
+
+    function disableHover() {
+        var tabs = $('#tabs').tabs('tabs');
+
+        for (var i = 0; i < tabs.length; i++) {
+            tabs[i].panel('options').tab.unbind();
+        }
+    }
+
+    function addOneTab(title, url) {
+        if ("用户信息" == title) {
+            url = "${contextPath}/main/userDetail.html";
+
+        } else if ("修改密码" == title) {
+            url = "${contextPath}/main/changePwd.html"
         }
 
-        function disableHover(){
-            var tabs = $('#tabs').tabs('tabs');
+        var content = '<iframe scrolling="auto" frameborder="0"  src="' + url + '" onLoad="panelLoaded()" style="width:100%; height: 99.6%;"></iframe>';
 
-            for(var i=0; i<tabs.length; i++){
-                tabs[i].panel('options').tab.unbind();
-            }
-        }
-        
-        function addOneTab(title, url) {
-            if ("用户信息" == title) {
-                url = "${contextPath}/main/userDetail.html";
-
-            } else if ("修改密码" == title) {
-                url = "${contextPath}/main/changePwd.html"
-            }
-
-            var content = '<iframe scrolling="auto" frameborder="0"  src="'+url+'" onLoad="panelLoaded()" style="width:100%; height: 99.6%;"></iframe>';
-
-            $('#tabs').tabs('add',{
-                title:title,
-                content:content,
-                cache:false,
-                closable:true
-
-            });
-
-        }
-
-        function closeTab(title) {
-            if ($('#tabs').tabs('exists', title)) {
-                $('#tabs').tabs('close', title);
-            }
-        }
-        
-        function backToLogin() {
-            window.location.href = "${contextPath}/login/index.html";
-        }
-        
-        function logout() {
-            $.post('${contextPath!}/login/logoutAction',null,function(data){
-            	if ("200" == data.code) {
-                    window.location.href = "${contextPath}/login/index.html";
-                } else {
-                    $.messager.alert('提示','注销失败');
-                }
-            });
-        }
-
-        function setHoverTabs() {
-            var tabs = $('#tabs').tabs('tabs');
-            for(var i=0; i<tabs.length; i++){
-                tabs[i].panel('options').tab.unbind().bind('mouseenter',{index:i},function(e){
-                    $('#tabs').tabs('select', e.data.index);
-                });
-            }
-        }
-        
-        $(function () {
+        $('#tabs').tabs('add', {
+            title: title,
+            content: content,
+            cache: false,
+            closable: true
 
         });
+
+    }
+
+    function closeTab(title) {
+        if ($('#tabs').tabs('exists', title)) {
+            $('#tabs').tabs('close', title);
+        }
+    }
+
+    function backToLogin() {
+        window.location.href = "${contextPath}/login/index.html";
+    }
+
+    function logout() {
+        $.post('${contextPath!}/login/logoutAction', null, function(data) {
+            if ("200" == data.code) {
+                window.location.href = "${contextPath}/login/index.html";
+            } else {
+                $.messager.alert('提示', '注销失败');
+            }
+        });
+    }
+
+    function setHoverTabs() {
+        var tabs = $('#tabs').tabs('tabs');
+        for (var i = 0; i < tabs.length; i++) {
+            tabs[i].panel('options').tab.unbind().bind('mouseenter', { index: i }, function(e) {
+                $('#tabs').tabs('select', e.data.index);
+            });
+        }
+    }
+
+    /**顶部header滑动下拉**/
+    $(function () {
+        let timer=[];
+        $('.show-list').on('mouseover',function(){
+            $('#'+$(this).data('id')).show();
+            if($(this).data('id')=='user-menu'){
+                $(this).find('.user-menu').addClass('mouseover');
+            }
+            clearTimeout(timer[$(this).index()]);
+        }).on('mouseout',function(){
+            var buttonObj=$(this);
+            var obj=$('#'+$(this).data('id'));
+            timer[$(this).index()]=setTimeout(function(){
+                obj.hide();
+                if(buttonObj.data('id')=='user-menu'){
+                    buttonObj.find('.user-menu').removeClass('mouseover');
+                }
+            }, 300);
+        });
+
+        $('.menu-list').on('mouseover',function(){
+//            console.log(1,$(this).data('index'));
+            clearTimeout(timer[$(this).data('index')]);
+            $(this).show();
+        }).on('mouseout',function(){
+            var obj = $(this);
+            console.log($(this).data('index')===0)
+            timer[$(this).data('index')]=setTimeout(function(){
+                if(obj.data('index')===0){
+                    $('.user-menu').removeClass('mouseover');
+                }
+                obj.hide();
+            }, 300);
+        });
+        messagesListen();
+    });
+    /** 得到消息通知信息  **/
+    var getMessages = {
+    		type: "POST",
+            url:'http://alm.diligrp.com:8083/alm/messageApi/list',
+            dataType:'json',
+            success:function(data) {
+            	
+    			var result = data.messages;
+    			$("#messageCount").empty();
+             	$('#messageCount').text(data.count);
+             	$("#messageList").empty();
+    			for(var i = 0; i<result.length; i++){
+     				$("#messageList").append("<li><a href='"+result[i].url+"'>一条消息未处理</a></li>");
+    			} 
+    			
+    		}
+    	};
+   		function messagesListen(){$.ajax(getMessages)}	
+    	//关键在这里，Ajax定时访问服务端，不断获取数据 ，这里是30秒请求一次。	
+    	window.setInterval(function(){$.ajax(getMessages)},30000);
+ 
     </script>
 </#body>

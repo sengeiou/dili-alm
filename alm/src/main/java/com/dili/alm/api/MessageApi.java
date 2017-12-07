@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiOperation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -60,6 +61,7 @@ public class MessageApi {
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Message", paramType="form", value = "Message的form信息", required = false, dataType = "string")
 	})
+	@CrossOrigin(origins = "http://almadmin.diligrp.com")
     @RequestMapping(value="/list", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody Map<String, Object> list() {
         return messageService.mapMessagges();

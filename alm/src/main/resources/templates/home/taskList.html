@@ -276,8 +276,6 @@
      *          表单提交需执行的任务
      */
     $(function () {
-        bindFormEvent("form", "name", queryGrid);
-        bindFormEvent("_form", "_name", saveOrUpdate, function (){$('#dlg').dialog('close');});
         if (document.addEventListener) {
             document.addEventListener("keyup",getKey,false);
         } else if (document.attachEvent) {

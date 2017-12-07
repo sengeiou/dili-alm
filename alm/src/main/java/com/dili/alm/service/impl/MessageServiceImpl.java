@@ -60,7 +60,7 @@ public class MessageServiceImpl extends BaseServiceImpl<Message, Long> implement
 			message.setRecipient(48L);
 			message.setIsRead(false);
 			List<Message> list = this.getActualDao().select(message);
-			map.put("message", list);
+			map.put("messages", list);
 			int count = this.getActualDao().selectCount(message);
 			map.put("count", count);
 		}
