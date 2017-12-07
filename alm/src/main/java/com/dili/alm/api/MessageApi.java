@@ -63,7 +63,7 @@ public class MessageApi {
 	})
 	@CrossOrigin(origins = "http://almadmin.diligrp.com")
     @RequestMapping(value="/list", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody Map<String, Object> list() {
-        return messageService.mapMessagges();
+    public @ResponseBody Map<String, Object> list(String userId) {
+        return messageService.mapMessagges(userId);
     }
 }

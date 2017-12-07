@@ -32,8 +32,8 @@
             <div class="menu-top">
                 <ul>
                     <li class="on"><a href="${contextPath}/main/index.html">首页</a></li>
-                    <li><a href="">项目管理</a></li>
-                    <li><a href="">系统管理</a></li>
+                    <li><a href="javascript:void(0)" >项目管理</a></li>
+                    <li><a href="javascript:void(0)" >系统管理</a></li>
                 </ul>
             </div>
 
@@ -129,9 +129,7 @@
 		
 		$("#homeIndex").css('display','none');
 		$("#tabs").css('display','block');
-		
-		$("li").removeClass("on");
-		console.log(id);
+		$("#"+id+"").parent().parent().children("li").removeClass("on");
 		if(id!=null&&id!=''){
 			$("#"+id+"").parent().addClass("on");
 		}
@@ -253,25 +251,32 @@
         messagesListen();
     });
     /** 得到消息通知信息  **/
+    var userId =${userid}
     var getMessages = {
     		type: "POST",
             url:'http://alm.diligrp.com:8083/alm/messageApi/list',
+            data:{userId,userId},
             dataType:'json',
             success:function(data) {
-            	
-    			var result = data.messages;
-    			$("#messageCount").empty();
-             	$('#messageCount').text(data.count);
-             	$("#messageList").empty();
-    			for(var i = 0; i<result.length; i++){
-     				$("#messageList").append("<li><a href='"+result[i].url+"'>一条消息未处理</a></li>");
-    			} 
-    			
+            	if(data.count==0){
+            		$("#messageCount").empty();
+	             	$("#messageList").empty();
+            		$("#messageCount").css('display','none');
+            	}else{
+            		$("#messageCount").css('display','block');
+	    			var result = data.messages;
+	    			$("#messageCount").empty();
+	             	$('#messageCount').text(data.count);
+	             	$("#messageList").empty();
+	    			for(var i = 0; i<result.length; i++){
+	     				$("#messageList").append("<li><a href='"+result[i].url+"'>一条消息未处理</a></li>");
+	    			} 
+            	}
     		}
     	};
    		function messagesListen(){$.ajax(getMessages)}	
     	//关键在这里，Ajax定时访问服务端，不断获取数据 ，这里是30秒请求一次。	
-    	window.setInterval(function(){$.ajax(getMessages)},30000);
+    	window.setInterval(function(){$.ajax(getMessages)},300000);
  
     </script>
 </#body>

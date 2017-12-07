@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 import com.dili.alm.dao.MessageMapper;
 import com.dili.alm.domain.Message;
 import com.dili.alm.service.MessageService;
+import com.dili.alm.utils.WebUtil;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
@@ -49,15 +50,14 @@ public class MessageServiceImpl extends BaseServiceImpl<Message, Long> implement
 	}
 
 	@Override
-	public Map<String,Object> mapMessagges() {
-		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+	public Map<String,Object> mapMessagges(String userId) {
 		Map<String,Object> map=new HashMap<String, Object>();
-//		if(userTicket==null){
-//			throw new RuntimeException("未登录");
-//		}
+		if(WebUtil.strIsEmpty(userId)){
+			throw new RuntimeException("未登录");
+		}
 		Message message=DTOUtils.newDTO(Message.class);
 		synchronized (this) {// 这个很重要，必须使用一个锁， 
-			message.setRecipient(48L);
+			message.setRecipient(Long.parseLong(userId));
 			message.setIsRead(false);
 			List<Message> list = this.getActualDao().select(message);
 			map.put("messages", list);
