@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 
+
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.dili.alm.domain.Weekly;
@@ -26,9 +28,11 @@ import com.dili.alm.domain.dto.NextWeeklyDto;
 import com.dili.alm.domain.dto.ProjectWeeklyDto;
 import com.dili.alm.domain.dto.TaskDto;
 import com.dili.alm.domain.dto.WeeklyPara;
+import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.WeeklyDetailsService;
 import com.dili.alm.service.WeeklyService;
 import com.dili.ss.domain.BaseOutput;
+
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -42,6 +46,7 @@ public class WeeklyController  {
     WeeklyService weeklyService;
     @Autowired
     WeeklyDetailsService  weeklyDetailsService;
+
 
     @ApiOperation("跳转到Weekly页面")
     @RequestMapping(value="/index", method = RequestMethod.GET)
@@ -80,8 +85,12 @@ public class WeeklyController  {
     }
     @RequestMapping(value="/save", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput save(WeeklyDetails WeeklyDetails) {
-    	
-    	weeklyDetailsService.createInsert(WeeklyDetails);
+    	 WeeklyDetails.setIsSubmit(1);
+        WeeklyDetails wd=weeklyDetailsService.getWeeklyDetailsByWeeklyId(WeeklyDetails.getWeeklyId());
+    	 if(wd==null)
+    		 weeklyDetailsService.createInsert(WeeklyDetails); 
+    	 else
+    		 weeklyDetailsService.updateSelective(WeeklyDetails);
         return BaseOutput.success("保存成功");
     }
     @RequestMapping(value="/updateWeeklyDetails", method = {RequestMethod.GET, RequestMethod.POST})
@@ -90,18 +99,24 @@ public class WeeklyController  {
     	weeklyDetailsService.updateSelective(WeeklyDetails);
         return BaseOutput.success("保存成功");
     }
+    @RequestMapping(value="/updateWeeklyDetailsCancel", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput updateWeeklyDetailsCancel(WeeklyDetails WeeklyDetails) {
+    	
+    	weeklyDetailsService.updateSelective(WeeklyDetails);
+        return BaseOutput.success("修改成功");
+    }
     
     @RequestMapping(value="/saveMaxQu", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput saveMaxQu(String str,String id) {
     	long longid=Long.parseLong(id);
     	weeklyService.updateMaxQuestion(str, longid);
-        return BaseOutput.success("保存成功");
+        return BaseOutput.success("重大问题保存成功");
     }
     @RequestMapping(value="/saveMaxRist", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput saveMaxRist(String str,String id) {
     	long longid=Long.parseLong(id);
     	weeklyService.updateMaxRist(str, longid);
-        return BaseOutput.success("保存成功");
+        return BaseOutput.success("重要风险保存成功");
     }
     
     @ApiOperation("修改Weekly")
@@ -113,6 +128,7 @@ public class WeeklyController  {
         weeklyService.updateSelective(weekly);
         return BaseOutput.success("修改成功");
     }
+  
 
     @ApiOperation("删除Weekly")
     @ApiImplicitParams({

@@ -1954,7 +1954,7 @@ select:focus{
 
 .tabs-header,
 .tabs-tool {
-    background-color: #F2F2F2;
+    /*background-color: #F2F2F2;*/
 }
 
 .tabs-header-plain {
