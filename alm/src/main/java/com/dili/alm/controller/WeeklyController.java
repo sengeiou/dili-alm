@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 
+
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.dili.alm.domain.Weekly;
@@ -26,9 +28,11 @@ import com.dili.alm.domain.dto.NextWeeklyDto;
 import com.dili.alm.domain.dto.ProjectWeeklyDto;
 import com.dili.alm.domain.dto.TaskDto;
 import com.dili.alm.domain.dto.WeeklyPara;
+import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.WeeklyDetailsService;
 import com.dili.alm.service.WeeklyService;
 import com.dili.ss.domain.BaseOutput;
+
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -42,6 +46,7 @@ public class WeeklyController  {
     WeeklyService weeklyService;
     @Autowired
     WeeklyDetailsService  weeklyDetailsService;
+
 
     @ApiOperation("跳转到Weekly页面")
     @RequestMapping(value="/index", method = RequestMethod.GET)

@@ -101,10 +101,10 @@
             </table>
             <!-- datagrid工具栏 -->
             <div id="toolbar" style="padding:2px 5px;">
-                <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true"></a>
+                <!-- <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true"></a>
                 <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()" plain="true"></a>
                 <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true"></a>
-                <a href="#" class="easyui-linkbutton" iconCls="icon-export" onclick="doExport('grid')" plain="true"></a>
+                <a href="#" class="easyui-linkbutton" iconCls="icon-export" onclick="doExport('grid')" plain="true"></a> -->
                 <div style="float:right">
                 边框显示:<select onchange="changeBorder('grid',this.value)">
                     <option value="lines-both">全边框</option>
@@ -344,8 +344,9 @@
         }
         //项目编号
         function formatserialNumber(val,row,index){  
-        	  return  "<a href='${contextPath}/weekly/list?id=" + row.id + "' target='_blank'>"+val+"</a>";   
-           
+        	  return  "<a href='${contextPath}/project/detail?id=" + row.id + "' target='_blank'>"+val+"</a>";   
+        	
+
         }
         //项目名称
         function formatprojectName(val,row,index){  
