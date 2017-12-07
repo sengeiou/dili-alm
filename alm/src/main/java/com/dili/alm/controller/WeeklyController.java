@@ -80,8 +80,12 @@ public class WeeklyController  {
     }
     @RequestMapping(value="/save", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput save(WeeklyDetails WeeklyDetails) {
-    	
-    	weeklyDetailsService.createInsert(WeeklyDetails);
+    	 WeeklyDetails.setIsSubmit(1);
+        WeeklyDetails wd=weeklyDetailsService.getWeeklyDetailsByWeeklyId(WeeklyDetails.getWeeklyId());
+    	 if(wd==null)
+    		 weeklyDetailsService.createInsert(WeeklyDetails); 
+    	 else
+    		 weeklyDetailsService.updateSelective(WeeklyDetails);
         return BaseOutput.success("保存成功");
     }
     @RequestMapping(value="/updateWeeklyDetails", method = {RequestMethod.GET, RequestMethod.POST})
@@ -90,18 +94,24 @@ public class WeeklyController  {
     	weeklyDetailsService.updateSelective(WeeklyDetails);
         return BaseOutput.success("保存成功");
     }
+    @RequestMapping(value="/updateWeeklyDetailsCancel", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput updateWeeklyDetailsCancel(WeeklyDetails WeeklyDetails) {
+    	
+    	weeklyDetailsService.updateSelective(WeeklyDetails);
+        return BaseOutput.success("修改成功");
+    }
     
     @RequestMapping(value="/saveMaxQu", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput saveMaxQu(String str,String id) {
     	long longid=Long.parseLong(id);
     	weeklyService.updateMaxQuestion(str, longid);
-        return BaseOutput.success("保存成功");
+        return BaseOutput.success("重大问题保存成功");
     }
     @RequestMapping(value="/saveMaxRist", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput saveMaxRist(String str,String id) {
     	long longid=Long.parseLong(id);
     	weeklyService.updateMaxRist(str, longid);
-        return BaseOutput.success("保存成功");
+        return BaseOutput.success("重要风险保存成功");
     }
     
     @ApiOperation("修改Weekly")
@@ -113,6 +123,7 @@ public class WeeklyController  {
         weeklyService.updateSelective(weekly);
         return BaseOutput.success("修改成功");
     }
+  
 
     @ApiOperation("删除Weekly")
     @ApiImplicitParams({

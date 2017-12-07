@@ -42,7 +42,8 @@ public class WeeklyDetailsServiceImpl extends BaseServiceImpl<WeeklyDetails, Lon
 
 	@Autowired
 	WeeklyDetailsMapper weeklyDetailsMapper;
-
+	@Autowired
+	WeeklyMapper weeklyMapper;
 	@Override
 	public WeeklyDetails getWeeklyDetailsByWeeklyId(Long id) {
 		
@@ -51,7 +52,7 @@ public class WeeklyDetailsServiceImpl extends BaseServiceImpl<WeeklyDetails, Lon
 
 	@Override
 	public Integer createInsert(WeeklyDetails weeklyDetails) {
-		// TODO Auto-generated method stub
+		
 		return weeklyDetailsMapper.createInsert(weeklyDetails);
 	}
 	

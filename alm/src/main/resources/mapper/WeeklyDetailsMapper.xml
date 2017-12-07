@@ -83,5 +83,17 @@
   </insert>
   
   
+  <!-- <update id="updateByWeeklyId" parameterType="com.dili.alm.domain.WeeklyDetails">
+  
+   update weekly_details
+     <set>
+     
+      <if test="isSubmit != null">
+         is_submit = #{isSubmit,jdbcType=INTEGER},
+      </if>
+    </set>
+     where  weekly_id= #{weeklyId,jdbcType=BIGINT}
+  </update> -->
+  
   
 </mapper>
