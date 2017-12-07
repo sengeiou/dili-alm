@@ -1,8 +1,6 @@
 <#body>
     <div id="main" style="width:1000px;">
     <div id="tt" class="easyui-tabs" style="width:70%;height:500px;float:left;">
-
-    <div id="tt" class="easyui-tabs" style="width:70%;height:500px">
         <div title="待办任务" >
           <iframe scrolling="auto" frameborder="0"  src="/alm/home/taskList" style="width:100%;height:100%;"></iframe> 
         </div>
@@ -22,10 +20,9 @@
 	   </ol>
 	   </div>
 	</div>
-	</div>
-	
+		
 	  <!-- 隐藏编辑框 -->
-    <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="日程详情" style="padding:20px" modal="true" border="thin" closed="true"
+    <div id="dlg" class="easyui-dialog" shadow="false" resizable="false" constrain="true" shadow="true" draggable="false" title="日程详情"style="width:400px;height:200px;padding:10px" modal="true" border="thin" closed="true"
          data-options="
 				iconCls: 'icon-save',
 				height: 200,
@@ -57,6 +54,8 @@
         </table>
         </form>
     </div>
+	</div>
+
 <script type="text/javascript">
 $(function() {
 	  init();
@@ -95,7 +94,10 @@ $(function() {
 				//弹出框
 	            var selDate =$.fullCalendar.formatDate(date,'yyyy-MM-dd');//格式化日期   
 	            $('#dlg').dialog("open");
+	            $('#_form').form("clear");
 	            $('#_form').form("load",{scheduleDate:selDate});
+	            $('#dlg').panel('move',{top:$(document).scrollTop() + ($(window).height()-100) * 0.5});
+	            $('#dlg').panel('move',{left:$(document).scrollTop() + ($(window).height()+50) * 0.5});
 	        },eventMouseover:function(calEvent, jsEvent, view){
 	        
 	        	var selDate =$.fullCalendar.formatDate(calEvent.start,'yyyy-MM-dd');//格式化日期  
@@ -175,7 +177,7 @@ $(function() {
 		 var htmlStr="";
 		 $("#scheduleList").empty();
 		  $(obj).each(function(){
-            htmlStr+="<li>"+this.scheduleText +"<a href='javascript:void(0)' onclick='del("+this.id+")'>删除</a></li>";
+            htmlStr+="<li>"+this.scheduleText +"&nbsp;&nbsp;<a href='javascript:void(0)' onclick='del("+this.id+")'>删除</a></li>";
 		  });
 		 $("#scheduleList").html(htmlStr);
 
