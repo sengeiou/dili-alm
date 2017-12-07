@@ -427,6 +427,10 @@ function deletePhase(id) {
 			});
 }
 
+function showMembers() {
+	window.location.href = '${contextPath!}/team/index.html?projectId=${model.id!}';
+}
+
 $(function() {
 			var uploadObj = $("#uploadDiv").uploadFile({
 						url : "${contextPath!}/files/filesUpload?projectId=" + $('#projectId').val(), // 文件上传url

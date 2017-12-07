@@ -5,11 +5,6 @@ function isEditing() {
 	return undefined != editIndex;
 }
 
-// 清空表单
-function clearForm() {
-	$('#form').form('clear');
-}
-
 // 结束行编辑
 function endEditing() {
 	if (editIndex == undefined) {
@@ -45,23 +40,6 @@ function openInsert() {
 	teamGrid.datagrid('beginEdit', editIndex);
 }
 
-// 开启选中行的编辑模式
-function openUpdate() {
-	if (!dataAuth.updateTeam) {
-		return;
-	}
-	var selected = teamGrid.datagrid("getSelected");
-	if (!selected) {
-		$.messager.alert('警告', '请选中一条数据');
-		return;
-	}
-	var index = teamGrid.datagrid('getRowIndex', selected);
-	if (endEditing()) {
-		teamGrid.datagrid('selectRow', index).datagrid('beginEdit', index);
-		editIndex = index;
-	}
-}
-
 // 根据主键删除
 function del() {
 	if (!dataAuth.deleteTeam) {
@@ -74,6 +52,9 @@ function del() {
 	}
 	$.messager.confirm('确认', '您确认想要删除记录吗？', function(r) {
 				if (r) {
+					if (!selected.deletable) {
+						$.messager.alert('警告', '该数据不能删除');
+					}
 					$.ajax({
 								type : "POST",
 								url : '${contextPath!}/team/delete',
@@ -166,18 +147,6 @@ function getKey(e) {
 }
 
 /**
- * 双击行的处理方法
- * 
- * @param {}
- *            index 行索引
- * @param {}
- *            field 行数据
- */
-function onDblClickRow(index, field) {
-	openUpdate();
-}
-
-/**
  * 显示编辑行最后一列的操作按钮
  * 
  * @param {}
@@ -212,28 +181,16 @@ function onBeginEdit(index, row) {
 	$.extend(true, oldRecord, row);
 	var editor = teamGrid.datagrid('getEditor', {
 				index : index,
-				field : 'projectId'
-			});
-	editor.target.textbox('setValue', row.$_projectId);
-	editor.target.textbox('setText', row.projectId);
-	editor = teamGrid.datagrid('getEditor', {
-				index : index,
 				field : 'memberId'
 			});
 	editor.target.textbox('setValue', row.$_memberId);
 	editor.target.textbox('setText', row.memberId);
 	editor = teamGrid.datagrid('getEditor', {
 				index : index,
-				field : 'type'
+				field : 'role'
 			});
-	editor.target.textbox('setValue', row.$_type);
-	editor.target.textbox('setText', row.type);
-	editor = teamGrid.datagrid('getEditor', {
-				index : index,
-				field : 'memberState'
-			});
-	editor.target.textbox('setValue', row.$_memberState);
-	editor.target.textbox('setText', row.memberState);
+	editor.target.textbox('setValue', row.$_role);
+	editor.target.textbox('setText', row.role);
 	resizeColumn();
 	hideCMAndShowOpt(row.id);
 }
@@ -247,31 +204,13 @@ function onBeginEdit(index, row) {
 function resizeColumn(original) {
 	if (original) {
 		teamGrid.datagrid('resizeColumn', [{
-							field : 'projectId',
-							width : '20%'
-						}, {
-							field : 'memberId',
-							width : '20%'
-						}, {
-							field : 'type',
-							width : '10%'
-						}, {
-							field : 'memberState',
-							width : '10%'
+							field : 'adminRoles',
+							width : '40%'
 						}]);
 	} else {
 		teamGrid.datagrid('resizeColumn', [{
-							field : 'projectId',
-							width : '25%'
-						}, {
-							field : 'memberId',
-							width : '25%'
-						}, {
-							field : 'type',
-							width : '15%'
-						}, {
-							field : 'memberState',
-							width : '15%'
+							field : 'adminRoles',
+							width : '30%'
 						}]);
 	}
 }
@@ -279,15 +218,11 @@ function resizeColumn(original) {
 function hideCMAndShowOpt(id) {
 	showOptButtons(id);
 	teamGrid.datagrid('showColumn', 'opt');
-	teamGrid.treegrid('hideColumn', 'joinTime');
-	teamGrid.treegrid('hideColumn', 'leaveTime');
 }
 
 function showCMAndHideOpt(id) {
 	hideOptButtons(id);
 	teamGrid.datagrid('hideColumn', 'opt');
-	teamGrid.treegrid('showColumn', 'joinTime');
-	teamGrid.treegrid('showColumn', 'leaveTime');
 }
 
 function showOptButtons(id) {
@@ -318,11 +253,12 @@ function hideOptButtons(id) {
  * @param {}
  *            changes 被修改的数据
  */
-function insertOrUpdateMenu(index, row, changes) {
+function insertOrUpdateTeam(index, row, changes) {
 	var postData = getOriginalData(row);
 	var url = '${contextPath!}/team/';
 	if (!row.id) {
 		url += 'insert';
+		postData.projectId = $('#projectId').val();
 	} else {
 		url += 'update'
 	}
@@ -340,19 +276,9 @@ function insertOrUpdateMenu(index, row, changes) {
 					return;
 				}
 				if (!row.id) {
-					row.id = data.data.id;
+					row = data.data;
 					$('#btnSaveTemp').prop('id', 'btnSave' + row.id);
 					$('#btnCancelTemp').prop('id', 'btnCancel' + row.id);
-				}
-				if (data.data.joinTime) {
-					var date = new Date()
-					date.setTime(data.data.joinTime);
-					row.joinTime = date.Format('yyyy-MM-dd HH:mm:ss');
-				}
-				if (data.data.leaveTime) {
-					var date = new Date()
-					date.setTime(data.data.leaveTime);
-					row.leaveTime = date.Format('yyyy-MM-dd HH:mm:ss');
 				}
 				teamGrid.datagrid('updateRow', {
 							index : index,
@@ -423,6 +349,13 @@ function editorCallback(field) {
 	// $("#"+field+"_"+index).textbox("setText","213231");
 	showMembersDlg(field + "_" + index);
 }
+
+// 清空表单
+function clearForm() {
+	$('#form').form('clear');
+	$('#memberId').textbox('initValue', '');
+}
+
 // 表格查询
 function queryGrid() {
 	var opts = $("#grid").datagrid("options");
@@ -449,28 +382,17 @@ function queryGrid() {
 function onEndEdit(index, row) {
 	var editor = $(this).datagrid('getEditor', {
 				index : index,
-				field : 'projectId'
-			});
-	row.projectId = editor.target.combobox('getText');
-	row.$_projectId = editor.target.combobox('getValue');
-	editor = $(this).datagrid('getEditor', {
-				index : index,
 				field : 'memberId'
 			});
 	row.memberId = editor.target.textbox('getText');
 	row.$_memberId = editor.target.textbox('getValue');
 	editor = $(this).datagrid('getEditor', {
 				index : index,
-				field : 'type'
+				field : 'role'
 			});
-	row.type = editor.target.combobox('getText');
-	row.$_type = editor.target.combobox('getValue');
-	editor = $(this).datagrid('getEditor', {
-				index : index,
-				field : 'memberState'
-			});
-	row.memberState = editor.target.textbox('getText');
-	row.$_memberState = editor.target.textbox('getValue');
+	row.role = editor.target.textbox('getText');
+	row.$_role = editor.target.textbox('getValue');
+
 	var isValid = teamGrid.datagrid('validateRow', index);
 	if (!isValid) {
 		return false;
@@ -480,7 +402,7 @@ function onEndEdit(index, row) {
 function onAfterEdit(index, row, changes) {
 	resizeColumn(true);
 	showCMAndHideOpt(index);
-	insertOrUpdateMenu(index, row, changes);
+	insertOrUpdateTeam(index, row, changes);
 }
 
 /**

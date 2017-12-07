@@ -14,7 +14,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2017-10-24 14:31:10.
+ * This file was generated on 2017-12-07 16:15:59.
  */
 @Table(name = "`team`")
 public interface Team extends IBaseDomain {
@@ -41,20 +41,6 @@ public interface Team extends IBaseDomain {
 
     void setMemberId(Long memberId);
 
-    @Column(name = "`type`")
-    @FieldDef(label="团队类型", maxLength = 10)
-    @EditMode(editor = FieldEditor.Combo, required = false, params="{\"data\":[{\"text\":\"产品\",\"value\":1},{\"text\":\"开发\",\"value\":2},{\"text\":\"测试\",\"value\":3}],\"provider\":\"teamTypeProvider\"}")
-    String getType();
-
-    void setType(String type);
-
-    @Column(name = "`member_state`")
-    @FieldDef(label="状态")
-    @EditMode(editor = FieldEditor.Combo, required = false, params="{\"data\":[{\"text\":\"离开\",\"value\":0},{\"text\":\"加入\",\"value\":1}],\"provider\":\"MemberStateProvider\"}")
-    Integer getMemberState();
-
-    void setMemberState(Integer memberState);
-
     @Column(name = "`join_time`")
     @FieldDef(label="加入时间")
     @EditMode(editor = FieldEditor.Datetime, required = true)
@@ -62,9 +48,23 @@ public interface Team extends IBaseDomain {
 
     void setJoinTime(Date joinTime);
 
+    @Column(name = "`role`")
+    @FieldDef(label="团队角色", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = true)
+    String getRole();
+
+    void setRole(String role);
+
+    @Column(name = "`deletable`")
+    @FieldDef(label="是否可删除")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Boolean getDeletable();
+
+    void setDeletable(Boolean deletable);
+
     @Column(name = "`leave_time`")
     @FieldDef(label="离开时间")
-    @EditMode(editor = FieldEditor.Datetime, required = true)
+    @EditMode(editor = FieldEditor.Datetime, required = false)
     Date getLeaveTime();
 
     void setLeaveTime(Date leaveTime);

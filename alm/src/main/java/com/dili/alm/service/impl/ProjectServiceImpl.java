@@ -2,12 +2,11 @@ package com.dili.alm.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.swing.text.html.HTMLDocument.HTMLReader.PreAction;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +25,9 @@ import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.dao.TeamMapper;
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.ProjectEntity;
 import com.dili.alm.domain.ProjectVersion;
+import com.dili.alm.domain.Task;
 import com.dili.alm.domain.Team;
 import com.dili.alm.domain.TeamType;
 import com.dili.alm.domain.dto.DataDictionaryDto;
@@ -219,9 +220,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 			Date now = new Date();
 			tt.setJoinTime(now);
 			tt.setMemberId(project.getProjectManager());
-			tt.setMemberState(MemberState.JOIN.getCode());
 			tt.setProjectId(project.getId());
-			tt.setType(String.valueOf(TeamType.DEVELOP.getCode()));
 			BaseOutput<Object> output = this.teamService.insertAfterCheck(tt);
 			if (!output.isSuccess()) {
 				throw new ProjectException(output.getResult());
@@ -234,9 +233,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 			Date now = new Date();
 			tt.setJoinTime(now);
 			tt.setMemberId(project.getProductManager());
-			tt.setMemberState(MemberState.JOIN.getCode());
 			tt.setProjectId(project.getId());
-			tt.setType(String.valueOf(TeamType.PRODUCT.getCode()));
 			BaseOutput<Object> output = this.teamService.insertAfterCheck(tt);
 			if (!output.isSuccess()) {
 				throw new ProjectException(output.getResult());
@@ -249,9 +246,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 			Date now = new Date();
 			tt.setJoinTime(now);
 			tt.setMemberId(project.getTestManager());
-			tt.setMemberState(MemberState.JOIN.getCode());
 			tt.setProjectId(project.getId());
-			tt.setType(String.valueOf(TeamType.TEST.getCode()));
 			BaseOutput<Object> output = this.teamService.insertAfterCheck(tt);
 			if (!output.isSuccess()) {
 				throw new ProjectException(output.getResult());
@@ -309,9 +304,10 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 				ProjectDto projectDto = new ProjectDto();
 				projectDto.setId(project1.getId());
 				projectDto.setSerialNumber(project1.getSerialNumber());
-				projectDto.setName(project1.getName());	
+				projectDto.setName(project1.getName());
 				projectDto.setType(project1.getType());
-				projectDto.setStartToEndDate(sdf.format(project1.getCreated()) + "至" + sdf.format(project1.getEndDate()));
+				projectDto
+						.setStartToEndDate(sdf.format(project1.getCreated()) + "至" + sdf.format(project1.getEndDate()));
 				projectDto.setActualStartTime(sdf.format(project1.getActualStartDate()));
 				projectDto.setProjectState(project1.getProjectState());
 				projectDto.setTaskCount(project1.getTaskCount());
@@ -327,15 +323,15 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		JSONObject projectStatusProvider = new JSONObject();
 		projectStatusProvider.put("provider", "projectStatusProvider");
 		metadata.put("status", projectStatusProvider);
-		
+
 		JSONObject projectTypeProvider = new JSONObject();
 		projectTypeProvider.put("provider", "projectTypeProvider");
 		metadata.put("type", projectTypeProvider);
-		
+
 		JSONObject memberProvider = new JSONObject();
 		memberProvider.put("provider", "memberProvider");
 		metadata.put("originator", memberProvider);
-		
+
 		JSONObject provider = new JSONObject();
 		provider.put("provider", "datetimeProvider");
 		metadata.put("validTimeBegin", provider);
@@ -358,6 +354,49 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 			return null;
 		}
 		return dto.getValues();
+	}
+
+	@Override
+	public Map<Object, Object> getDetailViewData(Long id) {
+		Project project = this.getActualDao().selectByPrimaryKey(id);
+		ProjectEntity viewData = DTOUtils.toEntity(project, ProjectEntity.class, true);
+		Task taskQuery = DTOUtils.newDTO(Task.class);
+		taskQuery.setProjectId(id);
+		Integer taskCount = this.taskMapper.selectCount(taskQuery);
+		viewData.setTaskCount(taskCount);
+		Integer memberCount = this.teamMapper.countProjectMember(id);
+		viewData.setMemberCount(memberCount);
+		try {
+			return this.parseEasyUiModel(viewData);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	private Map<Object, Object> parseEasyUiModel(Project project) throws Exception {
+		List<Map> list = this.parseEasyUiModelList(Arrays.asList(project));
+		return list.get(0);
+	}
+
+	private List<Map> parseEasyUiModelList(List<Project> list) throws Exception {
+		Map<Object, Object> metadata = new HashMap<>();
+
+		JSONObject projectTypeProvider = new JSONObject();
+		projectTypeProvider.put("provider", "projectTypeProvider");
+		metadata.put("type", projectTypeProvider);
+
+		JSONObject datetimeProvider = new JSONObject();
+		datetimeProvider.put("provider", "datetimeProvider");
+		metadata.put("startDate", datetimeProvider);
+		metadata.put("actualStartDate", datetimeProvider);
+
+		JSONObject memberProvider = new JSONObject();
+		memberProvider.put("provider", "memberProvider");
+		metadata.put("projectManager", memberProvider);
+		metadata.put("testManager", memberProvider);
+		metadata.put("productManager", memberProvider);
+		return ValueProviderUtils.buildDataByProvider(metadata, list);
 	}
 
 }

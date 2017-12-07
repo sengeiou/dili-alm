@@ -234,6 +234,14 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		return BaseOutput.failure();
 	}
 
+	@Override
+	public List<Files> listFiles(Long versionId) {
+		Example example = new Example(Files.class);
+		Example.Criteria criteria = example.createCriteria();
+		criteria.andEqualTo("versionId", versionId).andIsNull("phaseId");
+		return this.filesMapper.selectByExample(example);
+	}
+
 	// @Override
 	// public EasyuiPageOutput listEasyuiPageByExample(ProjectVersion
 	// projectVersion, boolean useProvider) throws Exception {
@@ -277,14 +285,6 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		onlineProvider.put("provider", "onlineProvider");
 		metadata.put("online", onlineProvider);
 		return ValueProviderUtils.buildDataByProvider(metadata, list);
-	}
-
-	@Override
-	public List<Files> listFiles(Long versionId) {
-		Example example = new Example(Files.class);
-		Example.Criteria criteria = example.createCriteria();
-		criteria.andEqualTo("versionId", versionId).andIsNull("phaseId");
-		return this.filesMapper.selectByExample(example);
 	}
 
 }

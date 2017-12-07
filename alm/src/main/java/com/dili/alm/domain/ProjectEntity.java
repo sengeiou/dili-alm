@@ -36,8 +36,6 @@ public class ProjectEntity extends BaseDomain implements Project {
 	private Integer completedProgress;
 	private Long originator;
 
-	private Long projectId;
-
 	private Long projectManager;
 
 	private Long developManager;
@@ -227,6 +225,6 @@ public class ProjectEntity extends BaseDomain implements Project {
 
 	@Override
 	public void setApplyId(Long applyId) {
-		this.applyId=applyId;		
+		this.applyId = applyId;
 	}
 }

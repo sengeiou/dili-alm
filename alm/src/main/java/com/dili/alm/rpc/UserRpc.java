@@ -1,5 +1,6 @@
 package com.dili.alm.rpc;
 
+import com.dili.alm.domain.Role;
 import com.dili.alm.domain.User;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.retrofitful.annotation.POST;
@@ -12,7 +13,7 @@ import java.util.List;
 /**
  * Created by asiamaster on 2017/10/19 0019.
  */
-@Restful("http://127.0.0.1:8080/almadmin")
+@Restful("http://almadmin.diligrp.com/almadmin")
 public interface UserRpc {
 	@POST("/userApi/list")
 	BaseOutput<List<User>> list(@VOBody User user);
@@ -22,4 +23,10 @@ public interface UserRpc {
 
 	@POST("/userApi/listUserByRole")
 	BaseOutput<List<User>> listUserByRole(@VOSingleParameter Long id);
+
+	@POST("/userApi/listUserRole")
+	BaseOutput<List<Role>> findUserRoles(@VOSingleParameter Long memberId);
+
+	@POST("/userApi/findByUserId")
+	BaseOutput<User> findUserById(@VOSingleParameter Long memberId);
 }

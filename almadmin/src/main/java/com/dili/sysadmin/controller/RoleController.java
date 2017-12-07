@@ -52,6 +52,11 @@ public class RoleController {
 		return BaseOutput.success("查询成功").setData(retList);
 	}
 
+	@RequestMapping(value = "/list.json", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody List<Role> listJson(Role role) {
+		return roleService.list(role);
+	}
+
 	@ApiOperation(value = "查询某个用户的Role", notes = "查询某个用户的Role，返回列表信息")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Role", paramType = "form", value = "Role的form信息", required = false, dataType = "string") })

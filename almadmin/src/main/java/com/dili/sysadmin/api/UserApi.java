@@ -1,7 +1,9 @@
 package com.dili.sysadmin.api;
 
 import com.dili.ss.domain.BaseOutput;
+import com.dili.sysadmin.domain.Role;
 import com.dili.sysadmin.domain.User;
+import com.dili.sysadmin.service.RoleService;
 import com.dili.sysadmin.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -25,9 +27,12 @@ import java.util.List;
 public class UserApi {
 	@Autowired
 	UserService userService;
+	@Autowired
+	private RoleService roleService;
 
 	@ApiOperation(value = "查询User列表接口", notes = "查询User列表接口，返回列表信息")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = false, dataType = "string") })
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<List<User>> list(@RequestBody(required = false) User user) {
 		return BaseOutput.success().setData(userService.list(user));
@@ -35,8 +40,8 @@ public class UserApi {
 
 	@RequestMapping(value = "listUserByRole")
 	@ResponseBody
-	public BaseOutput<List<User>> listUserByRole(@RequestBody Long id){
-			return BaseOutput.success().setData(userService.findUserByRole(id));
+	public BaseOutput<List<User>> listUserByRole(@RequestBody Long id) {
+		return BaseOutput.success().setData(userService.findUserByRole(id));
 	}
 
 	@ResponseBody
@@ -44,4 +49,17 @@ public class UserApi {
 	public BaseOutput<User> listByExample(@RequestBody(required = false) User user) {
 		return BaseOutput.success().setData(this.userService.listByExample(user));
 	}
+
+	@RequestMapping(value = "/listUserRole")
+	@ResponseBody
+	public BaseOutput<List<Role>> listUserRole(@RequestBody Long userId) {
+		return BaseOutput.success().setData(this.roleService.findByUserId(userId));
+	}
+
+	@RequestMapping(value = "/findByUserId")
+	@ResponseBody
+	public BaseOutput<User> findByUserId(@RequestBody Long userId) {
+		return BaseOutput.success().setData(this.userService.get(userId));
+	}
+
 }

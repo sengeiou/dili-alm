@@ -32,5 +32,7 @@ public class AlmCache {
 
 	// 文件类型
 	public static final Map<Integer, String> FILE_TYPE_MAP = new ConcurrentHashMap<>();
+	// 团队角色
+	public static final Map<String, String> TEAM_ROLE_MAP = new ConcurrentHashMap<>();
 
 }

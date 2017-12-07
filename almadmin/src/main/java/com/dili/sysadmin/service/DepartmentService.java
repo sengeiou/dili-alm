@@ -22,4 +22,6 @@ public interface DepartmentService extends BaseService<Department, Long> {
 	List<DepartmentUserCountDto> listDepartmentUserCount(Department department);
 
 	Department findById(Long departmentId);
+
+	List<Department> findByUserId(Long userId);
 }

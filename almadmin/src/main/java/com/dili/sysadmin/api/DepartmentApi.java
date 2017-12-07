@@ -24,4 +24,10 @@ public class DepartmentApi {
 		List<Department> list = this.departmentService.list(department);
 		return BaseOutput.success().setData(list);
 	}
+
+	@RequestMapping(value = "/findByUserId", method = { RequestMethod.GET, RequestMethod.POST })
+	public BaseOutput<List<Department>> list(@RequestBody Long userId) {
+		List<Department> list = this.departmentService.findByUserId(userId);
+		return BaseOutput.success().setData(list);
+	}
 }
