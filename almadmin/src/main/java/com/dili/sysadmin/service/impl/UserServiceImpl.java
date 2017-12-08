@@ -44,6 +44,8 @@ import com.dili.sysadmin.domain.dto.AddUserDto;
 import com.dili.sysadmin.domain.dto.UpdateUserDto;
 import com.dili.sysadmin.domain.dto.UpdateUserPasswordDto;
 import com.dili.sysadmin.domain.dto.UserDepartmentDto;
+import com.dili.sysadmin.domain.dto.UserDepartmentRole;
+import com.dili.sysadmin.domain.dto.UserDepartmentRoleQuery;
 import com.dili.sysadmin.domain.dto.UserLoginDto;
 import com.dili.sysadmin.domain.dto.UserLoginResultDto;
 import com.dili.sysadmin.exception.UserException;
@@ -305,7 +307,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 	 * @param user
 	 */
 	private void jamUser(User user) {
-		if (this.manageConfig.getUserLimitOne() && this.sessionManager.existUserIdSessionDataKey(user.getId().toString())) {
+		if (this.manageConfig.getUserLimitOne()
+				&& this.sessionManager.existUserIdSessionDataKey(user.getId().toString())) {
 			String oldSessionId = this.userManager.clearUserSession(user.getId());
 			// 为了提示
 			this.sessionManager.addKickSessionKey(oldSessionId);
@@ -317,7 +320,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 		sessionData.put(SessionConstants.LOGGED_USER, JSON.toJSONString(user));
 
 		LOG.debug("--- Save Session Data To Redis ---");
-		this.redisUtil.set(SessionConstants.SESSION_KEY_PREFIX + sessionId, JSON.toJSONString(sessionData), SessionConstants.SESSION_TIMEOUT);
+		this.redisUtil.set(SessionConstants.SESSION_KEY_PREFIX + sessionId, JSON.toJSONString(sessionData),
+				SessionConstants.SESSION_TIMEOUT);
 		// redis: sessionId - userID
 		this.sessionManager.setSessionUserIdKey(sessionId, user.getId().toString());
 		// redis: userID - sessionId
@@ -514,6 +518,11 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 			target.add(dto);
 		}
 		return target;
+	}
+
+	@Override
+	public List<UserDepartmentRole> findUserContainDepartmentAndRole(UserDepartmentRoleQuery query) {
+		return this.getActualDao().findUserContainDepartmentAndRole(query);
 	}
 
 }

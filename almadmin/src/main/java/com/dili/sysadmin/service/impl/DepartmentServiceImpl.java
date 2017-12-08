@@ -17,7 +17,7 @@ import com.dili.sysadmin.dao.UserDepartmentMapper;
 import com.dili.sysadmin.dao.UserMapper;
 import com.dili.sysadmin.domain.Department;
 import com.dili.sysadmin.domain.UserDepartment;
-import com.dili.sysadmin.domain.dto.DepartmentContainRole;
+import com.dili.sysadmin.domain.dto.UserDepartmentRole;
 import com.dili.sysadmin.domain.dto.DepartmentUserCountDto;
 import com.dili.sysadmin.service.DepartmentService;
 
@@ -114,11 +114,6 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department, Long> imp
 	@Override
 	public List<Department> findByUserId(Long userId) {
 		return this.getActualDao().findByUserId(userId);
-	}
-
-	@Override
-	public List<DepartmentContainRole> findByUserIdContainRoles(Long userId) {
-		return this.getActualDao().findByUserIdContainRoles(userId);
 	}
 
 }

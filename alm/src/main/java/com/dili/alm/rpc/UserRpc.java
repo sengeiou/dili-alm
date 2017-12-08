@@ -2,6 +2,8 @@ package com.dili.alm.rpc;
 
 import com.dili.alm.domain.Role;
 import com.dili.alm.domain.User;
+import com.dili.alm.domain.dto.UserDepartmentRole;
+import com.dili.alm.domain.dto.UserDepartmentRoleQuery;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.retrofitful.annotation.POST;
 import com.dili.ss.retrofitful.annotation.Restful;
@@ -29,4 +31,7 @@ public interface UserRpc {
 
 	@POST("/userApi/findByUserId")
 	BaseOutput<User> findUserById(@VOSingleParameter Long memberId);
+
+	@POST("/userApi/findUserContainDepartmentAndRole")
+	BaseOutput<List<UserDepartmentRole>> findUserContainDepartmentAndRole(UserDepartmentRoleQuery dto);
 }

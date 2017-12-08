@@ -23,6 +23,22 @@
 		<result column="valid_time_end" jdbcType="TIMESTAMP" property="validTimeEnd" />
 	</resultMap>
 
+	<resultMap id="UDRResultMap"
+		type="com.dili.sysadmin.domain.dto.UserDepartmentRole">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="real_name" jdbcType="VARCHAR" property="realName" />
+		<result column="cellphone" jdbcType="VARCHAR" property="cellphone" />
+		<result column="email" jdbcType="VARCHAR" property="email" />
+		<association property="department">
+			<id column="department_id" property="id" />
+			<result column="department_name" property="name" />
+		</association>
+		<collection property="roles">
+			<id column="role_id" property="id" />
+			<result column="role_name" property="roleName" />
+		</collection>
+	</resultMap>
+
 	<sql id="Base_Column_List">
 		<!-- WARNING - @mbg.generated -->
 		id,
@@ -198,5 +214,38 @@
 		INNER JOIN user_department ud
 		ON u.id = ud.user_id
 		WHERE ud.department_id = #{deptId} AND u.yn = 1
+	</select>
+
+	<select id="findUserContainDepartmentAndRole" parameterType="com.dili.sysadmin.domain.dto.UserDepartmentRoleQuery"
+		resultMap="UDRResultMap">
+		SELECT DISTINCT
+		u.id,
+		u.user_name,
+		d.id AS department_id,
+		u.real_name,
+		u.cellphone,
+		u.email,
+		r.id AS role_id,
+		r.role_name
+		FROM
+		`user` u
+		INNER JOIN
+		user_department ud ON u.id = ud.user_id
+		LEFT JOIN department d ON
+		ud.department_id = d.id
+		INNER JOIN department_role dr ON
+		ud.department_id = dr.department_id
+		LEFT JOIN role r ON r.id =
+		dr.role_id
+		WHERE 1 = 1
+		<if test="userId != null">
+			AND u.id = #{userId}
+		</if>
+		<if test="departmentId != null">
+			AND ud.department_id = #{departmentId}
+		</if>
+		<if test="roleId != null">
+			AND dr.role_id = #{roleId}
+		</if>
 	</select>
 </mapper>

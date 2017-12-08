@@ -1,9 +1,9 @@
 package com.dili.alm.service.impl;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -15,16 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.TeamMapper;
-import com.dili.alm.domain.Department;
-import com.dili.alm.domain.Role;
 import com.dili.alm.domain.Team;
-import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
-import com.dili.alm.domain.dto.DepartmentContainRole;
-import com.dili.alm.domain.dto.TeamListViewDto;
+import com.dili.alm.domain.dto.UserDepartmentRole;
+import com.dili.alm.domain.dto.UserDepartmentRoleQuery;
 import com.dili.alm.rpc.DataAuthRpc;
-import com.dili.alm.rpc.DepartmentRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.TeamService;
@@ -46,8 +42,6 @@ public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements Team
 	private DataDictionaryService dataDictionaryService;
 	@Autowired
 	private UserRpc userRPC;
-	@Autowired
-	private DepartmentRpc departmentRPC;
 
 	public TeamMapper getActualDao() {
 		return (TeamMapper) getDao();
@@ -107,9 +101,9 @@ public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements Team
 		}
 		int result = this.insertSelective(team);
 		if (result > 0) {
-			TeamListViewDto viewDto = this.parse2ListView(team);
+			this.parse2ListView(team);
 			try {
-				return BaseOutput.success().setData(this.parseEasyUiModel(viewDto));
+				return BaseOutput.success().setData(team);
 			} catch (Exception e) {
 				LOGGER.error(e.getMessage(), e);
 				return BaseOutput.failure();
@@ -136,9 +130,9 @@ public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements Team
 			result = this.updateSelective(team);
 		}
 		if (result > 0) {
-			TeamListViewDto viewDto = this.parse2ListView(team);
+			this.parse2ListView(team);
 			try {
-				return BaseOutput.success().setData(this.parseEasyUiModel(viewDto));
+				return BaseOutput.success().setData(this.parseEasyUiModel(team));
 			} catch (Exception e) {
 				LOGGER.error(e.getMessage(), e);
 				return BaseOutput.failure();
@@ -157,58 +151,42 @@ public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements Team
 	}
 
 	@Override
-	public List<Map> listContainUserInfo(TeamListViewDto dto) {
-		List<Team> list = this.list(dto);
-		if (CollectionUtils.isEmpty(list)) {
+	public List<Team> listContainUserInfo(UserDepartmentRoleQuery dto) {
+		Team team = DTOUtils.newDTO(Team.class);
+		team.setMemberId(dto.getUserId());
+		List<Team> teams = this.list(team);
+		if (CollectionUtils.isEmpty(teams)) {
 			return null;
 		}
-		List<TeamListViewDto> dtoList = new ArrayList<>(list.size());
-		list.forEach(t -> {
-			TeamListViewDto entity = this.parse2ListView(t);
-			if (dto.getDepartmentId() != null && !entity.getDepartmentId().equals(dto.getDepartmentId())) {
-				return;
+		Iterator<Team> it = teams.iterator();
+		while (it.hasNext()) {
+			Team t = it.next();
+			BaseOutput<List<UserDepartmentRole>> output = this.userRPC.findUserContainDepartmentAndRole(dto);
+			if (output == null && !output.isSuccess()) {
+				return null;
 			}
-			dtoList.add(entity);
-		});
-		try {
-			return this.parseEasyUiModelList(dtoList);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
+			List<UserDepartmentRole> udrList = output.getData();
+			if (CollectionUtils.isEmpty(udrList)) {
+				it.remove();
+				continue;
+			}
+			t.aset("userInfo", udrList.get(0));
 		}
+		return teams;
 	}
 
-	private TeamListViewDto parse2ListView(Team team) {
-		TeamListViewDto entity = DTOUtils.toEntity(team, TeamListViewDto.class, true);
-		BaseOutput<List<Role>> output = this.userRPC.findUserRoles(team.getMemberId());
-		if (output != null || output.isSuccess()) {
-			List<Role> roles = output.getData();
-			if (CollectionUtils.isNotEmpty(roles)) {
-				StringBuilder sb = new StringBuilder();
-				roles.forEach(r -> {
-					sb.append(r.getRoleName()).append(",");
-				});
-				entity.setAdminRoles(sb.substring(0, sb.length() - 1));
-			}
+	private void parse2ListView(Team team) {
+		UserDepartmentRoleQuery dto = new UserDepartmentRoleQuery();
+		dto.setUserId(team.getMemberId());
+		BaseOutput<List<UserDepartmentRole>> output = this.userRPC.findUserContainDepartmentAndRole(dto);
+		if (output == null && !output.isSuccess()) {
+			return;
 		}
-		BaseOutput<User> userOutput = this.userRPC.findUserById(team.getMemberId());
-		if (userOutput != null || userOutput.isSuccess()) {
-			User user = userOutput.getData();
-			if (user != null) {
-				entity.setContact(user.getCellphone());
-				entity.setEmail(user.getEmail());
-			}
+		List<UserDepartmentRole> udrList = output.getData();
+		if (CollectionUtils.isEmpty(udrList)) {
+			return;
 		}
-		BaseOutput<List<DepartmentContainRole>> deptOutput = this.departmentRPC.findByUserIdContainRoles(team.getMemberId());
-		if (deptOutput != null || deptOutput.isSuccess()) {
-			List<Department> depts = deptOutput.getData();
-			if (CollectionUtils.isNotEmpty(depts)) {
-				Department dept = depts.get(0);
-				entity.setDepartmentId(dept.getId());
-				entity.setDepartmentName(dept.getName());
-			}
-		}
-		return entity;
+		team.aset("userInfo", udrList.get(0));
 	}
 
 	private Map<Object, Object> parseEasyUiModel(Team team) throws Exception {

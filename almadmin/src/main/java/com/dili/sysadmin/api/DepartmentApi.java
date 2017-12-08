@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dili.ss.domain.BaseOutput;
 import com.dili.sysadmin.domain.Department;
-import com.dili.sysadmin.domain.dto.DepartmentContainRole;
+import com.dili.sysadmin.domain.dto.UserDepartmentRole;
 import com.dili.sysadmin.service.DepartmentService;
 
 @RestController
@@ -32,9 +32,4 @@ public class DepartmentApi {
 		return BaseOutput.success().setData(list);
 	}
 
-	@RequestMapping(value = "/listContainRoles", method = { RequestMethod.GET, RequestMethod.POST })
-	public BaseOutput<Object> listDepartmentAndRole(Long departmentId) {
-		List<DepartmentContainRole> list = this.departmentService.findByUserIdContainRoles(departmentId);
-		return BaseOutput.success().setData(list);
-	}
 }
