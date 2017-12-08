@@ -45,7 +45,7 @@ public class MessageServiceImpl extends BaseServiceImpl<Message, Long> implement
 	@Override
 	public int updateMessageIsRead(Long messageId) {
 		Message message = this.getActualDao().selectByPrimaryKey(messageId);
-		message.setIsRead(false);
+		message.setIsRead(true);
 		return this.getActualDao().updateByPrimaryKeySelective(message);
 	}
 

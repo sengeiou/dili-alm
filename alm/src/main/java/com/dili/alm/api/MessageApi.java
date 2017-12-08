@@ -46,12 +46,13 @@ public class MessageApi {
 	@ApiImplicitParams({
 	@ApiImplicitParam(name="Message", paramType="form", value = "Message的form信息", required = true, dataType = "string")
 	})
+	@CrossOrigin(origins = {"http://almadmin.diligrp.com", "null"})
 	@RequestMapping(value="/updateMessageIsRead", method = {RequestMethod.GET, RequestMethod.POST})
-	public @ResponseBody BaseOutput update(Long id) {
-		if(id==null){
+	public @ResponseBody BaseOutput update(String id) {
+		if(WebUtil.strIsEmpty(id)){
 	        return BaseOutput.failure("修改状态失败,包含空值id="+id);
         }else{
-        	messageService.updateMessageIsRead(id);
+        	messageService.updateMessageIsRead(Long.parseLong(id));
 		    return BaseOutput.success("修改状态成功");
         }
 		
