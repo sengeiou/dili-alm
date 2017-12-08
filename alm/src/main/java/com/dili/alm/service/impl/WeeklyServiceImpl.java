@@ -187,7 +187,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		 
 
 		// 查询项目经理
-		 user.setId(Long.parseLong(pd.getUserName()));
+	     user.setId(Long.parseLong(pd.getUserName()));
 		 BaseOutput<List<User>>  listUserByExample = userRpc.listByExample(user);
 		 List<User> listUsernName = listUserByExample.getData();
 		 pd.setUserName(listUsernName.get(0).getUserName());

@@ -118,7 +118,7 @@
         </div>
     </div>
     <!-- 隐藏编辑框 -->
-    <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="Weekly信息" style="padding:20px" modal="true" border="thin" closed="true"
+    <!-- <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="Weekly信息" style="padding:20px" modal="true" border="thin" closed="true"
          data-options="
 				iconCls: 'icon-save',
 				height: 480,
@@ -132,7 +132,7 @@
 						$('#dlg').dialog('close');
 					}
 				}]
-			">
+			"> -->
     <form id="_form" class="easyui-form" method="post" fit="true">
         <input name="_id" id="_id" type="hidden">
         <table width="360px">
@@ -340,7 +340,7 @@
         
         function formatOper(val,row,index){  
         	//alert(row.serialNumber);
-            return '<a href="${contextPath}/weekly/getDescById?id='+row.id+'">周报预览</a>   <a href="${contextPath}/weekly/getDescById?id='+row.id+'">下载</a>';  
+            return '<a href="${contextPath}/weekly/getDescById?id='+row.id+'">周报预览</a>   <a href="${contextPath}/weekly/download?id='+row.id+'">下载</a>';  
         }
         //项目编号
         function formatserialNumber(val,row,index){  

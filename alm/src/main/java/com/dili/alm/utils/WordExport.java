@@ -264,7 +264,7 @@ public class WordExport {
 			nextTabledd.getCell(2).setText(wk.get(i).getOwner());
 			nextTabledd.getCell(3).setText(wk.get(i).getPlanTime());
 			nextTabledd.getCell(4).setText(wk.get(i).getEndDate());
-			nextTabledd.getCell(6).setText(wk.get(i).getDescribe());
+			nextTabledd.getCell(5).setText(wk.get(i).getDescribe());
 
 		}
 	}
