@@ -199,6 +199,8 @@ CREATE TABLE `task` (
   `modified`         TIMESTAMP       NULL     DEFAULT CURRENT_TIMESTAMP,
   `create_member_id` BIGINT          NULL,
   `modify_member_id` BIGINT          NULL,
+  `fact_begin_date` datetime DEFAULT NULL COMMENT '任务实际开始执行时间',
+  `fact_end_date` datetime DEFAULT NULL COMMENT '任务实际完成时间',
   PRIMARY KEY (`id`)
 );
 
