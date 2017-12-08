@@ -5,6 +5,7 @@ import java.util.List;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.sysadmin.domain.Department;
+import com.dili.sysadmin.domain.dto.DepartmentContainRole;
 import com.dili.sysadmin.domain.dto.DepartmentUserCountDto;
 
 /**
@@ -24,4 +25,6 @@ public interface DepartmentService extends BaseService<Department, Long> {
 	Department findById(Long departmentId);
 
 	List<Department> findByUserId(Long userId);
+
+	List<DepartmentContainRole> findByUserIdContainRoles(Long userId);
 }

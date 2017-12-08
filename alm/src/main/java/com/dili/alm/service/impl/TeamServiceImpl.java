@@ -21,6 +21,7 @@ import com.dili.alm.domain.Team;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
+import com.dili.alm.domain.dto.DepartmentContainRole;
 import com.dili.alm.domain.dto.TeamListViewDto;
 import com.dili.alm.rpc.DataAuthRpc;
 import com.dili.alm.rpc.DepartmentRpc;
@@ -198,7 +199,7 @@ public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements Team
 				entity.setEmail(user.getEmail());
 			}
 		}
-		BaseOutput<List<Department>> deptOutput = this.departmentRPC.findByUserId(team.getMemberId());
+		BaseOutput<List<DepartmentContainRole>> deptOutput = this.departmentRPC.findByUserIdContainRoles(team.getMemberId());
 		if (deptOutput != null || deptOutput.isSuccess()) {
 			List<Department> depts = deptOutput.getData();
 			if (CollectionUtils.isNotEmpty(depts)) {

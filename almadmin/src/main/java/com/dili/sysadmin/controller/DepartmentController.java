@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.sysadmin.domain.Department;
 import com.dili.sysadmin.domain.dto.DepartmentUserCountDto;
 import com.dili.sysadmin.service.DepartmentService;
@@ -47,8 +48,12 @@ public class DepartmentController {
 
 	@ResponseBody
 	@RequestMapping(value = "/listDepartmentUserCount", method = { RequestMethod.GET, RequestMethod.POST })
-	public List<DepartmentUserCountDto> listDepartmentUserCount(Department department) {
-		return this.departmentService.listDepartmentUserCount(department);
+	public String listDepartmentUserCount(Department department) {
+		EasyuiPageOutput e = new EasyuiPageOutput();
+		List<DepartmentUserCountDto> list = departmentService.listDepartmentUserCount(department);
+		e.setRows(list);
+		e.setTotal(list.size());
+		return e.toString();
 	}
 
 	@ResponseBody
