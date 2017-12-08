@@ -3,6 +3,7 @@ package com.dili.alm.service;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.List;
+import java.util.Map;
 
 import com.dili.alm.domain.Weekly;
 import com.dili.alm.domain.WeeklyJson;
@@ -71,7 +72,15 @@ public interface WeeklyService extends BaseService<Weekly, Long> {
 	 */
 	Integer   updateMaxRist(String list,Long id );
 	
+	/**
+	 * 文件下载
+	 * @param file
+	 * @param id
+	 * @return
+	 */
 	File downLoad(File file,String id);
+	
+	Map<Object,Object> getDescById(String id);
 	
 	
 }
