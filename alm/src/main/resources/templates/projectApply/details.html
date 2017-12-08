@@ -368,7 +368,7 @@
                 <tr>
                     <th style="text-align:center" data-options="field:'system',width:120,align:'center',editor:{type:'combobox',options:{required:true,url:'${contextPath}/project/list.json',method:'get',valueField:'name',textField:'name'}}">受影响系统</th>
                     <th style="text-align:center" data-options="field:'dep',width:150,align:'center',editor:{type:'combobox',options:{required:true,url:'${contextPath}/department/departments',method:'get',valueField:'name',textField:'name'}}">归属部门</th>
-                    <th style="text-align:center" data-options="width:'150',field:'memberId',  _provider:'memberProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',editor : {
+                    <th style="text-align:center" data-options="width:'150',field:'memberId',  _provider:'memberProvider', align:'center', resizable:'true', fixed:'false',editor : {
 								type : 'textbox',
 								options : {
 									required : true,
@@ -461,14 +461,17 @@
             <div style="text-align:left;padding:5px;margin-top:10px;">
                 <a href="${contextPath}/projectApply/index.html" class="easyui-linkbutton"
                    data-options="size:'large',width:'80px'">返回</a>
+                <a href="#" onclick="down()" class="easyui-linkbutton"
+                   data-options="size:'large',width:'80px'">下载</a>
             </div>
         </form>
 
     </div>
 </div>
-
+<script type="text/javascript" src="${contextPath!}/resources/js/FileSaver.js"></script>
 <script>
 
+    function down(){}
     function formatDown(value, row) {
         return "<a href='${contextPath!}/files/download?id=" + row.id + "'>" + value + "</a>";
     }

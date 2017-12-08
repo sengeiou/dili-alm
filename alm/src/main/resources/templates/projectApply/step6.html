@@ -40,7 +40,7 @@
                 <tr>
                     <th style="text-align:center" data-options="field:'system',width:120,align:'center',editor:{type:'combobox',options:{required:true,url:'${contextPath}/project/list.json',method:'get',valueField:'name',textField:'name'}}">受影响系统</th>
                     <th style="text-align:center" data-options="field:'dep',width:150,align:'center',editor:{type:'combobox',options:{required:true,url:'${contextPath}/department/departments',method:'get',valueField:'name',textField:'name'}}">归属部门</th>
-                    <th style="text-align:center" data-options="width:'150',field:'memberId',  _provider:'memberProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',editor : {
+                    <th style="text-align:center" data-options="width:'150',field:'memberId',  _provider:'memberProvider', align:'center', resizable:'true', fixed:'false',editor : {
 								type : 'textbox',
 								options : {
 									required : true,
@@ -50,9 +50,7 @@
 										selectMember('editorCallback', 'memberId');
 									}
 								}
-							},formatter:function(value,row){
-									return row.memberId;
-								},onChange:_changeTextboxShowClear">负责人</th>
+							},onChange:_changeTextboxShowClear">负责人</th>
                     <th style="text-align:center" data-options="field:'content',align:'center',width:250,editor:{type:'textbox',options:{multiline:true,validType:['length[0,50]']}}">影响内容</th>
                     <th style="text-align:center" data-options="field:'level',width:100,align:'center',editor:{type:'combobox',options:{required:true,url:'${contextPath}/dataDictionaryValue/listByCode.json?code=project_ importance',method:'get',valueField:'code',textField:'code'}}">项目重要性</th>
                 </tr>
@@ -232,7 +230,45 @@
 
 </script>
 <script type="text/javascript">
-    <#members_index/>
+    // 打开选择用户弹出框
+    function selectMember(callback, args) {
+        if (callback) {
+            eval("(" + callback + "(args))");
+        } else {
+            showMembersDlg($(this)[0].id);
+        }
+    }
+    // 确认选择事件
+    function confirmMembersBtn(id) {
+        var selected = $('#smGridList').datagrid('getSelected');
+        $('#' + id).textbox('initValue', selected.realName);
+        $('#' + id).textbox('setText', selected.realName);
+        $('#smDialog').dialog('close');
+    }
+    // 根据id打开用户选择
+    function showMembersDlg(id) {
+        $('#smDialog').dialog({
+            title : '用户选择',
+            width : 800,
+            height : 400,
+            queryParams : {
+                textboxId : id
+            },
+            href : '${contextPath!}/member/members.html',
+            modal : true,
+            buttons : [{
+                text : '确定',
+                handler : function() {
+                    confirmMembersBtn(id);
+                }
+            }, {
+                text : '取消',
+                handler : function() {
+                    $('#smDialog').dialog('close');
+                }
+            }]
+        });
+    }
 </script>
 
 </#body>

@@ -207,43 +207,51 @@ CREATE TABLE `task` (
 );
 
 CREATE TABLE `project_complete` (
-  `id`                BIGINT ZEROFILL NOT NULL AUTO_INCREMENT,
-  `project_id`        BIGINT          NULL
+  `id`                   BIGINT ZEROFILL NOT NULL AUTO_INCREMENT,
+  `project_id`           BIGINT          NULL
+  COMMENT '项目Id',
+  `number`               VARCHAR(255)    NULL
   COMMENT '项目编号',
-  `launch_date`       DATETIME        NULL
+  `name`                 VARCHAR(255)    NULL
+  COMMENT '项目名称',
+  `type`                 VARCHAR(255)    NULL
+  COMMENT '项目类型',
+  `launch_date`          DATETIME        NULL
   COMMENT '实际上线日期',
-  `complete_date`     DATETIME        NULL
+  `complete_date`        DATETIME        NULL
   COMMENT '结项日期',
-  `reason`            VARCHAR(255)    NULL,
-  `information`       VARCHAR(255)    NULL
+  `reason`               VARCHAR(255)    NULL,
+  `information`          VARCHAR(255)    NULL
   COMMENT '项目资料齐备情况',
-  `range`             VARCHAR(255)    NULL,
-  `management_method` VARCHAR(255)    NULL
+  `range`                VARCHAR(255)    NULL,
+  `management_method`    VARCHAR(255)    NULL
   COMMENT '项目管理方法',
-  `appraise`          VARCHAR(255)    NULL
+  `appraise`             VARCHAR(255)    NULL
   COMMENT '项目管理过程评价',
-  `raise`             VARCHAR(255)    NULL
+  `technical_evaluation` VARCHAR(255)    NULL
+  COMMENT '技术方法评价',
+  `raise`                VARCHAR(255)    NULL
   COMMENT '进步与提高',
-  `result`            VARCHAR(255)    NULL
+  `result`               VARCHAR(255)    NULL
   COMMENT '成果',
-  `product`           VARCHAR(255)    NULL
+  `product`              VARCHAR(255)    NULL
   COMMENT '产品',
-  `performance`       VARCHAR(255)    NULL
+  `performance`          VARCHAR(255)    NULL
   COMMENT '主要功能和性能',
-  `suggest`           VARCHAR(255)    NULL
+  `suggest`              VARCHAR(255)    NULL
   COMMENT '建议',
-  `question`          VARCHAR(255)    NULL
+  `question`             VARCHAR(255)    NULL
   COMMENT '问题',
-  `members`           VARCHAR(255)    NULL
+  `members`              VARCHAR(255)    NULL
   COMMENT '成员',
-  `hardware`          VARCHAR(255)    NULL
+  `hardware`             VARCHAR(255)    NULL
   COMMENT '硬件',
-  `email`             VARCHAR(255)    NULL,
-  `status`            TINYINT         NULL,
-  `created`           TIMESTAMP       NULL     DEFAULT CURRENT_TIMESTAMP,
-  `modified`          TIMESTAMP       NULL     DEFAULT CURRENT_TIMESTAMP,
-  `create_member_id`  BIGINT          NULL,
-  `modify_member_id`  BIGINT          NULL,
+  `email`                VARCHAR(255)    NULL,
+  `status`               TINYINT         NULL,
+  `created`              TIMESTAMP       NULL     DEFAULT CURRENT_TIMESTAMP,
+  `modified`             TIMESTAMP       NULL     DEFAULT CURRENT_TIMESTAMP,
+  `create_member_id`     BIGINT          NULL,
+  `modify_member_id`     BIGINT          NULL,
   PRIMARY KEY (`id`)
 );
 
@@ -338,7 +346,7 @@ CREATE TABLE `log` (
   `ip` varchar(20) DEFAULT NULL COMMENT 'IP',
   `content` text COMMENT '内容',
   PRIMARY KEY (`id`)
-) 
+)
 
 CREATE TABLE `work_schedule` (
   `id`            BIGINT(20) NOT NULL AUTO_INCREMENT

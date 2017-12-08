@@ -40,6 +40,12 @@
                     <td>审批中</td>
                 </tr>
                 <tr>
+                    <td>申请人</td>
+                    <td>${apply.createMemberId}</td>
+                    <td>创建日期</td>
+                    <td>${apply.created}</td>
+                </tr>
+                <tr>
                     <td class="title-first" colspan="3">1项目内容及资源</td>
                 </tr>
                 <tr>
@@ -169,7 +175,7 @@
                 var data = eval('(' + data + ')');
                 if (data.success == true) {
                     if (data.success == true) {
-                        window.location.href = "${contextPath}/approve/index.html";
+                        window.location.href = "${contextPath}/approve/apply/index.html";
                     }
                 }
             }
