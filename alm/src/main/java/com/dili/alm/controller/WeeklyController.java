@@ -5,16 +5,32 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+
+
+
+
+
+
+
+
 
 
 
@@ -200,7 +216,19 @@ public class WeeklyController  {
         return mv;
     }
     
-    
+    @RequestMapping("download")    
+    public ResponseEntity<byte[]> download(String id) throws IOException {  
+    	
+    	File file=new File("weekly.docx");
+         weeklyService.downLoad(file,"16");
+    	
+        HttpHeaders headers = new HttpHeaders();    
+        String fileName=new String("周报下载.docx".getBytes("UTF-8"),"iso-8859-1");//为了解决中文名称乱码问题  
+        headers.setContentDispositionFormData("attachment", fileName);   
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);  
+       
+        return new ResponseEntity<byte[]>(FileUtils.readFileToByteArray(file),headers, HttpStatus.CREATED);    
+    }    
    
     
 }
