@@ -4,7 +4,7 @@ DROP TABLE `phase`;
 DROP TABLE `project`;
 DROP TABLE `version`;
 DROP TABLE `task`;
-DROP TABLE `project_ complete`;
+DROP TABLE project_complete;
 DROP TABLE `project_change`;
 DROP TABLE `verify_approval`;
 DROP TABLE `task_details`;
@@ -125,6 +125,10 @@ CREATE TABLE `project` (
   COMMENT '项目类型',
   `project_leader`      BIGINT          NULL
   COMMENT '项目负责人',
+  `business_owner`       BIGINT          NULL
+  COMMENT '业务负责人',
+  `dep`      BIGINT          NULL
+  COMMENT '所属部门',
   `product_manager`     BIGINT          NULL
   COMMENT '产品经理',
   `development_manager` BIGINT          NULL
@@ -204,7 +208,7 @@ CREATE TABLE `task` (
   PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `project_ complete` (
+CREATE TABLE `project_complete` (
   `id`                BIGINT ZEROFILL NOT NULL AUTO_INCREMENT,
   `project_id`        BIGINT          NULL
   COMMENT '项目编号',
@@ -249,16 +253,20 @@ CREATE TABLE `project_change` (
   `id`               BIGINT ZEROFILL NOT NULL AUTO_INCREMENT,
   `name`             VARCHAR(255)    NULL
   COMMENT '变更名称',
+  `number`           VARCHAR(255)    NULL
+  COMMENT '变更编号',
+  `project_name`     VARCHAR(255)    NULL
+  COMMENT '项目名称',
   `project_id`       BIGINT          NULL
   COMMENT '变更项目',
   `version_id`       BIGINT          NULL
   COMMENT '版本',
   `phase_id`         BIGINT          NULL
   COMMENT '阶段',
-  `type`             TINYINT         NULL,
+  `type`             VARCHAR(50)     NULL,
   `working_hours`    VARCHAR(255)    NULL
   COMMENT '预估工时',
-  `affects_ online`  TINYINT         NULL
+  `affects_online`  TINYINT         NULL
   COMMENT '是否影响上线',
   `submit_date`      DATETIME        NULL
   COMMENT '提交日期',
@@ -266,6 +274,7 @@ CREATE TABLE `project_change` (
   `effects`          VARCHAR(255)    NULL
   COMMENT '影响说明',
   `email`            VARCHAR(255)    NULL,
+  `status`           TINYINT         NULL,
   `created`          TIMESTAMP       NULL     DEFAULT CURRENT_TIMESTAMP,
   `modified`         TIMESTAMP       NULL     DEFAULT CURRENT_TIMESTAMP,
   `create_member_id` BIGINT          NULL,

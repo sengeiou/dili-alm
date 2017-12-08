@@ -1,14 +1,8 @@
 package com.dili.alm.domain;
 
 import com.dili.ss.domain.BaseDomain;
-import com.dili.ss.dto.IBaseDomain;
-import com.dili.ss.metadata.FieldEditor;
-import com.dili.ss.metadata.annotation.EditMode;
-import com.dili.ss.metadata.annotation.FieldDef;
 
 import java.util.Date;
-
-import javax.persistence.*;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -148,6 +142,26 @@ public class ProjectEntity extends BaseDomain implements Project {
 
 	public void setOriginator(Long originator) {
 		this.originator = originator;
+	}
+
+	@Override
+	public Long getDep() {
+		return null;
+	}
+
+	@Override
+	public void setDep(Long dep) {
+
+	}
+
+	@Override
+	public Long getBusinessOwner() {
+		return null;
+	}
+
+	@Override
+	public void setBusinessOwner(Long businessOwner) {
+
 	}
 
 	@Override

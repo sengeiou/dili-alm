@@ -4,12 +4,9 @@ import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
 import com.dili.ss.metadata.annotation.FieldDef;
-import java.util.Date;
+
 import javax.persistence.*;
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import java.util.Date;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -159,4 +156,18 @@ public interface Project extends IBaseDomain {
 	Long getOriginator();
 
 	void setOriginator(Long originator);
+
+    @Column(name = "`dep`")
+    @FieldDef(label="dep")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Long getDep();
+
+    void setDep(Long dep);
+
+	@Column(name = "`business_owner`")
+	@FieldDef(label="业务负责人")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Long getBusinessOwner();
+
+	void setBusinessOwner(Long businessOwner);
 }

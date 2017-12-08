@@ -63,9 +63,9 @@
 				     <tr>
 				           <td  style="padding:5px;" colspan="6" rowspan='4'">  
 				               <% if(wDetails!=null){%>
-				                <input class="easyui-textbox" name="_risk" id="_risk" value="${wDetails.projectDescription}" style="width:100%;height:40px" data-options=" validType:'length[0,500]'" />
+				                <input class="easyui-textbox" name="projectDescription" id="projectDescription" value="${wDetails.projectDescription}" style="width:100%;height:40px" data-options=" validType:'length[0,500]'" />
 				              <%}else{%>
-				                <input class="easyui-textbox" name="_risk" id="_risk" value="" style="width:100%;height:40px" data-options=" validType:'length[0,500]'" />
+				                <input class="easyui-textbox" name="projectDescription" id="projectDescription" value="" style="width:100%;height:40px" data-options=" validType:'length[0,500]'" />
 				                <%}%> 
 				          </td>
 				    </tr>
@@ -384,7 +384,7 @@
 	                url: _url,
 	                data: { 
 	                	expectedDeviation:$("#expectedDeviation").val(),
-	                	risk: $("#_risk").val(),
+	                	projectDescription: $("#projectDescription").val(),
 	                	overallProgress:$('#overallProgress').val(),
 	                	weeklyId:$("#inHidden").val(),
 	                	other:$("#other").val(),

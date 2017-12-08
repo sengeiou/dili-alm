@@ -1,4 +1,4 @@
-package com.dili.alm.utils;
+package com.dili.alm.controller;
 
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;  
@@ -14,7 +14,7 @@ import javax.swing.table.DefaultTableCellRenderer;
   
   
 /** 
- * Created by zhouhs on 2017/1/9. 
+ * Created by  on 2017/1/9. 
  */  
 public class WordExportController {  
   
@@ -24,8 +24,6 @@ public class WordExportController {
   
         //Write the Document in file system  
         FileOutputStream out = new FileOutputStream(new File("create_table.docx"));  
-  
-  
         //添加标题  
         XWPFParagraph titleParagraph = document.createParagraph();  
         //设置段落居中  
@@ -33,73 +31,17 @@ public class WordExportController {
  
   
         XWPFRun titleParagraphRun = titleParagraph.createRun();  
-        titleParagraphRun.setText("Java PoI");  
+        titleParagraphRun.setText("项目周报");  
         titleParagraphRun.setColor("000000");  
         titleParagraphRun.setFontSize(20);  
       
         
   
-        //段落  
-       /* XWPFParagraph firstParagraph = document.createParagraph();  
-        XWPFRun run = firstParagraph.createRun();  
-        run.setText("Java POI 生成word文件。");  
-        run.setColor("696969");  
-        run.setFontSize(16);  */
-  
-        //设置段落背景颜色  
-      /*  CTShd cTShd = run.getCTR().addNewRPr().addNewShd();  
-        cTShd.setVal(STShd.CLEAR);  
-        cTShd.setFill("97FFFF");  
-  */
-  
-        //换行  
-        /*XWPFParagraph paragraph1 = document.createParagraph();  
-        XWPFRun paragraphRun1 = paragraph1.createRun();  
-        paragraphRun1.setText("\r");  
-  
-  
-        //基本信息表格  
-        XWPFTable infoTable = document.createTable();  
-        //去表格边框  
-        infoTable.getCTTbl().getTblPr().unsetTblBorders();  
-  
-  
-        //列宽自动分割  
-        CTTblWidth infoTableWidth = infoTable.getCTTbl().addNewTblPr().addNewTblW();  
-        infoTableWidth.setType(STTblWidth.DXA);  
-        infoTableWidth.setW(BigInteger.valueOf(9072));  
-  
-  
-        //表格第一行  
-        XWPFTableRow infoTableRowOne = infoTable.getRow(0);  
-        infoTableRowOne.getCell(0).setText("职位");  
-        infoTableRowOne.addNewTableCell().setText(": Java 开发工程师");  
-  
-        //表格第二行  
-        XWPFTableRow infoTableRowTwo = infoTable.createRow();  
-        infoTableRowTwo.getCell(0).setText("姓名");  
-        infoTableRowTwo.getCell(1).setText(": seawater");  
-  
-        //表格第三行  
-        XWPFTableRow infoTableRowThree = infoTable.createRow();  
-        infoTableRowThree.getCell(0).setText("生日");  
-        infoTableRowThree.getCell(1).setText(": xxx-xx-xx");  
-  
-        //表格第四行  
-        XWPFTableRow infoTableRowFour = infoTable.createRow();  
-        infoTableRowFour.getCell(0).setText("性别");  
-        infoTableRowFour.getCell(1).setText(": 男");  
-  
-        //表格第五行  
-        XWPFTableRow infoTableRowFive = infoTable.createRow();  
-        infoTableRowFive.getCell(0).setText("现居地");  
-        infoTableRowFive.getCell(1).setText(": xx");  
-  
-  
+       
         //两个表格之间加个换行  
         XWPFParagraph paragraph = document.createParagraph();  
         XWPFRun paragraphRun = paragraph.createRun();  
-        paragraphRun.setText("\r");  */
+        paragraphRun.setText("\r");  
   
   
   
@@ -107,8 +49,6 @@ public class WordExportController {
      
         XWPFTable ComTable = document.createTable();  
        
-
-        
         //列宽自动分割  
         CTTblWidth comTableWidth = ComTable.getCTTbl().addNewTblPr().addNewTblW();  
         comTableWidth.setType(STTblWidth.DXA);  
@@ -143,42 +83,202 @@ public class WordExportController {
         comTableRowThree.getCell(5).setText("Java开发工程师");  
         
         XWPFTableRow comTableRowFive= ComTable.createRow(); 
-        //comTableRowFive.getCell(0).getCTTc().addNewTcPr().addNewHMerge().setVal(STMerge.CONTINUE);    
-        comTableRowFive.getCell(0).setText("项目总体情况描述");
-        XWPFTableCell cell =comTableRowFive.getCell(0);
-        getParagraph(comTableRowFive.getCell(0),"sss");
-        
-        cell.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER); //垂直居中
-        
-      //  comTableRowFive.getCell(0).setVerticalAlignment(XWPFVertAlign.CENTER);
-       
-       
-      //  comTableRowFive.getCell(0).getCTTc().addNewTcPr().addNewHMerge().setVal(STMerge.CONTINUE);    
-        
-        
-       /* cell.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER); //垂直居中
-        comTableRowFive.getCell(0).set*/
-      //  DefaultTableCellRenderer renderer=new DefaultTableCellRenderer();
-       // renderer.setHorizontalAlignment(DefaultTableCellRenderer.CENTER);
-        //.setDefaultRenderer(Object.class, renderer);
-        //comTableRowFive.setRepeatHeader(true);
-      
+        getParagraph(comTableRowFive.getCell(0),"项目总体情况描述");
         
         XWPFTableRow comTableRowsix= ComTable.createRow(); 
-        comTableRowsix.getCell(0).getCTTc().addNewTcPr().addNewHMerge().setVal(STMerge.CONTINUE);    
-        comTableRowsix.getCell(0).setText("跨行");
-       // mergeCellsVertically(ComTable, 0, 0, 3); 
-           mergeCellsHorizontal(ComTable, 3, 0, 5);
-           mergeCellsHorizontal(ComTable, 4, 0, 5);
+        getParagraph(comTableRowsix.getCell(0),"跨行");
         
+        mergeCellsHorizontal(ComTable, 3, 0, 5);
+        mergeCellsHorizontal(ComTable, 4, 0, 5);
+        
+           
+           
+  
+        
+        document.createParagraph().createRun().setText("\r"); 
+        
+        //本周进展情况
+        
+        XWPFTable thisWeekTable = document.createTable();  
+        //列宽自动分割  
+        CTTblWidth thisTableWidth = thisWeekTable.getCTTbl().addNewTblPr().addNewTblW();  
+        thisTableWidth.setType(STTblWidth.DXA);  
+        thisTableWidth.setW(BigInteger.valueOf(9072));  
+           
+      
+        XWPFTableRow thisWeekTableRowone = thisWeekTable.getRow(0);  
+       // thisWeekTableRowone.getCell(0).setText("本周进展情况");  
+        thisWeekTableRowone.addNewTableCell();  
+        thisWeekTableRowone.addNewTableCell();  
+        thisWeekTableRowone.addNewTableCell();
+        thisWeekTableRowone.addNewTableCell();  
+        thisWeekTableRowone.addNewTableCell();
+        thisWeekTableRowone.addNewTableCell();  
+        thisWeekTableRowone.addNewTableCell();  
+        thisWeekTableRowone.addNewTableCell();
+        thisWeekTableRowone.addNewTableCell();  
+        thisWeekTableRowone.addNewTableCell();
+
+        mergeCellsHorizontal(thisWeekTable, 0, 0, 10);
+        getParagraph(thisWeekTableRowone.getCell(0),"本周进展情况");
+        //表格第二行  
+        XWPFTableRow thisWeekTTableRowTwo = thisWeekTable.createRow();  
+        thisWeekTTableRowTwo.getCell(0).setText("本周项目版本");  
+        mergeCellsHorizontal(thisWeekTable, 1, 0, 1);
+        thisWeekTTableRowTwo.getCell(2).setText("sdfdefe 本");  
+        mergeCellsHorizontal(thisWeekTable, 1,2, 4);
+        thisWeekTTableRowTwo.getCell(5).setText("本周项目阶段");  
+        mergeCellsHorizontal(thisWeekTable, 1,5,7);
+        thisWeekTTableRowTwo.getCell(8).setText("本周项目阶段");  
+        mergeCellsHorizontal(thisWeekTable, 1,8, 10);
+        
+        XWPFTableRow thisTableTHREE = thisWeekTable.createRow();
+        thisTableTHREE.getCell(0).setText("序号");  
+        thisTableTHREE.getCell(1).setText("任务名称");  
+        thisTableTHREE.getCell(2).setText("版本"); 
+        thisTableTHREE.getCell(3).setText("阶段");  
+        thisTableTHREE.getCell(4).setText("责任人");  
+        thisTableTHREE.getCell(5).setText("完成情况");  
+        thisTableTHREE.getCell(6).setText("本周工时");  
+        thisTableTHREE.getCell(7).setText("预计工时");  
+        thisTableTHREE.getCell(8).setText("实际工时");  
+        thisTableTHREE.getCell(9).setText("工时偏差%");  
+        thisTableTHREE.getCell(10).setText("备注");  
+       
+        
+        
+        document.createParagraph().createRun().setText("\r");   
+      
+        
+        XWPFTable nextWeekTable = document.createTable();  
+        //列宽自动分割  
+        CTTblWidth nextWeekTableWidth = nextWeekTable.getCTTbl().addNewTblPr().addNewTblW();  
+        nextWeekTableWidth.setType(STTblWidth.DXA);  
+        nextWeekTableWidth.setW(BigInteger.valueOf(9072));  
+           
+      
+        XWPFTableRow nextWeekTableRowone = nextWeekTable.getRow(0);  
+       // thisWeekTableRowone.getCell(0).setText("本周进展情况");  
+        nextWeekTableRowone.addNewTableCell();  
+        nextWeekTableRowone.addNewTableCell();  
+        nextWeekTableRowone.addNewTableCell();
+        nextWeekTableRowone.addNewTableCell();  
+        nextWeekTableRowone.addNewTableCell();
+       
+        mergeCellsHorizontal(nextWeekTable, 0, 0, 5);
+        getParagraph(nextWeekTableRowone.getCell(0),"下周工作计划");
+        //表格第二行  
+
+      
+        XWPFTableRow nextWeekTTableRowTwo = nextWeekTable.createRow();  
+        nextWeekTTableRowTwo.getCell(0).setText("下周所处阶段");  
+        mergeCellsHorizontal(nextWeekTable, 1, 0, 1);
+        nextWeekTTableRowTwo.getCell(2).setText("sdfdefe 本");  
+        mergeCellsHorizontal(nextWeekTable, 1,2, 5);
+        
+        
+        
+        XWPFTableRow nextTableTHREE = nextWeekTable.createRow();
+        nextTableTHREE.getCell(0).setText("序号");  
+        nextTableTHREE.getCell(1).setText("任务名称");  
+        nextTableTHREE.getCell(2).setText("责任人"); 
+        nextTableTHREE.getCell(3).setText("下周计划工时");  
+        nextTableTHREE.getCell(4).setText("计划完成日期");  
+        nextTableTHREE.getCell(5).setText("备注");
+        
+        
+        
+        
+        
+        
+        document.createParagraph().createRun().setText("\r"); 
+        //当前重要风险
+        XWPFTable ristTable = document.createTable();  
+        //列宽自动分割  
+        CTTblWidth ristTableWidth = ristTable.getCTTbl().addNewTblPr().addNewTblW();  
+        ristTableWidth.setType(STTblWidth.DXA);  
+        ristTableWidth.setW(BigInteger.valueOf(9072));  
+           
+      
+        XWPFTableRow ristTableRowone = ristTable.getRow(0);
+        ristTableRowone.addNewTableCell();  
+        ristTableRowone.addNewTableCell(); 
+        mergeCellsHorizontal(ristTable, 0, 0, 2);
+        getParagraph(ristTableRowone.getCell(0),"当前重要风险");
+        
+        XWPFTableRow ristTableRowTwo= ristTable.createRow();
+        ristTableRowTwo.getCell(0).setText("风险名称");  
+        ristTableRowTwo.getCell(1).setText("跟踪简述");  
+        ristTableRowTwo.getCell(2).setText("当前状态"); 
+        
+        
+        
+        document.createParagraph().createRun().setText("\r"); 
+        //当前重大问题
+        XWPFTable questionTable = document.createTable();  
+        //列宽自动分割  
+        CTTblWidth questionTableWidth = questionTable.getCTTbl().addNewTblPr().addNewTblW();  
+        questionTableWidth.setType(STTblWidth.DXA);  
+        questionTableWidth.setW(BigInteger.valueOf(9072));  
+           
+      
+        XWPFTableRow questionTableRowone = questionTable.getRow(0);
+        questionTableRowone.addNewTableCell();  
+        questionTableRowone.addNewTableCell(); 
+        mergeCellsHorizontal(questionTable, 0, 0, 2);
+        getParagraph(questionTableRowone.getCell(0),"当前重大问题");
+        
+        XWPFTableRow questionTableRowTwo= questionTable.createRow();
+        questionTableRowTwo.getCell(0).setText("问题名称");  
+        questionTableRowTwo.getCell(1).setText("跟踪简述");  
+        questionTableRowTwo.getCell(2).setText("当前状态"); 
+        
+        XWPFTableRow questionTableRowThree= questionTable.createRow();
+        
+        questionTableRowThree.getCell(0).setText("问题名称");  
+        questionTableRowThree.getCell(1).setText("跟踪简述");  
+        mergeCellsHorizontal(questionTable, 2, 1, 2);
+       
+        XWPFTableRow questionTableRowFour= questionTable.createRow();
+        
+        questionTableRowFour.getCell(0).setText("其他");  
+        questionTableRowFour.getCell(1).setText("跟踪简述");  
+        mergeCellsHorizontal(questionTable, 3, 1, 2);
+        
+        
+        
+        
+        document.createParagraph().createRun().setText("\r"); 
+        
+        
+        XWPFTable personTable = document.createTable(); 
+        personTable.getCTTbl().getTblPr().unsetTblBorders();  
+        
+        //列宽自动分割  
+        CTTblWidth personTableWidth = personTable.getCTTbl().addNewTblPr().addNewTblW();  
+        personTableWidth.setType(STTblWidth.DXA);  
+        personTableWidth.setW(BigInteger.valueOf(9072));  
+        
+        XWPFTableRow personTableRowone = personTable.getRow(0);
+        personTableRowone.addNewTableCell().setText("创建人：");
+        personTableRowone.addNewTableCell().setText("项目经理");
+        personTableRowone.addNewTableCell();
+        personTableRowone.addNewTableCell().setText("新建阶段人：");;
+        personTableRowone.addNewTableCell().setText("当前人");
+        personTableRowone.addNewTableCell();
+        personTableRowone.addNewTableCell().setText("创建时间  :   ");; 
+        personTableRowone.addNewTableCell().setText("2017-12-14 12:12:12");
+       
+           
+           
+           
         CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();  
         XWPFHeaderFooterPolicy policy = new XWPFHeaderFooterPolicy(document, sectPr);  
-  
         //添加页眉  
         CTP ctpHeader = CTP.Factory.newInstance();  
         CTR ctrHeader = ctpHeader.addNewR();  
         CTText ctHeader = ctrHeader.addNewT();  
-        String headerText = "周报文件";  
+        String headerText = "集团文件";  
         ctHeader.setStringValue(headerText);  
         XWPFParagraph headerParagraph = new XWPFParagraph(ctpHeader, document);  
         //设置为右对齐  
@@ -192,7 +292,7 @@ public class WordExportController {
         CTP ctpFooter = CTP.Factory.newInstance();  
         CTR ctrFooter = ctpFooter.addNewR();  
         CTText ctFooter = ctrFooter.addNewT();  
-        String footerText = "有事联系我";  
+        String footerText = "北京研发提供";  
         ctFooter.setStringValue(footerText);  
         XWPFParagraph footerParagraph = new XWPFParagraph(ctpFooter, document);  
         headerParagraph.setAlignment(ParagraphAlignment.CENTER);  
