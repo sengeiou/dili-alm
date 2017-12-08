@@ -4,17 +4,14 @@ import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
 import com.dili.ss.metadata.annotation.FieldDef;
-import java.util.Date;
+
 import javax.persistence.*;
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import java.util.Date;
 
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2017-11-30 17:21:55.
+ * This file was generated on 2017-12-07 18:01:42.
  */
 @Table(name = "`project_change`")
 public interface ProjectChange extends IBaseDomain {
@@ -33,6 +30,20 @@ public interface ProjectChange extends IBaseDomain {
     String getName();
 
     void setName(String name);
+
+    @Column(name = "`number`")
+    @FieldDef(label="变更编号", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getNumber();
+
+    void setNumber(String number);
+
+    @Column(name = "`project_name`")
+    @FieldDef(label="项目名称", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getProjectName();
+
+    void setProjectName(String projectName);
 
     @Column(name = "`project_id`")
     @FieldDef(label="变更项目")
@@ -56,11 +67,11 @@ public interface ProjectChange extends IBaseDomain {
     void setPhaseId(Long phaseId);
 
     @Column(name = "`type`")
-    @FieldDef(label="type")
+    @FieldDef(label="type", maxLength = 50)
     @EditMode(editor = FieldEditor.Text, required = false)
-    Byte getType();
+    String getType();
 
-    void setType(Byte type);
+    void setType(String type);
 
     @Column(name = "`working_hours`")
     @FieldDef(label="预估工时", maxLength = 255)
@@ -72,9 +83,9 @@ public interface ProjectChange extends IBaseDomain {
     @Column(name = "`affects_online`")
     @FieldDef(label="是否影响上线")
     @EditMode(editor = FieldEditor.Text, required = false)
-    Byte getAffectsOnline();
+    Integer getAffectsOnline();
 
-    void setAffectsOnline(Byte affectsOnline);
+    void setAffectsOnline(Integer affectsOnline);
 
     @Column(name = "`submit_date`")
     @FieldDef(label="提交日期")
@@ -103,6 +114,13 @@ public interface ProjectChange extends IBaseDomain {
     String getEmail();
 
     void setEmail(String email);
+
+    @Column(name = "`status`")
+    @FieldDef(label="status")
+    @EditMode(editor = FieldEditor.Text, required = false)
+    Integer getStatus();
+
+    void setStatus(Integer status);
 
     @Column(name = "`created`")
     @FieldDef(label="created")

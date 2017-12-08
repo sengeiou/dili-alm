@@ -1,5 +1,6 @@
 package com.dili.alm.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.domain.Project;
@@ -14,7 +15,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -173,6 +173,21 @@ public class ProjectController {
 			return null;
 		}
 		return "project/detail";
+	}
+
+	@RequestMapping(value = "/getProjectList")
+	public @ResponseBody
+	Object getProjectList(Project project) throws Exception {
+		List<Project> list = projectService.list(project);
+		Map<Object, Object> metadata = new HashMap<>();
+		metadata.put("type", JSON.parse("{provider:'projectTypeProvider'}"));
+		metadata.put("projectManager", JSON.parse("{provider:'memberProvider'}"));
+		metadata.put("dep", JSON.parse("{provider:'depProvider'}"));
+		metadata.put("businessOwner", JSON.parse("{provider:'memberProvider'}"));
+		metadata.put("startDate", JSON.parse("{provider:'datetimeProvider'}"));
+		metadata.put("endDate", JSON.parse("{provider:'datetimeProvider'}"));
+		metadata.put("actualEndDate", JSON.parse("{provider:'datetimeProvider'}"));
+		return ValueProviderUtils.buildDataByProvider(metadata,list);
 	}
 
 }

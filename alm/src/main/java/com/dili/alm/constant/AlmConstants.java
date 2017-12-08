@@ -65,7 +65,7 @@ public class AlmConstants {
 	}
 
 	public enum ApproveType{
-		APPLY("apply");
+		APPLY("apply"),CHANGE("change");
 
 		private String code;
 

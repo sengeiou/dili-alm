@@ -7,16 +7,19 @@
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="number" jdbcType="VARCHAR" property="number" />
+    <result column="project_name" jdbcType="VARCHAR" property="projectName" />
     <result column="project_id" jdbcType="BIGINT" property="projectId" />
     <result column="version_id" jdbcType="BIGINT" property="versionId" />
     <result column="phase_id" jdbcType="BIGINT" property="phaseId" />
-    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
     <result column="working_hours" jdbcType="VARCHAR" property="workingHours" />
     <result column="affects_online" jdbcType="TINYINT" property="affectsOnline" />
     <result column="submit_date" jdbcType="TIMESTAMP" property="submitDate" />
     <result column="content" jdbcType="VARCHAR" property="content" />
     <result column="effects" jdbcType="VARCHAR" property="effects" />
     <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="status" jdbcType="TINYINT" property="status" />
     <result column="created" jdbcType="TIMESTAMP" property="created" />
     <result column="modified" jdbcType="TIMESTAMP" property="modified" />
     <result column="create_member_id" jdbcType="BIGINT" property="createMemberId" />
@@ -26,8 +29,9 @@
     <!--
       WARNING - @mbg.generated
     -->
-    id, name, project_id, version_id, phase_id, type, working_hours, affects_online, 
-    submit_date, content, effects, email, created, modified, create_member_id, modify_member_id
+    id, name, number, project_name, project_id, version_id, phase_id, type, working_hours, 
+    affects_online, submit_date, content, effects, email, status, created, modified, 
+    create_member_id, modify_member_id
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -47,6 +51,12 @@
       <if test="name != null">
         name = #{name,jdbcType=VARCHAR},
       </if>
+      <if test="number != null">
+        number = #{number,jdbcType=VARCHAR},
+      </if>
+      <if test="projectName != null">
+        project_name = #{projectName,jdbcType=VARCHAR},
+      </if>
       <if test="projectId != null">
         project_id = #{projectId,jdbcType=BIGINT},
       </if>
@@ -57,7 +67,7 @@
         phase_id = #{phaseId,jdbcType=BIGINT},
       </if>
       <if test="type != null">
-        type = #{type,jdbcType=TINYINT},
+        type = #{type,jdbcType=VARCHAR},
       </if>
       <if test="workingHours != null">
         working_hours = #{workingHours,jdbcType=VARCHAR},
@@ -76,6 +86,9 @@
       </if>
       <if test="email != null">
         email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
       </if>
       <if test="created != null">
         created = #{created,jdbcType=TIMESTAMP},
