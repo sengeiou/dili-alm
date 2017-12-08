@@ -1,0 +1,407 @@
+ <#body>
+    <div class="easyui-layout" fit="true">
+        <!-- ====================================================================================================================== -->
+        <!-- 上方布局 -->
+        <!-- ====================================================================================================================== -->
+        <div region="north" height="auto" align="center">
+            <!-- =========================================================表单========================================================= -->
+            <div class="easyui-panel" style="width:100%;" align="left">
+                <form id="form" class="easyui-form" method="post" fit="true">
+                    <table style="padding:10px;">
+                        <tr>
+                            <td style="padding:5px;">
+                                <input class="easyui-numberbox" name="name" id="name" style="width:100%" data-options="label:'项目名称:', validType:'length[0,19]'" />
+
+                            </td>
+                            <td style="padding:5px;">
+                                <input class="easyui-numberbox" name="type" id="type" style="width:100%" data-options="label:'项目类型:', validType:'length[0,19]'" />
+
+                            </td>
+
+                            <td style="padding:5px;">
+                                <input class="easyui-textbox" name="status" id="status" style="width:100%"
+                                       data-options="label:'项目状态:', validType:'length[0,3]'"/>
+                                <#comboProvider _id="status" _provider='applyStateProvider'/>
+
+                            </td>
+                            <td style="padding:5px;">
+                                <input class="easyui-datetimebox" name="created" id="created" style="width:100%" data-options="label:'created:'" />
+
+                            </td>
+                            <td style="padding:5px;">
+                                <input class="easyui-datetimebox" name="launchDate" id="launchDate" style="width:100%" data-options="label:'实际上线日期:'" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px;">
+                                <input class="easyui-datetimebox" name="completeDate" id="completeDate" style="width:100%" data-options="label:'结项日期:'" />
+
+                            </td>
+                            <td style="padding:5px;">
+                                <input class="easyui-textbox" name="reason" id="reason" style="width:100%" data-options="label:'reason:', validType:'length[0,255]'" />
+
+                            </td>
+                            <td style="padding:5px;">
+                                <input class="easyui-textbox" name="information" id="information" style="width:100%" data-options="label:'项目资料齐备情况:', validType:'length[0,255]'" />
+
+                            </td>
+                            <td style="padding:5px;">
+                                <input class="easyui-textbox" name="range" id="range" style="width:100%" data-options="label:'range:', validType:'length[0,255]'" />
+
+                            </td>
+                            <td style="padding:5px;">
+                                <input class="easyui-textbox" name="managementMethod" id="managementMethod" style="width:100%" data-options="label:'项目管理方法:', validType:'length[0,255]'" />
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px;">
+                                <input class="easyui-textbox" name="appraise" id="appraise" style="width:100%" data-options="label:'项目管理过程评价:', validType:'length[0,255]'" />
+
+                            </td>
+                            <td style="padding:5px;">
+                                <input class="easyui-textbox" name="raise" id="raise" style="width:100%" data-options="label:'进步与提高:', validType:'length[0,255]'" />
+
+                            </td>
+                            <td style="padding:5px;">
+                                <input class="easyui-textbox" name="result" id="result" style="width:100%" data-options="label:'成果:', validType:'length[0,255]'" />
+
+                            </td>
+                            <td style="padding:5px;">
+                                <input class="easyui-textbox" name="product" id="product" style="width:100%" data-options="label:'产品:', validType:'length[0,255]'" />
+
+                            </td>
+                            <td style="padding:5px;">
+                                <input class="easyui-textbox" name="performance" id="performance" style="width:100%" data-options="label:'主要功能和性能:', validType:'length[0,255]'" />
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px;">
+                                <input class="easyui-textbox" name="suggest" id="suggest" style="width:100%" data-options="label:'建议:', validType:'length[0,255]'" />
+
+                            </td>
+                            <td style="padding:5px;">
+                                <input class="easyui-textbox" name="question" id="question" style="width:100%" data-options="label:'问题:', validType:'length[0,255]'" />
+
+                            </td>
+                            <td style="padding:5px;">
+                                <input class="easyui-textbox" name="members" id="members" style="width:100%" data-options="label:'成员:', validType:'length[0,255]'" />
+
+                            </td>
+                            <td style="padding:5px;">
+                                <input class="easyui-textbox" name="hardware" id="hardware" style="width:100%" data-options="label:'硬件:', validType:'length[0,255]'" />
+
+                            </td>
+                            <td style="padding:5px;">
+                                <input class="easyui-textbox" name="email" id="email" style="width:100%" data-options="label:'email:', validType:'length[0,255]'" />
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px;">
+                                <input class="easyui-textbox" name="status" id="status" style="width:100%" data-options="label:'status:', validType:'length[0,3]'" />
+
+                            </td>
+
+                            <td style="padding:5px;">
+                                <input class="easyui-datetimebox" name="modified" id="modified" style="width:100%" data-options="label:'modified:'" />
+
+                            </td>
+                            <td style="padding:5px;">
+                                <input class="easyui-numberbox" name="createMemberId" id="createMemberId" style="width:100%" data-options="label:'createMemberId:', validType:'length[0,19]'" />
+
+                            </td>
+                            <td style="padding:5px;">
+                                <input class="easyui-numberbox" name="modifyMemberId" id="modifyMemberId" style="width:100%" data-options="label:'modifyMemberId:', validType:'length[0,19]'" />
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
+                                   onclick="queryGrid()">查询</a>
+                                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">清除</a>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+        <!-- ====================================================================================================================== -->
+        <!-- 中央布局 -->
+        <!-- ====================================================================================================================== -->
+        <!-- 表格 -->
+        <div region="center" style="width:100%;" height="auto">
+            <!-- =========================================================表格========================================================= -->
+            <table class="easyui-datagrid" title="ProjectComplete列表" id="grid" fitColumns="true"
+                   pagination="true" pageSize="30" pageNumber="1" pagePosition="both" rownumbers="true" remoteSort="false"
+                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="projectId"
+                   align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
+                <thead>
+                    <tr>
+                        <th data-options="field:'projectId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            项目Id
+                        </th>
+                        <th data-options="field:'number',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            项目编号
+                        </th>
+                        <th data-options="field:'name',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            项目名称
+                        </th>
+                        <th data-options="field:'type',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            项目类型
+                        </th>
+                        <th data-options="field:'launchDate',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            实际上线日期
+                        </th>
+                        <th data-options="field:'completeDate',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            结项日期
+                        </th>
+                        <th data-options="field:'reason',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            reason
+                        </th>
+                        <th data-options="field:'information',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            项目资料齐备情况
+                        </th>
+                        <th data-options="field:'range',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            range
+                        </th>
+                        <th data-options="field:'managementMethod',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            项目管理方法
+                        </th>
+                        <th data-options="field:'appraise',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            项目管理过程评价
+                        </th>
+                        <th data-options="field:'raise',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            进步与提高
+                        </th>
+                        <th data-options="field:'result',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            成果
+                        </th>
+                        <th data-options="field:'product',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            产品
+                        </th>
+                        <th data-options="field:'performance',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            主要功能和性能
+                        </th>
+                        <th data-options="field:'suggest',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            建议
+                        </th>
+                        <th data-options="field:'question',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            问题
+                        </th>
+                        <th data-options="field:'members',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            成员
+                        </th>
+                        <th data-options="field:'hardware',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            硬件
+                        </th>
+                        <th data-options="field:'email',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            email
+                        </th>
+                        <th data-options="field:'status',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            status
+                        </th>
+                        <th data-options="field:'created',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            created
+                        </th>
+                        <th data-options="field:'modified',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            modified
+                        </th>
+                        <th data-options="field:'createMemberId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            createMemberId
+                        </th>
+                        <th data-options="field:'modifyMemberId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            modifyMemberId
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+            <!-- datagrid工具栏 -->
+            <div id="toolbar" style="padding:2px 5px;">
+                <a href="${contextPath}/projectComplete/add" class="easyui-linkbutton" iconCls="icon-add" plain="true"></a>
+                <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()" plain="true"></a>
+                <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true"></a>
+                <a href="#" class="easyui-linkbutton" iconCls="icon-export" onclick="doExport('grid')" plain="true"></a>
+                <div style="float:right">
+                边框显示:<select onchange="changeBorder('grid',this.value)">
+                    <option value="lines-both">全边框</option>
+                    <option value="lines-no">无边框</option>
+                    <option value="lines-right">右边框</option>
+                    <option value="lines-bottom">下边框</option>
+                </select>
+                行条纹:<input type="checkbox" checked="checked" onclick="$('#grid').datagrid({striped:$(this).is(':checked')})">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ====================================================================================================================== -->
+    <!-- style & script 分隔线 -->
+    <!-- ====================================================================================================================== -->
+    <script type="text/javascript">
+        //打开新增窗口
+        function openInsert(){
+            $('#dlg').dialog('open');
+            $('#dlg').dialog('center');
+            $('#_form').form('clear');
+            formFocus("_form", "_projectId");
+        }
+
+        //打开修改窗口
+        function openUpdate(){
+            var selected = $("#grid").datagrid("getSelected");
+            if (null == selected) {
+                $.messager.alert('警告','请选中一条数据');
+                return;
+            }
+            $('#dlg').dialog('open');
+            $('#dlg').dialog('center');
+            formFocus("_form", "_projectId");
+            var formData = $.extend({},selected);
+            formData = addKeyStartWith(getOriginalData(formData),"_");
+            $('#_form').form('load', formData);
+        }
+
+        function saveOrUpdate(){
+            if(!$('#_form').form("validate")){
+                return;
+            }
+            var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
+            var _url = null;
+            //没有id就新增
+            if(_formData.id == null || _formData.id==""){
+                _url = "${contextPath}/projectComplete/insert";
+            }else{//有id就修改
+                _url = "${contextPath}/projectComplete/update";
+            }
+            $.ajax({
+                type: "POST",
+                url: _url,
+                data: _formData,
+                processData:true,
+                dataType: "json",
+                async : true,
+                success: function (data) {
+                    if(data.code=="200"){
+                        $("#grid").datagrid("reload");
+                        $('#dlg').dialog('close');
+                    }else{
+                        $.messager.alert('错误',data.result);
+                    }
+                },
+                error: function(){
+                    $.messager.alert('错误','远程访问失败');
+                }
+            });
+        }
+
+        //根据主键删除
+        function del() {
+            var selected = $("#grid").datagrid("getSelected");
+            if (null == selected) {
+                $.messager.alert('警告','请选中一条数据');
+                return;
+            }
+            $.messager.confirm('确认','您确认想要删除记录吗？',function(r){
+                if (r){
+                    $.ajax({
+                        type: "POST",
+                        url: "${contextPath}/projectComplete/delete",
+                        data: {id:selected.id},
+                        processData:true,
+                        dataType: "json",
+                        async : true,
+                        success: function (data) {
+                            if(data.code=="200"){
+                                $("#grid").datagrid("reload");
+                                $('#dlg').dialog('close');
+                            }else{
+                                $.messager.alert('错误',data.result);
+                            }
+                        },
+                        error: function(){
+                            $.messager.alert('错误','远程访问失败');
+                        }
+                    });
+                }
+            });
+
+        }
+        //表格查询
+        function queryGrid() {
+            var opts = $("#grid").datagrid("options");
+            if (null == opts.url || "" == opts.url) {
+                opts.url = "${contextPath}/projectComplete/listPage";
+            }
+            if(!$('#form').form("validate")){
+                return;
+            }
+            var param = bindMetadata("grid", true);
+            var formData = $("#form").serializeObject();
+            $.extend(param, formData);
+            $("#grid").datagrid("load", param);
+        }
+
+
+        //清空表单
+        function clearForm() {
+            $('#form').form('clear');
+        }
+
+        //表格表头右键菜单
+        function headerContextMenu(e, field){
+            e.preventDefault();
+            if (!cmenu){
+                createColumnMenu("grid");
+            }
+            cmenu.menu('show', {
+                left:e.pageX,
+                top:e.pageY
+            });
+        }
+
+        $.messager.progress({
+            title:"提示",
+            msg:"加载中,请稍候...",
+            value : '10',
+            text: '{value}%',
+            interval:200
+        });
+        $.parser.onComplete = function(){
+            $.messager.progress("close");
+        }
+        //全局按键事件
+        function getKey(e){
+            e = e || window.event;
+            var keycode = e.which ? e.which : e.keyCode;
+            if(keycode == 46){ //如果按下删除键
+                var selected = $("#grid").datagrid("getSelected");
+                if(selected && selected!= null){
+                    del();
+                }
+            }
+        }
+
+        /**
+         * 绑定页面回车事件，以及初始化页面时的光标定位
+         * @formId
+         *          表单ID
+         * @elementName
+         *          光标定位在指点表单元素的name属性的值
+         * @submitFun
+         *          表单提交需执行的任务
+         */
+        $(function () {
+            bindFormEvent("form", "projectId", queryGrid);
+            bindFormEvent("_form", "_projectId", saveOrUpdate, function (){$('#dlg').dialog('close');});
+            if (document.addEventListener) {
+                document.addEventListener("keyup",getKey,false);
+            } else if (document.attachEvent) {
+                document.attachEvent("onkeyup",getKey);
+            } else {
+                document.onkeyup = getKey;
+            }
+        })
+    </script>
+</#body>

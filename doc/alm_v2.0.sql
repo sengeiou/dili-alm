@@ -218,6 +218,10 @@ CREATE TABLE `project_complete` (
   COMMENT '项目名称',
   `type`                 VARCHAR(255)    NULL
   COMMENT '项目类型',
+  `start_date`           DATETIME        NULL
+  COMMENT '计划开始日期',
+  `end_date`             DATETIME        NULL
+  COMMENT '计划结束日期',
   `launch_date`          DATETIME        NULL
   COMMENT '实际上线日期',
   `complete_date`        DATETIME        NULL

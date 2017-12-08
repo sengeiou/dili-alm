@@ -1,0 +1,236 @@
+<#body>
+<style>
+    td {
+        padding-left: 60px;
+    }
+
+    input[class^="easyui-"] {
+        width: 300px;
+    }
+
+    .title-first,
+    .title-second {
+        margin-top: 20px;
+        background: #f7f7f7;
+    }
+
+    .title-first {
+        padding-left: 0;
+    }
+
+    .title-second {
+        padding-left: 30px;
+    }
+</style>
+<div class="easyui-panel" title="结项申请（第二步）">
+    <div id="smDialog" style="display: none;"></div>
+    <div style="padding:10px 60px 20px 60px">
+        <form id="ff" method="post">
+            <input type="hidden" name="id" value="${apply.id}">
+            <input type="hidden" name="hardware" id="hardware">
+            <input type="hidden" name="status" id="status"/>
+            <input type="hidden" name="email" id="email"/>
+            <table cellpadding="5">
+                <tr>
+                    <td>项目编号</td>
+                    <td>${apply.number}</td>
+                    <td>项目名称</td>
+                    <td>${apply.name}</td>
+                </tr>
+                <tr>
+                    <td class="title-first" colspan="4">3.项目资源释放</td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="padding:20px;">3.1项目成员</td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <table class="easyui-datagrid"
+                               data-options="
+                singleSelect: true,
+                toolbar: '#tb',
+                rownumbers:true,
+                url: '${contextPath}/projectComplete/loadMembers?id=${apply.id}'">
+                            <thead>
+                            <tr>
+                                <th style="text-align:center"
+                                    data-options="field:'memberId',width:120,align:'center',editor:{type:'textbox',options:{required:true}}">
+                                    姓名
+                                </th>
+                                <th data-options="field:'role',width:120,align:'center',editor:{type:'textbox',options:{required:true}}">
+                                    角色
+                                </th>
+                                <th style="text-align:center"
+                                    data-options="field:'joinTime',align:'center',width:250,editor:{type:'textbox',options:{multiline:true,validType:['length[0,50]']}}">
+                                    进入项目日期
+                                </th>
+                                <th style="text-align:center"
+                                    data-options="field:'leaveTime',align:'center',width:250,editor:{type:'textbox',options:{multiline:true,validType:['length[0,50]']}}">
+                                    离开项目日期
+                                </th>
+                                <th style="text-align:center"
+                                    data-options="field:'created',align:'center',width:250,editor:{type:'textbox',options:{multiline:true,validType:['length[0,50]']}}">
+                                    默认释放日期
+                                </th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="padding:20px;">3.2硬件设备</td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <table id="dg" class="easyui-datagrid"
+                               data-options="
+                singleSelect: true,
+                toolbar: '#tb',
+                rownumbers:true,
+                            url: '${contextPath}/projectComplete/loadHardWare?id=${apply.id}',
+                onClickCell: impact.onClickCell">
+                            <thead>
+                            <tr>
+                                <th data-options="field:'name',width:80,align:'center',editor:{type:'textbox',options:{required:true}}">设备名称</th>
+                                <th data-options="field:'mode',_provider:'datetimeProvider',width:200,align:'center',editor:{type:'textbox',options:{required:true}}">
+                                    型号
+                                </th>
+                                <th data-options="field:'number',width:100,align:'center',editor:{type:'numberspinner',options:{increment:1,min:1}}">
+                                    数量
+                                </th>
+                                <th data-options="field:'date',_provider:'datetimeProvider',width:200,align:'center',editor:{type:'datebox',options:{required:true}}">
+                                    释放日期
+                                </th>
+                            </tr>
+                            </thead>
+                        </table>
+                        <div id="tb" style="height:auto">
+                            <a href="javascript:void(0)" class="easyui-linkbutton"
+                               data-options="iconCls:'icon-add',plain:true" onclick="append()">新增</a>
+                            <a href="javascript:void(0)" class="easyui-linkbutton"
+                               data-options="iconCls:'icon-remove',plain:true" onclick="removeit()">删除</a>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="title-first" colspan="4">4.邮件发送列表</td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <input class="easyui-tagbox" id="tagbx" value="${apply.email}" style="width:800px">
+                    </td>
+                </tr>
+            </table>
+
+        </form>
+        <div style="text-align:center;padding:5px;margin-top:50px;">
+            <a href="${contextPath}/projectComplete/index.html" class="easyui-linkbutton"
+               data-options="size:'large',width:'80px'">取消</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="size:'large',width:'80px'"
+               onclick="submitForm(1)">保存</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="size:'large',width:'80px'"
+               onclick="submitForm(2)">立项提交</a>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+
+    var impact = {
+        editIndex: undefined,
+        endEditing: function () {
+            if (impact.editIndex == undefined) {
+                return true
+            }
+            if ($('#dg').datagrid('validateRow', impact.editIndex)) {
+                $('#dg').datagrid('endEdit', impact.editIndex);
+                impact.editIndex = undefined;
+                return true;
+            } else {
+                return false;
+            }
+        },
+        onClickCell: function (index, field) {
+            if (impact.editIndex != index) {
+                if (impact.endEditing()) {
+                    $('#dg').datagrid('selectRow', index)
+                        .datagrid('beginEdit', index);
+                    var ed = $('#dg').datagrid('getEditor', {index: index, field: field});
+                    if (ed) {
+                        ($(ed.target).data('textbox') ? $(ed.target).textbox('textbox') : $(ed.target)).focus();
+                    }
+                    impact.editIndex = index;
+                } else {
+                    setTimeout(function () {
+                        $('#dg').datagrid('selectRow', impact.editIndex);
+                    }, 0);
+                }
+            }
+        }
+    };
+
+
+    function append() {
+        if (impact.endEditing()) {
+            $('#dg').datagrid('appendRow', {});
+            impact.editIndex = $('#dg').datagrid('getRows').length - 1;
+            $('#dg').datagrid('selectRow', impact.editIndex)
+                .datagrid('beginEdit', impact.editIndex);
+        }
+    }
+
+    function removeit() {
+        if (impact.editIndex == undefined) {
+            return
+        }
+        $('#dg').datagrid('cancelEdit', impact.editIndex)
+            .datagrid('deleteRow', impact.editIndex);
+        impact.editIndex = undefined;
+    }
+
+    function backForm() {
+        window.location.href = "${contextPath}/projectComplete/toStep/2/${apply.id}";
+    }
+
+    function submitForm(type) {
+        $('#ff').form('submit', {
+            url: "${contextPath}/projectComplete/update",
+            onSubmit: function () {
+                impact.endEditing();
+                $("#hardware").val(JSON.stringify($("#dg").datagrid("getData").rows));
+                $("#status").val(type);
+                var data = $("#tagbx").tagbox("getValues");
+                $("#email").val(data.join());
+                return $("#ff").form('validate');
+            },
+            success: function (data) {
+                var data = eval('(' + data + ')');
+                if (data.success == true) {
+                    if (data.success == true) {
+                        window.location.href = "${contextPath}/projectComplete/toStep/3/" + data.result;
+                    }
+                }
+            }
+        });
+    }
+    $("#tagbx").tagbox({
+        onBeforeRemoveTag:function(value){
+            if(value == "wyx@diligrp.com"){
+                return false;
+            }
+        }
+    });
+
+
+    $(function () {
+        var value = $("#tagbx").tagbox('getValue');
+        if(value == undefined || value ==''){
+            $("#tagbx").tagbox('setValue','wyx@diligrp.com');
+        }
+    })
+</script>
+
+
+</#body>
