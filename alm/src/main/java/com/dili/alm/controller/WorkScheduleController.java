@@ -1,13 +1,18 @@
 package com.dili.alm.controller;
 
+import com.dili.alm.domain.Task;
 import com.dili.alm.domain.WorkSchedule;
+import com.dili.alm.domain.WorkScheduleEntity;
 import com.dili.alm.service.WorkScheduleService;
 import com.dili.ss.domain.BaseOutput;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -49,14 +54,27 @@ public class WorkScheduleController {
     public @ResponseBody String listPage(WorkSchedule workSchedule) throws Exception {
         return workScheduleService.listEasyuiPageByExample(workSchedule, true).toString();
     }
-
+    
+    //日程列表json
+	@ResponseBody
+	@RequestMapping(value = "/getWorkSchedule.json", method = { RequestMethod.GET, RequestMethod.POST })
+	public List<WorkScheduleEntity> getWorkSchedule(WorkSchedule workSchedule) throws Exception {
+		/*		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();*/
+		/*workSchedule.setUserId(userTicket.getId());*/
+		return workScheduleService.listWorkScheduleDto(workSchedule);
+		}
+	
+	
     @ApiOperation("新增WorkSchedule")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="WorkSchedule", paramType="form", value = "WorkSchedule的form信息", required = true, dataType = "string")
 	})
     @RequestMapping(value="/insert", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput insert(WorkSchedule workSchedule) {
-        workScheduleService.insertSelective(workSchedule);
+		//TODO:加入系统后放开 
+/*		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		workSchedule.setUserId(userTicket.getId());*/
+    	workScheduleService.insertSelective(workSchedule);
         return BaseOutput.success("新增成功");
     }
 
