@@ -1,5 +1,7 @@
 package com.dili.alm.service;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.List;
 
 import com.dili.alm.domain.Weekly;
@@ -68,6 +70,8 @@ public interface WeeklyService extends BaseService<Weekly, Long> {
 	 * @return
 	 */
 	Integer   updateMaxRist(String list,Long id );
+	
+	File downLoad(File file,String id);
 	
 	
 }

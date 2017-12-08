@@ -29,11 +29,11 @@
             <!--LOGO-->
             <div class="logo">LOGO</div>
             <!--顶部menu-->
-            <div class="menu-top">
+            <div id="css3menu" class="menu-top">
                 <ul>
-                    <li class="on"><a href="${contextPath}/main/index.html">首页</a></li>
-                    <li><a href="">项目管理</a></li>
-                    <li><a href="">系统管理</a></li>
+                	<% for(item in menu){ %>
+	                    <li><a id="fMenu${item.id}" href="javascript:void(0)" rel="${item.name}" onclick="setOnMenu(this)">${item.name}</a></li>
+                    <% } %>
                 </ul>
             </div>
 
@@ -41,13 +41,9 @@
         <!--<div data-options="region:'south'" style="height:50px;"></div>-->
         <!--左侧菜单栏-->
         <div class="menu-left" data-options="region:'west'" style="width:251px;height:100%;border: none">
-            <div class="menu-name">
-                		首页
-            </div>
- 			
             <div id="menuList" class="easyui-accordion" data-options="multiple:true" style="width:251px;" >
     			<% for(item in menu){ %>
-    				<div title="${item.name}" data-options="selected:true" style="overflow:auto;padding:10px 0;background: #f0f0f0;">
+    				<div id="${item.id}" title="${item.name}" data-options="selected:true" style="overflow:auto;padding:10px 0;background: #f0f0f0;">
 		                <ul>
 		                    <% for(item1 in item.children){ %> 
 		                        <li>
@@ -64,7 +60,7 @@
         </div>
         <!--页面主体内容-->
         <div data-options="region:'center'" style="height:100%;padding:15px 15px 0;border: none;">
-           <iframe id="homeIndex" scrolling="auto" frameborder="0"  src="http://alm.diligrp.com:8083/alm/home/index" style="width:100%; height: 99.6%; display:block;"></iframe>
+           <iframe id="homeIndex" scrolling="auto" frameborder="0"  src="http://127.0.0.1:8083/alm/home/index" style="width:100%; height: 99.6%; display:none;"></iframe>
            <div id="tabs" class="easyui-tabs"  fit="true" border="false" display="none">
 		   </div>
 	       
@@ -82,6 +78,7 @@
     <!--消息列表-->
     <div class="menu-list" id="news-list" data-index="1">
         <ul id="messageList">
+        
         </ul>
         <!--<span class="item dot-top"></span>-->
     </div>
@@ -129,9 +126,7 @@
 		
 		$("#homeIndex").css('display','none');
 		$("#tabs").css('display','block');
-		
-		$("li").removeClass("on");
-		console.log(id);
+		$("#"+id+"").parent().parent().children("li").removeClass("on");
 		if(id!=null&&id!=''){
 			$("#"+id+"").parent().addClass("on");
 		}
@@ -251,27 +246,59 @@
             }, 300);
         });
         messagesListen();
+        setOnMenu(0);
+
     });
     /** 得到消息通知信息  **/
+    var userId =${userid}
     var getMessages = {
     		type: "POST",
             url:'http://alm.diligrp.com:8083/alm/messageApi/list',
+            data:{userId,userId},
             dataType:'json',
             success:function(data) {
-            	
-    			var result = data.messages;
-    			$("#messageCount").empty();
-             	$('#messageCount').text(data.count);
-             	$("#messageList").empty();
-    			for(var i = 0; i<result.length; i++){
-     				$("#messageList").append("<li><a href='"+result[i].url+"'>一条消息未处理</a></li>");
-    			} 
-    			
+            	if(data.count==0){
+            		$("#messageCount").empty();
+	             	$("#messageList").empty();
+            		$("#messageCount").css('display','none');
+            	}else{
+            		$("#messageCount").css('display','block');
+	    			var result = data.messages;
+	    			$("#messageCount").empty();
+	             	$('#messageCount').text(data.count);
+	             	$("#messageList").empty();
+	    			for(var i = 0; i<result.length; i++){
+	     				$("#messageList").append("<li><a href='"+result[i].url+"'>一条消息未处理</a></li>");
+	    			} 
+            	}
     		}
     	};
    		function messagesListen(){$.ajax(getMessages)}	
     	//关键在这里，Ajax定时访问服务端，不断获取数据 ，这里是30秒请求一次。	
-    	window.setInterval(function(){$.ajax(getMessages)},30000);
- 
+    	window.setInterval(function(){$.ajax(getMessages)},300000);
+    	
+    	function setOnMenu(obj){
+    		$("#css3menu").find("ul li").removeClass("on");
+    		$("#menuList").children().each(function(){ 
+                $(this).css('display','none');  
+            });  
+    		$("#homeIndex").css('display','none');
+			if(obj==0){
+				$("#css3menu").find("ul li").first().addClass("on");
+				var id = $("#css3menu").find("ul li").children().get(0).id.replace("fMenu","");
+				$("#"+id+"").parent().css('display','block');
+			}else if(obj.rel=='ALM'){
+				var menuFid = obj.id;
+				var id = menuFid.replace("fMenu","");
+				$("#"+menuFid+"").parent().addClass("on");
+				$("#"+id+"").parent().css('display','block');
+				$("#homeIndex").css('display','block');
+			}else{
+				var menuFid = obj.id;
+				var id = menuFid.replace("fMenu","");
+				$("#"+menuFid+"").parent().addClass("on");
+				$("#"+id+"").parent().css('display','block');
+			}
+		}
     </script>
 </#body>

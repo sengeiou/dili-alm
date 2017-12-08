@@ -61,9 +61,9 @@ public class MessageApi {
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Message", paramType="form", value = "Message的form信息", required = false, dataType = "string")
 	})
-	@CrossOrigin(origins = "http://almadmin.diligrp.com")
+	@CrossOrigin(origins = {"http://almadmin.diligrp.com", "null"})
     @RequestMapping(value="/list", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody Map<String, Object> list() {
-        return messageService.mapMessagges();
+    public @ResponseBody Map<String, Object> list(String userId) {
+        return messageService.mapMessagges(userId);
     }
 }

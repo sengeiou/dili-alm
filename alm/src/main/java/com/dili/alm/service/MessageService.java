@@ -16,5 +16,5 @@ public interface MessageService extends BaseService<Message, Long> {
 	
 	int updateMessageIsRead( Long messageId);
 
-	Map<String,Object> mapMessagges();
+	Map<String,Object> mapMessagges(String userId);
 }
