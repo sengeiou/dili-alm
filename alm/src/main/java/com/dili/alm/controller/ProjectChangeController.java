@@ -1,19 +1,23 @@
 package com.dili.alm.controller;
 
+import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.ProjectChange;
 import com.dili.alm.service.ProjectChangeService;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.sysadmin.sdk.session.SessionContext;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-11-30 17:21:55.
@@ -29,6 +33,17 @@ public class ProjectChangeController {
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
 		return "projectChange/index";
+	}
+
+	@RequestMapping(value = "/add", method = RequestMethod.GET)
+	public String add(ModelMap modelMap) {
+		return "projectChange/add";
+	}
+
+	@RequestMapping(value = "/edit", method = RequestMethod.GET)
+	public String edit(ModelMap modelMap,Long id) {
+		modelMap.put("obj",projectChangeService.get(id));
+		return "projectChange/edit";
 	}
 
 	@ApiOperation(value = "查询ProjectChange", notes = "查询ProjectChange，返回列表信息")
@@ -49,7 +64,10 @@ public class ProjectChangeController {
 	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectChange", paramType = "form", value = "ProjectChange的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput insert(ProjectChange projectChange) {
+		projectChange.setStatus(AlmConstants.ApplyState.APPLY.getCode());
+		projectChange.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
 		projectChangeService.insertSelective(projectChange);
+		projectChangeService.approve(projectChange);
 		return BaseOutput.success("新增成功");
 	}
 
@@ -57,7 +75,9 @@ public class ProjectChangeController {
 	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectChange", paramType = "form", value = "ProjectChange的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput update(ProjectChange projectChange) {
+		projectChange.setSubmitDate(new Date());
 		projectChangeService.updateSelective(projectChange);
+		projectChangeService.approve(projectChange);
 		return BaseOutput.success("修改成功");
 	}
 

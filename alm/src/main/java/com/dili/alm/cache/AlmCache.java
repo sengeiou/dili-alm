@@ -27,6 +27,7 @@ public class AlmCache {
 
 	public static final Map<String, String> PROJECT_IMPORTANCE_MAP = new ConcurrentHashMap<>();
 	public static final Map<String, String> KIND_RISK_MAP = new ConcurrentHashMap<>();
+	public static final Map<String, String> CHANGE_TYPE = new ConcurrentHashMap<>();
 
 	public static final Map<Long, Department> DEP_MAP = new ConcurrentHashMap<>();
 
@@ -34,5 +35,6 @@ public class AlmCache {
 	public static final Map<Integer, String> FILE_TYPE_MAP = new ConcurrentHashMap<>();
 	// 团队角色
 	public static final Map<String, String> TEAM_ROLE_MAP = new ConcurrentHashMap<>();
+
 
 }

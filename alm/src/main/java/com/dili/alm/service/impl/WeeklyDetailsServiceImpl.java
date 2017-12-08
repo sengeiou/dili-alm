@@ -42,11 +42,18 @@ public class WeeklyDetailsServiceImpl extends BaseServiceImpl<WeeklyDetails, Lon
 
 	@Autowired
 	WeeklyDetailsMapper weeklyDetailsMapper;
-
+	@Autowired
+	WeeklyMapper weeklyMapper;
 	@Override
 	public WeeklyDetails getWeeklyDetailsByWeeklyId(Long id) {
 		
 		return weeklyDetailsMapper.getWeeklyDetailsByWeeklyId(id);
+	}
+
+	@Override
+	public Integer createInsert(WeeklyDetails weeklyDetails) {
+		
+		return weeklyDetailsMapper.createInsert(weeklyDetails);
 	}
 	
 	

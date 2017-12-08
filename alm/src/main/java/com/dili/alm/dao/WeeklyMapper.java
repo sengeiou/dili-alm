@@ -66,6 +66,13 @@ public interface WeeklyMapper extends MyMapper<Weekly> {
 	List<String> selectProjectVersion(Long id );
 	
 	
+	/**
+	 * 更新Rist or question
+	 * @param weeklyPara
+	 * @return
+	 */
+    Integer  updateRiskOrByQuestion(WeeklyPara weeklyPara);
+	
 }
 	
 	

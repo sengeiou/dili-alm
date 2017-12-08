@@ -27,7 +27,7 @@
     }
 </style>
 <div id="smDialog" style="display: none;"></div>
-<div class="easyui-panel" title="立项申请（第一步）">
+<div class="easyui-panel" title="项目立项审批">
     <div style="padding:10px 60px 20px 60px">
         <form id="ff" method="post" action="">
             <input type="hidden" name="id" value="${apply.id}">
@@ -38,6 +38,12 @@
                     <td>${apply.number}</td>
                     <td>项目审批状态</td>
                     <td>审批中</td>
+                </tr>
+                <tr>
+                    <td>申请人</td>
+                    <td>${apply.createMemberId}</td>
+                    <td>创建日期</td>
+                    <td>${apply.created}</td>
                 </tr>
                 <tr>
                     <td class="title-first" colspan="3">1项目内容及资源</td>
@@ -111,7 +117,7 @@
                                data-options="singleSelect: true,  url: '${contextPath}/approve/loadDesc?id=${apply.id}'">
                             <thead>
                             <tr>
-                                <th data-options="field:'approveDate',_provider:'datetimeProvider',width:80,align:'center'">
+                                <th data-options="field:'approveDate',_provider:'datetimeProvider',width:180,align:'center'">
                                     审批时间
                                 </th>
                                 <th data-options="field:'userId',width:200,align:'center'">
@@ -120,7 +126,7 @@
                                 <th data-options="field:'role',width:200,align:'center'">
                                     职务
                                 </th>
-                                <th data-options="field:'result',width:100,align:'center'">
+                                <th data-options="field:'result',width:100,align:'center',formatter:format">
                                     审批结果
                                 </th>
                                 <th data-options="field:'notes',width:150,align:'center'">审批意见</th>
@@ -133,7 +139,7 @@
             <table>
 
                 <tr>
-                    <td colspan="4" style="padding-left: 0"><input class="easyui-textbox" name="notes"
+                    <td colspan="4" style="padding-left: 0"><input id="notes" class="easyui-textbox" name="notes"
                                            data-options="label:'审批意见',multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
                                            style="width:800px;height:120px"/></td>
                 </tr>
@@ -153,6 +159,12 @@
 </div>
 
 <script type="text/javascript">
+    function format(value) {
+        if (value != undefined) {
+            return value == "accept" ? "通过" : "未通过";
+        }
+        return value;
+    }
     function submitForm(opt) {
         $('#ff').form('submit', {
             url: "${contextPath}/approve/applyApprove",
@@ -163,17 +175,23 @@
                 var data = eval('(' + data + ')');
                 if (data.success == true) {
                     if (data.success == true) {
-                        window.location.href = "${contextPath}/projectApply/index.html";
+                        window.location.href = "${contextPath}/approve/apply/index.html";
                     }
                 }
             }
         });
     }
-    var json = '${json}';
-    var extend = '${extend}';
-    json = eval('(' + json + ')');
-    extend = eval('(' + extend + ')');
-    $.extend(json, extend);
-    $('#ff').form('load', json);
+
+    $(function(){
+        var json = '${json}';
+        var extend = '${extend}';
+        json = eval('(' + json + ')');
+        extend = eval('(' + extend + ')');
+        $.extend(json, extend);
+        $('#ff').form('load', json);
+        $('input[class^=easyui-]').textbox("disable");
+        $('#notes').textbox("enable");
+    });
+
 </script>
 </#body>

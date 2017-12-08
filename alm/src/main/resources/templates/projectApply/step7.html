@@ -49,7 +49,7 @@
                 <thead>
                 <tr>
                     <th data-options="field:'id',width:80,hidden:true">ID</th>
-                    <th data-options="field:'name', width:'20%', align:'center', resizable:'true', fixed:'false'">文件名</th>
+                    <th data-options="field:'name', width:'20%', align:'center',formatter:formatDown, resizable:'true', fixed:'false'">文件名</th>
                     <th data-options="field:'length', width:'20%', align:'center', resizable:'true', fixed:'false',formatter:renderSize">大小</th>
                     <th data-options="field:'created', width:'50%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">上传日期</th>
                 </tr>
@@ -65,8 +65,9 @@
                 </tr>
                 <tr>
                     <td colspan="4">
-                        <input class="easyui-tagbox" id="tagbx" value="${apply.email}" label="Add a tag" style="width:100%">
+                        <input class="easyui-tagbox" id="tagbx" value="${apply.email}" style="width:100%">
                     </td>
+                </tr>
             </table>
         </form>
         <div style="text-align:center;padding:5px;margin-top:50px;">
@@ -84,6 +85,10 @@
 <script>
     function backForm() {
         window.location.href = "${contextPath}/projectApply/toStep/6/${apply.id}";
+    }
+
+    function formatDown(value, row) {
+        return "<a href='${contextPath!}/files/download?id=" + row.id + "'>" + value + "</a>";
     }
 
     function renderSize(value){

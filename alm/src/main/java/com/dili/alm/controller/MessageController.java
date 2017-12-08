@@ -3,6 +3,8 @@ package com.dili.alm.controller;
 import com.dili.alm.domain.Message;
 import com.dili.alm.service.MessageService;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.sysadmin.sdk.domain.UserTicket;
+import com.dili.sysadmin.sdk.session.SessionContext;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -42,6 +44,7 @@ public class MessageController {
 	})
     @RequestMapping(value="/list", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody Map<String,Object> list() {
-        return messageService.mapMessagges();
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+        return messageService.mapMessagges(userTicket.getId().toString());
     }
 }

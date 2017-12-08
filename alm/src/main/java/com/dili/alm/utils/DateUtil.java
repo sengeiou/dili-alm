@@ -22,6 +22,7 @@ public class DateUtil {
 		Date last = cal.getTime();
 		return formater.format(last);
 	}
+
 	public static String getDatePoor(Date endDate, Date nowDate) {
 
 		long nd = 1000 * 24 * 60 * 60;

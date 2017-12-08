@@ -16,4 +16,7 @@ public interface RoleRpc {
 
 	@POST("/roleApi/listRoleByUserId")
 	BaseOutput<List<Role>> listRoleByUserId(@VOSingleParameter Long id);
+
+	@POST("/roleApi/listRoleNameByUserId")
+	BaseOutput<String> listRoleNameByUserId(@VOSingleParameter Long id);
 }

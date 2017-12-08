@@ -297,6 +297,30 @@
 		      </where> 
    </select>
    
+   <update id="updateRiskOrByQuestion" parameterType="com.dili.alm.domain.dto.WeeklyPara">
    
+    update weekly
+    <set>
+     
+      <if test="risk != null">
+        risk = #{risk,jdbcType=VARCHAR},
+      </if>
+      <if test="question != null">
+        question = #{question,jdbcType=VARCHAR},
+      </if>
+     
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  
+
+   
+   
+  
+
+
+
+
 
 </mapper>

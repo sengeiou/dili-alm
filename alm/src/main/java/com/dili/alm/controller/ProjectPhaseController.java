@@ -1,16 +1,6 @@
 package com.dili.alm.controller;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
+import com.alibaba.fastjson.JSON;
 import com.dili.alm.domain.ProjectPhase;
 import com.dili.alm.domain.dto.ProjectPhaseAddViewDto;
 import com.dili.alm.domain.dto.ProjectPhaseEditViewDto;
@@ -20,11 +10,22 @@ import com.dili.alm.service.ProjectPhaseService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.ProjectVersionService;
 import com.dili.ss.domain.BaseOutput;
-
+import com.dili.ss.metadata.ValueProviderUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-11-30 16:05:32.
@@ -60,6 +61,14 @@ public class ProjectPhaseController {
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(ProjectPhase projectPhase) throws Exception {
 		return projectPhaseService.listEasyuiPageByExample(projectPhase, true).toString();
+	}
+
+	@RequestMapping(value = "/listPhase", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody Object listPhase(ProjectPhase projectPhase) throws Exception {
+		Map<Object, Object> metadata = new HashMap<>();
+		metadata.put("name", JSON.parse("{provider:'phaseNameProvider'}"));
+		List<ProjectPhase> list = projectPhaseService.list(projectPhase);
+		return ValueProviderUtils.buildDataByProvider(metadata, list);
 	}
 
 	@ApiOperation("新增ProjectPhase")

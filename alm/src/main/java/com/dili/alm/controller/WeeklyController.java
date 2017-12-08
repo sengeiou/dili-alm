@@ -5,16 +5,37 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+
+
+
+
+
+
+
+
+
+
+
+
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -25,9 +46,11 @@ import com.dili.alm.domain.dto.NextWeeklyDto;
 import com.dili.alm.domain.dto.ProjectWeeklyDto;
 import com.dili.alm.domain.dto.TaskDto;
 import com.dili.alm.domain.dto.WeeklyPara;
+import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.WeeklyDetailsService;
 import com.dili.alm.service.WeeklyService;
 import com.dili.ss.domain.BaseOutput;
+
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -37,10 +60,12 @@ import com.dili.ss.domain.BaseOutput;
 @Controller
 @RequestMapping("/weekly")
 public class WeeklyController  {
+	private  static final  String  WEEKLY="weekly";
     @Autowired
     WeeklyService weeklyService;
     @Autowired
     WeeklyDetailsService  weeklyDetailsService;
+
 
     @ApiOperation("跳转到Weekly页面")
     @RequestMapping(value="/index", method = RequestMethod.GET)
@@ -77,7 +102,42 @@ public class WeeklyController  {
         weeklyService.insertSelective(weekly);
         return BaseOutput.success("新增成功");
     }
-
+    @RequestMapping(value="/save", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput save(WeeklyDetails WeeklyDetails) {
+    	 WeeklyDetails.setIsSubmit(1);
+        WeeklyDetails wd=weeklyDetailsService.getWeeklyDetailsByWeeklyId(WeeklyDetails.getWeeklyId());
+    	 if(wd==null)
+    		 weeklyDetailsService.createInsert(WeeklyDetails); 
+    	 else
+    		 weeklyDetailsService.updateSelective(WeeklyDetails);
+        return BaseOutput.success("保存成功");
+    }
+    @RequestMapping(value="/updateWeeklyDetails", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput updateWeeklyDetails(WeeklyDetails WeeklyDetails) {
+    	
+    	weeklyDetailsService.updateSelective(WeeklyDetails);
+        return BaseOutput.success("保存成功");
+    }
+    @RequestMapping(value="/updateWeeklyDetailsCancel", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput updateWeeklyDetailsCancel(WeeklyDetails WeeklyDetails) {
+    	
+    	weeklyDetailsService.updateSelective(WeeklyDetails);
+        return BaseOutput.success("修改成功");
+    }
+    
+    @RequestMapping(value="/saveMaxQu", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput saveMaxQu(String str,String id) {
+    	long longid=Long.parseLong(id);
+    	weeklyService.updateMaxQuestion(str, longid);
+        return BaseOutput.success("重大问题保存成功");
+    }
+    @RequestMapping(value="/saveMaxRist", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput saveMaxRist(String str,String id) {
+    	long longid=Long.parseLong(id);
+    	weeklyService.updateMaxRist(str, longid);
+        return BaseOutput.success("重要风险保存成功");
+    }
+    
     @ApiOperation("修改Weekly")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Weekly", paramType="form", value = "Weekly的form信息", required = true, dataType = "string")
@@ -87,6 +147,7 @@ public class WeeklyController  {
         weeklyService.updateSelective(weekly);
         return BaseOutput.success("修改成功");
     }
+  
 
     @ApiOperation("删除Weekly")
     @ApiImplicitParams({
@@ -102,62 +163,45 @@ public class WeeklyController  {
     @ApiOperation("跳转到getDescById页面")
     @RequestMapping(value="/getDescById", method = RequestMethod.GET)
     public ModelAndView getDescById(String id) {
+    	
+    	Map<Object,Object> map=weeklyService.getDescById(id);
     	ModelAndView mv = new ModelAndView();
     	//项目周报
-    	ProjectWeeklyDto pd=weeklyService.getProjectWeeklyDtoById(Long.parseLong(id));
-		mv.addObject("pd", pd);
-		
+		mv.addObject("pd", (ProjectWeeklyDto)map.get("pd"));
 		// 本周项目版本
-		List<String> projectVersion=weeklyService.selectProjectVersion(Long.parseLong(pd.getProjectId()));
-		mv.addObject("pv", StringUtils.join(projectVersion.toArray(),","));
-		
+		mv.addObject("pv",(String) map.get("pv"));
 		//本周项目阶段
-		List<String> projectPhase=weeklyService.selectProjectPhase(Long.parseLong(pd.getProjectId()));
-		mv.addObject("pp", StringUtils.join(projectPhase.toArray(),","));
-		
+		mv.addObject("pp",(String) map.get("pp"));
 		//下周项目阶段
-		List<String> nextprojectPhase=weeklyService.selectNextProjectPhase(Long.parseLong(pd.getProjectId()));
-		mv.addObject("npp", StringUtils.join(nextprojectPhase.toArray(),","));
-		
-		
+		mv.addObject("npp", (String)map.get("npp"));
 		//本周进展情况 
-		List<TaskDto> td=weeklyService.selectWeeklyProgress(Long.parseLong(pd.getProjectId()));
-		for (int i = 0; i < td.size(); i++) {
-			td.get(i).setNumber(i+1);
-		}
-		mv.addObject("td", td);
-				
+		mv.addObject("td",(List<TaskDto>)map.get("td"));
 		//下周工作计划
-		List<NextWeeklyDto> wk=weeklyService.selectNextWeeklyProgress(Long.parseLong(pd.getProjectId()));
-	
-		for (int i = 0; i < wk.size(); i++) {
-			wk.get(i).setNumber(i+1);
-		}
-		mv.addObject("wk", wk);
-		
-		WeeklyPara weeklyPara=  new WeeklyPara();
-		weeklyPara.setId(Long.parseLong(id));
-		
+		mv.addObject("wk",(List<NextWeeklyDto>) map.get("wk"));
 		//当前重要风险
-		String weeklyRist=weeklyService.selectWeeklyRist(id);
-		JSONArray  weeklyRistJson=JSON.parseArray(weeklyRist);
-		mv.addObject("wr", weeklyRistJson.toJavaList(WeeklyJson.class));
-		
-		//当前重要风险
-		String weeklyQuestion=weeklyService.selectWeeklyQuestion(id);
-		JSONArray  weeklyQuestionJson=JSON.parseArray(weeklyQuestion);
-	    mv.addObject("wq", weeklyQuestionJson);
-	    
-	    
+		mv.addObject("wr", map.get("wr"));
+		//当前重要问题
+	    mv.addObject("wq", map.get("wq"));
 	    //项目总体情况描述
-	    WeeklyDetails wDetails=  weeklyDetailsService.getWeeklyDetailsByWeeklyId(Long.parseLong(id));
-	    mv.addObject("wDetails", wDetails);
+	    mv.addObject("wDetails", map.get("wDetails"));
 	    
 		mv.setViewName("weekly/indexDesc");
         return mv;
     }
     
-    
+    @RequestMapping("download")    
+    public ResponseEntity<byte[]> download(String id) throws IOException {  
+    	
+    	File file=new File(WEEKLY+".docx");
+         weeklyService.downLoad(file,id);
+    	
+        HttpHeaders headers = new HttpHeaders();    
+        String fileName=new String("周报下载.docx".getBytes("UTF-8"),"iso-8859-1");//为了解决中文名称乱码问题  
+        headers.setContentDispositionFormData("attachment", fileName);   
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);  
+       
+        return new ResponseEntity<byte[]>(FileUtils.readFileToByteArray(file),headers, HttpStatus.CREATED);    
+    }    
    
     
 }

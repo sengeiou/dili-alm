@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.domain.Project;
@@ -163,6 +164,21 @@ public class ProjectController {
 			return null;
 		}
 		return "project/detail";
+	}
+
+	@RequestMapping(value = "/getProjectList")
+	public @ResponseBody
+	Object getProjectList(Project project) throws Exception {
+		List<Project> list = projectService.list(project);
+		Map<Object, Object> metadata = new HashMap<>();
+		metadata.put("type", JSON.parse("{provider:'projectTypeProvider'}"));
+		metadata.put("projectManager", JSON.parse("{provider:'memberProvider'}"));
+		metadata.put("dep", JSON.parse("{provider:'depProvider'}"));
+		metadata.put("businessOwner", JSON.parse("{provider:'memberProvider'}"));
+		metadata.put("startDate", JSON.parse("{provider:'datetimeProvider'}"));
+		metadata.put("endDate", JSON.parse("{provider:'datetimeProvider'}"));
+		metadata.put("actualEndDate", JSON.parse("{provider:'datetimeProvider'}"));
+		return ValueProviderUtils.buildDataByProvider(metadata,list);
 	}
 
 }

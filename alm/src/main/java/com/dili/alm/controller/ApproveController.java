@@ -1,6 +1,7 @@
 package com.dili.alm.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.Approve;
 import com.dili.alm.domain.dto.apply.ApplyApprove;
 import com.dili.alm.service.ApproveService;
@@ -35,9 +36,15 @@ public class ApproveController {
 
 
     @ApiOperation("跳转到Approve页面")
-    @RequestMapping(value="/index.html", method = RequestMethod.GET)
-    public String index() {
+    @RequestMapping(value="/apply/index.html", method = RequestMethod.GET)
+    public String applyIndex() {
         return "approveApply/index";
+    }
+
+    @ApiOperation("跳转到Approve页面")
+    @RequestMapping(value="/change/index.html", method = RequestMethod.GET)
+    public String changeIndex() {
+        return "approveChange/index";
     }
 
     @RequestMapping(value="/apply/{id}", method = RequestMethod.GET)
@@ -48,12 +55,21 @@ public class ApproveController {
         return "approveApply/approve";
     }
 
+    @RequestMapping(value="/change/{id}", method = RequestMethod.GET)
+    public String change(ModelMap modelMap, @PathVariable("id") Long id) {
+
+        approveService.buildChangeApprove(modelMap,id);
+
+        return "approveChange/approve";
+    }
+
     @RequestMapping("/loadDesc")
     @ResponseBody
     public List<Map> loadDesc(Long id) throws Exception {
         Approve approve = approveService.get(id);
-        Map<Object, Object> metadata = new HashMap<>();
+        Map<Object, Object> metadata = new HashMap<>(2);
         metadata.put("userId", JSON.parse("{provider:'memberProvider'}"));
+        metadata.put("approveDate", JSON.parse("{provider:'datetimeProvider'}"));
         List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, JSON.parseArray(approve.getDescription(),ApplyApprove.class));
         return maps;
     }
@@ -77,8 +93,15 @@ public class ApproveController {
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Approve", paramType="form", value = "Approve的form信息", required = false, dataType = "string")
 	})
-    @RequestMapping(value="/listPage", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value="/apply/listPage", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String listPage(Approve approve) throws Exception {
+        approve.setType(AlmConstants.ApproveType.APPLY.getCode());
+        return approveService.listEasyuiPageByExample(approve, true).toString();
+    }
+
+    @RequestMapping(value="/change/listPage", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody String changeListPage(Approve approve) throws Exception {
+        approve.setType(AlmConstants.ApproveType.CHANGE.getCode());
         return approveService.listEasyuiPageByExample(approve, true).toString();
     }
 

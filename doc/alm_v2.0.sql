@@ -4,7 +4,7 @@ DROP TABLE `phase`;
 DROP TABLE `project`;
 DROP TABLE `version`;
 DROP TABLE `task`;
-DROP TABLE `project_ complete`;
+DROP TABLE project_complete;
 DROP TABLE `project_change`;
 DROP TABLE `verify_approval`;
 DROP TABLE `task_details`;
@@ -125,6 +125,10 @@ CREATE TABLE `project` (
   COMMENT '项目类型',
   `project_leader`      BIGINT          NULL
   COMMENT '项目负责人',
+  `business_owner`       BIGINT          NULL
+  COMMENT '业务负责人',
+  `dep`      BIGINT          NULL
+  COMMENT '所属部门',
   `product_manager`     BIGINT          NULL
   COMMENT '产品经理',
   `development_manager` BIGINT          NULL
@@ -199,47 +203,57 @@ CREATE TABLE `task` (
   `modified`         TIMESTAMP       NULL     DEFAULT CURRENT_TIMESTAMP,
   `create_member_id` BIGINT          NULL,
   `modify_member_id` BIGINT          NULL,
+  `fact_begin_date` datetime DEFAULT NULL COMMENT '任务实际开始执行时间',
+  `fact_end_date` datetime DEFAULT NULL COMMENT '任务实际完成时间',
   PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `project_ complete` (
-  `id`                BIGINT ZEROFILL NOT NULL AUTO_INCREMENT,
-  `project_id`        BIGINT          NULL
+CREATE TABLE `project_complete` (
+  `id`                   BIGINT ZEROFILL NOT NULL AUTO_INCREMENT,
+  `project_id`           BIGINT          NULL
+  COMMENT '项目Id',
+  `number`               VARCHAR(255)    NULL
   COMMENT '项目编号',
-  `launch_date`       DATETIME        NULL
+  `name`                 VARCHAR(255)    NULL
+  COMMENT '项目名称',
+  `type`                 VARCHAR(255)    NULL
+  COMMENT '项目类型',
+  `launch_date`          DATETIME        NULL
   COMMENT '实际上线日期',
-  `complete_date`     DATETIME        NULL
+  `complete_date`        DATETIME        NULL
   COMMENT '结项日期',
-  `reason`            VARCHAR(255)    NULL,
-  `information`       VARCHAR(255)    NULL
+  `reason`               VARCHAR(255)    NULL,
+  `information`          VARCHAR(255)    NULL
   COMMENT '项目资料齐备情况',
-  `range`             VARCHAR(255)    NULL,
-  `management_method` VARCHAR(255)    NULL
+  `range`                VARCHAR(255)    NULL,
+  `management_method`    VARCHAR(255)    NULL
   COMMENT '项目管理方法',
-  `appraise`          VARCHAR(255)    NULL
+  `appraise`             VARCHAR(255)    NULL
   COMMENT '项目管理过程评价',
-  `raise`             VARCHAR(255)    NULL
+  `technical_evaluation` VARCHAR(255)    NULL
+  COMMENT '技术方法评价',
+  `raise`                VARCHAR(255)    NULL
   COMMENT '进步与提高',
-  `result`            VARCHAR(255)    NULL
+  `result`               VARCHAR(255)    NULL
   COMMENT '成果',
-  `product`           VARCHAR(255)    NULL
+  `product`              VARCHAR(255)    NULL
   COMMENT '产品',
-  `performance`       VARCHAR(255)    NULL
+  `performance`          VARCHAR(255)    NULL
   COMMENT '主要功能和性能',
-  `suggest`           VARCHAR(255)    NULL
+  `suggest`              VARCHAR(255)    NULL
   COMMENT '建议',
-  `question`          VARCHAR(255)    NULL
+  `question`             VARCHAR(255)    NULL
   COMMENT '问题',
-  `members`           VARCHAR(255)    NULL
+  `members`              VARCHAR(255)    NULL
   COMMENT '成员',
-  `hardware`          VARCHAR(255)    NULL
+  `hardware`             VARCHAR(255)    NULL
   COMMENT '硬件',
-  `email`             VARCHAR(255)    NULL,
-  `status`            TINYINT         NULL,
-  `created`           TIMESTAMP       NULL     DEFAULT CURRENT_TIMESTAMP,
-  `modified`          TIMESTAMP       NULL     DEFAULT CURRENT_TIMESTAMP,
-  `create_member_id`  BIGINT          NULL,
-  `modify_member_id`  BIGINT          NULL,
+  `email`                VARCHAR(255)    NULL,
+  `status`               TINYINT         NULL,
+  `created`              TIMESTAMP       NULL     DEFAULT CURRENT_TIMESTAMP,
+  `modified`             TIMESTAMP       NULL     DEFAULT CURRENT_TIMESTAMP,
+  `create_member_id`     BIGINT          NULL,
+  `modify_member_id`     BIGINT          NULL,
   PRIMARY KEY (`id`)
 );
 
@@ -247,16 +261,20 @@ CREATE TABLE `project_change` (
   `id`               BIGINT ZEROFILL NOT NULL AUTO_INCREMENT,
   `name`             VARCHAR(255)    NULL
   COMMENT '变更名称',
+  `number`           VARCHAR(255)    NULL
+  COMMENT '变更编号',
+  `project_name`     VARCHAR(255)    NULL
+  COMMENT '项目名称',
   `project_id`       BIGINT          NULL
   COMMENT '变更项目',
   `version_id`       BIGINT          NULL
   COMMENT '版本',
   `phase_id`         BIGINT          NULL
   COMMENT '阶段',
-  `type`             TINYINT         NULL,
+  `type`             VARCHAR(50)     NULL,
   `working_hours`    VARCHAR(255)    NULL
   COMMENT '预估工时',
-  `affects_ online`  TINYINT         NULL
+  `affects_online`  TINYINT         NULL
   COMMENT '是否影响上线',
   `submit_date`      DATETIME        NULL
   COMMENT '提交日期',
@@ -264,6 +282,7 @@ CREATE TABLE `project_change` (
   `effects`          VARCHAR(255)    NULL
   COMMENT '影响说明',
   `email`            VARCHAR(255)    NULL,
+  `status`           TINYINT         NULL,
   `created`          TIMESTAMP       NULL     DEFAULT CURRENT_TIMESTAMP,
   `modified`         TIMESTAMP       NULL     DEFAULT CURRENT_TIMESTAMP,
   `create_member_id` BIGINT          NULL,
@@ -329,7 +348,7 @@ CREATE TABLE `log` (
   `ip` varchar(20) DEFAULT NULL COMMENT 'IP',
   `content` text COMMENT '内容',
   PRIMARY KEY (`id`)
-) 
+)
 
 CREATE TABLE `work_schedule` (
   `id`            BIGINT(20) NOT NULL AUTO_INCREMENT

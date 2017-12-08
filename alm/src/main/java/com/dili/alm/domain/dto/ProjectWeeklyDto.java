@@ -11,13 +11,29 @@ public class  ProjectWeeklyDto {
 	private String  projectName;//项目名称
 	private String serialNumber;//项目编号
 	private String userName ;//项目经理
+	
 	private String projectType ;//项目类型
 	private String projectInDept ;//项目所在部门
 	private String businessParty ;//业务方
 	private String planDate ;//计划上线日期
 	private String projectId ;//项目id
-	private String  beginAndEndTime;
+	private String stageMan ;//阶段人 
 	
+	private String  beginAndEndTime;
+	private String id ;
+
+	public String getStageMan() {
+		return stageMan;
+	}
+	public void setStageMan(String stageMan) {
+		this.stageMan = stageMan;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
 	public String getProjectId() {
 		return projectId;
 	}

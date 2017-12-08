@@ -10,81 +10,37 @@
                     <table style="padding:10px;">
                         <tr>
                             <td style="padding:5px;">
-                                <input class="easyui-textbox" name="name" id="name" style="width:100%" data-options="label:'name:', validType:'length[0,255]'" />
+                                <input class="easyui-textbox" name="name" id="name" style="width:100%" data-options="label:'任务名称:', validType:'length[0,255]'" />
 
                             </td>
                             <td style="padding:5px;">
-                                <input class="easyui-numberbox" name="projectId" id="projectId" style="width:100%" data-options="label:'projectId:', validType:'length[0,19]'" />
-
+                            <input  name="projectId" id="projectId"  class="easyui-combobox"style="width: 100%;"   data-options="valueField: 'id',textField: 'name',
+                                                                       label:'所属项目:', url:'${contextPath!}/task/listTreeProject.json',multiline:true">
                             </td>
                             <td style="padding:5px;">
-                                <input class="easyui-numberbox" name="versionId" id="versionId" style="width:100%" data-options="label:'versionId:', validType:'length[0,19]'" />
-
+ 								<input  name="versionId" id="versionId"  class="easyui-combobox"style="width: 100%;"   data-options="valueField: 'id',textField: 'version',
+                                                                       label:'所属版本:', url:'${contextPath!}/task/listTreeVersion.json',multiline:true">
                             </td>
                             <td style="padding:5px;">
-                                <input class="easyui-numberbox" name="phaseId" id="phaseId" style="width:100%" data-options="label:'phaseId:', validType:'length[0,19]'" />
+                                <input  name="phaseId" id="phaseId"  class="easyui-combobox"style="width: 100%;"   data-options="valueField: 'id',textField: 'name',
+                                                                       label:'所属阶段:', url:'${contextPath!}/task/listTreePhase.json',multiline:true">
 
                             </td>
-                            <td style="padding:5px;">
-                                <input class="easyui-datetimebox" name="startDate" id="startDate" style="width:100%" data-options="label:'startDate:'" />
 
-                            </td>
                         </tr>
                         <tr>
-                            <td style="padding:5px;">
-                                <input class="easyui-datetimebox" name="endDate" id="endDate" style="width:100%" data-options="label:'endDate:'" />
 
-                            </td>
-                            <td style="padding:5px;">
-                                <input class="easyui-numberbox" name="beforeTask" id="beforeTask" style="width:100%" data-options="label:'前置任务:', validType:'length[0,19]'" />
-
-                            </td>
-                            <td style="padding:5px;">
-                                <input class="easyui-numberbox" name="type" id="type" style="width:100%" data-options="label:'任务类型:', validType:'length[0,10]'" />
-
-                            </td>
                             <td style="padding:5px;">
                                 <input class="easyui-numberbox" name="owner" id="owner" style="width:100%" data-options="label:'负责人:', validType:'length[0,19]'" />
 
                             </td>
                             <td style="padding:5px;">
-                                <input class="easyui-textbox" name="planTime" id="planTime" style="width:100%" data-options="label:'计划工时:', validType:'length[0,5]'" />
-
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="padding:5px;">
-                                <input class="easyui-numberbox" name="flow" id="flow" style="width:100%" data-options="label:'流程:', validType:'length[0,1]'" />
-                            </td>
-                            <td style="padding:5px;">
-                                <input class="easyui-numberbox" name="changeId" id="changeId" style="width:100%" data-options="label:'changeId:', validType:'length[0,19]'" />
-
-                            </td>
-                            <td style="padding:5px;">
-                                <input class="easyui-textbox" name="describe" id="describe" style="width:100%" data-options="label:'描述:', validType:'length[0,255]'" />
-
-                            </td>
-                            <td style="padding:5px;">
-                                <input class="easyui-textbox" name="status" id="status" style="width:100%" data-options="label:'status:', validType:'length[0,3]'" />
-
-                            </td>
-                            <td style="padding:5px;">
-                                <input class="easyui-datetimebox" name="created" id="created" style="width:100%" data-options="label:'created:'" />
-
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="padding:5px;">
-                                <input class="easyui-datetimebox" name="modified" id="modified" style="width:100%" data-options="label:'modified:'" />
-
-                            </td>
-                            <td style="padding:5px;">
-                                <input class="easyui-numberbox" name="createMemberId" id="createMemberId" style="width:100%" data-options="label:'createMemberId:', validType:'length[0,19]'" />
-
-                            </td>
-                            <td style="padding:5px;">
-                                <input class="easyui-numberbox" name="modifyMemberId" id="modifyMemberId" style="width:100%" data-options="label:'modifyMemberId:', validType:'length[0,19]'" />
-
+		                    <select  name="status" id="status" class="easyui-combobox" data-options="label:'流程:', validType:'length[0,3]'" style="width:100%">
+		                      <option value=0>未开始</option>
+		                      <option value=1>已开始</option>
+		                      <option value=2>已暂停</option>
+		                      <option value=3>已完成</option>
+		                    </select>
                             </td>
                         </tr>
                         <tr>
@@ -111,59 +67,35 @@
                 <thead>
                     <tr>
                         <th data-options="field:'name',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            name
+                            任务名称
                         </th>
-                        <th data-options="field:'projectId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            projectId
+                        <th data-options="field:'projectName',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                           项目名称
                         </th>
-                        <th data-options="field:'versionId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            versionId
+                        <th data-options="field:'versionStr',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                           所属版本
                         </th>
-                        <th data-options="field:'phaseId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            phaseId
-                        </th>
-                        <th data-options="field:'startDate',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            startDate
-                        </th>
-                        <th data-options="field:'endDate',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            endDate
-                        </th>
-                        <th data-options="field:'beforeTask',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            前置任务
-                        </th>
-                        <th data-options="field:'type',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            任务类型
+                        <th data-options="field:'phaseStr',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            所属阶段
                         </th>
                         <th data-options="field:'owner',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                             负责人
                         </th>
-                        <th data-options="field:'planTime',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'planDays',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                             计划工时
                         </th>
-                        <th data-options="field:'flow',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+
+                        <th data-options="field:'statusStr',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            状态
+                        </th>
+                       <th data-options="field:'progress', formatter:progressFormatter,order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            进度
+                        </th>
+                        <th data-options="field:'flowStr',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                             流程
                         </th>
-                        <th data-options="field:'changeId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            changeId
-                        </th>
-                        <th data-options="field:'describe',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            描述
-                        </th>
-                        <th data-options="field:'status',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            status
-                        </th>
-                        <th data-options="field:'created',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            created
-                        </th>
-                        <th data-options="field:'modified',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            modified
-                        </th>
-                        <th data-options="field:'createMemberId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            createMemberId
-                        </th>
-                        <th data-options="field:'modifyMemberId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            modifyMemberId
-                        </th>
+                        <th data-options="field:'options', formatter:formatOptions, align:'center', resizable:'true', fixed:'false'">
+						操作</th>
                     </tr>
                 </thead>
             </table>
@@ -186,21 +118,10 @@
         </div>
     </div>
     <!-- 隐藏编辑框 -->
-    <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="Task信息" style="padding:20px" modal="true" border="thin" closed="true"
-         data-options="
+    <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="任务信息" style="padding:20px" modal="true" border="thin" closed="true"
+     data-options="
 				iconCls: 'icon-save',
-				height: 480,
-				buttons: [{
-					text:'Ok',
-					iconCls:'icon-ok',
-					handler:saveOrUpdate
-				},{
-					text:'取消',
-					handler:function(){
-						$('#dlg').dialog('close');
-					}
-				}]
-			">
+				height: 480">
     <form id="_form" class="easyui-form" method="post" fit="true">
         <input name="_id" id="_id" type="hidden">
         <table width="360px">
@@ -211,17 +132,20 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_projectId" id="_projectId" style="width:100%" data-options="label:'projectId:'" />
+                    <input  name="_projectId" id="_projectId"  class="easyui-combobox"style="width: 100%;"   data-options="valueField: 'id',textField: 'name',
+                                                                       label:'所属项目:', url:'${contextPath!}/task/listTreeProject.json',multiline:true">
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_versionId" id="_versionId" style="width:100%" data-options="label:'versionId:'" />
+                <input  name="_versionId" id="_versionId"  class="easyui-combobox"style="width: 100%;"   data-options="valueField: 'id',textField: 'version',
+                                                                       label:'所属版本:', url:'${contextPath!}/task/listTreeVersion.json',multiline:true">
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_phaseId" id="_phaseId" style="width:100%" data-options="label:'phaseId:'" />
+                 <input  name="_phaseId" id="_phaseId"  class="easyui-combobox"style="width: 100%;"   data-options="valueField: 'id',textField: 'name',
+                                                                       label:'所属阶段:', url:'${contextPath!}/task/listTreePhase.json',multiline:true">
                 </td>
             </tr>
             <tr>
@@ -236,12 +160,18 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_beforeTask" id="_beforeTask" style="width:100%" data-options="label:'前置任务:'" />
+                      <input name="_beforeTask" id="_beforeTask"  class="easyui-combobox"style="width: 100%;"   data-options="valueField: 'id',textField: 'name',
+                                    label:'前置任务:', url:'${contextPath!}/task/listTree.json',multiline:true">
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_type" id="_type" style="width:100%" data-options="label:'任务类型:'" />
+                     <select  name="_type" id="_type" class="easyui-combobox"  data-options="label:'任务类型:'"  style="width:100%">
+                      <option value="1">需求分析</option>
+                      <option value="2">测试任务</option>
+                      <option value="3">开发任务</option>
+                      <option value="4">上线任务</option>
+                    </select>
                 </td>
             </tr>
             <tr>
@@ -251,17 +181,15 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_planTime" id="_planTime" style="width:100%" data-options="label:'计划工时:', validType:'length[0,5]'" />
+                    <input class="easyui-numberbox" name="planTimeStr" id="planTimeStr" style="width:100%" data-options="label:'计划工时:', validType:'length[0,5]'" />
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_flow" id="_flow" style="width:100%" data-options="label:'流程:', validType:'length[0,1]'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_changeId" id="_changeId" style="width:100%" data-options="label:'changeId:'" />
+                    <select  name="_flow" id="_flow" class="easyui-combobox" data-options="label:'流程:'" style="width:100%">
+                      <option value="true">正常流程</option>
+                      <option value="false">变更流程</option>
+                    </select>
                 </td>
             </tr>
             <tr>
@@ -269,33 +197,58 @@
                     <input class="easyui-textbox" name="_describe" id="_describe" style="width:100%" data-options="label:'描述:', validType:'length[0,255]'" />
                 </td>
             </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_status" id="_status" style="width:100%" data-options="label:'status:', validType:'length[0,3]'" />
+        </table>
+    </form>
+    <!-- 隐藏工时信息 -->
+    <div id="task_detail" style="display:none;">
+    <hr>
+<h3>工时任务信息</h3>
+<form name="detail_form" id="detail_form">
+ <input name="taskId" id="taskId" type="hidden">
+ <input name="id" id="id" type="hidden">
+        <table width="360px;"  style="border:1px;">
+              <tr>
+                <td style="padding:5px;"  colspan="2">
+                                        任务进度:<div id="_progressShow" style="width:100%;"></div>
                 </td>
             </tr>
             <tr>
+
+            </tr>
+           <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-datetimebox" name="_created" id="_created" style="width:100%" data-options="label:'created:'" />
+                    <input class="easyui-numberbox" name="_taskHour" id="_taskHour" style="width:200px;height:26px;" data-options="label:'任务工时:'" />
+                </td>
+                <td style="padding:5px;">
+                    <input class="easyui-numberbox" name="taskHourStr" id="taskHourStr" style="width:200px;height:26px;" data-options="label:'已填工时:'" />
                 </td>
             </tr>
-            <tr>
+           <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-datetimebox" name="_modified" id="_modified" style="width:100%" data-options="label:'modified:'" />
+                    <input class="easyui-numberbox" name="overHourStr" id="overHourStr"  style="width:200px;height:26px;" data-options="label:'加班工时:'" />
+                </td>
+                <td style="padding:5px;">
+                    <input class="easyui-numberbox" name="tasktime" id="tasktime" style="width:200px;height:26px;" data-options="label:'已填加班:'" />
                 </td>
             </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_createMemberId" id="_createMemberId" style="width:100%" data-options="label:'createMemberId:'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_modifyMemberId" id="_modifyMemberId" style="width:100%" data-options="label:'modifyMemberId:'" />
+           <tr>
+                <td style="padding:5px;" colspan="2">
+                     <input class="easyui-textbox" name="describe" id="describe" style="width:100%;" data-options="label:'描述:', validType:'length[0,255]',multiline:true" />
                 </td>
             </tr>
         </table>
-    </form>
+        </form>
+    </div>
+        <div id="dialog_toolbar" style="diplay:show;" >
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true"  onclick="saveOrUpdate()" style="border:1px solid #ccc;background-color:#E0E0E0;">保存</a>
+            <a href="#" class="easyui-linkbutton" data-options="plain:true"  onclick="$('#dlg').dialog('close');" style="border:1px solid #ccc;background-color:#E0E0E0;">取消</a>
+        </div>
+        <div id="dialog_toolbar_detail"  style="diplay:none;" >
+            <a href="#" id="doTask" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" style="border:1px solid #ccc;background-color:#E0E0E0;" onclick="startTask()">开始执行任务</a>
+            <a href="#" id="pauseTask" class="easyui-linkbutton" data-options="plain:true"   style="border:1px solid #ccc;background-color:#E0E0E0;" onclick="pauseTaskStatus()"> 暂停任务</a>
+            <a href="#" id="updateDetail" class="easyui-linkbutton" data-options="plain:true"   style="border:1px solid #ccc;background-color:#E0E0E0;" onclick="saveTaskDetail()">工时填写完成</a>
+            <a href="#" class="easyui-linkbutton" data-options="plain:true"  onclick="$('#dlg').dialog('close');" style="border:1px solid #ccc;background-color:#E0E0E0;">取消</a>
+        </div>
 
     </div>
     <!-- ====================================================================================================================== -->
@@ -304,6 +257,9 @@
     <script type="text/javascript">
         //打开新增窗口
         function openInsert(){
+        	$("#task_detail").hide();
+        	$("#dialog_toolbar").show();
+        	$("#dialog_toolbar_detail").hide();
             $('#dlg').dialog('open');
             $('#dlg').dialog('center');
             $('#_form').form('clear');
@@ -312,10 +268,17 @@
 
         //打开修改窗口
         function openUpdate(){
+        	$("#task_detail").hide();
+        	$("#dialog_toolbar").show();
+        	$("#dialog_toolbar_detail").hide();
             var selected = $("#grid").datagrid("getSelected");
             if (null == selected) {
                 $.messager.alert('警告','请选中一条数据');
                 return;
+            }
+            if(selected.status!=0){
+            	$.messager.alert('警告','此项任务已经执行，不能再进行编辑！');
+            	return;
             }
             $('#dlg').dialog('open');
             $('#dlg').dialog('center');
@@ -323,9 +286,75 @@
             var formData = $.extend({},selected);
             formData = addKeyStartWith(getOriginalData(formData),"_");
             $('#_form').form('load', formData);
+            $('#_form').form('load', {taskHour:formData._planTime});
+        }
+        
+        //打开执行任务窗口
+        function openUpdateDetail(row){
+        	$("#task_detail").hide();
+        	$("#dialog_toolbar").hide();
+        	$("#dialog_toolbar_detail").show();
+			var selected=$("#grid").datagrid('getData').rows[row];
+			$("#task_detail").show();
+			
+
+            
+            $('#dlg').dialog('open');
+            $('#dlg').dialog('center');
+
+            $('#_form').form({editable:false});
+            formFocus("_form", "_name");
+            var formData = $.extend({},selected);
+            formData = addKeyStartWith(getOriginalData(formData),"_");
+            $('#_form').form('load', formData);
+            $('#_form').form('load', {planTimeStr:formData._planTime});
+            
+            
+/*             $('#_progress').progressbar({
+ 			    value: formData._progress;
+ 			}); */
+            if(formData._status==0){
+            	$("#task_detail").hide();
+            	$("#doTask").show();
+            	$("#pauseTask").hide();
+            	$("#updateDetail").hide();
+            }
+            if(formData._status==2){
+            	$("#task_detail").show();
+            	$("#doTask").show();
+            	$("#pauseTask").hide();
+            	$("#updateDetail").hide();
+            }
+            
+            if(formData._status==1){
+            	$('#_progressShow').progressbar({
+            	    value: parseInt(formData._progress)
+            	});
+            	$("#task_detail").show();
+            	$("#doTask").hide();
+            	$("#pauseTask").show();
+            	$("#updateDetail").show();
+            	$('#detail_form').form('clear');
+            	$('#detail_form').form('load', {_taskHour:formData._planTime});
+            	getDetailInfo(formData._id);
+            }
+            
+            if(formData._status==3){
+            	$('#_progressShow').progressbar({
+            	    value: parseInt(formData._progress)
+            	});
+            	$("#task_detail").show();
+            	$("#doTask").hide();
+            	$("#pauseTask").hide();
+            	$("#updateDetail").hide();
+            	$('#detail_form').form('clear');
+            	$('#detail_form').form('load', {_taskHour:formData._planTime});
+            	getDetailInfo(formData._id);
+            }
         }
 
         function saveOrUpdate(){
+        	$("#task_detail").hide();
             if(!$('#_form').form("validate")){
                 return;
             }
@@ -403,6 +432,7 @@
             var formData = $("#form").serializeObject();
             $.extend(param, formData);
             $("#grid").datagrid("load", param);
+            $('#detail_form').form('load', {_taskHour:formData._planTime});
         }
 
 
@@ -464,6 +494,96 @@
             } else {
                 document.onkeyup = getKey;
             }
+            queryGrid();
         })
+        
+        function formatOptions(value, row, index) {
+        	var content = '<span style="padding:5px;"><a href="javascript:void(0)" onclick="openUpdateDetail('+index+')">执行任务</a></span>';
+        	return content;
+        }
+        //进度条处理
+	    function progressFormatter(value,rowData,rowIndex){  
+	        var htmlstr = '<div  class="easyui-progressbar" style="width:100px;" value="'+rowData.progress+'">'+rowData.progress+'</div> ';  
+	        return htmlstr;  
+	    }  
+        function getDetailInfo(taskID){
+        	 var  htmlobj=$.ajax({url:"${contextPath}/task/listTaskDetail.json?id="+taskID,async:false});
+        	 var str=htmlobj.responseText;
+        	 var obj = $.parseJSON(str);
+        	 $('#detail_form').form('load', obj);
+        	 $('#detail_form').form('load', {taskHourStr:obj.taskHour,overHourStr:obj.overHour});
+        }
+        
+        function startTask(){
+        	var id=$("#_id").val();
+             $.ajax({
+                type: "POST",
+                url: "${contextPath}/task/updateTaskStatus?id="+id,
+                processData:true,
+                dataType: "json",
+                async : true,
+                success: function (data) {
+                    if(data.code=="200"){
+                        $("#grid").datagrid("reload");
+                        $('#dlg').dialog('close');
+                    }else{
+                        $.messager.alert('错误',data.result);
+                    }
+                },
+                error: function(){
+                    $.messager.alert('错误','远程访问失败');
+                }
+            });
+        	 
+        }
+        
+        function pauseTaskStatus(){
+        	var id=$("#_id").val();
+              $.ajax({
+                type: "POST",
+                url: "${contextPath}/task/pauseTaskStatus?id="+id,
+                processData:true,
+                dataType: "json",
+                async : true,
+                success: function (data) {
+                    if(data.code=="200"){
+                        $("#grid").datagrid("reload");
+                        $('#dlg').dialog('close');
+                    }else{
+                        $.messager.alert('错误',data.result);
+                    }
+                },
+                error: function(){
+                    $.messager.alert('错误','远程访问失败');
+                }
+            });
+        	  
+        }
+        
+        function saveTaskDetail(){
+        	var planTimeStr=$("#planTimeStr").val();
+        	var formDate=$("#detail_form").serialize();
+        	
+             $.ajax({
+                type: "POST",
+                url: "${contextPath}/task/updateTaskDetails?planTimeStr="+planTimeStr,
+                data: formDate,
+                processData:true,
+                dataType: "json",
+                async : true,
+                success: function (data) {
+                    if(data.code=="200"){
+                        $("#grid").datagrid("reload");
+                        $('#dlg').dialog('close');
+                    }else{
+                        $.messager.alert('错误',data.result);
+                    }
+                },
+                error: function(){
+                    $.messager.alert('错误','远程访问失败');
+                }
+            }); 
+        }
+
     </script>
 </#body>

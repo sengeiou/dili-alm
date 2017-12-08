@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiOperation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -45,12 +46,13 @@ public class MessageApi {
 	@ApiImplicitParams({
 	@ApiImplicitParam(name="Message", paramType="form", value = "Message的form信息", required = true, dataType = "string")
 	})
+	@CrossOrigin(origins = {"http://almadmin.diligrp.com", "null"})
 	@RequestMapping(value="/updateMessageIsRead", method = {RequestMethod.GET, RequestMethod.POST})
-	public @ResponseBody BaseOutput update(Long id) {
-		if(id==null){
+	public @ResponseBody BaseOutput update(String id) {
+		if(WebUtil.strIsEmpty(id)){
 	        return BaseOutput.failure("修改状态失败,包含空值id="+id);
         }else{
-        	messageService.updateMessageIsRead(id);
+        	messageService.updateMessageIsRead(Long.parseLong(id));
 		    return BaseOutput.success("修改状态成功");
         }
 		
@@ -60,8 +62,9 @@ public class MessageApi {
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Message", paramType="form", value = "Message的form信息", required = false, dataType = "string")
 	})
+	@CrossOrigin(origins = {"http://almadmin.diligrp.com", "null"})
     @RequestMapping(value="/list", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody Map<String, Object> list() {
-        return messageService.mapMessagges();
+    public @ResponseBody Map<String, Object> list(String userId) {
+        return messageService.mapMessagges(userId);
     }
 }

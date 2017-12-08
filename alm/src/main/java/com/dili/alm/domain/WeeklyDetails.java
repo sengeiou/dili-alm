@@ -11,9 +11,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
- * ÓÉMyBatis Generator¹¤¾ß×Ô¶¯Éú³É
+ * ç”±MyBatis Generatorå·¥å…·è‡ªåŠ¨ç”Ÿæˆ
  * 
- * This file was generated on 2017-12-05 20:20:16.
+ * This file was generated on 2017-12-06 10:31:00.
  */
 @Table(name = "`weekly_details`")
 public interface WeeklyDetails extends IBaseDomain {
@@ -27,28 +27,28 @@ public interface WeeklyDetails extends IBaseDomain {
     void setId(Long id);
 
     @Column(name = "`overall_progress`")
-    @FieldDef(label="×ÜÌå½øÕ¹", maxLength = 20)
+    @FieldDef(label="æ€»ä½“è¿›å±•", maxLength = 20)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getOverallProgress();
 
     void setOverallProgress(String overallProgress);
 
     @Column(name = "`project_description`")
-    @FieldDef(label="ÏîÄ¿×ÜÌåÇé¿öÃèÊö", maxLength = 500)
+    @FieldDef(label="é¡¹ç›®æ€»ä½“æƒ…å†µæè¿°", maxLength = 500)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getProjectDescription();
 
     void setProjectDescription(String projectDescription);
 
     @Column(name = "`expected_deviation`")
-    @FieldDef(label="Ô¤ÆÚÆ«²î", maxLength = 100)
+    @FieldDef(label="é¢„æœŸåå·®", maxLength = 100)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getExpectedDeviation();
 
     void setExpectedDeviation(String expectedDeviation);
 
     @Column(name = "`other`")
-    @FieldDef(label="ÆäËû", maxLength = 100)
+    @FieldDef(label="å…¶ä»–", maxLength = 100)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getOther();
 
@@ -60,4 +60,11 @@ public interface WeeklyDetails extends IBaseDomain {
     Long getWeeklyId();
 
     void setWeeklyId(Long weeklyId);
+
+    @Column(name = "`is_submit`")
+    @FieldDef(label="1,å·²ç»æäº¤0 æœªæäº¤")
+    @EditMode(editor = FieldEditor.Text, required = false)
+    Integer getIsSubmit();
+
+    void setIsSubmit(Integer isSubmit);
 }

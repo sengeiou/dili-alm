@@ -1,8 +1,12 @@
 package com.dili.alm.service;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.List;
+import java.util.Map;
 
 import com.dili.alm.domain.Weekly;
+import com.dili.alm.domain.WeeklyJson;
 import com.dili.alm.domain.dto.NextWeeklyDto;
 import com.dili.alm.domain.dto.ProjectWeeklyDto;
 import com.dili.alm.domain.dto.TaskDto;
@@ -55,5 +59,28 @@ public interface WeeklyService extends BaseService<Weekly, Long> {
 	 * 本周项目版本
 	 * */
 	List<String> selectProjectVersion(Long id );
+	/**
+	 * 保存当前重大问题 
+	 * @param list
+	 * @return
+	 */
+	Integer   updateMaxQuestion(String list,Long id );
+	/**
+	 * 
+	 * @param list
+	 * @return
+	 */
+	Integer   updateMaxRist(String list,Long id );
+	
+	/**
+	 * 文件下载
+	 * @param file
+	 * @param id
+	 * @return
+	 */
+	File downLoad(File file,String id);
+	
+	Map<Object,Object> getDescById(String id);
+	
 	
 }
