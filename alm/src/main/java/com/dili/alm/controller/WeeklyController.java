@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+
 
 
 
@@ -58,6 +60,7 @@ import com.dili.ss.domain.BaseOutput;
 @Controller
 @RequestMapping("/weekly")
 public class WeeklyController  {
+	private  static final  String  WEEKLY="weekly";
     @Autowired
     WeeklyService weeklyService;
     @Autowired
@@ -160,57 +163,27 @@ public class WeeklyController  {
     @ApiOperation("跳转到getDescById页面")
     @RequestMapping(value="/getDescById", method = RequestMethod.GET)
     public ModelAndView getDescById(String id) {
+    	
+    	Map<Object,Object> map=weeklyService.getDescById(id);
     	ModelAndView mv = new ModelAndView();
     	//项目周报
-    	ProjectWeeklyDto pd=weeklyService.getProjectWeeklyDtoById(Long.parseLong(id));
-    	pd.setId(id);
-		mv.addObject("pd", pd);
-		
+		mv.addObject("pd", (ProjectWeeklyDto)map.get("pd"));
 		// 本周项目版本
-		List<String> projectVersion=weeklyService.selectProjectVersion(Long.parseLong(pd.getProjectId()));
-		mv.addObject("pv", StringUtils.join(projectVersion.toArray(),","));
-		
+		mv.addObject("pv",(String) map.get("pv"));
 		//本周项目阶段
-		List<String> projectPhase=weeklyService.selectProjectPhase(Long.parseLong(pd.getProjectId()));
-		mv.addObject("pp", StringUtils.join(projectPhase.toArray(),","));
-		
+		mv.addObject("pp",(String) map.get("pp"));
 		//下周项目阶段
-		List<String> nextprojectPhase=weeklyService.selectNextProjectPhase(Long.parseLong(pd.getProjectId()));
-		mv.addObject("npp", StringUtils.join(nextprojectPhase.toArray(),","));
-		
-		
+		mv.addObject("npp", (String)map.get("npp"));
 		//本周进展情况 
-		List<TaskDto> td=weeklyService.selectWeeklyProgress(Long.parseLong(pd.getProjectId()));
-		for (int i = 0; i < td.size(); i++) {
-			td.get(i).setNumber(i+1);
-		}
-		mv.addObject("td", td);
-				
+		mv.addObject("td",(List<TaskDto>)map.get("td"));
 		//下周工作计划
-		List<NextWeeklyDto> wk=weeklyService.selectNextWeeklyProgress(Long.parseLong(pd.getProjectId()));
-	
-		for (int i = 0; i < wk.size(); i++) {
-			wk.get(i).setNumber(i+1);
-		}
-		mv.addObject("wk", wk);
-		
-		WeeklyPara weeklyPara=  new WeeklyPara();
-		weeklyPara.setId(Long.parseLong(id));
-		
+		mv.addObject("wk",(List<NextWeeklyDto>) map.get("wk"));
 		//当前重要风险
-		String weeklyRist=weeklyService.selectWeeklyRist(id);
-		JSONArray  weeklyRistJson=JSON.parseArray(weeklyRist);
-		mv.addObject("wr", weeklyRistJson.toJavaList(WeeklyJson.class));
-		
-		//当前重要风险
-		String weeklyQuestion=weeklyService.selectWeeklyQuestion(id);
-		JSONArray  weeklyQuestionJson=JSON.parseArray(weeklyQuestion);
-	    mv.addObject("wq", weeklyQuestionJson);
-	    
-	    
+		mv.addObject("wr", map.get("wr"));
+		//当前重要问题
+	    mv.addObject("wq", map.get("wq"));
 	    //项目总体情况描述
-	    WeeklyDetails wDetails=  weeklyDetailsService.getWeeklyDetailsByWeeklyId(Long.parseLong(id));
-	    mv.addObject("wDetails", wDetails);
+	    mv.addObject("wDetails", map.get("wDetails"));
 	    
 		mv.setViewName("weekly/indexDesc");
         return mv;
@@ -219,8 +192,8 @@ public class WeeklyController  {
     @RequestMapping("download")    
     public ResponseEntity<byte[]> download(String id) throws IOException {  
     	
-    	File file=new File("weekly.docx");
-         weeklyService.downLoad(file,"16");
+    	File file=new File(WEEKLY+".docx");
+         weeklyService.downLoad(file,id);
     	
         HttpHeaders headers = new HttpHeaders();    
         String fileName=new String("周报下载.docx".getBytes("UTF-8"),"iso-8859-1");//为了解决中文名称乱码问题  
