@@ -30,7 +30,7 @@
 <div class="easyui-panel" title="变更申请（第一步）">
     <div style="padding:10px 60px 20px 60px">
         <form id="ff" method="post" action="">
-            <input type="hidden" name="id" value=""/>
+            <input type="hidden" name="id" value="${obj.id}"/>
             <input type="hidden" name="status" id="status"/>
             <input type="hidden" name="email" id="email"/>
             <input type="hidden" name="number" id="number"/>
@@ -39,13 +39,13 @@
                     <td class="title-first" colspan="3">1基本信息</td>
                 </tr>
                 <tr>
-                    <td><input class="easyui-textbox" type="text" name="name"
+                    <td><input class="easyui-textbox" type="text" name="name" value="${obj.name}"
                                data-options="required:true,validType:'length[1,20]',label:'变更名称:'"></td>
                     <td><input class="easyui-textbox" type="text" name="projectId" id="projectId"
                                data-options="required:true,label:'项目编号:'"></td>
                 </tr>
                 <tr>
-                    <td><input class="easyui-textbox" readonly type="text" name="projectName" id="projectName"
+                    <td><input class="easyui-textbox" type="text" readonly name="projectName" id="projectName"
                                data-options="required:true,validType:'length[1,20]',label:'项目名称:'"></td>
                     <td><input class="easyui-textbox" type="text" name="versionId" id="versionId"
                                data-options="required:true,validType:'length[1,20]',label:'项目版本:'"></td>
@@ -62,7 +62,7 @@
                                data-options="required:true,validType:'length[1,10]',label:'变更类型:'">
                         <#comboProvider _id="type" _provider='changeTypeProvider'/>
                     </td>
-                    <td><input class="easyui-numberbox" type="text" name="workingHours"
+                    <td><input class="easyui-numberbox" type="text" name="workingHours" value="${obj.workingHours}"
                                data-options="required:true,min:0,max:99999999,label:'变更工作量预估:'"></td>
                 </tr>
                 <tr>
@@ -86,7 +86,7 @@
                     <td class="title-second" colspan="4">变更内容及原因</td>
                 </tr>
                 <tr>
-                    <td colspan="4"><input class="easyui-textbox" id="content" name="content"
+                    <td colspan="4"><input class="easyui-textbox" id="content" name="content" value="${obj.content}"
                                            data-options="required:true,multiline:true,prompt:'限制输入500个字符串',validType:['length[0,500]']"
                                            style="width:800px;height:120px"/></td>
                 </tr>
@@ -94,7 +94,7 @@
                     <td class="title-second" colspan="4">变更方案及影响风险</td>
                 </tr>
                 <tr>
-                    <td colspan="4"><input class="easyui-textbox" name="effects" id="effects"
+                    <td colspan="4"><input class="easyui-textbox" name="effects" id="effects" value="${obj.effects}"
                                            data-options="multiline:true,prompt:'限制输入500个字符串',validType:['length[0,500]']"
                                            style="width:800px;height:120px"/></td>
                 </tr>
@@ -103,18 +103,14 @@
                 </tr>
                 <tr>
                     <td colspan="4">
-                        <input class="easyui-tagbox" id="tagbx" value="" style="width:100%">
+                        <input class="easyui-tagbox" id="tagbx" value="${obj.email}" style="width:100%">
                     </td>
                 </tr>
             </table>
         </form>
-        <div style="text-align:center;padding:5px;margin-top:50px;">
+        <div style="text-align:left;padding:5px;margin-top:10px;">
             <a href="${contextPath}/projectChange/index.html" class="easyui-linkbutton"
-               data-options="size:'large',width:'80px'">取消</a>
-            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="size:'large',width:'80px'"
-               onclick="submitForm(1)">保存</a>
-            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="size:'large',width:'80px'"
-               onclick="submitForm(2)">立项提交</a>
+               data-options="size:'large',width:'80px'">返回</a>
         </div>
     </div>
 </div>
@@ -130,7 +126,7 @@
 
     function submitForm(type) {
         $('#ff').form('submit', {
-            url: "${contextPath}/projectChange/insert",
+            url: "${contextPath}/projectChange/update",
             onSubmit: function () {
                 $("#status").val(type);
                 var data = $("#tagbx").tagbox("getValues");
@@ -178,10 +174,14 @@
     });
 
     $(function(){
-        var value = $("#tagbx").tagbox('getValue');
-        if(value == undefined || value ==''){
-            $("#tagbx").tagbox('setValue','wyx@diligrp.com');
-        }
+        $("#projectId").combobox("setValue",'${obj.projectId}');
+        $("#versionId").combobox("setValue",'${obj.versionId}');
+        $("#phaseId").combobox("setValue",'${obj.phaseId}');
+        $("#type").combobox("setValue",'${obj.type}');
+        $("#affectsOnline").combobox("setValue",'${obj.affectsOnline}');
+
+        $('input[class^=easyui-]').textbox("disable");
+        $('select[class^=easyui-]').textbox("disable");
     });
 </script>
 </#body>

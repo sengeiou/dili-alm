@@ -2,7 +2,12 @@ package com.dili.alm.controller;
 
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.ProjectChange;
+import com.dili.alm.domain.ProjectState;
+import com.dili.alm.domain.Task;
+import com.dili.alm.domain.VerifyApproval;
 import com.dili.alm.service.ProjectChangeService;
+import com.dili.alm.service.TaskService;
+import com.dili.alm.service.VerifyApprovalService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.sysadmin.sdk.session.SessionContext;
 import io.swagger.annotations.Api;
@@ -12,6 +17,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -27,7 +33,13 @@ import java.util.List;
 @RequestMapping("/projectChange")
 public class ProjectChangeController {
 	@Autowired
-	ProjectChangeService projectChangeService;
+	private ProjectChangeService projectChangeService;
+
+	@Autowired
+	private TaskService taskService;
+
+	@Autowired
+	private VerifyApprovalService verifyApprovalService;
 
 	@ApiOperation("跳转到ProjectChange页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
@@ -44,6 +56,31 @@ public class ProjectChangeController {
 	public String edit(ModelMap modelMap,Long id) {
 		modelMap.put("obj",projectChangeService.get(id));
 		return "projectChange/edit";
+	}
+
+	@RequestMapping(value = "/loadTask", method = RequestMethod.GET)
+	@ResponseBody
+	public Object loadTask(Task task) throws Exception {
+		task.setStatus(ProjectState.COMPLETED.getValue().byteValue());
+		return taskService.listEasyuiPageByExample(task,true).toString();
+	}
+
+	@RequestMapping(value = "loadVerify")
+	@ResponseBody
+	public Object loadVerify(VerifyApproval verifyApproval) throws Exception {
+		return verifyApprovalService.listEasyuiPageByExample(verifyApproval,true);
+	}
+
+	@RequestMapping(value = "/toDetails/{id}", method = RequestMethod.GET)
+	public String toDetails(ModelMap modelMap, @PathVariable("id") Long id) {
+		modelMap.put("obj",projectChangeService.get(id));
+		return "projectChange/details";
+	}
+
+	@RequestMapping(value = "/reChange/{id}", method = RequestMethod.GET)
+	public String reChange(@PathVariable("id") Long id) {
+		Long reApplyId = projectChangeService.reChange(id);
+		return "redirect:/projectChange/edit?id=" + reApplyId;
 	}
 
 	@ApiOperation(value = "查询ProjectChange", notes = "查询ProjectChange，返回列表信息")

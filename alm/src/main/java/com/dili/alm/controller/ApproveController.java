@@ -69,6 +69,14 @@ public class ApproveController {
         return "approveChange/approve";
     }
 
+    @RequestMapping(value="/verify/{id}", method = RequestMethod.GET)
+    public String verify(ModelMap modelMap, @PathVariable("id") Long id) {
+
+        approveService.buildChangeApprove(modelMap,id);
+
+        return "approveChange/verify";
+    }
+
     @RequestMapping(value="/complete/{id}", method = RequestMethod.GET)
     public String complete(ModelMap modelMap, @PathVariable("id") Long id) {
 
@@ -92,6 +100,12 @@ public class ApproveController {
     @ResponseBody
     public BaseOutput applyApprove(Long id, String opt, String notes) {
         return approveService.applyApprove(id, opt, notes);
+    }
+
+    @RequestMapping("/verityApprove")
+    @ResponseBody
+    public BaseOutput verityApprove(Long id, String opt, String notes) {
+        return approveService.verity(id, opt, notes);
     }
 
     @ApiOperation(value="查询Approve", notes = "查询Approve，返回列表信息")
