@@ -101,13 +101,13 @@ public class WordExport {
 
 		XWPFTableRow personTableRowone = personTable.getRow(0);
 		personTableRowone.addNewTableCell().setText("创建人：");
-		personTableRowone.addNewTableCell().setText("项目经理");
+		personTableRowone.addNewTableCell().setText(pd.getUserName());
 		personTableRowone.addNewTableCell();
 		personTableRowone.addNewTableCell().setText("新建阶段人：");
-		personTableRowone.addNewTableCell().setText("当前人");
+		personTableRowone.addNewTableCell().setText(pd.getStageMan());
 		personTableRowone.addNewTableCell();
 		personTableRowone.addNewTableCell().setText("创建时间  :   ");
-		personTableRowone.addNewTableCell().setText("2017-12-14 12:12:12");
+		personTableRowone.addNewTableCell().setText(DateUtil.getToDay());
 
 		
 		
@@ -264,7 +264,7 @@ public class WordExport {
 			nextTabledd.getCell(2).setText(wk.get(i).getOwner());
 			nextTabledd.getCell(3).setText(wk.get(i).getPlanTime());
 			nextTabledd.getCell(4).setText(wk.get(i).getEndDate());
-			nextTabledd.getCell(6).setText(wk.get(i).getDescribe());
+			nextTabledd.getCell(5).setText(wk.get(i).getDescribe());
 
 		}
 	}
@@ -367,7 +367,7 @@ public class WordExport {
 		comTableRowThree.getCell(2).setText("本周起止日期");
 		comTableRowThree.getCell(3).setText(pd.getBeginAndEndTime());
 		comTableRowThree.getCell(4).setText("总体进展");
-		comTableRowThree.getCell(5).setText(wDetails.getOverallProgress());
+		comTableRowThree.getCell(5).setText(pd.getCompletedProgress());
 
 		XWPFTableRow comTableRowFive = ComTable.createRow();
 		getParagraph(comTableRowFive.getCell(0), "项目总体情况描述");

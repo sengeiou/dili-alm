@@ -18,10 +18,24 @@ public class  ProjectWeeklyDto {
 	private String planDate ;//计划上线日期
 	private String projectId ;//项目id
 	private String stageMan ;//阶段人 
+	private String  completedProgress;//总体进展
+	private String  beginAndEndTime;//本周起止日期
+	private String id ;//周报id
+	private Integer  completedProgressInt;//总体进展转换
 	
-	private String  beginAndEndTime;
-	private String id ;
 
+	public Integer getCompletedProgressInt() {
+		return completedProgressInt;
+	}
+	public void setCompletedProgressInt(Integer completedProgressInt) {
+		this.completedProgressInt = completedProgressInt;
+	}
+	public String getCompletedProgress() {
+		return completedProgress;
+	}
+	public void setCompletedProgress(String completedProgress) {
+		this.completedProgress = completedProgress;
+	}
 	public String getStageMan() {
 		return stageMan;
 	}

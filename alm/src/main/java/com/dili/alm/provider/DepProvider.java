@@ -30,7 +30,7 @@ public class DepProvider implements ValueProvider{
     public void init(){
         //应用启动时初始化userMap
         if(AlmCache.DEP_MAP.isEmpty()){
-            BaseOutput<List<Department>> output = departmentRpc.list(DTOUtils.newDTO(Department.class));
+            BaseOutput<List<Department>> output = departmentRpc.list(new Department());
             if(output.isSuccess()){
                 output.getData().forEach(dep ->{
                     AlmCache.DEP_MAP.put(dep.getId(), dep);

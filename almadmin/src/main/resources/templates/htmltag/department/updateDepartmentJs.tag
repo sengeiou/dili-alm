@@ -1,5 +1,30 @@
 var positionEditIndex = undefined;
 
+function onDeptGridBeginEdit(index, row) {
+	oldRecord = new Object();
+	$.extend(true, oldRecord, row);
+	var editor = $('#roleGrid').datagrid('getEditor', {
+				index : index,
+				field : 'roleId'
+			});
+	editor.target.textbox('initValue', row.$_roleId);
+	editor.target.textbox('setText', row.memberId);
+}
+
+function onDeptGridEndEdit(index, row, changes) {
+	var editor = $(this).datagrid('getEditor', {
+				index : index,
+				field : 'roleId'
+			});
+	row.roleId = editor.target.textbox('getText');
+	row.$_roleId = editor.target.textbox('getValue');
+
+	var isValid = $(this).datagrid('validateRow', index);
+	if (!isValid) {
+		return false;
+	}
+}
+
 function onGridLoadSuccess() {
 	$(this).datagrid('keyCtr');
 }
@@ -95,9 +120,9 @@ function hidePositionOptButtons(index) {
 }
 
 function updatePosition(positionEditIndex) {
-	var url = '${contextPath!}/position/update';
+	var url = '${contextPath!}/departmentRole/update';
 	var grid = $('#roleGrid');
-	var postData = grid.datagrid('getChanges')[0];
+	var postData = getOriginalData(grid.datagrid('getChanges')[0]);
 	postData.departmentId = $('#departmentId').val();
 	$.ajax({
 				url : url,
@@ -112,6 +137,10 @@ function updatePosition(positionEditIndex) {
 						$.messager.alert('提示', data.result);
 						return;
 					} else {
+						grid.datagrid('updateRow', {
+									index : positionEditIndex,
+									row : data.data
+								});
 						grid.datagrid('acceptChanges');
 					}
 				}
@@ -119,9 +148,9 @@ function updatePosition(positionEditIndex) {
 }
 
 function insertPosition(index) {
-	var url = '${contextPath!}/position/insert';
+	var url = '${contextPath!}/departmentRole/insert';
 	var grid = $('#roleGrid');
-	var postData = grid.datagrid('getChanges', 'inserted')[0];
+	var postData = getOriginalData(grid.datagrid('getChanges', 'inserted')[0]);
 	postData.departmentId = $('#departmentId').val();
 	$.ajax({
 				url : url,
@@ -136,6 +165,10 @@ function insertPosition(index) {
 						$.messager.alert('提示', data.result);
 						return;
 					} else {
+						grid.datagrid('updateRow', {
+									index : positionEditIndex,
+									row : data.data
+								});
 						grid.datagrid('acceptChanges');
 					}
 				}
@@ -154,7 +187,7 @@ function deletePosition() {
 					return false;
 				}
 				$.ajax({
-							url : '${contextPath!}/position/delete',
+							url : '${contextPath!}/departmentRole/delete',
 							data : {
 								id : selected.id
 							},
@@ -179,12 +212,12 @@ function deletePosition() {
 function resizePositionGridColumn(original) {
 	if (original) {
 		$('#roleGrid').datagrid('resizeColumn', [{
-							field : 'name',
+							field : 'roleId',
 							width : '80%'
 						}]);
 	} else {
 		$('#roleGrid').datagrid('resizeColumn', [{
-							field : 'name',
+							field : 'roleId',
 							width : '60%'
 						}]);
 	}
@@ -248,7 +281,6 @@ $.extend($.fn.datagrid.methods, {
 													return;
 												}
 												var selected = grid.datagrid("getSelected");
-												debugger;
 												if (selected && selected != null) {
 													deletePosition();
 												}

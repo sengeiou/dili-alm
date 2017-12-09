@@ -189,7 +189,7 @@ public class WeeklyController  {
         return mv;
     }
     
-    @RequestMapping("download")    
+    @RequestMapping("download") 
     public ResponseEntity<byte[]> download(String id) throws IOException {  
     	
     	File file=new File(WEEKLY+".docx");

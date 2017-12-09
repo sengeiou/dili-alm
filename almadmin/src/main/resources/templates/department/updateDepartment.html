@@ -3,7 +3,8 @@
 		<form id="form" method="post">
 			<input id="departmentId" type="hidden" name="id" value="${model.id!}">
 			<div style="margin: 5px;">
-				<label for="name">部门名称:</label> <input class="easyui-textbox" type="text" name="name" value="${model.name!}" data-options="required:true" />
+				<label for="name">部门名称:</label> <input class="easyui-textbox" type="text" name="name" value="${model.name!}"
+					data-options="required:true" />
 			</div>
 			<div style="margin: 5px;">
 				<label for="notes">部门描述:</label> <input class="easyui-textbox" type="text" name="notes" value="${model.notes!}" data-options="" />
@@ -11,22 +12,30 @@
 		</form>
 	</div>
 	<div data-options="region:'south'" style="height: 80%">
-		<table class="easyui-datagrid" title="角色信息" id="roleGrid" fitColumns="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="true" align="center" fit="true"
-			rownumbers="true" striped="true" toolbar="#positionToolbar" idField="id" url="${contextPath!}/position/list?departmentId=${model.id!}" data-options="onLoadSuccess:onGridLoadSuccess,onDblClickRow:openUpdatePosition">
+		<table class="easyui-datagrid" title="角色信息" id="roleGrid" fitColumns="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true"
+			method="post" multiSort="true" align="center" fit="true" rownumbers="true" striped="true" toolbar="#positionToolbar" idField="id"
+			url="${contextPath!}/departmentRole/list?departmentId=${model.id!}"
+			data-options="onLoadSuccess:onGridLoadSuccess,onDblClickRow:openUpdatePosition,onBeginEdit:onDeptGridBeginEdit,onEndEdit:onDeptGridEndEdit">
 			<thead>
 				<tr>
-					<th data-options="field:'name',width:'80%',editor:{
-						type : 'textbox',
+					<th
+						data-options="field:'roleId',width:'80%',editor:{
+						type : 'combobox',
 						options : {
-							required : true
+							required : true,
+							editable:false,
+							url:'${contextPath!}/role/list.json',
+							textField:'roleName',
+							valueField:'id'
 						}
 					}">职务</th>
 					<th
 						data-options="field:'rank',_provider:'rankProvider',width:'20%',_provider:'rankProvider',editor:{
 						type:'combobox',
 						options : {
+									required : true,
 									editable:false,
-									url:'${contextPath}/position/rank.json',
+									url:'${contextPath}/departmentRole/rank.json',
 									valueField:'value',
 									textField:'code'
 								}
@@ -36,8 +45,9 @@
 			</thead>
 		</table>
 		<div id="positionToolbar" style="padding: 2px 5px;">
-			<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsertPosition(${model.id!})" plain="true">新增职务</a> <a href="#" class="easyui-linkbutton" iconCls="icon-edit"
-				onclick="openUpdatePosition()" plain="true">修改职务</a><a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="deletePosition()" plain="true">删除职务</a>
+			<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsertPosition(${model.id!})" plain="true">新增职务</a> <a href="#"
+				class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdatePosition()" plain="true">修改职务</a><a href="#" class="easyui-linkbutton"
+				iconCls="icon-remove" onclick="deletePosition()" plain="true">删除职务</a>
 		</div>
 	</div>
 </div>

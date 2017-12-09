@@ -347,6 +347,10 @@
             <artifactId>almadmin-sdk</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+        	<groupId>org.springframework.boot</groupId>
+        	<artifactId>spring-boot-starter-jta-narayana</artifactId>
+        </dependency>
     </dependencies>
 
 

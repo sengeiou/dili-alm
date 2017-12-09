@@ -11,6 +11,8 @@ import com.dili.sysadmin.domain.dto.AddUserDto;
 import com.dili.sysadmin.domain.dto.UpdateUserDto;
 import com.dili.sysadmin.domain.dto.UpdateUserPasswordDto;
 import com.dili.sysadmin.domain.dto.UserDepartmentDto;
+import com.dili.sysadmin.domain.dto.UserDepartmentRole;
+import com.dili.sysadmin.domain.dto.UserDepartmentRoleQuery;
 import com.dili.sysadmin.domain.dto.UserLoginDto;
 import com.dili.sysadmin.domain.dto.UserLoginResultDto;
 import com.dili.sysadmin.exception.UserException;
@@ -48,5 +50,7 @@ public interface UserService extends BaseService<User, Long> {
 	void kickUserOffline(Long userId);
 
 	EasyuiPageOutput listPageUserDto(User user);
+
+	List<UserDepartmentRole> findUserContainDepartmentAndRole(UserDepartmentRoleQuery query);
 
 }

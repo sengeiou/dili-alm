@@ -10,7 +10,7 @@
 		<!-- =========================================================表格========================================================= -->
 		<table class="easyui-treegrid" title="部门列表" id="grid" sortName="id" sortOrder="asc" fitColumns="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="true"
 			sortName="id" align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" treeField="name" url="${contextPath!}/department/listDepartmentUserCount"
-			data-options="_parentIdField:'parentId',loadFilter:treegridLoadFilter,onClickRow:onClickRow,onDblClickRow:onDblClickRow, onAfterEdit:onAfterEdit,onCancelEdit:onCancelEdit,onBeforeEdit:onBeforeEdit,onEndEdit:onEndEdit">
+			data-options="_parentIdField:'parentId', loadFilter:treegridLoadFilter, onClickRow:onClickRow,onDblClickRow:onDblClickRow, onAfterEdit:onAfterEdit,onCancelEdit:onCancelEdit,onBeforeEdit:onBeforeEdit,onEndEdit:onEndEdit">
 			<thead>
 				<tr>
 					<th data-options="field:'id',hidden:true">id</th>

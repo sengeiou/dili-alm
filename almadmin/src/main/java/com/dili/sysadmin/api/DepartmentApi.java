@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dili.ss.domain.BaseOutput;
 import com.dili.sysadmin.domain.Department;
+import com.dili.sysadmin.domain.dto.UserDepartmentRole;
 import com.dili.sysadmin.service.DepartmentService;
 
 @RestController
@@ -24,4 +25,11 @@ public class DepartmentApi {
 		List<Department> list = this.departmentService.list(department);
 		return BaseOutput.success().setData(list);
 	}
+
+	@RequestMapping(value = "/findByUserId", method = { RequestMethod.GET, RequestMethod.POST })
+	public BaseOutput<List<Department>> list(@RequestBody Long userId) {
+		List<Department> list = this.departmentService.findByUserId(userId);
+		return BaseOutput.success().setData(list);
+	}
+
 }

@@ -1,5 +1,19 @@
 package com.dili.alm.controller;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
@@ -11,24 +25,11 @@ import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.ProjectService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-10-18 17:22:54.
@@ -65,7 +66,8 @@ public class ProjectController {
 
 	@SuppressWarnings("rawtypes")
 	@ApiOperation(value = "查询Project", notes = "查询Project，返回列表信息")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "Project", paramType = "form", value = "Project的form信息", required = false, dataType = "string") })
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Project", paramType = "form", value = "Project的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<Map> list(Project project) {
 		refreshMember();
@@ -96,14 +98,16 @@ public class ProjectController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "/list.json", method = { RequestMethod.GET, RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@RequestMapping(value = "/list.json", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public List<Project> listJson(Project project) {
 		refreshMember();
 		return this.projectService.list(project);
 	}
 
 	@ApiOperation(value = "分页查询Project", notes = "分页查询Project，返回easyui分页信息")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "Project", paramType = "form", value = "Project的form信息", required = false, dataType = "string") })
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Project", paramType = "form", value = "Project的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(Project project) throws Exception {
 		refreshMember();
@@ -111,7 +115,8 @@ public class ProjectController {
 	}
 
 	@ApiOperation("新增Project")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "Project", paramType = "form", value = "Project的form信息", required = true, dataType = "string") })
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Project", paramType = "form", value = "Project的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> insert(Project project) {
 		try {
@@ -122,21 +127,24 @@ public class ProjectController {
 	}
 
 	@ApiOperation("修改Project")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "Project", paramType = "form", value = "Project的form信息", required = true, dataType = "string") })
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Project", paramType = "form", value = "Project的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput update(Project project) {
 		return projectService.updateAfterCheck(project);
 	}
 
 	@ApiOperation("删除Project")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "id", paramType = "form", value = "Project的主键", required = true, dataType = "long") })
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "id", paramType = "form", value = "Project的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> delete(Long id) {
 		return projectService.deleteBeforeCheck(id);
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "/type.json", method = { RequestMethod.GET, RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@RequestMapping(value = "/type.json", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public List<DataDictionaryValueDto> projectTypeJson() {
 		return this.projectService.getPojectTypes();
 	}
@@ -149,26 +157,9 @@ public class ProjectController {
 
 	@RequestMapping(value = "/detail", method = RequestMethod.GET)
 	public String detail(@RequestParam Long id, ModelMap map) {
-		Project project = this.projectService.get(id);
-		Map<Object, Object> metadata = new HashMap<>();
-
-		JSONObject projectTypeProvider = new JSONObject();
-		projectTypeProvider.put("provider", "projectTypeProvider");
-		metadata.put("type", projectTypeProvider);
-
-		JSONObject datetimeProvider = new JSONObject();
-		datetimeProvider.put("provider", "datetimeProvider");
-		metadata.put("startDate", datetimeProvider);
-		metadata.put("actualStartDate", datetimeProvider);
-
-		JSONObject memberProvider = new JSONObject();
-		memberProvider.put("provider", "memberProvider");
-		metadata.put("projectManager", memberProvider);
-		metadata.put("testManager", memberProvider);
-		metadata.put("productManager", memberProvider);
 		try {
-			List<Map> list = ValueProviderUtils.buildDataByProvider(metadata, Arrays.asList(project));
-			map.addAttribute("model", list.get(0));
+			Map<Object, Object> model = this.projectService.getDetailViewData(id);
+			map.addAttribute("model", model);
 		} catch (Exception e) {
 			return null;
 		}

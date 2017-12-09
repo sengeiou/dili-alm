@@ -13,7 +13,7 @@ public class TaskDto {
     private  String phaseId;//
     private Date startDate;
     private Date endDate;
-    private Long owner;//负责人
+    private String owner;//负责人
     private Short planTime;//计划时间
     private String describe;  //备注
     private int   overHour; //加班工时
@@ -85,10 +85,10 @@ public class TaskDto {
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
-	public Long getOwner() {
+	public String getOwner() {
 		return owner;
 	}
-	public void setOwner(Long owner) {
+	public void setOwner(String owner) {
 		this.owner = owner;
 	}
 	public Short getPlanTime() {

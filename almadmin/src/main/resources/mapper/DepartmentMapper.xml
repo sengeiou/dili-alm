@@ -13,6 +13,7 @@
 		<result column="modified" jdbcType="TIMESTAMP" property="modified" />
 	</resultMap>
 
+
 	<sql id="Base_Column_List">
 		<!-- WARNING - @mbg.generated -->
 		id, name, code, operator_id, notes, parent_id, created, modified
@@ -68,4 +69,5 @@
 		ud.department_id
 		where ud.user_id = #{userId}
 	</select>
+
 </mapper>

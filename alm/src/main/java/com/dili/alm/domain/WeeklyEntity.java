@@ -4,24 +4,22 @@ import java.util.Date;
 
 import com.dili.ss.domain.BaseDomain;
 
-public class WeeklyEntity extends BaseDomain implements Weekly{
+public class WeeklyEntity extends BaseDomain implements Weekly {
 
 	private static final long serialVersionUID = 1L;
-	private Long  projectId;
-	private Date startDate   ;
+	private Long projectId;
+	private Date startDate;
 	private Date endDate;
-	
-	private String risk ;
-	private  String question;
-	private String progress ;
-	
-	
-	
-	private Date created ;
+
+	private String risk;
+	private String question;
+	private String progress;
+
+	private Date created;
 	private Date modified;
 	private Long createMemberId;
-	private Long modifyMemberId ;
-	
+	private Long modifyMemberId;
+
 	@Override
 	public Long getProjectId() {
 		// TODO Auto-generated method stub
@@ -30,8 +28,8 @@ public class WeeklyEntity extends BaseDomain implements Weekly{
 
 	@Override
 	public void setProjectId(Long projectId) {
-		this.projectId=projectId;
-		
+		this.projectId = projectId;
+
 	}
 
 	@Override
@@ -42,8 +40,8 @@ public class WeeklyEntity extends BaseDomain implements Weekly{
 
 	@Override
 	public void setStartDate(Date startDate) {
-		this.startDate=startDate;
-		
+		this.startDate = startDate;
+
 	}
 
 	@Override
@@ -54,8 +52,8 @@ public class WeeklyEntity extends BaseDomain implements Weekly{
 
 	@Override
 	public void setEndDate(Date endDate) {
-		this.endDate=endDate;
-		
+		this.endDate = endDate;
+
 	}
 
 	@Override
@@ -66,8 +64,8 @@ public class WeeklyEntity extends BaseDomain implements Weekly{
 
 	@Override
 	public void setRisk(String risk) {
-		this.risk=risk;
-		
+		this.risk = risk;
+
 	}
 
 	@Override
@@ -78,8 +76,8 @@ public class WeeklyEntity extends BaseDomain implements Weekly{
 
 	@Override
 	public void setQuestion(String question) {
-		 this.question=question;
-		
+		this.question = question;
+
 	}
 
 	@Override
@@ -90,8 +88,8 @@ public class WeeklyEntity extends BaseDomain implements Weekly{
 
 	@Override
 	public void setProgress(String progress) {
-		this.progress=progress;
-		
+		this.progress = progress;
+
 	}
 
 	@Override
@@ -102,8 +100,8 @@ public class WeeklyEntity extends BaseDomain implements Weekly{
 
 	@Override
 	public void setCreated(Date created) {
-		this.created=created;
-		
+		this.created = created;
+
 	}
 
 	@Override
@@ -114,9 +112,9 @@ public class WeeklyEntity extends BaseDomain implements Weekly{
 
 	@Override
 	public void setModified(Date modified) {
-	
-		  this.modified=modified;
-		
+
+		this.modified = modified;
+
 	}
 
 	@Override
@@ -127,20 +125,20 @@ public class WeeklyEntity extends BaseDomain implements Weekly{
 
 	@Override
 	public void setCreateMemberId(Long createMemberId) {
-		this.createMemberId=createMemberId;
-		
+		this.createMemberId = createMemberId;
+
 	}
 
 	@Override
 	public Long getModifyMemberId() {
-		
+
 		return modifyMemberId;
 	}
 
 	@Override
 	public void setModifyMemberId(Long modifyMemberId) {
-		this.modifyMemberId=modifyMemberId;
-		
+		this.modifyMemberId = modifyMemberId;
+
 	}
 
 }

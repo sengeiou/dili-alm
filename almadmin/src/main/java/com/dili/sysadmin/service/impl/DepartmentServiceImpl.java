@@ -11,11 +11,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.sysadmin.dao.DepartmentMapper;
 import com.dili.sysadmin.dao.UserDepartmentMapper;
 import com.dili.sysadmin.dao.UserMapper;
 import com.dili.sysadmin.domain.Department;
 import com.dili.sysadmin.domain.UserDepartment;
+import com.dili.sysadmin.domain.dto.UserDepartmentRole;
 import com.dili.sysadmin.domain.dto.DepartmentUserCountDto;
 import com.dili.sysadmin.service.DepartmentService;
 
@@ -77,10 +79,8 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department, Long> imp
 		Department oldDept = this.getActualDao().selectOne(record);
 		if (oldDept != null && !oldDept.getId().equals(department.getId())) {
 			return BaseOutput.failure("存在相同名称的部门");
-		}		
-		oldDept.setName(department.getName());
-		oldDept.setNotes(department.getNotes());
-		oldDept.setModified(new Date());
+		}
+		department.setModified(new Date());
 		int result = this.getActualDao().updateByPrimaryKey(department);
 		if (result > 0) {
 			return BaseOutput.success().setData(department);
@@ -96,15 +96,7 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department, Long> imp
 		}
 		List<DepartmentUserCountDto> dtos = new ArrayList<>(departments.size());
 		departments.forEach(d -> {
-			DepartmentUserCountDto dto = new DepartmentUserCountDto();
-			dto.setCode(d.getCode());
-			dto.setCreated(d.getCreated());
-			dto.setId(d.getId());
-			dto.setModified(d.getModified());
-			dto.setName(d.getName());
-			dto.setNotes(d.getNotes());
-			dto.setOperatorId(d.getOperatorId());
-			dto.setParentId(d.getParentId());
+			DepartmentUserCountDto dto = DTOUtils.toEntity(d, DepartmentUserCountDto.class, false);
 			UserDepartment record = new UserDepartment();
 			record.setDepartmentId(d.getId());
 			Integer userCount = this.userMapper.countByDepartmentId(d.getId());
@@ -117,6 +109,11 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department, Long> imp
 	@Override
 	public Department findById(Long departmentId) {
 		return this.getActualDao().selectByPrimaryKey(departmentId);
+	}
+
+	@Override
+	public List<Department> findByUserId(Long userId) {
+		return this.getActualDao().findByUserId(userId);
 	}
 
 }

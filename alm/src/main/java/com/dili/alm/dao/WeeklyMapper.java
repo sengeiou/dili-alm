@@ -72,6 +72,8 @@ public interface WeeklyMapper extends MyMapper<Weekly> {
 	 * @return
 	 */
     Integer  updateRiskOrByQuestion(WeeklyPara weeklyPara);
+    
+    
 	
 }
 	

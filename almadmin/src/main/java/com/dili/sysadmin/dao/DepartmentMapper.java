@@ -8,4 +8,5 @@ import com.dili.sysadmin.domain.Department;
 public interface DepartmentMapper extends MyMapper<Department> {
 
 	List<Department> findByUserId(Long id);
+
 }
