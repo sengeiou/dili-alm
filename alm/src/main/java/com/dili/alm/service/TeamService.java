@@ -1,6 +1,7 @@
 package com.dili.alm.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.dili.alm.domain.Team;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
@@ -19,7 +20,7 @@ public interface TeamService extends BaseService<Team, Long> {
 
 	List<DataDictionaryValueDto> getTeamRoles();
 
-	List<Team> listContainUserInfo(UserDepartmentRoleQuery dto);
+	List<Map<Object, Object>> listContainUserInfo(UserDepartmentRoleQuery dto);
 
 	BaseOutput<Object> deleteAfterCheck(Long id);
 }

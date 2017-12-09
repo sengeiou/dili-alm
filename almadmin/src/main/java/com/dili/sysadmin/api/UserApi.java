@@ -69,7 +69,7 @@ public class UserApi {
 
 	@ResponseBody
 	@RequestMapping(value = "/findUserContainDepartmentAndRole", method = { RequestMethod.GET, RequestMethod.POST })
-	public BaseOutput<List<UserDepartmentRole>> findUserContainDepartmentAndRole(UserDepartmentRoleQuery query) {
+	public BaseOutput<List<UserDepartmentRole>> findUserContainDepartmentAndRole(@RequestBody UserDepartmentRoleQuery query) {
 		List<UserDepartmentRole> list = this.userService.findUserContainDepartmentAndRole(query);
 		return BaseOutput.success().setData(list);
 	}

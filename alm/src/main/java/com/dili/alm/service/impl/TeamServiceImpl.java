@@ -1,9 +1,9 @@
 package com.dili.alm.service.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -101,9 +101,9 @@ public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements Team
 		}
 		int result = this.insertSelective(team);
 		if (result > 0) {
-			this.parse2ListView(team);
 			try {
-				return BaseOutput.success().setData(team);
+				Map<Object, Object> viewModel = this.parse2ListView(team, null);
+				return BaseOutput.success().setData(viewModel);
 			} catch (Exception e) {
 				LOGGER.error(e.getMessage(), e);
 				return BaseOutput.failure();
@@ -130,9 +130,9 @@ public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements Team
 			result = this.updateSelective(team);
 		}
 		if (result > 0) {
-			this.parse2ListView(team);
 			try {
-				return BaseOutput.success().setData(this.parseEasyUiModel(team));
+				Map<Object, Object> viewModel = this.parse2ListView(team, null);
+				return BaseOutput.success().setData(viewModel);
 			} catch (Exception e) {
 				LOGGER.error(e.getMessage(), e);
 				return BaseOutput.failure();
@@ -151,42 +151,48 @@ public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements Team
 	}
 
 	@Override
-	public List<Team> listContainUserInfo(UserDepartmentRoleQuery dto) {
+	public List<Map<Object, Object>> listContainUserInfo(UserDepartmentRoleQuery dto) {
 		Team team = DTOUtils.newDTO(Team.class);
 		team.setMemberId(dto.getUserId());
+		team.setRole(dto.getRole());
 		List<Team> teams = this.list(team);
+		List<Map<Object, Object>> models = new ArrayList<>();
 		if (CollectionUtils.isEmpty(teams)) {
 			return null;
 		}
-		Iterator<Team> it = teams.iterator();
-		while (it.hasNext()) {
-			Team t = it.next();
-			BaseOutput<List<UserDepartmentRole>> output = this.userRPC.findUserContainDepartmentAndRole(dto);
-			if (output == null && !output.isSuccess()) {
-				return null;
+		teams.forEach(t -> {
+			dto.setUserId(t.getMemberId());
+			try {
+				Map<Object, Object> model = this.parse2ListView(t, dto);
+				if (model == null) {
+					return;
+				}
+				models.add(model);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return;
 			}
-			List<UserDepartmentRole> udrList = output.getData();
-			if (CollectionUtils.isEmpty(udrList)) {
-				it.remove();
-				continue;
-			}
-			t.aset("userInfo", udrList.get(0));
-		}
-		return teams;
+		});
+		return models;
 	}
 
-	private void parse2ListView(Team team) {
-		UserDepartmentRoleQuery dto = new UserDepartmentRoleQuery();
-		dto.setUserId(team.getMemberId());
+	private Map<Object, Object> parse2ListView(Team team, UserDepartmentRoleQuery dto) throws Exception {
+		if (dto == null) {
+			dto = new UserDepartmentRoleQuery();
+			dto.setUserId(team.getMemberId());
+		}
 		BaseOutput<List<UserDepartmentRole>> output = this.userRPC.findUserContainDepartmentAndRole(dto);
 		if (output == null && !output.isSuccess()) {
-			return;
+			return null;
 		}
 		List<UserDepartmentRole> udrList = output.getData();
 		if (CollectionUtils.isEmpty(udrList)) {
-			return;
+			return null;
 		}
-		team.aset("userInfo", udrList.get(0));
+		Map<Object, Object> model = this.parseEasyUiModel(team);
+		UserDepartmentRole tdr = udrList.get(0);
+		model.put("userInfo", tdr);
+		return model;
 	}
 
 	private Map<Object, Object> parseEasyUiModel(Team team) throws Exception {

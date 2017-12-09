@@ -33,5 +33,5 @@ public interface UserRpc {
 	BaseOutput<User> findUserById(@VOSingleParameter Long memberId);
 
 	@POST("/userApi/findUserContainDepartmentAndRole")
-	BaseOutput<List<UserDepartmentRole>> findUserContainDepartmentAndRole(UserDepartmentRoleQuery dto);
+	BaseOutput<List<UserDepartmentRole>> findUserContainDepartmentAndRole(@VOBody UserDepartmentRoleQuery dto);
 }

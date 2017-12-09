@@ -1,6 +1,17 @@
 // 编辑行索引
 var editIndex = undefined;
 
+function rolesFormatter(value, row, index) {
+	var content = '';
+	if (!row.userInfo || row.userInfo.roles) {
+		return '';
+	}
+	$(row.userInfo.roles).each(function(index, item) {
+				content += item.roleName;
+			});
+	return content;
+}
+
 function isEditing() {
 	return undefined != editIndex;
 }
@@ -368,6 +379,7 @@ function queryGrid() {
 	var param = bindMetadata("grid", true);
 	var formData = $("#form").serializeObject();
 	$.extend(param, formData);
+	console.log(param);
 	$("#grid").datagrid("load", param);
 }
 

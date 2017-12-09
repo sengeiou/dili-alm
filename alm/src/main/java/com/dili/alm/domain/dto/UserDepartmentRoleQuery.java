@@ -11,7 +11,7 @@ public class UserDepartmentRoleQuery implements Serializable {
 
 	private Long userId;
 	private Long departmentId;
-	private Long roleId;
+	private String role;
 
 	public Long getUserId() {
 		return userId;
@@ -29,12 +29,12 @@ public class UserDepartmentRoleQuery implements Serializable {
 		this.departmentId = departmentId;
 	}
 
-	public Long getRoleId() {
-		return roleId;
+	public String getRole() {
+		return role;
 	}
 
-	public void setRoleId(Long roleId) {
-		this.roleId = roleId;
+	public void setRole(String role) {
+		this.role = role;
 	}
 
 }

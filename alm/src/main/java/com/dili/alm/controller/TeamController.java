@@ -18,6 +18,7 @@ import com.dili.alm.domain.Project;
 import com.dili.alm.domain.Team;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
+import com.dili.alm.domain.dto.TeamDepartmentRoleQuery;
 import com.dili.alm.domain.dto.UserDepartmentRoleQuery;
 import com.dili.alm.rpc.DepartmentRpc;
 import com.dili.alm.rpc.UserRpc;
@@ -84,7 +85,7 @@ public class TeamController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Team", paramType = "form", value = "Team的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody List<Team> list(UserDepartmentRoleQuery dto) {
+	public @ResponseBody List<Map<Object, Object>> list(TeamDepartmentRoleQuery dto) {
 		refreshMember();
 
 		try {

@@ -29,12 +29,14 @@
 		<result column="real_name" jdbcType="VARCHAR" property="realName" />
 		<result column="cellphone" jdbcType="VARCHAR" property="cellphone" />
 		<result column="email" jdbcType="VARCHAR" property="email" />
-		<association property="department">
-			<id column="department_id" property="id" />
+		<association property="department"
+			javaType="com.dili.sysadmin.domain.Department">
+			<result column="department_id" property="id" />
 			<result column="department_name" property="name" />
 		</association>
-		<collection property="roles">
-			<id column="role_id" property="id" />
+		<collection property="roles" javaType="java.util.ArrayList"
+			ofType="com.dili.sysadmin.domain.Role">
+			<result column="role_id" property="id" />
 			<result column="role_name" property="roleName" />
 		</collection>
 	</resultMap>
@@ -216,22 +218,25 @@
 		WHERE ud.department_id = #{deptId} AND u.yn = 1
 	</select>
 
-	<select id="findUserContainDepartmentAndRole" parameterType="com.dili.sysadmin.domain.dto.UserDepartmentRoleQuery"
+	<select id="findUserContainDepartmentAndRole"
+		parameterType="com.dili.sysadmin.domain.dto.UserDepartmentRoleQuery"
 		resultMap="UDRResultMap">
 		SELECT DISTINCT
 		u.id,
-		u.user_name,
-		d.id AS department_id,
 		u.real_name,
 		u.cellphone,
 		u.email,
+		d.id AS
+		department_id,
+		d.name AS department_name,
 		r.id AS role_id,
 		r.role_name
 		FROM
 		`user` u
 		INNER JOIN
 		user_department ud ON u.id = ud.user_id
-		LEFT JOIN department d ON
+		LEFT JOIN
+		department d ON
 		ud.department_id = d.id
 		INNER JOIN department_role dr ON
 		ud.department_id = dr.department_id
