@@ -46,11 +46,14 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
     private ApproveService approveService;
 
     public ProjectChangeMapper getActualDao() {
-        return (ProjectChangeMapper)getDao();
+        return (ProjectChangeMapper) getDao();
     }
 
     @Override
     public void approve(ProjectChange change) {
+        if (change.getStatus() == null) {
+            return;
+        }
         if (change.getStatus() == AlmConstants.ApplyState.APPROVE.getCode()) {
             Approve as = DTOUtils.as(this.get(change.getId()), Approve.class);
             as.setId(null);

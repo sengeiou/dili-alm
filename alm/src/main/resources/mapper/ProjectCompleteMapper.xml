@@ -10,6 +10,8 @@
     <result column="number" jdbcType="VARCHAR" property="number" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="start_date" jdbcType="TIMESTAMP" property="startDate" />
+    <result column="end_date" jdbcType="TIMESTAMP" property="endDate" />
     <result column="launch_date" jdbcType="TIMESTAMP" property="launchDate" />
     <result column="complete_date" jdbcType="TIMESTAMP" property="completeDate" />
     <result column="reason" jdbcType="VARCHAR" property="reason" />
@@ -37,10 +39,10 @@
     <!--
       WARNING - @mbg.generated
     -->
-    id, project_id, number, name, type, launch_date, complete_date, reason, information, 
-    range, management_method, appraise, technical_evaluation, raise, result, product, 
-    performance, suggest, question, members, hardware, email, status, created, modified, 
-    create_member_id, modify_member_id
+    id, project_id, number, name, type, start_date, end_date, launch_date, complete_date, 
+    reason, information, range, management_method, appraise, technical_evaluation, raise, 
+    result, product, performance, suggest, question, members, hardware, email, status, 
+    created, modified, create_member_id, modify_member_id
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -68,6 +70,12 @@
       </if>
       <if test="type != null">
         type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="startDate != null">
+        start_date = #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null">
+        end_date = #{endDate,jdbcType=TIMESTAMP},
       </if>
       <if test="launchDate != null">
         launch_date = #{launchDate,jdbcType=TIMESTAMP},

@@ -11,7 +11,7 @@ import java.util.Date;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2017-12-08 15:32:51.
+ * This file was generated on 2017-12-08 17:32:54.
  */
 @Table(name = "`project_complete`")
 public interface ProjectComplete extends IBaseDomain {
@@ -51,6 +51,20 @@ public interface ProjectComplete extends IBaseDomain {
     String getType();
 
     void setType(String type);
+
+    @Column(name = "`start_date`")
+    @FieldDef(label="计划开始日期")
+    @EditMode(editor = FieldEditor.Datetime, required = false)
+    Date getStartDate();
+
+    void setStartDate(Date startDate);
+
+    @Column(name = "`end_date`")
+    @FieldDef(label="计划结束日期")
+    @EditMode(editor = FieldEditor.Datetime, required = false)
+    Date getEndDate();
+
+    void setEndDate(Date endDate);
 
     @Column(name = "`launch_date`")
     @FieldDef(label="实际上线日期")

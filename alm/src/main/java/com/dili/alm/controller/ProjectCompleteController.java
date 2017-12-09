@@ -95,6 +95,7 @@ public class ProjectCompleteController {
 	})
     @RequestMapping(value="/insert", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput insert(ProjectComplete projectComplete) {
+        projectComplete.setStatus(AlmConstants.ApplyState.APPLY.getCode());
         projectCompleteService.insertSelective(projectComplete);
         return BaseOutput.success(String.valueOf(projectComplete.getId()));
     }
@@ -106,6 +107,7 @@ public class ProjectCompleteController {
     @RequestMapping(value="/update", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput update(ProjectComplete projectComplete) {
         projectCompleteService.updateSelective(projectComplete);
+        projectCompleteService.approve(projectComplete);
         return BaseOutput.success(String.valueOf(projectComplete.getId()));
     }
 

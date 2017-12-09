@@ -1,5 +1,6 @@
  <#body>
     <div class="easyui-layout" fit="true">
+        <div id="smDialog" style="display: none;"></div>
         <!-- ====================================================================================================================== -->
         <!-- 上方布局 -->
         <!-- ====================================================================================================================== -->
@@ -10,29 +11,32 @@
                     <table style="padding:10px;">
                         <tr>
                             <td style="padding:5px;">
-                                <input class="easyui-numberbox" name="name" id="name" style="width:100%" data-options="label:'项目名称:', validType:'length[0,19]'" />
+                                <input class="easyui-numberbox" name="number" id="number" style="width:100%" data-options="label:'项目编号:', validType:'length[0,19]'" />
 
                             </td>
                             <td style="padding:5px;">
-                                <input class="easyui-numberbox" name="type" id="type" style="width:100%" data-options="label:'项目类型:', validType:'length[0,19]'" />
+                                <input class="easyui-textbox" name="name" id="name" style="width:100%" data-options="label:'项目名称:', validType:'length[0,255]'" />
 
                             </td>
-
+                            <td style="padding:5px;">
+                                <input class="easyui-textbox" name="projectType" id="projectType" style="width:100%" data-options="label:'项目类型:', validType:'length[0,255]'" />
+                                <#comboProvider _id="projectType" _provider='projectTypeProvider'/>
+                            </td>
                             <td style="padding:5px;">
                                 <input class="easyui-textbox" name="status" id="status" style="width:100%"
-                                       data-options="label:'项目状态:', validType:'length[0,3]'"/>
-                                <#comboProvider _id="status" _provider='applyStateProvider'/>
+                                       data-options="label:'项目结项状态:', validType:'length[0,3]'"/>
+                                <#comboProvider _id="status" _provider='approveStateProvider'/>
 
                             </td>
                             <td style="padding:5px;">
-                                <input class="easyui-datetimebox" name="created" id="created" style="width:100%" data-options="label:'created:'" />
+                                <input class="easyui-datetimebox" name="created" id="created" style="width:100%" data-options="label:'项目申请日期:'" />
 
                             </td>
                             <td style="padding:5px;">
-                                <input class="easyui-datetimebox" name="startDate" id="startDate" style="width:100%" data-options="label:'项目开始日期:'" />
-                            </td>
-                            <td style="padding:5px;">
-                                <input class="easyui-datetimebox" name="endDate" id="endDate" style="width:100%" data-options="label:'项目结束日期:'" />
+                                <input class="easyui-numberbox" name="createMemberId" id="createMemberId" label="项目发起人:" style="width:100%" data-options="editable:false,
+									buttonText:'选择',
+									onClickButton:selectMember,onChange:_changeTextboxShowClear" />
+
                             </td>
                         </tr>
                         <tr>
@@ -52,34 +56,31 @@
         <!-- 表格 -->
         <div region="center" style="width:100%;" height="auto">
             <!-- =========================================================表格========================================================= -->
-            <table class="easyui-datagrid" title="ProjectComplete列表" id="grid" fitColumns="true"
+            <table class="easyui-datagrid" title="Approve列表" id="grid" fitColumns="true"
                    pagination="true" pageSize="30" pageNumber="1" pagePosition="both" rownumbers="true" remoteSort="false"
-                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="projectId"
-                   align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
+                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
+                   align="center" fit="true" striped="true" toolbar="#toolbar" idField="id">
                 <thead>
                     <tr>
-                        <th data-options="field:'name',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'number', width:180,    order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            项目编号
+                        </th>
+                        <th data-options="field:'name', width:180,    order:'asc', align:'center', resizable:'true', fixed:'false'">
                             项目名称
                         </th>
-                        <th data-options="field:'type',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'projectType',_provider:'projectTypeProvider',  width:180,   order:'asc', align:'center', resizable:'true', fixed:'false'">
                             项目类型
                         </th>
-                        <th data-options="field:'startDate',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            项目开始日期
+                        <th data-options="field:'status',  width:180,  _provider:'applyStateProvider', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            项目状态
                         </th>
-                        <th data-options="field:'endDate',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                           项目结束日期
+                        <th data-options="field:'created',  width:180, _provider:'datetimeProvider',  order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            申请时间
                         </th>
-                        <th data-options="field:'status',  _provider:'applyStateProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            status
+                        <th data-options="field:'createMemberId',  width:180, _provider:'memberProvider',  order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            项目发起人
                         </th>
-                        <th data-options="field:'created',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            created
-                        </th>
-                        <th data-options="field:'createMemberId',  _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            申请人
-                        </th>
-                        <th data-options="field:'opt', width:150,formatter:formatStatus,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'opt', width:150,formatter:formatStatus, align:'center', resizable:'true', fixed:'false'">
                             操作
                         </th>
                     </tr>
@@ -87,10 +88,7 @@
             </table>
             <!-- datagrid工具栏 -->
             <div id="toolbar" style="padding:2px 5px;">
-                <a href="${contextPath}/projectComplete/add" class="easyui-linkbutton" iconCls="icon-add" plain="true"></a>
-                <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()" plain="true"></a>
-                <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true"></a>
-                <a href="#" class="easyui-linkbutton" iconCls="icon-export" onclick="doExport('grid')" plain="true"></a>
+                <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true"></a>
                 <div style="float:right">
                 边框显示:<select onchange="changeBorder('grid',this.value)">
                     <option value="lines-both">全边框</option>
@@ -109,12 +107,11 @@
     <script type="text/javascript">
 
         function formatStatus(value, row) {
-            if (row.$_status == 1) {
-                return '<a href="${contextPath}/projectComplete/toStep/1/' + row.id + '">编辑</a><a href="javascript:void(0)" onclick="del(' + row.id + ')">删除</a>';
-            }else if(row.$_status == 2 || row.$_status == 3){
-                return '<a>编辑</a><a>删除</a>';
-            }else if(row.$_status == 4){
-                return '<a href="${contextPath}/projectApply/reApply/' + row.id + '">重新申请</a>';
+            var dom = '<a href="${contextPath}/approve/apply/' + row.id + '">立项文档下载</a>';
+            if (row.$_status == 2) {
+                return dom += '<a href="${contextPath}/approve/complete/' + row.id + '">审批</a>';
+            } else if (row.$_status == 3 || row.$_status == 4) {
+                return dom;
             }
         }
 
@@ -123,7 +120,7 @@
             $('#dlg').dialog('open');
             $('#dlg').dialog('center');
             $('#_form').form('clear');
-            formFocus("_form", "_projectId");
+            formFocus("_form", "_projectApplyId");
         }
 
         //打开修改窗口
@@ -135,7 +132,7 @@
             }
             $('#dlg').dialog('open');
             $('#dlg').dialog('center');
-            formFocus("_form", "_projectId");
+            formFocus("_form", "_projectApplyId");
             var formData = $.extend({},selected);
             formData = addKeyStartWith(getOriginalData(formData),"_");
             $('#_form').form('load', formData);
@@ -149,9 +146,9 @@
             var _url = null;
             //没有id就新增
             if(_formData.id == null || _formData.id==""){
-                _url = "${contextPath}/projectComplete/insert";
+                _url = "${contextPath}/approve/insert";
             }else{//有id就修改
-                _url = "${contextPath}/projectComplete/update";
+                _url = "${contextPath}/approve/update";
             }
             $.ajax({
                 type: "POST",
@@ -185,7 +182,7 @@
                 if (r){
                     $.ajax({
                         type: "POST",
-                        url: "${contextPath}/projectComplete/delete",
+                        url: "${contextPath}/approve/delete",
                         data: {id:selected.id},
                         processData:true,
                         dataType: "json",
@@ -210,7 +207,7 @@
         function queryGrid() {
             var opts = $("#grid").datagrid("options");
             if (null == opts.url || "" == opts.url) {
-                opts.url = "${contextPath}/projectComplete/listPage";
+                opts.url = "${contextPath}/approve/complete/listPage";
             }
             if(!$('#form').form("validate")){
                 return;
@@ -225,6 +222,7 @@
         //清空表单
         function clearForm() {
             $('#form').form('clear');
+            queryGrid();
         }
 
         //表格表头右键菜单
@@ -248,7 +246,7 @@
         });
         $.parser.onComplete = function(){
             $.messager.progress("close");
-        }
+        };
         //全局按键事件
         function getKey(e){
             e = e || window.event;
@@ -271,8 +269,8 @@
          *          表单提交需执行的任务
          */
         $(function () {
-            bindFormEvent("form", "projectId", queryGrid);
-            bindFormEvent("_form", "_projectId", saveOrUpdate, function (){$('#dlg').dialog('close');});
+            bindFormEvent("form", "projectApplyId", queryGrid);
+            bindFormEvent("_form", "_projectApplyId", saveOrUpdate, function (){$('#dlg').dialog('close');});
             if (document.addEventListener) {
                 document.addEventListener("keyup",getKey,false);
             } else if (document.attachEvent) {
@@ -280,6 +278,11 @@
             } else {
                 document.onkeyup = getKey;
             }
+
+            queryGrid();
         })
     </script>
+ <script type="text/javascript">
+     <#members_index/>
+ </script>
 </#body>

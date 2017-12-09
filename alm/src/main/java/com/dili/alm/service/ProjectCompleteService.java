@@ -8,4 +8,6 @@ import com.dili.ss.base.BaseService;
  * This file was generated on 2017-12-08 11:29:47.
  */
 public interface ProjectCompleteService extends BaseService<ProjectComplete, Long> {
+
+    void approve(ProjectComplete complete);
 }
