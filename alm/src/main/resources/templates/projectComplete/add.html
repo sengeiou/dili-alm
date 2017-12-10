@@ -37,7 +37,10 @@
             <input type="hidden" id="name" name="name"/>
             <table cellpadding="5" id="tb">
                 <tr>
-                    <td class="title-first" colspan="3">1项目内容及资源</td>
+                    <td class="title-first" colspan="3">1.项目概况描述</td>
+                </tr>
+                <tr>
+                    <td class="title-second" colspan="3">1.1.项目基本信息概述</td>
                 </tr>
                 <tr>
                     <td colspan="2"><input class="easyui-textbox" type="text" name="projectId" id="projectId"
@@ -81,7 +84,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="title-first" colspan="4">2.结项原因</td>
+                    <td class="title-second" colspan="4">1.2结项原因</td>
                 </tr>
                 <tr>
                     <td><input type="radio" checked name="reason" value="0"><span>正常结项</span></td>
@@ -89,7 +92,7 @@
                     <td><input type="radio" name="reason" value="2"><span>其他原因</span></td>
                 </tr>
                 <tr>
-                    <td class="title-first" colspan="4">3.项目资料齐备情况</td>
+                    <td class="title-second" colspan="4">1.3项目资料齐备情况</td>
                 </tr>
                 <tr>
                     <td><input type="radio" checked name="information" value="0"><span>项目结项总结报告</span></td>
@@ -122,6 +125,16 @@
             }
         });
     }
+
+    $('.easyui-datebox').each(function(){
+        $(this).datebox().datebox('calendar').calendar({
+            validator: function(date){
+                var now = new Date();
+                var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                return date>=d1;
+            }
+        });
+    });
 
     $('#projectId').combobox({
         url: '${contextPath}/project/getProjectList',

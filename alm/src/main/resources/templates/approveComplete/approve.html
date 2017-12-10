@@ -41,9 +41,9 @@
                 </tr>
                 <tr>
                     <td>申请人</td>
-                    <td>${complete.createMemberId}</td>
+                    <td>${approve.createMemberId}</td>
                     <td>创建日期</td>
-                    <td>${complete.created}</td>
+                    <td>${approve.created}</td>
                 </tr>
                 <tr>
                     <td class="title-first" colspan="3">1项目内容及资源</td>
@@ -175,7 +175,7 @@
                 var data = eval('(' + data + ')');
                 if (data.success == true) {
                     if (data.success == true) {
-                        window.location.href = "${contextPath}/approve/apply/index.html";
+                        window.location.href = "${contextPath}/approve/complete/index.html";
                     }
                 }
             }
@@ -213,6 +213,11 @@
         $("#projectId").combobox('setValue','${complete.projectId}');
         $("input[name='reason'][value='${complete.reason}']").attr("checked",true);
         $("input[name='information'][value='${complete.information}']").attr("checked",true);
+        $('input[class^=easyui-]').textbox("disable");
+        var input = $("body").find("input:radio");
+        input.attr("disabled","disabled");
+        $('#notes').textbox("enable");
+
     });
 </script>
 </#body>

@@ -1,0 +1,376 @@
+<#body>
+<style>
+    td {
+        padding-left: 60px;
+    }
+
+    .datebox-button td {
+        padding-left: 0;
+    }
+
+    input[class^="easyui-"] {
+        width: 300px;
+    }
+
+    .title-first,
+    .title-second {
+        margin-top: 20px;
+        background: #f7f7f7;
+    }
+
+    .title-first {
+        padding-left: 0;
+    }
+
+    .title-second {
+        padding-left: 30px;
+    }
+</style>
+<div id="smDialog" style="display: none;"></div>
+<div class="easyui-panel" title="结项详情">
+    <div style="padding:10px 60px 20px 60px">
+            <table cellpadding="5">
+                <tr>
+                    <td class="title-first" colspan="3">1.项目概况描述</td>
+                </tr>
+                <tr>
+                    <td class="title-second" colspan="3">1.1.项目基本信息概述</td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input class="easyui-textbox" type="text" name="projectId" value="" id="projectId"
+                                           data-options="required:true,label:'项目编号:'"></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><input disabled class="easyui-textbox" type="text" id="projectName"
+                               data-options="label:'项目名称:'"></td>
+                    <td><input disabled class="easyui-textbox" type="text" name="type" id="projectType"
+                               data-options="label:'项目类型:'"></td>
+                </tr>
+                <tr>
+                    <td><input disabled class="easyui-textbox" type="text" id="leader"
+                               data-options="label:'项目负责人:'"></td>
+                    <td><input disabled class="easyui-textbox" type="text" id="dep"
+                               data-options="label:'需求所属业务部门:'"></td>
+                </tr>
+                <tr>
+                    <td>
+                        <input disabled class="easyui-textbox" type="text" id="buss"
+                               data-options="label:'业务负责人:'">
+                    </td>
+                    <td><input disabled class="easyui-datebox" type="text" id="startDate"
+                               data-options="label:'计划开始日期:'"></td>
+                </tr>
+                <tr>
+                    <td>
+                        <input disabled class="easyui-datebox" type="text" id="endDate"
+                               data-options="label:'计划完成日期:'">
+                    </td>
+                    <td>
+                        <input disabled class="easyui-datebox" type="text" id="actualEndDate"
+                               data-options="label:'实际完成日期:'">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input class="easyui-datebox" type="text"  value="${apply.launchDate}" name="launchDate"
+                               data-options="required:true,label:'实际上线日期:'">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="title-second" colspan="4">1.2结项原因</td>
+                </tr>
+                <tr>
+                    <td><input type="radio" checked name="reason" value="0"><span>正常结项</span></td>
+                    <td><input type="radio" name="reason" value="1"><span>项目取消</span></td>
+                    <td><input type="radio" name="reason" value="2"><span>其他原因</span></td>
+                </tr>
+                <tr>
+                    <td class="title-second" colspan="4">1.3项目资料齐备情况</td>
+                </tr>
+                <tr>
+                    <td><input type="radio" checked name="information" value="0"><span>项目结项总结报告</span></td>
+                    <td><input type="radio" name="information" value="1"><span>结项资料清单（清单与交付物完备并一致）</span></td>
+                </tr>
+                <form id="ff" method="post">
+                <tr>
+                    <td class="title-first" colspan="4">2.项目情况总结</td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="padding:20px;">2.1项目范围</td>
+                </tr>
+                <tr>
+                    <td colspan="4"><input class="easyui-textbox" name="range" value="${apply.range}"
+                                           data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
+                                           style="width:800px;height:120px"/></td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="padding:20px;">2.2项目管理的方法</td>
+                </tr>
+                <tr>
+                    <td colspan="4"><input class="easyui-textbox" name="managementMethod" value="${apply.managementMethod}"
+                                           data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
+                                           style="width:800px;height:120px"/></td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="padding:20px;">项目管理过程评价</td>
+                </tr>
+                <tr>
+                    <td colspan="4"><input class="easyui-textbox" name="appraise" value="${apply.appraise}"
+                                           data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
+                                           style="width:800px;height:120px"/></td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="padding:20px;">技术方法评价</td>
+                </tr>
+                <tr>
+                    <td colspan="4"><input class="easyui-textbox" name="technicalEvaluation" value="${apply.technicalEvaluation}"
+                                           data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
+                                           style="width:800px;height:120px"/></td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="padding:20px;">进步与提高</td>
+                </tr>
+                <tr>
+                    <td colspan="4"><input class="easyui-textbox" name="raise" value="${apply.raise}"
+                                           data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
+                                           style="width:800px;height:120px"/></td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="padding:20px;">2.3项目的成果</td>
+                </tr>
+                <tr>
+                    <td colspan="4"><input class="easyui-textbox" name="result" value="${apply.result}"
+                                           data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
+                                           style="width:800px;height:120px"/></td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="padding:20px;">产品</td>
+                </tr>
+                <tr>
+                    <td colspan="4"><input class="easyui-textbox" name="product" value="${apply.product}"
+                                           data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
+                                           style="width:800px;height:120px"/></td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="padding:20px;">主要功能和性能</td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <table id="pro" class="easyui-datagrid"
+                               data-options="
+                singleSelect: true,
+                rownumbers:true,
+                url: '${contextPath}/projectComplete/loadPerformance?id=${apply.id}'">
+                            <thead>
+                            <tr>
+                                <th style="text-align:center" data-options="field:'performance',width:120,align:'center',editor:{type:'textbox',options:{required:true}}">功能性能项</th>
+                                <th data-options="field:'compare',align:'center',width:120,editor:{type:'combobox',options : {
+									required : false,
+									textField:'text',
+									valueField:'text',
+									editable:false,
+									data: [{
+										text: '未完全达到'
+									},{
+										text: '达到'
+									},{
+										text: '超过'
+									}]
+								}}">与开发目标相比</th>
+                                <th style="text-align:center" data-options="field:'notes',align:'center',width:250,editor:{type:'textbox',options:{multiline:true,validType:['length[0,50]']}}">说明</th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="padding:20px;">2.4项目团队的建议</td>
+                </tr>
+                <tr>
+                    <td colspan="4"><input class="easyui-textbox" name="suggest" value="${apply.suggest}"
+                                           data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
+                                           style="width:800px;height:120px"/></td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="padding:20px;">2.5遗留问题</td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <table id="risk" class="easyui-datagrid" style="height:auto"
+                               data-options="
+                singleSelect: true,
+                   url: '${contextPath}/projectComplete/loadQuestion?id=${apply.id}'">
+                            <thead>
+                            <tr>
+                                <th data-options="field:'notes',align:'center',width:250,editor:{type:'textbox',options:{required:false,multiline:true,validType:['length[0,200]']}}">
+                                    问题描述
+                                </th>
+                                <th data-options="field:'notes1',align:'center',width:250,editor:{type:'textbox',options:{required:false,multiline:true,validType:['length[0,200]']}}">
+                                    采取的措施
+                                </th>
+                                <th style="text-align:center" data-options="width:'150',field:'memberId',  _provider:'memberProvider', align:'center', resizable:'true', fixed:'false',editor : {
+								type : 'textbox',
+								options : {
+									required : true,
+									editable:false,
+									buttonText:'选择',
+									onClickButton:function(){
+										selectMember('editorCallback', 'memberId');
+									}
+								}
+							},onChange:_changeTextboxShowClear">负责人</th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </td>
+                </tr>
+                </form>
+                <tr>
+                    <td class="title-first" colspan="4">3.项目资源释放</td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="padding:20px;">3.1项目成员</td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <table class="easyui-datagrid"
+                               data-options="
+                singleSelect: true,
+                rownumbers:true,
+                url: '${contextPath}/projectComplete/loadMembers?id=${apply.id}'">
+                            <thead>
+                            <tr>
+                                <th style="text-align:center"
+                                    data-options="field:'memberId',width:120,align:'center',editor:{type:'textbox',options:{required:true}}">
+                                    姓名
+                                </th>
+                                <th data-options="field:'role',width:120,align:'center',editor:{type:'textbox',options:{required:true}}">
+                                    角色
+                                </th>
+                                <th style="text-align:center"
+                                    data-options="field:'joinTime',align:'center',width:180">
+                                    进入项目日期
+                                </th>
+                                <th style="text-align:center"
+                                    data-options="field:'leaveTime',align:'center',width:180">
+                                    离开项目日期
+                                </th>
+                                <th style="text-align:center"
+                                    data-options="field:'created',align:'center',width:180,formatter:formatDate">
+                                    默认释放日期
+                                </th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="padding:20px;">3.2硬件设备</td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <table id="dg" class="easyui-datagrid"
+                               data-options="
+                singleSelect: true,
+                rownumbers:true,
+                            url: '${contextPath}/projectComplete/loadHardWare?id=${apply.id}'">
+                            <thead>
+                            <tr>
+                                <th data-options="field:'name',width:80,align:'center',editor:{type:'textbox',options:{required:true}}">设备名称</th>
+                                <th data-options="field:'mode',_provider:'datetimeProvider',width:200,align:'center',editor:{type:'textbox',options:{required:true}}">
+                                    型号
+                                </th>
+                                <th data-options="field:'number',width:100,align:'center',editor:{type:'numberspinner',options:{increment:1,min:1}}">
+                                    数量
+                                </th>
+                                <th data-options="field:'date',_provider:'datetimeProvider',width:200,align:'center',editor:{type:'datebox',options:{required:true}}">
+                                    释放日期
+                                </th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="title-first" colspan="4">4.邮件发送列表</td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <input class="easyui-tagbox" id="tagbx" value="${apply.email}" style="width:800px">
+                    </td>
+                </tr>
+            </table>
+            <div style="text-align:left;padding:5px;margin-top:10px;">
+                <a href="${contextPath}/projectComplete/index.html" class="easyui-linkbutton"
+                   data-options="size:'large',width:'80px'">返回</a>
+            </div>
+    </div>
+</div>
+<script>
+
+    function formatDate(value, row) {
+        return new Date().format("yyyy-MM-dd hh:mm:ss");
+    }
+
+    $('#projectId').combobox({
+        url: '${contextPath}/project/getProjectList',
+        valueField: 'id',
+        textField: 'serialNumber',
+        onChange: function (projectValue) {
+            var datas = $("#projectId").combobox('getData');
+            for (var i = 0; i < datas.length; i++) {
+                var data = datas[i];
+                if (data.id == projectValue) {
+                    $("#projectName").combobox("initValue", data.name);
+                    $("#projectType").combobox("initValue", data.type);
+                    $("#number").val(data.serialNumber);
+                    $("#type").val(data.$_type);
+                    $("#name").val(data.name);
+                    $("#leader").combobox("initValue", data.projectManager);
+                    $("#dep").combobox("initValue", data.dep);
+                    $("#buss").combobox("initValue", data.businessOwner);
+                    $("#startDate").combobox("initValue", data.startDate);
+                    $("#startDateVal").val(data.startDate);
+                    $("#endDate").combobox("initValue", data.endDate);
+                    $("#endDateVal").val(data.endDate);
+                    $("#actualEndDate").combobox("initValue", data.actualEndDate);
+                }
+            }
+        }
+    });
+    Date.prototype.format = function(fmt) {
+        var o = {
+            "M+" : this.getMonth()+1,                 //月份
+            "d+" : this.getDate(),                    //日
+            "h+" : this.getHours(),                   //小时
+            "m+" : this.getMinutes(),                 //分
+            "s+" : this.getSeconds(),                 //秒
+            "q+" : Math.floor((this.getMonth()+3)/3), //季度
+            "S"  : this.getMilliseconds()             //毫秒
+        };
+        if(/(y+)/.test(fmt)) {
+            fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+        }
+        for(var k in o) {
+            if(new RegExp("("+ k +")").test(fmt)){
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+            }
+        }
+        return fmt;
+    };
+    $(function () {
+        $("#projectId").combobox('setValue','${apply.projectId}');
+        $("input[name='reason'][value='${apply.reason}']").attr("checked",true);
+        $("input[name='information'][value='${apply.information}']").attr("checked",true);
+
+        $('input[class^=easyui-]').textbox("disable");
+        $('select[class^=easyui-]').textbox("disable");
+
+
+
+        var input = $("body").find("input:radio");
+        input.attr("disabled","disabled");
+    });
+</script>
+</#body>

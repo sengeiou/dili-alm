@@ -34,7 +34,7 @@
                     <td>项目编号</td>
                     <td>${apply.number}</td>
                     <td>项目名称</td>
-                    <td>${apply.type}</td>
+                    <td>${apply.name}</td>
                 </tr>
                 <tr>
                     <td class="title-first" colspan="4">2.项目情况总结</td>
@@ -301,7 +301,7 @@
         showMembersDlg(field + "_" + index);
     }
     function backForm() {
-        window.location.href = "${contextPath}/projectComplete/toStep/2/${apply.id}";
+        window.location.href = "${contextPath}/projectComplete/toStep/1/${apply.id}";
     }
 
     function submitForm() {

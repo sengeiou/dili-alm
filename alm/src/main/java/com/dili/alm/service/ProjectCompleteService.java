@@ -10,4 +10,6 @@ import com.dili.ss.base.BaseService;
 public interface ProjectCompleteService extends BaseService<ProjectComplete, Long> {
 
     void approve(ProjectComplete complete);
+
+    Long reComplete(Long id);
 }

@@ -61,15 +61,15 @@
                                     角色
                                 </th>
                                 <th style="text-align:center"
-                                    data-options="field:'joinTime',align:'center',width:250,editor:{type:'textbox',options:{multiline:true,validType:['length[0,50]']}}">
+                                    data-options="field:'joinTime',align:'center',width:180">
                                     进入项目日期
                                 </th>
                                 <th style="text-align:center"
-                                    data-options="field:'leaveTime',align:'center',width:250,editor:{type:'textbox',options:{multiline:true,validType:['length[0,50]']}}">
+                                    data-options="field:'leaveTime',align:'center',width:180">
                                     离开项目日期
                                 </th>
                                 <th style="text-align:center"
-                                    data-options="field:'created',align:'center',width:250,editor:{type:'textbox',options:{multiline:true,validType:['length[0,50]']}}">
+                                    data-options="field:'created',align:'center',width:180,formatter:formatDate">
                                     默认释放日期
                                 </th>
                             </tr>
@@ -124,6 +124,8 @@
 
         </form>
         <div style="text-align:center;padding:5px;margin-top:50px;">
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="size:'large',width:'80px'"
+               onclick="backForm()">上一步</a>
             <a href="${contextPath}/projectComplete/index.html" class="easyui-linkbutton"
                data-options="size:'large',width:'80px'">取消</a>
             <a href="javascript:void(0)" class="easyui-linkbutton" data-options="size:'large',width:'80px'"
@@ -137,7 +139,9 @@
 
 
 <script>
-
+    function formatDate(value, row) {
+        return new Date().format("yyyy-MM-dd hh:mm:ss");
+    }
     var impact = {
         editIndex: undefined,
         endEditing: function () {
@@ -209,7 +213,7 @@
                 var data = eval('(' + data + ')');
                 if (data.success == true) {
                     if (data.success == true) {
-                        window.location.href = "${contextPath}/projectComplete/toStep/3/" + data.result;
+                        window.location.href = "${contextPath}/projectComplete/index.html";
                     }
                 }
             }
@@ -223,6 +227,26 @@
         }
     });
 
+    Date.prototype.format = function(fmt) {
+        var o = {
+            "M+" : this.getMonth()+1,                 //月份
+            "d+" : this.getDate(),                    //日
+            "h+" : this.getHours(),                   //小时
+            "m+" : this.getMinutes(),                 //分
+            "s+" : this.getSeconds(),                 //秒
+            "q+" : Math.floor((this.getMonth()+3)/3), //季度
+            "S"  : this.getMilliseconds()             //毫秒
+        };
+        if(/(y+)/.test(fmt)) {
+            fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+        }
+        for(var k in o) {
+            if(new RegExp("("+ k +")").test(fmt)){
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+            }
+        }
+        return fmt;
+    };
 
     $(function () {
         var value = $("#tagbx").tagbox('getValue');

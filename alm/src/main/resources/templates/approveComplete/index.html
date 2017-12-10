@@ -11,16 +11,16 @@
                     <table style="padding:10px;">
                         <tr>
                             <td style="padding:5px;">
-                                <input class="easyui-numberbox" name="number" id="number" style="width:100%" data-options="label:'项目编号:', validType:'length[0,19]'" />
-
-                            </td>
-                            <td style="padding:5px;">
                                 <input class="easyui-textbox" name="name" id="name" style="width:100%" data-options="label:'项目名称:', validType:'length[0,255]'" />
 
                             </td>
                             <td style="padding:5px;">
                                 <input class="easyui-textbox" name="projectType" id="projectType" style="width:100%" data-options="label:'项目类型:', validType:'length[0,255]'" />
                                 <#comboProvider _id="projectType" _provider='projectTypeProvider'/>
+                            </td>
+                            <td style="padding:5px;">
+                                <input class="easyui-numberbox" name="number" id="number" style="width:100%" data-options="label:'项目编号:', validType:'length[0,19]'" />
+
                             </td>
                             <td style="padding:5px;">
                                 <input class="easyui-textbox" name="status" id="status" style="width:100%"
@@ -222,6 +222,7 @@
         //清空表单
         function clearForm() {
             $('#form').form('clear');
+            $("#createMemberId").textbox('initValue','');
             queryGrid();
         }
 

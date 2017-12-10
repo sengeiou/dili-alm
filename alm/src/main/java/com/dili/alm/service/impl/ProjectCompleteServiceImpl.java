@@ -62,6 +62,7 @@ public class ProjectCompleteServiceImpl extends BaseServiceImpl<ProjectComplete,
             as.setStatus(AlmConstants.ApplyState.APPROVE.getCode());
             as.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
             as.setType(AlmConstants.ApproveType.COMPLETE.getCode());
+            as.setProjectType(complete.getType());
 
             DataDictionaryDto code = dataDictionaryService.findByCode(AlmConstants.ROLE_CODE);
             List<DataDictionaryValueDto> values = code.getValues();
@@ -83,5 +84,15 @@ public class ProjectCompleteServiceImpl extends BaseServiceImpl<ProjectComplete,
             }
             approveService.insert(as);
         }
+    }
+
+    @Override
+    public Long reComplete(Long id) {
+        ProjectComplete complete = get(id);
+        complete.setId(null);
+        complete.setCreated(new Date());
+        complete.setStatus(AlmConstants.ApplyState.APPLY.getCode());
+        insert(complete);
+        return complete.getId();
     }
 }
