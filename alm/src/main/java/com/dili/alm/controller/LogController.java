@@ -27,7 +27,7 @@ public class LogController {
     LogService logService;
 
     @ApiOperation("跳转到Log页面")
-    @RequestMapping(value="/index", method = RequestMethod.GET)
+    @RequestMapping(value="/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
         return "log/index";
     }

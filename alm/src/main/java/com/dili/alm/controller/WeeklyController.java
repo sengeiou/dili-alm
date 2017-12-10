@@ -68,7 +68,7 @@ public class WeeklyController  {
 
 
     @ApiOperation("跳转到Weekly页面")
-    @RequestMapping(value="/index", method = RequestMethod.GET)
+    @RequestMapping(value="/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
         return "weekly/index";
     }
