@@ -1,5 +1,23 @@
-<div style="margin: 5px 5px;">
-	真实姓名: <input id="searchTextbox" class="easyui-textbox" data-options="buttonText:'查询',buttonIcon:'icon-search',onClickButton:search" onkeyup="searchBoxOnKeyup();" style="width: 300px">
+<div class="easyui-panel" style="width:100%;" align="left">
+	<form id="form" class="easyui-form" method="post" fit="true">
+		<table style="padding:10px;">
+			<tr>
+				<td style="padding:5px;">
+					<input class="easyui-textbox" name="realName" id="realName" style="width:100%"
+						   data-options="label:'姓名:', validType:'length[0,20]'"/>
+				</td>
+				<td style="padding:5px;">
+					<input class="easyui-textbox" name="departmentId" id="departmentId" style="width:100%"
+						   data-options="label:'部门:', validType:'length[0,20]'"/>
+					<#comboProvider _id="departmentId" _provider='depProvider'/>
+				</td>
+				<td>
+					<a href="#" class="easyui-linkbutton" iconCls="icon-search"
+					   onclick="a();">查询</a>
+				</td>
+			</tr>
+		</table>
+	</form>
 </div>
 <table class="easyui-datagrid" id="smGridList" sortName="userName" sortOrder="asc" fitColumns="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="true"
 	align="center" fit="true" striped="true" idField="id" data-options="onDblClickRow:dbClickMembers">
@@ -18,20 +36,18 @@
 	function dbClickMembers(index, row) {
 		confirmMembersBtn("${textboxId}");
 	}
-	function search() {
-		var opts = $("#smGridList").datagrid("options");
-		opts.url = '${contextPath!}/member/members';
-		var param = $('#searchTextbox').textbox('getText');
-		$('#smGridList').datagrid('load', {
-			realName : param
-		});
-	}
 
+	function a(){
+        var opts = $("#smGridList").datagrid("options");
+        opts.url = '${contextPath!}/member/members';
+        var formData = $("#form").serializeObject();
+        $('#smGridList').datagrid('load',formData);
+	}
 	$(function() {
-		$('#searchTextbox').textbox('addClearBtn', 'icon-clear');
-		$('#searchTextbox').textbox('textbox').focus();
-		$('#searchTextbox').textbox('textbox').bind('keydown', function(e) {
-			search();
-		});
+		// $('#searchTextbox').textbox('addClearBtn', 'icon-clear');
+		// $('#searchTextbox').textbox('textbox').focus();
+		// $('#searchTextbox').textbox('textbox').bind('keydown', function(e) {
+		// 	search();
+		// });
 	})
 </script>

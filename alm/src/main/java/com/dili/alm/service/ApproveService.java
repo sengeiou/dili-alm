@@ -19,4 +19,8 @@ public interface ApproveService extends BaseService<Approve, Long> {
 
     BaseOutput applyApprove(Long id, String opt, String notes);
     BaseOutput verity(Long id, String opt, String notes);
+
+    void insertBefore(Approve approve);
+
+
 }

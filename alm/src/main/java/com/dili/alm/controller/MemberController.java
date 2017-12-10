@@ -1,6 +1,7 @@
 package com.dili.alm.controller;
 
-import com.dili.alm.domain.User;
+import com.dili.alm.domain.dto.UserDepartmentRole;
+import com.dili.alm.domain.dto.UserDepartmentRoleQuery;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.ss.domain.BaseOutput;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +30,8 @@ public class MemberController {
 
 	@ResponseBody
 	@RequestMapping(value = "/members", method = { RequestMethod.GET, RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public List<User> membersJson(ModelMap modelMap,User user) {
-		BaseOutput<List<User>> output = this.userRPC.listByExample(user);
+	public List<UserDepartmentRole> membersJson(UserDepartmentRoleQuery user) {
+		BaseOutput<List<UserDepartmentRole>> output = this.userRPC.findUserContainDepartmentAndRole(user);
 		if (output.isSuccess()) {
 			return output.getData();
 		}

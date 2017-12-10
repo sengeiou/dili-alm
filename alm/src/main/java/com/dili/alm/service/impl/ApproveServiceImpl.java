@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.ApproveMapper;
 import com.dili.alm.domain.*;
+import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.apply.ApplyApprove;
+import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.*;
 import com.dili.ss.base.BaseServiceImpl;
@@ -52,6 +54,10 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
     @Autowired
     private UserRpc userRpc;
 
+    @Autowired
+    private RoleRpc roleRpc;
+
+
     public ApproveMapper getActualDao() {
         return (ApproveMapper) getDao();
     }
@@ -83,42 +89,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
 
         String approveDescription = approve.getDescription();
-        // 能否审批
-        boolean canOpt = false;
-
-        // 只有审批中的才能操作
-        if (StringUtils.isNotBlank(approveDescription) && approve.getStatus() == AlmConstants.ApplyState.APPROVE.getCode()) {
-            List<ApplyApprove> approveList = JSON.parseArray(approveDescription, ApplyApprove.class);
-
-            /*
-               能够操作的情况:
-                当前操作用户在审批组中
-                且没有审批过意见
-                且不是组长
-             */
-            canOpt = approveList.stream()
-                    .anyMatch(applyApprove -> Objects.equals(applyApprove.getUserId(), SessionContext.getSessionContext().getUserTicket().getId())
-                            && applyApprove.getResult() == null
-                            && !Objects.equals(applyApprove.getUserId(), getApproveLeader()));
-
-
-            /*
-               如果都不能处理，检查是否扭转到组长
-             */
-            if (!canOpt) {
-                /*
-                   处理条件如下:
-                    当前操作用户属于组长
-                    且审批组中其他成员都全部审批完毕 (审批完毕成员数等于总成员数减1)
-                    注：目前只支持一位组长
-                 */
-                canOpt = Objects.equals(SessionContext.getSessionContext().getUserTicket().getId(), getApproveLeader())
-                        && approveList.stream().filter(applyApprove -> !Objects.equals(applyApprove.getUserId(), getApproveLeader()) && applyApprove.getResult() != null)
-                        .count() == approveList.size() - 1;
-            }
-
-        }
-        modelMap.put("canOpt", canOpt);
+        checkApprove(approveDescription,approve.getStatus(),modelMap);
     }
 
     @Override
@@ -141,11 +112,18 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         modelMap.put("change", change);
 
         String approveDescription = approve.getDescription();
+        checkApprove(approveDescription,approve.getStatus(),modelMap);
+    }
+
+    /**
+     * 检查是否有审批权限
+     */
+    private void checkApprove(String approveDescription,Integer status,Map map){
         // 能否审批
         boolean canOpt = false;
 
         // 只有审批中的才能操作
-        if (StringUtils.isNotBlank(approveDescription) && approve.getStatus() == AlmConstants.ApplyState.APPROVE.getCode()) {
+        if (StringUtils.isNotBlank(approveDescription) && status == AlmConstants.ApplyState.APPROVE.getCode()) {
             List<ApplyApprove> approveList = JSON.parseArray(approveDescription, ApplyApprove.class);
 
             /*
@@ -176,7 +154,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
             }
 
         }
-        modelMap.put("canOpt", canOpt);
+        map.put("canOpt", canOpt);
     }
 
     @Override
@@ -199,42 +177,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         modelMap.put("complete", complete);
 
         String approveDescription = approve.getDescription();
-        // 能否审批
-        boolean canOpt = false;
-
-        // 只有审批中的才能操作
-        if (StringUtils.isNotBlank(approveDescription) && approve.getStatus() == AlmConstants.ApplyState.APPROVE.getCode()) {
-            List<ApplyApprove> approveList = JSON.parseArray(approveDescription, ApplyApprove.class);
-
-            /*
-               能够操作的情况:
-                当前操作用户在审批组中
-                且没有审批过意见
-                且不是组长
-             */
-            canOpt = approveList.stream()
-                    .anyMatch(applyApprove -> Objects.equals(applyApprove.getUserId(), SessionContext.getSessionContext().getUserTicket().getId())
-                            && applyApprove.getResult() == null
-                            && !Objects.equals(applyApprove.getUserId(), getApproveLeader()));
-
-
-            /*
-               如果都不能处理，检查是否扭转到组长
-             */
-            if (!canOpt) {
-                /*
-                   处理条件如下:
-                    当前操作用户属于组长
-                    且审批组中其他成员都全部审批完毕 (审批完毕成员数等于总成员数减1)
-                    注：目前只支持一位组长
-                 */
-                canOpt = Objects.equals(SessionContext.getSessionContext().getUserTicket().getId(), getApproveLeader())
-                        && approveList.stream().filter(applyApprove -> !Objects.equals(applyApprove.getUserId(), getApproveLeader()) && applyApprove.getResult() != null)
-                        .count() == approveList.size() - 1;
-            }
-
-        }
-        modelMap.put("canOpt", canOpt);
+        checkApprove(approveDescription,approve.getStatus(),modelMap);
     }
 
     @Override
@@ -315,6 +258,29 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         verifyApproval.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
         verifyApprovalService.insert(verifyApproval);
         return BaseOutput.success();
+    }
+
+    @Override
+    public void insertBefore(Approve as) {
+        DataDictionaryDto code = dataDictionaryService.findByCode(AlmConstants.ROLE_CODE);
+        List<DataDictionaryValueDto> values = code.getValues();
+        String roleId = values.stream()
+                .filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH))
+                .findFirst().map(DataDictionaryValue::getValue)
+                .orElse(null);
+
+        if (roleId != null) {
+            List<ApplyApprove> approveList = Lists.newArrayList();
+            List<User> userByRole = userRpc.listUserByRole(Long.parseLong(roleId)).getData();
+            userByRole.forEach(u -> {
+                ApplyApprove approve = new ApplyApprove();
+                approve.setUserId(u.getId());
+                approve.setRole(roleRpc.listRoleNameByUserId(Long.valueOf(u.getId())).getData());
+                approveList.add(approve);
+            });
+            as.setDescription(JSON.toJSONString(approveList));
+        }
+        insert(as);
     }
 
 

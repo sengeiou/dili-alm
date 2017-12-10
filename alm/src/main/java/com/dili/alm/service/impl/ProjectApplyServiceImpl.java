@@ -4,10 +4,12 @@ import com.alibaba.fastjson.JSON;
 import com.dili.alm.cache.ProjectNumberGenerator;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.ProjectApplyMapper;
-import com.dili.alm.domain.*;
+import com.dili.alm.domain.Approve;
+import com.dili.alm.domain.FileType;
+import com.dili.alm.domain.Files;
+import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
-import com.dili.alm.domain.dto.apply.ApplyApprove;
 import com.dili.alm.domain.dto.apply.ApplyFiles;
 import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.rpc.UserRpc;
@@ -19,14 +21,16 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.sysadmin.sdk.session.SessionContext;
-import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -105,25 +109,7 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
             as.setExtend(as.getDescription());
             as.setType(AlmConstants.ApproveType.APPLY.getCode());
 
-            DataDictionaryDto code = dataDictionaryService.findByCode(AlmConstants.ROLE_CODE);
-            List<DataDictionaryValueDto> values = code.getValues();
-            String roleId = values.stream()
-                    .filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH))
-                    .findFirst().map(DataDictionaryValue::getValue)
-                    .orElse(null);
-
-            if (roleId != null) {
-                List<ApplyApprove> approveList = Lists.newArrayList();
-                List<User> userByRole = userRpc.listUserByRole(Long.parseLong(roleId)).getData();
-                userByRole.forEach(u -> {
-                    ApplyApprove approve = new ApplyApprove();
-                    approve.setUserId(u.getId());
-                    approve.setRole(roleRpc.listRoleNameByUserId(Long.valueOf(u.getId())).getData());
-                    approveList.add(approve);
-                });
-                as.setDescription(JSON.toJSONString(approveList));
-            }
-            approveService.insert(as);
+            approveService.insertBefore(as);
         }
 
         this.updateSelective(projectApply);
