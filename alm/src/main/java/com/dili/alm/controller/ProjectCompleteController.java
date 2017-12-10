@@ -46,11 +46,12 @@ public class ProjectCompleteController {
     @ApiOperation("跳转到ProjectComplete页面")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
+        modelMap.put("sessionID", SessionContext.getSessionContext().getUserTicket().getId());
         return "projectComplete/index";
     }
 
     @RequestMapping(value="/add", method = RequestMethod.GET)
-    public String add(ModelMap modelMap) {
+    public String add() {
         return "projectComplete/add";
     }
 

@@ -46,9 +46,9 @@
         <!-- 表格 -->
         <div region="center" style="width:100%;" height="auto">
             <!-- =========================================================表格========================================================= -->
-            <table class="easyui-datagrid" title="ProjectChange列表" id="grid" fitColumns="true"
-                   pagination="true" pageSize="30" pageNumber="1" pagePosition="both" rownumbers="true" remoteSort="false"
-                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="name"
+            <table class="easyui-datagrid" title="项目变更列表" id="grid" fitColumns="true"
+                   pagination="true" pageSize="30" pageNumber="1" pagePosition="bottom" rownumbers="true" remoteSort="false"
+                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
                    align="center" fit="true" striped="true" toolbar="#toolbar" idField="id">
                 <thead>
                     <tr>
@@ -79,15 +79,6 @@
             <!-- datagrid工具栏 -->
             <div id="toolbar" style="padding:2px 5px;">
                 <a href="${contextPath}/projectChange/add" class="easyui-linkbutton" iconCls="icon-add" plain="true"></a>
-                <div style="float:right">
-                边框显示:<select onchange="changeBorder('grid',this.value)">
-                    <option value="lines-both">全边框</option>
-                    <option value="lines-no">无边框</option>
-                    <option value="lines-right">右边框</option>
-                    <option value="lines-bottom">下边框</option>
-                </select>
-                行条纹:<input type="checkbox" checked="checked" onclick="$('#grid').datagrid({striped:$(this).is(':checked')})">
-                </div>
             </div>
         </div>
     </div>
@@ -96,19 +87,27 @@
     <!-- style & script 分隔线 -->
     <!-- ====================================================================================================================== -->
     <script type="text/javascript">
-
+        var userid = '${sessionID}';
         function formatStatus(value, row) {
             if (row.$_status == 1) {
-                return '<a href="${contextPath}/projectChange/edit?id=' + row.id + '">编辑</a><a href="javascript:void(0)" onclick="del(' + row.id + ')">删除</a>';
-            }else if(row.$_status == 2 || row.$_status == 3){
-                return '<a>编辑</a><a>删除</a>';
-            }else if(row.$_status == 4){
-                return '<a href="${contextPath}/projectChange/reChange/' + row.id + '">重新申请</a>';
+                if (row.$_createMemberId == userid) {
+                    return '<span class="opt" style="padding:5px;"><a href="${contextPath}/projectChange/edit?id=' + row.id + '">编辑</a></span><span class="opt" style="padding:5px;"><a href="javascript:void(0)" onclick="del(' + row.id + ')">删除</a></span>';
+                } else {
+                    return '<span class="opt" style="padding:5px;"><a>编辑</a></span><span class="opt" style="padding:5px;"><a">删除</a></span>';
+                }
+            } else if (row.$_status == 2 || row.$_status == 3) {
+                return '<span class="opt" style="padding:5px;"><a>编辑</a></span><span class="opt" style="padding:5px;"><a>删除</a></span>';
+            } else if (row.$_status == 4) {
+                if (row.$_createMemberId == userid) {
+                    return '<span class="opt" style="padding:5px;"><a href="${contextPath}/projectChange/reChange/' + row.id + '">重新申请</a></span>';
+                } else {
+                    return '<span class="opt" style="padding:5px;"><a>重新申请</a></span>';
+                }
             }
         }
 
         function formatName(value,row) {
-            return '<div style="text-align:center;height:auto;" class="datagrid-cell datagrid-cell-c1-name"><a href="${contextPath}/projectChange/toDetails/' + row.id + '">' + value + '</a></div>';
+            return '<span class="opt" style="padding:5px;"><a href="${contextPath}/projectChange/toDetails/' + row.id + '">' + value + '</a></span>';
         }
 
         //根据主键删除
@@ -159,18 +158,6 @@
             $('#form').form('clear');
             $("#createMemberId").textbox('initValue','');
             queryGrid();
-        }
-
-        //表格表头右键菜单
-        function headerContextMenu(e, field){
-            e.preventDefault();
-            if (!cmenu){
-                createColumnMenu("grid");
-            }
-            cmenu.menu('show', {
-                left:e.pageX,
-                top:e.pageY
-            });
         }
 
         $.messager.progress({

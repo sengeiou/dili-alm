@@ -1,6 +1,5 @@
 package com.dili.alm.controller;
 
-import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.ProjectChange;
 import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.Task;
@@ -44,6 +43,7 @@ public class ProjectChangeController {
 	@ApiOperation("跳转到ProjectChange页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
+		modelMap.put("sessionID", SessionContext.getSessionContext().getUserTicket().getId());
 		return "projectChange/index";
 	}
 
@@ -101,7 +101,6 @@ public class ProjectChangeController {
 	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectChange", paramType = "form", value = "ProjectChange的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput insert(ProjectChange projectChange) {
-		projectChange.setStatus(AlmConstants.ApplyState.APPLY.getCode());
 		projectChange.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
 		projectChangeService.insertSelective(projectChange);
 		projectChangeService.approve(projectChange);

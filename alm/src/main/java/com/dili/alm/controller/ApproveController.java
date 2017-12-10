@@ -7,10 +7,12 @@ import com.dili.alm.domain.dto.apply.ApplyApprove;
 import com.dili.alm.service.ApproveService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.sysadmin.sdk.session.SessionContext;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -37,51 +39,70 @@ public class ApproveController {
 
     @ApiOperation("跳转到Approve页面")
     @RequestMapping(value="/apply/index.html", method = RequestMethod.GET)
-    public String applyIndex() {
+    public String applyIndex(ModelMap modelMap) {
+        modelMap.put("sessionID", SessionContext.getSessionContext().getUserTicket().getId());
         return "approveApply/index";
     }
 
     @ApiOperation("跳转到Approve页面")
     @RequestMapping(value="/change/index.html", method = RequestMethod.GET)
-    public String changeIndex() {
+    public String changeIndex(ModelMap modelMap) {
+        modelMap.put("sessionID", SessionContext.getSessionContext().getUserTicket().getId());
         return "approveChange/index";
     }
 
     @ApiOperation("跳转到Approve页面")
     @RequestMapping(value="/complete/index.html", method = RequestMethod.GET)
-    public String completeIndex() {
+    public String completeIndex(ModelMap modelMap) {
+        modelMap.put("sessionID", SessionContext.getSessionContext().getUserTicket().getId());
         return "approveComplete/index";
     }
 
     @RequestMapping(value="/apply/{id}", method = RequestMethod.GET)
-    public String apply(ModelMap modelMap, @PathVariable("id") Long id) {
+    public String apply(ModelMap modelMap, @PathVariable("id") Long id,String viewMode) {
 
         approveService.buildApplyApprove(modelMap,id);
-
+        if(StringUtils.isNotBlank(viewMode)){
+            modelMap.put("viewMode",true);
+        }else{
+            modelMap.put("viewMode",false);
+        }
         return "approveApply/approve";
     }
 
     @RequestMapping(value="/change/{id}", method = RequestMethod.GET)
-    public String change(ModelMap modelMap, @PathVariable("id") Long id) {
+    public String change(ModelMap modelMap, @PathVariable("id") Long id,String viewMode) {
 
         approveService.buildChangeApprove(modelMap,id);
-
+        if(StringUtils.isNotBlank(viewMode)){
+            modelMap.put("viewMode",true);
+        }else{
+            modelMap.put("viewMode",false);
+        }
         return "approveChange/approve";
     }
 
     @RequestMapping(value="/verify/{id}", method = RequestMethod.GET)
-    public String verify(ModelMap modelMap, @PathVariable("id") Long id) {
+    public String verify(ModelMap modelMap, @PathVariable("id") Long id,String viewMode) {
 
         approveService.buildChangeApprove(modelMap,id);
-
+        if(StringUtils.isNotBlank(viewMode)){
+            modelMap.put("viewMode",true);
+        }else{
+            modelMap.put("viewMode",false);
+        }
         return "approveChange/verify";
     }
 
     @RequestMapping(value="/complete/{id}", method = RequestMethod.GET)
-    public String complete(ModelMap modelMap, @PathVariable("id") Long id) {
+    public String complete(ModelMap modelMap, @PathVariable("id") Long id,String viewMode) {
 
         approveService.buildCompleteApprove(modelMap,id);
-
+        if(StringUtils.isNotBlank(viewMode)){
+            modelMap.put("viewMode",true);
+        }else{
+            modelMap.put("viewMode",false);
+        }
         return "approveComplete/approve";
     }
 

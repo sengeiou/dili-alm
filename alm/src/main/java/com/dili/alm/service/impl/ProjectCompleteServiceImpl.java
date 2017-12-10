@@ -1,30 +1,18 @@
 package com.dili.alm.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.ProjectCompleteMapper;
 import com.dili.alm.domain.Approve;
-import com.dili.alm.domain.DataDictionaryValue;
 import com.dili.alm.domain.ProjectComplete;
-import com.dili.alm.domain.User;
-import com.dili.alm.domain.dto.DataDictionaryDto;
-import com.dili.alm.domain.dto.DataDictionaryValueDto;
-import com.dili.alm.domain.dto.apply.ApplyApprove;
-import com.dili.alm.rpc.RoleRpc;
-import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.ApproveService;
-import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.ProjectCompleteService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.sysadmin.sdk.session.SessionContext;
-import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -32,15 +20,6 @@ import java.util.Objects;
  */
 @Service
 public class ProjectCompleteServiceImpl extends BaseServiceImpl<ProjectComplete, Long> implements ProjectCompleteService {
-
-    @Autowired
-    private DataDictionaryService dataDictionaryService;
-
-    @Autowired
-    private RoleRpc roleRpc;
-
-    @Autowired
-    private UserRpc userRpc;
 
     @Autowired
     private ApproveService approveService;
@@ -54,35 +33,24 @@ public class ProjectCompleteServiceImpl extends BaseServiceImpl<ProjectComplete,
         if (complete.getStatus() == null) {
             return;
         }
+
+        /*
+           处理生成审批单
+         */
         if (complete.getStatus() == AlmConstants.ApplyState.APPROVE.getCode()) {
-            Approve as = DTOUtils.as(this.get(complete.getId()), Approve.class);
+            ProjectComplete projectComplete = get(complete.getId());
+            Approve as = DTOUtils.as(complete, Approve.class);
             as.setId(null);
             as.setCreated(new Date());
-            as.setProjectApplyId(complete.getId());
+            as.setNumber(projectComplete.getNumber());
+            as.setName(projectComplete.getName());
+            as.setProjectApplyId(projectComplete.getId());
             as.setStatus(AlmConstants.ApplyState.APPROVE.getCode());
             as.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
             as.setType(AlmConstants.ApproveType.COMPLETE.getCode());
-            as.setProjectType(complete.getType());
+            as.setProjectType(projectComplete.getType());
 
-            DataDictionaryDto code = dataDictionaryService.findByCode(AlmConstants.ROLE_CODE);
-            List<DataDictionaryValueDto> values = code.getValues();
-            String roleId = values.stream()
-                    .filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH))
-                    .findFirst().map(DataDictionaryValue::getValue)
-                    .orElse(null);
-
-            if (roleId != null) {
-                List<ApplyApprove> approveList = Lists.newArrayList();
-                List<User> userByRole = userRpc.listUserByRole(Long.parseLong(roleId)).getData();
-                userByRole.forEach(u -> {
-                    ApplyApprove approve = new ApplyApprove();
-                    approve.setUserId(u.getId());
-                    approve.setRole(roleRpc.listRoleNameByUserId(Long.valueOf(u.getId())).getData());
-                    approveList.add(approve);
-                });
-                as.setDescription(JSON.toJSONString(approveList));
-            }
-            approveService.insert(as);
+            approveService.insertBefore(as);
         }
     }
 

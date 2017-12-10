@@ -242,6 +242,9 @@
 		<if test="userId != null">
 			AND u.id = #{userId}
 		</if>
+		<if test="realName != null">
+			AND u.real_name like <![CDATA[concat('%',#{realName},'%')]]>
+		</if>
 		<if test="departmentId != null">
 			AND ud.department_id = #{departmentId}
 		</if>

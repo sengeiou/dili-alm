@@ -58,9 +58,9 @@
     <!-- 表格 -->
     <div region="center" style="width:100%;" height="auto">
         <!-- =========================================================表格========================================================= -->
-        <table class="easyui-datagrid" title="ProjectComplete列表" id="grid" fitColumns="true"
-               pagination="true" pageSize="30" pageNumber="1" pagePosition="both" rownumbers="true" remoteSort="false"
-               loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="projectId"
+        <table class="easyui-datagrid" title="结项申请列表" id="grid" fitColumns="true"
+               pagination="true" pageSize="30" pageNumber="1" pagePosition="bottom" rownumbers="true" remoteSort="false"
+               loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
                align="center" fit="true" striped="true" toolbar="#toolbar" idField="id"
                data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
             <thead>
@@ -95,19 +95,6 @@
         <!-- datagrid工具栏 -->
         <div id="toolbar" style="padding:2px 5px;">
             <a href="${contextPath}/projectComplete/add" class="easyui-linkbutton" iconCls="icon-add" plain="true"></a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()" plain="true"></a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true"></a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-export" onclick="doExport('grid')" plain="true"></a>
-            <div style="float:right">
-                边框显示:<select onchange="changeBorder('grid',this.value)">
-                <option value="lines-both">全边框</option>
-                <option value="lines-no">无边框</option>
-                <option value="lines-right">右边框</option>
-                <option value="lines-bottom">下边框</option>
-            </select>
-                行条纹:<input type="checkbox" checked="checked"
-                           onclick="$('#grid').datagrid({striped:$(this).is(':checked')})">
-            </div>
         </div>
     </div>
 </div>
@@ -115,19 +102,27 @@
 <!-- style & script 分隔线 -->
 <!-- ====================================================================================================================== -->
 <script type="text/javascript">
-
+    var userid = '${sessionID}';
     function formatStatus(value, row) {
         if (row.$_status == 1) {
-            return '<a href="${contextPath}/projectComplete/toStep/1/' + row.id + '">编辑</a><a href="javascript:void(0)" onclick="del(' + row.id + ')">删除</a>';
+            if(row.$_createMemberId == userid) {
+                return '<span class="opt" style="padding:5px;"><a href="${contextPath}/projectComplete/toStep/1/' + row.id + '">编辑</a></span><span class="opt" style="padding:5px;"><a href="javascript:void(0)" onclick="del(' + row.id + ')">删除</a></span>';
+            }else{
+                return '<span class="opt" style="padding:5px;"><a>编辑</a></span><span class="opt" style="padding:5px;"><a>删除</a></span>';
+            }
         } else if (row.$_status == 2 || row.$_status == 3) {
-            return '<a>编辑</a><a>删除</a>';
+            return '<span class="opt" style="padding:5px;"><a>编辑</a></span><span class="opt" style="padding:5px;"><a>删除</a></span>';
         } else if (row.$_status == 4) {
-            return '<a href="${contextPath}/projectComplete/reComplete/' + row.id + '">重新申请</a>';
+            if(row.$_createMemberId == userid) {
+                return '<span class="opt" style="padding:5px;"><a href="${contextPath}/projectComplete/reComplete/' + row.id + '">重新申请</a></span>';
+            }else{
+                return '<span class="opt" style="padding:5px;"><a>重新申请</a></span>';
+            }
         }
     }
 
     function formatName(value,row) {
-        return '<div style="text-align:center;height:auto;" class="datagrid-cell datagrid-cell-c1-name"><a href="${contextPath}/projectComplete/toDetails/' + row.id + '">' + value + '</a></div>';
+        return '<span class="opt" style="padding:5px;"><a href="${contextPath}/projectComplete/toDetails/' + row.id + '">' + value + '</a></span>';
     }
 
     //打开新增窗口

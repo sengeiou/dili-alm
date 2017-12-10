@@ -50,16 +50,16 @@
         <!-- 表格 -->
         <div region="center" style="width:100%;" height="auto">
             <!-- =========================================================表格========================================================= -->
-            <table class="easyui-datagrid" title="Approve列表" id="grid" fitColumns="true"
-                   pagination="true" pageSize="30" pageNumber="1" pagePosition="both" rownumbers="true" remoteSort="false"
+            <table class="easyui-datagrid" title="变更审批列表" id="grid" fitColumns="true"
+                   pagination="true" pageSize="30" pageNumber="1" pagePosition="bottom" rownumbers="true" remoteSort="false"
                    loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
-                   align="center" fit="true" striped="true" toolbar="#toolbar" idField="id">
+                   align="center" fit="true" striped="true" idField="id">
                 <thead>
                     <tr>
-                        <th data-options="field:'number', width:180,    order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'number', formatter:formatName,width:180,    order:'asc', align:'center', resizable:'true', fixed:'false'">
                             变更编号
                         </th>
-                        <th data-options="field:'changeName',_provider:'projectChangeProvider', width:180,    order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'changeName',formatter:formatName,_provider:'projectChangeProvider', width:180,    order:'asc', align:'center', resizable:'true', fixed:'false'">
                             变更名称
                         </th>
                         <th data-options="field:'name', width:180,    order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -86,35 +86,38 @@
                     </tr>
                 </thead>
             </table>
-            <!-- datagrid工具栏 -->
-            <div id="toolbar" style="padding:2px 5px;">
-                <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true"></a>
-                <div style="float:right">
-                边框显示:<select onchange="changeBorder('grid',this.value)">
-                    <option value="lines-both">全边框</option>
-                    <option value="lines-no">无边框</option>
-                    <option value="lines-right">右边框</option>
-                    <option value="lines-bottom">下边框</option>
-                </select>
-                行条纹:<input type="checkbox" checked="checked" onclick="$('#grid').datagrid({striped:$(this).is(':checked')})">
-                </div>
-            </div>
         </div>
     </div>
     <!-- ====================================================================================================================== -->
     <!-- style & script 分隔线 -->
     <!-- ====================================================================================================================== -->
+ <script>
+     var verify =false;
+ </script>
+ <#resource code="change_auth">
+ <script>
+     verify = true;
+ </script>
+ </#resource>
     <script type="text/javascript">
 
         function formatStatus(value, row) {
-            var dom = '<a href="${contextPath}/approve/apply/' + row.id + '">立项文档下载</a>';
+            var dom = '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/apply/' + row.id + '">立项文档下载</a></span>';
             if (row.$_status == 2) {
-                return dom += '<a href="${contextPath}/approve/change/' + row.id + '">审批</a>';
+                return dom += '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/change/' + row.id + '">审批</a></span>';
             } else if (row.$_status == 3) {
-                return dom += '<a href="${contextPath}/approve/verify/' + row.id + '">验证</a>';
+                if(verify) {
+                    return dom += '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/verify/' + row.id + '">验证</a></span>';
+                }else{
+                    return dom;
+                }
             } else if (row.$_status == 4) {
                 return dom;
             }
+        }
+
+        function formatName(value,row) {
+            return '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/change/' + row.id + '?viewMode=true">' + value + '</a></span>';
         }
 
         //打开新增窗口

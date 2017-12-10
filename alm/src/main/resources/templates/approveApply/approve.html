@@ -147,11 +147,13 @@
         </form>
         <div style="text-align:center;padding:5px;margin-top:50px;">
             <a href="${contextPath}/approve/apply/index.html" class="easyui-linkbutton" data-options="size:'large',width:'80px'">返回</a>
+            <% if(!viewMode){ %>
             <% if(canOpt){ %>
             <a href="javascript:void(0)" class="easyui-linkbutton" data-options="size:'large',width:'80px'"
                onclick="submitForm('reject')">拒绝</a>
             <a href="javascript:void(0)" class="easyui-linkbutton" data-options="size:'large',width:'80px'"
                onclick="submitForm('accept')">同意</a>
+            <% } %>
             <% } %>
         </div>
     </div>

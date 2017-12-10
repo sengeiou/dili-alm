@@ -13,6 +13,21 @@ public class UserDepartmentRoleQuery implements Serializable {
 	private Long departmentId;
 	private String role;
 
+	private String realName;
+
+	public String getRealName() {
+		return realName;
+	}
+
+	public void setRealName(String realName) {
+		this.realName = realName;
+	}
+
+	public static long getSerialVersionUID() {
+
+		return serialVersionUID;
+	}
+
 	public Long getUserId() {
 		return userId;
 	}
