@@ -13,6 +13,13 @@ public class DateUtil {
 		cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY); // 获取本周一的日期
 		return df.format(cal.getTime());
 	}
+	public static String getToDay() {
+
+		Calendar cal = Calendar.getInstance();
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		
+		return df.format(cal.getTime());
+	}
 
 	public static String getWeekFriday() {
 		SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd");
@@ -22,7 +29,7 @@ public class DateUtil {
 		Date last = cal.getTime();
 		return formater.format(last);
 	}
-
+	
 	public static String getDatePoor(Date endDate, Date nowDate) {
 
 		long nd = 1000 * 24 * 60 * 60;

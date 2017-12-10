@@ -27,15 +27,16 @@
     }
 </style>
 <div id="smDialog" style="display: none;"></div>
-<div class="easyui-panel" title="立项详情">
+<div class="easyui-panel" title="变更申请（第一步）">
     <div style="padding:10px 60px 20px 60px">
         <form id="ff" method="post" action="">
             <input type="hidden" name="id" value=""/>
             <input type="hidden" name="status" id="status"/>
             <input type="hidden" name="email" id="email"/>
+            <input type="hidden" name="number" id="number"/>
             <table cellpadding="5" id="tb">
                 <tr>
-                    <td class="title-first" colspan="3">1项目内容及资源</td>
+                    <td class="title-first" colspan="3">1基本信息</td>
                 </tr>
                 <tr>
                     <td><input class="easyui-textbox" type="text" name="name"
@@ -44,13 +45,13 @@
                                data-options="required:true,label:'项目编号:'"></td>
                 </tr>
                 <tr>
-                    <td><input class="easyui-textbox" type="text" name="projectName" id="projectName"
+                    <td><input class="easyui-textbox" readonly type="text" name="projectName" id="projectName"
                                data-options="required:true,validType:'length[1,20]',label:'项目名称:'"></td>
                     <td><input class="easyui-textbox" type="text" name="versionId" id="versionId"
                                data-options="required:true,validType:'length[1,20]',label:'项目版本:'"></td>
                 </tr>
                 <tr>
-                    <td><input class="easyui-textbox" type="text" name="projectType" id="projectType"
+                    <td><input class="easyui-textbox" type="text" readonly name="projectType" id="projectType"
                                data-options="required:true,label:'项目类型:'"></td>
                     <td><input class="easyui-textbox" type="text" name="phaseId" id="phaseId"
                                data-options="required:true,validType:'length[1,20]',label:'提交阶段:'"></td>
@@ -158,6 +159,7 @@
                 if (data.id == projectValue) {
                     $("#projectName").textbox("initValue", data.name);
                     $("#projectType").textbox("initValue", data.type);
+                    $("#number").val(data.serialNumber);
                     $('#versionId').combobox({
                         url: '${contextPath}/project/version/listPage?projectId=' + projectValue,
                         valueField: 'id',

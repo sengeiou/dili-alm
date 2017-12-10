@@ -1,0 +1,163 @@
+<#body>
+<style>
+    td {
+        padding-left: 60px;
+    }
+
+    .datebox-button td {
+        padding-left: 0;
+    }
+
+    input[class^="easyui-"] {
+        width: 300px;
+    }
+
+    .title-first,
+    .title-second {
+        margin-top: 20px;
+        background: #f7f7f7;
+    }
+
+    .title-first {
+        padding-left: 0;
+    }
+
+    .title-second {
+        padding-left: 30px;
+    }
+</style>
+<div id="smDialog" style="display: none;"></div>
+<div class="easyui-panel" title="结项申请（第一步）">
+    <div style="padding:10px 60px 20px 60px">
+        <form id="ff" method="post" action="">
+            <input type="hidden" id="id" name="id" value="${apply.id}"/>
+            <input type="hidden" id="number" name="number"/>
+            <input type="hidden" id="type" name="type"/>
+            <input type="hidden" id="startDateVal" name="startDate"/>
+            <input type="hidden" id="endDateVal" name="endDate"/>
+            <input type="hidden" id="name" name="name"/>
+            <table cellpadding="5" id="tb">
+                <tr>
+                    <td class="title-first" colspan="3">1.项目概况描述</td>
+                </tr>
+                <tr>
+                    <td class="title-second" colspan="3">1.1.项目基本信息概述</td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input class="easyui-textbox" type="text" name="projectId" value="" id="projectId"
+                                           data-options="required:true,label:'项目编号:'"></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><input disabled class="easyui-textbox" type="text" id="projectName"
+                               data-options="label:'项目名称:'"></td>
+                    <td><input disabled class="easyui-textbox" type="text" name="type" id="projectType"
+                               data-options="label:'项目类型:'"></td>
+                </tr>
+                <tr>
+                    <td><input disabled class="easyui-textbox" type="text" id="leader"
+                               data-options="label:'项目负责人:'"></td>
+                    <td><input disabled class="easyui-textbox" type="text" id="dep"
+                               data-options="label:'需求所属业务部门:'"></td>
+                </tr>
+                <tr>
+                    <td>
+                        <input disabled class="easyui-textbox" type="text" id="buss"
+                               data-options="label:'业务负责人:'">
+                    </td>
+                    <td><input disabled class="easyui-datebox" type="text" id="startDate"
+                               data-options="label:'计划开始日期:'"></td>
+                </tr>
+                <tr>
+                    <td>
+                        <input disabled class="easyui-datebox" type="text" id="endDate"
+                               data-options="label:'计划完成日期:'">
+                    </td>
+                    <td>
+                        <input disabled class="easyui-datebox" type="text" id="actualEndDate"
+                               data-options="label:'实际完成日期:'">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input class="easyui-datebox" type="text"  value="${apply.launchDate}" name="launchDate"
+                               data-options="required:true,label:'实际上线日期:'">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="title-second" colspan="4">1.2结项原因</td>
+                </tr>
+                <tr>
+                    <td><input type="radio" checked name="reason" value="0"><span>正常结项</span></td>
+                    <td><input type="radio" name="reason" value="1"><span>项目取消</span></td>
+                    <td><input type="radio" name="reason" value="2"><span>其他原因</span></td>
+                </tr>
+                <tr>
+                    <td class="title-second" colspan="4">1.3项目资料齐备情况</td>
+                </tr>
+                <tr>
+                    <td><input type="radio" checked name="information" value="0"><span>项目结项总结报告</span></td>
+                    <td><input type="radio" name="information" value="1"><span>结项资料清单（清单与交付物完备并一致）</span></td>
+                </tr>
+            </table>
+        </form>
+        <div style="text-align:center;padding:5px;margin-top:50px;">
+            <a href="${contextPath}/projectChange/index.html" class="easyui-linkbutton"
+               data-options="size:'large',width:'80px'">取消</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="size:'large',width:'80px'"
+               onclick="submitForm()">下一步</a>
+        </div>
+    </div>
+</div>
+<script>
+
+
+    function submitForm() {
+        $('#ff').form('submit', {
+            url: "${contextPath}/projectComplete/update",
+            onSubmit: function () {
+                return $("#ff").form('validate');
+            },
+            success: function (data) {
+                var data = eval('(' + data + ')');
+                if (data.success == true) {
+                    window.location.href = "${contextPath}/projectComplete/toStep/2/" + data.result;
+                }
+            }
+        });
+    }
+
+    $('#projectId').combobox({
+        url: '${contextPath}/project/getProjectList',
+        valueField: 'id',
+        textField: 'serialNumber',
+        onChange: function (projectValue) {
+            var datas = $("#projectId").combobox('getData');
+            for (var i = 0; i < datas.length; i++) {
+                var data = datas[i];
+                if (data.id == projectValue) {
+                    $("#projectName").combobox("initValue", data.name);
+                    $("#projectType").combobox("initValue", data.type);
+                    $("#number").val(data.serialNumber);
+                    $("#type").val(data.$_type);
+                    $("#name").val(data.name);
+                    $("#leader").combobox("initValue", data.projectManager);
+                    $("#dep").combobox("initValue", data.dep);
+                    $("#buss").combobox("initValue", data.businessOwner);
+                    $("#startDate").combobox("initValue", data.startDate);
+                    $("#startDateVal").val(data.startDate);
+                    $("#endDate").combobox("initValue", data.endDate);
+                    $("#endDateVal").val(data.endDate);
+                    $("#actualEndDate").combobox("initValue", data.actualEndDate);
+                }
+            }
+        }
+    });
+
+    $(function () {
+        $("#projectId").combobox('setValue','${apply.projectId}');
+        $("input[name='reason'][value='${apply.reason}']").attr("checked",true);
+        $("input[name='information'][value='${apply.information}']").attr("checked",true);
+    });
+</script>
+</#body>

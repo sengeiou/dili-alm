@@ -20,6 +20,7 @@ import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.WeeklyMapper;
 import com.dili.alm.domain.DataDictionary;
 import com.dili.alm.domain.DataDictionaryValue;
+import com.dili.alm.domain.Department;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.Weekly;
 import com.dili.alm.domain.WeeklyDetails;
@@ -37,6 +38,7 @@ import com.dili.alm.service.WeeklyService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.alm.utils.WordExport;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
@@ -70,7 +72,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	DataDictionaryService dataDictionaryService;
 	@Autowired
 	DataDictionaryValueService dataDictionaryValueService;
-	
+
 	public WeeklyMapper getActualDao() {
 		return (WeeklyMapper) getDao();
 	}
@@ -81,6 +83,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		//项目周报
     	ProjectWeeklyDto pd=getProjectWeeklyDtoById(Long.parseLong(id));
     	pd.setId(id);
+    
 		map.put("pd", pd);
 		
 		// 本周项目版本
@@ -122,6 +125,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	    
 	    //项目总体情况描述
 	    WeeklyDetails wDetails=  weeklyDetailsService.getWeeklyDetailsByWeeklyId(Long.parseLong(id));
+	  //（实际项目发生工时/立项申请预估工时-1）%
 	    map.put("wDetails", wDetails);
 	    
 	    return  map;
@@ -147,7 +151,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		if (list != null && list.size() > 0) {
 			for (WeeklyPara weeklyPara2 : list) {
 
-				weeklyPara2.setDate(weeklyPara2.getStartDate() + " 到 " + weeklyPara2.getEndDate());
+				 weeklyPara2.setDate(weeklyPara2.getStartDate() + " 到 " + weeklyPara2.getEndDate());
 				
 				 ddv=DTOUtils.newDTO(DataDictionaryValue.class);
 				 ddv.setValue(weeklyPara2.getProjectType());
@@ -164,6 +168,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 
 	@Override
 	public ProjectWeeklyDto getProjectWeeklyDtoById(Long projectId) {
+		
 		ProjectWeeklyDto pd = weeklyMapper.selectProjectWeeklyDto(projectId);
 		if (pd != null && pd.getPlanDate() != null)
 			pd.setPlanDate(pd.getPlanDate().substring(0, 10));
@@ -173,27 +178,29 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			pd.setStageMan(userTicket.getUserName());
 		}
 
-		User user = new User();
-		user.setId(Long.parseLong(pd.getUserName()));
+		 User user = new User();
+		 user.setId(Long.parseLong(pd.getBusinessParty()));
 		// 业务方
-
-		/*
-		 * List<User> listUserParty = (List<User>) userRpc.listByExample(user);
-		 * pd.setBusinessParty(listUserParty.get(0).getUserName());
-		 */
+		 BaseOutput<List<User>>  listByExample = userRpc.listByExample(user);
+		 List<User> listUserParty = listByExample.getData();
+		 pd.setBusinessParty(listUserParty.get(0).getUserName());
+		 
 
 		// 查询项目经理
-		/*
-		 * List<User> listUser = (List<User>) userRpc.listByExample(user);
-		 * pd.setUserName(listUser.get(0).getUserName());
-		 */
+	     user.setId(Long.parseLong(pd.getUserName()));
+		 BaseOutput<List<User>>  listUserByExample = userRpc.listByExample(user);
+		 List<User> listUsernName = listUserByExample.getData();
+		 pd.setUserName(listUsernName.get(0).getUserName());
+		
 
 		// 项目所在部门
-		/*
-		 * Department department=DTOUtils.newDTO(Department.class);
-		 * department.setId(Long.parseLong(pd.getProjectInDept()));
-		 * departmentRpc.list(department);
-		 */
+	     Department department=DTOUtils.newDTO(Department.class);
+	     department.setId(Long.parseLong(pd.getProjectInDept()));
+	     BaseOutput<List<Department>>   departmentByExample = departmentRpc.list(department);
+		 List<Department> departmentList= departmentByExample.getData();
+		 pd.setProjectInDept(departmentList.get(0).getName());
+		 
+		 
 		// 查询项目类型
 		DataDictionary  ddit=DTOUtils.newDTO(DataDictionary.class);
 		ddit.setName(PROJECTTYPE);
@@ -204,7 +211,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		ddv.setValue(pd.getProjectType());
 		ddv.setDdId(dditList.get(0).getId());
 		pd.setProjectType(dataDictionaryValueService.list(ddv).get(0).getCode());
-
+		pd.setCompletedProgressInt(Integer.parseInt(pd.getCompletedProgress()));
 		return pd;
 	}
 
@@ -235,11 +242,16 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		DataDictionary  ddit=DTOUtils.newDTO(DataDictionary.class);
 		ddit.setName(PROJECTSTATUS);
 		List<DataDictionary> dditList=dataDictionaryService.list(ddit);//查询出id
-		
+		 User user ;
 		for (int i = 0; i < td.size(); i++) {
 
 			// 责任人
-
+			 user = new User();
+			 user.setId(Long.parseLong(td.get(i).getOwner()));
+			 BaseOutput<List<User>>  listByExample = userRpc.listByExample(user);
+			 List<User> listUserParty = listByExample.getData();
+			 td.get(i).setOwner(listUserParty.get(0).getUserName());
+			 
 			// 版本
 			td.get(i).setVersionId(projectVersionMapper.selectByPrimaryKey(Long.parseLong(td.get(i).getVersionId())).getVersion());
 			// 阶段
@@ -248,8 +260,9 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			td.get(i).setWeekHour(DateUtil.getDatePoor(td.get(i).getStartDate(), td.get(i).getEndDate()));
 			// 实际工时
 			td.get(i).setRealHour(td.get(i).getOverHour() + td.get(i).getTaskHour() + "");
-			// 工时偏差% （100-实际/预计）%
-			int pro = (100 - (td.get(i).getOverHour() + td.get(i).getTaskHour()) / td.get(i).getPlanTime()) * 100;
+			// 工时偏差% （实际任务工时/预估任务工时-1）%
+			int pro = ( (td.get(i).getOverHour() + td.get(i).getTaskHour()) / td.get(i).getPlanTime()-1) * 100;
+			
 			td.get(i).setHourDeviation(pro + "");
 			// 完成情况
 			DataDictionaryValue  ddv=DTOUtils.newDTO(DataDictionaryValue.class);
@@ -268,6 +281,16 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	@Override
 	public List<NextWeeklyDto> selectNextWeeklyProgress(Long id) {
 		List<NextWeeklyDto> nwd = weeklyMapper.selectNextWeeklyProgress(id);
+		User user ;
+		
+		for (NextWeeklyDto nextWeeklyDto : nwd) {
+			 user = new User();
+			 user.setId(Long.parseLong(nextWeeklyDto.getOwner()));
+			 BaseOutput<List<User>>  listByExample = userRpc.listByExample(user);
+			 List<User> listUserParty = listByExample.getData();
+			 nextWeeklyDto.setOwner(listUserParty.get(0).getUserName());
+		}
+		
 		return nwd;
 	}
 

@@ -33,7 +33,7 @@
 
                             </td>
                             <td style="padding:5px;">
-                                <input class="easyui-numberbox" name="createMemberId" id="createMemberId" label="项目发起人:" style="width:100%" data-options="editable:false,
+                                <input class="easyui-textbox" name="createMemberId" id="createMemberId" label="项目发起人:" style="width:100%" data-options="editable:false,
 									buttonText:'选择',
 									onClickButton:selectMember,onChange:_changeTextboxShowClear" />
 
@@ -222,6 +222,7 @@
         //清空表单
         function clearForm() {
             $('#form').form('clear');
+            $("#createMemberId").textbox('initValue','');
             queryGrid();
         }
 

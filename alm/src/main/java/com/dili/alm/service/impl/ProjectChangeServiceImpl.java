@@ -3,10 +3,7 @@ package com.dili.alm.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.ProjectChangeMapper;
-import com.dili.alm.domain.Approve;
-import com.dili.alm.domain.DataDictionaryValue;
-import com.dili.alm.domain.ProjectChange;
-import com.dili.alm.domain.User;
+import com.dili.alm.domain.*;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.apply.ApplyApprove;
@@ -15,6 +12,7 @@ import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.ProjectChangeService;
+import com.dili.alm.service.ProjectService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.sysadmin.sdk.session.SessionContext;
@@ -45,20 +43,29 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
     @Autowired
     private ApproveService approveService;
 
+    @Autowired
+    private ProjectService projectService;
     public ProjectChangeMapper getActualDao() {
-        return (ProjectChangeMapper)getDao();
+        return (ProjectChangeMapper) getDao();
     }
 
     @Override
     public void approve(ProjectChange change) {
+        if (change.getStatus() == null) {
+            return;
+        }
         if (change.getStatus() == AlmConstants.ApplyState.APPROVE.getCode()) {
             Approve as = DTOUtils.as(this.get(change.getId()), Approve.class);
             as.setId(null);
+            as.setName(change.getProjectName());
             as.setCreated(new Date());
             as.setProjectApplyId(change.getId());
             as.setStatus(AlmConstants.ApplyState.APPROVE.getCode());
             as.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
             as.setType(AlmConstants.ApproveType.CHANGE.getCode());
+            Project project = projectService.get(change.getProjectId());
+            as.setProjectType(project.getType());
+            as.setExtend(change.getType());
 
             DataDictionaryDto code = dataDictionaryService.findByCode(AlmConstants.ROLE_CODE);
             List<DataDictionaryValueDto> values = code.getValues();
@@ -80,5 +87,15 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
             }
             approveService.insert(as);
         }
+    }
+
+    @Override
+    public Long reChange(Long id) {
+        ProjectChange change = get(id);
+        change.setId(null);
+        change.setCreated(new Date());
+        change.setStatus(AlmConstants.ApplyState.APPLY.getCode());
+        insert(change);
+        return change.getId();
     }
 }

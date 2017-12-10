@@ -2,6 +2,8 @@ package com.dili.sysadmin.dao;
 
 import com.dili.ss.base.MyMapper;
 import com.dili.sysadmin.domain.User;
+import com.dili.sysadmin.domain.dto.UserDepartmentDto;
+import com.dili.sysadmin.domain.dto.UserDepartmentQuery;
 import com.dili.sysadmin.domain.dto.UserDepartmentRole;
 import com.dili.sysadmin.domain.dto.UserDepartmentRoleQuery;
 

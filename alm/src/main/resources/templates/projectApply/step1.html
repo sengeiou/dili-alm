@@ -46,11 +46,11 @@
                 </tr>
                 <tr>
                     <td colspan="2"><input class="easyui-textbox" type="text" name="name"
-                                           data-options="required:true,validType:'length[1,10]',label:'项目名称:'" style="width:600px"></td>
+                                           data-options="required:true,validType:'length[1,20]',label:'项目名称:'" style="width:600px"></td>
                 </tr>
                 <tr>
                     <td><input class="easyui-textbox" name="projectLeader" id="project_leader" style="width: 100%;"
-                               panelWidth="auto" panelHeight="auto" label="*开发负责人:"
+                               panelWidth="auto" panelHeight="auto" label="*项目负责人:"
                                data-options="required:true,
 									buttonText:'选择',
 									onClickButton:selectMember,onChange:_changeTextboxShowClear"/></td>
@@ -72,16 +72,16 @@
 									onClickButton:selectDep,onChange:_changeTextboxShowClear"></td>
                 </tr>
                 <tr>
-                    <td><input class="easyui-datetimebox" name="expectedLaunchDate" id=""
+                    <td><input class="easyui-datebox" name="expectedLaunchDate" id=""
                                data-options="required:true,label:'*业务期望上线日期:'"/></td>
-                    <td><input class="easyui-datetimebox" name="estimateLaunchDate" id=""
+                    <td><input class="easyui-datebox" name="estimateLaunchDate" id=""
                                data-options="required:true,label:'*预估最终上线日期:'"/></td>
                 </tr>
                 <tr>
-                    <td><input class="easyui-datetimebox" name="startDate" id=""
+                    <td><input class="easyui-datebox" name="startDate" id=""
                                data-options="required:true,label:'*计划开始日期:'"/>
                     </td>
-                    <td><input class="easyui-datetimebox" name="endDate" id=""
+                    <td><input class="easyui-datebox" name="endDate" id=""
                                data-options="required:true,label:'*计划结束日期:'"/>
                     </td>
                 </tr>
@@ -140,6 +140,16 @@
 
     $("._add").on("click", function () {
         appendRelated();
+    });
+
+    $('.easyui-datebox').each(function(){
+        $(this).datebox().datebox('calendar').calendar({
+            validator: function(date){
+                var now = new Date();
+                var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                return date>=d1;
+            }
+        });
     });
 
     function delRelated($_this) {

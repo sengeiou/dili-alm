@@ -10,4 +10,6 @@ import com.dili.ss.base.BaseService;
 public interface ProjectChangeService extends BaseService<ProjectChange, Long> {
 
     void approve(ProjectChange change);
+
+    Long reChange(Long id);
 }

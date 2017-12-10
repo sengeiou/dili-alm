@@ -1,11 +1,13 @@
 package com.dili.sysadmin.domain;
 
 import com.dili.ss.domain.BaseDomain;
+import com.dili.ss.domain.annotation.Like;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
 import com.dili.ss.metadata.annotation.FieldDef;
-import java.util.Date;
+
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -22,6 +24,7 @@ public class Department extends BaseDomain {
     /**
      * 部门名
      */
+    @Like(Like.BOTH)
     @Column(name = "`name`")
     private String name;
 

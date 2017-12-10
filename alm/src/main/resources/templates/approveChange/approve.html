@@ -85,7 +85,7 @@
                             <option value="2">否</option>
                         </select>
                     </td>
-                    <td><input class="easyui-textbox" type="text" name="name" value="${change.submitDate}"
+                    <td><input class="easyui-datebox" type="text" name="name" value="${change.created}"
                                data-options="required:true,label:'提交日期:'"></td>
                 </tr>
                 <tr>
@@ -148,8 +148,8 @@
             </table>
         </form>
         <div style="text-align:center;padding:5px;margin-top:50px;">
-            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="size:'large',width:'80px'"
-                                                  onclick="submitForm()">返回</a>
+            <a href="${contextPath}/approve/change/index.html" class="easyui-linkbutton" data-options="size:'large',width:'80px'"
+                                                  >返回</a>
             <% if(canOpt){ %>
             <a href="javascript:void(0)" class="easyui-linkbutton" data-options="size:'large',width:'80px'"
                onclick="submitForm('reject')">拒绝</a>

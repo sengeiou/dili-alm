@@ -41,6 +41,7 @@
 		</collection>
 	</resultMap>
 
+
 	<sql id="Base_Column_List">
 		<!-- WARNING - @mbg.generated -->
 		id,
@@ -253,4 +254,5 @@
 			AND dr.role_id = #{roleId}
 		</if>
 	</select>
+
 </mapper>

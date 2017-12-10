@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.cglib.beans.BeanCopier;
 
 import com.dili.sysadmin.domain.Department;
+import com.dili.sysadmin.domain.Role;
 import com.dili.sysadmin.domain.User;
 
 public class UserDepartmentDto extends User {
@@ -16,18 +17,30 @@ public class UserDepartmentDto extends User {
 
 	private static final BeanCopier COPIER = BeanCopier.create(User.class, UserDepartmentDto.class, false);
 
-	private List<Department> departments;
+	private Department department;
+	private List<Role> roles;
+
+	public UserDepartmentDto() {
+	}
 
 	public UserDepartmentDto(User user) {
 		COPIER.copy(user, this, null);
 	}
 
-	public List<Department> getDepartments() {
-		return departments;
+	public Department getDepartment() {
+		return department;
 	}
 
-	public void setDepartments(List<Department> departments) {
-		this.departments = departments;
+	public void setDepartment(Department department) {
+		this.department = department;
+	}
+
+	public List<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<Role> roles) {
+		this.roles = roles;
 	}
 
 }

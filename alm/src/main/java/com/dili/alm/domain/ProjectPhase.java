@@ -14,7 +14,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2017-12-01 11:13:51.
+ * This file was generated on 2017-12-10 15:07:33.
  */
 @Table(name = "`project_phase`")
 public interface ProjectPhase extends IBaseDomain {
@@ -42,7 +42,7 @@ public interface ProjectPhase extends IBaseDomain {
     void setProjectId(Long projectId);
 
     @Column(name = "`version_id`")
-    @FieldDef(label="阶段id")
+    @FieldDef(label="版本id")
     @EditMode(editor = FieldEditor.Number, required = true)
     Long getVersionId();
 
@@ -110,4 +110,11 @@ public interface ProjectPhase extends IBaseDomain {
     Date getModified();
 
     void setModified(Date modified);
+
+    @Column(name = "`phase_state`")
+    @FieldDef(label="阶段状态")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Integer getPhaseState();
+
+    void setPhaseState(Integer phaseState);
 }

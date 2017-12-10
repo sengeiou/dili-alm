@@ -1,0 +1,125 @@
+<style>
+* {
+	margin: 0;
+	padding: 0;
+}
+
+.org-structure {
+	width: 2500px;
+}
+
+.org-structure ul {
+	padding-top: 20px;
+	position: relative;
+	transition: all 0.5s;
+	-webkit-transition: all 0.5s;
+	-moz-transition: all 0.5s;
+}
+
+.org-structure li {
+	float: left;
+	text-align: center;
+	list-style-type: none;
+	position: relative;
+	padding: 20px 5px 0 5px;
+	transition: all 0.5s;
+	-webkit-transition: all 0.5s;
+	-moz-transition: all 0.5s;
+}
+
+/*We will use ::before and ::after to draw the connectors*/
+.org-structure li::before, .org-structure li::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	right: 50%;
+	border-top: 1px solid #ccc;
+	width: 50%;
+	height: 20px;
+}
+
+.org-structure li::after {
+	right: auto;
+	left: 50%;
+	border-left: 1px solid #ccc;
+}
+
+/*We need to remove left-right connectors from elements without 
+        any siblings*/
+.org-structure li:only-child::after, .org-structure li:only-child::before
+	{
+	display: none;
+}
+
+/*Remove space from the top of single children*/
+.org-structure li:only-child {
+	padding-top: 0;
+}
+
+/*Remove left connector from first child and 
+        right connector from last child*/
+.org-structure li:first-child::before, .org-structure li:last-child::after
+	{
+	border: 0 none;
+}
+/*Adding back the vertical connector to the last nodes*/
+.org-structure li:last-child::before {
+	border-right: 1px solid #ccc;
+	border-radius: 0 5px 0 0;
+	-webkit-border-radius: 0 5px 0 0;
+	-moz-border-radius: 0 5px 0 0;
+}
+
+.org-structure li:first-child::after {
+	border-radius: 5px 0 0 0;
+	-webkit-border-radius: 5px 0 0 0;
+	-moz-border-radius: 5px 0 0 0;
+}
+
+/*Time to add downward connectors from parents*/
+.org-structure ul ul::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 50%;
+	border-left: 1px solid #ccc;
+	width: 0;
+	height: 20px;
+}
+
+.org-structure li a {
+	border: 1px solid #ccc;
+	padding: 5px 10px;
+	text-decoration: none;
+	color: #666;
+	font-family: arial, verdana, tahoma;
+	font-size: 11px;
+	display: inline-block;
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	transition: all 0.5s;
+	-webkit-transition: all 0.5s;
+	-moz-transition: all 0.5s;
+}
+
+/*Time for some hover effects*/
+/*We will apply the hover effect the the lineage of the element also*/
+.org-structure li a:hover, .org-structure li a:hover+ul li a {
+	background: #c8e4f8;
+	color: #000;
+	border: 1px solid #94a0b4;
+}
+/*Connector styles on hover*/
+.org-structure li a:hover+ul li::after, .org-structure li a:hover+ul li::before,
+	.org-structure li a:hover+ul::before, .org-structure li a:hover+ul ul::before
+	{
+	border-color: #94a0b4;
+}
+
+/*Thats all. I hope you enjoyed it.
+        Thanks :)*/
+</style>
+<div class="org-structure">
+	<#department_listTree depts="${depts!}" />
+</div>

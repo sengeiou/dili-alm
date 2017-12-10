@@ -1,0 +1,187 @@
+<#body>
+<style>
+    td {
+        padding-left: 60px;
+    }
+
+    .datebox-button td {
+        padding-left: 0;
+    }
+
+    input[class^="easyui-"] {
+        width: 300px;
+    }
+
+    .title-first,
+    .title-second {
+        margin-top: 20px;
+        background: #f7f7f7;
+    }
+
+    .title-first {
+        padding-left: 0;
+    }
+
+    .title-second {
+        padding-left: 30px;
+    }
+</style>
+<div id="smDialog" style="display: none;"></div>
+<div class="easyui-panel" title="变更申请（第一步）">
+    <div style="padding:10px 60px 20px 60px">
+        <form id="ff" method="post" action="">
+            <input type="hidden" name="id" value="${obj.id}"/>
+            <input type="hidden" name="status" id="status"/>
+            <input type="hidden" name="email" id="email"/>
+            <input type="hidden" name="number" id="number"/>
+            <table cellpadding="5" id="tb">
+                <tr>
+                    <td class="title-first" colspan="3">1基本信息</td>
+                </tr>
+                <tr>
+                    <td><input class="easyui-textbox" type="text" name="name" value="${obj.name}"
+                               data-options="required:true,validType:'length[1,20]',label:'变更名称:'"></td>
+                    <td><input class="easyui-textbox" type="text" name="projectId" id="projectId"
+                               data-options="required:true,label:'项目编号:'"></td>
+                </tr>
+                <tr>
+                    <td><input class="easyui-textbox" type="text" readonly name="projectName" id="projectName"
+                               data-options="required:true,validType:'length[1,20]',label:'项目名称:'"></td>
+                    <td><input class="easyui-textbox" type="text" name="versionId" id="versionId"
+                               data-options="required:true,validType:'length[1,20]',label:'项目版本:'"></td>
+                </tr>
+                <tr>
+                    <td><input class="easyui-textbox" type="text" readonly name="projectType" id="projectType"
+                               data-options="required:true,label:'项目类型:'"></td>
+                    <td><input class="easyui-textbox" type="text" name="phaseId" id="phaseId"
+                               data-options="required:true,validType:'length[1,20]',label:'提交阶段:'"></td>
+                </tr>
+                <tr>
+                    <td>
+                        <input class="easyui-textbox" type="text" name="type" id="type"
+                               data-options="required:true,validType:'length[1,10]',label:'变更类型:'">
+                        <#comboProvider _id="type" _provider='changeTypeProvider'/>
+                    </td>
+                    <td><input class="easyui-numberbox" type="text" name="workingHours" value="${obj.workingHours}"
+                               data-options="required:true,min:0,max:99999999,label:'变更工作量预估:'"></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <label class="textbox-label textbox-label-before">是否影响上线:</label>
+                        <select id="affectsOnline" class="easyui-combobox" name="affectsOnline" style="width: 150px;"
+                                data-options="editable:false"
+                                required="true">
+                            <option value="1">是</option>
+                            <option value="2">否</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="title-first" colspan="4">2.变更描述</td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="padding:20px;">简述项目目的、范围、方法概要</td>
+                </tr>
+                <tr>
+                    <td class="title-second" colspan="4">变更内容及原因</td>
+                </tr>
+                <tr>
+                    <td colspan="4"><input class="easyui-textbox" id="content" name="content" value="${obj.content}"
+                                           data-options="required:true,multiline:true,prompt:'限制输入500个字符串',validType:['length[0,500]']"
+                                           style="width:800px;height:120px"/></td>
+                </tr>
+                <tr>
+                    <td class="title-second" colspan="4">变更方案及影响风险</td>
+                </tr>
+                <tr>
+                    <td colspan="4"><input class="easyui-textbox" name="effects" id="effects" value="${obj.effects}"
+                                           data-options="multiline:true,prompt:'限制输入500个字符串',validType:['length[0,500]']"
+                                           style="width:800px;height:120px"/></td>
+                </tr>
+                <tr>
+                    <td class="title-first" colspan="4">3.邮件发送列表</td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <input class="easyui-tagbox" id="tagbx" value="${obj.email}" style="width:100%">
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <div style="text-align:left;padding:5px;margin-top:10px;">
+            <a href="${contextPath}/projectChange/index.html" class="easyui-linkbutton"
+               data-options="size:'large',width:'80px'">返回</a>
+        </div>
+    </div>
+</div>
+<script>
+
+    $("#tagbx").tagbox({
+        onBeforeRemoveTag: function (value) {
+            if (value == "wyx@diligrp.com") {
+                return false;
+            }
+        }
+    });
+
+    function submitForm(type) {
+        $('#ff').form('submit', {
+            url: "${contextPath}/projectChange/update",
+            onSubmit: function () {
+                $("#status").val(type);
+                var data = $("#tagbx").tagbox("getValues");
+                $("#email").val(data.join());
+                return $("#ff").form('validate');
+            },
+            success: function (data) {
+                var data = eval('(' + data + ')');
+                if (data.success == true) {
+                    window.location.href = "${contextPath}/projectChange/index.html";
+                }
+            }
+        });
+    }
+
+    $('#projectId').combobox({
+        url: '${contextPath}/project/getProjectList',
+        valueField: 'id',
+        textField: 'serialNumber',
+        onChange: function (projectValue) {
+            var datas = $("#projectId").combobox('getData');
+            $("#projectName").textbox("initValue", "");
+            $("#projectType").textbox("initValue", "");
+            for (var i = 0; i < datas.length; i++) {
+                var data = datas[i];
+                if (data.id == projectValue) {
+                    $("#projectName").textbox("initValue", data.name);
+                    $("#projectType").textbox("initValue", data.type);
+                    $("#number").val(data.serialNumber);
+                    $('#versionId').combobox({
+                        url: '${contextPath}/project/version/listPage?projectId=' + projectValue,
+                        valueField: 'id',
+                        textField: 'version',
+                        onChange: function (versionValue) {
+                            $('#phaseId').combobox({
+                                url: '${contextPath}/project/phase/listPhase?versionId=' + versionValue,
+                                valueField: 'id',
+                                textField: 'name'
+                            });
+                        }
+                    });
+                }
+            }
+        }
+    });
+
+    $(function(){
+        $("#projectId").combobox("setValue",'${obj.projectId}');
+        $("#versionId").combobox("setValue",'${obj.versionId}');
+        $("#phaseId").combobox("setValue",'${obj.phaseId}');
+        $("#type").combobox("setValue",'${obj.type}');
+        $("#affectsOnline").combobox("setValue",'${obj.affectsOnline}');
+
+        $('input[class^=easyui-]').textbox("disable");
+        $('select[class^=easyui-]').textbox("disable");
+    });
+</script>
+</#body>

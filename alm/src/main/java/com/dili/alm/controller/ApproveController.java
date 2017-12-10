@@ -47,6 +47,12 @@ public class ApproveController {
         return "approveChange/index";
     }
 
+    @ApiOperation("跳转到Approve页面")
+    @RequestMapping(value="/complete/index.html", method = RequestMethod.GET)
+    public String completeIndex() {
+        return "approveComplete/index";
+    }
+
     @RequestMapping(value="/apply/{id}", method = RequestMethod.GET)
     public String apply(ModelMap modelMap, @PathVariable("id") Long id) {
 
@@ -61,6 +67,22 @@ public class ApproveController {
         approveService.buildChangeApprove(modelMap,id);
 
         return "approveChange/approve";
+    }
+
+    @RequestMapping(value="/verify/{id}", method = RequestMethod.GET)
+    public String verify(ModelMap modelMap, @PathVariable("id") Long id) {
+
+        approveService.buildChangeApprove(modelMap,id);
+
+        return "approveChange/verify";
+    }
+
+    @RequestMapping(value="/complete/{id}", method = RequestMethod.GET)
+    public String complete(ModelMap modelMap, @PathVariable("id") Long id) {
+
+        approveService.buildCompleteApprove(modelMap,id);
+
+        return "approveComplete/approve";
     }
 
     @RequestMapping("/loadDesc")
@@ -78,6 +100,12 @@ public class ApproveController {
     @ResponseBody
     public BaseOutput applyApprove(Long id, String opt, String notes) {
         return approveService.applyApprove(id, opt, notes);
+    }
+
+    @RequestMapping("/verityApprove")
+    @ResponseBody
+    public BaseOutput verityApprove(Long id, String opt, String notes) {
+        return approveService.verity(id, opt, notes);
     }
 
     @ApiOperation(value="查询Approve", notes = "查询Approve，返回列表信息")
@@ -105,6 +133,11 @@ public class ApproveController {
         return approveService.listEasyuiPageByExample(approve, true).toString();
     }
 
+    @RequestMapping(value="/complete/listPage", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody String completeListPage(Approve approve) throws Exception {
+        approve.setType(AlmConstants.ApproveType.COMPLETE.getCode());
+        return approveService.listEasyuiPageByExample(approve, true).toString();
+    }
     @ApiOperation("新增Approve")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Approve", paramType="form", value = "Approve的form信息", required = true, dataType = "string")

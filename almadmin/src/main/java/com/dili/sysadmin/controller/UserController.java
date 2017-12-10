@@ -10,6 +10,7 @@ import com.dili.sysadmin.domain.User;
 import com.dili.sysadmin.domain.dto.AddUserDto;
 import com.dili.sysadmin.domain.dto.UpdateUserDto;
 import com.dili.sysadmin.domain.dto.UpdateUserPasswordDto;
+import com.dili.sysadmin.domain.dto.UserDepartmentQuery;
 import com.dili.sysadmin.exception.UserException;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.util.WebContent;
@@ -76,7 +77,7 @@ public class UserController {
 	@ApiOperation(value = "分页查询User", notes = "分页查询User，返回easyui分页信息")
 	@ApiImplicitParams({ @ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String listPage(@ModelAttribute User user) {
+	public @ResponseBody String listPage(@ModelAttribute UserDepartmentQuery user) {
 		return this.userService.listPageUserDto(user).toString();
 	}
 

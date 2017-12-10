@@ -18,13 +18,15 @@
     <result column="completed_progress" jdbcType="INTEGER" property="completedProgress" />
     <result column="created" jdbcType="TIMESTAMP" property="created" />
     <result column="modified" jdbcType="TIMESTAMP" property="modified" />
+    <result column="phase_state" jdbcType="INTEGER" property="phaseState" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
       WARNING - @mbg.generated
     -->
     id, name, project_id, version_id, planned_start_date, planned_end_date, actual_start_date, 
-    actual_end_date, creator_id, modifier_id, completed_progress, created, modified
+    actual_end_date, creator_id, modifier_id, completed_progress, created, modified, 
+    phase_state
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -76,6 +78,9 @@
       </if>
       <if test="modified != null">
         modified = #{modified,jdbcType=TIMESTAMP},
+      </if>
+      <if test="phaseState != null">
+        phase_state = #{phaseState,jdbcType=INTEGER},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

@@ -1,6 +1,26 @@
 // 编辑行索引
 var editId = undefined;
 
+function showOrgStructure() {
+	$('#win').dialog({
+				title : '组织结构',
+				width : 600,
+				height : 400,
+				cache : false,
+				href : '${contextPath!}/department/orgStructure.html',
+				modal : true,
+				onLoad : function() {
+
+				},
+				buttons : [{
+							text : '返回',
+							handler : function() {
+								$('#win').dialog('close');
+							}
+						}]
+			});
+}
+
 function isEditing() {
 	return undefined != editId;
 }

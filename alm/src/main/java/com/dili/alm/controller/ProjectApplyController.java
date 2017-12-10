@@ -58,6 +58,11 @@ public class ProjectApplyController {
         return "projectApply/index";
     }
 
+    @RequestMapping(value = "/add", method = RequestMethod.GET)
+    public String add() {
+        return "projectApply/add";
+    }
+
     @RequestMapping(value = "/toStep/{step}/{id}", method = RequestMethod.GET)
     public String toStep(ModelMap modelMap, @PathVariable("id") Long id, @PathVariable("step") int step) throws Exception {
         ProjectApply projectApply = DTOUtils.newDTO(ProjectApply.class);
@@ -254,6 +259,10 @@ public class ProjectApplyController {
         metadata.put("testManager", JSON.parse("{provider:'memberProvider'}"));
         metadata.put("businessOwner", JSON.parse("{provider:'memberProvider'}"));
         metadata.put("dep", JSON.parse("{provider:'depProvider'}"));
+        metadata.put("expectedLaunchDate", JSON.parse("{provider:'datetimeProvider'}"));
+        metadata.put("estimateLaunchDate", JSON.parse("{provider:'datetimeProvider'}"));
+        metadata.put("startDate", JSON.parse("{provider:'datetimeProvider'}"));
+        metadata.put("endDate", JSON.parse("{provider:'datetimeProvider'}"));
 
         List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, projectApplyService.listByExample(projectApply));
         return maps.get(0);

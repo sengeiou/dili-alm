@@ -24,6 +24,8 @@ public class ProjectPhaseEntity extends BaseDomain implements ProjectPhase {
 	private Date created;
 	private Date modified;
 
+	private Integer phaseState;
+
 	@Override
 	public String getName() {
 		return this.name;
@@ -142,5 +144,15 @@ public class ProjectPhaseEntity extends BaseDomain implements ProjectPhase {
 	@Override
 	public void setModified(Date modified) {
 		this.modified = modified;
+	}
+
+	@Override
+	public Integer getPhaseState() {
+		return phaseState;
+	}
+
+	@Override
+	public void setPhaseState(Integer phaseState) {
+		this.phaseState = phaseState;
 	}
 }

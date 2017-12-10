@@ -39,6 +39,7 @@ import com.dili.alm.service.TaskService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.quartz.domain.ScheduleMessage;
 import com.dili.ss.util.SystemConfigUtils;
 
 /**
@@ -99,61 +100,63 @@ public class AlarmConfigServiceImpl extends BaseServiceImpl<AlarmConfig, Long> i
 	}
 
 	@Override
-	public void alarm() {
-		List<AlarmConfig> configs = this.getActualDao().select(null);
-		if (CollectionUtils.isEmpty(configs)) {
-			return;
-		}
-		Date now = new Date();
-		Project projectQuery = DTOUtils.newDTO(Project.class);
-		projectQuery.setProjectState(ProjectState.IN_PROGRESS.getValue());
-		List<Project> projects = this.projectService.list(projectQuery);
-		if (CollectionUtils.isEmpty(projects)) {
-			return;
-		}
-		List<Long> projectIds = new ArrayList<>(projects.size());
-		projects.forEach(p -> {
-			projectIds.add(p.getId());
-		});
-		configs.forEach(config -> {
-			if (config.getType().equals(AlarmType.PHASE.getValue())) {
-				ProjectPhaseInProgress query = DTOUtils.newDTO(ProjectPhaseInProgress.class);
-				query.setInProgressProjectIds(projectIds);
-				List<ProjectPhase> phases = this.phaseService.list(query);
-				phases.forEach(phase -> {
-					long diff = config.getThreshold() > 0 ? phase.getPlannedEndDate().getTime() - now.getTime()
-							: now.getTime() - phase.getPlannedEndDate().getTime();
-					if (diff >= (24 * 60 * 60 * 100 * config.getThreshold())) {
-						Project project = this.projectService.get(phase.getProjectId());
-						ProjectVersion version = this.versionService.get(phase.getVersionId());
-						try {
-							this.sendMail(project, version, phase, null, now);
-						} catch (Exception e) {
-							LOG.error(e.getMessage(), e);
-						}
-					}
-				});
-			} else if (config.getType().equals(AlarmType.TASK.getValue())) {
-				ProjectTaskInProgress query = DTOUtils.newDTO(ProjectTaskInProgress.class);
-				query.setInProgressProjectIds(projectIds);
-				List<Task> tasks = this.taskService.list(query);
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
-				tasks.forEach(task -> {
-					long diff = config.getThreshold() > 0 ? task.getEndDate().getTime() - now.getTime()
-							: now.getTime() - task.getEndDate().getTime();
-					if (diff >= (24 * 60 * 60 * 100 * config.getThreshold())) {
-						Project project = this.projectService.get(task.getProjectId());
-						ProjectVersion version = this.versionService.get(task.getVersionId());
-						ProjectPhase phase = this.phaseService.get(task.getPhaseId());
-						try {
-							this.sendMail(project, version, phase, task, now);
-						} catch (Exception e) {
-							LOG.error(e.getMessage(), e);
-						}
-					}
-				});
-			}
-		});
+	public void alarm(ScheduleMessage msg) {
+//		List<AlarmConfig> configs = this.getActualDao().select(null);
+//		if (CollectionUtils.isEmpty(configs)) {
+//			return;
+//		}
+//		Date now = new Date();
+//		Project projectQuery = DTOUtils.newDTO(Project.class);
+//		projectQuery.setProjectState(ProjectState.IN_PROGRESS.getValue());
+//		List<Project> projects = this.projectService.list(projectQuery);
+//		if (CollectionUtils.isEmpty(projects)) {
+//			return;
+//		}
+//		List<Long> projectIds = new ArrayList<>(projects.size());
+//		projects.forEach(p -> {
+//			projectIds.add(p.getId());
+//		});
+//		configs.forEach(config -> {
+//			if (config.getType().equals(AlarmType.PHASE.getValue())) {
+//				ProjectPhaseInProgress query = DTOUtils.newDTO(ProjectPhaseInProgress.class);
+//				query.setPhaseState(ProjectState.IN_PROGRESS.getValue());
+//				query.setInProgressProjectIds(projectIds);
+//				List<ProjectPhase> phases = this.phaseService.list(query);
+//				phases.forEach(phase -> {
+//					long diff = config.getThreshold() > 0 ? phase.getPlannedEndDate().getTime() - now.getTime()
+//							: now.getTime() - phase.getPlannedEndDate().getTime();
+//					if (diff >= (24 * 60 * 60 * 100 * config.getThreshold())) {
+//						Project project = this.projectService.get(phase.getProjectId());
+//						ProjectVersion version = this.versionService.get(phase.getVersionId());
+//						try {
+//							this.sendMail(project, version, phase, null, now);
+//						} catch (Exception e) {
+//							LOG.error(e.getMessage(), e);
+//						}
+//					}
+//				});
+//			} else if (config.getType().equals(AlarmType.TASK.getValue())) {
+//				ProjectTaskInProgress query = DTOUtils.newDTO(ProjectTaskInProgress.class);
+//				query.setStatus(ProjectState.IN_PROGRESS.getValue().byteValue());
+//				query.setInProgressProjectIds(projectIds);
+//				List<Task> tasks = this.taskService.list(query);
+//				SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+//				tasks.forEach(task -> {
+//					long diff = config.getThreshold() > 0 ? task.getEndDate().getTime() - now.getTime()
+//							: now.getTime() - task.getEndDate().getTime();
+//					if (diff >= (24 * 60 * 60 * 100 * config.getThreshold())) {
+//						Project project = this.projectService.get(task.getProjectId());
+//						ProjectVersion version = this.versionService.get(task.getVersionId());
+//						ProjectPhase phase = this.phaseService.get(task.getPhaseId());
+//						try {
+//							this.sendMail(project, version, phase, task, now);
+//						} catch (Exception e) {
+//							LOG.error(e.getMessage(), e);
+//						}
+//					}
+//				});
+//			}
+//		});
 	}
 
 	private void sendMail(Project project, ProjectVersion version, ProjectPhase phase, Task task, Date now)
@@ -168,13 +171,13 @@ public class AlarmConfigServiceImpl extends BaseServiceImpl<AlarmConfig, Long> i
 		helper.setSubject("主题：" + project.getName() + "项目进度告警");
 		StringBuilder sb = new StringBuilder();
 		sb.append("项目名称：").append(project.getName()).append(version.getVersion()).append("\r\n所属阶段:")
-				.append(phase.getName());
+				.append(AlmCache.PHASE_NAME_MAP.get(phase.getName()));
 		if (task != null) {
-			sb.append("/r/n任务名称：").append(task.getName()).append("\r\n计划结束日期：").append(sdf.format(task.getEndDate()));
+			sb.append("\r\n任务名称：").append(task.getName()).append("\r\n计划结束日期：").append(sdf.format(task.getEndDate()));
 		} else {
 			sb.append(sdf.format(phase.getPlannedEndDate()));
 		}
-		sb.append("/r/n当前日期：").append(sdf.format(now));
+		sb.append("\r\n当前日期：").append(sdf.format(now));
 		helper.setText(sb.toString());
 		Thread.sleep(2000);
 		mailSender.send(mimeMessage);
