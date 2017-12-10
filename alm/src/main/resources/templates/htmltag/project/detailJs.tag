@@ -431,6 +431,42 @@ function showMembers() {
 	window.location.href = '${contextPath!}/team/index.html?projectId=${model.id!}';
 }
 
+function alarmConfig() {
+	$('#win').dialog({
+				title : '编辑版本',
+				width : 600,
+				height : '100%',
+				href : '${contextPath!}/alarmConfig/config.html?projectId=' + $('#projectId').val(),
+				modal : true,
+				buttons : [{
+							text : '保存',
+							handler : function() {
+								var data = $("#alarmForm").serializeArray();
+								$.ajax({
+											type : "POST",
+											url : '${contextPath!}/alarmConfig/saveOrUpdate',
+											data : data,
+											success : function(data) {
+												if (data.code == 200) {
+													$('#win').dialog('close');
+												} else {
+													$.messager.alert('错误', data.result);
+												}
+											},
+											error : function() {
+												$.messager.alert('错误', '远程访问失败');
+											}
+										});
+							}
+						}, {
+							text : '取消',
+							handler : function() {
+								$('#win').dialog('close');
+							}
+						}]
+			});
+}
+
 $(function() {
 			var uploadObj = $("#uploadDiv").uploadFile({
 						url : "${contextPath!}/files/filesUpload?projectId=" + $('#projectId').val(), // 文件上传url

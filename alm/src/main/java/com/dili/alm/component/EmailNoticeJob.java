@@ -132,8 +132,10 @@ public class EmailNoticeJob implements ApplicationListener<ContextRefreshedEvent
 		// helper.setTo(AlmCache.userMap.get(team.getMemberId()).getEmail());
 		// helper.setSubject("主题：里程碑[" + projectVersion.getCode() + "]发布");
 		// helper.setText("里程碑[" + projectVersion.getCode() + "]发布, \r\n版本号:" +
-		// projectVersion.getVersion() + ",\r\n文档地址:" + projectVersion.getRedmineUrl()
-		// + ", \r\ngit地址:" + projectVersion.getGit() + ", \r\n发布人:" +
+		// projectVersion.getVersion()
+		// + ",\r\n文档地址:" + projectVersion.getRedmineUrl() + ", \r\ngit地址:" +
+		// projectVersion.getGit()
+		// + ", \r\n发布人:" +
 		// AlmCache.userMap.get(projectVersion.getCreatorId()).getRealName()
 		// + ", \r\n发布时间:" + sdf.format(projectVersion.getReleaseTime()) + ", \r\n访问地址:"
 		// + projectVersion.getVisitUrl() + ", \r\n备注:" + projectVersion.getNotes());

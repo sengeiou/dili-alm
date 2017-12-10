@@ -36,5 +36,7 @@ public class AlmCache {
 	// 团队角色
 	public static final Map<String, String> TEAM_ROLE_MAP = new ConcurrentHashMap<>();
 
+	// 告警类型
+	public static final Map<String, String> ALARM_TYPE_MAP = new ConcurrentHashMap<>();
 
 }

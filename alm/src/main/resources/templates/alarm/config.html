@@ -1,0 +1,38 @@
+<script type="text/javascript">
+	<#alarm_configJs />
+</script>
+<div id="p" class="easyui-panel" title="My Panel" style="width: '100%'; padding: 10px; background: #fafafa;" data-options="">
+	<form id="alarmForm" action="${contextPath!}/alarmConfig/saveOrUpdate" method="post">
+		<input hidden="projectId" name="projectId" value="${project.id!}">
+		<table id="info">
+			<tr>
+				<td><label for="name">项目名称:</label></td>
+				<td><input class="easyui-textbox" type="text" name="name" value="${project.name!}" data-options="readonly:true" /></td>
+			</tr>
+			<tr>
+				<td><label for="projectManager">告警类型:</label></td>
+				<td><select id="alarmType" class="easyui-combobox" name="type" style="width: 100%"
+					data-options="url:'${contextPath!}/alarmConfig/type.json',textField:'code',valueField:'value',editable:false,required:true,onLoadSuccess:selectFirst,onSelect:function(record){
+						$(this).combobox('initValue',record.value);
+						$(this).combobox('setText',record.code);
+					}">
+				</select></td>
+			</tr>
+			<tr>
+				<td><label for="projectManager">告警阀值:</label></td>
+				<td><select id="cc" class="easyui-combobox" name="threshold" style="width: 100%" data-options="editable:false">
+						<option value="1">+1</option>
+						<option value="2">+2</option>
+						<option value="3">+3</option>
+						<option value="-1">-1</option>
+						<option value="-2">-2</option>
+						<option value="-3">-3</option>
+				</select></td>
+			</tr>
+			<tr>
+				<td><label for="actualStartDate">实际开始时间:</label></td>
+				<td><input class="easyui-textbox" type="text" name="actualStartDate" value="${project.endDate!}" data-options="readonly:true" /></td>
+			</tr>
+		</table>
+	</form>
+</div>

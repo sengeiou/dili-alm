@@ -29,14 +29,14 @@
 
 		<!-- Service生成插件 -->
 		<!-- targetProject和targetPackage必填 -->
-		<!-- <plugin type="${myService.Plugin}">
+		<plugin type="${myService.Plugin}">
 			<property name="targetProject" value="${targetJavaProject}"></property>
 			<property name="targetPackage" value="${targetServicePackage}"></property>
-			如果不配置，则不会在类上继承
+			<!-- 如果不配置，则不会在类上继承 -->
 			<property name="serviceSuperClass" value="com.dili.ss.base.BaseServiceImpl"></property>
-			如果不配置，则不会在接口上继承
+			<!-- 如果不配置，则不会在接口上继承 -->
 			<property name="serviceSuperInterface" value="com.dili.ss.base.BaseService"></property>
-		</plugin> -->
+		</plugin>
 
 		<!-- provider生成插件 -->
 		<!--targetProject和targetPackage必填 -->
@@ -46,14 +46,14 @@
 
 		<!-- Controller生成插件 -->
 		<!-- targetProject和targetPackage必填 -->
-		<!-- <plugin type="${myController.Plugin}">
+		<plugin type="${myController.Plugin}">
 			<property name="targetProject" value="${targetJavaProject}"></property>
 			<property name="targetPackage" value="${targetControllerPackage}"></property>
-			如果不配置，则不会在类上继承
+			<!-- 如果不配置，则不会在类上继承 -->
 			<property name="controllerSuperClass" value="com.dili.ss.base.BaseControllerImpl"></property>
-			如果不配置，则不会在接口上继承
+			<!-- 如果不配置，则不会在接口上继承 -->
 			<property name="controllerSuperInterface" value="com.dili.ss.base.BaseController"></property>
-		</plugin> -->
+		</plugin>
 
 		<!-- beetl模板文件生成插件 -->
 		<!-- <plugin type="com.dili.ss.mbg.beetl.BeetlTemplatesPlugin">
@@ -85,7 +85,7 @@
 			targetProject="${targetJavaProject}" type="XMLMAPPER" />
 
 		<!-- 生成所有表模型 -->
-		<table tableName="weekly_details">
+		<table tableName="alarm_config">
 			<generatedKey column="id" sqlStatement="Mysql" identity="true" />
 		</table>
 		<!-- 生成指定表模型 -->

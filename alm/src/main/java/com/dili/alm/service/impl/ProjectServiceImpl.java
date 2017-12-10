@@ -34,6 +34,7 @@ import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectDto;
 import com.dili.alm.exceptions.ProjectException;
+import com.dili.alm.provider.ProjectProvider;
 import com.dili.alm.rpc.DataAuthRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.ProjectService;
@@ -367,36 +368,11 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		Integer memberCount = this.teamMapper.countProjectMember(id);
 		viewData.setMemberCount(memberCount);
 		try {
-			return this.parseEasyUiModel(viewData);
+			return ProjectProvider.parseEasyUiModel(viewData);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
-	}
-
-	private Map<Object, Object> parseEasyUiModel(Project project) throws Exception {
-		List<Map> list = this.parseEasyUiModelList(Arrays.asList(project));
-		return list.get(0);
-	}
-
-	private List<Map> parseEasyUiModelList(List<Project> list) throws Exception {
-		Map<Object, Object> metadata = new HashMap<>();
-
-		JSONObject projectTypeProvider = new JSONObject();
-		projectTypeProvider.put("provider", "projectTypeProvider");
-		metadata.put("type", projectTypeProvider);
-
-		JSONObject datetimeProvider = new JSONObject();
-		datetimeProvider.put("provider", "datetimeProvider");
-		metadata.put("startDate", datetimeProvider);
-		metadata.put("actualStartDate", datetimeProvider);
-
-		JSONObject memberProvider = new JSONObject();
-		memberProvider.put("provider", "memberProvider");
-		metadata.put("projectManager", memberProvider);
-		metadata.put("testManager", memberProvider);
-		metadata.put("productManager", memberProvider);
-		return ValueProviderUtils.buildDataByProvider(metadata, list);
 	}
 
 }
