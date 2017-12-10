@@ -18,6 +18,7 @@ import com.dili.alm.dao.TeamMapper;
 import com.dili.alm.domain.Team;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
+import com.dili.alm.domain.dto.TeamDepartmentRoleQuery;
 import com.dili.alm.domain.dto.UserDepartmentRole;
 import com.dili.alm.domain.dto.UserDepartmentRoleQuery;
 import com.dili.alm.rpc.DataAuthRpc;
@@ -151,8 +152,9 @@ public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements Team
 	}
 
 	@Override
-	public List<Map<Object, Object>> listContainUserInfo(UserDepartmentRoleQuery dto) {
+	public List<Map<Object, Object>> listContainUserInfo(TeamDepartmentRoleQuery dto) {
 		Team team = DTOUtils.newDTO(Team.class);
+		team.setProjectId(dto.getProjectId());
 		team.setMemberId(dto.getUserId());
 		team.setRole(dto.getRole());
 		List<Team> teams = this.list(team);

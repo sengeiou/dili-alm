@@ -227,23 +227,18 @@
 		u.real_name,
 		u.cellphone,
 		u.email,
-		d.id AS
-		department_id,
-		d.name AS department_name,
+		d.id AS department_id,
+		d. NAME AS department_name,
 		r.id AS role_id,
 		r.role_name
 		FROM
 		`user` u
-		INNER JOIN
-		user_department ud ON u.id = ud.user_id
-		LEFT JOIN
-		department d ON
-		ud.department_id = d.id
-		INNER JOIN department_role dr ON
-		ud.department_id = dr.department_id
-		LEFT JOIN role r ON r.id =
-		dr.role_id
-		WHERE 1 = 1
+		INNER JOIN user_department ud ON u.id = ud.user_id
+		LEFT JOIN department d ON ud.department_id = d.id
+		LEFT JOIN user_role ur ON ur.user_id = u.id
+		LEFT JOIN role r ON r.id = ur.role_id
+		WHERE
+		(yn = 1 OR yn IS NULL)
 		<if test="userId != null">
 			AND u.id = #{userId}
 		</if>

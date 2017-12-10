@@ -3,7 +3,7 @@ var editIndex = undefined;
 
 function rolesFormatter(value, row, index) {
 	var content = '';
-	if (!row.userInfo || row.userInfo.roles) {
+	if (!row.userInfo || !row.userInfo.roles) {
 		return '';
 	}
 	$(row.userInfo.roles).each(function(index, item) {

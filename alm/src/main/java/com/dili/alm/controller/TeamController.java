@@ -87,7 +87,6 @@ public class TeamController {
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<Map<Object, Object>> list(TeamDepartmentRoleQuery dto) {
 		refreshMember();
-
 		try {
 			return this.teamService.listContainUserInfo(dto);
 		} catch (Exception e) {
