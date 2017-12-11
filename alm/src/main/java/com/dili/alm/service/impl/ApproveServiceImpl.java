@@ -14,10 +14,13 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.ss.util.SystemConfigUtils;
 import com.dili.sysadmin.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -41,6 +44,9 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
     @Autowired
     private ProjectService projectService;
+
+    @Autowired
+    private JavaMailSender mailSender;
 
     @Autowired
     private ProjectChangeService projectChangeService;
@@ -210,14 +216,17 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
                             ProjectApply apply = projectApplyService.get(approve.getProjectApplyId());
                             apply.setStatus(AlmConstants.ApplyState.NOPASS.getCode());
                             projectApplyService.updateSelective(apply);
+                            sendMail(apply,false);
                         } else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.CHANGE.getCode())) {
                             ProjectChange change = projectChangeService.get(approve.getProjectApplyId());
                             change.setStatus(AlmConstants.ApplyState.NOPASS.getCode());
                             projectChangeService.update(change);
+                            sendMail(change,false);
                         } else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.COMPLETE.getCode())) {
                             ProjectComplete complete = projectCompleteService.get(approve.getProjectApplyId());
                             complete.setStatus(AlmConstants.ApplyState.NOPASS.getCode());
                             projectCompleteService.update(complete);
+                            sendMail(complete,false);
                         }
                         break;
                     case "accept":
@@ -228,14 +237,17 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
                             // 立项审批通过生成项目信息
                             buildProject(apply, approve);
                             projectApplyService.updateSelective(apply);
+                            sendMail(apply,true);
                         } else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.CHANGE.getCode())) {
                             ProjectChange change = projectChangeService.get(approve.getProjectApplyId());
                             change.setStatus(AlmConstants.ApplyState.PASS.getCode());
                             projectChangeService.update(change);
+                            sendMail(change,true);
                         } else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.COMPLETE.getCode())) {
                             ProjectComplete complete = projectCompleteService.get(approve.getProjectApplyId());
                             complete.setStatus(AlmConstants.ApplyState.PASS.getCode());
                             projectCompleteService.update(complete);
+                            sendMail(complete,true);
                         }
                         break;
                     default:
@@ -247,6 +259,32 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         }
         return BaseOutput.success();
     }
+
+    private void sendMail(ProjectApply projectApply, boolean accept) {
+        sendMail(projectApply.getEmail().split(","), "立项申请", projectApply.getName() + "的立项申请" + (accept ? "已经审批通过" : "审批未通过"));
+    }
+
+    private void sendMail(ProjectChange change, boolean accept) {
+        sendMail(change.getEmail().split(","),"变更申请",change.getProjectName() + "的变更申请[" + change.getName() + "]" + (accept ? "已经审批通过" : "审批未通过"));
+    }
+
+    private void sendMail(ProjectComplete complete, boolean accept) {
+        sendMail(complete.getEmail().split(","),"结项申请",complete.getName() + "的结项申请" + (accept ? "已经审批通过" : "审批未通过"));
+    }
+
+    private void sendMail(String [] sendTo,String title,String text){
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo("yanggang@diligrp.com");
+            message.setFrom(SystemConfigUtils.getProperty("spring.mail.username"));
+            message.setSubject(title);
+            message.setText(text);
+            mailSender.send(message);
+        } catch (Exception e) {
+            LOGGER.error("邮件发送出错:", e);
+        }
+    }
+
 
     @Override
     public BaseOutput verity(Long id, String opt, String notes) {
@@ -299,13 +337,10 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         build.setStartDate(apply.getStartDate());
         build.setEndDate(apply.getEndDate());
         build.setDep(apply.getDep());
+        build.setApplyId(apply.getId());
         build.setBusinessOwner(apply.getBusinessOwner());
         build.setProjectState(NOT_START.getValue());
-        try {
-            projectService.insertSelective(build);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        projectService.insertSelective(build);
     }
 
     /**
