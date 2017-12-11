@@ -588,8 +588,8 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 				wk.setModifyMemberId(userTicket.getId());
 			}
 	
-			weeklyMapper.insertSelective(wkk);
-			map.put("one", wkk);
+			weeklyMapper.insertSelective(wk);
+			map.put("one", wk);
 				
 		}else{
 			map.put("two", wk);

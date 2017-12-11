@@ -252,10 +252,10 @@ public class WeeklyController  {
 	    mv.addObject("wq", map.get("wq"));
 	    //项目总体情况描述
 	    mv.addObject("wDetails", map.get("wDetails"));
-	    if(wkMap.get("one")==null){
+	  /*  if(wkMap.get("one")==null){
 	    	 mv.setViewName("weekly/indexDesc");
     		 return mv;
-	    }
+	    }*/
 		mv.setViewName("weekly/addWeeklyDesc");
         return mv;
     }
