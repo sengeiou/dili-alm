@@ -14,7 +14,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2017-12-10 15:07:33.
+ * This file was generated on 2017-12-11 10:55:31.
  */
 @Table(name = "`project_phase`")
 public interface ProjectPhase extends IBaseDomain {
@@ -111,10 +111,10 @@ public interface ProjectPhase extends IBaseDomain {
 
     void setModified(Date modified);
 
-    @Column(name = "`phase_state`")
-    @FieldDef(label="阶段状态")
+    @Column(name = "`notice`")
+    @FieldDef(label="是否已发送邮件通知")
     @EditMode(editor = FieldEditor.Number, required = true)
-    Integer getPhaseState();
+    Boolean getNotice();
 
-    void setPhaseState(Integer phaseState);
+    void setNotice(Boolean notice);
 }

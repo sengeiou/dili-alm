@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.dili.alm.dao.ProjectPhaseMapper">
+<mapper namespace="mapper.ProjectPhaseMapper">
   <resultMap id="BaseResultMap" type="com.dili.alm.domain.ProjectPhase">
     <!--
       WARNING - @mbg.generated
@@ -18,7 +18,7 @@
     <result column="completed_progress" jdbcType="INTEGER" property="completedProgress" />
     <result column="created" jdbcType="TIMESTAMP" property="created" />
     <result column="modified" jdbcType="TIMESTAMP" property="modified" />
-    <result column="phase_state" jdbcType="INTEGER" property="phaseState" />
+    <result column="notice" jdbcType="BIT" property="notice" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
@@ -26,7 +26,7 @@
     -->
     id, name, project_id, version_id, planned_start_date, planned_end_date, actual_start_date, 
     actual_end_date, creator_id, modifier_id, completed_progress, created, modified, 
-    phase_state
+    notice
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -79,10 +79,52 @@
       <if test="modified != null">
         modified = #{modified,jdbcType=TIMESTAMP},
       </if>
-      <if test="phaseState != null">
-        phase_state = #{phaseState,jdbcType=INTEGER},
+      <if test="notice != null">
+        notice = #{notice,jdbcType=BIT},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
+	<!-- WARNING - @mbg.generated -->
+	<resultMap id="BaseResultMap" type="com.dili.alm.domain.ProjectPhase">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="project_id" jdbcType="BIGINT" property="projectId" />
+		<result column="version_id" jdbcType="BIGINT" property="versionId" />
+		<result column="planned_start_date" jdbcType="TIMESTAMP" property="plannedStartDate" />
+		<result column="planned_end_date" jdbcType="TIMESTAMP" property="plannedEndDate" />
+		<result column="actual_start_date" jdbcType="TIMESTAMP" property="actualStartDate" />
+		<result column="actual_end_date" jdbcType="TIMESTAMP" property="actualEndDate" />
+		<result column="creator_id" jdbcType="BIGINT" property="creatorId" />
+		<result column="modifier_id" jdbcType="BIGINT" property="modifierId" />
+		<result column="completed_progress" jdbcType="INTEGER" property="completedProgress" />
+		<result column="created" jdbcType="TIMESTAMP" property="created" />
+		<result column="modified" jdbcType="TIMESTAMP" property="modified" />
+		<result column="notice" jdbcType="BIT" property="notice" />
+	</resultMap>
+	<sql id="Join_Column_List">
+		pp.id,
+		pp.name,
+		pp.project_id,
+		pp.version_id,
+		pp.planned_start_date,
+		pp.planned_end_date,
+		pp.actual_start_date,
+		pp.actual_end_date,
+		pp.creator_id,
+		pp.modifier_id,
+		pp.completed_progress,
+		pp.created,
+		pp.modified,
+		pp.notice
+	</sql>
+
+	<select id="selectByProjectState" resultMap="BaseResultMap" resultType="Integer">
+		SELECT
+		<include refid="Join_Column_List" />
+		FROM
+		project_phase pp
+		INNER JOIN project p ON pp.project_id = p.id WHERE
+		p.project_state = #{projectStatus}
+	</select>
 </mapper>

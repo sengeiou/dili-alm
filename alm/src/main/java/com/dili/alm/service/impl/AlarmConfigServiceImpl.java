@@ -1,9 +1,10 @@
 package com.dili.alm.service.impl;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -17,14 +18,15 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import com.dili.alm.cache.AlmCache;
+import com.dili.alm.constant.AlmConstants.TaskStatus;
 import com.dili.alm.dao.AlarmConfigMapper;
+import com.dili.alm.dao.ProjectPhaseMapper;
+import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.domain.AlarmConfig;
 import com.dili.alm.domain.AlarmType;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectPhase;
-import com.dili.alm.domain.ProjectPhaseInProgress;
 import com.dili.alm.domain.ProjectState;
-import com.dili.alm.domain.ProjectTaskInProgress;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.User;
@@ -35,7 +37,6 @@ import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.ProjectPhaseService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.ProjectVersionService;
-import com.dili.alm.service.TaskService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -61,9 +62,11 @@ public class AlarmConfigServiceImpl extends BaseServiceImpl<AlarmConfig, Long> i
 	@Autowired
 	private JavaMailSender mailSender;
 	@Autowired
-	private TaskService taskService;
-	@Autowired
 	private ProjectVersionService versionService;
+	@Autowired
+	private TaskMapper taskMapper;
+	@Autowired
+	private ProjectPhaseMapper phaseMapper;
 
 	public AlarmConfigMapper getActualDao() {
 		return (AlarmConfigMapper) getDao();
@@ -101,62 +104,58 @@ public class AlarmConfigServiceImpl extends BaseServiceImpl<AlarmConfig, Long> i
 
 	@Override
 	public void alarm(ScheduleMessage msg) {
-//		List<AlarmConfig> configs = this.getActualDao().select(null);
-//		if (CollectionUtils.isEmpty(configs)) {
-//			return;
-//		}
-//		Date now = new Date();
-//		Project projectQuery = DTOUtils.newDTO(Project.class);
-//		projectQuery.setProjectState(ProjectState.IN_PROGRESS.getValue());
-//		List<Project> projects = this.projectService.list(projectQuery);
-//		if (CollectionUtils.isEmpty(projects)) {
-//			return;
-//		}
-//		List<Long> projectIds = new ArrayList<>(projects.size());
-//		projects.forEach(p -> {
-//			projectIds.add(p.getId());
-//		});
-//		configs.forEach(config -> {
-//			if (config.getType().equals(AlarmType.PHASE.getValue())) {
-//				ProjectPhaseInProgress query = DTOUtils.newDTO(ProjectPhaseInProgress.class);
-//				query.setPhaseState(ProjectState.IN_PROGRESS.getValue());
-//				query.setInProgressProjectIds(projectIds);
-//				List<ProjectPhase> phases = this.phaseService.list(query);
-//				phases.forEach(phase -> {
-//					long diff = config.getThreshold() > 0 ? phase.getPlannedEndDate().getTime() - now.getTime()
-//							: now.getTime() - phase.getPlannedEndDate().getTime();
-//					if (diff >= (24 * 60 * 60 * 100 * config.getThreshold())) {
-//						Project project = this.projectService.get(phase.getProjectId());
-//						ProjectVersion version = this.versionService.get(phase.getVersionId());
-//						try {
-//							this.sendMail(project, version, phase, null, now);
-//						} catch (Exception e) {
-//							LOG.error(e.getMessage(), e);
-//						}
-//					}
-//				});
-//			} else if (config.getType().equals(AlarmType.TASK.getValue())) {
-//				ProjectTaskInProgress query = DTOUtils.newDTO(ProjectTaskInProgress.class);
-//				query.setStatus(ProjectState.IN_PROGRESS.getValue().byteValue());
-//				query.setInProgressProjectIds(projectIds);
-//				List<Task> tasks = this.taskService.list(query);
-//				SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
-//				tasks.forEach(task -> {
-//					long diff = config.getThreshold() > 0 ? task.getEndDate().getTime() - now.getTime()
-//							: now.getTime() - task.getEndDate().getTime();
-//					if (diff >= (24 * 60 * 60 * 100 * config.getThreshold())) {
-//						Project project = this.projectService.get(task.getProjectId());
-//						ProjectVersion version = this.versionService.get(task.getVersionId());
-//						ProjectPhase phase = this.phaseService.get(task.getPhaseId());
-//						try {
-//							this.sendMail(project, version, phase, task, now);
-//						} catch (Exception e) {
-//							LOG.error(e.getMessage(), e);
-//						}
-//					}
-//				});
-//			}
-//		});
+		List<AlarmConfig> configs = this.getActualDao().select(null);
+		if (CollectionUtils.isEmpty(configs)) {
+			return;
+		}
+		Date now = new Date();
+		configs.forEach(config -> {
+			if (config.getType().equals(AlarmType.PHASE.getValue())) {
+				List<ProjectPhase> phases = this.phaseMapper.selectByProjectState(ProjectState.IN_PROGRESS.getValue());
+				if (CollectionUtils.isEmpty(phases)) {
+					return;
+				}
+				phases.forEach(phase -> {
+					long diff = config.getThreshold() > 0 ? phase.getPlannedEndDate().getTime() - now.getTime()
+							: now.getTime() - phase.getPlannedEndDate().getTime();
+					if (diff >= (24 * 60 * 60 * 100 * config.getThreshold())) {
+						Project project = this.projectService.get(phase.getProjectId());
+						ProjectVersion version = this.versionService.get(phase.getVersionId());
+						Map<String, Object> taskQuery = new HashMap<>();
+						taskQuery.put("phaseId", phase.getId());
+						taskQuery.put("startStatus", TaskStatus.START.getCode());
+						taskQuery.put("notCompletedStatus", TaskStatus.NOTCOMPLETE);
+						int count = this.taskMapper.countNotCompletedByPhaseId(taskQuery);
+						if (count <= 0) {
+							return;
+						}
+						try {
+							this.sendMail(project, version, phase, null, now);
+							phase.setNotice(true);
+							this.phaseService.updateSelective(phase);
+						} catch (Exception e) {
+							LOG.error(e.getMessage(), e);
+						}
+					}
+				});
+			} else if (config.getType().equals(AlarmType.TASK.getValue())) {
+				List<Task> tasks = this.taskMapper.selectByProjectState(ProjectState.IN_PROGRESS.getValue());
+				tasks.forEach(task -> {
+					long diff = config.getThreshold() > 0 ? task.getEndDate().getTime() - now.getTime()
+							: now.getTime() - task.getEndDate().getTime();
+					if (diff >= (24 * 60 * 60 * 100 * config.getThreshold())) {
+						Project project = this.projectService.get(task.getProjectId());
+						ProjectVersion version = this.versionService.get(task.getVersionId());
+						ProjectPhase phase = this.phaseService.get(task.getPhaseId());
+						try {
+							this.sendMail(project, version, phase, task, now);
+						} catch (Exception e) {
+							LOG.error(e.getMessage(), e);
+						}
+					}
+				});
+			}
+		});
 	}
 
 	private void sendMail(Project project, ProjectVersion version, ProjectPhase phase, Task task, Date now)
