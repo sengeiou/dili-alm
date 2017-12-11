@@ -109,6 +109,43 @@ public class DateUtil {
 		
 		return map;
 	}
-	
+	public static void main(String[] args) {
+		 System.out.println(getNextMonday(new Date()));
+		 System.out.println(getNextFive(new Date()));
+		
+
+		
+    }
+	// 获得当前日期与本周日相差的天数  
+	private static int getMondayPlus(Date gmtCreate) {  
+	    Calendar cd = Calendar.getInstance();  
+	    cd.setTime(gmtCreate);  
+	    // 获得今天是一周的第几天，星期日是第一天，星期二是第二天......  
+	    int dayOfWeek = cd.get(Calendar.DAY_OF_WEEK) - 1; // 因为按中国礼拜一作为第一天所以这里减1  
+	    if (dayOfWeek == 1) {  
+	        return 0;  
+	    } else {  
+	        return 1 - dayOfWeek;  
+	    }  
+	}  
+	  
+	// 获得下周星期一的日期  
+	public static String getNextMonday(Date gmtCreate) {  
+		SimpleDateFormat sdf=new SimpleDateFormat("YYYY-MM-dd");
+	    int mondayPlus = getMondayPlus(gmtCreate);  
+	    GregorianCalendar currentDate = new GregorianCalendar();  
+	    currentDate.add(GregorianCalendar.DATE, mondayPlus + 7);  
+	    Date monday = currentDate.getTime();  
+	    return sdf.format(monday);  
+	}  
+	// 获得下周星期五的日期  
+	public static String getNextFive(Date gmtCreate) {  
+		SimpleDateFormat sdf=new SimpleDateFormat("YYYY-MM-dd");
+	    int mondayPlus = getMondayPlus(gmtCreate);  
+	    GregorianCalendar currentDate = new GregorianCalendar();  
+	    currentDate.add(GregorianCalendar.DATE, mondayPlus + 13);  
+	    Date nextFive = currentDate.getTime();  
+	    return  sdf.format(nextFive);  
+	}  
 
 }
