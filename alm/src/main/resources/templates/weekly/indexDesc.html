@@ -8,7 +8,7 @@
 	        </br>
 	         </br>
 	        <table id="tt"  border="1" cellspacing="0" class="easyui-datagrid" style="width:800px;height:135px"  data-options="view:scrollview,rownumbers:true,singleSelect:true,autoRowHeight:false,pageSize:50">
-			   <caption style="padding:5px;font-weight:bold"><font size="4">项目周报 </font></caption>
+			   <caption style="padding:5px;font-weight:bold"><font size="4">项目周报 详情</font></caption>
 			   <input  type="hidden" id="inHidden"  value="${pd.id}"  />
 				<tbody>
 				   <tr>
@@ -379,7 +379,7 @@
 		    	 var  tempid=$("#inHidden").val();
 		    	 
 		    	if($("#sSubmit").val()==1){//如果已经提交不可以修改和提交周报
-		    		alert("已经提交");
+		    		alert("周报已经提交");
 		    		return false;
 		    	}
 		    	  var _url= "${contextPath}/weekly/save";
@@ -417,9 +417,9 @@
 	                success: function (data) {
 	                    if(data.code=="200"){
 	                    	 if(isSubmit==1){
-	                    		 alert("提交成功");
+	                    		 alert("周报提交成功");
 	                    	 }else{
-	                    		 alert("保存成功");
+	                    		 alert("周报保存成功");
 	                    	 }
 	                    	//history.go(0);
 	                    	 window.location.href="${contextPath}/weekly/getDescById?id="+tempid;

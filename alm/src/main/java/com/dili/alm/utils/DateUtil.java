@@ -142,4 +142,17 @@ public class DateUtil {
 	    return  sdf.format(nextFive);  
 	}  
 
+	
+    public static Date getStrDate(String date){
+		
+		SimpleDateFormat sdf= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date mydate=null;
+		try {
+			mydate  = sdf.parse(date);
+		} catch (ParseException e) {
+			
+			e.printStackTrace();
+		}  
+		return   mydate;
+	}
 }

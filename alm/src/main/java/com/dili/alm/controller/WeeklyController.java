@@ -212,5 +212,33 @@ public class WeeklyController  {
         return new ResponseEntity<byte[]>(FileUtils.readFileToByteArray(file),headers, HttpStatus.CREATED);    
     }    
    
-    
+    @ApiOperation("跳转到AddWeekD页面")
+    @RequestMapping(value="/getDescAddByProjectId", method = RequestMethod.GET)
+    public ModelAndView getDescAddByProjectId(String projectId) {
+    	 Weekly wk=weeklyService.insertWeeklyByprojectId(projectId);
+    	//Map<Object,Object> map=weeklyService.addWeekly(wk);
+    	 Map<Object,Object> map=weeklyService.getDescById(wk.getId()+"");
+    	ModelAndView mv = new ModelAndView();
+    	//项目周报
+		mv.addObject("pd", (ProjectWeeklyDto)map.get("pd"));
+		// 本周项目版本
+		mv.addObject("pv",(String) map.get("pv"));
+		//本周项目阶段
+		mv.addObject("pp",(String) map.get("pp"));
+		//下周项目阶段
+		mv.addObject("npp", (String)map.get("npp"));
+		//本周进展情况 
+		mv.addObject("td",(List<TaskDto>)map.get("td"));
+		//下周工作计划
+		mv.addObject("wk",(List<NextWeeklyDto>) map.get("wk"));
+		//当前重要风险
+		mv.addObject("wr", map.get("wr"));
+		//当前重要问题
+	    mv.addObject("wq", map.get("wq"));
+	    //项目总体情况描述
+	    mv.addObject("wDetails", map.get("wDetails"));
+	    
+		mv.setViewName("weekly/addWeeklyDesc");
+        return mv;
+    }
 }

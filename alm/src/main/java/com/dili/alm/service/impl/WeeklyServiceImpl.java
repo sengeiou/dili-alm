@@ -218,9 +218,9 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	}
 
 	@Override
-	public ProjectWeeklyDto getProjectWeeklyDtoById(Long projectId) {
+	public ProjectWeeklyDto getProjectWeeklyDtoById(Long id) {
 		
-		ProjectWeeklyDto pd = weeklyMapper.selectProjectWeeklyDto(projectId);
+		ProjectWeeklyDto pd = weeklyMapper.selectProjectWeeklyDto(id);
 		if (pd != null && pd.getPlanDate() != null)
 			pd.setPlanDate(pd.getPlanDate().substring(0, 10));
 		
@@ -487,6 +487,91 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		userList.add(0, Wp);
 		
 		return userList;
+	}
+
+	@Override
+	public Map<Object, Object> addWeekly(Weekly wk) {
+		
+		//Weekly wk = insertWeeklyByprojectId(projectId);
+		Map<Object, Object>  map=new HashMap<Object, Object> ();
+		//项目周报
+    	ProjectWeeklyDto pd=getProjectWeeklyDtoById(wk.getId());
+    	pd.setId(wk.getId()+"");
+		map.put("pd", pd);
+		
+		WeeklyPara weeklyPara=  new WeeklyPara();
+		weeklyPara.setId(Long.parseLong(pd.getProjectId()));
+		weeklyPara.setStartDate(DateUtil.getFirstAndFive().get("one")+" 00:00:00");
+		weeklyPara.setEndDate(DateUtil.getFirstAndFive().get("five")+" 23:59:59");
+		
+		// 本周项目版本
+		List<String> projectVersion=selectProjectVersion(weeklyPara);
+		map.put("pv", StringUtils.join(projectVersion.toArray(),","));
+		//本周项目阶段
+		List<String> projectPhase=selectProjectPhase(weeklyPara);
+		map.put("pp", StringUtils.join(projectPhase.toArray(),","));
+		//本周进展情况 
+		List<TaskDto> td=selectWeeklyProgress(weeklyPara);
+		for (int i = 0; i < td.size(); i++) {
+			td.get(i).setNumber(i+1);
+		}
+		map.put("td", td);	
+		weeklyPara.setId(wk.getId());
+		//当前重要风险
+		String weeklyRist=selectWeeklyRist(weeklyPara);
+		if(weeklyRist!=null){
+			JSONArray  weeklyRistJson=JSON.parseArray(weeklyRist);
+			map.put("wr", weeklyRistJson.toJavaList(WeeklyJson.class));
+		}else
+			map.put("wr", null);
+		
+		//当前重要问题
+		String weeklyQuestion=selectWeeklyQuestion(weeklyPara);
+		if(weeklyQuestion!=null){
+		JSONArray  weeklyQuestionJson=JSON.parseArray(weeklyQuestion);
+	    map.put("wq", weeklyQuestionJson);
+		}else{
+			 map.put("wq", null);
+		}
+		
+		weeklyPara.setId(Long.parseLong(pd.getProjectId()));
+		weeklyPara.setStartDate(DateUtil.getNextMonday(new Date())+" 00:00:00");
+		weeklyPara.setEndDate(DateUtil.getNextFive(new Date())+" 23:59:59");
+		//下周工作计划
+		List<NextWeeklyDto> wek=selectNextWeeklyProgress(weeklyPara);
+	
+		for (int i = 0; i < wek.size(); i++) {
+			wek.get(i).setNumber(i+1);
+		}
+		map.put("wk", wek);
+		
+		//下周项目阶段
+		List<String> nextprojectPhase=selectNextProjectPhase(weeklyPara);
+		map.put("npp", StringUtils.join(nextprojectPhase.toArray(),","));
+		
+	    //项目总体情况描述
+	    WeeklyDetails wDetails=  weeklyDetailsService.getWeeklyDetailsByWeeklyId(wk.getId());
+	  //（实际项目发生工时/立项申请预估工时-1）%
+	    map.put("wDetails", wDetails);
+	    
+	    return  map;
+	}
+
+	public   Weekly insertWeeklyByprojectId(String projectId) {
+		Weekly wk=DTOUtils.newDTO(Weekly.class);
+		wk.setProjectId(Long.parseLong(projectId));
+		wk.setCreated(new Date());
+		wk.setModified(null);
+		wk.setStartDate(DateUtil.getStrDate(DateUtil.getFirstAndFive().get("one")+" 00:00:00"));
+		wk.setEndDate(DateUtil.getStrDate(DateUtil.getFirstAndFive().get("five")+" 23:59:59"));
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		if (userTicket != null) {
+			wk.setCreateMemberId(userTicket.getId());
+			//wk.setModifyMemberId(userTicket.getId());
+		}
+
+		weeklyMapper.insertSelective(wk);
+		return wk;
 	}
 
 	
