@@ -27,6 +27,7 @@
 		type="com.dili.sysadmin.domain.dto.UserDepartmentRole">
 		<id column="id" jdbcType="BIGINT" property="id" />
 		<result column="real_name" jdbcType="VARCHAR" property="realName" />
+		<result column="user_name" jdbcType="VARCHAR" property="userName" />
 		<result column="cellphone" jdbcType="VARCHAR" property="cellphone" />
 		<result column="email" jdbcType="VARCHAR" property="email" />
 		<association property="department"
@@ -225,6 +226,7 @@
 		SELECT DISTINCT
 		u.id,
 		u.real_name,
+		u.user_name,
 		u.cellphone,
 		u.email,
 		d.id AS department_id,

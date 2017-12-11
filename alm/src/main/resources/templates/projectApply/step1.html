@@ -56,14 +56,18 @@
 									onClickButton:selectMember,onChange:_changeTextboxShowClear"/></td>
                     <td><input class="easyui-textbox" type="text" name="productManager" id="productManager"
                                data-options="required:true,label:'*产品经理:',buttonText:'选择',
-									onClickButton:selectMember,onChange:_changeTextboxShowClear"></td>
+									onClickButton:function(){
+										selectMember('editorCallback', 'productManager');
+									},onChange:_changeTextboxShowClear"></td>
                 </tr>
                 <tr>
                     <td><input class="easyui-textbox" type="text" name="developmentManager" id="developmentManager"
                                data-options="required:true,label:'*研发经理:',buttonText:'选择',
 									onClickButton:selectMember,onChange:_changeTextboxShowClear"></td>
                     <td><input class="easyui-textbox" type="text" name="testManager" id="testManager" data-options="required:true,label:'*测试经理:',buttonText:'选择',
-									onClickButton:selectMember,onChange:_changeTextboxShowClear"></td>
+									onClickButton:function(){
+										selectMember('editorCallback', 'developmentManager');
+									},onChange:_changeTextboxShowClear"></td>
                 </tr>
                 <tr>
                     <td><input class="easyui-textbox" type="text" name="businessOwner" id="businessOwner" data-options="required:true,label:'*业务负责人:',buttonText:'选择',
@@ -122,6 +126,10 @@
 </div>
 <script>
 
+
+    function editorCallback(dep) {
+        showMembersDlg(dep,dep);
+    }
     function submitForm() {
         $('#ff').form('submit', {
             url: "${contextPath}/projectApply/insertStep1",
