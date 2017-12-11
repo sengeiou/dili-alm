@@ -89,13 +89,14 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		Map<Object, Object>  map=new HashMap<Object, Object> ();
 		//项目周报
     	ProjectWeeklyDto pd=getProjectWeeklyDtoById(Long.parseLong(id));
+    	pd.setCompletedProgressInt(Integer.parseInt(pd.getCompletedProgress()));
     	pd.setId(id);
 		map.put("pd", pd);
-		
+		String[]  strDate=pd.getBeginAndEndTime().split("到");
 		WeeklyPara weeklyPara=  new WeeklyPara();
 		weeklyPara.setId(Long.parseLong(pd.getProjectId()));
-		weeklyPara.setStartDate(DateUtil.getFirstAndFive().get("one")+" 00:00:00");
-		weeklyPara.setEndDate(DateUtil.getFirstAndFive().get("five")+" 23:59:59");
+		weeklyPara.setStartDate(strDate[0]+" 00:00:00");
+		weeklyPara.setEndDate(strDate[1]+" 23:59:59");
 		
 		// 本周项目版本
 		List<String> projectVersion=selectProjectVersion(weeklyPara);
@@ -128,8 +129,10 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		}
 		
 		weeklyPara.setId(Long.parseLong(pd.getProjectId()));
-		weeklyPara.setStartDate(DateUtil.getNextMonday(new Date())+" 00:00:00");
-		weeklyPara.setEndDate(DateUtil.getNextFive(new Date())+" 23:59:59");
+		weeklyPara.setStartDate(DateUtil.getNextMonday(DateUtil.getStrDate(strDate[0]+" 00:00:00")));
+		weeklyPara.setEndDate(DateUtil.getNextFive(DateUtil.getStrDate(strDate[0]+" 23:59:59")));
+		
+		
 		//下周工作计划
 		List<NextWeeklyDto> wk=selectNextWeeklyProgress(weeklyPara);
 	
@@ -224,7 +227,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		if (pd != null && pd.getPlanDate() != null)
 			pd.setPlanDate(pd.getPlanDate().substring(0, 10));
 		
-		pd.setBeginAndEndTime(DateUtil.getWeekFristDay() + "到" +DateUtil.getWeekFriday());
+		pd.setBeginAndEndTime(pd.getStartDate() + "到" +pd.getEndDate());
 		
 		if(DateUtil.getWeekOfDate(new Date()).endsWith("星期日")){
 			HashMap<String,String>  map =DateUtil.getFirstAndFive();
@@ -559,18 +562,23 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 
 	public   Weekly insertWeeklyByprojectId(String projectId) {
 		Weekly wk=DTOUtils.newDTO(Weekly.class);
-		wk.setProjectId(Long.parseLong(projectId));
-		wk.setCreated(new Date());
-		wk.setModified(null);
-		wk.setStartDate(DateUtil.getStrDate(DateUtil.getFirstAndFive().get("one")+" 00:00:00"));
-		wk.setEndDate(DateUtil.getStrDate(DateUtil.getFirstAndFive().get("five")+" 23:59:59"));
-		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		if (userTicket != null) {
-			wk.setCreateMemberId(userTicket.getId());
-			//wk.setModifyMemberId(userTicket.getId());
+		wk=weeklyMapper.selectByPrimaryKey(Long.parseLong(projectId));
+		if(wk==null&&wk.getId()<0){
+			wk.setProjectId(Long.parseLong(projectId));
+			wk.setCreated(new Date());
+			wk.setModified(null);
+			wk.setStartDate(DateUtil.getStrDate(DateUtil.getFirstAndFive().get("one")+" 00:00:00"));
+			wk.setEndDate(DateUtil.getStrDate(DateUtil.getFirstAndFive().get("five")+" 23:59:59"));
+			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+			if (userTicket != null) {
+				wk.setCreateMemberId(userTicket.getId());
+				//wk.setModifyMemberId(userTicket.getId());
+			}
+	
+			weeklyMapper.insertSelective(wk);
+		}else{
+			wk=null;
 		}
-
-		weeklyMapper.insertSelective(wk);
 		return wk;
 	}
 

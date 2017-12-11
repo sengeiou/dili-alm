@@ -215,12 +215,21 @@ public class WeeklyController  {
     @ApiOperation("跳转到AddWeekD页面")
     @RequestMapping(value="/getDescAddByProjectId", method = RequestMethod.GET)
     public ModelAndView getDescAddByProjectId(String projectId) {
+    	
+    	 ModelAndView mv = new ModelAndView();
     	 Weekly wk=weeklyService.insertWeeklyByprojectId(projectId);
-    	//Map<Object,Object> map=weeklyService.addWeekly(wk);
+    	 if(wk!=null){
+    		 mv.setViewName("weekly/indexDesc");
+    		 return mv;
+    	 }
     	 Map<Object,Object> map=weeklyService.getDescById(wk.getId()+"");
-    	ModelAndView mv = new ModelAndView();
+    	 
+    
     	//项目周报
 		mv.addObject("pd", (ProjectWeeklyDto)map.get("pd"));
+		wk.setProgress(((ProjectWeeklyDto)map.get("pd")).getCompletedProgress());//存项目
+		
+		weeklyService.update(wk);
 		// 本周项目版本
 		mv.addObject("pv",(String) map.get("pv"));
 		//本周项目阶段

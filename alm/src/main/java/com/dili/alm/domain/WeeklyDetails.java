@@ -26,12 +26,8 @@ public interface WeeklyDetails extends IBaseDomain {
 
     void setId(Long id);
 
-    @Column(name = "`overall_progress`")
-    @FieldDef(label="总体进展", maxLength = 20)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getOverallProgress();
+   
 
-    void setOverallProgress(String overallProgress);
 
     @Column(name = "`project_description`")
     @FieldDef(label="项目总体情况描述", maxLength = 500)
