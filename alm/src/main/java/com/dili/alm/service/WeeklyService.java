@@ -32,11 +32,11 @@ public interface WeeklyService extends BaseService<Weekly, Long> {
 	/** 
 	 * 当前重大问题 -
 	 * */
-	String  selectWeeklyQuestion(String id);
+	String  selectWeeklyQuestion(WeeklyPara weeklyPara);
 	/**   
 	 * 当前重要风险
 	 * */
-	String  selectWeeklyRist(String id);
+	String  selectWeeklyRist(WeeklyPara weeklyPara);
 	/** 
 	 * 本周进展情况 
 	 *  */

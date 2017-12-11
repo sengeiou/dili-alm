@@ -257,36 +257,39 @@
 		      </where> 
    </select>
   <!--   当前重要风险 -->
-    <select id="selectWeeklyRist"  resultType="String" parameterType="String">
+    <select id="selectWeeklyRist"  resultType="String" parameterType="com.dili.alm.domain.dto.WeeklyPara">
        
        select   w.risk
 		
 		     from    weekly  w
 		      <where>
 		      
-		        w.start_date &gt;= subdate(curdate(),date_format(curdate(),'%w')-1)
-		          and  w.end_date &lt;  subdate(curdate(),date_format(curdate(),'%w')-6)
+		        w.start_date &gt;=#{startDate,jdbcType=VARCHAR}
+		          and  w.end_date &lt;#{endDate,jdbcType=VARCHAR}
 		          and  w.start_date &lt; w.end_date 
-			    <if test="_parameter != null">
-		         and      w.id = #{_parameter,jdbcType=VARCHAR}
+			    <if test="id != null">
+		         and      w.id = #{id,jdbcType=VARCHAR}
 		        </if>
 		    
 		       
 		      </where> 
    </select>
+   
+   
+   
    <!--   当前重大问题 -->
-    <select id="selectWeeklyQuestion"  resultType="String" parameterType="String">
+    <select id="selectWeeklyQuestion"  resultType="String" parameterType="com.dili.alm.domain.dto.WeeklyPara">
        
        select   
 		    w.question  
 		         from  weekly  w
 		      <where>  
 		         
-		          w.start_date &gt;= subdate(curdate(),date_format(curdate(),'%w')-1)
-		          and  w.end_date &lt;  subdate(curdate(),date_format(curdate(),'%w')-6)
+		          w.start_date &gt;#{startDate,jdbcType=VARCHAR}
+		          and  w.end_date &lt;#{endDate,jdbcType=VARCHAR}
 		          and  w.start_date &lt; w.end_date 
-			    <if test="_parameter != null">
-		          and      w.id = #{_parameter,jdbcType=VARCHAR}
+			    <if test="id != null">
+		          and      w.id = #{id,jdbcType=VARCHAR}
 		        </if>
 		       
 		       

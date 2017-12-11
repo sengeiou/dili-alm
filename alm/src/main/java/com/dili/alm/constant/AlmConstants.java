@@ -82,7 +82,7 @@ public class AlmConstants {
 	//状态
 	public enum TaskStatus{
 		
-		NOTSTART(70),START(71),PAUSE(72),COMPLETE(73),NOTCOMPLETE(74);
+		NOTSTART(0),START(1),PAUSE(2),COMPLETE(3),NOTCOMPLETE(4);
 		
 		public int code;
 		

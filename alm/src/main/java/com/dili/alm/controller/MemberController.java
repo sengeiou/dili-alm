@@ -1,9 +1,12 @@
 package com.dili.alm.controller;
 
+import com.dili.alm.cache.AlmCache;
+import com.dili.alm.domain.Department;
 import com.dili.alm.domain.dto.UserDepartmentRole;
 import com.dili.alm.domain.dto.UserDepartmentRoleQuery;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.ss.domain.BaseOutput;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
+import java.util.Objects;
 
 @RequestMapping("/member")
 @Controller
@@ -23,8 +27,16 @@ public class MemberController {
 	private UserRpc userRPC;
 
 	@RequestMapping(value = "/members.html", method = RequestMethod.GET)
-	public String members(ModelMap modelMap, @RequestParam("textboxId") String textboxId) {
+	public String members(ModelMap modelMap, @RequestParam("textboxId") String textboxId ,String dep) {
 		modelMap.put("textboxId", textboxId);
+		modelMap.put("dep", dep);
+		if(StringUtils.isNotBlank(dep)){
+			AlmCache.DEP_MAP.forEach((Long k, Department v) ->{
+				if(Objects.equals(v.getCode(), dep)){
+					modelMap.put("dep", k);
+				}
+			});
+		}
 		return "member/members";
 	}
 

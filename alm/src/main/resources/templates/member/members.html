@@ -1,53 +1,66 @@
 <div class="easyui-panel" style="width:100%;" align="left">
-	<form id="form" class="easyui-form" method="post" fit="true">
-		<table style="padding:10px;">
-			<tr>
-				<td style="padding:5px;">
-					<input class="easyui-textbox" name="realName" id="realName" style="width:100%"
-						   data-options="label:'姓名:', validType:'length[0,20]'"/>
-				</td>
-				<td style="padding:5px;">
-					<input class="easyui-textbox" name="departmentId" id="departmentId" style="width:100%"
-						   data-options="label:'部门:', validType:'length[0,20]'"/>
-					<#comboProvider _id="departmentId" _provider='depProvider'/>
-				</td>
-				<td>
-					<a href="#" class="easyui-linkbutton" iconCls="icon-search"
-					   onclick="a();">查询</a>
-				</td>
-			</tr>
-		</table>
-	</form>
+    <form id="form" class="easyui-form" method="post" fit="true">
+        <table style="padding:10px;">
+            <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-textbox" name="realName" id="realName" style="width:100%"
+                           data-options="label:'姓名:', validType:'length[0,20]'"/>
+                </td>
+                <td style="padding:5px;">
+                    <input class="easyui-textbox" name="departmentId" id="departmentId" style="width:100%"
+                           data-options="label:'部门:', validType:'length[0,20]'"/>
+                    <#comboProvider _id="departmentId" _provider='depProvider'/>
+                </td>
+                <td>
+                    <a href="#" class="easyui-linkbutton" iconCls="icon-search"
+                       onclick="a();">查询</a>
+                </td>
+            </tr>
+        </table>
+    </form>
 </div>
-<table class="easyui-datagrid" id="smGridList" sortName="userName" sortOrder="asc" fitColumns="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="true"
-	align="center" fit="true" striped="true" idField="id" data-options="onDblClickRow:dbClickMembers">
-	<thead>
-		<tr>
-			<th data-options="field:'id',hidden:true"></th>
-			<th data-options="field:'userName',width:'25%'">用户名</th>
-			<th data-options="field:'realName',width:'25%'">真实姓名</th>
-			<th data-options="field:'cellPhone',width:'25%'">手机号</th>
-			<th data-options="field:'email',width:'25%'">邮箱</th>
-		</tr>
-	</thead>
+<table class="easyui-datagrid" id="smGridList" sortName="userName" sortOrder="asc" fitColumns="true" remoteSort="false"
+       loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="true"
+       align="center" fit="true" striped="true" idField="id" data-options="onDblClickRow:dbClickMembers">
+    <thead>
+    <tr>
+        <th data-options="field:'id',hidden:true"></th>
+        <th data-options="field:'userName',width:'25%'">用户名</th>
+        <th data-options="field:'realName',width:'25%'">真实姓名</th>
+        <!--<th data-options="field:'cellphone',width:'25%'">手机号</th>-->
+        <th data-options="field:'department',width:'25%',formatter:formatDep">部门</th>
+        <!--<th data-options="field:'email',width:'25%'">邮箱</th>-->
+    </tr>
+    </thead>
 </table>
 
 <script type="text/javascript">
-	function dbClickMembers(index, row) {
-		confirmMembersBtn("${textboxId}");
-	}
+    var dep = '${dep}';
 
-	function a(){
+    function formatDep(val, row) {
+        return row.department.name;
+    }
+
+    function dbClickMembers(index, row) {
+        confirmMembersBtn("${textboxId}");
+    }
+
+    function a() {
         var opts = $("#smGridList").datagrid("options");
         opts.url = '${contextPath!}/member/members';
         var formData = $("#form").serializeObject();
-        $('#smGridList').datagrid('load',formData);
-	}
-	$(function() {
-		// $('#searchTextbox').textbox('addClearBtn', 'icon-clear');
-		// $('#searchTextbox').textbox('textbox').focus();
-		// $('#searchTextbox').textbox('textbox').bind('keydown', function(e) {
-		// 	search();
-		// });
-	})
+        $('#smGridList').datagrid('load', formData);
+    }
+
+    $(function () {
+        if (dep != '') {
+            $("#departmentId").combobox('select', dep);
+        }
+        a();
+        // $('#searchTextbox').textbox('addClearBtn', 'icon-clear');
+        // $('#searchTextbox').textbox('textbox').focus();
+        // $('#searchTextbox').textbox('textbox').bind('keydown', function(e) {
+        // 	search();
+        // });
+    })
 </script>

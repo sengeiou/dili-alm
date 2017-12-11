@@ -67,11 +67,9 @@ public class TaskController {
 	public String index(ModelMap modelMap) {
 		/*		UserTicket userTicket = SessionContext.getSessionContext()
 		.getUserTicket();
-		Map<String, String> userMap  = new HashMap<String, String>();
-		userMap.put("userID",userTicket.getId());
+		
         */
-		
-		
+		modelMap.addAttribute("userId", 48);
 		return "task/index";
 	}
 
@@ -205,7 +203,6 @@ public class TaskController {
 		projectPhase.setVersionId(id);
 		
 		List<ProjectPhase> list = projectPhaseService.list(projectPhase);
-		System.out.println(list.size());
 		return list;
 	}
 

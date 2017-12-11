@@ -37,10 +37,10 @@ public class TaskStateProvider implements ValueProvider, ApplicationListener<Con
 	}
 
 	public void init() {
-		if (AlmCache.PROJECT_STATE_MAP.isEmpty()) {
+		if (AlmCache.TASK_STATE_MAP.isEmpty()) {
 			List<DataDictionaryValueDto> list = taskService.getTaskStates();
 			list.forEach(type -> {
-				AlmCache.PROJECT_STATE_MAP.put(type.getValue(), type.getCode());
+				AlmCache.TASK_STATE_MAP.put(type.getValue(), type.getCode());
 			});
 		}
 	}
