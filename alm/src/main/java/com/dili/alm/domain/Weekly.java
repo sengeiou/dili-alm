@@ -12,7 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
- * 由MyBatis Generator工具自动生成
+ * 鐢盡yBatis Generator宸ュ叿鑷姩鐢熸垚
  * 
  * This file was generated on 2017-11-30 12:37:16.
  */
@@ -49,21 +49,21 @@ public interface Weekly extends IBaseDomain {
     void setEndDate(Date endDate);
 
     @Column(name = "`risk`")
-    @FieldDef(label="风险", maxLength = 255)
+    @FieldDef(label="椋庨櫓", maxLength = 255)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getRisk();
 
     void setRisk(String risk);
 
     @Column(name = "`question`")
-    @FieldDef(label="问题", maxLength = 255)
+    @FieldDef(label="闂", maxLength = 255)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getQuestion();
 
     void setQuestion(String question);
 
     @Column(name = "`progress`")
-    @FieldDef(label="进度", maxLength = 255)
+    @FieldDef(label="杩涘害", maxLength = 255)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getProgress();
 
