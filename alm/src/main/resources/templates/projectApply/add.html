@@ -59,7 +59,13 @@
             success: function (data) {
                 var data = eval('(' + data + ')');
                 if (data.success == true) {
-                    window.location.href = "${contextPath}/projectApply/toStep/1/" + data.result;
+                    try {
+                        LogUtils.saveLog("新增立项申请:" + data.result, function () {
+                            window.location.href = "${contextPath}/projectApply/toStep/1/" + data.result;
+                        });
+                    } catch (e) {
+                        window.location.href = "${contextPath}/projectApply/toStep/1/" + data.result;
+                    }
                 }
             }
         });

@@ -7,11 +7,7 @@ import io.swagger.annotations.ApiOperation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
+import org.springframework.web.bind.annotation.*;
 
 
 import com.dili.alm.service.LogService;
@@ -29,7 +25,7 @@ public class LogApi {
 	@ApiImplicitParam(name="Log", paramType="form", value = "Log的form信息", required = true, dataType = "string")
 	})
 	@RequestMapping(value="/saveLog", method = {RequestMethod.GET, RequestMethod.POST})
-	public @ResponseBody BaseOutput insert(@RequestBody String logText) {
+	public @ResponseBody BaseOutput insert(@RequestParam String logText) {
 		if(WebUtil.strIsEmpty(logText)){
 	        return BaseOutput.failure("新增失败,包含空值logText="+logText.toString());
         }else{
