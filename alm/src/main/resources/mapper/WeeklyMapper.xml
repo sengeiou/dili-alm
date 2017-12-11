@@ -79,37 +79,37 @@
   
   <select id="selectListPageByWeeklyPara" parameterType="com.dili.alm.domain.dto.WeeklyPara" resultType="com.dili.alm.domain.dto.WeeklyPara">
   
-    select   p.serial_number as "serialNumber",p.`name` as "projectName" , w.id as 'id',
+    select   p.serial_number as "serialNumber",p.`name` as "projectName" , w.id as 'id',p.apply_id as "applyId",
              p.type as "projectType",p.product_manager as "userName",
              w.progress as "projectStatus",w.end_date as "endDate"  ,w.start_date as "startDate"
-         from   project p,weekly  w 
+         from   project p,weekly  w
         <where>
              p.id=w.project_id
           
             <if test="projectName != null">
-	           and   p.`name` = #{projectName,jdbcType=VARCHAR}
+            and   p.`name` = #{projectName,jdbcType=VARCHAR}
 	        </if>
 	        
 	         <if test="projectType != null">
-	            and   p.type = #{projectType,jdbcType=VARCHAR}
+	         and   p.type = #{projectType,jdbcType=VARCHAR}
 	        </if>
 		
 		    <if test="userName != null">
-	            and  p.project_manager= #{userName,jdbcType=VARCHAR}
+		    and  p.project_manager= #{userName,jdbcType=VARCHAR}
 	        </if>
 	       
 	        <if test="projectStatus != null">
-	           and   p.project_state= #{projectStatus,jdbcType=INTEGER}
+	        and   p.project_state= #{projectStatus,jdbcType=INTEGER}
 	        </if>
 	        
 		    <if test="serialNumber != null">
-	           and   p.serial_number = #{serialNumber,jdbcType=VARCHAR}
+		    and   p.serial_number = #{serialNumber,jdbcType=VARCHAR}
 	        </if>
 	        <if test="startDate!=null and startDate!=''">
-			　　AND w.start_date &gt;= 	STR_TO_DATE(#{startDate},'YYYY-MM-DD HH24:mi:ss')
+	        and w.start_date &gt;=#{startDate,jdbcType=VARCHAR}
 			</if> 
 			<if test="endDate!=null and endDate!=''">
-			  AND  w.end_date   &lt;=	STR_TO_DATE(#{endDate},'YYYY-MM-DD HH24:mi:ss')
+			and  w.end_date   &lt;=#{endDate,jdbcType=VARCHAR}
 			</if>
 	        
 		 </where>       
@@ -120,20 +120,14 @@
   <!-- 分页查询总条数 -->
     <select id="selectPageByWeeklyParaCount" parameterType="com.dili.alm.domain.dto.WeeklyPara" resultType="int">
   
-       select count(1)  as 'total' from   project p,weekly  w 
-       
-        <where>
-             p.id=w.project_id
-	          <if test="startDate!=null and startDate!=''">
-		  	　 
-			   AND   w.start_date &gt;=  STR_TO_DATE(#{startDate},'YYYY-MM-DD HH24:mi:ss') 
+       select count(1)  as 'total' from project p,weekly w where p.id=w.project_id
+	          <if test="startDate!=null and startDate!=''">AND   w.start_date &gt;=#{startDate,jdbcType=VARCHAR}
 			</if> 
 			<if test="endDate!=null and endDate!=''">
-			  AND   w.end_date &lt;=	STR_TO_DATE(#{endDate},'YYYY-MM-DD HH24:mi:ss')
+			AND   w.end_date &lt;=#{endDate,jdbcType=VARCHAR}
 			</if>
 	        
-		 </where>       
-        
+		
    </select>
    
    
@@ -143,7 +137,8 @@
    <!-- 项目详情-->
    <select id="selectProjectWeeklyDto" resultType="com.dili.alm.domain.dto.ProjectWeeklyDto" parameterType="Long">
   
-           select  p.project_manager  as "userName", p.serial_number  as  "serialNumber", p.`name` as "projectName",
+           select  p.project_manager  as "userName", p.serial_number  as  "serialNumber", p.`name` as "projectName",w.created,
+           
 		           p.type  as "projectType" ,a.business_owner as "businessParty",a.expected_launch_date as  "planDate",p.completed_progress as "completedProgress",
 		           a.dep  as "projectInDept",p.id as "projectId"
 		   from   project  p ,project_apply  a,weekly  w
@@ -313,6 +308,11 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
+  <select id="getUser"  resultType="com.dili.alm.domain.dto.WeeklyPara">
+  
+         select   DISTINCT   p.product_manager as "userName" from   project p,weekly  w  where  p.id=w.project_id
+   
+  </select>
   
   
 

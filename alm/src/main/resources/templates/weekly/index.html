@@ -19,33 +19,56 @@
 
                             </td>
                             
-                            <td style="padding: 5px;" ><input name="projectType" id="projectType" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="项目类型:" /> 
+                            <td style="padding: 5px;" >
+                            
+                               <!-- <input name="projectType" id="projectType" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="项目类型:" /> 
                                  <#comboProvider _id="projectType"
-									_data='[{"text":"-- 请选择 --"},{"text":"内部项目","value":"I"},{"text":"重点项目","value":"K"},{"text":"一般项目","value":"G"},{"text":"预约项目","value":"R"}]' /></td>
+									_data='[{"text":"-- 请选择 --"},{"text":"内部项目","value":"I"},{"text":"重点项目","value":"K"},{"text":"一般项目","value":"G"},{"text":"预约项目","value":"R"}]' /> -->
+									
+						      <input id="projectType" name="projectType" class="easyui-combobox" label="项目类型:" style="width:100%"  
+                                   data-options="
+	                              url: '${contextPath}/dataDictionaryValue/listTree.json?ddId=3',
+	                              method: 'get',
+	                              valueField: 'id',
+	                              textField: 'name',
+	                              panelHeight:'auto'"/>
+						     
+						     </td>
                           
                             
                         </tr>
                         <tr>
-                            <td style="padding:5px;">
+                            <!-- <td style="padding:5px;">
                               <input name="projectStatus" id="projectStatus" style="width: 100%;"  label="项目状态:" /> <#comboProvider _id="projectStatus"
 									_data='[{"text":"-- 请选择 --"},{"text":"已完成","value":"2"},{"text":"进行中","value":"1"} ,{"text":"暂停中","value":"3"},{"text":"已关闭","value":"4"},{"text":"未开始","value":"0"}]' />
                             </td>
-                            
-                            
-		                          <!--  <input id="projectStatus" name="projectStatus" class="easyui-combobox" label="项目状态:" style="width:100%"  
-                                    data-options="
-		                              url: '${contextPath}/dataDictionaryValue/listTree.json?ddId=6',
-		                              method: 'get',
-		                              valueField: 'id',
-		                              textField: 'name',
-		                              panelHeight:'auto'"/> -->
-		                  
-                            
+                             -->
+                            <td style="padding:5px;">
+	                           <input id="projectStatus" name="projectStatus" class="easyui-combobox" label="项目状态:" style="width:100%"  
+                                   data-options="
+	                              url: '${contextPath}/dataDictionaryValue/listTree.json?ddId=6',
+	                              method: 'get',
+	                              valueField: 'id',
+	                              textField: 'name',
+	                              panelHeight:'auto'"/>
+		                
+                             </td>
                             
                             
                             <td style="padding:5px;">
-                                 <input name="userName" id="userName" style="width: 100%;"  label="项目经理:" /> <#comboProvider _id="userName"
-									_data='[{"text":"-- 请选择 --"},{"text":"50","value":"50"},{"text":"sgq","value":"51"}]' />
+                                <!--  <input name="userName" id="userName" style="width: 100%;"  label="项目经理:" /> <#comboProvider _id="userName"
+									_data='[{"text":"-- 请选择 --"},{"text":"50","value":"50"},{"text":"sgq","value":"51"}]' /> -->
+
+
+
+                                  <input id="userName" name="userName" class="easyui-combobox" label="项目经理:" style="width:100%"  
+                                   data-options="
+	                              url: '${contextPath}/weekly/listUserByWeekly.json?ddId=6',
+	                              method: 'get',
+	                              valueField: 'id',
+	                              textField: 'userName',
+	                              panelHeight:'auto'"/>
+
 
                             </td>
                             
@@ -117,79 +140,17 @@
             </div>
         </div>
     </div>
-    <!-- 隐藏编辑框 -->
-    <!-- <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="Weekly信息" style="padding:20px" modal="true" border="thin" closed="true"
-         data-options="
-				iconCls: 'icon-save',
-				height: 480,
-				buttons: [{
-					text:'Ok',
-					iconCls:'icon-ok',
-					handler:saveOrUpdate
-				},{
-					text:'取消',
-					handler:function(){
-						$('#dlg').dialog('close');
-					}
-				}]
-			"> -->
-    <form id="_form" class="easyui-form" method="post" fit="true">
-        <input name="_id" id="_id" type="hidden">
-        <table width="360px">
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_serialNumber" id="_serialNumber" style="width:100%" data-options="label:'projectId:'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-datetimebox" name="_startDate" id="_startDate" style="width:100%" data-options="label:'startDate:'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-datetimebox" name="_endDate" id="_endDate" style="width:100%" data-options="label:'endDate:'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_risk" id="_risk" style="width:100%" data-options="label:'风险:', validType:'length[0,255]'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_question" id="_question" style="width:100%" data-options="label:'问题:', validType:'length[0,255]'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_progress" id="_progress" style="width:100%" data-options="label:'进度:', validType:'length[0,255]'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-datetimebox" name="_created" id="_created" style="width:100%" data-options="label:'created:'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-datetimebox" name="_modified" id="_modified" style="width:100%" data-options="label:'modified:'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_createMemberId" id="_createMemberId" style="width:100%" data-options="label:'createMemberId:'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_modifyMemberId" id="_modifyMemberId" style="width:100%" data-options="label:'modifyMemberId:'" />
-                </td>
-            </tr>
-        </table>
-    </form>
-
-    </div>
+    
+    
+   <!--  <div id="win" class="easyui-window" title="项目立项申请详情" style="width:600px;height:400px" data-options="iconCls:'icon-save',modal:false">
+        <div class="easyui-layout" data-options="fit:true">
+    		<div data-options="region:'north',split:true" style="height:100px"></div>
+    		<div data-options="region:'center'">
+    			The Content.
+    		</div>
+        </div>
+    </div> -->
+  
     <!-- ====================================================================================================================== -->
     <!-- style & script 分隔线 -->
     <!-- ====================================================================================================================== -->
@@ -344,22 +305,40 @@
         }
         //项目编号
         function formatserialNumber(val,row,index){  
-        	  return  "<a href='${contextPath}/project/detail?id=" + row.id + "' target='_blank'>"+val+"</a>";   
+        	// "<a href='${contextPath}/project/detail?id=" + row.id + "' target='_blank'>"+val+"</a>"; 
+        	  return  "<a href='javascript:void(0)' onclick='projectDesc(" + row.id + ")'>"+val+"</a>";   
         	
 
         }
         //项目名称
         function formatprojectName(val,row,index){  
-            return '<a href="#">'+val+'</a>';  
+        	//  alert(val+"s:" +row.applyId +"ss:"+index);
+           // return "<a href='javascript:void(0)'>"+val+"</a>"; 
+            return  "<a href='javascript:void(0)' onclick='formatprojectApply(" + row.applyId + ")'>"+val+"</a>";  
         }
+        function formatprojectApply(applyId){  
+        
+        	  var url='${contextPath}/projectApply/toDetails/'+applyId;        //转向网页的地址;
+        	   //alert(url);
+        	  var name='项目申请详情';                           //网页名称，可为空;
+        	  var iWidth=1000;                          //弹出窗口的宽度;
+        	  var iHeight=1200;                        //弹出窗口的高度;
+        	  var iTop = (window.screen.availHeight-30-iHeight)/2;       //获得窗口的垂直位置;
+        	  var iLeft = (window.screen.availWidth-10-iWidth)/2;           //获得窗口的水平位置;
+            	return	window.open(url,name,'height='+iHeight+',innerHeight='+iHeight+',width='+iWidth+',innerWidth='+iWidth+',top='+iTop+',left='+iLeft+',toolbar=no,menubar=no,scrollbars=yes,resizeable=no,location=no,status=no');
+      	 
+      	  //   return       window.open('${contextPath}/projectApply/toDetails/'+applyId,'_blank','top='+iTop+',left='+iLeft+',width=1100,top=0,left=0,toolbar=no,menubar=no,scrollbars=yes, resizable=no,location=no, status=no')
+         // return   window.location.href="${contextPath}/projectApply/toDetails/"+applyId;
+       }
+        
+        
         
         
         //周报预览
-       //  function ViWeekly(id){  
+        function projectDesc(id){  
+        	 return   window.location.href="${contextPath}/project/detail?id="+id;
         	
-        	 //return   window.location.href="${contextPath}/weekly/getDescById?id";
-        	
-      // }
+         }
         
  
         
@@ -374,6 +353,7 @@
          *          表单提交需执行的任务
          */
         $(function () {
+        	//$('#win').window('close');
             bindFormEvent("form", "serialNumber", queryGrid);
             bindFormEvent("_form", "_serialNumber", saveOrUpdate, function (){$('#dlg').dialog('close');});
             if (document.addEventListener) {
@@ -385,6 +365,7 @@
             }
             
             queryGrid();
+            
         })
     </script>
     

@@ -1,6 +1,11 @@
 package com.dili.alm.service.impl;
 
 import java.io.File;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +57,7 @@ import com.dili.sysadmin.sdk.session.SessionContext;
 public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements WeeklyService {
 
 	public static  final  String PROJECTTYPE="项目类型";
+	public static  final  String PROJECTTYPEID="3";
 	public static  final  String PROJECTSTATUS="项目状态";
 	
 	@Autowired
@@ -115,13 +121,21 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		
 		//当前重要风险
 		String weeklyRist=selectWeeklyRist(id);
-		JSONArray  weeklyRistJson=JSON.parseArray(weeklyRist);
-		map.put("wr", weeklyRistJson.toJavaList(WeeklyJson.class));
+		if(weeklyRist!=null){
+			JSONArray  weeklyRistJson=JSON.parseArray(weeklyRist);
+			map.put("wr", weeklyRistJson.toJavaList(WeeklyJson.class));
+		}else
+			map.put("wr", null);
+		
 		
 		//当前重要问题
 		String weeklyQuestion=selectWeeklyQuestion(id);
+		if(weeklyQuestion!=null){
 		JSONArray  weeklyQuestionJson=JSON.parseArray(weeklyQuestion);
 	    map.put("wq", weeklyQuestionJson);
+		}else{
+			 map.put("wq", null);
+		}
 	    
 	    //项目总体情况描述
 	    WeeklyDetails wDetails=  weeklyDetailsService.getWeeklyDetailsByWeeklyId(Long.parseLong(id));
@@ -133,7 +147,29 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 
 	@Override
 	public EasyuiPageOutput getListPage(WeeklyPara weeklyPara) {
-
+		
+		//参数转换 项目类型
+		if(weeklyPara.getProjectType()!=null&&!weeklyPara.getProjectType().endsWith("-1")){
+			 DataDictionaryValue  ddv=DTOUtils.newDTO(DataDictionaryValue.class);
+			 ddv.setId(Long.parseLong(weeklyPara.getProjectType()));//项目类型
+			 weeklyPara.setProjectType(dataDictionaryValueService.list(ddv).get(0).getValue());
+		}
+		//参数转换 项目状态
+		if(weeklyPara.getProjectStatus()!=null&&!weeklyPara.getProjectStatus().endsWith("-1")){
+		 DataDictionaryValue  ddv=DTOUtils.newDTO(DataDictionaryValue.class);
+		 ddv.setId(Long.parseLong(weeklyPara.getProjectStatus()));//项目类型
+		 weeklyPara.setProjectStatus(dataDictionaryValueService.list(ddv).get(0).getValue());
+		}
+		
+		//参数转换 项目状态
+		if(weeklyPara.getUserName()!=null&&weeklyPara.getUserName().endsWith("-1")){
+			weeklyPara.setUserName(null);
+		}
+		if(weeklyPara.getEndDate()!=null){
+			String dateString =DateUtil.getAddDay(weeklyPara.getEndDate(), 1);
+		    weeklyPara.setEndDate(dateString);  
+		}
+	     
 		// 查询总页数
 		int total = weeklyMapper.selectPageByWeeklyParaCount(weeklyPara);
 		// 查询list
@@ -142,15 +178,23 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		
 		DataDictionary  ddit=DTOUtils.newDTO(DataDictionary.class);
 		ddit.setName(PROJECTTYPE);
-		ddit.setId(Long.parseLong("3"));
+		ddit.setId(Long.parseLong(PROJECTTYPEID));
 		
 		List<DataDictionary> 	dditList=dataDictionaryService.list(ddit);
 		//List<DataDictionary> dditList=dictionaryMapper.selectByExample(ddit);
 		
 		DataDictionaryValue  ddv;
+		 User user =null;
 		if (list != null && list.size() > 0) {
 			for (WeeklyPara weeklyPara2 : list) {
-
+				
+				// 项目负责人
+				 user = new User();
+				 user.setId(Long.parseLong(weeklyPara2.getUserName()));
+				 BaseOutput<List<User>>  listByExample = userRpc.listByExample(user);
+				 List<User> listUserParty = listByExample.getData();
+				 weeklyPara2.setUserName(listUserParty.get(0).getUserName());
+				 
 				 weeklyPara2.setDate(weeklyPara2.getStartDate() + " 到 " + weeklyPara2.getEndDate());
 				
 				 ddv=DTOUtils.newDTO(DataDictionaryValue.class);
@@ -172,7 +216,16 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		ProjectWeeklyDto pd = weeklyMapper.selectProjectWeeklyDto(projectId);
 		if (pd != null && pd.getPlanDate() != null)
 			pd.setPlanDate(pd.getPlanDate().substring(0, 10));
+		
 		pd.setBeginAndEndTime(DateUtil.getWeekFristDay() + "到" +DateUtil.getWeekFriday());
+		
+		if(DateUtil.getWeekOfDate(new Date()).endsWith("星期日")){
+			HashMap<String,String>  map =DateUtil.getFirstAndFive();
+			
+			pd.setBeginAndEndTime(map.get("one").substring(0,10) + "到" +map.get("five").substring(0,10));
+		}
+		
+		
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		if (userTicket != null) {
 			pd.setStageMan(userTicket.getUserName());
@@ -181,20 +234,20 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		 User user = new User();
 		 user.setId(Long.parseLong(pd.getBusinessParty()));
 		// 业务方
-		 BaseOutput<List<User>>  listByExample = userRpc.listByExample(user);
+		BaseOutput<List<User>>  listByExample = userRpc.listByExample(user);
 		 List<User> listUserParty = listByExample.getData();
 		 pd.setBusinessParty(listUserParty.get(0).getUserName());
 		 
 
 		// 查询项目经理
-	     user.setId(Long.parseLong(pd.getUserName()));
+		 user.setId(Long.parseLong(pd.getUserName()));
 		 BaseOutput<List<User>>  listUserByExample = userRpc.listByExample(user);
 		 List<User> listUsernName = listUserByExample.getData();
 		 pd.setUserName(listUsernName.get(0).getUserName());
 		
 
 		// 项目所在部门
-	     Department department=DTOUtils.newDTO(Department.class);
+	     Department department=new Department();
 	     department.setId(Long.parseLong(pd.getProjectInDept()));
 	     BaseOutput<List<Department>>   departmentByExample = departmentRpc.list(department);
 		 List<Department> departmentList= departmentByExample.getData();
@@ -257,13 +310,17 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			// 阶段
 			td.get(i).setPhaseId(projectPhaseMapper.selectByPrimaryKey(Long.parseLong(td.get(i).getPhaseId())).getName());
 			// 本周工时
-			td.get(i).setWeekHour(DateUtil.getDatePoor(td.get(i).getStartDate(), td.get(i).getEndDate()));
+			Integer intweekHour=Integer.parseInt(DateUtil.getDatePoor( td.get(i).getEndDate(),td.get(i).getStartDate()));
+			td.get(i).setWeekHour((intweekHour+1)*8+"");
 			// 实际工时
 			td.get(i).setRealHour(td.get(i).getOverHour() + td.get(i).getTaskHour() + "");
 			// 工时偏差% （实际任务工时/预估任务工时-1）%
-			int pro = ( (td.get(i).getOverHour() + td.get(i).getTaskHour()) / td.get(i).getPlanTime()-1) * 100;
+			double  realHourandOverHour=td.get(i).getOverHour() + td.get(i).getTaskHour();
+			double  planTime=td.get(i).getPlanTime();
+			DecimalFormat    df   = new DecimalFormat("######0.00");   
+			double pro = ( realHourandOverHour/planTime -1) * 100;
+			td.get(i).setHourDeviation(df.format(pro) );
 			
-			td.get(i).setHourDeviation(pro + "");
 			// 完成情况
 			DataDictionaryValue  ddv=DTOUtils.newDTO(DataDictionaryValue.class);
 			ddv.setValue(td.get(i).getStatus());
@@ -285,7 +342,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		
 		for (NextWeeklyDto nextWeeklyDto : nwd) {
 			 user = new User();
-			 user.setId(Long.parseLong(nextWeeklyDto.getOwner()));
+		     user.setId(Long.parseLong(nextWeeklyDto.getOwner()));
 			 BaseOutput<List<User>>  listByExample = userRpc.listByExample(user);
 			 List<User> listUserParty = listByExample.getData();
 			 nextWeeklyDto.setOwner(listUserParty.get(0).getUserName());
@@ -379,6 +436,32 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		}
        return  file;
 		
+	}
+
+	/**
+	 * 根据任务表中个的项目经理id 查询项目经理
+	 * @return
+	 */
+	@Override
+	public List<WeeklyPara> getUser() {
+		User user ;
+		WeeklyPara Wp=new WeeklyPara();
+		Wp.setUserName("项目经理选择");
+		Wp.setId(Long.parseLong("-1"));
+		List<WeeklyPara> userList=weeklyMapper.getUser();
+		
+		for (int j = 0; j < userList.size(); j++) {
+			 user=new User();
+		     user.setId(Long.parseLong(userList.get(j).getUserName()));
+			 BaseOutput<List<User>>  listByExample = userRpc.listByExample(user);
+			 List<User> listUserParty = listByExample.getData();
+			 userList.get(j).setUserName(listUserParty.get(0).getUserName());
+			 userList.get(j).setId(listUserParty.get(0).getId());
+		}
+		
+		userList.add(0, Wp);
+		
+		return userList;
 	}
 
 	

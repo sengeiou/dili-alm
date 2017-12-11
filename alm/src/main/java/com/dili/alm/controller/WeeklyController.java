@@ -68,7 +68,7 @@ public class WeeklyController  {
 
 
     @ApiOperation("跳转到Weekly页面")
-    @RequestMapping(value="/index.html", method = RequestMethod.GET)
+    @RequestMapping(value="/index", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
         return "weekly/index";
     }
@@ -91,6 +91,15 @@ public class WeeklyController  {
     	
     	//weeklyService.listEasyuiPageByExample(weekly, true).toString();
         return weeklyService.getListPage(weeklyPara).toString();
+    }
+    /**
+     * 返回项目经理
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value="/listUserByWeekly.json", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody List<WeeklyPara>  listUserByWeekly() throws Exception {
+        return weeklyService.getUser();
     }
 
     @ApiOperation("新增Weekly")

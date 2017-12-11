@@ -107,7 +107,7 @@ public class WordExport {
 		personTableRowone.addNewTableCell().setText(pd.getStageMan());
 		personTableRowone.addNewTableCell();
 		personTableRowone.addNewTableCell().setText("创建时间  :   ");
-		personTableRowone.addNewTableCell().setText(DateUtil.getToDay());
+		personTableRowone.addNewTableCell().setText(pd.getCreated());
 
 		
 		
@@ -325,7 +325,7 @@ public class WordExport {
 			thisTabledd.getCell(2).setText(td.get(i).getVersionId());
 			thisTabledd.getCell(3).setText(td.get(i).getPhaseId());
 			thisTabledd.getCell(4).setText(td.get(i).getOwner() + "");
-			thisTabledd.getCell(6).setText(td.get(i).getStatus() + "");
+			thisTabledd.getCell(5).setText(td.get(i).getStatus() + "");
 			thisTabledd.getCell(6).setText(td.get(i).getPlanTime() + "");
 			thisTabledd.getCell(7).setText(td.get(i).getWeekHour());
 			thisTabledd.getCell(8).setText(td.get(i).getRealHour());
@@ -367,7 +367,14 @@ public class WordExport {
 		comTableRowThree.getCell(2).setText("本周起止日期");
 		comTableRowThree.getCell(3).setText(pd.getBeginAndEndTime());
 		comTableRowThree.getCell(4).setText("总体进展");
-		comTableRowThree.getCell(5).setText(pd.getCompletedProgress());
+		  if(Integer.parseInt(pd.getCompletedProgress())<8){
+			  comTableRowThree.getCell(5).setText("正常--偏差<8%");
+		  } else if(Integer.parseInt(pd.getCompletedProgress())>15){
+			  comTableRowThree.getCell(5).setText("警戒--偏差>15%");
+		  }else{
+			  comTableRowThree.getCell(5).setText("预警--8%<偏差<15%");
+		  }
+		
 
 		XWPFTableRow comTableRowFive = ComTable.createRow();
 		getParagraph(comTableRowFive.getCell(0), "项目总体情况描述");

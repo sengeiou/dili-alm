@@ -79,8 +79,18 @@ public interface WeeklyService extends BaseService<Weekly, Long> {
 	 * @return
 	 */
 	File downLoad(File file,String id);
-	
+	/**
+	 * 根据id返回页面详情
+	 * @param id
+	 * @return
+	 */
 	Map<Object,Object> getDescById(String id);
+	
+	/**
+	 * 根据周报中个的项目经理id 查询项目经理
+	 * @return
+	 */
+	List<WeeklyPara>  getUser();
 	
 	
 }

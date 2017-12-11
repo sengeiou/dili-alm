@@ -40,19 +40,21 @@
 				        <td style="padding:5px;">${pd.beginAndEndTime}</td>
 				        <td style="padding:5px;background-color:#D0CDC7;font-weight:bold">总体进展</td>
 				       <td style="padding:5px;">
-				          <% if(pd.completedProgress!=null){%>
-				            <select   class="easyui-combobox" >
-								 <option <%if(pd.completedProgressInt <15){%>selected<%}%>>预警--8%&lt;偏差&lt;15%</option>
-								 <option <%if(pd.completedProgressInt >8 &&pd.completedProgressInt<15){%>selected<%}%>>警戒--偏差>15%</option>
-								 <option <%if(pd.completedProgressInt <8){%>selected<%}%>>正常--偏差&lt;8%</option>
-							</select>
-				            <%}else{%>
-				                <select  class="easyui-combobox" >
-								 <option >预警--8%&lt;偏差&lt;15%</option>
-								 <option >警戒--偏差>15%</option>
-								 <option >正常--偏差&lt;8%</option>
-							   </select>
-				              <%}%> 
+				          
+				            
+								  <%if(pd.completedProgressInt >15){%>
+								      <font color="red">  预警--8%&lt;偏差&lt;15%</font>
+								  <%}%>
+								  
+								  <%if(pd.completedProgressInt >8 &&pd.completedProgressInt<15){%>
+							      	  <font color="orange"> 预警--8%&lt;偏差&lt;15%</font>
+								  <%}%>
+								  
+								   <%if(pd.completedProgressInt <8){%>
+								        <font color="green">  正常--偏差&lt;8% </font>
+								   <%}%>
+						
+				          
 				        </td>
 				    
 				   </tr>
@@ -108,8 +110,8 @@
 						        <td> ${item.phaseId}</td>
 						        <td> ${item.owner} </td>
 						        <td> ${item.status}  </td>
-						        <td> ${item.planTime}  </td>
 						        <td> ${item.weekHour}  </td>
+						        <td> ${item.planTime}  </td>
 						        <td> ${item.realHour} </td>
 						        <td> ${item.hourDeviation} </td>
 						        <td> ${item.describe}</td>
@@ -310,6 +312,15 @@
 			              无
 			             <%}%>
 			       </font>
+			        <font size="4">创建时间：</font>
+			       <font size="4">
+			         <% if(pd.created!=null){%>
+			             ${pd.created}
+			              <%}else{%>
+			              无
+			             <%}%>
+			       </font>
+			       
 			  </br>
 		      </br>
 		      
@@ -335,7 +346,7 @@
     <script type="text/javascript">
        
               function cancel(){  
-            	  
+            	  var  tempid=$("#inHidden").val();
             	  var  _url= "${contextPath}/weekly/updateWeeklyDetailsCancel";
             	  $.ajax({
   	                type: "POST",
@@ -349,7 +360,8 @@
   	                success: function (data) {
   	                    if(data.code=="200"){
   	                    	alert("取消成功");
-  	                    	history.go(0);
+  	                    	//history.go(0);
+  	                      window.location.href="${contextPath}/weekly/getDescById?id="+tempid;
   	                    }else{
   	                        $.messager.alert('错误',data.result);
   	                    }
@@ -358,11 +370,14 @@
   	                    $.messager.alert('错误','远程访问失败');
   	                }
   	            });
-        	 
+            	
+  	          
              }
 
 		    function save(isSubmit){  
 		    	
+		    	 var  tempid=$("#inHidden").val();
+		    	 
 		    	if($("#sSubmit").val()==1){//如果已经提交不可以修改和提交周报
 		    		alert("已经提交");
 		    		return false;
@@ -406,7 +421,8 @@
 	                    	 }else{
 	                    		 alert("保存成功");
 	                    	 }
-	                    	history.go(0);
+	                    	//history.go(0);
+	                    	 window.location.href="${contextPath}/weekly/getDescById?id="+tempid;
 	                    }else{
 	                        $.messager.alert('错误',data.result);
 	                    }
@@ -417,6 +433,8 @@
 	            });
 	            maxquSave();
 	            maxRistSave();
+	           
+	           
 	            
 		      }
 		 
@@ -444,7 +462,8 @@
                 document.onkeyup = getKey;
             }
             
-         
+          
+          
         })
         
         

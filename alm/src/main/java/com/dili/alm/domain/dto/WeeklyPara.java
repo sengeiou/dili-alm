@@ -14,7 +14,7 @@ public class WeeklyPara  {
    
     private String projectType ;
  
-    private Integer projectStatus ;
+    private String projectStatus ;
   
     private String userName ;
     
@@ -25,9 +25,17 @@ public class WeeklyPara  {
     private String date ;
     
 	private String risk;//最大风险
+	
 	private String question;//最大问题
 	
+	private String applyId;//项目立项id
 	
+	public String getApplyId() {
+		return applyId;
+	}
+	public void setApplyId(String applyId) {
+		this.applyId = applyId;
+	}
 	public String getRisk() {
 		return risk;
 	}
@@ -82,11 +90,11 @@ public class WeeklyPara  {
 		this.projectType = projectType;
 	}
 
-	public Integer getProjectStatus() {
+	public String getProjectStatus() {
 		return projectStatus;
 	}
 
-	public void setProjectStatus(Integer projectStatus) {
+	public void setProjectStatus(String projectStatus) {
 		this.projectStatus = projectStatus;
 	}
 

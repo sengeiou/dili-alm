@@ -73,7 +73,10 @@ public interface WeeklyMapper extends MyMapper<Weekly> {
 	 */
     Integer  updateRiskOrByQuestion(WeeklyPara weeklyPara);
     
-    
+    /**
+     * 根据周报负责人 查询项目经理
+     */
+    List<WeeklyPara> getUser();
 	
 }
 	

@@ -1,5 +1,7 @@
 package com.dili.alm.domain.dto;
 
+import java.util.Date;
+
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -18,12 +20,20 @@ public class  ProjectWeeklyDto {
 	private String planDate ;//计划上线日期
 	private String projectId ;//项目id
 	private String stageMan ;//阶段人 
+	private String created ;//创建时间
 	private String  completedProgress;//总体进展
 	private String  beginAndEndTime;//本周起止日期
 	private String id ;//周报id
 	private Integer  completedProgressInt;//总体进展转换
 	
 
+	public String getCreated() {
+		return created;
+	}
+	public void setCreated(String created) {
+		this.created = created;
+	}
+	
 	public Integer getCompletedProgressInt() {
 		return completedProgressInt;
 	}
