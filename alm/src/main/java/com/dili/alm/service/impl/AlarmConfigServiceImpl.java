@@ -118,7 +118,7 @@ public class AlarmConfigServiceImpl extends BaseServiceImpl<AlarmConfig, Long> i
 				phases.forEach(phase -> {
 					long diff = config.getThreshold() > 0 ? phase.getPlannedEndDate().getTime() - now.getTime()
 							: now.getTime() - phase.getPlannedEndDate().getTime();
-					if (diff >= (24 * 60 * 60 * 100 * config.getThreshold())) {
+					if (diff >= (24 * 60 * 60 * 100 * config.getThreshold()) || diff <= 0) {
 						Project project = this.projectService.get(phase.getProjectId());
 						ProjectVersion version = this.versionService.get(phase.getVersionId());
 						Map<String, Object> taskQuery = new HashMap<>();
@@ -126,16 +126,15 @@ public class AlarmConfigServiceImpl extends BaseServiceImpl<AlarmConfig, Long> i
 						taskQuery.put("startStatus", TaskStatus.START.getCode());
 						taskQuery.put("notCompletedStatus", TaskStatus.NOTCOMPLETE);
 						int count = this.taskMapper.countNotCompletedByPhaseId(taskQuery);
-						if (count <= 0) {
-							return;
+						if (count > 0) {
+							try {
+								this.sendMail(project, version, phase, null, now);
+							} catch (Exception e) {
+								LOG.error(e.getMessage(), e);
+							}
 						}
-						try {
-							this.sendMail(project, version, phase, null, now);
-							phase.setNotice(true);
-							this.phaseService.updateSelective(phase);
-						} catch (Exception e) {
-							LOG.error(e.getMessage(), e);
-						}
+						phase.setNotice(true);
+						this.phaseService.updateSelective(phase);
 					}
 				});
 			} else if (config.getType().equals(AlarmType.TASK.getValue())) {
@@ -143,7 +142,7 @@ public class AlarmConfigServiceImpl extends BaseServiceImpl<AlarmConfig, Long> i
 				tasks.forEach(task -> {
 					long diff = config.getThreshold() > 0 ? task.getEndDate().getTime() - now.getTime()
 							: now.getTime() - task.getEndDate().getTime();
-					if (diff >= (24 * 60 * 60 * 100 * config.getThreshold())) {
+					if (diff >= (24 * 60 * 60 * 100 * config.getThreshold()) || diff <= 0) {
 						Project project = this.projectService.get(task.getProjectId());
 						ProjectVersion version = this.versionService.get(task.getVersionId());
 						ProjectPhase phase = this.phaseService.get(task.getPhaseId());

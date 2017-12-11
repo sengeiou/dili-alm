@@ -114,6 +114,6 @@
 		FROM
 		project_phase pp
 		INNER JOIN project p ON pp.project_id = p.id WHERE
-		p.project_state = #{projectState}
+		p.project_state = #{projectState} AND pp.notice = 0
 	</select>
 </mapper>

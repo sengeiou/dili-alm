@@ -10,9 +10,7 @@
 		<#project_detailJs />
 	</script>
 <div id="win" style="display: none;"></div>
-<input type="hidden" id="projectId" value="${model.id!}"> <a id="btn" href="#" class="easyui-linkbutton"
-	data-options="iconCls:'icon-search'">项目任务：${model.taskCount!}</a>
-<a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">周报生成</a>
+<a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',onClick:generateWeekly">周报生成</a>
 <a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',onClick:alarmConfig">告警设置</a>
 <a id="btn" href="#" class="easyui-linkbutton" data-options="onClick:showMembers">团队成员：${model.memberCount!}</a>
 
