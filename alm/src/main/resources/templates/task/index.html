@@ -100,10 +100,9 @@
             </table>
             <!-- datagrid工具栏 -->
             <div id="toolbar" style="padding:2px 5px;">
-                <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true"></a>
-                <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()" plain="true"></a>
-                <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true"></a>
-                <a href="#" class="easyui-linkbutton" iconCls="icon-export" onclick="doExport('grid')" plain="true"></a>
+                <#resource code="addTask"> <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true"></a></#resource>
+                <#resource code="updateTask"> <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()" plain="true"></a></#resource>
+                <#resource code="delTask"> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true"></a></#resource>
                 <div style="float:right">
                 边框显示:<select onchange="changeBorder('grid',this.value)">
                     <option value="lines-both">全边框</option>

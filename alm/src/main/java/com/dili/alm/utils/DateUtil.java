@@ -109,10 +109,6 @@ public class DateUtil {
 		
 		return map;
 	}
-	public static void main(String[] args) {
-		
-		System.out.println(getFirstAndFive().get("one"));
-		System.out.println(getFirstAndFive().get("five"));
-	}
+	
 
 }

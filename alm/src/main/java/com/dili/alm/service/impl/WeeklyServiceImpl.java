@@ -120,7 +120,9 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		weeklyPara.setId(Long.parseLong(id));
 		
 		//当前重要风险
-		String weeklyRist=selectWeeklyRist(id);
+		weeklyPara.setStartDate(DateUtil.getFirstAndFive().get("one"));
+		weeklyPara.setEndDate(DateUtil.getFirstAndFive().get("five"));
+		String weeklyRist=selectWeeklyRist(weeklyPara);
 		if(weeklyRist!=null){
 			JSONArray  weeklyRistJson=JSON.parseArray(weeklyRist);
 			map.put("wr", weeklyRistJson.toJavaList(WeeklyJson.class));
@@ -129,7 +131,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		
 		
 		//当前重要问题
-		String weeklyQuestion=selectWeeklyQuestion(id);
+		String weeklyQuestion=selectWeeklyQuestion(weeklyPara);
 		if(weeklyQuestion!=null){
 		JSONArray  weeklyQuestionJson=JSON.parseArray(weeklyQuestion);
 	    map.put("wq", weeklyQuestionJson);
@@ -193,7 +195,9 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 				 user.setId(Long.parseLong(weeklyPara2.getUserName()));
 				 BaseOutput<List<User>>  listByExample = userRpc.listByExample(user);
 				 List<User> listUserParty = listByExample.getData();
+				 if(listUserParty!=null&&listUserParty.size()>0){
 				 weeklyPara2.setUserName(listUserParty.get(0).getUserName());
+				 }
 				 
 				 weeklyPara2.setDate(weeklyPara2.getStartDate() + " 到 " + weeklyPara2.getEndDate());
 				
@@ -236,14 +240,16 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		// 业务方
 		BaseOutput<List<User>>  listByExample = userRpc.listByExample(user);
 		 List<User> listUserParty = listByExample.getData();
-		 pd.setBusinessParty(listUserParty.get(0).getUserName());
+		 if(listUserParty!=null&&listUserParty.size()>0)
+		      pd.setBusinessParty(listUserParty.get(0).getUserName());
 		 
 
 		// 查询项目经理
 		 user.setId(Long.parseLong(pd.getUserName()));
 		 BaseOutput<List<User>>  listUserByExample = userRpc.listByExample(user);
 		 List<User> listUsernName = listUserByExample.getData();
-		 pd.setUserName(listUsernName.get(0).getUserName());
+		 if(listUsernName!=null&&listUsernName.size()>0)
+		    pd.setUserName(listUsernName.get(0).getUserName());
 		
 
 		// 项目所在部门
@@ -251,7 +257,8 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	     department.setId(Long.parseLong(pd.getProjectInDept()));
 	     BaseOutput<List<Department>>   departmentByExample = departmentRpc.list(department);
 		 List<Department> departmentList= departmentByExample.getData();
-		 pd.setProjectInDept(departmentList.get(0).getName());
+		 if(departmentList!=null&&departmentList.size()>0)
+		     pd.setProjectInDept(departmentList.get(0).getName());
 		 
 		 
 		// 查询项目类型
@@ -272,16 +279,16 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	 * 当前重大问题 -
 	 * */
 	@Override
-	public String selectWeeklyQuestion(String id) {
-		return weeklyMapper.selectWeeklyQuestion(id);
+	public String selectWeeklyQuestion(WeeklyPara weeklyPara) {
+		return weeklyMapper.selectWeeklyQuestion(weeklyPara);
 	}
 
 	/**
 	 * 当前重要风险
 	 * */
 	@Override
-	public String selectWeeklyRist(String id) {
-		return weeklyMapper.selectWeeklyRist(id);
+	public String selectWeeklyRist(WeeklyPara weeklyPara) {
+		return weeklyMapper.selectWeeklyRist(weeklyPara);
 	}
 
 	/**
@@ -303,7 +310,8 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			 user.setId(Long.parseLong(td.get(i).getOwner()));
 			 BaseOutput<List<User>>  listByExample = userRpc.listByExample(user);
 			 List<User> listUserParty = listByExample.getData();
-			 td.get(i).setOwner(listUserParty.get(0).getUserName());
+			 if(listUserParty!=null&&listUserParty.size()>0)
+			    td.get(i).setOwner(listUserParty.get(0).getUserName());
 			 
 			// 版本
 			td.get(i).setVersionId(projectVersionMapper.selectByPrimaryKey(Long.parseLong(td.get(i).getVersionId())).getVersion());
@@ -345,7 +353,8 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		     user.setId(Long.parseLong(nextWeeklyDto.getOwner()));
 			 BaseOutput<List<User>>  listByExample = userRpc.listByExample(user);
 			 List<User> listUserParty = listByExample.getData();
-			 nextWeeklyDto.setOwner(listUserParty.get(0).getUserName());
+			 if(listUserParty!=null&&listUserParty.size()>0)
+			   nextWeeklyDto.setOwner(listUserParty.get(0).getUserName());
 		}
 		
 		return nwd;
@@ -420,11 +429,13 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		}
 		WeeklyPara weeklyPara = new WeeklyPara();
 		weeklyPara.setId(Long.parseLong(id));
+		weeklyPara.setStartDate(DateUtil.getFirstAndFive().get("one"));
+		weeklyPara.setEndDate(DateUtil.getFirstAndFive().get("five"));
 		// 当前重要风险
-		String weeklyRist = selectWeeklyRist(id);
+		String weeklyRist = selectWeeklyRist(weeklyPara);
 		JSONArray weeklyRistJson = JSON.parseArray(weeklyRist);
 		// 当前重要风险
-		String weeklyQuestion = selectWeeklyQuestion(id);
+		String weeklyQuestion = selectWeeklyQuestion(weeklyPara);
 		JSONArray weeklyQuestionJson = JSON.parseArray(weeklyQuestion);
 		// 项目总体情况描述
 		WeeklyDetails wDetails = weeklyDetailsService.getWeeklyDetailsByWeeklyId(Long.parseLong(id));
