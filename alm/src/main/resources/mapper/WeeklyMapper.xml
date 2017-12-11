@@ -155,19 +155,19 @@
 
    
    <!-- 本周项目版本 -->
-    <select id="selectProjectVersion" resultType="String" parameterType="Long">
+    <select id="selectProjectVersion" resultType="String" parameterType="com.dili.alm.domain.dto.WeeklyPara">
     
      select  v.version   from  project_version v
           WHERE v.id in 
          ( select     DISTINCT t.version_id   from  task t 
 		   <where>
-		           t.start_date &gt;= subdate(curdate(),date_format(curdate(),'%w')-1)
-		          and  t.end_date &lt;  subdate(curdate(),date_format(curdate(),'%w')-6)
+		           t.start_date &gt;=#{startDate,jdbcType=VARCHAR}
+		          and  t.end_date &lt; #{endDate,jdbcType=VARCHAR}
 		          and  t.start_date &lt; t.end_date 
 		          
 		          
-		      <if test="_parameter != null">
-			     and   t.project_id=#{_parameter,jdbcType=BIGINT}
+		      <if test="id != null">
+			     and   t.project_id=#{id,jdbcType=BIGINT}
 			  </if>
 		   
 		   </where> 
@@ -177,48 +177,30 @@
 		
    </select>
      <!-- 本周项目阶段 -->
-    <select id="selectProjectPhase" resultType="String" parameterType="Long">
+    <select id="selectProjectPhase" resultType="String" parameterType="com.dili.alm.domain.dto.WeeklyPara">
   
           select  v.name   from  project_phase v 
           WHERE v.id in 
          ( select     DISTINCT t.phase_id   from  task t 
 		   <where>
-		           t.start_date &gt;= subdate(curdate(),date_format(curdate(),'%w')-1)
-		          and  t.end_date &lt;  subdate(curdate(),date_format(curdate(),'%w')-6)
+		           t.start_date &gt;=#{startDate,jdbcType=VARCHAR}
+		          and  t.end_date &lt; #{endDate,jdbcType=VARCHAR}
 		          and  t.start_date &lt; t.end_date 
 		          
 		          
-		      <if test="_parameter != null">
-			    and  t.project_id=#{_parameter,jdbcType=BIGINT}
+		      <if test="id != null">
+			    and  t.project_id=#{id,jdbcType=BIGINT}
 			  </if>
 		   
 		   </where> 
          )
    </select>
-      <!-- 下周项目阶段 -->
-    <select id="selectNextProjectPhase" resultType="String" parameterType="Long">
-  
-          select  v.name   from  project_phase v 
-          WHERE v.id in 
-         ( select     DISTINCT t.phase_id   from  task t 
-		   <where>
-		           t.start_date &gt;= subdate(curdate(),date_format(curdate(),'%w')-8)
-		          and  t.end_date &lt;  subdate(curdate(),date_format(curdate(),'%w')-13)
-		          and  t.start_date &lt; t.end_date 
-		          
-		          
-		      <if test="_parameter != null">
-			    and  t.project_id=#{_parameter,jdbcType=BIGINT}
-			  </if>
-		   
-		   </where> 
-         )
-   </select>
+
    
    
    
     <!-- 本周进展情况-->
-   <select id="selectWeeklyProgress"  resultType="com.dili.alm.domain.dto.TaskDto" parameterType="Long">
+   <select id="selectWeeklyProgress"  resultType="com.dili.alm.domain.dto.TaskDto" parameterType="com.dili.alm.domain.dto.WeeklyPara">
        
        select   t.`name`   ,t.phase_id ,t.plan_time ,
 		        t.`owner`, t.version_id   ,
@@ -229,29 +211,29 @@
 		     from  task  t,task_details d
 		      <where>  t.id=d.task_id
 		      
-		         and   t.start_date &gt;= subdate(curdate(),date_format(curdate(),'%w')-1)
-		          and  t.end_date &lt;  subdate(curdate(),date_format(curdate(),'%w')-6)
+		         and   t.start_date &gt;=#{startDate,jdbcType=VARCHAR}
+		          and  t.end_date &lt; #{endDate,jdbcType=VARCHAR}
 		          and  t.start_date &lt; t.end_date 
-		         <if test="_parameter != null">
-			           and  t.project_id=#{_parameter,jdbcType=BIGINT}
+		         <if test="id != null">
+			           and  t.project_id=#{id,jdbcType=BIGINT}
 			     </if>
 		       
 		      </where> 
    </select>
       <!-- 下周工作计划-->
-   <select id="selectNextWeeklyProgress"  resultType="com.dili.alm.domain.dto.NextWeeklyDto" parameterType="Long">
+   <select id="selectNextWeeklyProgress"  resultType="com.dili.alm.domain.dto.NextWeeklyDto" parameterType="com.dili.alm.domain.dto.WeeklyPara">
        
        select   t.`name`  ,t.plan_time ,
 		        t.`owner`, t.describe  ,t.end_date
 		
 		     from  task  t
 		      <where>  
-		           t.start_date &gt;= subdate(curdate(),date_format(curdate(),'%w')-8)
-		          and  t.end_date &lt;  subdate(curdate(),date_format(curdate(),'%w')-13)
+		           t.start_date &gt;=#{startDate,jdbcType=VARCHAR}
+		          and  t.end_date &lt; #{endDate,jdbcType=VARCHAR}
 		          and  t.start_date &lt; t.end_date 
 		          
-		         <if test="_parameter != null">
-			           and  t.project_id=#{_parameter,jdbcType=BIGINT}
+		         <if test="id != null">
+			           and  t.project_id=#{id,jdbcType=BIGINT}
 			     </if>
 		       
 		      </where> 
@@ -285,7 +267,7 @@
 		         from  weekly  w
 		      <where>  
 		         
-		          w.start_date &gt;#{startDate,jdbcType=VARCHAR}
+		          w.start_date &gt;=#{startDate,jdbcType=VARCHAR}
 		          and  w.end_date &lt;#{endDate,jdbcType=VARCHAR}
 		          and  w.start_date &lt; w.end_date 
 			    <if test="id != null">
