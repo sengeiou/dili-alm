@@ -109,13 +109,7 @@ public class DateUtil {
 		
 		return map;
 	}
-	public static void main(String[] args) {
-		 System.out.println(getNextMonday(new Date()));
-		 System.out.println(getNextFive(new Date()));
-		
 
-		
-    }
 	// 获得当前日期与本周日相差的天数  
 	private static int getMondayPlus(Date gmtCreate) {  
 	    Calendar cd = Calendar.getInstance();  
