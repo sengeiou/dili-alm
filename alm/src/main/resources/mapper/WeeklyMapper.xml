@@ -162,7 +162,7 @@
          ( select     DISTINCT t.version_id   from  task t 
 		   <where>
 		           t.start_date &gt;=#{startDate,jdbcType=VARCHAR}
-		          and  t.end_date &lt; #{endDate,jdbcType=VARCHAR}
+		          and  t.end_date &lt;=#{endDate,jdbcType=VARCHAR}
 		          and  t.start_date &lt; t.end_date 
 		          
 		          
@@ -184,7 +184,7 @@
          ( select     DISTINCT t.phase_id   from  task t 
 		   <where>
 		           t.start_date &gt;=#{startDate,jdbcType=VARCHAR}
-		          and  t.end_date &lt; #{endDate,jdbcType=VARCHAR}
+		          and  t.end_date &lt;= #{endDate,jdbcType=VARCHAR}
 		          and  t.start_date &lt; t.end_date 
 		          
 		          
@@ -203,7 +203,7 @@
          ( select     DISTINCT t.phase_id   from  task t 
 		   <where>
 		           t.start_date &gt;=#{startDate,jdbcType=VARCHAR}
-		          and  t.end_date &lt;  #{endDate,jdbcType=VARCHAR}
+		          and  t.end_date &lt;= #{endDate,jdbcType=VARCHAR}
 		          and  t.start_date &lt; t.end_date 
 		          
 		      <if test="id != null">
@@ -229,7 +229,7 @@
 		      <where>  t.id=d.task_id
 		      
 		         and   t.start_date &gt;=#{startDate,jdbcType=VARCHAR}
-		          and  t.end_date &lt; #{endDate,jdbcType=VARCHAR}
+		          and  t.end_date &lt;= #{endDate,jdbcType=VARCHAR}
 		          and  t.start_date &lt; t.end_date 
 		         <if test="id != null">
 			           and  t.project_id=#{id,jdbcType=BIGINT}
@@ -246,7 +246,7 @@
 		     from  task  t
 		      <where>  
 		           t.start_date &gt;=#{startDate,jdbcType=VARCHAR}
-		          and  t.end_date &lt; #{endDate,jdbcType=VARCHAR}
+		          and  t.end_date &lt;= #{endDate,jdbcType=VARCHAR}
 		          and  t.start_date &lt; t.end_date 
 		          
 		         <if test="id != null">
@@ -264,7 +264,7 @@
 		      <where>
 		      
 		        w.start_date &gt;=#{startDate,jdbcType=VARCHAR}
-		          and  w.end_date &lt;#{endDate,jdbcType=VARCHAR}
+		          and  w.end_date &lt;=#{endDate,jdbcType=VARCHAR}
 		          and  w.start_date &lt; w.end_date 
 			    <if test="id != null">
 		         and      w.id = #{id,jdbcType=VARCHAR}
@@ -285,7 +285,7 @@
 		      <where>  
 		         
 		          w.start_date &gt;=#{startDate,jdbcType=VARCHAR}
-		          and  w.end_date &lt;#{endDate,jdbcType=VARCHAR}
+		          and  w.end_date &lt;=#{endDate,jdbcType=VARCHAR}
 		          and  w.start_date &lt; w.end_date 
 			    <if test="id != null">
 		          and      w.id = #{id,jdbcType=VARCHAR}
