@@ -26,6 +26,8 @@ public class ProjectPhaseEntity extends BaseDomain implements ProjectPhase {
 
 	private Integer phaseState;
 
+	private Boolean notice;
+
 	@Override
 	public String getName() {
 		return this.name;
@@ -147,12 +149,12 @@ public class ProjectPhaseEntity extends BaseDomain implements ProjectPhase {
 	}
 
 	@Override
-	public Integer getPhaseState() {
-		return phaseState;
+	public Boolean getNotice() {
+		return notice;
 	}
 
 	@Override
-	public void setPhaseState(Integer phaseState) {
-		this.phaseState = phaseState;
+	public void setNotice(Boolean notice) {
+		this.notice = notice;
 	}
 }
