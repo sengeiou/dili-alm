@@ -11,8 +11,6 @@ import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.apply.ApplyFiles;
-import com.dili.alm.rpc.RoleRpc;
-import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.FilesService;
@@ -20,9 +18,14 @@ import com.dili.alm.service.ProjectApplyService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.util.SystemConfigUtils;
 import com.dili.sysadmin.sdk.session.SessionContext;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
@@ -39,6 +42,8 @@ import java.util.Locale;
 @Service
 public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long> implements ProjectApplyService {
 
+    protected static final Logger LOGGER = LoggerFactory.getLogger(ProjectApplyServiceImpl.class);
+
     @Autowired
     private ProjectNumberGenerator projectNumberGenerator;
     @Autowired
@@ -48,10 +53,7 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
     private FilesService filesService;
 
     @Autowired
-    private UserRpc userRpc;
-
-    @Autowired
-    private RoleRpc roleRpc;
+    private JavaMailSender mailSender;
 
     @Autowired
     private ApproveService approveService;
@@ -110,12 +112,26 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
             as.setType(AlmConstants.ApproveType.APPLY.getCode());
 
             approveService.insertBefore(as);
+            sendMail(projectApply);
         }
 
         this.updateSelective(projectApply);
         return BaseOutput.success(String.valueOf(projectApply.getId()));
     }
 
+    public void sendMail(ProjectApply projectApply) {
+        try {
+            String[] sendTo = projectApply.getEmail().split(",");
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo("yanggang@diligrp.com");
+            message.setFrom(SystemConfigUtils.getProperty("spring.mail.username"));
+            message.setSubject("立项申请");
+            message.setText(projectApply.getName() + "的立项申请已经提交成功");
+            mailSender.send(message);
+        } catch (Exception e) {
+            LOGGER.error("邮件发送出错:", e);
+        }
+    }
     @Override
     public Long reApply(Long id) {
         ProjectApply apply = get(id);
