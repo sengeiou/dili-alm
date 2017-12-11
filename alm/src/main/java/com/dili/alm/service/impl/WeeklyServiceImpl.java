@@ -560,26 +560,42 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	    return  map;
 	}
 
-	public   Weekly insertWeeklyByprojectId(String projectId) {
+	public  Map<String, Weekly> insertWeeklyByprojectId(String projectId) {
+		
+		Map<String, Weekly>  map=new HashMap<String, Weekly>();
+		
 		Weekly wk=DTOUtils.newDTO(Weekly.class);
-		wk=weeklyMapper.selectByPrimaryKey(Long.parseLong(projectId));
-		if(wk==null&&wk.getId()<0){
-			wk.setProjectId(Long.parseLong(projectId));
-			wk.setCreated(new Date());
-			wk.setModified(null);
-			wk.setStartDate(DateUtil.getStrDate(DateUtil.getFirstAndFive().get("one")+" 00:00:00"));
-			wk.setEndDate(DateUtil.getStrDate(DateUtil.getFirstAndFive().get("five")+" 23:59:59"));
-			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		WeeklyPara weeklyPara= new WeeklyPara();
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		weeklyPara.setStartDate(DateUtil.getFirstAndFive().get("one") +" 00:00:00");
+		weeklyPara.setEndDate  (DateUtil.getFirstAndFive().get("five")+" 23:59:59");
+		if(userTicket!=null){
+			weeklyPara.setUserId(userTicket.getId());
+		}
+		weeklyPara.setProjectId(Long.parseLong(projectId));
+		
+	    wk = weeklyMapper.selecByProjectId(weeklyPara);
+	    Weekly wkk=DTOUtils.newDTO(Weekly.class);
+		if(wk==null){
+			wkk.setProjectId(Long.parseLong(projectId));
+			wkk.setCreated(new Date());
+			wkk.setModified(null);
+			wkk.setStartDate(DateUtil.getStrDate(DateUtil.getFirstAndFive().get("one")+" 00:00:00"));
+			wkk.setEndDate(DateUtil.getStrDate(DateUtil.getFirstAndFive().get("five")+" 23:59:59"));
+			
 			if (userTicket != null) {
 				wk.setCreateMemberId(userTicket.getId());
-				//wk.setModifyMemberId(userTicket.getId());
+				wk.setModifyMemberId(userTicket.getId());
 			}
 	
-			weeklyMapper.insertSelective(wk);
+			weeklyMapper.insertSelective(wkk);
+			map.put("one", wkk);
+				
 		}else{
-			wk=null;
+			map.put("two", wk);
 		}
-		return wk;
+		map.put("three",  DTOUtils.newDTO(Weekly.class));
+		return map;
 	}
 
 	

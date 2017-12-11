@@ -33,6 +33,29 @@
     from weekly
     where id = #{id,jdbcType=BIGINT}
   </select>
+  
+   <select id="selecByProjectId" resultType="com.dili.alm.domain.Weekly" parameterType="com.dili.alm.domain.dto.WeeklyPara">
+         select  w.id  as 'id',w.project_id as 'projectId'
+          
+		   from  weekly  w
+		   
+		 <where>
+		        1=1
+		     <if test="projectId != null">
+			    and  w.project_id=#{projectId,jdbcType=BIGINT}
+			</if>
+			 <if test="startDate!=null and startDate!=''">
+	           and w.start_date &gt;=#{startDate,jdbcType=VARCHAR}
+			</if> 
+			<if test="endDate!=null and endDate!=''">
+			   and  w.end_date   &lt;=#{endDate,jdbcType=VARCHAR}
+			</if>
+		   <if test="userId != null">
+            AND   w.create_member_id = #{userId,jdbcType=BIGINT}
+           </if>
+		</where> 
+   </select>
+   
   <update id="updateBy" parameterType="com.dili.alm.domain.Weekly">
     <!--
       WARNING - @mbg.generated

@@ -29,7 +29,21 @@ public class WeeklyPara  {
 	private String question;
 	
 	private String applyId;
+	private Long  userId;
+	private Long  projectId;
 	
+	public Long getProjectId() {
+		return projectId;
+	}
+	public void setProjectId(Long projectId) {
+		this.projectId = projectId;
+	}
+	public Long getUserId() {
+		return userId;
+	}
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
 	public String getApplyId() {
 		return applyId;
 	}
