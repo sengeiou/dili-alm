@@ -153,12 +153,12 @@ public class WordExport {
 		XWPFTableRow otherTableRow = tableOther.getRow(0);
 		;
 		otherTableRow.getCell(0).setText("预期偏差");
-		otherTableRow.addNewTableCell().setText(wDetails.getExpectedDeviation());
+		otherTableRow.addNewTableCell().setText(wDetails!=null?wDetails.getExpectedDeviation():"");
 		otherTableRow.addNewTableCell();
 		mergeCellsHorizontal(tableOther, 0, 1, 2);
 		XWPFTableRow otherTableRowone = tableOther.createRow();
 		otherTableRowone.getCell(0).setText("其他");
-		otherTableRowone.getCell(1).setText(wDetails.getOther());
+		otherTableRowone.getCell(1).setText(wDetails!=null?wDetails.getOther():"");
 		otherTableRowone.getCell(2);
 		mergeCellsHorizontal(tableOther, 1, 1, 2);
 	}
@@ -380,7 +380,7 @@ public class WordExport {
 		getParagraph(comTableRowFive.getCell(0), "项目总体情况描述");
 
 		XWPFTableRow comTableRowsix = ComTable.createRow();
-		getParagraph(comTableRowsix.getCell(0), wDetails.getProjectDescription());
+		getParagraph(comTableRowsix.getCell(0), wDetails!=null?wDetails.getProjectDescription():"");
 
 		mergeCellsHorizontal(ComTable, 3, 0, 5);
 		mergeCellsHorizontal(ComTable, 4, 0, 5);

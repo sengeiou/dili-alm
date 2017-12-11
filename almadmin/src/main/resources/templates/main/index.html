@@ -61,9 +61,8 @@
         <!--页面主体内容-->
         <div data-options="region:'center'" style="height:100%;padding:15px 15px 0;border: none;">
            <iframe id="homeIndex" scrolling="auto" frameborder="0"  src="http://127.0.0.1:8083/alm/home/index" style="width:100%; height: 99.6%; display:none;"></iframe>
-           <div id="tabs" class="easyui-tabs"  fit="true" border="false" style="display: none;">
+           <div id="tabs" style="width:100%; height: 99.6%;display: none;">
 		   </div>
-	       
         </div>
     </div>
     <!--用户菜单-->
@@ -130,35 +129,9 @@
 		if(id!=null&&id!=''){
 			$("#"+id+"").parent().addClass("on");
 		}
-
-		
-        if ($('#tabs').tabs('exists', title)) {
-            $('#tabs').tabs('select', title);
-        } else {
-            var tabs = $('#tabs').tabs("tabs");
-            if (4 > tabs.length) {
-                addOneTab(title, url);
-            } else {
-                $.messager.alert('提示', '已打开的功能面板过多，请先关闭无用面板');
-            }
-        }
+        addOneTab(title, url);   
     }
-
-    function panelLoaded() {
-        window.setTimeout(function() {
-            setHoverTabs();
-        }, 100);
-
-    }
-
-    function disableHover() {
-        var tabs = $('#tabs').tabs('tabs');
-
-        for (var i = 0; i < tabs.length; i++) {
-            tabs[i].panel('options').tab.unbind();
-        }
-    }
-
+    
     function addOneTab(title, url) {
         if ("用户信息" == title) {
             url = "${contextPath}/main/userDetail.html";
@@ -166,23 +139,8 @@
         } else if ("修改密码" == title) {
             url = "${contextPath}/main/changePwd.html"
         }
-
-        var content = '<iframe scrolling="auto" frameborder="0"  src="' + url + '" onLoad="panelLoaded()" style="width:100%; height: 99.6%;"></iframe>';
-
-        $('#tabs').tabs('add', {
-            title: title,
-            content: content,
-            cache: false,
-            closable: true
-
-        });
-
-    }
-
-    function closeTab(title) {
-        if ($('#tabs').tabs('exists', title)) {
-            $('#tabs').tabs('close', title);
-        }
+        $("#tabs").empty();
+        $("#tabs").append('<iframe scrolling="auto" frameborder="0"  src="' + url + '"  style="width:100%; height: 99.6%;"></iframe>');
     }
 
     function backToLogin() {
@@ -199,14 +157,6 @@
         });
     }
 
-    function setHoverTabs() {
-        var tabs = $('#tabs').tabs('tabs');
-        for (var i = 0; i < tabs.length; i++) {
-            tabs[i].panel('options').tab.unbind().bind('mouseenter', { index: i }, function(e) {
-                $('#tabs').tabs('select', e.data.index);
-            });
-        }
-    }
 
     /**顶部header滑动下拉**/
     $(function () {
@@ -278,15 +228,7 @@
     		var title ="消息管理";
     		var url =obj.rel;
     		var id = obj.id;
-            var tabs = $('#tabs').tabs("tabs");
-            if (4 > tabs.length) {
-            	updateMessageIsRead(id,title,url);
-            } else {
-                $.messager.alert('提示', '已打开的功能面板过多，请先关闭无用面板');
-                messagesListen();
-            }
-           
-
+            updateMessageIsRead(id,title,url);
     	}
     	function updateMessageIsRead(id,title,url){
     		$.ajax(
