@@ -63,10 +63,12 @@
                 <tr>
                     <td><input class="easyui-textbox" type="text" name="developmentManager" id="developmentManager"
                                data-options="required:true,label:'*研发经理:',buttonText:'选择',
-									onClickButton:selectMember,onChange:_changeTextboxShowClear"></td>
-                    <td><input class="easyui-textbox" type="text" name="testManager" id="testManager" data-options="required:true,label:'*测试经理:',buttonText:'选择',
 									onClickButton:function(){
 										selectMember('editorCallback', 'developmentManager');
+									},onChange:_changeTextboxShowClear"></td>
+                    <td><input class="easyui-textbox" type="text" name="testManager" id="testManager" data-options="required:true,label:'*测试经理:',buttonText:'选择',
+									onClickButton:function(){
+										selectMember('editorCallback', 'testManager');
 									},onChange:_changeTextboxShowClear"></td>
                 </tr>
                 <tr>
