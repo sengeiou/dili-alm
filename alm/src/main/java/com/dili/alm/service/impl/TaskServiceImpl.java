@@ -114,9 +114,9 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		memberProvider.put("provider", "memberProvider");
 		metadata.put("owner", memberProvider);
 		
-		JSONObject taskStatusProvider = new JSONObject();
-		taskStatusProvider.put("provider", "taskStateProvider");
-		metadata.put("status", taskStatusProvider);
+		JSONObject taskStateProvider = new JSONObject();
+		taskStateProvider.put("provider", "taskStateProvider");
+		metadata.put("status", taskStateProvider);
 		
 		JSONObject taskTypeProvider = new JSONObject();
 		taskTypeProvider.put("provider", "taskTypeProvider");
@@ -142,9 +142,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			TaskEntity dto = new TaskEntity(task);
 			//流程
 			dto.setFlowStr(task.getFlow()?"正常流程":"修改流程");
-			//状态
-			Integer status=task.getStatus();
-			dto.setStatusStr(status);
 			//计划周期
 			String planDays=this.dateToString(task.getStartDate())+
 					                               "至"+this.dateToString(task.getEndDate());
