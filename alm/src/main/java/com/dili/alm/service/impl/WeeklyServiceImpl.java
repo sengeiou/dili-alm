@@ -103,8 +103,6 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		//本周项目阶段
 		List<String> projectPhase=selectProjectPhase(weeklyPara);
 		map.put("pp", StringUtils.join(projectPhase.toArray(),","));
-		
-		
 		//本周进展情况 
 		List<TaskDto> td=selectWeeklyProgress(weeklyPara);
 		for (int i = 0; i < td.size(); i++) {
@@ -120,7 +118,6 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		}else
 			map.put("wr", null);
 		
-		
 		//当前重要问题
 		String weeklyQuestion=selectWeeklyQuestion(weeklyPara);
 		if(weeklyQuestion!=null){
@@ -129,6 +126,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		}else{
 			 map.put("wq", null);
 		}
+		
 		weeklyPara.setId(Long.parseLong(pd.getProjectId()));
 		weeklyPara.setStartDate(DateUtil.getNextMonday(new Date())+" 00:00:00");
 		weeklyPara.setEndDate(DateUtil.getNextFive(new Date())+" 23:59:59");

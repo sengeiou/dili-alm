@@ -195,24 +195,7 @@
 		   </where> 
          )
    </select>
-      <!-- 下周项目阶段 -->
-    <select id="selectNextProjectPhase" resultType="String" parameterType="com.dili.alm.domain.dto.WeeklyPara">
-  
-          select  v.name   from  project_phase v 
-          WHERE v.id in 
-         ( select     DISTINCT t.phase_id   from  task t 
-		   <where>
-		           t.start_date &gt;=#{startDate,jdbcType=VARCHAR}
-		          and  t.end_date &lt;  #{endDate,jdbcType=VARCHAR}
-		          and  t.start_date &lt; t.end_date 
-		          
-		      <if test="id != null">
-			    and  t.project_id=#{id,jdbcType=BIGINT}
-			  </if>
-		   
-		   </where> 
-         )
-   </select>
+
    
    
    
