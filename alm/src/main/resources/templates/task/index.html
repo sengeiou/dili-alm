@@ -39,7 +39,7 @@
                             <td style="padding:5px;">
                             <input  name="status" id="status"  class="easyui-combobox"style="width: 100%;"  panelWidth="auto" panelHeight="auto"  data-options="label:'状态:'">
                                 <#comboProvider _id="status" _table="data_dictionary_value"
-								_valueField="id" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":16}' />
+								_valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":16}' />
                             </td>
                         </tr>
                         <tr>
@@ -84,7 +84,7 @@
                             计划工时
                         </th>
 
-                        <th data-options="field:'status',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'status',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',_provider:'taskStateProvider'">
                             状态
                         </th>
                        <th data-options="field:'progress', formatter:progressFormatter,order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -166,7 +166,7 @@
                 <td style="padding:5px;">
                      <input  name="_type" id="_type"  class="easyui-combobox"style="width: 100%;"  panelWidth="auto" panelHeight="auto"  data-options="label:'任务类型:'">
                                <#comboProvider _id="_type" _table="data_dictionary_value"
-								_valueField="id" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":17}' />
+								_valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":17}' />
                 </td>
             </tr>
             <tr>
@@ -310,20 +310,20 @@
 /*             $('#_progress').progressbar({
  			    value: formData._progress;
  			}); */
-            if(formData._status==70){
+            if(formData._status==0){
             	$("#task_detail").hide();
             	$("#doTask").show();
             	$("#pauseTask").hide();
             	$("#updateDetail").hide();
             }
-            if(formData._status==72){
+            if(formData._status==2){
             	$("#task_detail").show();
             	$("#doTask").show();
             	$("#pauseTask").hide();
             	$("#updateDetail").hide();
             }
             
-            if(formData._status==71){
+            if(formData._status==1){
             	$('#_progressShow').progressbar({
             	    value: parseInt(formData._progress)
             	});
@@ -336,7 +336,7 @@
             	getDetailInfo(formData._id);
             }
             
-            if(formData._status==73){
+            if(formData._status==3){
             	$('#_progressShow').progressbar({
             	    value: parseInt(formData._progress)
             	});

@@ -59,6 +59,6 @@ public class TaskTypeProvider implements ValueProvider, ApplicationListener<Cont
 	public String getDisplayText(Object obj, Map metaMap, FieldMeta fieldMeta) {
 		if (obj == null || obj.equals(""))
 			return null;
-		return AlmCache.PROJECT_TYPE_MAP.get(obj.toString());
+		return AlmCache.TASK_TYPE_MAP.get(obj.toString());
 	}
 }
