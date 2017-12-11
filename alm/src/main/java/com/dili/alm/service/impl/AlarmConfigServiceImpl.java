@@ -169,7 +169,7 @@ public class AlarmConfigServiceImpl extends BaseServiceImpl<AlarmConfig, Long> i
 		helper.setTo(receiver.getEmail());
 		helper.setSubject("主题：" + project.getName() + "项目进度告警");
 		StringBuilder sb = new StringBuilder();
-		sb.append("项目名称：").append(project.getName()).append(version.getVersion()).append("\r\n所属阶段:")
+		sb.append("项目名称：").append(project.getName()).append(version.getVersion()).append("\r\n所属阶段：")
 				.append(AlmCache.PHASE_NAME_MAP.get(phase.getName()));
 		if (task != null) {
 			sb.append("\r\n任务名称：").append(task.getName()).append("\r\n计划结束日期：").append(sdf.format(task.getEndDate()));
