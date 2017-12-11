@@ -8,8 +8,11 @@ import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.ProjectCompleteService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.util.SystemConfigUtils;
 import com.dili.sysadmin.sdk.session.SessionContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -23,6 +26,9 @@ public class ProjectCompleteServiceImpl extends BaseServiceImpl<ProjectComplete,
 
     @Autowired
     private ApproveService approveService;
+
+    @Autowired
+    private JavaMailSender mailSender;
 
     public ProjectCompleteMapper getActualDao() {
         return (ProjectCompleteMapper) getDao();
@@ -51,6 +57,21 @@ public class ProjectCompleteServiceImpl extends BaseServiceImpl<ProjectComplete,
             as.setProjectType(projectComplete.getType());
 
             approveService.insertBefore(as);
+            sendMail(projectComplete);
+        }
+    }
+
+    public void sendMail(ProjectComplete complete) {
+        try {
+            String[] sendTo = complete.getEmail().split(",");
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo("yanggang@diligrp.com");
+            message.setFrom(SystemConfigUtils.getProperty("spring.mail.username"));
+            message.setSubject("结项申请");
+            message.setText(complete.getName() + "的结项申请已经提交成功");
+            mailSender.send(message);
+        } catch (Exception e) {
+            LOGGER.error("邮件发送出错:", e);
         }
     }
 

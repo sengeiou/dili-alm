@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="mapper.ProjectPhaseMapper">
+<mapper namespace="com.dili.alm.dao.ProjectPhaseMapper">
 	<resultMap id="BaseResultMap" type="com.dili.alm.domain.ProjectPhase">
 		<!-- WARNING - @mbg.generated -->
 		<id column="id" jdbcType="BIGINT" property="id" />
@@ -107,13 +107,13 @@
 		pp.notice
 	</sql>
 
-	<select id="selectByProjectState" resultMap="BaseResultMap"
-		parameterType="Integer">
+	<select id="selectByProjectState" parameterType="Integer"
+		resultMap="BaseResultMap">
 		SELECT
 		<include refid="Join_Column_List" />
 		FROM
 		project_phase pp
 		INNER JOIN project p ON pp.project_id = p.id WHERE
-		p.project_state = #{projectStatus}
+		p.project_state = #{projectState} AND pp.notice = 0
 	</select>
 </mapper>

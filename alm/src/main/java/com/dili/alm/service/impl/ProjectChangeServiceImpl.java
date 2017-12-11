@@ -5,16 +5,16 @@ import com.dili.alm.dao.ProjectChangeMapper;
 import com.dili.alm.domain.Approve;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectChange;
-import com.dili.alm.rpc.RoleRpc;
-import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.ApproveService;
-import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.ProjectChangeService;
 import com.dili.alm.service.ProjectService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.util.SystemConfigUtils;
 import com.dili.sysadmin.sdk.session.SessionContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -27,14 +27,7 @@ import java.util.Date;
 public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Long> implements ProjectChangeService {
 
     @Autowired
-    private DataDictionaryService dataDictionaryService;
-
-    @Autowired
-    private RoleRpc roleRpc;
-
-    @Autowired
-    private UserRpc userRpc;
-
+    private JavaMailSender mailSender;
     @Autowired
     private ApproveService approveService;
 
@@ -67,6 +60,20 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
             as.setExtend(change.getType());
 
             approveService.insertBefore(as);
+            sendMail(change);
+        }
+    }
+    public void sendMail(ProjectChange change) {
+        try {
+            String[] sendTo = change.getEmail().split(",");
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo("yanggang@diligrp.com");
+            message.setFrom(SystemConfigUtils.getProperty("spring.mail.username"));
+            message.setSubject("变更申请");
+            message.setText(change.getProjectName() + "的变更申请[" + change.getName() + "]已经提交成功");
+            mailSender.send(message);
+        } catch (Exception e) {
+            LOGGER.error("邮件发送出错:", e);
         }
     }
 

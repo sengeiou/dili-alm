@@ -147,10 +147,10 @@
 		WHERE p.project_state = 1
 	</select>
 
-	<select id="countByPhaseIdAndStatus" parameterType="java.util.Map"
+	<select id="countNotCompletedByPhaseId" parameterType="java.util.Map"
 		resultType="Integer">
 		select count(*) from task where (status = #{startStatus} or
 		status =
-		#{notCompletedStatus}) and phaseId = #{phaseId}
+		#{notCompletedStatus}) and phase_id = #{phaseId}
 	</select>
 </mapper>

@@ -118,7 +118,7 @@ public class AlarmConfigServiceImpl extends BaseServiceImpl<AlarmConfig, Long> i
 				phases.forEach(phase -> {
 					long diff = config.getThreshold() > 0 ? phase.getPlannedEndDate().getTime() - now.getTime()
 							: now.getTime() - phase.getPlannedEndDate().getTime();
-					if (diff >= (24 * 60 * 60 * 100 * config.getThreshold())) {
+					if (diff >= (24 * 60 * 60 * 100 * config.getThreshold()) || diff <= 0) {
 						Project project = this.projectService.get(phase.getProjectId());
 						ProjectVersion version = this.versionService.get(phase.getVersionId());
 						Map<String, Object> taskQuery = new HashMap<>();
@@ -126,16 +126,15 @@ public class AlarmConfigServiceImpl extends BaseServiceImpl<AlarmConfig, Long> i
 						taskQuery.put("startStatus", TaskStatus.START.getCode());
 						taskQuery.put("notCompletedStatus", TaskStatus.NOTCOMPLETE);
 						int count = this.taskMapper.countNotCompletedByPhaseId(taskQuery);
-						if (count <= 0) {
-							return;
+						if (count > 0) {
+							try {
+								this.sendMail(project, version, phase, null, now);
+							} catch (Exception e) {
+								LOG.error(e.getMessage(), e);
+							}
 						}
-						try {
-							this.sendMail(project, version, phase, null, now);
-							phase.setNotice(true);
-							this.phaseService.updateSelective(phase);
-						} catch (Exception e) {
-							LOG.error(e.getMessage(), e);
-						}
+						phase.setNotice(true);
+						this.phaseService.updateSelective(phase);
 					}
 				});
 			} else if (config.getType().equals(AlarmType.TASK.getValue())) {
@@ -143,7 +142,7 @@ public class AlarmConfigServiceImpl extends BaseServiceImpl<AlarmConfig, Long> i
 				tasks.forEach(task -> {
 					long diff = config.getThreshold() > 0 ? task.getEndDate().getTime() - now.getTime()
 							: now.getTime() - task.getEndDate().getTime();
-					if (diff >= (24 * 60 * 60 * 100 * config.getThreshold())) {
+					if (diff >= (24 * 60 * 60 * 100 * config.getThreshold()) || diff <= 0) {
 						Project project = this.projectService.get(task.getProjectId());
 						ProjectVersion version = this.versionService.get(task.getVersionId());
 						ProjectPhase phase = this.phaseService.get(task.getPhaseId());
@@ -169,7 +168,7 @@ public class AlarmConfigServiceImpl extends BaseServiceImpl<AlarmConfig, Long> i
 		helper.setTo(receiver.getEmail());
 		helper.setSubject("主题：" + project.getName() + "项目进度告警");
 		StringBuilder sb = new StringBuilder();
-		sb.append("项目名称：").append(project.getName()).append(version.getVersion()).append("\r\n所属阶段:")
+		sb.append("项目名称：").append(project.getName()).append(version.getVersion()).append("\r\n所属阶段：")
 				.append(AlmCache.PHASE_NAME_MAP.get(phase.getName()));
 		if (task != null) {
 			sb.append("\r\n任务名称：").append(task.getName()).append("\r\n计划结束日期：").append(sdf.format(task.getEndDate()));

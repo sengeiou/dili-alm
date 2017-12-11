@@ -467,6 +467,11 @@ function alarmConfig() {
 			});
 }
 
+function generateWeekly() {
+	debugger;
+	window.location.href = '${contextPath!}/weekly/getDescAddByProjectId?id=' + $('#projectId').val();
+}
+
 $(function() {
 			var uploadObj = $("#uploadDiv").uploadFile({
 						url : "${contextPath!}/files/filesUpload?projectId=" + $('#projectId').val(), // 文件上传url
