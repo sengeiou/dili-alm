@@ -108,7 +108,7 @@
 	</sql>
 
 	<select id="selectByProjectState" resultMap="BaseResultMap"
-		resultType="Integer">
+		parameterType="Integer">
 		SELECT
 		<include refid="Join_Column_List" />
 		FROM
