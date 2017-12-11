@@ -29,7 +29,6 @@ import com.dili.alm.domain.TaskDetails;
 import com.dili.alm.domain.TaskEntity;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
-import com.dili.alm.domain.dto.TaskSelectDto;
 import com.dili.alm.domain.dto.apply.ApplyMajorResource;
 import com.dili.alm.domain.dto.apply.ApplyRelatedResource;
 import com.dili.alm.service.DataDictionaryService;
@@ -338,15 +337,22 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	    return this.update(task);
 	}
 
+	/**
+	 * 调度器任务
+	 */
 	@Override
-	public int notComplateStatus(Task task) {
-		int days = Integer.parseInt(DateUtil.getDatePoor(new Date(), task.getEndDate()).trim());
-		if (days<=0) {
-			task.setStatus(TaskStatus.NOTCOMPLETE.code);// 更新状态为未完成
-			task.setModified(new Date());
-			return this.update(task);
-		}else{
-			return 14;
+	public void notComplateTask() {
+		Task  taskSelect  = DTOUtils.newDTO(Task.class);
+		//查询任务表里 项目下的所有任务
+		List<Task> taskList = this.list(taskSelect);
+		for (Task taskDome: taskList){
+			//dateUtil 计算相差天数小于0，更新状态为未完成
+			int days = Integer.parseInt(DateUtil.getDatePoor(new Date(), taskDome.getEndDate()).trim());
+			if (days<=0) {
+				taskDome.setStatus(TaskStatus.NOTCOMPLETE.code);// 更新状态为未完成
+				taskDome.setModified(new Date());
+				this.update(taskDome);
+			}
 		}
 	}
 

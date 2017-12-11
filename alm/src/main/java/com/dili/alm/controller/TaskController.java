@@ -1,16 +1,12 @@
 package com.dili.alm.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.dili.alm.constant.AlmConstants.TaskStatus;
 import com.dili.alm.domain.Project;
-import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.ProjectPhase;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.TaskDetails;
 import com.dili.alm.domain.User;
-import com.dili.alm.domain.dto.apply.ApplyMajorResource;
-import com.dili.alm.domain.dto.apply.ApplyRelatedResource;
 import com.dili.alm.service.ProjectApplyService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.ProjectVersionService;
@@ -27,12 +23,8 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -288,23 +280,5 @@ public class TaskController {
 		return BaseOutput.success("已暂停任务");
 	}
 	
-	
-	//更改未完成状态
-	@ApiOperation("未完成状态")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "pauseTaskStatus", paramType = "form", value = "TaskDetails的form信息", required = true, dataType = "string") })
-	@RequestMapping(value = "/notComplateStatus", method = { RequestMethod.GET,
-			RequestMethod.POST })
-	public @ResponseBody BaseOutput notComplateStatus(Long id) {
-/*		UserTicket userTicket = SessionContext.getSessionContext()
-				.getUserTicket();*/
-/*		task.setModifyMemberId(userTicket.getId());*/
-		Task task = taskService.get(id);
-		if (taskService.notComplateStatus(task)==14) {
-			return null;
-		}else{
-			return BaseOutput.success("任务已过期");
-		}
-		
-	}
 
 }
