@@ -78,4 +78,20 @@ public class AlmConstants {
 		}
 
 	}
+	
+	//状态
+	public enum TaskStatus{
+		
+		NOTSTART(70),START(71),PAUSE(72),COMPLETE(73),NOTCOMPLETE(74);
+		
+		public int code;
+		
+		TaskStatus(int code) {
+			this.code = code;
+		}
+		
+		public int getCode() {
+			return code;
+		}
+	}
 }

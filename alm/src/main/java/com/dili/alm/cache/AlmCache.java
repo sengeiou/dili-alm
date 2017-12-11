@@ -20,6 +20,10 @@ public class AlmCache {
 	// 项目状态
 	public static final Map<String, String> PROJECT_STATE_MAP = new ConcurrentHashMap<>();
 
+	// 任务状态
+	public static final Map<String, String> TASK_STATE_MAP = new ConcurrentHashMap<>();
+	// 任务类型
+	public static final Map<String, String> TASK_TYPE_MAP = new ConcurrentHashMap<>();
 	// 阶段名称
 	public static final Map<String, String> PHASE_NAME_MAP = new ConcurrentHashMap<>();
 

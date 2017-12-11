@@ -24,6 +24,8 @@
     <result column="modified" jdbcType="TIMESTAMP" property="modified" />
     <result column="create_member_id" jdbcType="BIGINT" property="createMemberId" />
     <result column="modify_member_id" jdbcType="BIGINT" property="modifyMemberId" />
+    <result column="fact_begin_date" jdbcType="TIMESTAMP" property="factBeginDate" />
+    <result column="fact_end_date" jdbcType="TIMESTAMP" property="factEndDate" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
@@ -31,7 +33,7 @@
     -->
     id, name, project_id, version_id, phase_id, start_date, end_date, before_task, type, 
     owner, plan_time, flow, change_id, describe, status, created, modified, create_member_id, 
-    modify_member_id
+    modify_member_id,fact_begin_date,fact_end_date
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -101,6 +103,12 @@
       </if>
       <if test="modifyMemberId != null">
         modify_member_id = #{modifyMemberId,jdbcType=BIGINT},
+      </if>
+      <if test="factBeginDate != null">
+        start_date = #{factBeginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="factEndDate != null">
+        end_date = #{factEndDate,jdbcType=TIMESTAMP},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

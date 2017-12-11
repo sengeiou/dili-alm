@@ -1,5 +1,6 @@
  <#body>
     <div class="easyui-layout" fit="true">
+    <div id="smDialog" style="display: none;"></div>
         <!-- ====================================================================================================================== -->
         <!-- 上方布局 -->
         <!-- ====================================================================================================================== -->
@@ -14,33 +15,31 @@
 
                             </td>
                             <td style="padding:5px;">
-                            <input  name="projectId" id="projectId"  class="easyui-combobox"style="width: 100%;"   data-options="valueField: 'id',textField: 'name',
-                                                                       label:'所属项目:', url:'${contextPath!}/task/listTreeProject.json',multiline:true">
+                               <input class="easyui-textbox" name="projectId" id="projectId"  style="width:100%" data-options="label:'所属项目:'"/>
+                               <#comboProvider _id="projectId" _table="project"
+								_valueField="id" _textField="name"/>
+                            <td style="padding:5px;">
+ 								<input  name="versionId" id="versionId"  class="easyui-combobox"style="width: 100%;"   data-options="label:'所属版本:'"/>
+ 								<#comboProvider _id="versionId" _table="project_version"
+								_valueField="id" _textField="version"/>
                             </td>
                             <td style="padding:5px;">
- 								<input  name="versionId" id="versionId"  class="easyui-combobox"style="width: 100%;"   data-options="valueField: 'id',textField: 'version',
-                                                                       label:'所属版本:', url:'${contextPath!}/task/listTreeVersion.json',multiline:true">
-                            </td>
-                            <td style="padding:5px;">
-                                <input  name="phaseId" id="phaseId"  class="easyui-combobox"style="width: 100%;"   data-options="valueField: 'id',textField: 'name',
-                                                                       label:'所属阶段:', url:'${contextPath!}/task/listTreePhase.json',multiline:true">
+                                <input  name="phaseId" id="phaseId"  class="easyui-combobox"style="width: 100%;"  panelWidth="auto" panelHeight="auto"  data-options="label:'所属阶段:'">
+                                <#comboProvider _id="phaseId" _table="project_phase"
+								_valueField="id" _textField="name"/>
 
                             </td>
-
-                        </tr>
                         <tr>
-
                             <td style="padding:5px;">
-                                <input class="easyui-numberbox" name="owner" id="owner" style="width:100%" data-options="label:'负责人:', validType:'length[0,19]'" />
-
+								<input class="easyui-textbox" name="owner" id="owner" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="负责人:"
+															data-options="editable:false,
+																	buttonText:'选择',
+																	onClickButton:selectMember,onChange:_changeTextboxShowClear" />
                             </td>
                             <td style="padding:5px;">
-		                    <select  name="status" id="status" class="easyui-combobox" data-options="label:'流程:', validType:'length[0,3]'" style="width:100%">
-		                      <option value=0>未开始</option>
-		                      <option value=1>已开始</option>
-		                      <option value=2>已暂停</option>
-		                      <option value=3>已完成</option>
-		                    </select>
+                            <input  name="status" id="status"  class="easyui-combobox"style="width: 100%;"  panelWidth="auto" panelHeight="auto"  data-options="label:'状态:'">
+                                <#comboProvider _id="status" _table="data_dictionary_value"
+								_valueField="id" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":16}' />
                             </td>
                         </tr>
                         <tr>
@@ -60,7 +59,7 @@
         <!-- 表格 -->
         <div region="center" style="width:100%;" height="auto">
             <!-- =========================================================表格========================================================= -->
-            <table class="easyui-datagrid" title="Task列表" id="grid" fitColumns="true"
+            <table class="easyui-datagrid" title="任务列表" id="grid" fitColumns="true"
                    pagination="true" pageSize="30" pageNumber="1" pagePosition="both" rownumbers="true" remoteSort="false"
                    loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="name"
                    align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
@@ -69,23 +68,23 @@
                         <th data-options="field:'name',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                             任务名称
                         </th>
-                        <th data-options="field:'projectName',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'projectId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',_provider:'projectProvider'" >
                            项目名称
                         </th>
-                        <th data-options="field:'versionStr',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'versionId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',_provider:'projectVersionProvider'">
                            所属版本
                         </th>
-                        <th data-options="field:'phaseStr',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'phaseId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',_provider:'projectPhaseProvider'">
                             所属阶段
                         </th>
-                        <th data-options="field:'owner',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'owner',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',_provider:'memberProvider'">
                             负责人
                         </th>
                         <th data-options="field:'planDays',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                             计划工时
                         </th>
 
-                        <th data-options="field:'statusStr',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'status',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                             状态
                         </th>
                        <th data-options="field:'progress', formatter:progressFormatter,order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -132,20 +131,19 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input  name="_projectId" id="_projectId"  class="easyui-combobox"style="width: 100%;"   data-options="valueField: 'id',textField: 'name',
-                                                                       label:'所属项目:', url:'${contextPath!}/task/listTreeProject.json',multiline:true">
+                    <input  name="_projectId" id="_projectId"  class="easyui-combobox"style="width: 100%;"   data-options="label:'所属项目:' ">
+                    <#comboProvider _id="_projectId" _table="project"
+								_valueField="id" _textField="name"/>
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                <input  name="_versionId" id="_versionId"  class="easyui-combobox"style="width: 100%;"   data-options="valueField: 'id',textField: 'version',
-                                                                       label:'所属版本:', url:'${contextPath!}/task/listTreeVersion.json',multiline:true">
+                <input  name="_versionId" id="_versionId"  class="easyui-combobox"style="width: 100%;"   data-options="label:'所属版本:'">
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                 <input  name="_phaseId" id="_phaseId"  class="easyui-combobox"style="width: 100%;"   data-options="valueField: 'id',textField: 'name',
-                                                                       label:'所属阶段:', url:'${contextPath!}/task/listTreePhase.json',multiline:true">
+                 <input  name="_phaseId" id="_phaseId"  class="easyui-combobox"style="width: 100%;"   data-options="label:'所属阶段:'">
                 </td>
             </tr>
             <tr>
@@ -160,23 +158,22 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
-                      <input name="_beforeTask" id="_beforeTask"  class="easyui-combobox"style="width: 100%;"   data-options="valueField: 'id',textField: 'name',
-                                    label:'前置任务:', url:'${contextPath!}/task/listTree.json',multiline:true">
+                 <input name="_beforeTask" id="_beforeTask"  class="easyui-combobox"style="width: 100%;"   data-options="label:'前置任务:'">
+                <#comboProvider _id="_beforeTask" _table="task"
+								_valueField="id" _textField="name"/>
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                     <select  name="_type" id="_type" class="easyui-combobox"  data-options="label:'任务类型:'"  style="width:100%">
-                      <option value="1">需求分析</option>
-                      <option value="2">测试任务</option>
-                      <option value="3">开发任务</option>
-                      <option value="4">上线任务</option>
-                    </select>
+                     <input  name="_type" id="_type"  class="easyui-combobox"style="width: 100%;"  panelWidth="auto" panelHeight="auto"  data-options="label:'任务类型:'">
+                               <#comboProvider _id="_type" _table="data_dictionary_value"
+								_valueField="id" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":17}' />
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_owner" id="_owner" style="width:100%" data-options="label:'负责人:'" />
+                  <input class="easyui-textbox" name="_owner" id="_owner" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="负责人:"
+						 data-options="editable:false, buttonText:'选择', onClickButton:selectMember,onChange:_changeTextboxShowClear" />
                 </td>
             </tr>
             <tr>
@@ -206,6 +203,7 @@
 <form name="detail_form" id="detail_form">
  <input name="taskId" id="taskId" type="hidden">
  <input name="id" id="id" type="hidden">
+ <input name="taskHour" id="taskHour" type="hidden">
         <table width="360px;"  style="border:1px;">
               <tr>
                 <td style="padding:5px;"  colspan="2">
@@ -217,10 +215,10 @@
             </tr>
            <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_taskHour" id="_taskHour" style="width:200px;height:26px;" data-options="label:'任务工时:'" />
+                    <input class="easyui-numberbox" name="taskHourStr" id="taskHourStr" style="width:200px;height:26px;" data-options="label:'任务工时:',validType:'taskHours'" />
                 </td>
                 <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="taskHourStr" id="taskHourStr" style="width:200px;height:26px;" data-options="label:'已填工时:'" />
+                    <input class="easyui-numberbox" name="_taskHour" id="_taskHour" style="width:200px;height:26px;" data-options="label:'已填工时:',disabled:true" />
                 </td>
             </tr>
            <tr>
@@ -228,7 +226,7 @@
                     <input class="easyui-numberbox" name="overHourStr" id="overHourStr"  style="width:200px;height:26px;" data-options="label:'加班工时:'" />
                 </td>
                 <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="tasktime" id="tasktime" style="width:200px;height:26px;" data-options="label:'已填加班:'" />
+                    <input class="easyui-numberbox" name="_overHour" id="_overHour" style="width:200px;height:26px;" data-options="label:'已填加班:',disabled:true" />
                 </td>
             </tr>
            <tr>
@@ -286,7 +284,7 @@
             var formData = $.extend({},selected);
             formData = addKeyStartWith(getOriginalData(formData),"_");
             $('#_form').form('load', formData);
-            $('#_form').form('load', {taskHour:formData._planTime});
+
         }
         
         //打开执行任务窗口
@@ -313,33 +311,33 @@
 /*             $('#_progress').progressbar({
  			    value: formData._progress;
  			}); */
-            if(formData._status==0){
+            if(formData._status==70){
             	$("#task_detail").hide();
             	$("#doTask").show();
             	$("#pauseTask").hide();
             	$("#updateDetail").hide();
             }
-            if(formData._status==2){
+            if(formData._status==72){
             	$("#task_detail").show();
             	$("#doTask").show();
             	$("#pauseTask").hide();
             	$("#updateDetail").hide();
             }
             
-            if(formData._status==1){
+            if(formData._status==71){
             	$('#_progressShow').progressbar({
             	    value: parseInt(formData._progress)
             	});
+            	
             	$("#task_detail").show();
             	$("#doTask").hide();
             	$("#pauseTask").show();
             	$("#updateDetail").show();
             	$('#detail_form').form('clear');
-            	$('#detail_form').form('load', {_taskHour:formData._planTime});
             	getDetailInfo(formData._id);
             }
             
-            if(formData._status==3){
+            if(formData._status==73){
             	$('#_progressShow').progressbar({
             	    value: parseInt(formData._progress)
             	});
@@ -510,8 +508,9 @@
         	 var  htmlobj=$.ajax({url:"${contextPath}/task/listTaskDetail.json?id="+taskID,async:false});
         	 var str=htmlobj.responseText;
         	 var obj = $.parseJSON(str);
+       
         	 $('#detail_form').form('load', obj);
-        	 $('#detail_form').form('load', {taskHourStr:obj.taskHour,overHourStr:obj.overHour});
+        	 $('#detail_form').form('load', {_taskHour:obj.taskHour,_overHour:obj.overHour});
         }
         
         function startTask(){
@@ -584,6 +583,23 @@
                 }
             }); 
         }
-
-    </script>
+        
+        //工时填写校验
+        $.extend($.fn.validatebox.defaults.rules, {
+            taskHours:{
+                validator: function (value) {
+                    return value <= 8;
+                },
+                message: '当日所填任务工时只能是8小时！'
+        }
+        })
+        
+        
+        
+        </script>
+    
+    <script type="text/javascript">
+	<#task_index/>
+	<#members_index/>
+</script>
 </#body>

@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.Task;
+import com.dili.alm.domain.TaskDetails;
+import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.EasyuiPageOutput;
 
@@ -16,4 +18,14 @@ public interface TaskService extends BaseService<Task, Long> {
 	List<Project> selectByOwner(Long ownerId);
 
 	EasyuiPageOutput listPageSelectTaskDto(Task task) throws Exception;
+	
+	int updateTaskDetail(TaskDetails taskDetails ,Task task);
+	
+	int startTask(Task task);
+	
+	int notComplateStatus(Task task);
+
+	List<DataDictionaryValueDto> getTaskStates();
+
+	List<DataDictionaryValueDto> getTaskTypes();
 }

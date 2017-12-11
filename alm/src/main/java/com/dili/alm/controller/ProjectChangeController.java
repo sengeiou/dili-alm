@@ -61,7 +61,7 @@ public class ProjectChangeController {
 	@RequestMapping(value = "/loadTask", method = RequestMethod.GET)
 	@ResponseBody
 	public Object loadTask(Task task) throws Exception {
-		task.setStatus(ProjectState.COMPLETED.getValue().byteValue());
+		task.setStatus(ProjectState.COMPLETED.getValue().intValue());
 		return taskService.listEasyuiPageByExample(task,true).toString();
 	}
 

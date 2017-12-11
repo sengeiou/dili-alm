@@ -92,7 +92,7 @@ public interface Task extends IBaseDomain {
 
     @Column(name = "`plan_time`")
     @FieldDef(label="计划工时")
-    @EditMode(editor = FieldEditor.Text, required = false)
+    @EditMode(editor = FieldEditor.Number, required = false)
     Short getPlanTime();
 
     void setPlanTime(Short planTime);
@@ -120,10 +120,10 @@ public interface Task extends IBaseDomain {
 
     @Column(name = "`status`")
     @FieldDef(label="status")
-    @EditMode(editor = FieldEditor.Text, required = false)
-    Byte getStatus();
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Integer getStatus();
 
-    void setStatus(Byte status);
+    void setStatus(Integer status);
 
     @Column(name = "`created`")
     @FieldDef(label="created")
@@ -152,4 +152,18 @@ public interface Task extends IBaseDomain {
     Long getModifyMemberId();
 
     void setModifyMemberId(Long modifyMemberId);
+    
+    @Column(name = "`fact_begin_date`")
+    @FieldDef(label="factBeginDate")
+    @EditMode(editor = FieldEditor.Datetime, required = false)
+    Date getFactBeginDate();
+
+    void setFactBeginDate(Date factBeginDate);
+
+    @Column(name = "`fact_end_date`")
+    @FieldDef(label="factEndDate")
+    @EditMode(editor = FieldEditor.Datetime, required = false)
+    Date getFactEndDate();
+
+    void setFactEndDate(Date factEndDate);
 }
