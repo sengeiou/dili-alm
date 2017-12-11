@@ -24,11 +24,11 @@ public class WeeklyPara  {
 
     private String date ;
     
-	private String risk;//最大风险
+	private String risk;
 	
-	private String question;//最大问题
+	private String question;
 	
-	private String applyId;//项目立项id
+	private String applyId;
 	
 	public String getApplyId() {
 		return applyId;

@@ -3916,7 +3916,7 @@ select:focus{
 .tabs li a.tabs-inner {
     /* border-color: transparent; */
     border-color: #ddd;
-    background: transparent;
+    /*background: transparent;*/
     filter: none;
     color: #333;
 }
