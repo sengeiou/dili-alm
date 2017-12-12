@@ -234,7 +234,8 @@ public class WeeklyController  {
     	//项目周报
 		mv.addObject("pd", (ProjectWeeklyDto)map.get("pd"));
 		wk.setProgress(((ProjectWeeklyDto)map.get("pd")).getCompletedProgress());//存项目
-		
+		wk.setProjectId(Long.parseLong(projectId));
+		wk.setId(Long.parseLong(((ProjectWeeklyDto)map.get("pd")).getId()));
 		weeklyService.update(wk);
 		// 本周项目版本
 		mv.addObject("pv",(String) map.get("pv"));
