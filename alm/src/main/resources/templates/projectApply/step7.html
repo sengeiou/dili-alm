@@ -178,7 +178,11 @@
             success: function (data) {
                 var data = eval('(' + data + ')');
                 if (data.success == true) {
-                    if (data.success == true) {
+                    try {
+                        LogUtils.saveLog("保存立项申请:" + data.result, function () {
+                            window.location.href = "${contextPath}/projectApply/index.html";
+                        });
+                    } catch (e) {
                         window.location.href = "${contextPath}/projectApply/index.html";
                     }
                 }

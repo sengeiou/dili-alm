@@ -173,7 +173,13 @@
             success: function (data) {     //回调函数，result，返回值
                 if (data.success == true) {
                     if (data.success == true) {
-                        window.location.href = "${contextPath}/projectApply/toStep/6/" + data.result;
+                        try {
+                            LogUtils.saveLog("修改立项申请:" + data.result, function () {
+                                window.location.href="${contextPath}/projectApply/toStep/6/" + data.result;
+                            });
+                        } catch (e) {
+                            window.location.href="${contextPath}/projectApply/toStep/6/" + data.result;
+                        }
                     }
                 }
             }

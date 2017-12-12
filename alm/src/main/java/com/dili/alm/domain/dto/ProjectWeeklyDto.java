@@ -25,8 +25,22 @@ public class  ProjectWeeklyDto {
 	private String  beginAndEndTime;//本周起止日期
 	private String id ;//周报id
 	private Integer  completedProgressInt;//总体进展转换
-	
+	private String  startDate;//本
+	private String  endDate;//本
 
+	
+	public String getStartDate() {
+		return startDate;
+	}
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
+	}
+	public String getEndDate() {
+		return endDate;
+	}
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
+	}
 	public String getCreated() {
 		return created;
 	}

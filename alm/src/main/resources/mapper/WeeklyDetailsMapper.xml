@@ -7,7 +7,6 @@
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="overall_progress" jdbcType="VARCHAR" property="overallProgress" />
-    <result column="project_description" jdbcType="VARCHAR" property="projectDescription" />
     <result column="expected_deviation" jdbcType="VARCHAR" property="expectedDeviation" />
     <result column="other" jdbcType="VARCHAR" property="other" />
     <result column="weekly_id" jdbcType="BIGINT" property="weeklyId" />
@@ -17,7 +16,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    id, overall_progress, project_description, expected_deviation, other, weekly_id, 
+    id, project_description, expected_deviation, other, weekly_id, 
     is_submit
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
@@ -35,9 +34,7 @@
     -->
     update weekly_details
     <set>
-      <if test="overallProgress != null">
-        overall_progress = #{overallProgress,jdbcType=VARCHAR},
-      </if>
+     
       <if test="projectDescription != null">
         project_description = #{projectDescription,jdbcType=VARCHAR},
       </if>
@@ -76,9 +73,9 @@
   
   
   <insert id="createInsert" keyProperty="id" parameterType="com.dili.alm.domain.WeeklyDetails" useGeneratedKeys="true">
-      INSERT INTO `weekly_details`( `expected_deviation`,`other`,`overall_progress`,`project_description`,`weekly_id`,is_submit)
+      INSERT INTO `weekly_details`( `expected_deviation`,`other`,`project_description`,`weekly_id`,is_submit)
     values (#{expectedDeviation,jdbcType=VARCHAR}, 
-      #{other,jdbcType=VARCHAR},#{overallProgress,jdbcType=VARCHAR},#{projectDescription,jdbcType=VARCHAR},
+      #{other,jdbcType=VARCHAR},#{projectDescription,jdbcType=VARCHAR},
       #{weeklyId,jdbcType=BIGINT} , #{isSubmit,jdbcType=INTEGER} )
   </insert>
   

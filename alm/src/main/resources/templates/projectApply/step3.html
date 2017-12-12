@@ -69,7 +69,13 @@
                 var data = eval('(' + data + ')');
                 if(data.success==true){
                     if(data.success==true){
-                        window.location.href="${contextPath}/projectApply/toStep/4/" + data.result;
+                        try {
+                            LogUtils.saveLog("修改立项申请:" + data.result, function () {
+                                window.location.href="${contextPath}/projectApply/toStep/4/" + data.result;
+                            });
+                        } catch (e) {
+                            window.location.href="${contextPath}/projectApply/toStep/4/" + data.result;
+                        }
                     }
                 }
             }

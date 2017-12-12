@@ -13,6 +13,12 @@ import com.dili.alm.domain.dto.TaskDto;
 public interface WeeklyMapper extends MyMapper<Weekly> {
 	
 	/**
+	 * 根据projectId
+	 * @param id
+	 * @return
+	 */
+     Weekly selecByProjectId(WeeklyPara weeklyPara );
+	/**
 	 * 周报搜索条件查询
 	 * @param weeklyPara
 	 * @return
