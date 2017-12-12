@@ -363,8 +363,14 @@
   	                success: function (data) {
   	                    if(data.code=="200"){
   	                    	alert("取消成功");
-  	                    	//history.go(0);
-  	                      window.location.href="${contextPath}/weekly/getDescById?id="+tempid;
+  	                      try {
+	                          LogUtils.saveLog("周报取消成功:" + data.result, function () {
+	                        	  window.location.href="${contextPath}/weekly/getDescById?id="+tempid;
+	                          });
+	                      } catch (e) {
+	                    	  window.location.href="${contextPath}/weekly/getDescById?id="+tempid;
+	                      }
+	                      
   	                    }else{
   	                        $.messager.alert('错误',data.result);
   	                    }
@@ -421,11 +427,26 @@
 	                    if(data.code=="200"){
 	                    	 if(isSubmit==1){
 	                    		 alert("周报提交成功");
+	                    		 try {
+	   	                          LogUtils.saveLog("周报提交成功:" + data.result, function () {
+		   	                        	  window.location.href="${contextPath}/weekly/getDescById?id="+tempid;
+		   	                          });
+		   	                      } catch (e) {
+		   	                    	  window.location.href="${contextPath}/weekly/getDescById?id="+tempid;
+		   	                      }
+	   	                      
 	                    	 }else{
 	                    		 alert("周报保存成功");
+                    		      try {
+	   	                          LogUtils.saveLog("周报保存成功:" + data.result, function () {
+		   	                        	  window.location.href="${contextPath}/weekly/getDescById?id="+tempid;
+		   	                          });
+		   	                      } catch (e) {
+		   	                    	  window.location.href="${contextPath}/weekly/getDescById?id="+tempid;
+		   	                      }
 	                    	 }
 	                    	//history.go(0);
-	                    	 window.location.href="${contextPath}/weekly/getDescById?id="+tempid;
+	                    	// window.location.href="${contextPath}/weekly/getDescById?id="+tempid;
 	                    }else{
 	                        $.messager.alert('错误',data.result);
 	                    }
