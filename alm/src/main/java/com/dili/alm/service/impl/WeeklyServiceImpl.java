@@ -95,8 +95,8 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		String[]  strDate=pd.getBeginAndEndTime().split("到");
 		WeeklyPara weeklyPara=  new WeeklyPara();
 		weeklyPara.setId(Long.parseLong(pd.getProjectId()));
-		weeklyPara.setStartDate(strDate[0]+" 00:00:00");
-		weeklyPara.setEndDate(strDate[1]+" 23:59:59");
+		weeklyPara.setStartDate(strDate[0].substring(0,10)+" 00:00:00");
+		weeklyPara.setEndDate(strDate[1].substring(0,10)+" 23:59:59");
 		
 		// 本周项目版本
 		List<String> projectVersion=selectProjectVersion(weeklyPara);
