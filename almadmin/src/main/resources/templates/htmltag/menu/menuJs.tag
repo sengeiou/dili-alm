@@ -1,4 +1,3 @@
-var gridType;
 // 编辑行索引
 var editIndexMap = {
 	grid : undefined,
@@ -74,7 +73,7 @@ function del(gridId) {
 				if (r) {
 					$.ajax({
 								type : "POST",
-								url : (gridType == 1 && gridId == 'grid' ? '${contextPath!}/resource/' : '${contextPath!}/menu/') + '/delete',
+								url : (typeof(selected.type) == "undefined" ? '${contextPath!}/resource/' : '${contextPath!}/menu/') + '/delete',
 								data : {
 									id : selected.id
 								},
@@ -111,7 +110,7 @@ function del(gridId) {
 function queryGrid(node) {
 	cancelEdit('grid');
 	cancelEdit('inlineGrid');
-	gridType = node.attributes.type;
+	var gridType = node.attributes.type;
 	if (gridType == 1 || gridType == 2) {
 		$('#p1').panel('resize', {
 					height : '50%'
@@ -507,7 +506,7 @@ function hideOptButtons(gridId, index) {
 function onBeginEdit(index, row) {
 	var grid = $('#' + this.id);
 	showOptButtons(this.id, index);
-	if (gridType != 0 && this.id == 'grid') {
+	if (typeof(row.type) == 'undefined') {
 		grid.datagrid('resizeColumn', {
 					field : 'description',
 					width : '40%'
@@ -538,7 +537,6 @@ function onBeginEdit(index, row) {
  *            changes 当前行被修改的数据
  */
 function onAfterEdit(index, row, changes) {
-	debugger;
 	var grid = $('#' + this.id);
 	var isValid = grid.datagrid('validateRow', index);
 	if (!isValid) {
@@ -546,7 +544,7 @@ function onAfterEdit(index, row, changes) {
 	}
 	hideOptButtons(this.id, index);
 	var selectedTreeNode = menuTree.tree('getSelected');
-	if (gridType != 0 && this.id == 'grid') {
+	if (typeof(row.type) == 'undefined') {
 		insertOrUpdateResource(this.id, selectedTreeNode, index, row, changes);
 	} else {
 		insertOrUpdateMenu(this.id, selectedTreeNode, index, row, changes);
@@ -742,7 +740,7 @@ function onCancelEdit(index, row) {
 		grid.datagrid('deleteRow', index);
 	}
 	hideOptButtons(this.id, index);
-	if (gridType == 1 && this.id == 'grid') {
+	if (typeof(row.type) == 'undefined') {
 		grid.datagrid('resizeColumn', [{
 							field : 'description',
 							width : '60%'
@@ -770,7 +768,7 @@ function onCancelEdit(index, row) {
 function onEndEdit(index, row) {
 	var grid = $('#' + this.id);
 	hideOptButtons(this.id, index);
-	if (gridType != 0 && this.id == 'grid') {
+	if (typeof(row.type) == 'undefined') {
 		grid.datagrid('resizeColumn', [{
 							field : 'description',
 							width : '60%'

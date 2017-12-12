@@ -105,6 +105,7 @@ public class RoleServiceImpl extends BaseServiceImpl<Role, Long> implements Role
 		return (List<Role>) CollectionUtils.subtract(allRoles, userRoles);
 	}
 
+	@Transactional
 	@Override
 	public BaseOutput<Object> deleteIfUserNotBind(Long roleId) {
 		UserRole record = new UserRole();
@@ -117,6 +118,9 @@ public class RoleServiceImpl extends BaseServiceImpl<Role, Long> implements Role
 		if (rows <= 0) {
 			return BaseOutput.failure("删除角色失败");
 		}
+		RoleMenu roleMenuQuery = new RoleMenu();
+		roleMenuQuery.setRoleId(roleId);
+		this.roleMenuMapper.delete(roleMenuQuery);
 		return BaseOutput.success();
 	}
 
