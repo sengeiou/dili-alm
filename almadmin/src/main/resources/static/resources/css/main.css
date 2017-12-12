@@ -326,12 +326,13 @@ input {
 }
 .menu-left .title-name{
     box-sizing: border-box;
-    height: 48px;
+    height: 45px;
     /*padding-left: 85px;*/
-    line-height: 48px;
+    line-height: 45px;
     font-size: 15px;
     color: #333;
-    text-align: center;
+    /*text-align: center;*/
+    text-indent: 90px;
     background: #ededed;
     font-weight: bold;
     /*background: #f0f0f0 url(../images/file-open.png) no-repeat 67px center;*/
@@ -340,10 +341,10 @@ input {
     /*background: #f0f0f0 url(../images/file-close.png) no-repeat 67px center;*/
 }
 .menu-left ul li{
-    text-indent: 97px;
-    height: 35px;
+    text-indent: 105px;
+    height: 40px;
     /*text-align: center;*/
-    background: url("../images/list-decration.png") 80px center no-repeat;
+    background: url("../images/list-decration.png") 90px center no-repeat;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -353,11 +354,11 @@ input {
 }
 .menu-left ul li a{
     font-size: 14px;
-    line-height: 35px;
+    line-height: 40px;
     color: #666;
 }
 .menu-left ul li.on {
-    background: #299a58 url("../images/list-decration-on.png") 80px center no-repeat !important;
+    background: #299a58 url("../images/list-decration-on.png") 90px center no-repeat !important;
     /*color: #fff !important;*/
 }
 .menu-left ul li.on a{
@@ -365,7 +366,7 @@ input {
     color: #fff !important;
 }
 .menu-left ul li:hover{
-    background: #cdded4 url("../images/list-decration.png") 80px center no-repeat;
+    background: #cdded4 url("../images/list-decration.png") 90px center no-repeat;
 }
 /*index end*/
 
