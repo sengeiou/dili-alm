@@ -477,11 +477,6 @@ function onSaveClicked() {
 	}
 
 	var _formData = removeKeyStartWith($("#_form").serializeObject(), "_");
-	var nodes = $('#_department').combotree('tree').tree('getChecked', 'checked');
-	_formData.department = new Array();
-	$(nodes).each(function(index, item) {
-				_formData.department.push(item.id)
-			});
 	var _url = null;
 
 	var isAdd = false;

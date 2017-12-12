@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.dili.alm.cache.AlmCache;
@@ -40,7 +41,6 @@ import com.dili.alm.service.ProjectVersionService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.quartz.domain.ScheduleMessage;
 import com.dili.ss.util.SystemConfigUtils;
 
 /**
@@ -102,8 +102,10 @@ public class AlarmConfigServiceImpl extends BaseServiceImpl<AlarmConfig, Long> i
 		return result > 0 ? BaseOutput.success() : BaseOutput.failure();
 	}
 
+	// 每天早上6点检查项目进度完成情况并发送邮件告警
+	@Scheduled(cron = "0 0 6 * * ?")
 	@Override
-	public void alarm(ScheduleMessage msg) {
+	public void alarm() {
 		List<AlarmConfig> configs = this.getActualDao().select(null);
 		if (CollectionUtils.isEmpty(configs)) {
 			return;
