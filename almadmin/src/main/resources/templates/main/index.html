@@ -32,7 +32,7 @@
             <div id="css3menu" class="menu-top">
                 <ul>
                 	<% for(item in menu){ %>
-	                    <li><a id="fMenu${item.id}" href="javascript:void(0)" rel="${item.name}" onclick="setOnMenu(this)">${item.name}</a></li>
+	                    <li><a id="fMenu${item.id}" href="javascript:void(0)" rel="${item.name}">${item.name}</a></li>
                     <% } %>
                 </ul>
             </div>
@@ -40,26 +40,32 @@
         </div>
         <!--<div data-options="region:'south'" style="height:50px;"></div>-->
         <!--左侧菜单栏-->
-        <div class="menu-left" data-options="region:'west'" style="width:251px;height:100%;border: none">
-            <div id="menuList" class="easyui-accordion" data-options="multiple:true" style="width:251px;" >
-    			<% for(item in menu){ %>
-    				<div id="${item.id}" title="${item.name}" data-options="selected:true" style="overflow:auto;padding:10px 0;background: #f0f0f0;">
-		                <ul>
-		                    <% for(item1 in item.children){ %> 
-		                        <li>
-		                            <a href="javascript:void(0)" id="${item1.id }" rel="${item1.menuUrl}" onclick="menuClickHandler(this)">${item1.name}</a>
-		                        </li>     
-		                    <% } %>
-		                </ul>
-		             </div>
-		         <% } %>
-		     </div>
-		     
-    		
+        <div class="menu-left" data-options="region:'west'" style="width:251px;height:100%;padding-top:0px;border: none">
+
+            <% for(item in menu){ %>
+            <div id="${item.id}" class="menu-left-list">
+                <div class="title-name">${item.name}</div>
+                <ul>
+                    <% for(item1 in item.children){ %>
+                    <li>
+                        <a href="javascript:void(0)" id="${item1.id }" rel="${item1.menuUrl}" onclick="menuClickHandler(this)">${item1.name}</a>
+                    </li>
+                    <% } %>
+                </ul>
+                <div class="title-name">${item.name}</div>
+                <ul>
+                    <% for(item1 in item.children){ %>
+                    <li>
+                        <a href="javascript:void(0)" id="${item1.id }" rel="${item1.menuUrl}" onclick="menuClickHandler(this)">${item1.name}</a>
+                    </li>
+                    <% } %>
+                </ul>
+            </div>
+            <% } %>
 
         </div>
         <!--页面主体内容-->
-        <div data-options="region:'center'" style="height:100%;padding:15px 15px 0;border: none;">
+        <div data-options="region:'center'" style="height:100%;padding:10px 10px 0;border: none;">
            <iframe id="homeIndex" scrolling="auto" frameborder="0"  src="http://127.0.0.1:8083/alm/home/index" style="width:100%; height: 99.6%; display:none;"></iframe>
            <div id="tabs" style="width:100%; height: 99.6%;display: none;">
 		   </div>
@@ -246,28 +252,16 @@
     	            }
     		});
     	}
-    	function setOnMenu(obj){
-    		$("#css3menu").find("ul li").removeClass("on");
-    		$("#menuList").children().each(function(){ 
-                $(this).css('display','none');  
-            });  
-    		$("#homeIndex").css('display','none');
-			if(obj==0){
-				$("#css3menu").find("ul li").first().addClass("on");
-				var id = $("#css3menu").find("ul li").children().get(0).id.replace("fMenu","");
-				$("#"+id+"").parent().css('display','block');
-			}else if(obj.rel=='ALM'){
-				var menuFid = obj.id;
-				var id = menuFid.replace("fMenu","");
-				$("#"+menuFid+"").parent().addClass("on");
-				$("#"+id+"").parent().css('display','block');
-				$("#homeIndex").css('display','block');
-			}else{
-				var menuFid = obj.id;
-				var id = menuFid.replace("fMenu","");
-				$("#"+menuFid+"").parent().addClass("on");
-				$("#"+id+"").parent().css('display','block');
-			}
-		}
+
+    /*菜单切换*/
+    $(function () {
+        $('#css3menu ul li').on('click',function(){
+            let index= $(this).index();
+            if(index<1)return;
+            $('.menu-left-list').eq(index).show().siblings().hide();
+        })
+    });
+
+
     </script>
 </#body>
