@@ -1,9 +1,11 @@
 package com.dili.alm.service;
 
+import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.Approve;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
 
+import java.io.OutputStream;
 import java.util.Map;
 
 /**
@@ -13,12 +15,17 @@ import java.util.Map;
 public interface ApproveService extends BaseService<Approve, Long> {
 
 
-    void buildApplyApprove(Map map,Long id);
-    void buildChangeApprove(Map map,Long id);
-    void buildCompleteApprove(Map map,Long id);
+    void buildApplyApprove(Map map, Long id);
+
+    void buildChangeApprove(Map map, Long id);
+
+    void buildCompleteApprove(Map map, Long id);
 
     BaseOutput applyApprove(Long id, String opt, String notes);
+
     BaseOutput verity(Long id, String opt, String notes);
+
+    void downloadProjectDoc(AlmConstants.ApproveType approveType, Long id, OutputStream os);
 
     void insertBefore(Approve approve);
 

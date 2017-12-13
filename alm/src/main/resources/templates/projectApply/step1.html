@@ -49,32 +49,32 @@
                                            data-options="required:true,validType:'length[1,20]',label:'项目名称:'" style="width:600px"></td>
                 </tr>
                 <tr>
-                    <td><input class="easyui-textbox" name="projectLeader" id="project_leader" style="width: 100%;"
+                    <td><input class="easyui-textbox"  name="projectLeader" id="project_leader" style="width: 100%;"
                                panelWidth="auto" panelHeight="auto" label="*项目负责人:"
-                               data-options="required:true,
+                               data-options="editable:false,required:true,
 									buttonText:'选择',
 									onClickButton:selectMember,onChange:_changeTextboxShowClear"/></td>
                     <td><input class="easyui-textbox" type="text" name="productManager" id="productManager"
-                               data-options="required:true,label:'*产品经理:',buttonText:'选择',
+                               data-options="editable:false,required:true,label:'*产品经理:',buttonText:'选择',
 									onClickButton:function(){
 										selectMember('editorCallback', 'productManager');
 									},onChange:_changeTextboxShowClear"></td>
                 </tr>
                 <tr>
                     <td><input class="easyui-textbox" type="text" name="developmentManager" id="developmentManager"
-                               data-options="required:true,label:'*研发经理:',buttonText:'选择',
+                               data-options="editable:false,required:true,label:'*研发经理:',buttonText:'选择',
 									onClickButton:function(){
 										selectMember('editorCallback', 'developmentManager');
 									},onChange:_changeTextboxShowClear"></td>
-                    <td><input class="easyui-textbox" type="text" name="testManager" id="testManager" data-options="required:true,label:'*测试经理:',buttonText:'选择',
+                    <td><input class="easyui-textbox" type="text" name="testManager" id="testManager" data-options="editable:false,required:true,label:'*测试经理:',buttonText:'选择',
 									onClickButton:function(){
 										selectMember('editorCallback', 'testManager');
 									},onChange:_changeTextboxShowClear"></td>
                 </tr>
                 <tr>
-                    <td><input class="easyui-textbox" type="text" name="businessOwner" id="businessOwner" data-options="required:true,label:'*业务负责人:',buttonText:'选择',
+                    <td><input class="easyui-textbox" type="text" name="businessOwner" id="businessOwner" data-options="editable:false,required:true,label:'*业务负责人:',buttonText:'选择',
 									onClickButton:selectMember,onChange:_changeTextboxShowClear"></td>
-                    <td><input class="easyui-textbox" type="text" id="dep" name="dep" data-options="required:true,label:'*需求所属业务部门:',buttonText:'选择',
+                    <td><input class="easyui-textbox" type="text" id="dep" name="dep" data-options="editable:false,required:true,label:'*需求所属业务部门:',buttonText:'选择',
 									onClickButton:selectDep,onChange:_changeTextboxShowClear"></td>
                 </tr>
                 <tr>
@@ -96,24 +96,13 @@
                 </tr>
                 <tr>
                     <td><input class="easyui-textbox" type="text" name="mainUser" id="mainUser"
-                               data-options="required:true,label:'*负责部门经理:',buttonText:'选择',
+                               data-options="editable:false,required:true,label:'*负责部门经理:',buttonText:'选择',
 									onClickButton:selectMember,onChange:_changeTextboxShowClear"></td>
                     <td><input class="easyui-numberspinner" id="member" name="mainNumber" value=""
                                data-options="required:true,increment:1,label:'*预估所需人员:',min:1"> 人
                     </td>
                     <td><input class="easyui-numberbox" type="text" id="workTime" name="mainWorkTime"
                                data-options="required:true,label:'*预估工时:',min:1"> 人日
-                    </td>
-                </tr>
-                <tr>
-                    <td><input class="easyui-textbox" type="text" id="xiangguan" name="relatedResources[0].relatedUser"
-                               data-options="label:'相关部门经理:',buttonText:'选择',
-									onClickButton:selectMember,onChange:_changeTextboxShowClear"></td>
-                    <td><input class="easyui-numberspinner" id="relatedNumber" value="" name="relatedResources[0].relatedNumber"
-                               data-options="increment:1,label:'预估所需人员:',min:1">人
-                    </td>
-                    <td><input class="easyui-numberbox" type="text" id="relatedWorkTime" name="relatedResources[0].relatedWorkTime"
-                               data-options="label:'预估工时:',min:1"> 人日
                     </td>
                     <td><a href="javascript:void(0);" class="_add">新增</a></td>
                 </tr>
@@ -174,9 +163,9 @@
     }
 
     function appendRelated(obj) {
-        var index = jQuery('.related').length + 1;
+        var index = jQuery('.related').length;
         var parserId = "parser_" + new Date().getTime();
-        $("#tb").append("<tr class='related' id='" + parserId + "'><td><input class=\"easyui-textbox\" type=\"text\" id=\"" + index + "-user" + "\" name=\"relatedResources[" + index + "].relatedUser\" data-options=\"label:'相关部门经理:',buttonText:'选择', onClickButton:selectMember,onChange:_changeTextboxShowClear\"></td><td><input class=\"easyui-numberspinner\" id='" + index + "-number' name='relatedResources[" + index + "].relatedNumber' value=\"\" data-options=\"increment:1,label:'预估所需人员:',min:1\">人</td><td><input class=\"easyui-numberbox\" type=\"text\" id='" + index + "-time' name='relatedResources[" + index + "].relatedWorkTime' data-options=\"label:'预估工时:',min:1\"> 人日</td><td><a href=\"javascript:void(0);\" class=\"_del\" onclick='delRelated(this)'>删除</a></td></tr>");
+        $("#tb").append("<tr class='related' id='" + parserId + "'><td><input class=\"easyui-textbox\" type=\"text\" id=\"" + index + "-user" + "\" name=\"relatedResources[" + index + "].relatedUser\" data-options=\"label:'相关部门经理:',editable:false,required:true,buttonText:'选择', onClickButton:selectMember,onChange:_changeTextboxShowClear\"></td><td><input class=\"easyui-numberspinner\" id='" + index + "-number' name='relatedResources[" + index + "].relatedNumber' value=\"\" data-options=\"increment:1,required:true,label:'预估所需人员:',min:1\">人</td><td><input class=\"easyui-numberbox\" type=\"text\" id='" + index + "-time' name='relatedResources[" + index + "].relatedWorkTime' data-options=\"label:'预估工时:',required:true,min:1\"> 人日</td><td><a href=\"javascript:void(0);\" class=\"_del\" onclick='delRelated(this)'>删除</a></td></tr>");
         $.parser.parse("#" + parserId);
         if(obj!=undefined){
             $("#" + index + "-user").textbox('initValue', obj['relatedUserValue']);
@@ -195,16 +184,10 @@
         $("#workTime").textbox("initValue", '${main.mainWorkTime}');
         <%
         for (obj in related) {
-            if(objLP.first){
         %>
-                $("#xiangguan").textbox('initValue', '${obj.$_relatedUser}');
-                $("#xiangguan").textbox('setText', '${obj.relatedUser}');
-                $("#relatedNumber").textbox('initValue', '${obj.relatedNumber}');
-                $("#relatedWorkTime").textbox('initValue', '${obj.relatedWorkTime}');
-            <% }else{ %>
                 var data = {'relatedUserText':'${obj.relatedUser}','relatedUserValue':'${obj.$_relatedUser}','relatedNumber':'${obj.relatedNumber}','relatedWorkTime':'${obj.relatedWorkTime}'};
                 appendRelated(data);
-        <%}}%>
+        <%}%>
     })
 </script>
 

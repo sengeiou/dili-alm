@@ -105,19 +105,6 @@
                                data-options="label:'*预估工时:'"> 人日
                     </td>
                 </tr>
-
-                <tr id="realtedShow" style="display: none">
-                    <td><input class="easyui-textbox" type="text" id="xiangguan" name="relatedResources[0].relatedUser"
-                               data-options="label:'相关部门经理:'"></td>
-                    <td><input class="easyui-numberspinner" id="relatedNumber" value=""
-                               name="relatedResources[0].relatedNumber"
-                               data-options="label:'预估所需人员:'">人
-                    </td>
-                    <td><input class="easyui-numberbox" type="text" id="relatedWorkTime"
-                               name="relatedResources[0].relatedWorkTime"
-                               data-options="label:'预估工时:',min:1"> 人日
-                    </td>
-                </tr>
             </table>
         </form>
     </div>
@@ -461,17 +448,13 @@
             <div style="text-align:left;padding:5px;margin-top:10px;">
                 <a href="${contextPath}/projectApply/index.html" class="easyui-linkbutton"
                    data-options="size:'large',width:'80px'">返回</a>
-                <a href="#" onclick="down()" class="easyui-linkbutton"
-                   data-options="size:'large',width:'80px'">下载</a>
             </div>
         </form>
 
     </div>
 </div>
-<script type="text/javascript" src="${contextPath!}/resources/js/FileSaver.js"></script>
 <script>
 
-    function down(){}
     function formatDown(value, row) {
         return "<a href='${contextPath!}/files/download?id=" + row.id + "'>" + value + "</a>";
     }
@@ -500,9 +483,9 @@
     }
 
     function appendRelated(obj) {
-        var index = jQuery('.related').length + 1;
+        var index = jQuery('.related').length;
         var parserId = "parser_" + new Date().getTime();
-        $("#tb").append("<tr class='related' id='" + parserId + "'><td><input class=\"easyui-textbox\" type=\"text\" id=\"" + index + "-user" + "\" name=\"relatedResources[" + index + "].relatedUser\" data-options=\"label:'相关部门经理:',buttonText:'选择', onClickButton:selectMember,onChange:_changeTextboxShowClear\"></td><td><input class=\"easyui-numberspinner\" id='" + index + "-number' name='relatedResources[" + index + "].relatedNumber' value=\"\" data-options=\"increment:1,label:'预估所需人员:',min:1\">人</td><td><input class=\"easyui-numberbox\" type=\"text\" id='" + index + "-time' name='relatedResources[" + index + "].relatedWorkTime' data-options=\"label:'预估工时:',min:1\"> 人日</td></tr>");
+        $("#tb").append("<tr class='related' id='" + parserId + "'><td><input class=\"easyui-textbox\" type=\"text\" id=\"" + index + "-user" + "\" name=\"relatedResources[" + index + "].relatedUser\" data-options=\"label:'相关部门经理:'\"></td><td><input class=\"easyui-numberspinner\" id='" + index + "-number' name='relatedResources[" + index + "].relatedNumber' value=\"\" data-options=\"increment:1,label:'预估所需人员:',min:1\">人</td><td><input class=\"easyui-numberbox\" type=\"text\" id='" + index + "-time' name='relatedResources[" + index + "].relatedWorkTime' data-options=\"label:'预估工时:',min:1\"> 人日</td></tr>");
         $.parser.parse("#" + parserId);
         if(obj!=undefined){
             $("#" + index + "-user").textbox('initValue', obj['relatedUserValue']);
@@ -520,17 +503,10 @@
         $("#workTime").textbox("initValue", '${main.mainWorkTime}');
         <%
         for (obj in related) {
-            if(objLP.first){
-         %>
-                $("#xiangguan").textbox('initValue', '${obj.$_relatedUser}');
-                $("#xiangguan").textbox('setText', '${obj.relatedUser}');
-                $("#relatedNumber").textbox('initValue', '${obj.relatedNumber}');
-                $("#relatedWorkTime").textbox('initValue', '${obj.relatedWorkTime}');
-                $("#realtedShow").show();
-            <% }else{ %>
-                var data = {'relatedUserText':'${obj.relatedUser}','relatedUserValue':'${obj.$_relatedUser}','relatedNumber':'${obj.relatedNumber}','relatedWorkTime':'${obj.relatedWorkTime}'};
-                appendRelated(data);
-            <%}}%>
+        %>
+            var data = {'relatedUserText':'${obj.relatedUser}','relatedUserValue':'${obj.$_relatedUser}','relatedNumber':'${obj.relatedNumber}','relatedWorkTime':'${obj.relatedWorkTime}'};
+            appendRelated(data);
+        <%}%>
 
         try {
             var description = '${apply.description}';
@@ -559,5 +535,8 @@
 
         $('input[class^=easyui-]').textbox("disable");
     })
+</script>
+<script type="text/javascript">
+    <#members_index/>
 </script>
 </#body>

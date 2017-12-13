@@ -146,9 +146,6 @@ public class ProjectApplyController {
     @RequestMapping(value = "/insertStep1", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
     BaseOutput insertStep1(ProjectApply projectApply, ApplyMajorResource majorResource) {
-        if (majorResource.getRelatedResources().get(0).getRelatedUser() == null) {
-            majorResource.setRelatedResources(null);
-        }
         projectApply.setResourceRequire(JSON.toJSONString(majorResource));
         projectApplyService.updateSelective(projectApply);
         return BaseOutput.success(String.valueOf(projectApply.getId()));
