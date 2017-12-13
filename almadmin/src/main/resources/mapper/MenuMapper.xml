@@ -155,7 +155,7 @@
 		= m.id
 		WHERE
 		(u.yn = 1 OR u.yn IS NULL)
-		AND u.id = #{userId} 
+		AND u.id = #{userId} order by order_number asc
 	</select>
 
 	<select id="findByRoleId" parameterType="Long" resultMap="BaseResultMap">
