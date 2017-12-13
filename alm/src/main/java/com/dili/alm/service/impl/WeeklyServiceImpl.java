@@ -92,11 +92,12 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
     	pd.setCompletedProgressInt(Integer.parseInt(pd.getCompletedProgress()));
     	pd.setId(id);
 		map.put("pd", pd);
-		String[]  strDate=pd.getBeginAndEndTime().split("到");
+		Weekly wkly=weeklyMapper.selectByPrimaryKey(Long.parseLong(id));
+		/*String[]  strDate=pd.getBeginAndEndTime().split("到");*/
 		WeeklyPara weeklyPara=  new WeeklyPara();
 		weeklyPara.setId(Long.parseLong(pd.getProjectId()));
-		weeklyPara.setStartDate(strDate[0].substring(0,10)+" 00:00:00");
-		weeklyPara.setEndDate(strDate[1].substring(0,10)+" 23:59:59");
+		weeklyPara.setStartDate(DateUtil.getDateStr(wkly.getStartDate()));
+		weeklyPara.setEndDate(DateUtil.getDateStr(wkly.getEndDate()));
 		
 		// 本周项目版本
 		List<String> projectVersion=selectProjectVersion(weeklyPara);
@@ -129,9 +130,12 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		}
 		
 		weeklyPara.setId(Long.parseLong(pd.getProjectId()));
-		weeklyPara.setStartDate(DateUtil.getNextMonday(DateUtil.getStrDate(strDate[0]+" 00:00:00")));
-		weeklyPara.setEndDate(DateUtil.getNextFive(DateUtil.getStrDate(strDate[0]+" 23:59:59")));
-		
+		String dateone=DateUtil.getFirstAndFive(wkly.getStartDate()).get("one");
+		String datefive= DateUtil.getFirstAndFive(wkly.getEndDate()).get("five");
+		//Date  dateDateone=DateUtil.getStrDateyyyyMMdd(dateone);
+		//Date  dateDatetwo= DateUtil.getStrDateyyyyMMdd(datefive);
+		weeklyPara.setStartDate(DateUtil.getAddDay(dateone+" 00:00:00",7));
+		weeklyPara.setEndDate(DateUtil.getAddDay(datefive+" 23:59:59",7));
 		
 		//下周工作计划
 		List<NextWeeklyDto> wk=selectNextWeeklyProgress(weeklyPara);
@@ -203,6 +207,13 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 				 List<User> listUserParty = listByExample.getData();
 				 if(listUserParty!=null&&listUserParty.size()>0){
 				 weeklyPara2.setUserName(listUserParty.get(0).getUserName());
+				 }
+				 if(Integer.parseInt(weeklyPara2.getProjectStatus())<8){
+					 weeklyPara2.setProjectStatus(" <font color='green'>正常--偏差<8%</font>");
+				 }else if(Integer.parseInt(weeklyPara2.getProjectStatus())>15){
+					 weeklyPara2.setProjectStatus("<font color='red'>警戒--偏差>15%</font>");
+				 }else{
+					 weeklyPara2.setProjectStatus("<font color='orange'>预警--8%<偏差<15%</font>");
 				 }
 				 
 				 weeklyPara2.setDate(weeklyPara2.getStartDate() + " 到 " + weeklyPara2.getEndDate());
@@ -420,8 +431,13 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		pd.setId(id);
 		WeeklyPara weeklyPara = new WeeklyPara();
 		weeklyPara.setId(Long.parseLong(pd.getProjectId()));
-		weeklyPara.setStartDate(DateUtil.getFirstAndFive().get("one")+" 00:00:00");
+		
+		//weeklyPara.setStartDate(DateUtil.getFirstAndFive().get("one")+" 00:00:00");
 		weeklyPara.setEndDate(DateUtil.getFirstAndFive().get("five")+" 23:59:59");
+		Weekly wkly=weeklyMapper.selectByPrimaryKey(Long.parseLong(id));
+		weeklyPara.setId(Long.parseLong(pd.getProjectId()));
+		weeklyPara.setStartDate(DateUtil.getDateStr(wkly.getStartDate()));
+		weeklyPara.setEndDate(DateUtil.getDateStr(wkly.getEndDate()));
 		
 		// 本周项目版本
 		List<String> projectVersion = selectProjectVersion(weeklyPara);
@@ -442,8 +458,14 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	
 		weeklyPara.setId(Long.parseLong(pd.getProjectId()));
 		// 下周项目阶段
-		weeklyPara.setStartDate(DateUtil.getNextMonday(new Date())+" 00:00:00");
-		weeklyPara.setEndDate(DateUtil.getNextFive(new Date())+" 23:59:59");
+		//weeklyPara.setStartDate(DateUtil.getNextMonday(new Date())+" 00:00:00");
+		//weeklyPara.setEndDate(DateUtil.getNextFive(new Date())+" 23:59:59");
+		String dateone=DateUtil.getFirstAndFive(wkly.getStartDate()).get("one");
+		String datefive= DateUtil.getFirstAndFive(wkly.getEndDate()).get("five");
+	
+		weeklyPara.setStartDate(DateUtil.getAddDay(dateone+" 00:00:00",7));
+		weeklyPara.setEndDate(DateUtil.getAddDay(datefive+" 23:59:59",7));
+		
 		
 		List<String> nextprojectPhase = selectNextProjectPhase(weeklyPara);
 		
@@ -569,6 +591,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		weeklyPara.setStartDate(DateUtil.getFirstAndFive().get("one") +" 00:00:00");
 		weeklyPara.setEndDate  (DateUtil.getFirstAndFive().get("five")+" 23:59:59");
+		
 		if(userTicket!=null){
 			weeklyPara.setUserId(userTicket.getId());
 		}
