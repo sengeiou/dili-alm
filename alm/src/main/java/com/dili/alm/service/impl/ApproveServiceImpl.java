@@ -332,14 +332,9 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
                 map.put("taxlist", mapList);
                 map.put("totalpreyear", "2660");
                 map.put("totalthisyear", "3400");
-                Map<String, String> total = new HashMap<String, String>();
-                total.put("orderId", "2660");
-                total.put("orderCreateTime", "3400");
-                total.put("supplyName", "3410");
-                map.put("order", total);
                 try {
                     XWPFDocument doc = WordExportUtil.exportWord07(
-                            "/Users/shaofan/Desktop/contractDemo.docx", map);
+                            "/Users/shaofan/Desktop/纳税信息.docx", map);
                     doc.write(os);
                     os.close();
                 } catch (Exception e) {
