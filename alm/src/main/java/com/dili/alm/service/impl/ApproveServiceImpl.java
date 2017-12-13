@@ -26,6 +26,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.dili.alm.domain.ProjectState.NOT_START;
@@ -305,12 +306,40 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
     public void downloadProjectDoc(AlmConstants.ApproveType approveType, Long id, OutputStream os) {
         switch (approveType) {
             case APPLY:
-                ProjectApply apply = projectApplyService.get(id);
+//                ProjectApply apply = projectApplyService.get(id);
+//                Map<String, Object> map = new HashMap<String, Object>();
+//                map.put("apply", apply);
+//                map.put("related", JSON.parseObject(apply.getResourceRequire(), ApplyMajorResource.class).getRelatedResources());
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String curTime = format.format(new Date());
+
                 Map<String, Object> map = new HashMap<String, Object>();
-                map.put("apply", apply);
+                List<Map<String, Object>> mapList = new ArrayList<Map<String, Object>>();
+                Map<String, Object> map1 = new HashMap<String, Object>();
+                map1.put("type", "个人所得税");
+                map1.put("presum", "1580");
+                map1.put("thissum", "1750");
+                map1.put("curmonth", "1-11月");
+                map1.put("now", curTime);
+                mapList.add(map1);
+                Map<String, Object> map2 = new HashMap<String, Object>();
+                map2.put("type", "增值税");
+                map2.put("presum", "1080");
+                map2.put("thissum", "1650");
+                map2.put("curmonth", "1-11月");
+                map2.put("now", curTime);
+                mapList.add(map2);
+                map.put("taxlist", mapList);
+                map.put("totalpreyear", "2660");
+                map.put("totalthisyear", "3400");
+                Map<String, String> total = new HashMap<String, String>();
+                total.put("orderId", "2660");
+                total.put("orderCreateTime", "3400");
+                total.put("supplyName", "3410");
+                map.put("order", total);
                 try {
                     XWPFDocument doc = WordExportUtil.exportWord07(
-                            "/Users/shaofan/Desktop/apply.docx", map);
+                            "/Users/shaofan/Desktop/contractDemo.docx", map);
                     doc.write(os);
                     os.close();
                 } catch (Exception e) {

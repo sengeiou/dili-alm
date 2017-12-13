@@ -94,7 +94,7 @@
     <script type="text/javascript">
 
         function formatStatus(value, row) {
-            var dom = '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/doc/apply/' + row.id + '">立项文档下载</a></span>';
+            var dom = '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/doc/apply/' + row.projectApplyId + '">立项文档下载</a></span>';
             if (row.$_status == 2) {
                 return dom += '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/apply/' + row.id + '">审批</a></span>';
             } else if (row.$_status == 3 || row.$_status == 4) {
