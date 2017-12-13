@@ -2,6 +2,9 @@
 var editId = undefined;
 
 function optFormatter(value, row) {
+	if (!row.manager) {
+		return '';
+	}
 	return '<a href="${contextPath!}/project/detail.html?id=' + row.id + '">管理</a>';
 }
 

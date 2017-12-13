@@ -29,10 +29,12 @@ import com.dili.alm.domain.ProjectEntity;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.Team;
+import com.dili.alm.domain.TeamRole;
 import com.dili.alm.domain.TeamType;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectDto;
+import com.dili.alm.domain.dto.ProjectListDto;
 import com.dili.alm.exceptions.ProjectException;
 import com.dili.alm.provider.ProjectProvider;
 import com.dili.alm.rpc.DataAuthRpc;
@@ -47,6 +49,7 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
+import com.github.pagehelper.Page;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-10-18 17:22:54.
@@ -180,26 +183,24 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		if (sessionContext == null) {
 			throw new RuntimeException("未登录");
 		}
-		List<Map> dataauth = sessionContext.dataAuth(AlmConstants.DATA_AUTH_TYPE_PROJECT);
-		List<Long> projectIds = new ArrayList<>(dataauth.size());
-		dataauth.forEach(t -> {
-			List<Project> projects = getChildProjects(Long.parseLong(t.get("dataId").toString()));
-			projects.forEach(p -> {
-				projectIds.add(p.getId());
-			});
-			// projectIds.add(Long.parseLong(t.get("dataId").toString()));
+		UserTicket user = sessionContext.getUserTicket();
+		if (user == null) {
+			throw new RuntimeException("未登录");
+		}
+		List<Project> list = this.listByExample(domain);
+		List<ProjectListDto> dtos = DTOUtils.as(list, ProjectListDto.class);
+		dtos.forEach(p -> {
+			Team record = DTOUtils.newDTO(Team.class);
+			record.setProjectId(p.getId());
+			record.setMemberId(user.getId());
+			record.setRole(TeamRole.PROJECT_MANAGER.getValue());
+			int count = this.teamMapper.selectCount(record);
+			p.setManager(count > 0);
 		});
-		// 去掉数据权限
-		// if (projectIds.isEmpty()) {
-		// return new EasyuiPageOutput(0, null);
-		// }
-		// // 刷新projectProvider缓存
-		// List<Project> list = list(DTOUtils.newDTO(Project.class));
-		// list.forEach(project -> {
-		// AlmCache.projectMap.put(project.getId(), project);
-		// });
-		// projectDto.setIds(projectIds);
-		return super.listEasyuiPageByExample(domain, useProvider);
+		long total = list instanceof Page ? ((Page) list).getTotal() : list.size();
+		List results = null;
+		results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, dtos) : dtos;
+		return new EasyuiPageOutput(Integer.parseInt(String.valueOf(total)), results);
 	}
 
 	@Transactional(rollbackFor = ProjectException.class)
