@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="mapper.ProjectChangeMapper">
+<mapper namespace="com.dili.alm.dao.ProjectChangeMapper">
   <resultMap id="BaseResultMap" type="com.dili.alm.domain.ProjectChange">
     <!--
       WARNING - @mbg.generated
@@ -24,7 +24,6 @@
     <result column="modified" jdbcType="TIMESTAMP" property="modified" />
     <result column="create_member_id" jdbcType="BIGINT" property="createMemberId" />
     <result column="modify_member_id" jdbcType="BIGINT" property="modifyMemberId" />
-    <result column="estimate_launch_date" jdbcType="TIMESTAMP" property="estimateLaunchDate" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
@@ -32,7 +31,7 @@
     -->
     id, name, number, project_name, project_id, version_id, phase_id, type, working_hours, 
     affects_online, submit_date, content, effects, email, status, created, modified, 
-    create_member_id, modify_member_id, estimate_launch_date
+    create_member_id, modify_member_id
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -102,9 +101,6 @@
       </if>
       <if test="modifyMemberId != null">
         modify_member_id = #{modifyMemberId,jdbcType=BIGINT},
-      </if>
-      <if test="estimateLaunchDate != null">
-        estimate_launch_date = #{estimateLaunchDate,jdbcType=TIMESTAMP},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

@@ -11,7 +11,7 @@ import java.util.Date;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2017-12-14 16:52:10.
+ * This file was generated on 2017-12-07 18:01:42.
  */
 @Table(name = "`project_change`")
 public interface ProjectChange extends IBaseDomain {
@@ -149,11 +149,4 @@ public interface ProjectChange extends IBaseDomain {
     Long getModifyMemberId();
 
     void setModifyMemberId(Long modifyMemberId);
-
-    @Column(name = "`estimate_launch_date`")
-    @FieldDef(label="estimateLaunchDate")
-    @EditMode(editor = FieldEditor.Datetime, required = false)
-    Date getEstimateLaunchDate();
-
-    void setEstimateLaunchDate(Date estimateLaunchDate);
 }

@@ -163,16 +163,6 @@ public class ProjectEntity extends BaseDomain implements Project {
 	}
 
 	@Override
-	public Date getEstimateLaunchDate() {
-		return null;
-	}
-
-	@Override
-	public void setEstimateLaunchDate(Date estimateLaunchDate) {
-
-	}
-
-	@Override
 	public Long getParentId() {
 		return parentId;
 	}

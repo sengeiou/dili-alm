@@ -176,7 +176,6 @@ public class ProjectController {
 		metadata.put("startDate", JSON.parse("{provider:'datetimeProvider'}"));
 		metadata.put("endDate", JSON.parse("{provider:'datetimeProvider'}"));
 		metadata.put("actualEndDate", JSON.parse("{provider:'datetimeProvider'}"));
-		metadata.put("estimateLaunchDate", JSON.parse("{provider:'datetimeProvider'}"));
 		return ValueProviderUtils.buildDataByProvider(metadata,list);
 	}
 

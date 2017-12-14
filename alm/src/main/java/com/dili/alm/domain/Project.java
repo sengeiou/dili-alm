@@ -170,11 +170,4 @@ public interface Project extends IBaseDomain {
 	Long getBusinessOwner();
 
 	void setBusinessOwner(Long businessOwner);
-
-    @Column(name = "`estimate_launch_date`")
-    @FieldDef(label="estimateLaunchDate")
-    @EditMode(editor = FieldEditor.Datetime, required = false)
-    Date getEstimateLaunchDate();
-
-    void setEstimateLaunchDate(Date estimateLaunchDate);
 }
