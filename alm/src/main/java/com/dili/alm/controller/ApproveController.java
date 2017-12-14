@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,70 +40,70 @@ public class ApproveController {
 
 
     @ApiOperation("跳转到Approve页面")
-    @RequestMapping(value="/apply/index.html", method = RequestMethod.GET)
+    @RequestMapping(value = "/apply/index.html", method = RequestMethod.GET)
     public String applyIndex(ModelMap modelMap) {
         modelMap.put("sessionID", SessionContext.getSessionContext().getUserTicket().getId());
         return "approveApply/index";
     }
 
     @ApiOperation("跳转到Approve页面")
-    @RequestMapping(value="/change/index.html", method = RequestMethod.GET)
+    @RequestMapping(value = "/change/index.html", method = RequestMethod.GET)
     public String changeIndex(ModelMap modelMap) {
         modelMap.put("sessionID", SessionContext.getSessionContext().getUserTicket().getId());
         return "approveChange/index";
     }
 
     @ApiOperation("跳转到Approve页面")
-    @RequestMapping(value="/complete/index.html", method = RequestMethod.GET)
+    @RequestMapping(value = "/complete/index.html", method = RequestMethod.GET)
     public String completeIndex(ModelMap modelMap) {
         modelMap.put("sessionID", SessionContext.getSessionContext().getUserTicket().getId());
         return "approveComplete/index";
     }
 
-    @RequestMapping(value="/apply/{id}", method = RequestMethod.GET)
-    public String apply(ModelMap modelMap, @PathVariable("id") Long id,String viewMode) {
+    @RequestMapping(value = "/apply/{id}", method = RequestMethod.GET)
+    public String apply(ModelMap modelMap, @PathVariable("id") Long id, String viewMode) {
 
-        approveService.buildApplyApprove(modelMap,id);
-        if(StringUtils.isNotBlank(viewMode)){
-            modelMap.put("viewMode",true);
-        }else{
-            modelMap.put("viewMode",false);
+        approveService.buildApplyApprove(modelMap, id);
+        if (StringUtils.isNotBlank(viewMode)) {
+            modelMap.put("viewMode", true);
+        } else {
+            modelMap.put("viewMode", false);
         }
         return "approveApply/approve";
     }
 
-    @RequestMapping(value="/change/{id}", method = RequestMethod.GET)
-    public String change(ModelMap modelMap, @PathVariable("id") Long id,String viewMode) {
+    @RequestMapping(value = "/change/{id}", method = RequestMethod.GET)
+    public String change(ModelMap modelMap, @PathVariable("id") Long id, String viewMode) {
 
-        approveService.buildChangeApprove(modelMap,id);
-        if(StringUtils.isNotBlank(viewMode)){
-            modelMap.put("viewMode",true);
-        }else{
-            modelMap.put("viewMode",false);
+        approveService.buildChangeApprove(modelMap, id);
+        if (StringUtils.isNotBlank(viewMode)) {
+            modelMap.put("viewMode", true);
+        } else {
+            modelMap.put("viewMode", false);
         }
         return "approveChange/approve";
     }
 
-    @RequestMapping(value="/verify/{id}", method = RequestMethod.GET)
-    public String verify(ModelMap modelMap, @PathVariable("id") Long id,String viewMode) {
+    @RequestMapping(value = "/verify/{id}", method = RequestMethod.GET)
+    public String verify(ModelMap modelMap, @PathVariable("id") Long id, String viewMode) {
 
-        approveService.buildChangeApprove(modelMap,id);
-        if(StringUtils.isNotBlank(viewMode)){
-            modelMap.put("viewMode",true);
-        }else{
-            modelMap.put("viewMode",false);
+        approveService.buildChangeApprove(modelMap, id);
+        if (StringUtils.isNotBlank(viewMode)) {
+            modelMap.put("viewMode", true);
+        } else {
+            modelMap.put("viewMode", false);
         }
         return "approveChange/verify";
     }
 
-    @RequestMapping(value="/complete/{id}", method = RequestMethod.GET)
-    public String complete(ModelMap modelMap, @PathVariable("id") Long id,String viewMode) {
+    @RequestMapping(value = "/complete/{id}", method = RequestMethod.GET)
+    public String complete(ModelMap modelMap, @PathVariable("id") Long id, String viewMode) {
 
-        approveService.buildCompleteApprove(modelMap,id);
-        if(StringUtils.isNotBlank(viewMode)){
-            modelMap.put("viewMode",true);
-        }else{
-            modelMap.put("viewMode",false);
+        approveService.buildCompleteApprove(modelMap, id);
+        if (StringUtils.isNotBlank(viewMode)) {
+            modelMap.put("viewMode", true);
+        } else {
+            modelMap.put("viewMode", false);
         }
         return "approveComplete/approve";
     }
@@ -113,7 +115,7 @@ public class ApproveController {
         Map<Object, Object> metadata = new HashMap<>(2);
         metadata.put("userId", JSON.parse("{provider:'memberProvider'}"));
         metadata.put("approveDate", JSON.parse("{provider:'datetimeProvider'}"));
-        List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, JSON.parseArray(approve.getDescription(),ApplyApprove.class));
+        List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, JSON.parseArray(approve.getDescription(), ApplyApprove.class));
         return maps;
     }
 
@@ -129,63 +131,104 @@ public class ApproveController {
         return approveService.verity(id, opt, notes);
     }
 
-    @ApiOperation(value="查询Approve", notes = "查询Approve，返回列表信息")
+    @ApiOperation(value = "查询Approve", notes = "查询Approve，返回列表信息")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="Approve", paramType="form", value = "Approve的form信息", required = false, dataType = "string")
-	})
-    @RequestMapping(value="/list", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody List<Approve> list(Approve approve) {
+            @ApiImplicitParam(name = "Approve", paramType = "form", value = "Approve的form信息", required = false, dataType = "string")
+    })
+    @RequestMapping(value = "/list", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody
+    List<Approve> list(Approve approve) {
         return approveService.list(approve);
     }
 
-    @ApiOperation(value="分页查询Approve", notes = "分页查询Approve，返回easyui分页信息")
+    @ApiOperation(value = "分页查询Approve", notes = "分页查询Approve，返回easyui分页信息")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="Approve", paramType="form", value = "Approve的form信息", required = false, dataType = "string")
-	})
-    @RequestMapping(value="/apply/listPage", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody String listPage(Approve approve) throws Exception {
+            @ApiImplicitParam(name = "Approve", paramType = "form", value = "Approve的form信息", required = false, dataType = "string")
+    })
+    @RequestMapping(value = "/apply/listPage", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody
+    String listPage(Approve approve) throws Exception {
         approve.setType(AlmConstants.ApproveType.APPLY.getCode());
         return approveService.listEasyuiPageByExample(approve, true).toString();
     }
 
-    @RequestMapping(value="/change/listPage", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody String changeListPage(Approve approve) throws Exception {
+    @RequestMapping(value = "/change/listPage", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody
+    String changeListPage(Approve approve) throws Exception {
         approve.setType(AlmConstants.ApproveType.CHANGE.getCode());
         return approveService.listEasyuiPageByExample(approve, true).toString();
     }
 
-    @RequestMapping(value="/complete/listPage", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody String completeListPage(Approve approve) throws Exception {
+    @RequestMapping(value = "/complete/listPage", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody
+    String completeListPage(Approve approve) throws Exception {
         approve.setType(AlmConstants.ApproveType.COMPLETE.getCode());
         return approveService.listEasyuiPageByExample(approve, true).toString();
     }
+
     @ApiOperation("新增Approve")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="Approve", paramType="form", value = "Approve的form信息", required = true, dataType = "string")
-	})
-    @RequestMapping(value="/insert", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput insert(Approve approve) {
+            @ApiImplicitParam(name = "Approve", paramType = "form", value = "Approve的form信息", required = true, dataType = "string")
+    })
+    @RequestMapping(value = "/insert", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody
+    BaseOutput insert(Approve approve) {
         approveService.insertSelective(approve);
         return BaseOutput.success("新增成功");
     }
 
     @ApiOperation("修改Approve")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="Approve", paramType="form", value = "Approve的form信息", required = true, dataType = "string")
-	})
-    @RequestMapping(value="/update", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput update(Approve approve) {
+            @ApiImplicitParam(name = "Approve", paramType = "form", value = "Approve的form信息", required = true, dataType = "string")
+    })
+    @RequestMapping(value = "/update", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody
+    BaseOutput update(Approve approve) {
         approveService.updateSelective(approve);
         return BaseOutput.success("修改成功");
     }
 
     @ApiOperation("删除Approve")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="id", paramType="form", value = "Approve的主键", required = true, dataType = "long")
-	})
-    @RequestMapping(value="/delete", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput delete(Long id) {
+            @ApiImplicitParam(name = "id", paramType = "form", value = "Approve的主键", required = true, dataType = "long")
+    })
+    @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody
+    BaseOutput delete(Long id) {
         approveService.delete(id);
         return BaseOutput.success("删除成功");
+    }
+
+    @RequestMapping(value = "/doc/apply/{id}", method = RequestMethod.GET)
+    public void applyDoc(@PathVariable("id") Long id, HttpServletRequest request, HttpServletResponse response) {
+
+        String fileName = "收费单明细.docx";
+        // 默认使用IE的方式进行编码
+        try {
+            String userAgent = request.getHeader("User-Agent");
+            String rtn = "filename=\"" + fileName + "\"";
+            if (userAgent != null) {
+                userAgent = userAgent.toLowerCase();
+                // IE浏览器，只能采用URLEncoder编码
+                if (userAgent.contains("msie")) {
+                    rtn = "filename=\"" + fileName + "\"";
+                }
+                // Opera浏览器只能采用filename*
+                else if (userAgent.contains("opera")) {
+                    rtn = "filename*=UTF-8''" + fileName;
+                }
+                // Safari浏览器，只能采用ISO编码的中文输出
+                else if (userAgent.contains("safari")) {
+                    rtn = "filename=\"" + new String(fileName.getBytes("UTF-8"), "ISO8859-1") + "\"";
+                } else if (userAgent.contains("mozilla")) {
+                    rtn = "filename*=UTF-8''" + fileName;
+                }
+            }
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", "attachment;" + rtn);
+            approveService.downloadProjectDoc(AlmConstants.ApproveType.APPLY, id, response.getOutputStream());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

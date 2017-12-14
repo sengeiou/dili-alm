@@ -167,6 +167,13 @@ function openInsertVersion() {
 											data : data,
 											success : function(data) {
 												if (data.code == 200) {
+													try {
+														LogUtils.saveLog("新增项目版本:" + data.result, function() {
+																	window.location.href = "${contextPath}/projectApply/toStep/1/" + data.result;
+																});
+													} catch (e) {
+														window.location.href = "${contextPath}/projectApply/toStep/1/" + data.result;
+													}
 													$('#versionGrid').datagrid('appendRow', data.data);
 													$('#versionGrid').datagrid('acceptChanges');
 													if ($('#versionForm input[name=fileIds]').length > 0) {

@@ -46,13 +46,13 @@
 			data-options="onHeaderContextMenu:headerContextMenu,onDblClickRow:onDblClickRow">
 			<thead>
 				<tr>
-					<th data-options="field:'serialNumber',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">用户编号</th>
-					<th data-options="field:'userName',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">用户名</th>
-					<th data-options="field:'realName',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">真实姓名</th>
+					<th data-options="field:'serialNumber',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',width:80" >用户编号</th>
+					<th data-options="field:'userName',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',width:105">用户名</th>
+					<th data-options="field:'realName',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',width:80"">真实姓名</th>
 					<th
 						data-options="field:'department',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:function(value,row,index){
 						return row.department.name;
-					}">所属部门</th>
+					},width:80"" 所属部门</th>
 					<th
 						data-options="field:'职务',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:function(value,row,index){
 						var content = '';
@@ -60,14 +60,15 @@
 							content += item.roleName;
 						});
 						return content;
-					}">职务</th>
+					}"  >职务</th>
 					<th data-options="field:'lastLoginIp',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">最后登录ip</th>
 					<th
 						data-options="field:'lastLoginTime',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">最后登录时间</th>
-					<th data-options="field:'cellphone',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">手机号码</th>
+					<th data-options="field:'cellphone',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'" >手机号码</th>
 					<th data-options="field:'email',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">邮箱</th>
 					<th
-						data-options="field:'status', _data:[{'text':'已启用','value':1},{'text':'已停用','value':0}],  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">状态</th>
+						data-options="field:'status', _data:[{'text':'已启用','value':1},{'text':'已停用','value':0}],  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'"
+						>状态</th>
 					<th data-options="field:'options', formatter:formatOptions, align:'center', resizable:'true', fixed:'false'">操作</th>
 				</tr>
 			</thead>

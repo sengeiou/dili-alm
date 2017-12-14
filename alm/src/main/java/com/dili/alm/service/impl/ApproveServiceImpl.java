@@ -1,6 +1,8 @@
 package com.dili.alm.service.impl;
 
+import cn.afterturn.easypoi.word.WordExportUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.ApproveMapper;
 import com.dili.alm.domain.*;
@@ -18,11 +20,14 @@ import com.dili.ss.util.SystemConfigUtils;
 import com.dili.sysadmin.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.*;
 
 import static com.dili.alm.domain.ProjectState.NOT_START;
@@ -80,6 +85,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         metadata.put("dep", JSON.parse("{provider:'depProvider'}"));
         metadata.put("createMemberId", JSON.parse("{provider:'memberProvider'}"));
         metadata.put("created", JSON.parse("{provider:'dateProvider'}"));
+        metadata.put("status", JSON.parse("{provider:'approveStateProvider'}"));
 
         Map dto = null;
         try {
@@ -95,7 +101,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
 
         String approveDescription = approve.getDescription();
-        checkApprove(approveDescription,approve.getStatus(),modelMap);
+        checkApprove(approveDescription, approve.getStatus(), modelMap);
     }
 
     @Override
@@ -105,6 +111,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         Map<Object, Object> metadata = new HashMap<>();
         metadata.put("createMemberId", JSON.parse("{provider:'memberProvider'}"));
         metadata.put("created", JSON.parse("{provider:'dateProvider'}"));
+        metadata.put("status", JSON.parse("{provider:'changeStateProvider'}"));
 
         Map dto = null;
         try {
@@ -118,13 +125,13 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         modelMap.put("change", change);
 
         String approveDescription = approve.getDescription();
-        checkApprove(approveDescription,approve.getStatus(),modelMap);
+        checkApprove(approveDescription, approve.getStatus(), modelMap);
     }
 
     /**
      * 检查是否有审批权限
      */
-    private void checkApprove(String approveDescription,Integer status,Map map){
+    private void checkApprove(String approveDescription, Integer status, Map map) {
         // 能否审批
         boolean canOpt = false;
 
@@ -170,6 +177,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         Map<Object, Object> metadata = new HashMap<>();
         metadata.put("createMemberId", JSON.parse("{provider:'memberProvider'}"));
         metadata.put("created", JSON.parse("{provider:'dateProvider'}"));
+        metadata.put("status", JSON.parse("{provider:'approveStateProvider'}"));
 
         Map dto = null;
         try {
@@ -183,7 +191,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         modelMap.put("complete", complete);
 
         String approveDescription = approve.getDescription();
-        checkApprove(approveDescription,approve.getStatus(),modelMap);
+        checkApprove(approveDescription, approve.getStatus(), modelMap);
     }
 
     @Override
@@ -216,17 +224,17 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
                             ProjectApply apply = projectApplyService.get(approve.getProjectApplyId());
                             apply.setStatus(AlmConstants.ApplyState.NOPASS.getCode());
                             projectApplyService.updateSelective(apply);
-                            sendMail(apply,false);
+                            sendMail(apply, false);
                         } else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.CHANGE.getCode())) {
                             ProjectChange change = projectChangeService.get(approve.getProjectApplyId());
                             change.setStatus(AlmConstants.ApplyState.NOPASS.getCode());
                             projectChangeService.update(change);
-                            sendMail(change,false);
+                            sendMail(change, false);
                         } else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.COMPLETE.getCode())) {
                             ProjectComplete complete = projectCompleteService.get(approve.getProjectApplyId());
                             complete.setStatus(AlmConstants.ApplyState.NOPASS.getCode());
                             projectCompleteService.update(complete);
-                            sendMail(complete,false);
+                            sendMail(complete, false);
                         }
                         break;
                     case "accept":
@@ -237,17 +245,17 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
                             // 立项审批通过生成项目信息
                             buildProject(apply, approve);
                             projectApplyService.updateSelective(apply);
-                            sendMail(apply,true);
+                            sendMail(apply, true);
                         } else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.CHANGE.getCode())) {
                             ProjectChange change = projectChangeService.get(approve.getProjectApplyId());
                             change.setStatus(AlmConstants.ApplyState.PASS.getCode());
                             projectChangeService.update(change);
-                            sendMail(change,true);
+                            sendMail(change, true);
                         } else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.COMPLETE.getCode())) {
                             ProjectComplete complete = projectCompleteService.get(approve.getProjectApplyId());
                             complete.setStatus(AlmConstants.ApplyState.PASS.getCode());
                             projectCompleteService.update(complete);
-                            sendMail(complete,true);
+                            sendMail(complete, true);
                         }
                         break;
                     default:
@@ -265,14 +273,14 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
     }
 
     private void sendMail(ProjectChange change, boolean accept) {
-        sendMail(change.getEmail().split(","),"变更申请",change.getProjectName() + "的变更申请[" + change.getName() + "]" + (accept ? "已经审批通过" : "审批未通过"));
+        sendMail(change.getEmail().split(","), "变更申请", change.getProjectName() + "的变更申请[" + change.getName() + "]" + (accept ? "已经审批通过" : "审批未通过"));
     }
 
     private void sendMail(ProjectComplete complete, boolean accept) {
-        sendMail(complete.getEmail().split(","),"结项申请",complete.getName() + "的结项申请" + (accept ? "已经审批通过" : "审批未通过"));
+        sendMail(complete.getEmail().split(","), "结项申请", complete.getName() + "的结项申请" + (accept ? "已经审批通过" : "审批未通过"));
     }
 
-    private void sendMail(String [] sendTo,String title,String text){
+    private void sendMail(String[] sendTo, String title, String text) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo("yanggang@diligrp.com");
@@ -295,7 +303,43 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         verifyApproval.setResult(opt);
         verifyApproval.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
         verifyApprovalService.insert(verifyApproval);
+        Approve approve = get(id);
+        approve.setStatus(Objects.equals(opt, "accept") ?AlmConstants.ChangeState.VRIFY.getCode() : approve.getStatus());
+        updateSelective(approve);
         return BaseOutput.success();
+    }
+
+    @Override
+    public void downloadProjectDoc(AlmConstants.ApproveType approveType, Long id, OutputStream os) {
+        switch (approveType) {
+            case APPLY:
+
+                try {
+                    ProjectApply apply = projectApplyService.get(id);
+                    Map<String, Object> map = new HashMap<String, Object>();
+                    Map<Object, Object> metadata = new HashMap<>(2);
+                    JSONObject projectTypeProvider = new JSONObject();
+                    projectTypeProvider.put("provider", "projectTypeProvider");
+                    metadata.put("type", projectTypeProvider);
+                    List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, projectApplyService.listByExample(apply));
+                    Map applyDTO = maps.get(0);
+                    map.put("apply", applyDTO);
+
+                   projectApplyService.buildStepOne(map,applyDTO);
+
+
+                    XWPFDocument doc = WordExportUtil.exportWord07(
+                            "/Users/shaofan/Desktop/apply.docx", applyDTO);
+                    FileOutputStream fos = new FileOutputStream("/Users/shaofan/Desktop/simpleExcel1.docx");
+                    doc.write(fos);
+                    os.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
@@ -340,6 +384,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         build.setApplyId(apply.getId());
         build.setBusinessOwner(apply.getBusinessOwner());
         build.setProjectState(NOT_START.getValue());
+        build.setOriginator(SessionContext.getSessionContext().getUserTicket().getId());
         projectService.insertSelective(build);
     }
 

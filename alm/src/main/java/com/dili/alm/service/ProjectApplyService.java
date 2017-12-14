@@ -8,6 +8,7 @@ import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -24,4 +25,14 @@ public interface ProjectApplyService extends BaseService<ProjectApply, Long> {
 
     List<Files> listFiles(Long applyId);
 
+    /**
+     * 构建立项申请第一步数据
+     *
+     * @param modelMap
+     * @param applyDTO
+     * @throws Exception
+     */
+    void buildStepOne(Map modelMap, Map applyDTO) throws Exception;
+
+    List<Map> loadPlan(Long id) throws Exception;
 }

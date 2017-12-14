@@ -360,8 +360,15 @@
   	                success: function (data) {
   	                    if(data.code=="200"){
   	                    	alert("取消成功");
-  	                    	//history.go(0);
-  	                      window.location.href="${contextPath}/weekly/getDescById?id="+tempid;
+	  	                      try {
+	  	                          LogUtils.saveLog("周报取消成功:" + data.result, function () {
+	  	                        	  window.location.href="${contextPath}/weekly/getDescById?id="+tempid;
+	  	                          });
+	  	                      } catch (e) {
+	  	                    	     window.location.href="${contextPath}/weekly/getDescById?id="+tempid;
+	  	                      }
+  	                 
+  	                    
   	                    }else{
   	                        $.messager.alert('错误',data.result);
   	                    }
@@ -370,8 +377,7 @@
   	                    $.messager.alert('错误','远程访问失败');
   	                }
   	            });
-            	
-  	          
+            
              }
 
 		    function save(isSubmit){  
@@ -400,6 +406,9 @@
 	        	   isSubmit=1;
 	           }
 		         
+	           maxquSave();
+	            maxRistSave();
+	            
 	            $.ajax({
 	                type: "POST",
 	                url: _url,
@@ -417,12 +426,28 @@
 	                success: function (data) {
 	                    if(data.code=="200"){
 	                    	 if(isSubmit==1){
+	                    		 try {
+	     	                          LogUtils.saveLog("周报提交成功:" + data.result, function () {
+	     	                        	 window.location.href="${contextPath}/weekly/getDescById?id="+tempid;
+	     	                          });
+	     	                      } catch (e) {
+	     	                    	 window.location.href="${contextPath}/weekly/getDescById?id="+tempid;
+	     	                      }
+	     	                      
 	                    		 alert("周报提交成功");
 	                    	 }else{
+	                    		 try {
+	     	                          LogUtils.saveLog("周报保存成功:" + data.result, function () {
+	     	                        	 window.location.href="${contextPath}/weekly/getDescById?id="+tempid;
+	     	                          });
+	     	                      } catch (e) {
+	     	                    	 window.location.href="${contextPath}/weekly/getDescById?id="+tempid;
+	     	                      }
+	     	                      
 	                    		 alert("周报保存成功");
 	                    	 }
 	                    	//history.go(0);
-	                    	 window.location.href="${contextPath}/weekly/getDescById?id="+tempid;
+	                    	// window.location.href="${contextPath}/weekly/getDescById?id="+tempid;
 	                    }else{
 	                        $.messager.alert('错误',data.result);
 	                    }
@@ -431,8 +456,7 @@
 	                    $.messager.alert('错误','远程访问失败');
 	                }
 	            });
-	            maxquSave();
-	            maxRistSave();
+	          
 	           
 	           
 	            
@@ -479,42 +503,59 @@
       
       function maxquSave(){
     	
-    	  var arr = new Array();
-    	    $("#maxqu").find("tbody tr").each(function(){
-    	        var tdArr = $(this).children();
-    	        var name = tdArr.eq(0).find('input').val();//风险名称
-    	        var desc = tdArr.eq(1).find('input').val();//跟踪简述
-    	        var status = tdArr.eq(2).find('select').val();// 当前状态
-    	        
-    	        var person=new WeeklyJson(name,desc,status);
-    	        
-    	        arr.push(person);
-    	        
-    	    });
-    	  
-    	 
+	   	    var arr = new Array();
+	   	    $("#maxqu").find("tbody tr").each(function(){
+	   	        var tdArr = $(this).children();
+	   	        var name = tdArr.eq(0).find('input').val();//风险名称
+	   	        if(name==null|name=''){
+	   	        	alert("问题名称为空");
+	   	        	return false;
+	   	        }
+	   	        var desc = tdArr.eq(1).find('input').val();//跟踪简述
+	   	        if(desc==null|desc=''){
+	   	        	alert("问题简述为空");
+	   	        	return false;
+	   	        }
+	   	        var status = tdArr.eq(2).find('select').val();// 当前状态
+	   	        if(desc==null|desc=''){
+	   	        	alert("当前状态为空");
+	   	        	return false;
+	   	        }
+	   	        
+	   	        var person=new WeeklyJson(name,desc,status);
+	   	        arr.push(person);
+	   	        
+	   	    });
+	   	  
     	    var _url= "${contextPath}/weekly/saveMaxQu";
-    	      $.ajax({
-	                type: "POST",
-	                url: _url,
-	                data: {
-	                	str:JSON.stringify(arr),
-	                	id:$("#inHidden").val()
-	                },
-	                async : true,
-	                success: function (data) {
-	                    if(data.code=="200"){
-	                    
-	                    }else{
-	                        $.messager.alert('错误',data.result);
-	                    }
-	                },
-	                error: function(){
-	                    $.messager.alert('错误','远程访问失败');
-	                }
-	            });
     	    
+   	        $.ajax({
+                type: "POST",
+                url: _url,
+                data: {
+                	str:JSON.stringify(arr),
+                	id:$("#inHidden").val()
+                },
+                async : true,
+                success: function (data) {
+                    if(data.code=="200"){
+                    
+                    }else{
+                        $.messager.alert('错误',data.result);
+                    }
+                    try {
+                        LogUtils.saveLog("当前重大问题:" + data.result, function () {
+                        });
+                    } catch (e) {
+                  	
+                    }
+                },
+                error: function(){
+                    $.messager.alert('错误','远程访问失败');
+                }
+            });
     	    
+    	      
     	   
       }
       function maxRistSave(){
@@ -524,12 +565,24 @@
  	            var name = tdArr.eq(0).find('input').val();//风险名称
  	            var desc = tdArr.eq(1).find('input').val();//跟踪简述
  	            var status = tdArr.eq(2).find('select').val();// 当前状态
+ 	            if(name==null|name=''){
+	   	        	alert("风险名称为空");
+	   	        	return false;
+	   	        }
+ 	           if(desc==null|desc=''){
+	   	        	alert("跟踪简述");
+	   	        	return false;
+	   	        }
+ 	            if(status==null|status=''){
+	   	        	alert("当前状态为空");
+	   	        	return false;
+	   	        }
  	        
  	            var person=new WeeklyJson(name,desc,status);
  	        
  	            arr.push(person);
    	      });
-   	   var _url= "${contextPath}/weekly/saveMaxRist";
+   	      var _url= "${contextPath}/weekly/saveMaxRist";
 	      $.ajax({
              type: "POST",
              url: _url,
@@ -541,15 +594,23 @@
              async : true,
              success: function (data) {
                  if(data.code=="200"){
-                 	
                  }else{
                      $.messager.alert('错误',data.result);
+                 }
+                 
+                 try {
+                     LogUtils.saveLog("当前重大风险:" + data.result, function () {
+                     });
+                 } catch (e) {
+               	
                  }
              },
              error: function(){
                  $.messager.alert('错误','远程访问失败');
              }
          });
+	      
+	     
      }
      
       

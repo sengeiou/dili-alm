@@ -15,7 +15,7 @@ public class MenuTreeUtil {
 		this.menu=menus;
 		for (Menu menu : menus) {
 			Map<String,Object> maps = new LinkedHashMap<String, Object>();
-			if(menu.getParentId()==-1){
+			if(menu.getParentId().longValue()==-1L){
 				maps.put("id", menu.getId());
 				maps.put("created", menu.getCreated());
 				maps.put("description", menu.getDescription());
@@ -36,7 +36,7 @@ public class MenuTreeUtil {
 		List<Object> obt = new ArrayList<Object>();
 		for (Menu menu : menu) {
 			Map<String,Object> mapsChild = new LinkedHashMap<String, Object>();
-			if(menu.getParentId()==parentId){
+			if(menu.getParentId().longValue()==parentId.longValue()){
 				mapsChild.put("id", menu.getId());
 				mapsChild.put("created", menu.getCreated());
 				mapsChild.put("description", menu.getDescription());

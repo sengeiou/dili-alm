@@ -1,7 +1,7 @@
 body {
     font-family: "microsoft yahei", verdana, helvetica, arial, sans-serif;
     padding: 20px;
-    font-size: 12px;
+    font-size: 13px;
     margin: 0;
 }
 
@@ -164,7 +164,7 @@ select:focus{
 .panel-body {
     background-color: #ffffff;
     color: #333;
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .panel-body input:focus {
@@ -175,7 +175,7 @@ select:focus{
 }
 
 .panel-title {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: bold;
     color: #333;
     height: 16px;
@@ -769,7 +769,7 @@ select:focus{
     vertical-align: top;
     width: auto;
     line-height: 24px;
-    font-size: 12px;
+    font-size: 13px;
     padding: 0;
     margin: 0 4px;
 }
@@ -1009,7 +1009,7 @@ select:focus{
 }
 
 .textbox .textbox-text {
-    font-size: 12px;
+    font-size: 13px;
     border: 0;
     margin: 0;
     padding: 4px;
@@ -1038,7 +1038,7 @@ select:focus{
 }
 
 .textbox .textbox-prompt {
-    font-size: 12px;
+    font-size: 13px;
     color: #aaa;
 }
 
@@ -1238,7 +1238,7 @@ select:focus{
 .combobox-item,
 .combobox-group,
 .combobox-stick {
-    font-size: 12px;
+    font-size: 13px;
     padding: 3px;
 }
 
@@ -1682,7 +1682,7 @@ select:focus{
 }
 
 .tabs-title {
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .tabs-closable {
@@ -2130,7 +2130,7 @@ select:focus{
     overflow: hidden;
     height: 18px;
     line-height: 18px;
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .datagrid-header .datagrid-cell {
@@ -2138,7 +2138,7 @@ select:focus{
 }
 
 .datagrid-header .datagrid-cell span {
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .datagrid-cell-group {
@@ -2231,7 +2231,7 @@ select:focus{
     margin: 0;
     padding: 2px 4px;
     border: 1px solid #D4D4D4;
-    font-size: 12px;
+    font-size: 13px;
     outline-style: none;
     -moz-border-radius: 0 0 0 0;
     -webkit-border-radius: 0 0 0 0;
@@ -2540,11 +2540,11 @@ select:focus{
     padding: 0;
     height: 30px;
     line-height: 30px;
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .pagination span {
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .pagination-link .l-btn-text {
@@ -2593,14 +2593,14 @@ select:focus{
 .calendar table {
     table-layout: fixed;
     border-collapse: separate;
-    font-size: 12px;
+    font-size: 13px;
     width: 100%;
     height: 100%;
 }
 
 .calendar table td,
 .calendar table th {
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .calendar-noborder {
@@ -2624,7 +2624,7 @@ select:focus{
     padding: 0 3px;
     height: 18px;
     line-height: 18px;
-    font-size: 12px;
+    font-size: 13px;
     cursor: pointer;
     -moz-border-radius: 3px 3px 3px 3px;
     -webkit-border-radius: 3px 3px 3px 3px;
@@ -2703,7 +2703,7 @@ select:focus{
     width: 180px;
     height: 150px;
     padding: 5px;
-    font-size: 12px;
+    font-size: 13px;
     display: none;
     overflow: hidden;
 }
@@ -2723,7 +2723,7 @@ select:focus{
     margin: 0;
     padding: 2px;
     font-weight: bold;
-    font-size: 12px;
+    font-size: 13px;
     -moz-border-radius: 3px 3px 3px 3px;
     -webkit-border-radius: 3px 3px 3px 3px;
     border-radius: 3px 3px 3px 3px;
@@ -2833,7 +2833,7 @@ select:focus{
 
 .datebox-button a {
     line-height: 22px;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: bold;
     text-decoration: none;
     opacity: 0.6;
@@ -2965,7 +2965,7 @@ select:focus{
 
 .progressbar-text {
     color: #333;
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .progressbar-value .progressbar-text {
@@ -3082,7 +3082,7 @@ select:focus{
     position: absolute;
     display: inline-block;
     line-height: 12px;
-    font-size: 12px;
+    font-size: 13px;
     white-space: nowrap;
     top: -22px;
 }
@@ -3109,7 +3109,7 @@ select:focus{
 .slider-rulelabel span {
     position: absolute;
     display: inline-block;
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .slider-v .slider-inner {
@@ -3251,7 +3251,7 @@ select:focus{
 
 .menu-text,
 .menu-text span {
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .menu-shadow {
@@ -3609,7 +3609,7 @@ select:focus{
 }
 
 .tree-title {
-    font-size: 12px;
+    font-size: 13px;
     display: inline-block;
     text-decoration: none;
     vertical-align: top;
@@ -3620,7 +3620,7 @@ select:focus{
 }
 
 .tree-node-proxy {
-    font-size: 12px;
+    font-size: 13px;
     line-height: 20px;
     padding: 0 2px 0 20px;
     border-width: 1px;
@@ -3660,7 +3660,7 @@ select:focus{
 
 .tree-editor {
     border: 1px solid #D4D4D4;
-    font-size: 12px;
+    font-size: 13px;
     line-height: 16px;
     padding: 0 4px;
     margin: 0;
@@ -3714,7 +3714,7 @@ select:focus{
 }
 
 .tooltip-content {
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .tooltip-arrow-outer,
@@ -3851,7 +3851,7 @@ select:focus{
     text-align: center;
     height: 100%;
     float: left;
-    font-size: 12px;
+    font-size: 13px;
     -moz-border-radius: 3px 3px 3px 3px;
     -webkit-border-radius: 3px 3px 3px 3px;
     border-radius: 3px 3px 3px 3px;

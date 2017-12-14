@@ -71,7 +71,7 @@ public class WeeklyController  {
 
 
     @ApiOperation("跳转到Weekly页面")
-    @RequestMapping(value="/index", method = RequestMethod.GET)
+    @RequestMapping(value="/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
         return "weekly/index";
     }
@@ -229,13 +229,16 @@ public class WeeklyController  {
     	 if(wkMap.get("one")==null){
     		  map=weeklyService.getDescById(wkMap.get("two").getId()+"");
     		
+    	 }else{
+    		 map=weeklyService.getDescById(wkMap.get("one").getId()+"");
     	 }
     	
     	//项目周报
 		mv.addObject("pd", (ProjectWeeklyDto)map.get("pd"));
 		wk.setProgress(((ProjectWeeklyDto)map.get("pd")).getCompletedProgress());//存项目
-		
-		weeklyService.update(wk);
+		wk.setProjectId(Long.parseLong(projectId));
+		wk.setId(Long.parseLong(((ProjectWeeklyDto)map.get("pd")).getId()));
+		weeklyService.updateSelective(wk);
 		// 本周项目版本
 		mv.addObject("pv",(String) map.get("pv"));
 		//本周项目阶段

@@ -178,7 +178,7 @@
 
     function append() {
         if (impact.endEditing()) {
-            $('#dg').datagrid('appendRow', {});
+            $('#dg').datagrid('appendRow', {date:new Date().format("yyyy-MM-dd hh:mm:ss")});
             impact.editIndex = $('#dg').datagrid('getRows').length - 1;
             $('#dg').datagrid('selectRow', impact.editIndex)
                 .datagrid('beginEdit', impact.editIndex);

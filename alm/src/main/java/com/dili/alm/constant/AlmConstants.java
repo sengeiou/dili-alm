@@ -63,6 +63,26 @@ public class AlmConstants {
 			return false;
 		}
 	}
+	public enum ChangeState{
+		APPLY(1),APPROVE(2),PASS(3),NOPASS(4),VRIFY(5);
+
+		private int code;
+
+		ChangeState(int code) {
+			this.code = code;
+		}
+
+		public int getCode() {
+			return code;
+		}
+
+		public boolean check(Object value){
+			try{
+				return Integer.parseInt(value.toString()) == this.code;
+			}catch (Exception ignored){}
+			return false;
+		}
+	}
 
 	public enum ApproveType{
 		APPLY("apply"),CHANGE("change"),COMPLETE("complete");
