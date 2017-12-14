@@ -88,7 +88,8 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 	@Override
 	public List<Project> selectByOwner(Long ownerId) {
-		return this.projectMapper.getProjectsByTaskOwner(ownerId);
+		Project project =DTOUtils.newDTO(Project.class);
+		return this.projectMapper.getProjectsByTaskOwner(project,ownerId);
 	}
 	
 	@Override

@@ -298,7 +298,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 			throw new RuntimeException("未登录");
 		}
 		int total = this.getActualDao().getPageByProjectCount(userTicket.getId());
-		List<Project> projectList = this.getActualDao().getProjectsByTaskOwner(userTicket.getId());
+		List<Project> projectList = this.getActualDao().getProjectsByTaskOwner(project,userTicket.getId());
 		List<ProjectDto> projectDtoList = new ArrayList<ProjectDto>();
 		if (projectList != null && projectList.size() > 0) {
 			for (Project project1 : projectList) {

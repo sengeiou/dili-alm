@@ -11,33 +11,20 @@
     <result column="operator_id" jdbcType="BIGINT" property="operatorId" />
     <result column="operator_name" jdbcType="VARCHAR" property="operatorName" />
     <result column="ip" jdbcType="VARCHAR" property="ip" />
-  </resultMap>
-  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.dili.alm.domain.Log">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+     <result column="content" jdbcType="VARCHAR" property="content" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
       WARNING - @mbg.generated
     -->
-    id, created, modified, operator_id, operator_name, ip
+    id, created, modified, operator_id, operator_name, ip,content
   </sql>
-  <sql id="Blob_Column_List">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    content
-  </sql>
-  <select id="selectBy" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
       WARNING - @mbg.generated
     -->
     select 
     <include refid="Base_Column_List" />
-    ,
-    <include refid="Blob_Column_List" />
     from log
     where id = #{id,jdbcType=BIGINT}
   </select>
@@ -51,7 +38,7 @@
         created = #{created,jdbcType=TIMESTAMP},
       </if>
       <if test="modified != null">
-        created = #{modified,jdbcType=TIMESTAMP},
+        modified = #{modified,jdbcType=TIMESTAMP},
       </if>
       <if test="operatorId != null">
         operator_id = #{operatorId,jdbcType=BIGINT},
@@ -63,9 +50,58 @@
         ip = #{ip,jdbcType=VARCHAR},
       </if>
       <if test="content != null">
-        content = #{content,jdbcType=LONGVARCHAR},
+        content = #{content,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
+  <select id="logLikeList"  resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from log
+    where 1=1
+    <if test="log.operatorId != null">
+        and operator_id = #{log.operatorId}
+    </if>
+    <if test="beginTime != null">
+        and created &gt;=#{beginTime} 
+    </if>
+    <if test="endTime != null">
+        and created &lt;=#{endTime} 
+    </if>
+    <if test="log.content != null">
+        and content like '%${log.content}%'
+    </if>
+    <if test="log.sort != null">
+    	ORDER BY '${log.sort}' ${log.order}
+    </if>
+    <if test="log.page != null and log.rows != null">
+    limit ${(log.page-1)*log.rows},${log.rows}
+    </if>
+    
+  </select>
+  <select id="logLikeListCount" resultType="java.lang.Integer">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    count(1) AS 'total'
+    from log
+    where 1=1
+    <if test="log.operatorId != null">
+        and operator_id = #{log.operatorId}
+    </if>
+    <if test="beginTime != null">
+        and created &gt;=#{beginTime} 
+    </if>
+    <if test="endTime != null">
+        and created &lt;=#{endTime} 
+    </if>
+    <if test="log.content != null">
+        and content like '%${log.content}%'
+    </if>
+  </select>
 </mapper>

@@ -46,8 +46,8 @@ public class LogController {
 		@ApiImplicitParam(name="Log", paramType="form", value = "Log的form信息", required = false, dataType = "string")
 	})
     @RequestMapping(value="/listPage", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody String listPage(Log log) throws Exception {
-        return logService.listEasyuiPageByExample(log, true).toString();
+    public @ResponseBody String listPage(Log log,String beginTime,String endTime) throws Exception {
+        return logService.listLogPage(log,beginTime,endTime).toString();
     }
     
     @ApiOperation("修改Log")

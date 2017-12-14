@@ -2,6 +2,7 @@ package com.dili.alm.service;
 
 import com.dili.alm.domain.Log;
 import com.dili.ss.base.BaseService;
+import com.dili.ss.domain.EasyuiPageOutput;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -12,4 +13,6 @@ public interface LogService extends BaseService<Log, Long> {
 	int insertLog( String logText);
 
 	int updateLog( Long logId,String logText);
+
+	EasyuiPageOutput listLogPage(Log log, String beginTime, String endTime);
 }
