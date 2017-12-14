@@ -109,6 +109,23 @@ public class DateUtil {
 		
 		return map;
 	}
+public static HashMap<String,String>  getFirstAndFive(Date date) {
+		
+		
+		HashMap<String,String> map=new HashMap<String,String>();
+		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//小写的mm表示的是分钟  
+		if(getWeekOfDate(date).endsWith("星期日")){
+			String strend=getAddDay(sdf.format(date),-2);//周五
+			String  strbegin=getAddDay(sdf.format(date),-6);//周一
+			map.put("one", strbegin);
+			map.put("five", strend);
+		}else{
+		    map.put("one", getWeekFristDay());
+		    map.put("five", getWeekFriday());
+		}
+		
+		return map;
+	}
 
 	// 获得当前日期与本周日相差的天数  
 	private static int getMondayPlus(Date gmtCreate) {  
@@ -124,23 +141,41 @@ public class DateUtil {
 	}  
 	  
 	// 获得下周星期一的日期  
-	public static String getNextMonday(Date gmtCreate) {  
+	public static String getNextMondayAdd(Date gmtCreate) {  
 		SimpleDateFormat sdf=new SimpleDateFormat("YYYY-MM-dd");
-	    int mondayPlus = getMondayPlus(gmtCreate);  
 	    GregorianCalendar currentDate = new GregorianCalendar();  
-	    currentDate.add(GregorianCalendar.DATE, mondayPlus + 7);  
+	    currentDate.add(GregorianCalendar.DATE,   7);  
 	    Date monday = currentDate.getTime();  
+	   
 	    return sdf.format(monday);  
 	}  
+	// 获得下周星期一的日期  
+		public static String getNextMonday(Date gmtCreate) {  
+			SimpleDateFormat sdf=new SimpleDateFormat("YYYY-MM-dd");
+		    int mondayPlus = getMondayPlus(gmtCreate);  
+		    GregorianCalendar currentDate = new GregorianCalendar();  
+		    currentDate.add(GregorianCalendar.DATE, mondayPlus + 7);  
+		    Date monday = currentDate.getTime();  
+		    return sdf.format(monday);  
+		}  
 	// 获得下周星期五的日期  
-	public static String getNextFive(Date gmtCreate) {  
+	 public static String getNextFiveAdd(Date gmtCreate) {  
 		SimpleDateFormat sdf=new SimpleDateFormat("YYYY-MM-dd");
-	    int mondayPlus = getMondayPlus(gmtCreate);  
+	  
 	    GregorianCalendar currentDate = new GregorianCalendar();  
-	    currentDate.add(GregorianCalendar.DATE, mondayPlus + 13);  
+	    currentDate.add(GregorianCalendar.DATE,  13);  
 	    Date nextFive = currentDate.getTime();  
 	    return  sdf.format(nextFive);  
-	}  
+	 }  
+	// 获得下周星期五的日期  
+		public static String getNextFive(Date gmtCreate) {  
+			SimpleDateFormat sdf=new SimpleDateFormat("YYYY-MM-dd");
+		    int mondayPlus = getMondayPlus(gmtCreate);  
+		    GregorianCalendar currentDate = new GregorianCalendar();  
+		    currentDate.add(GregorianCalendar.DATE, mondayPlus + 13);  
+		    Date nextFive = currentDate.getTime();  
+		    return  sdf.format(nextFive);  
+		}  
 
 	
     public static Date getStrDate(String date){
@@ -155,4 +190,31 @@ public class DateUtil {
 		}  
 		return   mydate;
 	}
+ public static Date getStrDateyyyyMMdd(String date){
+		
+		SimpleDateFormat sdf= new SimpleDateFormat("YYYY-MM-dd");
+		Date mydate=null;
+		try {
+			mydate  = sdf.parse(date);
+		} catch (ParseException e) {
+			
+			e.printStackTrace();
+		}  
+		return   mydate;
+	}
+    
+   public static String getDateStr(Date date){
+		
+		SimpleDateFormat sdf= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String mydate=null;
+		try {
+			mydate  = sdf.format(date);
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		}  
+		return   mydate;
+	}
+    
+    
 }
