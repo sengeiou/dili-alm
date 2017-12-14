@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.dili.alm.dao.ProjectMapper">
+<mapper namespace="mapper.ProjectMapper">
   <resultMap id="BaseResultMap" type="com.dili.alm.domain.Project">
     <!--
       WARNING - @mbg.generated
@@ -13,7 +13,6 @@
     <result column="type" jdbcType="VARCHAR" property="type" />
     <result column="project_manager" jdbcType="BIGINT" property="projectManager" />
     <result column="develop_manager" jdbcType="BIGINT" property="developManager" />
-    <result column="business_owner" jdbcType="BIGINT" property="businessOwner" />
     <result column="test_manager" jdbcType="BIGINT" property="testManager" />
     <result column="product_manager" jdbcType="BIGINT" property="productManager" />
     <result column="created" jdbcType="TIMESTAMP" property="created" />
@@ -21,20 +20,24 @@
     <result column="start_date" jdbcType="TIMESTAMP" property="startDate" />
     <result column="end_date" jdbcType="TIMESTAMP" property="endDate" />
     <result column="actual_start_date" jdbcType="TIMESTAMP" property="actualStartDate" />
+    <result column="actual_end_date" jdbcType="TIMESTAMP" property="actualEndDate" />
     <result column="project_state" jdbcType="INTEGER" property="projectState" />
     <result column="task_count" jdbcType="INTEGER" property="taskCount" />
     <result column="member_count" jdbcType="INTEGER" property="memberCount" />
     <result column="completed_progress" jdbcType="INTEGER" property="completedProgress" />
     <result column="originator" jdbcType="BIGINT" property="originator" />
     <result column="dep" jdbcType="INTEGER" property="dep" />
+    <result column="business_owner" jdbcType="BIGINT" property="businessOwner" />
+    <result column="estimate_launch_date" jdbcType="TIMESTAMP" property="estimateLaunchDate" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
       WARNING - @mbg.generated
     -->
-    id, apply_id, serial_number, parent_id, name, type, project_manager,business_owner, develop_manager,
+    id, apply_id, serial_number, parent_id, name, type, project_manager, develop_manager, 
     test_manager, product_manager, created, modified, start_date, end_date, actual_start_date, 
-    project_state, task_count, member_count, completed_progress, originator, dep
+    actual_end_date, project_state, task_count, member_count, completed_progress, originator, 
+    dep, business_owner, estimate_launch_date
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -93,6 +96,9 @@
       <if test="actualStartDate != null">
         actual_start_date = #{actualStartDate,jdbcType=TIMESTAMP},
       </if>
+      <if test="actualEndDate != null">
+        actual_end_date = #{actualEndDate,jdbcType=TIMESTAMP},
+      </if>
       <if test="projectState != null">
         project_state = #{projectState,jdbcType=INTEGER},
       </if>
@@ -110,6 +116,12 @@
       </if>
       <if test="dep != null">
         dep = #{dep,jdbcType=INTEGER},
+      </if>
+      <if test="businessOwner != null">
+        business_owner = #{businessOwner,jdbcType=BIGINT},
+      </if>
+      <if test="estimateLaunchDate != null">
+        estimate_launch_date = #{estimateLaunchDate,jdbcType=TIMESTAMP},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
