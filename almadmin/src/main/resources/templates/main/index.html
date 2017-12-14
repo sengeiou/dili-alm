@@ -61,7 +61,7 @@
         <!--页面主体内容-->
         <div data-options="region:'center'" id="center" style="width:100%;height:100%;border: none;min-width:949px" >
            <iframe id="homeIndex" scrolling="auto" frameborder="0"  src="http://alm.diligrp.com:8083/alm/home/index" style="width:100%; height: 99.6%; display:none;"></iframe>
-           <div id="tabs" style="width:100%; height: 99.6%;display: none;padding:10px 10px 0;box-sizing: border-box;min-width:949px"></div>
+           <div id="tabs" style="width:100%; height: 99.6%;display: none;padding:10px 10px 0;box-sizing: border-box;min-width:929px"></div>
         </div>
     </div>
     <!--用户菜单-->
@@ -257,19 +257,28 @@
             if(index<1){
                 $('.menu-left').hide();
                 $("#homeIndex").css('display','block');
-                $("#tabs").empty();
-                $("#tabs").css('display','none');
-                $("#center").parent().css('left',0);
-                $("#center").parent().width($(window).width());
-                $("#center").width($(window).width());
+                $("#tabs").empty().hide();
+                let width= $(window).width();
+//                console.log(width)
+                width=width<1200?1200:width;
+                $("#center").width(width)
+                    .parent().css({
+                        'left':0,
+                        'width':width
+                    });
             }else{
                 $('.menu-left').show();
                 $("#menuList").find("ul li").removeClass('on')
-                $("#homeIndex").css('display','none');
+                $("#homeIndex").hide();
                 var leftWidth=$("#menuList").parent().width();
-                $("#center").parent().css('left',leftWidth);
-                $("#center").parent().width($(window).width()-leftWidth);
-                $("#center").width($(window).width()-leftWidth);
+                let width= $(window).width()-leftWidth;
+                width=width<949?949:width;
+
+                $("#center").width(width)
+                    .parent().css({
+                        'left':leftWidth+'px',
+                        'width':width
+                    });
                 var id = $(this).children().get(0).id.replace("fMenu","");
                 $("#"+id+"").find("ul li").first().addClass('on');
                 var menuLi=$("#"+id+"").find("ul li").first().children().get(0);
