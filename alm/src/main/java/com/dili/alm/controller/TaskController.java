@@ -6,7 +6,6 @@ import com.dili.alm.domain.ProjectPhase;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.TaskDetails;
-import com.dili.alm.domain.User;
 import com.dili.alm.service.ProjectApplyService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.ProjectVersionService;
@@ -25,6 +24,7 @@ import io.swagger.annotations.ApiOperation;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -57,12 +57,15 @@ public class TaskController {
 	@ApiOperation("跳转到Task页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
-		/*		UserTicket userTicket = SessionContext.getSessionContext()
-		.getUserTicket();
-		
-        */
-		modelMap.addAttribute("userId", 48);
+		modelMap.put("sessionID", SessionContext.getSessionContext().getUserTicket().getId());
 		return "task/index";
+	}
+	
+	@ApiOperation("跳转到Task页面")
+	@RequestMapping(value = "/index0.html", method = RequestMethod.GET)
+	public String index0(ModelMap modelMap) {
+		modelMap.put("sessionID", SessionContext.getSessionContext().getUserTicket().getId());
+		return "task/index0";
 	}
 
 	@ApiOperation(value = "查询Task", notes = "查询Task，返回列表信息")
@@ -79,9 +82,6 @@ public class TaskController {
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET,
 			RequestMethod.POST })
 	public @ResponseBody String listPage(Task task) throws Exception {
-/*		UserTicket userTicket = SessionContext.getSessionContext()
-				.getUserTicket();
-		task.setOwner(userTicket.getId());*/
 		return taskService.listPageSelectTaskDto(task).toString();
 	}
 
@@ -90,9 +90,9 @@ public class TaskController {
 	@RequestMapping(value = "/listTaskPageTab", method = { RequestMethod.GET,
 			RequestMethod.POST })
 	public @ResponseBody String listTaskPageTab(Task task) throws Exception {
-/*		UserTicket userTicket = SessionContext.getSessionContext()
+		UserTicket userTicket = SessionContext.getSessionContext()
 				.getUserTicket();
-		task.setOwner(userTicket.getId());*/
+		task.setOwner(userTicket.getId());//设置登录人员信息
 		return taskService.listPageSelectTaskDto(task).toString();
 	}
 
@@ -110,9 +110,9 @@ public class TaskController {
 			return BaseOutput.failure("请正确填写工时");
 		}
 
-/*		UserTicket userTicket = SessionContext.getSessionContext()
+		UserTicket userTicket = SessionContext.getSessionContext()
 				.getUserTicket();
-		task.setCreateMemberId(userTicket.getId());*/
+		task.setCreateMemberId(userTicket.getId());
 		task.setCreated(new Date());
 		task.setStatus(TaskStatus.NOTSTART.code);// 新增的初始化状态为0未开始状态
 		taskService.insertSelective(task);
@@ -128,12 +128,12 @@ public class TaskController {
 
 		try {
 			
-/*			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-	        task.setModifyMemberId(userTicket.getId());*/
-			Short planTime = Short.parseShort(planTimeStr.trim());
-			task.setPlanTime(planTime);
+			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 			// 设置任务修改人为当前登录用户
 			task.setModified(new Date());
+	        task.setModifyMemberId(userTicket.getId());
+			Short planTime = Short.parseShort(planTimeStr.trim());
+			task.setPlanTime(planTime);
 			
 		} catch (Exception e) {
 			
@@ -157,9 +157,8 @@ public class TaskController {
 	@RequestMapping(value = "/listTree.json", method = { RequestMethod.GET,
 			RequestMethod.POST })
 	public List<Task> listTree(Task task) {
-/*		UserTicket userTicket = SessionContext.getSessionContext()
-				.getUserTicket();
-		task.setOwner(userTicket.getId());*/
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		task.setOwner(userTicket.getId());
 		List<Task> list = this.taskService.list(task);
 		return list;
 	}
@@ -222,31 +221,30 @@ public class TaskController {
 	public @ResponseBody BaseOutput updateTaskDetails(TaskDetails taskDetails,
 			String planTimeStr, String overHourStr, String taskHourStr) {
 		
-		Task task = taskService.get(taskDetails.getTaskId());
+		short taskHour = Optional.ofNullable(Short.parseShort(taskHourStr)).orElse((short)0);
+		short overHour = Optional.ofNullable(Short.parseShort(overHourStr)).orElse((short)0);
 		
-/*		UserTicket userTicket = SessionContext.getSessionContext()
-				.getUserTicket();*/
-		
-		/*基础信息设置*/
-/*		task.setModifyMemberId(userTicket.getId());*/
-		taskHourStr = taskHourStr.trim();
-		overHourStr = overHourStr.trim();
-		
-		if (taskHourStr != null && taskHourStr != "") {
-			taskDetails.setTaskHour(Short.parseShort(taskHourStr));
-		} else {
-			taskDetails.setTaskHour((short) 0);
+		if (taskHour<=0) {
+			return BaseOutput.failure("工时必须大于0");
 		}
-		if (overHourStr != null && overHourStr != "") {
-			taskDetails.setOverHour(Short.parseShort(overHourStr));
-		} else {
-			taskDetails.setOverHour((short) 0);
+		if (taskService.isSetTask(taskDetails.getId(),taskHour)) {
+			
+			Task task = taskService.get(taskDetails.getTaskId());
+			
+	        UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+			/*基础信息设置*/
+			task.setModifyMemberId(userTicket.getId());
+			taskDetails.setTaskHour(taskHour);
+			taskDetails.setOverHour(overHour);
+			taskDetails.setCreateMemberId(userTicket.getId());
+			/*基础信息设置*/
+			taskService.updateTaskDetail(taskDetails,task);//保存任务
+			
+			return BaseOutput.success("修改成功");
 		}
-		/*taskDetails.setCreateMemberId(userTicket.getId());*/
-		/*基础信息设置*/
-		taskService.updateTaskDetail(taskDetails,task);//保存任务
 		
-		return BaseOutput.success("修改成功");
+		return BaseOutput.failure("今日工时已填写超过8小时！");
+		
 	}
 
 
@@ -256,10 +254,10 @@ public class TaskController {
 	@RequestMapping(value = "/updateTaskStatus", method = { RequestMethod.GET,
 			RequestMethod.POST })
 	public @ResponseBody BaseOutput updateTaskDetails(Long id) {
-/*		UserTicket userTicket = SessionContext.getSessionContext()
-				.getUserTicket();*/
+ 		UserTicket userTicket = SessionContext.getSessionContext()
+				.getUserTicket(); 
 		Task task = taskService.get(id);
-		/*task.setModifyMemberId(userTicket.getId());*/
+		task.setModifyMemberId(userTicket.getId());
 		taskService.startTask(task);
 		return BaseOutput.success("修改成功");
 	}
@@ -270,12 +268,12 @@ public class TaskController {
 	@RequestMapping(value = "/pauseTaskStatus", method = { RequestMethod.GET,
 			RequestMethod.POST })
 	public @ResponseBody BaseOutput pauseTask(Long id) {
-/*		UserTicket userTicket = SessionContext.getSessionContext()
-				.getUserTicket();*/
+		UserTicket userTicket = SessionContext.getSessionContext()
+				.getUserTicket();
 		Task task = taskService.get(id);
 		task.setStatus(TaskStatus.PAUSE.code);// 更新状态为暂停
 		task.setModified(new Date());
-/*		task.setModifyMemberId(userTicket.getId());*/
+		task.setModifyMemberId(userTicket.getId());
 		taskService.update(task);
 		return BaseOutput.success("已暂停任务");
 	}

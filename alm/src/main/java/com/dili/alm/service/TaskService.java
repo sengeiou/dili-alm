@@ -28,4 +28,6 @@ public interface TaskService extends BaseService<Task, Long> {
 	List<DataDictionaryValueDto> getTaskStates();
 
 	List<DataDictionaryValueDto> getTaskTypes();
+	
+	boolean isSetTask(Long id,short taskHour);
 }

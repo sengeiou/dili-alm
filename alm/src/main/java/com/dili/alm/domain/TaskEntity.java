@@ -173,9 +173,6 @@ public class TaskEntity extends BaseDomain implements Task {
 	}
 
 	public void setProgress(int progress) {
-		if (this.statusStr.equals("未开始")) {
-			progress=0;
-		}
 		this.progress = progress;
 	}
 

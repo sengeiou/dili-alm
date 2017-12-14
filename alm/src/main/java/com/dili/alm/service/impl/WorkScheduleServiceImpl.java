@@ -6,9 +6,11 @@ import java.util.List;
 import com.dili.alm.dao.WorkScheduleMapper;
 import com.dili.alm.domain.WorkSchedule;
 import com.dili.alm.domain.WorkScheduleEntity;
+import com.dili.alm.domain.dto.WorkScheduleDateDto;
 import com.dili.alm.service.WorkScheduleService;
 import com.dili.ss.base.BaseServiceImpl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -18,13 +20,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class WorkScheduleServiceImpl extends BaseServiceImpl<WorkSchedule, Long> implements WorkScheduleService {
 
+	@Autowired
+	WorkScheduleMapper workScheduleMapper;
+	
     public WorkScheduleMapper getActualDao() {
         return (WorkScheduleMapper)getDao();
     }
 
 	@Override
 	public List<WorkScheduleEntity> listWorkScheduleDto(WorkSchedule workSchedule)  {
-		List<WorkSchedule> list = this.listByExample(workSchedule);//查询出来
+		WorkScheduleEntity workScheduleEntity = new WorkScheduleEntity(workSchedule);
+		List<WorkSchedule> list = workScheduleMapper.selecByDateAndUser(workScheduleEntity);//查询出来
 		return this.ParseWorkScheduleEntity(list);
 	}
 	
@@ -35,5 +41,18 @@ public class WorkScheduleServiceImpl extends BaseServiceImpl<WorkSchedule, Long>
 			target.add(workScheduleEntity);
 		}
 		return target;
+	}
+
+	@Override
+	public List<WorkScheduleDateDto> listWorkScheduleDate(
+			WorkSchedule workSchedule)  {
+		List<WorkScheduleDateDto> list = null;
+		try {
+			list = workScheduleMapper.selecGroupByDate(workSchedule);//查询出来
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return list;
 	}
 }
