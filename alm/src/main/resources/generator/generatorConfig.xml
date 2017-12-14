@@ -78,14 +78,14 @@
 		<javaModelGenerator targetPackage="${targetModelPackage}"
 			targetProject="${targetJavaProject}" />
 
-		<sqlMapGenerator targetPackage="${targetXMLPackage}"
-			targetProject="${targetResourcesProject}" />
+		<!-- <sqlMapGenerator targetPackage="${targetXMLPackage}"
+			targetProject="${targetResourcesProject}" /> -->
 
 		<!-- <javaClientGenerator targetPackage="${targetMapperPackage}"
 			targetProject="${targetJavaProject}" type="XMLMAPPER" /> -->
 
 		<!-- 生成所有表模型 -->
-		<table tableName="project_phase">
+		<table tableName="files">
 			<generatedKey column="id" sqlStatement="Mysql" identity="true" />
 		</table>
 		<!-- 生成指定表模型 -->

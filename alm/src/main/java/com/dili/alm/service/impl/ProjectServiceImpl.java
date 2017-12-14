@@ -1,52 +1,64 @@
 package com.dili.alm.service.impl;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
-import com.dili.alm.constant.AlmConstants.MemberState;
+import com.dili.alm.dao.FilesMapper;
 import com.dili.alm.dao.ProjectMapper;
+import com.dili.alm.dao.ProjectPhaseMapper;
 import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.dao.TeamMapper;
+import com.dili.alm.domain.Files;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectEntity;
+import com.dili.alm.domain.ProjectPhase;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.Team;
 import com.dili.alm.domain.TeamRole;
-import com.dili.alm.domain.TeamType;
+import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectDto;
 import com.dili.alm.domain.dto.ProjectListDto;
+import com.dili.alm.domain.dto.UploadProjectFileDto;
 import com.dili.alm.exceptions.ProjectException;
 import com.dili.alm.provider.ProjectProvider;
 import com.dili.alm.rpc.DataAuthRpc;
+import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
+import com.dili.alm.service.FilesService;
 import com.dili.alm.service.ProjectService;
-import com.dili.alm.service.TaskService;
 import com.dili.alm.service.TeamService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.ss.util.SystemConfigUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
@@ -73,9 +85,15 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	@Autowired
 	private TeamService teamService;
 	@Autowired
-	private TaskService taskService;
-	@Autowired
 	private TaskMapper taskMapper;
+	@Autowired
+	private ProjectPhaseMapper phaseMapper;
+	@Autowired
+	private FilesMapper fileMapper;
+	@Autowired
+	private JavaMailSender mailSender;
+	@Autowired
+	private UserRpc userRPC;
 
 	public ProjectMapper getActualDao() {
 		return (ProjectMapper) getDao();
@@ -376,4 +394,88 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		}
 	}
 
+	@Transactional
+	@Override
+	public BaseOutput<Object> uploadFileAndSendMail(UploadProjectFileDto dto)
+			throws MessagingException, InterruptedException {
+		List<Files> target = new ArrayList<>(dto.getFileIds().size());
+		dto.getFileIds().forEach(fid -> {
+			Files files = this.fileMapper.selectByPrimaryKey(fid);
+			files.setProjectId(dto.getProjectId());
+			files.setVersionId(dto.getVersionId());
+			files.setPhaseId(dto.getPhaseId());
+			files.setType(dto.getType());
+			files.setNotes(dto.getNotes());
+			this.fileMapper.updateByPrimaryKey(files);
+			target.add(files);
+		});
+		if (dto.getSendMail()) {
+			this.sendMail(dto, target);
+		}
+		List<Map> listModel;
+		try {
+			listModel = this.parseEasyUiListModel(target);
+		} catch (Exception e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+		return BaseOutput.success().setData(listModel);
+	}
+
+	private void sendMail(UploadProjectFileDto dto, List<Files> attachments)
+			throws MessagingException, InterruptedException {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+		MimeMessage mimeMessage = this.mailSender.createMimeMessage();
+		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+		String from = SystemConfigUtils.getProperty("spring.mail.username");
+		helper.setFrom(from);
+		Project project = this.getActualDao().selectByPrimaryKey(dto.getProjectId());
+		BaseOutput<User> output = this.userRPC.findUserById(dto.getReceiver());
+		if (output == null || !output.isSuccess()) {
+			throw new MessagingException("收件人不存在");
+		}
+		User receiver = output.getData();
+		if (receiver == null) {
+			throw new MessagingException("收件人不存在");
+		}
+		helper.setTo(receiver.getEmail());
+		helper.setSubject("主题：" + project.getName() + "有新的文件上传");
+		StringBuilder sb = new StringBuilder();
+		ProjectVersion version = this.projectVersionMapper.selectByPrimaryKey(dto.getVersionId());
+		ProjectPhase phase = this.phaseMapper.selectByPrimaryKey(dto.getPhaseId());
+		sb.append("项目名称：").append(project.getName()).append(version.getVersion()).append("\r\n阶段名称：")
+				.append(AlmCache.PHASE_NAME_MAP.get(phase.getName()));
+		helper.setText(sb.toString());
+		for (Files files : attachments) {
+			FileSystemResource file = new FileSystemResource(
+					new File(FilesService.MILESTONES_PATH_PREFIX + files.getName()));
+			helper.addAttachment(files.getName(), file);
+		}
+		Thread.sleep(2000);
+		mailSender.send(mimeMessage);
+	}
+
+	private List<Map> parseEasyUiListModel(List<? extends Files> list) throws Exception {
+		Map<Object, Object> metadata = new HashMap<>();
+
+		JSONObject fileTypeProvider = new JSONObject();
+		fileTypeProvider.put("provider", "fileTypeProvider");
+		metadata.put("type", fileTypeProvider);
+
+		JSONObject projectVersionProvider = new JSONObject();
+		projectVersionProvider.put("provider", "projectVersionProvider");
+		metadata.put("versionId", projectVersionProvider);
+
+		JSONObject projectPhaseProvider = new JSONObject();
+		projectPhaseProvider.put("provider", "projectPhaseProvider");
+		metadata.put("phaseId", projectPhaseProvider);
+
+		JSONObject memberProvider = new JSONObject();
+		memberProvider.put("provider", "memberProvider");
+		metadata.put("createMemberId", memberProvider);
+
+		JSONObject datetimeProvider = new JSONObject();
+		datetimeProvider.put("provider", "datetimeProvider");
+		metadata.put("created", datetimeProvider);
+		return ValueProviderUtils.buildDataByProvider(metadata, list);
+	}
 }

@@ -1,8 +1,12 @@
 package com.dili.alm.controller;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.mail.MessagingException;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +24,13 @@ import com.dili.alm.cache.AlmCache;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
+import com.dili.alm.domain.dto.UploadProjectFileDto;
 import com.dili.alm.exceptions.ProjectException;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.ProjectService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.sysadmin.sdk.session.SessionContext;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -167,8 +173,7 @@ public class ProjectController {
 	}
 
 	@RequestMapping(value = "/getProjectList")
-	public @ResponseBody
-	Object getProjectList(Project project) throws Exception {
+	public @ResponseBody Object getProjectList(Project project) throws Exception {
 		List<Project> list = projectService.list(project);
 		Map<Object, Object> metadata = new HashMap<>();
 		metadata.put("type", JSON.parse("{provider:'projectTypeProvider'}"));
@@ -178,7 +183,30 @@ public class ProjectController {
 		metadata.put("startDate", JSON.parse("{provider:'datetimeProvider'}"));
 		metadata.put("endDate", JSON.parse("{provider:'datetimeProvider'}"));
 		metadata.put("actualEndDate", JSON.parse("{provider:'datetimeProvider'}"));
-		return ValueProviderUtils.buildDataByProvider(metadata,list);
+		return ValueProviderUtils.buildDataByProvider(metadata, list);
 	}
 
+	@RequestMapping(value = "/uploadFileView", method = RequestMethod.GET)
+	public String uploadFileView(@RequestParam Long projectId, ModelMap map) {
+		Project project = this.projectService.get(projectId);
+		map.addAttribute("project", project).addAttribute("creator",
+				SessionContext.getSessionContext().getUserTicket());
+		return "project/uploadFile";
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
+	public BaseOutput<Object> uploadFile(UploadProjectFileDto dto) {
+		try {
+			return this.projectService.uploadFileAndSendMail(dto);
+		} catch (Exception e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/fileTypes.json", method = { RequestMethod.GET, RequestMethod.POST })
+	public List<DataDictionaryValueDto> getFileTypes() {
+		return this.projectService.getFileTypes();
+	}
 }

@@ -10,9 +10,10 @@
 		<#project_detailJs />
 	</script>
 <div id="win" style="display: none;"></div>
-<a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',onClick:generateWeekly">周报生成</a>
-<a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',onClick:alarmConfig">告警设置</a>
-<a id="btn" href="#" class="easyui-linkbutton" data-options="onClick:showMembers">团队成员：${model.memberCount!}</a>
+<div id="smDialog" style="display: none;"></div>
+<a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',onClick:generateWeekly">周报生成</a> <a id="btn" href="#"
+	class="easyui-linkbutton" data-options="iconCls:'icon-search',onClick:alarmConfig">告警设置</a> <a id="btn" href="#" class="easyui-linkbutton"
+	data-options="onClick:showMembers">团队成员：${model.memberCount!}</a>
 
 <div id="p" class="easyui-panel" title="项目详情" style="width: '100%'; height: '30%'; background: #fafafa;" data-options="tools:'#infoToolbar'">
 	<table id="info">
@@ -114,6 +115,8 @@
 </table>
 <!-- datagrid工具栏 -->
 <div id="fileToolbar" style="padding: 2px 5px;">
-	<div id="uploadDiv" class="easyui-linkbutton" iconCls="icon-add" plain="true">上传文档</div>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="uploadFile(${model.id!})" plain="true">新建文档</a>
 </div>
-</#body>
+<script type="text/javascript">
+<#members_index/>
+</script> </#body>

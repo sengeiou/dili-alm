@@ -14,7 +14,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2017-11-29 10:59:53.
+ * This file was generated on 2017-12-14 15:53:30.
  */
 @Table(name = "`files`")
 public interface Files extends IBaseDomain {
@@ -85,7 +85,7 @@ public interface Files extends IBaseDomain {
 
     @Column(name = "`type`")
     @FieldDef(label="文档类型")
-    @EditMode(editor = FieldEditor.Number, required = true)
+    @EditMode(editor = FieldEditor.Number, required = false)
     Integer getType();
 
     void setType(Integer type);
@@ -117,4 +117,11 @@ public interface Files extends IBaseDomain {
     Long getRecordId();
 
     void setRecordId(Long recordId);
+
+    @Column(name = "`notes`")
+    @FieldDef(label="文档描述")
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getNotes();
+
+    void setNotes(String notes);
 }

@@ -6,6 +6,7 @@ function selectMember(callback, args) {
 		showMembersDlg($(this)[0].id);
 	}
 }
+
 // 确认选择事件
 function confirmMembersBtn(id) {
 	var selected = $('#smGridList').datagrid('getSelected');
@@ -14,14 +15,14 @@ function confirmMembersBtn(id) {
 	$('#smDialog').dialog('close');
 }
 // 根据id打开用户选择
-function showMembersDlg(id,dep) {
+function showMembersDlg(id, dep) {
 	$('#smDialog').dialog({
 				title : '用户选择',
 				width : 800,
 				height : 400,
 				queryParams : {
 					textboxId : id,
-					dep:dep
+					dep : dep
 				},
 				href : '${contextPath!}/member/members.html',
 				modal : true,
