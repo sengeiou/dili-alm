@@ -84,7 +84,7 @@ public class ProjectApplyController {
         }
         modelMap.put("apply", applyDTO);
         if (step == 1) {
-            buildStepOne(modelMap, applyDTO);
+            projectApplyService.buildStepOne(modelMap, applyDTO);
         }
         return "projectApply/step" + step;
     }
@@ -108,7 +108,7 @@ public class ProjectApplyController {
         List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, projectApplyService.listByExample(projectApply));
         Map applyDTO = maps.get(0);
         modelMap.put("apply", applyDTO);
-        buildStepOne(modelMap, applyDTO);
+        projectApplyService.buildStepOne(modelMap, applyDTO);
         return "projectApply/details";
     }
 
@@ -204,25 +204,7 @@ public class ProjectApplyController {
     @RequestMapping("/loadPlan")
     @ResponseBody
     public List<Map> loadPlan(Long id) throws Exception {
-        ProjectApply projectApply = projectApplyService.get(id);
-        List<ApplyPlan> result = new ArrayList<>();
-
-        if (StringUtils.isNotBlank(projectApply.getPlan())) {
-            result = JSON.parseArray(projectApply.getPlan(), ApplyPlan.class);
-        } else {
-            List<DataDictionaryValueDto> list = projectApplyService.getPlanPhase();
-            List<ApplyPlan> finalResult = result;
-            list.forEach(dataDictionaryValueDto -> {
-                ApplyPlan plan = new ApplyPlan();
-                plan.setPhase(dataDictionaryValueDto.getCode());
-                finalResult.add(plan);
-            });
-        }
-
-        Map<Object, Object> metadata = new HashMap<>();
-        metadata.put("startDate", JSON.parse("{provider:'datetimeProvider'}"));
-        metadata.put("endDate", JSON.parse("{provider:'datetimeProvider'}"));
-        return ValueProviderUtils.buildDataByProvider(metadata, Lists.newArrayList(result));
+        return projectApplyService.loadPlan(id);
     }
 
     @RequestMapping("/loadRisk")
@@ -279,23 +261,4 @@ public class ProjectApplyController {
         return BaseOutput.success("删除成功");
     }
 
-    /**
-     * 构建立项申请第一步数据
-     *
-     * @param modelMap
-     * @param applyDTO
-     * @throws Exception
-     */
-    private void buildStepOne(ModelMap modelMap, Map applyDTO) throws Exception {
-        Map<Object, Object> metadata = new HashMap<>();
-        ApplyMajorResource resourceRequire = JSON.parseObject(Optional.ofNullable(applyDTO.get("resourceRequire")).map(Object::toString).orElse("{}"), ApplyMajorResource.class);
-        metadata.clear();
-        metadata.put("mainUser", JSON.parse("{provider:'memberProvider'}"));
-        List<Map> majorMap = ValueProviderUtils.buildDataByProvider(metadata, Lists.newArrayList(resourceRequire));
-        metadata.clear();
-        metadata.put("relatedUser", JSON.parse("{provider:'memberProvider'}"));
-        List<Map> relatedMap = ValueProviderUtils.buildDataByProvider(metadata, Optional.ofNullable(resourceRequire.getRelatedResources()).orElse(new ArrayList<>()));
-        modelMap.put("main", majorMap.get(0));
-        modelMap.put("related", relatedMap);
-    }
 }

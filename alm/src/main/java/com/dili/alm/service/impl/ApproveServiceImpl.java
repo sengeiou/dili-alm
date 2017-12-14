@@ -2,13 +2,13 @@ package com.dili.alm.service.impl;
 
 import cn.afterturn.easypoi.word.WordExportUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.ApproveMapper;
 import com.dili.alm.domain.*;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.apply.ApplyApprove;
-import com.dili.alm.domain.dto.apply.ApplyMajorResource;
 import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.*;
@@ -317,19 +317,19 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
                 try {
                     ProjectApply apply = projectApplyService.get(id);
                     Map<String, Object> map = new HashMap<String, Object>();
-                    map.put("apply", apply);
-                    Map<Object, Object> metadata = new HashMap<>();
-                    ApplyMajorResource resourceRequire = JSON.parseObject(Optional.ofNullable(apply.getResourceRequire()).map(Object::toString).orElse("{}"), ApplyMajorResource.class);
-                    metadata.clear();
-                    metadata.put("mainUser", JSON.parse("{provider:'memberProvider'}"));
-                    List<Map> majorMap = ValueProviderUtils.buildDataByProvider(metadata, Lists.newArrayList(resourceRequire));
-                    metadata.clear();
-                    metadata.put("relatedUser", JSON.parse("{provider:'memberProvider'}"));
-                    List<Map> relatedMap = ValueProviderUtils.buildDataByProvider(metadata, Optional.ofNullable(resourceRequire.getRelatedResources()).orElse(new ArrayList<>()));
-                    map.put("main", majorMap.get(0));
-                    map.put("related", relatedMap);
+                    Map<Object, Object> metadata = new HashMap<>(2);
+                    JSONObject projectTypeProvider = new JSONObject();
+                    projectTypeProvider.put("provider", "projectTypeProvider");
+                    metadata.put("type", projectTypeProvider);
+                    List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, projectApplyService.listByExample(apply));
+                    Map applyDTO = maps.get(0);
+                    map.put("apply", applyDTO);
+
+                   projectApplyService.buildStepOne(map,applyDTO);
+
+
                     XWPFDocument doc = WordExportUtil.exportWord07(
-                            "/Users/shaofan/Desktop/apply.docx", map);
+                            "/Users/shaofan/Desktop/apply.docx", applyDTO);
                     FileOutputStream fos = new FileOutputStream("/Users/shaofan/Desktop/simpleExcel1.docx");
                     doc.write(fos);
                     os.close();

@@ -139,6 +139,8 @@ CREATE TABLE `project` (
   COMMENT '计划开始日期',
   `end_date`            DATETIME        NULL
   COMMENT '计划结束日期',
+  `estimate_launch_date` DATETIME        NULL
+  COMMENT '预估上线日期',
   `progress`            VARCHAR(255)    NULL
   COMMENT '进度',
   `status`              TINYINT         NULL,
@@ -278,6 +280,8 @@ CREATE TABLE `project_change` (
   `type`             VARCHAR(50)     NULL,
   `working_hours`    VARCHAR(255)    NULL
   COMMENT '预估工时',
+  `estimate_launch_date` DATETIME        NULL
+  COMMENT '预估上线日期',
   `affects_online`  TINYINT         NULL
   COMMENT '是否影响上线',
   `submit_date`      DATETIME        NULL
