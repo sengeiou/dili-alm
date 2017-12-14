@@ -85,6 +85,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         metadata.put("dep", JSON.parse("{provider:'depProvider'}"));
         metadata.put("createMemberId", JSON.parse("{provider:'memberProvider'}"));
         metadata.put("created", JSON.parse("{provider:'dateProvider'}"));
+        metadata.put("status", JSON.parse("{provider:'approveStateProvider'}"));
 
         Map dto = null;
         try {
@@ -110,6 +111,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         Map<Object, Object> metadata = new HashMap<>();
         metadata.put("createMemberId", JSON.parse("{provider:'memberProvider'}"));
         metadata.put("created", JSON.parse("{provider:'dateProvider'}"));
+        metadata.put("status", JSON.parse("{provider:'changeStateProvider'}"));
 
         Map dto = null;
         try {
@@ -175,6 +177,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         Map<Object, Object> metadata = new HashMap<>();
         metadata.put("createMemberId", JSON.parse("{provider:'memberProvider'}"));
         metadata.put("created", JSON.parse("{provider:'dateProvider'}"));
+        metadata.put("status", JSON.parse("{provider:'approveStateProvider'}"));
 
         Map dto = null;
         try {
@@ -310,11 +313,21 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
     public void downloadProjectDoc(AlmConstants.ApproveType approveType, Long id, OutputStream os) {
         switch (approveType) {
             case APPLY:
-                ProjectApply apply = projectApplyService.get(id);
-                Map<String, Object> map = new HashMap<String, Object>();
-                map.put("apply", apply);
-                map.put("related", JSON.parseObject(apply.getResourceRequire(), ApplyMajorResource.class).getRelatedResources());
+
                 try {
+                    ProjectApply apply = projectApplyService.get(id);
+                    Map<String, Object> map = new HashMap<String, Object>();
+                    map.put("apply", apply);
+                    Map<Object, Object> metadata = new HashMap<>();
+                    ApplyMajorResource resourceRequire = JSON.parseObject(Optional.ofNullable(apply.getResourceRequire()).map(Object::toString).orElse("{}"), ApplyMajorResource.class);
+                    metadata.clear();
+                    metadata.put("mainUser", JSON.parse("{provider:'memberProvider'}"));
+                    List<Map> majorMap = ValueProviderUtils.buildDataByProvider(metadata, Lists.newArrayList(resourceRequire));
+                    metadata.clear();
+                    metadata.put("relatedUser", JSON.parse("{provider:'memberProvider'}"));
+                    List<Map> relatedMap = ValueProviderUtils.buildDataByProvider(metadata, Optional.ofNullable(resourceRequire.getRelatedResources()).orElse(new ArrayList<>()));
+                    map.put("main", majorMap.get(0));
+                    map.put("related", relatedMap);
                     XWPFDocument doc = WordExportUtil.exportWord07(
                             "/Users/shaofan/Desktop/apply.docx", map);
                     FileOutputStream fos = new FileOutputStream("/Users/shaofan/Desktop/simpleExcel1.docx");

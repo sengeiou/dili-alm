@@ -37,7 +37,7 @@
                     <td>项目编号</td>
                     <td>${apply.number}</td>
                     <td>项目审批状态</td>
-                    <td>审批中</td>
+                    <td>${apply.status}</td>
                 </tr>
                 <tr>
                     <td>申请人</td>
@@ -136,6 +136,7 @@
                     </td>
                 </tr>
             </table>
+            <% if(!viewMode){ %>
             <table>
 
                 <tr>
@@ -144,6 +145,7 @@
                                            style="width:800px;height:120px"/></td>
                 </tr>
             </table>
+            <%}%>
         </form>
         <div style="text-align:center;padding:5px;margin-top:50px;">
             <a href="${contextPath}/approve/apply/index.html" class="easyui-linkbutton" data-options="size:'large',width:'80px'">返回</a>
