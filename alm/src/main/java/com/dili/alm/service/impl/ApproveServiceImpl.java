@@ -300,6 +300,9 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         verifyApproval.setResult(opt);
         verifyApproval.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
         verifyApprovalService.insert(verifyApproval);
+        Approve approve = get(id);
+        approve.setStatus(Objects.equals(opt, "accept") ?AlmConstants.ChangeState.VRIFY.getCode() : approve.getStatus());
+        updateSelective(approve);
         return BaseOutput.success();
     }
 
