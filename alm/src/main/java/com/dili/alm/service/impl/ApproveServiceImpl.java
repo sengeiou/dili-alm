@@ -68,6 +68,9 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
     @Autowired
     private RoleRpc roleRpc;
 
+    @Autowired
+    private TeamService teamService;
+
 
     public ApproveMapper getActualDao() {
         return (ApproveMapper) getDao();
@@ -304,7 +307,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         verifyApproval.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
         verifyApprovalService.insert(verifyApproval);
         Approve approve = get(id);
-        approve.setStatus(Objects.equals(opt, "accept") ?AlmConstants.ChangeState.VRIFY.getCode() : approve.getStatus());
+        approve.setStatus(Objects.equals(opt, "accept") ? AlmConstants.ChangeState.VRIFY.getCode() : approve.getStatus());
         updateSelective(approve);
         return BaseOutput.success();
     }
@@ -325,7 +328,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
                     Map applyDTO = maps.get(0);
                     map.put("apply", applyDTO);
 
-                   projectApplyService.buildStepOne(map,applyDTO);
+                    projectApplyService.buildStepOne(map, applyDTO);
 
 
                     XWPFDocument doc = WordExportUtil.exportWord07(
@@ -369,7 +372,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
     /**
      * 立项审批通过生成项目信息
      */
-    public void buildProject(ProjectApply apply, Approve approve) {
+    private void buildProject(ProjectApply apply, Approve approve) {
         Project build = DTOUtils.newDTO(Project.class);
         build.setSerialNumber(apply.getNumber());
         build.setName(apply.getName());
@@ -386,6 +389,41 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         build.setProjectState(NOT_START.getValue());
         build.setOriginator(SessionContext.getSessionContext().getUserTicket().getId());
         projectService.insertSelective(build);
+        buildTeam(build);
+    }
+
+    private void buildTeam(Project project) {
+        for (TeamRole teamRole : TeamRole.values()) {
+            Team team = DTOUtils.newDTO(Team.class);
+            team.setProjectId(project.getId());
+            team.setJoinTime(new Date());
+            team.setDeletable(false);
+            switch (teamRole) {
+                case PROJECT_MANAGER:
+                    team.setMemberId(project.getProjectManager());
+                    team.setRole(TeamRole.PROJECT_MANAGER.getValue());
+                    teamService.insert(team);
+                    break;
+                case PRODUCT_MANAGER:
+                    team.setMemberId(project.getProductManager());
+                    team.setRole(TeamRole.PRODUCT_MANAGER.getValue());
+                    teamService.insert(team);
+                    break;
+                case TEST_MANAGER:
+                    team.setMemberId(project.getTestManager());
+                    team.setRole(TeamRole.TEST_MANAGER.getValue());
+                    teamService.insert(team);
+                    break;
+                case DEVELOP_MANAGER:
+                    team.setMemberId(project.getDevelopManager());
+                    team.setRole(TeamRole.DEVELOP_MANAGER.getValue());
+                    teamService.insert(team);
+                    break;
+                default:
+                    break;
+            }
+
+        }
     }
 
     /**
