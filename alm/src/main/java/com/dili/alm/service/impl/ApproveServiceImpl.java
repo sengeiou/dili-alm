@@ -8,6 +8,7 @@ import com.dili.alm.domain.*;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.apply.ApplyApprove;
+import com.dili.alm.domain.dto.apply.ApplyMajorResource;
 import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.*;
@@ -25,8 +26,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.dili.alm.domain.ProjectState.NOT_START;
@@ -306,36 +307,15 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
     public void downloadProjectDoc(AlmConstants.ApproveType approveType, Long id, OutputStream os) {
         switch (approveType) {
             case APPLY:
-//                ProjectApply apply = projectApplyService.get(id);
-//                Map<String, Object> map = new HashMap<String, Object>();
-//                map.put("apply", apply);
-//                map.put("related", JSON.parseObject(apply.getResourceRequire(), ApplyMajorResource.class).getRelatedResources());
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                String curTime = format.format(new Date());
-
+                ProjectApply apply = projectApplyService.get(id);
                 Map<String, Object> map = new HashMap<String, Object>();
-                List<Map<String, Object>> mapList = new ArrayList<Map<String, Object>>();
-                Map<String, Object> map1 = new HashMap<String, Object>();
-                map1.put("type", "个人所得税");
-                map1.put("presum", "1580");
-                map1.put("thissum", "1750");
-                map1.put("curmonth", "1-11月");
-                map1.put("now", curTime);
-                mapList.add(map1);
-                Map<String, Object> map2 = new HashMap<String, Object>();
-                map2.put("type", "增值税");
-                map2.put("presum", "1080");
-                map2.put("thissum", "1650");
-                map2.put("curmonth", "1-11月");
-                map2.put("now", curTime);
-                mapList.add(map2);
-                map.put("taxlist", mapList);
-                map.put("totalpreyear", "2660");
-                map.put("totalthisyear", "3400");
+                map.put("apply", apply);
+                map.put("related", JSON.parseObject(apply.getResourceRequire(), ApplyMajorResource.class).getRelatedResources());
                 try {
                     XWPFDocument doc = WordExportUtil.exportWord07(
-                            "/Users/shaofan/Desktop/纳税信息.docx", map);
-                    doc.write(os);
+                            "/Users/shaofan/Desktop/apply.docx", map);
+                    FileOutputStream fos = new FileOutputStream("/Users/shaofan/Desktop/simpleExcel1.docx");
+                    doc.write(fos);
                     os.close();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -388,6 +368,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         build.setApplyId(apply.getId());
         build.setBusinessOwner(apply.getBusinessOwner());
         build.setProjectState(NOT_START.getValue());
+        build.setOriginator(SessionContext.getSessionContext().getUserTicket().getId());
         projectService.insertSelective(build);
     }
 

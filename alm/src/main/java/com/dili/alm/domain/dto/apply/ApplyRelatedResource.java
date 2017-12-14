@@ -2,15 +2,15 @@ package com.dili.alm.domain.dto.apply;
 
 public class ApplyRelatedResource {
 
-    private Long relatedUser;
+    private String relatedUser;
     private Integer relatedNumber;
     private Integer relatedWorkTime;
 
-    public Long getRelatedUser() {
+    public String getRelatedUser() {
         return relatedUser;
     }
 
-    public void setRelatedUser(Long relatedUser) {
+    public void setRelatedUser(String relatedUser) {
         this.relatedUser = relatedUser;
     }
 
