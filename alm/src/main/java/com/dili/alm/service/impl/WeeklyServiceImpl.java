@@ -32,6 +32,7 @@ import com.dili.alm.domain.Weekly;
 import com.dili.alm.domain.WeeklyDetails;
 import com.dili.alm.domain.WeeklyJson;
 import com.dili.alm.domain.dto.NextWeeklyDto;
+import com.dili.alm.domain.dto.Page;
 import com.dili.alm.domain.dto.ProjectWeeklyDto;
 import com.dili.alm.domain.dto.TaskDto;
 import com.dili.alm.domain.dto.WeeklyPara;
@@ -185,7 +186,11 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		// 查询总页数
 		int total = weeklyMapper.selectPageByWeeklyParaCount(weeklyPara);
 		// 查询list
-		CopyOnWriteArrayList<WeeklyPara> list = weeklyMapper.selectListPageByWeeklyPara(weeklyPara);
+		Page page=new Page();
+		page.setPageIndex(weeklyPara.getPage());
+		page.setPageSize(weeklyPara.getRows());
+		
+		CopyOnWriteArrayList<WeeklyPara> list = weeklyMapper.selectListPageByWeeklyPara(weeklyPara,page);
 		CopyOnWriteArrayList<WeeklyPara> copyList = new CopyOnWriteArrayList();
 		
 		DataDictionary  ddit=DTOUtils.newDTO(DataDictionary.class);
@@ -216,7 +221,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 					 weeklyPara2.setProjectStatus("<font color='orange'>预警--8%<偏差<15%</font>");
 				 }
 				 
-				 weeklyPara2.setDate(weeklyPara2.getStartDate() + " 到 " + weeklyPara2.getEndDate());
+				 weeklyPara2.setDate(weeklyPara2.getStartDate().substring(0,10) + " 到 " + weeklyPara2.getEndDate().substring(0,10));
 				
 				 ddv=DTOUtils.newDTO(DataDictionaryValue.class);
 				 ddv.setValue(weeklyPara2.getProjectType());
@@ -238,7 +243,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		if (pd != null && pd.getPlanDate() != null)
 			pd.setPlanDate(pd.getPlanDate().substring(0, 10));
 		
-		pd.setBeginAndEndTime(pd.getStartDate() + "到" +pd.getEndDate());
+		pd.setBeginAndEndTime(pd.getStartDate().substring(0,10) + "到" +pd.getEndDate().substring(0,10));
 		
 		if(DateUtil.getWeekOfDate(new Date()).endsWith("星期日")){
 			HashMap<String,String>  map =DateUtil.getFirstAndFive();

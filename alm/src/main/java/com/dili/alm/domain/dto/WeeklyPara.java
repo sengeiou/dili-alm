@@ -1,11 +1,40 @@
 package com.dili.alm.domain.dto;
 
-import java.util.Date;
 
 
-public class WeeklyPara  {
+public class WeeklyPara   {
     
+	Integer page;
+	Integer rows;
+	String sort;
+	String order;
 	
+	
+	public Integer getPage() {
+		return page;
+	}
+	public void setPage(Integer page) {
+		this.page = page;
+	}
+	public Integer getRows() {
+		return rows;
+	}
+	public void setRows(Integer rows) {
+		this.rows = rows;
+	}
+	public String getSort() {
+		return sort;
+	}
+	public void setSort(String sort) {
+		this.sort = sort;
+	}
+	public String getOrder() {
+		return order;
+	}
+	public void setOrder(String order) {
+		this.order = order;
+	}
+
 	private  Long id ;
 	
 	private  String serialNumber;
@@ -135,7 +164,7 @@ public class WeeklyPara  {
 	public void setEndDate(String endDate) {
 		this.endDate = endDate;
 	}
-    
 
+	
 
 }
