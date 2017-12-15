@@ -17,7 +17,7 @@
                     <tr>
 						<th data-options="field:'serialNumber', align:'left'">项目编号</th>
 						<th
-							data-options="field:'name', align:'left'">项目名称</th>
+							data-options="field:'name',formatter:formatprojectName, align:'left'">项目名称</th>
 						<th 
 							data-options="field:'type', _provider:'projectTypeProvider',width:80, _table:'data_dictionary_value',_valueField:'value',_textField:'code',_queryParams:{'yn':1,'dd_id':3}, align:'center'" >
 							项目类型</th>
