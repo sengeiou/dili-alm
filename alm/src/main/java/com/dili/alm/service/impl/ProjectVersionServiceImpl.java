@@ -199,12 +199,12 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 
 		Map<Object, Object> metadata = new HashMap<>();
 
-		JSONObject changeNameProvider = new JSONObject();
-		changeNameProvider.put("provider", "changeNameProvider");
-		metadata.put("name", changeNameProvider);
+//		JSONObject changeNameProvider = new JSONObject();
+//		changeNameProvider.put("provider", "projectChangeProvider");
+//		metadata.put("name", changeNameProvider);
 
 		JSONObject phaseProvider = new JSONObject();
-		phaseProvider.put("provider", "phaseProvider");
+		phaseProvider.put("provider", "projectPhaseProvider");
 		metadata.put("phaseId", phaseProvider);
 		try {
 			List<Map> listMap = ValueProviderUtils.buildDataByProvider(metadata, changes);
