@@ -149,4 +149,12 @@ public interface ProjectChange extends IBaseDomain {
     Long getModifyMemberId();
 
     void setModifyMemberId(Long modifyMemberId);
+
+
+    @Column(name = "`estimate_launch_date`")
+    @FieldDef(label="estimateLaunchDate")
+    @EditMode(editor = FieldEditor.Datetime, required = false)
+    Date getEstimateLaunchDate();
+
+    void setEstimateLaunchDate(Date estimateLaunchDate);
 }
