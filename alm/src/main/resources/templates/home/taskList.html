@@ -112,8 +112,8 @@
             <tr>
                 <td style="padding:5px;">
                     <select  name="_flow" id="_flow" class="easyui-combobox" data-options="label:'流程:'" style="width:100%">
-                      <option value="true">正常流程</option>
-                      <option value="false">变更流程</option>
+                      <option value=1>正常流程</option>
+                      <option value=0>变更流程</option>
                     </select>
                 </td>
             </tr>
@@ -263,9 +263,31 @@
             $.extend(param, formData);
             $("#grid").datagrid("load", param);
             $('#detail_form').form('load', {_taskHour:formData._planTime});
+            $('#grid').datagrid({
+                data: param,
+                view: myview,
+                emptyMsg: '当前没有任务'
+          });
         }
 
-
+        var myview = $.extend({},$.fn.datagrid.defaults.view,{
+            onAfterRender:function(target){
+                $.fn.datagrid.defaults.view.onAfterRender.call(this,target);
+                var opts = $(target).datagrid('options');
+                var vc = $(target).datagrid('getPanel').children('div.datagrid-view');
+                vc.children('div.datagrid-empty').remove();
+                if (!$(target).datagrid('getRows').length){
+                    var d = $('<div class="datagrid-empty"></div>').html(opts.emptyMsg || 'no records').appendTo(vc);
+                    d.css({
+                        position:'absolute',
+                        left:0,
+                        top:50,
+                        width:'100%',
+                        textAlign:'center'
+                    });
+                }
+            }
+            });
         //清空表单
         function clearForm() {
             $('#form').form('clear');
@@ -391,17 +413,7 @@
         	  
         }
         
-        
-        //工时填写校验
-        $.extend($.fn.validatebox.defaults.rules, {
-            taskHours:{
-                validator: function (value) {
-                    return value <= 8;
-                },
-                message: '当日所填任务工时只能是8小时！'
-        }
-        })
-        
+
         
         
         </script>

@@ -61,12 +61,6 @@ public class TaskController {
 		return "task/index";
 	}
 	
-	@ApiOperation("跳转到Task页面")
-	@RequestMapping(value = "/index0.html", method = RequestMethod.GET)
-	public String index0(ModelMap modelMap) {
-		modelMap.put("sessionID", SessionContext.getSessionContext().getUserTicket().getId());
-		return "task/index0";
-	}
 
 	@ApiOperation(value = "查询Task", notes = "查询Task，返回列表信息")
 	@ApiImplicitParams({ @ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = false, dataType = "string") })
@@ -210,7 +204,19 @@ public class TaskController {
 		}
 		return list.get(0);
 	}
-
+	
+	//是否是任务所有人，传入任务ID
+	@ResponseBody
+	@RequestMapping(value = "/isOwner.json", method = {
+			RequestMethod.GET, RequestMethod.POST })
+	public boolean isOwner(Long id) {
+		Task task = taskService.get(id);
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		if (task.getOwner()==userTicket.getId()) {
+			return true;
+		}
+		return false;
+	}
  
 
 	// 更新任务信息
@@ -223,7 +229,6 @@ public class TaskController {
 		
 		short taskHour = Optional.ofNullable(Short.parseShort(taskHourStr)).orElse((short)0);
 		short overHour = Optional.ofNullable(Short.parseShort(overHourStr)).orElse((short)0);
-		
 		if (taskHour<=0) {
 			return BaseOutput.failure("工时必须大于0");
 		}

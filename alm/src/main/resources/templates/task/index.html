@@ -1,5 +1,4 @@
  <#body>
- <input type="hidden" value="modelMap.sessionID" id="userId"/>
     <div class="easyui-layout" fit="true">
     <div id="smDialog" style="display: none;"></div>
         <!-- ====================================================================================================================== -->
@@ -163,7 +162,7 @@
             <tr>
                 <td style="padding:5px;">
                  <input name="_beforeTask" id="_beforeTask"  class="easyui-combobox"style="width: 100%;"   data-options="label:'前置任务:'">
-                <#comboProvider _id="_beforeTask" _table="task"
+                 <#comboProvider _id="_beforeTask" _table="task"
 								_valueField="id" _textField="name"/>
                 </td>
             </tr>
@@ -195,7 +194,7 @@
             </tr>
            <tr  id="changeIdTr">
                 <td style="padding:5px;">
-                     <input name="_changeId" id="_changeId"  class="easyui-combobox"  style="width:100%" data-options="label:'变更项目:', required:true ">
+                     <input name="_changeId" id="_changeId"  class="easyui-combobox"  style="width:300px" data-options="label:'变更项目:'">
                     <#comboProvider _id="_changeId" _table="project"
 								_valueField="id" _textField="name"/>
                 </td>
@@ -266,7 +265,7 @@
     <script type="text/javascript">
         //打开新增窗口
         function openInsert(){
-        	//canEdit();
+        	canEdit();
         	$("#task_detail").hide();
         	$("#dialog_toolbar").show();
         	$("#dialog_toolbar_detail").hide();
@@ -278,7 +277,6 @@
 
         //打开修改窗口
         function openUpdate(){
-        	
         	$("#task_detail").hide();
         	$("#dialog_toolbar").show();
         	$("#dialog_toolbar_detail").hide();
@@ -291,7 +289,7 @@
             	$.messager.alert('警告','此项任务已经执行，不能再进行编辑！');
             	return;
             }
-            //canEdit();
+            canEdit();
             $('#dlg').dialog('open');
             $('#dlg').dialog('center');
             formFocus("_form", "_name");
@@ -299,8 +297,13 @@
             formData = addKeyStartWith(getOriginalData(formData),"_");
             $('#_form').form('load', formData);
             $('#_form').form('load', {planTimeStr:formData._planTime});
-
-        }
+            
+            
+            loadVisionSelect(formData._projectId);
+            $('#_versionId').combobox('select',formData._versionId);
+            loadPhaseSelect(formData._versionId);
+            $('#_phaseId').combobox('select',formData._phaseId);
+         }
         
 
 
@@ -312,8 +315,10 @@
             if(!$('#_form').form("validate")){
                 return;
             }
+            
             var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
             var _url = null;
+            
             //没有id就新增
             if(_formData.id == null || _formData.id==""){
             	logIngo = "新增任务:";
@@ -466,6 +471,7 @@
 	    }  
         
         function getDetailInfo(taskID){
+        	
         	 var  htmlobj=$.ajax({url:"${contextPath}/task/listTaskDetail.json?id="+taskID,async:false});
         	 var str=htmlobj.responseText;
         	 var obj = $.parseJSON(str);
@@ -522,44 +528,7 @@
         	  
         }
         
-        function saveTaskDetail(){
-        	var planTimeStr=$("#planTimeStr").val();
-        	var formDate=$("#detail_form").serialize();
-            if(!$('#detail_form').form("validate")){
-                return;
-            }
-             $.ajax({
-                type: "POST",
-                url: "${contextPath}/task/updateTaskDetails?planTimeStr="+planTimeStr,
-                data: formDate,
-                processData:true,
-                dataType: "json",
-                async : true,
-                success: function (data) {
-                    if(data.code=="200"){
-                        $("#grid").datagrid("reload");
-                        $('#dlg').dialog('close');
-                        //LogUtils.saveLog("添加执行任务时间：" + data.result, function () {});
-                    }else{
-                        $.messager.alert('错误',data.result);
-                    }
-                },
-                error: function(){
-                    $.messager.alert('错误','远程访问失败');
-                }
-            }); 
-        }
-        
-        
-        //工时填写校验
-        $.extend($.fn.validatebox.defaults.rules, {
-            taskHours:{
-                validator: function (value) {
-                    return value <= 8;
-                },
-                message: '当日所填任务工时只能是8小时！'
-        }
-        })
+
         
         </script>
     
