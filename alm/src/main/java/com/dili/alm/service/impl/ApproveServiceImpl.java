@@ -2,6 +2,7 @@ package com.dili.alm.service.impl;
 
 import cn.afterturn.easypoi.word.WordExportUtil;
 import com.alibaba.fastjson.JSON;
+import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.ApproveMapper;
 import com.dili.alm.domain.*;
@@ -11,6 +12,7 @@ import com.dili.alm.domain.dto.apply.ApplyApprove;
 import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.*;
+import com.dili.alm.utils.DateUtil;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -61,6 +63,12 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
     @Autowired
     private VerifyApprovalService verifyApprovalService;
+
+    @Autowired
+    private ProjectVersionService projectVersionService;
+
+    @Autowired
+    private ProjectPhaseService projectPhaseService;
 
     @Autowired
     private UserRpc userRpc;
@@ -316,7 +324,6 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
     public void downloadProjectDoc(AlmConstants.ApproveType approveType, Long id, OutputStream os) {
         switch (approveType) {
             case APPLY:
-
                 try {
                     ProjectApply apply = projectApplyService.get(id);
                     Map<String, Object> map = new HashMap<>();
@@ -338,14 +345,14 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
                     projectApplyService.buildStepOne(map, applyDTO);
 
-                    map.put("planDto",projectApplyService.loadPlan(id));
+                    map.put("planDto", projectApplyService.loadPlan(id));
 
-                    map.put("roi",JSON.parseObject(apply.getRoi(),Map.class));
+                    map.put("roi", JSON.parseObject(apply.getRoi(), Map.class));
 
-                    map.put("loadImpact",projectApplyService.loadImpact(id));
-                    map.put("loadRisk",projectApplyService.loadRisk(id));
-                    map.put("descDto",JSON.parseObject(apply.getDescription()));
-                    map.put("gf",JSON.parseObject(apply.getGoalsFunctions()));
+                    map.put("loadImpact", projectApplyService.loadImpact(id));
+                    map.put("loadRisk", projectApplyService.loadRisk(id));
+                    map.put("descDto", JSON.parseObject(apply.getDescription()));
+                    map.put("gf", JSON.parseObject(apply.getGoalsFunctions()));
 
                     Resource resource = new ClassPathResource("/word/apply.docx");
 
@@ -357,6 +364,34 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
                     e.printStackTrace();
                 }
                 break;
+            case CHANGE:
+                ProjectChange change = projectChangeService.get(id);
+                try {
+                    Resource resource = new ClassPathResource("/word/change.docx");
+                    Project project = projectService.get(change.getProjectId());
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("name", change.getName());
+                    map.put("number", change.getNumber());
+                    map.put("projectName", change.getProjectName());
+                    map.put("version", projectVersionService.get(change.getVersionId()).getVersion());
+                    map.put("projectType", AlmCache.PROJECT_TYPE_MAP.get(project.getType()));
+                    map.put("phase", AlmCache.PHASE_NAME_MAP.get(projectPhaseService.get(change.getPhaseId()).getName()));
+                    map.put("type", AlmCache.CHANGE_TYPE.get(change.getType()));
+                    map.put("workingHours", change.getWorkingHours());
+                    map.put("affectsOnline", change.getAffectsOnline() == 1 ? "是" : "否");
+                    map.put("estimateLaunchDate", DateUtil.getDate(change.getEstimateLaunchDate()));
+                    map.put("content", StringUtils.isBlank(change.getContent()) ? "无" : change.getContent());
+                    map.put("effects", StringUtils.isBlank(change.getEffects()) ? "无" : change.getEffects());
+                    XWPFDocument doc = WordExportUtil.exportWord07(
+                            resource.getURI().getPath(), map);
+                    doc.write(os);
+                    os.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            case COMPLETE:
+                ProjectComplete complete = projectCompleteService.get(id);
             default:
                 break;
         }
