@@ -1,5 +1,6 @@
 package com.dili.alm.service.impl;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -9,6 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.constant.AlmConstants.ApproveType;
 import com.dili.alm.constant.AlmConstants.MemberState;
@@ -27,9 +29,9 @@ import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.TaskDetails;
 import com.dili.alm.domain.TaskEntity;
+import com.dili.alm.domain.WeeklyJson;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
-import com.dili.alm.domain.dto.TaskSelectDto;
 import com.dili.alm.domain.dto.apply.ApplyMajorResource;
 import com.dili.alm.domain.dto.apply.ApplyRelatedResource;
 import com.dili.alm.service.DataDictionaryService;
@@ -46,7 +48,11 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.github.pagehelper.Page;
 
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 /**
@@ -88,7 +94,8 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 	@Override
 	public List<Project> selectByOwner(Long ownerId) {
-		return this.projectMapper.getProjectsByTaskOwner(ownerId);
+		Project project =DTOUtils.newDTO(Project.class);
+		return this.projectMapper.getProjectsByTaskOwner(project,ownerId);
 	}
 	
 	@Override
@@ -128,6 +135,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			List taskList = ValueProviderUtils.buildDataByProvider(task, results);
 			return new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(page.getTotal()))), taskList);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -184,7 +192,8 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		//校验加班工时
 		short overHour = Optional.ofNullable(taskDetailsFromDatabase.getOverHour()).orElse((short) 0);
 		/*task表基础数据更新*/
-		//如果有工时就累加，如果没有就用当前填入数据
+		//工时信息填写
+		taskDetailsFromDatabase.setTaskTime(this.taskHoursMapAdd(taskDetailsFromDatabase.getTaskTime(),taskHour));
 		if(taskHour==0){
 			taskDetailsFromDatabase.setTaskHour(taskDetails.getTaskHour());
 		}else{
@@ -217,6 +226,30 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		return 0;
 	}
 	
+	
+	private String taskHoursMapAdd(String jsonMapStr,int taskHour){
+		try {
+			//StringParseMap
+			Map<String, Integer> jsonMap = (Map<String, Integer>)JSON.parse(jsonMapStr);
+			if (jsonMap.size()>0) {
+				jsonMap.put(this.dateToString(new Date())+(jsonMap.size()+1), taskHour);
+			}else{
+				jsonMap.put(this.dateToString(new Date())+1, taskHour);
+			}
+			//MapParseString
+	        ObjectMapper mapper = new ObjectMapper();  
+			return mapper.writeValueAsString(jsonMap);
+			
+		} catch (JsonGenerationException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+        
+		return "";
+	}
 	
 	//计算阶段进度
 	private void saveProjectPhase(Task task) {
@@ -329,8 +362,8 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			taskDetails.setCreated(new Date());
 			taskDetails.setTaskHour((short) 0);
 			taskDetails.setOverHour((short) 0);
-			taskDetails.setTaskTime("0");
-			/*taskDetails.setCreateMemberId(task.getModifyMemberId());*/
+			taskDetails.setTaskTime("{}");
+			taskDetails.setCreateMemberId(task.getModifyMemberId());
 		    taskDetailsService.insert(taskDetails);
 		}
 
@@ -338,15 +371,23 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	    return this.update(task);
 	}
 
+	/**
+	 * 定时刷过期任务
+	 */
+	@Scheduled(cron="0 0 0 * * ? ")
 	@Override
-	public int notComplateStatus(Task task) {
-		int days = Integer.parseInt(DateUtil.getDatePoor(new Date(), task.getEndDate()).trim());
-		if (days<=0) {
-			task.setStatus(TaskStatus.NOTCOMPLETE.code);// 更新状态为未完成
-			task.setModified(new Date());
-			return this.update(task);
-		}else{
-			return 14;
+	public void notComplateTask() {
+		Task  taskSelect  = DTOUtils.newDTO(Task.class);
+		//查询任务表里 项目下的所有任务
+		List<Task> taskList = this.list(taskSelect);
+		for (Task taskDome: taskList){
+			//dateUtil 计算相差天数小于0，更新状态为未完成
+			int days = Integer.parseInt(DateUtil.getDatePoor(new Date(), taskDome.getEndDate()).trim());
+			if (days<=0) {
+				taskDome.setStatus(TaskStatus.NOTCOMPLETE.code);// 更新状态为未完成
+				taskDome.setModified(new Date());
+				this.update(taskDome);
+			}
 		}
 	}
 
@@ -367,4 +408,36 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		}
 		return dto.getValues();
 	}
+
+	@Override
+	public boolean isSetTask(Long id,short taskHour) {
+		
+		Map<String, Integer> taskHourMap =  new HashMap<String, Integer>();
+		String taskUpdateDate = null;
+		int dayTotal = 0;
+		//校验一天内的工时是否超过8小时
+		TaskDetails taskDetails = this.taskDetailsService.get(id);
+		taskHourMap =  (Map<String, Integer>)JSON.parse(taskDetails.getTaskTime());
+		
+		if (taskHourMap.size()==0) {
+			return true;
+		}else{
+			taskUpdateDate = this.dateToString(taskDetails.getModified()).equals(this.dateToString(new Date()))?this.dateToString(taskDetails.getModified()):this.dateToString(new Date());//获取最后跟新的日期，用日期在map里取值，一天最多能存8次值
+			
+			for (int i = 0; i < 8; i++) {
+				if (taskHourMap.get(taskUpdateDate+(i+1))==null) break;
+				dayTotal += taskHourMap.get(taskUpdateDate+(i+1));
+			}
+			
+			//再加上填写的时间
+			dayTotal += taskHour;
+			
+			if (dayTotal>8) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+
 }

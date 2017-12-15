@@ -1,4 +1,9 @@
 <#body>
+    <style>
+        .textbox-label{
+            width: 90px;
+        }
+    </style>
 <div class="easyui-layout" fit="true">
     <!-- ====================================================================================================================== -->
     <!-- 上方布局 -->
@@ -21,6 +26,13 @@
 
                         </td>
                         <td style="padding:5px;">
+                            <input class="easyui-datetimebox" name="created" id="created" style="width:100%"
+                                   data-options="label:'项目申请日期:'"/>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px;">
                             <input class="easyui-datetimebox" name="startDate" id="startDate" style="width:100%"
                                    data-options="label:'计划开始日期:'"/>
 
@@ -34,11 +46,6 @@
                             <input class="easyui-textbox" name="status" id="status" style="width:100%"
                                    data-options="label:'项目状态:', validType:'length[0,3]'"/>
                             <#comboProvider _id="status" _provider='applyStateProvider'/>
-
-                        </td>
-                        <td style="padding:5px;">
-                            <input class="easyui-datetimebox" name="created" id="created" style="width:100%"
-                                   data-options="label:'项目申请日期:'"/>
 
                         </td>
                     </tr>

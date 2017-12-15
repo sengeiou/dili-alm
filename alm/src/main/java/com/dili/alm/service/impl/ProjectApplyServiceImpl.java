@@ -11,6 +11,8 @@ import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.apply.ApplyFiles;
+import com.dili.alm.domain.dto.apply.ApplyMajorResource;
+import com.dili.alm.domain.dto.apply.ApplyPlan;
 import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.FilesService;
@@ -18,8 +20,10 @@ import com.dili.alm.service.ProjectApplyService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.util.SystemConfigUtils;
 import com.dili.sysadmin.sdk.session.SessionContext;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,10 +34,7 @@ import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -159,6 +160,43 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("recordId", applyId).andEqualTo("type",FileType.APPLY.getValue());
         return this.filesService.selectByExample(example);
+    }
+
+    @Override
+    public void buildStepOne(Map modelMap, Map applyDTO) throws Exception {
+        Map<Object, Object> metadata = new HashMap<>();
+        ApplyMajorResource resourceRequire = JSON.parseObject(Optional.ofNullable(applyDTO.get("resourceRequire")).map(Object::toString).orElse("{}"), ApplyMajorResource.class);
+        metadata.clear();
+        metadata.put("mainUser", JSON.parse("{provider:'memberProvider'}"));
+        List<Map> majorMap = ValueProviderUtils.buildDataByProvider(metadata, Lists.newArrayList(resourceRequire));
+        metadata.clear();
+        metadata.put("relatedUser", JSON.parse("{provider:'memberProvider'}"));
+        List<Map> relatedMap = ValueProviderUtils.buildDataByProvider(metadata, Optional.ofNullable(resourceRequire.getRelatedResources()).orElse(new ArrayList<>()));
+        modelMap.put("main", majorMap.get(0));
+        modelMap.put("related", relatedMap);
+    }
+
+    @Override
+    public List<Map> loadPlan(Long id) throws Exception {
+        ProjectApply projectApply = this.get(id);
+        List<ApplyPlan> result = new ArrayList<>();
+
+        if (StringUtils.isNotBlank(projectApply.getPlan())) {
+            result = JSON.parseArray(projectApply.getPlan(), ApplyPlan.class);
+        } else {
+            List<DataDictionaryValueDto> list = this.getPlanPhase();
+            List<ApplyPlan> finalResult = result;
+            list.forEach(dataDictionaryValueDto -> {
+                ApplyPlan plan = new ApplyPlan();
+                plan.setPhase(dataDictionaryValueDto.getCode());
+                finalResult.add(plan);
+            });
+        }
+
+        Map<Object, Object> metadata = new HashMap<>();
+        metadata.put("startDate", JSON.parse("{provider:'datetimeProvider'}"));
+        metadata.put("endDate", JSON.parse("{provider:'datetimeProvider'}"));
+        return ValueProviderUtils.buildDataByProvider(metadata, Lists.newArrayList(result));
     }
 
     /**

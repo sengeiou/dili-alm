@@ -23,9 +23,11 @@ public interface TaskService extends BaseService<Task, Long> {
 	
 	int startTask(Task task);
 	
-	int notComplateStatus(Task task);
+	void notComplateTask();
 
 	List<DataDictionaryValueDto> getTaskStates();
 
 	List<DataDictionaryValueDto> getTaskTypes();
+	
+	boolean isSetTask(Long id,short taskHour);
 }

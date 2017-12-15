@@ -2,14 +2,20 @@ package com.dili.alm.service.impl;
 
 import java.io.File;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.dao.LogMapper;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.Log;
 import com.dili.alm.domain.Task;
 import com.dili.alm.service.LogService;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
 import com.dili.sysadmin.sdk.util.WebContent;
@@ -54,6 +60,31 @@ public class LogServiceImpl extends BaseServiceImpl<Log, Long> implements LogSer
 		record.setModified(new Date());
 		record.setIp(userTicket.getLastLoginIp());
 		return this.getActualDao().updateByPrimaryKeySelective(record);
+	}
+	
+	@Override
+	public EasyuiPageOutput listLogPage(Log log,String beginTime,String endTime) {
+		List<Log> logLikeList = this.getActualDao().logLikeList(log,beginTime,endTime);
+		int logLikeListCount = this.getActualDao().logLikeListCount(log,beginTime,endTime);
+		
+		@SuppressWarnings("unchecked")
+		Map<Object, Object> metadata = null == log.getMetadata() ? new HashMap<>() : log.getMetadata();
+
+		JSONObject memberProvider = new JSONObject();
+		memberProvider.put("provider", "memberProvider");
+		metadata.put("operatorId", memberProvider);
+		
+		JSONObject provider = new JSONObject();
+		provider.put("provider", "datetimeProvider");;
+		metadata.put("created", provider);
+		metadata.put("modified", provider);
+		log.setMetadata(metadata);
+		try {
+			List list = ValueProviderUtils.buildDataByProvider(log, logLikeList);
+			return new EasyuiPageOutput(logLikeListCount, list);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 }

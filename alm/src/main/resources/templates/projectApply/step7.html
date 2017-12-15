@@ -9,7 +9,9 @@
     .title-first {
         padding-left: 0;
     }
-
+    .ajax-file-upload{
+        line-height: 28px;
+    }
 </style>
 <link href="${contextPath!}/resources/css/uploadfile.css" rel="stylesheet">
 <script type="text/javascript" src="${contextPath!}/resources/js/jquery.uploadfile.min.js"></script>
@@ -34,9 +36,8 @@
                 </tr>
                 <tr>
                     <td>*立项文件上传</td>
-                    <td>
+                    <td colspan="3">
                         <div id="fileuploader"></div>
-                    </td>
                     </td>
                 </tr>
             </table>
@@ -49,8 +50,8 @@
                 <thead>
                 <tr>
                     <th data-options="field:'id',width:80,hidden:true">ID</th>
-                    <th data-options="field:'name', width:'20%', align:'center',formatter:formatDown, resizable:'true', fixed:'false'">文件名</th>
-                    <th data-options="field:'length', width:'20%', align:'center', resizable:'true', fixed:'false',formatter:renderSize">大小</th>
+                    <th data-options="field:'name', width:'25%', align:'center',formatter:formatDown, resizable:'true', fixed:'false'">文件名</th>
+                    <th data-options="field:'length', width:'25%', align:'center', resizable:'true', fixed:'false',formatter:renderSize">大小</th>
                     <th data-options="field:'created', width:'50%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">上传日期</th>
                 </tr>
                 </thead>
@@ -116,7 +117,7 @@
         url: "${contextPath!}/files/filesUpload", // 文件上传url
         fileName: "file", // 提交到服务器的文件名
         uploadStr: '上传',
-        //maxFileCount : 1, // 上传文件个数（多个时修改此处
+        maxFileSize : 10485760, // 上传文件个数（多个时修改此处
         returnType: 'json', // 服务返回数据
         // allowedTypes : 'jpg,jpeg,png,gif', // 允许上传的文件式
         showDone: true, // 是否显示"Done"(完成)按钮

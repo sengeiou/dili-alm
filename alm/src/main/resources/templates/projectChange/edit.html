@@ -42,24 +42,24 @@
                     <td><input class="easyui-textbox" type="text" name="name" value="${obj.name}"
                                data-options="required:true,validType:'length[1,20]',label:'变更名称:'"></td>
                     <td><input class="easyui-textbox" type="text" name="projectId" id="projectId"
-                               data-options="required:true,label:'项目编号:'"></td>
+                               data-options="editable:false,required:true,label:'项目编号:'"></td>
                 </tr>
                 <tr>
                     <td><input class="easyui-textbox" type="text" readonly name="projectName" id="projectName"
-                               data-options="required:true,validType:'length[1,20]',label:'项目名称:'"></td>
+                               data-options="editable:false,required:true,validType:'length[1,20]',label:'项目名称:'"></td>
                     <td><input class="easyui-textbox" type="text" name="versionId" id="versionId"
-                               data-options="required:true,validType:'length[1,20]',label:'项目版本:'"></td>
+                               data-options="editable:false,required:true,validType:'length[1,20]',label:'项目版本:'"></td>
                 </tr>
                 <tr>
                     <td><input class="easyui-textbox" type="text" readonly name="projectType" id="projectType"
-                               data-options="required:true,label:'项目类型:'"></td>
+                               data-options="editable:false,required:true,label:'项目类型:'"></td>
                     <td><input class="easyui-textbox" type="text" name="phaseId" id="phaseId"
-                               data-options="required:true,validType:'length[1,20]',label:'提交阶段:'"></td>
+                               data-options="editable:false,required:true,validType:'length[1,20]',label:'提交阶段:'"></td>
                 </tr>
                 <tr>
                     <td>
                         <input class="easyui-textbox" type="text" name="type" id="type"
-                               data-options="required:true,validType:'length[1,10]',label:'变更类型:'">
+                               data-options="editable:false,required:true,validType:'length[1,10]',label:'变更类型:'">
                         <#comboProvider _id="type" _provider='changeTypeProvider'/>
                     </td>
                     <td><input class="easyui-numberbox" type="text" name="workingHours" value="${obj.workingHours}"

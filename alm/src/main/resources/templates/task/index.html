@@ -1,4 +1,5 @@
  <#body>
+ <input type="hidden" value="modelMap.sessionID" id="userId"/>
     <div class="easyui-layout" fit="true">
     <div id="smDialog" style="display: none;"></div>
         <!-- ====================================================================================================================== -->
@@ -125,34 +126,38 @@
         <table width="360px">
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_name" id="_name" style="width:100%" data-options="label:'name:', validType:'length[0,255]'" />
+                    <input class="easyui-textbox" name="_name" id="_name" style="width:100%" data-options="label:'任务名称:', required:true,validType:'length[0,255]'" />
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input  name="_projectId" id="_projectId"  class="easyui-combobox"style="width: 100%;"   data-options="label:'所属项目:' ">
+                    <input  name="_projectId" id="_projectId"  class="easyui-combobox"style="width: 100%;"   data-options="label:'所属项目:', required:true ">
                     <#comboProvider _id="_projectId" _table="project"
 								_valueField="id" _textField="name"/>
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                <input  name="_versionId" id="_versionId"  class="easyui-combobox"style="width: 100%;"   data-options="label:'所属版本:'">
+                <input  name="_versionId" id="_versionId"  class="easyui-combobox"style="width: 100%;"   data-options="label:'所属版本:', required:true">
+                 								<#comboProvider _id="_versionId" _table="project_version"
+								_valueField="id" _textField="version"/>
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                 <input  name="_phaseId" id="_phaseId"  class="easyui-combobox"style="width: 100%;"   data-options="label:'所属阶段:'">
+                 <input  name="_phaseId" id="_phaseId"  class="easyui-combobox"style="width: 100%;"   data-options="label:'所属阶段:', required:true">
+                                                 <#comboProvider _id="phaseId" _table="project_phase"
+								_valueField="id" _textField="name"/>
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-datetimebox" name="_startDate" id="_startDate" style="width:100%" data-options="label:'startDate:'" />
+                    <input class="easyui-datetimebox" name="_startDate" id="_startDate" style="width:100%" data-options="label:'开始时间:', required:true" />
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-datetimebox" name="_endDate" id="_endDate" style="width:100%" data-options="label:'endDate:'" />
+                    <input class="easyui-datetimebox" name="_endDate" id="_endDate" style="width:100%" data-options="label:'结束时间:', required:true" />
                 </td>
             </tr>
             <tr>
@@ -164,7 +169,7 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
-                     <input  name="_type" id="_type"  class="easyui-combobox"style="width: 100%;"  panelWidth="auto" panelHeight="auto"  data-options="label:'任务类型:'">
+                     <input  name="_type" id="_type"  class="easyui-combobox"style="width: 100%;"  panelWidth="auto" panelHeight="auto"  data-options="label:'任务类型:', required:true">
                                <#comboProvider _id="_type" _table="data_dictionary_value"
 								_valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":17}' />
                 </td>
@@ -172,7 +177,7 @@
             <tr>
                 <td style="padding:5px;">
                   <input class="easyui-textbox" name="_owner" id="_owner" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="负责人:"
-						 data-options="editable:false, buttonText:'选择', onClickButton:selectMember,onChange:_changeTextboxShowClear" />
+						 data-options="editable:false, buttonText:'选择', onClickButton:selectMember,onChange:_changeTextboxShowClear,required:true" />
                 </td>
             </tr>
             <tr>
@@ -182,10 +187,17 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <select  name="_flow" id="_flow" class="easyui-combobox" data-options="label:'流程:'" style="width:100%">
-                      <option value="true">正常流程</option>
-                      <option value="false">变更流程</option>
+                    <select  name="_flow" id="_flow" class="easyui-combobox" data-options="label:'流程:', required:true" style="width:100%">
+                      <option value=1>正常流程</option>
+                      <option value=0>变更流程</option>
                     </select>
+                </td>
+            </tr>
+           <tr  id="changeIdTr">
+                <td style="padding:5px;">
+                     <input name="_changeId" id="_changeId"  class="easyui-combobox"  style="width:100%" data-options="label:'变更项目:', required:true ">
+                    <#comboProvider _id="_changeId" _table="project"
+								_valueField="id" _textField="name"/>
                 </td>
             </tr>
             <tr>
@@ -214,7 +226,7 @@
             </tr>
            <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="taskHourStr" id="taskHourStr" style="width:200px;height:26px;" data-options="label:'任务工时:',validType:'taskHours'" />
+                    <input class="easyui-numberbox" name="taskHourStr" id="taskHourStr" style="width:200px;height:26px;" data-options="label:'任务工时:',required:true,validType:'taskHours'" />
                 </td>
                 <td style="padding:5px;">
                     <input class="easyui-numberbox" name="_taskHour" id="_taskHour" style="width:200px;height:26px;" data-options="label:'已填工时:',disabled:true" />
@@ -254,6 +266,7 @@
     <script type="text/javascript">
         //打开新增窗口
         function openInsert(){
+        	//canEdit();
         	$("#task_detail").hide();
         	$("#dialog_toolbar").show();
         	$("#dialog_toolbar_detail").hide();
@@ -265,92 +278,36 @@
 
         //打开修改窗口
         function openUpdate(){
+        	
         	$("#task_detail").hide();
         	$("#dialog_toolbar").show();
         	$("#dialog_toolbar_detail").hide();
-            var selected = $("#grid").datagrid("getSelected");
+            var selected = $("#grid").datagrid("getSelected");            
             if (null == selected) {
                 $.messager.alert('警告','请选中一条数据');
                 return;
             }
-            if(selected.status!=0){
+            if(selected.status!="未开始"){
             	$.messager.alert('警告','此项任务已经执行，不能再进行编辑！');
             	return;
             }
+            //canEdit();
             $('#dlg').dialog('open');
             $('#dlg').dialog('center');
-            formFocus("_form", "_name");
-            var formData = $.extend({},selected);
-            formData = addKeyStartWith(getOriginalData(formData),"_");
-            $('#_form').form('load', formData);
-
-        }
-        
-        //打开执行任务窗口
-        function openUpdateDetail(row){
-        	$("#task_detail").hide();
-        	$("#dialog_toolbar").hide();
-        	$("#dialog_toolbar_detail").show();
-			var selected=$("#grid").datagrid('getData').rows[row];
-			$("#task_detail").show();
-			
-
-            
-            $('#dlg').dialog('open');
-            $('#dlg').dialog('center');
-
-            $('#_form').form({editable:false});
             formFocus("_form", "_name");
             var formData = $.extend({},selected);
             formData = addKeyStartWith(getOriginalData(formData),"_");
             $('#_form').form('load', formData);
             $('#_form').form('load', {planTimeStr:formData._planTime});
-            
-            
-/*             $('#_progress').progressbar({
- 			    value: formData._progress;
- 			}); */
-            if(formData._status==0){
-            	$("#task_detail").hide();
-            	$("#doTask").show();
-            	$("#pauseTask").hide();
-            	$("#updateDetail").hide();
-            }
-            if(formData._status==2){
-            	$("#task_detail").show();
-            	$("#doTask").show();
-            	$("#pauseTask").hide();
-            	$("#updateDetail").hide();
-            }
-            
-            if(formData._status==1){
-            	$('#_progressShow').progressbar({
-            	    value: parseInt(formData._progress)
-            	});
-            	
-            	$("#task_detail").show();
-            	$("#doTask").hide();
-            	$("#pauseTask").show();
-            	$("#updateDetail").show();
-            	$('#detail_form').form('clear');
-            	getDetailInfo(formData._id);
-            }
-            
-            if(formData._status==3){
-            	$('#_progressShow').progressbar({
-            	    value: parseInt(formData._progress)
-            	});
-            	$("#task_detail").show();
-            	$("#doTask").hide();
-            	$("#pauseTask").hide();
-            	$("#updateDetail").hide();
-            	$('#detail_form').form('clear');
-            	$('#detail_form').form('load', {_taskHour:formData._planTime});
-            	getDetailInfo(formData._id);
-            }
+
         }
+        
+
 
         function saveOrUpdate(){
+        	
+        	var logInfo = "";
+        		
         	$("#task_detail").hide();
             if(!$('#_form').form("validate")){
                 return;
@@ -359,8 +316,10 @@
             var _url = null;
             //没有id就新增
             if(_formData.id == null || _formData.id==""){
+            	logIngo = "新增任务:";
                 _url = "${contextPath}/task/insert";
             }else{//有id就修改
+            	logIngo = "修改任务:";
                 _url = "${contextPath}/task/update";
             }
             $.ajax({
@@ -374,6 +333,7 @@
                     if(data.code=="200"){
                         $("#grid").datagrid("reload");
                         $('#dlg').dialog('close');
+                        LogUtils.saveLog(logIngo + data.result, function () {});
                     }else{
                         $.messager.alert('错误',data.result);
                     }
@@ -404,6 +364,7 @@
                             if(data.code=="200"){
                                 $("#grid").datagrid("reload");
                                 $('#dlg').dialog('close');
+                                LogUtils.saveLog("删除任务：" + data.result, function () {});
                             }else{
                                 $.messager.alert('错误',data.result);
                             }
@@ -503,6 +464,7 @@
 	        var htmlstr = '<div  class="easyui-progressbar" style="width:100px;" value="'+rowData.progress+'">'+rowData.progress+'</div> ';  
 	        return htmlstr;  
 	    }  
+        
         function getDetailInfo(taskID){
         	 var  htmlobj=$.ajax({url:"${contextPath}/task/listTaskDetail.json?id="+taskID,async:false});
         	 var str=htmlobj.responseText;
@@ -524,6 +486,7 @@
                     if(data.code=="200"){
                         $("#grid").datagrid("reload");
                         $('#dlg').dialog('close');
+                        LogUtils.saveLog("开始任务：" + data.result, function () {});
                     }else{
                         $.messager.alert('错误',data.result);
                     }
@@ -547,6 +510,7 @@
                     if(data.code=="200"){
                         $("#grid").datagrid("reload");
                         $('#dlg').dialog('close');
+                        //LogUtils.saveLog("暂停任务：" + data.result, function () {});
                     }else{
                         $.messager.alert('错误',data.result);
                     }
@@ -561,7 +525,9 @@
         function saveTaskDetail(){
         	var planTimeStr=$("#planTimeStr").val();
         	var formDate=$("#detail_form").serialize();
-        	
+            if(!$('#detail_form').form("validate")){
+                return;
+            }
              $.ajax({
                 type: "POST",
                 url: "${contextPath}/task/updateTaskDetails?planTimeStr="+planTimeStr,
@@ -573,6 +539,7 @@
                     if(data.code=="200"){
                         $("#grid").datagrid("reload");
                         $('#dlg').dialog('close');
+                        //LogUtils.saveLog("添加执行任务时间：" + data.result, function () {});
                     }else{
                         $.messager.alert('错误',data.result);
                     }
@@ -583,6 +550,7 @@
             }); 
         }
         
+        
         //工时填写校验
         $.extend($.fn.validatebox.defaults.rules, {
             taskHours:{
@@ -592,8 +560,6 @@
                 message: '当日所填任务工时只能是8小时！'
         }
         })
-        
-        
         
         </script>
     
