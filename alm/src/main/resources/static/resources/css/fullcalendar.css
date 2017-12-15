@@ -122,7 +122,7 @@ html .fc,
 .fc-widget-header{background:#f7f7f7}
 
 .fc-state-highlight { /* <td> today cell */ /* TODO: add .fc-today to <th> */
-	background: #fcf8e3;
+	background: #d3ecde;
 	}
 	
 .fc-cell-overlay { /* semi-transparent rectangle while dragging */
