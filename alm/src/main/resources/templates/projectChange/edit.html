@@ -66,7 +66,7 @@
                                data-options="required:true,min:0,max:99999999,label:'变更工作量预估:'"></td>
                 </tr>
                 <tr>
-                    <td colspan="2">
+                    <td>
                         <label class="textbox-label textbox-label-before">是否影响上线:</label>
                         <select id="affectsOnline" class="easyui-combobox" name="affectsOnline" style="width: 150px;"
                                 data-options="editable:false"
@@ -74,6 +74,10 @@
                             <option value="1">是</option>
                             <option value="2">否</option>
                         </select>
+                    </td>
+                    <td>
+                        <input class="easyui-datebox" type="text" id="estimateLaunchDate" name="estimateLaunchDate"
+                               data-options="required:true,label:'变更后上线日期:'">
                     </td>
                 </tr>
                 <tr>
@@ -183,6 +187,7 @@
         $("#phaseId").combobox("setValue",'${obj.phaseId}');
         $("#type").combobox("setValue",'${obj.type}');
         $("#affectsOnline").combobox("setValue",'${obj.affectsOnline}');
+        $("#estimateLaunchDate").datebox("setValue",'${obj.estimateLaunchDate}');
     });
 </script>
 </#body>

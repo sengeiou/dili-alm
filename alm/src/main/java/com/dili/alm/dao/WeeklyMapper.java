@@ -3,8 +3,11 @@ package com.dili.alm.dao;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.dili.alm.domain.Weekly;
 import com.dili.alm.domain.dto.NextWeeklyDto;
+import com.dili.alm.domain.dto.Page;
 import com.dili.alm.domain.dto.ProjectWeeklyDto;
 import com.dili.alm.domain.dto.WeeklyPara;
 import com.dili.ss.base.MyMapper;
@@ -23,7 +26,7 @@ public interface WeeklyMapper extends MyMapper<Weekly> {
 	 * @param weeklyPara
 	 * @return
 	 */
-	CopyOnWriteArrayList<WeeklyPara> selectListPageByWeeklyPara(WeeklyPara weeklyPara);
+	CopyOnWriteArrayList<WeeklyPara> selectListPageByWeeklyPara(@Param("weeklyPara")WeeklyPara weeklyPara,@Param("page")Page page);
 	/**
 	 * 周报搜索条件查询条数
 	 * @param weeklyPara

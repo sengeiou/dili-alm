@@ -6,7 +6,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Map;
 
 public class DateUtil {
 	public static String getWeekFristDay() {
@@ -213,6 +212,18 @@ public static HashMap<String,String>  getFirstAndFive(Date date) {
 			
 			e.printStackTrace();
 		}  
+		return   mydate;
+	}
+	public static String getDate(Date date){
+
+		SimpleDateFormat sdf= new SimpleDateFormat("yyyy-MM-dd");
+		String mydate=null;
+		try {
+			mydate  = sdf.format(date);
+		} catch (Exception e) {
+
+			e.printStackTrace();
+		}
 		return   mydate;
 	}
     

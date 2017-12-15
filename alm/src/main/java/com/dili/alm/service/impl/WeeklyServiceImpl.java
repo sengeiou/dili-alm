@@ -32,6 +32,7 @@ import com.dili.alm.domain.Weekly;
 import com.dili.alm.domain.WeeklyDetails;
 import com.dili.alm.domain.WeeklyJson;
 import com.dili.alm.domain.dto.NextWeeklyDto;
+import com.dili.alm.domain.dto.Page;
 import com.dili.alm.domain.dto.ProjectWeeklyDto;
 import com.dili.alm.domain.dto.TaskDto;
 import com.dili.alm.domain.dto.WeeklyPara;
@@ -158,6 +159,78 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	}
 
 	@Override
+	public Map<Object, Object> getDescAddById(String id) {
+		Map<Object, Object>  map=new HashMap<Object, Object> ();
+		//项目周报
+    	ProjectWeeklyDto pd=getProjectAddWeeklyDtoById(Long.parseLong(id));
+    	pd.setCompletedProgressInt(Integer.parseInt(pd.getCompletedProgress()));
+    	pd.setId(id);
+		map.put("pd", pd);
+		Weekly wkly=weeklyMapper.selectByPrimaryKey(Long.parseLong(id));
+		/*String[]  strDate=pd.getBeginAndEndTime().split("到");*/
+		WeeklyPara weeklyPara=  new WeeklyPara();
+		weeklyPara.setId(Long.parseLong(pd.getProjectId()));
+		weeklyPara.setStartDate(DateUtil.getDateStr(wkly.getStartDate()));
+		weeklyPara.setEndDate(DateUtil.getDateStr(wkly.getEndDate()));
+		
+		// 本周项目版本
+		List<String> projectVersion=selectProjectVersion(weeklyPara);
+		map.put("pv", StringUtils.join(projectVersion.toArray(),","));
+		//本周项目阶段
+		List<String> projectPhase=selectProjectPhase(weeklyPara);
+		map.put("pp", StringUtils.join(projectPhase.toArray(),","));
+		//本周进展情况 
+		List<TaskDto> td=selectWeeklyProgress(weeklyPara);
+		for (int i = 0; i < td.size(); i++) {
+			td.get(i).setNumber(i+1);
+		}
+		map.put("td", td);	
+		weeklyPara.setId(Long.parseLong(id));
+		//当前重要风险
+		String weeklyRist=selectWeeklyRist(weeklyPara);
+		if(weeklyRist!=null){
+			JSONArray  weeklyRistJson=JSON.parseArray(weeklyRist);
+			map.put("wr", weeklyRistJson.toJavaList(WeeklyJson.class));
+		}else
+			map.put("wr", null);
+		
+		//当前重要问题
+		String weeklyQuestion=selectWeeklyQuestion(weeklyPara);
+		if(weeklyQuestion!=null){
+		JSONArray  weeklyQuestionJson=JSON.parseArray(weeklyQuestion);
+	    map.put("wq", weeklyQuestionJson);
+		}else{
+			 map.put("wq", null);
+		}
+		
+		weeklyPara.setId(Long.parseLong(pd.getProjectId()));
+		String dateone=DateUtil.getFirstAndFive(wkly.getStartDate()).get("one");
+		String datefive= DateUtil.getFirstAndFive(wkly.getEndDate()).get("five");
+		//Date  dateDateone=DateUtil.getStrDateyyyyMMdd(dateone);
+		//Date  dateDatetwo= DateUtil.getStrDateyyyyMMdd(datefive);
+		weeklyPara.setStartDate(DateUtil.getAddDay(dateone+" 00:00:00",7));
+		weeklyPara.setEndDate(DateUtil.getAddDay(datefive+" 23:59:59",7));
+		
+		//下周工作计划
+		List<NextWeeklyDto> wk=selectNextWeeklyProgress(weeklyPara);
+	
+		for (int i = 0; i < wk.size(); i++) {
+			wk.get(i).setNumber(i+1);
+		}
+		map.put("wk", wk);
+		
+		//下周项目阶段
+		List<String> nextprojectPhase=selectNextProjectPhase(weeklyPara);
+		map.put("npp", StringUtils.join(nextprojectPhase.toArray(),","));
+		
+	    //项目总体情况描述
+	    WeeklyDetails wDetails=  weeklyDetailsService.getWeeklyDetailsByWeeklyId(Long.parseLong(id));
+	  //（实际项目发生工时/立项申请预估工时-1）%
+	    map.put("wDetails", wDetails);
+	    
+	    return  map;
+	}
+	@Override
 	public EasyuiPageOutput getListPage(WeeklyPara weeklyPara) {
 		
 		//参数转换 项目类型
@@ -185,7 +258,11 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		// 查询总页数
 		int total = weeklyMapper.selectPageByWeeklyParaCount(weeklyPara);
 		// 查询list
-		CopyOnWriteArrayList<WeeklyPara> list = weeklyMapper.selectListPageByWeeklyPara(weeklyPara);
+		Page page=new Page();
+		page.setPageIndex(weeklyPara.getPage());
+		page.setPageSize(weeklyPara.getRows());
+		
+		CopyOnWriteArrayList<WeeklyPara> list = weeklyMapper.selectListPageByWeeklyPara(weeklyPara,page);
 		CopyOnWriteArrayList<WeeklyPara> copyList = new CopyOnWriteArrayList();
 		
 		DataDictionary  ddit=DTOUtils.newDTO(DataDictionary.class);
@@ -216,7 +293,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 					 weeklyPara2.setProjectStatus("<font color='orange'>预警--8%<偏差<15%</font>");
 				 }
 				 
-				 weeklyPara2.setDate(weeklyPara2.getStartDate() + " 到 " + weeklyPara2.getEndDate());
+				 weeklyPara2.setDate(weeklyPara2.getStartDate().substring(0,10) + " 到 " + weeklyPara2.getEndDate().substring(0,10));
 				
 				 ddv=DTOUtils.newDTO(DataDictionaryValue.class);
 				 ddv.setValue(weeklyPara2.getProjectType());
@@ -238,7 +315,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		if (pd != null && pd.getPlanDate() != null)
 			pd.setPlanDate(pd.getPlanDate().substring(0, 10));
 		
-		pd.setBeginAndEndTime(pd.getStartDate() + "到" +pd.getEndDate());
+		pd.setBeginAndEndTime(pd.getStartDate().substring(0,10) + "到" +pd.getEndDate().substring(0,10));
 		
 		if(DateUtil.getWeekOfDate(new Date()).endsWith("星期日")){
 			HashMap<String,String>  map =DateUtil.getFirstAndFive();
@@ -246,11 +323,15 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			pd.setBeginAndEndTime(map.get("one").substring(0,10) + "到" +map.get("five").substring(0,10));
 		}
 		
-		
-		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		if (userTicket != null) {
-			pd.setStageMan(userTicket.getUserName());
-		}
+		 if(pd.getStageMan()!=null|pd.getStageMan()!=""){
+			 User userStageMan = new User();
+			 userStageMan.setId(Long.parseLong(pd.getStageMan()));
+			 BaseOutput<List<User>>  listStageMan = userRpc.listByExample(userStageMan);
+			 List<User> listUserlistStageMan = listStageMan.getData();
+			 if(listUserlistStageMan!=null&&listUserlistStageMan.size()>0)
+			      pd.setStageMan(listUserlistStageMan.get(0).getUserName());
+		 
+		 }
 
 		 User user = new User();
 		 user.setId(Long.parseLong(pd.getBusinessParty()));
@@ -292,6 +373,66 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		return pd;
 	}
 
+	
+	@Override
+	public ProjectWeeklyDto getProjectAddWeeklyDtoById(Long id) {
+		
+		ProjectWeeklyDto pd = weeklyMapper.selectProjectWeeklyDto(id);
+		if (pd != null && pd.getPlanDate() != null)
+			pd.setPlanDate(pd.getPlanDate().substring(0, 10));
+		
+		pd.setBeginAndEndTime(pd.getStartDate().substring(0,10) + "到" +pd.getEndDate().substring(0,10));
+		
+		if(DateUtil.getWeekOfDate(new Date()).endsWith("星期日")){
+			HashMap<String,String>  map =DateUtil.getFirstAndFive();
+			
+			pd.setBeginAndEndTime(map.get("one").substring(0,10) + "到" +map.get("five").substring(0,10));
+		}
+		
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		 pd.setStageMan(userTicket.getUserName());
+		 
+		
+
+		 User user = new User();
+		 user.setId(Long.parseLong(pd.getBusinessParty()));
+		// 业务方
+		BaseOutput<List<User>>  listByExample = userRpc.listByExample(user);
+		 List<User> listUserParty = listByExample.getData();
+		 if(listUserParty!=null&&listUserParty.size()>0)
+		      pd.setBusinessParty(listUserParty.get(0).getUserName());
+		 
+
+		// 查询项目经理
+		 user.setId(Long.parseLong(pd.getUserName()));
+		 BaseOutput<List<User>>  listUserByExample = userRpc.listByExample(user);
+		 List<User> listUsernName = listUserByExample.getData();
+		 if(listUsernName!=null&&listUsernName.size()>0)
+		    pd.setUserName(listUsernName.get(0).getUserName());
+		
+
+		// 项目所在部门
+	     Department department=new Department();
+	     department.setId(Long.parseLong(pd.getProjectInDept()));
+	     BaseOutput<List<Department>>   departmentByExample = departmentRpc.list(department);
+		 List<Department> departmentList= departmentByExample.getData();
+		 if(departmentList!=null&&departmentList.size()>0)
+		     pd.setProjectInDept(departmentList.get(0).getName());
+		 
+		 
+		// 查询项目类型
+		DataDictionary  ddit=DTOUtils.newDTO(DataDictionary.class);
+		ddit.setName(PROJECTTYPE);
+		List<DataDictionary> 	dditList=dataDictionaryService.list(ddit);
+		//List<DataDictionary> dditList=dictionaryMapper.selectByExample(ddit);//查询出id
+		
+		DataDictionaryValue  ddv=DTOUtils.newDTO(DataDictionaryValue.class);
+		ddv.setValue(pd.getProjectType());
+		ddv.setDdId(dditList.get(0).getId());
+		pd.setProjectType(dataDictionaryValueService.list(ddv).get(0).getCode());
+		pd.setCompletedProgressInt(Integer.parseInt(pd.getCompletedProgress()));
+		return pd;
+	}
 	/**
 	 * 当前重大问题 -
 	 * */

@@ -2,7 +2,7 @@ package com.dili.alm.service.impl;
 
 import cn.afterturn.easypoi.word.WordExportUtil;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.ApproveMapper;
 import com.dili.alm.domain.*;
@@ -12,6 +12,7 @@ import com.dili.alm.domain.dto.apply.ApplyApprove;
 import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.*;
+import com.dili.alm.utils.DateUtil;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -22,11 +23,12 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.*;
 
@@ -63,10 +65,19 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
     private VerifyApprovalService verifyApprovalService;
 
     @Autowired
+    private ProjectVersionService projectVersionService;
+
+    @Autowired
+    private ProjectPhaseService projectPhaseService;
+
+    @Autowired
     private UserRpc userRpc;
 
     @Autowired
     private RoleRpc roleRpc;
+
+    @Autowired
+    private TeamService teamService;
 
 
     public ApproveMapper getActualDao() {
@@ -304,7 +315,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         verifyApproval.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
         verifyApprovalService.insert(verifyApproval);
         Approve approve = get(id);
-        approve.setStatus(Objects.equals(opt, "accept") ?AlmConstants.ChangeState.VRIFY.getCode() : approve.getStatus());
+        approve.setStatus(Objects.equals(opt, "accept") ? AlmConstants.ChangeState.VRIFY.getCode() : approve.getStatus());
         updateSelective(approve);
         return BaseOutput.success();
     }
@@ -313,30 +324,74 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
     public void downloadProjectDoc(AlmConstants.ApproveType approveType, Long id, OutputStream os) {
         switch (approveType) {
             case APPLY:
-
                 try {
                     ProjectApply apply = projectApplyService.get(id);
-                    Map<String, Object> map = new HashMap<String, Object>();
+                    Map<String, Object> map = new HashMap<>();
                     Map<Object, Object> metadata = new HashMap<>(2);
-                    JSONObject projectTypeProvider = new JSONObject();
-                    projectTypeProvider.put("provider", "projectTypeProvider");
-                    metadata.put("type", projectTypeProvider);
+                    metadata.put("projectLeader", JSON.parse("{provider:'memberProvider'}"));
+                    metadata.put("productManager", JSON.parse("{provider:'memberProvider'}"));
+                    metadata.put("developmentManager", JSON.parse("{provider:'memberProvider'}"));
+                    metadata.put("testManager", JSON.parse("{provider:'memberProvider'}"));
+                    metadata.put("businessOwner", JSON.parse("{provider:'memberProvider'}"));
+                    metadata.put("dep", JSON.parse("{provider:'depProvider'}"));
+                    metadata.put("expectedLaunchDate", JSON.parse("{provider:'dateProvider'}"));
+                    metadata.put("estimateLaunchDate", JSON.parse("{provider:'dateProvider'}"));
+                    metadata.put("startDate", JSON.parse("{provider:'dateProvider'}"));
+                    metadata.put("endDate", JSON.parse("{provider:'dateProvider'}"));
+                    metadata.put("type", JSON.parse("{provider:'projectTypeProvider'}"));
                     List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, projectApplyService.listByExample(apply));
                     Map applyDTO = maps.get(0);
                     map.put("apply", applyDTO);
 
-                   projectApplyService.buildStepOne(map,applyDTO);
+                    projectApplyService.buildStepOne(map, applyDTO);
 
+                    map.put("planDto", projectApplyService.loadPlan(id));
+
+                    map.put("roi", JSON.parseObject(apply.getRoi(), Map.class));
+
+                    map.put("loadImpact", projectApplyService.loadImpact(id));
+                    map.put("loadRisk", projectApplyService.loadRisk(id));
+                    map.put("descDto", JSON.parseObject(apply.getDescription()));
+                    map.put("gf", JSON.parseObject(apply.getGoalsFunctions()));
+
+                    Resource resource = new ClassPathResource("/word/apply.docx");
 
                     XWPFDocument doc = WordExportUtil.exportWord07(
-                            "/Users/shaofan/Desktop/apply.docx", applyDTO);
-                    FileOutputStream fos = new FileOutputStream("/Users/shaofan/Desktop/simpleExcel1.docx");
-                    doc.write(fos);
+                            resource.getURI().getPath(), map);
+                    doc.write(os);
                     os.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;
+            case CHANGE:
+                ProjectChange change = projectChangeService.get(id);
+                try {
+                    Resource resource = new ClassPathResource("/word/change.docx");
+                    Project project = projectService.get(change.getProjectId());
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("name", change.getName());
+                    map.put("number", change.getNumber());
+                    map.put("projectName", change.getProjectName());
+                    map.put("version", projectVersionService.get(change.getVersionId()).getVersion());
+                    map.put("projectType", AlmCache.PROJECT_TYPE_MAP.get(project.getType()));
+                    map.put("phase", AlmCache.PHASE_NAME_MAP.get(projectPhaseService.get(change.getPhaseId()).getName()));
+                    map.put("type", AlmCache.CHANGE_TYPE.get(change.getType()));
+                    map.put("workingHours", change.getWorkingHours());
+                    map.put("affectsOnline", change.getAffectsOnline() == 1 ? "是" : "否");
+                    map.put("estimateLaunchDate", DateUtil.getDate(change.getEstimateLaunchDate()));
+                    map.put("content", StringUtils.isBlank(change.getContent()) ? "无" : change.getContent());
+                    map.put("effects", StringUtils.isBlank(change.getEffects()) ? "无" : change.getEffects());
+                    XWPFDocument doc = WordExportUtil.exportWord07(
+                            resource.getURI().getPath(), map);
+                    doc.write(os);
+                    os.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            case COMPLETE:
+                ProjectComplete complete = projectCompleteService.get(id);
             default:
                 break;
         }
@@ -369,7 +424,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
     /**
      * 立项审批通过生成项目信息
      */
-    public void buildProject(ProjectApply apply, Approve approve) {
+    private void buildProject(ProjectApply apply, Approve approve) {
         Project build = DTOUtils.newDTO(Project.class);
         build.setSerialNumber(apply.getNumber());
         build.setName(apply.getName());
@@ -385,7 +440,43 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         build.setBusinessOwner(apply.getBusinessOwner());
         build.setProjectState(NOT_START.getValue());
         build.setOriginator(SessionContext.getSessionContext().getUserTicket().getId());
+        build.setEstimateLaunchDate(apply.getEstimateLaunchDate());
         projectService.insertSelective(build);
+        buildTeam(build);
+    }
+
+    private void buildTeam(Project project) {
+        for (TeamRole teamRole : TeamRole.values()) {
+            Team team = DTOUtils.newDTO(Team.class);
+            team.setProjectId(project.getId());
+            team.setJoinTime(new Date());
+            team.setDeletable(false);
+            switch (teamRole) {
+                case PROJECT_MANAGER:
+                    team.setMemberId(project.getProjectManager());
+                    team.setRole(TeamRole.PROJECT_MANAGER.getValue());
+                    teamService.insert(team);
+                    break;
+                case PRODUCT_MANAGER:
+                    team.setMemberId(project.getProductManager());
+                    team.setRole(TeamRole.PRODUCT_MANAGER.getValue());
+                    teamService.insert(team);
+                    break;
+                case TEST_MANAGER:
+                    team.setMemberId(project.getTestManager());
+                    team.setRole(TeamRole.TEST_MANAGER.getValue());
+                    teamService.insert(team);
+                    break;
+                case DEVELOP_MANAGER:
+                    team.setMemberId(project.getDevelopManager());
+                    team.setRole(TeamRole.DEVELOP_MANAGER.getValue());
+                    teamService.insert(team);
+                    break;
+                default:
+                    break;
+            }
+
+        }
     }
 
     /**

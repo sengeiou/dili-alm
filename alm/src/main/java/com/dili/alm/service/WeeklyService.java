@@ -8,6 +8,7 @@ import java.util.Map;
 import com.dili.alm.domain.Weekly;
 import com.dili.alm.domain.WeeklyJson;
 import com.dili.alm.domain.dto.NextWeeklyDto;
+import com.dili.alm.domain.dto.Page;
 import com.dili.alm.domain.dto.ProjectWeeklyDto;
 import com.dili.alm.domain.dto.TaskDto;
 import com.dili.alm.domain.dto.WeeklyPara;
@@ -27,6 +28,8 @@ public interface WeeklyService extends BaseService<Weekly, Long> {
 	EasyuiPageOutput  getListPage(WeeklyPara weeklyPara);
 	
 	ProjectWeeklyDto  getProjectWeeklyDtoById(Long projectId);
+	
+	ProjectWeeklyDto  getProjectAddWeeklyDtoById(Long projectId);
 	
 	
 	/** 
@@ -85,6 +88,13 @@ public interface WeeklyService extends BaseService<Weekly, Long> {
 	 * @return
 	 */
 	Map<Object,Object> getDescById(String id);
+	/**
+	 * 根据id返回页面详情
+	 * @param id
+	 * @return
+	 */
+	Map<Object,Object> getDescAddById(String id);
+	
 	
 	/**
 	 * 根据周报中个的项目经理id 查询项目经理

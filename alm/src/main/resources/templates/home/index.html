@@ -1,66 +1,109 @@
 <#body>
-    <div id="main" style="width:100%;"> 
-    <div id="tt" class="easyui-tabs" style="width:70%;height:520px;float:left;">
-        <div title="待办任务" >
-          <iframe scrolling="auto" frameborder="0"  src="/alm/home/taskList" style="width:100%;height:100%;"></iframe> 
-        </div>
-         <div title="我的项目">
-          <iframe scrolling="auto" frameborder="0"  src="/alm/home/myProjectIndex" style="width:100%;height:100%;"></iframe>  
-        </div>
-    </div>
+    <style>
+        html,body{
+            height: 100%;
+        }
+        body{
+            box-sizing: border-box;
+            /*background: #fcf8e3;*/
+            padding: 10px 10px 0;
+        }
+        .main-left{
+            margin-right: 300px;
+            height: 100%;
+            /*background-color: #ffe6b8*/
+        }
+        .main-right{
+            float: right;
+            width: 300px;
+            height: 100%;
+            /*background-color: #ffe6b8*/
+        }
+        .tabs-panels{
+            height: calc(100% - 30px);
+        }
+        .tabs-header{
+            border: none;
+        }
+        #scheduleList li{
+            margin-bottom: 10px;
+            font-weight:400;
+            color: #333;
 
-    <div>
-	   <div id='calendar' style="width:25%;float:right;"></div>
-	   <div style="width:25%;float:right;padding-top:20px">
-	       待办事件
-	   <hr/>
-	   <ol id="scheduleList">
-	   <li></li>
-	   <li></li>
-	   </ol>
-	   </div>
-	</div>
-		
-	  <!-- 隐藏编辑框 -->
-    <div id="dlg" class="easyui-dialog" shadow="false" resizable="false" constrain="true" shadow="true" draggable="false" title="日程详情"style="width:400px;height:200px;padding:10px" modal="true" border="thin" closed="true"
-         data-options="
-				iconCls: 'icon-save',
-				height: 200,
-				buttons: [{
-					text:'保存',
-					iconCls:'icon-ok',
-					handler:saveOrUpdate
-				},{
-					text:'取消',
-					handler:function(){
-						$('#dlg').dialog('close');
-					}
-				}]
-			">
-		<form id="_form" class="easyui-form" method="post" fit="true">	
-        <input name="_id" id="_id" type="hidden">
-        <table width="360px">
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="scheduleDate" id="scheduleDate" style="width:100%" data-options="label:'编辑时间:'" 
-                        required="true" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="scheduleText" id="scheduleText" style="width:100%" data-options="label:'编辑内容:', validType:'length[0,255]'" />
-                </td>
-            </tr>
-        </table>
-        </form>
-    </div>
+        }
+        #scheduleList li a{
+            float: right;
+            text-decoration: none;
+            color: #A52A2A;
+        }
+    </style>
+
+    <div id="main" style="box-sizing:border-box;width:100%;height:100%;">
+        <div class="main-right">
+            <div id='calendar' style="width:300px;"></div>
+            <div style="width:300px;float:right;padding-top:20px;font-weight: bold">
+            待办事件
+            <hr/>
+            <ol id="scheduleList">
+            <!--<li></li>-->
+            <!--<li></li>-->
+            </ol>
+            </div>
+        </div>
+        <div class="main-left">
+
+            <div class="easyui-tabs" style="width: 100%;height: 100%">
+                <div title="待办任务" style="width: 100%">
+                    <iframe scrolling="auto" frameborder="0"  src="/alm/home/taskList" style="width:100%;height:calc(100% - 3px);"></iframe>
+                </div>
+                <div title="我的项目">
+                    <iframe scrolling="auto" frameborder="0"  src="/alm/home/myProjectIndex" style="width:100%;height:calc(100% - 3px);margin-right: 310px"></iframe>
+                </div>
+            </div>
+        </div>
+
+
+
+          <!-- 隐藏编辑框 -->
+        <div id="dlg" class="easyui-dialog" shadow="false" resizable="false" constrain="true" shadow="true" draggable="false" title="日程详情"style="width:400px;height:200px;padding:10px" modal="true" border="thin" closed="true"
+             data-options="
+                    iconCls: 'icon-save',
+                    height: 200,
+                    buttons: [{
+                        text:'保存',
+                        iconCls:'icon-ok',
+                        handler:saveOrUpdate
+                    },{
+                        text:'取消',
+                        handler:function(){
+                            $('#dlg').dialog('close');
+                        }
+                    }]
+                ">
+            <form id="_form" class="easyui-form" method="post" fit="true">
+            <input name="_id" id="_id" type="hidden">
+            <table width="360px">
+                <tr>
+                    <td style="padding:5px;">
+                        <input class="easyui-textbox" name="scheduleDate" id="scheduleDate" style="width:100%" data-options="label:'编辑时间:'"
+                            required="true" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:5px;">
+                        <input class="easyui-textbox" name="scheduleText" id="scheduleText" style="width:100%" data-options="label:'编辑内容:', validType:'length[0,255]'" />
+                    </td>
+                </tr>
+            </table>
+            </form>
+        </div>
 	</div>
 
 <script type="text/javascript">
 $(function() {
 	  init();
 	});
-	
+
    function init(){
 	   $('#calendar').empty();
 	   $("#scheduleList").empty();
@@ -88,19 +131,19 @@ $(function() {
 	                      color: '#A52A2A'
 	                  });
 					  });
- 
+
                   callback(events);
-			} ,dayClick: function(date, allDay, jsEvent, view) {   
+			} ,dayClick: function(date, allDay, jsEvent, view) {
 				//弹出框
-	            var selDate =$.fullCalendar.formatDate(date,'yyyy-MM-dd');//格式化日期   
+	            var selDate =$.fullCalendar.formatDate(date,'yyyy-MM-dd');//格式化日期
 	            $('#dlg').dialog("open");
 	            $('#_form').form("clear");
 	            $('#_form').form("load",{scheduleDate:selDate});
 	            $('#dlg').panel('move',{top:$(document).scrollTop() + ($(window).height()-100) * 0.5});
 	            $('#dlg').panel('move',{left:$(document).scrollTop() + ($(window).height()+50) * 0.5});
 	        },eventMouseover:function(calEvent, jsEvent, view){
-	        
-	        	var selDate =$.fullCalendar.formatDate(calEvent.start,'yyyy-MM-dd');//格式化日期  
+
+	        	var selDate =$.fullCalendar.formatDate(calEvent.start,'yyyy-MM-dd');//格式化日期
 	        	listEvents(selDate);
 	        }
 		});
@@ -132,10 +175,10 @@ $(function() {
             });
 
         }
-	
+
 	//保存日程
     function saveOrUpdate(){
-		
+
         if(!$('#_form').form("validate")){
             return;
         }

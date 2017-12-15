@@ -38,6 +38,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 
 
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.dili.alm.domain.DataDictionaryValue;
@@ -45,6 +46,7 @@ import com.dili.alm.domain.Weekly;
 import com.dili.alm.domain.WeeklyDetails;
 import com.dili.alm.domain.WeeklyJson;
 import com.dili.alm.domain.dto.NextWeeklyDto;
+import com.dili.alm.domain.dto.Page;
 import com.dili.alm.domain.dto.ProjectWeeklyDto;
 import com.dili.alm.domain.dto.TaskDto;
 import com.dili.alm.domain.dto.WeeklyPara;
@@ -220,17 +222,15 @@ public class WeeklyController  {
     public ModelAndView getDescAddByProjectId(String projectId) {
     	
     	 ModelAndView mv = new ModelAndView();
-    	 
-    	
       	 Map<String, Weekly> wkMap=weeklyService.insertWeeklyByprojectId(projectId);
       	 Weekly  wk=wkMap.get("three");
       	 
     	 Map<Object,Object> map=null;
     	 if(wkMap.get("one")==null){
-    		  map=weeklyService.getDescById(wkMap.get("two").getId()+"");
+    		  map=weeklyService.getDescAddById(wkMap.get("two").getId()+"");
     		
     	 }else{
-    		 map=weeklyService.getDescById(wkMap.get("one").getId()+"");
+    		 map=weeklyService.getDescAddById(wkMap.get("one").getId()+"");
     	 }
     	
     	//项目周报

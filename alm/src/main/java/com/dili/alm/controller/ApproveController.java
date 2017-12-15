@@ -202,7 +202,7 @@ public class ApproveController {
     @RequestMapping(value = "/doc/apply/{id}", method = RequestMethod.GET)
     public void applyDoc(@PathVariable("id") Long id, HttpServletRequest request, HttpServletResponse response) {
 
-        String fileName = "收费单明细.docx";
+        String fileName = "立项审批.docx";
         // 默认使用IE的方式进行编码
         try {
             String userAgent = request.getHeader("User-Agent");
@@ -227,6 +227,72 @@ public class ApproveController {
             response.setContentType("application/octet-stream");
             response.setHeader("Content-Disposition", "attachment;" + rtn);
             approveService.downloadProjectDoc(AlmConstants.ApproveType.APPLY, id, response.getOutputStream());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @RequestMapping(value = "/doc/change/{id}", method = RequestMethod.GET)
+    public void changeDoc(@PathVariable("id") Long id, HttpServletRequest request, HttpServletResponse response) {
+
+        String fileName = "变更审批.docx";
+        // 默认使用IE的方式进行编码
+        try {
+            String userAgent = request.getHeader("User-Agent");
+            String rtn = "filename=\"" + fileName + "\"";
+            if (userAgent != null) {
+                userAgent = userAgent.toLowerCase();
+                // IE浏览器，只能采用URLEncoder编码
+                if (userAgent.contains("msie")) {
+                    rtn = "filename=\"" + fileName + "\"";
+                }
+                // Opera浏览器只能采用filename*
+                else if (userAgent.contains("opera")) {
+                    rtn = "filename*=UTF-8''" + fileName;
+                }
+                // Safari浏览器，只能采用ISO编码的中文输出
+                else if (userAgent.contains("safari")) {
+                    rtn = "filename=\"" + new String(fileName.getBytes("UTF-8"), "ISO8859-1") + "\"";
+                } else if (userAgent.contains("mozilla")) {
+                    rtn = "filename*=UTF-8''" + fileName;
+                }
+            }
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", "attachment;" + rtn);
+            approveService.downloadProjectDoc(AlmConstants.ApproveType.CHANGE, id, response.getOutputStream());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @RequestMapping(value = "/doc/complete/{id}", method = RequestMethod.GET)
+    public void completeDoc(@PathVariable("id") Long id, HttpServletRequest request, HttpServletResponse response) {
+
+        String fileName = "变更审批.docx";
+        // 默认使用IE的方式进行编码
+        try {
+            String userAgent = request.getHeader("User-Agent");
+            String rtn = "filename=\"" + fileName + "\"";
+            if (userAgent != null) {
+                userAgent = userAgent.toLowerCase();
+                // IE浏览器，只能采用URLEncoder编码
+                if (userAgent.contains("msie")) {
+                    rtn = "filename=\"" + fileName + "\"";
+                }
+                // Opera浏览器只能采用filename*
+                else if (userAgent.contains("opera")) {
+                    rtn = "filename*=UTF-8''" + fileName;
+                }
+                // Safari浏览器，只能采用ISO编码的中文输出
+                else if (userAgent.contains("safari")) {
+                    rtn = "filename=\"" + new String(fileName.getBytes("UTF-8"), "ISO8859-1") + "\"";
+                } else if (userAgent.contains("mozilla")) {
+                    rtn = "filename*=UTF-8''" + fileName;
+                }
+            }
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", "attachment;" + rtn);
+            approveService.downloadProjectDoc(AlmConstants.ApproveType.COMPLETE, id, response.getOutputStream());
         } catch (Exception e) {
             e.printStackTrace();
         }

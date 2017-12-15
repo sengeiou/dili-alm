@@ -13,12 +13,36 @@
             if(!$('#form').form("validate")){
                 return;
             }
+            
             var param = bindMetadata("grid", true);
             var formData = $("#form").serializeObject();
             $.extend(param, formData);
             $("#grid").datagrid("load", param);
+            $('#grid').datagrid({
+                data: param,
+                view: myview,
+                emptyMsg: '当前没有任何项目'
+          });
         }
 
+        var myview = $.extend({},$.fn.datagrid.defaults.view,{
+            onAfterRender:function(target){
+                $.fn.datagrid.defaults.view.onAfterRender.call(this,target);
+                var opts = $(target).datagrid('options');
+                var vc = $(target).datagrid('getPanel').children('div.datagrid-view');
+                vc.children('div.datagrid-empty').remove();
+                if (!$(target).datagrid('getRows').length){
+                    var d = $('<div class="datagrid-empty"></div>').html(opts.emptyMsg || 'no records').appendTo(vc);
+                    d.css({
+                        position:'absolute',
+                        left:0,
+                        top:50,
+                        width:'100%',
+                        textAlign:'center'
+                    });
+                }
+            }
+         });
 
         //表格表头右键菜单
         function headerContextMenu(e, field){
@@ -60,14 +84,9 @@
         	return '<a href="${contextPath!}/project/detail.html?id=' + row.id + '">管理</a>';
         }
         
-        //项目编号
-        function formatserialNumber(val,row,index){  
-        	  return  "<a href='${contextPath}/weekly/list?id=" + row.id + "' target='_blank'>"+val+"</a>";   
-           
-        }
         //项目名称
         function formatprojectName(val,row,index){  
-            return '<a href="#">'+val+'</a>';  
+        	return  "<span class='opt' style='padding:5px;'><a href='${contextPath}/project/detail?id=" + row.id + "' target='_blank'>"+val+"</a></span>";        
         }
  
         /**
