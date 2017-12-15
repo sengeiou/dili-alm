@@ -1,10 +1,12 @@
 package com.dili.alm.controller;
 
-import com.dili.alm.domain.Task;
 import com.dili.alm.domain.WorkSchedule;
 import com.dili.alm.domain.WorkScheduleEntity;
+import com.dili.alm.domain.dto.WorkScheduleDateDto;
 import com.dili.alm.service.WorkScheduleService;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.sysadmin.sdk.domain.UserTicket;
+import com.dili.sysadmin.sdk.session.SessionContext;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -55,13 +57,20 @@ public class WorkScheduleController {
         return workScheduleService.listEasyuiPageByExample(workSchedule, true).toString();
     }
     
-    //日程列表json
 	@ResponseBody
 	@RequestMapping(value = "/getWorkSchedule.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public List<WorkScheduleEntity> getWorkSchedule(WorkSchedule workSchedule) throws Exception {
-		/*		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();*/
-		/*workSchedule.setUserId(userTicket.getId());*/
-		return workScheduleService.listWorkScheduleDto(workSchedule);
+			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+			workSchedule.setUserId(userTicket.getDepId());
+			return workScheduleService.listWorkScheduleDto(workSchedule);
+		}
+	
+	@ResponseBody
+	@RequestMapping(value = "/getWorkScheduleDate.json", method = { RequestMethod.GET, RequestMethod.POST })
+	public List<WorkScheduleDateDto> getWorkScheduleDate(WorkSchedule workSchedule) throws Exception {
+			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+			workSchedule.setUserId(userTicket.getId());
+			return workScheduleService.listWorkScheduleDate(workSchedule);
 		}
 	
 	
@@ -71,9 +80,8 @@ public class WorkScheduleController {
 	})
     @RequestMapping(value="/insert", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput insert(WorkSchedule workSchedule) {
-		//TODO:加入系统后放开 
-/*		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		workSchedule.setUserId(userTicket.getId());*/
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		workSchedule.setUserId(userTicket.getId());
     	workScheduleService.insertSelective(workSchedule);
         return BaseOutput.success("新增成功");
     }

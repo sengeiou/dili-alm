@@ -43,4 +43,36 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
+  
+     <!--  查询日期 -->
+    <select  id="selecGroupByDate"  resultType="com.dili.alm.domain.dto.WorkScheduleDateDto" parameterType="com.dili.alm.domain.WorkSchedule">
+    select 
+           w.schedule_date as scheduleDate ,COUNT(w.schedule_date) as textCount
+           
+                  from alm.work_schedule w  
+                  <where>
+                   1=1
+                   <if test="id != null">
+		          		and      w.id = #{id,jdbcType=BIGINT}
+			        </if>
+                  </where>
+                      GROUP BY  DATE_FORMAT(w.schedule_date,'%Y-%m-%d') 
+   </select>
+   
+    <!--  根据日期和用户ID查询 -->
+    <select  id="selecByDateAndUser"  resultType="com.dili.alm.domain.WorkSchedule" parameterType="com.dili.alm.domain.WorkScheduleEntity">
+    select 
+           id, schedule_date, schedule_text, user_id
+           
+                  from work_schedule  
+                  <where>
+                   1=1
+                   <if test="userId != null">
+		          		and      user_id = #{userId,jdbcType=BIGINT}
+			        </if>
+			        <if test="scheduleDate != null">
+		          		and      schedule_date like   CONCAT("%",#{scheduleDateStr,jdbcType=TIMESTAMP},"%") 
+			        </if>
+                  </where>
+   </select>
 </mapper>

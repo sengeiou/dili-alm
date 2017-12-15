@@ -3,8 +3,11 @@ package com.dili.alm.service;
 import java.util.List;
 import java.util.Map;
 
+import javax.mail.MessagingException;
+
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
+import com.dili.alm.domain.dto.UploadProjectFileDto;
 import com.dili.alm.exceptions.ProjectException;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
@@ -38,5 +41,7 @@ public interface ProjectService extends BaseService<Project, Long> {
 	List<DataDictionaryValueDto> getFileTypes();
 
 	Map<Object, Object> getDetailViewData(Long id);
+
+	BaseOutput<Object> uploadFileAndSendMail(UploadProjectFileDto dto) throws MessagingException, InterruptedException;
 
 }

@@ -322,7 +322,7 @@ function changeVersionState(id) {
 
 function openInsertPhase() {
 	$('#win').dialog({
-				title : '新建阶段',
+				title : '新建文档',
 				width : 600,
 				height : '100%',
 				href : '${contextPath!}/project/phase/add?projectId=' + $('#projectId').val(),
@@ -434,6 +434,50 @@ function deletePhase(id) {
 			});
 }
 
+function uploadFile(projectId) {
+	$('#win').dialog({
+				title : '新建文档',
+				width : 600,
+				height : '100%',
+				href : '${contextPath!}/project/uploadFileView?projectId=' + projectId,
+				modal : true,
+				buttons : [{
+							text : '保存',
+							handler : function() {
+								if ($('#uploadFileGrid').datagrid('getRows').length <= 0) {
+									$.messager.alert('错误', '请上传文件');
+									return;
+								}
+								var data = $("#uploadForm").serializeArray();
+								$.ajax({
+											type : "POST",
+											url : '${contextPath!}/project/uploadFile',
+											data : data,
+											success : function(data) {
+												if (data.code == 200) {
+													$(data.data).each(function(index, item) {
+																$('#fileGrid').datagrid('appendRow', item);
+																$('#fileGrid').datagrid('acceptChanges');
+															});
+													$('#win').dialog('close');
+												} else {
+													$.messager.alert('错误', data.result);
+												}
+											},
+											error : function() {
+												$.messager.alert('错误', '远程访问失败');
+											}
+										});
+							}
+						}, {
+							text : '取消',
+							handler : function() {
+								$('#win').dialog('close');
+							}
+						}]
+			});
+}
+
 function showMembers() {
 	window.location.href = '${contextPath!}/team/index.html?projectId=${model.id!}';
 }
@@ -475,7 +519,6 @@ function alarmConfig() {
 }
 
 function generateWeekly() {
-	debugger;
 	window.location.href = '${contextPath!}/weekly/getDescAddByProjectId?id=' + $('#projectId').val();
 }
 
