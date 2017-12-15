@@ -4,6 +4,8 @@ import com.dili.alm.domain.Files;
 import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.apply.ApplyFiles;
+import com.dili.alm.domain.dto.apply.ApplyImpact;
+import com.dili.alm.domain.dto.apply.ApplyRisk;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
 
@@ -35,4 +37,8 @@ public interface ProjectApplyService extends BaseService<ProjectApply, Long> {
     void buildStepOne(Map modelMap, Map applyDTO) throws Exception;
 
     List<Map> loadPlan(Long id) throws Exception;
+
+    List<ApplyImpact> loadImpact(Long id);
+
+    public List<ApplyRisk> loadRisk(Long id);
 }

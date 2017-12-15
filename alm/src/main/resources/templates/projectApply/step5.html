@@ -186,7 +186,8 @@
                     <td style="background-color: #eee;text-align: center">合计</td>
                     <td></td>
                     <td></td>
-                    <td id="totalTxt">0元</td>
+                    <td><input class="easyui-textbox" id="totalTxt" type="text" value="" name="val99"
+                               data-options=""></td>
                     <td></td>
                 </tr>
             </table>
@@ -237,7 +238,7 @@
                 cal += parseInt(value);
             }
         });
-        $("#totalTxt").html(cal + '元');
+        $("#totalTxt").textbox('initValue',cal + '元');
     }
 
     function cal1() {
@@ -264,8 +265,8 @@
             }
         } catch (ex) {
         }
-        cal();
-        cal1();
+        // cal();
+        // cal1();
         $(".cal").textbox({
             'onChange': function () {
                 cal();

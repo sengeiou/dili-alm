@@ -10,9 +10,7 @@ import com.dili.alm.domain.Files;
 import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
-import com.dili.alm.domain.dto.apply.ApplyFiles;
-import com.dili.alm.domain.dto.apply.ApplyMajorResource;
-import com.dili.alm.domain.dto.apply.ApplyPlan;
+import com.dili.alm.domain.dto.apply.*;
 import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.FilesService;
@@ -197,6 +195,36 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
         metadata.put("startDate", JSON.parse("{provider:'datetimeProvider'}"));
         metadata.put("endDate", JSON.parse("{provider:'datetimeProvider'}"));
         return ValueProviderUtils.buildDataByProvider(metadata, Lists.newArrayList(result));
+    }
+
+    @Override
+    public List<ApplyImpact> loadImpact(Long id) {
+        ProjectApply projectApply = this.get(id);
+        List<ApplyImpact> result = new ArrayList<>();
+
+        if (StringUtils.isNotBlank(projectApply.getImpact())) {
+            result = JSON.parseArray(projectApply.getImpact(), ApplyImpact.class);
+        }
+        return result;
+    }
+
+    @Override
+    public List<ApplyRisk> loadRisk(Long id) {
+        ProjectApply projectApply = this.get(id);
+        List<ApplyRisk> result = new ArrayList<>();
+
+        if (StringUtils.isNotBlank(projectApply.getRisk())) {
+            result = JSON.parseArray(projectApply.getRisk(), ApplyRisk.class);
+        } else {
+            List<DataDictionaryValueDto> list = dataDictionaryService.findByCode("kind_risk").getValues();
+            List<ApplyRisk> finalResult = result;
+            list.forEach(dataDictionaryValueDto -> {
+                ApplyRisk risk = new ApplyRisk();
+                risk.setType(dataDictionaryValueDto.getCode());
+                finalResult.add(risk);
+            });
+        }
+        return result;
     }
 
     /**

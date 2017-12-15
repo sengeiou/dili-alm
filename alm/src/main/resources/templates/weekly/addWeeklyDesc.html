@@ -344,7 +344,9 @@
 
     <!-- ====================================================================================================================== -->
     <script type="text/javascript">
-       
+		       
+	
+		       
               function cancel(){  
             	  var  tempid=$("#inHidden").val();
             	  var  _url= "${contextPath}/weekly/updateWeeklyDetailsCancel";
@@ -406,11 +408,15 @@
 	        	   isSubmit=1;
 	           }
 		         
-	           maxquSave();
-	            maxRistSave();
+	            if(!maxquSave()){
+	        	     return  false;
+	            }
+	            if(!maxRistSave()){
+	              return  false;
+	            }
 	            
 	            $.ajax({
-	                type: "POST",
+	                type: "POST", 
 	                url: _url,
 	                data: { 
 	                	expectedDeviation:$("#expectedDeviation").val(),
@@ -507,18 +513,21 @@
 	   	    $("#maxqu").find("tbody tr").each(function(){
 	   	        var tdArr = $(this).children();
 	   	        var name = tdArr.eq(0).find('input').val();//风险名称
-	   	        if(name==null|name=''){
+	   	       var desc = tdArr.eq(1).find('input').val();//跟踪简述
+	   	     
+	   	       var status = tdArr.eq(2).find('select').val();// 当前状态
+	   	        if(name==null|name=""){
 	   	        	alert("问题名称为空");
 	   	        	return false;
 	   	        }
-	   	        var desc = tdArr.eq(1).find('input').val();//跟踪简述
-	   	        if(desc==null|desc=''){
+	   	       
+	   	        if(desc==null|desc=""){
 	   	        	alert("问题简述为空");
 	   	        	return false;
 	   	        }
-	   	        var status = tdArr.eq(2).find('select').val();// 当前状态
-	   	        if(desc==null|desc=''){
-	   	        	alert("当前状态为空");
+	   	      
+	   	        if(desc==null|desc=""){
+	   	        	alert("当前问题状态为空");
 	   	        	return false;
 	   	        }
 	   	        
@@ -565,15 +574,15 @@
  	            var name = tdArr.eq(0).find('input').val();//风险名称
  	            var desc = tdArr.eq(1).find('input').val();//跟踪简述
  	            var status = tdArr.eq(2).find('select').val();// 当前状态
- 	            if(name==null|name=''){
+ 	            if(name==null|name=""){
 	   	        	alert("风险名称为空");
 	   	        	return false;
 	   	        }
- 	           if(desc==null|desc=''){
+ 	           if(desc==null|desc=""){
 	   	        	alert("跟踪简述");
 	   	        	return false;
 	   	        }
- 	            if(status==null|status=''){
+ 	            if(status==null|status=""){
 	   	        	alert("当前状态为空");
 	   	        	return false;
 	   	        }
