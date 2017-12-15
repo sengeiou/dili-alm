@@ -1,5 +1,6 @@
 package com.dili.alm.domain;
 
+import com.dili.ss.domain.annotation.Operator;
 import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
@@ -101,6 +102,7 @@ public interface Project extends IBaseDomain {
 
 	void setModified(Date modified);
 
+	@Operator(Operator.GREAT_EQUAL_THAN)
 	@Column(name = "`start_date`")
 	@FieldDef(label = "项目开始日期")
 	@EditMode(editor = FieldEditor.Datetime, required = false)
@@ -108,6 +110,7 @@ public interface Project extends IBaseDomain {
 
 	void setStartDate(Date startDate);
 
+	@Operator(Operator.LITTLE_EQUAL_THAN)
 	@Column(name = "`end_date`")
 	@FieldDef(label = "项目结束日期")
 	@EditMode(editor = FieldEditor.Datetime, required = false)
@@ -157,23 +160,22 @@ public interface Project extends IBaseDomain {
 
 	void setOriginator(Long originator);
 
-    @Column(name = "`dep`")
-    @FieldDef(label="dep")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getDep();
+	@Column(name = "`dep`")
+	@FieldDef(label = "dep")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Long getDep();
 
-    void setDep(Long dep);
+	void setDep(Long dep);
 
 	@Column(name = "`business_owner`")
-	@FieldDef(label="业务负责人")
+	@FieldDef(label = "业务负责人")
 	@EditMode(editor = FieldEditor.Number, required = false)
 	Long getBusinessOwner();
 
 	void setBusinessOwner(Long businessOwner);
 
-
 	@Column(name = "`estimate_launch_date`")
-	@FieldDef(label="estimateLaunchDate")
+	@FieldDef(label = "estimateLaunchDate")
 	@EditMode(editor = FieldEditor.Datetime, required = false)
 	Date getEstimateLaunchDate();
 

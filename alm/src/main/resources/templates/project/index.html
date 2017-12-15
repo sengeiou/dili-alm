@@ -11,25 +11,28 @@
 			<form id="form" class="easyui-form" method="post" fit="true">
 				<table style="padding: 10px;">
 					<tr>
-						<td style="padding: 5px;"><input class="easyui-textbox" name="name" id="name" style="width: 100%" data-options="label:'项目名称:', validType:'length[0,20]'" /></td>
-						<td style="padding: 5px;"><input name="type" id="type" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="项目类型:" /> <#comboProvider _id="type" _table="data_dictionary_value"
-								_valueField="id" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":3}' /></td>
-						<td style="padding: 5px;"><input class="easyui-textbox" name="projectManager" id="projectManager" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="开发负责人:"
-							data-options="editable:false,
-									buttonText:'选择',
-									onClickButton:selectMember,onChange:_changeTextboxShowClear" /></td>
-						<td style="padding: 5px;"><input class="easyui-textbox" name="testManager" id="testManager" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="测试负责人:"
-							data-options="editable:false,
-									buttonText:'选择',
-									onClickButton:selectMember,onChange:_changeTextboxShowClear" /></td>
-						<td style="padding: 5px;"><input class="easyui-textbox" name="productManager" id="productManager" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="产品负责人:"
-							data-options="editable:false,
-									buttonText:'选择',
-									onClickButton:selectMember,onChange:_changeTextboxShowClear" /></td>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="serialNumber" id="serialNumber" style="width: 100%"
+							data-options="label:'项目编号:', validType:'length[0,20]'" /></td>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="name" id="name" style="width: 100%"
+							data-options="label:'项目名称:', validType:'length[0,20]'" /></td>
+						<td style="padding: 5px;"><select id="type" class="easyui-combobox" name="type" style="width: 100%"
+							data-options="url:'${contextPath!}/project/type.json',textField:'code',valueField:'value',label:'项目类型',editable:false">
+						</select></td>
+						<td style="padding: 5px;"><select id="projectState" class="easyui-combobox" name="projectState" style="width: 100%"
+							data-options="url:'${contextPath!}/project/state.json',textField:'code',valueField:'value',label:'项目状态',editable:false">
+						</select></td>
 					</tr>
 					<tr>
-						<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid();">查询</a> <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">清除</a>
-						</td>
+						<td style="padding: 5px;"><input class="easyui-datebox" name="actualStartDate" id="actualStartDate" style="width: 100%;"
+							panelWidth="auto" panelHeight="auto" label="项目实际开始日期:" data-options="editable:false" /></td>
+						<td style="padding: 5px;"><input class="easyui-datebox" name="startDate" id="startDate" style="width: 100%;" panelWidth="auto"
+							panelHeight="auto" label="项目起止日期:" data-options="editable:false" /></td>
+						<td><input class="easyui-datebox" labelWidth="20" name="endDate" id="endDate" style="width: 78%;" panelWidth="auto" panelHeight="auto" label="至"
+							data-options="editable:false" /></td>
+					</tr>
+					<tr>
+						<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid();">查询</a> <a
+							href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">清除</a></td>
 					</tr>
 				</table>
 			</form>
@@ -41,8 +44,8 @@
 	<!-- 表格 -->
 	<div region="center" style="width: 100%;" height="auto">
 		<!-- =========================================================表格========================================================= -->
-		<table class="easyui-treegrid" title="项目列表" id="grid" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" align="center" toolbar="#toolbar"
-			fit="true" striped="false" idField="id" treeField="name"
+		<table class="easyui-treegrid" title="项目列表" id="grid" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true"
+			method="post" align="center" toolbar="#toolbar" fit="true" striped="false" idField="id" treeField="name"
 			data-options="onHeaderContextMenu:headerContextMenu,
 			_parentIdField:'parentId',
 			idField:'id',
@@ -52,7 +55,8 @@
 				<tr>
 					<th data-options="field:'serialNumber',width:'10%', align:'left'">项目编号</th>
 					<th data-options="field:'name',width:'10%', align:'left'">项目名称</th>
-					<th data-options="field:'type',width:'10%', _provider:'projectTypeProvider', _table:'data_dictionary_value',_valueField:'value',_textField:'code',_queryParams:{'yn':1,'dd_id':3}, align:'center'">
+					<th
+						data-options="field:'type',width:'10%', _provider:'projectTypeProvider', _table:'data_dictionary_value',_valueField:'value',_textField:'code',_queryParams:{'yn':1,'dd_id':3}, align:'center'">
 						项目类型</th>
 					<th data-options="field:'startDate',width:'15%', _provider:'dateProvider', align:'center'">项目开始时间</th>
 					<th data-options="field:'endDate',width:'15%', _provider:'dateProvider', align:'center'">项目结束时间</th>
@@ -76,7 +80,8 @@
 		</div>
 	</div>
 </div>
-<!-- 隐藏编辑框 --> <!-- ====================================================================================================================== --> <!-- style & script 分隔线 --> <!-- ====================================================================================================================== -->
+<!-- 隐藏编辑框 --> <!-- ====================================================================================================================== -->
+<!-- style & script 分隔线 --> <!-- ====================================================================================================================== -->
 <script type="text/javascript" src="${contextPath!}/resources/js/dateFormat.js"></script> <script type="text/javascript">
 	var dataAuth = {
 		addProject : <%if(hasResource('addProject')){%>true<%}else{%>false<%}%>,
