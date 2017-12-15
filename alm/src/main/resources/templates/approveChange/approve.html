@@ -51,24 +51,24 @@
                 <tr>
                     <td><input class="easyui-textbox" type="text" name="name" value="${change.name}"
                                data-options="required:true,validType:'length[1,20]',label:'变更名称:'"></td>
-                    <td><input class="easyui-textbox" type="text" name="projectId" id="projectId"
+                    <td><input class="easyui-combobox" type="text" name="projectId" id="projectId"
                                data-options="required:true,label:'项目编号:'"></td>
                 </tr>
                 <tr>
                     <td><input class="easyui-textbox" type="text" name="projectName" id="projectName"
                                data-options="required:true,validType:'length[1,20]',label:'项目名称:'"></td>
-                    <td><input class="easyui-textbox" type="text" name="versionId" id="versionId"
+                    <td><input class="easyui-combobox" type="text" name="versionId" id="versionId"
                                data-options="required:true,validType:'length[1,20]',label:'项目版本:'"></td>
                 </tr>
                 <tr>
-                    <td><input class="easyui-textbox" type="text" name="projectType" id="projectType"
+                    <td><input class="easyui-combobox" type="text" name="projectType" id="projectType"
                                data-options="required:true,label:'项目类型:'"></td>
-                    <td><input class="easyui-textbox" type="text" name="phaseId" id="phaseId"
+                    <td><input class="easyui-combobox" type="text" name="phaseId" id="phaseId"
                                data-options="required:true,validType:'length[1,20]',label:'提交阶段:'"></td>
                 </tr>
                 <tr>
                     <td>
-                        <input class="easyui-textbox" type="text" name="type" id="type"
+                        <input class="easyui-combobox" type="text" name="type" id="type"
                                data-options="required:true,validType:'length[1,10]',label:'变更类型:'">
                         <#comboProvider _id="type" _provider='changeTypeProvider'/>
                     </td>
@@ -190,24 +190,31 @@
         url: '${contextPath}/project/getProjectList',
         valueField: 'id',
         textField: 'serialNumber',
+        onLoadSuccess:function () {
+            $("#projectId").combobox("setValue",'${change.projectId}');
+        },
         onChange: function (projectValue) {
             var datas = $("#projectId").combobox('getData');
-            $("#projectName").textbox("initValue", "");
-            $("#projectType").textbox("initValue", "");
             for (var i = 0; i < datas.length; i++) {
                 var data = datas[i];
                 if (data.id == projectValue) {
-                    $("#projectName").textbox("initValue", data.name);
-                    $("#projectType").textbox("initValue", data.type);
+                    $("#projectName").textbox("setText", data.name);
+                    $("#projectType").textbox("setText", data.type);
                     $('#versionId').combobox({
                         url: '${contextPath}/project/version/listPage?projectId=' + projectValue,
                         valueField: 'id',
                         textField: 'version',
+                        onLoadSuccess:function () {
+                            $("#versionId").combobox("setValue",'${change.versionId}');
+                        },
                         onChange: function (versionValue) {
                             $('#phaseId').combobox({
                                 url: '${contextPath}/project/phase/listPhase?versionId=' + versionValue,
                                 valueField: 'id',
-                                textField: 'name'
+                                textField: 'name',
+                                onLoadSuccess:function () {
+                                    $("#phaseId").combobox("setValue",'${change.phaseId}');
+                                }
                             });
                         }
                     });
@@ -217,9 +224,6 @@
     });
 
     $(function(){
-        $("#projectId").combobox("setValue",'${change.projectId}');
-        $("#versionId").combobox("setValue",'${change.versionId}');
-        $("#phaseId").combobox("setValue",'${change.phaseId}');
         $("#type").combobox("setValue",'${change.type}');
         $("#affectsOnline").combobox("setValue",'${change.affectsOnline}');
         $('input[class^=easyui-]').textbox("disable");
