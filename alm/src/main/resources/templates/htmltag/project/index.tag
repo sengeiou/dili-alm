@@ -538,4 +538,5 @@ $(function() {
 				document.onkeyup = getKey;
 			}
 			window.projectGrid = $('#grid');
+			queryGrid();
 		});

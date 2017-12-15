@@ -73,14 +73,6 @@
 			<#resource code="updateProject"> <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()" plain="true">修改</a></#resource>
 			<#resource code="deleteProject"> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true">删除</a></#resource> -->
 			<a href="#" class="easyui-linkbutton" iconCls="icon-export" onclick="doExport('grid', true)" plain="true">导出</a>
-			<div style="float: right">
-				边框显示:<select onchange="changeBorder('grid',this.value)">
-					<option value="lines-both">全边框</option>
-					<option value="lines-no">无边框</option>
-					<option value="lines-right">右边框</option>
-					<option value="lines-bottom">下边框</option>
-				</select> 行条纹:<input type="checkbox" checked="checked" onclick="$('#grid').datagrid({striped:$(this).is(':checked')})">
-			</div>
 		</div>
 	</div>
 </div>
