@@ -1,6 +1,13 @@
 // 编辑行索引
 var editId = undefined;
 
+function projectNameFormatter(value, row) {
+	if (!row.manager) {
+		return value;
+	}
+	return '<a href="${contextPath!}/project/detail.html?id=' + row.id + '">' + value + '</a>';
+}
+
 function optFormatter(value, row) {
 	if (!row.manager) {
 		return '';

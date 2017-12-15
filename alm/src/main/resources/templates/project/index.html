@@ -53,8 +53,8 @@
 			loadFilter:treegridLoadFilter">
 			<thead>
 				<tr>
-					<th data-options="field:'serialNumber',width:'10%', align:'left'">项目编号</th>
-					<th data-options="field:'name',width:'10%', align:'left'">项目名称</th>
+					<th data-options="field:'serialNumber',width:'10%', align:'left',formatter:projectNameFormatter">项目编号</th>
+					<th data-options="field:'name',width:'10%', align:'left',formatter:projectNameFormatter">项目名称</th>
 					<th
 						data-options="field:'type',width:'10%', _provider:'projectTypeProvider', _table:'data_dictionary_value',_valueField:'value',_textField:'code',_queryParams:{'yn':1,'dd_id':3}, align:'center'">
 						项目类型</th>
