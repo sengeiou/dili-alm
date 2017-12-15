@@ -202,7 +202,7 @@ public class ApproveController {
     @RequestMapping(value = "/doc/apply/{id}", method = RequestMethod.GET)
     public void applyDoc(@PathVariable("id") Long id, HttpServletRequest request, HttpServletResponse response) {
 
-        String fileName = "收费单明细.docx";
+        String fileName = "立项审批.docx";
         // 默认使用IE的方式进行编码
         try {
             String userAgent = request.getHeader("User-Agent");
