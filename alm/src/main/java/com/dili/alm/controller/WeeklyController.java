@@ -227,10 +227,10 @@ public class WeeklyController  {
       	 
     	 Map<Object,Object> map=null;
     	 if(wkMap.get("one")==null){
-    		  map=weeklyService.getDescById(wkMap.get("two").getId()+"");
+    		  map=weeklyService.getDescAddById(wkMap.get("two").getId()+"");
     		
     	 }else{
-    		 map=weeklyService.getDescById(wkMap.get("one").getId()+"");
+    		 map=weeklyService.getDescAddById(wkMap.get("one").getId()+"");
     	 }
     	
     	//项目周报

@@ -50,9 +50,9 @@
 			<if test="endDate!=null and endDate!=''">
 			   and  w.end_date   &lt;=#{endDate,jdbcType=VARCHAR}
 			</if>
-		   <if test="userId != null">
+		 <!--   <if test="userId != null">
             AND   w.create_member_id = #{userId,jdbcType=BIGINT}
-           </if>
+           </if> -->
 		</where> 
    </select>
    
@@ -210,7 +210,7 @@
            select  p.project_manager  as "userName", p.serial_number  as  "serialNumber", p.`name` as "projectName",w.created,w.start_date as "startDate",w.end_date as "endDate" ,
            
 		           p.type  as "projectType" ,a.business_owner as "businessParty",a.expected_launch_date as  "planDate",p.completed_progress as "completedProgress",
-		           a.dep  as "projectInDept",p.id as "projectId"
+		           a.dep  as "projectInDept",p.id as "projectId",w.modify_member_id as "stageMan"
 		   from   project  p ,project_apply  a,weekly  w
 		   
 		 <where>

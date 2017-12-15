@@ -29,6 +29,8 @@ public interface WeeklyService extends BaseService<Weekly, Long> {
 	
 	ProjectWeeklyDto  getProjectWeeklyDtoById(Long projectId);
 	
+	ProjectWeeklyDto  getProjectAddWeeklyDtoById(Long projectId);
+	
 	
 	/** 
 	 * 当前重大问题 -
@@ -86,6 +88,13 @@ public interface WeeklyService extends BaseService<Weekly, Long> {
 	 * @return
 	 */
 	Map<Object,Object> getDescById(String id);
+	/**
+	 * 根据id返回页面详情
+	 * @param id
+	 * @return
+	 */
+	Map<Object,Object> getDescAddById(String id);
+	
 	
 	/**
 	 * 根据周报中个的项目经理id 查询项目经理
