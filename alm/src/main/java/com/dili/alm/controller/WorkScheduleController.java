@@ -61,7 +61,7 @@ public class WorkScheduleController {
 	@RequestMapping(value = "/getWorkSchedule.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public List<WorkScheduleEntity> getWorkSchedule(WorkSchedule workSchedule) throws Exception {
 			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-			workSchedule.setUserId((long) 48);
+			workSchedule.setUserId(userTicket.getDepId());
 			return workScheduleService.listWorkScheduleDto(workSchedule);
 		}
 	

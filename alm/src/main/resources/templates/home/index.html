@@ -77,14 +77,14 @@ $(function() {
 			axisFormat: 'H:mm',
 			events:function (start,end,callback){
 				//得到日期就显示样式
- 			   	 var  htmlobj=$.ajax({url:"${contextPath}/workSchedule/getWorkSchedule.json",async:false});
+ 			   	 var  htmlobj=$.ajax({url:"${contextPath}/workSchedule/getWorkScheduleDate.json",async:false});
 				 var str=htmlobj.responseText;
 				 var obj = $.parseJSON(str);
 				 events=[];
 				  $(obj).each(function(){
 	                  events.push({
 	                      title: "*",
-	                      start: this.scheduleDateStr, // will be parsed
+	                      start: this.scheduleDate, // will be parsed
 	                      color: '#A52A2A'
 	                  });
 					  });
