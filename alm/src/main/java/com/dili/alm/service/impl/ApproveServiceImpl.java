@@ -392,8 +392,64 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
                 break;
             case COMPLETE:
                 ProjectComplete complete = projectCompleteService.get(id);
+                try {
+                    Resource resource = new ClassPathResource("/word/complete.docx");
+                    Map<String, Object> map = new HashMap<>();
+                    Project project = DTOUtils.newDTO(Project.class);
+                    project.setId(complete.getProjectId());
+                    Map<Object, Object> metadata = new HashMap<>();
+                    metadata.put("type", JSON.parse("{provider:'projectTypeProvider'}"));
+                    metadata.put("projectManager", JSON.parse("{provider:'memberProvider'}"));
+                    metadata.put("dep", JSON.parse("{provider:'depProvider'}"));
+                    metadata.put("businessOwner", JSON.parse("{provider:'memberProvider'}"));
+                    metadata.put("startDate", JSON.parse("{provider:'datetimeProvider'}"));
+                    metadata.put("endDate", JSON.parse("{provider:'datetimeProvider'}"));
+                    metadata.put("actualEndDate", JSON.parse("{provider:'datetimeProvider'}"));
+                    metadata.put("estimateLaunchDate", JSON.parse("{provider:'datetimeProvider'}"));
+                    metadata.put("launchDate", JSON.parse("{provider:'datetimeProvider'}"));
+                    List<Map> projectDtos = ValueProviderUtils.buildDataByProvider(metadata, projectService.listByExample(project));
+                    map.put("project", projectDtos.get(0));
+                    map.put("cl", complete);
+                    map.put("clrs", formatReason(complete.getReason()));
+                    map.put("if", formatInfo(complete.getInformation()));
+                    map.put("lpf", JSON.parseArray(complete.getPerformance(), Map.class));
+                    map.put("lq", JSON.parseArray(complete.getQuestion(), Map.class));
+                    map.put("mb", projectCompleteService.loadMembers(id));
+                    map.put("hd", JSON.parseArray(complete.getHardware(), Map.class));
+                    XWPFDocument doc = WordExportUtil.exportWord07(
+                            resource.getURI().getPath(), map);
+                    doc.write(os);
+                    os.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             default:
                 break;
+        }
+    }
+
+    private String formatInfo(String info) {
+        switch (info) {
+            case "0":
+                return "项目结项总结报告";
+            case "1":
+                return "结项资料清单（清单与交付物完备并一致）";
+            default:
+                return "";
+        }
+    }
+
+    private String formatReason(String reason) {
+
+        switch (reason) {
+            case "0":
+                return "正常结项";
+            case "1":
+                return "项目取消";
+            case "2":
+                return "其他原因";
+            default:
+                return "";
         }
     }
 

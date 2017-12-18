@@ -12,4 +12,6 @@ public interface ProjectCompleteService extends BaseService<ProjectComplete, Lon
     void approve(ProjectComplete complete);
 
     Long reComplete(Long id);
+
+    Object loadMembers(Long id) throws Exception;
 }

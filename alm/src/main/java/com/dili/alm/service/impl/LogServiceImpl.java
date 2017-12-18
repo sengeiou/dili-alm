@@ -42,7 +42,6 @@ public class LogServiceImpl extends BaseServiceImpl<Log, Long> implements LogSer
 		}
 		Log record = DTOUtils.newDTO(Log.class);
 		record.setOperatorId(userTicket.getId());
-		record.setOperatorName(userTicket.getUserName());
 		record.setContent(logText);
 		record.setCreated(new Date());
 		record.setIp(userTicket.getLastLoginIp());
@@ -55,7 +54,6 @@ public class LogServiceImpl extends BaseServiceImpl<Log, Long> implements LogSer
 		Log record = DTOUtils.newDTO(Log.class);
 		record.setId(logId);
 		record.setOperatorId(userTicket.getId());
-		record.setOperatorName(userTicket.getUserName());
 		record.setContent(logText);
 		record.setModified(new Date());
 		record.setIp(userTicket.getLastLoginIp());
