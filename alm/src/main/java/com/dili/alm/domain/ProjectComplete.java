@@ -11,7 +11,7 @@ import java.util.Date;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2017-12-08 17:32:54.
+ * This file was generated on 2017-12-18 14:58:26.
  */
 @Table(name = "`project_complete`")
 public interface ProjectComplete extends IBaseDomain {
@@ -219,4 +219,11 @@ public interface ProjectComplete extends IBaseDomain {
     Long getModifyMemberId();
 
     void setModifyMemberId(Long modifyMemberId);
+
+    @Column(name = "`reStatus`")
+    @FieldDef(label="restatus")
+    @EditMode(editor = FieldEditor.Text, required = false)
+    Integer getRestatus();
+
+    void setRestatus(Integer restatus);
 }

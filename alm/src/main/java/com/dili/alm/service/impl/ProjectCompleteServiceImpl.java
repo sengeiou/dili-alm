@@ -89,6 +89,8 @@ public class ProjectCompleteServiceImpl extends BaseServiceImpl<ProjectComplete,
     @Override
     public Long reComplete(Long id) {
         ProjectComplete complete = get(id);
+        complete.setRestatus(0);
+        update(complete);
         complete.setId(null);
         complete.setCreated(new Date());
         complete.setStatus(AlmConstants.ApplyState.APPLY.getCode());

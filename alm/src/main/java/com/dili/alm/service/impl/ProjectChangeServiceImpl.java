@@ -80,6 +80,8 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
     @Override
     public Long reChange(Long id) {
         ProjectChange change = get(id);
+        change.setRestatus(0);
+        update(change);
         change.setId(null);
         change.setCreated(new Date());
         change.setStatus(AlmConstants.ApplyState.APPLY.getCode());

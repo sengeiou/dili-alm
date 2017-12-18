@@ -51,7 +51,7 @@ public class MemberProvider implements ValueProvider {
 	public String getDisplayText(Object o, Map map, FieldMeta fieldMeta) {
 		if(o == null) return null;
 		init();
-		User user = AlmCache.USER_MAP.get(o);
+		User user = AlmCache.USER_MAP.get(Long.parseLong(o.toString()));
 		return user == null ? null : user.getRealName();
 	}
 }
