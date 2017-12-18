@@ -202,7 +202,7 @@ public class ApproveController {
     @RequestMapping(value = "/doc/apply/{id}", method = RequestMethod.GET)
     public void applyDoc(@PathVariable("id") Long id, HttpServletRequest request, HttpServletResponse response) {
 
-        String fileName = "立项审批.docx";
+        String fileName = "立项申请文档.docx";
         // 默认使用IE的方式进行编码
         try {
             String userAgent = request.getHeader("User-Agent");
@@ -235,7 +235,7 @@ public class ApproveController {
     @RequestMapping(value = "/doc/change/{id}", method = RequestMethod.GET)
     public void changeDoc(@PathVariable("id") Long id, HttpServletRequest request, HttpServletResponse response) {
 
-        String fileName = "变更审批.docx";
+        String fileName = "变更申请文档.docx";
         // 默认使用IE的方式进行编码
         try {
             String userAgent = request.getHeader("User-Agent");
@@ -268,7 +268,7 @@ public class ApproveController {
     @RequestMapping(value = "/doc/complete/{id}", method = RequestMethod.GET)
     public void completeDoc(@PathVariable("id") Long id, HttpServletRequest request, HttpServletResponse response) {
 
-        String fileName = "变更审批.docx";
+        String fileName = "结项申请文档.docx";
         // 默认使用IE的方式进行编码
         try {
             String userAgent = request.getHeader("User-Agent");

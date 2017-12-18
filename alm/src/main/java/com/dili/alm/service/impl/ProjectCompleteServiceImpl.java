@@ -9,6 +9,7 @@ import com.dili.alm.domain.Team;
 import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.ProjectCompleteService;
 import com.dili.alm.service.TeamService;
+import com.dili.alm.utils.DateUtil;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
@@ -111,7 +112,7 @@ public class ProjectCompleteServiceImpl extends BaseServiceImpl<ProjectComplete,
             metadata.put("joinTime", JSON.parse("{provider:'datetimeProvider'}"));
             metadata.put("leaveTime", JSON.parse("{provider:'datetimeProvider'}"));
             List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, list);
-            maps.forEach(map -> map.put("created", new Date()));
+            maps.forEach(map -> map.put("created", DateUtil.getDate(new Date())));
             return maps;
         }
         return projectComplete.getPerformance();

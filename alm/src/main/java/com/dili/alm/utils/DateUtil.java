@@ -217,12 +217,13 @@ public static HashMap<String,String>  getFirstAndFive(Date date) {
 	public static String getDate(Date date){
 
 		SimpleDateFormat sdf= new SimpleDateFormat("yyyy-MM-dd");
-		String mydate=null;
+		String mydate;
 		try {
 			mydate  = sdf.format(date);
 		} catch (Exception e) {
 
 			e.printStackTrace();
+			return "";
 		}
 		return   mydate;
 	}

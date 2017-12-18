@@ -402,11 +402,11 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
                     metadata.put("projectManager", JSON.parse("{provider:'memberProvider'}"));
                     metadata.put("dep", JSON.parse("{provider:'depProvider'}"));
                     metadata.put("businessOwner", JSON.parse("{provider:'memberProvider'}"));
-                    metadata.put("startDate", JSON.parse("{provider:'datetimeProvider'}"));
-                    metadata.put("endDate", JSON.parse("{provider:'datetimeProvider'}"));
-                    metadata.put("actualEndDate", JSON.parse("{provider:'datetimeProvider'}"));
-                    metadata.put("estimateLaunchDate", JSON.parse("{provider:'datetimeProvider'}"));
-                    metadata.put("launchDate", JSON.parse("{provider:'datetimeProvider'}"));
+                    metadata.put("startDate", JSON.parse("{provider:'dateProvider'}"));
+                    metadata.put("endDate", JSON.parse("{provider:'dateProvider'}"));
+                    metadata.put("actualEndDate", JSON.parse("{provider:'dateProvider'}"));
+                    metadata.put("estimateLaunchDate", JSON.parse("{provider:'dateProvider'}"));
+                    metadata.put("launchDate", JSON.parse("{provider:'dateProvider'}"));
                     List<Map> projectDtos = ValueProviderUtils.buildDataByProvider(metadata, projectService.listByExample(project));
                     map.put("project", projectDtos.get(0));
                     map.put("cl", complete);
@@ -416,6 +416,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
                     map.put("lq", JSON.parseArray(complete.getQuestion(), Map.class));
                     map.put("mb", projectCompleteService.loadMembers(id));
                     map.put("hd", JSON.parseArray(complete.getHardware(), Map.class));
+                    map.put("now",DateUtil.getDate(new Date()));
                     XWPFDocument doc = WordExportUtil.exportWord07(
                             resource.getURI().getPath(), map);
                     doc.write(os);
