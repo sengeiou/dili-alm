@@ -325,11 +325,14 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		
 		 if(pd.getStageMan()!=null|pd.getStageMan()!=""){
 			 User userStageMan = new User();
-			 userStageMan.setId(Long.parseLong(pd.getStageMan()));
-			 BaseOutput<List<User>>  listStageMan = userRpc.listByExample(userStageMan);
-			 List<User> listUserlistStageMan = listStageMan.getData();
-			 if(listUserlistStageMan!=null&&listUserlistStageMan.size()>0)
-			      pd.setStageMan(listUserlistStageMan.get(0).getUserName());
+			 if(pd.getStageMan()!=null&&pd.getStageMan()!=""){
+				 userStageMan.setId(Long.parseLong(pd.getStageMan()));
+				 BaseOutput<List<User>>  listStageMan = userRpc.listByExample(userStageMan);
+				 List<User> listUserlistStageMan = listStageMan.getData();
+				 if(listUserlistStageMan!=null&&listUserlistStageMan.size()>0)
+				      pd.setStageMan(listUserlistStageMan.get(0).getUserName());
+			 }
+			
 		 
 		 }
 
@@ -748,8 +751,8 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			wkk.setEndDate(DateUtil.getStrDate(DateUtil.getFirstAndFive().get("five")+" 23:59:59"));
 			
 			if (userTicket != null) {
-				wk.setCreateMemberId(userTicket.getId());
-				wk.setModifyMemberId(userTicket.getId());
+				wkk.setCreateMemberId(userTicket.getId());
+				wkk.setModifyMemberId(userTicket.getId());
 			}
 	
 			weeklyMapper.insertSelective(wkk);
