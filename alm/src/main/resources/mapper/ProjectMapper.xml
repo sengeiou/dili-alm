@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="mapper.ProjectMapper">
+<mapper namespace="com.dili.alm.dao.ProjectMapper">
     <resultMap id="BaseResultMap" type="com.dili.alm.domain.Project">
         <!--
           WARNING - @mbg.generated
@@ -131,28 +131,39 @@
         {call getChildProjects(#{id})}
     </select>
 
-    <select id="getProjectsByTaskOwner" parameterType="java.lang.Long" resultMap="BaseResultMap">
-        SELECT
-        p.id, p.serial_number, p.parent_id, p.name, p.type, p.project_manager,
-        p.develop_manager, p.test_manager,
-        p.product_manager, p.created, p.modified, p.start_date, p.end_date, p.actual_start_date,
-        p.project_state,
-        p.task_count,p.member_count, p.completed_progress, p.originator
-        FROM
-        `project` p
-        RIGHT JOIN
-        `task` t
-        ON p.id = t.`project_id`
-        WHERE t.owner = #{owner}
-    </select>
-    <select id="getPageByProjectCount" parameterType="java.lang.Long" resultType="int">
-		SELECT
-		count(1) as 'total'
+	<select id="getProjectsByTaskOwner" resultMap="BaseResultMap">
+		SELECT 
+		DISTINCT p.id, p.serial_number, p.parent_id, p.name, p.type, p.project_manager,
+		p.develop_manager, p.test_manager,
+		p.product_manager, p.created, p.modified, p.start_date, p.end_date, p.actual_start_date,
+		p.project_state,
+		p.task_count,p.member_count, p.completed_progress, p.originator,p.dep,
+		p.business_owner,p.estimate_launch_date
+		FROM 
+		`project` p 
+		LEFT JOIN 
+		`task` t 
+		ON p.id = t.`project_id` 
+		WHERE t.owner = #{owner} 
+		<if test="project.sort != null">
+			ORDER BY '${project.sort}' ${project.order}
+		</if>
+      	<if test="project.page != null and project.rows != null ">
+			limit ${(project.page-1)*project.rows},${project.rows}
+		</if>
+      	
+	</select>
+	<select id="getPageByProjectCount" resultType="int">
+		SELECT COUNT(1) AS 'total'
 		FROM
-		`project` p
-		RIGHT JOIN
-		`task` t
-		ON p.id = t.`project_id`
-		WHERE t.owner = #{owner}
+		(SELECT 
+		DISTINCT p.id
+		FROM 
+		`project` p 
+		RIGHT JOIN 
+		`task` t 
+		ON p.id = t.`project_id` 
+		WHERE t.owner = #{owner}) AS c
+		
 	</select>
 </mapper>
