@@ -408,23 +408,48 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
                     metadata.put("estimateLaunchDate", JSON.parse("{provider:'datetimeProvider'}"));
                     metadata.put("launchDate", JSON.parse("{provider:'datetimeProvider'}"));
                     List<Map> projectDtos = ValueProviderUtils.buildDataByProvider(metadata, projectService.listByExample(project));
-                    map.put("project",projectDtos.get(0));
-                    map.put("cl",complete);
-                    map.put("clrs",complete.getReason());
-                    map.put("if",complete.getInformation());
-                    map.put("lpf",JSON.parseArray(complete.getPerformance(),Map.class));
-                    map.put("lq",JSON.parseArray(complete.getQuestion(),Map.class));
-                    map.put("mb",projectCompleteService.loadMembers(id));
-                    map.put("hd",JSON.parseArray(complete.getHardware(),Map.class));
+                    map.put("project", projectDtos.get(0));
+                    map.put("cl", complete);
+                    map.put("clrs", formatReason(complete.getReason()));
+                    map.put("if", formatInfo(complete.getInformation()));
+                    map.put("lpf", JSON.parseArray(complete.getPerformance(), Map.class));
+                    map.put("lq", JSON.parseArray(complete.getQuestion(), Map.class));
+                    map.put("mb", projectCompleteService.loadMembers(id));
+                    map.put("hd", JSON.parseArray(complete.getHardware(), Map.class));
                     XWPFDocument doc = WordExportUtil.exportWord07(
-                            "/Users/shaofan/Desktop/complete.docx", map);
+                            resource.getURI().getPath(), map);
                     doc.write(os);
                     os.close();
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             default:
                 break;
+        }
+    }
+
+    private String formatInfo(String info) {
+        switch (info) {
+            case "0":
+                return "项目结项总结报告";
+            case "1":
+                return "结项资料清单（清单与交付物完备并一致）";
+            default:
+                return "";
+        }
+    }
+
+    private String formatReason(String reason) {
+
+        switch (reason) {
+            case "0":
+                return "正常结项";
+            case "1":
+                return "项目取消";
+            case "2":
+                return "其他原因";
+            default:
+                return "";
         }
     }
 
