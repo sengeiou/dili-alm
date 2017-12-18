@@ -261,8 +261,15 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		Page page=new Page();
 		page.setPageIndex(weeklyPara.getPage());
 		page.setPageSize(weeklyPara.getRows());
+		CopyOnWriteArrayList<WeeklyPara> list=null;
+		try {
+			 list = weeklyMapper.selectListPageByWeeklyPara(weeklyPara,page);
+		} catch (Exception e) {
+		e.printStackTrace();
+		}
 		
-		CopyOnWriteArrayList<WeeklyPara> list = weeklyMapper.selectListPageByWeeklyPara(weeklyPara,page);
+		
+		
 		CopyOnWriteArrayList<WeeklyPara> copyList = new CopyOnWriteArrayList();
 		
 		DataDictionary  ddit=DTOUtils.newDTO(DataDictionary.class);
