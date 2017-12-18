@@ -352,7 +352,6 @@ CREATE TABLE `log` (
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改时间',
   `operator_id` bigint(20) DEFAULT NULL COMMENT '操作员',
-  `operator_name` varchar(20) DEFAULT NULL COMMENT '操作员名称',
   `ip` varchar(20) DEFAULT NULL COMMENT 'IP',
   `content` text COMMENT '内容',
   PRIMARY KEY (`id`)

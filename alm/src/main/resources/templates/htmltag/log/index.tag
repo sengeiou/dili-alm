@@ -15,9 +15,11 @@
 
 
         //清空表单
-        function clearForm() {
-            $('#form').form('clear');
-        }
+	    function clearForm() {
+	        $('#form').form('clear');
+	        $("input[name='operatorId']").val(''); 
+	        queryGrid();
+	    }
 
         //表格表头右键菜单
         function headerContextMenu(e, field){

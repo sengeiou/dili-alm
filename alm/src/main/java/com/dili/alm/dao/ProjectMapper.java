@@ -20,5 +20,5 @@ public interface ProjectMapper extends MyMapper<Project> {
 				  
 	List<Project> getProjectsByTaskOwner(@Param("project")Project project,@Param("owner")Long owner);
 	
-	int getPageByProjectCount(Long owner);
+	int getPageByProjectCount(@Param("owner")Long owner);
 }
