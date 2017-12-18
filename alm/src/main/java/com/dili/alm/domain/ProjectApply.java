@@ -1,7 +1,5 @@
 package com.dili.alm.domain;
 
-import com.dili.ss.domain.annotation.Like;
-import com.dili.ss.domain.annotation.Operator;
 import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
@@ -13,7 +11,7 @@ import java.util.Date;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2017-11-23 18:19:46.
+ * This file was generated on 2017-12-18 14:59:21.
  */
 @Table(name = "`project_apply`")
 public interface ProjectApply extends IBaseDomain {
@@ -34,7 +32,6 @@ public interface ProjectApply extends IBaseDomain {
     void setNumber(String number);
 
     @Column(name = "`name`")
-    @Like(Like.BOTH)
     @FieldDef(label="项目名称", maxLength = 255)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getName();
@@ -113,7 +110,6 @@ public interface ProjectApply extends IBaseDomain {
 
     @Column(name = "`start_date`")
     @FieldDef(label="计划开始日期")
-    @Operator(Operator.GREAT_EQUAL_THAN)
     @EditMode(editor = FieldEditor.Datetime, required = false)
     Date getStartDate();
 
@@ -121,56 +117,55 @@ public interface ProjectApply extends IBaseDomain {
 
     @Column(name = "`end_date`")
     @FieldDef(label="计划结束日期")
-    @Operator(Operator.LITTLE_EQUAL_THAN)
     @EditMode(editor = FieldEditor.Datetime, required = false)
     Date getEndDate();
 
     void setEndDate(Date endDate);
 
     @Column(name = "`resource_require`")
-    @FieldDef(label="项目资源需求", maxLength = 255)
+    @FieldDef(label="项目资源需求", maxLength = 1000)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getResourceRequire();
 
     void setResourceRequire(String resourceRequire);
 
     @Column(name = "`description`")
-    @FieldDef(label="项目说明", maxLength = 255)
+    @FieldDef(label="项目说明", maxLength = 1000)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getDescription();
 
     void setDescription(String description);
 
     @Column(name = "`goals_functions`")
-    @FieldDef(label="目标以及功能", maxLength = 255)
+    @FieldDef(label="目标以及功能", maxLength = 1000)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getGoalsFunctions();
 
     void setGoalsFunctions(String goalsFunctions);
 
     @Column(name = "`plan`")
-    @FieldDef(label="概要计划", maxLength = 255)
+    @FieldDef(label="概要计划", maxLength = 1000)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getPlan();
 
     void setPlan(String plan);
 
     @Column(name = "`roi`")
-    @FieldDef(label="ROI分析", maxLength = 255)
+    @FieldDef(label="ROI分析", maxLength = 1000)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getRoi();
 
     void setRoi(String roi);
 
     @Column(name = "`impact`")
-    @FieldDef(label="项目影响", maxLength = 255)
+    @FieldDef(label="项目影响", maxLength = 1000)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getImpact();
 
     void setImpact(String impact);
 
     @Column(name = "`risk`")
-    @FieldDef(label="项目风险", maxLength = 255)
+    @FieldDef(label="项目风险", maxLength = 1000)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getRisk();
 
@@ -185,7 +180,7 @@ public interface ProjectApply extends IBaseDomain {
 
     @Column(name = "`status`")
     @FieldDef(label="status")
-    @EditMode(editor = FieldEditor.Number, required = false)
+    @EditMode(editor = FieldEditor.Text, required = false)
     Integer getStatus();
 
     void setStatus(Integer status);
@@ -217,4 +212,11 @@ public interface ProjectApply extends IBaseDomain {
     Long getModifyMemberId();
 
     void setModifyMemberId(Long modifyMemberId);
+
+    @Column(name = "`reStatus`")
+    @FieldDef(label="restatus")
+    @EditMode(editor = FieldEditor.Text, required = false)
+    Integer getRestatus();
+
+    void setRestatus(Integer restatus);
 }

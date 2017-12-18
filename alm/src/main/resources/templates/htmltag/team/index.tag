@@ -7,9 +7,9 @@ function rolesFormatter(value, row, index) {
 		return '';
 	}
 	$(row.userInfo.roles).each(function(index, item) {
-				content += item.roleName;
+				content += item.roleName + '，';
 			});
-	return content;
+	return content.substring(0, content.length - 1);
 }
 
 function isEditing() {

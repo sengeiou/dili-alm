@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.dili.alm.dao.ProjectApplyMapper">
+<mapper namespace="mapper.ProjectApplyMapper">
   <resultMap id="BaseResultMap" type="com.dili.alm.domain.ProjectApply">
     <!--
       WARNING - @mbg.generated
@@ -33,6 +33,7 @@
     <result column="modified" jdbcType="TIMESTAMP" property="modified" />
     <result column="create_member_id" jdbcType="BIGINT" property="createMemberId" />
     <result column="modify_member_id" jdbcType="BIGINT" property="modifyMemberId" />
+    <result column="reStatus" jdbcType="TINYINT" property="restatus" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
@@ -41,7 +42,7 @@
     ID, number, name, type, pid, project_leader, product_manager, development_manager, 
     test_manager, business_owner, dep, expected_launch_date, estimate_launch_date, start_date, 
     end_date, resource_require, description, goals_functions, plan, roi, impact, risk, 
-    email, status, created, modified, create_member_id, modify_member_id
+    email, status, created, modified, create_member_id, modify_member_id, reStatus
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -138,6 +139,9 @@
       </if>
       <if test="modifyMemberId != null">
         modify_member_id = #{modifyMemberId,jdbcType=BIGINT},
+      </if>
+      <if test="restatus != null">
+        reStatus = #{restatus,jdbcType=TINYINT},
       </if>
     </set>
     where ID = #{id,jdbcType=BIGINT}

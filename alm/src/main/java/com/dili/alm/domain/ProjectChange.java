@@ -11,7 +11,7 @@ import java.util.Date;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2017-12-07 18:01:42.
+ * This file was generated on 2017-12-18 14:58:59.
  */
 @Table(name = "`project_change`")
 public interface ProjectChange extends IBaseDomain {
@@ -83,9 +83,9 @@ public interface ProjectChange extends IBaseDomain {
     @Column(name = "`affects_online`")
     @FieldDef(label="是否影响上线")
     @EditMode(editor = FieldEditor.Text, required = false)
-    Integer getAffectsOnline();
+    Byte getAffectsOnline();
 
-    void setAffectsOnline(Integer affectsOnline);
+    void setAffectsOnline(Byte affectsOnline);
 
     @Column(name = "`submit_date`")
     @FieldDef(label="提交日期")
@@ -150,11 +150,17 @@ public interface ProjectChange extends IBaseDomain {
 
     void setModifyMemberId(Long modifyMemberId);
 
-
     @Column(name = "`estimate_launch_date`")
     @FieldDef(label="estimateLaunchDate")
     @EditMode(editor = FieldEditor.Datetime, required = false)
     Date getEstimateLaunchDate();
 
     void setEstimateLaunchDate(Date estimateLaunchDate);
+
+    @Column(name = "`reStatus`")
+    @FieldDef(label="restatus")
+    @EditMode(editor = FieldEditor.Text, required = false)
+    Integer getRestatus();
+
+    void setRestatus(Integer restatus);
 }
