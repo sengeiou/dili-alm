@@ -4,9 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.ProjectComplete;
-import com.dili.alm.domain.Team;
 import com.dili.alm.service.ProjectCompleteService;
-import com.dili.alm.service.TeamService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
@@ -15,7 +13,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -24,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,8 +36,7 @@ public class ProjectCompleteController {
     @Autowired
     ProjectCompleteService projectCompleteService;
 
-    @Autowired
-    private TeamService teamService;
+
 
     @ApiOperation("跳转到ProjectComplete页面")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
@@ -179,21 +174,7 @@ public class ProjectCompleteController {
     @RequestMapping("/loadMembers")
     @ResponseBody
     public Object loadMembers(Long id) throws Exception {
-        ProjectComplete projectComplete = projectCompleteService.get(id);
-        if(StringUtils.isBlank(projectComplete.getMembers())){
-            Team team = DTOUtils.newDTO(Team.class);
-            team.setProjectId(projectComplete.getProjectId());
-            List<Team> list = teamService.list(team);
-            Map<Object, Object> metadata = new HashMap<>();
-            metadata.put("memberId", JSON.parse("{provider:'memberProvider'}"));
-            metadata.put("role", JSON.parse("{provider:'teamRoleProvider'}"));
-            metadata.put("joinTime", JSON.parse("{provider:'datetimeProvider'}"));
-            metadata.put("leaveTime", JSON.parse("{provider:'datetimeProvider'}"));
-            List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, list);
-            maps.forEach(map -> map.put("created", new Date()));
-            return maps;
-        }
-        return projectComplete.getPerformance();
+            return projectCompleteService.loadMembers(id);
     }
 
     @RequestMapping("/loadComplete")
