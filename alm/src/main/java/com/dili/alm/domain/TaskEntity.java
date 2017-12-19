@@ -22,17 +22,15 @@ public class TaskEntity extends BaseDomain implements Task {
 
 	String flowStr="正常流程";//流程
 	
-	String statusStr="未开始";//状态
 	
 	Integer status;
+	
 	
 	String planDays;//计划周期
 	
 	int progress=0;//进度
 	
-	String ownerName="";
 	
-	/*修改数据*/
 	long projectId;
 	
 	long versionId;
@@ -139,18 +137,9 @@ public class TaskEntity extends BaseDomain implements Task {
 
 	public void setFlowStr(Boolean flow) {
 		
-		this.flowStr = flow?"正常流程":"修改流程";
+		this.flowStr = flow?"变更流程":"正常流程";
 	}
 		
-
-
-	public String getStatusStr() {
-		return statusStr;
-	}
-
-	public void setStatusStr(int status) {
-		this.statusStr = status+"";
-	}
 
 	public Integer getStatus() {
 		return status;
@@ -184,13 +173,6 @@ public class TaskEntity extends BaseDomain implements Task {
 		this.owner = owner;
 	}
 
-	public String getOwnerName() {
-		return ownerName;
-	}
-
-	public void setOwnerName(String ownerName) {
-		this.ownerName = ownerName;
-	}
 
 	public Long getProjectId() {
 		return projectId;

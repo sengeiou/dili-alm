@@ -108,15 +108,13 @@
             $('#_form').form('load',{planTimeStr:formData._planTime});
             if(selected.flow){ $("#changeIdTr").css("display","none");}
             else{ $("#changeIdTr").css("display","block");}
-/*             $('#_progress').progressbar({
- 			    value: formData._progress;
- 			}); */
- 			
+
  			loadVisionSelect(formData._projectId);
             $('#_versionId').combobox('select',formData._versionId);
             
             loadPhaseSelect(formData._versionId);
             $('#_phaseId').combobox('select',formData._phaseId);
+            
             
             if(formData._status==0){
             	$("#task_detail").hide();

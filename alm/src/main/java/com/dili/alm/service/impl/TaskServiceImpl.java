@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -29,7 +30,8 @@ import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.TaskDetails;
 import com.dili.alm.domain.TaskEntity;
-import com.dili.alm.domain.WeeklyJson;
+import com.dili.alm.domain.Team;
+import com.dili.alm.domain.TeamRole;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.apply.ApplyMajorResource;
@@ -41,12 +43,16 @@ import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.ProjectVersionService;
 import com.dili.alm.service.TaskDetailsService;
 import com.dili.alm.service.TaskService;
+import com.dili.alm.service.TeamService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.sysadmin.sdk.domain.UserTicket;
+import com.dili.sysadmin.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -54,6 +60,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -67,6 +74,10 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
     public TaskMapper getActualDao() {
         return (TaskMapper)getDao();
     }
+    
+    @Autowired
+    private TaskMapper taskMapper;
+    
     @Autowired
     private ProjectMapper projectMapper;
     
@@ -87,6 +98,10 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	ProjectPhaseService projectPhaseService;
 	@Autowired
 	ProjectService projectService;
+	@Autowired
+	TeamService teamService;
+	
+	
 	@Autowired
 	ProjectApplyService projectApplyService;
 	private static final String TASK_STATUS_CODE = "task_status";
@@ -133,7 +148,8 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		try {
 			List<TaskEntity> results = this.TaskParseTaskSelectDto(list);//转化为查询的DTO
 			List taskList = ValueProviderUtils.buildDataByProvider(task, results);
-			return new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(page.getTotal()))), taskList);
+			EasyuiPageOutput taskEasyuiPageOutput =new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(page.getTotal()))), taskList);
+ 			return new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(page.getTotal()))), taskList);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -192,8 +208,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		//校验加班工时
 		short overHour = Optional.ofNullable(taskDetailsFromDatabase.getOverHour()).orElse((short) 0);
 		/*task表基础数据更新*/
-		//工时信息填写
-		taskDetailsFromDatabase.setTaskTime(this.taskHoursMapAdd(taskDetailsFromDatabase.getTaskTime(),taskHour));
+		
 		if(taskHour==0){
 			taskDetailsFromDatabase.setTaskHour(taskDetails.getTaskHour());
 		}else{
@@ -207,7 +222,8 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			overHour+=taskDetails.getOverHour();
 			taskDetailsFromDatabase.setTaskHour(overHour);
 		}
-		
+		//工时信息填写
+		taskDetailsFromDatabase.setTaskTime(this.taskHoursMapAdd(taskDetailsFromDatabase.getTaskTime(),taskHour));
 		
 		if(taskDetailsFromDatabase.getTaskHour()>=task.getPlanTime()){
 			//更新状态为完成
@@ -432,12 +448,79 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			//再加上填写的时间
 			dayTotal += taskHour;
 			
-			if (dayTotal>8) {
+			if (dayTotal>=8) {
 				return false;
 			}
 		}
 		
 		return true;
 	}
+
+	@Override
+	public EasyuiPageOutput listByTeam(Task task,String phaseName) {
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		ProjectPhase projectPhase=DTOUtils.newDTO(ProjectPhase.class);
+		projectPhase.setName(phaseName);
+		List<ProjectPhase> projectPhaseList = projectPhaseService.listByExample(projectPhase);
+		List<Long> ids=new ArrayList<Long>();
+		for (ProjectPhase projectPhase2 : projectPhaseList) {
+			ids.add(projectPhase2.getId());
+		}
+		List<Task> list = taskMapper.selectByTeam(task, userTicket.getId(),ids);//查询出来
+		int count = taskMapper.selectByTeamCount(task, userTicket.getId(),ids);
+		@SuppressWarnings("unchecked")
+		Map<Object, Object> metadata = null == task.getMetadata() ? new HashMap<>() : task.getMetadata();
+
+		JSONObject projectProvider = new JSONObject();
+		projectProvider.put("provider", "projectProvider");
+		metadata.put("projectId", projectProvider);
+		
+		JSONObject  projectVersionProvider= new JSONObject();
+		projectVersionProvider.put("projectVersion", "projectVersionProvider");
+		metadata.put("versionId", projectVersionProvider);
+		
+		JSONObject  projectPhaseProvider= new JSONObject();
+		projectPhaseProvider.put("projectPhase", "projectPhaseProvider");
+		metadata.put("phaseId", projectPhaseProvider);
+		
+		JSONObject memberProvider = new JSONObject();
+		memberProvider.put("provider", "memberProvider");
+		metadata.put("owner", memberProvider);
+		
+		JSONObject taskStateProvider = new JSONObject();
+		taskStateProvider.put("provider", "taskStateProvider");
+		metadata.put("status", taskStateProvider);
+		
+		JSONObject taskTypeProvider = new JSONObject();
+		taskTypeProvider.put("provider", "taskTypeProvider");
+		metadata.put("type", taskTypeProvider);
+		
+		task.setMetadata(metadata);
+		try {
+			List<TaskEntity> results = this.TaskParseTaskSelectDto(list);//转化为查询的DTO
+			List taskList = ValueProviderUtils.buildDataByProvider(task, results);
+			EasyuiPageOutput taskEasyuiPageOutput =new EasyuiPageOutput(count, taskList);
+ 			return taskEasyuiPageOutput;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public boolean isManager(Long managerId) {
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		Team team = DTOUtils.newDTO(Team.class);
+		team.setProjectId(managerId);
+		team.setMemberId(userTicket.getId());
+		List<Team> teamList = teamService.list(team);
+		for (Team team2 : teamList) {
+			if (team2.getRole().equals(TeamRole.PRODUCT_MANAGER)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 
 }

@@ -355,9 +355,9 @@
         }
         //进度条处理
 	    function progressFormatter(value,rowData,rowIndex){  
-	        var htmlstr = '<div  class="easyui-progressbar" style="width:100px;" value="'+rowData.progress+'">'+rowData.progress+'</div> ';  
-	        return htmlstr;  
-	    }  
+	       var htmlstr = '<div style="width: 100px; height:20px;border: 1px solid #299a58;"><div style="width:'+rowData.progress+'px; height:20px; background-color: #299a58;"><span>'+rowData.progress+'%</span></div></div>'; 
+	       return htmlstr;  
+	    }    
         function getDetailInfo(taskID){
         	 var  htmlobj=$.ajax({url:"${contextPath}/task/listTaskDetail.json?id="+taskID,async:false});
         	 var str=htmlobj.responseText;

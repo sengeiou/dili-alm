@@ -30,4 +30,10 @@ public interface TaskService extends BaseService<Task, Long> {
 	List<DataDictionaryValueDto> getTaskTypes();
 	
 	boolean isSetTask(Long id,short taskHour);
+	
+	boolean isManager(Long managerId);
+
+	EasyuiPageOutput listByTeam(Task task, String phaseName);
+	
+
 }

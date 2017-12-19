@@ -153,4 +153,147 @@
 		status =
 		#{notCompletedStatus}) and phase_id = #{phaseId}
 	</select>
+	<!--  根据群组查询信息 -->
+    <select  id="selectByTeam"  resultType="com.dili.alm.domain.Task" >
+     select * from alm.task as task where task.project_id in 
+            (select t2.project_id from alm.team as t2 where t2.project_id in(select t.project_id from alm.team as t where t.member_id =#{selectOwner,jdbcType=BIGINT}))
+           
+          
+		     <if test="task.name != null">
+				and task.name like CONCAT("%",#{task.name,jdbcType=VARCHAR},"%") 
+			</if>
+			<if test="task.projectId != null and task.projectId != 0">
+				and task.project_id = #{task.projectId,jdbcType=BIGINT}
+			</if>
+			<if test="task.versionId != null and task.versionId != 0">
+				and task.version_id = #{task.versionId,jdbcType=BIGINT}
+			</if>
+			<if test="ids != null">
+				and task.phase_id in 
+				<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+				  #{item}  
+				</foreach>
+			</if>
+			<if test="task.owner != null and task.owner != 0">
+				and task.owner = #{task.owner,jdbcType=BIGINT}
+			</if>
+			<if test="task.startDate != null">
+				and task.start_date = #{task.startDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="task.endDate != null">
+				and task.end_date = #{task.endDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="task.beforeTask != null">
+				and task.before_task = #{task.beforeTask,jdbcType=BIGINT}
+			</if>
+			<if test="task.type != null">
+				and task.type = #{task.type,jdbcType=INTEGER}
+			</if>
+			<if test="task.planTime != null">
+				and task.plan_time = #{task.planTime,jdbcType=SMALLINT}
+			</if>
+			<if test="task.flow != null">
+				and task.flow = #{task.flow,jdbcType=BIT}
+			</if>
+			<if test="task.changeId != null">
+				and task.change_id = #{task.changeId,jdbcType=BIGINT}
+			</if>
+			<if test="task.describe != null">
+				and task.describe = #{task.describe,jdbcType=VARCHAR}
+			</if>
+			<if test="task.status != null">
+				and task.status = #{task.status,jdbcType=TINYINT}
+			</if>
+			<if test="task.created != null">
+				and task.created = #{task.created,jdbcType=TIMESTAMP}
+			</if>
+			<if test="task.modified != null">
+				and task.modified = #{task.modified,jdbcType=TIMESTAMP}
+			</if>
+			<if test="task.createMemberId != null">
+				and task.create_member_id = #{task.createMemberId,jdbcType=BIGINT}
+			</if>
+			<if test="task.modifyMemberId != null">
+				and task.modify_member_id = #{task.modifyMemberId,jdbcType=BIGINT}
+			</if>
+			<if test="task.factBeginDate != null">
+				and task.start_date = #{task.factBeginDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="task.factEndDate != null">
+				and task.end_date = #{task.factEndDate,jdbcType=TIMESTAMP}
+			</if>
+ 			<if test="task.page != null and task.rows != null">
+            limit ${(task.page-1)*task.rows},${task.rows}
+            </if> 
+    </select>
+     <select  id="selectByTeamCount"  resultType="int" >
+     select count(1) from alm.task as task where task.project_id in 
+            (select t2.project_id from alm.team as t2 where t2.project_id in(select t.project_id from alm.team as t where t.member_id =#{selectOwner,jdbcType=BIGINT}))
+           
+          
+		     <if test="task.name != null">
+				and task.name like CONCAT("%",#{task.name,jdbcType=VARCHAR},"%") 
+			</if>
+			<if test="task.projectId != null and task.projectId != 0">
+				and task.project_id = #{task.projectId,jdbcType=BIGINT}
+			</if>
+			<if test="task.versionId != null and task.versionId != 0">
+				and task.version_id = #{task.versionId,jdbcType=BIGINT}
+			</if>
+			<if test="ids != null">
+				and task.phase_id in
+				<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+				  #{item}  
+				</foreach> 
+			</if>
+			<if test="task.owner != null and task.owner != 0">
+				and task.owner = #{task.owner,jdbcType=BIGINT}
+			</if>
+			<if test="task.startDate != null">
+				and task.start_date = #{task.startDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="task.endDate != null">
+				and task.end_date = #{task.endDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="task.beforeTask != null">
+				and task.before_task = #{task.beforeTask,jdbcType=BIGINT}
+			</if>
+			<if test="task.type != null">
+				and task.type = #{task.type,jdbcType=INTEGER}
+			</if>
+			<if test="task.planTime != null">
+				and task.plan_time = #{task.planTime,jdbcType=SMALLINT}
+			</if>
+			<if test="task.flow != null">
+				and task.flow = #{task.flow,jdbcType=BIT}
+			</if>
+			<if test="task.changeId != null">
+				and task.change_id = #{task.changeId,jdbcType=BIGINT}
+			</if>
+			<if test="task.describe != null">
+				and task.describe = #{task.describe,jdbcType=VARCHAR}
+			</if>
+			<if test="task.status != null">
+				and task.status = #{task.status,jdbcType=TINYINT}
+			</if>
+			<if test="task.created != null">
+				and task.created = #{task.created,jdbcType=TIMESTAMP}
+			</if>
+			<if test="task.modified != null">
+				and task.modified = #{task.modified,jdbcType=TIMESTAMP}
+			</if>
+			<if test="task.createMemberId != null">
+				and task.create_member_id = #{task.createMemberId,jdbcType=BIGINT}
+			</if>
+			<if test="task.modifyMemberId != null">
+				and task.modify_member_id = #{task.modifyMemberId,jdbcType=BIGINT}
+			</if>
+			<if test="task.factBeginDate != null">
+				and task.start_date = #{task.factBeginDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="task.factEndDate != null">
+				and task.end_date = #{task.factEndDate,jdbcType=TIMESTAMP}
+			</if>
+    </select>
+	
 </mapper>

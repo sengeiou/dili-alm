@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiOperation;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +78,16 @@ public class TaskController {
 			RequestMethod.POST })
 	public @ResponseBody String listPage(Task task) throws Exception {
 		return taskService.listPageSelectTaskDto(task).toString();
+	}
+	
+	@ApiOperation(value = "分页查询Task", notes = "按照群组进行分页查询")
+	@ApiImplicitParams({ @ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = false, dataType = "string") })
+	@RequestMapping(value = "/listTeamPage", method = { RequestMethod.GET,
+			RequestMethod.POST })
+	public @ResponseBody String listTeamPage(Task task,String phaseName) throws Exception {
+		
+		
+		return taskService.listByTeam(task,phaseName).toString();
 	}
 
 	@ApiOperation(value = "分页查询Task,首页显示", notes = "分页查询Task，返回easyui分页信息")
@@ -183,11 +194,11 @@ public class TaskController {
 	@ResponseBody
 	@RequestMapping(value = "/listTreePhase.json", method = {
 			RequestMethod.GET, RequestMethod.POST })
-	public List<ProjectPhase> listPhase(Long id) {
+	public List<Map> listPhase(Long id) {
 		ProjectPhase projectPhase = DTOUtils.newDTO(ProjectPhase.class);
 		projectPhase.setVersionId(id);
 		
-		List<ProjectPhase> list = projectPhaseService.list(projectPhase);
+		List<Map> list = projectPhaseService.listEasyUiModels(projectPhase);
 		return list;
 	}
 
@@ -212,12 +223,23 @@ public class TaskController {
 	public boolean isOwner(Long id) {
 		Task task = taskService.get(id);
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		if (task.getOwner()==userTicket.getId()) {
+		if (task.getOwner()==userTicket.getId()) {//判断是否是任务所有人
+			return true;
+		}
+		if(taskService.isManager(task.getProjectId())){//判断是否是项目经理
 			return true;
 		}
 		return false;
 	}
- 
+	
+	//是否是项目经理
+	@ResponseBody
+	@RequestMapping(value = "/isProjectManger.json", method = {
+			RequestMethod.GET, RequestMethod.POST })
+	public boolean isProjectManger(Long id) {
+		Task task = taskService.get(id);
+		return false;
+	}
 
 	// 更新任务信息
 	@ApiOperation("填写任务工时")
@@ -226,7 +248,6 @@ public class TaskController {
 			RequestMethod.POST })
 	public @ResponseBody BaseOutput updateTaskDetails(TaskDetails taskDetails,
 			String planTimeStr, String overHourStr, String taskHourStr) {
-		
 		short taskHour = Optional.ofNullable(Short.parseShort(taskHourStr)).orElse((short)0);
 		short overHour = Optional.ofNullable(Short.parseShort(overHourStr)).orElse((short)0);
 		if (taskHour<=0) {
