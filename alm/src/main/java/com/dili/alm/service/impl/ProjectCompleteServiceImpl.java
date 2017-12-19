@@ -77,7 +77,7 @@ public class ProjectCompleteServiceImpl extends BaseServiceImpl<ProjectComplete,
         try {
             String[] sendTo = complete.getEmail().split(",");
             SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo("yanggang@diligrp.com");
+            message.setTo(sendTo);
             message.setFrom(SystemConfigUtils.getProperty("spring.mail.username"));
             message.setSubject("结项申请");
             message.setText(complete.getName() + "的结项申请已经提交成功");

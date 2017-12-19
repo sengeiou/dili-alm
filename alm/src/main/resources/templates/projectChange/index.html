@@ -126,8 +126,15 @@
                     async: true,
                     success: function (data) {
                         if (data.code == "200") {
-                            $("#grid").datagrid("reload");
-                            $('#dlg').dialog('close');
+                            try {
+                                LogUtils.saveLog("删除变更申请:" + id, function () {
+                                    $("#grid").datagrid("reload");
+                                    $('#dlg').dialog('close');
+                                });
+                            } catch (e) {
+                                $("#grid").datagrid("reload");
+                                $('#dlg').dialog('close');
+                            }
                         } else {
                             $.messager.alert('错误', data.result);
                         }

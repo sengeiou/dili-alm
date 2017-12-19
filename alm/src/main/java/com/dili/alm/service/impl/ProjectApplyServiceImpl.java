@@ -122,7 +122,7 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
         try {
             String[] sendTo = projectApply.getEmail().split(",");
             SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo("yanggang@diligrp.com");
+            message.setTo(sendTo);
             message.setFrom(SystemConfigUtils.getProperty("spring.mail.username"));
             message.setSubject("立项申请");
             message.setText(projectApply.getName() + "的立项申请已经提交成功");

@@ -212,7 +212,11 @@
             success: function (data) {
                 var data = eval('(' + data + ')');
                 if (data.success == true) {
-                    if (data.success == true) {
+                    try {
+                        LogUtils.saveLog("保存结项申请:${apply.id}", function () {
+                            window.location.href = "${contextPath}/projectComplete/index.html";
+                        });
+                    } catch (e) {
                         window.location.href = "${contextPath}/projectComplete/index.html";
                     }
                 }
