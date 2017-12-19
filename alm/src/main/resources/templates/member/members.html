@@ -19,20 +19,23 @@
         </table>
     </form>
 </div>
-<table class="easyui-datagrid" id="smGridList" sortName="userName" sortOrder="asc" fitColumns="true" remoteSort="false"
+
+<table class="easyui-datagrid" style="width:100%;height:262px"
+       id="smGridList" sortName="userName" sortOrder="asc" fitColumns="true" remoteSort="false"
        loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="true"
-       align="center" fit="true" striped="true" idField="id" data-options="onDblClickRow:dbClickMembers">
+       align="center"  striped="true" idField="id" data-options="onDblClickRow:dbClickMembers">
     <thead>
-    <tr>
-        <th data-options="field:'id',hidden:true"></th>
-        <th data-options="field:'userName',width:'25%'">用户名</th>
-        <th data-options="field:'realName',width:'25%'">真实姓名</th>
-        <!--<th data-options="field:'cellphone',width:'25%'">手机号</th>-->
-        <th data-options="field:'department',width:'25%',formatter:formatDep">部门</th>
-        <!--<th data-options="field:'email',width:'25%'">邮箱</th>-->
-    </tr>
+        <tr>
+            <th data-options="field:'id',hidden:true"></th>
+            <th data-options="field:'userName',width:'33.3%'">用户名</th>
+            <th data-options="field:'realName',width:'33.3%'">真实姓名</th>
+            <!--<th data-options="field:'cellphone',width:'25%'">手机号</th>-->
+            <th data-options="field:'department',width:'33.3%',formatter:formatDep">部门</th>
+            <!--<th data-options="field:'email',width:'25%'">邮箱</th>-->
+        </tr>
     </thead>
 </table>
+
 
 <script type="text/javascript">
     var dep = '${dep}';
