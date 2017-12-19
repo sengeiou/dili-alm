@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiOperation;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -183,11 +184,11 @@ public class TaskController {
 	@ResponseBody
 	@RequestMapping(value = "/listTreePhase.json", method = {
 			RequestMethod.GET, RequestMethod.POST })
-	public List<ProjectPhase> listPhase(Long id) {
+	public List<Map> listPhase(Long id) {
 		ProjectPhase projectPhase = DTOUtils.newDTO(ProjectPhase.class);
 		projectPhase.setVersionId(id);
 		
-		List<ProjectPhase> list = projectPhaseService.list(projectPhase);
+		List<Map> list = projectPhaseService.listEasyUiModels(projectPhase);
 		return list;
 	}
 

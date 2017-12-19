@@ -199,7 +199,7 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		files.setVersionId(id);
 		List<Files> filesList = filesService.list(files);
 		filesList.forEach(f -> {
-			filesService.delete(f);
+			this.filesMapper.delete(f);
 		});
 		super.delete(id);
 		return BaseOutput.success("删除成功");
