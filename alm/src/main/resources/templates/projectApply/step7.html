@@ -12,6 +12,9 @@
     .ajax-file-upload{
         line-height: 28px;
     }
+    .ajax-file-upload-statusbar{
+        display: none;
+    }
 </style>
 <link href="${contextPath!}/resources/css/uploadfile.css" rel="stylesheet">
 <script type="text/javascript" src="${contextPath!}/resources/js/jquery.uploadfile.min.js"></script>
@@ -121,12 +124,23 @@
         returnType: 'json', // 服务返回数据
         // allowedTypes : 'jpg,jpeg,png,gif', // 允许上传的文件式
         showDone: true, // 是否显示"Done"(完成)按钮
-        showDelete: false, // 是否显示"Delete"(删除)按钮
+        showDelete: false, // 是否显示"Delete"(删除)
+        sizeErrorStr:'文件过大，允许上传文件最大为',//超过最大文件限制
         onLoad: function (obj) {
-            // 页面加载时，onLoad回调。如果有需要在页面初始化时显示（比如：文件修改时）的文件需要在此方法中处理
+            // 页面加载时，onLoad回调。如果有需要在页面初始化时显示（比如：件修改时）的文件需要在此方法中处理
             // obj.createProgress('/tmpImage.jpg'); //
             // createProgress方法可以创建一个已上传的文件
-
+        },
+        onSelect:function(files){
+            console.log(files[0]);
+            console.log($('#dg').datagrid('getData'));
+            var old = $('#dg').datagrid('getData').rows;
+            for(var i=0;i<old.length;i++){
+                if(files[0].name==old[i].name){
+                    $('.ajax-upload-dragdrop').next('div').append('<div class="ajax-file-upload-error">请不要重复上传文件!</div>')
+                    return false;
+                }
+            }
         },
         deleteCallback: function (data, pd) {
             // 文件删除时的回调方法。

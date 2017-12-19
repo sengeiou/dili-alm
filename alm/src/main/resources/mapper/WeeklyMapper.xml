@@ -110,29 +110,29 @@
              p.id=w.project_id
           
             <if test="weeklyPara.projectName != null and weeklyPara.projectName!=''">
-            and   p.`name` = #{projectName,jdbcType=VARCHAR}
+            and   p.`name` = #{weeklyPara.projectName,jdbcType=VARCHAR}
 	        </if>
 	        
 	         <if test="weeklyPara.projectType != null">
-	         and   p.type = #{projectType,jdbcType=VARCHAR}
+	         and   p.type = #{weeklyPara.projectType,jdbcType=VARCHAR}
 	        </if>
 		
 		    <if test="weeklyPara.userName != null">
-		    and  p.project_manager= #{userName,jdbcType=VARCHAR}
+		    and  p.project_manager= #{weeklyPara.userName,jdbcType=VARCHAR}
 	        </if>
 	       
 	        <if test="weeklyPara.projectStatus != null">
-	        and   p.project_state= #{projectStatus,jdbcType=INTEGER}
+	        and   p.project_state= #{weeklyPara.projectStatus,jdbcType=INTEGER}
 	        </if>
 	        
 		    <if test="weeklyPara.serialNumber != null">
-		    and   p.serial_number = #{serialNumber,jdbcType=VARCHAR}
+		    and   p.serial_number = #{weeklyPara.serialNumber,jdbcType=VARCHAR}
 	        </if>
 	        <if test="weeklyPara.startDate!=null and weeklyPara.startDate!=''">
-	        and w.start_date &gt;=#{startDate,jdbcType=VARCHAR}
+	        and w.start_date &gt;=#{weeklyPara.startDate,jdbcType=VARCHAR}
 			</if> 
 			<if test="weeklyPara.endDate!=null and weeklyPara.endDate!=''">
-			and  w.end_date   &lt;=#{endDate,jdbcType=VARCHAR}
+			and  w.end_date   &lt;=#{weeklyPara.endDate,jdbcType=VARCHAR}
 			</if>
 			
 			<if test="page.pageIndex!=-1">

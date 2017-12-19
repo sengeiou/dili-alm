@@ -68,6 +68,12 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department, Long> imp
 		if (count > 0) {
 			return BaseOutput.failure("存在相同名称的部门");
 		}
+		record = new Department();
+		record.setCode(department.getCode());
+		count = this.getActualDao().selectCount(record);
+		if (count > 0) {
+			return BaseOutput.failure("存在相同编码的部门");
+		}
 		int result = this.getActualDao().insertSelective(department);
 		if (result > 0) {
 			return BaseOutput.success().setData(department);

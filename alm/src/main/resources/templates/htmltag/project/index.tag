@@ -166,6 +166,7 @@ function queryGrid() {
 // 清空表单
 function clearForm() {
 	$('#form').form('clear');
+	$('#originator').textbox('initValue', '');
 }
 
 // 表格表头右键菜单
@@ -533,9 +534,7 @@ function editorCallback(field) {
  * @submitFun 表单提交需执行的任务
  */
 $(function() {
-			$('#projectManager').textbox('addClearBtn', 'icon-clear');
-			$('#testManager').textbox('addClearBtn', 'icon-clear');
-			$('#productManager').textbox('addClearBtn', 'icon-clear');
+			$('#originator').textbox('addClearBtn', 'icon-clear');
 			bindFormEvent("form", "name", queryGrid);
 			if (document.addEventListener) {
 				document.addEventListener("keyup", getKey, false);

@@ -13,13 +13,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.dao.FilesMapper;
+import com.dili.alm.dao.ProjectPhaseMapper;
 import com.dili.alm.dao.ProjectVersionMapper;
+import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.domain.FileType;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.ProjectChange;
+import com.dili.alm.domain.ProjectPhase;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.ProjectVersionFormDto;
+import com.dili.alm.domain.Task;
 import com.dili.alm.domain.dto.ProjectVersionChangeStateViewDto;
+import com.dili.alm.provider.ProjectVersionProvider;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.ProjectChangeService;
 import com.dili.alm.service.ProjectVersionService;
@@ -51,6 +56,10 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 	private ProjectChangeService projectChangeService;
 	@Autowired
 	private FilesMapper filesMapper;
+	@Autowired
+	private ProjectPhaseMapper phaseMapper;
+	@Autowired
+	private TaskMapper taskMapper;
 
 	public ProjectVersionMapper getActualDao() {
 		return (ProjectVersionMapper) getDao();
@@ -99,7 +108,7 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		// }
 
 		try {
-			Map<Object, Object> target = this.parseEasyUiModel(dto);
+			Map<Object, Object> target = ProjectVersionProvider.parseEasyUiModel(dto);
 			return BaseOutput.success("新增成功").setData(target);
 		} catch (Exception e) {
 			return BaseOutput.failure(e.getMessage());
@@ -165,7 +174,7 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		// super.updateSelective(dto);
 		Map<Object, Object> target;
 		try {
-			target = this.parseEasyUiModel(dto);
+			target = ProjectVersionProvider.parseEasyUiModel(dto);
 			return BaseOutput.success("修改成功").setData(target);
 		} catch (Exception e) {
 			return BaseOutput.failure(e.getMessage());
@@ -174,12 +183,23 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 
 	@Override
 	public BaseOutput deleteWithOutput(Long id) {
-		// 没有子里程碑才能删除，并且删除所有里程碑下的文件
+		ProjectPhase phaseQuery = DTOUtils.newDTO(ProjectPhase.class);
+		phaseQuery.setVersionId(id);
+		int count = this.phaseMapper.selectCount(phaseQuery);
+		if (count > 0) {
+			return BaseOutput.failure("该版本包含阶段信息不能删除");
+		}
+		Task taskQuery = DTOUtils.newDTO(Task.class);
+		taskQuery.setVersionId(id);
+		count = this.taskMapper.selectCount(taskQuery);
+		if (count > 0) {
+			return BaseOutput.failure("该版本下包含任务不能删除");
+		}
 		Files files = DTOUtils.newDTO(Files.class);
 		files.setVersionId(id);
 		List<Files> filesList = filesService.list(files);
 		filesList.forEach(f -> {
-			filesService.delete(f);
+			this.filesMapper.delete(f);
 		});
 		super.delete(id);
 		return BaseOutput.success("删除成功");
@@ -199,9 +219,9 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 
 		Map<Object, Object> metadata = new HashMap<>();
 
-//		JSONObject changeNameProvider = new JSONObject();
-//		changeNameProvider.put("provider", "projectChangeProvider");
-//		metadata.put("name", changeNameProvider);
+		// JSONObject changeNameProvider = new JSONObject();
+		// changeNameProvider.put("provider", "projectChangeProvider");
+		// metadata.put("name", changeNameProvider);
 
 		JSONObject phaseProvider = new JSONObject();
 		phaseProvider.put("provider", "projectPhaseProvider");
@@ -225,7 +245,7 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		int result = this.getActualDao().updateByPrimaryKey(pv);
 		if (result > 0) {
 			try {
-				Map<Object, Object> target = this.parseEasyUiModel(pv);
+				Map<Object, Object> target = ProjectVersionProvider.parseEasyUiModel(pv);
 				return BaseOutput.success().setData(target);
 			} catch (Exception e) {
 				return BaseOutput.failure(e.getMessage());
@@ -263,28 +283,5 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 	// milestonesDto.setProjectIds(projectIds);
 	// return super.listEasyuiPageByExample(milestonesDto, useProvider);
 	// }
-
-	private Map<Object, Object> parseEasyUiModel(ProjectVersion projectVersion) throws Exception {
-		List<Map> listMap = this.parseEasyUiModelList(Arrays.asList(projectVersion));
-		return listMap.get(0);
-	}
-
-	private List<Map> parseEasyUiModelList(List<ProjectVersion> list) throws Exception {
-		Map<Object, Object> metadata = new HashMap<>();
-		JSONObject versionStateProvider = new JSONObject();
-		versionStateProvider.put("provider", "projectStateProvider");
-		metadata.put("versionState", versionStateProvider);
-
-		JSONObject almDateProvider = new JSONObject();
-		almDateProvider.put("provider", "almDateProvider");
-		metadata.put("plannedStartDate", almDateProvider);
-		metadata.put("plannedEndDate", almDateProvider);
-		metadata.put("actualStartDate", almDateProvider);
-
-		JSONObject onlineProvider = new JSONObject();
-		onlineProvider.put("provider", "onlineProvider");
-		metadata.put("online", onlineProvider);
-		return ValueProviderUtils.buildDataByProvider(metadata, list);
-	}
 
 }

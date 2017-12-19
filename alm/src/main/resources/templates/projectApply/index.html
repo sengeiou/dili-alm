@@ -112,7 +112,7 @@
 <script type="text/javascript">
     var userid = '${sessionID}';
     function formatStatus(value, row) {
-        console.log(row);
+        // console.log(row);
         if (row.$_status == 1) {
             if(row.$_createMemberId == userid) {
                 return '<span class="opt" style="padding:5px;"><a href="${contextPath}/projectApply/toStep/1/' + row.id + '">编辑</a></span><span class="opt" style="padding:5px;"><a href="javascript:void(0)" onclick="del(' + row.id + ')">删除</a></span>';
@@ -122,7 +122,7 @@
         }else if(row.$_status == 2 || row.$_status == 3){
             return '<span style="padding:5px;"><a>编辑</a></span><span style="padding:5px;"><a>删除</a></span>';
         }else if(row.$_status == 4){
-            if(row.$_createMemberId == userid) {
+            if(row.$_createMemberId == userid && row.restatus == undefined) {
                 return '<span style="padding:5px;" class="opt"><a href="${contextPath}/projectApply/reApply/' + row.id + '">重新申请</a></span>';
             }else{
                 return '<span style="padding:5px;"><a>重新申请</a></span>';
@@ -147,8 +147,15 @@
                     async: true,
                     success: function (data) {
                         if (data.code == "200") {
-                            $("#grid").datagrid("reload");
-                            $('#dlg').dialog('close');
+                            try {
+                                LogUtils.saveLog("删除立项申请:" + id, function () {
+                                    $("#grid").datagrid("reload");
+                                    $('#dlg').dialog('close');
+                                });
+                            } catch (e) {
+                                $("#grid").datagrid("reload");
+                                $('#dlg').dialog('close');
+                            }
                         } else {
                             $.messager.alert('错误', data.result);
                         }

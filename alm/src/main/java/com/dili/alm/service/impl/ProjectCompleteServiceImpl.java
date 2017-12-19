@@ -9,6 +9,7 @@ import com.dili.alm.domain.Team;
 import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.ProjectCompleteService;
 import com.dili.alm.service.TeamService;
+import com.dili.alm.utils.DateUtil;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
@@ -76,7 +77,7 @@ public class ProjectCompleteServiceImpl extends BaseServiceImpl<ProjectComplete,
         try {
             String[] sendTo = complete.getEmail().split(",");
             SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo("yanggang@diligrp.com");
+            message.setTo(sendTo);
             message.setFrom(SystemConfigUtils.getProperty("spring.mail.username"));
             message.setSubject("结项申请");
             message.setText(complete.getName() + "的结项申请已经提交成功");
@@ -89,6 +90,8 @@ public class ProjectCompleteServiceImpl extends BaseServiceImpl<ProjectComplete,
     @Override
     public Long reComplete(Long id) {
         ProjectComplete complete = get(id);
+        complete.setRestatus(0);
+        update(complete);
         complete.setId(null);
         complete.setCreated(new Date());
         complete.setStatus(AlmConstants.ApplyState.APPLY.getCode());
@@ -109,7 +112,7 @@ public class ProjectCompleteServiceImpl extends BaseServiceImpl<ProjectComplete,
             metadata.put("joinTime", JSON.parse("{provider:'datetimeProvider'}"));
             metadata.put("leaveTime", JSON.parse("{provider:'datetimeProvider'}"));
             List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, list);
-            maps.forEach(map -> map.put("created", new Date()));
+            maps.forEach(map -> map.put("created", DateUtil.getDate(new Date())));
             return maps;
         }
         return projectComplete.getPerformance();

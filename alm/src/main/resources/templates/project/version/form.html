@@ -28,15 +28,15 @@
 			<td style="padding: 5px;"><input class="easyui-textbox" name="visitUrl" id="visitUrl" value="${model.visitUrl!}" style="width: 100%" data-options="label:'访问地址:', validType:'length[0,120]'" /></td>
 		</tr>
 		<tr>
-			<td style="padding: 5px;"><input class="easyui-datetimebox" name="plannedStartDate" id="plannedStartDate" value="${model.plannedStartDate!,dateFormat='yyyy-MM-dd HH:mm:ss'}"
+			<td style="padding: 5px;"><input class="easyui-datebox" name="plannedStartDate" id="plannedStartDate" value="${model.plannedStartDate!,dateFormat='yyyy-MM-dd HH:mm:ss'}"
 				style="width: 100%" data-options="label:'计划开始日期:',editable:false" required="true" /></td>
 		</tr>
 		<tr>
-			<td style="padding: 5px;"><input class="easyui-datetimebox" name="plannedEndDate" id="plannedEndDate" value="${model.plannedEndDate!,dateFormat='yyyy-MM-dd HH:mm:ss'}" style="width: 100%"
+			<td style="padding: 5px;"><input class="easyui-datebox" name="plannedEndDate" id="plannedEndDate" value="${model.plannedEndDate!,dateFormat='yyyy-MM-dd HH:mm:ss'}" style="width: 100%"
 				data-options="label:'计划结束日期:',editable:false" required="true" /></td>
 		</tr>
 		<tr>
-			<td style="padding: 5px;"><input class="easyui-datetimebox" name="plannedOnlineDate" id="plannedOnlineDate" value="${model.plannedOnlineDate!,dateFormat='yyyy-MM-dd HH:mm:ss'}"
+			<td style="padding: 5px;"><input class="easyui-datebox" name="plannedOnlineDate" id="plannedOnlineDate" value="${model.plannedOnlineDate!,dateFormat='yyyy-MM-dd HH:mm:ss'}"
 				style="width: 100%" data-options="label:'计划上线日期:',editable:false" required="true" /></td>
 		</tr>
 		<tr>
@@ -50,12 +50,12 @@
 				<div id="fileuploader"></div>
 				<table class="easyui-datagrid" title="版本文档列表" id="versionFileGrid" fitColumns="true" pagination="false" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
 					align="center" fit="false" striped="true" idField="id"
-					data-options="<%if(model.id != null){%>url:'${contextPath!}/project/version/file/list?versionId=${model.id!}'<%}%>">
+					data-options="<%if(has(model) && model.id != null){%>url:'${contextPath!}/project/version/file/list?versionId=${model.id!}'<%}%>">
 					<thead>
 						<tr>
 							<th data-options="field:'name', width:'20%', align:'center', resizable:'true', fixed:'false'">文件名</th>
 							<th data-options="field:'length', width:'20%', align:'center', resizable:'true', fixed:'false'">大小</th>
-							<th data-options="field:'created', width:'50%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">上传日期</th>
+							<th data-options="field:'created', width:'50%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false',formatter:dateFormatter">上传日期</th>
 							<th data-options="field:'opt', width:'10%', align:'center', resizable:'true', fixed:'false',formatter:versionFileOptFormatter">操作</th>
 						</tr>
 					</thead>

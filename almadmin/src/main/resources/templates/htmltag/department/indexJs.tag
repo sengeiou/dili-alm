@@ -95,7 +95,6 @@ function openUpdate() {
 								handler : function() {
 									var data = $('#form').serializeArray();
 									$.post('${contextPath!}/department/update', data, function(res) {
-												debugger;
 												if (res.success) {
 													deptGrid.treegrid('update', {
 																id : res.data.id,

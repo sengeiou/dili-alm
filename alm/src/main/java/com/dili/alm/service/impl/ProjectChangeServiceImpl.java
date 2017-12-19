@@ -67,7 +67,7 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
         try {
             String[] sendTo = change.getEmail().split(",");
             SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo("yanggang@diligrp.com");
+            message.setTo(sendTo);
             message.setFrom(SystemConfigUtils.getProperty("spring.mail.username"));
             message.setSubject("变更申请");
             message.setText(change.getProjectName() + "的变更申请[" + change.getName() + "]已经提交成功");
@@ -80,6 +80,8 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
     @Override
     public Long reChange(Long id) {
         ProjectChange change = get(id);
+        change.setRestatus(0);
+        update(change);
         change.setId(null);
         change.setCreated(new Date());
         change.setStatus(AlmConstants.ApplyState.APPLY.getCode());

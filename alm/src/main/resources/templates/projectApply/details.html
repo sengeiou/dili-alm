@@ -7,7 +7,7 @@
         padding-left: 0;
     }
     #step1 .textbox-label {
-        width: 110px;
+        width: 120px;
     }
     #step1 input[class^="easyui-"] {
         width: 250px;
@@ -42,67 +42,80 @@
 <div class="easyui-panel" title="立项详情">
     <div style="padding:10px 60px 20px 60px">
         <form id="step1" method="post" action="">
-            <table cellpadding="5" id="tb">
+            <table cellpadding="5" id="tb" style="width: 100%">
                 <tr>
-                    <th>项目编号</th>
-                    <th>${apply.number}</th>
-                    <th>项目类别</th>
-                    <th>${apply.type}</th>
+                    <td width="25%">项目编号</td>
+                    <td width="25%">${apply.number}</td>
+                    <td width="25%">项目类别</td>
+                    <td width="25%">${apply.type}</td>
                 </tr>
                 <tr>
-                    <td class="title-first" colspan="3">1项目内容及资源</td>
+                    <td class="title-first" colspan="4">1项目内容及资源</td>
                 </tr>
                 <tr>
-                    <td class="title-second" colspan="3">1.1项目基本信息</td>
+                    <td class="title-second" colspan="4">1.1项目基本信息</td>
                 </tr>
                 <tr>
-                    <td colspan="2"><input class="easyui-textbox" type="text" name="name"
+                    <td colspan="4"><input class="easyui-textbox" type="text" name="name"
                                            data-options="required:true,validType:'length[1,10]',label:'项目名称:'"
                                            style="width:576px"></td>
                 </tr>
                 <tr>
-                    <td><input class="easyui-textbox" name="projectLeader" id="project_leader"
+                    <td colspan="2"><input class="easyui-textbox" name="projectLeader" id="project_leader"
                                panelWidth="auto" panelHeight="auto" label="*项目负责人:"/></td>
-                    <td><input class="easyui-textbox" type="text" name="productManager" id="productManager"
+                    <td colspan="2"><input class="easyui-textbox" type="text" name="productManager" id="productManager"
                                data-options="label:'*产品经理:'"></td>
                 </tr>
                 <tr>
-                    <td><input class="easyui-textbox" type="text" name="developmentManager" id="developmentManager"
+                    <td colspan="2"><input class="easyui-textbox" type="text" name="developmentManager" id="developmentManager"
                                data-options="label:'*研发经理:'"></td>
-                    <td><input class="easyui-textbox" type="text" name="testManager" id="testManager"
+                    <td colspan="2"><input class="easyui-textbox" type="text" name="testManager" id="testManager"
                                data-options="label:'*测试经理:'"></td>
                 </tr>
                 <tr>
-                    <td><input class="easyui-textbox" type="text" name="businessOwner" id="businessOwner"
+                    <td colspan="2"><input class="easyui-textbox" type="text" name="businessOwner" id="businessOwner"
                                data-options="label:'*业务负责人:'"></td>
-                    <td><input class="easyui-textbox" type="text" id="dep" name="dep" data-options="label:'*需求所属业务部门:'">
+                    <td colspan="2"><input class="easyui-textbox" type="text" id="dep" name="dep" data-options="label:'*需求所属业务部门:'">
                     </td>
                 </tr>
                 <tr>
-                    <td><input class="easyui-datebox" name="expectedLaunchDate" id=""
+                    <td colspan="2"><input class="easyui-datebox" name="expectedLaunchDate" id=""
                                data-options="label:'*业务期望上线日期:'"/></td>
-                    <td><input class="easyui-datebox" name="estimateLaunchDate" id=""
+                    <td colspan="2"><input class="easyui-datebox" name="estimateLaunchDate" id=""
                                data-options="label:'*预估最终上线日期:'"/></td>
                 </tr>
                 <tr>
-                    <td><input class="easyui-datebox" name="startDate" id=""
+                    <td colspan="2"><input class="easyui-datebox" name="startDate" id=""
                                data-options="label:'*计划开始日期:'"/>
                     </td>
-                    <td><input class="easyui-datebox" name="endDate" id=""
+                    <td colspan="2"><input class="easyui-datebox" name="endDate" id=""
                                data-options="label:'*计划结束日期:'"/>
                     </td>
                 </tr>
                 <tr>
-                    <td class="title-second" colspan="3">1.2.项目资源需求</td>
+                    <td colspan="4" class="title-second" colspan="3">1.2.项目资源需求</td>
                 </tr>
                 <tr>
-                    <td><input class="easyui-textbox" type="text" name="mainUser" id="mainUser"
-                               data-options="label:'*负责部门经理:'"></td>
-                    <td><input class="easyui-numberspinner" id="member" name="mainNumber" value=""
-                               data-options="label:'*预估所需人员:'"> 人
-                    </td>
-                    <td><input class="easyui-numberbox" type="text" id="workTime" name="mainWorkTime"
-                               data-options="label:'*预估工时:'"> 人日
+                    <td colspan="4">
+                        <table id="requireTable" border="0" style="width: 100%">
+                            <tr>
+                                <td style="width: 33%; padding-left:0;">
+                                    <span class="require">*</span>
+                                    <input class="easyui-textbox" type="text" name="mainUser" id="mainUser" style="width: calc(30% - 88px)"
+                                           data-options="label:'负责部门经理:'">
+                                </td>
+                                <td style="width: 33%; padding-left:0;">
+                                    <span class="require">*</span>
+                                    <input class="easyui-numberspinner" id="member" name="mainNumber" value="" style="width: calc(30% - 105px)"
+                                           data-options="label:'*预估所需人员:'"> 人
+                                </td>
+                                <td style="width: 33%; padding-left:0;">
+                                    <span class="require">*</span>
+                                    <input class="easyui-numberbox" type="text" id="workTime" name="mainWorkTime" style="width: calc(30% - 115px)"
+                                           data-options="label:'*预估工时:'"> 人日
+                                </td>
+                            </tr>
+                        </table>
                     </td>
                 </tr>
             </table>
@@ -111,7 +124,7 @@
 
     <div style="padding:10px 60px 20px 60px">
         <form id="step2" method="post">
-            <table cellpadding="5">
+            <table cellpadding="5" style="width: 100%">
                 <tr>
                     <td class="title-first" colspan="4">2.项目说明</td>
                 </tr>
@@ -124,7 +137,7 @@
                 <tr>
                     <td colspan="4"><input class="easyui-textbox" name="purpose"
                                            data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
-                                           style="width:800px;height:120px"/></td>
+                                           style="width:100%;height:120px"/></td>
                 </tr>
                 <tr>
                     <td class="title-second" colspan="4">范围</td>
@@ -132,7 +145,7 @@
                 <tr>
                     <td colspan="4"><input class="easyui-textbox" name="range"
                                            data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
-                                           style="width:800px;height:120px"/></td>
+                                           style="width:100%;height:120px"/></td>
                 </tr>
                 <tr>
                     <td class="title-second" colspan="4">方法概要</td>
@@ -140,7 +153,7 @@
                 <tr>
                     <td colspan="4"><input class="easyui-textbox" name="methodSummary"
                                            data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
-                                           style="width:800px;height:120px"/></td>
+                                           style="width:100%;height:120px"/></td>
                 </tr>
 
             </table>
@@ -151,19 +164,19 @@
 
     <div style="padding:10px 60px 20px 60px">
         <form id="step3" method="post">
-            <table cellpadding="5">
+            <table cellpadding="5" style="width: 100%">
                 <tr>
                     <td class="title-first" colspan="4">3.项目目标以及功能描述</td>
                 </tr>
                 <tr>
                     <td class="title-second" colspan="4">目标说明</td>
                 </tr>
-                <tr><td colspan="4"><input class="easyui-textbox" name="notes" id="" data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']" style="width:800px;height:120px" /></td>
+                <tr><td colspan="4"><input class="easyui-textbox" style="width: 100%;height: 120px" name="notes" id="" data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']" style="width:800px;height:120px" /></td>
                 </tr>
                 <tr>
                     <td class="title-second" colspan="4">功能描述</td>
                 </tr>
-                <tr><td colspan="4"><input class="easyui-textbox" name="desc" id="" data-options="multiline:true,prompt:'限制输入500个字符串',validType:['length[0,500]']" style="width:800px;height:120px" /></td>
+                <tr><td colspan="4"><input class="easyui-textbox" style="width: 100%;height: 120px" name="desc" id="" data-options="multiline:true,prompt:'限制输入500个字符串',validType:['length[0,500]']" style="width:800px;height:120px" /></td>
                 </tr>
 
             </table>
@@ -173,7 +186,7 @@
 
     <div style="padding:10px 60px 20px 60px" style="width: auto;">
         <form id="step4" method="post">
-            <table cellpadding="5">
+            <table cellpadding="5" style="width: 100%">
                 <tr>
                     <td class="title-first" colspan="4">4.项目概要计划</td>
                 </tr>
@@ -187,17 +200,17 @@
             ">
                 <thead>
                 <tr>
-                    <th data-options="field:'phase',width:80,align:'center',">阶段/里程碑</th>
-                    <th data-options="field:'startDate',_provider:'datetimeProvider',width:200,align:'center',editor:{type:'datetimebox',options:{required:true}}">
+                    <th data-options="field:'phase',align:'center'," style="width: 15%">阶段/里程碑</th>
+                    <th data-options="field:'startDate',_provider:'datetimeProvider',align:'center',editor:{type:'datetimebox',options:{required:true}}" style="width: 25%">
                         计划开始日期
                     </th>
-                    <th data-options="field:'endDate',_provider:'datetimeProvider',width:200,align:'center',editor:{type:'datetimebox',options:{required:true}}">
+                    <th data-options="field:'endDate',_provider:'datetimeProvider',align:'center',editor:{type:'datetimebox',options:{required:true}}" style="width: 25%">
                         计划结束日期
                     </th>
-                    <th data-options="field:'resources',width:100,align:'center',editor:{type:'numberspinner',options:{increment:1,min:1}}">
+                    <th data-options="field:'resources',align:'center',editor:{type:'numberspinner',options:{increment:1,min:1}}" style="width: 15%">
                         计划投入资源
                     </th>
-                    <th data-options="field:'workTime',width:150,align:'center',editor:'numberbox'">计划工时（人日）</th>
+                    <th data-options="field:'workTime',align:'center',editor:'numberbox'" style="width: 20%">计划工时（人日）</th>
                 </tr>
                 </thead>
             </table>
@@ -212,47 +225,47 @@
                     <td class="title-first" colspan="4">5.项目ROI分析</td>
                 </tr>
             </table>
-            <table border="1" style="margin-top: 20px; border: 1px solid #eee;line-height: 32px;" cellspacing="0" cellpadding="0" >
+            <table border="1" style="width:80%;margin-top: 20px; border: 1px solid #eee;line-height: 32px;" cellspacing="0" cellpadding="0" >
                 <tr style="background-color: #eee;">
-                    <th rowspan="10">项目收益</th>
-                    <th style="text-align:center">业务类</th>
-                    <th style="text-align:center">指标一</th>
-                    <th style="text-align:center">指标二</th>
-                    <th style="text-align:center">指标三</th>
+                    <th rowspan="10" style="width: 10%;text-align:center">项目收益</th>
+                    <th style="width: 15%;text-align:center">业务类</th>
+                    <th style="width: 25%;text-align:center">指标一</th>
+                    <th style="width: 25%;text-align:center">指标二</th>
+                    <th style="width: 25%;text-align:center">指标三</th>
                 </tr>
                 <tr>
                     <!--<td rowspan="3" style="padding-left: 0;background-color: #eee;text-align: center">项目收益</td>-->
                     <td style="background-color: #eee;text-align: center">指标名称</td>
-                    <td><input class="easyui-textbox" name="val1" id=""
+                    <td><input class="easyui-textbox" name="val1" id="" style="width: 100%"
                                data-options="multiline:true,validType:['length[0,50]']"/></td>
-                    <td><input class="easyui-textbox" name="val2" id=""
+                    <td><input class="easyui-textbox" name="val2" id="" style="width: 100%"
                                data-options="multiline:true,validType:['length[0,50]']"/></td>
-                    <td><input class="easyui-textbox" name="val3" id=""
+                    <td><input class="easyui-textbox" name="val3" id="" style="width: 100%"
                                data-options="multiline:true,validType:['length[0,50]']"/></td>
                 </tr>
                 <tr>
                     <td style="background-color: #eee;text-align: center">指标现状</td>
-                    <td><input class="easyui-textbox" name="val4" id=""
+                    <td><input class="easyui-textbox" name="val4" id="" style="width: 100%"
                                data-options="multiline:true,validType:['length[0,50]']"/></td>
-                    <td><input class="easyui-textbox" name="val5" id=""
+                    <td><input class="easyui-textbox" name="val5" id="" style="width: 100%"
                                data-options="multiline:true,validType:['length[0,50]']"/></td>
-                    <td><input class="easyui-textbox" name="val6" id=""
+                    <td><input class="easyui-textbox" name="val6" id="" style="width: 100%"
                                data-options="multiline:true,validType:['length[0,50]']"/></td>
                 </tr>
                 <tr>
                     <td style="background-color: #eee;text-align: center">项目目标</td>
-                    <td><input class="easyui-textbox" name="val7" id=""
+                    <td><input class="easyui-textbox" name="val7" id="" style="width: 100%"
                                data-options="multiline:true,validType:['length[0,50]']"/></td>
-                    <td><input class="easyui-textbox" name="val8" id=""
+                    <td><input class="easyui-textbox" name="val8" id="" style="width: 100%"
                                data-options="multiline:true,validType:['length[0,50]']"/></td>
-                    <td><input class="easyui-textbox" name="val9" id=""
+                    <td><input class="easyui-textbox" name="val9" id="" style="width: 100%"
                                data-options="multiline:true,validType:['length[0,50]']"/></td>
                 </tr>
                 <tr>
                     <td style="background-color: #eee;text-align: center">实现日期</td>
-                    <td><input class="easyui-datebox" name="val10" id="" data-options="required:false"/></td>
-                    <td><input class="easyui-datebox" name="val11" id="" data-options="required:false"/></td>
-                    <td><input class="easyui-datebox" name="val12" id="" data-options="required:false"/></td>
+                    <td><input class="easyui-datebox" name="val10" id="" data-options="required:false" style="width: 100%"/></td>
+                    <td><input class="easyui-datebox" name="val11" id="" data-options="required:false" style="width: 100%"/></td>
+                    <td><input class="easyui-datebox" name="val12" id="" data-options="required:false" style="width: 100%"/></td>
                 </tr>
 
                 <tr style="background-color: #eee;">
@@ -263,113 +276,113 @@
                 </tr>
                 <tr>
                     <td style="background-color: #eee;text-align: center">指标名称</td>
-                    <td><input class="easyui-textbox" name="val13" id=""
+                    <td><input class="easyui-textbox" name="val13" id="" style="width: 100%"
                                data-options="multiline:true,validType:['length[0,50]']"/></td>
-                    <td><input class="easyui-textbox" name="val14" id=""
+                    <td><input class="easyui-textbox" name="val14" id="" style="width: 100%"
                                data-options="multiline:true,validType:['length[0,50]']"/></td>
-                    <td><input class="easyui-textbox" name="val15" id=""
+                    <td><input class="easyui-textbox" name="val15" id="" style="width: 100%"
                                data-options="multiline:true,validType:['length[0,50]']"/></td>
                 </tr>
                 <tr>
                     <td style="background-color: #eee;text-align: center">指标现状</td>
-                    <td><input class="easyui-textbox" name="val16" id=""
+                    <td><input class="easyui-textbox" name="val16" id="" style="width: 100%"
                                data-options="multiline:true,validType:['length[0,50]']"/></td>
-                    <td><input class="easyui-textbox" name="val17" id=""
+                    <td><input class="easyui-textbox" name="val17" id="" style="width: 100%"
                                data-options="multiline:true,validType:['length[0,50]']"/></td>
-                    <td><input class="easyui-textbox" name="val18" id=""
+                    <td><input class="easyui-textbox" name="val18" id="" style="width: 100%"
                                data-options="multiline:true,validType:['length[0,50]']"/></td>
                 </tr>
                 <tr>
                     <td style="background-color: #eee;text-align: center">项目目标</td>
-                    <td><input class="easyui-textbox" name="val19" id=""
+                    <td><input class="easyui-textbox" name="val19" id="" style="width: 100%"
                                data-options="multiline:true,validType:['length[0,50]']"/></td>
-                    <td><input class="easyui-textbox" name="val20" id=""
+                    <td><input class="easyui-textbox" name="val20" id="" style="width: 100%"
                                data-options="multiline:true,validType:['length[0,50]']"/></td>
-                    <td><input class="easyui-textbox" name="val21" id=""
+                    <td><input class="easyui-textbox" name="val21" id="" style="width: 100%"
                                data-options="multiline:true,validType:['length[0,50]']"/></td>
                 </tr>
                 <tr>
                     <td style="background-color: #eee;text-align: center">实现日期</td>
-                    <td><input class="easyui-datebox" name="val22" id="" data-options="required:false"/></td>
-                    <td><input class="easyui-datebox" name="val23" id="" data-options="required:false"/></td>
-                    <td><input class="easyui-datebox" name="val24" id="" data-options="required:false"/></td>
+                    <td><input class="easyui-datebox" name="val22" id="" data-options="required:false" style="width: 100%"/></td>
+                    <td><input class="easyui-datebox" name="val23" id="" data-options="required:false" style="width: 100%"/></td>
+                    <td><input class="easyui-datebox" name="val24" id="" data-options="required:false" style="width: 100%"/></td>
                 </tr>
             </table>
-            <table border="1" style="margin-top: 20px; border: 1px solid #eee;line-height: 32px;" cellspacing="0"
+            <table border="1" style="width:100%;margin-top: 20px; border: 1px solid #eee;line-height: 32px;" cellspacing="0"
                    cellpadding="0">
                 <tr style="background-color: #eee;">
-                    <th rowspan="8">项目成本</th>
-                    <th style="text-align:center">名称</th>
-                    <th style="text-align:center">数量</th>
-                    <th style="text-align:center">费率</th>
-                    <th style="text-align:center">合计（人民币）</th>
-                    <th style="text-align:center">备注</th>
+                    <th rowspan="8" style="text-align:center;width: 7%">项目成本</th>
+                    <th style="width:13%;text-align:center">名称</th>
+                    <th style="width:20%;text-align:center">数量</th>
+                    <th style="width:20%;text-align:center">费率</th>
+                    <th style="width:20%;text-align:center">合计（人民币）</th>
+                    <th style="width:20%;text-align:center">备注</th>
                 </tr>
                 <tr>
                     <td style="background-color: #eee;text-align: center">人天成本</td>
-                    <td><input class="easyui-numberbox cal1" type="text" name="val25" data-options="min:0,max:999999"></td>
-                    <td><input class="easyui-numberbox cal1" type="text" name="val26" data-options="min:0,max:999999">
+                    <td><input class="easyui-numberbox cal1" type="text" name="val25" data-options="min:0,max:999999" style="width: 100%"></td>
+                    <td><input class="easyui-numberbox cal1" type="text" name="val26" data-options="min:0,max:999999" style="width: 100%">
                     </td>
-                    <td><input class="easyui-numberbox cal"  readonly id="cal1" type="text" name="val27" data-options="min:0,max:99999999">
+                    <td><input class="easyui-numberbox cal"  readonly id="cal1" type="text" name="val27" data-options="min:0,max:99999999" style="width: 100%">
                     </td>
                     <td><input class="easyui-textbox" name="val48" id=""
-                               data-options="multiline:true,validType:['length[0,50]']"/></td>
+                               data-options="multiline:true,validType:['length[0,50]']" style="width: 100%"/></td>
                 </tr>
                 <tr>
                     <td style="background-color: #eee;text-align: center">软件成本</td>
-                    <td><input class="easyui-numberbox" type="text" name="val28" data-options="min:0,max:999999"></td>
-                    <td><input class="easyui-textbox" type="text" value="/" name="val29" data-options=""></td>
-                    <td><input class="easyui-numberbox cal" type="text" name="val30" data-options="min:0,max:99999999">
+                    <td><input class="easyui-numberbox" type="text" name="val28" data-options="min:0,max:999999" style="width: 100%"></td>
+                    <td><input class="easyui-textbox" type="text" value="/" name="val29" data-options="" style="width: 100%"></td>
+                    <td><input class="easyui-numberbox cal" type="text" name="val30" data-options="min:0,max:99999999" style="width: 100%">
                     </td>
-                    <td><input class="easyui-textbox" name="val47" id=""
+                    <td><input class="easyui-textbox" name="val47" id=""  style="width: 100%"
                                data-options="multiline:true,validType:['length[0,50]']"/></td>
                 </tr>
                 <tr>
                     <td style="background-color: #eee;text-align: center">硬件成本.实体机</td>
-                    <td><input class="easyui-numberbox" type="text" name="val31" data-options="min:0,max:999999"></td>
+                    <td><input class="easyui-numberbox" type="text" name="val31" data-options="min:0,max:999999" style="width: 100%"></td>
                     <td><input class="easyui-textbox" type="text" value="实体机 50000元/台VM 1H1G:1200元/年，2H2G：2400元/年，2H4G:4800元/年，4H4G:9600元/年；" name="val32"
-                               data-options="">
+                               data-options=""  style="width: 100%">
                     </td>
-                    <td><input class="easyui-numberbox cal" type="text" name="val33" data-options="min:0,max:99999999">
+                    <td><input class="easyui-numberbox cal" type="text" name="val33" data-options="min:0,max:99999999" style="width: 100%">
                     </td>
                     <td><input class="easyui-textbox" name="val46" id=""
-                               data-options="multiline:true,validType:['length[0,50]']"/></td>
+                               data-options="multiline:true,validType:['length[0,50]']" style="width: 100%"/></td>
                 </tr>
                 <tr>
                     <td style="background-color: #eee;text-align: center">硬件成本.VM</td>
-                    <td><input class="easyui-numberbox" type="text" name="val34" data-options="min:0,max:999999"></td>
-                    <td><input class="easyui-textbox" value="实体机 50000元/台VM 1H1G:1200元/年，2H2G：2400元/年，2H4G:4800元/年，4H4G:9600元/年；" type="text" name="val35"
+                    <td><input class="easyui-numberbox" type="text" name="val34" data-options="min:0,max:999999" style="width: 100%"></td>
+                    <td><input class="easyui-textbox" style="width: 100%" value="实体机 50000元/台VM 1H1G:1200元/年，2H2G：2400元/年，2H4G:4800元/年，4H4G:9600元/年；" type="text" name="val35"
                                data-options="">
                     </td>
-                    <td><input class="easyui-numberbox cal" type="text" name="val36" data-options="min:0,max:99999999">
+                    <td><input class="easyui-numberbox cal" style="width: 100%" type="text" name="val36" data-options="min:0,max:99999999">
                     </td>
-                    <td><input class="easyui-textbox" name="val37" id=""
+                    <td><input class="easyui-textbox" name="val37" id="" style="width: 100%"
                                data-options="multiline:true,validType:['length[0,50]']"/></td>
                 </tr>
                 <tr>
                     <td style="background-color: #eee;text-align: center">差旅会议成本</td>
-                    <td><input class="easyui-numberbox" type="text" name="val38" data-options="min:0,max:999999"></td>
-                    <td><input class="easyui-textbox" value="机票：4000元/人，补助：600元/人/天；" type="text" name="val39"
+                    <td><input class="easyui-numberbox" type="text" name="val38" data-options="min:0,max:999999" style="width: 100%"></td>
+                    <td><input class="easyui-textbox" value="机票：4000元/人，补助：600元/人/天；" type="text" name="val39" style="width: 100%"
                                data-options=""></td>
-                    <td><input class="easyui-numberbox cal" type="text" name="val40" data-options="min:0,max:99999999">
+                    <td><input class="easyui-numberbox cal" type="text" name="val40" data-options="min:0,max:99999999" style="width: 100%">
                     </td>
-                    <td><input class="easyui-textbox" name="val45" id=""
+                    <td><input class="easyui-textbox" name="val45" id="" style="width: 100%"
                                data-options="multiline:true,validType:['length[0,50]']"/></td>
                 </tr>
                 <tr>
                     <td style="background-color: #eee;text-align: center">其他成本</td>
-                    <td><input class="easyui-numberbox" type="text" name="val41" data-options="min:0,max:999999"></td>
-                    <td><input class="easyui-textbox" value="/" type="text" name="val42" data-options=""></td>
-                    <td><input class="easyui-numberbox cal" type="text" name="val43" data-options="min:0,max:99999999">
+                    <td><input class="easyui-numberbox" type="text" name="val41" data-options="min:0,max:999999" style="width: 100%"></td>
+                    <td><input class="easyui-textbox" value="/" type="text" name="val42" data-options="" style="width: 100%"></td>
+                    <td><input class="easyui-numberbox cal" type="text" name="val43" data-options="min:0,max:99999999" style="width: 100%">
                     </td>
-                    <td><input class="easyui-textbox" name="val44" id=""
+                    <td><input class="easyui-textbox" name="val44" id="" style="width: 100%"
                                data-options="multiline:true,validType:['length[0,50]']"/></td>
                 </tr>
                 <tr>
                     <td style="background-color: #eee;text-align: center">合计</td>
                     <td></td>
                     <td></td>
-                    <td><input class="easyui-textbox" id="totalTxt" type="text" value="" name="val99"
+                    <td><input class="easyui-textbox" id="totalTxt" type="text" value="" name="val99" style="width: 100%"
                                data-options=""></td>
                     <td></td>
                 </tr>
@@ -392,9 +405,9 @@
                 rownumbers:true">
                 <thead>
                 <tr>
-                    <th style="text-align:center" data-options="field:'system',width:120,align:'center',editor:{type:'combobox',options:{required:true,url:'${contextPath}/project/list.json',method:'get',valueField:'name',textField:'name'}}">受影响系统</th>
-                    <th style="text-align:center" data-options="field:'dep',width:150,align:'center',editor:{type:'combobox',options:{required:true,url:'${contextPath}/department/departments',method:'get',valueField:'name',textField:'name'}}">归属部门</th>
-                    <th style="text-align:center" data-options="width:'150',field:'memberId',  _provider:'memberProvider', align:'center', resizable:'true', fixed:'false',editor : {
+                    <th style="width:20%;text-align:center" data-options="field:'system',align:'center',editor:{type:'combobox',options:{required:true,url:'${contextPath}/project/list.json',method:'get',valueField:'name',textField:'name'}}">受影响系统</th>
+                    <th style="width:20%;text-align:center" data-options="field:'dep',align:'center',editor:{type:'combobox',options:{required:true,url:'${contextPath}/department/departments',method:'get',valueField:'name',textField:'name'}}">归属部门</th>
+                    <th style="width:20%;text-align:center" data-options="field:'memberId',  _provider:'memberProvider', align:'center', resizable:'true', fixed:'false',editor : {
 								type : 'textbox',
 								options : {
 									required : true,
@@ -407,8 +420,8 @@
 							},formatter:function(value,row){
 									return row.memberId;
 								},onChange:_changeTextboxShowClear">负责人</th>
-                    <th style="text-align:center" data-options="field:'content',align:'center',width:250,editor:{type:'textbox',options:{multiline:true,validType:['length[0,50]']}}">影响内容</th>
-                    <th style="text-align:center" data-options="field:'level',width:100,align:'center',editor:{type:'combobox',options:{required:true,url:'${contextPath}/dataDictionaryValue/listByCode.json?code=project_ importance',method:'get',valueField:'code',textField:'code'}}">项目重要性</th>
+                    <th style="width:20%;text-align:center" data-options="field:'content',align:'center',editor:{type:'textbox',options:{multiline:true,validType:['length[0,50]']}}">影响内容</th>
+                    <th style="width:20%;text-align:center" data-options="field:'level',align:'center',editor:{type:'combobox',options:{required:true,url:'${contextPath}/dataDictionaryValue/listByCode.json?code=project_ importance',method:'get',valueField:'code',textField:'code'}}">项目重要性</th>
                 </tr>
                 </thead>
             </table>
@@ -425,11 +438,11 @@
             ">
                 <thead>
                 <tr>
-                    <th data-options="field:'type',align:'center',width:80,">类别</th>
-                    <th data-options="field:'notes',align:'center',width:250,editor:{type:'textbox',options:{required:false,multiline:true,validType:['length[0,50]']}}">
+                    <th style="width: 15%" data-options="field:'type',align:'center'">类别</th>
+                    <th style="width: 35%" data-options="field:'notes',align:'center',editor:{type:'textbox',options:{required:false,multiline:true,validType:['length[0,50]']}}">
                         描述
                     </th>
-                    <th data-options="field:'level',align:'center',width:120,editor:{type:'combobox',options : {
+                    <th style="width: 15%" data-options="field:'level',align:'center',editor:{type:'combobox',options : {
 									required : false,
 									textField:'text',
 									valueField:'text',
@@ -444,7 +457,7 @@
 								}}">
                         等级（高、中、低）
                     </th>
-                    <th data-options="field:'measure',width:250,align:'center',editor:{type:'textbox',options:{multiline:true,validType:['length[0,50]']}}">
+                    <th style="width: 35%" data-options="field:'measure',align:'center',editor:{type:'textbox',options:{multiline:true,validType:['length[0,50]']}}">
                         应对措施
                     </th>
                 </tr>
@@ -469,8 +482,8 @@
                 <thead>
                 <tr>
                     <th data-options="field:'id',width:80,hidden:true">ID</th>
-                    <th data-options="field:'name', width:'20%', align:'center', formatter:formatDown,resizable:'true', fixed:'false'">文件名</th>
-                    <th data-options="field:'length', width:'20%', align:'center', resizable:'true', fixed:'false',formatter:renderSize">大小</th>
+                    <th data-options="field:'name', width:'25%', align:'center', formatter:formatDown,resizable:'true', fixed:'false'">文件名</th>
+                    <th data-options="field:'length', width:'25%', align:'center', resizable:'true', fixed:'false',formatter:renderSize">大小</th>
                     <th data-options="field:'created', width:'50%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">上传日期</th>
                 </tr>
                 </thead>
@@ -486,7 +499,7 @@
             </table>
             <div style="text-align:left;padding:5px;margin-top:10px;">
                 <a href="${contextPath}/projectApply/index.html" class="easyui-linkbutton"
-                   data-options="size:'large',width:'80px'">返回</a>
+                   data-options="width:'80px'">返回</a>
             </div>
         </form>
 

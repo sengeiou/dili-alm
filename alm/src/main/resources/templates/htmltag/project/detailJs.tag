@@ -1,3 +1,15 @@
+function countVersionGrid(data) {
+	$('#versionCount').text('（' + data.total + '条版本记录）');
+}
+
+function countPhaseGrid(data) {
+	$('#phaseCount').text('（' + data.total + '条阶段记录）');
+}
+
+function countFileGrid(data) {
+	$('#fileCount').text('（' + data.total + '条）');
+}
+
 function versionOptFormatter(value, row, index) {
 	var content = '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="changeVersionState(' + row.id + ');">状态变更</a>';
 	content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="editVersion(' + row.id + ');">编辑</a>';
@@ -71,6 +83,7 @@ function deleteFile(id) {
 									var selected = $('#fileGrid').datagrid('getSelected');
 									var index = $('#fileGrid').datagrid('getRowIndex', selected);
 									$('#fileGrid').datagrid('deleteRow', index);
+									$('#fileGrid').datagrid('acceptChanges');
 								} else {
 									$.messager.alert('错误', data.result);
 								}
@@ -100,7 +113,9 @@ function delVersionFile(id) {
 									$('#versionFileGrid').datagrid('deleteRow', index);
 									$($('#fileGrid').datagrid('getRows')).each(function(i, item) {
 												if (item.id == selected.id) {
-													$('#fileGrid').datagrid('deleteRow', i);
+													var rowIndex = $('#fileGrid').datagrid('getRowIndex', item);
+													$('#fileGrid').datagrid('deleteRow', rowIndex);
+													$('#fileGrid').datagrid('acceptChanges');
 													return false;
 												}
 											});
@@ -134,7 +149,9 @@ function delPhaseFile(id) {
 									$('#phaseFileGrid').datagrid('deleteRow', index);
 									$($('#fileGrid').datagrid('getRows')).each(function(i, item) {
 												if (item.id == selected.id) {
-													$('#fileGrid').datagrid('deleteRow', i);
+													var rowIndex = $('#fileGrid').datagrid('getRowIndex', item);
+													$('#fileGrid').datagrid('deleteRow', rowIndex);
+													$('#fileGrid').datagrid('acceptChanges');
 													return false;
 												}
 											});
@@ -154,7 +171,7 @@ function openInsertVersion() {
 	$('#win').dialog({
 				title : '新建版本',
 				width : 600,
-				height : '100%',
+				height : 500,
 				href : '${contextPath!}/project/version/add?projectId=' + $('#projectId').val(),
 				modal : true,
 				buttons : [{
@@ -168,9 +185,7 @@ function openInsertVersion() {
 											success : function(data) {
 												if (data.code == 200) {
 													try {
-														LogUtils.saveLog("新增项目版本:" + data.result, function() {
-																	window.location.href = "${contextPath}/projectApply/toStep/1/" + data.result;
-																});
+														LogUtils.saveLog("新增项目版本:" + data.result);
 													} catch (e) {
 														window.location.href = "${contextPath}/projectApply/toStep/1/" + data.result;
 													}
@@ -202,8 +217,8 @@ function editVersion(id) {
 	$('#win').dialog({
 				title : '编辑版本',
 				width : 600,
-				height : '100%',
-				href : '${contextPath!}/project/version/edit?id=' + id + '&projectId=' + $('#projectId').val(),
+				height : 500,
+				href : '${contextPath!}/project/version/edit?id=' + id,
 				modal : true,
 				buttons : [{
 							text : '保存',
@@ -257,7 +272,15 @@ function deleteVersion(id) {
 							},
 							success : function(data) {
 								if (data.code == 200) {
-									var index = $('#versionGrid').datagrid('getRowIndex', $('#versionGrid').datagrid('getSelected'));
+									var delRow = $('#versionGrid').datagrid('getSelected');
+									var index = $('#versionGrid').datagrid('getRowIndex', delRow);
+									$($('#fileGrid').datagrid('getRows')).each(function(i, item) {
+												if (item.$_versionId == delRow.id) {
+													var rowIndex = $('#fileGrid').datagrid('getRowIndex', item);
+													$('#fileGrid').datagrid('deleteRow', rowIndex);
+												}
+											});
+									$('#fileGrid').datagrid('acceptChanges');
 									$('#versionGrid').datagrid('deleteRow', index);
 									$('#versionGrid').datagrid('acceptChanges');
 								} else {
@@ -275,7 +298,7 @@ function changeVersionState(id) {
 	$('#win').dialog({
 				title : '状态变更',
 				width : 600,
-				height : '100%',
+				height : 500,
 				href : '${contextPath!}/project/version/changeState?id=' + id,
 				modal : true,
 				buttons : [{
@@ -324,7 +347,7 @@ function openInsertPhase() {
 	$('#win').dialog({
 				title : '新建文档',
 				width : 600,
-				height : '100%',
+				height : 500,
 				href : '${contextPath!}/project/phase/add?projectId=' + $('#projectId').val(),
 				modal : true,
 				buttons : [{
@@ -365,7 +388,7 @@ function editPhase(id) {
 	$('#win').dialog({
 				title : '编辑版本',
 				width : 600,
-				height : '100%',
+				height : 500,
 				href : '${contextPath!}/project/phase/edit?id=' + id,
 				modal : true,
 				buttons : [{
@@ -420,7 +443,15 @@ function deletePhase(id) {
 							},
 							success : function(data) {
 								if (data.code == 200) {
-									var index = $('#phaseGrid').datagrid('getRowIndex', $('#phaseGrid').datagrid('getSelected'));
+									var delRow = $('#phaseGrid').datagrid('getSelected');
+									var index = $('#phaseGrid').datagrid('getRowIndex', delRow);
+									$($('#fileGrid').datagrid('getRows')).each(function(i, item) {
+												if (item.$_phaseId == delRow.id) {
+													var rowIndex = $('#fileGrid').datagrid('getRowIndex', item);
+													$('#fileGrid').datagrid('deleteRow', rowIndex);
+												}
+											});
+									$('#fileGrid').datagrid('acceptChanges');
 									$('#phaseGrid').datagrid('deleteRow', index);
 									$('#phaseGrid').datagrid('acceptChanges');
 								} else {
@@ -438,7 +469,7 @@ function uploadFile(projectId) {
 	$('#win').dialog({
 				title : '新建文档',
 				width : 600,
-				height : '100%',
+				height : 500,
 				href : '${contextPath!}/project/uploadFileView?projectId=' + projectId,
 				modal : true,
 				buttons : [{
@@ -486,7 +517,7 @@ function alarmConfig() {
 	$('#win').dialog({
 				title : '编辑版本',
 				width : 600,
-				height : '100%',
+				height : 500,
 				href : '${contextPath!}/alarmConfig/config.html?projectId=' + $('#projectId').val(),
 				modal : true,
 				buttons : [{
@@ -519,7 +550,7 @@ function alarmConfig() {
 }
 
 function generateWeekly() {
-	window.location.href = '${contextPath!}/weekly/getDescAddByProjectId?id=' + $('#projectId').val();
+	window.location.href = '${contextPath}/weekly/getDescAddByProjectId?projectId=' + $('#projectId').val();
 }
 
 $(function() {

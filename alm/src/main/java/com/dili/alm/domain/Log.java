@@ -48,13 +48,6 @@ public interface Log extends IBaseDomain {
 
     void setOperatorId(Long operatorId);
 
-    @Column(name = "`operator_name`")
-    @FieldDef(label="操作员名称", maxLength = 20)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getOperatorName();
-
-    void setOperatorName(String operatorName);
-
     @Column(name = "`ip`")
     @FieldDef(label="IP", maxLength = 20)
     @EditMode(editor = FieldEditor.Text, required = false)

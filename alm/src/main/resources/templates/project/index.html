@@ -1,6 +1,12 @@
 
 <#body>
+<style>
+.textbox-label {
+	width: 110px
+}
+</style>
 <div class="easyui-layout" fit="true">
+
 	<div id="smDialog" style="display: none;"></div>
 	<!-- ====================================================================================================================== -->
 	<!-- 上方布局 -->
@@ -16,19 +22,26 @@
 						<td style="padding: 5px;"><input class="easyui-textbox" name="name" id="name" style="width: 100%"
 							data-options="label:'项目名称:', validType:'length[0,20]'" /></td>
 						<td style="padding: 5px;"><select id="type" class="easyui-combobox" name="type" style="width: 100%"
-							data-options="url:'${contextPath!}/project/type.json',textField:'code',valueField:'value',label:'项目类型',editable:false">
-						</select></td>
-						<td style="padding: 5px;"><select id="projectState" class="easyui-combobox" name="projectState" style="width: 100%"
-							data-options="url:'${contextPath!}/project/state.json',textField:'code',valueField:'value',label:'项目状态',editable:false">
+							data-options="url:'${contextPath!}/project/type.json',textField:'code',valueField:'value',label:'项目类型:',editable:false">
 						</select></td>
 					</tr>
 					<tr>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="originator" id="originator" style="width: 100%;" panelWidth="auto"
+							panelHeight="auto" label="项目发起人:"
+							data-options="editable:false,
+									buttonText:'选择',
+									onClickButton:selectMember,onChange:_changeTextboxShowClear" /></td>
+						<td style="padding: 5px;"><select id="projectState" class="easyui-combobox" name="projectState" style="width: 100%"
+							data-options="url:'${contextPath!}/project/state.json',textField:'code',valueField:'value',label:'项目状态:',editable:false">
+						</select></td>
 						<td style="padding: 5px;"><input class="easyui-datebox" name="actualStartDate" id="actualStartDate" style="width: 100%;"
 							panelWidth="auto" panelHeight="auto" label="项目实际开始日期:" data-options="editable:false" /></td>
+					</tr>
+					<tr>
 						<td style="padding: 5px;"><input class="easyui-datebox" name="startDate" id="startDate" style="width: 100%;" panelWidth="auto"
 							panelHeight="auto" label="项目起止日期:" data-options="editable:false" /></td>
-						<td><input class="easyui-datebox" labelWidth="20" name="endDate" id="endDate" style="width: 78%;" panelWidth="auto" panelHeight="auto" label="至"
-							data-options="editable:false" /></td>
+						<td><input class="easyui-datebox" labelWidth="20" name="endDate" id="endDate" style="width: 170px;" panelWidth="auto"
+							panelHeight="auto" label="至" data-options="editable:false" /></td>
 					</tr>
 					<tr>
 						<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid();">查询</a> <a
@@ -54,19 +67,19 @@
 			<thead>
 				<tr>
 					<th data-options="field:'serialNumber',width:'10%', align:'left',formatter:projectNameFormatter">项目编号</th>
-					<th data-options="field:'name',width:'10%', align:'left',formatter:projectNameFormatter">项目名称</th>
+					<th data-options="field:'name', align:'left',formatter:projectNameFormatter">项目名称</th>
 					<th
 						data-options="field:'type',width:'10%', _provider:'projectTypeProvider', _table:'data_dictionary_value',_valueField:'value',_textField:'code',_queryParams:{'yn':1,'dd_id':3}, align:'center'">
 						项目类型</th>
 					<th data-options="field:'startDate',width:'15%', _provider:'dateProvider', align:'center'">项目开始时间</th>
 					<th data-options="field:'endDate',width:'15%', _provider:'dateProvider', align:'center'">项目结束时间</th>
 					<th data-options="field:'actualStartTime',width:'15%', _provider:'dateProvider', align:'center'">实际开始时间</th>
-					<th data-options="field:'projectState',width:'5%',  _provider:'projectStateProvider', align:'center'">项目状态</th>
+					<th data-options="field:'projectState',  _provider:'projectStateProvider', align:'center'">项目状态</th>
 					<th data-options="field:'taskCount',width:'5%', align:'center'">任务数</th>
 					<th data-options="field:'memberCount',width:'5%', align:'center'">成员数</th>
 					<th data-options="field:'completedProgress',width:'10%', align:'center'">完成进度</th>
-					<th data-options="field:'originator',width:'5%', _provider:'memberProvider', align:'center'">项目发起人</th>
-					<th data-options="field:'opt',width:'5%',formatter:optFormatter">操作</th>
+					<th data-options="field:'originator', _provider:'memberProvider', align:'center'">项目发起人</th>
+					<th data-options="field:'opt',align:'center',width:60,formatter:optFormatter">操作</th>
 				</tr>
 			</thead>
 		</table>

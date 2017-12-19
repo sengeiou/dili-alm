@@ -14,12 +14,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dili.alm.dao.FilesMapper;
 import com.dili.alm.dao.ProjectPhaseMapper;
+import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.domain.FileType;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectPhase;
 import com.dili.alm.domain.ProjectVersion;
+import com.dili.alm.domain.Task;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectPhaseAddViewDto;
@@ -54,6 +57,10 @@ public class ProjectPhaseServiceImpl extends BaseServiceImpl<ProjectPhase, Long>
 	private ProjectVersionService projectVersionService;
 	@Autowired
 	private FilesService filesService;
+	@Autowired
+	private TaskMapper taskMapper;
+@Autowired
+	private FilesMapper fileMapper;
 
 	public ProjectPhaseMapper getActualDao() {
 		return (ProjectPhaseMapper) getDao();
@@ -205,13 +212,19 @@ public class ProjectPhaseServiceImpl extends BaseServiceImpl<ProjectPhase, Long>
 	@Transactional
 	@Override
 	public BaseOutput<Object> deleteWithOutput(Long id) {
+		Task taskQuery = DTOUtils.newDTO(Task.class);
+		taskQuery.setPhaseId(id);
+		int count = this.taskMapper.selectCount(taskQuery);
+		if (count > 0) {
+			return BaseOutput.failure("该阶段包含任务不能删除");
+		}
 		int result = this.delete(id);
 		if (result <= 0) {
 			return BaseOutput.failure("删除失败");
 		}
 		Files condition = DTOUtils.newDTO(Files.class);
 		condition.setPhaseId(id);
-		this.filesService.delete(condition);
+		this.fileMapper.delete(condition);
 		return BaseOutput.success();
 	}
 

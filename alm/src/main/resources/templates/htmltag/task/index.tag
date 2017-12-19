@@ -38,6 +38,8 @@
     
     
     function loadPhaseSelect(id,selectId){
+    	console.log(id);
+    	console.log(selectId);
     	$('#_phaseId').combobox({
 				url:"${contextPath!}/task/listTreePhase.json?id="+id,
 				valueField:'id',
