@@ -52,14 +52,17 @@
 					<th
 						data-options="field:'department',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:function(value,row,index){
 						return row.department.name;
-					},width:80"" 所属部门</th>
+					},width:80"">所属部门</th>
 					<th
 						data-options="field:'职务',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:function(value,row,index){
+						if(!row.roles || row.roles.length <= 0){
+							return '';
+						}
 						var content = '';
 						$(row.roles).each(function(index,item){
-							content += item.roleName;
+							content += item.roleName + '，';
 						});
-						return content;
+						return content.substring(0,content.length - 1);
 					}"  >职务</th>
 					<th data-options="field:'lastLoginIp',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">最后登录ip</th>
 					<th
