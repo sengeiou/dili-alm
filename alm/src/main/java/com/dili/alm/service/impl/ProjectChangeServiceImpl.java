@@ -67,7 +67,7 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
         try {
             String[] sendTo = change.getEmail().split(",");
             SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo("yanggang@diligrp.com");
+            message.setTo(sendTo);
             message.setFrom(SystemConfigUtils.getProperty("spring.mail.username"));
             message.setSubject("变更申请");
             message.setText(change.getProjectName() + "的变更申请[" + change.getName() + "]已经提交成功");

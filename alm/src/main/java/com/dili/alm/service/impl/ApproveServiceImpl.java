@@ -294,7 +294,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
     private void sendMail(String[] sendTo, String title, String text) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo("yanggang@diligrp.com");
+            message.setTo(sendTo);
             message.setFrom(SystemConfigUtils.getProperty("spring.mail.username"));
             message.setSubject(title);
             message.setText(text);

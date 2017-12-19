@@ -120,7 +120,13 @@
             success: function (data) {
                 var data = eval('(' + data + ')');
                 if (data.success == true) {
-                    window.location.href = "${contextPath}/projectComplete/toStep/2/" + data.result;
+                    try {
+                        LogUtils.saveLog("新增结项申请:" + data.result, function () {
+                            window.location.href = "${contextPath}/projectComplete/toStep/2/" + data.result;
+                        });
+                    } catch (e) {
+                        window.location.href = "${contextPath}/projectComplete/toStep/2/" + data.result;
+                    }
                 }
             }
         });
