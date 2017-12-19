@@ -23,12 +23,17 @@
 						</select></td>
 					</tr>
 					<tr>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="originator" id="originator" style="width: 100%;" panelWidth="auto"
+							panelHeight="auto" label="所属成员:"
+							data-options="editable:false,
+									buttonText:'选择',
+									onClickButton:selectMember,onChange:_changeTextboxShowClear" /></td>
 						<td style="padding: 5px;"><input class="easyui-datebox" name="actualStartDate" id="actualStartDate" style="width: 100%;"
 							panelWidth="auto" panelHeight="auto" label="项目实际开始日期:" data-options="editable:false" /></td>
 						<td style="padding: 5px;"><input class="easyui-datebox" name="startDate" id="startDate" style="width: 100%;" panelWidth="auto"
 							panelHeight="auto" label="项目起止日期:" data-options="editable:false" /></td>
-						<td><input class="easyui-datebox" labelWidth="20" name="endDate" id="endDate" style="width: 78%;" panelWidth="auto" panelHeight="auto" label="至"
-							data-options="editable:false" /></td>
+						<td><input class="easyui-datebox" labelWidth="20" name="endDate" id="endDate" style="width: 78%;" panelWidth="auto"
+							panelHeight="auto" label="至" data-options="editable:false" /></td>
 					</tr>
 					<tr>
 						<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid();">查询</a> <a
