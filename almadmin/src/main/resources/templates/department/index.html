@@ -22,7 +22,14 @@
 									required : true
 								}
 							}">部门名称</th>
-					<th data-options="field:'notes',width:'50%',editor : 'textbox'">描述</th>
+					<th
+						data-options="field:'code',width:'20%',editor : {
+								type : 'textbox',
+								options : {
+									required : true
+								}
+							}">部门编码</th>
+					<th data-options="field:'notes',width:'30%',editor : 'textbox'">描述</th>
 					<th data-options="field:'userCount',width:'10%',formatter:userCountFomartter">部门人员</th>
 					<th data-options="field:'opt',width:'20%',hidden:true,formatter:columnFormatter">操作</th>
 				</tr>

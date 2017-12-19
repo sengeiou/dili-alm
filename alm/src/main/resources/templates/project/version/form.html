@@ -50,7 +50,7 @@
 				<div id="fileuploader"></div>
 				<table class="easyui-datagrid" title="版本文档列表" id="versionFileGrid" fitColumns="true" pagination="false" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
 					align="center" fit="false" striped="true" idField="id"
-					data-options="<%if(model.id != null){%>url:'${contextPath!}/project/version/file/list?versionId=${model.id!}'<%}%>">
+					data-options="<%if(has(model) && model.id != null){%>url:'${contextPath!}/project/version/file/list?versionId=${model.id!}'<%}%>">
 					<thead>
 						<tr>
 							<th data-options="field:'name', width:'20%', align:'center', resizable:'true', fixed:'false'">文件名</th>
