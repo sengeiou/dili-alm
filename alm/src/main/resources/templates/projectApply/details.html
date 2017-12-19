@@ -95,16 +95,29 @@
                 <tr>
                     <td colspan="4" class="title-second" colspan="3">1.2.项目资源需求</td>
                 </tr>
-                <!--<tr>-->
-                    <!--<td><input class="easyui-textbox" type="text" name="mainUser" id="mainUser"-->
-                               <!--data-options="label:'*负责部门经理:'"></td>-->
-                    <!--<td><input class="easyui-numberspinner" id="member" name="mainNumber" value=""-->
-                               <!--data-options="label:'*预估所需人员:'"> 人-->
-                    <!--</td>-->
-                    <!--<td><input class="easyui-numberbox" type="text" id="workTime" name="mainWorkTime"-->
-                               <!--data-options="label:'*预估工时:'"> 人日-->
-                    <!--</td>-->
-                <!--</tr>-->
+                <tr>
+                    <td colspan="4">
+                        <table id="requireTable" border="0" style="width: 100%">
+                            <tr>
+                                <td style="width: 33%; padding-left:0;">
+                                    <span class="require">*</span>
+                                    <input class="easyui-textbox" type="text" name="mainUser" id="mainUser" style="width: calc(30% - 88px)"
+                                           data-options="label:'负责部门经理:'">
+                                </td>
+                                <td style="width: 33%; padding-left:0;">
+                                    <span class="require">*</span>
+                                    <input class="easyui-numberspinner" id="member" name="mainNumber" value="" style="width: calc(30% - 105px)"
+                                           data-options="label:'*预估所需人员:'"> 人
+                                </td>
+                                <td style="width: 33%; padding-left:0;">
+                                    <span class="require">*</span>
+                                    <input class="easyui-numberbox" type="text" id="workTime" name="mainWorkTime" style="width: calc(30% - 115px)"
+                                           data-options="label:'*预估工时:'"> 人日
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
             </table>
         </form>
     </div>

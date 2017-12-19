@@ -112,7 +112,7 @@
 <script type="text/javascript">
     var userid = '${sessionID}';
     function formatStatus(value, row) {
-        console.log(row);
+        // console.log(row);
         if (row.$_status == 1) {
             if(row.$_createMemberId == userid) {
                 return '<span class="opt" style="padding:5px;"><a href="${contextPath}/projectApply/toStep/1/' + row.id + '">编辑</a></span><span class="opt" style="padding:5px;"><a href="javascript:void(0)" onclick="del(' + row.id + ')">删除</a></span>';
