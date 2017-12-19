@@ -134,11 +134,14 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
     @Override
     public Long reApply(Long id) {
         ProjectApply apply = get(id);
+        apply.setRestatus(0);
+        update(apply);
         apply.setId(null);
         apply.setStatus(AlmConstants.ApplyState.APPLY.getCode());
         apply.setCreated(new Date());
         apply.setModified(null);
         apply.setNumber(getProjectNumber(apply));
+        apply.setRestatus(0);
         insert(apply);
         buildFiles(id, apply.getId());
         return apply.getId();

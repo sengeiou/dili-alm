@@ -25,20 +25,21 @@
     <result column="create_member_id" jdbcType="BIGINT" property="createMemberId" />
     <result column="modify_member_id" jdbcType="BIGINT" property="modifyMemberId" />
     <result column="estimate_launch_date" jdbcType="TIMESTAMP" property="estimateLaunchDate" />
+    <result column="reStatus" jdbcType="TINYINT" property="restatus" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
       WARNING - @mbg.generated
     -->
-    id, name, number, project_name, project_id, version_id, phase_id, type, working_hours,
-    affects_online, submit_date, content, effects, email, status, created, modified,
-    create_member_id, modify_member_id, estimate_launch_date
+    id, name, number, project_name, project_id, version_id, phase_id, type, working_hours, 
+    affects_online, submit_date, content, effects, email, status, created, modified, 
+    create_member_id, modify_member_id, estimate_launch_date, reStatus
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
       WARNING - @mbg.generated
     -->
-    select
+    select 
     <include refid="Base_Column_List" />
     from project_change
     where id = #{id,jdbcType=BIGINT}
@@ -105,6 +106,9 @@
       </if>
       <if test="estimateLaunchDate != null">
         estimate_launch_date = #{estimateLaunchDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="restatus != null">
+        reStatus = #{restatus,jdbcType=TINYINT},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
