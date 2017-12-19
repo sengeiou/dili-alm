@@ -238,12 +238,16 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			 DataDictionaryValue  ddv=DTOUtils.newDTO(DataDictionaryValue.class);
 			 ddv.setId(Long.parseLong(weeklyPara.getProjectType()));//项目类型
 			 weeklyPara.setProjectType(dataDictionaryValueService.list(ddv).get(0).getValue());
+		}else{
+			 weeklyPara.setProjectType(null);
 		}
 		//参数转换 项目状态
 		if(weeklyPara.getProjectStatus()!=null&&!weeklyPara.getProjectStatus().endsWith("-1")){
 		 DataDictionaryValue  ddv=DTOUtils.newDTO(DataDictionaryValue.class);
 		 ddv.setId(Long.parseLong(weeklyPara.getProjectStatus()));//项目类型
 		 weeklyPara.setProjectStatus(dataDictionaryValueService.list(ddv).get(0).getValue());
+		}else{
+			 weeklyPara.setProjectStatus(null);
 		}
 		
 		//参数转换 项目状态
@@ -251,7 +255,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			weeklyPara.setUserName(null);
 		}
 		if(weeklyPara.getEndDate()!=null){
-			String dateString =DateUtil.getAddDay(weeklyPara.getEndDate(), 1);
+			String dateString =DateUtil.getAddDay(weeklyPara.getEndDate(), 1);//加一天
 		    weeklyPara.setEndDate(dateString);  
 		}
 	     
