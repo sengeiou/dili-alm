@@ -21,6 +21,7 @@ import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.ProjectVersionFormDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectVersionChangeStateViewDto;
+import com.dili.alm.provider.ProjectVersionProvider;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.ProjectPhaseService;
 import com.dili.alm.service.ProjectService;
@@ -64,51 +65,46 @@ public class ProjectVersionController {
 	}
 
 	@ApiOperation(value = "查询Milestones", notes = "查询Milestones，返回列表信息")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "Milestones", paramType = "form", value = "Milestones的form信息", required = false, dataType = "string") })
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Milestones", paramType = "form", value = "Milestones的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<ProjectVersion> list(ProjectVersion projectVersion) {
 		return projectVersionService.list(projectVersion);
 	}
 
 	@ApiOperation(value = "分页查询Milestones", notes = "分页查询Milestones，返回easyui分页信息")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "Milestones", paramType = "form", value = "Milestones的form信息", required = false, dataType = "string") })
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Milestones", paramType = "form", value = "Milestones的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody List<Map> listPage(ProjectVersion projectVersion) throws Exception {
-		Map<Object, Object> metadata = new HashMap<>();
-
-		JSONObject projectStateProvider = new JSONObject();
-		projectStateProvider.put("provider", "projectStateProvider");
-		metadata.put("versionState", projectStateProvider);
-
-		JSONObject onlineProvider = new JSONObject();
-		onlineProvider.put("provider", "onlineProvider");
-		metadata.put("online", onlineProvider);
-
-		JSONObject datetimeProvider = new JSONObject();
-		datetimeProvider.put("provider", "datetimeProvider");
-		metadata.put("actualStartDate", datetimeProvider);
-		metadata.put("plannedStartDate", datetimeProvider);
-		metadata.put("plannedEndDate", datetimeProvider);
+	public @ResponseBody List<Map> listPage(ProjectVersion projectVersion) {
 		List<ProjectVersion> list = this.projectVersionService.listByExample(projectVersion);
-		return ValueProviderUtils.buildDataByProvider(metadata, list);
+		try {
+			return ProjectVersionProvider.parseEasyUiModelList(list);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	@ApiOperation("新增Milestones")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "Milestones", paramType = "form", value = "Milestones的form信息", required = true, dataType = "string") })
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Milestones", paramType = "form", value = "Milestones的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.POST })
 	public @ResponseBody BaseOutput insert(ProjectVersionFormDto dto) {
 		return projectVersionService.insertSelectiveWithOutput(dto);
 	}
 
 	@ApiOperation("修改Milestones")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "Milestones", paramType = "form", value = "Milestones的form信息", required = true, dataType = "string") })
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Milestones", paramType = "form", value = "Milestones的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput update(ProjectVersionFormDto dto) {
 		return projectVersionService.updateSelectiveWithOutput(dto);
 	}
 
 	@ApiOperation("删除Milestones")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "id", paramType = "form", value = "Milestones的主键", required = true, dataType = "long") })
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "id", paramType = "form", value = "Milestones的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput delete(Long id) {
 		return projectVersionService.deleteWithOutput(id);
@@ -122,11 +118,11 @@ public class ProjectVersionController {
 	}
 
 	@RequestMapping(value = "/edit", method = RequestMethod.GET)
-	public String editView(@RequestParam Long projectId, @RequestParam(required = false) Long id, ModelMap map) {
-		Project project = this.projectService.get(projectId);
-		map.addAttribute("project", project);
+	public String editView(@RequestParam Long id, ModelMap map) {
 		ProjectVersion version = this.projectVersionService.get(id);
 		map.addAttribute("model", version);
+		Project project = this.projectService.get(version.getProjectId());
+		map.addAttribute("project", project);
 		Files record = DTOUtils.newDTO(Files.class);
 		record.setVersionId(id);
 		List<Files> files = this.filesService.list(record);
@@ -139,7 +135,8 @@ public class ProjectVersionController {
 		ProjectVersionChangeStateViewDto model = this.projectVersionService.getChangeStateViewData(id);
 		Project project = this.projectService.get(model.getVersion().getProjectId());
 		List<DataDictionaryValueDto> states = this.projectService.getProjectStates();
-		map.addAttribute("model", model.getVersion()).addAttribute("changes", model.getChanges()).addAttribute("project", project).addAttribute("states", states);
+		map.addAttribute("model", model.getVersion()).addAttribute("changes", model.getChanges())
+				.addAttribute("project", project).addAttribute("states", states);
 		return "project/version/changeState";
 	}
 
