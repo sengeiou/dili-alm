@@ -25,6 +25,12 @@
     .title-second {
         padding-left: 30px;
     }
+    .l-btn-large .l-btn-text{
+        line-height: 28px;
+    }
+    .textbox-label{
+        width: 110px;
+    }
 </style>
 <div id="smDialog" style="display: none;"></div>
 <div class="easyui-panel" title="项目立项审批">
@@ -32,7 +38,7 @@
         <form id="ff" method="post" action="">
             <input type="hidden" name="id" value="${apply.id}">
             <input type="hidden" name="opt" id="opt" value="">
-            <table cellpadding="5" id="tb">
+            <table cellpadding="5" id="tb" style="width: 100%">
                 <tr>
                     <td>项目编号</td>
                     <td>${apply.number}</td>
@@ -46,43 +52,43 @@
                     <td>${apply.created}</td>
                 </tr>
                 <tr>
-                    <td class="title-first" colspan="3">1项目内容及资源</td>
+                    <td class="title-first" colspan="4">1项目内容及资源</td>
                 </tr>
                 <tr>
-                    <td class="title-second" colspan="3">1.1项目基本信息</td>
+                    <td class="title-second" colspan="4">1.1项目基本信息</td>
                 </tr>
                 <tr>
-                    <td colspan="2"><input class="easyui-textbox" type="text" name="name"
+                    <td colspan="4"><input class="easyui-textbox" type="text" name="name"
                                            data-options="label:'项目名称:'" style="width:600px"></td>
                 </tr>
                 <tr>
-                    <td><input class="easyui-textbox" name="projectLeader" style="width: 100%;"
+                    <td colspan="2"><input class="easyui-textbox" name="projectLeader" style=""
                                panelWidth="auto" panelHeight="auto" label="项目负责人:"
                                data-options=""/></td>
-                    <td><input class="easyui-textbox" type="text" name="projectType"
+                    <td colspan="2"><input class="easyui-textbox" type="text" name="projectType"
                                data-options="label:'项目类别:'"></td>
                 </tr>
                 <tr>
-                    <td><input class="easyui-textbox" type="text" name="businessOwner"
+                    <td colspan="2"><input class="easyui-textbox" type="text" name="businessOwner"
                                data-options="label:'业务负责人:'"></td>
-                    <td><input class="easyui-textbox" type="text" name="dep" data-options="required:true,label:'需求所属业务部门:'"></td>
+                    <td colspan="2"><input class="easyui-textbox" type="text" name="dep" data-options="required:true,label:'需求所属业务部门:'"></td>
                 </tr>
                 <tr>
-                    <td><input class="easyui-datetimebox" name="expectedLaunchDate" id=""
+                    <td colspan="2"><input class="easyui-datetimebox" name="expectedLaunchDate" id=""
                                data-options="required:true,label:'业务期望上线日期:'"/></td>
-                    <td><input class="easyui-datetimebox" name="estimateLaunchDate" id=""
+                    <td colspan="2"><input class="easyui-datetimebox" name="estimateLaunchDate" id=""
                                data-options="required:true,label:'预估最终上线日期:'"/></td>
                 </tr>
                 <tr>
-                    <td><input class="easyui-datetimebox" name="startDate" id=""
+                    <td colspan="2"><input class="easyui-datetimebox" name="startDate" id=""
                                data-options="required:true,label:'计划开始日期:'"/>
                     </td>
-                    <td><input class="easyui-datetimebox" name="endDate" id=""
+                    <td colspan="2"><input class="easyui-datetimebox" name="endDate" id=""
                                data-options="required:true,label:'计划结束日期:'"/>
                     </td>
                 </tr>
                 <tr>
-                    <td class="title-first" colspan="3">项目基本描述</td>
+                    <td class="title-first" colspan="4">项目基本描述</td>
                 </tr>
                 <tr>
                     <td class="title-second" colspan="4">目的</td>
@@ -90,7 +96,7 @@
                 <tr>
                     <td colspan="4"><input class="easyui-textbox" name="purpose"
                                            data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
-                                           style="width:800px;height:120px"/></td>
+                                           style="width:100%;height:120px"/></td>
                 </tr>
                 <tr>
                     <td class="title-second" colspan="4">范围</td>
@@ -98,7 +104,7 @@
                 <tr>
                     <td colspan="4"><input class="easyui-textbox" name="range"
                                            data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
-                                           style="width:800px;height:120px"/></td>
+                                           style="width:100%;height:120px"/></td>
                 </tr>
                 <tr>
                     <td class="title-second" colspan="4">方法概要</td>
@@ -106,21 +112,21 @@
                 <tr>
                     <td colspan="4"><input class="easyui-textbox" name="methodSummary"
                                            data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
-                                           style="width:800px;height:120px"/></td>
+                                           style="width:100%;height:120px"/></td>
                 </tr>
                 <tr>
-                    <td class="title-first" colspan="3">立项评审&审批</td>
+                    <td class="title-first" colspan="4">立项评审&审批</td>
                 </tr>
                 <tr>
                     <td class="" colspan="4">
-                        <table id="dg" class="easyui-datagrid" style="height:auto"
+                        <table id="dg" class="easyui-datagrid" style="height:auto;width: 100%"
                                data-options="singleSelect: true,  url: '${contextPath}/approve/loadDesc?id=${apply.id}'">
                             <thead>
                             <tr>
-                                <th data-options="field:'approveDate',_provider:'datetimeProvider',width:180,align:'center'">
+                                <th data-options="field:'approveDate',_provider:'datetimeProvider',width:150,align:'center'">
                                     审批时间
                                 </th>
-                                <th data-options="field:'userId',width:200,align:'center'">
+                                <th data-options="field:'userId',width:100,align:'center'">
                                     用户
                                 </th>
                                 <th data-options="field:'role',width:200,align:'center'">
@@ -137,12 +143,12 @@
                 </tr>
             </table>
             <% if(!viewMode){ %>
-            <table>
+            <table style="width: 100%">
 
                 <tr>
                     <td colspan="4" style="padding-left: 0"><input id="notes" class="easyui-textbox" name="notes"
                                            data-options="label:'审批意见',multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
-                                           style="width:800px;height:120px"/></td>
+                                           style="width:calc(100% - 175px);height:120px"/></td>
                 </tr>
             </table>
             <%}%>

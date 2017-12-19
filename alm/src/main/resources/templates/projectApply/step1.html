@@ -29,7 +29,7 @@
     }
     em{
         display: inline-block;
-        width: 9px;
+        width: 11px;
     }
     span.require{
         width: 9px;
@@ -144,23 +144,31 @@
                     <td class="title-second" colspan="4">1.2.项目资源需求</td>
                 </tr>
                 <tr>
-                    <td>
-                        <span class="require">*</span>
-                        <input class="easyui-textbox" type="text" name="mainUser" id="mainUser"
-                               data-options="editable:false,required:true,label:'负责部门经理:',buttonText:'选择',
-									onClickButton:selectMember,onChange:_changeTextboxShowClear">
+                    <td colspan="4">
+                        <table id="requireTable" border="0" style="width: 100%">
+                            <tr>
+                                <td style="width: 30%">
+                                    <span class="require">*</span>
+                                    <input class="easyui-textbox" type="text" name="mainUser" id="mainUser" style="width: calc(30% - 78px)"
+                                    data-options="editable:false,required:true,label:'负责部门经理:',buttonText:'选择',
+                                    onClickButton:selectMember,onChange:_changeTextboxShowClear">
+                                </td>
+                                <td style="width: 30%">
+                                    <span class="require">*</span>
+                                    <input class="easyui-numberspinner" id="member" name="mainNumber" value="" style="width: calc(30% - 95px)"
+                                    data-options="required:true,increment:1,label:'预估所需人员:',min:1"> 人
+                                </td>
+                                <td style="width: 30%">
+                                    <span class="require">*</span>
+                                    <input class="easyui-numberbox" type="text" id="workTime" name="mainWorkTime" style="width: calc(30% - 105px)"
+                                    data-options="required:true,label:'预估工时:',min:1"> 人日
+                                </td>
+                                <td style="width: 10%;text-align: center">
+                                    <a href="javascript:void(0);" class="_add">新增</a>
+                                </td>
+                            </tr>
+                        </table>
                     </td>
-                    <td>
-                        <span class="require">*</span>
-                        <input class="easyui-numberspinner" id="member" name="mainNumber" value=""
-                               data-options="required:true,increment:1,label:'预估所需人员:',min:1"> 人
-                    </td>
-                    <td>
-                        <span class="require">*</span>
-                        <input class="easyui-numberbox" type="text" id="workTime" name="mainWorkTime"
-                               data-options="required:true,label:'预估工时:',min:1"> 人日
-                    </td>
-                    <td><a href="javascript:void(0);" class="_add">新增</a></td>
                 </tr>
             </table>
         </form>
@@ -222,7 +230,7 @@
         console.log(obj);
         var index = jQuery('.related').length;
         var parserId = "parser_" + new Date().getTime();
-        $("#tb").append("<tr class='related' id='" + parserId + "'><td><input class=\"easyui-textbox\" type=\"text\" id=\"" + index + "-user" + "\" name=\"relatedResources[" + index + "].relatedUser\" data-options=\"label:'相关部门经理:',editable:false,required:true,buttonText:'选择', onClickButton:selectMember,onChange:_changeTextboxShowClear\"></td><td><input class=\"easyui-numberspinner\" id='" + index + "-number' name='relatedResources[" + index + "].relatedNumber' value=\"\" data-options=\"increment:1,required:true,label:'预估所需人员:',min:1\">人</td><td><input class=\"easyui-numberbox\" type=\"text\" id='" + index + "-time' name='relatedResources[" + index + "].relatedWorkTime' data-options=\"label:'预估工时:',required:true,min:1\"> 人日</td><td><a href=\"javascript:void(0);\" class=\"_del\" onclick='delRelated(this)'>删除</a></td></tr>");
+        $("#requireTable").append("<tr class='related' id='" + parserId + "'><td><em></em><input style=\"width: calc(30% - 78px)\" class=\"easyui-textbox\" type=\"text\" id=\"" + index + "-user" + "\" name=\"relatedResources[" + index + "].relatedUser\" data-options=\"label:'相关部门经理:',editable:false,required:true,buttonText:'选择', onClickButton:selectMember,onChange:_changeTextboxShowClear\"></td><td><em></em><input style=\"width: calc(30% - 95px)\" class=\"easyui-numberspinner\" id='" + index + "-number' name='relatedResources[" + index + "].relatedNumber' value=\"\" data-options=\"increment:1,required:true,label:'预估所需人员:',min:1\"> 人</td><td><em></em><input style=\"width: calc(30% - 105px)\" class=\"easyui-numberbox\" type=\"text\" id='" + index + "-time' name='relatedResources[" + index + "].relatedWorkTime' data-options=\"label:'预估工时:',required:true,min:1\"> 人日</td><td style=\"width: 10%;text-align: center\"><a href=\"javascript:void(0);\" class=\"_del\" onclick='delRelated(this)'>删除</a></td></tr>");
         $.parser.parse("#" + parserId);
         if(obj!=undefined){
             $("#" + index + "-user").textbox('initValue', obj['relatedUserValue']);
