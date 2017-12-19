@@ -51,7 +51,7 @@
 <!-- =========================================================表格========================================================= -->
 <table class="easyui-datagrid" title="项目版本信息" id="versionGrid" fitColumns="true" rownumbers="true" pagination="false" remoteSort="false"
 	loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" align="center" fit="false" striped="true" toolbar="#versionToolbar"
-	idField="id" data-options="url:'${contextPath!}/project/version/listPage?projectId=${model.id!}'">
+	idField="id" data-options="url:'${contextPath!}/project/version/listPage?projectId=${model.id!}',onLoadSuccess:countVersionGrid">
 	<thead>
 		<tr>
 			<th data-options="field:'version', width:'20%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">版本号</th>
@@ -73,12 +73,13 @@
 </table>
 <!-- datagrid工具栏 -->
 <div id="versionToolbar" style="padding: 2px 5px;">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsertVersion()" plain="true">新建版本</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsertVersion()" plain="true">新建版本</a> <span id="versionCount"
+		style="color: red;"></span>
 </div>
 
 <table class="easyui-datagrid" title="项目阶段信息" id="phaseGrid" fitColumns="true" rownumbers="true" pagination="false" remoteSort="false"
 	loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" align="center" fit="false" striped="true" toolbar="#phaseToolbar"
-	idField="id" data-options="url:'${contextPath!}/project/phase/list?projectId=${model.id!}'">
+	idField="id" data-options="url:'${contextPath!}/project/phase/list?projectId=${model.id!}',onLoadSuccess:countPhaseGrid">
 	<thead>
 		<tr>
 			<th data-options="field:'name', width:'10%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">阶段名称</th>
@@ -98,12 +99,13 @@
 </table>
 <!-- datagrid工具栏 -->
 <div id="phaseToolbar" style="padding: 2px 5px;">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsertPhase()" plain="true">新建阶段</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsertPhase()" plain="true">新建阶段</a> <span id="phaseCount"
+		style="color: red;"></span>
 </div>
 <table class="easyui-datagrid" title="项目文档列表" id="fileGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"
 	pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
 	sortName="name" align="center" fit="false" striped="true" toolbar="#fileToolbar" idField="id"
-	data-options="url:'${contextPath!}/files/list?projectId=${model.id!}'">
+	data-options="url:'${contextPath!}/files/list?projectId=${model.id!}',onLoadSuccess:countFileGrid">
 	<thead>
 		<tr>
 			<th data-options="field:'name', width:'15%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">文件名</th>
@@ -120,7 +122,8 @@
 </table>
 <!-- datagrid工具栏 -->
 <div id="fileToolbar" style="padding: 2px 5px;">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="uploadFile(${model.id!})" plain="true">新建文档</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="uploadFile(${model.id!})" plain="true">新建文档</a> <span id="fileCount"
+		style="color: red;"></span>
 </div>
 <script type="text/javascript">
 <#members_index/>

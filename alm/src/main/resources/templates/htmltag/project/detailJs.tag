@@ -1,3 +1,15 @@
+function countVersionGrid(data) {
+	$('#versionCount').text('（' + data.total + '条版本记录）');
+}
+
+function countPhaseGrid(data) {
+	$('#phaseCount').text('（' + data.total + '条阶段记录）');
+}
+
+function countFileGrid(data) {
+	$('#fileCount').text('（' + data.total + '条）');
+}
+
 function versionOptFormatter(value, row, index) {
 	var content = '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="changeVersionState(' + row.id + ');">状态变更</a>';
 	content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="editVersion(' + row.id + ');">编辑</a>';
