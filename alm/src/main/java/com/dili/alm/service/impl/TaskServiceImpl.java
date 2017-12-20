@@ -229,7 +229,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			//更新状态为完成
 			task.setStatus(TaskStatus.COMPLETE.code); 
 		} 
-		
+		taskDetailsFromDatabase.setModified(new Date());
 		this.taskDetailsService.saveOrUpdate(taskDetailsFromDatabase);
 		//进度总量写入project表中
 		saveProjectProgress(task);
@@ -515,7 +515,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		team.setMemberId(userTicket.getId());
 		List<Team> teamList = teamService.list(team);
 		for (Team team2 : teamList) {
-			if (team2.getRole().equals(TeamRole.PRODUCT_MANAGER)) {
+			if (team2.getRole().equalsIgnoreCase(TeamRole.DEVELOP_MANAGER.getValue())) {
 				return true;
 			}
 		}

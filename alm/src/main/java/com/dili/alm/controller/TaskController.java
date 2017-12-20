@@ -232,14 +232,6 @@ public class TaskController {
 		return false;
 	}
 	
-	//是否是项目经理
-	@ResponseBody
-	@RequestMapping(value = "/isProjectManger.json", method = {
-			RequestMethod.GET, RequestMethod.POST })
-	public boolean isProjectManger(Long id) {
-		Task task = taskService.get(id);
-		return false;
-	}
 
 	// 更新任务信息
 	@ApiOperation("填写任务工时")
