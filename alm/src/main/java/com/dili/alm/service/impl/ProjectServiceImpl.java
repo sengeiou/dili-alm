@@ -316,7 +316,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 			throw new RuntimeException("未登录");
 		}
 		int total = this.getActualDao().getPageByProjectCount(userTicket.getId());
-		List<Project> projectList = this.getActualDao().getProjectsByTaskOwner(project,userTicket.getId());
+		List<Project> projectList = this.getActualDao().getProjectsByTaskOwner(project, userTicket.getId());
 		List<ProjectDto> projectDtoList = new ArrayList<ProjectDto>();
 		if (projectList != null && projectList.size() > 0) {
 			for (Project project1 : projectList) {
@@ -446,11 +446,9 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 				.append(AlmCache.PHASE_NAME_MAP.get(phase.getName()));
 		helper.setText(sb.toString());
 		for (Files files : attachments) {
-			FileSystemResource file = new FileSystemResource(
-					new File(FilesService.MILESTONES_PATH_PREFIX + files.getName()));
+			FileSystemResource file = new FileSystemResource(new File(files.getUrl() + files.getName()));
 			helper.addAttachment(files.getName(), file);
 		}
-		Thread.sleep(2000);
 		mailSender.send(mimeMessage);
 	}
 
