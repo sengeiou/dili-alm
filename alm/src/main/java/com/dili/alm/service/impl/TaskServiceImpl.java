@@ -231,6 +231,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		} 
 		taskDetailsFromDatabase.setModified(new Date());
 		this.taskDetailsService.saveOrUpdate(taskDetailsFromDatabase);
+		this.saveOrUpdate(task);
 		//进度总量写入project表中
 		saveProjectProgress(task);
 		
