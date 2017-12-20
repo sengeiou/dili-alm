@@ -2,6 +2,7 @@
 <style>
     td {
         padding-left: 60px;
+        padding-right: 60px;
     }
     input[class^="easyui-"] {
         width: 300px;
@@ -16,6 +17,9 @@
     }
     .title-second {
         padding-left: 30px;
+    }
+    table{
+        width: 100%;
     }
 </style>
 <div class="easyui-panel" title="立项申请（第三步）" >
@@ -35,12 +39,12 @@
                 <tr>
                     <td class="title-second" colspan="4">目标说明</td>
                 </tr>
-                <tr><td colspan="4"><input class="easyui-textbox" name="notes" id="" data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']" style="width:800px;height:120px" /></td>
+                <tr><td colspan="4"><input class="easyui-textbox" name="notes" id="" data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']" style="width:100%;height:120px" /></td>
                 </tr>
                 <tr>
                     <td class="title-second" colspan="4">功能描述</td>
                 </tr>
-                <tr><td colspan="4"><input class="easyui-textbox" name="desc" id="" data-options="multiline:true,prompt:'限制输入500个字符串',validType:['length[0,500]']" style="width:800px;height:120px" /></td>
+                <tr><td colspan="4"><input class="easyui-textbox" name="desc" id="" data-options="multiline:true,prompt:'限制输入500个字符串',validType:['length[0,500]']" style="width:100%;height:120px" /></td>
                 </tr>
 
             </table>
