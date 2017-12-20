@@ -4,6 +4,7 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -60,6 +61,9 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 
 	public static  final  String PROJECTTYPE="项目类型";
 	public static  final  String PROJECTTYPEID="3";
+	public static  final  Long PHASENAMEVALUE=10L;
+	                             
+	
 	public static  final  String PROJECTSTATUS="项目状态";
 	
 	@Autowired
@@ -489,7 +493,12 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			// 版本
 			td.get(i).setVersionId(projectVersionMapper.selectByPrimaryKey(Long.parseLong(td.get(i).getVersionId())).getVersion());
 			// 阶段
-			td.get(i).setPhaseId(projectPhaseMapper.selectByPrimaryKey(Long.parseLong(td.get(i).getPhaseId())).getName());
+			String  phaseName=projectPhaseMapper.selectByPrimaryKey(Long.parseLong(td.get(i).getPhaseId())).getName();
+			DataDictionaryValue  ddvPhaseName=DTOUtils.newDTO(DataDictionaryValue.class);
+			ddvPhaseName.setValue(phaseName);
+			ddvPhaseName.setDdId(PHASENAMEVALUE);
+			td.get(i).setPhaseId(dataDictionaryValueService.list(ddvPhaseName).get(0).getCode());
+			
 			// 本周工时
 			Integer intweekHour=Integer.parseInt(DateUtil.getDatePoor( td.get(i).getEndDate(),td.get(i).getStartDate()));
 			td.get(i).setWeekHour((intweekHour+1)*8+"");
@@ -546,7 +555,18 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	 * */
 	@Override
 	public List<String> selectProjectPhase(WeeklyPara weeklyPara) {
-		return weeklyMapper.selectProjectPhase(weeklyPara);
+		
+		List<String> listStr= weeklyMapper.selectProjectPhase(weeklyPara);
+		DataDictionaryValue  ddvPhaseName=DTOUtils.newDTO(DataDictionaryValue.class);
+		ddvPhaseName.setDdId(PHASENAMEVALUE);
+		
+		List<String>   list=new ArrayList<String>();
+		for (String phaseName : listStr) {
+		       ddvPhaseName.setValue(phaseName);
+		       list.add( dataDictionaryValueService.list(ddvPhaseName).get(0).getCode() );
+		}
+		
+		return list;
 	}
 
 	/**
