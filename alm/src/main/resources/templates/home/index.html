@@ -103,7 +103,13 @@
 $(function() {
 	  init();
 	});
-
+	function showNewDate(){
+    var newDate = new Date();
+    var str = "" + newDate.getFullYear() + "/";
+    str += (newDate.getMonth()+1) + "/";
+    str += newDate.getDate() ;
+    return str;
+   }
    function init(){
 	   $('#calendar').empty();
 	   $("#scheduleList").empty();
@@ -136,11 +142,17 @@ $(function() {
 			} ,dayClick: function(date, allDay, jsEvent, view) {
 				//弹出框
 	            var selDate =$.fullCalendar.formatDate(date,'yyyy-MM-dd');//格式化日期
-	            $('#dlg').dialog("open");
-	            $('#_form').form("clear");
-	            $('#_form').form("load",{scheduleDate:selDate});
-	            $('#dlg').panel('move',{top:$(document).scrollTop() + ($(window).height()-100) * 0.5});
-	            $('#dlg').panel('move',{left:$(document).scrollTop() + ($(window).height()+50) * 0.5});
+	            var oldDate = new Date(selDate.replace("-", "/").replace("-", "/"));
+	   		 	var newDate = new Date(showNewDate());
+	   		 	if(oldDate<newDate){
+	   		 		$.messager.alert('警告','不可添加日程');
+	   		 	}else{
+		            $('#dlg').dialog("open");
+		            $('#_form').form("clear");
+		            $('#_form').form("load",{scheduleDate:selDate});
+		            $('#dlg').panel('move',{top:$(document).scrollTop() + ($(window).height()-100) * 0.5});
+		            $('#dlg').panel('move',{left:$(document).scrollTop() + ($(window).height()+50) * 0.5});
+	   		 	}
 	        },eventMouseover:function(calEvent, jsEvent, view){
 
 	        	var selDate =$.fullCalendar.formatDate(calEvent.start,'yyyy-MM-dd');//格式化日期
@@ -219,9 +231,17 @@ $(function() {
 		 var obj = $.parseJSON(str);
 		 var htmlStr="";
 		 $("#scheduleList").empty();
-		  $(obj).each(function(){
-            htmlStr+="<li>"+this.scheduleText +"&nbsp;&nbsp;<a href='javascript:void(0)' onclick='del("+this.id+")'>删除</a></li>";
-		  });
+		 var oldDate = new Date(obj[0].scheduleDateStr.replace("-", "/").replace("-", "/"));
+		 var newDate = new Date(showNewDate());
+		 if(oldDate<newDate){
+			  $(obj).each(function(){
+		           htmlStr+="<li>"+this.scheduleText +"&nbsp;&nbsp;</li>";
+			  });
+		 }else{
+			 $(obj).each(function(){
+		           htmlStr+="<li>"+this.scheduleText +"&nbsp;&nbsp;<a href='javascript:void(0)' onclick='del("+this.id+")'>删除</a></li>";
+			  }); 
+		 }
 		 $("#scheduleList").html(htmlStr);
 
 	}
