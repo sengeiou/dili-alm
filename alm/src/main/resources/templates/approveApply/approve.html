@@ -33,7 +33,11 @@
     }
 </style>
 <div id="smDialog" style="display: none;"></div>
-<div class="easyui-panel" title="项目立项审批">
+<!--<div id="cusTools">-->
+    <!--<a href="${contextPath}/approve/apply/index.html" style="width: 30px;color: #333;text-decoration: none">返回</a>-->
+<!--</div>-->
+<div class="easyui-panel" title="项目立项审批"style="height: 100%"
+     data-options="tools:'#cusTools'">
     <div style="padding:10px 60px 20px 60px">
         <form id="ff" method="post" action="">
             <input type="hidden" name="id" value="${apply.id}">
@@ -123,19 +127,19 @@
                                data-options="singleSelect: true,  url: '${contextPath}/approve/loadDesc?id=${apply.id}'">
                             <thead>
                             <tr>
-                                <th data-options="field:'approveDate',_provider:'datetimeProvider',width:150,align:'center'">
+                                <th data-options="field:'approveDate',_provider:'datetimeProvider',width:'32%',align:'center'">
                                     审批时间
                                 </th>
-                                <th data-options="field:'userId',width:100,align:'center'">
+                                <th data-options="field:'userId',width:'12%',align:'center'">
                                     用户
                                 </th>
-                                <th data-options="field:'role',width:200,align:'center'">
+                                <th data-options="field:'role',width:'32%',align:'center'">
                                     职务
                                 </th>
-                                <th data-options="field:'result',width:100,align:'center',formatter:format">
+                                <th data-options="field:'result',width:'12%',align:'center',formatter:format">
                                     审批结果
                                 </th>
-                                <th data-options="field:'notes',width:150,align:'center'">审批意见</th>
+                                <th data-options="field:'notes',width:'12%',align:'center'">审批意见</th>
                             </tr>
                             </thead>
                         </table>
@@ -154,7 +158,7 @@
             <%}%>
         </form>
         <div style="text-align:center;padding:5px;margin-top:50px;">
-            <a href="${contextPath}/approve/apply/index.html" class="easyui-linkbutton" data-options="size:'large',width:'80px'">返回</a>
+            <a href="${contextPath}/approve/apply/index.html" class="easyui-linkbutton" data-options="width:'80px'">返回</a>
             <% if(!viewMode){ %>
             <% if(canOpt){ %>
             <a href="javascript:void(0)" class="easyui-linkbutton" data-options="size:'large',width:'80px'"
