@@ -42,8 +42,8 @@
             ">
                 <thead>
                 <tr>
-                    <th data-options="field:'phase',width:80,align:'center',">阶段/里程碑</th>
-                    <th data-options="field:'startDate',_provider:'datetimeProvider',width:200,align:'center',editor:{type:'datebox',options:{required:true,onShowPanel:function(){
+                    <th data-options="field:'phase',width:'15%',align:'center',">阶段/里程碑</th>
+                    <th data-options="field:'startDate',_provider:'datetimeProvider',width:'25%',align:'center',editor:{type:'datebox',options:{required:true,onShowPanel:function(){
                      $(this).datebox().datebox('calendar').calendar({
                 validator: function(date){
                 var now = new Date();
@@ -54,7 +54,7 @@
                     }}}">
                         计划开始日期
                     </th>
-                    <th data-options="field:'endDate',_provider:'datetimeProvider',width:200,align:'center',editor:{type:'datebox',options:{required:true,onShowPanel:function(){
+                    <th data-options="field:'endDate',_provider:'datetimeProvider',width:'25%',align:'center',editor:{type:'datebox',options:{required:true,onShowPanel:function(){
                      $(this).datebox().datebox('calendar').calendar({
                 validator: function(date){
                 var now = new Date();
@@ -65,10 +65,10 @@
                     }}}">
                         计划结束日期
                     </th>
-                    <th data-options="field:'resources',width:100,align:'center',editor:{type:'numberspinner',options:{increment:1,min:1}}">
+                    <th data-options="field:'resources',width:'15%',align:'center',editor:{type:'numberspinner',options:{increment:1,min:1}}">
                         计划投入资源
                     </th>
-                    <th data-options="field:'workTime',width:150,align:'center',editor:{type:'numberbox',options:{min:1}}">计划工时（人日）</th>
+                    <th data-options="field:'workTime',width:'20%',align:'center',editor:{type:'numberbox',options:{min:1}}">计划工时（人日）</th>
                 </tr>
                 </thead>
             </table>

@@ -1,5 +1,8 @@
 <#body>
 <style>
+    html,body{
+        height: 100%;
+    }
     #step1 td {
         padding-left: 60px;
     }
@@ -37,9 +40,14 @@
     .title-second {
         padding-left: 30px;
     }
+
 </style>
 <div id="smDialog" style="display: none;"></div>
-<div class="easyui-panel" title="立项详情">
+<!--<div id="cusTools">-->
+    <!--<a href="${contextPath}/projectApply/index.html" style="width: 30px;color: #444;text-decoration: none">返回</a>-->
+<!--</div>-->
+<div class="easyui-panel" title="立项详情" style="height: 100%"
+     data-options="tools:'#cusTools'">
     <div style="padding:10px 60px 20px 60px">
         <form id="step1" method="post" action="">
             <table cellpadding="5" id="tb" style="width: 100%">

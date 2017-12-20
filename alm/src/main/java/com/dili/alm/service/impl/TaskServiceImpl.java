@@ -165,7 +165,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		for (Task task : results) {
 			TaskEntity dto = new TaskEntity(task);
 			//流程
-			dto.setFlowStr(task.getFlow()?"正常流程":"修改流程");
+			dto.setFlowStr(task.getFlow()?"变更流程":"正常流程");
 			//计划周期
 			String planDays=this.dateToString(task.getStartDate())+
 					                               "至"+this.dateToString(task.getEndDate());
