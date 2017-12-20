@@ -294,7 +294,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 				 BaseOutput<List<User>>  listByExample = userRpc.listByExample(user);
 				 List<User> listUserParty = listByExample.getData();
 				 if(listUserParty!=null&&listUserParty.size()>0){
-				 weeklyPara2.setUserName(listUserParty.get(0).getUserName());
+				 weeklyPara2.setUserName(listUserParty.get(0).getRealName());
 				 }
 				 if(Integer.parseInt(weeklyPara2.getProjectStatus())<8){
 					 weeklyPara2.setProjectStatus(" <font color='green'>正常--偏差<8%</font>");
@@ -341,7 +341,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 				 BaseOutput<List<User>>  listStageMan = userRpc.listByExample(userStageMan);
 				 List<User> listUserlistStageMan = listStageMan.getData();
 				 if(listUserlistStageMan!=null&&listUserlistStageMan.size()>0)
-				      pd.setStageMan(listUserlistStageMan.get(0).getUserName());
+				      pd.setStageMan(listUserlistStageMan.get(0).getRealName());
 			 }
 			
 		 
@@ -353,7 +353,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		BaseOutput<List<User>>  listByExample = userRpc.listByExample(user);
 		 List<User> listUserParty = listByExample.getData();
 		 if(listUserParty!=null&&listUserParty.size()>0)
-		      pd.setBusinessParty(listUserParty.get(0).getUserName());
+		      pd.setBusinessParty(listUserParty.get(0).getRealName());
 		 
 
 		// 查询项目经理
@@ -361,7 +361,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		 BaseOutput<List<User>>  listUserByExample = userRpc.listByExample(user);
 		 List<User> listUsernName = listUserByExample.getData();
 		 if(listUsernName!=null&&listUsernName.size()>0)
-		    pd.setUserName(listUsernName.get(0).getUserName());
+		    pd.setUserName(listUsernName.get(0).getRealName());
 		
 
 		// 项目所在部门
@@ -403,8 +403,8 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			pd.setBeginAndEndTime(map.get("one").substring(0,10) + "到" +map.get("five").substring(0,10));
 		}
 		
-		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		 pd.setStageMan(userTicket.getUserName());
+		 UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		 pd.setStageMan(userTicket.getRealName());
 		 
 		
 
@@ -414,7 +414,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		BaseOutput<List<User>>  listByExample = userRpc.listByExample(user);
 		 List<User> listUserParty = listByExample.getData();
 		 if(listUserParty!=null&&listUserParty.size()>0)
-		      pd.setBusinessParty(listUserParty.get(0).getUserName());
+		      pd.setBusinessParty(listUserParty.get(0).getRealName());
 		 
 
 		// 查询项目经理
@@ -422,7 +422,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		 BaseOutput<List<User>>  listUserByExample = userRpc.listByExample(user);
 		 List<User> listUsernName = listUserByExample.getData();
 		 if(listUsernName!=null&&listUsernName.size()>0)
-		    pd.setUserName(listUsernName.get(0).getUserName());
+		    pd.setUserName(listUsernName.get(0).getRealName());
 		
 
 		// 项目所在部门
@@ -484,7 +484,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			 BaseOutput<List<User>>  listByExample = userRpc.listByExample(user);
 			 List<User> listUserParty = listByExample.getData();
 			 if(listUserParty!=null&&listUserParty.size()>0)
-			    td.get(i).setOwner(listUserParty.get(0).getUserName());
+			    td.get(i).setOwner(listUserParty.get(0).getRealName());
 			 
 			// 版本
 			td.get(i).setVersionId(projectVersionMapper.selectByPrimaryKey(Long.parseLong(td.get(i).getVersionId())).getVersion());
@@ -527,7 +527,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			 BaseOutput<List<User>>  listByExample = userRpc.listByExample(user);
 			 List<User> listUserParty = listByExample.getData();
 			 if(listUserParty!=null&&listUserParty.size()>0)
-			   nextWeeklyDto.setOwner(listUserParty.get(0).getUserName());
+			   nextWeeklyDto.setOwner(listUserParty.get(0).getRealName());
 		}
 		
 		return nwd;
@@ -660,7 +660,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		     user.setId(Long.parseLong(userList.get(j).getUserName()));
 			 BaseOutput<List<User>>  listByExample = userRpc.listByExample(user);
 			 List<User> listUserParty = listByExample.getData();
-			 userList.get(j).setUserName(listUserParty.get(0).getUserName());
+			 userList.get(j).setUserName(listUserParty.get(0).getRealName());
 			 userList.get(j).setId(listUserParty.get(0).getId());
 		}
 		
