@@ -185,9 +185,10 @@ function openInsertVersion() {
 											success : function(data) {
 												if (data.code == 200) {
 													try {
-														LogUtils.saveLog("新增项目版本:" + data.result);
+														LogUtils.saveLog("新增项目版本:" + data.data.id, function() {
+																});
 													} catch (e) {
-														window.location.href = "${contextPath}/projectApply/toStep/1/" + data.result;
+														$.messager.alert('错误', e);
 													}
 													$('#versionGrid').datagrid('appendRow', data.data);
 													$('#versionGrid').datagrid('acceptChanges');
@@ -230,6 +231,12 @@ function editVersion(id) {
 											data : data,
 											success : function(res) {
 												if (res.code == 200) {
+													try {
+														LogUtils.saveLog("修改项目版本:" + data.data.id, function() {
+																});
+													} catch (e) {
+														$.messager.alert('错误', e);
+													}
 													var row = $('#versionGrid').datagrid('getSelected');
 													var index = $('#versionGrid').datagrid('getRowIndex', row);
 													$('#versionGrid').datagrid('updateRow', {
@@ -272,6 +279,12 @@ function deleteVersion(id) {
 							},
 							success : function(data) {
 								if (data.code == 200) {
+									try {
+										LogUtils.saveLog("删除项目版本:" + id, function() {
+												});
+									} catch (e) {
+										$.messager.alert('错误', e);
+									}
 									var delRow = $('#versionGrid').datagrid('getSelected');
 									var index = $('#versionGrid').datagrid('getRowIndex', delRow);
 									$($('#fileGrid').datagrid('getRows')).each(function(i, item) {
@@ -314,6 +327,12 @@ function changeVersionState(id) {
 											},
 											success : function(data) {
 												if (data.code == 200) {
+													try {
+														LogUtils.saveLog("变更项目版本状态:" + data.data.id, function() {
+																});
+													} catch (e) {
+														$.messager.alert('错误', e);
+													}
 													var row = $('#versionGrid').datagrid('getSelected');
 													var index = $('#versionGrid').datagrid('getRowIndex', row);
 													row.versionState = data.data.versionState;
@@ -360,6 +379,12 @@ function openInsertPhase() {
 											data : data,
 											success : function(data) {
 												if (data.code == 200) {
+													try {
+														LogUtils.saveLog("新增项目版本阶段:" + data.data.id, function() {
+																});
+													} catch (e) {
+														$.messager.alert('错误', e);
+													}
 													$('#phaseGrid').datagrid('appendRow', data.data);
 													$('#phaseGrid').datagrid('acceptChanges');
 													if ($('#phaseForm input[name=fileIds]').length > 0) {
@@ -401,6 +426,12 @@ function editPhase(id) {
 											data : data,
 											success : function(data) {
 												if (data.code == 200) {
+													try {
+														LogUtils.saveLog("编辑项目版本阶段:" + data.data.id, function() {
+																});
+													} catch (e) {
+														$.messager.alert('错误', e);
+													}
 													var row = $('#phaseGrid').datagrid('getSelected');
 													var index = $('#phaseGrid').datagrid('getRowIndex', row);
 													$('#phaseGrid').datagrid('updateRow', {
@@ -443,6 +474,12 @@ function deletePhase(id) {
 							},
 							success : function(data) {
 								if (data.code == 200) {
+									try {
+										LogUtils.saveLog("删除项目版本版本阶段:" + id, function() {
+												});
+									} catch (e) {
+										$.messager.alert('错误', e);
+									}
 									var delRow = $('#phaseGrid').datagrid('getSelected');
 									var index = $('#phaseGrid').datagrid('getRowIndex', delRow);
 									$($('#fileGrid').datagrid('getRows')).each(function(i, item) {
@@ -486,6 +523,12 @@ function uploadFile(projectId) {
 											data : data,
 											success : function(data) {
 												if (data.code == 200) {
+													try {
+														LogUtils.saveLog("上传项目文档:" + data.data.name, function() {
+																});
+													} catch (e) {
+														$.messager.alert('错误', e);
+													}
 													$(data.data).each(function(index, item) {
 																$('#fileGrid').datagrid('appendRow', item);
 																$('#fileGrid').datagrid('acceptChanges');
@@ -530,6 +573,12 @@ function alarmConfig() {
 											data : data,
 											success : function(data) {
 												if (data.code == 200) {
+													try {
+														LogUtils.saveLog("设置项目进度告警:" + data.result, function() {
+																});
+													} catch (e) {
+														$.messager.alert('错误', e);
+													}
 													$('#win').dialog('close');
 												} else {
 													$.messager.alert('错误', data.result);

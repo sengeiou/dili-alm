@@ -590,6 +590,12 @@ function insertOrUpdateMenu(gridId, node, index, row, changes) {
 					return;
 				}
 				if (!row.id) {
+					try {
+						LogUtils.saveLog("新增菜单:" + data.data.id, function() {
+								});
+					} catch (e) {
+						$.messager.alert('错误', e);
+					}
 					var node = menuTree.tree('getSelected');
 					row.id = data.data.id;
 					menuTree.tree('append', {
@@ -604,6 +610,12 @@ function insertOrUpdateMenu(gridId, node, index, row, changes) {
 										}]
 							});
 				} else {
+					try {
+						LogUtils.saveLog("修改菜单:" + data.data.id, function() {
+								});
+					} catch (e) {
+						$.messager.alert('错误', e);
+					}
 					var node = menuTree.tree('find', row.id);
 					menuTree.tree('update', {
 								target : node.target,
@@ -663,7 +675,20 @@ function insertOrUpdateResource(gridId, node, index, row, changes) {
 					return;
 				}
 				if (!row.id) {
+					try {
+						LogUtils.saveLog("新增资源:" + data.data.id, function() {
+								});
+					} catch (e) {
+						$.messager.alert('错误', e);
+					}
 					row.id = data.data.id;
+				} else {
+					try {
+						LogUtils.saveLog("修改资源:" + data.data.id, function() {
+								});
+					} catch (e) {
+						$.messager.alert('错误', e);
+					}
 				}
 				grid.datagrid('updateRow', {
 							index : index,
