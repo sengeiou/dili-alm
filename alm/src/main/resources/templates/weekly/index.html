@@ -82,7 +82,7 @@
                                 <input class="easyui-datetimebox" name="endDate" id="endDate" style="width:100%" data-options="label:'截止时间:'" />
 
                             </td>
-                          
+                         
                            
                         </tr>
                         <tr>
@@ -296,7 +296,7 @@
         $.parser.onComplete = function(){
             $.messager.progress("close");
         }
-        //全局按键事件
+        //全局按键事件`
         function getKey(e){
             e = e || window.event;
             var keycode = e.which ? e.which : e.keyCode;
@@ -316,7 +316,7 @@
         //项目编号
         function formatserialNumber(val,row,index){  
         	// "<a href='${contextPath}/project/detail?id=" + row.id + "' target='_blank'>"+val+"</a>"; 
-        	  return  "<a href='javascript:void(0)' onclick='projectDesc(" + row.id + ")'>"+val+"</a>";   
+        	  return  "<a href='javascript:void(0)' onclick='projectDesc(" + row.projectId + ")'>"+val+"</a>";   
         	
 
         }
@@ -344,7 +344,7 @@
         
         
         
-        //周报预览
+        //
         function projectDesc(id){  
         	 return   window.location.href="${contextPath}/project/detail?id="+id;
         	
