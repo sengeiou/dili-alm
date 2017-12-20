@@ -547,7 +547,18 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	 * */
 	@Override
 	public List<String> selectNextProjectPhase(WeeklyPara weeklyPara) {
-		return weeklyMapper.selectNextProjectPhase(weeklyPara);
+		
+		List<String> listStr= weeklyMapper.selectNextProjectPhase(weeklyPara);
+		DataDictionaryValue  ddvPhaseName=DTOUtils.newDTO(DataDictionaryValue.class);
+		ddvPhaseName.setDdId(PHASENAMEVALUE);
+		
+		List<String>   list=new ArrayList<String>();
+		for (String phaseName : listStr) {
+		       ddvPhaseName.setValue(phaseName);
+		       list.add( dataDictionaryValueService.list(ddvPhaseName).get(0).getCode() );
+		}
+		
+		return list;
 	}
 
 	/**
