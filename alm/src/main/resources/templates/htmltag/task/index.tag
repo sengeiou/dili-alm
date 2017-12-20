@@ -13,9 +13,9 @@
             onSelect: function (o,n) {
             	// 获取到的项目ID
             	if(o.value==0){
-            	  $("#changeIdTr").css("display","block");
-            	}else{
             	  $("#changeIdTr").css("display","none");
+            	}else{
+            	  $("#changeIdTr").css("display","block");
             	}
             }
         });

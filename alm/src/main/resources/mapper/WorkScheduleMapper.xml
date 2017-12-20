@@ -55,6 +55,9 @@
                    <if test="id != null">
 		          		and      w.id = #{id,jdbcType=BIGINT}
 			        </if>
+			        <if test="userId != null">
+		          		and      user_id = #{userId,jdbcType=BIGINT}
+			        </if>
                   </where>
                       GROUP BY  DATE_FORMAT(w.schedule_date,'%Y-%m-%d') 
    </select>
