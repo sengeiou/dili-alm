@@ -1,5 +1,5 @@
 <div class="easyui-panel" style="width:100%;" align="left">
-    <form id="form" class="easyui-form" method="post" fit="true">
+    <form id="smform" class="easyui-form" method="post" fit="true">
         <table style="padding:10px;">
             <tr>
                 <td style="padding:5px;">
@@ -49,9 +49,9 @@
     }
 
     function a() {
-        var opts = $("#smGridList").datagrid("options");
-        opts.url = '${contextPath!}/member/members';
-        var formData = $("#form").serializeObject();
+    	var opts = $("#smGridList").datagrid("options");
+        opts.url = '${contextPath}/member/members';
+    	var formData = $("#smform").serializeObject();
         $('#smGridList').datagrid('load', formData);
     }
 

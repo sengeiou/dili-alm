@@ -217,7 +217,6 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
             current.setResult(opt);
             current.setNotes(notes);
             approve.setDescription(JSON.toJSONString(approveList));
-            this.updateSelective(approve);
 
             /*
                 如果审批的是组长，需特殊处理
@@ -273,9 +272,8 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
                     default:
                         break;
                 }
-
-                updateSelective(approve);
             }
+            updateSelective(approve);
         }
         return BaseOutput.success();
     }

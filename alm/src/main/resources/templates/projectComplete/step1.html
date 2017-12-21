@@ -47,8 +47,8 @@
                     <td class="title-second" colspan="4">1.1.项目基本信息概述</td>
                 </tr>
                 <tr>
-                    <td colspan="2"><input class="easyui-textbox" type="text" name="projectId" value="" id="projectId"
-                                           data-options="required:true,label:'项目编号:'"></td>
+                    <td colspan="2"><input class="easyui-combobox" type="text" name="projectId" value="" id="projectId"
+                                           data-options="editable:false,required:true,label:'项目编号:'"></td>
                     <td colspan="2"></td>
                 </tr>
                 <tr>
@@ -140,19 +140,19 @@
             for (var i = 0; i < datas.length; i++) {
                 var data = datas[i];
                 if (data.id == projectValue) {
-                    $("#projectName").combobox("initValue", data.name);
-                    $("#projectType").combobox("initValue", data.type);
+                    $("#projectName").textbox("initValue", data.name);
+                    $("#projectType").textbox("initValue", data.type);
                     $("#number").val(data.serialNumber);
                     $("#type").val(data.$_type);
                     $("#name").val(data.name);
-                    $("#leader").combobox("initValue", data.projectManager);
-                    $("#dep").combobox("initValue", data.dep);
-                    $("#buss").combobox("initValue", data.businessOwner);
-                    $("#startDate").combobox("initValue", data.startDate);
+                    $("#leader").textbox("initValue", data.projectManager);
+                    $("#dep").textbox("initValue", data.dep);
+                    $("#buss").textbox("initValue", data.businessOwner);
+                    $("#startDate").datebox("initValue", data.startDate);
                     $("#startDateVal").val(data.startDate);
-                    $("#endDate").combobox("initValue", data.endDate);
+                    $("#endDate").datebox("initValue", data.endDate);
                     $("#endDateVal").val(data.endDate);
-                    $("#actualEndDate").combobox("initValue", data.actualEndDate);
+                    $("#actualEndDate").datebox("initValue", data.actualEndDate);
                 }
             }
         }
