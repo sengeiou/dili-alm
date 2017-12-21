@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -522,6 +521,33 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		}
 		return false;
 	}
-	
 
+	@Override
+	public boolean validateBeginAndEnd(Task task) {
+		try {
+			Project project = projectService.get(task.getProjectId());
+			Date pstDate = project.getStartDate();//开始时间
+			Date penDate = project.getEndDate();//结束时间
+			
+			int startCompareVal = DateUtil.compare_date(DateUtil.getDateStr(pstDate),DateUtil.getDateStr(task.getStartDate()));
+			int endCompareVal   = DateUtil.compare_date(DateUtil.getDateStr(penDate),DateUtil.getDateStr(task.getEndDate()));
+			
+			//合法值是0,1
+			if (startCompareVal != 1){
+				return false;
+			}
+			if (endCompareVal != -1) {
+				return false;
+			}
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public List<Project> projectList() {
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		return taskMapper.selectProjectByTeam(userTicket.getId());
+	}
 }

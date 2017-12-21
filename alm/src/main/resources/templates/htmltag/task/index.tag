@@ -1,5 +1,6 @@
 
     $(document).ready(function () {
+       loadProjectSelect();
        $("#changeIdTr").css("display","none");
         $('#_projectId').combobox({
             onChange: function (o,n) {
@@ -21,7 +22,19 @@
         });
     });
     
-    
+   function loadProjectSelect(){
+    	$('#_projectId').combobox({
+				url:"${contextPath!}/task/listTreeProject.json",
+				valueField:'id',
+				textField:'name',
+				editable:true,
+				onChange: function (o,n) {
+				  var versionId = $('#_versionId').combobox('getValue');
+				  loadPhaseSelect(versionId); 
+				}
+			});
+			
+    }
     function loadVisionSelect(id){
     	$('#_versionId').combobox({
 				url:"${contextPath!}/task/listTreeVersion.json?id="+id,
@@ -38,8 +51,6 @@
     
     
     function loadPhaseSelect(id,selectId){
-    	console.log(id);
-    	console.log(selectId);
     	$('#_phaseId').combobox({
 				url:"${contextPath!}/task/listTreePhase.json?id="+id,
 				valueField:'id',

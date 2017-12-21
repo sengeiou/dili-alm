@@ -114,6 +114,10 @@ public class TaskController {
 			e.printStackTrace();
 			return BaseOutput.failure("请正确填写工时");
 		}
+		
+		if(taskService.validateBeginAndEnd(task)){
+			return BaseOutput.failure("开始时间和结束时间不能早于项目起始日期");
+		}
 
 		UserTicket userTicket = SessionContext.getSessionContext()
 				.getUserTicket();
@@ -174,8 +178,7 @@ public class TaskController {
 	@RequestMapping(value = "/listTreeProject.json", method = {
 			RequestMethod.GET, RequestMethod.POST })
 	public List<Project> listProject() {
-		Project project = DTOUtils.newDTO(Project.class);
-		List<Project> list = projectService.list(project);
+		List<Project> list =taskService.projectList();
 		return list;
 	}
 
