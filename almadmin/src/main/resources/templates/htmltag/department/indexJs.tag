@@ -96,6 +96,12 @@ function openUpdate() {
 									var data = $('#form').serializeArray();
 									$.post('${contextPath!}/department/update', data, function(res) {
 												if (res.success) {
+													try {
+														LogUtils.saveLog("修改部门:" + res.data.id, function() {
+																});
+													} catch (e) {
+														$.messager.alert('错误', e);
+													}
 													deptGrid.treegrid('update', {
 																id : res.data.id,
 																row : res.data
@@ -302,6 +308,12 @@ function insertOrUpdateDept(row, changes) {
 					return;
 				}
 				if (postData.id == undefined) {
+					try {
+						LogUtils.saveLog("新增部门:" + data.data.id, function() {
+								});
+					} catch (e) {
+						$.messager.alert('错误', e);
+					}
 					deptGrid.treegrid('remove', 'temp');
 					deptGrid.treegrid('append', {
 								parent : data.data.parentId,

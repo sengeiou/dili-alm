@@ -77,6 +77,12 @@ function del() {
 								async : true,
 								success : function(data) {
 									if (data.code == "200") {
+										try {
+											LogUtils.saveLog("删除团队:" + id, function() {
+													});
+										} catch (e) {
+											$.messager.alert('错误', e);
+										}
 										teamGrid.datagrid('deleteRow', teamGrid.datagrid('getRowIndex', selected));
 										$('#dlg').dialog('close');
 									} else {
@@ -287,9 +293,22 @@ function insertOrUpdateTeam(index, row, changes) {
 					return;
 				}
 				if (!row.id) {
+					try {
+						LogUtils.saveLog("新增团队成员:" + data.data.id, function() {
+								});
+					} catch (e) {
+						$.messager.alert('错误', e);
+					}
 					row = data.data;
 					$('#btnSaveTemp').prop('id', 'btnSave' + row.id);
 					$('#btnCancelTemp').prop('id', 'btnCancel' + row.id);
+				} else {
+					try {
+						LogUtils.saveLog("修改团队成员:" + data.data.id, function() {
+								});
+					} catch (e) {
+						$.messager.alert('错误', e);
+					}
 				}
 				teamGrid.datagrid('updateRow', {
 							index : index,

@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
+import com.dili.alm.component.MailManager;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.FilesMapper;
 import com.dili.alm.dao.ProjectMapper;
@@ -91,7 +92,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	@Autowired
 	private FilesMapper fileMapper;
 	@Autowired
-	private JavaMailSender mailSender;
+	private MailManager mailManager;
 	@Autowired
 	private UserRpc userRPC;
 
@@ -423,11 +424,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 
 	private void sendMail(UploadProjectFileDto dto, List<Files> attachments)
 			throws MessagingException, InterruptedException {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
-		MimeMessage mimeMessage = this.mailSender.createMimeMessage();
-		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 		String from = SystemConfigUtils.getProperty("spring.mail.username");
-		helper.setFrom(from);
 		Project project = this.getActualDao().selectByPrimaryKey(dto.getProjectId());
 		BaseOutput<User> output = this.userRPC.findUserById(dto.getReceiver());
 		if (output == null || !output.isSuccess()) {
@@ -437,19 +434,20 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		if (receiver == null) {
 			throw new MessagingException("收件人不存在");
 		}
-		helper.setTo(receiver.getEmail());
-		helper.setSubject("主题：" + project.getName() + "有新的文件上传");
+		String to = receiver.getEmail();
+		String subject = "主题：" + project.getName() + "有新的文件上传";
 		StringBuilder sb = new StringBuilder();
 		ProjectVersion version = this.projectVersionMapper.selectByPrimaryKey(dto.getVersionId());
 		ProjectPhase phase = this.phaseMapper.selectByPrimaryKey(dto.getPhaseId());
 		sb.append("项目名称：").append(project.getName()).append(version.getVersion()).append("\r\n阶段名称：")
 				.append(AlmCache.PHASE_NAME_MAP.get(phase.getName()));
-		helper.setText(sb.toString());
-		for (Files files : attachments) {
-			FileSystemResource file = new FileSystemResource(new File(files.getUrl() + files.getName()));
-			helper.addAttachment(files.getName(), file);
+		String content = sb.toString();
+		List<File> files = new ArrayList<>();
+		for (Files attach : attachments) {
+			FileSystemResource file = new FileSystemResource(new File(attach.getUrl() + attach.getName()));
+			files.add(file.getFile());
 		}
-		mailSender.send(mimeMessage);
+		this.mailManager.sendMail(from, to, content, subject, files);
 	}
 
 	private List<Map> parseEasyUiListModel(List<? extends Files> list) throws Exception {

@@ -500,8 +500,20 @@ function onSaveClicked() {
 	requestSave(_url, temp, function(retData) {
 				if (null != retData) {
 					if (isAdd) {
+						try {
+							LogUtils.saveLog("新增用户:" + retData.id, function() {
+									});
+						} catch (e) {
+							$.messager.alert('错误', e);
+						}
 						userGrid.datagrid("appendRow", retData);
 					} else {
+						try {
+							LogUtils.saveLog("修改用户:" + retData.id, function() {
+									});
+						} catch (e) {
+							$.messager.alert('错误', e);
+						}
 						var index = userGrid.datagrid("getRowIndex", userGrid.datagrid("getSelected"));
 						userGrid.datagrid("updateRow", {
 									index : index,
