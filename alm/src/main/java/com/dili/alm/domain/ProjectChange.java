@@ -83,9 +83,9 @@ public interface ProjectChange extends IBaseDomain {
     @Column(name = "`affects_online`")
     @FieldDef(label="是否影响上线")
     @EditMode(editor = FieldEditor.Text, required = false)
-    Byte getAffectsOnline();
+    Integer getAffectsOnline();
 
-    void setAffectsOnline(Byte affectsOnline);
+    void setAffectsOnline(Integer affectsOnline);
 
     @Column(name = "`submit_date`")
     @FieldDef(label="提交日期")

@@ -29,7 +29,7 @@
     }
     em{
         display: inline-block;
-        width: 11px;
+        width: 7px;
     }
     span.require{
         width: 9px;
@@ -227,7 +227,7 @@
     }
 
     function appendRelated(obj) {
-        console.log(obj);
+        // console.log(obj);
         var index = jQuery('.related').length;
         var parserId = "parser_" + new Date().getTime();
         $("#requireTable").append("<tr class='related' id='" + parserId + "'><td><em></em><input style=\"width: calc(30% - 78px)\" class=\"easyui-textbox\" type=\"text\" id=\"" + index + "-user" + "\" name=\"relatedResources[" + index + "].relatedUser\" data-options=\"label:'相关部门经理:',editable:false,required:true,buttonText:'选择', onClickButton:selectMember,onChange:_changeTextboxShowClear\"></td><td><em></em><input style=\"width: calc(30% - 95px)\" class=\"easyui-numberspinner\" id='" + index + "-number' name='relatedResources[" + index + "].relatedNumber' value=\"\" data-options=\"increment:1,required:true,label:'预估所需人员:',min:1\"> 人</td><td><em></em><input style=\"width: calc(30% - 105px)\" class=\"easyui-numberbox\" type=\"text\" id='" + index + "-time' name='relatedResources[" + index + "].relatedWorkTime' data-options=\"label:'预估工时:',required:true,min:1\"> 人日</td><td style=\"width: 10%;text-align: center\"><a href=\"javascript:void(0);\" class=\"_del\" onclick='delRelated(this)'>删除</a></td></tr>");

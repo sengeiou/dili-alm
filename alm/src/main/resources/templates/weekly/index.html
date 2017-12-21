@@ -1,4 +1,10 @@
  <#body>
+ <style>
+     .textbox-label{
+         width: 60px;
+     }
+
+ </style>
     <div class="easyui-layout" fit="true">
         <!-- ====================================================================================================================== -->
         <!-- 上方布局 -->
@@ -34,7 +40,16 @@
 	                              panelHeight:'auto'"/>
 						     
 						     </td>
-                          
+                            <td style="padding:5px;">
+                                <input id="projectStatus" name="projectStatus" class="easyui-combobox" label="项目状态:" style="width:100%"
+                                       data-options="
+	                              url: '${contextPath}/dataDictionaryValue/listTree.json?ddId=6',
+	                              method: 'get',
+	                              valueField: 'id',
+	                              textField: 'name',
+	                              panelHeight:'auto'"/>
+
+                            </td>
                             
                         </tr>
                         <tr>
@@ -43,16 +58,7 @@
 									_data='[{"text":"-- 请选择 --"},{"text":"已完成","value":"2"},{"text":"进行中","value":"1"} ,{"text":"暂停中","value":"3"},{"text":"已关闭","value":"4"},{"text":"未开始","value":"0"}]' />
                             </td>
                              -->
-                            <td style="padding:5px;">
-	                           <input id="projectStatus" name="projectStatus" class="easyui-combobox" label="项目状态:" style="width:100%"  
-                                   data-options="
-	                              url: '${contextPath}/dataDictionaryValue/listTree.json?ddId=6',
-	                              method: 'get',
-	                              valueField: 'id',
-	                              textField: 'name',
-	                              panelHeight:'auto'"/>
-		                
-                             </td>
+
                             
                             
                             <td style="padding:5px;">
@@ -108,18 +114,14 @@
                    align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
                 <thead>
                     <tr>
-                     
-                      
-                        <th data-options="field:'date',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">本周起止时间 </th>
-                        <th data-options="field:'serialNumber', formatter:formatserialNumber,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目编号   </th>
-                        <th data-options="field:'projectName',  formatter: formatprojectName, sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目名称 </th>
-                        <th data-options="field:'projectType',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目类型</th>
-                        <th data-options="field:'userName',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目负责人 </th>
-                        <th data-options="field:'projectStatus',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目进度   </th>
-                        <th data-options="field:'endDate', _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">提交周报时间   </th>
-                      
-                       <th data-options="field:'_operate',align:'center',formatter:formatOper">操作</th>
-                  	      
+                        <th data-options="field:'date',width:'20%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">本周起止时间 </th>
+                        <th data-options="field:'serialNumber',width:'10%', formatter:formatserialNumber,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目编号   </th>
+                        <th data-options="field:'projectName',width:'10%',  formatter: formatprojectName, sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目名称 </th>
+                        <th data-options="field:'projectType',width:'10%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目类型</th>
+                        <th data-options="field:'userName', width:'10%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目负责人 </th>
+                        <th data-options="field:'projectStatus', width:'12%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目进度   </th>
+                        <th data-options="field:'endDate',width:'18%', _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">提交周报时间   </th>
+                        <th data-options="field:'_operate',width:'10%',align:'center',formatter:formatOper">操作</th>
                     </tr>
                 </thead>
             </table>

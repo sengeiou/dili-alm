@@ -29,7 +29,7 @@
             <input type="hidden" name="id" value="${apply.id}">
             <input type="hidden" name="performance" id="completePerformance" value="">
             <input type="hidden" name="question" id="question" value="">
-            <table cellpadding="5">
+            <table cellpadding="5" style="width: 100%">
                 <tr>
                     <td>项目编号</td>
                     <td>${apply.number}</td>
@@ -45,7 +45,7 @@
                 <tr>
                     <td colspan="4"><input class="easyui-textbox" name="range"
                                            data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
-                                           style="width:800px;height:120px"/></td>
+                                           style="width:100%;height:120px"/></td>
                 </tr>
                 <tr>
                     <td colspan="4" style="padding:20px;">2.2项目管理的方法</td>
@@ -53,7 +53,7 @@
                 <tr>
                     <td colspan="4"><input class="easyui-textbox" name="managementMethod"
                                            data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
-                                           style="width:800px;height:120px"/></td>
+                                           style="width:100%;height:120px"/></td>
                 </tr>
                 <tr>
                     <td colspan="4" style="padding:20px;">项目管理过程评价</td>
@@ -61,7 +61,7 @@
                 <tr>
                     <td colspan="4"><input class="easyui-textbox" name="appraise"
                                            data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
-                                           style="width:800px;height:120px"/></td>
+                                           style="width:100%;height:120px"/></td>
                 </tr>
                 <tr>
                     <td colspan="4" style="padding:20px;">技术方法评价</td>
@@ -69,7 +69,7 @@
                 <tr>
                     <td colspan="4"><input class="easyui-textbox" name="technicalEvaluation"
                                            data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
-                                           style="width:800px;height:120px"/></td>
+                                           style="width:100%;height:120px"/></td>
                 </tr>
                 <tr>
                     <td colspan="4" style="padding:20px;">进步与提高</td>
@@ -77,7 +77,7 @@
                 <tr>
                     <td colspan="4"><input class="easyui-textbox" name="raise"
                                            data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
-                                           style="width:800px;height:120px"/></td>
+                                           style="width:100%;height:120px"/></td>
                 </tr>
                 <tr>
                     <td colspan="4" style="padding:20px;">2.3项目的成果</td>
@@ -85,7 +85,7 @@
                 <tr>
                     <td colspan="4"><input class="easyui-textbox" name="result"
                                            data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
-                                           style="width:800px;height:120px"/></td>
+                                           style="width:100%;height:120px"/></td>
                 </tr>
                 <tr>
                     <td colspan="4" style="padding:20px;">产品</td>
@@ -93,7 +93,7 @@
                 <tr>
                     <td colspan="4"><input class="easyui-textbox" name="product"
                                            data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
-                                           style="width:800px;height:120px"/></td>
+                                           style="width:100%;height:120px"/></td>
                 </tr>
                 <tr>
                     <td colspan="4" style="padding:20px;">主要功能和性能</td>
@@ -109,8 +109,8 @@
                 onClickCell: impact.onClickCell">
                             <thead>
                             <tr>
-                                <th style="text-align:center" data-options="field:'performance',width:120,align:'center',editor:{type:'textbox',options:{required:true}}">功能性能项</th>
-                                <th data-options="field:'compare',align:'center',width:120,editor:{type:'combobox',options : {
+                                <th style="text-align:center" data-options="field:'performance',width:'30%',align:'center',editor:{type:'textbox',options:{required:true}}">功能性能项</th>
+                                <th data-options="field:'compare',align:'center',width:'30%',editor:{type:'combobox',options : {
 									required : false,
 									textField:'text',
 									valueField:'text',
@@ -123,7 +123,7 @@
 										text: '超过'
 									}]
 								}}">与开发目标相比</th>
-                                <th style="text-align:center" data-options="field:'notes',align:'center',width:250,editor:{type:'textbox',options:{multiline:true,validType:['length[0,50]']}}">说明</th>
+                                <th style="text-align:center" data-options="field:'notes',align:'center',width:'40%',editor:{type:'textbox',options:{multiline:true,validType:['length[0,50]']}}">说明</th>
                             </tr>
                             </thead>
                         </table>
@@ -139,7 +139,7 @@
                 <tr>
                     <td colspan="4"><input class="easyui-textbox" name="suggest"
                                            data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
-                                           style="width:800px;height:120px"/></td>
+                                           style="width:100%;height:120px"/></td>
                 </tr>
                 <tr>
                     <td colspan="4" style="padding:20px;">2.5遗留问题</td>
@@ -155,13 +155,13 @@
             ">
                             <thead>
                             <tr>
-                                <th data-options="field:'notes',align:'center',width:250,editor:{type:'textbox',options:{required:false,multiline:true,validType:['length[0,200]']}}">
+                                <th data-options="field:'notes',align:'center',width:'40%',editor:{type:'textbox',options:{required:false,multiline:true,validType:['length[0,200]']}}">
                                     问题描述
                                 </th>
-                                <th data-options="field:'notes1',align:'center',width:250,editor:{type:'textbox',options:{required:false,multiline:true,validType:['length[0,200]']}}">
+                                <th data-options="field:'notes1',align:'center',width:'40%',editor:{type:'textbox',options:{required:false,multiline:true,validType:['length[0,200]']}}">
                                     采取的措施
                                 </th>
-                                <th style="text-align:center" data-options="width:'150',field:'memberId',  _provider:'memberProvider', align:'center', resizable:'true', fixed:'false',editor : {
+                                <th style="text-align:center" data-options="width:'20%',field:'memberId',  _provider:'memberProvider', align:'center', resizable:'true', fixed:'false',editor : {
 								type : 'textbox',
 								options : {
 									required : true,
@@ -185,9 +185,9 @@
 
         </form>
         <div style="text-align:center;padding:5px;margin-top:50px;">
-            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="size:'large',width:'80px'"
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
                onclick="backForm()">上一步</a>
-            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="size:'large',width:'80px'"
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
                onclick="submitForm()">下一步</a>
         </div>
     </div>

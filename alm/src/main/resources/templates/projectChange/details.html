@@ -25,18 +25,32 @@
     .title-second {
         padding-left: 30px;
     }
+    .textbox-label{
+        width: 100px;
+    }
+    .panel-tool{
+        top:10px;
+        height: 24px;
+    }
 </style>
 <div id="smDialog" style="display: none;"></div>
-<div class="easyui-panel" title="变更申请（第一步）">
+<div id="cusTools">
+    <a onclick="window.location.href='${contextPath}/projectChange/index.html';" class="easyui-linkbutton" style="width: 50px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">返回</a>
+</div>
+<!--<div id="cusTools">-->
+    <!--<a href="${contextPath}/projectChange/index.html" style="width: 30px;color: #333;text-decoration: none">返回</a>-->
+<!--</div>-->
+<div class="easyui-panel" title="变更申请（第一步）" style="height: 100%"
+     data-options="tools:'#cusTools'">
     <div style="padding:10px 60px 20px 60px">
         <form id="ff" method="post" action="">
             <input type="hidden" name="id" value="${obj.id}"/>
             <input type="hidden" name="status" id="status"/>
             <input type="hidden" name="email" id="email"/>
             <input type="hidden" name="number" id="number"/>
-            <table cellpadding="5" id="tb">
+            <table cellpadding="5" id="tb" style="width: 100%">
                 <tr>
-                    <td class="title-first" colspan="3">1基本信息</td>
+                    <td class="title-first" colspan="4">1基本信息</td>
                 </tr>
                 <tr>
                     <td><input class="easyui-textbox" type="text" name="name" value="${obj.name}"
@@ -67,9 +81,8 @@
                 </tr>
                 <tr>
                     <td>
-                        <label class="textbox-label textbox-label-before">是否影响上线:</label>
-                        <select id="affectsOnline" class="easyui-combobox" name="affectsOnline" style="width: 150px;"
-                                data-options="editable:false"
+                        <select id="affectsOnline"  class="easyui-combobox" type="text" name="affectsOnline" style="width: 305px;"
+                                data-options="editable:false,label:'是否影响上线:'"
                                 required="true">
                             <option value="1">是</option>
                             <option value="2">否</option>
@@ -93,7 +106,7 @@
                 <tr>
                     <td colspan="4"><input class="easyui-textbox" id="content" name="content" value="${obj.content}"
                                            data-options="required:true,multiline:true,prompt:'限制输入500个字符串',validType:['length[0,500]']"
-                                           style="width:800px;height:120px"/></td>
+                                           style="width:100%;height:120px"/></td>
                 </tr>
                 <tr>
                     <td class="title-second" colspan="4">变更方案及影响风险</td>
@@ -101,7 +114,7 @@
                 <tr>
                     <td colspan="4"><input class="easyui-textbox" name="effects" id="effects" value="${obj.effects}"
                                            data-options="multiline:true,prompt:'限制输入500个字符串',validType:['length[0,500]']"
-                                           style="width:800px;height:120px"/></td>
+                                           style="width:100%;height:120px"/></td>
                 </tr>
                 <tr>
                     <td class="title-first" colspan="4">3.邮件发送列表</td>
@@ -113,10 +126,10 @@
                 </tr>
             </table>
         </form>
-        <div style="text-align:left;padding:5px;margin-top:10px;">
-            <a href="${contextPath}/projectChange/index.html" class="easyui-linkbutton"
-               data-options="size:'large',width:'80px'">返回</a>
-        </div>
+        <!--<div style="text-align:left;padding:5px;margin-top:10px;">-->
+            <!--<a href="${contextPath}/projectChange/index.html" class="easyui-linkbutton"-->
+               <!--data-options="width:'80px'">返回</a>-->
+        <!--</div>-->
     </div>
 </div>
 <script>

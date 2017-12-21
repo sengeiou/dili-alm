@@ -107,6 +107,12 @@ function onRemoveClicked(id) {
 					requestDelete(index, {
 								id : selected.id
 							}, function(index) {
+								try {
+									LogUtils.saveLog("删除角色:" + selected.id, function() {
+											});
+								} catch (e) {
+									$.messager.alert('错误', e);
+								}
 								roleGrid.datagrid("deleteRow", index);
 							});
 					// 强制刷新 formatOptions() 中的 index
@@ -209,6 +215,21 @@ function onAfterEdit(index, row, changes) {
 	row.editing = false;
 
 	requestSave(index, row, function(index, retData) {
+				if (!row.id) {
+					try {
+						LogUtils.saveLog("新增角色:" + retData.id, function() {
+								});
+					} catch (e) {
+						$.messager.alert('错误', e);
+					}
+				} else {
+					try {
+						LogUtils.saveLog("修改角色:" + retData.id, function() {
+								});
+					} catch (e) {
+						$.messager.alert('错误', e);
+					}
+				}
 				if (retData) {
 					var data = eval(retData);
 					data.created = dateFtt("yyyy-MM-dd hh:mm:ss", null == data.created ? new Date() : new Date(data.created));
@@ -291,6 +312,12 @@ function unbindRoleUser(id) {
 				if (r) {
 					var index = $('#userListGrid').datagrid("getRowIndex", selected);
 					requestUnbind(index, JSON.stringify(formData), function(index) {
+								try {
+									LogUtils.saveLog("解除绑定用户:" + JSON.stringify(formData), function() {
+											});
+								} catch (e) {
+									$.messager.alert('错误', e);
+								}
 								$('#userListGrid').datagrid("deleteRow", index);
 							});
 				}
