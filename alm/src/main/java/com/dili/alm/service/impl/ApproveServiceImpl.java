@@ -20,15 +20,16 @@ import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.util.SystemConfigUtils;
 import com.dili.sysadmin.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.*;
 
@@ -353,13 +354,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
                     map.put("loadRisk", projectApplyService.loadRisk(id));
                     map.put("descDto", JSON.parseObject(apply.getDescription()));
                     map.put("gf", JSON.parseObject(apply.getGoalsFunctions()));
-
-                    Resource resource = new ClassPathResource("/word/apply.docx");
-
-                    XWPFDocument doc = WordExportUtil.exportWord07(
-                            resource.getURI().getPath(), map);
-                    doc.write(os);
-                    os.close();
+                    exportWord("apply", os, map);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -367,7 +362,6 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
             case CHANGE:
                 ProjectChange change = projectChangeService.get(id);
                 try {
-                    Resource resource = new ClassPathResource("/word/change.docx");
                     Project project = projectService.get(change.getProjectId());
                     Map<String, Object> map = new HashMap<>();
                     map.put("name", change.getName());
@@ -382,10 +376,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
                     map.put("estimateLaunchDate", DateUtil.getDate(change.getEstimateLaunchDate()));
                     map.put("content", StringUtils.isBlank(change.getContent()) ? "无" : change.getContent());
                     map.put("effects", StringUtils.isBlank(change.getEffects()) ? "无" : change.getEffects());
-                    XWPFDocument doc = WordExportUtil.exportWord07(
-                            resource.getURI().getPath(), map);
-                    doc.write(os);
-                    os.close();
+                    exportWord("change", os, map);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -393,7 +384,6 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
             case COMPLETE:
                 ProjectComplete complete = projectCompleteService.get(id);
                 try {
-                    Resource resource = new ClassPathResource("/word/complete.docx");
                     Map<String, Object> map = new HashMap<>();
                     Project project = DTOUtils.newDTO(Project.class);
                     project.setId(complete.getProjectId());
@@ -416,17 +406,26 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
                     map.put("lq", JSON.parseArray(complete.getQuestion(), Map.class));
                     map.put("mb", projectCompleteService.loadMembers(id));
                     map.put("hd", JSON.parseArray(complete.getHardware(), Map.class));
-                    map.put("now",DateUtil.getDate(new Date()));
-                    XWPFDocument doc = WordExportUtil.exportWord07(
-                            resource.getURI().getPath(), map);
-                    doc.write(os);
-                    os.close();
+                    map.put("now", DateUtil.getDate(new Date()));
+                    exportWord("complete", os, map);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             default:
                 break;
         }
+    }
+
+    private void exportWord(String name, OutputStream os, Map map) throws Exception {
+        InputStream stream = getClass().getClassLoader().getResourceAsStream("word/" + name + ".docx");
+        File targetFile = new File(name + ".docx");
+        if (!targetFile.exists()) {
+            FileUtils.copyInputStreamToFile(stream, targetFile);
+        }
+        XWPFDocument doc = WordExportUtil.exportWord07(
+                targetFile.getPath(), map);
+        doc.write(os);
+        os.close();
     }
 
     private String formatInfo(String info) {
