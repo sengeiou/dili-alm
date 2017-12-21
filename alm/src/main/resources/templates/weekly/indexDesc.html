@@ -209,7 +209,7 @@
 				        <td style="width: 25%"> ${item.name}  </td>
 				        <td style="width: 55%"> ${item.desc}  </td>
 				        <td style="width: 20%">
-				            <select  class="easyui-combobox" disabled="disabled" style="width: 80%" >
+				            <select  class="easyui-combobox" disabled="disabled" style="width: 100%" >
 				             <option <%if(item.status == '已识别'){%>selected<%}%>>已识别</option>
 							 <option <%if(item.status == '跟踪'){%>selected<%}%>>跟踪</option>
 							 <option <%if(item.status == '已发生'){%>selected<%}%>>已发生</option>
@@ -234,10 +234,10 @@
 				 <caption style="padding:5px;background-color:#f5f5f5;font-weight:bold">当前重大问题</caption>
 				 <thead>
 					 <tr> 
-					    <th style="padding:5px;background-color:#f5f5f5;font-weight:bold">问题名称</th>
-				        <th style="padding:5px;background-color:#f5f5f5;font-weight:bold">问题简述</th>
-				        <th style="padding:5px;background-color:#f5f5f5;font-weight:bold">当前状态</th>
-					  
+					    <th style="width:25%;padding:5px;background-color:#f5f5f5;font-weight:bold">问题名称</th>
+				        <th style="width:55%;padding:5px;background-color:#f5f5f5;font-weight:bold">问题简述</th>
+				        <th style="width:20%;padding:5px;background-color:#f5f5f5;font-weight:bold">当前状态</th>
+
 					  </tr>
 			 	 </thead>
 				
@@ -248,20 +248,20 @@
 					        <td  style="width: 25%">${item.name}   </td>
 					        <td  style="width: 50%">  ${item.desc}  </td>
 					        <td  style="width: 20%">
-					            <select  class="easyui-combobox"  disabled="disabled" style="width: 80%" >
+					            <select  class="easyui-combobox"  disabled="disabled" style="width: 100%" >
 					             <option <%if(item.status == '已识别'){%>selected<%}%>>已识别</option>
 								 <option <%if(item.status == '跟踪'){%>selected<%}%>>跟踪</option>
 								 <option <%if(item.status == '已发生'){%>selected<%}%>>已发生</option>
 								 <option <%if(item.status == '应急处理'){%>selected<%}%>>应急处理</option>
-								 <option <%if(item.status == '关闭（处理）'){%>selected<%}%>>关闭（处理）</option> 
-		                         <option <%if(item.status == '关闭（规避）'){%>selected<%}%>>关闭（规避）</option> 
-								    
+								 <option <%if(item.status == '关闭（处理）'){%>selected<%}%>>关闭（处理）</option>
+		                         <option <%if(item.status == '关闭（规避）'){%>selected<%}%>>关闭（规避）</option>
+
 								</select>
-								
-					             
+
+
 					        </td>
-					        
-					      
+
+
 					    </tr>
 			         <%}%>
 			       <%}%>
@@ -269,46 +269,44 @@
 				 </tbody>
 				 
 				 
-				<tfoot>
-				       <tr>
-				             
-				              <td colspan="3">
-				               
-				              
-				                   <% if(wDetails!=null){%>
-				                      <input id="sSubmit" type='hidden' value="${wDetails.isSubmit}"/>
-				                      <input id="cancelSubmit" type='hidden' value="${wDetails.id}"/>
-				                    <%}%>
-				                </td>
-				         
-				       </tr>
-				       <tr>
-				        <td style="padding:5px;background-color:#f5f5f5;font-weight:bold">预期偏差</td>
-				        <td colspan="3" >
-				          <% if(wDetails!=null){%>
-				             <input class="easyui-textbox" id="expectedDeviation" value= "${wDetails.expectedDeviation}"    data-options="multiline:true"  style="width:100%;height:50px">
-				           <%}else{%>
-				             <input class="easyui-textbox" id="expectedDeviation"     data-options="multiline:true"  style="width:100%;height:50px">
-				          <%}%>
-				        </td>
-				      
-				    </tr>
-				    <tr>
-				        <td style="padding:5px;background-color:#f5f5f5;font-weight:bold">其他</td>
-				        <td colspan="3" >
-				         <% if(wDetails!=null){%>
-				             <input class="easyui-textbox" id="other"  value= "${wDetails.other}"   data-options="multiline:true"  style="width:100%;height:50px">
-                        
-                          <%}else{%>
-                             <input class="easyui-textbox" id="other"   data-options="multiline:true"  style="width:100%;height:50px">
-                        <%}%>
-                       </td>
-				      
-				    </tr>
-				   
-			</tfoot>
-				 
-				 
+				<tr colspan="3">
+					<table border="1" style="width:800px;border: 1px solid #ddd;border-collapse:collapse;">
+						<tr>
+							<td colspan="3">
+
+
+								<% if(wDetails!=null){%>
+								<input id="sSubmit" type='hidden' value="${wDetails.isSubmit}"/>
+								<input id="cancelSubmit" type='hidden' value="${wDetails.id}"/>
+								<%}%>
+							</td>
+
+						</tr>
+						<tr>
+							<td style="padding:5px;background-color:#f5f5f5;font-weight:bold">预期偏差</td>
+							<td colspan="3" >
+								<% if(wDetails!=null){%>
+								<input class="easyui-textbox" id="expectedDeviation" value= "${wDetails.expectedDeviation}"    data-options="multiline:true"  style="width:100%;height:50px">
+								<%}else{%>
+								<input class="easyui-textbox" id="expectedDeviation"     data-options="multiline:true"  style="width:100%;height:50px">
+								<%}%>
+							</td>
+
+						</tr>
+						<tr>
+							<td style="padding:5px;background-color:#f5f5f5;font-weight:bold">其他</td>
+							<td colspan="3" >
+								<% if(wDetails!=null){%>
+								<input class="easyui-textbox" id="other"  value= "${wDetails.other}"   data-options="multiline:true"  style="width:100%;height:50px">
+
+								<%}else{%>
+								<input class="easyui-textbox" id="other"   data-options="multiline:true"  style="width:100%;height:50px">
+								<%}%>
+							</td>
+
+						</tr>
+					</table>
+				</tr>
 			</table>
 			
 			<hr/>
@@ -316,7 +314,14 @@
 			       <font size="2">创建人：</font>
 			       <font size="2">${pd.userName}</font>
 			       <font size="2">&nbsp;</font>
-			       
+			       <font size="2">新建阶段人：</font>
+			       <font size="2">
+			         <% if(pd.stageMan!=null){%>
+			             ${pd.stageMan}
+			              <%}else{%>
+			              无
+			             <%}%>
+			       </font>
 			        <font size="2">创建时间：</font>
 			       <font size="2">
 			         <% if(pd.created!=null){%>
@@ -579,8 +584,8 @@
       
       function addMaxTr(){  
     	 
-    	  var $td= $("<td >"+" <input class='easyui-numberbox'   style='width:90%;' />"+"</td>");
-    	  var $tdq= $("<td>"+" <input class='easyui-numberbox'   style='width:90%;'/>"+"</td>");
+    	  var $td= $("<td >"+" <input class='easyui-numberbox'   style='width:100%;' />"+"</td>");
+    	  var $tdq= $("<td>"+" <input class='easyui-numberbox'   style='width:100%;'/>"+"</td>");
     	  var $tdselect= $("<td></td>");
     	  var $delecttd=$("<td><button  onclick='delectTr(this)'>删除</button></td>");
     	  
@@ -611,8 +616,8 @@
       }
       function addRistTr(){  
      	 
-    	  var $td= $("<td >"+" <input class='easyui-numberbox'   style='width:90%;' />"+"</td>");
-    	  var $tdq= $("<td>"+" <input class='easyui-numberbox'   style='width:90%;'/>"+"</td>");
+    	  var $td= $("<td >"+" <input class='easyui-numberbox'   style='width:100%;' />"+"</td>");
+    	  var $tdq= $("<td>"+" <input class='easyui-numberbox'   style='width:100%;'/>"+"</td>");
     	  var $tdselect= $("<td></td>");
     	  var $delecttd=$("<td><button  onclick='delectTr(this)'>删除</button></td>");
     			  
