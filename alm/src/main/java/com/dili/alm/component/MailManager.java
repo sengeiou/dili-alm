@@ -19,6 +19,7 @@ public class MailManager {
 	@Autowired
 	private JavaMailSender mailSender;
 
+	@Async
 	public void sendMail(String from, String to, String content, String subject, Collection<File> attachments)
 			throws MessagingException {
 		MimeMessage mimeMessage = this.mailSender.createMimeMessage();
