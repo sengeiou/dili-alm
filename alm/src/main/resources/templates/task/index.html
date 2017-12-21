@@ -156,7 +156,7 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-datetimebox" name="_endDate" id="_endDate" style="width:100%" data-options="label:'结束时间:', required:true" />
+                    <input class="easyui-datetimebox" name="_endDate" id="_endDate" style="width:100%" data-options="label:'结束时间:', required:true,validType:'endDateValidate[\'_startDate\']'" />
                 </td>
             </tr>
             <tr>
@@ -530,9 +530,15 @@
             });
         	  
         }
-        
-
-        
+        $.extend($.fn.validatebox.defaults.rules,{  
+        	endDateValidate:{  
+        	     validator:function(value,param){       
+        	           var s = $("input[name="+param[0]+"]").val();  
+        	           return value>=s;  
+        	         },  
+        	         message:'结束时间必须大于开始时间！'  
+            }  
+        });
         </script>
     
     <script type="text/javascript">
