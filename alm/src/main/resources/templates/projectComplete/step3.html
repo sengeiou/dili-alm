@@ -21,6 +21,7 @@
     .title-second {
         padding-left: 30px;
     }
+
 </style>
 <div class="easyui-panel" title="结项申请（第二步）">
     <div id="smDialog" style="display: none;"></div>
@@ -30,7 +31,7 @@
             <input type="hidden" name="hardware" id="hardware">
             <input type="hidden" name="status" id="status"/>
             <input type="hidden" name="email" id="email"/>
-            <table cellpadding="5">
+            <table cellpadding="5" style="width: 100%">
                 <tr>
                     <td>项目编号</td>
                     <td>${apply.number}</td>
@@ -54,22 +55,22 @@
                             <thead>
                             <tr>
                                 <th style="text-align:center"
-                                    data-options="field:'memberId',width:120,align:'center',editor:{type:'textbox',options:{required:true}}">
+                                    data-options="field:'memberId',width:'17%',align:'center',editor:{type:'textbox',options:{required:true}}">
                                     姓名
                                 </th>
-                                <th data-options="field:'role',width:120,align:'center',editor:{type:'textbox',options:{required:true}}">
+                                <th data-options="field:'role',width:'17%',align:'center',editor:{type:'textbox',options:{required:true}}">
                                     角色
                                 </th>
                                 <th style="text-align:center"
-                                    data-options="field:'joinTime',align:'center',width:180">
+                                    data-options="field:'joinTime',align:'center',width:'22%'">
                                     进入项目日期
                                 </th>
                                 <th style="text-align:center"
-                                    data-options="field:'leaveTime',align:'center',width:180">
+                                    data-options="field:'leaveTime',align:'center',width:'22%'">
                                     离开项目日期
                                 </th>
                                 <th style="text-align:center"
-                                    data-options="field:'created',align:'center',width:180,formatter:formatDate">
+                                    data-options="field:'created',align:'center',width:'22%',formatter:formatDate">
                                     默认释放日期
                                 </th>
                             </tr>
@@ -91,14 +92,14 @@
                 onClickCell: impact.onClickCell">
                             <thead>
                             <tr>
-                                <th data-options="field:'name',width:80,align:'center',editor:{type:'textbox',options:{required:true}}">设备名称</th>
-                                <th data-options="field:'mode',_provider:'datetimeProvider',width:200,align:'center',editor:{type:'textbox',options:{required:true}}">
+                                <th data-options="field:'name',width:'25%',align:'center',editor:{type:'textbox',options:{required:true}}">设备名称</th>
+                                <th data-options="field:'mode',_provider:'datetimeProvider',width:'25%',align:'center',editor:{type:'textbox',options:{required:true}}">
                                     型号
                                 </th>
-                                <th data-options="field:'number',width:100,align:'center',editor:{type:'numberspinner',options:{increment:1,min:1}}">
+                                <th data-options="field:'number',width:'25%',align:'center',editor:{type:'numberspinner',options:{increment:1,min:1}}">
                                     数量
                                 </th>
-                                <th data-options="field:'date',_provider:'datetimeProvider',width:200,align:'center',editor:{type:'datebox',options:{required:true}}">
+                                <th data-options="field:'date',_provider:'datetimeProvider',width:'25%',align:'center',editor:{type:'datebox',options:{required:true}}">
                                     释放日期
                                 </th>
                             </tr>
@@ -117,20 +118,20 @@
                 </tr>
                 <tr>
                     <td colspan="4">
-                        <input class="easyui-tagbox" id="tagbx" value="${apply.email}" style="width:800px">
+                        <input class="easyui-tagbox" id="tagbx" value="${apply.email}" style="width:100%">
                     </td>
                 </tr>
             </table>
 
         </form>
         <div style="text-align:center;padding:5px;margin-top:50px;">
-            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="size:'large',width:'80px'"
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
                onclick="backForm()">上一步</a>
             <a href="${contextPath}/projectComplete/index.html" class="easyui-linkbutton"
-               data-options="size:'large',width:'80px'">取消</a>
-            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="size:'large',width:'80px'"
+               data-options="width:'80px'">取消</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
                onclick="submitForm(1)">保存</a>
-            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="size:'large',width:'80px'"
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
                onclick="submitForm(2)">立项提交</a>
         </div>
     </div>
