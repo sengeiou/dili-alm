@@ -432,26 +432,27 @@ function queryGrid(node) {
 							}, {
 								field : 'menuUrl',
 								title : '菜单链接地址',
-								width : '35%',
+								width : '36%',
 								editor : {
 									type : 'textbox'
 								}
 							}, {
 								field : 'description',
 								title : '描述',
-								width : '40%',
+								width : '36%',
 								editor : 'text'
 							}, {
 								field : 'orderNumber',
 								title : '排序',
-								width : '5%',
+								width : '8%',
+								align : 'center',
 								editor : {
 									type : 'numberbox'
 								}
 							}, {
 								field : 'opt',
 								title : '操作',
-								width : '10%',
+								width : '5%',
 								hidden : true,
 								formatter : function(value, row, index) {
 									var content = '<input type="button" id="gridBtnSave' + index + '" style="margin:0px 4px;display:none;" value="保存" onclick="javascript:endEditing(\'grid\');">';
