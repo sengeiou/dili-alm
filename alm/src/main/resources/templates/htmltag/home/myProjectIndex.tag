@@ -78,9 +78,11 @@
             }
         }
 
-        
-        function formatOper(val,row,index){  
-        	//alert(row.serialNumber);
+      function formatOper(val,row,index){ 
+      		console.log(row);
+		    if (!row.manager) {
+				return '';
+			} 
         	return '<a href="${contextPath!}/project/detail.html?id=' + row.id + '">管理</a>';
         }
         
