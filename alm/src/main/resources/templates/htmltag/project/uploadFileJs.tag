@@ -15,6 +15,12 @@ function delUploadFile(id) {
 							},
 							success : function(data) {
 								if (data.code == 200) {
+									try {
+										LogUtils.saveLog("删除项目文档:" + data.result, function() {
+												});
+									} catch (e) {
+										$.messager.alert('错误', e);
+									}
 									var selected = $('#uploadFileGrid').datagrid('getSelected');
 									var index = $('#uploadFileGrid').datagrid('getRowIndex', selected);
 									$('#uploadFileGrid').datagrid('deleteRow', index);
