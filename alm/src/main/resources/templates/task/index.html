@@ -23,14 +23,14 @@
  								<#comboProvider _id="versionId" _table="project_version"
 								_valueField="id" _textField="version"/>
                             </td>
-                            <td style="padding:5px;">
-                                <input  name="phaseName" id="phaseName"  class="easyui-combobox"style="width: 100%;"  panelWidth="auto" panelHeight="auto"  data-options="label:'所属阶段:'">
-                                <#comboProvider _id="phaseName" _table="data_dictionary_value"
-								_valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":10}'/>
-
-                            </td>
                         <tr>
-                            <td style="padding:5px;">
+                        <td style="padding:5px;">
+                            <input  name="phaseName" id="phaseName"  class="easyui-combobox"style="width: 100%;"  panelWidth="auto" panelHeight="auto"  data-options="label:'所属阶段:'">
+                            <#comboProvider _id="phaseName" _table="data_dictionary_value"
+                            _valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":10}'/>
+
+                        </td>
+                        <td style="padding:5px;">
 								<input class="easyui-textbox" name="owner" id="owner" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="负责人:"
 															data-options="editable:false,
 																	buttonText:'选择',

@@ -973,14 +973,14 @@ select:focus{
 
 .l-btn-selected,
 .l-btn-selected:hover {
-    background: #deebff;
+    background: #ecf2ef;
     color: #333;
     filter: none;
 }
 
 .l-btn-selected {
-    background: #579bff;
-    color: #fff
+    background: #ecf2ef;
+    /*color: #fff*/
 }
 
 .l-btn-plain-selected,
