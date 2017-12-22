@@ -72,7 +72,7 @@
         and content like '%${log.content}%'
     </if>
     <if test="log.sort != null">
-    	ORDER BY '${log.sort}' ${log.order}
+    	ORDER BY ${log.sort} ${log.order}
     </if>
     <if test="log.page != null and log.rows != null">
     limit ${(log.page-1)*log.rows},${log.rows}

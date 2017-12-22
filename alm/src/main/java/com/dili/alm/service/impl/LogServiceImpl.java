@@ -12,6 +12,7 @@ import com.dili.alm.domain.Files;
 import com.dili.alm.domain.Log;
 import com.dili.alm.domain.Task;
 import com.dili.alm.service.LogService;
+import com.dili.alm.utils.WebUtil;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -62,6 +63,11 @@ public class LogServiceImpl extends BaseServiceImpl<Log, Long> implements LogSer
 	
 	@Override
 	public EasyuiPageOutput listLogPage(Log log,String beginTime,String endTime) {
+		String content = log.getContent();
+		if(!WebUtil.strIsEmpty(content)){
+			String replaceAll = content.replaceAll(" ", "");
+			log.setContent(replaceAll);
+		}
 		List<Log> logLikeList = this.getActualDao().logLikeList(log,beginTime,endTime);
 		int logLikeListCount = this.getActualDao().logLikeListCount(log,beginTime,endTime);
 		
