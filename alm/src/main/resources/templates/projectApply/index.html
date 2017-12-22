@@ -21,30 +21,30 @@
                         </td>
                         <td style="padding:5px;">
                             <input class="easyui-textbox" name="type" id="type" style="width:100%"
-                                   data-options="label:'项目类型:', validType:'length[0,20]'"/>
+                                   data-options="editable:false,label:'项目类型:', validType:'length[0,20]'"/>
                             <#comboProvider _id="type" _provider='projectTypeProvider'/>
 
                         </td>
                         <td style="padding:5px;">
                             <input class="easyui-datebox" name="created" id="created" style="width:100%"
-                                   data-options="label:'项目申请日期:'"/>
+                                   data-options="editable:false,label:'项目申请日期:'"/>
 
                         </td>
                     </tr>
                     <tr>
                         <td style="padding:5px;">
                             <input class="easyui-datebox" name="startDate" id="startDate" style="width:100%"
-                                   data-options="label:'计划开始日期:'"/>
+                                   data-options="editable:false,label:'计划开始日期:'"/>
 
                         </td>
                         <td style="padding:5px;">
                             <input class="easyui-datebox" name="endDate" id="endDate" style="width:100%"
-                                   data-options="label:'计划结束日期:'"/>
+                                   data-options="editable:false,label:'计划结束日期:'"/>
 
                         </td>
                         <td style="padding:5px;">
                             <input class="easyui-textbox" name="status" id="status" style="width:100%"
-                                   data-options="label:'项目状态:', validType:'length[0,3]'"/>
+                                   data-options="editable:false,label:'项目状态:', validType:'length[0,3]'"/>
                             <#comboProvider _id="status" _provider='applyStateProvider'/>
 
                         </td>

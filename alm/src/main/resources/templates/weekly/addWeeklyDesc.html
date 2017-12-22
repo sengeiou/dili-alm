@@ -345,7 +345,9 @@
                <button onclick="save(0)">保存</button>
                <button onclick="save(1)">提交周报</button> 
 		       
-			       
+			     <font size="3">  
+		                    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="pageReturn()">返回周报列表</a>
+		          </font>     
 			             
 			             
 			 
@@ -367,6 +369,13 @@
 
     <!-- ====================================================================================================================== -->
     <script type="text/javascript">
+    
+		    function pageReturn(){  
+		    	//window.history.go(-1);
+		    	window.location.href="${contextPath}/weekly/index.html";
+		    }
+    
+    
        
               function cancel(){  
             	  var  tempid=$("#pdprojectId").val();

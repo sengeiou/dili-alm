@@ -84,7 +84,7 @@
                 <tr>
                     <td colspan="2">
                         <input class="easyui-datebox" type="text" name="launchDate"
-                               data-options="required:true,label:'实际上线日期:'">
+                               data-options="editable:false,required:true,label:'实际上线日期:'">
                     </td>
                 </tr>
                 <tr>
@@ -137,15 +137,15 @@
         });
     }
 
-    $('.easyui-datebox').each(function(){
-        $(this).datebox().datebox('calendar').calendar({
-            validator: function(date){
-                var now = new Date();
-                var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-                return date>=d1;
-            }
-        });
-    });
+    // $('.easyui-datebox').each(function(){
+    //     $(this).datebox().datebox('calendar').calendar({
+    //         validator: function(date){
+    //             var now = new Date();
+    //             var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    //             return date>=d1;
+    //         }
+    //     });
+    // });
 
     $('#projectId').combobox({
         url: '${contextPath}/project/getProjectList',
