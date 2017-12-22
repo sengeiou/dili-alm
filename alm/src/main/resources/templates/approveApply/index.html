@@ -265,8 +265,8 @@
          *          表单提交需执行的任务
          */
         $(function () {
-            bindFormEvent("form", "projectApplyId", queryGrid);
-            bindFormEvent("_form", "_projectApplyId", saveOrUpdate, function (){$('#dlg').dialog('close');});
+            // bindFormEvent("form", "number", queryGrid);
+            // bindFormEvent("_form", "_projectApplyId", saveOrUpdate, function (){$('#dlg').dialog('close');});
             if (document.addEventListener) {
                 document.addEventListener("keyup",getKey,false);
             } else if (document.attachEvent) {

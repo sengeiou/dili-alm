@@ -288,10 +288,10 @@
      *          表单提交需执行的任务
      */
     $(function () {
-        bindFormEvent("form", "projectId", queryGrid);
-        bindFormEvent("_form", "_projectId", saveOrUpdate, function () {
-            $('#dlg').dialog('close');
-        });
+        // bindFormEvent("form", "projectId", queryGrid);
+        // bindFormEvent("_form", "_projectId", saveOrUpdate, function () {
+        //     $('#dlg').dialog('close');
+        // });
         if (document.addEventListener) {
             document.addEventListener("keyup", getKey, false);
         } else if (document.attachEvent) {
