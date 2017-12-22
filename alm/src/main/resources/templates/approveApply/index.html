@@ -22,19 +22,19 @@
 
                             </td>
                             <td style="padding:5px;">
-                                <input class="easyui-textbox" name="projectType" id="projectType" style="width:100%" data-options="label:'项目类型:', validType:'length[0,255]'" />
+                                <input class="easyui-textbox" name="projectType" id="projectType" style="width:100%" data-options="editable:false,label:'项目类型:', validType:'length[0,255]'" />
                                 <#comboProvider _id="projectType" _provider='projectTypeProvider'/>
                             </td>
                         </tr>
                         <tr>
                             <td style="padding:5px;">
                                 <input class="easyui-textbox" name="status" id="status" style="width:100%"
-                                       data-options="label:'项目审批状态:', validType:'length[0,3]'"/>
+                                       data-options="editable:false,label:'项目审批状态:', validType:'length[0,3]'"/>
                                 <#comboProvider _id="status" _provider='approveStateProvider'/>
 
                             </td>
                             <td style="padding:5px;">
-                                <input class="easyui-datebox" name="created" id="created" style="width:100%" data-options="label:'项目申请日期:'" />
+                                <input class="easyui-datebox" name="created" id="created" style="width:100%" data-options="editable:false,label:'项目申请日期:'" />
 
                             </td>
                             <td style="padding:5px;">

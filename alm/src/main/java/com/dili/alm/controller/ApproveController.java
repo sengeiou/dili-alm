@@ -5,6 +5,7 @@ import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.Approve;
 import com.dili.alm.domain.dto.apply.ApplyApprove;
 import com.dili.alm.service.ApproveService;
+import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.sdk.session.SessionContext;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -149,6 +151,11 @@ public class ApproveController {
     public @ResponseBody
     String listPage(Approve approve) throws Exception {
         approve.setType(AlmConstants.ApproveType.APPLY.getCode());
+        if(approve.getCreated()!=null){
+            Date temp = approve.getCreated();
+            approve.setCreated(DateUtil.appendDateToEnd(approve.getCreated()));
+            approve.setCreatedStart(DateUtil.appendDateToStart(temp));
+        }
         return approveService.listEasyuiPageByExample(approve, true).toString();
     }
 
@@ -156,6 +163,11 @@ public class ApproveController {
     public @ResponseBody
     String changeListPage(Approve approve) throws Exception {
         approve.setType(AlmConstants.ApproveType.CHANGE.getCode());
+        if(approve.getCreated()!=null){
+            Date temp = approve.getCreated();
+            approve.setCreated(DateUtil.appendDateToEnd(approve.getCreated()));
+            approve.setCreatedStart(DateUtil.appendDateToStart(temp));
+        }
         return approveService.listEasyuiPageByExample(approve, true).toString();
     }
 
@@ -163,6 +175,11 @@ public class ApproveController {
     public @ResponseBody
     String completeListPage(Approve approve) throws Exception {
         approve.setType(AlmConstants.ApproveType.COMPLETE.getCode());
+        if(approve.getCreated()!=null){
+            Date temp = approve.getCreated();
+            approve.setCreated(DateUtil.appendDateToEnd(approve.getCreated()));
+            approve.setCreatedStart(DateUtil.appendDateToStart(temp));
+        }
         return approveService.listEasyuiPageByExample(approve, true).toString();
     }
 

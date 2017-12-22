@@ -170,9 +170,9 @@
             <% if(!viewMode){ %>
             <% if(canOpt){ %>
             <a href="javascript:void(0)" class="easyui-linkbutton" data-options="size:'large',width:'80px'"
-               onclick="submitForm('reject')">拒绝</a>
+               onclick="submitForm('reject',this)">拒绝</a>
             <a href="javascript:void(0)" class="easyui-linkbutton" data-options="size:'large',width:'80px'"
-               onclick="submitForm('accept')">同意</a>
+               onclick="submitForm('accept',this)">同意</a>
             <% } %>
             <% } %>
         </div>
@@ -186,10 +186,11 @@
         }
         return value;
     }
-    function submitForm(opt) {
+    function submitForm(opt,obj) {
         $('#ff').form('submit', {
             url: "${contextPath}/approve/applyApprove",
             onSubmit: function () {
+                $(obj).linkbutton('disable');
                 $("#opt").val(opt);
             },
             success: function (data) {

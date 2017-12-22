@@ -9,6 +9,7 @@ import com.dili.alm.provider.ProjectTypeProvider;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.ProjectApplyService;
+import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValuePair;
@@ -28,10 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -120,6 +118,11 @@ public class ProjectApplyController {
     @RequestMapping(value = "/listPage", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
     String listPage(ProjectApply projectApply) throws Exception {
+        if(projectApply.getCreated()!=null){
+            Date temp = projectApply.getCreated();
+            projectApply.setCreated(DateUtil.appendDateToEnd(projectApply.getCreated()));
+            projectApply.setCreatedStart(DateUtil.appendDateToStart(temp));
+        }
         return projectApplyService.listEasyuiPageByExample(projectApply, true).toString();
     }
 

@@ -1,6 +1,7 @@
 package com.dili.alm.domain;
 
 import com.dili.ss.domain.annotation.Like;
+import com.dili.ss.domain.annotation.Operator;
 import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
@@ -132,12 +133,18 @@ public interface Approve extends IBaseDomain {
 
     void setType(String type);
 
+    @Operator(Operator.LITTLE_EQUAL_THAN)
     @Column(name = "`created`")
     @FieldDef(label="created")
     @EditMode(editor = FieldEditor.Datetime, required = false)
     Date getCreated();
 
     void setCreated(Date created);
+
+    @Operator(Operator.GREAT_EQUAL_THAN)
+    @Column(name = "`created`")
+    Date getCreatedStart();
+    void setCreatedStart(Date created);
 
     @Column(name = "`modified`")
     @FieldDef(label="modified")
