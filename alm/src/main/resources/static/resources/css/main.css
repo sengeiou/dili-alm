@@ -40,3 +40,7 @@ h2 {
 }
 
 /* datagrid row border end */
+.show-hint{
+    margin: 0 0 10px;
+    color: #999;
+}
