@@ -47,7 +47,7 @@
         <!-- =========================================================表格========================================================= -->
         <table class="easyui-datagrid" title="项目变更列表" id="grid" fitColumns="true"
                pagination="true" pageSize="30" pageNumber="1" pagePosition="bottom" rownumbers="true" remoteSort="false"
-               loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
+               loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="created" sortOrder="desc"
                align="center" fit="true" striped="true" toolbar="#toolbar" idField="id">
             <thead>
             <tr>
@@ -68,6 +68,9 @@
                 </th>
                 <th data-options="field:'estimateLaunchDate',width:120,  _provider:'dateProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                     变更后上线日期
+                </th>
+                <th data-options="hidden:true,field:'created',width:120,  _provider:'dateProvider',  sortable:'true', order:'desc', align:'center', resizable:'true', fixed:'false'">
+                    创建日期
                 </th>
                 <th data-options="field:'createMemberId',width:180,  _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                     变更人
