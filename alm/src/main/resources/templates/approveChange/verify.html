@@ -25,9 +25,19 @@
     .title-second {
         padding-left: 30px;
     }
+    .textbox-label{
+        width: 100px;
+    }
+    .panel-tool{
+        top:10px;
+        height: 24px;
+    }
 </style>
 <div id="smDialog" style="display: none;"></div>
-<div class="easyui-panel" title="项目变更审批">
+<div id="cusTools">
+    <a onclick="window.location.href='${contextPath}/approve/change/index.html';" class="easyui-linkbutton" style="width: 50px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">返回</a>
+</div>
+<div class="easyui-panel" title="项目变更审批" style="height: 100%" data-options="tools:'#cusTools'">
     <div style="padding:10px 60px 20px 60px">
         <form id="ff" method="post" action="">
             <input type="hidden" name="id" value="${approve.id}">
@@ -46,47 +56,54 @@
                     <td>${approve.created}</td>
                 </tr>
                 <tr>
-                    <td class="title-first" colspan="3">1项目内容及资源</td>
+                    <td class="title-first" colspan="4">1项目内容及资源</td>
                 </tr>
                 <tr>
-                    <td><input class="easyui-textbox" type="text" name="name" value="${change.name}"
-                               data-options="required:true,validType:'length[1,20]',label:'变更名称:'"></td>
-                    <td><input class="easyui-textbox" type="text" name="projectId" id="projectId"
-                               data-options="required:true,label:'项目编号:'"></td>
-                </tr>
-                <tr>
-                    <td><input class="easyui-textbox" type="text" name="projectName" id="projectName"
-                               data-options="required:true,validType:'length[1,20]',label:'项目名称:'"></td>
-                    <td><input class="easyui-textbox" type="text" name="versionId" id="versionId"
-                               data-options="required:true,validType:'length[1,20]',label:'项目版本:'"></td>
-                </tr>
-                <tr>
-                    <td><input class="easyui-textbox" type="text" name="projectType" id="projectType"
-                               data-options="required:true,label:'项目类型:'"></td>
-                    <td><input class="easyui-textbox" type="text" name="phaseId" id="phaseId"
-                               data-options="required:true,validType:'length[1,20]',label:'提交阶段:'"></td>
-                </tr>
-                <tr>
-                    <td>
-                        <input class="easyui-textbox" type="text" name="type" id="type"
-                               data-options="required:true,validType:'length[1,10]',label:'变更类型:'">
-                        <#comboProvider _id="type" _provider='changeTypeProvider'/>
+                    <td colspan="2">
+                        <input class="easyui-textbox" type="text" name="name" value="${change.name}" data-options="required:true,validType:'length[1,20]',label:'变更名称:'">
                     </td>
-                    <td><input class="easyui-numberbox" type="text" name="workingHours" value="${change.workingHours}"
-                               data-options="required:true,min:0,max:99999999,label:'变更工作量预估:'"></td>
+                    <td colspan="2">
+                        <input class="easyui-textbox" type="text" name="projectId" id="projectId" data-options="required:true,label:'项目编号:'">
+                    </td>
                 </tr>
                 <tr>
-                    <td>
-                        <label class="textbox-label textbox-label-before">是否影响上线:</label>
-                        <select id="affectsOnline" class="easyui-combobox" name="affectsOnline" style="width: 150px;"
-                                data-options="editable:false"
+                    <td colspan="2">
+                        <input class="easyui-textbox" type="text" name="projectName" id="projectName" data-options="required:true,validType:'length[1,20]',label:'项目名称:'">
+                    </td>
+                    <td colspan="2">
+                        <input class="easyui-textbox" type="text" name="versionId" id="versionId" data-options="required:true,validType:'length[1,20]',label:'项目版本:'">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input class="easyui-textbox" type="text" name="projectType" id="projectType" data-options="required:true,label:'项目类型:'">
+                    </td>
+                    <td colspan="2">
+                        <input class="easyui-textbox" type="text" name="phaseId" id="phaseId" data-options="required:true,validType:'length[1,20]',label:'提交阶段:'">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input class="easyui-textbox" type="text" name="type" id="type" data-options="required:true,validType:'length[1,10]',label:'变更类型:'">
+                        <#comboProvider _id="type" _provider='changeTypeProvider' />
+                    </td>
+                    <td colspan="2">
+                        <input class="easyui-numberbox" type="text" name="workingHours" value="${change.workingHours}" data-options="required:true,min:0,max:99999999,label:'变更工作量预估:'">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <!--<label class="textbox-label textbox-label-before">是否影响上线:</label>-->
+                        <select id="affectsOnline" class="easyui-combobox" name="affectsOnline" style="width: 305px;"
+                                data-options="editable:false,label:'是否影响上线'"
                                 required="true">
                             <option value="1">是</option>
                             <option value="2">否</option>
                         </select>
                     </td>
-                    <td><input class="easyui-datebox" type="text" name="name" value="${change.created}"
-                               data-options="required:true,label:'提交日期:'"></td>
+                    <td colspan="2">
+                        <input class="easyui-datebox" type="text" name="name" value="${change.created}" data-options="required:true,label:'提交日期:'">
+                    </td>
                 </tr>
                 <tr>
                     <td class="title-first" colspan="4">2.变更描述</td>
@@ -98,64 +115,62 @@
                     <td class="title-second" colspan="4">变更内容及原因</td>
                 </tr>
                 <tr>
-                    <td colspan="4"><input class="easyui-textbox" id="content" name="content" value="${change.content}"
-                                           data-options="required:true,multiline:true,prompt:'限制输入500个字符串',validType:['length[0,500]']"
-                                           style="width:800px;height:120px"/></td>
+                    <td colspan="4">
+                        <input class="easyui-textbox" id="content" name="content" value="${change.content}" data-options="required:true,multiline:true,prompt:'限制输入500个字符串',validType:['length[0,500]']" style="width:800px;height:120px" />
+                    </td>
                 </tr>
                 <tr>
                     <td class="title-second" colspan="4">变更方案及影响风险</td>
                 </tr>
                 <tr>
-                    <td colspan="4"><input class="easyui-textbox" name="effects" id="effects" value="${change.effects}"
-                                           data-options="multiline:true,prompt:'限制输入500个字符串',validType:['length[0,500]']"
-                                           style="width:800px;height:120px"/></td>
+                    <td colspan="4">
+                        <input class="easyui-textbox" name="effects" id="effects" value="${change.effects}" data-options="multiline:true,prompt:'限制输入500个字符串',validType:['length[0,500]']" style="width:800px;height:120px" />
+                    </td>
                 </tr>
                 <tr>
-                    <td class="title-first" colspan="3">立项评审&审批</td>
+                    <td class="title-first" colspan="4">立项评审&审批</td>
                 </tr>
                 <tr>
                     <td class="" colspan="4">
-                        <table id="dg" class="easyui-datagrid" style="height:auto"
-                               data-options="singleSelect: true,url: '${contextPath}/approve/loadDesc?id=${approve.id}'">
+                        <table id="dg" class="easyui-datagrid" style="height:auto" data-options="singleSelect: true,url: '${contextPath}/approve/loadDesc?id=${approve.id}'">
                             <thead>
                             <tr>
-                                <th data-options="field:'approveDate',_provider:'dateProvider',width:180,align:'center'">
+                                <th data-options="field:'approveDate',_provider:'dateProvider',width:'20%',align:'center'">
                                     审批时间
                                 </th>
-                                <th data-options="field:'userId',width:200,align:'center'">
+                                <th data-options="field:'userId',width:'15%',align:'center'">
                                     用户
                                 </th>
-                                <th data-options="field:'role',width:200,align:'center'">
+                                <th data-options="field:'role',width:'25%',align:'center'">
                                     职务
                                 </th>
-                                <th data-options="field:'result',width:100,align:'center',formatter:format">
+                                <th data-options="field:'result',width:'15%',align:'center',formatter:format">
                                     审批结果
                                 </th>
-                                <th data-options="field:'notes',width:150,align:'center'">审批意见</th>
+                                <th data-options="field:'notes',width:'25%',align:'center'">审批意见</th>
                             </tr>
                             </thead>
                         </table>
                     </td>
                 </tr>
                 <tr>
-                    <td class="title-first" colspan="3">验证审批</td>
+                    <td class="title-first" colspan="4">验证审批</td>
                 </tr>
                 <tr>
                     <td class="" colspan="4">
-                        <table id="dg1" class="easyui-datagrid" style="height:auto"
-                               data-options="singleSelect: true">
+                        <table id="dg1" class="easyui-datagrid" style="height:auto" data-options="singleSelect: true">
                             <thead>
                             <tr>
-                                <th data-options="field:'created',_provider:'dateProvider',width:180,align:'center'">
+                                <th data-options="field:'created',_provider:'dateProvider',width:'25%',align:'center'">
                                     审批时间
                                 </th>
-                                <th data-options="field:'approver',_provider:'memberProvider',width:200,align:'center'">
+                                <th data-options="field:'approver',_provider:'memberProvider',width:'20%',align:'center'">
                                     用户
                                 </th>
-                                <th data-options="field:'roleName',_provider:'roleNameProvider',width:200,align:'center'">
+                                <th data-options="field:'roleName',_provider:'roleNameProvider',width:'30%',align:'center'">
                                     职务
                                 </th>
-                                <th data-options="field:'result',width:100,align:'center',formatter:format">
+                                <th data-options="field:'result',width:'25%',align:'center',formatter:format">
                                     验证结果
                                 </th>
                             </tr>
@@ -164,12 +179,11 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="title-first" colspan="3">验证执行</td>
+                    <td class="title-first" colspan="4">验证执行</td>
                 </tr>
                 <tr>
                     <td class="" colspan="4">
-                        <table id="task" class="easyui-datagrid" style="height:auto"
-                               data-options="singleSelect: true">
+                        <table id="task" class="easyui-datagrid" style="height:auto" data-options="singleSelect: true">
                             <thead>
                             <tr>
                                 <th data-options="field:'changeName',_provider:'projectChangeProvider',width:180,align:'center'">
@@ -181,7 +195,7 @@
                                 <th data-options="field:'changeType',_provider:'projectChangeProvider',width:200,align:'center'">
                                     变更内容
                                 </th>
-                                <th data-options="field:'versionId',_provider:'projectVersionProvider',width:100,align:'center'">
+                                <th data-options="field:'versionId',_provider:'projectVersionProvider',width:200,align:'center'">
                                     变更后版本
                                 </th>
                                 <th data-options="field:'planTime',width:100,align:'center'">
@@ -201,22 +215,19 @@
             </table>
             <table>
                 <tr>
-                    <td colspan="4" style="padding-left: 0"><input id="notes" class="easyui-textbox" name="notes"
-                                                                   data-options="label:'验证意见',multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
-                                                                   style="width:800px;height:120px"/></td>
+                    <td colspan="4" style="padding-left: 0">
+                        <input id="notes" class="easyui-textbox" name="notes" data-options="label:'验证意见',multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']" style="width:800px;height:120px" />
+                    </td>
                 </tr>
             </table>
         </form>
         <div style="text-align:center;padding:5px;margin-top:50px;">
-            <a href="${contextPath}/approve/change/index.html" class="easyui-linkbutton" data-options="size:'large',width:'80px'">返回</a>
-            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="size:'large',width:'80px'"
-               onclick="submitForm('reject')">拒绝</a>
-            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="size:'large',width:'80px'"
-               onclick="submitForm('accept')">同意</a>
+            <!--<a href="${contextPath}/approve/change/index.html" class="easyui-linkbutton" data-options="size:'large',width:'80px'">返回</a>-->
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'" onclick="submitForm('reject')">拒绝</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'" onclick="submitForm('accept')">同意</a>
         </div>
     </div>
 </div>
-
 <script type="text/javascript">
     function format(value) {
         if (value != undefined) {
@@ -228,10 +239,10 @@
     function submitForm(opt) {
         $('#ff').form('submit', {
             url: "${contextPath}/approve/verityApprove",
-            onSubmit: function () {
+            onSubmit: function() {
                 $("#opt").val(opt);
             },
-            success: function (data) {
+            success: function(data) {
                 var data = eval('(' + data + ')');
                 if (data.success == true) {
                     if (data.success == true) {
@@ -246,7 +257,7 @@
         url: '${contextPath}/project/getProjectList',
         valueField: 'id',
         textField: 'serialNumber',
-        onChange: function (projectValue) {
+        onChange: function(projectValue) {
             var datas = $("#projectId").combobox('getData');
             $("#projectName").textbox("initValue", "");
             $("#projectType").textbox("initValue", "");
@@ -259,7 +270,7 @@
                         url: '${contextPath}/project/version/listPage?projectId=' + projectValue,
                         valueField: 'id',
                         textField: 'version',
-                        onChange: function (versionValue) {
+                        onChange: function(versionValue) {
                             $('#phaseId').combobox({
                                 url: '${contextPath}/project/phase/listPhase?versionId=' + versionValue,
                                 valueField: 'id',
@@ -272,7 +283,7 @@
         }
     });
 
-    $(function () {
+    $(function() {
         $("#projectId").combobox("setValue", '${change.projectId}');
         $("#versionId").combobox("setValue", '${change.versionId}');
         $("#phaseId").combobox("setValue", '${change.phaseId}');
@@ -298,6 +309,5 @@
         var param = bindMetadata("dg1", true);
         $("#dg1").datagrid("load", param);
     });
-
 </script>
 </#body>

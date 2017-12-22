@@ -103,8 +103,8 @@ public class WordExport {
 		personTableRowone.addNewTableCell().setText("创建人：");
 		personTableRowone.addNewTableCell().setText(pd.getUserName());
 		personTableRowone.addNewTableCell();
-		personTableRowone.addNewTableCell().setText("新建阶段人：");
-		personTableRowone.addNewTableCell().setText(pd.getStageMan());
+		//personTableRowone.addNewTableCell().setText("新建阶段人：");
+		//personTableRowone.addNewTableCell().setText(pd.getStageMan());
 		personTableRowone.addNewTableCell();
 		personTableRowone.addNewTableCell().setText("创建时间  :   ");
 		personTableRowone.addNewTableCell().setText(pd.getCreated());
