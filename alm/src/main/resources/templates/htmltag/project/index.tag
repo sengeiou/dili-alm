@@ -2,11 +2,11 @@
 var editId = undefined;
 
 function projectNameFormatter(value, row) {
-	return '<a href="${contextPath!}/project/detail.html?id=' + row.id + '">' + value + '</a>';
+	return '<a href="${contextPath!}/project/detail.html?id=' + row.id + '&backUrl=' + encodeURI('${contextPath!}/project/index.html') + '">' + value + '</a>';
 }
 
 function optFormatter(value, row) {
-	return '<a href="${contextPath!}/project/detail.html?id=' + row.id + '&editable=true">管理</a>';
+	return '<a href="${contextPath!}/project/detail.html?id=' + row.id + '&editable=true&backUrl=' + encodeURI('${contextPath!}/project/index.html') + '">管理</a>';
 }
 
 function progressFormatter(value, rowData, rowIndex) {
