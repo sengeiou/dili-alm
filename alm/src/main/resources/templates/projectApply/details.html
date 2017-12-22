@@ -225,10 +225,10 @@
                 <thead>
                 <tr>
                     <th data-options="field:'phase',align:'center'," style="width: 15%">阶段/里程碑</th>
-                    <th data-options="field:'startDate',_provider:'datetimeProvider',align:'center',editor:{type:'datetimebox',options:{required:true}}" style="width: 25%">
+                    <th data-options="field:'startDate',_provider:'dateProvider',align:'center',editor:{type:'datebox',options:{required:true}}" style="width: 25%">
                         计划开始日期
                     </th>
-                    <th data-options="field:'endDate',_provider:'datetimeProvider',align:'center',editor:{type:'datetimebox',options:{required:true}}" style="width: 25%">
+                    <th data-options="field:'endDate',_provider:'dateProvider',align:'center',editor:{type:'datebox',options:{required:true}}" style="width: 25%">
                         计划结束日期
                     </th>
                     <th data-options="field:'resources',align:'center',editor:{type:'numberspinner',options:{increment:1,min:1}}" style="width: 15%">
@@ -518,7 +518,7 @@
                     <th data-options="field:'id',width:80,hidden:true">ID</th>
                     <th data-options="field:'name', width:'25%', align:'center', formatter:formatDown,resizable:'true', fixed:'false'">文件名</th>
                     <th data-options="field:'length', width:'25%', align:'center', resizable:'true', fixed:'false',formatter:renderSize">大小</th>
-                    <th data-options="field:'created', width:'50%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">上传日期</th>
+                    <th data-options="field:'created', width:'50%',  _provider:'dateProvider', align:'center', resizable:'true', fixed:'false'">上传日期</th>
                 </tr>
                 </thead>
             </table>
