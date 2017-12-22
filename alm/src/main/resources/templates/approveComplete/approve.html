@@ -132,7 +132,7 @@
                                data-options="singleSelect: true,  url: '${contextPath}/approve/loadDesc?id=${approve.id}'">
                             <thead>
                             <tr>
-                                <th data-options="field:'approveDate',_provider:'datetimeProvider',width:'20%',align:'center'">
+                                <th data-options="field:'approveDate',_provider:'dateProvider',width:'20%',align:'center'">
                                     审批时间
                                 </th>
                                 <th data-options="field:'userId',width:'15%',align:'center'">
@@ -214,11 +214,11 @@
                     $("#leader").combobox("initValue", data.projectManager);
                     $("#dep").combobox("initValue", data.dep);
                     $("#buss").combobox("initValue", data.businessOwner);
-                    $("#startDate").combobox("initValue", data.startDate);
+                    $("#startDate").datebox("setValue", data.startDate);
                     $("#startDateVal").val(data.startDate);
-                    $("#endDate").combobox("initValue", data.endDate);
+                    $("#endDate").datebox("setValue", data.endDate);
                     $("#endDateVal").val(data.endDate);
-                    $("#actualEndDate").combobox("initValue", data.actualEndDate);
+                    $("#actualEndDate").datebox("setValue", data.actualEndDate);
                 }
             }
         }

@@ -97,6 +97,10 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         metadata.put("dep", JSON.parse("{provider:'depProvider'}"));
         metadata.put("createMemberId", JSON.parse("{provider:'memberProvider'}"));
         metadata.put("created", JSON.parse("{provider:'dateProvider'}"));
+        metadata.put("expectedLaunchDate", JSON.parse("{provider:'dateProvider'}"));
+        metadata.put("estimateLaunchDate", JSON.parse("{provider:'dateProvider'}"));
+        metadata.put("startDate", JSON.parse("{provider:'dateProvider'}"));
+        metadata.put("endDate", JSON.parse("{provider:'dateProvider'}"));
         metadata.put("status", JSON.parse("{provider:'approveStateProvider'}"));
 
         Map dto = null;

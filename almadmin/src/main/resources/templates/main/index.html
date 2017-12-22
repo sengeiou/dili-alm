@@ -60,7 +60,7 @@
         </div>
         <!--页面主体内容-->
         <div data-options="region:'center'" id="center" style="width:100%;height:100%;border: none;min-width:1200px" >
-           <iframe id="homeIndex" scrolling="auto" frameborder="0"  src="http://alm.diligrp.com:8083/alm/home/index" style="width:100%; height: 99.6%; display:none;"></iframe>
+           <iframe id="homeIndex" scrolling="auto" frameborder="0"  style="width:100%; height: 99.6%; display:none;"></iframe>
            <div id="tabs" style="width:100%; height: 99.6%;display: none;padding:10px 10px 0;box-sizing: border-box;min-width:929px"></div>
         </div>
     </div>
@@ -249,6 +249,7 @@
     	$('#css3menu ul li').first().addClass("on");
     	$('.menu-left').hide();
         $("#homeIndex").show();
+        $('#homeIndex').attr("src","http://alm.diligrp.com:8083/alm/home/index");
         let width= $(window).width();
         width=width<1200?1200:width;
         $("#center").width(width)
@@ -264,6 +265,7 @@
             if(index<1){
                 $('.menu-left').hide();
                 $("#homeIndex").css('display','block');
+                $('#homeIndex').attr("src","http://alm.diligrp.com:8083/alm/home/index");
                 $("#tabs").empty().hide();
                 let width= $(window).width();
                 width=width<1200?1200:width;

@@ -79,18 +79,22 @@
         }
 
       function formatOper(val,row,index){ 
-      		console.log(row);
 		    if (!row.manager) {
 				return '';
 			} 
-        	return '<a href="${contextPath!}/project/detail.html?id=' + row.id + '">管理</a>';
+        	return '<a href="javascript:void(0)" onclick="formatOperSrc('+ row.id + ')">管理</a>';
         }
         
         //项目名称
         function formatprojectName(val,row,index){  
-        	return  "<span class='opt' style='padding:5px;'><a href='${contextPath}/project/detail?id=" + row.id + "' target='_blank'>"+val+"</a></span>";        
+        	return  '<span class="opt" style="padding:5px;"><a href="javascript:void(0)" onclick="projectNameSrc('+ row.id + ')" target="_blank">'+val+'</a></span>';        
         }
- 
+ 		function projectNameSrc(rid){
+ 			$("#myProject", parent.document).attr("src","${contextPath!}/project/detail?id="+ rid+"&backUrl='home/myProjectIndex'");
+ 		}
+ 		function formatOperSrc(rid){
+ 			$("#myProject", parent.document).attr("src","${contextPath!}/project/detail?id="+ rid+"&backUrl='home/myProjectIndex'");
+ 		}
         /**
          * 绑定页面回车事件，以及初始化页面时的光标定位
          * @formId

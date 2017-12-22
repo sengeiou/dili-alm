@@ -146,7 +146,7 @@
 		ON p.id = t.`project_id` 
 		WHERE t.owner = #{owner} 
 		<if test="project.sort != null">
-			ORDER BY '${project.sort}' ${project.order}
+			ORDER BY ${project.sort} ${project.order}
 		</if>
       	<if test="project.page != null and project.rows != null ">
 			limit ${(project.page-1)*project.rows},${project.rows}
