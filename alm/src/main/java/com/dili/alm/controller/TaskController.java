@@ -6,12 +6,14 @@ import com.dili.alm.domain.ProjectPhase;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.TaskDetails;
+import com.dili.alm.domain.User;
 import com.dili.alm.service.ProjectApplyService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.ProjectVersionService;
 import com.dili.alm.service.TaskDetailsService;
 import com.dili.alm.service.TaskService;
 import com.dili.alm.service.ProjectPhaseService;
+import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
@@ -83,7 +85,7 @@ public class TaskController {
 	public @ResponseBody String listPage(Task task) throws Exception {
 		return taskService.listPageSelectTaskDto(task).toString();
 	}
-
+	
 	@ApiOperation(value = "分页查询Task", notes = "按照群组进行分页查询")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = false, dataType = "string") })
@@ -134,19 +136,20 @@ public class TaskController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput update(Task task, String planTimeStr) {
+	public @ResponseBody BaseOutput update(Task task, String planTimeStr,String _startDateShow,String _endDateShow) {
 
 		try {
 
 			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 			// 设置任务修改人为当前登录用户
 			task.setModified(new Date());
-			task.setModifyMemberId(userTicket.getId());
+	        task.setModifyMemberId(userTicket.getId());
 			Short planTime = Short.parseShort(planTimeStr.trim());
 			task.setPlanTime(planTime);
+			task.setStartDate(DateUtil.getStrDateyyyyMMdd(_startDateShow));
+			task.setEndDate(DateUtil.getStrDateyyyyMMdd(_endDateShow));
 
 		} catch (Exception e) {
-
 			return BaseOutput.failure("请正确填写工时");
 		}
 		taskService.updateSelective(task);
@@ -171,6 +174,7 @@ public class TaskController {
 		List<Task> list = this.taskService.list(task);
 		return list;
 	}
+ 
 
 	// 查询项目
 	@ResponseBody
@@ -189,16 +193,45 @@ public class TaskController {
 		List<ProjectVersion> list = projectVersionService.list(projectVersion);
 		return list;
 	}
+	
+	// 根据登录用户查询版本信息
+	@ResponseBody
+	@RequestMapping(value = "/listTreeVersionByTeam.json", method = {
+			RequestMethod.GET, RequestMethod.POST })
+	public List<ProjectVersion> listTreeVersionByTeam() {
+		List<ProjectVersion> list = taskService.listProjectVersionByTeam();
+		return list;
+	}
+	
+	
 
+	
 	// 查询阶段
 	@ResponseBody
 	@RequestMapping(value = "/listTreePhase.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public List<Map> listPhase(Long id) {
 		ProjectPhase projectPhase = DTOUtils.newDTO(ProjectPhase.class);
 		projectPhase.setVersionId(id);
-
+		
 		List<Map> list = projectPhaseService.listEasyUiModels(projectPhase);
 		return list;
+	}
+	
+	// 根据项目查找用户
+	@ResponseBody
+	@RequestMapping(value = "/listTreeUserByProject.json", method = {
+			RequestMethod.GET, RequestMethod.POST })
+	public List<User> listTreeUserByProject(Long projectId) {
+		List<User> list = taskService.listUserByProjectId(projectId);
+		return list;
+	}
+	
+	//查询用户列表
+	@ResponseBody
+	@RequestMapping(value = "/listTreeMember.json", method = {
+			RequestMethod.GET, RequestMethod.POST })
+	public List<User> listTreeMember() {
+		return taskService.listUserByTeam();
 	}
 
 	// 查询任务详细信息
@@ -214,19 +247,27 @@ public class TaskController {
 		return list.get(0);
 	}
 
-	// 是否是任务所有人，传入任务ID
+	//是否是任务所有人，传入任务ID
 	@ResponseBody
 	@RequestMapping(value = "/isOwner.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public boolean isOwner(Long id) {
 		Task task = taskService.get(id);
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		if (task.getOwner() == userTicket.getId()) {// 判断是否是任务所有人
+		if (task.getOwner()==userTicket.getId()) {//判断是否是任务所有人
 			return true;
 		}
-		if (taskService.isManager(task.getProjectId())) {// 判断是否是项目经理
+		if(taskService.isManager(task.getProjectId())){//判断是否是项目经理
 			return true;
 		}
 		return false;
+	}
+	//判断是否是项目经理，用于显示按钮
+	//是否是任务所有人，传入任务ID
+	@ResponseBody
+	@RequestMapping(value = "/isProjectManger.json", method = {
+			RequestMethod.GET, RequestMethod.POST })
+	public boolean isProjectManger() {
+		return taskService.isProjectManager();
 	}
 
 	// 更新任务信息
@@ -241,25 +282,26 @@ public class TaskController {
 		if (taskHour <= 0) {
 			return BaseOutput.failure("工时必须大于0");
 		}
-		if (taskService.isSetTask(taskDetails.getId(), taskHour)) {
-
+		if (taskService.isSetTask(taskDetails.getId(),taskHour)) {
+			
 			Task task = taskService.get(taskDetails.getTaskId());
-
-			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-			/* 基础信息设置 */
+			
+	        UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+			/*基础信息设置*/
 			task.setModifyMemberId(userTicket.getId());
 			taskDetails.setTaskHour(taskHour);
 			taskDetails.setOverHour(overHour);
 			taskDetails.setCreateMemberId(userTicket.getId());
-			/* 基础信息设置 */
-			taskService.updateTaskDetail(taskDetails, task);// 保存任务
-
+			/*基础信息设置*/
+			taskService.updateTaskDetail(taskDetails,task);//保存任务
+			
 			return BaseOutput.success("修改成功");
 		}
-
+		
 		return BaseOutput.failure("今日工时已填写超过8小时！");
-
+		
 	}
+
 
 	// 开始执行任务
 	@ApiOperation("开始执行任务")
@@ -288,5 +330,8 @@ public class TaskController {
 		taskService.update(task);
 		return BaseOutput.success("已暂停任务");
 	}
+	
+	
+	
 
 }

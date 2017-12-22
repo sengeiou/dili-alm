@@ -3,8 +3,10 @@ package com.dili.alm.service;
 import java.util.List;
 
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.TaskDetails;
+import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.EasyuiPageOutput;
@@ -37,7 +39,14 @@ public interface TaskService extends BaseService<Task, Long> {
 
 	boolean validateBeginAndEnd(Task task);
 	
-	List<Project> projectList();
+	boolean isProjectManager();
 	
+	List<Project> projectList();
+
+	List<User> listUserByTeam();
+	
+	List<ProjectVersion> listProjectVersionByTeam();
+	
+	List<User> listUserByProjectId(Long projectId);
 	
 }

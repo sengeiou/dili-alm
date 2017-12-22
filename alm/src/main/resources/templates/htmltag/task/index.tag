@@ -1,12 +1,18 @@
 
     $(document).ready(function () {
+    
        loadProjectSelect();
+       loadVisionCondition();
+       loadMemberCondition();
+       loadProjectCondition();
+       
        $("#changeIdTr").css("display","none");
         $('#_projectId').combobox({
             onChange: function (o,n) {
             	// 获取到的项目ID
             	var projectId = $('#_projectId').combobox('getValue');
             	loadVisionSelect(projectId);
+            	loadMemberSelect(projectId);
             }
         });
 
@@ -22,6 +28,7 @@
         });
     });
     
+    
    function loadProjectSelect(){
     	$('#_projectId').combobox({
 				url:"${contextPath!}/task/listTreeProject.json",
@@ -35,6 +42,8 @@
 			});
 			
     }
+    
+    
     function loadVisionSelect(id){
     	$('#_versionId').combobox({
 				url:"${contextPath!}/task/listTreeVersion.json?id="+id,
@@ -48,8 +57,52 @@
 			});
 			
     }
+    function loadMemberSelect(id){
+    	$('#_owner').combobox({
+				url:"${contextPath!}/task/listTreeUserByProject.json?projectId="+id,
+				valueField:'id',
+				textField:'realName',
+				editable:true,
+				onChange: function (o,n) {
+
+				}
+			});
+    }
+    function loadVisionCondition(){
+    	$('#versionId').combobox({
+				url:"${contextPath!}/task/listTreeVersionByTeam.json",
+				valueField:'id',
+				textField:'version',
+				editable:true,
+				onChange: function (o,n) {
+
+				}
+			});
+    }
     
+   function loadMemberCondition(){
+    	$('#owner').combobox({
+				url:"${contextPath!}/task/listTreeMember.json",
+				valueField:'id',
+				textField:'realName',
+				editable:true,
+				onChange: function (o,n) {
+
+				}
+			});
+    }
     
+    function loadProjectCondition(){
+    	$('#projectId').combobox({
+				url:"${contextPath!}/task/listTreeProject.json",
+				valueField:'id',
+				textField:'name',
+				editable:true,
+				onChange: function (o,n) {
+
+				}
+			});
+    }
     function loadPhaseSelect(id,selectId){
     	$('#_phaseId').combobox({
 				url:"${contextPath!}/task/listTreePhase.json?id="+id,
@@ -121,11 +174,18 @@
             $('#_form').form('load',{planTimeStr:formData._planTime});
             if(selected.flow){ $("#changeIdTr").css("display","none");}
             else{ $("#changeIdTr").css("display","block");}
+            
+            loadMemberSelect(formData._projectId);
+            $('#_owner').combobox('select',formData._owner);
 
  			loadVisionSelect(formData._projectId);
             $('#_versionId').combobox('select',formData._versionId);
             
             loadPhaseSelect(formData._versionId);
+            $('#_phaseId').combobox('select',formData._phaseId);
+            
+            $('#_form').form('load', {_startDateShow:dateFormat_1(formData._startDate)});
+            $('#_form').form('load', {_endDateShow:dateFormat_1(formData._endDate)}); 
             $('#_phaseId').combobox('select',formData._phaseId);
             
             
@@ -166,6 +226,18 @@
             	$('#detail_form').form('clear');
             	getDetailInfo(formData._id);
             }
+            
+            if(formData._status==4){
+            	$('#_progressShow').progressbar({
+            	    value: parseInt(formData._progress)
+            	});
+            	$("#task_detail").show();
+            	$("#doTask").hide();
+            	$("#pauseTask").hide();
+            	$("#updateDetail").hide();
+            	$('#detail_form').form('clear');
+            	getDetailInfo(formData._id);
+            }
             $('#detail_form').form('load',{overHourStr:0});
             $('#detail_form').form('load',{taskHourStr:0});
         }
@@ -180,7 +252,6 @@
         
         
        function saveTaskDetail(){
-       
         	var planTimeStr=$("#planTimeStr").val();
         	var formDate=$("#detail_form").serialize();
             if($('#overHourStr').textbox('getValue')==""){$('#detail_form').form('load',{overHourStr:0});}
@@ -189,8 +260,6 @@
             if(!$('#detail_form').form("validate")){
                 return;
             }
-            
-
              $.ajax({
                 type: "POST",
                 url: "${contextPath}/task/updateTaskDetails?planTimeStr="+planTimeStr,
@@ -223,3 +292,41 @@
                 message: '当日所填任务工时只能是8小时！'
         }
         })
+
+
+		//判断是否是项目经理
+        function isProjectManager(){
+          	  var  htmlobj=$.ajax({url:"${contextPath}/task/isProjectManger.json",async:false});
+	          var str=htmlobj.responseText;
+	          var obj = $.parseJSON(str);
+	          return obj;
+        }
+        
+function dateFormat_1(longTypeDate){
+    var dateType = "";  
+    var date = new Date();  
+    date.setTime(longTypeDate);  
+    dateType += date.getFullYear();   //年  
+    dateType += "-" + getMonth(date); //月   
+    dateType += "-" + getDay(date);   //日  
+    return dateType;
+} 
+
+//返回 01-12 的月份值   
+function getMonth(date){  
+    var month = "";  
+    month = date.getMonth() + 1; //getMonth()得到的月份是0-11  
+    if(month<10){  
+        month = "0" + month;  
+    }  
+    return month;  
+}  
+//返回01-30的日期  
+function getDay(date){  
+    var day = "";  
+    day = date.getDate();  
+    if(day<10){  
+        day = "0" + day;  
+    }  
+    return day;  
+}
