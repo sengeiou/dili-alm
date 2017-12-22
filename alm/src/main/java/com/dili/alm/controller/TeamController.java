@@ -82,8 +82,9 @@ public class TeamController {
 			ModelMap modelMap) {
 		refreshProject();
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
-		Team team = this.teamService.findByUserAndProject(user.getId(), projectId);
-		modelMap.addAttribute("projectId", projectId).addAttribute("editable", editable).addAttribute("team", team);
+		Boolean projectManager = this.teamService.teamMemberIsProjectManager(user.getId(), projectId);
+		modelMap.addAttribute("projectId", projectId).addAttribute("editable", editable).addAttribute("projectManager",
+				projectManager);
 		return "team/index";
 	}
 

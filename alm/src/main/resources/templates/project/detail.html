@@ -1,18 +1,30 @@
 <#body>
 <link href="${contextPath!}/resources/css/uploadfile.css" rel="stylesheet">
 <style>
-	html,body{height: 100%}
+html, body {
+	height: 100%
+}
+
 #info tr td {
 	padding: 5px 10px;
 }
-#info td{
+
+#info td {
 	width: 50%;
 }
-.textbox-label{
+
+.textbox-label {
 	width: 100px;
 }
-	.panel-tool{top: 9px;height: 30px}
-	#infoToolbar a{padding-bottom: 5px}
+
+.panel-tool {
+	top: 9px;
+	height: 30px
+}
+
+#infoToolbar a {
+	padding-bottom: 5px
+}
 </style>
 <script type="text/javascript" src="${contextPath!}/resources/js/jquery.uploadfile.min.js"></script> <script type="text/javascript"
 	src="${contextPath!}/resources/js/dateFormat.js"></script> <script type="text/javascript">
@@ -20,132 +32,154 @@
 	</script>
 <div id="win" style="display: none;"></div>
 <div id="smDialog" style="display: none;"></div>
-<input type="hidden" id="projectId" value="${model.id!}">
+<input type="hidden" id="projectId" value="${model.id!}"> <input type="hidden" id="editable" value="${editable!}"> <input
+	type="hidden" id="projectState" value="${model.projectState!}"> <input type="hidden" id="projectManager" value="${projectManager!}">
 <div id="infoToolbar">
-	<a href="#" class="easyui-linkbutton" style="width: 80px;height: 30px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef"
-	   data-options="onClick:generateWeekly">周报生成</a>
-	<a href="#" class="easyui-linkbutton" style="width: 80px;height: 30px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef"
-	   data-options="onClick:alarmConfig">告警设置</a>
-	<a href="#" class="easyui-linkbutton" style="width: 100px;height: 30px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef"
-	   data-options="onClick:showMembers">团队成员：${model.memberCount!}</a>
-	<a href="#" class="easyui-linkbutton" style="width: 50px;height: 30px; margin-left:10px;text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef"
-	   data-options="">返回</a>
+	<a href="#" class="easyui-linkbutton"
+		style="width: 80px; height: 30px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef"
+		data-options="onClick:function(){
+	   	window.location.href='${contextPath!}/task/index.html?projectId=${model.id!}';
+	   }">项目任务</a>
+	<%if(editable == true && projectManager == true){%> <a href="#" class="easyui-linkbutton"
+		style="width: 80px; height: 30px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef"
+		data-options="onClick:generateWeekly">周报生成</a> <%}%> <%if(editable == true && projectManager == true){%> <a href="#"
+		class="easyui-linkbutton"
+		style="width: 80px; height: 30px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef"
+		data-options="onClick:alarmConfig">告警设置</a> <%}%> <a href="#" class="easyui-linkbutton"
+		style="width: 100px; height: 30px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef"
+		data-options="onClick:showMembers">团队成员：${model.memberCount!}</a> <a href="#" class="easyui-linkbutton"
+		style="width: 50px; height: 30px; margin-left: 10px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef"
+		data-options="onClick:function(){
+			window.location.href='${contextPath!}/project/index.html';
+		}">返回</a>
 </div>
 <div id="p" class="easyui-panel" title="项目详情" style="width: 100%; height: 100%; background: #fafafa;" data-options="tools:'#infoToolbar'">
 	<table id="info" style="width: 100%">
 		<tr>
 			<!--<td><label for="name">项目名称:</label></td>-->
-			<td>
-				<input class="easyui-textbox" type="text" name="name" value="${model.name!}" data-options="readonly:true,label:'项目名称:',width:'95%'" />
-			</td>
+			<td><input class="easyui-textbox" type="text" name="name" value="${model.name!}"
+				data-options="readonly:true,label:'项目名称:',width:'95%'" /></td>
 			<!--<td><label for="type">项目类型:</label></td>-->
-			<td>
-				<input class="easyui-textbox" type="text" name="type" value="${model.type!}" data-options="readonly:true,label:'项目类型:',width:'95%'" />
-			</td>
+			<td><input class="easyui-textbox" type="text" name="type" value="${model.type!}"
+				data-options="readonly:true,label:'项目类型:',width:'95%'" /></td>
 		</tr>
 		<tr>
 			<!--<td><label for="projectManager">项目负责人:</label></td>-->
-			<td><input class="easyui-textbox" type="text" name="projectManager" value="${model.projectManager!}" data-options="readonly:true,label:'项目负责人:',width:'95%'" /></td>
+			<td><input class="easyui-textbox" type="text" name="projectManager" value="${model.projectManager!}"
+				data-options="readonly:true,label:'项目负责人:',width:'95%'" /></td>
 			<!--<td><label for="developManager">研发经理:</label></td>-->
-			<td><input class="easyui-textbox" type="text" name="developManager" value="${model.developManager!}" data-options="readonly:true,label:'研发经理:',width:'95%'" /></td>
+			<td><input class="easyui-textbox" type="text" name="developManager" value="${model.developManager!}"
+				data-options="readonly:true,label:'研发经理:',width:'95%'" /></td>
 		</tr>
 		<tr>
 			<!--<td><label for="productManager">产品经理:</label></td>-->
-			<td><input class="easyui-textbox" type="text" name="projectManager" value="${model.projectManager!}" data-options="readonly:true,label:'产品经理:',width:'95%'" /></td>
+			<td><input class="easyui-textbox" type="text" name="projectManager" value="${model.projectManager!}"
+				data-options="readonly:true,label:'产品经理:',width:'95%'" /></td>
 			<!--<td><label for="testManager">测试经理:</label></td>-->
-			<td><input class="easyui-textbox" type="text" name="testManager" value="${model.testManager!}" data-options="readonly:true,label:'测试经理:',width:'95%'" /></td>
+			<td><input class="easyui-textbox" type="text" name="testManager" value="${model.testManager!}"
+				data-options="readonly:true,label:'测试经理:',width:'95%'" /></td>
 		</tr>
 		<tr>
 			<!--<td><label for="actualStartDate">实际开始时间:</label></td>-->
-			<td><input class="easyui-textbox" type="text" name="actualStartDate" value="${model.actualStartDate!}" data-options="readonly:true,label:'实际开始时间:',width:'95%'" /></td>
+			<td><input class="easyui-textbox" type="text" name="actualStartDate" value="${model.actualStartDate!}"
+				data-options="readonly:true,label:'实际开始时间:',width:'95%'" /></td>
 			<!--<td><label for="startDate">项目开始时间:</label></td>-->
-			<td><input class="easyui-textbox" type="text" name="startDate" value="${model.startDate!}" data-options="readonly:true,label:'项目开始时间:',width:'95%'" /></td>
+			<td><input class="easyui-textbox" type="text" name="startDate" value="${model.startDate!}"
+				data-options="readonly:true,label:'项目开始时间:',width:'95%'" /></td>
 		</tr>
 		<tr>
 			<!--<td><label for="startDate">项目结束时间:</label></td>-->
-			<td><input class="easyui-textbox" type="text" name="endDate" value="${model.endDate!}" data-options="readonly:true,label:'项目结束时间:',width:'95%'" /></td>
+			<td><input class="easyui-textbox" type="text" name="endDate" value="${model.endDate!}"
+				data-options="readonly:true,label:'项目结束时间:',width:'95%'" /></td>
 		</tr>
 	</table>
 
 	<table class="easyui-datagrid" title="项目版本信息" id="versionGrid" fitColumns="true" rownumbers="true" pagination="false" remoteSort="false"
-		   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" align="center" fit="false" striped="true" toolbar="#versionToolbar"
-		   idField="id" data-options="url:'${contextPath!}/project/version/listPage?projectId=${model.id!}',onLoadSuccess:countVersionGrid">
+		loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" align="center" fit="false" striped="true" toolbar="#versionToolbar"
+		idField="id" data-options="url:'${contextPath!}/project/version/listPage?projectId=${model.id!}',onLoadSuccess:countVersionGrid">
 		<thead>
-		<tr>
-			<th data-options="field:'version', width:'16%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">版本号</th>
-			<th
+			<tr>
+				<th data-options="field:'version', width:'16%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">版本号</th>
+				<th
 					data-options="field:'plannedStartDate', width:'12%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">计划开始日期</th>
-			<th
+				<th
 					data-options="field:'plannedEndDate', width:'12%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">计划结束日期</th>
-			<th
+				<th
 					data-options="field:'versionState', width:'10%', provider:'projectStateProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">版本状态</th>
-			<th
+				<th
 					data-options="field:'actualStartDate', width:'12%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">实际开始日期</th>
-			<th
+				<th
 					data-options="field:'online', width:'7%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false,formatter:onlineFormatter'">上线</th>
-			<th
+				<th
 					data-options="field:'completedProgress', width:'14%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:progressFormatter">完成进度</th>
-			<th data-options="field:'opt',width:'17%',formatter:versionOptFormatter, align:'center'">操作</th>
-		</tr>
+				<th
+					data-options="field:'opt',width:'17%'
+					<%if(editable == true && model.projectState != 2 && projectManager == true){%>
+					,formatter:versionOptFormatter
+					<%}%>, align:'center'">操作</th>
+			</tr>
 		</thead>
 	</table>
 	<!-- datagrid工具栏 -->
 	<div id="versionToolbar" style="padding: 2px 5px;">
-		<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsertVersion()" plain="true">新建版本</a> <span id="versionCount"
-																														   style="color: red;"></span>
+		<%if(editable == true && projectManager == true){%> <a href="#" class="easyui-linkbutton" iconCls="icon-add"
+			onclick="openInsertVersion()" plain="true">新建版本</a> <%}%> <span id="versionCount" style="color: red;"></span>
 	</div>
 
 	<table class="easyui-datagrid" title="项目阶段信息" id="phaseGrid" fitColumns="true" rownumbers="true" pagination="false" remoteSort="false"
-		   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" align="center" fit="false" striped="true" toolbar="#phaseToolbar"
-		   idField="id" data-options="url:'${contextPath!}/project/phase/list?projectId=${model.id!}',onLoadSuccess:countPhaseGrid">
+		loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" align="center" fit="false" striped="true" toolbar="#phaseToolbar"
+		idField="id" data-options="url:'${contextPath!}/project/phase/list?projectId=${model.id!}',onLoadSuccess:countPhaseGrid">
 		<thead>
-		<tr>
-			<th data-options="field:'name', width:'10%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">阶段名称</th>
-			<th data-options="field:'projectId', width:'10%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目</th>
-			<th data-options="field:'versionId', width:'10%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">版本</th>
-			<th
+			<tr>
+				<th data-options="field:'name', width:'10%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">阶段名称</th>
+				<th data-options="field:'projectId', width:'10%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目</th>
+				<th data-options="field:'versionId', width:'10%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">版本</th>
+				<th
 					data-options="field:'plannedStartDate', width:'15%',  _provider:'almDateProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">计划开始日期</th>
-			<th
+				<th
 					data-options="field:'plannedEndDate', width:'15%',  _provider:'almDateProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">计划结束日期</th>
-			<th
+				<th
 					data-options="field:'actualStartDate', width:'15%',  _provider:'almDateProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">实际开始日期</th>
-			<th
+				<th
 					data-options="field:'completedProgress', width:'15%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:progressFormatter">完成进度</th>
-			<th data-options="field:'opt',width:'10%',formatter:phaseOptFormatter, align:'center'">操作</th>
-		</tr>
+				<th data-options="field:'opt',width:'10%'
+				<%if(editable == true && model.projectState != 2 && projectManager == true){%>
+					,formatter:versionOptFormatter
+				<%}%>
+				, align:'center'">操作</th>
+			</tr>
 		</thead>
 	</table>
 	<!-- datagrid工具栏 -->
 	<div id="phaseToolbar" style="padding: 2px 5px;">
-		<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsertPhase()" plain="true">新建阶段</a> <span id="phaseCount"
-																														 style="color: red;"></span>
+		<%if(editable == true && projectManager == true){%> <a href="#" class="easyui-linkbutton" iconCls="icon-add"
+			onclick="openInsertPhase()" plain="true">新建阶段</a> <%}%> <span id="phaseCount" style="color: red;"></span>
 	</div>
 	<table class="easyui-datagrid" title="项目文档列表" id="fileGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"
-		   pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
-		   sortName="name" align="center" fit="false" striped="true" toolbar="#fileToolbar" idField="id"
-		   data-options="url:'${contextPath!}/files/list?projectId=${model.id!}',onLoadSuccess:countFileGrid">
+		pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
+		sortName="name" align="center" fit="false" striped="true" toolbar="#fileToolbar" idField="id"
+		data-options="url:'${contextPath!}/files/list?projectId=${model.id!}',onLoadSuccess:countFileGrid">
 		<thead>
-		<tr>
-			<th data-options="field:'name', width:'23%',  sortable:'true', order:'asc', align:'left', resizable:'true', fixed:'false'">文件名</th>
-			<th data-options="field:'type', width:'15%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">文件类型</th>
-			<th data-options="field:'versionId', width:'15%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">所属版本</th>
-			<th data-options="field:'phaseId', width:'15%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">所属阶段</th>
-			<th
+			<tr>
+				<th data-options="field:'name', width:'23%',  sortable:'true', order:'asc', align:'left', resizable:'true', fixed:'false'">文件名</th>
+				<th data-options="field:'type', width:'15%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">文件类型</th>
+				<th data-options="field:'versionId', width:'15%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">所属版本</th>
+				<th data-options="field:'phaseId', width:'15%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">所属阶段</th>
+				<th
 					data-options="field:'createMemberId', width:'8%',  _provider:'memberProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">创建人</th>
-			<th
+				<th
 					data-options="field:'created', width:'15%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">创建时间</th>
-			<th data-options="field:'opt',width:'9%',formatter:fileOptFormatter, align:'center'">操作</th>
-		</tr>
+				<th data-options="field:'opt',width:'9%',formatter:fileOptFormatter, align:'center'">操作</th>
+			</tr>
 		</thead>
 	</table>
 	<!-- datagrid工具栏 -->
 	<div id="fileToolbar" style="padding: 2px 5px;">
-		<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="uploadFile(${model.id!})" plain="true">新建文档</a> <span id="fileCount"
-																																style="color: red;"></span>
+		<%if(editable == true && projectManager == true){%> <a href="#" class="easyui-linkbutton" iconCls="icon-add"
+			onclick="uploadFile(${model.id!})" plain="true">新建文档</a> <%}%> <span id="fileCount" style="color: red;"></span>
 	</div>
 	<script type="text/javascript">
         <#members_index/>
 	</script>
 </div>
-<!-- =========================================================表格========================================================= -->
- </#body>
+<!-- =========================================================表格========================================================= --> </#body>

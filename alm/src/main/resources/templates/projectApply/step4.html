@@ -43,7 +43,7 @@
                 <thead>
                 <tr>
                     <th data-options="field:'phase',width:'15%',align:'center',">阶段/里程碑</th>
-                    <th data-options="field:'startDate',_provider:'datetimeProvider',width:'25%',align:'center',editor:{type:'datebox',options:{required:true,onShowPanel:function(){
+                    <th data-options="field:'startDate',_provider:'dateProvider',width:'25%',align:'center',editor:{type:'datebox',options:{required:true,onShowPanel:function(){
                      $(this).datebox().datebox('calendar').calendar({
                 validator: function(date){
                 var now = new Date();
@@ -54,7 +54,7 @@
                     }}}">
                         计划开始日期
                     </th>
-                    <th data-options="field:'endDate',_provider:'datetimeProvider',width:'25%',align:'center',editor:{type:'datebox',options:{required:true,onShowPanel:function(){
+                    <th data-options="field:'endDate',_provider:'dateProvider',width:'25%',align:'center',editor:{type:'datebox',options:{required:true,onShowPanel:function(){
                      $(this).datebox().datebox('calendar').calendar({
                 validator: function(date){
                 var now = new Date();

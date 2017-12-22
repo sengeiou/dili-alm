@@ -16,6 +16,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.TeamMapper;
 import com.dili.alm.domain.Team;
+import com.dili.alm.domain.TeamRole;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.TeamDepartmentRoleQuery;
@@ -29,7 +30,6 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
-import com.google.common.collect.Lists;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-10-24 14:31:10.
@@ -236,11 +236,17 @@ public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements Team
 	}
 
 	@Override
-	public Team findByUserAndProject(Long memberId, Long projectId) {
+	public Boolean teamMemberIsProjectManager(Long memberId, Long projectId) {
 		Team teamQuery = DTOUtils.newDTO(Team.class);
 		teamQuery.setProjectId(projectId);
 		teamQuery.setMemberId(memberId);
-		return this.getActualDao().selectOne(teamQuery);
+		List<Team> teams = this.getActualDao().select(teamQuery);
+		for (Team team : teams) {
+			if (TeamRole.PROJECT_MANAGER.getValue().equals(team.getRole())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

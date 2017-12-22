@@ -58,7 +58,7 @@
             <!-- =========================================================表格========================================================= -->
             <table class="easyui-datagrid" title="变更审批列表" id="grid" fitColumns="true"
                    pagination="true" pageSize="30" pageNumber="1" pagePosition="bottom" rownumbers="true" remoteSort="false"
-                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
+                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="created" sortOrder="desc"
                    align="center" fit="true" striped="true" idField="id">
                 <thead>
                     <tr>
@@ -80,7 +80,7 @@
                         <th data-options="field:'status',  width:180,  _provider:'changeStateProvider', order:'asc', align:'center', resizable:'true', fixed:'false'">
                             变更状态
                         </th>
-                        <th data-options="field:'created',  width:180, _provider:'datetimeProvider',  order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'created',  width:180, _provider:'dateProvider',  order:'asc', align:'center', resizable:'true', fixed:'false'">
                             申请时间
                         </th>
                         <th data-options="field:'createMemberId',  width:180, _provider:'memberProvider',  order:'asc', align:'center', resizable:'true', fixed:'false'">

@@ -325,6 +325,13 @@
 			             <%}%>
 			       </font>
 			       
+		          <font size="2">&nbsp;</font>
+		          <font size="2">&nbsp;</font>
+		           <font size="2">&nbsp;</font>
+		          <font size="2">&nbsp;</font>
+		          <font size="3">  
+		                    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="pageReturn()">返回周报列表</a>
+		          </font>
 			  </br>
 		      </br>
 			     </br>
@@ -343,6 +350,9 @@
 
     <!-- ====================================================================================================================== -->
     <script type="text/javascript">
+			    function pageReturn(){  
+			    	 window.location.href="http://alm.diligrp.com:8083/alm/weekly/index.html?page=1&rows=30";
+			    }
        
               function cancel(){  
             	  var  tempid=$("#inHidden").val();

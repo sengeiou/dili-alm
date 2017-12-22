@@ -86,16 +86,16 @@
                     <td colspan="2"><input class="easyui-textbox" type="text" name="dep" data-options="required:true,label:'需求所属业务部门:'"></td>
                 </tr>
                 <tr>
-                    <td colspan="2"><input class="easyui-datetimebox" name="expectedLaunchDate" id=""
+                    <td colspan="2"><input class="easyui-datebox" name="expectedLaunchDate" id=""
                                data-options="required:true,label:'业务期望上线日期:'"/></td>
-                    <td colspan="2"><input class="easyui-datetimebox" name="estimateLaunchDate" id=""
+                    <td colspan="2"><input class="easyui-datebox" name="estimateLaunchDate" id=""
                                data-options="required:true,label:'预估最终上线日期:'"/></td>
                 </tr>
                 <tr>
-                    <td colspan="2"><input class="easyui-datetimebox" name="startDate" id=""
+                    <td colspan="2"><input class="easyui-datebox" name="startDate" id=""
                                data-options="required:true,label:'计划开始日期:'"/>
                     </td>
-                    <td colspan="2"><input class="easyui-datetimebox" name="endDate" id=""
+                    <td colspan="2"><input class="easyui-datebox" name="endDate" id=""
                                data-options="required:true,label:'计划结束日期:'"/>
                     </td>
                 </tr>
@@ -135,7 +135,7 @@
                                data-options="singleSelect: true,  url: '${contextPath}/approve/loadDesc?id=${apply.id}'">
                             <thead>
                             <tr>
-                                <th data-options="field:'approveDate',_provider:'datetimeProvider',width:'32%',align:'center'">
+                                <th data-options="field:'approveDate',_provider:'dateProvider',width:'32%',align:'center'">
                                     审批时间
                                 </th>
                                 <th data-options="field:'userId',width:'12%',align:'center'">

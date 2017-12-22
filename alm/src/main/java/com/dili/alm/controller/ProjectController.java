@@ -166,8 +166,8 @@ public class ProjectController {
 		try {
 			Map<Object, Object> model = this.projectService.getDetailViewData(id);
 			UserTicket user = SessionContext.getSessionContext().getUserTicket();
-			Team team = this.teamService.findByUserAndProject(user.getId(), id);
-			map.addAttribute("model", model).addAttribute("editable", editable).addAttribute("team", team);
+			Boolean projectManager = this.teamService.teamMemberIsProjectManager(user.getId(), id);
+			map.addAttribute("model", model).addAttribute("editable", editable).addAttribute("projectManager", projectManager);
 		} catch (Exception e) {
 			return null;
 		}

@@ -43,70 +43,77 @@
                     <td colspan="4" style="padding:20px;">2.1项目范围</td>
                 </tr>
                 <tr>
-                    <td colspan="4"><input class="easyui-textbox" name="range"
-                                           data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
-                                           style="width:100%;height:120px"/></td>
+                    <td colspan="4">
+                        <p class="show-hint">【说明：请简述项目范围，项目的特点或特殊性。】</p>
+                        <input class="easyui-textbox" name="range" data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']" style="width:100%;height:120px" />
+                    </td>
                 </tr>
                 <tr>
                     <td colspan="4" style="padding:20px;">2.2项目管理的方法</td>
                 </tr>
                 <tr>
-                    <td colspan="4"><input class="easyui-textbox" name="managementMethod"
-                                           data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
-                                           style="width:100%;height:120px"/></td>
+                    <td colspan="4">
+                        <p class="show-hint">【说明：请简述项目管理过程总结，符合公司管理规范的情况。】</p>
+                        <input class="easyui-textbox" name="managementMethod" data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']" style="width:100%;height:120px" />
+                    </td>
                 </tr>
                 <tr>
                     <td colspan="4" style="padding:20px;">项目管理过程评价</td>
                 </tr>
                 <tr>
-                    <td colspan="4"><input class="easyui-textbox" name="appraise"
-                                           data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
-                                           style="width:100%;height:120px"/></td>
+                    <td colspan="4">
+                        <p class="show-hint">【说明和举例：对项目的管理过程进行总结。】</p>
+                        <input class="easyui-textbox" name="appraise" data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']" style="width:100%;height:120px" />
+                    </td>
                 </tr>
                 <tr>
                     <td colspan="4" style="padding:20px;">技术方法评价</td>
                 </tr>
                 <tr>
-                    <td colspan="4"><input class="easyui-textbox" name="technicalEvaluation"
-                                           data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
-                                           style="width:100%;height:120px"/></td>
+                    <td colspan="4">
+                        <p class="show-hint">【说明和举例：请给出对在开发中所使用的开发模型、技术、方法、工具、开发语言、手段的评价 [参考但不限于以下内容]】</p>
+                        <input class="easyui-textbox" name="technicalEvaluation" data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']" style="width:100%;height:120px" />
+                    </td>
                 </tr>
                 <tr>
                     <td colspan="4" style="padding:20px;">进步与提高</td>
                 </tr>
                 <tr>
-                    <td colspan="4"><input class="easyui-textbox" name="raise"
-                                           data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
-                                           style="width:100%;height:120px"/></td>
+                    <td colspan="4">
+                        <p class="show-hint">【说明和举例：与以往你参与的项目相比，本项目取得了哪些进步和提高？ [参考但不限于此内容]】</p>
+                        <input class="easyui-textbox" name="raise" data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']" style="width:100%;height:120px" />
+                    </td>
                 </tr>
                 <tr>
                     <td colspan="4" style="padding:20px;">2.3项目的成果</td>
                 </tr>
                 <tr>
-                    <td colspan="4"><input class="easyui-textbox" name="result"
-                                           data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
-                                           style="width:100%;height:120px"/></td>
+                    <td colspan="4">
+                        <p class="show-hint">【说明:请简述在项目范围中描述的内容是否达到。】</p>
+                        <input class="easyui-textbox" name="result" data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']" style="width:100%;height:120px" />
+                    </td>
                 </tr>
                 <tr>
                     <td colspan="4" style="padding:20px;">产品</td>
                 </tr>
                 <tr>
-                    <td colspan="4"><input class="easyui-textbox" name="product"
-                                           data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
-                                           style="width:100%;height:120px"/></td>
+                    <td colspan="4">
+                        <p class="show-hint">【说明和举例：程序系统共有哪几个版本？各自的版本号及他们之间的区别。形成了哪些可复用的项目，特点是什么 】</p>
+                        <input class="easyui-textbox" name="product" data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']" style="width:100%;height:120px" />
+                    </td>
                 </tr>
                 <tr>
                     <td colspan="4" style="padding:20px;">主要功能和性能</td>
                 </tr>
                 <tr>
                     <td colspan="4">
-                        <table id="dg" class="easyui-datagrid"
-                               data-options="
-                singleSelect: true,
-                toolbar: '#tb',
-                rownumbers:true,
-                            url: '${contextPath}/projectComplete/loadPerformance?id=${apply.id}',
-                onClickCell: impact.onClickCell">
+                        <p class="show-hint">【说明：请逐项列出本软件产品所实际具有的主要功能和性能，对照《立项申请》ROI说明原定的开发目标是达到了，未完全达到、或超过。】</p>
+                        <table id="dg" class="easyui-datagrid" data-options="
+                                singleSelect: true,
+                                toolbar: '#tb',
+                                rownumbers:true,
+                                            url: '${contextPath}/projectComplete/loadPerformance?id=${apply.id}',
+                                onClickCell: impact.onClickCell">
                             <thead>
                             <tr>
                                 <th style="text-align:center" data-options="field:'performance',width:'30%',align:'center',editor:{type:'textbox',options:{required:true}}">功能性能项</th>
@@ -137,17 +144,17 @@
                     <td colspan="4" style="padding:20px;">2.4项目团队的建议</td>
                 </tr>
                 <tr>
-                    <td colspan="4"><input class="easyui-textbox" name="suggest"
-                                           data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
-                                           style="width:100%;height:120px"/></td>
+                    <td colspan="4">
+                        <p class="show-hint">【说明和举例：项目团队都有什么建议 ？本项目的哪些教训值得后续项目避免？哪些过程或环节在以后的项目中可以改进，以便使项目做的更好？对参加本项目的主要感想，以及获得的经验教训。</p>
+                        <input class="easyui-textbox" name="suggest" data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']" style="width:100%;height:120px" />
+                    </td>
                 </tr>
                 <tr>
                     <td colspan="4" style="padding:20px;">2.5遗留问题</td>
                 </tr>
                 <tr>
                     <td colspan="4">
-                        <table id="risk" class="easyui-datagrid" style="height:auto"
-                               data-options="
+                        <table id="risk" class="easyui-datagrid" style="height:auto" data-options="
                 singleSelect: true,
                   toolbar: '#tb1',
                    url: '${contextPath}/projectComplete/loadQuestion?id=${apply.id}',
@@ -182,21 +189,17 @@
                 <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="risk.append()">新增</a>
                 <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="risk.removeit()">删除</a>
             </div>
-
         </form>
         <div style="text-align:center;padding:5px;margin-top:50px;">
-            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
-               onclick="backForm()">上一步</a>
-            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
-               onclick="submitForm()">下一步</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'" onclick="backForm()">上一步</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'" onclick="submitForm()">下一步</a>
         </div>
     </div>
 </div>
 <script>
-
     var impact = {
         editIndex: undefined,
-        endEditing: function () {
+        endEditing: function() {
             if (impact.editIndex == undefined) {
                 return true
             }
@@ -208,18 +211,18 @@
                 return false;
             }
         },
-        onClickCell: function (index, field) {
+        onClickCell: function(index, field) {
             if (impact.editIndex != index) {
                 if (impact.endEditing()) {
                     $('#dg').datagrid('selectRow', index)
                         .datagrid('beginEdit', index);
-                    var ed = $('#dg').datagrid('getEditor', {index: index, field: field});
+                    var ed = $('#dg').datagrid('getEditor', { index: index, field: field });
                     if (ed) {
                         ($(ed.target).data('textbox') ? $(ed.target).textbox('textbox') : $(ed.target)).focus();
                     }
                     impact.editIndex = index;
                 } else {
-                    setTimeout(function () {
+                    setTimeout(function() {
                         $('#dg').datagrid('selectRow', impact.editIndex);
                     }, 0);
                 }
@@ -229,7 +232,7 @@
 
     var risk = {
         editIndex: undefined,
-        endEditing: function () {
+        endEditing: function() {
             if (risk.editIndex == undefined) {
                 return true
             }
@@ -241,49 +244,50 @@
                 return false;
             }
         },
-        onClickCell: function (index, field) {
+        onClickCell: function(index, field) {
             if (risk.editIndex != index) {
                 if (risk.endEditing()) {
                     $('#risk').datagrid('selectRow', index)
                         .datagrid('beginEdit', index);
-                    var ed = $('#risk').datagrid('getEditor', {index: index, field: field});
+                    var ed = $('#risk').datagrid('getEditor', { index: index, field: field });
                     if (ed) {
                         ($(ed.target).data('textbox') ? $(ed.target).textbox('textbox') : $(ed.target)).focus();
                     }
                     risk.editIndex = index;
                 } else {
-                    setTimeout(function () {
+                    setTimeout(function() {
                         $('#risk').datagrid('selectRow', risk.editIndex);
                     }, 0);
                 }
             }
         },
-        append:function(){
-            if (risk.endEditing()){
-                $('#risk').datagrid('appendRow',{});
-                risk.editIndex = $('#risk').datagrid('getRows').length-1;
+        append: function() {
+            if (risk.endEditing()) {
+                $('#risk').datagrid('appendRow', {});
+                risk.editIndex = $('#risk').datagrid('getRows').length - 1;
                 $('#risk').datagrid('selectRow', risk.editIndex)
                     .datagrid('beginEdit', risk.editIndex);
             }
         },
-        removeit:function(){
-            if (risk.editIndex == undefined){return}
+        removeit: function() {
+            if (risk.editIndex == undefined) { return }
             $('#risk').datagrid('cancelEdit', risk.editIndex)
                 .datagrid('deleteRow', risk.editIndex);
             risk.editIndex = undefined;
         }
     };
 
-    function append(){
-        if (impact.endEditing()){
-            $('#dg').datagrid('appendRow',{});
-            impact.editIndex = $('#dg').datagrid('getRows').length-1;
+    function append() {
+        if (impact.endEditing()) {
+            $('#dg').datagrid('appendRow', {});
+            impact.editIndex = $('#dg').datagrid('getRows').length - 1;
             $('#dg').datagrid('selectRow', impact.editIndex)
                 .datagrid('beginEdit', impact.editIndex);
         }
     }
-    function removeit(){
-        if (impact.editIndex == undefined){return}
+
+    function removeit() {
+        if (impact.editIndex == undefined) { return }
         $('#dg').datagrid('cancelEdit', impact.editIndex)
             .datagrid('deleteRow', impact.editIndex);
         impact.editIndex = undefined;
@@ -291,15 +295,16 @@
 
 
     function editorCallback(field) {
-        var selected =  $('#risk').datagrid("getSelected");
-        var index =  $('#risk').datagrid('getRowIndex', selected);
-        var editor =  $('#risk').datagrid('getEditor', {
-            index : index,
-            field : field
+        var selected = $('#risk').datagrid("getSelected");
+        var index = $('#risk').datagrid('getRowIndex', selected);
+        var editor = $('#risk').datagrid('getEditor', {
+            index: index,
+            field: field
         });
         $(editor.target).attr("id", field + "_" + index);
         showMembersDlg(field + "_" + index);
     }
+
     function backForm() {
         window.location.href = "${contextPath}/projectComplete/toStep/1/${apply.id}";
     }
@@ -307,14 +312,14 @@
     function submitForm() {
         $('#ff').form('submit', {
             url: "${contextPath}/projectComplete/update",
-            onSubmit: function () {
+            onSubmit: function() {
                 impact.endEditing();
                 risk.endEditing();
                 $("#completePerformance").val(JSON.stringify($("#dg").datagrid("getData").rows));
                 $("#question").val(JSON.stringify($("#risk").datagrid("getData").rows));
                 return $("#ff").form('validate');
             },
-            success: function (data) {
+            success: function(data) {
                 var data = eval('(' + data + ')');
                 if (data.success == true) {
                     if (data.success == true) {
@@ -324,6 +329,7 @@
             }
         });
     }
+
     function selectMember(callback, args) {
         if (callback) {
             eval("(" + callback + "(args))");
@@ -341,32 +347,30 @@
     // 根据id打开用户选择
     function showMembersDlg(id) {
         $('#smDialog').dialog({
-            title : '用户选择',
-            width : 800,
-            height : 400,
-            queryParams : {
-                textboxId : id
+            title: '用户选择',
+            width: 800,
+            height: 400,
+            queryParams: {
+                textboxId: id
             },
-            href : '${contextPath!}/member/members.html',
-            modal : true,
-            buttons : [{
-                text : '确定',
-                handler : function() {
+            href: '${contextPath!}/member/members.html',
+            modal: true,
+            buttons: [{
+                text: '确定',
+                handler: function() {
                     confirmMembersBtn(id);
                 }
             }, {
-                text : '取消',
-                handler : function() {
+                text: '取消',
+                handler: function() {
                     $('#smDialog').dialog('close');
                 }
             }]
         });
     }
 
-    $(function () {
+    $(function() {
         $('#ff').form('load', '${contextPath}/projectComplete/loadComplete?id=${apply.id}');
     })
 </script>
-
-
 </#body>
