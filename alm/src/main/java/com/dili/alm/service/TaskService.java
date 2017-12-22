@@ -34,6 +34,10 @@ public interface TaskService extends BaseService<Task, Long> {
 	boolean isManager(Long managerId);
 
 	EasyuiPageOutput listByTeam(Task task, String phaseName);
-	
 
+	boolean validateBeginAndEnd(Task task);
+	
+	List<Project> projectList();
+	
+	
 }

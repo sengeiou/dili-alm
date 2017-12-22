@@ -52,12 +52,22 @@
     em{
         display: inline-block;
         width: 11px;}
+    .panel-tool{
+        top:10px;
+        height: 24px;
+    }
 </style>
 <div id="smDialog" style="display: none;"></div>
+<div id="cusTools">
+    <a onclick="window.location.href='${contextPath}/projectApply/index.html';" class="easyui-linkbutton" style="width: 50px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">返回</a>
+</div>
 <!--<div id="cusTools">-->
     <!--<a href="${contextPath}/projectApply/index.html" style="width: 30px;color: #444;text-decoration: none">返回</a>-->
 <!--</div>-->
-<div class="easyui-panel" title="立项详情" style="height: 100%"
+<div id="cusTools">
+    <a onclick="window.location.href='${contextPath}/projectApply/index.html';" class="easyui-linkbutton" style="width: 50px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">返回</a>
+</div>
+<div class="easyui-panel" title="立项详情" style="height: 100%;"
      data-options="tools:'#cusTools'">
     <div style="padding:10px 60px 20px 60px">
         <form id="step1" method="post" action="">
@@ -526,10 +536,10 @@
                         <input class="easyui-tagbox" id="tagbx" value="${apply.email}" style="width:100%">
                     </td>
             </table>
-            <div style="text-align:left;padding:5px;margin-top:10px;">
-                <a href="${contextPath}/projectApply/index.html" class="easyui-linkbutton"
-                   data-options="width:'80px'">返回</a>
-            </div>
+            <!--<div style="text-align:left;padding:5px;margin-top:10px;">-->
+                <!--<a href="${contextPath}/projectApply/index.html" class="easyui-linkbutton"-->
+                   <!--data-options="width:'80px'">返回</a>-->
+            <!--</div>-->
         </form>
 
     </div>

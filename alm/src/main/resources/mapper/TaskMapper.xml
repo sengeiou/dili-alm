@@ -295,5 +295,13 @@
 				and task.end_date = #{task.factEndDate,jdbcType=TIMESTAMP}
 			</if>
     </select>
+    <select  id="selectProjectByTeam"  resultType="com.dili.alm.domain.Project" >
+     select  p.id, p.serial_number, p.parent_id, p.name, p.type, p.project_manager,
+		p.develop_manager, p.test_manager,
+		p.product_manager, p.created, p.modified, p.start_date, p.end_date, p.actual_start_date,
+		p.project_state,
+		p.task_count,p.member_count, p.completed_progress, p.originator,p.dep,
+		p.business_owner,p.estimate_launch_date  from alm.project as p where p.id in(select t.project_id from alm.team as t where t.member_id =#{selectOwner,jdbcType=BIGINT})
+    </select>
 	
 </mapper>

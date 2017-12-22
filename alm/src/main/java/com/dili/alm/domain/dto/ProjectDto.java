@@ -15,6 +15,8 @@ public class ProjectDto  extends ProjectEntity{
 	
 	private String actualStartTime;
 	
+	private Boolean manager;
+	
 	public String getStartToEndDate() {
 		return startToEndDate;
 	}
@@ -30,4 +32,13 @@ public class ProjectDto  extends ProjectEntity{
 	public void setActualStartTime(String actualStartTime) {
 		this.actualStartTime = actualStartTime;
 	}
+
+	public Boolean getManager() {
+		return manager;
+	}
+
+	public void setManager(Boolean manager) {
+		this.manager = manager;
+	}
+	
 }

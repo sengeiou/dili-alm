@@ -25,24 +25,28 @@
     .title-second {
         padding-left: 30px;
     }
-    table{
-        width: 100%;
-    }
     .textbox-label{
         width: 110px;
     }
+    .panel-tool{
+        top:10px;
+        height: 24px;
+    }
 </style>
 <div id="smDialog" style="display: none;"></div>
+<div id="cusTools">
+    <a onclick="window.location.href='${contextPath}/approve/complete/index.html';" class="easyui-linkbutton" style="width: 50px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">返回</a>
+</div>
 <!--<div id="cusTools">-->
-<!--<a href="${contextPath}/approve/complete/index.html" style="width: 30px;color: #444;text-decoration: none">返回</a>-->
+    <!--<a href="${contextPath}/approve/complete/index.html" style="width: 30px;color: #444;text-decoration: none">返回</a>-->
 <!--</div>-->
-<div class="easyui-panel" title="项目立项审批" style="height: 100%;"
+<div class="easyui-panel" title="项目立项审批"style="height: 100%"
      data-options="tools:'#cusTools'">
     <div style="padding:10px 60px 20px 60px">
         <form id="ff" method="post" action="">
             <input type="hidden" name="id" value="${approve.id}">
             <input type="hidden" name="opt" id="opt" value="">
-            <table cellpadding="5" id="tb">
+            <table cellpadding="5" id="tb" style="width: 100%">
                 <tr>
                     <td>项目编号</td>
                     <td>${complete.number}</td>
@@ -61,26 +65,26 @@
                 <tr>
                     <td colspan="2"><input class="easyui-textbox" type="text" name="projectId" value="" id="projectId"
                                            data-options="required:true,label:'项目编号:'"></td>
-                    <td></td>
+                    <td colspan="2"></td>
                 </tr>
                 <tr>
                     <td colspan="2"><input disabled class="easyui-textbox" type="text" id="projectName"
-                                           data-options="label:'项目名称:'"></td>
+                               data-options="label:'项目名称:'"></td>
                     <td colspan="2"><input disabled class="easyui-textbox" type="text" name="type" id="projectType"
-                                           data-options="label:'项目类型:'"></td>
+                               data-options="label:'项目类型:'"></td>
                 </tr>
                 <tr>
                     <td colspan="2"><input disabled class="easyui-textbox" type="text" id="leader"
-                                           data-options="label:'项目负责人:'"></td>
+                               data-options="label:'项目负责人:'"></td>
                     <td colspan="2"><input disabled class="easyui-textbox" type="text" id="dep"
-                                           data-options="label:'需求所属业务部门:'"></td>
+                               data-options="label:'需求所属业务部门:'"></td>
                 </tr>
                 <tr>
                     <td colspan="2">
                         <input disabled class="easyui-textbox" type="text" id="buss"
                                data-options="label:'业务负责人:'">
-                    </td colspan="2">
-                    <td><input disabled class="easyui-datebox" type="text" id="startDate"
+                    </td>
+                    <td colspan="2"><input disabled class="easyui-datebox" type="text" id="startDate"
                                data-options="label:'计划开始日期:'"></td>
                 </tr>
                 <tr>
@@ -128,36 +132,35 @@
                                data-options="singleSelect: true,  url: '${contextPath}/approve/loadDesc?id=${approve.id}'">
                             <thead>
                             <tr>
-                                <th data-options="field:'approveDate',_provider:'datetimeProvider',width:180,align:'center'">
+                                <th data-options="field:'approveDate',_provider:'datetimeProvider',width:'20%',align:'center'">
                                     审批时间
                                 </th>
-                                <th data-options="field:'userId',width:200,align:'center'">
+                                <th data-options="field:'userId',width:'15%',align:'center'">
                                     用户
                                 </th>
-                                <th data-options="field:'role',width:200,align:'center'">
+                                <th data-options="field:'role',width:'25%',align:'center'">
                                     职务
                                 </th>
-                                <th data-options="field:'result',width:100,align:'center',formatter:format">
+                                <th data-options="field:'result',width:'15%',align:'center',formatter:format">
                                     审批结果
                                 </th>
-                                <th data-options="field:'notes',width:150,align:'center'">审批意见</th>
+                                <th data-options="field:'notes',width:'25%',align:'center'">审批意见</th>
                             </tr>
                             </thead>
                         </table>
                     </td>
                 </tr>
             </table>
-            <table>
-
+            <table style="width: 100%">
                 <tr>
                     <td colspan="4" style="padding-left: 0"><input id="notes" class="easyui-textbox" name="notes"
-                                                                   data-options="label:'审批意见',multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
-                                                                   style="width:800px;height:120px"/></td>
+                                           data-options="label:'审批意见',multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
+                                           style="width:100%;height:120px"/></td>
                 </tr>
             </table>
         </form>
         <div style="text-align:center;padding:5px;margin-top:50px;">
-            <a href="${contextPath}/approve/complete/index.html" class="easyui-linkbutton" data-options="width:'80px'">返回</a>
+            <!--<a href="${contextPath}/approve/complete/index.html" class="easyui-linkbutton" data-options="width:'80px'">返回</a>-->
             <% if(!viewMode){ %>
             <% if(canOpt){ %>
             <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"

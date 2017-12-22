@@ -335,6 +335,14 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 				projectDto.setMemberCount(project1.getMemberCount());
 				projectDto.setCompletedProgress(project1.getCompletedProgress());
 				projectDto.setOriginator(project1.getOriginator());
+				
+				Team record = DTOUtils.newDTO(Team.class);
+				record.setProjectId(project1.getId());
+				record.setMemberId(userTicket.getId());
+				record.setRole(TeamRole.PROJECT_MANAGER.getValue());
+				int count = this.teamMapper.selectCount(record);
+				projectDto.setManager(count > 0);
+				
 				projectDtoList.add(projectDto);
 			}
 		}
