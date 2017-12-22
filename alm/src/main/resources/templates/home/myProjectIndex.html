@@ -12,11 +12,11 @@
             <!-- =========================================================表格========================================================= -->
             <table class="easyui-datagrid" title="我的项目列表" style="width:100%" id="grid" fitColumns="false"
                    pagination="true" pageSize="30" pageNumber="1" pagePosition="both" rownumbers="false" remoteSort="false"
-                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="serialNumber"
+                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="serial_number"
                    align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" data-options="onHeaderContextMenu:headerContextMenu">
                 <thead>
                     <tr>
-						<th data-options="field:'serialNumber', align:'left'">项目编号</th>
+						<th data-options="field:'serialNumber',formatter:formatprojectName, align:'left'">项目编号</th>
 						<th
 							data-options="field:'name',formatter:formatprojectName, align:'left'">项目名称</th>
 						<th 
