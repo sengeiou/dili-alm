@@ -247,5 +247,24 @@ public static HashMap<String,String>  getFirstAndFive(Date date) {
         }
         return 0;
     }
+
+    public static Date appendDateToEnd(Date date){
+		try {
+			String dateStr = getDate(date);
+			dateStr += " 23:59:59";
+			return getStrDate(dateStr);
+		}catch (Exception e){
+			return date;
+		}
+	}
+	public static Date appendDateToStart(Date date){
+		try {
+			String dateStr = getDate(date);
+			dateStr += " 00:00:00";
+			return getStrDate(dateStr);
+		}catch (Exception e){
+			return date;
+		}
+	}
     
 }
