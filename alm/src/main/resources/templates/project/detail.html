@@ -36,10 +36,10 @@ html, body {
 	type="hidden" id="projectState" value="${model.projectState!}"> <input type="hidden" id="projectManager" value="${projectManager!}">
 <div id="infoToolbar">
 	<a href="#" class="easyui-linkbutton"
-		style="width: 80px; height: 30px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef"
+		style="width: 100px; height: 30px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef"
 		data-options="onClick:function(){
 	   	window.location.href='${contextPath!}/task/index.html?projectId=${model.id!}';
-	   }">项目任务</a>
+	   }">项目任务：${model.taskCount!}</a>
 	<%if(editable == true && projectManager == true){%> <a href="#" class="easyui-linkbutton"
 		style="width: 80px; height: 30px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef"
 		data-options="onClick:generateWeekly">周报生成</a> <%}%> <%if(editable == true && projectManager == true){%> <a href="#"
@@ -144,7 +144,7 @@ html, body {
 					data-options="field:'completedProgress', width:'15%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:progressFormatter">完成进度</th>
 				<th data-options="field:'opt',width:'10%'
 				<%if(editable == true && model.projectState != 2 && projectManager == true){%>
-					,formatter:versionOptFormatter
+					,formatter:phaseOptFormatter
 				<%}%>
 				, align:'center'">操作</th>
 			</tr>

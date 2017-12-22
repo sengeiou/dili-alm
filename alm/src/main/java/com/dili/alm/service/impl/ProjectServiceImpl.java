@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -17,8 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,14 +41,12 @@ import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectDto;
-import com.dili.alm.domain.dto.ProjectListDto;
 import com.dili.alm.domain.dto.UploadProjectFileDto;
 import com.dili.alm.exceptions.ProjectException;
 import com.dili.alm.provider.ProjectProvider;
 import com.dili.alm.rpc.DataAuthRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
-import com.dili.alm.service.FilesService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.TeamService;
 import com.dili.ss.base.BaseServiceImpl;
@@ -207,18 +202,13 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 			throw new RuntimeException("未登录");
 		}
 		List<Project> list = this.listByExample(domain);
-		List<ProjectListDto> dtos = DTOUtils.as(list, ProjectListDto.class);
-		dtos.forEach(p -> {
-			Team record = DTOUtils.newDTO(Team.class);
-			record.setProjectId(p.getId());
-			record.setMemberId(user.getId());
-			record.setRole(TeamRole.PROJECT_MANAGER.getValue());
-			int count = this.teamMapper.selectCount(record);
-			p.setManager(count > 0);
+		list.forEach(p -> {
+			int count = this.teamMapper.countProjectMember(p.getId());
+			p.setMemberCount(count);
 		});
 		long total = list instanceof Page ? ((Page) list).getTotal() : list.size();
 		List results = null;
-		results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, dtos) : dtos;
+		results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, list) : list;
 		return new EasyuiPageOutput(Integer.parseInt(String.valueOf(total)), results);
 	}
 
@@ -335,14 +325,14 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 				projectDto.setMemberCount(project1.getMemberCount());
 				projectDto.setCompletedProgress(project1.getCompletedProgress());
 				projectDto.setOriginator(project1.getOriginator());
-				
+
 				Team record = DTOUtils.newDTO(Team.class);
 				record.setProjectId(project1.getId());
 				record.setMemberId(userTicket.getId());
 				record.setRole(TeamRole.PROJECT_MANAGER.getValue());
 				int count = this.teamMapper.selectCount(record);
 				projectDto.setManager(count > 0);
-				
+
 				projectDtoList.add(projectDto);
 			}
 		}
