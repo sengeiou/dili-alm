@@ -574,7 +574,7 @@ function uploadFile(projectId) {
 
 function showMembers() {
 	var href = '${contextPath!}/team/index.html?projectId=${model.id!}';
-	if ($('#editable').val() == true) {
+	if ($('#editable').val() == 'true') {
 		href += '&editable=true';
 	}
 	window.location.href = href;
