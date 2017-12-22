@@ -98,6 +98,8 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	ProjectApplyService projectApplyService;
 	@Autowired
 	private ProjectVersionMapper versionMapper;
+	@Autowired
+	private ProjectPhaseMapper phaseMapper;
 	private static final String TASK_STATUS_CODE = "task_status";
 	private static final String TASK_TYPE_CODE = "task_type";
 
@@ -404,14 +406,22 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		if (project == null) {
 			throw new RuntimeException("项目不存在");
 		}
+		Date now = new Date();
 		if (project.getProjectState().equals(ProjectState.NOT_START.getValue())) {
+			project.setActualStartDate(now);
 			project.setProjectState(ProjectState.IN_PROGRESS.getValue());
 			this.projectMapper.updateByPrimaryKey(project);
 		}
 		ProjectVersion version = this.versionMapper.selectByPrimaryKey(task.getVersionId());
 		if (version.getVersionState().equals(ProjectState.NOT_START.getValue())) {
+			version.setActualStartDate(now);
 			version.setVersionState(ProjectState.IN_PROGRESS.getValue());
 			this.versionMapper.updateByPrimaryKey(version);
+		}
+		ProjectPhase phase = this.phaseMapper.selectByPrimaryKey(task.getPhaseId());
+		if (phase.getActualStartDate() == null) {
+			phase.setActualStartDate(now);
+			this.phaseMapper.updateByPrimaryKey(phase);
 		}
 		return this.update(task);
 	}
