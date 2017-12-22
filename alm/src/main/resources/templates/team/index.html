@@ -1,56 +1,67 @@
-
-<#body> <input type="hidden" id="projectId" name="projectId" value="${projectId!}"> <input type="hidden" id="editable"
-	value="${editable!}"> <input type="hidden" id="teamRole" value="${team.role!}">
-<div class="easyui-layout" fit="true">
-	<div id="smDialog" style="display: none;"></div>
-	<!-- ====================================================================================================================== -->
-	<!-- 上方布局 -->
-	<!-- ====================================================================================================================== -->
-	<div region="north" height="auto" align="center">
-		<!-- =========================================================表单========================================================= -->
-		<div class="easyui-panel" style="width: 100%;" align="left">
-			<a href="#" class="easyui-linkbutton" iconCls="icon-back"
-				onclick="window.history.go(-1);" plain="true">返回</a>
-			<form id="form" class="easyui-form" method="post" fit="true">
-				<table style="padding: 10px;">
-					<tr>
-						<td style="padding: 5px;"><input class="easyui-textbox" name="memberId" id="memberId" style="width: 100%;" panelWidth="auto"
-							panelHeight="auto" label="所属成员:"
-							data-options="editable:false,
+<#body>
+<style>
+	.panel-tool{
+		top:10px;
+		height: 24px;
+	}
+</style>
+<div id="cusTools">
+	<a onclick="window.location.href='${contextPath!}/project/detail?id=${projectId!}';" class="easyui-linkbutton" style="width: 50px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">返回</a>
+</div>
+<div class="easyui-panel" title="团队成员" style="height: 100%"
+	 data-options="tools:'#cusTools'">
+	<input type="hidden" id="projectId" name="projectId" value="${projectId!}">
+	<div class="easyui-layout" fit="true">
+		<div id="smDialog" style="display: none;"></div>
+		<!-- ====================================================================================================================== -->
+		<!-- 上方布局 -->
+		<!-- ====================================================================================================================== -->
+		<div region="north" height="auto" align="center">
+			<!-- =========================================================表单========================================================= -->
+			<div class="easyui-panel" style="width: 100%;" align="left">
+				<!--<a href="#" class="easyui-linkbutton" iconCls="icon-back"-->
+				   <!--onclick="window.location.href='${contextPath!}/project/detail?id=${projectId!}';" plain="true">返回</a>-->
+				<form id="form" class="easyui-form" method="post" fit="true">
+					<table style="padding: 10px;">
+						<tr>
+							<td style="padding: 5px;"><input class="easyui-textbox" name="memberId" id="memberId" style="width: 100%;" panelWidth="auto"
+															 panelHeight="auto" label="所属成员:"
+															 data-options="editable:false,
 									buttonText:'选择',
 									onClickButton:selectMember,onChange:_changeTextboxShowClear" /></td>
-						<td style="padding: 5px;"><select class="easyui-combotree" name="departmentId" id="departmentId" style="width: 100%"
-							data-options="loadFilter:treeLoadFilter, _idField:'id', _textField:'name', _parentIdField:'parentId',label:'部门:', url:'${contextPath!}/team/department.json',editable:false"></select>
-						</td>
-						<td style="padding: 5px;"><select id="cc" class="easyui-combobox" name="role" style="width: 100%"
-							data-options="url:'${contextPath!}/team/role.json',textField:'code',valueField:'value',label:'团队角色',editable:false">
-						</select></td>
-						<td style="padding: 5px;"><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid()">查询</a>
-							<a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">清除</a></td>
-					</tr>
-				</table>
-			</form>
+							<td style="padding: 5px;"><select class="easyui-combotree" name="departmentId" id="departmentId" style="width: 100%"
+															  data-options="loadFilter:treeLoadFilter, _idField:'id', _textField:'name', _parentIdField:'parentId',label:'部门:', url:'${contextPath!}/team/department.json',editable:false"></select>
+							</td>
+							<td style="padding: 5px;"><select id="cc" class="easyui-combobox" name="role" style="width: 100%"
+															  data-options="url:'${contextPath!}/team/role.json',textField:'code',valueField:'value',label:'团队角色',editable:false">
+							</select></td>
+							<td style="padding: 5px;"><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid()">查询</a>
+								<a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">清除</a></td>
+						</tr>
+					</table>
+				</form>
+			</div>
 		</div>
-	</div>
-	<!-- ====================================================================================================================== -->
-	<!-- 中央布局 -->
-	<!-- ====================================================================================================================== -->
-	<!-- 表格 -->
-	<div region="center" style="width: 100%;" height="auto">
-		<!-- =========================================================表格========================================================= -->
-		<table class="easyui-datagrid" title="Team列表" id="grid" fitColumns="true" pagination="true" pageSize="30" pageNumber="1"
-			pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
-			align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" url="${contextPath!}/team/list?projectId=${projectId!}"
-			data-options="onClickRow:onClickRow,
+		<!-- ====================================================================================================================== -->
+		<!-- 中央布局 -->
+		<!-- ====================================================================================================================== -->
+		<!-- 表格 -->
+		<div region="center" style="width: 100%;" height="auto">
+			<!-- =========================================================表格========================================================= -->
+			<table class="easyui-datagrid" title="Team列表" id="grid" fitColumns="true" pagination="true" pageSize="30" pageNumber="1"
+				   pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
+				   sortName="id" align="center" fit="true" striped="true" toolbar="#toolbar" idField="id"
+				   url="${contextPath!}/team/list?projectId=${projectId!}"
+				   data-options="onClickRow:onClickRow,
 			onCancelEdit:onCancelEdit,
 			onBeginEdit:onBeginEdit,
 			onEndEdit:onEndEdit,
 			onAfterEdit:onAfterEdit">
-			<thead>
+				<thead>
 				<tr>
 					<th data-options="field:'id',hidden:true"></th>
 					<th
-						data-options="width:'10%',field:'memberId',  _provider:'memberProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',editor : {
+							data-options="width:'10%',field:'memberId',  _provider:'memberProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',editor : {
 								type : 'textbox',
 								options : {
 									required : true,
@@ -64,7 +75,7 @@
 									return row.memberId;
 								},onChange:_changeTextboxShowClear">姓名</th>
 					<th
-						data-options="width:'10%',field:'role',  _provider:'teamRoleProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false', editor : {
+							data-options="width:'10%',field:'role',  _provider:'teamRoleProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false', editor : {
 								type : 'combobox',
 								options : {
 									required : true,
@@ -77,9 +88,9 @@
 									return row.role;
 								}">团队角色</th>
 					<th
-						data-options="width:'40%',field:'adminRoles', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:rolesFormatter">职位</th>
+							data-options="width:'40%',field:'adminRoles', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:rolesFormatter">职位</th>
 					<th
-						data-options="width:'10%',field:'departmentName', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',
+							data-options="width:'10%',field:'departmentName', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',
 					formatter:function(value,row){
 						if(!row.userInfo){
 							return '';
@@ -87,7 +98,7 @@
 						return row.userInfo.department.name;
 					}">部门</th>
 					<th
-						data-options="width:'10%',field:'contact', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',
+							data-options="width:'10%',field:'contact', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',
 					formatter:function(value,row){
 						if(!row.userInfo){
 							return '';
@@ -95,40 +106,44 @@
 						return row.userInfo.cellphone;
 					}">联系方式</th>
 					<th
-						data-options="width:'20%',field:'email', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',
+							data-options="width:'20%',field:'email', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',
 					formatter:function(value,row){
 						if(!row.userInfo){
 							return '';
 						}
-						return row.userInfo.email; 					
+						return row.userInfo.email;
 					}">邮箱</th>
 					<th data-options="field:'opt',width:'10%',hidden:true,formatter:columnFormatter">操作</th>
 				</tr>
-			</thead>
-		</table>
-		<!-- datagrid工具栏 -->
-		<div id="toolbar" style="padding: 2px 5px;">
-			<%if(editable==true && team.role!'' == 'project_manager'){%><a href="#" class="easyui-linkbutton" iconCls="icon-add"
-				onclick="openInsert()" plain="true">新增</a> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true">删除</a><%}%>
-			<div style="float: right">
-				边框显示:<select onchange="changeBorder('grid',this.value)">
-					<option value="lines-both">全边框</option>
-					<option value="lines-no">无边框</option>
-					<option value="lines-right">右边框</option>
-					<option value="lines-bottom">下边框</option>
-				</select> 行条纹:<input type="checkbox" checked="checked" onclick="$('#grid').datagrid({striped:$(this).is(':checked')})">
-			</div>
+				</thead>
+			</table>
+			<!-- datagrid工具栏 -->
+			<div id="toolbar" style="padding: 2px 5px;">
+				<#resource code="addTeam"> <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true">新增</a></#resource>
+			<#resource code="deleteTeam"> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true">删除</a></#resource>
+		<div style="float: right">
+			边框显示:<select onchange="changeBorder('grid',this.value)">
+			<option value="lines-both">全边框</option>
+			<option value="lines-no">无边框</option>
+			<option value="lines-right">右边框</option>
+			<option value="lines-bottom">下边框</option>
+		</select> 行条纹:<input type="checkbox" checked="checked" onclick="$('#grid').datagrid({striped:$(this).is(':checked')})">
 		</div>
 	</div>
 </div>
+</div>
+</div>
+
+
 <!-- ====================================================================================================================== --> <!-- style & script 分隔线 -->
-<!-- ====================================================================================================================== --> <script
+<!-- ====================================================================================================================== -->
+<script
 	type="text/javascript" src="${contextPath!}/resources/js/dateFormat.js"></script> <script type="text/javascript"
 	src="${contextPath!}/resources/js/dateFormat.js"></script> <script type="text/javascript">
 		var dataAuth = {
-			addTeam : <%if(editable==true && team.role!'' == 'project_manager'){%>true<%}else{%>false<%}%>,
-			updateTeam : <%if(editable==true && team.role!'' == 'project_manager'){%>true<%}else{%>false<%}%>,
-			deleteTeam : <%if(editable==true && team.role!'' == 'project_manager'){%>true<%}else{%>false<%}%>
+			addTeam : <%if(hasResource('addTeam')){%>true<%}else{%>false<%}%>,
+			updateTeam : <%if(hasResource('updateTeam')){%>true<%}else{%>false<%}%>,
+			deleteTeam : <%if(hasResource('deleteTeam')){%>true<%}else{%>false<%}%>
 		};
 	</script> <script type="text/javascript">
 		<#members_index/>
