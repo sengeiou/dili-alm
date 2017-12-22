@@ -500,22 +500,33 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			td.get(i).setPhaseId(dataDictionaryValueService.list(ddvPhaseName).get(0).getCode());
 			
 			// 本周工时
-			Integer intweekHour=Integer.parseInt(DateUtil.getDatePoor( td.get(i).getEndDate(),td.get(i).getStartDate()));
-			td.get(i).setWeekHour((intweekHour+1)*8+"");
+			Integer intweekHour=Integer.parseInt(DateUtil.differentDays( td.get(i).getStartDate(),td.get(i).getEndDate()));
+			td.get(i).setWeekHour((intweekHour)*8+"");
 			// 实际工时
 			td.get(i).setRealHour(td.get(i).getOverHour() + td.get(i).getTaskHour() + "");
 			// 工时偏差% （实际任务工时/预估任务工时-1）%
 			double  realHourandOverHour=td.get(i).getOverHour() + td.get(i).getTaskHour();
 			double  planTime=td.get(i).getPlanTime();
 			DecimalFormat    df   = new DecimalFormat("######0.00");   
-			double pro = ( realHourandOverHour/planTime -1) * 100;
-			td.get(i).setHourDeviation(df.format(pro) );
+			
 			
 			// 完成情况
-			DataDictionaryValue  ddv=DTOUtils.newDTO(DataDictionaryValue.class);
-			ddv.setValue(td.get(i).getStatus());
-			ddv.setDdId(dditList.get(0).getId());
-			td.get(i).setStatus(dataDictionaryValueService.list(ddv).get(0).getCode());
+			//DataDictionaryValue  ddv=DTOUtils.newDTO(DataDictionaryValue.class);
+			//ddv.setValue(td.get(i).getStatus());
+			//ddv.setDdId(dditList.get(0).getId());
+			
+			 if(td.get(i).getStatus().equals("2")){//已完成就是等于二
+				 td.get(i).setStatus("YES");
+				 double pro = ( realHourandOverHour/(intweekHour*8) -1) * 100;
+					td.get(i).setHourDeviation(df.format(pro) );
+				 
+			 }else{
+				 td.get(i).setStatus("NO");
+				 
+				 double pro = ((intweekHour- realHourandOverHour)/intweekHour) * 100;
+					td.get(i).setHourDeviation(df.format(pro) );
+			 }
+			
 			
 
 		}
