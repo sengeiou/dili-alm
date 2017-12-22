@@ -1,4 +1,5 @@
 <#body>
+<div class="easyui-panel" title="用户信息" style="height: 100%;padding:20px">
 <form id="userDetailForm" class="easyui-form" fit="true">
 	<input name="id" id="id" type="hidden">
 	<table width="460px">
@@ -51,7 +52,7 @@
 		</tr>
 	</table>
 </form>
-
+</div>
 <script type="text/javascript" src="${contextPath!}/resources/js/dateFormat.js"></script> <script type="text/javascript">
 	function setUserInfo(userinfo) {
 		$('#userDetailForm').form('load', userinfo);
