@@ -11,10 +11,20 @@
 	</script>
 <div id="win" style="display: none;"></div>
 <div id="smDialog" style="display: none;"></div>
-<input type="hidden" id="projectId" value="${model.id!}"> <a id="btn" href="#" class="easyui-linkbutton"
-	data-options="iconCls:'icon-search',onClick:generateWeekly">周报生成</a> <a id="btn" href="#" class="easyui-linkbutton"
-	data-options="iconCls:'icon-search',onClick:alarmConfig">告警设置</a> <a id="btn" href="#" class="easyui-linkbutton"
-	data-options="onClick:showMembers">团队成员：${model.memberCount!}</a>
+<input type="hidden" id="projectId" value="${model.id!}"> <input type="hidden" id="editable" value="${editable!}"> <input
+	type="hidden" id="projectState" value="${model.projectState!}"> <input type="hidden" id="teamRole" value="${team.role!}">
+	<a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',onClick:function(){
+		<%if(team.role!'' == 'project_manager'){%>
+		window.location.href='${contextPath!}/task/index.html';
+		<%}%>
+	}">项目任务:${model.taskCount!}</a>
+	<%if(editable == true && team.role!'' == 'project_manager'){%>
+	<a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',onClick:generateWeekly">周报生成</a>
+	<%}%>
+	<%if(editable == true && team.role!'' == 'project_manager'){%>
+	<a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',onClick:alarmConfig">告警设置</a>
+	<%}%> 
+	<a id="btn" href="#" class="easyui-linkbutton" data-options="onClick:showMembers">团队成员：${model.memberCount!}</a>
 
 <div id="p" class="easyui-panel" title="项目详情" style="width: '100%'; height: '30%'; background: #fafafa;" data-options="tools:'#infoToolbar'">
 	<table id="info">
@@ -67,14 +77,18 @@
 				data-options="field:'online', width:'10%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false,formatter:onlineFormatter'">上线</th>
 			<th
 				data-options="field:'completedProgress', width:'15%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:progressFormatter">完成进度</th>
-			<th data-options="field:'opt',width:'15%',formatter:versionOptFormatter, align:'center'">操作</th>
+			<th data-options="field:'opt',width:'15%'
+			<%if(editable == true && model.projectState != 2 && team.role!'' == 'project_manager'){%>
+			,formatter:versionOptFormatter
+			<%}%>
+			, align:'center'">操作</th>
 		</tr>
 	</thead>
 </table>
 <!-- datagrid工具栏 -->
 <div id="versionToolbar" style="padding: 2px 5px;">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsertVersion()" plain="true">新建版本</a> <span id="versionCount"
-		style="color: red;"></span>
+	<%if(editable == true && team.role!'' == 'project_manager'){%><a href="#" class="easyui-linkbutton" iconCls="icon-add"
+		onclick="openInsertVersion()" plain="true">新建版本</a><%}%> <span id="versionCount" style="color: red;"></span>
 </div>
 
 <table class="easyui-datagrid" title="项目阶段信息" id="phaseGrid" fitColumns="true" rownumbers="true" pagination="false" remoteSort="false"
@@ -93,14 +107,18 @@
 				data-options="field:'actualStartDate', width:'15%',  _provider:'almDateProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">实际开始日期</th>
 			<th
 				data-options="field:'completedProgress', width:'15%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:progressFormatter">完成进度</th>
-			<th data-options="field:'opt',width:'10%',formatter:phaseOptFormatter, align:'center'">操作</th>
+			<th data-options="field:'opt',width:'10%'
+			<%if(editable == true && model.projectState != 2 && team.role!'' == 'project_manager'){%>
+			,formatter:phaseOptFormatter
+			<%}%>
+			, align:'center'">操作</th>
 		</tr>
 	</thead>
 </table>
 <!-- datagrid工具栏 -->
 <div id="phaseToolbar" style="padding: 2px 5px;">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsertPhase()" plain="true">新建阶段</a> <span id="phaseCount"
-		style="color: red;"></span>
+	<%if(editable == true && team.role!'' == 'project_manager'){%><a href="#" class="easyui-linkbutton" iconCls="icon-add"
+		onclick="openInsertPhase()" plain="true">新建阶段</a><%}%> <span id="phaseCount" style="color: red;"></span>
 </div>
 <table class="easyui-datagrid" title="项目文档列表" id="fileGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"
 	pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
@@ -116,14 +134,18 @@
 				data-options="field:'createMemberId', width:'15%',  _provider:'memberProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">创建人</th>
 			<th
 				data-options="field:'created', width:'15%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">创建时间</th>
-			<th data-options="field:'opt',width:'10%',formatter:fileOptFormatter, align:'center'">操作</th>
+			<th data-options="field:'opt',width:'10%'
+			<%if(editable == true){%>
+			,formatter:fileOptFormatter
+			<%}%>
+			, align:'center'">操作</th>
 		</tr>
 	</thead>
 </table>
 <!-- datagrid工具栏 -->
 <div id="fileToolbar" style="padding: 2px 5px;">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="uploadFile(${model.id!})" plain="true">新建文档</a> <span id="fileCount"
-		style="color: red;"></span>
+	<%if(editable == true && team.role!'' == 'project_manager'){%><a href="#" class="easyui-linkbutton" iconCls="icon-add"
+		onclick="uploadFile(${model.id!})" plain="true">新建文档</a><%}%> <span id="fileCount" style="color: red;"></span>
 </div>
 <script type="text/javascript">
 <#members_index/>

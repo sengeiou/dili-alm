@@ -23,4 +23,6 @@ public interface TeamService extends BaseService<Team, Long> {
 	List<Map<Object, Object>> listContainUserInfo(TeamDepartmentRoleQuery dto);
 
 	BaseOutput<Object> deleteAfterCheck(Long id);
+
+	Team findByUserAndProject(Long memberId, Long projectId);
 }

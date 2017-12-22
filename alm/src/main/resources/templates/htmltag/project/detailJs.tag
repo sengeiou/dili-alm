@@ -11,6 +11,14 @@ function countFileGrid(data) {
 }
 
 function versionOptFormatter(value, row, index) {
+	var editable = $('#editable').val();
+	if (!editable) {
+		return '';
+	}
+	var projectState = $('#projectState').val();
+	if (projectState == 2) {
+		return '';
+	}
 	var content = '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="changeVersionState(' + row.id + ');">状态变更</a>';
 	content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="editVersion(' + row.id + ');">编辑</a>';
 	content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="deleteVersion(' + row.id + ');">删除</a>';
@@ -18,6 +26,14 @@ function versionOptFormatter(value, row, index) {
 }
 
 function phaseOptFormatter(value, row, index) {
+	var editable = $('#editable').val();
+	if (!editable) {
+		return '';
+	}
+	var projectState = $('#projectState').val();
+	if (projectState == 2) {
+		return '';
+	}
 	var content = '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="editPhase(' + row.id + ');">编辑</a>';
 	content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="deletePhase(' + row.id + ');">删除</a>';
 	return content;
@@ -59,6 +75,10 @@ function phaseFileOptFormatter(value, row, index) {
 
 function fileOptFormatter(value, row, index) {
 	var content = '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="downloadFile(' + row.id + ');">下载</a>';
+	var teamRole = $('#teamRole').val();
+	if (teamRole != 'projectManager') {
+		return content;
+	}
 	content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="deleteFile(' + row.id + ');">删除</a>';
 	return content;
 }
@@ -553,7 +573,11 @@ function uploadFile(projectId) {
 }
 
 function showMembers() {
-	window.location.href = '${contextPath!}/team/index.html?projectId=${model.id!}';
+	var href = '${contextPath!}/team/index.html?projectId=${model.id!}';
+	if ($('#editable').val()) {
+		href += '&editable=true';
+	}
+	window.location.href = href;
 }
 
 function alarmConfig() {

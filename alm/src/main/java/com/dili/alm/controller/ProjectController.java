@@ -4,14 +4,18 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.Team;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.UploadProjectFileDto;
 import com.dili.alm.exceptions.ProjectException;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.ProjectService;
+import com.dili.alm.service.TeamService;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -42,6 +46,8 @@ public class ProjectController {
 	ProjectService projectService;
 	@Autowired
 	private UserRpc userRPC;
+	@Autowired
+	private TeamService teamService;
 
 	private void refreshMember() {
 		AlmCache.USER_MAP.clear();
@@ -156,10 +162,12 @@ public class ProjectController {
 	}
 
 	@RequestMapping(value = "/detail", method = RequestMethod.GET)
-	public String detail(@RequestParam Long id, ModelMap map) {
+	public String detail(@RequestParam Long id, @RequestParam(defaultValue = "false") Boolean editable, ModelMap map) {
 		try {
 			Map<Object, Object> model = this.projectService.getDetailViewData(id);
-			map.addAttribute("model", model);
+			UserTicket user = SessionContext.getSessionContext().getUserTicket();
+			Team team = this.teamService.findByUserAndProject(user.getId(), id);
+			map.addAttribute("model", model).addAttribute("editable", editable).addAttribute("team", team);
 		} catch (Exception e) {
 			return null;
 		}

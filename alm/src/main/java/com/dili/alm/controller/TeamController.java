@@ -25,7 +25,10 @@ import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.TeamService;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.sysadmin.sdk.domain.UserTicket;
+import com.dili.sysadmin.sdk.session.SessionContext;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -75,9 +78,12 @@ public class TeamController {
 
 	@ApiOperation("跳转到Team页面")
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
-	public String index(@RequestParam Long projectId, ModelMap modelMap) {
+	public String index(@RequestParam Long projectId, @RequestParam(defaultValue = "false") Boolean editable,
+			ModelMap modelMap) {
 		refreshProject();
-		modelMap.addAttribute("projectId", projectId);
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		Team team = this.teamService.findByUserAndProject(user.getId(), projectId);
+		modelMap.addAttribute("projectId", projectId).addAttribute("editable", editable).addAttribute("team", team);
 		return "team/index";
 	}
 
@@ -85,10 +91,14 @@ public class TeamController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Team", paramType = "form", value = "Team的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody List<Map<Object, Object>> list(TeamDepartmentRoleQuery dto) {
+	public @ResponseBody String list(TeamDepartmentRoleQuery dto) {
 		refreshMember();
 		try {
-			return this.teamService.listContainUserInfo(dto);
+			List<Map<Object, Object>> list = this.teamService.listContainUserInfo(dto);
+			EasyuiPageOutput e = new EasyuiPageOutput();
+			e.setRows(list);
+			e.setTotal(list.size());
+			return e.toString();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

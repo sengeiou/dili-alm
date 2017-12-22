@@ -29,6 +29,7 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
+import com.google.common.collect.Lists;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-10-24 14:31:10.
@@ -102,6 +103,7 @@ public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements Team
 		}
 		int result = this.insertSelective(team);
 		if (result > 0) {
+			team.setDeletable(true);
 			try {
 				Map<Object, Object> viewModel = this.parse2ListView(team, null);
 				return BaseOutput.success().setData(viewModel);
@@ -160,7 +162,7 @@ public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements Team
 		List<Team> teams = this.list(team);
 		List<Map<Object, Object>> models = new ArrayList<>();
 		if (CollectionUtils.isEmpty(teams)) {
-			return null;
+			return models;
 		}
 		teams.forEach(t -> {
 			dto.setUserId(t.getMemberId());
@@ -231,6 +233,14 @@ public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements Team
 		metadata.put("leaveTime", datetimeProvider);
 
 		return ValueProviderUtils.buildDataByProvider(metadata, list);
+	}
+
+	@Override
+	public Team findByUserAndProject(Long memberId, Long projectId) {
+		Team teamQuery = DTOUtils.newDTO(Team.class);
+		teamQuery.setProjectId(projectId);
+		teamQuery.setMemberId(memberId);
+		return this.getActualDao().selectOne(teamQuery);
 	}
 
 }

@@ -1,5 +1,6 @@
 
-<#body> <input type="hidden" id="projectId" name="projectId" value="${projectId!}">
+<#body> <input type="hidden" id="projectId" name="projectId" value="${projectId!}"> <input type="hidden" id="editable"
+	value="${editable!}"> <input type="hidden" id="teamRole" value="${team.role!}">
 <div class="easyui-layout" fit="true">
 	<div id="smDialog" style="display: none;"></div>
 	<!-- ====================================================================================================================== -->
@@ -9,7 +10,7 @@
 		<!-- =========================================================表单========================================================= -->
 		<div class="easyui-panel" style="width: 100%;" align="left">
 			<a href="#" class="easyui-linkbutton" iconCls="icon-back"
-				onclick="window.location.href='${contextPath!}/project/detail?id=${projectId!}';" plain="true">返回</a>
+				onclick="window.history.go(-1);" plain="true">返回</a>
 			<form id="form" class="easyui-form" method="post" fit="true">
 				<table style="padding: 10px;">
 					<tr>
@@ -39,8 +40,7 @@
 		<!-- =========================================================表格========================================================= -->
 		<table class="easyui-datagrid" title="Team列表" id="grid" fitColumns="true" pagination="true" pageSize="30" pageNumber="1"
 			pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
-			sortName="id" align="center" fit="true" striped="true" toolbar="#toolbar" idField="id"
-			url="${contextPath!}/team/list?projectId=${projectId!}"
+			align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" url="${contextPath!}/team/list?projectId=${projectId!}"
 			data-options="onClickRow:onClickRow,
 			onCancelEdit:onCancelEdit,
 			onBeginEdit:onBeginEdit,
@@ -108,8 +108,8 @@
 		</table>
 		<!-- datagrid工具栏 -->
 		<div id="toolbar" style="padding: 2px 5px;">
-			<#resource code="addTeam"> <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true">新增</a></#resource>
-			<#resource code="deleteTeam"> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true">删除</a></#resource>
+			<%if(editable==true && team.role!'' == 'project_manager'){%><a href="#" class="easyui-linkbutton" iconCls="icon-add"
+				onclick="openInsert()" plain="true">新增</a> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true">删除</a><%}%>
 			<div style="float: right">
 				边框显示:<select onchange="changeBorder('grid',this.value)">
 					<option value="lines-both">全边框</option>
@@ -126,9 +126,9 @@
 	type="text/javascript" src="${contextPath!}/resources/js/dateFormat.js"></script> <script type="text/javascript"
 	src="${contextPath!}/resources/js/dateFormat.js"></script> <script type="text/javascript">
 		var dataAuth = {
-			addTeam : <%if(hasResource('addTeam')){%>true<%}else{%>false<%}%>,
-			updateTeam : <%if(hasResource('updateTeam')){%>true<%}else{%>false<%}%>,
-			deleteTeam : <%if(hasResource('deleteTeam')){%>true<%}else{%>false<%}%>
+			addTeam : <%if(editable==true && team.role!'' == 'project_manager'){%>true<%}else{%>false<%}%>,
+			updateTeam : <%if(editable==true && team.role!'' == 'project_manager'){%>true<%}else{%>false<%}%>,
+			deleteTeam : <%if(editable==true && team.role!'' == 'project_manager'){%>true<%}else{%>false<%}%>
 		};
 	</script> <script type="text/javascript">
 		<#members_index/>

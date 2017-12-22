@@ -65,6 +65,7 @@ function del() {
 				if (r) {
 					if (!selected.deletable) {
 						$.messager.alert('警告', '该数据不能删除');
+						return;
 					}
 					$.ajax({
 								type : "POST",
@@ -78,7 +79,7 @@ function del() {
 								success : function(data) {
 									if (data.code == "200") {
 										try {
-											LogUtils.saveLog("删除团队:" + id, function() {
+											LogUtils.saveLog("删除团队:" + selected.id, function() {
 													});
 										} catch (e) {
 											$.messager.alert('错误', e);
@@ -388,6 +389,7 @@ function clearForm() {
 
 // 表格查询
 function queryGrid() {
+	debugger;
 	var opts = $("#grid").datagrid("options");
 	if (null == opts.url || "" == opts.url) {
 		opts.url = "${contextPath}/team/listPage";
@@ -398,7 +400,6 @@ function queryGrid() {
 	var param = bindMetadata("grid", true);
 	var formData = $("#form").serializeObject();
 	$.extend(param, formData);
-	console.log(param);
 	$("#grid").datagrid("load", param);
 }
 
