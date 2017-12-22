@@ -15,7 +15,7 @@
 
                             </td>
                             <td style="padding:5px;">
-                               <input class="easyui-textbox" name="projectId" id="projectId"  style="width:100%" data-options="label:'所属项目:'"/>
+                               <input class="easyui-textbox" name="projectId" id="projectId" style="width:100%" data-options="label:'所属项目:'"/>
                                <#comboProvider _id="projectId" _table="project"
 								_valueField="id" _textField="name"/>
                             <td style="padding:5px;">
@@ -150,12 +150,12 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-datetimebox" name="_startDate" id="_startDate" style="width:100%" data-options="label:'开始时间:', required:true" />
+                    <input class="easyui-datebox" name="_startDate" id="_startDate" style="width:100%" data-options="label:'开始时间:', required:true" />
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-datetimebox" name="_endDate" id="_endDate" style="width:100%" data-options="label:'结束时间:', required:true,validType:'endDateValidate[\'_startDate\']'" />
+                    <input class="easyui-datebox" name="_endDate" id="_endDate" style="width:100%" data-options="label:'结束时间:', required:true,validType:'endDateValidate[\'_startDate\']'" />
                 </td>
             </tr>
             <tr>
@@ -446,6 +446,10 @@
          *          表单提交需执行的任务
          */
         $(function () {
+        	<%if(project!null != null){%>
+        		$('#projectId').combobox('initValue','${project.id!}');
+        		$('#projectId').combobox('setText','${project.name!}');
+        	<%}%>
             bindFormEvent("form", "name", queryGrid);
             bindFormEvent("_form", "_name", saveOrUpdate, function (){$('#dlg').dialog('close');});
             if (document.addEventListener) {
