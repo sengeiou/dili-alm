@@ -75,8 +75,8 @@ function phaseFileOptFormatter(value, row, index) {
 
 function fileOptFormatter(value, row, index) {
 	var content = '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="downloadFile(' + row.id + ');">下载</a>';
-	var teamRole = $('#teamRole').val();
-	if (teamRole != 'projectManager') {
+	var projectManager = $('#projectManager').val();
+	if (projectManager == true) {
 		return content;
 	}
 	content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="deleteFile(' + row.id + ');">删除</a>';

@@ -33,16 +33,16 @@ html, body {
 <div id="win" style="display: none;"></div>
 <div id="smDialog" style="display: none;"></div>
 <input type="hidden" id="projectId" value="${model.id!}"> <input type="hidden" id="editable" value="${editable!}"> <input
-	type="hidden" id="projectState" value="${model.projectState!}"> <input type="hidden" id="teamRole" value="${team.role!}">
+	type="hidden" id="projectState" value="${model.projectState!}"> <input type="hidden" id="projectManager" value="${projectManager!}">
 <div id="infoToolbar">
 	<a href="#" class="easyui-linkbutton"
 		style="width: 80px; height: 30px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef"
 		data-options="onClick:function(){
 	   	window.location.href='${contextPath!}/task/index.html?projectId=${model.id!}';
 	   }">项目任务</a>
-	<%if(editable == true && team.role!'' == 'project_manager'){%> <a href="#" class="easyui-linkbutton"
+	<%if(editable == true && projectManager == true){%> <a href="#" class="easyui-linkbutton"
 		style="width: 80px; height: 30px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef"
-		data-options="onClick:generateWeekly">周报生成</a> <%}%> <%if(editable == true && team.role!'' == 'project_manager'){%> <a href="#"
+		data-options="onClick:generateWeekly">周报生成</a> <%}%> <%if(editable == true && projectManager == true){%> <a href="#"
 		class="easyui-linkbutton"
 		style="width: 80px; height: 30px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef"
 		data-options="onClick:alarmConfig">告警设置</a> <%}%> <a href="#" class="easyui-linkbutton"
@@ -114,7 +114,7 @@ html, body {
 					data-options="field:'completedProgress', width:'14%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:progressFormatter">完成进度</th>
 				<th
 					data-options="field:'opt',width:'17%'
-					<%if(editable == true && model.projectState != 2 && team.role!'' == 'project_manager'){%>
+					<%if(editable == true && model.projectState != 2 && projectManager == true){%>
 					,formatter:versionOptFormatter
 					<%}%>, align:'center'">操作</th>
 			</tr>
@@ -122,7 +122,7 @@ html, body {
 	</table>
 	<!-- datagrid工具栏 -->
 	<div id="versionToolbar" style="padding: 2px 5px;">
-		<%if(editable == true && team.role!'' == 'project_manager'){%> <a href="#" class="easyui-linkbutton" iconCls="icon-add"
+		<%if(editable == true && projectManager == true){%> <a href="#" class="easyui-linkbutton" iconCls="icon-add"
 			onclick="openInsertVersion()" plain="true">新建版本</a> <%}%> <span id="versionCount" style="color: red;"></span>
 	</div>
 
@@ -143,7 +143,7 @@ html, body {
 				<th
 					data-options="field:'completedProgress', width:'15%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:progressFormatter">完成进度</th>
 				<th data-options="field:'opt',width:'10%'
-				<%if(editable == true && model.projectState != 2 && team.role!'' == 'project_manager'){%>
+				<%if(editable == true && model.projectState != 2 && projectManager == true){%>
 					,formatter:versionOptFormatter
 				<%}%>
 				, align:'center'">操作</th>
@@ -152,7 +152,7 @@ html, body {
 	</table>
 	<!-- datagrid工具栏 -->
 	<div id="phaseToolbar" style="padding: 2px 5px;">
-		<%if(editable == true && team.role!'' == 'project_manager'){%> <a href="#" class="easyui-linkbutton" iconCls="icon-add"
+		<%if(editable == true && projectManager == true){%> <a href="#" class="easyui-linkbutton" iconCls="icon-add"
 			onclick="openInsertPhase()" plain="true">新建阶段</a> <%}%> <span id="phaseCount" style="color: red;"></span>
 	</div>
 	<table class="easyui-datagrid" title="项目文档列表" id="fileGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"
@@ -175,7 +175,7 @@ html, body {
 	</table>
 	<!-- datagrid工具栏 -->
 	<div id="fileToolbar" style="padding: 2px 5px;">
-		<%if(editable == true && team.role!'' == 'project_manager'){%> <a href="#" class="easyui-linkbutton" iconCls="icon-add"
+		<%if(editable == true && projectManager == true){%> <a href="#" class="easyui-linkbutton" iconCls="icon-add"
 			onclick="uploadFile(${model.id!})" plain="true">新建文档</a> <%}%> <span id="fileCount" style="color: red;"></span>
 	</div>
 	<script type="text/javascript">

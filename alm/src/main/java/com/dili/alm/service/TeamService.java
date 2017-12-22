@@ -24,5 +24,5 @@ public interface TeamService extends BaseService<Team, Long> {
 
 	BaseOutput<Object> deleteAfterCheck(Long id);
 
-	Team findByUserAndProject(Long memberId, Long projectId);
+	Boolean teamMemberIsProjectManager(Long memberId, Long projectId);
 }

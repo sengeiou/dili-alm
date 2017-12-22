@@ -119,7 +119,7 @@
 			</table>
 			<!-- datagrid工具栏 -->
 			<div id="toolbar" style="padding: 2px 5px;">
-				<%if(editable==true && team.role!'' == 'project_manager'){%> <a href="#" class="easyui-linkbutton" iconCls="icon-add"
+				<%if(editable==true && projectManager == true){%> <a href="#" class="easyui-linkbutton" iconCls="icon-add"
 					onclick="openInsert()" plain="true">新增</a> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true">删除</a><%}%>
 				<div style="float: right">
 					边框显示:<select onchange="changeBorder('grid',this.value)">
@@ -140,9 +140,9 @@
 	type="text/javascript" src="${contextPath!}/resources/js/dateFormat.js"></script> <script type="text/javascript"
 	src="${contextPath!}/resources/js/dateFormat.js"></script> <script type="text/javascript">
 		var dataAuth = {
-			addTeam : <%if(editable==true && team.role!'' == 'project_manager'){%>true<%}else{%>false<%}%>,
-			updateTeam : <%if(editable==true && team.role!'' == 'project_manager'){%>true<%}else{%>false<%}%>,
-			deleteTeam : <%if(editable==true && team.role!'' == 'project_manager'){%>true<%}else{%>false<%}%>
+			addTeam : <%if(editable==true && projectManager == true){%>true<%}else{%>false<%}%>,
+			updateTeam : <%if(editable==true && projectManager == true){%>true<%}else{%>false<%}%>,
+			deleteTeam : <%if(editable==true && projectManager == true){%>true<%}else{%>false<%}%>
 		};
 	</script> <script type="text/javascript">
 		<#members_index/>
