@@ -22,6 +22,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -162,12 +164,15 @@ public class ProjectController {
 	}
 
 	@RequestMapping(value = "/detail", method = RequestMethod.GET)
-	public String detail(@RequestParam Long id, @RequestParam(defaultValue = "false") Boolean editable, ModelMap map) {
+	public String detail(@RequestParam Long id, @RequestParam(defaultValue = "false") Boolean editable,
+			@RequestParam(required = false) String backUrl, ModelMap map) {
 		try {
 			Map<Object, Object> model = this.projectService.getDetailViewData(id);
 			UserTicket user = SessionContext.getSessionContext().getUserTicket();
 			Boolean projectManager = this.teamService.teamMemberIsProjectManager(user.getId(), id);
-			map.addAttribute("model", model).addAttribute("editable", editable).addAttribute("projectManager", projectManager);
+			map.addAttribute("model", model).addAttribute("editable", editable)
+					.addAttribute("projectManager", projectManager).addAttribute("backUrl",
+							StringUtils.isNotBlank(backUrl) ? URLDecoder.decode(backUrl, "UTF-8") : "");
 		} catch (Exception e) {
 			return null;
 		}

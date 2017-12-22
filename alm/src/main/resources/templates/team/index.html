@@ -6,7 +6,7 @@
 }
 </style>
 <div id="cusTools">
-	<a onclick="window.location.href='${contextPath!}/project/detail?id=${projectId!}';" class="easyui-linkbutton"
+	<a onclick="window.history.go(-1);" class="easyui-linkbutton"
 		style="width: 50px; height: 24px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef">返回</a>
 </div>
 <div class="easyui-panel" title="团队成员" style="height: 100%" data-options="tools:'#cusTools'">
@@ -19,8 +19,6 @@
 		<div region="north" height="auto" align="center">
 			<!-- =========================================================表单========================================================= -->
 			<div class="easyui-panel" style="width: 100%;" align="left">
-				<!--<a href="#" class="easyui-linkbutton" iconCls="icon-back"-->
-				<!--onclick="window.location.href='${contextPath!}/project/detail?id=${projectId!}';" plain="true">返回</a>-->
 				<form id="form" class="easyui-form" method="post" fit="true">
 					<table style="padding: 10px;">
 						<tr>
