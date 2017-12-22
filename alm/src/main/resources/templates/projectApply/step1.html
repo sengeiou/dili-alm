@@ -120,24 +120,24 @@
                     <td colspan="2">
                         <span class="require">*</span>
                         <input class="easyui-datebox" name="expectedLaunchDate" id="" style="width: calc(50% - 132px)"
-                               data-options="required:true,label:'业务期望上线日期:'"/>
+                               data-options="editable:false,required:true,label:'业务期望上线日期:'"/>
                     </td>
                     <td colspan="2">
                         <span class="require">*</span>
                         <input class="easyui-datebox" name="estimateLaunchDate" id="" style="width: calc(50% - 132px)"
-                               data-options="required:true,label:'预估最终上线日期:'"/>
+                               data-options="editable:false,required:true,label:'预估最终上线日期:'"/>
                     </td>
                 </tr>
                 <tr>
                     <td colspan="2">
                         <span class="require">*</span>
                         <input class="easyui-datebox" name="startDate" id="" style="width: calc(50% - 132px)"
-                               data-options="required:true,label:'计划开始日期:'"/>
+                               data-options="editable:false,required:true,label:'计划开始日期:'"/>
                     </td>
                     <td colspan="2">
                         <span class="require">*</span>
                         <input class="easyui-datebox" name="endDate" id="" style="width: calc(50% - 132px)"
-                               data-options="required:true,label:'计划结束日期:'"/>
+                               data-options="editable:false,required:true,label:'计划结束日期:'"/>
                     </td>
                 </tr>
                 <tr>
@@ -212,15 +212,15 @@
         appendRelated();
     });
 
-    $('.easyui-datebox').each(function(){
-        $(this).datebox().datebox('calendar').calendar({
-            validator: function(date){
-                var now = new Date();
-                var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-                return date>=d1;
-            }
-        });
-    });
+    // $('.easyui-datebox').each(function(){
+    //     $(this).datebox().datebox('calendar').calendar({
+    //         validator: function(date){
+    //             var now = new Date();
+    //             var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    //             return date>=d1;
+    //         }
+    //     });
+    // });
 
     function delRelated($_this) {
         $($_this).closest("tr").remove();
