@@ -196,9 +196,14 @@
             success: function (data) {
                 var data = eval('(' + data + ')');
                 if (data.success == true) {
-                    if (data.success == true) {
+                    try {
+                        LogUtils.saveLog("立项审批:${apply.id}", function () {
+                            window.location.href = "${contextPath}/approve/apply/index.html";
+                        });
+                    } catch (e) {
                         window.location.href = "${contextPath}/approve/apply/index.html";
                     }
+
                 }
             }
         });
