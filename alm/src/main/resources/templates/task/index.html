@@ -15,7 +15,7 @@
 
                             </td>
                             <td style="padding:5px;">
-                               <input class="easyui-textbox" name="projectId" id="projectId" style="width:100%" data-options="label:'所属项目:'"/>
+                               <input class="easyui-textbox" name="projectId" id="projectId"  style="width:100%" data-options="label:'所属项目:'"/>
                                <#comboProvider _id="projectId" _table="project"
 								_valueField="id" _textField="name"/>
                             <td style="padding:5px;">
@@ -31,10 +31,7 @@
 
                         </td>
                         <td style="padding:5px;">
-								<input class="easyui-textbox" name="owner" id="owner" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="负责人:"
-															data-options="editable:false,
-																	buttonText:'选择',
-																	onClickButton:selectMember,onChange:_changeTextboxShowClear" />
+                           <input name="owner" id="owner"  class="easyui-combobox"  style="width:100%;" data-options="label:'负责人:'">
                             </td>
                             <td style="padding:5px;">
                             <input  name="status" id="status"  class="easyui-combobox"style="width: 100%;"  panelWidth="auto" panelHeight="auto"  data-options="label:'状态:'">
@@ -99,10 +96,11 @@
                 </thead>
             </table>
             <!-- datagrid工具栏 -->
-            <div id="toolbar" style="padding:2px 5px;">
-                <#resource code="addTask"> <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true"></a></#resource>
+            <div id="toolbar" style="padding:2px 5px;"><a href="#" class="easyui-linkbutton" style="border: 0px;" plain="true"></a>
+                <span id="manager_tools"><#resource code="addTask"> <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true"></a></#resource>
                 <#resource code="updateTask"> <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()" plain="true"></a></#resource>
                 <#resource code="delTask"> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true"></a></#resource>
+                </span>
                 <div style="float:right">
                 边框显示:<select onchange="changeBorder('grid',this.value)">
                     <option value="lines-both">全边框</option>
@@ -131,7 +129,8 @@
             <tr>
                 <td style="padding:5px;">
                     <input  name="_projectId" id="_projectId"  class="easyui-combobox"style="width: 100%;"   data-options="label:'所属项目:', required:true ">
-                    <#comboProvider _id="_projectId" _table="project" _valueField="id" _textField="name"/>
+                    <#comboProvider _id="_projectId" _table="project"
+								_valueField="id" _textField="name"/>
                 </td>
             </tr>
             <tr>
@@ -150,12 +149,12 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-datebox" name="_startDate" id="_startDate" style="width:100%" data-options="label:'开始时间:', required:true" />
+                    <input class="easyui-datebox" name="_startDateShow" id="_startDateShow" style="width:100%" data-options="label:'开始时间:', required:true" />
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-datebox" name="_endDate" id="_endDate" style="width:100%" data-options="label:'结束时间:', required:true,validType:'endDateValidate[\'_startDate\']'" />
+                    <input class="easyui-datebox" name="_endDateShow" id="_endDateShow" style="width:100%" data-options="label:'结束时间:', required:true,validType:'endDateValidate[\'_startDate\']'" />
                 </td>
             </tr>
             <tr>
@@ -174,8 +173,7 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
-                  <input class="easyui-textbox" name="_owner" id="_owner" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="负责人:"
-						 data-options="editable:false, buttonText:'选择', onClickButton:selectMember,onChange:_changeTextboxShowClear,required:true" />
+                <input name="_owner" id="_owner"  class="easyui-combobox"  style="width:100%" data-options="label:'负责人:'">
                 </td>
             </tr>
             <tr>
@@ -296,12 +294,17 @@
             formData = addKeyStartWith(getOriginalData(formData),"_");
             $('#_form').form('load', formData);
             $('#_form').form('load', {planTimeStr:formData._planTime});
+
             
-            
+            loadMemberSelect(formData._projectId);
+            $('#_owner').combobox('select',formData._owner);
             loadVisionSelect(formData._projectId);
             $('#_versionId').combobox('select',formData._versionId);
             loadPhaseSelect(formData._versionId);
             $('#_phaseId').combobox('select',formData._phaseId);
+            
+            $('#_form').form('load', {_startDateShow:dateFormat_1(formData._startDate)});
+            $('#_form').form('load', {_endDateShow:dateFormat_1(formData._endDate)}); 
          }
         
         function saveOrUpdate(){
@@ -446,9 +449,9 @@
          *          表单提交需执行的任务
          */
         $(function () {
-        	<%if(project!null != null){%>
-        		$('#projectId').combobox('initValue','${project.id!}');
-        		$('#projectId').combobox('setText','${project.name!}');
+        	<%if(project!null!=null){%>
+        	   $('#projectId').combobox('initValue','${project.id!}');
+        	   $('#projectId').combobox('setText','${project.name!}');
         	<%}%>
             bindFormEvent("form", "name", queryGrid);
             bindFormEvent("_form", "_name", saveOrUpdate, function (){$('#dlg').dialog('close');});
@@ -460,6 +463,9 @@
                 document.onkeyup = getKey;
             }
             queryGrid();
+            if(!isProjectManager()){
+            	$("#manager_tools").css("display","none");
+            }
         })
         
         function formatOptions(value, row, index) {
