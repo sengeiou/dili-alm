@@ -132,7 +132,7 @@
             <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
                onclick="submitForm(1,this)">保存</a>
             <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
-               onclick="submitForm(2,this)">立项提交</a>
+               onclick="submitForm(2,this)">提交</a>
         </div>
     </div>
 </div>
@@ -150,10 +150,12 @@
         $('#ff').form('submit', {
             url: "${contextPath}/projectChange/update",
             onSubmit: function () {
-                $(obj).linkbutton('disable');
                 $("#status").val(type);
                 var data = $("#tagbx").tagbox("getValues");
                 $("#email").val(data.join());
+                if($("#ff").form('validate')){
+                    $(obj).linkbutton('disable');
+                }
                 return $("#ff").form('validate');
             },
             success: function (data) {

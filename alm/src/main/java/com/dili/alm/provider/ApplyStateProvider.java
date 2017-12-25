@@ -21,7 +21,7 @@ public class ApplyStateProvider implements ValueProvider {
     static {
         buffer = new ArrayList<ValuePair<?>>();
         buffer.add(new ValuePairImpl("申请中", "1"));
-        buffer.add(new ValuePairImpl("审批中", "2"));
+        buffer.add(new ValuePairImpl("已提交", "2"));
         buffer.add(new ValuePairImpl("已通过", "3"));
         buffer.add(new ValuePairImpl("未通过", "4"));
     }
