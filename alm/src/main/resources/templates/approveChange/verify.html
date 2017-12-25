@@ -84,7 +84,7 @@
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <input class="easyui-textbox" type="text" name="type" id="type" data-options="required:true,validType:'length[1,10]',label:'变更类型:'">
+                        <input class="easyui-textbox" type="text" name="type" id="type" data-options="editable:false,required:true,validType:'length[1,10]',label:'变更类型:'">
                         <#comboProvider _id="type" _provider='changeTypeProvider' />
                     </td>
                     <td colspan="2">
@@ -102,7 +102,7 @@
                         </select>
                     </td>
                     <td colspan="2">
-                        <input class="easyui-datebox" type="text" name="name" value="${change.created}" data-options="required:true,label:'提交日期:'">
+                        <input class="easyui-datebox" type="text" name="name" value="${change.created}" data-options="editable:false,required:true,label:'提交日期:'">
                     </td>
                 </tr>
                 <tr>
