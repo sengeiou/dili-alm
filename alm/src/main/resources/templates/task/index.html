@@ -529,7 +529,7 @@
                     if(data.code=="200"){
                         $("#grid").datagrid("reload");
                         $('#dlg').dialog('close');
-                        //LogUtils.saveLog("暂停任务：" + data.result, function () {});
+                        LogUtils.saveLog("暂停任务：" + data.result, function () {});
                     }else{
                         $.messager.alert('错误',data.result);
                     }
