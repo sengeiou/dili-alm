@@ -4,24 +4,24 @@
         <form id="ff" method="post" action="">
             <table cellpadding="5" width="100%">
                 <tr>
-                    <td><input name="type" id="_projectType" style="width:15%;" data-options="editable:false"
-                               panelWidth="auto" panelHeight="auto" label="项目类型:" required="true"/>
-                        <#comboProvider _id="_projectType" _provider='projectTypeProvider'/>
+                    <td>
+                        <input name="type" class="easyui-combobox" id="_projectType" style="width:300px" data-options="editable:false" panelWidth="auto" panelHeight="auto" label="项目类型:" required="true" />
+                        <#comboProvider _id="_projectType" _provider='projectTypeProvider' />
                     </td>
                 </tr>
                 <tr>
-                    <td><label class="textbox-label textbox-label-before">项目级别:</label>
-                        <select id="cc" class="easyui-combobox" name="level" style="width: 150px;"
-                                data-options="editable:false"
-                                required="true">
+                    <td>
+                        <!--<label class="textbox-label textbox-label-before">项目级别:</label>-->
+                        <select id="cc" class="easyui-combobox" name="level" style="width: 300px;" label="项目级别:"  data-options="editable:false" required="true">
                             <option value="1">一级项目</option>
                             <option value="2">二级项目</option>
-                        </select></td>
+                        </select>
+                    </td>
                 </tr>
                 <tr id="child_div">
-                    <td><input name="pid" id="child" style="width:15%;" label="父项目:" validType="checked"
-                               data-options="editable:false"
-                               panelWidth="auto" panelHeight="auto" required="true"/></td>
+                    <td>
+                        <input class="easyui-combobox"  name="pid" id="child" style="width:300px;" label="父项目:" validType="checked" data-options="editable:false" panelWidth="auto" panelHeight="auto" required="true" />
+                    </td>
                 </tr>
             </table>
         </form>
@@ -32,7 +32,6 @@
     </div>
 </div>
 <script>
-
     $('#child').combobox({
         url: '${contextPath}/projectApply/getProjectList',
         valueField: 'value',
@@ -40,7 +39,7 @@
     }).combobox('disable');
 
     $('#cc').combobox({
-        onChange: function (newValue) {
+        onChange: function(newValue) {
             if (newValue == 2) {
                 $('#child').combobox('enable');
             } else {
@@ -53,14 +52,14 @@
     function submitForm() {
         $('#ff').form('submit', {
             url: "${contextPath}/projectApply/insert",
-            onSubmit: function () {
+            onSubmit: function() {
                 return $("#ff").form('validate');
             },
-            success: function (data) {
+            success: function(data) {
                 var data = eval('(' + data + ')');
                 if (data.success == true) {
                     try {
-                        LogUtils.saveLog("新增立项申请:" + data.result, function () {
+                        LogUtils.saveLog("新增立项申请:" + data.result, function() {
                             window.location.href = "${contextPath}/projectApply/toStep/1/" + data.result;
                         });
                     } catch (e) {
@@ -73,12 +72,11 @@
 
     $.extend($.fn.validatebox.defaults.rules, {
         checked: {
-            validator: function (value) {
+            validator: function(value) {
                 return value != '请选择';
             },
             message: '请选择'
         }
     });
-
 </script>
 </#body>
