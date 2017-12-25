@@ -93,7 +93,7 @@
                 <tr>
                     <td><input type="radio" checked name="reason" value="0"><span>正常结项</span></td>
                     <td><input type="radio" name="reason" value="1"><span>项目取消</span></td>
-                    <td><input type="radio" name="reason" value="2"><span>其他原因</span></td>
+                    <td><input type="radio" name="reason" value="2"><span>其他原因</span><input name="reasonText" id="reasonText" type="text"></td>
                     <td></td>
                 </tr>
                 <tr>
@@ -160,7 +160,12 @@
 
     $(function () {
         $("#projectId").combobox('setValue','${apply.projectId}');
+        var reason = '${apply.reason}';
         $("input[name='reason'][value='${apply.reason}']").attr("checked",true);
+        if(reason != "0" && reason!="1"){
+            $("#reasonText").val(reason);
+            $("input[name='reason'][value='2']").attr("checked",true);
+        }
         $("input[name='information'][value='${apply.information}']").attr("checked",true);
     });
 </script>

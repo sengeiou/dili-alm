@@ -141,6 +141,7 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
         apply.setCreated(new Date());
         apply.setModified(null);
         apply.setNumber(getProjectNumber(apply));
+        apply.setRestatus(null);
         insertSelective(apply);
         buildFiles(id, apply.getId());
         return apply.getId();
