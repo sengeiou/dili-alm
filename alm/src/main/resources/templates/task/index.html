@@ -493,6 +493,7 @@
         }
         
         function startTask(){
+        	 $('#dlg').dialog('close');
         	var id=$("#_id").val();
              $.ajax({
                 type: "POST",
@@ -503,7 +504,7 @@
                 success: function (data) {
                     if(data.code=="200"){
                         $("#grid").datagrid("reload");
-                        $('#dlg').dialog('close');
+                        $.messager.alert('信息','任务开始成功');
                         LogUtils.saveLog("开始任务：" + data.result, function () {});
                     }else{
                         $.messager.alert('错误',data.result);
@@ -528,7 +529,7 @@
                     if(data.code=="200"){
                         $("#grid").datagrid("reload");
                         $('#dlg').dialog('close');
-                        //LogUtils.saveLog("暂停任务：" + data.result, function () {});
+                        LogUtils.saveLog("暂停任务：" + data.result, function () {});
                     }else{
                         $.messager.alert('错误',data.result);
                     }

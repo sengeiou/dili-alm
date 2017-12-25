@@ -4,7 +4,7 @@
         padding-left: 60px;
     }
 
-    .datebox-button td{
+    .datebox-button td {
         padding-left: 0;
     }
 
@@ -25,17 +25,20 @@
     .title-second {
         padding-left: 30px;
     }
-    .textbox-label{
+
+    .textbox-label {
         width: 100px;
     }
-    .panel-tool{
-        top:10px;
+
+    .panel-tool {
+        top: 10px;
         height: 24px;
     }
 </style>
 <div id="smDialog" style="display: none;"></div>
 <div id="cusTools">
-    <a onclick="window.location.href='${contextPath}/approve/change/index.html';" class="easyui-linkbutton" style="width: 50px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">返回</a>
+    <a onclick="window.location.href='${contextPath}/approve/change/index.html';" class="easyui-linkbutton"
+       style="width: 50px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">返回</a>
 </div>
 <div class="easyui-panel" title="项目变更审批" style="height: 100%"
      data-options="tools:'#cusTools'">
@@ -62,30 +65,31 @@
                 </tr>
                 <tr>
                     <td colspan="2"><input class="easyui-textbox" type="text" name="name" value="${change.name}"
-                               data-options="required:true,validType:'length[1,20]',label:'变更名称:'"></td>
+                                           data-options="label:'变更名称:'"></td>
                     <td colspan="2"><input class="easyui-combobox" type="text" name="projectId" id="projectId"
-                               data-options="required:true,label:'项目编号:'"></td>
+                                           data-options="label:'项目编号:'"></td>
                 </tr>
                 <tr>
                     <td colspan="2"><input class="easyui-textbox" type="text" name="projectName" id="projectName"
-                               data-options="required:true,validType:'length[1,20]',label:'项目名称:'"></td>
+                                           data-options="label:'项目名称:'"></td>
                     <td colspan="2"><input class="easyui-combobox" type="text" name="versionId" id="versionId"
-                               data-options="required:true,validType:'length[1,20]',label:'项目版本:'"></td>
+                                           data-options="label:'项目版本:'"></td>
                 </tr>
                 <tr>
                     <td colspan="2"><input class="easyui-combobox" type="text" name="projectType" id="projectType"
-                               data-options="required:true,label:'项目类型:'"></td>
+                                           data-options="label:'项目类型:'"></td>
                     <td colspan="2"><input class="easyui-combobox" type="text" name="phaseId" id="phaseId"
-                               data-options="required:true,validType:'length[1,20]',label:'提交阶段:'"></td>
+                                           data-options="label:'提交阶段:'"></td>
                 </tr>
                 <tr>
                     <td colspan="2">
                         <input class="easyui-combobox" type="text" name="type" id="type"
-                               data-options="required:true,validType:'length[1,10]',label:'变更类型:'">
+                               data-options="label:'变更类型:'">
                         <#comboProvider _id="type" _provider='changeTypeProvider'/>
                     </td>
-                    <td colspan="2"><input class="easyui-numberbox" type="text" name="workingHours" value="${change.workingHours}"
-                               data-options="required:true,min:0,max:99999999,label:'变更工作量预估:'"></td>
+                    <td colspan="2"><input class="easyui-numberbox" type="text" name="workingHours"
+                                           value="${change.workingHours}"
+                                           data-options="label:'变更工作量预估:'"></td>
                 </tr>
                 <tr>
                     <td colspan="2">
@@ -98,7 +102,7 @@
                         </select>
                     </td>
                     <td colspan="2"><input class="easyui-datebox" type="text" name="name" value="${change.created}"
-                               data-options="required:true,label:'提交日期:'"></td>
+                                           data-options="label:'提交日期:'"></td>
                 </tr>
                 <tr>
                     <td class="title-first" colspan="4">2.变更描述</td>
@@ -111,7 +115,6 @@
                 </tr>
                 <tr>
                     <td colspan="4"><input class="easyui-textbox" id="content" name="content" value="${change.content}"
-                                           data-options="required:true,multiline:true,prompt:'限制输入500个字符串',validType:['length[0,500]']"
                                            style="width:100%;height:120px"/></td>
                 </tr>
                 <tr>
@@ -119,7 +122,6 @@
                 </tr>
                 <tr>
                     <td colspan="4"><input class="easyui-textbox" name="effects" id="effects" value="${change.effects}"
-                                           data-options="multiline:true,prompt:'限制输入500个字符串',validType:['length[0,500]']"
                                            style="width:100%;height:120px"/></td>
                 </tr>
                 <tr>
@@ -153,14 +155,14 @@
             <table style="width: 100%">
                 <tr>
                     <td colspan="4" style="padding-left: 0"><input id="notes" class="easyui-textbox" name="notes"
-                                           data-options="label:'审批意见',multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
-                                           style="width: 100%;height:120px"/></td>
+                                                                   data-options="label:'审批意见',multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
+                                                                   style="width: 100%;height:120px"/></td>
                 </tr>
             </table>
         </form>
         <div style="text-align:center;padding:5px;margin-top:50px;">
             <!--<a href="${contextPath}/approve/change/index.html" class="easyui-linkbutton" data-options="width:'80px'"-->
-                                                  <!--&gt;返回</a>-->
+            <!--&gt;返回</a>-->
             <% if(!viewMode){ %>
             <% if(canOpt){ %>
             <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
@@ -180,7 +182,8 @@
         }
         return value;
     }
-    function submitForm(opt,obj) {
+
+    function submitForm(opt, obj) {
         $('#ff').form('submit', {
             url: "${contextPath}/approve/applyApprove",
             onSubmit: function () {
@@ -190,7 +193,11 @@
             success: function (data) {
                 var data = eval('(' + data + ')');
                 if (data.success == true) {
-                    if (data.success == true) {
+                    try {
+                        LogUtils.saveLog("变更审批:${approve.id}", function () {
+                            window.location.href = "${contextPath}/approve/change/index.html";
+                        });
+                    } catch (e) {
                         window.location.href = "${contextPath}/approve/change/index.html";
                     }
                 }
@@ -202,8 +209,8 @@
         url: '${contextPath}/project/getProjectList',
         valueField: 'id',
         textField: 'serialNumber',
-        onLoadSuccess:function () {
-            $("#projectId").combobox("setValue",'${change.projectId}');
+        onLoadSuccess: function () {
+            $("#projectId").combobox("setValue", '${change.projectId}');
         },
         onChange: function (projectValue) {
             var datas = $("#projectId").combobox('getData');
@@ -216,16 +223,16 @@
                         url: '${contextPath}/project/version/listPage?projectId=' + projectValue,
                         valueField: 'id',
                         textField: 'version',
-                        onLoadSuccess:function () {
-                            $("#versionId").combobox("setValue",'${change.versionId}');
+                        onLoadSuccess: function () {
+                            $("#versionId").combobox("setValue", '${change.versionId}');
                         },
                         onChange: function (versionValue) {
                             $('#phaseId').combobox({
                                 url: '${contextPath}/project/phase/listPhase?versionId=' + versionValue,
                                 valueField: 'id',
                                 textField: 'name',
-                                onLoadSuccess:function () {
-                                    $("#phaseId").combobox("setValue",'${change.phaseId}');
+                                onLoadSuccess: function () {
+                                    $("#phaseId").combobox("setValue", '${change.phaseId}');
                                 }
                             });
                         }
@@ -235,9 +242,9 @@
         }
     });
 
-    $(function(){
-        $("#type").combobox("setValue",'${change.type}');
-        $("#affectsOnline").combobox("setValue",'${change.affectsOnline}');
+    $(function () {
+        $("#type").combobox("setValue", '${change.type}');
+        $("#affectsOnline").combobox("setValue", '${change.affectsOnline}');
         $('input[class^=easyui-]').textbox("disable");
         $('select[class^=easyui-]').textbox("disable");
         $('#notes').textbox("enable");

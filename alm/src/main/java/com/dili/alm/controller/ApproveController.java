@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.Approve;
 import com.dili.alm.domain.dto.apply.ApplyApprove;
+import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.service.ApproveService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.BaseOutput;
@@ -39,6 +40,9 @@ import java.util.Map;
 public class ApproveController {
     @Autowired
     ApproveService approveService;
+
+    @Autowired
+    private RoleRpc roleRpc;
 
 
     @ApiOperation("跳转到Approve页面")
@@ -118,6 +122,10 @@ public class ApproveController {
         metadata.put("userId", JSON.parse("{provider:'memberProvider'}"));
         metadata.put("approveDate", JSON.parse("{provider:'datetimeProvider'}"));
         List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, JSON.parseArray(approve.getDescription(), ApplyApprove.class));
+        maps.forEach(map -> {
+            Long userId = Long.valueOf(map.get("$_userId").toString());
+            map.put("role", roleRpc.listRoleNameByUserId(userId).getData());
+        });
         return maps;
     }
 

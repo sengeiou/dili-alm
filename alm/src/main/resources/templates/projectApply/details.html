@@ -60,7 +60,7 @@
 <div id="smDialog" style="display: none;"></div>
 
 <div id="cusTools">
-    <a onclick="window.location.href='${contextPath}/projectApply/index.html';" class="easyui-linkbutton" style="width: 50px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">返回</a>
+    <a onclick="window.history.go(-1);" class="easyui-linkbutton" style="width: 50px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">返回</a>
 </div>
 <div class="easyui-panel" title="立项详情" style="height: 100%;"
      data-options="tools:'#cusTools'">
@@ -81,7 +81,7 @@
                 </tr>
                 <tr>
                     <td colspan="4"><input class="easyui-textbox" type="text" name="name"
-                                           data-options="required:true,validType:'length[1,10]',label:'项目名称:'"
+                                           data-options="required:true,validType:'length[1,10]',label:'*项目名称:'"
                                            style="width:576px"></td>
                 </tr>
                 <tr>
@@ -560,7 +560,7 @@
     function appendRelated(obj) {
         var index = jQuery('.related').length;
         var parserId = "parser_" + new Date().getTime();
-        $("#requireTable").append("<tr class='related' id='" + parserId + "'><td><em></em><input style=\"width: calc(30% - 88px)\"  class=\"easyui-textbox\" type=\"text\" id=\"" + index + "-user" + "\" name=\"relatedResources[" + index + "].relatedUser\" data-options=\"label:'相关部门经理:'\"></td><td><em></em><input style=\"width: calc(30% - 105px)\" class=\"easyui-numberspinner\" id='" + index + "-number' name='relatedResources[" + index + "].relatedNumber' value=\"\" data-options=\"increment:1,label:'预估所需人员:',min:1\"><span style=\"opacity: .6\">人</span></td><td><em></em><input style=\"width: calc(30% - 115px)\" class=\"easyui-numberbox\" type=\"text\" id='" + index + "-time' name='relatedResources[" + index + "].relatedWorkTime' data-options=\"label:'预估工时:',min:1\"> <span style=\"opacity: .6\">人日</span></td></tr>");
+        $("#requireTable").append("<tr class='related' id='" + parserId + "'><td><em></em><input style=\"width: calc(30% - 88px)\"  class=\"easyui-textbox\" type=\"text\" id=\"" + index + "-user" + "\" name=\"relatedResources[" + index + "].relatedUser\" data-options=\"label:'相关部门经理:'\"></td><td><em></em><input style=\"width: calc(30% - 105px)\" class=\"easyui-numberspinner\" id='" + index + "-number' name='relatedResources[" + index + "].relatedNumber' value=\"\" data-options=\"increment:1,label:'预估所需人员:',min:1\"><span style=\"opacity: .6\"> 人</span></td><td><em></em><input style=\"width: calc(30% - 115px)\" class=\"easyui-numberbox\" type=\"text\" id='" + index + "-time' name='relatedResources[" + index + "].relatedWorkTime' data-options=\"label:'预估工时:',min:1\"> <span style=\"opacity: .6\">人日</span></td></tr>");
         $.parser.parse("#" + parserId);
         if(obj!=undefined){
             $("#" + index + "-user").textbox('initValue', obj['relatedUserValue']);

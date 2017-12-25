@@ -122,8 +122,8 @@
       $("#_projectId").combobox({disabled: true});  
       $("#_versionId").combobox({disabled: true});
       $("#_phaseId").combobox({disabled: true});
-      $("#_startDate").datebox({disabled: true});
-      $("#_endDate").datebox({disabled: true});
+      $("#_startDateShow").datebox({disabled: true});
+      $("#_endDateShow").datebox({disabled: true});
       $("#_owner").combobox({disabled: true});
       $("#_flow").combobox({disabled: true}); 
       $("#_type").combobox({disabled: true});
@@ -140,8 +140,8 @@
       $("#_projectId").combobox({disabled: false});  
       $("#_versionId").combobox({disabled: false});
       $("#_phaseId").combobox({disabled: false});
-      $("#_startDate").datebox({disabled: false});
-      $("#_endDate").datebox({disabled: false});
+      $("#_startDateShow").datebox({disabled: false});
+      $("#_endDateShow").datebox({disabled: false});
       $("#_owner").combobox({disabled: false});
       $("#_flow").combobox({disabled: false}); 
       $("#_type").combobox({disabled: false});

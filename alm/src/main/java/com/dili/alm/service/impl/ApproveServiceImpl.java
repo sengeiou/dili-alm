@@ -475,7 +475,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
             });
             as.setDescription(JSON.toJSONString(approveList));
         }
-        insert(as);
+        insertSelective(as);
     }
 
 

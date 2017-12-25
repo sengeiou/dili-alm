@@ -54,7 +54,7 @@
 						return row.department.name;
 					},width:80"">所属部门</th>
 					<th
-						data-options="field:'职务',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:function(value,row,index){
+						data-options="field:'职务', width:180, sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:function(value,row,index){
 						if(!row.roles || row.roles.length <= 0){
 							return '';
 						}
@@ -98,7 +98,7 @@
 </div>
 <!-- 隐藏编辑框 -->
 <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="用户信息" style="padding: 20px"
-	modal="true" border="thin" closed="true" height="100%"
+	modal="true" border="thin" closed="true" height="80%"
 	data-options="
 				iconCls: 'icon-save',
 				buttons: [{

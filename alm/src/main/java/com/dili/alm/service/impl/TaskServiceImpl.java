@@ -254,8 +254,10 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		if (taskDetailsFromDatabase.getTaskHour() >= task.getPlanTime()) {
 			// 更新状态为完成
 			task.setStatus(TaskStatus.COMPLETE.code);
+			task.setFactEndDate(new Date());
 		}
 		taskDetailsFromDatabase.setModified(new Date());
+		
 		this.taskDetailsService.saveOrUpdate(taskDetailsFromDatabase);
 		this.saveOrUpdate(task);
 		// 进度总量写入project表中
@@ -269,6 +271,12 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		return 0;
 	}
 
+	/**
+	 * 读取填入的工时记录
+	 * @param jsonMapStr
+	 * @param taskHour
+	 * @return
+	 */
 	private String taskHoursMapAdd(String jsonMapStr, int taskHour) {
 		try {
 			// StringParseMap
@@ -396,9 +404,16 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	@Transactional
 	@Override
 	public int startTask(Task task) {
-
+		
+		TaskDetails taskDetails=DTOUtils.newDTO(TaskDetails.class);
+		taskDetails.setTaskId(task.getId());
+		List<TaskDetails> byExample = taskDetailsService.list(taskDetails);
+		int size = byExample.size();
+		if(size!=0){
+			return 0 ;
+		}
+		
 		if (task.getStatus() != 2) {
-			TaskDetails taskDetails = DTOUtils.newDTO(TaskDetails.class);
 			taskDetails.setTaskId(task.getId());
 			taskDetails.setCreated(new Date());
 			taskDetails.setTaskHour((short) 0);

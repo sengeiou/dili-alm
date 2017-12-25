@@ -142,7 +142,7 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
         apply.setModified(null);
         apply.setNumber(getProjectNumber(apply));
         apply.setRestatus(0);
-        insert(apply);
+        insertSelective(apply);
         buildFiles(id, apply.getId());
         return apply.getId();
     }
@@ -195,8 +195,8 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
         }
 
         Map<Object, Object> metadata = new HashMap<>();
-        metadata.put("startDate", JSON.parse("{provider:'datetimeProvider'}"));
-        metadata.put("endDate", JSON.parse("{provider:'datetimeProvider'}"));
+        metadata.put("startDate", JSON.parse("{provider:'dateProvider'}"));
+        metadata.put("endDate", JSON.parse("{provider:'dateProvider'}"));
         return ValueProviderUtils.buildDataByProvider(metadata, Lists.newArrayList(result));
     }
 
