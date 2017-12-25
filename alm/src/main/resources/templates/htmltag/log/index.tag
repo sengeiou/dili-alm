@@ -65,7 +65,7 @@
          *          表单提交需执行的任务
          */
         $(function () {
-            bindFormEvent("form", "created", queryGrid);
+            //bindFormEvent("form", "created", queryGrid);
             if (document.addEventListener) {
                 document.addEventListener("keyup",getKey,false);
             } else if (document.attachEvent) {

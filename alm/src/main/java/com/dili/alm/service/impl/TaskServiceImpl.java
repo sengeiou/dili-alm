@@ -35,10 +35,12 @@ import com.dili.alm.domain.TaskDetails;
 import com.dili.alm.domain.TaskEntity;
 import com.dili.alm.domain.Team;
 import com.dili.alm.domain.TeamRole;
+import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.apply.ApplyMajorResource;
 import com.dili.alm.domain.dto.apply.ApplyRelatedResource;
+import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.ProjectApplyService;
 import com.dili.alm.service.ProjectPhaseService;
@@ -56,6 +58,8 @@ import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
 
+
+
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-11-23 10:23:05.
  */
@@ -63,28 +67,29 @@ import com.github.pagehelper.Page;
 public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements TaskService {
 	@Autowired
 	DataDictionaryService dataDictionaryService;
-
-	public TaskMapper getActualDao() {
-		return (TaskMapper) getDao();
-	}
-
 	@Autowired
-	private TaskMapper taskMapper;
-
-	@Autowired
-	private ProjectMapper projectMapper;
-
-	@Autowired
-	private ProjectPhaseMapper ppMapper;
-
-	@Autowired
-	private ProjectVersionMapper pvMapper;
-
-	@Autowired
-	private TaskDetailsMapper tdMapper;
-
-	@Autowired
-	private TaskDetailsService taskDetailsService;
+	UserRpc userRpc;
+    public TaskMapper getActualDao() {
+        return (TaskMapper)getDao();
+    }
+    
+    @Autowired
+    private TaskMapper taskMapper;
+    
+    @Autowired
+    private ProjectMapper projectMapper;
+    
+    @Autowired
+    private ProjectPhaseMapper ppMapper;
+    
+    @Autowired
+    private ProjectVersionMapper pvMapper;
+    
+    @Autowired
+    private TaskDetailsMapper tdMapper;
+    
+    @Autowired
+    private TaskDetailsService taskDetailsService;
 	@Autowired
 	ProjectVersionService projectVersionService;
 	@Autowired
@@ -191,6 +196,8 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			String planDays = this.dateToString(task.getStartDate()) + "至" + this.dateToString(task.getEndDate());
 			dto.setPlanDays(planDays);
 
+			
+			
 			TaskDetails taskDetails = DTOUtils.newDTO(TaskDetails.class);
 			taskDetails.setTaskId(task.getId());
 			taskDetails = tdMapper.selectOne(taskDetails);
@@ -501,12 +508,15 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	@Override
 	public EasyuiPageOutput listByTeam(Task task, String phaseName) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		ProjectPhase projectPhase = DTOUtils.newDTO(ProjectPhase.class);
-		projectPhase.setName(phaseName);
-		List<ProjectPhase> projectPhaseList = projectPhaseService.listByExample(projectPhase);
-		List<Long> ids = new ArrayList<Long>();
-		for (ProjectPhase projectPhase2 : projectPhaseList) {
-			ids.add(projectPhase2.getId());
+		ProjectPhase projectPhase=DTOUtils.newDTO(ProjectPhase.class);
+		List<Long> ids = null;
+		if (phaseName!=null) {
+			projectPhase.setName(phaseName);
+			List<ProjectPhase> projectPhaseList = projectPhaseService.listByExample(projectPhase);
+			ids = new ArrayList<Long>();
+			for (ProjectPhase projectPhase2 : projectPhaseList) {
+				ids.add(projectPhase2.getId());
+			}
 		}
 		List<Task> list = taskMapper.selectByTeam(task, userTicket.getId(), ids);// 查询出来
 		int count = taskMapper.selectByTeamCount(task, userTicket.getId(), ids);
@@ -557,7 +567,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		team.setMemberId(userTicket.getId());
 		List<Team> teamList = teamService.list(team);
 		for (Team team2 : teamList) {
-			if (team2.getRole().equalsIgnoreCase(TeamRole.DEVELOP_MANAGER.getValue())) {
+			if (team2.getRole().equalsIgnoreCase(TeamRole.PROJECT_MANAGER.getValue())) {
 				return true;
 			}
 		}
@@ -593,5 +603,58 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	public List<Project> projectList() {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		return taskMapper.selectProjectByTeam(userTicket.getId());
+	}
+
+	/**
+	 * 判断是否是项目经理
+	 */
+	@Override
+	public boolean isProjectManager() {
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		Team team = DTOUtils.newDTO(Team.class);
+		team.setMemberId(userTicket.getId());
+		List<Team> teamList = teamService.list(team);
+		
+		for (Team team2 : teamList) {
+			if (team2.getRole().equalsIgnoreCase(TeamRole.PROJECT_MANAGER.getValue())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public List<User> listUserByTeam() {
+		 UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		 List<Long> userIdList = taskMapper.selectUserByTeam(userTicket.getId());
+		 List<User> userList =new ArrayList<User>();
+		 for (Long userId : userIdList) {
+			 User user = userRpc.findUserById(userId).getData();
+			 userList.add(user);
+		 }
+		 
+		return userList;
+	}
+
+	@Override
+	public List<ProjectVersion> listProjectVersionByTeam() {
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		return taskMapper.selectVersionByTeam(userTicket.getId());
+	}
+
+	/**
+	 * 根据项目ID查询人员
+	 */
+	@Override
+	public List<User> listUserByProjectId(Long projectId) {
+		Team team = DTOUtils.newDTO(Team.class);
+		team.setProjectId(projectId);
+		List<Team> result = teamService.list(team);
+		List<User> userList =new ArrayList<User>();
+		for (Team entity : result) {
+			 User user = userRpc.findUserById(entity.getMemberId()).getData();
+			 userList.add(user);
+		}
+		return userList;
 	}
 }

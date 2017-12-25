@@ -146,7 +146,7 @@
 			
 			
 			
-	         <table id="22"  border="1" cellspacing="0" class="easyui-datagrid" style="width:800px;border: 1px solid #ddd;border-collapse:collapse;" data-options="view:scrollview,rownumbers:true,singleSelect:true">
+	         <table id="nextWeek"  border="1" cellspacing="0" class="easyui-datagrid" style="width:800px;border: 1px solid #ddd;border-collapse:collapse;" data-options="view:scrollview,rownumbers:true,singleSelect:true">
 				
 				<caption  style="padding:5px;background-color:#f5f5f5;font-weight:bold">下周进展情况</caption>
 				 <thead>
@@ -268,7 +268,7 @@
 			      
 				 </tbody>
 				 
-				 
+				 <tfoot>
 				<tr colspan="3">
 					<table border="1" style="width:800px;border: 1px solid #ddd;border-collapse:collapse;">
 						<tr>
@@ -307,6 +307,7 @@
 						</tr>
 					</table>
 				</tr>
+				 <tfoot>
 			</table>
 			
 			<hr/>
@@ -466,7 +467,7 @@
 	            maxquSave();
 	            maxRistSave();
 	           
-	           
+	            addTableTr();
 	            
 		      }
 		 
@@ -657,6 +658,85 @@
     	  $(obj).parents('tr').remove();
       }
      
+         window.onload = function() { 
+    	 
+    	   if( $("#nextWeek tbody tr").length==1){
+    		      var $td1=$("<td >&nbsp;</td>");
+    		      var $td2=$("<td >&nbsp;</td>");
+    		      var $td3=$("<td >&nbsp;</td>");
+    		      var $td4=$("<td >&nbsp;</td>");
+    		      var $td5=$("<td >&nbsp;</td>");
+    		      var $td6=$("<td >&nbsp;</td>");
+    		      var $tr=$("<tr ></tr>");
+    		      $tr.append($td1);
+    		      $tr.append($td2);
+    		      $tr.append($td3);
+    		      $tr.append($td4);
+    		      $tr.append($td5);
+    		      $tr.append($td6);
+    		      var $table = $("#nextWeek");
+    	          $table.append($tr);  
+    		   
+    	   }
+    	   if( $("#thisWeek tbody tr").length==0){
+ 		      var $td1=$("<td >&nbsp;</td>");
+ 		      var $td2=$("<td >&nbsp;</td>");
+ 		      var $td3=$("<td >&nbsp;</td>");
+ 		      var $td4=$("<td >&nbsp;</td>");
+ 		      var $td5=$("<td >&nbsp;</td>");
+ 		      var $td6=$("<td >&nbsp;</td>");
+ 		      var $tr=$("<tr ></tr>");
+ 		      $tr.append($td1);
+ 		      $tr.append($td2);
+ 		      $tr.append($td3);
+ 		      $tr.append($td4);
+ 		      $tr.append($td5);
+ 		      $tr.append($td6);
+ 		      var $table = $("#thisWeek");
+ 	          $table.append($tr);  
+ 		   
+ 	       }
+    	   if( $("#maxRist tbody tr").length==0){
+  		      var $td1=$("<td >&nbsp;</td>");
+  		      var $td2=$("<td >&nbsp;</td>");
+  		      var $td3=$("<td >&nbsp;</td>");
+  		    
+  		      var $tr=$("<tr ></tr>");
+  		      $tr.append($td1);
+  		      $tr.append($td2);
+  		      $tr.append($td3);
+  		 
+  		      var $table = $("#maxRist");
+  	          $table.append($tr);  
+  		   
+  	       }
+    	  
+    	   if( $("#maxqu tbody tr").length==0){
+    		   
+    		   
+   		      var $td1=$("<td >&nbsp;</td>");
+   		      var $td2=$("<td >&nbsp;</td>");
+   		      var $td3=$("<td >&nbsp;</td>");
+   		    
+   		      var $tr=$("<tr ></tr>");
+   		      $tr.append($td1);
+   		      $tr.append($td2);
+   		      $tr.append($td3);
+   		 
+   		      var $table = $("#maxqu");
+   	          $table.append($tr);  
+   		   
+   	       }
+     	   
+    	   
+    	   
+    	   
+    	   
+    	   
+    	   
+    	};
+    	  
+   
       
     	  
      
