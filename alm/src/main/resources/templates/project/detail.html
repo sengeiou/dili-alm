@@ -34,6 +34,7 @@ html, body {
 <div id="smDialog" style="display: none;"></div>
 <input type="hidden" id="projectId" value="${model.id!}"> <input type="hidden" id="editable" value="${editable!}"> <input
 	type="hidden" id="projectState" value="${model.projectState!}"> <input type="hidden" id="projectManager" value="${projectManager!}">
+<input type="hidden" id="projectMember" value="${projectMember!}"> <input type="hidden" id="loginUserId" value="${loginUserId!}">
 <div id="infoToolbar">
 	<a href="#" class="easyui-linkbutton"
 		style="width: 100px; height: 30px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef"
@@ -122,8 +123,8 @@ html, body {
 	</table>
 	<!-- datagrid工具栏 -->
 	<div id="versionToolbar" style="padding: 2px 5px;">
-		<%if(editable == true && projectManager == true){%> <a href="#" class="easyui-linkbutton" iconCls="icon-add"
-			onclick="openInsertVersion()" plain="true">新建版本</a> <%}%> <span id="versionCount" style="color: red;"></span>
+		<%if(editable == true && projectManager == true){%> <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsertVersion()"
+			plain="true">新建版本</a> <%}%> <span id="versionCount" style="color: red;"></span>
 	</div>
 
 	<table class="easyui-datagrid" title="项目阶段信息" id="phaseGrid" fitColumns="true" rownumbers="true" pagination="false" remoteSort="false"
@@ -142,7 +143,8 @@ html, body {
 					data-options="field:'actualStartDate', width:'15%',  _provider:'almDateProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">实际开始日期</th>
 				<th
 					data-options="field:'completedProgress', width:'15%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:progressFormatter">完成进度</th>
-				<th data-options="field:'opt',width:'10%'
+				<th
+					data-options="field:'opt',width:'10%'
 				<%if(editable == true && model.projectState != 2 && projectManager == true){%>
 					,formatter:phaseOptFormatter
 				<%}%>
@@ -152,8 +154,8 @@ html, body {
 	</table>
 	<!-- datagrid工具栏 -->
 	<div id="phaseToolbar" style="padding: 2px 5px;">
-		<%if(editable == true && projectManager == true){%> <a href="#" class="easyui-linkbutton" iconCls="icon-add"
-			onclick="openInsertPhase()" plain="true">新建阶段</a> <%}%> <span id="phaseCount" style="color: red;"></span>
+		<%if(editable == true && projectManager == true){%> <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsertPhase()"
+			plain="true">新建阶段</a> <%}%> <span id="phaseCount" style="color: red;"></span>
 	</div>
 	<table class="easyui-datagrid" title="项目文档列表" id="fileGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"
 		pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"

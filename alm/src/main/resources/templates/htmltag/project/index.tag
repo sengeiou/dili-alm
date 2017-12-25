@@ -1,17 +1,19 @@
 // 编辑行索引
 var editId = undefined;
 
+function progressFormatter(value, rowData, rowIndex) {
+	var htmlstr = '<div class="easyui-progressbar progressbar easyui-fluid" style="width: 100%; height: 20px;">'
+			+ '<div class="progressbar-value" style="width: 100%; height: 20px; line-height: 20px;"> ' + '<div class="progressbar-text" style="width: ' + value
+			+ '%; height: 20px; line-height: 20px;">' + value + '%</div>' + '</div>' + '</div>';
+	return htmlstr;
+}
+
 function projectNameFormatter(value, row) {
 	return '<a href="${contextPath!}/project/detail.html?id=' + row.id + '&backUrl=' + encodeURI('${contextPath!}/project/index.html') + '">' + value + '</a>';
 }
 
 function optFormatter(value, row) {
 	return '<a href="${contextPath!}/project/detail.html?id=' + row.id + '&editable=true&backUrl=' + encodeURI('${contextPath!}/project/index.html') + '">管理</a>';
-}
-
-function progressFormatter(value, rowData, rowIndex) {
-	var htmlstr = '<div class="progressbar-text" style="width:100%;">' + value + '%</div><div class="progressbar-value" style="width:\'' + value + '%\';"> </div>';
-	return htmlstr;
 }
 
 function isEditing() {
