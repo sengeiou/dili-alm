@@ -18,7 +18,6 @@
             $.extend(param, formData);
             $("#grid").datagrid("load", param);
             $('#grid').datagrid({
-                data: param,
                 view: myview,
                 emptyMsg: '当前没有任何项目'
           });

@@ -6,36 +6,36 @@
             <!-- =========================================================表格========================================================= -->
              <table class="easyui-datagrid" title="任务列表" id="grid" fitColumns="false"
                    pagination="true" pageSize="30" pageNumber="1" pagePosition="both" rownumbers="false" remoteSort="false"
-                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="name"
+                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"  
                    align="center" fit="true" striped="true" toolbar="#toolbar" idField="id"  >
                 <thead>
                     <tr>
-                        <th data-options="field:'name',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'name',     order:'asc', align:'center', resizable:'true', fixed:'false'">
                             任务名称
                         </th>
-                        <th data-options="field:'projectId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',_provider:'projectProvider'" >
+                        <th data-options="field:'projectId',  order:'asc', align:'center', resizable:'true', fixed:'false',_provider:'projectProvider'" >
                            项目名称
                         </th>
-                        <th data-options="field:'versionId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',_provider:'projectVersionProvider'">
+                        <th data-options="field:'versionId',   order:'asc', align:'center', resizable:'true', fixed:'false',_provider:'projectVersionProvider'">
                            所属版本
                         </th>
-                        <th data-options="field:'phaseId', width:100,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',_provider:'projectPhaseProvider'">
+                        <th data-options="field:'phaseId', width:100,   order:'asc', align:'center', resizable:'true', fixed:'false',_provider:'projectPhaseProvider'">
                             所属阶段
                         </th>
-                        <th data-options="field:'owner', width:100,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',_provider:'memberProvider'">
+                        <th data-options="field:'owner', width:100,   order:'asc', align:'center', resizable:'true', fixed:'false',_provider:'memberProvider'">
                             负责人
                         </th>
-                        <th data-options="field:'planDays',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'planDays',     order:'asc', align:'center', resizable:'true', fixed:'false'">
                             计划工时
                         </th>
 
-                        <th data-options="field:'status', width:100,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',_provider:'taskStateProvider'">
+                        <th data-options="field:'status', width:100,  order:'asc', align:'center', resizable:'true', fixed:'false',_provider:'taskStateProvider'">
                             状态
                         </th>
                        <th data-options="field:'progress', formatter:progressFormatter,order:'asc', align:'center', resizable:'true', fixed:'false'">
                             进度
                         </th>
-                        <th data-options="field:'flowStr',  width:100, sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'flowStr',  width:100,  order:'asc', align:'center', resizable:'true', fixed:'false'">
                             流程
                         </th>
                         <th data-options="field:'options',width:80, formatter:formatOptions, align:'center', resizable:'true', fixed:'false'">
@@ -260,7 +260,6 @@
         $("#grid").datagrid("load", param);
         $('#detail_form').form('load', { _taskHour: formData._planTime });
         $('#grid').datagrid({
-            data: param,
             view: myview,
             emptyMsg: '当前没有任务'
         });
