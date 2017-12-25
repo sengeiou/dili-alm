@@ -11,14 +11,6 @@ function countFileGrid(data) {
 }
 
 function versionOptFormatter(value, row, index) {
-	var editable = $('#editable').val();
-	if (!editable) {
-		return '';
-	}
-	var projectState = $('#projectState').val();
-	if (projectState == 2) {
-		return '';
-	}
 	var content = '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="changeVersionState(' + row.id + ');">状态变更</a>';
 	content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="editVersion(' + row.id + ');">编辑</a>';
 	content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="deleteVersion(' + row.id + ');">删除</a>';
@@ -26,14 +18,6 @@ function versionOptFormatter(value, row, index) {
 }
 
 function phaseOptFormatter(value, row, index) {
-	var editable = $('#editable').val();
-	if (!editable) {
-		return '';
-	}
-	var projectState = $('#projectState').val();
-	if (projectState == 2) {
-		return '';
-	}
 	var content = '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="editPhase(' + row.id + ');">编辑</a>';
 	content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="deletePhase(' + row.id + ');">删除</a>';
 	return content;
@@ -50,8 +34,8 @@ function dateFormatter(value, row, index) {
 
 function progressFormatter(value, rowData, rowIndex) {
 	var htmlstr = '<div class="easyui-progressbar progressbar easyui-fluid" style="width: 100%; height: 20px;">'
-			+ '<div class="progressbar-value" style="width: 100%; height: 20px; line-height: 20px;"> ' + '<div class="progressbar-text" style="width: \'' + value
-			+ '%\'; height: 20px; line-height: 20px;">' + value + '%</div>' + '</div>' + '</div>';
+			+ '<div class="progressbar-value" style="width: 100%; height: 20px; line-height: 20px;"> ' + '<div class="progressbar-text" style="width: ' + value
+			+ '%; height: 20px; line-height: 20px;">' + value + '%</div>' + '</div>' + '</div>';
 	return htmlstr;
 }
 
@@ -74,12 +58,16 @@ function phaseFileOptFormatter(value, row, index) {
 }
 
 function fileOptFormatter(value, row, index) {
-	var content = '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="downloadFile(' + row.id + ');">下载</a>';
-	var projectManager = $('#projectManager').val();
-	if (projectManager == true) {
-		return content;
+	var content = '';
+	var projectMember = $('#projectMember').val() == 'true';
+	if (projectMember) {
+		content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="downloadFile(' + row.id + ');">下载</a>';
 	}
-	content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="deleteFile(' + row.id + ');">删除</a>';
+	var projectManager = $('#projectManager').val() == 'true';
+	var editable = $('#editable').val() == 'true';
+	if ((editable && projectManager) || row.createMemberId == $('#loginUserId').val()) {
+		content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="deleteFile(' + row.id + ');">删除</a>';
+	}
 	return content;
 }
 
@@ -212,8 +200,10 @@ function openInsertVersion() {
 													}
 													$('#versionGrid').datagrid('appendRow', data.data);
 													$('#versionGrid').datagrid('acceptChanges');
+													countVersionGrid($('#versionGrid').datagrid('gerRows').length);
 													if ($('#versionForm input[name=fileIds]').length > 0) {
 														$('#fileGrid').datagrid('reload');
+														countFileGrid($('#fileGrid').datagrid('getRows').length);
 													}
 													$('#win').dialog('close');
 												} else {
@@ -264,8 +254,10 @@ function editVersion(id) {
 																row : res.data
 															});
 													$('#versionGrid').datagrid('acceptChanges');
+													countVersionGrid($('#versionGrid').datagrid('getRows').length);
 													if ($('#versionForm input[name=fileIds]').length > 0) {
 														$('#fileGrid').datagrid('reload');
+														countFileGrid($('#fileGrid').datagrid('getRows').length);
 													}
 													$('#win').dialog('close');
 												} else {
@@ -314,8 +306,10 @@ function deleteVersion(id) {
 												}
 											});
 									$('#fileGrid').datagrid('acceptChanges');
+									countFileGrid($('#fileGrid').datagrid('getRows').length);
 									$('#versionGrid').datagrid('deleteRow', index);
 									$('#versionGrid').datagrid('acceptChanges');
+									countVersionGrid($('#versionGrid').datagrid('getRows'));
 								} else {
 									$.messager.alert('错误', data.result);
 								}
@@ -407,8 +401,10 @@ function openInsertPhase() {
 													}
 													$('#phaseGrid').datagrid('appendRow', data.data);
 													$('#phaseGrid').datagrid('acceptChanges');
+													countPhaseGrid($('pahseGrid').datagrid('getRows').length);
 													if ($('#phaseForm input[name=fileIds]').length > 0) {
 														$('#fileGrid').datagrid('reload');
+														countFileGrid($('#fileGrid').datagrid('getRows').length);
 													}
 													$('#win').dialog('close');
 												} else {
@@ -461,6 +457,7 @@ function editPhase(id) {
 													$('#phaseGrid').datagrid('acceptChanges');
 													if ($('#phaseForm input[name=fileIds]').length > 0) {
 														$('#fileGrid').datagrid('reload');
+														countFileGrid($('#fileGrid').datagrid('getRows').length);
 													}
 													$('#win').dialog('close');
 												} else {
@@ -509,8 +506,10 @@ function deletePhase(id) {
 												}
 											});
 									$('#fileGrid').datagrid('acceptChanges');
+									countFileGrid($('#fileGrid').datagrid(('getRows').length);
 									$('#phaseGrid').datagrid('deleteRow', index);
 									$('#phaseGrid').datagrid('acceptChanges');
+									countPhaseGrid($('#phaseGrid').datagrid('getRows').length);
 								} else {
 									$.messager.alert('错误', data.result);
 								}
@@ -553,6 +552,7 @@ function uploadFile(projectId) {
 																$('#fileGrid').datagrid('appendRow', item);
 																$('#fileGrid').datagrid('acceptChanges');
 															});
+													countFileGrid($('#fileGrid').datagrid('getRows').length)
 													$('#win').dialog('close');
 												} else {
 													$.messager.alert('错误', data.result);
@@ -645,6 +645,7 @@ $(function() {
 						onSuccess : function(files, data, xhr, pd) {
 							// 上传成功后的回调方法。本例中是将返回的文件名保到一个hidden类开的input中，以便后期数据处理
 							$('#fileGrid').datagrid('reload');
+							countFileGrid($('#fileGrid').datagrid('getRows').length);
 						}
 					});
 		});

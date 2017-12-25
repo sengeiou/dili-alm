@@ -249,4 +249,12 @@ public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements Team
 		return false;
 	}
 
+	@Override
+	public Boolean currentUserIsTeamMember(Long userId, Long projectId) {
+		Team record = DTOUtils.newDTO(Team.class);
+		record.setProjectId(projectId);
+		record.setMemberId(userId);
+		return this.getActualDao().selectCount(record) > 0;
+	}
+
 }

@@ -170,8 +170,10 @@ public class ProjectController {
 			Map<Object, Object> model = this.projectService.getDetailViewData(id);
 			UserTicket user = SessionContext.getSessionContext().getUserTicket();
 			Boolean projectManager = this.teamService.teamMemberIsProjectManager(user.getId(), id);
+			Boolean projectMember = this.teamService.currentUserIsTeamMember(user.getId(), id);
 			map.addAttribute("model", model).addAttribute("editable", editable)
-					.addAttribute("projectManager", projectManager).addAttribute("backUrl",
+					.addAttribute("projectManager", projectManager).addAttribute("projectMember", projectMember)
+					.addAttribute("loginUserId", user.getId()).addAttribute("backUrl",
 							StringUtils.isNotBlank(backUrl) ? URLDecoder.decode(backUrl, "UTF-8") : "");
 		} catch (Exception e) {
 			return null;
