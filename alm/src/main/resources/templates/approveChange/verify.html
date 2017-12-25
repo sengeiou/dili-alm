@@ -42,7 +42,7 @@
         <form id="ff" method="post" action="">
             <input type="hidden" name="id" value="${approve.id}">
             <input type="hidden" name="opt" id="opt" value="">
-            <table cellpadding="5" id="tb">
+            <table cellpadding="5" id="tb" style="width: 100%">
                 <tr>
                     <td>项目编号</td>
                     <td>${change.number}</td>
@@ -84,7 +84,7 @@
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <input class="easyui-textbox" type="text" name="type" id="type" data-options="required:true,validType:'length[1,10]',label:'变更类型:'">
+                        <input class="easyui-textbox" type="text" name="type" id="type" data-options="editable:false,required:true,validType:'length[1,10]',label:'变更类型:'">
                         <#comboProvider _id="type" _provider='changeTypeProvider' />
                     </td>
                     <td colspan="2">
@@ -102,7 +102,7 @@
                         </select>
                     </td>
                     <td colspan="2">
-                        <input class="easyui-datebox" type="text" name="name" value="${change.created}" data-options="required:true,label:'提交日期:'">
+                        <input class="easyui-datebox" type="text" name="name" value="${change.created}" data-options="editable:false,required:true,label:'提交日期:'">
                     </td>
                 </tr>
                 <tr>
@@ -116,7 +116,7 @@
                 </tr>
                 <tr>
                     <td colspan="4">
-                        <input class="easyui-textbox" id="content" name="content" value="${change.content}" data-options="required:true,multiline:true,prompt:'限制输入500个字符串',validType:['length[0,500]']" style="width:800px;height:120px" />
+                        <input class="easyui-textbox" id="content" name="content" value="${change.content}" data-options="required:true,multiline:true,prompt:'限制输入500个字符串',validType:['length[0,500]']" style="width:100%;height:120px" />
                     </td>
                 </tr>
                 <tr>
@@ -124,7 +124,7 @@
                 </tr>
                 <tr>
                     <td colspan="4">
-                        <input class="easyui-textbox" name="effects" id="effects" value="${change.effects}" data-options="multiline:true,prompt:'限制输入500个字符串',validType:['length[0,500]']" style="width:800px;height:120px" />
+                        <input class="easyui-textbox" name="effects" id="effects" value="${change.effects}" data-options="multiline:true,prompt:'限制输入500个字符串',validType:['length[0,500]']" style="width:100%;height:120px" />
                     </td>
                 </tr>
                 <tr>
@@ -195,7 +195,7 @@
                                 <th data-options="field:'changeType',_provider:'projectChangeProvider',width:200,align:'center'">
                                     变更内容
                                 </th>
-                                <th data-options="field:'versionId',_provider:'projectVersionProvider',width:200,align:'center'">
+                                <th data-options="field:'versionId',_provider:'projectVersionProvider',width:100,align:'center'">
                                     变更后版本
                                 </th>
                                 <th data-options="field:'planTime',width:100,align:'center'">

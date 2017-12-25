@@ -18,7 +18,7 @@ function confirmMembersBtn(id) {
 function showMembersDlg(id, dep) {
 	$('#smDialog').dialog({
 				title : '用户选择',
-				width : 800,
+				width : 650,
 				height : 400,
 				queryParams : {
 					textboxId : id,

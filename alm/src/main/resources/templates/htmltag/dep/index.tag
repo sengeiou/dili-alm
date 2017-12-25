@@ -17,7 +17,7 @@ function confirmDepBtn(id) {
 function showDepDlg(id) {
 	$('#smDialog').dialog({
 				title : '部门选择',
-				width : 800,
+				width : 600,
 				height : 400,
 				queryParams : {
 					textboxId : id
