@@ -123,7 +123,7 @@ public class ApproveController {
         metadata.put("approveDate", JSON.parse("{provider:'datetimeProvider'}"));
         List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, JSON.parseArray(approve.getDescription(), ApplyApprove.class));
         maps.forEach(map -> {
-            Long userId = Long.valueOf(map.get("userId").toString());
+            Long userId = Long.valueOf(map.get("$_userId").toString());
             map.put("role", roleRpc.listRoleNameByUserId(userId).getData());
         });
         return maps;
