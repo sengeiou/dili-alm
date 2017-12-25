@@ -13,7 +13,6 @@
             if(!$('#form').form("validate")){
                 return;
             }
-            
             var param = bindMetadata("grid", true);
             var formData = $("#form").serializeObject();
             $.extend(param, formData);
@@ -79,6 +78,7 @@
         }
 
       function formatOper(val,row,index){ 
+      		
 		    if (!row.manager) {
 				return '';
 			} 
@@ -90,10 +90,10 @@
         	return  '<span class="opt" style="padding:5px;"><a href="javascript:void(0)" onclick="projectNameSrc('+ row.id + ')" target="_blank">'+val+'</a></span>';        
         }
  		function projectNameSrc(rid){
- 			$("#myProject", parent.document).attr("src","${contextPath!}/project/detail?id="+ rid+"&backUrl='home/myProjectIndex'");
+ 			$("#myProject", parent.document).attr("src","${contextPath!}/project/detail?id="+ rid+"&backUrl=${contextPath!}/home/myProjectIndex");
  		}
  		function formatOperSrc(rid){
- 			$("#myProject", parent.document).attr("src","${contextPath!}/project/detail?id="+ rid+"&backUrl='home/myProjectIndex'");
+ 			$("#myProject", parent.document).attr("src","${contextPath!}/project/detail?id="+ rid+"&backUrl=${contextPath!}/home/myProjectIndex");
  		}
         /**
          * 绑定页面回车事件，以及初始化页面时的光标定位
