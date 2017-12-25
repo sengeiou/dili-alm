@@ -1,8 +1,3 @@
- //打开新增窗口
-        function openInsert(){
-            $('#_form').form('clear');
-            formFocus("_form", "_serialNumber");
-        }
 
         //表格查询
         function queryGrid() {

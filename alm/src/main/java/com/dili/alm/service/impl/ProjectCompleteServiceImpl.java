@@ -94,8 +94,9 @@ public class ProjectCompleteServiceImpl extends BaseServiceImpl<ProjectComplete,
         update(complete);
         complete.setId(null);
         complete.setCreated(new Date());
+        complete.setRestatus(null);
         complete.setStatus(AlmConstants.ApplyState.APPLY.getCode());
-        insert(complete);
+        insertSelective(complete);
         return complete.getId();
     }
 
