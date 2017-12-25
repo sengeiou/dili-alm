@@ -497,7 +497,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         build.setApplyId(apply.getId());
         build.setBusinessOwner(apply.getBusinessOwner());
         build.setProjectState(NOT_START.getValue());
-        build.setOriginator(SessionContext.getSessionContext().getUserTicket().getId());
+        build.setOriginator(apply.getCreateMemberId());
         build.setEstimateLaunchDate(apply.getEstimateLaunchDate());
         projectService.insertSelective(build);
         buildTeam(build);
