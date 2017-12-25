@@ -243,7 +243,7 @@ public class ApproveController {
             }
             response.setContentType("application/octet-stream");
             response.setHeader("Content-Disposition", "attachment;" + rtn);
-            approveService.downloadProjectDoc(AlmConstants.ApproveType.APPLY, id, null);
+            approveService.downloadProjectDoc(AlmConstants.ApproveType.APPLY, id, response.getOutputStream());
         } catch (Exception e) {
             e.printStackTrace();
         }

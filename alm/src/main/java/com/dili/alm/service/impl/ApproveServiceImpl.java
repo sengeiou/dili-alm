@@ -29,7 +29,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.*;
@@ -425,11 +424,10 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         if (!targetFile.exists()) {
             FileUtils.copyInputStreamToFile(stream, targetFile);
         }
-        FileOutputStream outputStream  = new FileOutputStream("/Users/shaofan/Desktop/apply.docx");
         XWPFDocument doc = WordExportUtil.exportWord07(
                 targetFile.getPath(), map);
-        doc.write(outputStream);
-        outputStream.close();
+        doc.write(os);
+        os.close();
     }
 
     private String formatInfo(String info) {
