@@ -1,5 +1,7 @@
 package com.dili.alm.domain.dto;
 
+import java.util.Date;
+
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectEntity;
 
@@ -13,8 +15,6 @@ public class ProjectDto  extends ProjectEntity{
 	
 	private String startToEndDate;
 	
-	private String actualStartTime;
-	
 	private Boolean manager;
 	
 	public String getStartToEndDate() {
@@ -25,14 +25,6 @@ public class ProjectDto  extends ProjectEntity{
 		this.startToEndDate = startToEndDate;
 	}
 
-	public String getActualStartTime() {
-		return actualStartTime;
-	}
-
-	public void setActualStartTime(String actualStartTime) {
-		this.actualStartTime = actualStartTime;
-	}
-
 	public Boolean getManager() {
 		return manager;
 	}
@@ -40,5 +32,5 @@ public class ProjectDto  extends ProjectEntity{
 	public void setManager(Boolean manager) {
 		this.manager = manager;
 	}
-	
+
 }
