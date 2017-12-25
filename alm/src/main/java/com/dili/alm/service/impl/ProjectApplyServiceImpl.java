@@ -195,8 +195,8 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
         }
 
         Map<Object, Object> metadata = new HashMap<>();
-        metadata.put("startDate", JSON.parse("{provider:'datetimeProvider'}"));
-        metadata.put("endDate", JSON.parse("{provider:'datetimeProvider'}"));
+        metadata.put("startDate", JSON.parse("{provider:'dateProvider'}"));
+        metadata.put("endDate", JSON.parse("{provider:'dateProvider'}"));
         return ValueProviderUtils.buildDataByProvider(metadata, Lists.newArrayList(result));
     }
 

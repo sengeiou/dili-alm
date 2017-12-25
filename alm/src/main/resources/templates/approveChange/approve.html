@@ -193,7 +193,11 @@
             success: function (data) {
                 var data = eval('(' + data + ')');
                 if (data.success == true) {
-                    if (data.success == true) {
+                    try {
+                        LogUtils.saveLog("变更审批:${approve.id}", function () {
+                            window.location.href = "${contextPath}/approve/change/index.html";
+                        });
+                    } catch (e) {
                         window.location.href = "${contextPath}/approve/change/index.html";
                     }
                 }

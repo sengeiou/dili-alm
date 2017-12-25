@@ -1,19 +1,18 @@
 package com.dili.alm.provider;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.dili.alm.domain.ProjectPhase;
 import com.dili.alm.service.ProjectPhaseService;
 import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValuePairImpl;
 import com.dili.ss.metadata.ValueProvider;
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by asiamaster on 2017/10/19 0019.
@@ -35,7 +34,7 @@ public class ProjectPhaseProvider implements ValueProvider {
 		ArrayList<ValuePair<?>> buffer = new ArrayList<>(versions.size());
 		versions.forEach(v -> {
 			String text = this.nameProvider.getDisplayText(v.getName(), null, null);
-			buffer.add(new ValuePairImpl<Long>(text, v.getId()));
+			buffer.add(new ValuePairImpl<>(text, v.getId()));
 		});
 		return buffer;
 	}

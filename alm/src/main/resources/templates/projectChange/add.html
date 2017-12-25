@@ -26,10 +26,12 @@
     .title-second {
         padding-left: 30px;
     }
-    .textbox-label{
+
+    .textbox-label {
         width: 100px;
     }
-    table{
+
+    table {
         width: 100%;
     }
 </style>
@@ -124,7 +126,7 @@
             <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
                onclick="submitForm(1,this)">保存</a>
             <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
-               onclick="submitForm(2,this)">立项提交</a>
+               onclick="submitForm(2,this)">提交</a>
         </div>
     </div>
 </div>
@@ -138,26 +140,32 @@
         }
     });
 
-    function submitForm(type,obj) {
+    function submitForm(type, obj) {
         $('#ff').form('submit', {
             url: "${contextPath}/projectChange/insert",
             onSubmit: function () {
-                $(obj).linkbutton('disable');
                 $("#status").val(type);
                 var data = $("#tagbx").tagbox("getValues");
                 $("#email").val(data.join());
+                if ($("#ff").form('validate')) {
+                    $(obj).linkbutton('disable');
+                }
                 return $("#ff").form('validate');
             },
             success: function (data) {
-                var data = eval('(' + data + ')');
-                if (data.success == true) {
-                    try {
-                        LogUtils.saveLog("新增项目变更", function () {
+                try {
+                    var data = eval('(' + data + ')');
+                    if (data.success == true) {
+                        try {
+                            LogUtils.saveLog("新增项目变更", function () {
+                                window.location.href = "${contextPath}/projectChange/index.html";
+                            });
+                        } catch (e) {
                             window.location.href = "${contextPath}/projectChange/index.html";
-                        });
-                    } catch (e) {
-                        window.location.href = "${contextPath}/projectChange/index.html";
+                        }
                     }
+                } catch (ee) {
+                    window.location.href = "${contextPath}/projectChange/index.html";
                 }
             }
         });
@@ -177,7 +185,7 @@
                     $("#projectName").textbox("initValue", data.name);
                     $("#projectType").textbox("initValue", data.type);
                     $("#number").val(data.serialNumber);
-                    $("#estimateLaunchDate").datebox('setValue',data.estimateLaunchDate);
+                    $("#estimateLaunchDate").datebox('setValue', data.estimateLaunchDate);
                     $('#versionId').combobox({
                         url: '${contextPath}/project/version/listPage?projectId=' + projectValue,
                         valueField: 'id',
@@ -195,10 +203,10 @@
         }
     });
 
-    $(function(){
+    $(function () {
         var value = $("#tagbx").tagbox('getValue');
-        if(value == undefined || value ==''){
-            $("#tagbx").tagbox('setValue','pmo@diligrp.com');
+        if (value == undefined || value == '') {
+            $("#tagbx").tagbox('setValue', 'pmo@diligrp.com');
         }
     });
 </script>
