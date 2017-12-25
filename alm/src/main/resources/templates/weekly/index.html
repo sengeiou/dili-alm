@@ -264,6 +264,14 @@
             if(!$('#form').form("validate")){
                 return;
             }
+            
+            var start=$("#startDate").val()+"";
+            var end=$("#endDate").val()+"";
+            if(start>end){
+             	alert("开始时间必须小于结束时间");
+             	return;
+            }
+            
             var param = bindMetadata("grid", true);
             var formData = $("#form").serializeObject();
             $.extend(param, formData);
