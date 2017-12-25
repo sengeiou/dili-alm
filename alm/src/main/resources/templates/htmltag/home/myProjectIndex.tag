@@ -1,8 +1,3 @@
- //打开新增窗口
-        function openInsert(){
-            $('#_form').form('clear');
-            formFocus("_form", "_serialNumber");
-        }
 
         //表格查询
         function queryGrid() {
@@ -18,7 +13,6 @@
             $.extend(param, formData);
             $("#grid").datagrid("load", param);
             $('#grid').datagrid({
-                data: param,
                 view: myview,
                 emptyMsg: '当前没有任何项目'
           });
