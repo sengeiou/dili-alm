@@ -368,6 +368,7 @@
         }
         
         function startTask(){
+        	$('#dlg').dialog('close');
         	var id=$("#_id").val();
              $.ajax({
                 type: "POST",
@@ -378,7 +379,7 @@
                 success: function (data) {
                     if(data.code=="200"){
                         $("#grid").datagrid("reload");
-                        $('#dlg').dialog('close');
+                        $.messager.alert('信息','任务开始成功');
                     }else{
                         $.messager.alert('错误',data.result);
                     }
