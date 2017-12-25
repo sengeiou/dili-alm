@@ -312,7 +312,9 @@ public class TaskController {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		Task task = taskService.get(id);
 		task.setModifyMemberId(userTicket.getId());
-		taskService.startTask(task);
+		if (taskService.startTask(task)==0) {
+			BaseOutput.failure("请勿重复添加数据");
+		}
 		return BaseOutput.success("修改成功");
 	}
 
