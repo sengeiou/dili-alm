@@ -79,13 +79,13 @@
                             </td>
                             
                               <td style="padding:5px;">
-                                <input class="easyui-datetimebox" name="startDate" id="startDate" style="width:100%" data-options="label:'开始时间:'" />
+                                <input class="easyui-datetimebox" name="startDate" id="startDate" style="width:100%" data-options="editable:false,label:'开始时间:'" />
                                 
                                
 
                             </td>
                             <td style="padding:5px;">
-                                <input class="easyui-datetimebox" name="endDate" id="endDate" style="width:100%" data-options="label:'截止时间:'" />
+                                <input class="easyui-datetimebox" name="endDate" id="endDate" style="width:100%" data-options="editable:false,label:'截止时间:'" />
 
                             </td>
                          
@@ -264,15 +264,6 @@
             if(!$('#form').form("validate")){
                 return;
             }
-            
-            var start=$("#startDate").val()+"";
-            var end=$("#endDate").val()+"";
-            if(start>end){
-             	alert("开始时间必须小于结束时间");
-             	return;
-            }
-      
-          
             var param = bindMetadata("grid", true);
             var formData = $("#form").serializeObject();
             $.extend(param, formData);
@@ -349,7 +340,7 @@
             //	return	window.open(url,name,'height='+iHeight+',innerHeight='+iHeight+',width='+iWidth+',innerWidth='+iWidth+',top='+iTop+',left='+iLeft+',toolbar=no,menubar=no,scrollbars=yes,resizeable=no,location=no,status=no');
       	 
       	  //   return       window.open('${contextPath}/projectApply/toDetails/'+applyId,'_blank','top='+iTop+',left='+iLeft+',width=1100,top=0,left=0,toolbar=no,menubar=no,scrollbars=yes, resizable=no,location=no, status=no')
-           return   window.location.href="${contextPath}/projectApply/toDetails/"+applyId;
+           return   window.location.href="${contextPath}/projectApply/toDetails/"+applyId+"";
        }
         
         
