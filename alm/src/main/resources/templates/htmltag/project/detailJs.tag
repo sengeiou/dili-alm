@@ -506,7 +506,7 @@ function deletePhase(id) {
 												}
 											});
 									$('#fileGrid').datagrid('acceptChanges');
-									countFileGrid($('#fileGrid').datagrid(('getRows').length);
+									countFileGrid($('#fileGrid').datagrid('getRows').length);
 									$('#phaseGrid').datagrid('deleteRow', index);
 									$('#phaseGrid').datagrid('acceptChanges');
 									countPhaseGrid($('#phaseGrid').datagrid('getRows').length);

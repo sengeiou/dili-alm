@@ -113,7 +113,10 @@ public class ProjectCompleteController {
 		@ApiImplicitParam(name="ProjectComplete", paramType="form", value = "ProjectComplete的form信息", required = true, dataType = "string")
 	})
     @RequestMapping(value="/insert", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput insert(ProjectComplete projectComplete) {
+    public @ResponseBody BaseOutput insert(ProjectComplete projectComplete,String reasonText) {
+        if(projectComplete.getReason().equalsIgnoreCase("2")){
+            projectComplete.setReason(reasonText);
+        }
         projectComplete.setStatus(AlmConstants.ApplyState.APPLY.getCode());
         projectComplete.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
         projectCompleteService.insertSelective(projectComplete);
@@ -131,7 +134,10 @@ public class ProjectCompleteController {
 		@ApiImplicitParam(name="ProjectComplete", paramType="form", value = "ProjectComplete的form信息", required = true, dataType = "string")
 	})
     @RequestMapping(value="/update", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput update(ProjectComplete projectComplete) {
+    public @ResponseBody BaseOutput update(ProjectComplete projectComplete,String reasonText) {
+        if(projectComplete.getReason().equalsIgnoreCase("2")){
+            projectComplete.setReason(reasonText);
+        }
         projectCompleteService.updateSelective(projectComplete);
         projectCompleteService.approve(projectComplete);
         return BaseOutput.success(String.valueOf(projectComplete.getId()));
