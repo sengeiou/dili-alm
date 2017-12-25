@@ -264,6 +264,15 @@
             if(!$('#form').form("validate")){
                 return;
             }
+            
+            var start=$("#startDate").val()+"";
+            var end=$("#endDate").val()+"";
+            if(start>end){
+             	alert("开始时间必须小于结束时间");
+             	return;
+            }
+      
+          
             var param = bindMetadata("grid", true);
             var formData = $("#form").serializeObject();
             $.extend(param, formData);
@@ -340,7 +349,7 @@
             //	return	window.open(url,name,'height='+iHeight+',innerHeight='+iHeight+',width='+iWidth+',innerWidth='+iWidth+',top='+iTop+',left='+iLeft+',toolbar=no,menubar=no,scrollbars=yes,resizeable=no,location=no,status=no');
       	 
       	  //   return       window.open('${contextPath}/projectApply/toDetails/'+applyId,'_blank','top='+iTop+',left='+iLeft+',width=1100,top=0,left=0,toolbar=no,menubar=no,scrollbars=yes, resizable=no,location=no, status=no')
-           return   window.location.href="${contextPath}/projectApply/toDetails/"+applyId+"";
+           return   window.location.href="${contextPath}/projectApply/toDetails/"+applyId;
        }
         
         
