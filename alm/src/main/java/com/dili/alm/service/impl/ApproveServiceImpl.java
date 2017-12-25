@@ -448,10 +448,8 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
                 return "正常结项";
             case "1":
                 return "项目取消";
-            case "2":
-                return "其他原因";
             default:
-                return "";
+                return "其他原因：" + reason;
         }
     }
 

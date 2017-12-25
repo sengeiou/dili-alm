@@ -296,7 +296,7 @@
         var opts = $("#task").datagrid("options");
         opts.method = 'get';
         if (null == opts.url || "" == opts.url) {
-            opts.url = "${contextPath}/projectChange/loadTask?changeId=${change.id}";
+            opts.url = "${contextPath}/projectChange/loadTask?changeId=${change.id}&projectId=${change.projectId}";
         }
         var param = bindMetadata("task", true);
         $("#task").datagrid("load", param);

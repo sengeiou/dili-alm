@@ -1,7 +1,7 @@
 package com.dili.alm.controller;
 
+import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.ProjectChange;
-import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.VerifyApproval;
 import com.dili.alm.service.ProjectChangeService;
@@ -61,7 +61,7 @@ public class ProjectChangeController {
 	@RequestMapping(value = "/loadTask", method = RequestMethod.GET)
 	@ResponseBody
 	public Object loadTask(Task task) throws Exception {
-		task.setStatus(ProjectState.COMPLETED.getValue().intValue());
+		task.setStatus(AlmConstants.TaskStatus.COMPLETE.getCode());
 		return taskService.listEasyuiPageByExample(task,true).toString();
 	}
 
