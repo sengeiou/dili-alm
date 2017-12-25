@@ -49,6 +49,7 @@ import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.TeamService;
+import com.dili.alm.utils.WebUtil;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
@@ -319,7 +320,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 				projectDto.setType(project1.getType());
 				projectDto
 						.setStartToEndDate(sdf.format(project1.getCreated()) + "至" + sdf.format(project1.getEndDate()));
-				projectDto.setActualStartTime(sdf.format(project1.getActualStartDate()));
+				projectDto.setActualStartDate(project1.getActualStartDate());
 				projectDto.setProjectState(project1.getProjectState());
 				projectDto.setTaskCount(project1.getTaskCount());
 				projectDto.setMemberCount(project1.getMemberCount());
@@ -357,6 +358,8 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		metadata.put("validTimeEnd", provider);
 		metadata.put("created", provider);
 		metadata.put("modified", provider);
+		metadata.put("actualStartDate", provider);
+		
 		project.setMetadata(metadata);
 		try {
 			List list = ValueProviderUtils.buildDataByProvider(project, projectDtoList);

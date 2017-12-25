@@ -145,9 +145,7 @@
 		`task` t 
 		ON p.id = t.`project_id` 
 		WHERE t.owner = #{owner} 
-		<if test="project.sort != null">
-			ORDER BY ${project.sort} ${project.order}
-		</if>
+		ORDER BY p.actual_start_date desc
       	<if test="project.page != null and project.rows != null ">
 			limit ${(project.page-1)*project.rows},${project.rows}
 		</if>
