@@ -85,8 +85,9 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
         update(change);
         change.setId(null);
         change.setCreated(new Date());
+        change.setRestatus(null);
         change.setStatus(AlmConstants.ApplyState.APPLY.getCode());
-        insert(change);
+        insertSelective(change);
         return change.getId();
     }
 }
