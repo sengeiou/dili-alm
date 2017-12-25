@@ -132,6 +132,9 @@ function del() {
 	if (!dataAuth.deleteDept) {
 		return;
 	}
+	if (!$("#win").parent().is(":hidden")) {
+		return;
+	}
 	var selected = deptGrid.treegrid("getSelected");
 	if (null == selected) {
 		$.messager.alert('警告', '请选中一条数据');
