@@ -95,9 +95,8 @@ public class RoleController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Role", paramType = "form", value = "Role的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput update(Role role, HttpServletRequest request) {
-		roleService.update(role);
-		return BaseOutput.success("修改成功").setData(JSON.toJSONString(role));
+	public @ResponseBody BaseOutput<Object> update(Role role, HttpServletRequest request) {
+		return roleService.updateAfterCheck(role);
 	}
 
 	@ApiOperation("删除Role")

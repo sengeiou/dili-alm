@@ -197,6 +197,9 @@ public class MenuManagerImpl implements MenuManager {
 		}
 		String key = SessionConstants.USER_MENU_URL_KEY + userId;
 		this.redisUtils.remove(key);
+		if (CollectionUtils.isEmpty(urls)) {
+			return;
+		}
 		@SuppressWarnings("unchecked")
 		BoundSetOperations<Object, Object> ops = this.redisUtils.getRedisTemplate().boundSetOps(key);
 		ops.add(urls.toArray());

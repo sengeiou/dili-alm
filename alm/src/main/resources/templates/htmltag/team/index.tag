@@ -85,6 +85,7 @@ function del() {
 											$.messager.alert('错误', e);
 										}
 										teamGrid.datagrid('deleteRow', teamGrid.datagrid('getRowIndex', selected));
+										teamGrid.dataGrid('acceptChanges');
 										$('#dlg').dialog('close');
 									} else {
 										$.messager.alert('错误', data.result);
@@ -281,15 +282,9 @@ function insertOrUpdateTeam(index, row, changes) {
 		url += 'update'
 	}
 	$.post(url, postData, function(data) {
+				debugger;
 				if (data.code != 200) {
-					if (oldRecord) {
-						teamGrid.datagrid('updateRow', {
-									index : index,
-									row : oldRecord
-								});
-					} else {
-						teamGrid.datagrid('deleteRow', index);
-					}
+					$('#grid').datagrid('rejectChanges');
 					$.messager.alert('提示', data.result);
 					return;
 				}
@@ -316,6 +311,7 @@ function insertOrUpdateTeam(index, row, changes) {
 							row : row
 						});
 				teamGrid.datagrid('refreshRow', index);
+				teamGrid.datagrid('acceptChanges');
 			}, 'json');
 }
 
