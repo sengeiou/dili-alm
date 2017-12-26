@@ -89,9 +89,7 @@
                         <span class="require">*</span>
                         <input class="easyui-textbox" type="text" name="developmentManager" id="developmentManager" style="width: calc(50% - 132px)"
                                data-options="editable:false,required:true,label:'研发经理:',buttonText:'选择',
-									onClickButton:function(){
-										selectMember('editorCallback', 'developmentManager');
-									},onChange:_changeTextboxShowClear">
+									onClickButton:selectMember,onChange:_changeTextboxShowClear">
                     </td>
                     <td colspan="2">
                         <span class="require">*</span>

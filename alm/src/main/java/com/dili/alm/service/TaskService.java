@@ -49,4 +49,6 @@ public interface TaskService extends BaseService<Task, Long> {
 	
 	List<User> listUserByProjectId(Long projectId);
 	
+	List<Task> listTaskByProjectId(Long projectId);
+	
 }

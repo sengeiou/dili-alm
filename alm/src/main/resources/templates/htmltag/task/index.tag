@@ -13,6 +13,7 @@
             	var projectId = $('#_projectId').combobox('getValue');
             	loadVisionSelect(projectId);
             	loadMemberSelect(projectId);
+            	loadTaskSelect(projectId);
             }
         });
 
@@ -23,6 +24,7 @@
             	  $("#changeIdTr").css("display","none");
             	}else{
             	  $("#changeIdTr").css("display","block");
+            	  loadChangePorjectSelect();
             	}
             }
         });
@@ -34,7 +36,7 @@
 				url:"${contextPath!}/task/listTreeProject.json",
 				valueField:'id',
 				textField:'name',
-				editable:true,
+				editable:false,
 				onChange: function (o,n) {
 				  var versionId = $('#_versionId').combobox('getValue');
 				  loadPhaseSelect(versionId); 
@@ -49,7 +51,7 @@
 				url:"${contextPath!}/task/listTreeVersion.json?id="+id,
 				valueField:'id',
 				textField:'version',
-				editable:true,
+				editable:false,
 				onChange: function (o,n) {
 				  var versionId = $('#_versionId').combobox('getValue');
 				  loadPhaseSelect(versionId);
@@ -62,42 +64,45 @@
 				url:"${contextPath!}/task/listTreeUserByProject.json?projectId="+id,
 				valueField:'id',
 				textField:'realName',
-				editable:true,
-				onChange: function (o,n) {
-
-				}
-			});
-    }
-    function loadVisionCondition(){
-    	$('#versionId').combobox({
-				url:"${contextPath!}/task/listTreeVersionByTeam.json",
-				valueField:'id',
-				textField:'version',
-				editable:true,
+				editable:false,
 				onChange: function (o,n) {
 
 				}
 			});
     }
     
-   function loadMemberCondition(){
-    	$('#owner').combobox({
-				url:"${contextPath!}/task/listTreeMember.json",
+    
+    function loadVisionCondition(){
+    	$('#versionId').combobox({
+				url:"${contextPath!}/task/listTreeVersionByTeam.json",
 				valueField:'id',
-				textField:'realName',
-				editable:true,
+				textField:'version',
+				editable:false,
 				onChange: function (o,n) {
 
 				}
 			});
     }
+   
+   function loadMemberCondition(){
+    	$('#owner').combobox({
+				url:"${contextPath!}/task/listTreeMember.json",
+				valueField:'id',
+				textField:'realName',
+				editable:false,
+				onChange: function (o,n) {
+
+				}
+			});
+    }
+    
     
     function loadProjectCondition(){
     	$('#projectId').combobox({
 				url:"${contextPath!}/task/listTreeProject.json",
 				valueField:'id',
 				textField:'name',
-				editable:true,
+				editable:false,
 				onChange: function (o,n) {
 
 				}
@@ -108,10 +113,32 @@
 				url:"${contextPath!}/task/listTreePhase.json?id="+id,
 				valueField:'id',
 				textField:'name',
-				editable:true
+				editable:false
 			});
     }
-    
+     //projectId
+    function loadTaskSelect(id){
+    	$('#_beforeTask').combobox({
+				url:"${contextPath!}/task/listTree.json?projectId="+id,
+				valueField:'id',
+				textField:'name',
+				editable:false,
+				onChange: function (o,n) {
+
+				}
+			});
+    }
+   function loadChangePorjectSelect(){
+    	$('#_changeId').combobox({
+				url:"${contextPath!}/task/listTreeProject.json",
+				valueField:'id',
+				textField:'name',
+				editable:false,
+				onChange: function (o,n) {
+
+				}
+			});
+    }
     
     function noEdit(){
       $('#_name').textbox('textbox').attr('readonly',true);
@@ -122,8 +149,8 @@
       $("#_projectId").combobox({disabled: true});  
       $("#_versionId").combobox({disabled: true});
       $("#_phaseId").combobox({disabled: true});
-      $("#_startDateShow").datebox({disabled: true});
-      $("#_endDateShow").datebox({disabled: true});
+      $("#startDateShow").datebox({disabled: true});
+      $("#endDateShow").datebox({disabled: true});
       $("#_owner").combobox({disabled: true});
       $("#_flow").combobox({disabled: true}); 
       $("#_type").combobox({disabled: true});
@@ -140,8 +167,8 @@
       $("#_projectId").combobox({disabled: false});  
       $("#_versionId").combobox({disabled: false});
       $("#_phaseId").combobox({disabled: false});
-      $("#_startDateShow").datebox({disabled: false});
-      $("#_endDateShow").datebox({disabled: false});
+      $("#startDateShow").datebox({disabled: false});
+      $("#endDateShow").datebox({disabled: false});
       $("#_owner").combobox({disabled: false});
       $("#_flow").combobox({disabled: false}); 
       $("#_type").combobox({disabled: false});
@@ -184,8 +211,8 @@
             loadPhaseSelect(formData._versionId);
             $('#_phaseId').combobox('select',formData._phaseId);
             
-            $('#_form').form('load', {_startDateShow:dateFormat_1(formData._startDate)});
-            $('#_form').form('load', {_endDateShow:dateFormat_1(formData._endDate)}); 
+            $('#_form').form('load', {startDateShow:dateFormat_1(formData._startDate)});
+            $('#_form').form('load', {endDateShow:dateFormat_1(formData._endDate)}); 
             $('#_phaseId').combobox('select',formData._phaseId);
             
             

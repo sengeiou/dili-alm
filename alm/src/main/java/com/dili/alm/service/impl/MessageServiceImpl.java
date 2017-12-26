@@ -31,13 +31,12 @@ public class MessageServiceImpl extends BaseServiceImpl<Message, Long> implement
     }
 
 	@Override
-	public int insertMessage(String messageUrl, Long sender, Long recipient,
-			Integer type) {
+	public int insertMessage(String messageUrl, Long sender, Long recipient) {
 		Message message = DTOUtils.newDTO(Message.class);
 		message.setUrl(messageUrl);
 		message.setSender(sender);
 		message.setRecipient(recipient);
-		message.setType(type);
+		message.setType(1);
 		message.setCreated(new Date());
 		return this.getActualDao().insertSelective(message);	
 	}
