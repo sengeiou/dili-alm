@@ -1,13 +1,16 @@
-function countVersionGrid(data) {
-	$('#versionCount').text('（' + data.total + '条版本记录）');
+function countVersionGrid() {
+	var data = $('#versionGrid').datagrid('getRows').length;
+	$('#versionCount').text('（' + data + '条版本记录）');
 }
 
-function countPhaseGrid(data) {
-	$('#phaseCount').text('（' + data.total + '条阶段记录）');
+function countPhaseGrid() {
+	var data = $('#phaseGrid').datagrid('getRows').length;
+	$('#phaseCount').text('（' + data + '条阶段记录）');
 }
 
-function countFileGrid(data) {
-	$('#fileCount').text('（' + data.total + '条）');
+function countFileGrid() {
+	var data = $('#fileGrid').datagrid('getRows').length;
+	$('#fileCount').text('（' + data + '条）');
 }
 
 function versionOptFormatter(value, row, index) {
@@ -65,7 +68,7 @@ function fileOptFormatter(value, row, index) {
 	}
 	var projectManager = $('#projectManager').val() == 'true';
 	var editable = $('#editable').val() == 'true';
-	if ((editable && projectManager) || row.createMemberId == $('#loginUserId').val()) {
+	if ((editable && projectManager) || row.$_createMemberId == $('#loginUserId').val()) {
 		content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="deleteFile(' + row.id + ');">删除</a>';
 	}
 	return content;
@@ -200,10 +203,11 @@ function openInsertVersion() {
 													}
 													$('#versionGrid').datagrid('appendRow', data.data);
 													$('#versionGrid').datagrid('acceptChanges');
-													countVersionGrid($('#versionGrid').datagrid('gerRows').length);
+													console.log($('#versionGrid').datagrid('getRows'));
+													countVersionGrid();
 													if ($('#versionForm input[name=fileIds]').length > 0) {
 														$('#fileGrid').datagrid('reload');
-														countFileGrid($('#fileGrid').datagrid('getRows').length);
+														countFileGrid();
 													}
 													$('#win').dialog('close');
 												} else {
@@ -242,7 +246,7 @@ function editVersion(id) {
 											success : function(res) {
 												if (res.code == 200) {
 													try {
-														LogUtils.saveLog("修改项目版本:" + data.data.id, function() {
+														LogUtils.saveLog("修改项目版本:" + res.data.id, function() {
 																});
 													} catch (e) {
 														$.messager.alert('错误', e);
@@ -254,10 +258,10 @@ function editVersion(id) {
 																row : res.data
 															});
 													$('#versionGrid').datagrid('acceptChanges');
-													countVersionGrid($('#versionGrid').datagrid('getRows').length);
+													countVersionGrid();
 													if ($('#versionForm input[name=fileIds]').length > 0) {
 														$('#fileGrid').datagrid('reload');
-														countFileGrid($('#fileGrid').datagrid('getRows').length);
+														countFileGrid();
 													}
 													$('#win').dialog('close');
 												} else {
@@ -306,10 +310,10 @@ function deleteVersion(id) {
 												}
 											});
 									$('#fileGrid').datagrid('acceptChanges');
-									countFileGrid($('#fileGrid').datagrid('getRows').length);
+									countFileGrid();
 									$('#versionGrid').datagrid('deleteRow', index);
 									$('#versionGrid').datagrid('acceptChanges');
-									countVersionGrid($('#versionGrid').datagrid('getRows'));
+									countVersionGrid();
 								} else {
 									$.messager.alert('错误', data.result);
 								}
@@ -401,10 +405,10 @@ function openInsertPhase() {
 													}
 													$('#phaseGrid').datagrid('appendRow', data.data);
 													$('#phaseGrid').datagrid('acceptChanges');
-													countPhaseGrid($('pahseGrid').datagrid('getRows').length);
+													countPhaseGrid();
 													if ($('#phaseForm input[name=fileIds]').length > 0) {
 														$('#fileGrid').datagrid('reload');
-														countFileGrid($('#fileGrid').datagrid('getRows').length);
+														countFileGrid();
 													}
 													$('#win').dialog('close');
 												} else {
@@ -457,7 +461,7 @@ function editPhase(id) {
 													$('#phaseGrid').datagrid('acceptChanges');
 													if ($('#phaseForm input[name=fileIds]').length > 0) {
 														$('#fileGrid').datagrid('reload');
-														countFileGrid($('#fileGrid').datagrid('getRows').length);
+														countFileGrid();
 													}
 													$('#win').dialog('close');
 												} else {
@@ -506,10 +510,10 @@ function deletePhase(id) {
 												}
 											});
 									$('#fileGrid').datagrid('acceptChanges');
-									countFileGrid($('#fileGrid').datagrid('getRows').length);
+									countFileGrid();
 									$('#phaseGrid').datagrid('deleteRow', index);
 									$('#phaseGrid').datagrid('acceptChanges');
-									countPhaseGrid($('#phaseGrid').datagrid('getRows').length);
+									countPhaseGrid();
 								} else {
 									$.messager.alert('错误', data.result);
 								}
@@ -552,7 +556,7 @@ function uploadFile(projectId) {
 																$('#fileGrid').datagrid('appendRow', item);
 																$('#fileGrid').datagrid('acceptChanges');
 															});
-													countFileGrid($('#fileGrid').datagrid('getRows').length)
+													countFileGrid()
 													$('#win').dialog('close');
 												} else {
 													$.messager.alert('错误', data.result);

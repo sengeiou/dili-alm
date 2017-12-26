@@ -46,15 +46,14 @@
 		<!-- 表格 -->
 		<div region="center" style="width: 100%;" height="auto">
 			<!-- =========================================================表格========================================================= -->
-			<table class="easyui-datagrid" title="Team列表" id="grid" fitColumns="true" pagination="true" pageSize="30" pageNumber="1"
-				pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
-				sortName="id" align="center" fit="true" striped="true" toolbar="#toolbar" idField="id"
-				url="${contextPath!}/team/list?projectId=${projectId!}"
+			<table class="easyui-datagrid" title="Team列表" id="grid" fitColumns="true" pagination="false" pagePosition="both" rownumbers="true"
+				remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="id" align="center" fit="true"
+				striped="true" toolbar="#toolbar" idField="id" url="${contextPath!}/team/list?projectId=${projectId!}"
 				data-options="onClickRow:onClickRow,
-				onCancelEdit:onCancelEdit,
-				onBeginEdit:onBeginEdit,
-				onEndEdit:onEndEdit,
-				onAfterEdit:onAfterEdit">
+			onCancelEdit:onCancelEdit,
+			onBeginEdit:onBeginEdit,
+			onEndEdit:onEndEdit,
+			onAfterEdit:onAfterEdit,onDblClickRow:openUpdate">
 				<thead>
 					<tr>
 						<th data-options="field:'id',hidden:true"></th>
@@ -116,9 +115,9 @@
 				</thead>
 			</table>
 			<!-- datagrid工具栏 -->
-			<div id="toolbar" style="height:20px;padding: 2px 5px;">
-				<%if(editable==true && projectManager == true){%> <a href="#" class="easyui-linkbutton" iconCls="icon-add"
-					onclick="openInsert()" plain="true">新增</a> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true">删除</a><%}%>
+			<div id="toolbar" style="height: 20px; padding: 2px 5px;">
+				<%if(editable==true && projectManager == true){%> <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()"
+					plain="true">新增</a> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true">删除</a><%}%>
 				<div style="float: right">
 					边框显示:<select onchange="changeBorder('grid',this.value)">
 						<option value="lines-both">全边框</option>
@@ -143,6 +142,44 @@
 			deleteTeam : <%if(editable==true && projectManager == true){%>true<%}else{%>false<%}%>
 		};
 	</script> <script type="text/javascript">
-		<#members_index/>
+	// 打开选择用户弹出框
+    function selectMember(callback, args) {
+        if (callback) {
+            eval("(" + callback + "(args))");
+        } else {
+            showMembersDlg($(this)[0].id);
+        }
+    }
+    // 确认选择事件
+    function confirmMembersBtn(id) {
+        var selected = $('#smGridList').datagrid('getSelected');
+        $('#' + id).textbox('initValue', selected.realName);
+        $('#' + id).textbox('setText', selected.realName);
+        $('#smDialog').dialog('close');
+    }
+    // 根据id打开用户选择
+    function showMembersDlg(id) {
+        $('#smDialog').dialog({
+            title : '用户选择',
+            width : 600,
+            height : 400,
+            queryParams : {
+                textboxId : id
+            },
+            href : '${contextPath!}/member/members.html',
+            modal : true,
+            buttons : [{
+                text : '确定',
+                handler : function() {
+                    confirmMembersBtn(id);
+                }
+            }, {
+                text : '取消',
+                handler : function() {
+                    $('#smDialog').dialog('close');
+                }
+            }]
+        });
+    }
 		<#team_index />
 	</script> </#body>

@@ -31,7 +31,7 @@ function endEditing() {
 }
 
 // 新增一行空数据并开启编辑模式
-function openInsert() {
+function openInsert(index, row) {
 	if (!dataAuth.addTeam) {
 		return;
 	}
@@ -48,6 +48,20 @@ function openInsert() {
 				}
 			});
 	teamGrid.datagrid('selectRow', editIndex);
+	teamGrid.datagrid('beginEdit', editIndex);
+}
+
+function openUpdate() {
+	if (!endEditing()) {
+		$.messager.alert('警告', '有数据正在编辑');
+		return;
+	}
+	var selected = teamGrid.datagrid('getSelected');
+	if (!selected) {
+		$.messager.alert('警告', '请选择一条数据');
+		return;
+	}
+	editIndex = teamGrid.datagrid('getRowIndex', selected);
 	teamGrid.datagrid('beginEdit', editIndex);
 }
 
@@ -372,8 +386,6 @@ function editorCallback(field) {
 				field : field
 			});
 	$(editor.target).attr("id", field + "_" + index);
-	// $("#"+field+"_"+index).textbox("setValue","1234");
-	// $("#"+field+"_"+index).textbox("setText","213231");
 	showMembersDlg(field + "_" + index);
 }
 
@@ -385,7 +397,6 @@ function clearForm() {
 
 // 表格查询
 function queryGrid() {
-	debugger;
 	var opts = $("#grid").datagrid("options");
 	if (null == opts.url || "" == opts.url) {
 		opts.url = "${contextPath}/team/listPage";
