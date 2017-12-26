@@ -396,7 +396,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 				taskTimes += taskDetailsDome.getTaskHour();
 			}
 		}
-		progress = (int) (( taskTimes / total) -1* 100);
+		progress = (int) (( taskTimes / total)* 100);
 		project.setCompletedProgress(progress);
 		projectService.saveOrUpdate(project);
 	}
