@@ -1118,7 +1118,9 @@ select:focus{
     opacity: 0.6;
     filter: alpha(opacity=60);
 }
-
+.textbox-disabled:hover{
+    border-color: #D4D4D4 !important;
+}
 .textbox-icon {
     display: inline-block;
     width: 18px;

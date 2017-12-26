@@ -18,7 +18,7 @@ $.map(['validatebox','textbox','passwordbox','filebox','searchbox',
 		'datebox','datetimebox','numberbox',
 		'spinner','numberspinner','timespinner','datetimespinner'], function(plugin){
 	if ($.fn[plugin]){
-		$.fn[plugin].defaults.missingMessage = '该输入项为必输项';
+		$.fn[plugin].defaults.missingMessage = '此项为必输项';
 	}
 });
 if ($.fn.validatebox){

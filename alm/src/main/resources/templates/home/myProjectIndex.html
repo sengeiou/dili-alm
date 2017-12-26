@@ -4,6 +4,7 @@
         <!-- 表格 -->
         <div region="center" style="width:100%;" height="auto">
             <!-- =========================================================表格========================================================= -->
+
             <table class="easyui-datagrid" title="我的项目列表" style="width:100%" id="grid" fitColumns="true"
                    pagination="true" pageSize="20" pageNumber="1" pagePosition="both" rownumbers="true" remoteSort="false"
                    loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
@@ -11,9 +12,8 @@
                 <thead>
                     <tr>
 						<th data-options="field:'serialNumber',formatter:formatprojectName, align:'left'">项目编号</th>
+						<th data-options="field:'name',formatter:formatprojectName, align:'left'">项目名称</th>
 						<th
-							data-options="field:'name',formatter:formatprojectName, align:'left'">项目名称</th>
-						<th 
 							data-options="field:'type', _provider:'projectTypeProvider',width:80, _table:'data_dictionary_value',_valueField:'value',_textField:'code',_queryParams:{'yn':1,'dd_id':3}, align:'center'" >
 							项目类型</th>
 						<th
@@ -27,9 +27,9 @@
 						<th data-options="field:'completedProgress', align:'center'">完成进度</th>
 						<th data-options="field:'originator', _provider:'memberProvider', align:'center'" >项目发起人</th>
                         <th data-options="field:'_operate',align:'center',formatter:formatOper,width:80">操作</th>
-                  	      
+
                     </tr>
-                    
+
                 </thead>
             </table>
 

@@ -2,7 +2,7 @@
 <script type="text/javascript" src="${contextPath!}/resources/js/jquery.uploadfile.min.js"></script>
 <form id="versionForm" action="${contextPath!}/project/version/insert" class="easyui-form" method="post" fit="true">
 	<input name="id" id="id" type="hidden" value="${model.id!}"> <input type="hidden" name="projectId" value="${project.id!}">
-	<table width="100%">
+	<table width="80%">
 		<tr>
 			<td style="padding: 5px;"><input class="easyui-textbox" style="width: 100%;" value="${project.name!}" panelWidth="auto" panelHeight="auto" label="项目名称:" readonly="readonly" /></td>
 		</tr>
@@ -79,8 +79,8 @@
 			</td>
 		</tr>
 		<tr>
-			<td><label>版本进度：</label>
-				<div id="p" class="easyui-progressbar" data-options="value:${model.completedProgress!}" style="width: 400px;"></div></td>
+			<td><label style="float: left">版本进度：</label>
+				<div id="p" class="easyui-progressbar" data-options="value:${model.completedProgress!}" style="margin-left:105px;width: 100%;"></div></td>
 		</tr>
 		<tr>
 			<td><select id="versionState" editable="false" panelWidth="auto" panelHeight="auto" label="版本状态:" class="easyui-combobox" name="online" id="online" style="width: 100%;">

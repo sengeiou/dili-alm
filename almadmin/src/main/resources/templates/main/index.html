@@ -182,7 +182,7 @@
             $(this).show();
         }).on('mouseout',function(){
             var obj = $(this);
-            console.log($(this).data('index')===0)
+            // console.log($(this).data('index')===0)
             timer[$(this).data('index')]=setTimeout(function(){
                 if(obj.data('index')===0){
                     $('.user-menu').removeClass('mouseover');

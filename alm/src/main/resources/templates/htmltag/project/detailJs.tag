@@ -528,6 +528,7 @@ function uploadFile(projectId) {
 				height : 500,
 				href : '${contextPath!}/project/uploadFileView?projectId=' + projectId,
 				modal : true,
+				maxFileSize: 10485760, // 上传文件个数（多个时修改此处
 				buttons : [{
 							text : '保存',
 							handler : function() {
