@@ -160,30 +160,22 @@
     $(function () {
         $("#projectId").combobox('setValue','${apply.projectId}');
         var reason = '${apply.reason}';
-        console.log(reason)
-        // $("#reasonText").textbox("initValue", reason);
         $("input[name='reason'][value='${apply.reason}']").attr("checked",true);
         if(reason != "0" && reason!="1"){
-            $("#reasonText").textbox("setValue", '');
-            $('#reasonText').textbox({
-                disabled:false
-            })
-        }else{
-            // $("#reasonText").textbox("initValue", reason);
+            $("#reasonText").textbox("setValue",reason );
             $('#reasonText').textbox({
                 disabled:false
             });
+            $("input[name='reason'][value='2']").attr("checked",true);
         }
 
         $("input[name='information'][value='${apply.information}']").attr("checked",true);
 
         $("input[name='reason']").on('click',function(){
             if($(this).val()==='2'){
-                console.log($(this).val())
                 $('#reasonText').textbox({
                     disabled:false
                 })
-
             }else{
                 $("#reasonText").textbox("initValue", '');
                 $('#reasonText').textbox({

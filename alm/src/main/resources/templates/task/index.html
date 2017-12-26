@@ -96,10 +96,11 @@
                 </thead>
             </table>
             <!-- datagrid工具栏 -->
-            <div id="toolbar" style="padding:2px 5px;"><a href="#" class="easyui-linkbutton" style="border: 0px;" plain="true"></a>
-                <span id="manager_tools"><#resource code="addTask"> <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true"></a></#resource>
-                <#resource code="updateTask"> <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()" plain="true"></a></#resource>
-                <#resource code="delTask"> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true"></a></#resource>
+            <div id="toolbar" style="padding:2px 5px;">
+                <span id="manager_tools">
+                    <#resource code="addTask"> <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true"></a></#resource>
+                    <#resource code="updateTask"> <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()" plain="true"></a></#resource>
+                    <#resource code="delTask"> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true"></a></#resource>
                 </span>
                 <div style="float:right">
                 边框显示:<select onchange="changeBorder('grid',this.value)">
@@ -154,7 +155,7 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-datebox" name="_endDateShow" id="_endDateShow" style="width:100%" data-options="label:'结束时间:', required:true,validType:'endDateValidate[\'_startDate\']'" />
+                    <input class="easyui-datebox" name="_endDateShow" id="_endDateShow" style="width:100%" data-options="label:'结束时间:', required:true,validType:'endDateValidate[\'_startDateShow\']'" />
                 </td>
             </tr>
             <tr>
@@ -178,7 +179,7 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="planTimeStr" id="planTimeStr" style="width:100%" data-options="label:'计划工时:', validType:'length[0,5]'" />
+                    <input class="easyui-numberbox" name="planTimeStr" id="planTimeStr" style="width:100%" data-options="label:'计划工时:',  required:true,validType:'length[0,5]'" />
                 </td>
             </tr>
             <tr>
@@ -245,8 +246,8 @@
         </form>
     </div>
         <div id="dialog_toolbar" style="diplay:show;" >
-            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true"  onclick="saveOrUpdate()" style="border:1px solid #ccc;background-color:#E0E0E0;">保存</a>
-            <a href="#" class="easyui-linkbutton" data-options="plain:true"  onclick="$('#dlg').dialog('close');" style="border:1px solid #ccc;background-color:#E0E0E0;">取消</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true"  onclick="saveOrUpdate()" style="border:1px solid #ccc;">保存</a>
+            <a href="#" class="easyui-linkbutton" data-options="plain:true"  onclick="$('#dlg').dialog('close');" style="border:1px solid #ccc;">取消</a>
         </div>
         <div id="dialog_toolbar_detail"  style="diplay:none;" >
             <a href="#" id="doTask" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" style="border:1px solid #ccc;background-color:#E0E0E0;" onclick="startTask()">开始执行任务</a>

@@ -54,7 +54,11 @@ public class ProjectChangeController {
 
 	@RequestMapping(value = "/edit", method = RequestMethod.GET)
 	public String edit(ModelMap modelMap,Long id) {
-		modelMap.put("obj",projectChangeService.get(id));
+		ProjectChange change = projectChangeService.get(id);
+		modelMap.put("obj",change);
+		if (!AlmConstants.ApplyState.APPLY.check(change.getStatus())) {
+			return "redirect:/projectChange/index.html";
+		}
 		return "projectChange/edit";
 	}
 
