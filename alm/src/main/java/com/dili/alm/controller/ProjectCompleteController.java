@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.ProjectComplete;
 import com.dili.alm.service.ProjectCompleteService;
+import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,6 +107,11 @@ public class ProjectCompleteController {
 	})
     @RequestMapping(value="/listPage", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String listPage(ProjectComplete projectComplete) throws Exception {
+        if(projectComplete.getCreated()!=null){
+            Date temp = projectComplete.getCreated();
+            projectComplete.setCreated(DateUtil.appendDateToEnd(projectComplete.getCreated()));
+            projectComplete.setCreatedStart(DateUtil.appendDateToStart(temp));
+        }
         return projectCompleteService.listEasyuiPageByExample(projectComplete, true).toString();
     }
 
