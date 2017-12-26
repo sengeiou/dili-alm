@@ -271,11 +271,12 @@
                 $.messager.alert('警告','请选中一条数据');
                 return;
             }
-            if(selected.status!="未开始"){
-            	$.messager.alert('警告','此项任务已经执行，不能再进行编辑！');
-            	return;
-            }
             canEdit();
+            
+            if(selected.status!="未开始"){
+            	noEdit();
+            }
+
             $('#dlg').dialog('open');
             $('#dlg').dialog('center');
             formFocus("_form", "_name");
@@ -292,8 +293,8 @@
             loadPhaseSelect(formData._versionId);
             $('#_phaseId').combobox('select',formData._phaseId);
             
-            $('#_form').form('load', {_startDateShow:dateFormat_1(formData._startDate)});
-            $('#_form').form('load', {_endDateShow:dateFormat_1(formData._endDate)}); 
+            $('#_form').form('load', {startDateShow:dateFormat_1(formData._startDate)});
+            $('#_form').form('load', {endDateShow:dateFormat_1(formData._endDate)}); 
          }
         
         function saveOrUpdate(){

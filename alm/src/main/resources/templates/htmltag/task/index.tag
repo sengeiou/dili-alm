@@ -149,8 +149,8 @@
       $("#_projectId").combobox({disabled: true});  
       $("#_versionId").combobox({disabled: true});
       $("#_phaseId").combobox({disabled: true});
-      $("#_startDateShow").datebox({disabled: true});
-      $("#_endDateShow").datebox({disabled: true});
+      $("#startDateShow").datebox({disabled: true});
+      $("#endDateShow").datebox({disabled: true});
       $("#_owner").combobox({disabled: true});
       $("#_flow").combobox({disabled: true}); 
       $("#_type").combobox({disabled: true});
@@ -167,8 +167,8 @@
       $("#_projectId").combobox({disabled: false});  
       $("#_versionId").combobox({disabled: false});
       $("#_phaseId").combobox({disabled: false});
-      $("#_startDateShow").datebox({disabled: false});
-      $("#_endDateShow").datebox({disabled: false});
+      $("#startDateShow").datebox({disabled: false});
+      $("#endDateShow").datebox({disabled: false});
       $("#_owner").combobox({disabled: false});
       $("#_flow").combobox({disabled: false}); 
       $("#_type").combobox({disabled: false});
@@ -211,8 +211,8 @@
             loadPhaseSelect(formData._versionId);
             $('#_phaseId').combobox('select',formData._phaseId);
             
-            $('#_form').form('load', {_startDateShow:dateFormat_1(formData._startDate)});
-            $('#_form').form('load', {_endDateShow:dateFormat_1(formData._endDate)}); 
+            $('#_form').form('load', {startDateShow:dateFormat_1(formData._startDate)});
+            $('#_form').form('load', {endDateShow:dateFormat_1(formData._endDate)}); 
             $('#_phaseId').combobox('select',formData._phaseId);
             
             
