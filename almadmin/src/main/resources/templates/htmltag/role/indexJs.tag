@@ -605,6 +605,7 @@ $(function() {
 																	}
 																});
 													});
+													
 											$.fn.zTree.init($("#tree"), {
 														check : {
 															enable : true
@@ -618,6 +619,14 @@ $(function() {
 															}
 														},
 														callback : {
+															beforeCheck:function (event,treeId, treeNode) {
+																if(treeId.id==126){
+																	$.messager.alert('警告', '首页是必选项，不可编辑');
+																	return  false;
+																	
+																}
+																return  true;
+															},
 															onNodeCreated : function(event, treeId, treeNode) {
 																if (treeNode.resourceId) {
 																	$("#" + treeNode.tId).addClass("menuRes")
@@ -629,11 +638,18 @@ $(function() {
 														}
 
 													}, znodes);
+												var treeObj = $.fn.zTree.getZTreeObj("tree");
+												var node = treeObj.getNodeByParam("id", "126");
+												treeObj.checkNode(node, true, true);
+												
 										}, 'json');
 							}
 						});
 			};
-
+			function beforeCheck(treeId, treeNode) {
+				
+			return (treeNode.doCheck !== false);
+			}
 			window.editRoleDataAuth = function(roleId) {
 				$('#win').window({
 							title : '编辑数据权限',
