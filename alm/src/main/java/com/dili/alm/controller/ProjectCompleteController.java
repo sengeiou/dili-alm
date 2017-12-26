@@ -14,6 +14,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -142,8 +143,10 @@ public class ProjectCompleteController {
 	})
     @RequestMapping(value="/update", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput update(ProjectComplete projectComplete,String reasonText) {
-        if(projectComplete.getReason().equalsIgnoreCase("2")){
-            projectComplete.setReason(reasonText);
+        if(StringUtils.isNotEmpty(projectComplete.getReason())) {
+            if (projectComplete.getReason().equalsIgnoreCase("2")) {
+                projectComplete.setReason(reasonText);
+            }
         }
         projectCompleteService.updateSelective(projectComplete);
         projectCompleteService.approve(projectComplete);

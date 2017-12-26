@@ -25,7 +25,8 @@
     .title-second {
         padding-left: 30px;
     }
-    .textbox-label{
+
+    .textbox-label {
         width: 110px;
     }
 </style>
@@ -53,15 +54,15 @@
                 </tr>
                 <tr>
                     <td colspan="2"><input disabled class="easyui-textbox" type="text" id="projectName"
-                               data-options="label:'项目名称:'"></td>
+                                           data-options="label:'项目名称:'"></td>
                     <td colspan="2"><input disabled class="easyui-textbox" type="text" name="type" id="projectType"
-                               data-options="label:'项目类型:'"></td>
+                                           data-options="label:'项目类型:'"></td>
                 </tr>
                 <tr>
                     <td colspan="2"><input disabled class="easyui-textbox" type="text" id="leader"
-                               data-options="label:'项目负责人:'"></td>
+                                           data-options="label:'项目负责人:'"></td>
                     <td colspan="2"><input disabled class="easyui-textbox" type="text" id="dep"
-                               data-options="label:'需求所属业务部门:'"></td>
+                                           data-options="label:'需求所属业务部门:'"></td>
                 </tr>
                 <tr>
                     <td colspan="2">
@@ -69,7 +70,7 @@
                                data-options="label:'业务负责人:'">
                     </td>
                     <td colspan="2"><input disabled class="easyui-datebox" type="text" id="startDate"
-                               data-options="label:'计划开始日期:'"></td>
+                                           data-options="label:'计划开始日期:'"></td>
                 </tr>
                 <tr>
                     <td colspan="2">
@@ -83,7 +84,7 @@
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <input class="easyui-datebox" type="text"  value="${apply.launchDate}" name="launchDate"
+                        <input class="easyui-datebox" type="text" value="${apply.launchDate}" name="launchDate"
                                data-options="required:true,label:'实际上线日期:'">
                     </td>
                 </tr>
@@ -93,14 +94,17 @@
                 <tr>
                     <td><input type="radio" checked name="reason" value="0"><span>正常结项</span></td>
                     <td><input type="radio" name="reason" value="1"><span>项目取消</span></td>
-                    <td colspan="2"><input type="radio" name="reason" value="2"><span>其他原因 </span><input class="easyui-textbox" name="reasonText" id="reasonText" disabled data-options="width:'70%',required:true,validType:'length[1,20]'"></td>
+                    <td colspan="2"><input type="radio" name="reason" value="2"><span>其他原因 </span><input
+                            class="easyui-textbox" name="reasonText" id="reasonText" disabled
+                            data-options="width:'70%',required:true,validType:'length[1,20]'"></td>
                 </tr>
                 <tr>
                     <td class="title-second" colspan="4">1.3项目资料齐备情况</td>
                 </tr>
                 <tr>
                     <td colspan="2"><input type="radio" checked name="information" value="0"><span>项目结项总结报告</span></td>
-                    <td colspan="2"><input type="radio" name="information" value="1"><span>结项资料清单（清单与交付物完备并一致）</span></td>
+                    <td colspan="2"><input type="radio" name="information" value="1"><span>结项资料清单（清单与交付物完备并一致）</span>
+                    </td>
                 </tr>
             </table>
         </form>
@@ -134,6 +138,9 @@
         url: '${contextPath}/project/getProjectList',
         valueField: 'id',
         textField: 'serialNumber',
+        onLoadSuccess: function () {
+            $("#projectId").combobox('setValue', '${apply.projectId}');
+        },
         onChange: function (projectValue) {
             var datas = $("#projectId").combobox('getData');
             for (var i = 0; i < datas.length; i++) {
@@ -158,28 +165,27 @@
     });
 
     $(function () {
-        $("#projectId").combobox('setValue','${apply.projectId}');
         var reason = '${apply.reason}';
-        $("input[name='reason'][value='${apply.reason}']").attr("checked",true);
-        if(reason != "0" && reason!="1"){
-            $("#reasonText").textbox("setValue",reason );
+        $("input[name='reason'][value='${apply.reason}']").attr("checked", true);
+        if (reason != "0" && reason != "1") {
+            $("#reasonText").textbox("setValue", reason);
             $('#reasonText').textbox({
-                disabled:false
+                disabled: false
             });
-            $("input[name='reason'][value='2']").attr("checked",true);
+            $("input[name='reason'][value='2']").attr("checked", true);
         }
 
-        $("input[name='information'][value='${apply.information}']").attr("checked",true);
+        $("input[name='information'][value='${apply.information}']").attr("checked", true);
 
-        $("input[name='reason']").on('click',function(){
-            if($(this).val()==='2'){
+        $("input[name='reason']").on('click', function () {
+            if ($(this).val() === '2') {
                 $('#reasonText').textbox({
-                    disabled:false
+                    disabled: false
                 })
-            }else{
+            } else {
                 $("#reasonText").textbox("initValue", '');
                 $('#reasonText').textbox({
-                    disabled:true
+                    disabled: true
                 })
             }
         });
