@@ -337,7 +337,6 @@ function requestUnbind(index, data, callback) {
 				success : function(retData) {
 					if (retData.code == "200") {
 						(callback && typeof(callback) === "function") && callback(index);
-						// $("#userListGrid").datagrid("reload");
 					} else {
 						$.messager.alert('错误', retData.result);
 					}
@@ -361,11 +360,14 @@ function requestDelete(index, data, callback) {
 				success : function(retData) {
 					if (retData.code == "200") {
 						(callback && typeof(callback) === "function") && callback(index);
+						roleGrid.datagrid('acceptChanges');
 					} else {
+						roleGrid.datagrid('rejectChanges');
 						$.messager.alert('错误', retData.result);
 					}
 				},
 				error : function() {
+					roleGrid.datagrid('rejectChanges');
 					$.messager.alert('错误', '远程访问失败');
 				}
 			});
@@ -391,11 +393,14 @@ function requestSave(index, data, callback) {
 				success : function(retData) {
 					if (retData.code == "200") {
 						(callback && typeof(callback) === "function") && callback(index, retData.data);
+						roleGrid.datagrid('acceptChanges');
 					} else {
+						roleGrid.datagrid('rejectChanges');
 						$.messager.alert('错误', retData.result);
 					}
 				},
 				error : function() {
+					roleGrid.datagrid('rejectChanges');
 					$.messager.alert('错误', '远程访问失败');
 				}
 			});
