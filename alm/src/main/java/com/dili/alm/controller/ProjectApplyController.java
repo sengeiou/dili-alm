@@ -78,7 +78,7 @@ public class ProjectApplyController {
         List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, projectApplyService.listByExample(projectApply));
 
         Map applyDTO = maps.get(0);
-        if (AlmConstants.ApplyState.APPROVE.check(applyDTO.get("status"))) {
+        if (!AlmConstants.ApplyState.APPLY.check(applyDTO.get("status"))) {
             return "redirect:/projectApply/index.html";
         }
         modelMap.put("apply", applyDTO);

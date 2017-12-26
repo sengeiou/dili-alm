@@ -59,41 +59,35 @@
                     <td class="title-first" colspan="4">1项目内容及资源</td>
                 </tr>
                 <tr>
-                    <td colspan="2">
-                        <input class="easyui-textbox" type="text" name="name" value="${change.name}" data-options="required:true,validType:'length[1,20]',label:'变更名称:'">
-                    </td>
-                    <td colspan="2">
-                        <input class="easyui-textbox" type="text" name="projectId" id="projectId" data-options="required:true,label:'项目编号:'">
-                    </td>
+                    <td colspan="2"><input class="easyui-textbox" type="text" name="name" value="${change.name}"
+                                           data-options="label:'变更名称:'"></td>
+                    <td colspan="2"><input class="easyui-combobox" type="text" name="projectId" id="projectId"
+                                           data-options="label:'项目编号:'"></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input class="easyui-textbox" type="text" name="projectName" id="projectName"
+                                           data-options="label:'项目名称:'"></td>
+                    <td colspan="2"><input class="easyui-combobox" type="text" name="versionId" id="versionId"
+                                           data-options="label:'项目版本:'"></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input class="easyui-combobox" type="text" name="projectType" id="projectType"
+                                           data-options="label:'项目类型:'"></td>
+                    <td colspan="2"><input class="easyui-combobox" type="text" name="phaseId" id="phaseId"
+                                           data-options="label:'提交阶段:'"></td>
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <input class="easyui-textbox" type="text" name="projectName" id="projectName" data-options="required:true,validType:'length[1,20]',label:'项目名称:'">
+                        <input class="easyui-combobox" type="text" name="type" id="type"
+                               data-options="label:'变更类型:'">
+                        <#comboProvider _id="type" _provider='changeTypeProvider'/>
                     </td>
-                    <td colspan="2">
-                        <input class="easyui-textbox" type="text" name="versionId" id="versionId" data-options="required:true,validType:'length[1,20]',label:'项目版本:'">
-                    </td>
+                    <td colspan="2"><input class="easyui-numberbox" type="text" name="workingHours"
+                                           value="${change.workingHours}"
+                                           data-options="label:'变更工作量预估:'"></td>
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <input class="easyui-textbox" type="text" name="projectType" id="projectType" data-options="required:true,label:'项目类型:'">
-                    </td>
-                    <td colspan="2">
-                        <input class="easyui-textbox" type="text" name="phaseId" id="phaseId" data-options="required:true,validType:'length[1,20]',label:'提交阶段:'">
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <input class="easyui-textbox" type="text" name="type" id="type" data-options="editable:false,required:true,validType:'length[1,10]',label:'变更类型:'">
-                        <#comboProvider _id="type" _provider='changeTypeProvider' />
-                    </td>
-                    <td colspan="2">
-                        <input class="easyui-numberbox" type="text" name="workingHours" value="${change.workingHours}" data-options="required:true,min:0,max:99999999,label:'变更工作量预估:'">
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <!--<label class="textbox-label textbox-label-before">是否影响上线:</label>-->
                         <select id="affectsOnline" class="easyui-combobox" name="affectsOnline" style="width: 305px;"
                                 data-options="editable:false,label:'是否影响上线'"
                                 required="true">
@@ -101,9 +95,8 @@
                             <option value="2">否</option>
                         </select>
                     </td>
-                    <td colspan="2">
-                        <input class="easyui-datebox" type="text" name="name" value="${change.created}" data-options="editable:false,required:true,label:'提交日期:'">
-                    </td>
+                    <td colspan="2"><input class="easyui-datebox" type="text" name="name" value="${change.created}"
+                                           data-options="label:'提交日期:'"></td>
                 </tr>
                 <tr>
                     <td class="title-first" colspan="4">2.变更描述</td>
@@ -257,24 +250,31 @@
         url: '${contextPath}/project/getProjectList',
         valueField: 'id',
         textField: 'serialNumber',
-        onChange: function(projectValue) {
+        onLoadSuccess: function () {
+            $("#projectId").combobox("setValue", '${change.projectId}');
+        },
+        onChange: function (projectValue) {
             var datas = $("#projectId").combobox('getData');
-            $("#projectName").textbox("initValue", "");
-            $("#projectType").textbox("initValue", "");
             for (var i = 0; i < datas.length; i++) {
                 var data = datas[i];
                 if (data.id == projectValue) {
-                    $("#projectName").textbox("initValue", data.name);
-                    $("#projectType").textbox("initValue", data.type);
+                    $("#projectName").textbox("setText", data.name);
+                    $("#projectType").textbox("setText", data.type);
                     $('#versionId').combobox({
                         url: '${contextPath}/project/version/listPage?projectId=' + projectValue,
                         valueField: 'id',
                         textField: 'version',
-                        onChange: function(versionValue) {
+                        onLoadSuccess: function () {
+                            $("#versionId").combobox("setValue", '${change.versionId}');
+                        },
+                        onChange: function (versionValue) {
                             $('#phaseId').combobox({
                                 url: '${contextPath}/project/phase/listPhase?versionId=' + versionValue,
                                 valueField: 'id',
-                                textField: 'name'
+                                textField: 'name',
+                                onLoadSuccess: function () {
+                                    $("#phaseId").combobox("setValue", '${change.phaseId}');
+                                }
                             });
                         }
                     });
@@ -284,9 +284,6 @@
     });
 
     $(function() {
-        $("#projectId").combobox("setValue", '${change.projectId}');
-        $("#versionId").combobox("setValue", '${change.versionId}');
-        $("#phaseId").combobox("setValue", '${change.phaseId}');
         $("#type").combobox("setValue", '${change.type}');
         $("#affectsOnline").combobox("setValue", '${change.affectsOnline}');
         $('input[class^=easyui-]').textbox("disable");
