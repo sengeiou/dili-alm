@@ -59,7 +59,7 @@ public class ProjectPhaseServiceImpl extends BaseServiceImpl<ProjectPhase, Long>
 	private FilesService filesService;
 	@Autowired
 	private TaskMapper taskMapper;
-@Autowired
+	@Autowired
 	private FilesMapper fileMapper;
 
 	public ProjectPhaseMapper getActualDao() {
@@ -108,10 +108,11 @@ public class ProjectPhaseServiceImpl extends BaseServiceImpl<ProjectPhase, Long>
 	public BaseOutput<Object> addProjectPhase(ProjectPhaseFormDto dto) {
 		ProjectPhase query = DTOUtils.newDTO(ProjectPhase.class);
 		query.setProjectId(dto.getProjectId());
+		query.setVersionId(dto.getVersionId());
 		query.setName(dto.getName());
 		int count = this.getActualDao().selectCount(query);
 		if (count > 0) {
-			return BaseOutput.failure("该项目已存在相同阶段");
+			return BaseOutput.failure("该项目版本已存在相同阶段");
 		}
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		dto.setCreatorId(userTicket.getId());

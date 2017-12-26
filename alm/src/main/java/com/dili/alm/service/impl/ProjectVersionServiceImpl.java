@@ -115,6 +115,7 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		}
 	}
 
+	@Transactional
 	@Override
 	public BaseOutput<Object> updateSelectiveWithOutput(ProjectVersionFormDto dto) {
 		ProjectVersion query = DTOUtils.newDTO(ProjectVersion.class);
@@ -137,41 +138,6 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 				this.filesService.updateSelective(file);
 			});
 		}
-		// UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		// dto.setModifierId(userTicket.getId());
-		// dto.setModified(new Date());
-		// // 如果要通知，刷新调度信息
-		// if (dto.getEmailNotice().equals(1)) {
-		// ProjectVersion oriMilestones = get(dto.getId());
-		// dto = DTOUtils.link(dto, oriMilestones, ProjectVersion.class);
-		// ScheduleJob scheduleJob = DTOUtils.newDTO(ScheduleJob.class);
-		// scheduleJob.setJobStatus(QuartzConstants.JobStatus.NORMAL.getCode());
-		// scheduleJob.setIsConcurrent(QuartzConstants.Concurrent.Async.getCode());
-		// scheduleJob.setJobGroup("milestones");
-		// scheduleJob.setJobName(dto.getCode());
-		// scheduleJob.setDescription("里程碑修改通知, code:" + dto.getCode() + ", version:" +
-		// dto.getVersion());
-		// scheduleJob.setSpringId("emailNoticeJob");
-		// scheduleJob.setStartDelay(0);
-		// scheduleJob.setMethodName("scan");
-		// scheduleJob.setCronExpression(CronDateUtils.getCron(new
-		// Date(System.currentTimeMillis() + 10000)));
-		// scheduleJob.setJobData(JSONObject.toJSONStringWithDateFormat(dto, "yyyy-MM-dd
-		// HH:mm:ss"));
-		// ScheduleJob scheduleJobCondition = DTOUtils.newDTO(ScheduleJob.class);
-		// scheduleJobCondition.setJobGroup("milestones");
-		// scheduleJobCondition.setJobName(dto.getCode());
-		// List<ScheduleJob> scheduleJobs =
-		// scheduleJobService.list(scheduleJobCondition);
-		// // 如果数据库没有调度信息，则新增调度器
-		// if (ListUtils.emptyIfNull(scheduleJobs).isEmpty()) {
-		// scheduleJobService.insertSelective(scheduleJob, true);
-		// } else {
-		// scheduleJob.setId(scheduleJobs.get(0).getId());
-		// scheduleJobService.updateSelective(scheduleJob, true);
-		// }
-		// }
-		// super.updateSelective(dto);
 		Map<Object, Object> target;
 		try {
 			target = ProjectVersionProvider.parseEasyUiModel(dto);

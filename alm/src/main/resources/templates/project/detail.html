@@ -177,7 +177,7 @@ html, body {
 	</table>
 	<!-- datagrid工具栏 -->
 	<div id="fileToolbar" style="padding: 2px 5px;">
-		<%if(editable == true && projectManager == true){%> <a href="#" class="easyui-linkbutton" iconCls="icon-add"
+		<%if(editable == true && (projectManager!'' == true || projectMember!'' == true)){%> <a href="#" class="easyui-linkbutton" iconCls="icon-add"
 			onclick="uploadFile(${model.id!})" plain="true">新建文档</a> <%}%> <span id="fileCount" style="color: red;"></span>
 	</div>
 	<script type="text/javascript">

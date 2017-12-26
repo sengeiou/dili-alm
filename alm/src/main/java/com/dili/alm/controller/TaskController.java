@@ -25,6 +25,9 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -110,7 +113,7 @@ public class TaskController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput insert(Task task, String planTimeStr,String startDateShow,String endDateShow) {
+	public @ResponseBody BaseOutput insert(Task task, String planTimeStr,String startDateShow,String endDateShow) throws ParseException {
 
 		try {
 			Short planTime = Short.parseShort(planTimeStr.trim());
@@ -123,12 +126,12 @@ public class TaskController {
 		if (taskService.validateBeginAndEnd(task)) {
 			return BaseOutput.failure("开始时间和结束时间不能早于项目起始日期");
 		}
-
+		DateFormat fmt =new SimpleDateFormat("yyyy-MM-dd");
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		task.setCreateMemberId(userTicket.getId());
 		task.setCreated(new Date());
-		task.setStartDate(DateUtil.getStrDateyyyyMMdd(startDateShow));
-		task.setEndDate(DateUtil.getStrDateyyyyMMdd(endDateShow));
+		task.setStartDate(fmt.parse(startDateShow));
+		task.setEndDate(fmt.parse(endDateShow));
 		task.setStatus(TaskStatus.NOTSTART.code);// 新增的初始化状态为0未开始状态
 		taskService.insertSelective(task);
 
@@ -140,7 +143,7 @@ public class TaskController {
 			@ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput update(Task task, String planTimeStr,String startDateShow,String endDateShow) {
-
+		DateFormat fmt =new SimpleDateFormat("yyyy-MM-dd");
 		try {
 
 			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
@@ -149,8 +152,8 @@ public class TaskController {
 	        task.setModifyMemberId(userTicket.getId());
 			Short planTime = Short.parseShort(planTimeStr.trim());
 			task.setPlanTime(planTime);
-			task.setStartDate(DateUtil.getStrDateyyyyMMdd(startDateShow));
-			task.setEndDate(DateUtil.getStrDateyyyyMMdd(endDateShow));
+			task.setStartDate(fmt.parse(startDateShow));
+			task.setEndDate(fmt.parse(endDateShow));
 
 		} catch (Exception e) {
 			return BaseOutput.failure("请正确填写工时");
