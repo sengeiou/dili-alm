@@ -20,7 +20,7 @@
                             </td>
 
                             <td style="padding:5px;">
-                                <input class="easyui-textbox" name="content" id="content" style="width:100%" data-options="label:'内容:', validType:'length[0,65535]'" />
+                                <input class="easyui-textbox" name="content" id="content" style="width:100%" data-options="label:'内容:', validType:'length[0,20]'" />
 
                             </td>
                         </tr>
@@ -57,7 +57,7 @@
                    align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" data-options="onHeaderContextMenu:headerContextMenu">
                 <thead>
                     <tr>
-                        <th data-options="field:'id',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'" style="width: 15%">
+                        <th data-options="field:'logNumber',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'" style="width: 15%">
                             操作日志ID
                         </th>
                         <th data-options="field:'operatorId',  _provider:'memberProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'" style="width: 15%">
@@ -66,10 +66,10 @@
                         <th data-options="field:'created',  _provider:'datetimeProvider', sortable:'true', order:'desc', align:'center', resizable:'true', fixed:'false'" style="width: 30%">
                             操作时间
                         </th>
-                        <th data-options="field:'ip',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'" style="width: 20%">
+                        <th data-options="field:'ip',   align:'center', resizable:'true', fixed:'false'" style="width: 20%">
          IP
                         </th>
-                        <th data-options="field:'content',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'" style="width: 20%">
+                        <th data-options="field:'content', align:'center', resizable:'true', fixed:'false'" style="width: 20%">
                             内容
                         </th>
                     </tr>

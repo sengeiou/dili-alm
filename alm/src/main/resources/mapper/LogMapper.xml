@@ -11,12 +11,14 @@
     <result column="operator_id" jdbcType="BIGINT" property="operatorId" />
     <result column="ip" jdbcType="VARCHAR" property="ip" />
      <result column="content" jdbcType="VARCHAR" property="content" />
+     <result column="log_number" jdbcType="BIGINT" property="logNumber" />
+     <result column="log_order" jdbcType="BIGINT" property="logOrder" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
       WARNING - @mbg.generated
     -->
-    id, created, modified, operator_id, ip,content
+    id, created, modified, operator_id, ip,content,log_number,log_order
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -47,6 +49,12 @@
       </if>
       <if test="content != null">
         content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="logNumber != null">
+        log_number = #{logNumber,jdbcType=BIGINT},
+      </if>
+      <if test="logOrder != null">
+        log_order = #{logOrder,jdbcType=BIGINT},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
@@ -99,5 +107,17 @@
     <if test="log.content != null">
         and content like '%${log.content}%'
     </if>
+  </select>
+  
+  <select id="selectLogByCreated"  resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from log
+    where  created  &gt;=#{beginTime} 
+        and created &lt;=#{endTime} 
+    	ORDER BY log_order desc
   </select>
 </mapper>

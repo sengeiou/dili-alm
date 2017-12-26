@@ -102,5 +102,15 @@ public class WebUtil {
 		}
 		return ip;
 	}
+	
+	public static String getSixNumber(Long number) {
+		String str=number.toString();
+		StringBuffer sb = new StringBuffer();
+		for(int i = 0; i < 6 - str.length(); i++) {
+			sb.append("0");
+		}
+		sb.append(str);
+		return sb.toString();
+	}
 
 }
