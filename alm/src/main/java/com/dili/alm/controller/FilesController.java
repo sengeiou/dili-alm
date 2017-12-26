@@ -128,7 +128,12 @@ public class FilesController {
 	public BaseOutput<Object> filesUpload(@RequestParam("file") MultipartFile[] files,
 			@RequestParam(required = false) Long projectId, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
-		List<Files> uploadFiles = this.filesService.uploadFile(files, projectId);
+		List<Files> uploadFiles;
+		try {
+			uploadFiles = this.filesService.uploadFile(files, projectId);
+		} catch (Exception e) {
+			return BaseOutput.failure(e.getMessage());
+		}
 		return BaseOutput.success().setData(uploadFiles);
 	}
 

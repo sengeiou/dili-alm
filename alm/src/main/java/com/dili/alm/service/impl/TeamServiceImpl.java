@@ -117,21 +117,15 @@ public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements Team
 
 	@Override
 	public BaseOutput<Object> updateAfterCheck(Team team) {
-		int result;
-		Team oldRecord = this.getActualDao().selectByPrimaryKey(team.getId());
-		if (oldRecord.getProjectId().equals(team.getProjectId())
-				&& oldRecord.getMemberId().equals(team.getMemberId())) {
-			result = this.updateSelective(team);
-		} else {
-			Team record = DTOUtils.newDTO(Team.class);
-			record.setProjectId(team.getProjectId());
-			record.setMemberId(team.getMemberId());
-			int count = this.getActualDao().selectCount(record);
-			if (count > 0) {
-				return BaseOutput.failure("项目和团队已存在，不能重复添加");
-			}
-			result = this.updateSelective(team);
+		Team teamQuery = DTOUtils.newDTO(Team.class);
+		teamQuery.setProjectId(team.getProjectId());
+		teamQuery.setMemberId(team.getMemberId());
+		teamQuery.setRole(team.getRole());
+		Team old = this.getActualDao().selectOne(teamQuery);
+		if (old != null && !old.getId().equals(team.getId())) {
+			return BaseOutput.failure("该项目存在相同角色的团队成员");
 		}
+		int result = this.updateSelective(team);
 		if (result > 0) {
 			try {
 				Map<Object, Object> viewModel = this.parse2ListView(team, null);

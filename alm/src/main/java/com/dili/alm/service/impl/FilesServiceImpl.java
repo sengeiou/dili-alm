@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSONObject;
@@ -59,6 +60,7 @@ public class FilesServiceImpl extends BaseServiceImpl<Files, Long> implements Fi
 		return super.delete(files.getId());
 	}
 
+	@Transactional
 	@Override
 	public List<Files> uploadFile(MultipartFile[] files, Long projectId) {
 		if (files.length <= 0) {
@@ -74,6 +76,12 @@ public class FilesServiceImpl extends BaseServiceImpl<Files, Long> implements Fi
 		List<Files> returnFiles = new ArrayList<>(files.length);
 		for (MultipartFile file : files) {
 			String fileName = file.getOriginalFilename();
+			Files record = DTOUtils.newDTO(Files.class);
+			record.setName(fileName);
+			int count = this.getActualDao().selectCount(record);
+			if (count > 0) {
+				throw new RuntimeException("存在相同文件名");
+			}
 			int size = (int) file.getSize();
 			if (StringUtils.isBlank(fileName) || size == 0) {
 				continue;
@@ -85,39 +93,25 @@ public class FilesServiceImpl extends BaseServiceImpl<Files, Long> implements Fi
 				byte[] bytes = file.getBytes();
 				buffStream = new BufferedOutputStream(new FileOutputStream(dest));
 				buffStream.write(bytes);
-				Files record = DTOUtils.newDTO(Files.class);
+				record = DTOUtils.newDTO(Files.class);
 				record.setName(file.getOriginalFilename());
-				Files tmpFiles = this.getActualDao().selectOne(record);
 				UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-				if (tmpFiles == null) {
-					tmpFiles = DTOUtils.newDTO(Files.class);
-					if (userTicket != null) {
-						tmpFiles.setCreateMemberId(userTicket.getId());
-					}
-					tmpFiles.setProjectId(projectId);
-					tmpFiles.setName(file.getOriginalFilename());
-					tmpFiles.setLength(file.getSize());
-					tmpFiles.setSuffix(
-							file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1));
-					tmpFiles.setUrl(path);
-					tmpFiles.setCreated(new Date());
-					this.getActualDao().insertSelective(tmpFiles);
-				} else {
-					if (userTicket != null) {
-						tmpFiles.setModifyMemberId(userTicket.getId());
-					}
-					tmpFiles.setProjectId(projectId);
-					tmpFiles.setName(file.getOriginalFilename());
-					tmpFiles.setLength(file.getSize());
-					tmpFiles.setSuffix(
-							file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1));
-					tmpFiles.setUrl(path);
-					tmpFiles.setModified(new Date());
-					this.getActualDao().updateByPrimaryKey(tmpFiles);
+				Files tmpFiles = DTOUtils.newDTO(Files.class);
+				if (userTicket != null) {
+					tmpFiles.setCreateMemberId(userTicket.getId());
 				}
+				tmpFiles.setProjectId(projectId);
+				tmpFiles.setName(file.getOriginalFilename());
+				tmpFiles.setLength(file.getSize());
+				tmpFiles.setSuffix(
+						file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1));
+				tmpFiles.setUrl(path);
+				tmpFiles.setCreated(new Date());
+				this.getActualDao().insertSelective(tmpFiles);
 				returnFiles.add(tmpFiles);
 			} catch (IOException e) {
 				LOGGER.error(e.getMessage(), e);
+				throw new RuntimeException("上传失败");
 			} finally {
 				if (buffStream != null) {
 					try {
