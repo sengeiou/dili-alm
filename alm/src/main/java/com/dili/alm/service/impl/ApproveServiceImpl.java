@@ -57,6 +57,9 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
     private JavaMailSender mailSender;
 
     @Autowired
+    private MessageService messageService;
+
+    @Autowired
     private ProjectChangeService projectChangeService;
 
     @Autowired
@@ -470,12 +473,30 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
                 approve.setUserId(u.getId());
                 approve.setRole(roleRpc.listRoleNameByUserId(Long.valueOf(u.getId())).getData());
                 approveList.add(approve);
+                sendMessage(as.getType(), as.getCreateMemberId(), u.getId());
             });
             as.setDescription(JSON.toJSONString(approveList));
         }
         insertSelective(as);
     }
 
+    private void sendMessage(String type, Long sender, Long recipient) {
+        try {
+            switch (type) {
+                case "apply":
+                    messageService.insertMessage("http://alm.diligrp.com:8083/alm/approve/apply/index.html", sender, recipient);
+                    break;
+                case "change":
+                    messageService.insertMessage("http://alm.diligrp.com:8083/alm/approve/change/index.html", sender, recipient);
+                    break;
+                case "complete":
+                    messageService.insertMessage("http://alm.diligrp.com:8083/alm/approve/complete/index.html", sender, recipient);
+                    break;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
     /**
      * 立项审批通过生成项目信息

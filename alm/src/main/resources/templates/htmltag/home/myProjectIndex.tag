@@ -1,4 +1,9 @@
-
+function progressFormatter(value, rowData, rowIndex) {
+	var htmlstr = '<div class="easyui-progressbar progressbar easyui-fluid" style="width: 100%; height: 20px;">'
+			+ '<div class="progressbar-value" style="width: 100%; height: 20px; line-height: 20px;"> ' + '<div class="progressbar-text" style="width: ' + value
+			+ '%; height: 20px; line-height: 20px;">' + value + '%</div>' + '</div>' + '</div>';
+	return htmlstr;
+}
         //表格查询
         function queryGrid() {
             var opts = $("#grid").datagrid("options");

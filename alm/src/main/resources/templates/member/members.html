@@ -4,8 +4,8 @@
 			<tr>
 				<td style="padding: 5px;"><input class="easyui-textbox" name="realName" id="realName" style="width: 100%"
 					data-options="label:'姓名:'" /></td>
-				<td style="padding: 5px;"><select class="easyui-combotree" name="departmentId" id="departmentId" style="width: 100%"
-					data-options="loadFilter:treeLoadFilter, _idField:'id', _textField:'name', _parentIdField:'parentId',label:'部门:', url:'${contextPath!}/team/department.json',editable:false"></select>
+				<td style="padding: 5px;"><input value="${dep}" class="easyui-combotree" name="departmentId" id="departmentId" style="width: 100%"
+					data-options="loadFilter:treeLoadFilter, _idField:'id', _textField:'name', _parentIdField:'parentId',label:'部门:', url:'${contextPath!}/team/department.json',editable:false">
 				</td>
 				<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="a();">查询</a></td>
 			</tr>
@@ -48,9 +48,9 @@
 	}
 
 	$(function() {
-		if (dep != '') {
-			$("#departmentId").combobox('select', dep);
-		}
+		// if (dep != '') {
+		// 	$("#departmentId").combotreegrid('setValue', dep);
+		// }
 		a();
 		// $('#searchTextbox').textbox('addClearBtn', 'icon-clear');
 		// $('#searchTextbox').textbox('textbox').focus();
