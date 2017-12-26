@@ -396,7 +396,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 				taskTimes += taskDetailsDome.getTaskHour();
 			}
 		}
-		progress = (int) ((1 - taskTimes / total) * 100);
+		progress = (int) (( taskTimes / total) -1* 100);
 		project.setCompletedProgress(progress);
 		projectService.saveOrUpdate(project);
 	}
@@ -516,10 +516,9 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 				return false;
 			}
 		}
-
 		return true;
 	}
-
+	
 	@Override
 	public EasyuiPageOutput listByTeam(Task task, String phaseName) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
@@ -672,4 +671,15 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		}
 		return userList;
 	}
+
+
+	@Override
+	public List<Task> listTaskByProjectId(Long projectId) {
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		Task task = DTOUtils.newDTO(Task.class);
+		task.setProjectId(projectId);
+		return taskMapper.selectByTeam(task, userTicket.getId(), null);
+	}
+	
+	
 }

@@ -15,6 +15,7 @@ import com.dili.alm.service.TaskService;
 import com.dili.alm.service.ProjectPhaseService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
@@ -77,13 +78,13 @@ public class TaskController {
 
 		return taskService.list(task);
 	}
-
-	@ApiOperation(value = "分页查询Task", notes = "分页查询Task，返回easyui分页信息")
+ 
+	@ApiOperation(value = "分页查询Task", notes = "按群组查询首页信息")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(Task task) throws Exception {
-		return taskService.listPageSelectTaskDto(task).toString();
+		return taskService.listByTeam(task, null).toString();
 	}
 	
 	@ApiOperation(value = "分页查询Task", notes = "按照群组进行分页查询")
@@ -109,7 +110,7 @@ public class TaskController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput insert(Task task, String planTimeStr) {
+	public @ResponseBody BaseOutput insert(Task task, String planTimeStr,String startDateShow,String endDateShow) {
 
 		try {
 			Short planTime = Short.parseShort(planTimeStr.trim());
@@ -126,6 +127,8 @@ public class TaskController {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		task.setCreateMemberId(userTicket.getId());
 		task.setCreated(new Date());
+		task.setStartDate(DateUtil.getStrDateyyyyMMdd(startDateShow));
+		task.setEndDate(DateUtil.getStrDateyyyyMMdd(endDateShow));
 		task.setStatus(TaskStatus.NOTSTART.code);// 新增的初始化状态为0未开始状态
 		taskService.insertSelective(task);
 
@@ -136,7 +139,7 @@ public class TaskController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput update(Task task, String planTimeStr,String _startDateShow,String _endDateShow) {
+	public @ResponseBody BaseOutput update(Task task, String planTimeStr,String startDateShow,String endDateShow) {
 
 		try {
 
@@ -146,8 +149,8 @@ public class TaskController {
 	        task.setModifyMemberId(userTicket.getId());
 			Short planTime = Short.parseShort(planTimeStr.trim());
 			task.setPlanTime(planTime);
-			task.setStartDate(DateUtil.getStrDateyyyyMMdd(_startDateShow));
-			task.setEndDate(DateUtil.getStrDateyyyyMMdd(_endDateShow));
+			task.setStartDate(DateUtil.getStrDateyyyyMMdd(startDateShow));
+			task.setEndDate(DateUtil.getStrDateyyyyMMdd(endDateShow));
 
 		} catch (Exception e) {
 			return BaseOutput.failure("请正确填写工时");
@@ -165,14 +168,11 @@ public class TaskController {
 		return BaseOutput.success("删除成功");
 	}
 
-	// 查询
+	// 查询前置任务
 	@ResponseBody
 	@RequestMapping(value = "/listTree.json", method = { RequestMethod.GET, RequestMethod.POST })
-	public List<Task> listTree(Task task) {
-		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		task.setOwner(userTicket.getId());
-		List<Task> list = this.taskService.list(task);
-		return list;
+	public List<Task> listTree(Long projectId) {
+		return taskService.listTaskByProjectId(projectId);
 	}
  
 

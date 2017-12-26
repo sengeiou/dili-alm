@@ -20,12 +20,10 @@
 								_valueField="id" _textField="name"/>
                             <td style="padding:5px;">
  								<input  name="versionId" id="versionId"  class="easyui-combobox"style="width: 100%;"   data-options="label:'所属版本:'"/>
- 								<#comboProvider _id="versionId" _table="project_version"
-								_valueField="id" _textField="version"/>
                             </td>
                         <tr>
                         <td style="padding:5px;">
-                            <input  name="phaseName" id="phaseName"  class="easyui-combobox"style="width: 100%;"  panelWidth="auto" panelHeight="auto"  data-options="label:'所属阶段:'">
+                            <input  name="phaseName" id="phaseName"  class="easyui-combobox"style="width: 100%;"  panelWidth="auto" panelHeight="auto"  editable="false" data-options="label:'所属阶段:'">
                             <#comboProvider _id="phaseName" _table="data_dictionary_value"
                             _valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":10}'/>
 
@@ -34,7 +32,7 @@
                            <input name="owner" id="owner"  class="easyui-combobox"  style="width:100%;" data-options="label:'负责人:'">
                             </td>
                             <td style="padding:5px;">
-                            <input  name="status" id="status"  class="easyui-combobox"style="width: 100%;"  panelWidth="auto" panelHeight="auto"  data-options="label:'状态:'">
+                            <input  name="status" id="status"  class="easyui-combobox"style="width: 100%;"  panelWidth="auto" panelHeight="auto"  editable="false" data-options="label:'状态:'">
                                 <#comboProvider _id="status" _table="data_dictionary_value"
 								_valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":16}' />
                             </td>
@@ -128,45 +126,37 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input  name="_projectId" id="_projectId"  class="easyui-combobox"style="width: 100%;"   data-options="label:'所属项目:', required:true ">
-                    <#comboProvider _id="_projectId" _table="project"
-								_valueField="id" _textField="name"/>
+                    <input  name="_projectId" id="_projectId"  class="easyui-combobox"style="width: 100%;"   editable="false" data-options="label:'所属项目:', required:true">
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                <input  name="_versionId" id="_versionId"  class="easyui-combobox"style="width: 100%;"   data-options="label:'所属版本:', required:true">
-                 								<#comboProvider _id="_versionId" _table="project_version"
-								_valueField="id" _textField="version"/>
+                <input  name="_versionId" id="_versionId"  class="easyui-combobox"style="width: 100%;"   editable="false"  data-options="label:'所属版本:', required:true">
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                 <input  name="_phaseId" id="_phaseId"  class="easyui-combobox"style="width: 100%;"   data-options="label:'所属阶段:', required:true">
-                                                 <#comboProvider _id="_phaseId" _table="project_phase"
-								_valueField="id" _textField="name"/>
+                 <input  name="_phaseId" id="_phaseId"  class="easyui-combobox"style="width: 100%;"   editable="false" data-options="label:'所属阶段:', required:true">
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-datebox" name="_startDateShow" id="_startDateShow" style="width:100%" data-options="label:'开始时间:', required:true" />
+                    <input class="easyui-datebox" name="startDateShow" id="startDateShow" editable="false" style="width:100%" data-options="label:'开始时间:', required:true" />
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-datebox" name="_endDateShow" id="_endDateShow" style="width:100%" data-options="label:'结束时间:', required:true,validType:'endDateValidate[\'_startDate\']'" />
+                    <input class="easyui-datebox" name="endDateShow" id="endDateShow" editable="false" style="width:100%" data-options="label:'结束时间:', required:true,validType:'endDateValidate[\'startDateShow\']'" />
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                 <input name="_beforeTask" id="_beforeTask"  class="easyui-combobox"style="width: 100%;"   data-options="label:'前置任务:'">
-                 <#comboProvider _id="_beforeTask" _table="task"
-								_valueField="id" _textField="name"/>
+                  <input  name="_beforeTask" id="_beforeTask"  class="easyui-combobox"style="width: 100%;"  editable=false  data-options="label:'前置任务:',editable:false">
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                     <input  name="_type" id="_type"  class="easyui-combobox"style="width: 100%;"  panelWidth="auto" panelHeight="auto"  data-options="label:'任务类型:', required:true">
+                     <input  name="_type" id="_type"  class="easyui-combobox"style="width: 100%;"  editable=false panelWidth="auto" panelHeight="auto"  data-options="label:'任务类型:', required:true">
                                <#comboProvider _id="_type" _table="data_dictionary_value"
 								_valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":17}' />
                 </td>
@@ -183,7 +173,7 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <select  name="_flow" id="_flow" class="easyui-combobox" data-options="label:'流程:', required:true" style="width:100%">
+                    <select  name="_flow" id="_flow" class="easyui-combobox" editable=false data-options="label:'流程:', required:true" style="width:100%">
                       <option value=0>正常流程</option>
                       <option value=1>变更流程</option>
                     </select>
@@ -192,8 +182,6 @@
            <tr  id="changeIdTr">
                 <td style="padding:5px;">
                      <input name="_changeId" id="_changeId"  class="easyui-combobox"  style="width:300px" data-options="label:'变更项目:'">
-                    <#comboProvider _id="_changeId" _table="project"
-								_valueField="id" _textField="name"/>
                 </td>
             </tr>
             <tr>
