@@ -1,296 +1,303 @@
- <#body>
- <style>
-     .textbox-label{
-         width: 100px;
-     }
- </style>
-    <div class="easyui-layout" fit="true">
-        <div id="smDialog" style="display: none;"></div>
-        <!-- ====================================================================================================================== -->
-        <!-- 上方布局 -->
-        <!-- ====================================================================================================================== -->
-        <div region="north" height="auto" align="center">
-            <!-- =========================================================表单========================================================= -->
-            <div class="easyui-panel" style="width:100%;" align="left">
-                <form id="form" class="easyui-form" method="post" fit="true">
-                    <table style="padding:10px;">
-                        <tr>
-                            <td style="padding:5px;">
-                                <input class="easyui-textbox" name="name" id="name" style="width:100%" data-options="label:'项目名称:', validType:'length[0,19]'" />
-
-                            </td>
-                            <td style="padding:5px;">
-                                <input class="easyui-textbox" name="status" id="status" style="width:100%"
-                                       data-options="label:'项目审批状态:', validType:'length[0,3]'"/>
-                                <#comboProvider _id="status" _provider='changeStateProvider'/>
-
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="padding:5px;">
-                                <input class="easyui-textbox" name="extend" id="extend" style="width:100%" data-options="label:'变更类型:', validType:'length[0,19]'" />
-                                <#comboProvider _id="extend" _provider='changeTypeProvider'/>
-
-                            </td>
-
-                            <td style="padding:5px;">
-                                <input class="easyui-textbox" name="createMemberId" id="createMemberId" label="变更发起人:" style="width:100%" data-options="editable:false,
-									buttonText:'选择',
-									onClickButton:selectMember,onChange:_changeTextboxShowClear" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
-                                   onclick="queryGrid()">查询</a>
-                                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">清除</a>
-                            </td>
-                        </tr>
-                    </table>
-                </form>
-            </div>
-        </div>
-        <!-- ====================================================================================================================== -->
-        <!-- 中央布局 -->
-        <!-- ====================================================================================================================== -->
-        <!-- 表格 -->
-        <div region="center" style="width:100%;" height="auto">
-            <!-- =========================================================表格========================================================= -->
-            <table class="easyui-datagrid" title="变更审批列表" id="grid" fitColumns="true"
-                   pagination="true" pageSize="30" pageNumber="1" pagePosition="bottom" rownumbers="true" remoteSort="false"
-                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="created" sortOrder="desc"
-                   align="center" fit="true" striped="true" idField="id">
-                <thead>
+<#body>
+<style>
+    .textbox-label {
+        width: 100px;
+    }
+</style>
+<div class="easyui-layout" fit="true">
+    <div id="smDialog" style="display: none;"></div>
+    <!-- ====================================================================================================================== -->
+    <!-- 上方布局 -->
+    <!-- ====================================================================================================================== -->
+    <div region="north" height="auto" align="center">
+        <!-- =========================================================表单========================================================= -->
+        <div class="easyui-panel" style="width:100%;" align="left">
+            <form id="form" class="easyui-form" method="post" fit="true">
+                <table style="padding:10px;">
                     <tr>
-                        <th data-options="field:'number', formatter:formatName,width:'10%',    order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            变更编号
-                        </th>
-                        <th data-options="field:'changeName',formatter:formatName,_provider:'projectChangeProvider', width:'16%',    order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            变更名称
-                        </th>
-                        <th data-options="field:'name', width:'16%',    order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            项目名称
-                        </th>
-                        <th data-options="field:'version',_provider:'projectChangeProvider',  width:'10%',   order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            版本
-                        </th>
-                        <th data-options="field:'extend',_provider:'changeTypeProvider',  width:'8%',   order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            变更类型
-                        </th>
-                        <th data-options="field:'status',  width:'7%',  _provider:'changeStateProvider', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            变更状态
-                        </th>
-                        <th data-options="field:'created',  width:'10%', _provider:'datetimeProvider',  order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            申请时间
-                        </th>
-                        <th data-options="field:'createMemberId',  width:'10%', _provider:'memberProvider',  order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            变更人
-                        </th>
-                        <th data-options="field:'opt',formatter:formatStatus, align:'center', resizable:'true', fixed:'false'">
-                            操作
-                        </th>
+                        <td style="padding:5px;">
+                            <input class="easyui-textbox" name="name" id="name" style="width:100%"
+                                   data-options="label:'项目名称:', validType:'length[0,19]'"/>
+
+                        </td>
+                        <td style="padding:5px;">
+                            <input class="easyui-textbox" name="status" id="status" style="width:100%"
+                                   data-options="label:'项目审批状态:', validType:'length[0,3]'"/>
+                            <#comboProvider _id="status" _provider='changeStateProvider'/>
+
+                        </td>
                     </tr>
-                </thead>
-            </table>
+                    <tr>
+                        <td style="padding:5px;">
+                            <input class="easyui-textbox" name="extend" id="extend" style="width:100%"
+                                   data-options="label:'变更类型:', validType:'length[0,19]'"/>
+                            <#comboProvider _id="extend" _provider='changeTypeProvider'/>
+
+                        </td>
+
+                        <td style="padding:5px;">
+                            <input class="easyui-textbox" name="createMemberId" id="createMemberId" label="变更发起人:"
+                                   style="width:100%" data-options="editable:false,
+									buttonText:'选择',
+									onClickButton:selectMember,onChange:_changeTextboxShowClear"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
+                               onclick="queryGrid()">查询</a>
+                            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">清除</a>
+                        </td>
+                    </tr>
+                </table>
+            </form>
         </div>
     </div>
     <!-- ====================================================================================================================== -->
-    <!-- style & script 分隔线 -->
+    <!-- 中央布局 -->
     <!-- ====================================================================================================================== -->
- <script>
-     var verify =false;
- </script>
- <#resource code="change_auth">
- <script>
-     verify = true;
- </script>
- </#resource>
-    <script type="text/javascript">
+    <!-- 表格 -->
+    <div region="center" style="width:100%;" height="auto">
+        <!-- =========================================================表格========================================================= -->
+        <table class="easyui-datagrid" title="变更审批列表" id="grid" fitColumns="true"
+               pagination="true" pageSize="30" pageNumber="1" pagePosition="bottom" rownumbers="true" remoteSort="false"
+               loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="created"
+               sortOrder="desc"
+               align="center" fit="true" striped="true" idField="id">
+            <thead>
+            <tr>
+                <th data-options="field:'number', formatter:formatName,width:'10%',    order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    变更编号
+                </th>
+                <th data-options="field:'changeName',formatter:formatName,_provider:'projectChangeProvider', width:'16%',    order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    变更名称
+                </th>
+                <th data-options="field:'name', width:'16%',    order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    项目名称
+                </th>
+                <th data-options="field:'version',_provider:'projectChangeProvider',  width:'10%',   order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    版本
+                </th>
+                <th data-options="field:'extend',_provider:'changeTypeProvider',  width:'8%',   order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    变更类型
+                </th>
+                <th data-options="field:'status',  width:'7%',  _provider:'changeStateProvider', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    变更状态
+                </th>
+                <th data-options="field:'created',  width:'10%', _provider:'datetimeProvider',  order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    申请时间
+                </th>
+                <th data-options="field:'createMemberId',  width:'10%', _provider:'memberProvider',  order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    变更人
+                </th>
+                <th data-options="field:'opt',formatter:formatStatus, align:'center', resizable:'true', fixed:'false'">
+                    操作
+                </th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+<!-- ====================================================================================================================== -->
+<!-- style & script 分隔线 -->
+<!-- ====================================================================================================================== -->
+<script>
+    var verify = false;
+</script>
+<#resource code="change_auth">
+<script>
+    verify = true;
+</script>
+</#resource>
+<script type="text/javascript">
 
-        function formatStatus(value, row) {
-            var dom = '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/doc/change/' + row.projectApplyId + '">变更文档下载</a></span>';
-            if (row.$_status == 2) {
-                return '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/change/' + row.id + '">审批</a></span>';
-            } else if (row.$_status == 3) {
-                if(verify) {
-                    return dom += '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/verify/' + row.id + '">验证</a></span>';
+    function formatStatus(value, row) {
+        var dom = '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/doc/change/' + row.projectApplyId + '">变更文档下载</a></span>';
+        if (row.$_status == 2) {
+            return '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/change/' + row.id + '">审批</a></span>';
+        } else if (row.$_status == 3 || row.$_status == 5) {
+            if (verify) {
+                dom += '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/verify/' + row.id + '">验证</a></span>';
+            }
+            return dom;
+        }
+    }
+
+    function formatName(value, row) {
+        return '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/change/' + row.id + '?viewMode=true">' + value + '</a></span>';
+    }
+
+    //打开新增窗口
+    function openInsert() {
+        $('#dlg').dialog('open');
+        $('#dlg').dialog('center');
+        $('#_form').form('clear');
+        formFocus("_form", "_projectApplyId");
+    }
+
+    //打开修改窗口
+    function openUpdate() {
+        var selected = $("#grid").datagrid("getSelected");
+        if (null == selected) {
+            $.messager.alert('警告', '请选中一条数据');
+            return;
+        }
+        $('#dlg').dialog('open');
+        $('#dlg').dialog('center');
+        formFocus("_form", "_projectApplyId");
+        var formData = $.extend({}, selected);
+        formData = addKeyStartWith(getOriginalData(formData), "_");
+        $('#_form').form('load', formData);
+    }
+
+    function saveOrUpdate() {
+        if (!$('#_form').form("validate")) {
+            return;
+        }
+        var _formData = removeKeyStartWith($("#_form").serializeObject(), "_");
+        var _url = null;
+        //没有id就新增
+        if (_formData.id == null || _formData.id == "") {
+            _url = "${contextPath}/approve/insert";
+        } else {//有id就修改
+            _url = "${contextPath}/approve/update";
+        }
+        $.ajax({
+            type: "POST",
+            url: _url,
+            data: _formData,
+            processData: true,
+            dataType: "json",
+            async: true,
+            success: function (data) {
+                if (data.code == "200") {
+                    $("#grid").datagrid("reload");
+                    $('#dlg').dialog('close');
+                } else {
+                    $.messager.alert('错误', data.result);
                 }
+            },
+            error: function () {
+                $.messager.alert('错误', '远程访问失败');
             }
-        }
-
-        function formatName(value,row) {
-            return '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/change/' + row.id + '?viewMode=true">' + value + '</a></span>';
-        }
-
-        //打开新增窗口
-        function openInsert(){
-            $('#dlg').dialog('open');
-            $('#dlg').dialog('center');
-            $('#_form').form('clear');
-            formFocus("_form", "_projectApplyId");
-        }
-
-        //打开修改窗口
-        function openUpdate(){
-            var selected = $("#grid").datagrid("getSelected");
-            if (null == selected) {
-                $.messager.alert('警告','请选中一条数据');
-                return;
-            }
-            $('#dlg').dialog('open');
-            $('#dlg').dialog('center');
-            formFocus("_form", "_projectApplyId");
-            var formData = $.extend({},selected);
-            formData = addKeyStartWith(getOriginalData(formData),"_");
-            $('#_form').form('load', formData);
-        }
-
-        function saveOrUpdate(){
-            if(!$('#_form').form("validate")){
-                return;
-            }
-            var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
-            var _url = null;
-            //没有id就新增
-            if(_formData.id == null || _formData.id==""){
-                _url = "${contextPath}/approve/insert";
-            }else{//有id就修改
-                _url = "${contextPath}/approve/update";
-            }
-            $.ajax({
-                type: "POST",
-                url: _url,
-                data: _formData,
-                processData:true,
-                dataType: "json",
-                async : true,
-                success: function (data) {
-                    if(data.code=="200"){
-                        $("#grid").datagrid("reload");
-                        $('#dlg').dialog('close');
-                    }else{
-                        $.messager.alert('错误',data.result);
-                    }
-                },
-                error: function(){
-                    $.messager.alert('错误','远程访问失败');
-                }
-            });
-        }
-
-        //根据主键删除
-        function del() {
-            var selected = $("#grid").datagrid("getSelected");
-            if (null == selected) {
-                $.messager.alert('警告','请选中一条数据');
-                return;
-            }
-            $.messager.confirm('确认','您确认想要删除记录吗？',function(r){
-                if (r){
-                    $.ajax({
-                        type: "POST",
-                        url: "${contextPath}/approve/delete",
-                        data: {id:selected.id},
-                        processData:true,
-                        dataType: "json",
-                        async : true,
-                        success: function (data) {
-                            if(data.code=="200"){
-                                $("#grid").datagrid("reload");
-                                $('#dlg').dialog('close');
-                            }else{
-                                $.messager.alert('错误',data.result);
-                            }
-                        },
-                        error: function(){
-                            $.messager.alert('错误','远程访问失败');
-                        }
-                    });
-                }
-            });
-
-        }
-        //表格查询
-        function queryGrid() {
-            var opts = $("#grid").datagrid("options");
-            if (null == opts.url || "" == opts.url) {
-                opts.url = "${contextPath}/approve/change/listPage";
-            }
-            if(!$('#form').form("validate")){
-                return;
-            }
-            var param = bindMetadata("grid", true);
-            var formData = $("#form").serializeObject();
-            $.extend(param, formData);
-            $("#grid").datagrid("load", param);
-        }
-
-
-        //清空表单
-        function clearForm() {
-            $('#form').form('clear');
-            $("#createMemberId").textbox('initValue','');
-            queryGrid();
-        }
-
-        //表格表头右键菜单
-        function headerContextMenu(e, field){
-            e.preventDefault();
-            if (!cmenu){
-                createColumnMenu("grid");
-            }
-            cmenu.menu('show', {
-                left:e.pageX,
-                top:e.pageY
-            });
-        }
-
-        $.messager.progress({
-            title:"提示",
-            msg:"加载中,请稍候...",
-            value : '10',
-            text: '{value}%',
-            interval:200
         });
-        $.parser.onComplete = function(){
-            $.messager.progress("close");
-        };
-        //全局按键事件
-        function getKey(e){
-            e = e || window.event;
-            var keycode = e.which ? e.which : e.keyCode;
-            if(keycode == 46){ //如果按下删除键
-                var selected = $("#grid").datagrid("getSelected");
-                if(selected && selected!= null){
-                    del();
-                }
+    }
+
+    //根据主键删除
+    function del() {
+        var selected = $("#grid").datagrid("getSelected");
+        if (null == selected) {
+            $.messager.alert('警告', '请选中一条数据');
+            return;
+        }
+        $.messager.confirm('确认', '您确认想要删除记录吗？', function (r) {
+            if (r) {
+                $.ajax({
+                    type: "POST",
+                    url: "${contextPath}/approve/delete",
+                    data: {id: selected.id},
+                    processData: true,
+                    dataType: "json",
+                    async: true,
+                    success: function (data) {
+                        if (data.code == "200") {
+                            $("#grid").datagrid("reload");
+                            $('#dlg').dialog('close');
+                        } else {
+                            $.messager.alert('错误', data.result);
+                        }
+                    },
+                    error: function () {
+                        $.messager.alert('错误', '远程访问失败');
+                    }
+                });
+            }
+        });
+
+    }
+
+    //表格查询
+    function queryGrid() {
+        var opts = $("#grid").datagrid("options");
+        if (null == opts.url || "" == opts.url) {
+            opts.url = "${contextPath}/approve/change/listPage";
+        }
+        if (!$('#form').form("validate")) {
+            return;
+        }
+        var param = bindMetadata("grid", true);
+        var formData = $("#form").serializeObject();
+        $.extend(param, formData);
+        $("#grid").datagrid("load", param);
+    }
+
+
+    //清空表单
+    function clearForm() {
+        $('#form').form('clear');
+        $("#createMemberId").textbox('initValue', '');
+        queryGrid();
+    }
+
+    //表格表头右键菜单
+    function headerContextMenu(e, field) {
+        e.preventDefault();
+        if (!cmenu) {
+            createColumnMenu("grid");
+        }
+        cmenu.menu('show', {
+            left: e.pageX,
+            top: e.pageY
+        });
+    }
+
+    $.messager.progress({
+        title: "提示",
+        msg: "加载中,请稍候...",
+        value: '10',
+        text: '{value}%',
+        interval: 200
+    });
+    $.parser.onComplete = function () {
+        $.messager.progress("close");
+    };
+
+    //全局按键事件
+    function getKey(e) {
+        e = e || window.event;
+        var keycode = e.which ? e.which : e.keyCode;
+        if (keycode == 46) { //如果按下删除键
+            var selected = $("#grid").datagrid("getSelected");
+            if (selected && selected != null) {
+                del();
             }
         }
+    }
 
-        /**
-         * 绑定页面回车事件，以及初始化页面时的光标定位
-         * @formId
-         *          表单ID
-         * @elementName
-         *          光标定位在指点表单元素的name属性的值
-         * @submitFun
-         *          表单提交需执行的任务
-         */
-        $(function () {
-            // bindFormEvent("form", "projectApplyId", queryGrid);
-            // bindFormEvent("_form", "_projectApplyId", saveOrUpdate, function (){$('#dlg').dialog('close');});
-            if (document.addEventListener) {
-                document.addEventListener("keyup",getKey,false);
-            } else if (document.attachEvent) {
-                document.attachEvent("onkeyup",getKey);
-            } else {
-                document.onkeyup = getKey;
-            }
+    /**
+     * 绑定页面回车事件，以及初始化页面时的光标定位
+     * @formId
+     *          表单ID
+     * @elementName
+     *          光标定位在指点表单元素的name属性的值
+     * @submitFun
+     *          表单提交需执行的任务
+     */
+    $(function () {
+        // bindFormEvent("form", "projectApplyId", queryGrid);
+        // bindFormEvent("_form", "_projectApplyId", saveOrUpdate, function (){$('#dlg').dialog('close');});
+        if (document.addEventListener) {
+            document.addEventListener("keyup", getKey, false);
+        } else if (document.attachEvent) {
+            document.attachEvent("onkeyup", getKey);
+        } else {
+            document.onkeyup = getKey;
+        }
 
-            queryGrid();
-        })
-    </script>
- <script type="text/javascript">
-     <#members_index/>
- </script>
+        queryGrid();
+    })
+</script>
+<script type="text/javascript">
+    <#members_index / >
+</script>
 </#body>
