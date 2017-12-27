@@ -167,6 +167,9 @@
       $('#taskHourStr').textbox('textbox').attr('readonly',false);
       $('#overHourStr').textbox('textbox').attr('readonly',false);
       $('#describe').textbox('textbox').attr('readonly',false); 
+      $('#doTask').linkbutton({disabled:false});
+      $('#pauseTask').linkbutton({disabled:false});
+      $('#updateDetail').linkbutton({disabled:false});
     }
     
     
@@ -187,18 +190,23 @@
       $("#_type").combobox({disabled: false});
       $("#_changeId").combobox({disabled: false});
       $("#saveTask").linkbutton({disabled:false});
+      
     }
     
     function noEditForTaskdetail(){
       $('#taskHourStr').numberbox('textbox').attr('readonly',true);
       $('#overHourStr').numberbox('textbox').attr('readonly',true);
-      $('#describe').textbox('textbox').attr('readonly',true); 
+      $('#describe').textbox('textbox').attr('readonly',true);
+      $('#doTask').linkbutton({disabled:true});
+      $('#pauseTask').linkbutton({disabled:true});
+      $('#updateDetail').linkbutton({disabled:true});
     }
     
     
             //打开执行任务窗口
         function openUpdateDetail(row){
         	noEdit();
+        	noEditForTaskdetail();
         	
         	$("#task_detail").hide();
         	$("#dialog_toolbar").hide();
@@ -206,11 +214,10 @@
 			var selected=$("#grid").datagrid('getData').rows[row];
 			$("#task_detail").show();
 			
-			if(!isOwenr(selected.id)){
-				$.messager.alert('警告','只有任务所有者才可以编辑！');
-				noEditForTaskdetail();
+			if(isOwenr(selected.id)){
+				canEditForTaskdetail();
 			}
-			canEditForTaskdetail();
+			
             $('#dlg').dialog('open');
             $('#dlg').dialog('center');
 
@@ -309,6 +316,7 @@
             if(!$('#detail_form').form("validate")){
                 return;
             }
+             $('#dlg').dialog('close');
              $.ajax({
                 type: "POST",
                 url: "${contextPath}/task/updateTaskDetails?planTimeStr="+planTimeStr,
@@ -319,7 +327,6 @@
                 success: function (data) {
                     if(data.code=="200"){
                         $("#grid").datagrid("reload");
-                        $('#dlg').dialog('close');
                         //LogUtils.saveLog("添加执行任务时间：" + data.result, function () {});
                     }else{
                         $.messager.alert('错误',data.result);
