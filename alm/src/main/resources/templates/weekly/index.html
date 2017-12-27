@@ -118,7 +118,7 @@
                         <th data-options="field:'serialNumber',width:'10%', formatter:formatserialNumber,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目编号   </th>
                         <th data-options="field:'projectName',width:'10%',  formatter: formatprojectName, sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目名称 </th>
                         <th data-options="field:'projectType',width:'10%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目类型</th>
-                        <th data-options="field:'userName', width:'10%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目负责人 </th>
+                        <th data-options="field:'userName', width:'10%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目经理 </th>
                         <th data-options="field:'projectStatus', width:'12%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目进度   </th>
                         <th data-options="field:'endDate',width:'18%', _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">提交周报时间   </th>
                         <th data-options="field:'_operate',width:'10%',align:'center',formatter:formatOper">操作</th>
@@ -268,7 +268,7 @@
             var start=$("#startDate").val()+"";
             var end=$("#endDate").val()+"";
             if(start>end){
-             	alert("开始时间必须小于结束时间");
+            	 $.messager.alert('错误','开始时间必须小于结束时间');
              	return;
             }
             
