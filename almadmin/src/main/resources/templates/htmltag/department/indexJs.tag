@@ -132,7 +132,7 @@ function del() {
 	if (!dataAuth.deleteDept) {
 		return;
 	}
-	if (!$("#win").parent().is(":hidden")) {
+	if (!$('#win').is(':hidden')) {
 		return;
 	}
 	var selected = deptGrid.treegrid("getSelected");

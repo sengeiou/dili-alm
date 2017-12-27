@@ -28,10 +28,19 @@
 								type : 'textbox',
 								options : {
 									required : true,
-									validType:'length[0,20]'
+									validType:'length[1,20]',
+									missingMessage:'部门编码不能为空',
+									invalidMessage:'部门编码长度必须是1-20个字符'
 								}
 							}">部门编码</th>
-					<th data-options="field:'notes',width:'40%',editor : 'textbox'">描述</th>
+					<th
+						data-options="field:'notes',width:'40%',editor :{
+							type:'textbox',
+								options : {
+									validType:'length[0,30]',
+									invalidMessage:'部门描述不能超过30个字符'
+								}
+							}">描述</th>
 					<th data-options="field:'userCount',width:'10%',formatter:userCountFomartter">部门人员</th>
 					<th data-options="field:'opt',width:'20%',hidden:true,formatter:columnFormatter">操作</th>
 				</tr>
