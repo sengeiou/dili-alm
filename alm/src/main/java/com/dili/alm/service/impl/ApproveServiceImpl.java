@@ -281,6 +281,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
                 }
             }
             updateSelective(approve);
+            sendMessage(id, approve.getType(), SessionContext.getSessionContext().getUserTicket().getId(), approve.getCreateMemberId());
         }
         return BaseOutput.success();
     }
@@ -465,6 +466,8 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
                 .findFirst().map(DataDictionaryValue::getValue)
                 .orElse(null);
 
+        insertSelective(as);
+
         if (roleId != null) {
             List<ApplyApprove> approveList = Lists.newArrayList();
             List<User> userByRole = userRpc.listUserByRole(Long.parseLong(roleId)).getData();
@@ -473,27 +476,28 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
                 approve.setUserId(u.getId());
                 approve.setRole(roleRpc.listRoleNameByUserId(Long.valueOf(u.getId())).getData());
                 approveList.add(approve);
-                sendMessage(as.getType(), as.getCreateMemberId(), u.getId());
+                sendMessage(as.getId(), as.getType(), as.getCreateMemberId(), u.getId());
             });
             as.setDescription(JSON.toJSONString(approveList));
+            updateSelective(as);
         }
-        insertSelective(as);
+
     }
 
-    private void sendMessage(String type, Long sender, Long recipient) {
+    private void sendMessage(Long id, String type, Long sender, Long recipient) {
         try {
             switch (type) {
                 case "apply":
-                    messageService.insertMessage("http://alm.diligrp.com:8083/alm/approve/apply/index.html", sender, recipient);
+                    messageService.insertMessage("http://alm.diligrp.com:8083/alm/approve/apply/" + id, sender, recipient);
                     break;
                 case "change":
-                    messageService.insertMessage("http://alm.diligrp.com:8083/alm/approve/change/index.html", sender, recipient);
+                    messageService.insertMessage("http://alm.diligrp.com:8083/alm/approve/change/" + id, sender, recipient);
                     break;
                 case "complete":
-                    messageService.insertMessage("http://alm.diligrp.com:8083/alm/approve/complete/index.html", sender, recipient);
+                    messageService.insertMessage("http://alm.diligrp.com:8083/alm/approve/complete/" + id, sender, recipient);
                     break;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
