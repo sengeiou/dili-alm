@@ -76,7 +76,7 @@
                         <th data-options="field:'projectType',_provider:'projectTypeProvider',  width:'13%',   order:'asc', align:'center', resizable:'true', fixed:'false'">
                             项目类型
                         </th>
-                        <th data-options="field:'status',  width:'10%',  _provider:'applyStateProvider', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'status',  width:'10%',  _provider:'approveStateProvider', order:'asc', align:'center', resizable:'true', fixed:'false'">
                             项目审批状态
                         </th>
                         <th data-options="field:'created',  width:'13%', _provider:'datetimeProvider',  order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -101,8 +101,8 @@
         function formatStatus(value, row) {
             var dom = '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/doc/apply/' + row.projectApplyId + '">立项文档下载</a></span>';
             if (row.$_status == 2) {
-                return dom += '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/apply/' + row.id + '">审批</a></span>';
-            } else if (row.$_status == 3 || row.$_status == 4) {
+                return '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/apply/' + row.id + '">审批</a></span>';
+            } else if (row.$_status == 3) {
                 return dom;
             }
         }

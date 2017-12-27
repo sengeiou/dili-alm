@@ -1,12 +1,14 @@
 package com.dili.alm.service.impl;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.LogMapper;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.Log;
@@ -42,11 +44,33 @@ public class LogServiceImpl extends BaseServiceImpl<Log, Long> implements LogSer
 			throw new RuntimeException("未登录");
 		}
 		Log record = DTOUtils.newDTO(Log.class);
-		record.setOperatorId(userTicket.getId());
-		record.setContent(logText);
-		record.setCreated(new Date());
-		record.setIp(userTicket.getLastLoginIp());
-		return this.getActualDao().insertSelective(record);
+		
+		SimpleDateFormat formater = new SimpleDateFormat("yyMMdd");
+		Date date = new Date();
+		String id = formater.format(date);
+		SimpleDateFormat formater1 = new SimpleDateFormat("yyyy-MM-dd");
+		String formatDate = formater1.format(date);
+		String beginTime=formatDate+" 00:00:00";
+		String endTime=formatDate+" 23:59:59";
+		synchronized (this) {
+			List<Log> selectLogByCreated = this.getActualDao()
+					.selectLogByCreated(beginTime, endTime);
+			if (selectLogByCreated != null && selectLogByCreated.size() > 0) {
+				Log log = selectLogByCreated.get(0);
+				record.setLogOrder(log.getLogOrder() + 1L);
+				record.setLogNumber(Long.parseLong(id
+						+ WebUtil.getSixNumber(log.getLogOrder() + 1L)));
+			} else {
+				record.setLogOrder(1L);
+				record.setLogNumber(Long.parseLong(id
+						+ WebUtil.getSixNumber(1L)));
+			}
+			record.setOperatorId(userTicket.getId());
+			record.setContent(logText);
+			record.setCreated(date);
+			record.setIp(userTicket.getLastLoginIp());
+			return this.getActualDao().insertSelective(record);
+		}
 	}
 
 	@Override
@@ -67,6 +91,11 @@ public class LogServiceImpl extends BaseServiceImpl<Log, Long> implements LogSer
 		if(!WebUtil.strIsEmpty(content)){
 			String replaceAll = content.replaceAll(" ", "");
 			log.setContent(replaceAll);
+		}
+		if(log.getSort().equals("logNumber")){
+			log.setSort(AlmConstants.LogSort.LOGNUMBER.getCode());
+		}else if(log.getSort().equals("operatorId")){
+			log.setSort(AlmConstants.LogSort.OPERATORID.getCode());
 		}
 		List<Log> logLikeList = this.getActualDao().logLikeList(log,beginTime,endTime);
 		int logLikeListCount = this.getActualDao().logLikeListCount(log,beginTime,endTime);

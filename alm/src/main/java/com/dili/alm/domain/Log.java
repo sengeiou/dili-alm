@@ -61,4 +61,18 @@ public interface Log extends IBaseDomain {
     String getContent();
 
     void setContent(String content);
+    
+    @Column(name = "`log_number`")
+    @FieldDef(label="操作日志Id")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Long getLogNumber();
+
+    void setLogNumber(Long logNumber);
+    
+    @Column(name = "`log_order`")
+    @FieldDef(label="每日自增Id")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Long getLogOrder();
+
+    void setLogOrder(Long logOrder);
 }

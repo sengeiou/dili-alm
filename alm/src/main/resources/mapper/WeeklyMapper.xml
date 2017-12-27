@@ -152,7 +152,7 @@
        
            select   p.serial_number as "serialNumber",p.`name` as "projectName" , w.id as 'id',p.apply_id as "applyId",
              p.type as "projectType",p.product_manager as "userName",
-             w.progress as "projectStatus",w.end_date as "endDate"  ,w.start_date as "startDate"
+              p.completed_progress as "projectStatus",w.end_date as "endDate"  ,w.start_date as "startDate"
          from   project p,weekly  w
         <where>
              p.id=w.project_id

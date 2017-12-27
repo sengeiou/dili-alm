@@ -110,15 +110,11 @@
         function formatStatus(value, row) {
             var dom = '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/doc/change/' + row.projectApplyId + '">变更文档下载</a></span>';
             if (row.$_status == 2) {
-                return dom += '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/change/' + row.id + '">审批</a></span>';
+                return '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/change/' + row.id + '">审批</a></span>';
             } else if (row.$_status == 3) {
                 if(verify) {
                     return dom += '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/verify/' + row.id + '">验证</a></span>';
-                }else{
-                    return dom;
                 }
-            } else{
-                return dom;
             }
         }
 

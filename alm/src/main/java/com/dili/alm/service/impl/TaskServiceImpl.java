@@ -396,7 +396,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 				taskTimes += taskDetailsDome.getTaskHour();
 			}
 		}
-		progress = (int) (( taskTimes / total) -1* 100);
+		progress = (int) (( taskTimes / total)* 100);
 		project.setCompletedProgress(progress);
 		projectService.saveOrUpdate(project);
 	}
@@ -429,13 +429,13 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			throw new RuntimeException("项目不存在");
 		}
 		Date now = new Date();
-		if (project.getProjectState().equals(ProjectState.NOT_START.getValue())) {
+		if (project.getProjectState().equals(ProjectState.NOT_START.getValue())||project.getActualStartDate()==null) {
 			project.setActualStartDate(now);
 			project.setProjectState(ProjectState.IN_PROGRESS.getValue());
 			this.projectMapper.updateByPrimaryKey(project);
 		}
 		ProjectVersion version = this.versionMapper.selectByPrimaryKey(task.getVersionId());
-		if (version.getVersionState().equals(ProjectState.NOT_START.getValue())) {
+		if (version.getVersionState().equals(ProjectState.NOT_START.getValue())||version.getActualEndDate()==null) {
 			version.setActualStartDate(now);
 			version.setVersionState(ProjectState.IN_PROGRESS.getValue());
 			this.versionMapper.updateByPrimaryKey(version);

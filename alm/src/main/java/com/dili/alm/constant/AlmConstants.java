@@ -98,7 +98,20 @@ public class AlmConstants {
 		}
 
 	}
-	
+	public enum LogSort{
+		LOGNUMBER("log_number"),OPERATORID("operator_id");
+
+		private String code;
+
+		LogSort(String code) {
+			this.code = code;
+		}
+
+		public String getCode() {
+			return code;
+		}
+
+	}	
 	//状态
 	public enum TaskStatus{
 		

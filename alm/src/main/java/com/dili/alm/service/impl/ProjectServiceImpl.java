@@ -323,7 +323,8 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 				projectDto.setActualStartDate(project1.getActualStartDate());
 				projectDto.setProjectState(project1.getProjectState());
 				projectDto.setTaskCount(project1.getTaskCount());
-				projectDto.setMemberCount(project1.getMemberCount());
+				int count = this.teamMapper.countProjectMember(project1.getId());
+				projectDto.setMemberCount(count);
 				projectDto.setCompletedProgress(project1.getCompletedProgress());
 				projectDto.setOriginator(project1.getOriginator());
 
@@ -331,8 +332,8 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 				record.setProjectId(project1.getId());
 				record.setMemberId(userTicket.getId());
 				record.setRole(TeamRole.PROJECT_MANAGER.getValue());
-				int count = this.teamMapper.selectCount(record);
-				projectDto.setManager(count > 0);
+				int managerCount = this.teamMapper.selectCount(record);
+				projectDto.setManager(managerCount > 0);
 
 				projectDtoList.add(projectDto);
 			}
