@@ -174,6 +174,28 @@ public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements Team
 		return models;
 	}
 
+	@Override
+	public Boolean teamMemberIsProjectManager(Long memberId, Long projectId) {
+		Team teamQuery = DTOUtils.newDTO(Team.class);
+		teamQuery.setProjectId(projectId);
+		teamQuery.setMemberId(memberId);
+		List<Team> teams = this.getActualDao().select(teamQuery);
+		for (Team team : teams) {
+			if (TeamRole.PROJECT_MANAGER.getValue().equals(team.getRole())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public Boolean currentUserIsTeamMember(Long userId, Long projectId) {
+		Team record = DTOUtils.newDTO(Team.class);
+		record.setProjectId(projectId);
+		record.setMemberId(userId);
+		return this.getActualDao().selectCount(record) > 0;
+	}
+
 	private Map<Object, Object> parse2ListView(Team team, UserDepartmentRoleQuery dto) throws Exception {
 		if (dto == null) {
 			dto = new UserDepartmentRoleQuery();
@@ -227,28 +249,6 @@ public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements Team
 		metadata.put("leaveTime", datetimeProvider);
 
 		return ValueProviderUtils.buildDataByProvider(metadata, list);
-	}
-
-	@Override
-	public Boolean teamMemberIsProjectManager(Long memberId, Long projectId) {
-		Team teamQuery = DTOUtils.newDTO(Team.class);
-		teamQuery.setProjectId(projectId);
-		teamQuery.setMemberId(memberId);
-		List<Team> teams = this.getActualDao().select(teamQuery);
-		for (Team team : teams) {
-			if (TeamRole.PROJECT_MANAGER.getValue().equals(team.getRole())) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@Override
-	public Boolean currentUserIsTeamMember(Long userId, Long projectId) {
-		Team record = DTOUtils.newDTO(Team.class);
-		record.setProjectId(projectId);
-		record.setMemberId(userId);
-		return this.getActualDao().selectCount(record) > 0;
 	}
 
 }
