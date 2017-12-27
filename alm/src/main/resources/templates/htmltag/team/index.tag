@@ -57,6 +57,10 @@ function openUpdate() {
 		return;
 	}
 	var selected = teamGrid.datagrid('getSelected');
+	if (!selected.deletable) {
+		$.messager.alert('警告', '当前记录不能编辑');
+		return;
+	}
 	if (!selected) {
 		$.messager.alert('警告', '请选择一条数据');
 		return;

@@ -10,15 +10,17 @@
 				<div style="padding: 10px; float: left;">
 					<table>
 						<tr>
-							<td style="padding: 5px;"><input class="easyui-textbox" name="userName" id="userName" style="width: 100%" data-options="label:'用户名:', validType:'length[0,50]'" /></td>
-							<td style="padding: 5px;"><input class="easyui-textbox" name="realName" id="realName" style="width: 100%" data-options="label:'真实姓名:', validType:'length[0,64]'" /></td>
+							<td style="padding: 5px;"><input class="easyui-textbox" name="userName" id="userName" style="width: 100%"
+								data-options="label:'用户名:', validType:'length[0,50]'" /></td>
+							<td style="padding: 5px;"><input class="easyui-textbox" name="realName" id="realName" style="width: 100%"
+								data-options="label:'真实姓名:', validType:'length[0,64]'" /></td>
 						</tr>
 					</table>
 				</div>
 
 				<div style="padding: 10px; float: right;">
-					<a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid()">查询</a> <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload"
-						onclick="$('#userForm').form('clear');">重置</a>
+					<a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid()">查询</a> <a href="javascript:void(0)"
+						class="easyui-linkbutton" iconCls="icon-reload" onclick="$('#userForm').form('clear');">重置</a>
 				</div>
 			</form>
 		</div>
@@ -29,22 +31,23 @@
 	<!-- 表格 -->
 	<div region="center" style="width: 100%;" height="auto">
 		<!-- =========================================================表格========================================================= -->
-		<table class="easyui-datagrid" title="用户列表" id="userOnlineGrid" fitColumns="true" pagination="true" pageSize="30" pageNumber="1" pagePosition="bottom" rownumbers="false" remoteSort="false"
-			loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="true" sortName="serialNumber" align="center" fit="true" striped="true" toolbar="#toolbar" idField="id"
+		<table class="easyui-datagrid" title="用户列表" id="userOnlineGrid" fitColumns="true" pagination="true" pageSize="30" pageNumber="1"
+			pagePosition="bottom" rownumbers="false" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="true"
+			sortName="serialNumber" align="center" fit="true" striped="true" toolbar="#toolbar" idField="id"
 			data-options="onHeaderContextMenu:headerContextMenu">
 			<thead>
 				<tr>
-					<th data-options="field:'serialNumber', width:'16%',sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">用户编号</th>
-					<th data-options="field:'userName',  width:'16%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">用户名</th>
-					<th data-options="field:'realName',  width:'16%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">真实姓名</th>
-					<th data-options="field:'lastLoginIp',  width:'16%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">最后登录ip</th>
-					<th data-options="field:'lastLoginTime', width:'20%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">最后登录时间</th>
+					<th data-options="field:'serialNumber', width:'16%', align:'center', resizable:'true', fixed:'false'">用户编号</th>
+					<th data-options="field:'userName',  width:'16%',   align:'center', resizable:'true', fixed:'false'">用户名</th>
+					<th data-options="field:'realName',  width:'16%',   align:'center', resizable:'true', fixed:'false'">真实姓名</th>
+					<th data-options="field:'lastLoginIp',  width:'16%',   align:'center', resizable:'true', fixed:'false'">最后登录ip</th>
+					<th data-options="field:'lastLoginTime', width:'20%',  _provider:'datetimeProvider',  align:'center', resizable:'true', fixed:'false'">最后登录时间</th>
 					<th data-options="field:'options',  width:'16%',formatter:formatOptions, align:'center', resizable:'true', fixed:'false'">操作</th>
 				</tr>
 			</thead>
 		</table>
 		<!-- datagrid工具栏 -->
-		<div id="toolbar" style="padding: 2px 5px;overflow: hidden">
+		<div id="toolbar" style="padding: 2px 5px; overflow: hidden">
 			<div style="float: right">
 				边框显示:<select onchange="changeBorder('grid',this.value)">
 					<option value="lines-both">全边框</option>
@@ -56,8 +59,9 @@
 		</div>
 	</div>
 </div>
-<!-- ====================================================================================================================== --> <!-- style & script 分隔线 --> <!-- ====================================================================================================================== -->
-<script type="text/javascript">
+<!-- ====================================================================================================================== --> <!-- style & script 分隔线 -->
+<!-- ====================================================================================================================== --> <script
+	type="text/javascript">
 	function getHyperlinkContext(text, handler, data) {
 		return '<span style="padding:5px;"><a href="javascript:void(0)" onclick="'
 				+ handler + '(' + data + ')">' + text + '</a></span>'
@@ -117,7 +121,7 @@
 			return;
 		}
 
-		var param = bindMetadata("userOnlineGrid",true);
+		var param = bindMetadata("userOnlineGrid", true);
 		var formData = $("#userOnlineForm").serializeObject();
 		$.extend(formData, param);
 		$("#userOnlineGrid").datagrid("load", formData);
