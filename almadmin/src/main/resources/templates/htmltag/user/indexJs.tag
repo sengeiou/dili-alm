@@ -177,7 +177,7 @@ function onEditClicked(id) {
 	if (!dataAuth.editUser) {
 		return false;
 	}
-	var selected = null == id ? userGrid.datagrid("getSelected") : getRowById(id);
+	var selected = userGrid.datagrid("getSelected");
 	if (null == selected) {
 		$.messager.alert("警告", "请选中一条数据");
 		return;
@@ -588,6 +588,7 @@ function queryRole(userid) {
 
 // 表格查询
 function queryGrid() {
+	userGrid.datagrid('unselectAll');
 	var opts = userGrid.datagrid("options");
 	if (null == opts.url || "" == opts.url) {
 		opts.url = "${contextPath}/user/listPage";

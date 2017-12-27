@@ -590,6 +590,7 @@ function insertOrUpdateMenu(gridId, node, index, row, changes) {
 					$.messager.alert('提示', data.result);
 					return;
 				}
+				debugger;
 				if (!row.id) {
 					try {
 						LogUtils.saveLog("新增菜单:" + data.data.id, function() {

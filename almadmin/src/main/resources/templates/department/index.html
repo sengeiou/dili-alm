@@ -19,14 +19,16 @@
 						data-options="field:'name',width:'20%',editor : {
 								type : 'textbox',
 								options : {
-									required : true
+									required : true,
+									validType:'length[0,10]'
 								}
 							}">部门名称</th>
 					<th
 						data-options="field:'code',width:'30%',editor : {
 								type : 'textbox',
 								options : {
-									required : true
+									required : true,
+									validType:'length[0,20]'
 								}
 							}">部门编码</th>
 					<th data-options="field:'notes',width:'40%',editor : 'textbox'">描述</th>
