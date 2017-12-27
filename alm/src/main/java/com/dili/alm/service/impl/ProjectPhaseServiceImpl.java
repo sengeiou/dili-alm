@@ -158,10 +158,15 @@ public class ProjectPhaseServiceImpl extends BaseServiceImpl<ProjectPhase, Long>
 		if (old != null && !old.getId().equals(dto.getId())) {
 			return BaseOutput.failure("该项目已存在相同阶段");
 		}
+		old = this.getActualDao().selectByPrimaryKey(dto.getId());
+		old.setVersionId(dto.getVersionId());
+		old.setName(dto.getName());
+		old.setPlannedStartDate(dto.getPlannedStartDate());
+		old.setPlannedEndDate(dto.getPlannedEndDate());
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		dto.setModifierId(userTicket.getId());
-		dto.setModified(new Date());
-		super.updateSelective(dto);
+		old.setModifierId(userTicket.getId());
+		old.setModified(new Date());
+		super.updateSelective(old);
 		if (CollectionUtils.isNotEmpty(dto.getFileIds())) {
 			dto.getFileIds().forEach(id -> {
 				Files file = this.filesService.get(id);
@@ -173,7 +178,7 @@ public class ProjectPhaseServiceImpl extends BaseServiceImpl<ProjectPhase, Long>
 			});
 		}
 		try {
-			Map<Object, Object> model = this.parseEasyUiModel(dto);
+			Map<Object, Object> model = this.parseEasyUiModel(old);
 			return BaseOutput.success().setData(model);
 		} catch (Exception e) {
 			LOG.error(e.getMessage(), e);

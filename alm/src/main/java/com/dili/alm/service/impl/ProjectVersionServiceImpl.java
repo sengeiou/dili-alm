@@ -88,24 +88,6 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 				this.filesService.updateSelective(file);
 			});
 		}
-		// 如果要通知，则生成调度信息
-		// if (projectVersion.getEmailNotice().equals(1)) {
-		// ScheduleJob scheduleJob = DTOUtils.newDTO(ScheduleJob.class);
-		// scheduleJob.setJobStatus(QuartzConstants.JobStatus.NORMAL.getCode());
-		// scheduleJob.setIsConcurrent(QuartzConstants.Concurrent.Async.getCode());
-		// scheduleJob.setJobGroup("milestones");
-		// scheduleJob.setJobName(projectVersion.getCode());
-		// scheduleJob.setDescription("里程碑发布通知, code:" + projectVersion.getCode() + ",
-		// version:" + projectVersion.getVersion());
-		// scheduleJob.setSpringId("emailNoticeJob");
-		// scheduleJob.setStartDelay(0);
-		// scheduleJob.setMethodName("scan");
-		// scheduleJob.setCronExpression(CronDateUtils.getCron(new
-		// Date(System.currentTimeMillis() + 10000)));
-		// scheduleJob.setJobData(JSONObject.toJSONStringWithDateFormat(projectVersion,
-		// "yyyy-MM-dd HH:mm:ss"));
-		// scheduleJobService.insertSelective(scheduleJob, true);
-		// }
 
 		try {
 			Map<Object, Object> target = ProjectVersionProvider.parseEasyUiModel(dto);
@@ -125,10 +107,22 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		if (version != null && !version.getId().equals(dto.getId())) {
 			return BaseOutput.failure("版本已存在");
 		}
+		version = this.getActualDao().selectByPrimaryKey(dto.getId());
+		version.setVersion(dto.getVersion());
+		version.setPlannedStartDate(dto.getPlannedStartDate());
+		version.setPlannedEndDate(dto.getPlannedEndDate());
+		version.setGit(dto.getGit());
+		version.setVisitUrl(dto.getVisitUrl());
+		version.setOnline(dto.getOnline());
+		version.setPlannedOnlineDate(dto.getPlannedOnlineDate());
+		version.setHost(dto.getHost());
+		version.setPort(dto.getPort());
+		version.setRedmineUrl(dto.getRedmineUrl());
+		version.setNotes(dto.getNotes());
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		dto.setModifierId(userTicket.getId());
-		dto.setModified(new Date());
-		super.update(dto);
+		version.setModifierId(userTicket.getId());
+		version.setModified(new Date());
+		super.update(version);
 		if (CollectionUtils.isNotEmpty(dto.getFileIds())) {
 			dto.getFileIds().forEach(id -> {
 				Files file = this.filesService.get(id);
@@ -140,7 +134,7 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		}
 		Map<Object, Object> target;
 		try {
-			target = ProjectVersionProvider.parseEasyUiModel(dto);
+			target = ProjectVersionProvider.parseEasyUiModel(version);
 			return BaseOutput.success("修改成功").setData(target);
 		} catch (Exception e) {
 			return BaseOutput.failure(e.getMessage());
