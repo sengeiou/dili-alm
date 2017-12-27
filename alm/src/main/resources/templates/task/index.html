@@ -160,7 +160,8 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="planTimeStr" id="planTimeStr" style="width:100%" data-options="label:'计划工时:', validType:'length[0,5]'" />
+                    <input class="easyui-numberbox" name="planTimeStr" id="planTimeStr" style="width:100%" min="0" max="99999"
+                           data-options="label:'计划工时:',validType:['length[0,5]']" />
                 </td>
             </tr>
             <tr>
@@ -173,7 +174,7 @@
             </tr>
             <tr id="changeIdTr">
                 <td style="padding:5px;">
-                    <input name="_changeId" id="_changeId" class="easyui-combobox" style="width:300px" data-options="label:'变更项目:'">
+                    <input name="_changeId" id="_changeId" class="easyui-combobox" style="width:340px" data-options="label:'变更项目:'">
                 </td>
             </tr>
             <tr>
