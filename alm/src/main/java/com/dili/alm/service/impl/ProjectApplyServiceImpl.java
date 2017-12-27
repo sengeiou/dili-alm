@@ -131,9 +131,13 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
             LOGGER.error("邮件发送出错:", e);
         }
     }
+
     @Override
     public Long reApply(Long id) {
         ProjectApply apply = get(id);
+        if (apply.getRestatus() != null) {
+            return -1L;
+        }
         apply.setRestatus(0);
         updateSelective(apply);
         apply.setId(null);
@@ -148,7 +152,7 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
     }
 
     private void buildFiles(Long applyId, Long newId) {
-        listFiles(applyId).forEach( (Files files) -> {
+        listFiles(applyId).forEach((Files files) -> {
             files.setRecordId(newId);
             files.setId(null);
             filesService.insert(files);
@@ -159,7 +163,7 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
     public List<Files> listFiles(Long applyId) {
         Example example = new Example(Files.class);
         Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo("recordId", applyId).andEqualTo("type",FileType.APPLY.getValue());
+        criteria.andEqualTo("recordId", applyId).andEqualTo("type", FileType.APPLY.getValue());
         return this.filesService.selectByExample(example);
     }
 

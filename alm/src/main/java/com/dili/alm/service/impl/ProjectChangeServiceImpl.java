@@ -33,6 +33,7 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 
     @Autowired
     private ProjectService projectService;
+
     public ProjectChangeMapper getActualDao() {
         return (ProjectChangeMapper) getDao();
     }
@@ -64,6 +65,7 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
             sendMail(change);
         }
     }
+
     public void sendMail(ProjectChange change) {
         try {
             String[] sendTo = change.getEmail().split(",");
@@ -81,6 +83,9 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
     @Override
     public Long reChange(Long id) {
         ProjectChange change = get(id);
+        if (change.getRestatus() != null) {
+            return -1L;
+        }
         change.setRestatus(0);
         update(change);
         change.setId(null);

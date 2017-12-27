@@ -103,7 +103,7 @@
   <select id="selectListPageByWeeklyPara" parameterType="com.dili.alm.domain.dto.WeeklyPara" resultType="com.dili.alm.domain.dto.WeeklyPara">
   
     select   p.serial_number as "serialNumber",p.`name` as "projectName" , w.id as 'id',p.apply_id as "applyId",
-             p.type as "projectType",p.product_manager as "userName",p.id as "projectId",
+             p.type as "projectType",p.project_manager as "userName",p.id as "projectId",
              p.completed_progress as "projectStatus",w.end_date as "endDate"  ,w.start_date as "startDate"
          from   project p,weekly  w
         <where>
@@ -151,7 +151,7 @@
        select count(1)  as 'total' from (
        
            select   p.serial_number as "serialNumber",p.`name` as "projectName" , w.id as 'id',p.apply_id as "applyId",
-             p.type as "projectType",p.product_manager as "userName",
+             p.type as "projectType",p.project_manager as "userName",
               p.completed_progress as "projectStatus",w.end_date as "endDate"  ,w.start_date as "startDate"
          from   project p,weekly  w
         <where>
@@ -382,7 +382,7 @@
   </update>
   <select id="getUser"  resultType="com.dili.alm.domain.dto.WeeklyPara">
   
-         select   DISTINCT   p.product_manager as "userName" from   project p,weekly  w  where  p.id=w.project_id
+         select   DISTINCT   p.project_manager as "userName" from   project p,weekly  w  where  p.id=w.project_id
    
   </select>
   

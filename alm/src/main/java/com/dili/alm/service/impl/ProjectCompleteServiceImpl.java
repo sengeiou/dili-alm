@@ -90,6 +90,9 @@ public class ProjectCompleteServiceImpl extends BaseServiceImpl<ProjectComplete,
     @Override
     public Long reComplete(Long id) {
         ProjectComplete complete = get(id);
+        if (complete.getRestatus() != null) {
+            return -1L;
+        }
         complete.setRestatus(0);
         update(complete);
         complete.setId(null);
@@ -103,7 +106,7 @@ public class ProjectCompleteServiceImpl extends BaseServiceImpl<ProjectComplete,
     @Override
     public Object loadMembers(Long id) throws Exception {
         ProjectComplete projectComplete = this.get(id);
-        if(StringUtils.isBlank(projectComplete.getMembers())){
+        if (StringUtils.isBlank(projectComplete.getMembers())) {
             Team team = DTOUtils.newDTO(Team.class);
             team.setProjectId(projectComplete.getProjectId());
             List<Team> list = teamService.list(team);
