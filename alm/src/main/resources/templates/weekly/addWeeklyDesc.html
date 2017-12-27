@@ -328,11 +328,7 @@
 			    
 			        <font size="2">创建时间：</font>
 			       <font size="2">
-			         <% if(pd.created!=null){%>
-			             ${pd.created}
-			              <%}else{%>
-			              无
-			             <%}%>
+			      
 			       </font>
 			       
 			  </br>
@@ -341,13 +337,19 @@
 		     
 	            <button onclick="cancel()">取消</button>
                 
-              
-               <button onclick="save(0)">保存</button>
-               <button onclick="save(1)">提交周报</button> 
+                 <% if(wDetails.isSubmit==null  || wDetails.isSubmit==0){%>
+			                <button onclick="save(0)">保存</button>
+                          <button onclick="save(1)">提交周报</button> 
+			                 
+			                    
+			      <%}else{%>
+			            <font size="2">   周报已经提交  </font>
+			       <%}%>
+            
 		       
-			     <font size="3">  
-		                    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="pageReturn()">返回周报列表</a>
-		          </font>     
+		      <font size="3">  
+	                    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="pageReturn()">返回周报列表</a>
+	          </font>     
 			             
 			             
 			 
@@ -579,8 +581,11 @@
     	        var status = tdArr.eq(2).find('select').val();// 当前状态
     	       
     	        var person=new WeeklyJson(name,desc,status);
-    	        
-    	        arr.push(person);
+    	        if(name!=null && desc!=null  && status!=null){
+    	        	
+    	        	  arr.push(person);
+    	        }
+    	      
     	        
     	    });
     	  
