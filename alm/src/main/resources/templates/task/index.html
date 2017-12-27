@@ -155,19 +155,19 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input name="_owner" id="_owner" class="easyui-combobox" style="width:100%" data-options="label:'负责人:'">
+                    <input name="_owner" id="_owner" class="easyui-combobox" style="width:100%" data-options="label:'负责人:', required:true">
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
                     <input class="easyui-numberbox" name="planTimeStr" id="planTimeStr" style="width:100%" min="0" max="99999"
-                           data-options="label:'计划工时:',validType:['length[0,5]']" />
+                           data-options="label:'计划工时:',validType:['length[0,5]'], required:true" />
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
                     <select name="_flow" id="_flow" class="easyui-combobox" editable=false data-options="label:'流程:', required:true" style="width:100%">
-                        <option value=0>正常流程</option>
+                        <option value=0 selected="selected">正常流程</option>
                         <option value=1>变更流程</option>
                     </select>
                 </td>
@@ -228,7 +228,7 @@
         </form>
     </div>
     <div id="dialog_toolbar" style="diplay:show;">
-        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="saveOrUpdate()" style="border:1px solid #ccc;">保存</a>
+        <a href="#" class="easyui-linkbutton" id="saveTask" data-options="iconCls:'icon-edit',plain:true" onclick="saveOrUpdate()" style="border:1px solid #ccc;">保存</a>
         <a href="#" class="easyui-linkbutton" data-options="plain:true" onclick="$('#dlg').dialog('close');" style="border:1px solid #ccc;">取消</a>
     </div>
     <div id="dialog_toolbar_detail" style="diplay:none;">
@@ -245,12 +245,14 @@
     //打开新增窗口
     function openInsert() {
         canEdit();
+        
         $("#task_detail").hide();
         $("#dialog_toolbar").show();
         $("#dialog_toolbar_detail").hide();
         $('#dlg').dialog('open');
         $('#dlg').dialog('center');
         $('#_form').form('clear');
+        $('#_flow').combobox('setValue',0);
         formFocus("_form", "_name");
     }
 
@@ -259,6 +261,7 @@
         $("#task_detail").hide();
         $("#dialog_toolbar").show();
         $("#dialog_toolbar_detail").hide();
+        
         var selected = $("#grid").datagrid("getSelected");
         if (null == selected) {
             $.messager.alert('警告', '请选中一条数据');
@@ -266,6 +269,10 @@
         }
         canEdit();
 
+        if(!isCreater(selected.id)){
+        	noEdit();
+          }
+        
         if (selected.status != "未开始") {
             noEdit();
         }
@@ -310,6 +317,7 @@
             logIngo = "修改任务:";
             _url = "${contextPath}/task/update";
         }
+        $('#dlg').dialog('close');
         $.ajax({
             type: "POST",
             url: _url,
@@ -320,7 +328,6 @@
             success: function(data) {
                 if (data.code == "200") {
                     $("#grid").datagrid("reload");
-                    $('#dlg').dialog('close');
                     LogUtils.saveLog(logIngo + data.result, function() {});
                 } else {
                     $.messager.alert('错误', data.result);
@@ -335,6 +342,18 @@
     //根据主键删除
     function del() {
         var selected = $("#grid").datagrid("getSelected");
+        
+
+        
+        if(!isCreater(selected.id)){
+       	 $.messager.alert('警告', '并非任务创建者,不能执行删除操作');
+            return;
+       }
+        
+        if (selected.status != "未开始") {
+        	$.messager.alert('警告', '不是未开始的任务不能删除！');
+           return ;
+        }
         if (null == selected) {
             $.messager.alert('警告', '请选中一条数据');
             return;

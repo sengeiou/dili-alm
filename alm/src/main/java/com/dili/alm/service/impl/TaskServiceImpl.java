@@ -27,6 +27,7 @@ import com.dili.alm.dao.TaskDetailsMapper;
 import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectApply;
+import com.dili.alm.domain.ProjectChange;
 import com.dili.alm.domain.ProjectPhase;
 import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.ProjectVersion;
@@ -229,27 +230,25 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	public int updateTaskDetail(TaskDetails taskDetails, Task task) {
 		// 查询当前要修改的任务工时信息
 		TaskDetails taskDetailsFromDatabase = taskDetailsService.get(taskDetails.getId());
-		// 校验工时
-		short taskHour = Optional.ofNullable(taskDetailsFromDatabase.getTaskHour()).orElse((short) 0);
-		// 校验加班工时
-		short overHour = Optional.ofNullable(taskDetailsFromDatabase.getOverHour()).orElse((short) 0);
+		// 校验前台工时
+		int taskHour =(int)Optional.ofNullable(taskDetails.getTaskHour()).orElse((short) 0);
+		// 校验前台加班工时
+		int overHour =(int)Optional.ofNullable(taskDetails.getOverHour()).orElse((short) 0);
+		
+		int saveHour = taskHour;//用作保存每次存储的工时值
 		/* task表基础数据更新 */
+		
+		int baseTaskHour =(int)taskDetailsFromDatabase.getTaskHour();
+		baseTaskHour+=taskHour;
+		taskDetailsFromDatabase.setTaskHour((short)baseTaskHour);
 
-		if (taskHour == 0) {
-			taskDetailsFromDatabase.setTaskHour(taskDetails.getTaskHour());
-		} else {
-			taskHour += taskDetails.getTaskHour();
-			taskDetailsFromDatabase.setTaskHour(taskHour);
-		}
-
-		if (overHour == 0) {
-			taskDetailsFromDatabase.setOverHour(taskDetails.getOverHour());
-		} else {
-			overHour += taskDetails.getOverHour();
-			taskDetailsFromDatabase.setTaskHour(overHour);
-		}
+		
+		int baseOverHour =(int)taskDetailsFromDatabase.getOverHour();
+		baseOverHour+=overHour;
+		taskDetailsFromDatabase.setOverHour((short)baseOverHour);
+		
 		// 工时信息填写
-		taskDetailsFromDatabase.setTaskTime(this.taskHoursMapAdd(taskDetailsFromDatabase.getTaskTime(), taskHour));
+		taskDetailsFromDatabase.setTaskTime(this.taskHoursMapAdd(taskDetailsFromDatabase.getTaskTime(), saveHour));
 
 		if (taskDetailsFromDatabase.getTaskHour() >= task.getPlanTime()) {
 			// 更新状态为完成
@@ -409,11 +408,14 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		taskDetails.setTaskId(task.getId());
 		List<TaskDetails> byExample = taskDetailsService.list(taskDetails);
 		int size = byExample.size();
-		if(size!=0){
-			return 0 ;
-		}
 		
 		if (task.getStatus() != 2) {
+			
+			//如果大于0判定为重复提交
+			if(size>0){
+				return 0 ;
+			}
+			
 			taskDetails.setTaskId(task.getId());
 			taskDetails.setCreated(new Date());
 			taskDetails.setTaskHour((short) 0);
@@ -486,37 +488,42 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		return dto.getValues();
 	}
 
+	/**
+	 * 判断今日所有项目累加总和是否超过8小时
+	 */
 	@Override
 	public boolean isSetTask(Long id, short taskHour) {
-
-		Map<String, Integer> taskHourMap = new HashMap<String, Integer>();
-		String taskUpdateDate = null;
-		int dayTotal = 0;
-		// 校验一天内的工时是否超过8小时
-		TaskDetails taskDetails = this.taskDetailsService.get(id);
-		taskHourMap = (Map<String, Integer>) JSON.parse(taskDetails.getTaskTime());
-
-		if (taskHourMap.size() == 0) {
-			return true;
-		} else {
-			taskUpdateDate = this.dateToString(taskDetails.getModified()).equals(this.dateToString(new Date()))
-					? this.dateToString(taskDetails.getModified())
-					: this.dateToString(new Date());// 获取最后跟新的日期，用日期在map里取值，一天最多能存8次值
-
-			for (int i = 0; i < 8; i++) {
-				if (taskHourMap.get(taskUpdateDate + (i + 1)) == null)
-					break;
-				dayTotal += taskHourMap.get(taskUpdateDate + (i + 1));
-			}
-
-			// 再加上填写的时间
-			dayTotal += taskHour;
-
-			if (dayTotal >= 8) {
+		//获取今日填写所有项目的总工时
+		int totalTaskHour = restTaskHour();
+		
+		if (totalTaskHour!=0) {
+			
+			totalTaskHour+=taskHour;
+			//加上此次添加的超过8小时
+			if (totalTaskHour>8) {
 				return false;
 			}
 		}
 		return true;
+	}
+
+	//读取填写工时信息的方法
+	private int taskHoursPlus(TaskDetails taskDetails) {
+		
+		int dayTotal = 0;
+		
+		Map<String, Integer> taskHourMap = new HashMap<String, Integer>();
+		
+		String taskUpdateDate = this.dateToString(taskDetails.getModified());
+		
+		taskHourMap = (Map<String, Integer>) JSON.parse(taskDetails.getTaskTime());
+        // 获取最后跟新的日期，用日期在map里取值，一天最多能存8次值
+		for (int i = 0; i < 8; i++) {
+			if (taskHourMap.get(taskUpdateDate + (i + 1)) == null)
+				break;
+			dayTotal += taskHourMap.get(taskUpdateDate + (i + 1));
+		}
+		return dayTotal;
 	}
 	
 	@Override
@@ -584,6 +591,15 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			if (team2.getRole().equalsIgnoreCase(TeamRole.PROJECT_MANAGER.getValue())) {
 				return true;
 			}
+			if (team2.getRole().equalsIgnoreCase(TeamRole.PRODUCT_MANAGER.getValue())) {
+				return true;
+			}
+			if (team2.getRole().equalsIgnoreCase(TeamRole.TEST_MANAGER.getValue())) {
+				return true;
+			}
+			if (team2.getRole().equalsIgnoreCase(TeamRole.DEVELOP_MANAGER.getValue())) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -614,6 +630,12 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	}
 
 	@Override
+	public List<ProjectChange> projectChangeList(Long projectId) {
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		return taskMapper.selectProjectChangeByTeam(userTicket.getId(),projectId);
+	}
+	
+	@Override
 	public List<Project> projectList() {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		return taskMapper.selectProjectByTeam(userTicket.getId());
@@ -631,6 +653,15 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		
 		for (Team team2 : teamList) {
 			if (team2.getRole().equalsIgnoreCase(TeamRole.PROJECT_MANAGER.getValue())) {
+				return true;
+			}
+			if (team2.getRole().equalsIgnoreCase(TeamRole.PRODUCT_MANAGER.getValue())) {
+				return true;
+			}
+			if (team2.getRole().equalsIgnoreCase(TeamRole.TEST_MANAGER.getValue())) {
+				return true;
+			}
+			if (team2.getRole().equalsIgnoreCase(TeamRole.DEVELOP_MANAGER.getValue())) {
 				return true;
 			}
 		}
@@ -679,6 +710,89 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		Task task = DTOUtils.newDTO(Task.class);
 		task.setProjectId(projectId);
 		return taskMapper.selectByTeam(task, userTicket.getId(), null);
+	}
+
+
+	/**
+	 * 
+	 */
+	@Override
+	public boolean isThisProjectManger(Long projectId) {
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		
+		Team team = DTOUtils.newDTO(Team.class);
+		team.setMemberId(userTicket.getId());
+		team.setProjectId(projectId);
+		
+		List<Team> teamList = teamService.list(team);
+		
+		for (Team team2 : teamList) {
+			if (team2.getRole().equalsIgnoreCase(TeamRole.PROJECT_MANAGER.getValue())) {
+				return true;
+			}
+			if (team2.getRole().equalsIgnoreCase(TeamRole.PRODUCT_MANAGER.getValue())) {
+				return true;
+			}
+			if (team2.getRole().equalsIgnoreCase(TeamRole.TEST_MANAGER.getValue())) {
+				return true;
+			}
+			if (team2.getRole().equalsIgnoreCase(TeamRole.DEVELOP_MANAGER.getValue())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * 
+	 */
+	@Override
+	public boolean isCreater(Task task) {
+        Task taskSelect = this.get(task.getId());
+        UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		if (taskSelect.getCreateMemberId().equals(userTicket.getId())) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 判断其他项目的填写工时是否超过，没有填写工时填flase,
+	 */
+	@Override
+	public List<TaskDetails> otherProjectTaskHour(String updateDate) {
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		//查询本日修改的其他项目的detail
+		List<TaskDetails> taskDetails = taskMapper.selectOtherTaskDetail(userTicket.getId(), updateDate);
+		
+		return taskDetails;
+	}
+    /*
+     * 已经填写的工时
+     */
+	@Override
+	public int restTaskHour() {
+		
+		String updateDate = this.dateToString(new Date());
+		
+		int dayTotal = 0;
+		
+		//本日更新其他项目的工时
+		List<TaskDetails> tdList =this.otherProjectTaskHour(updateDate);
+		
+		//今日没有填写工时
+		if (tdList==null||tdList.size()==0) {
+			return 0;
+		}
+		//累加做比较，计算本日填写的总工时是否超过8小时
+		for (TaskDetails taskDetails : tdList) {
+
+			int getInt = taskHoursPlus(taskDetails); 
+			dayTotal += getInt;//其他项目填写工时总和
+			
+		}
+		
+		return dayTotal;
 	}
 	
 	

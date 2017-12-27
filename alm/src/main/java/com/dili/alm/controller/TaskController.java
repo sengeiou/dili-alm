@@ -2,6 +2,7 @@ package com.dili.alm.controller;
 
 import com.dili.alm.constant.AlmConstants.TaskStatus;
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.ProjectChange;
 import com.dili.alm.domain.ProjectPhase;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
@@ -115,9 +116,16 @@ public class TaskController {
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput insert(Task task, String planTimeStr,String startDateShow,String endDateShow) throws ParseException {
 
+		//判断是否是本项目的项目经理
+		if (!taskService.isThisProjectManger(task.getProjectId())) {
+			return BaseOutput.failure("只有本项目的项目经理可以添加项目！");
+		}
+		DateFormat fmt =new SimpleDateFormat("yyyy-MM-dd");
 		try {
 			Short planTime = Short.parseShort(planTimeStr.trim());
 			task.setPlanTime(planTime);
+			task.setStartDate(fmt.parse(startDateShow));
+			task.setEndDate(fmt.parse(endDateShow));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return BaseOutput.failure("请正确填写工时");
@@ -126,12 +134,10 @@ public class TaskController {
 		if (taskService.validateBeginAndEnd(task)) {
 			return BaseOutput.failure("开始时间和结束时间不能早于项目起始日期");
 		}
-		DateFormat fmt =new SimpleDateFormat("yyyy-MM-dd");
+		
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		task.setCreateMemberId(userTicket.getId());
 		task.setCreated(new Date());
-		task.setStartDate(fmt.parse(startDateShow));
-		task.setEndDate(fmt.parse(endDateShow));
 		task.setStatus(TaskStatus.NOTSTART.code);// 新增的初始化状态为0未开始状态
 		taskService.insertSelective(task);
 
@@ -143,9 +149,13 @@ public class TaskController {
 			@ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput update(Task task, String planTimeStr,String startDateShow,String endDateShow) {
+		
+		if (!taskService.isCreater(task)) {
+			return BaseOutput.failure("不是本项目的创建者，不能进行编辑");
+		}
+		
 		DateFormat fmt =new SimpleDateFormat("yyyy-MM-dd");
 		try {
-
 			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 			// 设置任务修改人为当前登录用户
 			task.setModified(new Date());
@@ -167,6 +177,12 @@ public class TaskController {
 			@ApiImplicitParam(name = "id", paramType = "form", value = "Task的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput delete(Long id) {
+		
+		Task task = taskService.get(id);
+		
+		if (!taskService.isCreater(task)) {
+			return BaseOutput.failure("不是本项目的创建者，不能进行删除");
+		}
 		taskService.delete(id);
 		return BaseOutput.success("删除成功");
 	}
@@ -178,8 +194,15 @@ public class TaskController {
 		return taskService.listTaskByProjectId(projectId);
 	}
  
-
 	// 查询项目
+	@ResponseBody
+	@RequestMapping(value = "/listTreeProjectChange.json", method = { RequestMethod.GET, RequestMethod.POST })
+	public List<ProjectChange> listChangeProject(Long projectId) {
+		List<ProjectChange> list = taskService.projectChangeList(projectId);
+		return list;
+	}
+	
+	//查询变更项目
 	@ResponseBody
 	@RequestMapping(value = "/listTreeProject.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public List<Project> listProject() {
@@ -271,6 +294,24 @@ public class TaskController {
 			RequestMethod.GET, RequestMethod.POST })
 	public boolean isProjectManger() {
 		return taskService.isProjectManager();
+	}
+	
+	//判断是否是创建人，用户
+	@ResponseBody
+	@RequestMapping(value = "/isCreater.json", method = {
+			RequestMethod.GET, RequestMethod.POST })
+	public boolean isCreater(Long id) {
+		Task task = taskService.get(id);
+		return taskService.isCreater(task);
+	}
+	
+	//剩余工时
+	@ResponseBody
+	@RequestMapping(value = "/restTaskHour.json", method = {
+			RequestMethod.GET, RequestMethod.POST })
+	public int restTaskHour() {
+		int rest = taskService.restTaskHour();
+		return rest;
 	}
 
 	// 更新任务信息

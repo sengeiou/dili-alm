@@ -3,6 +3,7 @@ package com.dili.alm.service;
 import java.util.List;
 
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.ProjectChange;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.TaskDetails;
@@ -41,6 +42,8 @@ public interface TaskService extends BaseService<Task, Long> {
 	
 	boolean isProjectManager();
 	
+	List<ProjectChange> projectChangeList(Long projectId);
+	
 	List<Project> projectList();
 
 	List<User> listUserByTeam();
@@ -51,4 +54,11 @@ public interface TaskService extends BaseService<Task, Long> {
 	
 	List<Task> listTaskByProjectId(Long projectId);
 	
+	boolean isThisProjectManger(Long projectId);
+	
+	boolean isCreater(Task task);
+
+	List<TaskDetails> otherProjectTaskHour(String updateDate);
+	
+	int restTaskHour();
 }

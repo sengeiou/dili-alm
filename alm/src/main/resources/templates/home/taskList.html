@@ -53,7 +53,7 @@
         <table width="360px">
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_name" id="_name" style="width:100%" data-options="label:'name:', validType:'length[0,255]'" />
+                    <input class="easyui-textbox" name="_name" id="_name" style="width:100%" data-options="label:'任务名称:', validType:'length[0,255]'" />
                 </td>
             </tr>
             <tr>
@@ -74,12 +74,12 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-datetimebox" name="_startDate" id="_startDate" style="width:100%" data-options="label:'startDate:'" />
+                    <input class="easyui-datebox" name="startDateShow" id="startDateShow" style="width:100%" data-options="label:'开始时间:'" />
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-datetimebox" name="_endDate" id="_endDate" style="width:100%" data-options="label:'endDate:'" />
+                    <input class="easyui-datebox" name="endDateShow" id="endDateShow" style="width:100%" data-options="label:'结束时间:'" />
                 </td>
             </tr>
             <tr>
@@ -145,11 +145,11 @@
                     </td>
                 </tr>
                 <tr>
-                    <td style="padding:5px;>
-                        <input class="easyui-numberbox" name="overHourStr" id="overHourStr" style="width:200px;height:26px;" data-options="label:'加班工时:'" />
+                    <td style="padding:5px;width: 50%">
+                        <input class="easyui-numberbox" name="overHourStr" id="overHourStr" style="width:100%;height:26px;" data-options="label:'加班工时:'" />
                     </td>
-                    <td style="padding:5px;>
-                        <input class="easyui-numberbox" name="_overHour" id="_overHour" style="width:200px;height:26px;" data-options="label:'已填加班:',disabled:true" />
+                    <td style="padding:5px;width: 50%">
+                        <input class="easyui-numberbox" name="_overHour" id="_overHour" style="width:100%;height:26px;" data-options="label:'已填加班:',disabled:true" />
                     </td>
                 </tr>
                 <tr>
