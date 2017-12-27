@@ -621,8 +621,9 @@
 		 	        var status = tdArr.eq(2).find('select').val();// 当前状态
 		 	      
  	            var person=new WeeklyJson(name,desc,status);
- 	        
- 	            arr.push(person);
+ 	           if(name!=null && desc!=null  && status!=null){
+ 	                arr.push(person);
+ 	           }
    	      });
    	      
    	      var _url= "${contextPath}/weekly/saveMaxRist";

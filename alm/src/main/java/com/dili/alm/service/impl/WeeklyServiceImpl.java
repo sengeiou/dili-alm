@@ -300,13 +300,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 				 if(listUserParty!=null&&listUserParty.size()>0){
 				 weeklyPara2.setUserName(listUserParty.get(0).getRealName());
 				 }
-				 if(Integer.parseInt(weeklyPara2.getProjectStatus())<8){
-					 weeklyPara2.setProjectStatus(" <font color='green'>正常--偏差<8%</font>");
-				 }else if(Integer.parseInt(weeklyPara2.getProjectStatus())>15){
-					 weeklyPara2.setProjectStatus("<font color='red'>警戒--偏差>15%</font>");
-				 }else{
-					 weeklyPara2.setProjectStatus("<font color='orange'>预警--8%<偏差<15%</font>");
-				 }
+				 
 				 
 				 weeklyPara2.setDate(weeklyPara2.getStartDate().substring(0,10) + " 到 " + weeklyPara2.getEndDate().substring(0,10));
 				
