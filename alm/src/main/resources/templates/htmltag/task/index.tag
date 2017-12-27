@@ -14,6 +14,7 @@
             	loadVisionSelect(projectId);
             	loadMemberSelect(projectId);
             	loadTaskSelect(projectId);
+            	loadChangePorjectSelect(projectId);
             }
         });
 
@@ -116,7 +117,7 @@
 				editable:false
 			});
     }
-     //projectId
+    
     function loadTaskSelect(id){
     	$('#_beforeTask').combobox({
 				url:"${contextPath!}/task/listTree.json?projectId="+id,
@@ -128,9 +129,10 @@
 				}
 			});
     }
-   function loadChangePorjectSelect(){
+    
+   function loadChangePorjectSelect(id){
     	$('#_changeId').combobox({
-				url:"${contextPath!}/task/listTreeProject.json",
+				url:"${contextPath!}/task/listTreeProjectChange.json?projectId="+id,
 				valueField:'id',
 				textField:'name',
 				editable:false,
@@ -139,6 +141,8 @@
 				}
 			});
     }
+    
+
     
     function noEdit(){
       $('#_name').textbox('textbox').attr('readonly',true);
@@ -152,10 +156,19 @@
       $("#startDateShow").datebox({disabled: true});
       $("#endDateShow").datebox({disabled: true});
       $("#_owner").combobox({disabled: true});
-      $("#_flow").combobox({disabled: true}); 
+      $("#_flow").combobox({disabled: true});      
       $("#_type").combobox({disabled: true});
       $("#_changeId").combobox({disabled: true});
+      $("#saveTask").linkbutton({disabled:true});
     }
+    
+    
+    function canEditForTaskdetail(){
+      $('#taskHourStr').textbox('textbox').attr('readonly',false);
+      $('#overHourStr').textbox('textbox').attr('readonly',false);
+      $('#describe').textbox('textbox').attr('readonly',false); 
+    }
+    
     
   function canEdit(){
   
@@ -173,7 +186,15 @@
       $("#_flow").combobox({disabled: false}); 
       $("#_type").combobox({disabled: false});
       $("#_changeId").combobox({disabled: false});
+      $("#saveTask").linkbutton({disabled:false});
     }
+    
+    function noEditForTaskdetail(){
+      $('#taskHourStr').numberbox('textbox').attr('readonly',true);
+      $('#overHourStr').numberbox('textbox').attr('readonly',true);
+      $('#describe').textbox('textbox').attr('readonly',true); 
+    }
+    
     
             //打开执行任务窗口
         function openUpdateDetail(row){
@@ -187,9 +208,9 @@
 			
 			if(!isOwenr(selected.id)){
 				$.messager.alert('警告','只有任务所有者才可以编辑！');
-                return;
+				noEditForTaskdetail();
 			}
-			
+			canEditForTaskdetail();
             $('#dlg').dialog('open');
             $('#dlg').dialog('center');
 
@@ -255,6 +276,7 @@
             }
             
             if(formData._status==4){
+                noEditForTaskdetail();
             	$('#_progressShow').progressbar({
             	    value: parseInt(formData._progress)
             	});
@@ -357,3 +379,13 @@ function getDay(date){
     }  
     return day;  
 }
+
+
+
+//创建者
+        function isCreater(id){
+	          var  htmlobj=$.ajax({url:"${contextPath}/task/isCreater.json?id="+id,async:false});
+	          var str=htmlobj.responseText;
+	          var obj = $.parseJSON(str);
+	          return obj;
+        }
