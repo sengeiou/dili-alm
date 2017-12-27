@@ -391,9 +391,28 @@ function requestSave(index, data, callback) {
 				processData : true,
 				async : true,
 				success : function(retData) {
+					
 					if (retData.code == "200") {
 						(callback && typeof(callback) === "function") && callback(index, retData.data);
-						roleGrid.datagrid('acceptChanges');
+						var submitData = {
+							roleId : retData.data.id,
+							menuResources :[{id: 126, resource: false}]
+						};
+						$.ajax({
+								type : "POST",
+								url : '${contextPath!}/role/updateRoleMenuResource',
+								contentType : "application/json; charset=utf-8",
+								data : JSON.stringify(submitData),
+								dataType : "json",
+								success : function(data) {
+									if (data.code == 200) {
+										roleGrid.datagrid('acceptChanges');
+									} else {
+										$.messager.alert('提示', data.result);
+									}
+								}
+							});
+						
 					} else {
 						roleGrid.datagrid('rejectChanges');
 						$.messager.alert('错误', retData.result);
