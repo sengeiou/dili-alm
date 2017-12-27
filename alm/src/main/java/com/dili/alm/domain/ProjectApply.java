@@ -1,5 +1,6 @@
 package com.dili.alm.domain;
 
+import com.dili.ss.domain.annotation.Like;
 import com.dili.ss.domain.annotation.Operator;
 import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.FieldEditor;
@@ -32,6 +33,7 @@ public interface ProjectApply extends IBaseDomain {
 
     void setNumber(String number);
 
+    @Like(value = Like.BOTH)
     @Column(name = "`name`")
     @FieldDef(label="项目名称", maxLength = 255)
     @EditMode(editor = FieldEditor.Text, required = false)
