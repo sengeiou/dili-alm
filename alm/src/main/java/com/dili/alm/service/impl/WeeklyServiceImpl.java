@@ -505,26 +505,22 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			// 实际工时
 			td.get(i).setRealHour(td.get(i).getOverHour() + td.get(i).getTaskHour() + "");
 			// 工时偏差% （实际任务工时/预估任务工时-1）%
-			double  realHourandOverHour=td.get(i).getOverHour() + td.get(i).getTaskHour();
-			double  planTime=td.get(i).getPlanTime();
+			double  realHourandOverHour=td.get(i).getOverHour() + td.get(i).getTaskHour();//实际工时
+			double  planTime=td.get(i).getPlanTime();//计划工时
 			DecimalFormat    df   = new DecimalFormat("######0.00");   
-			
 			
 			// 完成情况
 			//DataDictionaryValue  ddv=DTOUtils.newDTO(DataDictionaryValue.class);
 			//ddv.setValue(td.get(i).getStatus());
 			//ddv.setDdId(dditList.get(0).getId());
 			
+			 double pro = ( realHourandOverHour/(planTime) -1) * 100;
+				td.get(i).setHourDeviation(df.format(pro) );
+				
 			 if(td.get(i).getStatus().equals("2")){//已完成就是等于二
 				 td.get(i).setStatus("YES");
-				 double pro = ( realHourandOverHour/(intweekHour*8) -1) * 100;
-					td.get(i).setHourDeviation(df.format(pro) );
-				 
 			 }else{
 				 td.get(i).setStatus("NO");
-				 
-				 double pro = ((intweekHour- realHourandOverHour)/intweekHour) * 100;
-					td.get(i).setHourDeviation(df.format(pro) );
 			 }
 			
 			
