@@ -91,7 +91,7 @@ public class ProjectApplyController {
     @RequestMapping(value = "/reApply/{id}", method = RequestMethod.GET)
     public String reApply(@PathVariable("id") Long id) {
         Long reApplyId = projectApplyService.reApply(id);
-        return "redirect:/projectApply/toStep/1/" + reApplyId;
+        return reApplyId == -1 ? "redirect:/projectApply/index.html" : "redirect:/projectApply/toStep/1/" + reApplyId;
     }
 
 
@@ -118,7 +118,7 @@ public class ProjectApplyController {
     @RequestMapping(value = "/listPage", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
     String listPage(ProjectApply projectApply) throws Exception {
-        if(projectApply.getCreated()!=null){
+        if (projectApply.getCreated() != null) {
             Date temp = projectApply.getCreated();
             projectApply.setCreated(DateUtil.appendDateToEnd(projectApply.getCreated()));
             projectApply.setCreatedStart(DateUtil.appendDateToStart(temp));

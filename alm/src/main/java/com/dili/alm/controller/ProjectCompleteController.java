@@ -40,15 +40,14 @@ public class ProjectCompleteController {
     ProjectCompleteService projectCompleteService;
 
 
-
     @ApiOperation("跳转到ProjectComplete页面")
-    @RequestMapping(value="/index.html", method = RequestMethod.GET)
+    @RequestMapping(value = "/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
         modelMap.put("sessionID", SessionContext.getSessionContext().getUserTicket().getId());
         return "projectComplete/index";
     }
 
-    @RequestMapping(value="/add", method = RequestMethod.GET)
+    @RequestMapping(value = "/add", method = RequestMethod.GET)
     public String add() {
         return "projectComplete/add";
     }
@@ -74,12 +73,13 @@ public class ProjectCompleteController {
         return "projectComplete/step" + step;
     }
 
-    @ApiOperation(value="查询ProjectComplete", notes = "查询ProjectComplete，返回列表信息")
+    @ApiOperation(value = "查询ProjectComplete", notes = "查询ProjectComplete，返回列表信息")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="ProjectComplete", paramType="form", value = "ProjectComplete的form信息", required = false, dataType = "string")
-	})
-    @RequestMapping(value="/list", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody List<ProjectComplete> list(ProjectComplete projectComplete) {
+            @ApiImplicitParam(name = "ProjectComplete", paramType = "form", value = "ProjectComplete的form信息", required = false, dataType = "string")
+    })
+    @RequestMapping(value = "/list", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody
+    List<ProjectComplete> list(ProjectComplete projectComplete) {
         return projectCompleteService.list(projectComplete);
     }
 
@@ -102,13 +102,14 @@ public class ProjectCompleteController {
         return "projectComplete/details";
     }
 
-    @ApiOperation(value="分页查询ProjectComplete", notes = "分页查询ProjectComplete，返回easyui分页信息")
+    @ApiOperation(value = "分页查询ProjectComplete", notes = "分页查询ProjectComplete，返回easyui分页信息")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="ProjectComplete", paramType="form", value = "ProjectComplete的form信息", required = false, dataType = "string")
-	})
-    @RequestMapping(value="/listPage", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody String listPage(ProjectComplete projectComplete) throws Exception {
-        if(projectComplete.getCreated()!=null){
+            @ApiImplicitParam(name = "ProjectComplete", paramType = "form", value = "ProjectComplete的form信息", required = false, dataType = "string")
+    })
+    @RequestMapping(value = "/listPage", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody
+    String listPage(ProjectComplete projectComplete) throws Exception {
+        if (projectComplete.getCreated() != null) {
             Date temp = projectComplete.getCreated();
             projectComplete.setCreated(DateUtil.appendDateToEnd(projectComplete.getCreated()));
             projectComplete.setCreatedStart(DateUtil.appendDateToStart(temp));
@@ -118,11 +119,12 @@ public class ProjectCompleteController {
 
     @ApiOperation("新增ProjectComplete")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="ProjectComplete", paramType="form", value = "ProjectComplete的form信息", required = true, dataType = "string")
-	})
-    @RequestMapping(value="/insert", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput insert(ProjectComplete projectComplete,String reasonText) {
-        if(projectComplete.getReason().equalsIgnoreCase("2")){
+            @ApiImplicitParam(name = "ProjectComplete", paramType = "form", value = "ProjectComplete的form信息", required = true, dataType = "string")
+    })
+    @RequestMapping(value = "/insert", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody
+    BaseOutput insert(ProjectComplete projectComplete, String reasonText) {
+        if (projectComplete.getReason().equalsIgnoreCase("2")) {
             projectComplete.setReason(reasonText);
         }
         projectComplete.setStatus(AlmConstants.ApplyState.APPLY.getCode());
@@ -134,16 +136,17 @@ public class ProjectCompleteController {
     @RequestMapping(value = "/reComplete/{id}", method = RequestMethod.GET)
     public String reComplete(@PathVariable("id") Long id) {
         Long newId = projectCompleteService.reComplete(id);
-        return "redirect:/projectComplete/toStep/1/" + newId;
+        return newId == -1 ? "redirect:/projectComplete/index.html" : "redirect:/projectComplete/toStep/1/" + newId;
     }
 
     @ApiOperation("修改ProjectComplete")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="ProjectComplete", paramType="form", value = "ProjectComplete的form信息", required = true, dataType = "string")
-	})
-    @RequestMapping(value="/update", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput update(ProjectComplete projectComplete,String reasonText) {
-        if(StringUtils.isNotEmpty(projectComplete.getReason())) {
+            @ApiImplicitParam(name = "ProjectComplete", paramType = "form", value = "ProjectComplete的form信息", required = true, dataType = "string")
+    })
+    @RequestMapping(value = "/update", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody
+    BaseOutput update(ProjectComplete projectComplete, String reasonText) {
+        if (StringUtils.isNotEmpty(projectComplete.getReason())) {
             if (projectComplete.getReason().equalsIgnoreCase("2")) {
                 projectComplete.setReason(reasonText);
             }
@@ -155,10 +158,11 @@ public class ProjectCompleteController {
 
     @ApiOperation("删除ProjectComplete")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="id", paramType="form", value = "ProjectComplete的主键", required = true, dataType = "long")
-	})
-    @RequestMapping(value="/delete", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput delete(Long id) {
+            @ApiImplicitParam(name = "id", paramType = "form", value = "ProjectComplete的主键", required = true, dataType = "long")
+    })
+    @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody
+    BaseOutput delete(Long id) {
         projectCompleteService.delete(id);
         return BaseOutput.success("删除成功");
     }
@@ -190,7 +194,7 @@ public class ProjectCompleteController {
     @RequestMapping("/loadMembers")
     @ResponseBody
     public Object loadMembers(Long id) throws Exception {
-            return projectCompleteService.loadMembers(id);
+        return projectCompleteService.loadMembers(id);
     }
 
     @RequestMapping("/loadComplete")
