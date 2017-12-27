@@ -3,6 +3,8 @@ package com.dili.alm.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
+import com.dili.alm.domain.FileType;
+import com.dili.alm.domain.Files;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.Team;
 import com.dili.alm.domain.User;
@@ -10,6 +12,7 @@ import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.UploadProjectFileDto;
 import com.dili.alm.exceptions.ProjectException;
 import com.dili.alm.rpc.UserRpc;
+import com.dili.alm.service.FilesService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.TeamService;
 import com.dili.ss.domain.BaseOutput;
@@ -21,6 +24,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import tk.mybatis.mapper.entity.Example;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +55,8 @@ public class ProjectController {
 	private UserRpc userRPC;
 	@Autowired
 	private TeamService teamService;
+	@Autowired
+	private FilesService filesService;
 
 	private void refreshMember() {
 		AlmCache.USER_MAP.clear();
@@ -218,5 +225,41 @@ public class ProjectController {
 	@RequestMapping(value = "/fileTypes.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public List<DataDictionaryValueDto> getFileTypes() {
 		return this.projectService.getFileTypes();
+	}
+
+	@RequestMapping(value = "/files/list", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody List<Map> list(Files files) {
+		Example example = new Example(Files.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("projectId", files.getProjectId()).andIsNotNull("type");
+		List<Files> list = this.filesService.selectByExample(example);
+		Map<Object, Object> metadata = new HashMap<>();
+
+		JSONObject fileTypeProvider = new JSONObject();
+		fileTypeProvider.put("provider", "fileTypeProvider");
+		metadata.put("type", fileTypeProvider);
+
+		JSONObject projectVersionProvider = new JSONObject();
+		projectVersionProvider.put("provider", "projectVersionProvider");
+		metadata.put("versionId", projectVersionProvider);
+
+		JSONObject projectPhaseProvider = new JSONObject();
+		projectPhaseProvider.put("provider", "projectPhaseProvider");
+		metadata.put("phaseId", projectPhaseProvider);
+
+		JSONObject memberProvider = new JSONObject();
+		memberProvider.put("provider", "memberProvider");
+		metadata.put("createMemberId", memberProvider);
+
+		JSONObject datetimeProvider = new JSONObject();
+		datetimeProvider.put("provider", "datetimeProvider");
+		metadata.put("created", datetimeProvider);
+
+		try {
+			return ValueProviderUtils.buildDataByProvider(metadata, list);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

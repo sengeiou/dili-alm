@@ -160,7 +160,7 @@ html, body {
 	<table class="easyui-datagrid" title="项目文档列表" id="fileGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"
 		pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
 		sortName="name" align="center" fit="false" striped="true" toolbar="#fileToolbar" idField="id"
-		data-options="url:'${contextPath!}/files/list?projectId=${model.id!}',onLoadSuccess:countFileGrid">
+		data-options="url:'${contextPath!}/project/files/list?projectId=${model.id!}',onLoadSuccess:countFileGrid">
 		<thead>
 			<tr>
 				<th data-options="field:'name', width:'26%',  sortable:'true', order:'asc', align:'left', resizable:'true', fixed:'false'">文件名</th>

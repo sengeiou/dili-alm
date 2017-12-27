@@ -71,14 +71,18 @@ public class FilesServiceImpl extends BaseServiceImpl<Files, Long> implements Fi
 		List<Files> returnFiles = new ArrayList<>(files.length);
 		for (MultipartFile file : files) {
 			String fileName = file.getOriginalFilename();
-			Files record = DTOUtils.newDTO(Files.class);
-			record.setName(fileName);
-			Files old = this.getActualDao().selectOne(record);
-			if (old != null) {
-				if (old.getProjectId() != null) {
-					throw new RuntimeException("存在相同文件名");
+
+			if (projectId != null) {
+				Files record = DTOUtils.newDTO(Files.class);
+				record.setName(fileName);
+				record.setProjectId(projectId);
+				Files old = this.getActualDao().selectOne(record);
+				if (old != null && old.getType() != null) {
+					if (old.getProjectId() != null) {
+						throw new RuntimeException("存在相同文件名");
+					}
+					this.getActualDao().deleteByPrimaryKey(old.getId());
 				}
-				this.getActualDao().deleteByPrimaryKey(old.getId());
 			}
 
 			int size = (int) file.getSize();
@@ -92,8 +96,6 @@ public class FilesServiceImpl extends BaseServiceImpl<Files, Long> implements Fi
 				byte[] bytes = file.getBytes();
 				buffStream = new BufferedOutputStream(new FileOutputStream(dest));
 				buffStream.write(bytes);
-				record = DTOUtils.newDTO(Files.class);
-				record.setName(file.getOriginalFilename());
 				UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 				Files tmpFiles = DTOUtils.newDTO(Files.class);
 				if (userTicket != null) {

@@ -1,4 +1,10 @@
 <#body>
+ <%if(project!null!=null){%>
+<div id="cusTools" >
+	<a onclick="window.history.go(-1);" class="easyui-linkbutton"
+		style="width: 50px; height: 24px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef;padding:5px; float:right;">返回</a>
+</div>
+<%}%>
 <div class="easyui-layout" fit="true" style="">
     <div id="smDialog" style="display: none;"></div>
     <!-- ====================================================================================================================== -->
@@ -267,8 +273,9 @@
             $.messager.alert('警告', '请选中一条数据');
             return;
         }
+        
         canEdit();
-
+        
         if(!isCreater(selected.id)){
         	noEdit();
           }
