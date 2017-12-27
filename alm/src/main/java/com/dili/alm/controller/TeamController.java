@@ -1,10 +1,16 @@
 package com.dili.alm.controller;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +25,7 @@ import com.dili.alm.domain.Team;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.TeamDepartmentRoleQuery;
+import com.dili.alm.domain.dto.UserDepartmentRole;
 import com.dili.alm.domain.dto.UserDepartmentRoleQuery;
 import com.dili.alm.rpc.DepartmentRpc;
 import com.dili.alm.rpc.UserRpc;
@@ -29,6 +36,7 @@ import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
+import com.google.common.collect.Lists;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -152,5 +160,48 @@ public class TeamController {
 			return output.getData();
 		}
 		return null;
+	}
+
+	@RequestMapping(value = "/members", method = RequestMethod.GET)
+	public String members(ModelMap modelMap, @RequestParam("textboxId") String textboxId, String dep) {
+		modelMap.put("textboxId", textboxId);
+		modelMap.put("dep", dep);
+		if (StringUtils.isNotBlank(dep)) {
+			AlmCache.DEP_MAP.forEach((Long k, Department v) -> {
+				if (Objects.equals(v.getCode(), dep)) {
+					modelMap.put("dep", k);
+				}
+			});
+		}
+		return "team/members";
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/members.json", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public List<UserDepartmentRole> membersJson(UserDepartmentRoleQuery user, @RequestParam Long projectId) {
+		BaseOutput<List<UserDepartmentRole>> output = this.userRPC.findUserContainDepartmentAndRole(user);
+		if (output == null || !output.isSuccess()) {
+			return Lists.newArrayList();
+		}
+		List<UserDepartmentRole> udrs = output.getData();
+		if (org.apache.commons.collections.CollectionUtils.isEmpty(udrs)) {
+			return Lists.newArrayList();
+		}
+		Team teamQuery = DTOUtils.newDTO(Team.class);
+		teamQuery.setProjectId(projectId);
+		List<Team> teams = this.teamService.list(teamQuery);
+		Set<Long> userIds = new HashSet<>();
+		teams.forEach(t -> {
+			userIds.add(t.getMemberId());
+		});
+		Iterator<UserDepartmentRole> it = udrs.iterator();
+		while (it.hasNext()) {
+			UserDepartmentRole udr = it.next();
+			if (!userIds.contains(udr.getId())) {
+				it.remove();
+			}
+		}
+		return udrs;
 	}
 }

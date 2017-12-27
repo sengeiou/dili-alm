@@ -7,7 +7,7 @@ import com.dili.alm.domain.FilesEntity;
 public class UploadProjectFileDto extends FilesEntity {
 
 	private List<Long> fileIds;
-	private Long receiver;
+	private String receiver;
 	private Boolean sendMail;
 
 	public List<Long> getFileIds() {
@@ -18,11 +18,11 @@ public class UploadProjectFileDto extends FilesEntity {
 		this.fileIds = fileIds;
 	}
 
-	public Long getReceiver() {
+	public String getReceiver() {
 		return receiver;
 	}
 
-	public void setReceiver(Long receiver) {
+	public void setReceiver(String receiver) {
 		this.receiver = receiver;
 	}
 

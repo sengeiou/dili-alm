@@ -78,10 +78,14 @@ public class FilesServiceImpl extends BaseServiceImpl<Files, Long> implements Fi
 			String fileName = file.getOriginalFilename();
 			Files record = DTOUtils.newDTO(Files.class);
 			record.setName(fileName);
-			int count = this.getActualDao().selectCount(record);
-			if (count > 0) {
-				throw new RuntimeException("存在相同文件名");
+			Files old = this.getActualDao().selectOne(record);
+			if (old != null) {
+				if (old.getProjectId() != null) {
+					throw new RuntimeException("存在相同文件名");
+				}
+				this.getActualDao().deleteByPrimaryKey(old.getId());
 			}
+
 			int size = (int) file.getSize();
 			if (StringUtils.isBlank(fileName) || size == 0) {
 				continue;

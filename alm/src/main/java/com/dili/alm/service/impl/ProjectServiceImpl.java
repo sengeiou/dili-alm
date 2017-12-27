@@ -360,7 +360,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		metadata.put("created", provider);
 		metadata.put("modified", provider);
 		metadata.put("actualStartDate", provider);
-		
+
 		project.setMetadata(metadata);
 		try {
 			List list = ValueProviderUtils.buildDataByProvider(project, projectDtoList);
@@ -412,7 +412,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 			this.fileMapper.updateByPrimaryKey(files);
 			target.add(files);
 		});
-		if (dto.getSendMail()) {
+		if (dto.getSendMail() && StringUtils.isNotBlank(dto.getReceiver())) {
 			this.sendMail(dto, target);
 		}
 		List<Map> listModel;
@@ -428,15 +428,10 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 			throws MessagingException, InterruptedException {
 		String from = SystemConfigUtils.getProperty("spring.mail.username");
 		Project project = this.getActualDao().selectByPrimaryKey(dto.getProjectId());
-		BaseOutput<User> output = this.userRPC.findUserById(dto.getReceiver());
-		if (output == null || !output.isSuccess()) {
-			throw new MessagingException("收件人不存在");
+		String[] userIds = dto.getReceiver().split(",");
+		if (userIds.length <= 0) {
+			return;
 		}
-		User receiver = output.getData();
-		if (receiver == null) {
-			throw new MessagingException("收件人不存在");
-		}
-		String to = receiver.getEmail();
 		String subject = "主题：" + project.getName() + "有新的文件上传";
 		StringBuilder sb = new StringBuilder();
 		ProjectVersion version = this.projectVersionMapper.selectByPrimaryKey(dto.getVersionId());
@@ -444,12 +439,23 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		sb.append("项目名称：").append(project.getName()).append(version.getVersion()).append("\r\n阶段名称：")
 				.append(AlmCache.PHASE_NAME_MAP.get(phase.getName()));
 		String content = sb.toString();
-		List<File> files = new ArrayList<>();
-		for (Files attach : attachments) {
-			FileSystemResource file = new FileSystemResource(new File(attach.getUrl() + attach.getName()));
-			files.add(file.getFile());
+		for (String str : userIds) {
+			BaseOutput<User> output = this.userRPC.findUserById(Long.valueOf(str));
+			if (output == null || !output.isSuccess()) {
+				throw new MessagingException("收件人不存在");
+			}
+			User receiver = output.getData();
+			if (receiver == null) {
+				throw new MessagingException("收件人不存在");
+			}
+			String to = receiver.getEmail();
+			List<File> files = new ArrayList<>();
+			for (Files attach : attachments) {
+				FileSystemResource file = new FileSystemResource(new File(attach.getUrl() + attach.getName()));
+				files.add(file.getFile());
+			}
+			this.mailManager.sendMail(from, to, content, subject, files);
 		}
-		this.mailManager.sendMail(from, to, content, subject, files);
 	}
 
 	private List<Map> parseEasyUiListModel(List<? extends Files> list) throws Exception {
