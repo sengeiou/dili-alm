@@ -72,12 +72,12 @@ public class FilesServiceImpl extends BaseServiceImpl<Files, Long> implements Fi
 		for (MultipartFile file : files) {
 			String fileName = file.getOriginalFilename();
 
-			if(projectId!=null) {
+			if (projectId != null) {
 				Files record = DTOUtils.newDTO(Files.class);
 				record.setName(fileName);
 				record.setProjectId(projectId);
 				Files old = this.getActualDao().selectOne(record);
-				if (old != null) {
+				if (old != null && old.getType() != null) {
 					if (old.getProjectId() != null) {
 						throw new RuntimeException("存在相同文件名");
 					}

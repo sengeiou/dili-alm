@@ -1,6 +1,6 @@
 $(function() {
 			$("#fileuploader").uploadFile({
-						url : "${contextPath!}/files/filesUpload?projectId=" + $('projectId').val(), // 文件上传url
+						url : "${contextPath!}/files/filesUpload?projectId=" + $('#projectId').val(), // 文件上传url
 						fileName : "file", // 提交到服务器的文件名
 						uploadStr : '上传',
 						// maxFileCount : 1, // 上传文件个数（多个时修改此处

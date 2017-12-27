@@ -629,7 +629,3 @@ function alarmConfig() {
 function generateWeekly() {
 	window.location.href = '${contextPath}/weekly/getDescAddByProjectId?projectId=' + $('#projectId').val();
 }
-
-$(function() {
-
-		});
