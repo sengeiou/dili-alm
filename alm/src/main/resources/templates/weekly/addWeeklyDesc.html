@@ -231,7 +231,12 @@
 				 <tfoot>  
 				       <tr>
 			              <td colspan="4"  >
+			               <% if(wDetails.isSubmit==null  || wDetails.isSubmit==0){%>
 			                <a href="#" onclick="addRistTr()" class="easyui-linkbutton" data-options="iconCls:'icon-add',toggle:true">新增重要风险</a>
+			                <%}else{%>
+			                       <font size="2">周报重要风险已提交</font>
+			                 <%}%>
+			       
 			              </td>
 				       </tr>
 				 </tfoot>
@@ -282,12 +287,15 @@
 						  <tr>
 
 							  <td colspan="4">
-
-								  <a href="#"  onclick="addMaxTr()"class="easyui-linkbutton" data-options="iconCls:'icon-add',toggle:true">新增重大问题</a>
-
+                                   <% if(wDetails.isSubmit==null  || wDetails.isSubmit==0){%>
+								        <a href="#"  onclick="addMaxTr()"class="easyui-linkbutton" data-options="iconCls:'icon-add',toggle:true">新增重大问题</a>
+                                  <%}else{%>
+			                              <font size="2">周报重大问题已提交</font>
+			                       <%}%>
+			                       
 								  <% if(wDetails!=null){%>
-								  <input id="sSubmit" type='hidden' value="${wDetails.isSubmit}"/>
-								  <input id="cancelSubmit" type='hidden' value="${wDetails.id}"/>
+								     <input id="sSubmit" type='hidden' value="${wDetails.isSubmit}"/>
+								     <input id="cancelSubmit" type='hidden' value="${wDetails.id}"/>
 								  <%}%>
 							  </td>
 
