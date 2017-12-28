@@ -119,7 +119,7 @@
                         <th data-options="field:'projectName',width:'10%',  formatter: formatprojectName, sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目名称 </th>
                         <th data-options="field:'projectType',width:'10%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目类型</th>
                         <th data-options="field:'userName', width:'10%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目经理 </th>
-                        <th data-options="field:'projectStatus', width:'12%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目进度   </th>
+                        <th data-options="field:'projectStatus', width:'12%',formatter:a,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目进度   </th>
                         <th data-options="field:'endDate',width:'18%', _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">提交周报时间   </th>
                         <th data-options="field:'_operate',width:'10%',align:'center',formatter:formatOper">操作</th>
                     </tr>
@@ -160,6 +160,21 @@
     <script type="text/javascript">
     
     
+   
+   //项目名称
+     function a(val,row,index){  
+     	//  alert(val+"s:" +row.applyId +"ss:"+index);
+        // return "<a href='javascript:void(0)'>"+val+"</a>"; 
+        if(row.projectStatus<8){
+        	return 	 "<font color='green'>正常--偏差<8%</font>";
+        }else if(row.projectStatus>15){
+        	return "<font color='red'>警戒--偏差>15%</font>";
+        }else{
+        	return "<font color='orange'>预警--8%<偏差<15%</font>";
+        }
+       
+     }
+   
     function cancel(){  
     	 window.location.href="${contextPath}/weekly/getDescAddByProjectId?projectId=3";
   
