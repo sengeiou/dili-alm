@@ -228,6 +228,8 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 	@Override
 	public int updateTaskDetail(TaskDetails taskDetails, Task task) {
+		//标识任务已完成，需要写入项目中实际完成时间
+		boolean isComplete =false;
 		// 查询当前要修改的任务工时信息
 		TaskDetails taskDetailsFromDatabase = taskDetailsService.get(taskDetails.getId());
 		// 校验前台工时
@@ -254,19 +256,20 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			// 更新状态为完成
 			task.setStatus(TaskStatus.COMPLETE.code);
 			task.setFactEndDate(new Date());
+			isComplete = true;
 		}
 		taskDetailsFromDatabase.setModified(new Date());
 		
 		this.taskDetailsService.saveOrUpdate(taskDetailsFromDatabase);
 		this.saveOrUpdate(task);
 		// 进度总量写入project表中
-		saveProjectProgress(task);
+		saveProjectProgress(task,isComplete);
 
 		// 更新版本表中的进度
 		saveProjectVersion(task);
 
 		// 更新阶段表中的进度
-		saveProjectPhase(task);
+		saveProjectPhase(task);		
 		return 0;
 	}
 
@@ -356,7 +359,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	}
 
 	// 计算项目总进度
-	private void saveProjectProgress(Task task) {
+	private void saveProjectProgress(Task task,boolean signComplate) {
 
 		int progress = 0;
 
@@ -397,6 +400,11 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		}
 		progress = (int) (( taskTimes / total)* 100);
 		project.setCompletedProgress(progress);
+		
+		//接收到true的标识就写入日期
+		if (signComplate) {
+			project.setActualStartDate(new Date());
+		}
 		projectService.saveOrUpdate(project);
 	}
 
@@ -425,6 +433,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			taskDetailsService.insert(taskDetails);
 		}
 
+		task.setFactBeginDate(new Date());
 		task.setStatus(TaskStatus.START.code);// 更新状态为开始任务
 		Project project = this.projectMapper.selectByPrimaryKey(task.getProjectId());
 		if (project == null) {
@@ -460,16 +469,22 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		// 查询任务表里 项目下的所有任务
 		List<Task> taskList = this.list(taskSelect);
 		for (Task taskDome : taskList) {
-			// dateUtil 计算相差天数小于0，更新状态为未完成
-			int days = Integer.parseInt(DateUtil.getDatePoor(new Date(), taskDome.getEndDate()).trim());
-			if (days > 0) {
-				taskDome.setStatus(TaskStatus.NOTCOMPLETE.code);// 更新状态为未完成
-				taskDome.setModified(new Date());
-				this.update(taskDome);
+			//只判断未开始，已开始状态的任务
+			if (taskDome.getStatus()==TaskStatus.START.code||taskDome.getStatus()==TaskStatus.NOTSTART.code) {
+				// dateUtil 计算相差天数小于0，更新状态为未完成
+				int days = Integer.parseInt(DateUtil.getDatePoor(new Date(), taskDome.getEndDate()).trim());
+				if (days > 0) {
+					taskDome.setStatus(TaskStatus.NOTCOMPLETE.code);// 更新状态为未完成
+					taskDome.setModified(new Date());
+					this.update(taskDome);
+				}
 			}
 		}
 	}
 
+	/*
+	 *字典
+	 */
 	@Override
 	public List<DataDictionaryValueDto> getTaskStates() {
 		DataDictionaryDto dto = this.dataDictionaryService.findByCode(TASK_STATUS_CODE);
@@ -487,6 +502,10 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		}
 		return dto.getValues();
 	}
+	
+	/*
+	 *字典
+	 */
 
 	/**
 	 * 判断今日所有项目累加总和是否超过8小时
@@ -507,7 +526,11 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		return true;
 	}
 
-	//读取填写工时信息的方法
+	/*
+	 * 
+     * 已经填写的工时
+     *
+	 */
 	private int taskHoursPlus(TaskDetails taskDetails) {
 		
 		int dayTotal = 0;
@@ -714,7 +737,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 
 	/**
-	 * 
+	 * 项目经理判断
 	 */
 	@Override
 	public boolean isThisProjectManger(Long projectId) {
