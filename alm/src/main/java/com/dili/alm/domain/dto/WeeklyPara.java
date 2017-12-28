@@ -61,6 +61,14 @@ public class WeeklyPara   {
 	private Long  userId;
 	private Long  projectId;
 	
+	private  String   created;
+	
+	public String getCreated() {
+		return created;
+	}
+	public void setCreated(String created) {
+		this.created = created;
+	}
 	public Long getProjectId() {
 		return projectId;
 	}

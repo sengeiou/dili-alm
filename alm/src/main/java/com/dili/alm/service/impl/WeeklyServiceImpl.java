@@ -303,7 +303,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 				 
 				 
 				 weeklyPara2.setDate(weeklyPara2.getStartDate().substring(0,10) + " 到 " + weeklyPara2.getEndDate().substring(0,10));
-				
+				 weeklyPara2.setCreated(weeklyPara2.getCreated().substring(0,19));
 				 ddv=DTOUtils.newDTO(DataDictionaryValue.class);
 				 ddv.setValue(weeklyPara2.getProjectType());
 				 ddv.setDdId(dditList.get(0).getId());
