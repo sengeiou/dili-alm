@@ -36,7 +36,7 @@ public class RoleNameProvider implements ValueProvider {
 			if (Objects.equals(json.getString("field"), "roleName")) {
 				if(json.get("_rowData") instanceof VerifyApproval){
 					VerifyApproval approve = json.getObject("_rowData", VerifyApproval.class);
-					roleRpc.listRoleNameByUserId(approve.getApprover()).getData();
+					return roleRpc.listRoleNameByUserId(approve.getApprover()).getData();
 				}
 			}
 		}catch (Exception ignored){}
