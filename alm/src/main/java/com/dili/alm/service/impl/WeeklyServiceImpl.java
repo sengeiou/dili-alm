@@ -258,8 +258,12 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		if(weeklyPara.getUserName()!=null&&weeklyPara.getUserName().endsWith("-1")){
 			weeklyPara.setUserName(null);
 		}
+		if(weeklyPara.getStartDate()!=null){
+			String dateString =weeklyPara.getStartDate().substring(0,10)+" 00:00:00";
+		    weeklyPara.setStartDate(dateString);  
+		}
 		if(weeklyPara.getEndDate()!=null){
-			String dateString =DateUtil.getAddDay(weeklyPara.getEndDate(), 1);//加一天
+			String dateString =weeklyPara.getEndDate().substring(0,10)+" 23:59:59";
 		    weeklyPara.setEndDate(dateString);  
 		}
 	     
