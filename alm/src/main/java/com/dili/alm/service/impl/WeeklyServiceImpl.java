@@ -258,8 +258,12 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		if(weeklyPara.getUserName()!=null&&weeklyPara.getUserName().endsWith("-1")){
 			weeklyPara.setUserName(null);
 		}
+		if(weeklyPara.getStartDate()!=null){
+			String dateString =weeklyPara.getStartDate().substring(0,10)+" 00:00:00";
+		    weeklyPara.setStartDate(dateString);  
+		}
 		if(weeklyPara.getEndDate()!=null){
-			String dateString =DateUtil.getAddDay(weeklyPara.getEndDate(), 1);//加一天
+			String dateString =weeklyPara.getEndDate().substring(0,10)+" 23:59:59";
 		    weeklyPara.setEndDate(dateString);  
 		}
 	     
@@ -303,7 +307,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 				 
 				 
 				 weeklyPara2.setDate(weeklyPara2.getStartDate().substring(0,10) + " 到 " + weeklyPara2.getEndDate().substring(0,10));
-				
+				 weeklyPara2.setCreated(weeklyPara2.getCreated().substring(0,19));
 				 ddv=DTOUtils.newDTO(DataDictionaryValue.class);
 				 ddv.setValue(weeklyPara2.getProjectType());
 				 ddv.setDdId(dditList.get(0).getId());

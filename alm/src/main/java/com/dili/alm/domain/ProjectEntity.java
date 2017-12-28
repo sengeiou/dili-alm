@@ -24,6 +24,7 @@ public class ProjectEntity extends BaseDomain implements Project {
 	private Date startDate;
 	private Date endDate;
 	private Date actualStartDate;
+	private Date actualEndDate;
 	private Integer projectState;
 	private Integer taskCount;
 	private Integer memberCount;
@@ -251,4 +252,14 @@ public class ProjectEntity extends BaseDomain implements Project {
 	public void setApplyId(Long applyId) {
 		this.applyId = applyId;
 	}
+
+	public Date getActualEndDate() {
+		return actualEndDate;
+	}
+
+	public void setActualEndDate(Date actualEndDate) {
+		this.actualEndDate = actualEndDate;
+	}
+
+
 }

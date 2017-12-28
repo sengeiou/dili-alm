@@ -257,7 +257,7 @@
             	$("#updateDetail").hide();
             }
             
-            if(formData._status==1){
+            if(formData._status==1||formData._status==4){
             	$('#_progressShow').progressbar({
             	    value: parseInt(formData._progress)
             	});
@@ -281,19 +281,7 @@
             	$('#detail_form').form('clear');
             	getDetailInfo(formData._id);
             }
-            
-            if(formData._status==4){
-                noEditForTaskdetail();
-            	$('#_progressShow').progressbar({
-            	    value: parseInt(formData._progress)
-            	});
-            	$("#task_detail").show();
-            	$("#doTask").hide();
-            	$("#pauseTask").hide();
-            	$("#updateDetail").hide();
-            	$('#detail_form').form('clear');
-            	getDetailInfo(formData._id);
-            }
+
             $('#detail_form').form('load',{overHourStr:0});
             $('#detail_form').form('load',{taskHourStr:0});
         }
