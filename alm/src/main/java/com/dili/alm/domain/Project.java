@@ -124,6 +124,13 @@ public interface Project extends IBaseDomain {
 	Date getActualStartDate();
 
 	void setActualStartDate(Date actualStartDate);
+	
+	@Column(name = "`actual_end_date`")
+	@FieldDef(label = "实际结束时间")
+	@EditMode(editor = FieldEditor.Datetime, required = false)
+	Date getActualEndDate();
+
+	void setActualEndDate(Date actualEndDate);
 
 	@Column(name = "`project_state`")
 	@FieldDef(label = "状态")
