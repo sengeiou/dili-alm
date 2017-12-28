@@ -20,7 +20,9 @@
 								type : 'textbox',
 								options : {
 									required : true,
-									validType:'length[0,10]'
+									validType:'length[0,10]',
+									missingMessage:'部门名称不能为空',
+									invalidMessage:'部门名称长度必须是1-20个字符'
 								}
 							}">部门名称</th>
 					<th
@@ -37,8 +39,8 @@
 						data-options="field:'notes',width:'40%',editor :{
 							type:'textbox',
 								options : {
-									validType:'length[0,30]',
-									invalidMessage:'部门描述不能超过30个字符'
+									validType:'length[0,40]',
+									invalidMessage:'部门描述不能超过40个字符'
 								}
 							}">描述</th>
 					<th data-options="field:'userCount',width:'10%',formatter:userCountFomartter">部门人员</th>

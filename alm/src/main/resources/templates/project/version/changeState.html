@@ -84,9 +84,9 @@
 		</tr>
 		<tr>
 			<td><select id="versionState" editable="false" panelWidth="auto" panelHeight="auto" label="版本状态:" class="easyui-combobox" name="online" id="online" style="width: 100%;">
-			<%for(item in states){%>
-					<option value="${item.value!}" <%if(model.versionState == parseInt(item.value)){%>selected="selected"<%}%>>${item.code!}</option>
-			<%}%>
+					<option value="1" <%if(model.versionState == 1){%>selected="selected"<%}%>>进行中</option>
+					<option value="3" <%if(model.versionState == 3){%>selected="selected"<%}%>>暂停中</option>
+					<option value="2" <%if(model.versionState == 2){%>selected="selected"<%}%>>已完成</option>
 			</select></td>
 		</tr>
 	</table>
