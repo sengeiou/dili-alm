@@ -50,11 +50,11 @@
 					<th data-options="field:'userName',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',width:105">用户名</th>
 					<th data-options="field:'realName',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',width:80"">真实姓名</th>
 					<th
-						data-options="field:'department',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:function(value,row,index){
+						data-options="field:'department', align:'center', resizable:'true', fixed:'false',formatter:function(value,row,index){
 						return row.department.name;
 					},width:80"">所属部门</th>
 					<th
-						data-options="field:'职务', width:180, sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:function(value,row,index){
+						data-options="field:'职务', width:180, align:'center', resizable:'true', fixed:'false',formatter:function(value,row,index){
 						if(!row.roles || row.roles.length <= 0){
 							return '';
 						}
@@ -145,10 +145,6 @@
 							<td style="padding: 5px;"><input class="easyui-textbox" name="_cellphone" id="_cellphone" style="width: 100%"
 															 data-options="label:'手机号码:', validType:'cellphone',validateOnCreate:false,required:true" /></td>
 						</tr>
-						<!--<tr>-->
-							<!--<td style="padding: 5px;"><input class="easyui-textbox" name="_cellphone" id="_cellphone" style="width: 100%"-->
-								<!--data-options="label:'手机号码:', validType:'cellphone',validateOnCreate:false,required:true" /></td>-->
-						<!--</tr>-->
 						<tr>
 							<td colspan="2" style="padding: 5px;"><input class="easyui-textbox" name="_email" id="_email" style="width: 100%"
 								data-options="label:'邮箱:', validType:'email',validateOnCreate:false,required:true" /></td>

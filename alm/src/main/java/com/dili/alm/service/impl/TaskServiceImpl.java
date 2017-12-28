@@ -131,11 +131,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		return super.insertSelective(t);
 	}
 
-	@Override
-	public List<Project> selectByOwner(Long ownerId) {
-		Project project = DTOUtils.newDTO(Project.class);
-		return this.projectMapper.getProjectsByTaskOwner(project, ownerId);
-	}
 
 	@Override
 	public EasyuiPageOutput listPageSelectTaskDto(Task task) throws Exception {

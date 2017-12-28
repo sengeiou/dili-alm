@@ -2,6 +2,7 @@ package com.dili.sysadmin.service.impl;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -250,6 +251,12 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 		if (count > 0) {
 			return BaseOutput.failure("用户名已存在");
 		}
+		record = new User();
+		record.setSerialNumber(dto.getSerialNumber());
+		count = this.getActualDao().selectCount(record);
+		if (count > 0) {
+			return BaseOutput.failure("用户编号已存在");
+		}
 		User user = new User();
 		BeanCopier copier = BeanCopier.create(AddUserDto.class, User.class, true);
 		copier.copy(dto, user, (v, c, m) -> {
@@ -283,29 +290,30 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 		if (user == null) {
 			return BaseOutput.failure("用户不存在");
 		}
-		List<User> singleUser = new ArrayList<>();
-		UserDepartmentDto userDto = new UserDepartmentDto(user);
-		List<Department> departments = this.departmentMapper.findByUserId(user.getId());
-		userDto.setDepartment(departments.get(0));
-		singleUser.add(userDto);
+		@SuppressWarnings("unchecked")
+		Map<Object, Object> metadata = null == user.getMetadata() ? new HashMap<>() : user.getMetadata();
+
+		JSONObject userStatusProvider = new JSONObject();
+		userStatusProvider.put("provider", "userStatusProvider");
+		metadata.put("status", userStatusProvider);
+
+		JSONObject provider = new JSONObject();
+		provider.put("provider", "datetimeProvider");
+		metadata.put("validTimeBegin", provider);
+		metadata.put("validTimeEnd", provider);
+		metadata.put("created", provider);
+		metadata.put("modified", provider);
+		user.setMetadata(metadata);
 		try {
-			Map<Object, Object> metadata = new HashMap<>();
-			JSONObject datetimeProvider = new JSONObject();
-			datetimeProvider.put("provider", "datetimeProvider");
-			metadata.put("lastLoginTime", datetimeProvider);
-			metadata.put("created", datetimeProvider);
-			metadata.put("modified", datetimeProvider);
-			metadata.put("validTimeBegin", datetimeProvider);
-			JSONObject userStatusProvider = new JSONObject();
-			userStatusProvider.put("provider", "userStatusProvider");
-			metadata.put("status", userStatusProvider);
-
-			List<Map> results = ValueProviderUtils.buildDataByProvider(metadata, singleUser);
-			return BaseOutput.success().setData(results.get(0));
+			UserDepartmentQuery udQuery = new UserDepartmentQuery();
+			udQuery.setDepartmentId(dto.getDepartment().get(0));
+			@SuppressWarnings("unchecked")
+			List<UserDepartmentDto> results = this.parseToUserDepartmentDto(Arrays.asList(user), udQuery);
+			List users = ValueProviderUtils.buildDataByProvider(user, results);
+			return BaseOutput.success().setData(users.get(0));
 		} catch (Exception e) {
+			return null;
 		}
-		return null;
-
 	}
 
 	/**
