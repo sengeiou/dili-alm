@@ -157,6 +157,12 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	    //项目总体情况描述
 	    WeeklyDetails wDetails=  weeklyDetailsService.getWeeklyDetailsByWeeklyId(Long.parseLong(id));
 	  //（实际项目发生工时/立项申请预估工时-1）%
+	    
+	    if( wDetails!=null && wDetails.getIsSubmit()!=null &&wDetails.getIsSubmit()==0){
+	    	
+	    	wDetails.setIsSubmit(0);
+	    }
+  
 	    map.put("wDetails", wDetails);
 	    
 	    return  map;
@@ -230,6 +236,11 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	    //项目总体情况描述
 	    WeeklyDetails wDetails=  weeklyDetailsService.getWeeklyDetailsByWeeklyId(Long.parseLong(id));
 	  //（实际项目发生工时/立项申请预估工时-1）%
+	    if( wDetails!=null && wDetails.getIsSubmit()!=null &&wDetails.getIsSubmit()==0){
+	    	
+	    	wDetails.setIsSubmit(0);
+	    }
+  
 	    map.put("wDetails", wDetails);
 	    
 	    return  map;
@@ -258,12 +269,8 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		if(weeklyPara.getUserName()!=null&&weeklyPara.getUserName().endsWith("-1")){
 			weeklyPara.setUserName(null);
 		}
-		if(weeklyPara.getStartDate()!=null){
-			String dateString =weeklyPara.getStartDate().substring(0,10)+" 00:00:00";
-		    weeklyPara.setStartDate(dateString);  
-		}
 		if(weeklyPara.getEndDate()!=null){
-			String dateString =weeklyPara.getEndDate().substring(0,10)+" 23:59:59";
+			String dateString =DateUtil.getAddDay(weeklyPara.getEndDate(), 1);//加一天
 		    weeklyPara.setEndDate(dateString);  
 		}
 	     
@@ -307,7 +314,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 				 
 				 
 				 weeklyPara2.setDate(weeklyPara2.getStartDate().substring(0,10) + " 到 " + weeklyPara2.getEndDate().substring(0,10));
-				 weeklyPara2.setCreated(weeklyPara2.getCreated().substring(0,19));
+				
 				 ddv=DTOUtils.newDTO(DataDictionaryValue.class);
 				 ddv.setValue(weeklyPara2.getProjectType());
 				 ddv.setDdId(dditList.get(0).getId());
@@ -404,7 +411,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			
 			pd.setBeginAndEndTime(map.get("one").substring(0,10) + "到" +map.get("five").substring(0,10));
 		}
-		
+	
 		 UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		 pd.setStageMan(userTicket.getRealName());
 		 
@@ -767,6 +774,10 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		
 	    //项目总体情况描述
 	    WeeklyDetails wDetails=  weeklyDetailsService.getWeeklyDetailsByWeeklyId(wk.getId());
+	    if( wDetails!=null && wDetails.getIsSubmit()!=null &&wDetails.getIsSubmit()==0){
+	    	
+	    	wDetails.setIsSubmit(0);
+	    }
 	  //（实际项目发生工时/立项申请预估工时-1）%
 	    map.put("wDetails", wDetails);
 	    

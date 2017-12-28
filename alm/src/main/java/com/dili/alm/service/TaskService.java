@@ -18,8 +18,6 @@ import com.dili.ss.domain.EasyuiPageOutput;
  */
 public interface TaskService extends BaseService<Task, Long> {
 
-	List<Project> selectByOwner(Long ownerId);
-
 	EasyuiPageOutput listPageSelectTaskDto(Task task) throws Exception;
 	
 	int updateTaskDetail(TaskDetails taskDetails ,Task task);
