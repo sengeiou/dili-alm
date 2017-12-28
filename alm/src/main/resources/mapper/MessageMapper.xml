@@ -55,4 +55,64 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
+  
+  <select id="selectMessages" parameterType="com.dili.alm.domain.Message" resultMap="BaseResultMap">
+
+    select 
+    <include refid="Base_Column_List" />
+    from message
+    where 1=1 
+      <if test="id != null">
+    	and id = #{id,jdbcType=BIGINT}
+      </if>
+      <if test="url != null">
+        and url = #{url,jdbcType=VARCHAR}
+      </if>
+      <if test="sender != null">
+        and sender = #{sender,jdbcType=BIGINT}
+      </if>
+      <if test="recipient != null">
+        and recipient = #{recipient,jdbcType=BIGINT}
+      </if>
+      <if test="created != null">
+        and created = #{created,jdbcType=TIMESTAMP}
+      </if>
+      <if test="type != null">
+        and type = #{type,jdbcType=INTEGER}
+      </if>
+      <if test="isRead != null">
+        and is_read = #{isRead,jdbcType=BIT}
+      </if>
+      <if test="sort != null">
+    	ORDER BY ${sort} ${order}
+      </if>
+  </select>
+  <select id="selectMessagesCount" parameterType="com.dili.alm.domain.Message" resultType="java.lang.Integer">
+
+    select 
+    count(1) AS 'total'
+    from message
+    where 1=1 
+      <if test="id != null">
+    	and id = #{id,jdbcType=BIGINT}
+      </if>
+      <if test="url != null">
+        and url = #{url,jdbcType=VARCHAR}
+      </if>
+      <if test="sender != null">
+        and sender = #{sender,jdbcType=BIGINT}
+      </if>
+      <if test="recipient != null">
+        and recipient = #{recipient,jdbcType=BIGINT}
+      </if>
+      <if test="created != null">
+        and created = #{created,jdbcType=TIMESTAMP}
+      </if>
+      <if test="type != null">
+        and type = #{type,jdbcType=INTEGER}
+      </if>
+      <if test="isRead != null">
+        and is_read = #{isRead,jdbcType=BIT}
+      </if>
+  </select>
 </mapper>

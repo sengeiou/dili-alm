@@ -58,9 +58,11 @@ public class MessageServiceImpl extends BaseServiceImpl<Message, Long> implement
 		synchronized (this) {// 这个很重要，必须使用一个锁， 
 			message.setRecipient(Long.parseLong(userId));
 			message.setIsRead(false);
-			List<Message> list = this.getActualDao().select(message);
+			message.setOrder("desc");
+			message.setSort("created");
+			List<Message> list = this.getActualDao().selectMessages(message);
 			map.put("messages", list);
-			int count = this.getActualDao().selectCount(message);
+			int count = this.getActualDao().selectMessagesCount(message);
 			map.put("count", count);
 		}
 		return map;
