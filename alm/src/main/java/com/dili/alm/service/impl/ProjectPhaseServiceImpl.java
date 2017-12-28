@@ -15,11 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.dao.FilesMapper;
+import com.dili.alm.dao.ProjectChangeMapper;
 import com.dili.alm.dao.ProjectPhaseMapper;
 import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.domain.FileType;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.ProjectChange;
 import com.dili.alm.domain.ProjectPhase;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
@@ -61,6 +63,8 @@ public class ProjectPhaseServiceImpl extends BaseServiceImpl<ProjectPhase, Long>
 	private TaskMapper taskMapper;
 	@Autowired
 	private FilesMapper fileMapper;
+	@Autowired
+	private ProjectChangeMapper projectChangeMapper;
 
 	public ProjectPhaseMapper getActualDao() {
 		return (ProjectPhaseMapper) getDao();
@@ -223,6 +227,12 @@ public class ProjectPhaseServiceImpl extends BaseServiceImpl<ProjectPhase, Long>
 		int count = this.taskMapper.selectCount(taskQuery);
 		if (count > 0) {
 			return BaseOutput.failure("该阶段包含任务不能删除");
+		}
+		ProjectChange changeQuery = DTOUtils.newDTO(ProjectChange.class);
+		changeQuery.setPhaseId(id);
+		count = this.projectChangeMapper.selectCount(changeQuery);
+		if (count > 0) {
+			return BaseOutput.failure("该阶段关联了需求变更不能删除");
 		}
 		int result = this.delete(id);
 		if (result <= 0) {

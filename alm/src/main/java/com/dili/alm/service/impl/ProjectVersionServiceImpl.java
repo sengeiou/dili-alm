@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.dao.FilesMapper;
+import com.dili.alm.dao.ProjectChangeMapper;
 import com.dili.alm.dao.ProjectPhaseMapper;
 import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.TaskMapper;
@@ -60,6 +61,8 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 	private ProjectPhaseMapper phaseMapper;
 	@Autowired
 	private TaskMapper taskMapper;
+	@Autowired
+	private ProjectChangeMapper projectChangeMapper;
 
 	public ProjectVersionMapper getActualDao() {
 		return (ProjectVersionMapper) getDao();
@@ -154,6 +157,12 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		count = this.taskMapper.selectCount(taskQuery);
 		if (count > 0) {
 			return BaseOutput.failure("该版本下包含任务不能删除");
+		}
+		ProjectChange changeQuery = DTOUtils.newDTO(ProjectChange.class);
+		changeQuery.setVersionId(id);
+		count = this.projectChangeMapper.selectCount(changeQuery);
+		if (count > 0) {
+			return BaseOutput.failure("该版本关联了需求变更不能删除");
 		}
 		Files files = DTOUtils.newDTO(Files.class);
 		files.setVersionId(id);
