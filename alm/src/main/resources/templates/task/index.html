@@ -227,14 +227,14 @@
                 </tr>
                 <tr>
                     <td style="padding:5px;" colspan="2">
-                        <input class="easyui-textbox" name="describe" id="describe" style="width:100%;" data-options="label:'描述:', validType:'length[0,255]',multiline:true" />
+                        <input class="easyui-textbox"  name="describe" id="describe" style="width:100%;" data-options="label:'描述:', validType:'length[0,255]',multiline:true" />
                     </td>
                 </tr>
             </table>
         </form>
     </div>
     <div id="dialog_toolbar" style="diplay:show;">
-        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="saveOrUpdate()" style="border:1px solid #ccc;">保存</a>
+        <a href="#" id="saveTask" class="easyui-linkbutton"  data-options="iconCls:'icon-edit',plain:true" onclick="saveOrUpdate()" style="border:1px solid #ccc;">保存</a>
         <a href="#" class="easyui-linkbutton" data-options="plain:true" onclick="$('#dlg').dialog('close');" style="border:1px solid #ccc;">取消</a>
     </div>
     <div id="dialog_toolbar_detail" style="diplay:none;">
@@ -324,7 +324,6 @@
             logIngo = "修改任务:";
             _url = "${contextPath}/task/update";
         }
-        
         $('#dlg').dialog('close');
         $.ajax({
             type: "POST",
@@ -528,6 +527,7 @@
     }
 
     function pauseTaskStatus() {
+    	 $('#dlg').dialog('close');
         var id = $("#_id").val();
         $.ajax({
             type: "POST",
@@ -538,7 +538,6 @@
             success: function(data) {
                 if (data.code == "200") {
                     $("#grid").datagrid("reload");
-                    $('#dlg').dialog('close');
                     LogUtils.saveLog("暂停任务：" + data.result, function() {});
                 } else {
                     $.messager.alert('错误', data.result);
