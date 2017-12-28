@@ -231,11 +231,11 @@
 				 <tfoot>  
 				       <tr>
 			              <td colspan="4"  >
-			               <% if(wDetails.isSubmit==null  || wDetails.isSubmit==0){%>
-			                <a href="#" onclick="addRistTr()" class="easyui-linkbutton" data-options="iconCls:'icon-add',toggle:true">新增重要风险</a>
-			                <%}else{%>
-			                       <font size="2">周报重要风险已提交</font>
-			                 <%}%>
+			               <% if(wDetails!=null && wDetails.isSubmit==0 ){%>
+			                   <a href="#" onclick="addRistTr()" class="easyui-linkbutton" data-options="iconCls:'icon-add',toggle:true">新增重要风险</a>
+			                  <%}else{%>
+			                    <a href="#"  class="easyui-linkbutton" data-options="iconCls:'icon-add',toggle:true">新增重要风险</a>
+			                  <%}%>
 			       
 			              </td>
 				       </tr>
@@ -287,12 +287,13 @@
 						  <tr>
 
 							  <td colspan="4">
-                                   <% if(wDetails.isSubmit==null  || wDetails.isSubmit==0){%>
+                                    <% if(wDetails!=null && wDetails.isSubmit==0 ){%>
 								        <a href="#"  onclick="addMaxTr()"class="easyui-linkbutton" data-options="iconCls:'icon-add',toggle:true">新增重大问题</a>
-                                  <%}else{%>
-			                              <font size="2">周报重大问题已提交</font>
-			                       <%}%>
-			                       
+                                     <%}else{%>
+			                            <a href="#"   class="easyui-linkbutton" data-options="iconCls:'icon-add',toggle:true">新增重大问题</a>
+			                         <%}%>
+			             
+			             
 								  <% if(wDetails!=null){%>
 								     <input id="sSubmit" type='hidden' value="${wDetails.isSubmit}"/>
 								     <input id="cancelSubmit" type='hidden' value="${wDetails.id}"/>
@@ -304,9 +305,9 @@
 							  <td style="padding:5px;background-color:#f5f5f5;font-weight:bold">预期偏差</td>
 							  <td colspan="3" >
 								  <% if(wDetails!=null){%>
-								  <input class="easyui-textbox" id="expectedDeviation" value= "${wDetails.expectedDeviation}"    data-options="multiline:true"  style="width:100%;height:50px">
+								  <input class="easyui-textbox" id="expectedDeviation" value= "${wDetails.expectedDeviation}"    data-options="multiline:true, validType:'length[0,100]'"  style="width:100%;height:50px">
 								  <%}else{%>
-								  <input class="easyui-textbox" id="expectedDeviation"     data-options="multiline:true"  style="width:100%;height:50px">
+								  <input class="easyui-textbox" id="expectedDeviation"     data-options="multiline:true, validType:'length[0,100]'"  style="width:100%;height:50px">
 								  <%}%>
 							  </td>
 
@@ -315,10 +316,10 @@
 							  <td style="padding:5px;background-color:#f5f5f5;font-weight:bold">其他</td>
 							  <td colspan="3" >
 								  <% if(wDetails!=null){%>
-								  <input class="easyui-textbox" id="other"  value= "${wDetails.other}"   data-options="multiline:true"  style="width:100%;height:50px">
+								  <input class="easyui-textbox" id="other"  value= "${wDetails.other}"   data-options="multiline:true, validType:'length[0,100]'"  style="width:100%;height:50px">
 
 								  <%}else{%>
-								  <input class="easyui-textbox" id="other"   data-options="multiline:true"  style="width:100%;height:50px">
+								  <input class="easyui-textbox" id="other"   data-options="multiline:true,validType:'length[0,100]'"  style="width:100%;height:50px">
 								  <%}%>
 							  </td>
 
@@ -336,29 +337,34 @@
 			    
 			        <font size="2">创建时间：</font>
 			       <font size="2">
-			      
+			         <% if(pd.created!=null){%>
+			             ${pd.created}
+			              <%}else{%>
+			              无
+			             <%}%>
 			       </font>
 			       
 			  </br>
 		      </br>
 		       
 		     
-	            <button onclick="cancel()">取消</button>
+	            <button onclick="pageReturn()">取消</button>
                 
-                 <% if(wDetails.isSubmit==null  || wDetails.isSubmit==0){%>
+                 <% if(wDetails!=null && wDetails.isSubmit==0 ){%>
 			                <button onclick="save(0)">保存</button>
-                          <button onclick="save(1)">提交周报</button> 
-			                 
+                            <button onclick="save(1)">提交周报</button> 
 			                    
 			      <%}else{%>
 			            <font size="2">   周报已经提交  </font>
 			       <%}%>
             
+            
+            
 		       
-		      <font size="3">  
+		   <!--    <font size="3">  
 	                    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="pageReturn()">返回周报列表</a>
 	          </font>     
-			             
+			              -->
 			             
 			 
 	             
@@ -422,8 +428,30 @@
   	          
              }
 
+             
+              function getMyDay(date){
+            	  var week;
+            	  if(date.getDay()==0) week="周日"
+            	  if(date.getDay()==1) week="周一"
+            	  if(date.getDay()==2) week="周二"
+            	  if(date.getDay()==3) week="周三"
+            	  if(date.getDay()==4) week="周四"
+            	  if(date.getDay()==5) week="周五"
+            	  if(date.getDay()==6) week="周六"
+            	  return week;
+            	}
+            	
+            	  
 		    function save(isSubmit){  
 		    	
+		    	 var w1 = getMyDay(new Date()); 
+            	 if(w1!='周五'){
+            	
+            		 $.messager.alert('不能保存',' 不是周五  不可保存和提交周报');
+            		 return false;
+            	 }
+            	  
+            	  
 		    	 var  tempid=$("#pdprojectId").val();
 		    	 
 		    	if($("#sSubmit").val()==1){//如果已经提交不可以修改和提交周报
@@ -459,10 +487,19 @@
 	    	        	alert("风险名称为空");
 	    	        	temp= true;
 	    	        }
+	    	      /*   if(name.length>20){
+	    	        	alert("风险名称超过20字符");
+	    	        	temp= true;
+	    	        } */
+	    	        
 	    	        if(desc==""){
 	    	        	alert("风险简述为空");
 	    	        	temp= true;
 	    	        }
+	    	       /*  if(desc.length>100){
+	    	        	alert("风险简述超过100字符");
+	    	        	temp= true;
+	    	        } */
 	    	       
 	    	        
 	    	    });
@@ -477,10 +514,12 @@
 	    	        	alert("问题名称为空");
 	    	        	temp= true;
 	    	        }
+	    	       
 	    	        if(desc==""){
 	    	        	alert("问题简述为空");
 	    	        	temp= true;
 	    	        }
+	    
 	    	       
 	    	        
 	    	    });
@@ -659,8 +698,8 @@
       
       function addMaxTr(){  
     	 
-    	  var $td= $("<td >"+" <input class='easyui-numberbox'   style='width:100%;' />"+"</td>");
-    	  var $tdq= $("<td>"+" <input class='easyui-numberbox'   style='width:100%;'/>"+"</td>");
+    	  var $td= $("<td >"+" <input class='easyui-numberbox'  style='width:100%;' "+ " data-options='validType:length[0,19]'  />"+"</td>");
+    	  var $tdq= $("<td>"+" <input class='easyui-numberbox'  style='width:100%;' "+ " data-options='validType:length[0,100]'  />"+"</td>");
     	  var $tdselect= $("<td></td>");
     	  var $delecttd=$("<td><button  onclick='delectTr(this)'>删除</button></td>");
     	  
@@ -691,8 +730,8 @@
       }
       function addRistTr(){  
      	 
-    	  var $td= $("<td >"+" <input class='easyui-numberbox'   style='width:100%;' />"+"</td>");
-    	  var $tdq= $("<td>"+" <input class='easyui-numberbox'   style='width:100%;'/>"+"</td>");
+    	  var $td= $("<td >"+" <input class='easyui-numberbox'  style='width:100%;' "+ " data-options='validType:length[0,19]' "+   " />"+"</td>");
+    	  var $tdq= $("<td>"+" <input class='easyui-numberbox'  style='width:100%;' "+ " data-options='validType:length[0,100]' "+  " />"+"</td>");
     	  var $tdselect= $("<td></td>");
     	  var $delecttd=$("<td><button  onclick='delectTr(this)'>删除</button></td>");
     			  

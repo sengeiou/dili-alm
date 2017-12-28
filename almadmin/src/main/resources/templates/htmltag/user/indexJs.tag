@@ -312,7 +312,7 @@ function onUserDetailClicked(id) {
 	$('#_fixedLineTelephone').textbox({
 				readonly : true
 			});
-	$('#_user_cellphoneName').textbox({
+	$('#_cellphone').textbox({
 				readonly : true
 			});
 	$('#_email').textbox({
