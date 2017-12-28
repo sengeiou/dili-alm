@@ -44,6 +44,7 @@ import com.dili.alm.domain.dto.apply.ApplyRelatedResource;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.ProjectApplyService;
+import com.dili.alm.service.ProjectChangeService;
 import com.dili.alm.service.ProjectPhaseService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.ProjectVersionService;
@@ -51,6 +52,7 @@ import com.dili.alm.service.TaskDetailsService;
 import com.dili.alm.service.TaskService;
 import com.dili.alm.service.TeamService;
 import com.dili.alm.utils.DateUtil;
+import com.dili.alm.utils.WebUtil;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -106,6 +108,9 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	private ProjectVersionMapper versionMapper;
 	@Autowired
 	private ProjectPhaseMapper phaseMapper;
+	@Autowired
+	private ProjectChangeService projectChangeService;
+	
 	private static final String TASK_STATUS_CODE = "task_status";
 	private static final String TASK_TYPE_CODE = "task_type";
 
@@ -131,11 +136,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		return super.insertSelective(t);
 	}
 
-	@Override
-	public List<Project> selectByOwner(Long ownerId) {
-		Project project = DTOUtils.newDTO(Project.class);
-		return this.projectMapper.getProjectsByTaskOwner(project, ownerId);
-	}
 
 	@Override
 	public EasyuiPageOutput listPageSelectTaskDto(Task task) throws Exception {
@@ -371,16 +371,28 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 				Optional.ofNullable(projectApply.getResourceRequire()).orElse("{}"), ApplyMajorResource.class);
 
 		// 整体项目预估时间
-		double total = Optional.ofNullable(applyMajorResource.getMainWorkTime()).orElse(0);
+		double total = Optional.ofNullable(applyMajorResource.getMainWorkTime()).orElse(0)*8;
 
 		List<ApplyRelatedResource> list = Optional.ofNullable(applyMajorResource.getRelatedResources())
 				.orElse(new ArrayList<ApplyRelatedResource>());
 
 		for (int i = 0; i < list.size(); i++) {
 			ApplyRelatedResource applyRelatedResource = list.get(i);
-			total += Optional.ofNullable(applyRelatedResource.getRelatedWorkTime()).orElse(0);
+			total += Optional.ofNullable(applyRelatedResource.getRelatedWorkTime()).orElse(0)*8;
 		}
 
+		
+		//查询项目变更的累加
+		ProjectChange projectChange  = DTOUtils.newDTO(ProjectChange.class);
+		projectChange.setProjectId(task.getProjectId());
+		List<ProjectChange> projectChangeList =  projectChangeService.list(projectChange);
+		if (projectChangeList!=null&&projectChangeList.size()>0) {
+			for (ProjectChange projectChange2 : projectChangeList) {
+				if (!WebUtil.strIsEmpty(projectChange2.getWorkingHours())) {
+					total += Double.parseDouble(projectChange2.getWorkingHours());
+				}
+			}
+		}
 		// 任务计划中已完成的时间总和
 		double taskTimes = 0;
 
@@ -396,6 +408,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			List<TaskDetails> taskDetailsList = taskDetailsService.list(taskDetails);
 			for (TaskDetails taskDetailsDome : taskDetailsList) {
 				taskTimes += taskDetailsDome.getTaskHour();
+				taskTimes += taskDetailsDome.getOverHour();
 			}
 		}
 		progress = (int) (( taskTimes / total)* 100);
@@ -552,6 +565,9 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	@Override
 	public EasyuiPageOutput listByTeam(Task task, String phaseName) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		if (userTicket == null) {
+			throw new RuntimeException("未登录");
+		}
 		ProjectPhase projectPhase=DTOUtils.newDTO(ProjectPhase.class);
 		List<Long> ids = null;
 		if (phaseName!=null) {
@@ -606,6 +622,9 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	@Override
 	public boolean isManager(Long managerId) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		if (userTicket == null) {
+			throw new RuntimeException("未登录");
+		}
 		Team team = DTOUtils.newDTO(Team.class);
 		team.setProjectId(managerId);
 		team.setMemberId(userTicket.getId());
@@ -655,12 +674,18 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	@Override
 	public List<ProjectChange> projectChangeList(Long projectId) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		if (userTicket == null) {
+			throw new RuntimeException("未登录");
+		}
 		return taskMapper.selectProjectChangeByTeam(userTicket.getId(),projectId);
 	}
 	
 	@Override
 	public List<Project> projectList() {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		if (userTicket == null) {
+			throw new RuntimeException("未登录");
+		}
 		return taskMapper.selectProjectByTeam(userTicket.getId());
 	}
 
@@ -670,6 +695,9 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	@Override
 	public boolean isProjectManager() {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		if (userTicket == null) {
+			throw new RuntimeException("未登录");
+		}
 		Team team = DTOUtils.newDTO(Team.class);
 		team.setMemberId(userTicket.getId());
 		List<Team> teamList = teamService.list(team);
@@ -694,6 +722,9 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	@Override
 	public List<User> listUserByTeam() {
 		 UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+			if (userTicket == null) {
+				throw new RuntimeException("未登录");
+			}
 		 List<Long> userIdList = taskMapper.selectUserByTeam(userTicket.getId());
 		 List<User> userList =new ArrayList<User>();
 		 for (Long userId : userIdList) {
@@ -707,6 +738,9 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	@Override
 	public List<ProjectVersion> listProjectVersionByTeam() {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		if (userTicket == null) {
+			throw new RuntimeException("未登录");
+		}
 		return taskMapper.selectVersionByTeam(userTicket.getId());
 	}
 
@@ -730,6 +764,9 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	@Override
 	public List<Task> listTaskByProjectId(Long projectId) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		if (userTicket == null) {
+			throw new RuntimeException("未登录");
+		}
 		Task task = DTOUtils.newDTO(Task.class);
 		task.setProjectId(projectId);
 		return taskMapper.selectByTeam(task, userTicket.getId(), null);
@@ -742,7 +779,9 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	@Override
 	public boolean isThisProjectManger(Long projectId) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		
+		if (userTicket == null) {
+			throw new RuntimeException("未登录");
+		}
 		Team team = DTOUtils.newDTO(Team.class);
 		team.setMemberId(userTicket.getId());
 		team.setProjectId(projectId);
@@ -773,6 +812,9 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	public boolean isCreater(Task task) {
         Task taskSelect = this.get(task.getId());
         UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		if (userTicket == null) {
+			throw new RuntimeException("未登录");
+		}
 		if (taskSelect.getCreateMemberId().equals(userTicket.getId())) {
 			return true;
 		}
@@ -785,6 +827,9 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	@Override
 	public List<TaskDetails> otherProjectTaskHour(String updateDate) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		if (userTicket == null) {
+			throw new RuntimeException("未登录");
+		}
 		//查询本日修改的其他项目的detail
 		List<TaskDetails> taskDetails = taskMapper.selectOtherTaskDetail(userTicket.getId(), updateDate);
 		

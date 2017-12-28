@@ -8,6 +8,7 @@ import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.TaskDetails;
 import com.dili.alm.domain.User;
+import com.dili.alm.service.MessageService;
 import com.dili.alm.service.ProjectApplyService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.ProjectVersionService;
@@ -62,6 +63,8 @@ public class TaskController {
 	ProjectPhaseService projectPhaseService;
 	@Autowired
 	TaskDetailsService taskDetailsService;
+	@Autowired
+	MessageService messageService;
 
 	@ApiOperation("跳转到Task页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
@@ -136,9 +139,13 @@ public class TaskController {
 		}
 		
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+        if (userTicket ==null) {
+        	return BaseOutput.failure("用户登录超时！");
+		}
 		task.setCreateMemberId(userTicket.getId());
 		task.setCreated(new Date());
 		task.setStatus(TaskStatus.NOTSTART.code);// 新增的初始化状态为0未开始状态
+		messageService.insertMessage("http://alm.diligrp.com:8083/alm/task.html", userTicket.getId(), task.getOwner());
 		taskService.insertSelective(task);
 
 		return BaseOutput.success("新增成功");
@@ -157,6 +164,9 @@ public class TaskController {
 		DateFormat fmt =new SimpleDateFormat("yyyy-MM-dd");
 		try {
 			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+	        if (userTicket ==null) {
+	        	return BaseOutput.failure("用户登录超时！");
+			}
 			// 设置任务修改人为当前登录用户
 			task.setModified(new Date());
 	        task.setModifyMemberId(userTicket.getId());
@@ -279,6 +289,7 @@ public class TaskController {
 	public boolean isOwner(Long id) {
 		Task task = taskService.get(id);
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		
 		if (task.getOwner()==userTicket.getId()) {//判断是否是任务所有人
 			return true;
 		}
@@ -331,6 +342,10 @@ public class TaskController {
 			Task task = taskService.get(taskDetails.getTaskId());
 			
 	        UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+	        
+	        if (userTicket ==null) {
+	        	return BaseOutput.failure("用户登录超时！");
+			}
 			/*基础信息设置*/
 			task.setModifyMemberId(userTicket.getId());
 			taskDetails.setTaskHour(taskHour);
@@ -354,6 +369,9 @@ public class TaskController {
 	@RequestMapping(value = "/updateTaskStatus", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput updateTaskDetails(Long id) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+        if (userTicket ==null) {
+        	return BaseOutput.failure("用户登录超时！");
+		}
 		Task task = taskService.get(id);
 		task.setModifyMemberId(userTicket.getId());
 		if (taskService.startTask(task)==0) {
@@ -369,6 +387,9 @@ public class TaskController {
 	@RequestMapping(value = "/pauseTaskStatus", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput pauseTask(Long id) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+        if (userTicket ==null) {
+        	return BaseOutput.failure("用户登录超时！");
+		}
 		Task task = taskService.get(id);
 		task.setStatus(TaskStatus.PAUSE.code);// 更新状态为暂停
 		task.setModified(new Date());
@@ -377,7 +398,15 @@ public class TaskController {
 		return BaseOutput.success("已暂停任务");
 	}
 	
-	
+	//测试未完成任务
+	@ApiOperation("测试未完成任务")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "notComplate", paramType = "form", value = "TaskDetails的form信息", required = true, dataType = "string") })
+	@RequestMapping(value = "/notComplate", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody BaseOutput notComplate(){
+		taskService.notComplateTask();
+		return  BaseOutput.success("测试未完成任务");
+	}
 	
 
 }
