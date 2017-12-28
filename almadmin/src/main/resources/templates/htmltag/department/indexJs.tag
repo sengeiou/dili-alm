@@ -93,6 +93,9 @@ function openUpdate() {
 					buttons : [{
 								text : '保存',
 								handler : function() {
+									if (!$('#form').form('validate')) {
+										return;
+									}
 									var data = $('#form').serializeArray();
 									$.post('${contextPath!}/department/update', data, function(res) {
 												if (res.success) {

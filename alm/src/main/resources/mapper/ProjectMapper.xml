@@ -131,7 +131,7 @@
         {call getChildProjects(#{id})}
     </select>
 
-	<select id="getProjectsByTaskOwner" resultMap="BaseResultMap">
+	<select id="getProjectsByTeam" resultMap="BaseResultMap">
 		SELECT 
 		DISTINCT p.id, p.serial_number, p.parent_id, p.name, p.type, p.project_manager,
 		p.develop_manager, p.test_manager,
@@ -142,9 +142,9 @@
 		FROM 
 		`project` p 
 		LEFT JOIN 
-		`task` t 
+		`team` t 
 		ON p.id = t.`project_id` 
-		WHERE t.owner = #{owner} 
+		WHERE t.member_id = #{owner} 
 		ORDER BY p.actual_start_date desc
       	<if test="project.page != null and project.rows != null ">
 			limit ${(project.page-1)*project.rows},${project.rows}
@@ -159,9 +159,9 @@
 		FROM 
 		`project` p 
 		RIGHT JOIN 
-		`task` t 
+		`team` t 
 		ON p.id = t.`project_id` 
-		WHERE t.owner = #{owner}) AS c
+		WHERE t.member_id = #{owner} ) AS c
 		
 	</select>
 </mapper>

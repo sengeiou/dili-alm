@@ -4,10 +4,15 @@
 			<input id="departmentId" type="hidden" name="id" value="${model.id!}">
 			<div style="margin: 5px;">
 				<label for="name">部门名称:</label> <input class="easyui-textbox" type="text" name="name" value="${model.name!}"
-					data-options="required:true" />
+					data-options="required : true,
+									validType:'length[0,10]',
+									missingMessage:'部门名称不能为空',
+									invalidMessage:'部门名称长度必须是1-20个字符'" />
 			</div>
 			<div style="margin: 5px;">
-				<label for="notes">部门描述:</label> <input class="easyui-textbox" type="text" name="notes" value="${model.notes!}" data-options="" />
+				<label for="notes">部门描述:</label> <input class="easyui-textbox" type="text" name="notes" value="${model.notes!}"
+					data-options="validType:'length[0,40]',
+									invalidMessage:'部门描述不能超过40个字符'" />
 			</div>
 		</form>
 	</div>
