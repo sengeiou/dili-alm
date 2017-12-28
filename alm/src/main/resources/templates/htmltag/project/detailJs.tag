@@ -188,6 +188,9 @@ function openInsertVersion() {
 				buttons : [{
 							text : '保存',
 							handler : function() {
+								if (!$('#versionForm').form('validate')) {
+									return;
+								}
 								var data = $("#versionForm").serializeArray();
 								$.ajax({
 											type : "POST",
@@ -238,6 +241,9 @@ function editVersion(id) {
 				buttons : [{
 							text : '保存',
 							handler : function() {
+								if (!$('#versionForm').form('validate')) {
+									return;
+								}
 								var data = $("#versionForm").serializeArray();
 								$.ajax({
 											type : "POST",
@@ -390,6 +396,9 @@ function openInsertPhase() {
 				buttons : [{
 							text : '保存',
 							handler : function() {
+								if (!$('#phaseForm').form('validate')) {
+									return;
+								}
 								var data = $("#phaseForm").serializeArray();
 								$.ajax({
 											type : "POST",
@@ -439,6 +448,9 @@ function editPhase(id) {
 				buttons : [{
 							text : '保存',
 							handler : function() {
+								if (!$('#phaseForm').form('validate')) {
+									return;
+								}
 								var data = $("#phaseForm").serializeArray();
 								$.ajax({
 											type : "POST",
@@ -535,6 +547,9 @@ function uploadFile(projectId) {
 				buttons : [{
 							text : '保存',
 							handler : function() {
+								if (!$('#uploadForm').form('validate')) {
+									return;
+								}
 								if ($('#uploadFileGrid').datagrid('getRows').length <= 0) {
 									$.messager.alert('错误', '请上传文件');
 									return;

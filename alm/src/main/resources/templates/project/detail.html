@@ -171,7 +171,11 @@ html, body {
 					data-options="field:'createMemberId', width:'8%',  _provider:'memberProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">创建人</th>
 				<th
 					data-options="field:'created', width:'15%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">创建时间</th>
-				<th data-options="field:'opt',width:'9%',formatter:fileOptFormatter, align:'center'">操作</th>
+				<th data-options="field:'opt',width:'9%',
+				<%if(editable == true){%>
+				formatter:fileOptFormatter, 
+				<%}%>
+				align:'center'">操作</th>
 			</tr>
 		</thead>
 	</table>

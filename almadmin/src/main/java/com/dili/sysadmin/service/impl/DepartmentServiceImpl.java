@@ -91,10 +91,13 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department, Long> imp
 		if (oldDept != null && !oldDept.getId().equals(department.getId())) {
 			return BaseOutput.failure("存在相同名称的部门");
 		}
-		department.setModified(new Date());
-		int result = this.getActualDao().updateByPrimaryKey(department);
+		Department target = this.getActualDao().selectByPrimaryKey(department.getId());
+		target.setModified(new Date());
+		target.setName(department.getName());
+		target.setNotes(department.getNotes());
+		int result = this.getActualDao().updateByPrimaryKey(target);
 		if (result > 0) {
-			return BaseOutput.success().setData(department);
+			return BaseOutput.success().setData(target);
 		}
 		return BaseOutput.failure("更新失败");
 	}

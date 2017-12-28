@@ -2,7 +2,7 @@
 	<#project_uploadFileJs />
 </script>
 <form id="uploadForm" action="${contextPath!}/project/uploadFile" class="easyui-form" method="post" fit="true">
-	<input type="hidden" id="projectId" name="projectId" value="${project.id!}">
+	<input type="hidden" name="projectId" value="${project.id!}">
 	<table width="100%">
 		<tr>
 			<td style="padding: 5px;"><input class="easyui-textbox" style="width: 100%;" value="${project.name!}" panelWidth="auto"

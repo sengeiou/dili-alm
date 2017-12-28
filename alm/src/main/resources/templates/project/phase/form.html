@@ -1,5 +1,6 @@
 <form id="phaseForm" action="${contextPath!}/project/phase/insert" class="easyui-form" method="post" fit="true">
 	<input name="id" id="id" type="hidden" value="${model.id!}">
+	<input type="hidden" name="projectId" value="${model.project.id!}">
 	<table width="100%">
 		<tr>
 			<td style="padding: 5px;"><input class="easyui-textbox" style="width: 100%;" value="${model.project.name!}" panelWidth="auto"

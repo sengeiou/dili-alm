@@ -3,6 +3,8 @@ package com.dili.sysadmin.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -32,6 +34,8 @@ import io.swagger.annotations.ApiOperation;
 public class DepartmentRoleController {
 
 	private static final String RANK_CODE = "rank";
+
+	private static final Logger LOG = LoggerFactory.getLogger(DepartmentRoleController.class);
 
 	@Autowired
 	DepartmentRoleService departmentRoleService;
@@ -90,6 +94,7 @@ public class DepartmentRoleController {
 	public List<DataDictionaryValueDto> getRanks() {
 		BaseOutput<DataDictionaryDto> output = this.dataDictrionaryRPC.findDataDictionaryByCode(RANK_CODE);
 		if (output == null || !output.isSuccess()) {
+			LOG.error(output.getResult());
 			return null;
 		}
 		DataDictionaryDto dd = output.getData();
