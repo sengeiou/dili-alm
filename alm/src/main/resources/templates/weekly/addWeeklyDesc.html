@@ -465,10 +465,19 @@
 	    	        	alert("风险名称为空");
 	    	        	temp= true;
 	    	        }
+	    	      /*   if(name.length>20){
+	    	        	alert("风险名称超过20字符");
+	    	        	temp= true;
+	    	        } */
+	    	        
 	    	        if(desc==""){
 	    	        	alert("风险简述为空");
 	    	        	temp= true;
 	    	        }
+	    	       /*  if(desc.length>100){
+	    	        	alert("风险简述超过100字符");
+	    	        	temp= true;
+	    	        } */
 	    	       
 	    	        
 	    	    });
@@ -483,10 +492,12 @@
 	    	        	alert("问题名称为空");
 	    	        	temp= true;
 	    	        }
+	    	       
 	    	        if(desc==""){
 	    	        	alert("问题简述为空");
 	    	        	temp= true;
 	    	        }
+	    
 	    	       
 	    	        
 	    	    });
@@ -665,8 +676,8 @@
       
       function addMaxTr(){  
     	 
-    	  var $td= $("<td >"+" <input class='easyui-numberbox'   style='width:100%;' />"+"</td>");
-    	  var $tdq= $("<td>"+" <input class='easyui-numberbox'   style='width:100%;'/>"+"</td>");
+    	  var $td= $("<td >"+" <input class='easyui-numberbox'  style='width:100%;' "+ " data-options='validType:length[0,19]'  />"+"</td>");
+    	  var $tdq= $("<td>"+" <input class='easyui-numberbox'  style='width:100%;' "+ " data-options='validType:length[0,100]'  />"+"</td>");
     	  var $tdselect= $("<td></td>");
     	  var $delecttd=$("<td><button  onclick='delectTr(this)'>删除</button></td>");
     	  
@@ -697,8 +708,8 @@
       }
       function addRistTr(){  
      	 
-    	  var $td= $("<td >"+" <input class='easyui-numberbox'   style='width:100%;' />"+"</td>");
-    	  var $tdq= $("<td>"+" <input class='easyui-numberbox'   style='width:100%;'/>"+"</td>");
+    	  var $td= $("<td >"+" <input class='easyui-numberbox'  style='width:100%;' "+ " data-options='validType:length[0,19]' "+   " />"+"</td>");
+    	  var $tdq= $("<td>"+" <input class='easyui-numberbox'  style='width:100%;' "+ " data-options='validType:length[0,100]' "+  " />"+"</td>");
     	  var $tdselect= $("<td></td>");
     	  var $delecttd=$("<td><button  onclick='delectTr(this)'>删除</button></td>");
     			  
