@@ -145,7 +145,7 @@ public class TaskController {
 		task.setCreateMemberId(userTicket.getId());
 		task.setCreated(new Date());
 		task.setStatus(TaskStatus.NOTSTART.code);// 新增的初始化状态为0未开始状态
-		messageService.insertMessage("http://alm.diligrp.com:8083/alm/task.html", userTicket.getId(), task.getOwner());
+		messageService.insertMessage("http://alm.diligrp.com:8083/alm/task/index.html", userTicket.getId(), task.getOwner());
 		taskService.insertSelective(task);
 
 		return BaseOutput.success("新增成功");
