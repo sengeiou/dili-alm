@@ -239,11 +239,12 @@ input {
     top:72px;
     right: 10px;
     width: 190px;
+    max-height: 230px;
     padding: 0 8px;
     /*z-index: 999;*/
     background:#fafafa;
     box-shadow: 0px 1px 6px #ccc;
-
+    overflow-y: scroll;
 }
 
 .menu-list ul li{

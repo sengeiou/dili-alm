@@ -1,5 +1,6 @@
 package com.dili.alm.controller;
 
+import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.constant.AlmConstants.TaskStatus;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectChange;
@@ -154,7 +155,7 @@ public class TaskController {
 		task.setCreated(new Date());
 		task.setStatus(TaskStatus.NOTSTART.code);// 新增的初始化状态为0未开始状态
 		messageService.insertMessage("http://alm.diligrp.com:8083/alm/task/index.html", userTicket.getId(),
-				task.getOwner());
+				task.getOwner(),AlmConstants.MessageType.TASK.getCode());
 		taskService.insertSelective(task);
 
 		return BaseOutput.success("新增成功");

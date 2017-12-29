@@ -127,4 +127,19 @@ public class AlmConstants {
 			return code;
 		}
 	}
+	//状态
+	public enum MessageType{
+		
+		APPLY(1),APPLYRESULT(2),TASK(3),COMPLETE(4),COMPLETERESULT(5),CHANGE(6),CHANGERESULT(7),OTHER(8);
+		
+		public int code;
+		
+		MessageType(int code) {
+			this.code = code;
+		}
+		
+		public int getCode() {
+			return code;
+		}
+	}
 }

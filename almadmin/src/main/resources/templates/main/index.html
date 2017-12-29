@@ -4,13 +4,12 @@
         border: 0;
         background-color: #EEEEEE;
     }
-
     body {
         margin: 0;
         padding: 0;
     }
     </style>
-    <div id="page-layout" class="page-layout index-layout">
+    <div id="page-layout" class="page-layout index-layout" style="width: 100%;height: 100%;">
         <!--消息通知、用户信息-->
         <div class="head" data-options="region:'north'" style="height:72px;border:none;">
             <div class="info">
@@ -40,27 +39,12 @@
         </div>
         <!--<div data-options="region:'south'" style="height:50px;"></div>-->
         <!--左侧菜单栏-->
-         <div id="menuList" class="menu-left" data-options="region:'west'" style="width:251px;height:100%;padding-top:0px;border: none">
-
-            <% for(item in menu){ %>
-            <div id="${item.id}" class="menu-left-list">
-            	<% for(item1 in item.children){ %>
-                <div class="title-name">${item1.name}</div>
-                <ul>
-                    <% for(item2 in item1.children){ %>
-                    <li>
-                        <a href="javascript:void(0)" id="${item2.id }" rel="${item2.menuUrl}" onclick="menuClickHandler(this)">${item2.name}</a>
-                    </li>
-                    <% } %>
-                </ul>
-                <% } %>
-            </div>
-            <% } %>
+         <div  data-options="region:'west'" style="width:251px;height:100%;padding-top:0px;border: none">
 
         </div>
         <!--页面主体内容-->
-        <div data-options="region:'center'" id="center" style="width:100%;height:100%;border: none;min-width:1200px" >
-           <iframe id="homeIndex" scrolling="auto" frameborder="0"  style="width:100%; height: 99.6%; display:none;"></iframe>
+        <div data-options="region:'center'" id="center" style="width:100%;height:100%;border: none;" >
+           <iframe id="homeIndex" scrolling="auto" frameborder="0"  style="width:100%; height: 99.6%; display:block;"></iframe>
            <div id="tabs" style="width:100%; height: 99.6%;display: none;padding:10px 10px 0;box-sizing: border-box;min-width:929px"></div>
         </div>
     </div>
@@ -76,7 +60,7 @@
     <!--消息列表-->
     <div class="menu-list" id="news-list" data-index="1">
         <ul id="messageList">
-        
+
         </ul>
         <!--<span class="item dot-top"></span>-->
     </div>
@@ -87,30 +71,8 @@
 
     $(function() {
         $('#page-layout').layout();
-        //            setHeight();
     });
-	
-	
-    function addItem() {
-        $('#page-layout').layout('panel', 'center').append('<p>More Panel Content.</p>');
-        setHeight();
-    }
 
-    function removeItem() {
-        $('#page-layout').layout('panel', 'center').find('p:last').remove();
-        setHeight();
-    }
-
-    function setHeight() {
-        var c = $('#page-layout');
-        var p = c.layout('panel', 'center'); // get the center panel
-        var oldHeight = p.panel('panel').outerHeight();
-        p.panel('resize', { height: 'auto' });
-        var newHeight = p.panel('panel').outerHeight();
-        c.layout('resize', {
-            height: (c.height() + newHeight - oldHeight)
-        });
-    }
     </script>
     <!-- ====================================================================================================================== -->
     <!-- style & script 分隔线 -->
@@ -212,7 +174,8 @@
 	             	$('#messageCount').text(data.count);
 	             	$("#messageList").empty();
 	    			for(var i = 0; i<result.length; i++){
-	     				$("#messageList").append("<li><a id='"+result[i].id+"'href='javascript:void(0)' onclick='setMessageTags(this)' rel='"+result[i].url+"'>一条消息未处理</a></li>");
+							$("#messageList").append("<li><a id='"+result[i].id+"'href='javascript:void(0)' onclick='setMessageTags(this)' rel='"+result[i].url+"'>一条"+result[i].messageName+"消息未处理</a></li>");
+
 	    			} 
             	}
     		}
@@ -236,10 +199,11 @@
     	            datatype : 'json',
     	            success : function (data) {
     	            	var flag = data.success;
-    	            	if(flag){
-    	            		addOneTab(title, url);
+                        addOneTab(title, url);
+                        if(flag){
+                        	messagesListen();
     	            	}
-    	            	messagesListen();
+    	            	
     	            }
     		});
     	}
@@ -247,46 +211,24 @@
     /*菜单切换*/
     $(function () {
     	$('#css3menu ul li').first().addClass("on");
-    	$('.menu-left').hide();
-        $("#homeIndex").show();
+
+    	$('#page-layout').layout('remove','west');
         $('#homeIndex').attr("src","http://alm.diligrp.com:8083/alm/home/index");
-        let width= $(window).width();
-        width=width<1200?1200:width;
-        $("#center").width(width)
-            .parent().css({
-            'left':0,
-            'width':width
-        });
-        /*$("#center").parent().css('left',0);
-        $("#center").parent().width($(window).width());
-        $("#center").width($(window).width());*/
+
     	$('#css3menu ul li').on('click',function(){
             let index= $(this).index();
             if(index<1){
-                $('.menu-left').hide();
+                $('#page-layout').layout('remove','west')
                 $("#homeIndex").css('display','block');
                 $('#homeIndex').attr("src","http://alm.diligrp.com:8083/alm/home/index");
                 $("#tabs").empty().hide();
-                let width= $(window).width();
-                width=width<1200?1200:width;
-                $("#center").width(width)
-                    .parent().css({
-                        'left':0,
-                        'width':width
-                    });
             }else{
-                $('.menu-left').show();
-                $("#menuList").find("ul li").removeClass('on')
-                $("#homeIndex").hide();
-                var leftWidth=$("#menuList").parent().width();
-                let width= $(window).width()-leftWidth;
-                width=width<949?949:width;
-
-                $("#center").width(width)
-                    .parent().css({
-                        'left':leftWidth+'px',
-                        'width':width
-                    });
+                // console.log($('#menuTem').html())
+                $('#page-layout').layout('add',{
+                    region:'west',
+                    width:251
+                });
+                $('.layout-panel-west .panel-body').append($('#menuTem').html());
                 var id = $(this).children().get(0).id.replace("fMenu","");
                 $("#"+id+"").find("ul li").first().addClass('on');
                 var menuLi=$("#"+id+"").find("ul li").first().children().get(0);
@@ -300,4 +242,23 @@
 
 
     </script>
+<script type="text/template" id="menuTem">
+    <div id="menuList" class="menu-left">
+        <% for(item in menu){ %>
+        <div id="${item.id}" class="menu-left-list">
+            <% for(item1 in item.children){ %>
+            <div class="title-name">${item1.name}</div>
+            <ul>
+                <% for(item2 in item1.children){ %>
+                <li>
+                    <a href="javascript:void(0)" id="${item2.id }" rel="${item2.menuUrl}" onclick="menuClickHandler(this)">${item2.name}</a>
+                </li>
+                <% } %>
+            </ul>
+            <% } %>
+        </div>
+        <% } %>
+    </div>
+
+</script>
 </#body>

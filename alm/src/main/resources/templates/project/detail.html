@@ -103,7 +103,7 @@ span.require{
 		</tr>
 	</table>
 
-	<table class="easyui-datagrid" title="项目版本信息" id="versionGrid" fitColumns="true" rownumbers="true" pagination="false" remoteSort="false"
+	<table class="easyui-datagrid" title="项目版本信息" id="versionGrid" fitColumns="true" rownumbers="true" pagination="false" remoteSort="false" style="width: 100%;"
 		loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" align="center" fit="false" striped="true" toolbar="#versionToolbar"
 		idField="id" data-options="url:'${contextPath!}/project/version/listPage?projectId=${model.id!}',onLoadSuccess:countVersionGrid">
 		<thead>
@@ -135,7 +135,7 @@ span.require{
 			plain="true">新建版本</a> <%}%> <span id="versionCount" style="color: red;"></span>
 	</div>
 
-	<table class="easyui-datagrid" title="项目阶段信息" id="phaseGrid" fitColumns="true" rownumbers="true" pagination="false" remoteSort="false"
+	<table class="easyui-datagrid" title="项目阶段信息" id="phaseGrid" fitColumns="true" rownumbers="true" pagination="false" remoteSort="false"  style="width: 100%;"
 		loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" align="center" fit="false" striped="true" toolbar="#phaseToolbar"
 		idField="id" data-options="url:'${contextPath!}/project/phase/list?projectId=${model.id!}',onLoadSuccess:countPhaseGrid">
 		<thead>
@@ -165,7 +165,7 @@ span.require{
 		<%if(editable == true && projectManager == true){%> <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsertPhase()"
 			plain="true">新建阶段</a> <%}%> <span id="phaseCount" style="color: red;"></span>
 	</div>
-	<table class="easyui-datagrid" title="项目文档列表" id="fileGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"
+	<table class="easyui-datagrid" title="项目文档列表" id="fileGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"  style="width: 100%;"
 		pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
 		sortName="name" align="center" fit="false" striped="true" toolbar="#fileToolbar" idField="id"
 		data-options="url:'${contextPath!}/project/files/list?projectId=${model.id!}',onLoadSuccess:countFileGrid">

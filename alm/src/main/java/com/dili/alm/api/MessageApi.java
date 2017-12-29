@@ -32,11 +32,11 @@ public class MessageApi {
 	@ApiImplicitParam(name="Message", paramType="form", value = "Message的form信息", required = true, dataType = "string")
 	})
 	@RequestMapping(value="/saveMessage", method = {RequestMethod.GET, RequestMethod.POST})
-	public @ResponseBody BaseOutput insert(String messageUrl,Long sender,Long recipient) {
-		if(WebUtil.strIsEmpty(messageUrl)|| sender==null|| recipient==null){
-	        return BaseOutput.failure("新增失败,包含空值messageUrl="+messageUrl.toString()+",sender="+sender+",recipient="+recipient);
+	public @ResponseBody BaseOutput insert(String messageUrl,Long sender,Long recipient,Integer type) {
+		if(WebUtil.strIsEmpty(messageUrl)|| sender==null|| recipient==null||type==null){
+	        return BaseOutput.failure("新增失败,包含空值messageUrl="+messageUrl.toString()+",sender="+sender+",recipient="+recipient+",type="+type);
         }else{
-        	messageService.insertMessage(messageUrl,sender,recipient);
+        	messageService.insertMessage(messageUrl,sender,recipient,type);
 		    return BaseOutput.success("新增成功");
         }
 		
