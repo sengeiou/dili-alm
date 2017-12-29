@@ -216,6 +216,7 @@ function onAfterEdit(index, row, changes) {
 
 	requestSave(index, row, function(index, retData) {
 				if (!row.id) {
+					debugger;
 					try {
 						LogUtils.saveLog("新增角色:" + retData.id, function() {
 								});

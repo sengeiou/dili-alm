@@ -166,7 +166,7 @@ function insertPosition(index) {
 						return;
 					} else {
 						grid.datagrid('updateRow', {
-									index : positionEditIndex,
+									index : index,
 									row : data.data
 								});
 						grid.datagrid('acceptChanges');

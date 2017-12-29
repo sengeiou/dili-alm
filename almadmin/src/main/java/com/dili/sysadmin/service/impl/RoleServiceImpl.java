@@ -232,7 +232,7 @@ public class RoleServiceImpl extends BaseServiceImpl<Role, Long> implements Role
 		}
 		int result = this.updateSelective(role);
 		if (result > 0) {
-			return BaseOutput.success();
+			return BaseOutput.success().setData(role);
 		}
 		return BaseOutput.failure();
 	}
