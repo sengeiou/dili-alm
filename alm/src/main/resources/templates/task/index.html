@@ -1,7 +1,7 @@
 <#body>
  <%if(project!null!=null){%>
 <div id="cusTools" >
-	<a onclick="window.history.go(-1);" class="easyui-linkbutton"
+	<a onclick="<%if(backUrl!'' == ''){%>window.history.go(-1);<%}else{%>window.location.href='${backUrl!}';<%}%>" class="easyui-linkbutton"
 		style="width: 50px; height: 24px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef;padding:5px; float:right;">返回</a>
 </div>
 <%}%>

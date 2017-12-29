@@ -13,6 +13,12 @@ function countFileGrid() {
 	$('#fileCount').text('（' + data + '条）');
 }
 
+function showTask() {
+	var backUrl = encodeURIComponent(window.location)
+	var location = '${contextPath!}/task/index.html?projectId=${model.id!}' + '&backUrl=' + backUrl;
+	window.location.href = location;
+}
+
 function versionOptFormatter(value, row, index) {
 	var content = '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="changeVersionState(' + row.id + ');">状态变更</a>';
 	content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="editVersion(' + row.id + ');">编辑</a>';

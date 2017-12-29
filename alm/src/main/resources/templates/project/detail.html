@@ -47,7 +47,7 @@ span.require{
 	<a href="#" class="easyui-linkbutton"
 		style="width: 100px; height: 30px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef"
 		data-options="onClick:function(){
-	   	window.location.href='${contextPath!}/task/index.html?projectId=${model.id!}';
+	   		showTask('${backUrl!}');
 	   }">项目任务：${model.taskCount!}</a>
 	<%if(editable == true && projectManager == true){%> <a href="#" class="easyui-linkbutton"
 		style="width: 80px; height: 30px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef"
