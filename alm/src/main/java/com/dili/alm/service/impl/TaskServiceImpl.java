@@ -419,7 +419,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		
 		//接收到true的标识就写入日期
 		if (signComplate) {
-			project.setActualStartDate(new Date());
+			project.setActualEndDate(new Date());
 		}
 		projectService.saveOrUpdate(project);
 	}
@@ -472,6 +472,17 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			phase.setActualStartDate(now);
 			this.phaseMapper.updateByPrimaryKey(phase);
 		}
+		
+		/***初始化相关内容的进度***/
+		// 进度总量写入project表中
+		saveProjectProgress(task,false);
+
+		// 更新版本表中的进度
+		saveProjectVersion(task);
+
+		// 更新阶段表中的进度
+		saveProjectPhase(task);	
+		/***初始化相关内容的进度***/
 		return this.update(task);
 	}
 
@@ -487,7 +498,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		for (Task taskDome : taskList) {
 			//只判断未开始，已开始状态的任务
 			if (taskDome.getStatus()==TaskStatus.START.code||taskDome.getStatus()==TaskStatus.NOTSTART.code) {
-				// dateUtil 计算相差天数小于0，更新状态为未完成
+				// dateUtil 计算相差天数大于0，更新状态为未完成
 				int days = Integer.parseInt(DateUtil.getDatePoor(new Date(), taskDome.getEndDate()).trim());
 				if (days > 0) {
 					taskDome.setStatus(TaskStatus.NOTCOMPLETE.code);// 更新状态为未完成
@@ -655,23 +666,20 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			Project project = projectService.get(task.getProjectId());
 			Date pstDate = project.getStartDate();// 开始时间
 			Date penDate = project.getEndDate();// 结束时间
+			int startCompareVal = Integer.parseInt(DateUtil.getDatePoor(pstDate, task.getStartDate()));
+			int endCompareVal = Integer.parseInt(DateUtil.getDatePoor(penDate,task.getEndDate()));
 
-			int startCompareVal = DateUtil.compare_date(DateUtil.getDateStr(pstDate),
-					DateUtil.getDateStr(task.getStartDate()));
-			int endCompareVal = DateUtil.compare_date(DateUtil.getDateStr(penDate),
-					DateUtil.getDateStr(task.getEndDate()));
-
-			// 合法值是0,1
-			if (startCompareVal != 1) {
-				return false;
+			// 大于0，后者晚，小于0 后者早
+			if (startCompareVal > 0) {
+				return true;
 			}
-			if (endCompareVal != -1) {
-				return false;
+			if (endCompareVal < 0) {
+				return true;
 			}
 		} catch (Exception e) {
 			return false;
 		}
-		return true;
+		return false;
 	}
 
 	@Override
@@ -706,6 +714,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		List<Team> teamList = teamService.list(team);
 		
 		for (Team team2 : teamList) {
+			
 			if (team2.getRole().equalsIgnoreCase(TeamRole.PROJECT_MANAGER.getValue())) {
 				return true;
 			}

@@ -172,9 +172,9 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <select name="_flow" id="_flow" class="easyui-combobox" editable=false data-options="label:'流程:', required:true" style="width:100%">
-                        <option value=0 selected="selected">正常流程</option>
-                        <option value=1>变更流程</option>
+                    <select name="flowSt" id="flowSt" class="easyui-combobox" editable=false data-options="label:'流程:', required:true" style="width:100%">
+                        <option value=1 >正常流程</option>
+                        <option value=0>变更流程</option>
                     </select>
                 </td>
             </tr>
@@ -258,7 +258,6 @@
         $('#dlg').dialog('open');
         $('#dlg').dialog('center');
         $('#_form').form('clear');
-        $('#_flow').combobox('setValue',0);
         formFocus("_form", "_name");
     }
 
@@ -302,6 +301,13 @@
 
         $('#_form').form('load', { startDateShow: dateFormat_1(formData._startDate) });
         $('#_form').form('load', { endDateShow: dateFormat_1(formData._endDate) });
+        
+        if(selected.flow){ $("#changeIdTr").css("display","block");
+        loadChangePorjectSelect(); 
+        $('#_changeId').combobox('select',formData._changeId);
+        $('#flowSt').combobox('select',0); 
+       }
+       else{ $("#changeIdTr").css("display","none");$('#flowSt').combobox('select',1); }
     }
 
     function saveOrUpdate() {

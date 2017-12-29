@@ -21,13 +21,13 @@
             }
         });
 
-        $('#_flow').combobox({
+        $('#flowSt').combobox({
             onSelect: function (o,n) {
             	// 获取到的项目ID
             	if(o.value==0){
-            	  $("#changeIdTr").css("display","none");
-            	}else{
             	  $("#changeIdTr").css("display","block");
+            	}else{
+            	  $("#changeIdTr").css("display","none");
             	  loadChangePorjectSelect();
             	}
             }
@@ -159,7 +159,7 @@
       $("#startDateShow").datebox({disabled: true});
       $("#endDateShow").datebox({disabled: true});
       $("#_owner").combobox({disabled: true});
-      $("#_flow").combobox({disabled: true});      
+      $("#flowSt").combobox({disabled: true});      
       $("#_type").combobox({disabled: true});
       $("#_changeId").combobox({disabled: true});
       $("#saveTask").linkbutton({disabled:true});
@@ -189,7 +189,7 @@
       $("#startDateShow").datebox({disabled: false});
       $("#endDateShow").datebox({disabled: false});
       $("#_owner").combobox({disabled: false});
-      $("#_flow").combobox({disabled: false}); 
+      $("#flowSt").combobox({disabled: false}); 
       $("#_type").combobox({disabled: false});
       $("#_changeId").combobox({disabled: false});
       $("#saveTask").linkbutton({disabled:false});
@@ -230,8 +230,14 @@
             formData = addKeyStartWith(getOriginalData(formData),"_");
             $('#_form').form('load', formData);
             $('#_form').form('load',{planTimeStr:formData._planTime});
-            if(selected.flow){ $("#changeIdTr").css("display","block");}
-            else{ $("#changeIdTr").css("display","none");}
+            if(selected.flow){ $("#changeIdTr").css("display","block");
+                                loadChangePorjectSelect(); 
+                                $('#_changeId').combobox('select',formData._changeId);
+                                $('#flowSt').combobox('select',0); 
+                               }
+            else{ $("#changeIdTr").css("display","none");$('#flowSt').combobox('select',1); }
+            
+            
             
             loadMemberSelect(formData._projectId);
             $('#_owner').combobox('select',formData._owner);

@@ -125,7 +125,7 @@ public class TaskController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput insert(Task task, String planTimeStr, String startDateShow, String endDateShow)
+	public @ResponseBody BaseOutput insert(Task task, String planTimeStr, String startDateShow, String endDateShow,String flowSt)
 			throws ParseException {
 
 		// 判断是否是本项目的项目经理
@@ -138,6 +138,7 @@ public class TaskController {
 			task.setPlanTime(planTime);
 			task.setStartDate(fmt.parse(startDateShow));
 			task.setEndDate(fmt.parse(endDateShow));
+			task.setFlow(flowSt.equals("0")?true:false);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return BaseOutput.failure("请正确填写工时");
@@ -154,6 +155,7 @@ public class TaskController {
 		task.setCreateMemberId(userTicket.getId());
 		task.setCreated(new Date());
 		task.setStatus(TaskStatus.NOTSTART.code);// 新增的初始化状态为0未开始状态
+		
 		messageService.insertMessage("http://alm.diligrp.com:8083/alm/task/index.html", userTicket.getId(),
 				task.getOwner(),AlmConstants.MessageType.TASK.getCode());
 		taskService.insertSelective(task);
@@ -165,12 +167,11 @@ public class TaskController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput update(Task task, String planTimeStr, String startDateShow, String endDateShow) {
+	public @ResponseBody BaseOutput update(Task task, String planTimeStr, String startDateShow, String endDateShow,String flowSt) {
 
 		if (!taskService.isCreater(task)) {
 			return BaseOutput.failure("不是本项目的创建者，不能进行编辑");
 		}
-
 		DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
 		try {
 			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
@@ -184,7 +185,11 @@ public class TaskController {
 			task.setPlanTime(planTime);
 			task.setStartDate(fmt.parse(startDateShow));
 			task.setEndDate(fmt.parse(endDateShow));
-
+			task.setFlow(flowSt.equals("0")?true:false);
+			if (taskService.validateBeginAndEnd(task)) {
+				return BaseOutput.failure("开始时间和结束时间不能早于项目起始日期");
+			}
+			
 		} catch (Exception e) {
 			return BaseOutput.failure("请正确填写工时");
 		}
