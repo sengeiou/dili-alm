@@ -8,11 +8,13 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.dili.alm.cache.AlmCache;
 import com.dili.alm.dao.DataDictionaryValueMapper;
 import com.dili.alm.dao.MessageMapper;
 import com.dili.alm.domain.DataDictionaryValue;
 import com.dili.alm.domain.Message;
 import com.dili.alm.domain.dto.DataDictionaryDto;
+import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.MessageDto;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.MessageService;
@@ -71,7 +73,6 @@ public class MessageServiceImpl extends BaseServiceImpl<Message, Long> implement
 			message.setIsRead(false);
 			
 			List<Message> list = this.getActualDao().selectMessages(message);
-			DataDictionaryDto dto = this.dataDictionaryService.findByCode(MESSAGE_TYPE_CODE);
 			
 			List<MessageDto> listDto=new ArrayList<MessageDto>();
 			for (Message newMessage : list) {
@@ -79,11 +80,7 @@ public class MessageServiceImpl extends BaseServiceImpl<Message, Long> implement
 				 messageDto.setId(newMessage.getId());
 				 messageDto.setIsRead(newMessage.getIsRead());
 				 messageDto.setUrl(newMessage.getUrl());
-				 DataDictionaryValue dtoValue=DTOUtils.newDTO(DataDictionaryValue.class);
-				 dtoValue.setDdId(dto.getId());
-				 dtoValue.setValue(newMessage.getType().toString());
-				 DataDictionaryValue selectOne = dataDictionaryValueMapper.selectOne(dtoValue);
-				 messageDto.setMessageName(selectOne.getCode());
+				 messageDto.setMessageName(AlmCache.MESSAGE_TYPE_MAP.get(newMessage.getType().toString()));
 				 listDto.add(messageDto);
 			}
 			map.put("messages", listDto);
@@ -93,5 +90,12 @@ public class MessageServiceImpl extends BaseServiceImpl<Message, Long> implement
 		return map;
 	}
 
-
+	@Override
+	public List<DataDictionaryValueDto> getMessageTypes() {
+		DataDictionaryDto dto = this.dataDictionaryService.findByCode(MESSAGE_TYPE_CODE);
+		if (dto == null) {
+			return null;
+		}
+		return dto.getValues();
+	}
 }

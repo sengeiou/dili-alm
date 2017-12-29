@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.dili.alm.domain.Message;
+import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.ss.base.BaseService;
 
 /**
@@ -17,4 +18,6 @@ public interface MessageService extends BaseService<Message, Long> {
 	int updateMessageIsRead( Long messageId);
 
 	Map<String,Object> mapMessagges(String userId);
+
+	List<DataDictionaryValueDto> getMessageTypes();
 }

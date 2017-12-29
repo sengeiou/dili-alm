@@ -24,6 +24,8 @@ public class AlmCache {
 	public static final Map<String, String> TASK_STATE_MAP = new ConcurrentHashMap<>();
 	// 任务类型
 	public static final Map<String, String> TASK_TYPE_MAP = new ConcurrentHashMap<>();
+	// 消息类型
+	public static final Map<String, String> MESSAGE_TYPE_MAP = new ConcurrentHashMap<>();
 	// 阶段名称
 	public static final Map<String, String> PHASE_NAME_MAP = new ConcurrentHashMap<>();
 
