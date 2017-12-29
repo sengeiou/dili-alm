@@ -83,7 +83,13 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
     @Override
     public Long reChange(Long id) {
         ProjectChange change = get(id);
+        if(change == null){
+            return -1L;
+        }
         if (change.getRestatus() != null) {
+            return -1L;
+        }
+        if(!change.getCreateMemberId().equals(SessionContext.getSessionContext().getUserTicket().getId())){
             return -1L;
         }
         change.setRestatus(0);

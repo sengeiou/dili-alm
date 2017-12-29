@@ -90,6 +90,12 @@ public class ProjectCompleteServiceImpl extends BaseServiceImpl<ProjectComplete,
     @Override
     public Long reComplete(Long id) {
         ProjectComplete complete = get(id);
+        if (complete == null) {
+            return -1L;
+        }
+        if (!complete.getCreateMemberId().equals(SessionContext.getSessionContext().getUserTicket().getId())) {
+            return -1L;
+        }
         if (complete.getRestatus() != null) {
             return -1L;
         }
