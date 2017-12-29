@@ -307,11 +307,13 @@
 		     (select t.project_id from team as t where t.member_id =#{selectOwner,jdbcType=BIGINT}) ORDER BY p.created DESC
     </select>
    <select  id="selectUserByTeam"  resultType="java.lang.Long" >
-     select distinct(t2.member_id) from alm.team as t2 where t2.project_id in
-     
-       (select t.project_id from alm.team as t where t.member_id =#{selectOwner,jdbcType=BIGINT}) ORDER BY pc.created DESC
-   </select>
    
+    select distinct(t2.member_id) from alm.team as t2 where t2.project_id in
+     
+       (select t.project_id from alm.team as t where t.member_id =#{selectOwner,jdbcType=BIGINT})) 
+       
+        ORDER BY t2.join_time DESC
+   </select>
    <select  id="selectVersionByTeam"  resultType="com.dili.alm.domain.ProjectVersion" >
      select * from alm.project_version as version where version.project_id in 
       (select distinct(t2.project_id) from alm.team as t2 where t2.project_id in

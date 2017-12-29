@@ -1,37 +1,47 @@
 <script type="text/javascript">
 	<#alarm_configJs />
 </script>
-<div id="p" class="easyui-panel" title="My Panel" style="width: '100%'; padding: 10px; background: #fafafa;" data-options="">
+<div id="p" class="easyui-panel" title="My Panel" style="width:100%; padding: 10px; background: #fafafa;" data-options="">
 	<form id="alarmForm" action="${contextPath!}/alarmConfig/saveOrUpdate" method="post">
 		<input hidden="projectId" name="projectId" value="${project.id!}">
-		<table id="info">
+		<!--<table>-->
+			<!--<tr>-->
+				<!--<td style="width: 85px">12312</td>-->
+				<!--<td>冯锦江大酒店</td>-->
+			<!--</tr>-->
+		<!--</table>-->
+		<table id="info" style="width: 100%">
 			<tr>
-				<td><label for="name">项目名称:</label></td>
-				<td><input class="easyui-textbox" type="text" name="name" value="${project.name!}" data-options="readonly:true" /></td>
+				<!--<td style="width: 85px"><label for="name">项目名称:</label></td>-->
+				<td style="width: 100%"><input class="easyui-textbox" type="text" style="width: 100%" name="name" value="${project.name!}" data-options="readonly:true,label:'项目名称：'" /></td>
 			</tr>
 			<tr>
-				<td><label for="projectManager">告警类型:</label></td>
+				<!--<td><label for="projectManager">告警类型:</label></td>-->
 				<td><select id="alarmType" class="easyui-combobox" name="type" style="width: 100%"
-					data-options="url:'${contextPath!}/alarmConfig/type.json',textField:'code',valueField:'value',editable:false,required:true,onLoadSuccess:selectFirst,onSelect:function(record){
+					data-options="url:'${contextPath!}/alarmConfig/type.json',textField:'code',label:'告警类型：',valueField:'value',editable:false,required:true,onLoadSuccess:selectFirst,onSelect:function(record){
 						$(this).combobox('initValue',record.value);
 						$(this).combobox('setText',record.code);
 					}">
-				</select></td>
+				</select>
+				</td>
 			</tr>
 			<tr>
-				<td><label for="projectManager">告警阀值:</label></td>
-				<td><select id="cc" class="easyui-combobox" name="threshold" style="width: 100%" data-options="editable:false">
+				<!--<td><label for="projectManager">告警阀值:</label></td>-->
+				<td>
+					<select id="cc" class="easyui-combobox" name="threshold" style="width: 100%" data-options="editable:false,label:'告警阀值：'">
 						<option value="1">+1</option>
 						<option value="2">+2</option>
 						<option value="3">+3</option>
 						<option value="-1">-1</option>
 						<option value="-2">-2</option>
 						<option value="-3">-3</option>
-				</select></td>
+					</select>
+					<p style="padding-left: 105px">按日设置阀值，正数表示提前，负数表示延后</p>
+				</td>
 			</tr>
 			<tr>
-				<td><label for="plannedEndDate">预计结束日期:</label></td>
-				<td><input class="easyui-textbox" type="text" name="plannedEndDate" value="${project.endDate!}" data-options="readonly:true" /></td>
+				<!--<td><label for="plannedEndDate">预计结束日期:</label></td>？-->
+				<td><input class="easyui-textbox" type="text" style="width: 100%" name="plannedEndDate" value="${project.endDate!}" data-options="readonly:true,label:'预计结束日期：'" /></td>
 			</tr>
 		</table>
 	</form>

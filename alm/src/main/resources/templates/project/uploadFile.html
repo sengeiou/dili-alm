@@ -1,66 +1,79 @@
 <script type="text/javascript">
 	<#project_uploadFileJs />
 </script>
+<style>
+	#uploadForm .textbox-label{width: 80px}
+</style>
 <form id="uploadForm" action="${contextPath!}/project/uploadFile" class="easyui-form" method="post" fit="true">
 	<input type="hidden" name="projectId" value="${project.id!}">
 	<table width="100%">
 		<tr>
-			<td style="padding: 5px;"><input class="easyui-textbox" style="width: 100%;" value="${project.name!}" panelWidth="auto"
-				panelHeight="auto" label="项目名称:" readonly="readonly" /></td>
+			<td style="width:50%;padding: 5px;">
+				<em></em>
+				<input class="easyui-textbox" style="width: calc(50% - 50px);" value="${project.name!}" panelWidth="auto" panelHeight="auto" label="项目名称:" readonly="readonly" />
+			</td>
+			<td style="width:50%;padding: 5px;">
+				<span class="require">*</span>
+				<input editable="false" panelWidth="auto" panelHeight="auto" label="文档类型:" class="easyui-combobox" name="type" id="type" style="width: calc(50% - 50px);" data-options="valueField:'value',textField:'code',required:true,url:'${contextPath!}/project/fileTypes.json'">
+			</td>
 		</tr>
 		<tr>
-			<td style="padding: 5px;"><input editable="false" panelWidth="auto" panelHeight="auto" label="版本名称:" class="easyui-combobox"
-				name="versionId" id="versionId" style="width: 100%;"
-				data-options="valueField:'id',textField:'version',required:true,url:'${contextPath!}/project/version/list?projectId=${project.id!}',onChange:onVersionIdChange"></td>
+			<td style="width:50%;padding: 5px;">
+				<span class="require">*</span>
+				<input editable="false" panelWidth="auto" panelHeight="auto" label="版本名称:" class="easyui-combobox" name="versionId" id="versionId" style="width: calc(50% - 50px);" data-options="valueField:'id',textField:'version',required:true,url:'${contextPath!}/project/version/list?projectId=${project.id!}',onChange:onVersionIdChange">
+			</td>
+			<td style="width:50%;padding: 5px;">
+				<span class="require">*</span>
+				<input disabled="disabled" editable="false" panelWidth="auto" panelHeight="auto" label="阶段名称:" class="easyui-combobox" name="phaseId" id="phaseId" style="width: calc(50% - 50px);" data-options="valueField:'id',textField:'name',required:true">
+			</td>
 		</tr>
 		<tr>
-			<td style="padding: 5px;"><input disabled="disabled" editable="false" panelWidth="auto" panelHeight="auto" label="阶段名称:"
-				class="easyui-combobox" name="phaseId" id="phaseId" style="width: 100%;" data-options="valueField:'id',textField:'name',required:true"></td>
-		</tr>
-		<tr>
-			<td style="padding: 5px;"><input editable="false" panelWidth="auto" panelHeight="auto" label="文档类型:" class="easyui-combobox"
-				name="type" id="type" style="width: 100%;"
-				data-options="valueField:'value',textField:'code',required:true,url:'${contextPath!}/project/fileTypes.json'"></td>
-		</tr>
-		<tr>
-			<td style="padding: 5px;"><select editable="false" panelWidth="auto" panelHeight="auto" label="邮件通知:" class="easyui-combobox"
-				name="sendMail" id="sendMail" style="width: 100%;" data-options="onChange:showOrHideSelectMember">
+			<td colspan="2" style="padding: 5px;">
+				<span class="require">*</span>
+				<select editable="false" panelWidth="auto" panelHeight="auto" label="邮件通知:" class="easyui-combobox" name="sendMail" id="sendMail" style="width: calc(100% - 52px);" data-options="onChange:showOrHideSelectMember">
 					<option value="0">不发送</option>
 					<option value="1">发送</option>
-			</select></td>
+				</select>
+			</td>
 		</tr>
 		<tr>
-			<td style="padding: 5px;"><input disabled="disabled" class="easyui-textbox" name="receiver" id="receiver" style="width: 100%;"
-				panelWidth="auto" panelHeight="auto" label="发送成员:"
-				data-options="editable:false,
-									buttonText:'选择',
-									onClickButton:function(){
-										showMembersDlg('receiver');
-									},onChange:_changeTextboxShowClear" /></td>
+			<td colspan="2" style="padding: 5px;">
+				<em></em>
+				<input disabled="disabled" class="easyui-textbox" name="receiver" id="receiver" style="width: calc(100% - 57px);" panelWidth="auto" panelHeight="auto" label="发送成员:" data-options="editable:false,
+                                    buttonText:'选择',
+                                    onClickButton:function(){
+                                        showMembersDlg('receiver');
+                                    },onChange:_changeTextboxShowClear" />
+			</td>
 		</tr>
 		<tr>
-			<td style="padding: 5px;"><input class="easyui-textbox" name="notes" id="notes" style="width: 100%;" panelWidth="auto"
-				panelHeight="auto" label="文档描述:" data-options="multiline:true" /></td>
+			<td colspan="2" style="padding: 5px;">
+				<em></em>
+				<input class="easyui-textbox" name="notes" id="notes" style="width:calc(100% - 57px);" panelWidth="auto" panelHeight="auto" label="文档描述:" data-options="multiline:true" />
+			</td>
 		</tr>
 		<tr>
-			<td style="padding: 5px;"><label style="margin-right: 49px;">文档：</label>
-				<div id="fileuploader"></div>
-				<table class="easyui-datagrid" title="文档列表" id="uploadFileGrid" fitColumns="true" pagination="false" remoteSort="false"
-					loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" align="center" fit="false" striped="true" idField="id"
-					data-options="">
+			<td colspan="2" style="padding: 5px;">
+
+				<label style="float:left;"><span class="require">*</span>文档：</label>
+				<div id="fileuploader" style="margin-left: 90px;padding: 5px"></div>
+				<table class="easyui-datagrid" style="width: 100%"
+					   title="文档列表" id="uploadFileGrid" fitColumns="true" pagination="false" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" align="center" fit="false" striped="true" idField="id" data-options="">
 					<thead>
-						<tr>
-							<th data-options="field:'name', width:'20%', align:'center', resizable:'true', fixed:'false'">文件名</th>
-							<th data-options="field:'length', width:'20%', align:'center', resizable:'true', fixed:'false'">大小</th>
-							<th data-options="field:'created', width:'50%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">上传日期</th>
-							<th data-options="field:'opt', width:'10%', align:'center', resizable:'true', fixed:'false',formatter:uploadFileOptFormatter">操作</th>
-						</tr>
+					<tr>
+						<th data-options="field:'name', width:'20%', align:'center', resizable:'true', fixed:'false'">文件名</th>
+						<th data-options="field:'length', width:'20%', align:'center', resizable:'true', fixed:'false'">大小</th>
+						<th data-options="field:'created', width:'50%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">上传日期</th>
+						<th data-options="field:'opt', width:'10%', align:'center', resizable:'true', fixed:'false',formatter:uploadFileOptFormatter">操作</th>
+					</tr>
 					</thead>
-				</table></td>
+				</table>
+			</td>
 		</tr>
 	</table>
 	<tr>
-		<td style="padding: 5px;"><input type="hidden" name="creatorMemberId" value="${model.creator.id!}">${model.creator.realName!}</td>
+		<td style="padding: 5px;">
+			<input type="hidden" name="creatorMemberId" value="${model.creator.id!}">${model.creator.realName!}</td>
 	</tr>
 </form>
 <script type="text/javascript">

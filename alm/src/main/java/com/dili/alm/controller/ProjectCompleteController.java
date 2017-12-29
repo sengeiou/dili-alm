@@ -14,6 +14,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -64,10 +65,18 @@ public class ProjectCompleteController {
         metadata.put("type", projectTypeProvider);
 
         List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, projectCompleteService.listByExample(projectComplete));
-
+        if (CollectionUtils.isEmpty(maps)) {
+            return "redirect:/projectComplete/index.html";
+        }
         Map applyDTO = maps.get(0);
         if (!AlmConstants.ApplyState.APPLY.check(applyDTO.get("status"))) {
             return "redirect:/projectComplete/index.html";
+        }
+        try {
+            if (Long.parseLong(applyDTO.get("createMemberId").toString()) != SessionContext.getSessionContext().getUserTicket().getId()) {
+                return "redirect:/projectComplete/index.html";
+            }
+        } catch (Exception ignored) {
         }
         modelMap.put("apply", applyDTO);
         return "projectComplete/step" + step;
@@ -95,6 +104,9 @@ public class ProjectCompleteController {
         metadata.put("type", projectTypeProvider);
 
         List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, projectCompleteService.listByExample(projectComplete));
+        if (CollectionUtils.isEmpty(maps)) {
+            return "redirect:/projectComplete/index.html";
+        }
 
         Map applyDTO = maps.get(0);
         modelMap.put("apply", applyDTO);
@@ -163,7 +175,10 @@ public class ProjectCompleteController {
     @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
     BaseOutput delete(Long id) {
-        projectCompleteService.delete(id);
+        ProjectComplete complete = projectCompleteService.get(id);
+        if (complete != null && complete.getCreateMemberId().equals(SessionContext.getSessionContext().getUserTicket().getId())) {
+            projectCompleteService.delete(id);
+        }
         return BaseOutput.success("删除成功");
     }
 

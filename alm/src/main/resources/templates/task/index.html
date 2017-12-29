@@ -120,32 +120,32 @@
         <table width="360px">
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_name" id="_name" style="width:100%" data-options="label:'任务名称:', required:true,validType:'length[0,255]'" />
+                    <input class="easyui-textbox" name="_name" id="_name" style="width:100%" data-options="label:'任务名称:', required:true,validType:'length[0,255]',prompt:'请填写任务名称'" />
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input name="_projectId" id="_projectId" class="easyui-combobox" style="width: 100%;" editable="false" data-options="label:'所属项目:', required:true">
+                    <input name="_projectId" id="_projectId" class="easyui-combobox" style="width: 100%;" editable="false" data-options="label:'所属项目:', required:true,validType:'isIds'">
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input name="_versionId" id="_versionId" class="easyui-combobox" style="width: 100%;" editable="false" data-options="label:'所属版本:', required:true">
+                    <input name="_versionId" id="_versionId" class="easyui-combobox" style="width: 100%;" editable="false" data-options="label:'所属版本:', required:true,validType:'isIds'">
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input name="_phaseId" id="_phaseId" class="easyui-combobox" style="width: 100%;" editable="false" data-options="label:'所属阶段:', required:true">
+                    <input name="_phaseId" id="_phaseId" class="easyui-combobox" style="width: 100%;" editable="false" data-options="label:'所属阶段:', required:true,validType:'isIds'">
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-datebox" name="startDateShow" id="startDateShow" editable="false" style="width:100%" data-options="label:'开始时间:', required:true" />
+                    <input class="easyui-datebox" name="startDateShow" id="startDateShow" editable="false" style="width:100%" data-options="label:'开始时间:', required:true,validType:'isIds',prompt:'任务开始时间不能早于项目开始时间'" />
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-datebox" name="endDateShow" id="endDateShow" editable="false" style="width:100%" data-options="label:'结束时间:', required:true,validType:'endDateValidate[\'startDateShow\']'" />
+                    <input class="easyui-datebox" name="endDateShow" id="endDateShow" editable="false" style="width:100%" data-options="label:'结束时间:', required:true,validType:'endDateValidate[\'startDateShow\']',prompt:'任务结束时间不能晚于项目结束时间'" />
                 </td>
             </tr>
             <tr>
@@ -155,13 +155,13 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input name="_type" id="_type" class="easyui-combobox" style="width: 100%;" editable=false panelWidth="auto" panelHeight="auto" data-options="label:'任务类型:', required:true">
+                    <input name="_type" id="_type" class="easyui-combobox" style="width: 100%;" editable=false panelWidth="auto" panelHeight="auto" data-options="label:'任务类型:', required:true,validType:'isIds'">
                     <#comboProvider _id="_type" _table="data_dictionary_value" _valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":17}' />
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input name="_owner" id="_owner" class="easyui-combobox" style="width:100%" data-options="label:'负责人:', required:true">
+                    <input name="_owner" id="_owner" class="easyui-combobox" style="width:100%" data-options="label:'负责人:', required:true,validType:'isIds'">
                 </td>
             </tr>
             <tr>
@@ -251,7 +251,7 @@
     //打开新增窗口
     function openInsert() {
         canEdit();
-
+        defaultValue();
         $("#task_detail").hide();
         $("#dialog_toolbar").show();
         $("#dialog_toolbar_detail").hide();
@@ -558,6 +558,14 @@
             message: '结束时间必须大于开始时间！'
         }
     });
+    $.extend($.fn.validatebox.defaults.rules, {  
+        isIds: {  
+            validator: function(value){  
+                return "----请选择---"!=value;  
+            },  
+            message: '此项为必输项'  
+        }  
+    }); 
 </script>
 <script type="text/javascript">
     <#task_index />

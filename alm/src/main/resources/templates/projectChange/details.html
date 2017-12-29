@@ -25,23 +25,27 @@
     .title-second {
         padding-left: 30px;
     }
-    .textbox-label{
+
+    .textbox-label {
         width: 100px;
     }
-    .panel-tool{
-        top:10px;
+
+    .panel-tool {
+        top: 10px;
         height: 24px;
     }
+
     .ajax-file-upload-statusbar {
         display: none;
     }
 </style>
 <div id="smDialog" style="display: none;"></div>
 <div id="cusTools">
-    <a onclick="window.location.href='${contextPath}/projectChange/index.html';" class="easyui-linkbutton" style="width: 50px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">返回</a>
+    <a onclick="window.location.href='${contextPath}/projectChange/index.html';" class="easyui-linkbutton"
+       style="width: 50px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">返回</a>
 </div>
 <!--<div id="cusTools">-->
-    <!--<a href="${contextPath}/projectChange/index.html" style="width: 30px;color: #333;text-decoration: none">返回</a>-->
+<!--<a href="${contextPath}/projectChange/index.html" style="width: 30px;color: #333;text-decoration: none">返回</a>-->
 <!--</div>-->
 <div class="easyui-panel" title="变更申请" style="height: 100%"
      data-options="tools:'#cusTools'">
@@ -84,7 +88,8 @@
                 </tr>
                 <tr>
                     <td>
-                        <select id="affectsOnline"  class="easyui-combobox" type="text" name="affectsOnline" style="width: 305px;"
+                        <select id="affectsOnline" class="easyui-combobox" type="text" name="affectsOnline"
+                                style="width: 305px;"
                                 data-options="editable:false,label:'是否影响上线:'"
                                 required="true">
                             <option value="1">是</option>
@@ -130,8 +135,8 @@
             </table>
         </form>
         <!--<div style="text-align:left;padding:5px;margin-top:10px;">-->
-            <!--<a href="${contextPath}/projectChange/index.html" class="easyui-linkbutton"-->
-               <!--data-options="width:'80px'">返回</a>-->
+        <!--<a href="${contextPath}/projectChange/index.html" class="easyui-linkbutton"-->
+        <!--data-options="width:'80px'">返回</a>-->
         <!--</div>-->
     </div>
 </div>
@@ -139,7 +144,7 @@
 
     $("#tagbx").tagbox({
         onBeforeRemoveTag: function (value) {
-            if (value == "pmo@diligrp.com") {
+            if (value == pmo_email) {
                 return false;
             }
         }

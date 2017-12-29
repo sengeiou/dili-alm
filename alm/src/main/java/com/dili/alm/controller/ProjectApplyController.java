@@ -21,6 +21,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -77,9 +78,18 @@ public class ProjectApplyController {
 
         List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, projectApplyService.listByExample(projectApply));
 
+        if (CollectionUtils.isEmpty(maps)) {
+            return "redirect:/projectApply/index.html";
+        }
         Map applyDTO = maps.get(0);
         if (!AlmConstants.ApplyState.APPLY.check(applyDTO.get("status"))) {
             return "redirect:/projectApply/index.html";
+        }
+        try {
+            if (Long.parseLong(applyDTO.get("createMemberId").toString()) != SessionContext.getSessionContext().getUserTicket().getId()) {
+                return "redirect:/projectApply/index.html";
+            }
+        } catch (Exception ignored) {
         }
         modelMap.put("apply", applyDTO);
         if (step == 1) {
@@ -105,6 +115,11 @@ public class ProjectApplyController {
         metadata.put("type", projectTypeProvider);
 
         List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, projectApplyService.listByExample(projectApply));
+
+        if (CollectionUtils.isEmpty(maps)) {
+            return "redirect:/projectApply/index.html";
+        }
+
         Map applyDTO = maps.get(0);
         modelMap.put("apply", applyDTO);
         projectApplyService.buildStepOne(modelMap, applyDTO);
@@ -241,7 +256,10 @@ public class ProjectApplyController {
     @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
     BaseOutput delete(Long id) {
-        projectApplyService.delete(id);
+        ProjectApply apply = projectApplyService.get(id);
+        if (apply != null && apply.getCreateMemberId().equals(SessionContext.getSessionContext().getUserTicket().getId())) {
+            projectApplyService.delete(id);
+        }
         return BaseOutput.success("删除成功");
     }
 

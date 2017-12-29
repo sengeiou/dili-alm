@@ -20,6 +20,7 @@ import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.util.SystemConfigUtils;
 import com.dili.sysadmin.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -83,6 +84,9 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
     @Autowired
     private TeamService teamService;
 
+    @Autowired
+    private FilesService filesService;
+
 
     public ApproveMapper getActualDao() {
         return (ApproveMapper) getDao();
@@ -91,6 +95,10 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
     @Override
     public void buildApplyApprove(Map modelMap, Long id) {
         Approve approve = this.get(id);
+
+        String approveDescription = approve.getDescription();
+        modelMap.put("canOpt", checkApprove(approveDescription, approve.getStatus()));
+
 
         // 构建Provider
         Map<Object, Object> metadata = new HashMap<>();
@@ -118,14 +126,15 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         modelMap.put("extend", dto.remove("extend"));
         modelMap.put("json", JSON.toJSON(dto));
 
-
-        String approveDescription = approve.getDescription();
-        checkApprove(approveDescription, approve.getStatus(), modelMap);
     }
 
     @Override
     public void buildChangeApprove(Map modelMap, Long id) {
         Approve approve = this.get(id);
+
+        String approveDescription = approve.getDescription();
+        modelMap.put("canOpt", checkApprove(approveDescription, approve.getStatus()));
+
         // 构建Provider
         Map<Object, Object> metadata = new HashMap<>();
         metadata.put("createMemberId", JSON.parse("{provider:'memberProvider'}"));
@@ -143,14 +152,12 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         ProjectChange change = projectChangeService.get(approve.getProjectApplyId());
         modelMap.put("change", change);
 
-        String approveDescription = approve.getDescription();
-        checkApprove(approveDescription, approve.getStatus(), modelMap);
     }
 
     /**
      * 检查是否有审批权限
      */
-    private void checkApprove(String approveDescription, Integer status, Map map) {
+    private boolean checkApprove(String approveDescription, Integer status) {
         // 能否审批
         boolean canOpt = false;
 
@@ -186,12 +193,17 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
             }
 
         }
-        map.put("canOpt", canOpt);
+        return canOpt;
     }
 
     @Override
     public void buildCompleteApprove(Map modelMap, Long id) {
         Approve approve = this.get(id);
+
+
+        String approveDescription = approve.getDescription();
+        modelMap.put("canOpt", checkApprove(approveDescription, approve.getStatus()));
+
         // 构建Provider
         Map<Object, Object> metadata = new HashMap<>();
         metadata.put("createMemberId", JSON.parse("{provider:'memberProvider'}"));
@@ -208,9 +220,6 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
         ProjectComplete complete = projectCompleteService.get(approve.getProjectApplyId());
         modelMap.put("complete", complete);
-
-        String approveDescription = approve.getDescription();
-        checkApprove(approveDescription, approve.getStatus(), modelMap);
     }
 
     @Override
@@ -282,8 +291,23 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
             }
             updateSelective(approve);
             sendMessage(id, approve.getType(), SessionContext.getSessionContext().getUserTicket().getId(), approve.getCreateMemberId());
+            sendLeaderApproveMessage(id, approve.getType(), approveList);
         }
         return BaseOutput.success();
+    }
+
+    private void sendLeaderApproveMessage(Long id, String type, List<ApplyApprove> approveList) {
+        try {
+            if (CollectionUtils.isNotEmpty(approveList)) {
+                boolean canSend = approveList.stream().filter(applyApprove -> !Objects.equals(applyApprove.getUserId(), getApproveLeader()) && applyApprove.getResult() != null)
+                        .count() == approveList.size() - 1;
+                if (canSend) {
+                    sendMessage(id, type, SessionContext.getSessionContext().getUserTicket().getId(), getApproveLeader());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void sendMail(ProjectApply projectApply, boolean accept) {
@@ -476,7 +500,9 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
                 approve.setUserId(u.getId());
                 approve.setRole(roleRpc.listRoleNameByUserId(Long.valueOf(u.getId())).getData());
                 approveList.add(approve);
-                sendMessage(as.getId(), as.getType(), as.getCreateMemberId(), u.getId());
+                if (!u.getId().equals(getApproveLeader())) {
+                    sendMessage(as.getId(), as.getType(), as.getCreateMemberId(), u.getId());
+                }
             });
             as.setDescription(JSON.toJSONString(approveList));
             updateSelective(as);
@@ -524,6 +550,19 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         build.setEstimateLaunchDate(apply.getEstimateLaunchDate());
         projectService.insertSelective(build);
         buildTeam(build);
+//        buildFile(apply.getId(), build.getId());
+    }
+
+    /**
+     * @param applyId
+     * @param projectId
+     */
+    private void buildFile(Long applyId, Long projectId) {
+        List<Files> files = projectApplyService.listFiles(applyId);
+        files.forEach(f -> {
+            f.setProjectId(projectId);
+            filesService.updateSelective(f);
+        });
     }
 
     private void buildTeam(Project project) {

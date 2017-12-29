@@ -55,6 +55,12 @@ public class ProjectChangeController {
     @RequestMapping(value = "/edit", method = RequestMethod.GET)
     public String edit(ModelMap modelMap, Long id) {
         ProjectChange change = projectChangeService.get(id);
+        if (change == null) {
+            return "redirect:/projectChange/index.html";
+        }
+        if (!change.getCreateMemberId().equals(SessionContext.getSessionContext().getUserTicket().getId())) {
+            return "redirect:/projectChange/index.html";
+        }
         modelMap.put("obj", change);
         if (!AlmConstants.ApplyState.APPLY.check(change.getStatus())) {
             return "redirect:/projectChange/index.html";
@@ -77,7 +83,11 @@ public class ProjectChangeController {
 
     @RequestMapping(value = "/toDetails/{id}", method = RequestMethod.GET)
     public String toDetails(ModelMap modelMap, @PathVariable("id") Long id) {
-        modelMap.put("obj", projectChangeService.get(id));
+        ProjectChange change = projectChangeService.get(id);
+        if (change == null) {
+            return "redirect:/projectChange/index.html";
+        }
+        modelMap.put("obj", change);
         return "projectChange/details";
     }
 
@@ -130,7 +140,10 @@ public class ProjectChangeController {
     @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
     BaseOutput delete(Long id) {
-        projectChangeService.delete(id);
+        ProjectChange change = projectChangeService.get(id);
+        if (change != null && change.getCreateMemberId().equals(SessionContext.getSessionContext().getUserTicket().getId())) {
+            projectChangeService.delete(id);
+        }
         return BaseOutput.success("删除成功");
     }
 }

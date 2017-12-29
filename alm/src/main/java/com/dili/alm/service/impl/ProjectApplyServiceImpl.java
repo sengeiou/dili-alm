@@ -135,7 +135,13 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
     @Override
     public Long reApply(Long id) {
         ProjectApply apply = get(id);
+        if (apply == null) {
+            return -1L;
+        }
         if (apply.getRestatus() != null) {
+            return -1L;
+        }
+        if (!apply.getCreateMemberId().equals(SessionContext.getSessionContext().getUserTicket().getId())) {
             return -1L;
         }
         apply.setRestatus(0);

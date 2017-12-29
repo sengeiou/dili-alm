@@ -11,6 +11,9 @@
             onChange: function (o,n) {
             	// 获取到的项目ID
             	var projectId = $('#_projectId').combobox('getValue');
+            	if(isDefaultValue(projectId)){
+            	  return;
+            	}
             	loadVisionSelect(projectId);
             	loadMemberSelect(projectId);
             	loadTaskSelect(projectId);
@@ -227,8 +230,8 @@
             formData = addKeyStartWith(getOriginalData(formData),"_");
             $('#_form').form('load', formData);
             $('#_form').form('load',{planTimeStr:formData._planTime});
-            if(selected.flow){ $("#changeIdTr").css("display","none");}
-            else{ $("#changeIdTr").css("display","block");}
+            if(selected.flow){ $("#changeIdTr").css("display","block");}
+            else{ $("#changeIdTr").css("display","none");}
             
             loadMemberSelect(formData._projectId);
             $('#_owner').combobox('select',formData._owner);
@@ -384,3 +387,26 @@ function getDay(date){
 	          var obj = $.parseJSON(str);
 	          return obj;
         }
+        
+        
+function defaultValue(){
+	$('#_projectId').combobox({
+		onLoadSuccess : function(){  
+		                        var projectId = $('#_projectId').combobox('getValue');
+		                        if(projectId==""){
+							            $('#_projectId').combobox('select',"----请选择---"); 
+							            $('#_versionId').combobox('select',"----请选择---");
+							            $('#_phaseId').combobox('select',"----请选择---");
+							            $('#_owner').combobox('select',"----请选择---");
+							            $('#_type').combobox('select',"----请选择---"); 
+							         }
+					        }
+	
+	  })
+}
+
+function isDefaultValue(val){
+  if(val=="----请选择---"){
+    return true;
+  }
+}
