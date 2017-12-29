@@ -9,7 +9,7 @@ function progressFormatter(value, rowData, rowIndex) {
 }
 
 function projectNameFormatter(value, row) {
-	return '<a href="${contextPath!}/project/detail.html?id=' + row.id + '&backUrl=' + encodeURI('${contextPath!}/project/index.html') + '">' + value + '</a>';
+	return '<a href="${contextPath!}/project/detail.html?id=' + row.id + '&backUrl=' + encodeURIComponent('${contextPath!}/project/index.html') + '">' + value + '</a>';
 }
 
 function taskFormatter(value, row, index) {
@@ -21,7 +21,7 @@ function memberFormatter(value, row, index) {
 }
 
 function optFormatter(value, row) {
-	return '<a href="${contextPath!}/project/detail.html?id=' + row.id + '&editable=true&backUrl=' + encodeURI('${contextPath!}/project/index.html') + '">管理</a>';
+	return '<a href="${contextPath!}/project/detail.html?id=' + row.id + '&editable=true&backUrl=' + encodeURIComponent('${contextPath!}/project/index.html') + '">管理</a>';
 }
 
 function isEditing() {
