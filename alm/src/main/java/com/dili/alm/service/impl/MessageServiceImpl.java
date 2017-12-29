@@ -77,15 +77,13 @@ public class MessageServiceImpl extends BaseServiceImpl<Message, Long> implement
 			for (Message newMessage : list) {
 				 MessageDto messageDto=new MessageDto();
 				 messageDto.setId(newMessage.getId());
-				 messageDto.setCreated(newMessage.getCreated());
 				 messageDto.setIsRead(newMessage.getIsRead());
+				 messageDto.setUrl(newMessage.getUrl());
 				 DataDictionaryValue dtoValue=DTOUtils.newDTO(DataDictionaryValue.class);
 				 dtoValue.setDdId(dto.getId());
 				 dtoValue.setValue(newMessage.getType().toString());
 				 DataDictionaryValue selectOne = dataDictionaryValueMapper.selectOne(dtoValue);
 				 messageDto.setMessageName(selectOne.getCode());
-				 messageDto.setSender(newMessage.getSender());
-				 messageDto.setRecipient(newMessage.getRecipient());
 				 listDto.add(messageDto);
 			}
 			map.put("messages", listDto);
