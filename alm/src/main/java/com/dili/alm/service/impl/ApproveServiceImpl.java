@@ -536,7 +536,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         build.setSerialNumber(apply.getNumber());
         build.setName(apply.getName());
         build.setType(apply.getType());
-        build.setProjectManager(apply.getCreateMemberId());
+        build.setProjectManager(apply.getProjectLeader());
         build.setDevelopManager(apply.getDevelopmentManager());
         build.setTestManager(apply.getTestManager());
         build.setProductManager(apply.getProductManager());
