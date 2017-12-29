@@ -17,7 +17,8 @@ function taskFormatter(value, row, index) {
 }
 
 function memberFormatter(value, row, index) {
-	return '<a href="${contextPath!}/team/index.html?projectId=' + row.id + '">' + value + "</a>";
+	var backUrl = encodeURIComponent(window.location);
+	return '<a href="${contextPath!}/team/index.html?projectId=' + row.id + '&backUrl=' + backUrl + '">' + value + "</a>";
 }
 
 function optFormatter(value, row) {

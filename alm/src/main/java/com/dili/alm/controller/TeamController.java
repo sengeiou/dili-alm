@@ -1,5 +1,7 @@
 package com.dili.alm.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -87,12 +89,15 @@ public class TeamController {
 	@ApiOperation("跳转到Team页面")
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
 	public String index(@RequestParam Long projectId, @RequestParam(defaultValue = "false") Boolean editable,
-			ModelMap modelMap) {
+			@RequestParam(required = false) String backUrl, ModelMap modelMap) throws UnsupportedEncodingException {
 		refreshProject();
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		Boolean projectManager = this.teamService.teamMemberIsProjectManager(user.getId(), projectId);
 		modelMap.addAttribute("projectId", projectId).addAttribute("editable", editable).addAttribute("projectManager",
 				projectManager);
+		if (StringUtils.isNotBlank(backUrl)) {
+			modelMap.addAttribute("backUrl", URLDecoder.decode(backUrl, "UTF-8"));
+		}
 		return "team/index";
 	}
 
