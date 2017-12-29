@@ -9,6 +9,7 @@
     <#css/>
     <script type="text/javascript">
         var contextPath = '${contextPath}';
+        var pmo_email='tg@diligrp.com';
     </script>
     <#js/>
 
