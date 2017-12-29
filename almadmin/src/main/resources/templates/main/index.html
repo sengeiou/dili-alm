@@ -174,24 +174,8 @@
 	             	$('#messageCount').text(data.count);
 	             	$("#messageList").empty();
 	    			for(var i = 0; i<result.length; i++){
-	    				
-		    				if(result[i].type==1){
-			                    	$("#messageList").append("<li><a id='"+result[i].id+"'href='javascript:void(0)' onclick='setMessageTags(this)' rel='"+result[i].url+"'>一条立项审批消息未处理</a></li>");
-		    				}else if(result[i].type==2){
-		                    		$("#messageList").append("<li><a id='"+result[i].id+"'href='javascript:void(0)' onclick='setMessageTags(this)' rel='"+result[i].url+"'>一条立项审批结果消息未处理</a></li>");
-		    				}else if(result[i].type==3){	
-		                    		$("#messageList").append("<li><a id='"+result[i].id+"'href='javascript:void(0)' onclick='setMessageTags(this)' rel='"+result[i].url+"'>一条任务执行消息未处理</a></li>");
-		    				}else if(result[i].type==4){
-		                    		$("#messageList").append("<li><a id='"+result[i].id+"'href='javascript:void(0)' onclick='setMessageTags(this)' rel='"+result[i].url+"'>一条结项审批消息未处理</a></li>");
-		    				}else if(result[i].type==5){
-		                    		$("#messageList").append("<li><a id='"+result[i].id+"'href='javascript:void(0)' onclick='setMessageTags(this)' rel='"+result[i].url+"'>一条结项审批结果消息未处理</a></li>");
-		    				}else if(result[i].type==6){
-		                    		$("#messageList").append("<li><a id='"+result[i].id+"'href='javascript:void(0)' onclick='setMessageTags(this)' rel='"+result[i].url+"'>一条变更审批消息未处理</a></li>");
-		    				}else if(result[i].type==7){
-		                    		$("#messageList").append("<li><a id='"+result[i].id+"'href='javascript:void(0)' onclick='setMessageTags(this)' rel='"+result[i].url+"'>一条变更审批结果消息未处理</a></li>");
-		    				}else if(result[i].type==8){
-		                    		$("#messageList").append("<li><a id='"+result[i].id+"'href='javascript:void(0)' onclick='setMessageTags(this)' rel='"+result[i].url+"'>一条其他消息未处理</a></li>");
-		    				}
+							$("#messageList").append("<li><a id='"+result[i].id+"'href='javascript:void(0)' onclick='setMessageTags(this)' rel='"+result[i].url+"'>一条"+result[i].messageName+"消息未处理</a></li>");
+
 	    			} 
             	}
     		}

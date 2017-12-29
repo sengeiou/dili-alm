@@ -8,8 +8,13 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.dili.alm.dao.DataDictionaryValueMapper;
 import com.dili.alm.dao.MessageMapper;
+import com.dili.alm.domain.DataDictionaryValue;
 import com.dili.alm.domain.Message;
+import com.dili.alm.domain.dto.DataDictionaryDto;
+import com.dili.alm.domain.dto.MessageDto;
+import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.MessageService;
 import com.dili.alm.utils.WebUtil;
 import com.dili.ss.base.BaseServiceImpl;
@@ -17,6 +22,7 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -29,7 +35,11 @@ public class MessageServiceImpl extends BaseServiceImpl<Message, Long> implement
     public MessageMapper getActualDao() {
         return (MessageMapper)getDao();
     }
-
+    @Autowired
+    private DataDictionaryValueMapper dataDictionaryValueMapper;
+    @Autowired
+    private DataDictionaryService dataDictionaryService;
+    private static final String MESSAGE_TYPE_CODE = "message_type";
 	@Override
 	public int insertMessage(String messageUrl, Long sender, Long recipient,Integer type) {
 		Message message = DTOUtils.newDTO(Message.class);
@@ -54,14 +64,31 @@ public class MessageServiceImpl extends BaseServiceImpl<Message, Long> implement
 		if(WebUtil.strIsEmpty(userId)){
 			throw new RuntimeException("未登录");
 		}
-		Message message=DTOUtils.newDTO(Message.class);
+		
 		synchronized (this) {// 这个很重要，必须使用一个锁， 
+			Message message=DTOUtils.newDTO(Message.class);
 			message.setRecipient(Long.parseLong(userId));
 			message.setIsRead(false);
-			message.setOrder("desc");
-			message.setSort("created");
+			
 			List<Message> list = this.getActualDao().selectMessages(message);
-			map.put("messages", list);
+			DataDictionaryDto dto = this.dataDictionaryService.findByCode(MESSAGE_TYPE_CODE);
+			
+			List<MessageDto> listDto=new ArrayList<MessageDto>();
+			for (Message newMessage : list) {
+				 MessageDto messageDto=new MessageDto();
+				 messageDto.setId(newMessage.getId());
+				 messageDto.setCreated(newMessage.getCreated());
+				 messageDto.setIsRead(newMessage.getIsRead());
+				 DataDictionaryValue dtoValue=DTOUtils.newDTO(DataDictionaryValue.class);
+				 dtoValue.setDdId(dto.getId());
+				 dtoValue.setValue(newMessage.getType().toString());
+				 DataDictionaryValue selectOne = dataDictionaryValueMapper.selectOne(dtoValue);
+				 messageDto.setMessageName(selectOne.getCode());
+				 messageDto.setSender(newMessage.getSender());
+				 messageDto.setRecipient(newMessage.getRecipient());
+				 listDto.add(messageDto);
+			}
+			map.put("messages", listDto);
 			int count = this.getActualDao().selectMessagesCount(message);
 			map.put("count", count);
 		}

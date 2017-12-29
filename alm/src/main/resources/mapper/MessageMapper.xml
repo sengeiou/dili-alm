@@ -83,9 +83,7 @@
       <if test="isRead != null">
         and is_read = #{isRead,jdbcType=BIT}
       </if>
-      <if test="sort != null">
-    	ORDER BY ${sort} ${order}
-      </if>
+    	ORDER BY created desc
   </select>
   <select id="selectMessagesCount" parameterType="com.dili.alm.domain.Message" resultType="java.lang.Integer">
 
