@@ -12,7 +12,7 @@ import com.dili.ss.base.BaseService;
  */
 public interface MessageService extends BaseService<Message, Long> {
 
-	int insertMessage(String messageUrl, Long sender, Long recipient);
+	int insertMessage(String messageUrl, Long sender, Long recipient,Integer type);
 	
 	int updateMessageIsRead( Long messageId);
 
