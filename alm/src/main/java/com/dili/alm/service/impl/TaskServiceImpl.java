@@ -25,6 +25,7 @@ import com.dili.alm.dao.ProjectPhaseMapper;
 import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.TaskDetailsMapper;
 import com.dili.alm.dao.TaskMapper;
+import com.dili.alm.dao.TeamMapper;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.ProjectChange;
@@ -72,6 +73,8 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	DataDictionaryService dataDictionaryService;
 	@Autowired
 	UserRpc userRpc;
+	@Autowired
+	private TeamMapper teamMapper;
     public TaskMapper getActualDao() {
         return (TaskMapper)getDao();
     }
@@ -751,10 +754,10 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	public List<User> listUserByProjectId(Long projectId) {
 		Team team = DTOUtils.newDTO(Team.class);
 		team.setProjectId(projectId);
-		List<Team> result = teamService.list(team);
+		List<Long> resultIds = teamMapper.selectByProjectId(projectId);
 		List<User> userList =new ArrayList<User>();
-		for (Team entity : result) {
-			 User user = userRpc.findUserById(entity.getMemberId()).getData();
+		for (Long userId : resultIds) {
+			 User user = userRpc.findUserById(userId).getData();
 			 userList.add(user);
 		}
 		return userList;

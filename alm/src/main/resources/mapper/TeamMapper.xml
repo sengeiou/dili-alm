@@ -72,4 +72,9 @@
 		t
 		WHERE t.project_id = #{projectId}
 	</select>
+	<select id="selectByProjectId" parameterType="Long" resultType="Long">
+		SELECT DISTINCT t.member_id FROM team t
+		WHERE t.project_id = #{projectId}
+	</select>
+	
 </mapper>
