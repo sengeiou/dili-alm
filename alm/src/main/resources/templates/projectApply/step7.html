@@ -77,7 +77,9 @@
                 </tr>
                 <tr>
                     <td colspan="4">
-                        <input class="easyui-tagbox" id="tagbx" data-options="prompt: '输完后回车才能生效哦!'" value="${apply.email}" style="width:100%">
+                        <input class="easyui-tagbox" id="tagbx"
+                               data-options="prompt: '输完后回车才能生效哦!',validType: ['email']" value="${apply.email}"
+                               style="width:100%">
                     </td>
                 </tr>
             </table>
@@ -123,12 +125,14 @@
             }
         }
     });
-    function progress(){
+
+    function progress() {
         var win = $.messager.progress({
-            title:'Please waiting',
-            msg:'Loading data...'
+            title: 'Please waiting',
+            msg: 'Loading data...'
         });
     }
+
     var dels = [];
     $("#fileuploader").uploadFile({
         url: "${contextPath!}/files/filesUpload", // 文件上传url
@@ -201,16 +205,19 @@
         $('#dg').datagrid('deleteRow', index);
     }
 
-    function submitForm(type,obj) {
+    function submitForm(type, obj) {
         $('#ff').form('submit', {
             url: "${contextPath}/projectApply/submit",
             onSubmit: function () {
-                $(obj).linkbutton('disable');
+                if ($("#ff").form('validate')) {
+                    $(obj).linkbutton('disable');
+                }
                 $("#files").val(JSON.stringify($("#dg").datagrid("getData").rows));
                 $("#dels").val(JSON.stringify(dels));
                 $("#status").val(type);
                 var data = $("#tagbx").tagbox("getValues");
                 $("#email").val(data.join());
+                return $("#ff").form('validate');
             },
             success: function (data) {
                 var data = eval('(' + data + ')');
