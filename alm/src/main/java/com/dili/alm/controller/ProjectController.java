@@ -3,10 +3,8 @@ package com.dili.alm.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
-import com.dili.alm.domain.FileType;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.Project;
-import com.dili.alm.domain.Team;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectQueryDto;
@@ -17,7 +15,6 @@ import com.dili.alm.service.FilesService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.TeamService;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
@@ -25,8 +22,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import tk.mybatis.mapper.entity.Example;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import tk.mybatis.mapper.entity.Example;
 
 import java.net.URLDecoder;
 import java.util.Calendar;
@@ -218,10 +214,10 @@ public class ProjectController {
 		metadata.put("projectManager", JSON.parse("{provider:'memberProvider'}"));
 		metadata.put("dep", JSON.parse("{provider:'depProvider'}"));
 		metadata.put("businessOwner", JSON.parse("{provider:'memberProvider'}"));
-		metadata.put("startDate", JSON.parse("{provider:'datetimeProvider'}"));
-		metadata.put("endDate", JSON.parse("{provider:'datetimeProvider'}"));
-		metadata.put("actualEndDate", JSON.parse("{provider:'datetimeProvider'}"));
-		metadata.put("estimateLaunchDate", JSON.parse("{provider:'datetimeProvider'}"));
+		metadata.put("startDate", JSON.parse("{provider:'dateProvider'}"));
+		metadata.put("endDate", JSON.parse("{provider:'dateProvider'}"));
+		metadata.put("actualEndDate", JSON.parse("{provider:'dateProvider'}"));
+		metadata.put("estimateLaunchDate", JSON.parse("{provider:'dateProvider'}"));
 		return ValueProviderUtils.buildDataByProvider(metadata, list);
 	}
 

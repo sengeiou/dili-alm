@@ -172,45 +172,47 @@
         });
     }
 
-    $('#projectId').combobox({
-        url: '${contextPath}/project/getProjectList',
-        valueField: 'id',
-        textField: 'serialNumber',
-        onLoadSuccess:function () {
-            $("#projectId").combobox("setValue",'${obj.projectId}');
-        },
-        onChange: function (projectValue) {
-            var datas = $("#projectId").combobox('getData');
-            for (var i = 0; i < datas.length; i++) {
-                var data = datas[i];
-                if (data.id == projectValue) {
-                    $("#projectName").textbox("setText", data.name);
-                    $("#projectType").textbox("setText", data.type);
-                    $("#number").val(data.serialNumber);
-                    $('#versionId').combobox({
-                        url: '${contextPath}/project/version/listPage?projectId=' + projectValue,
-                        valueField: 'id',
-                        textField: 'version',
-                        onLoadSuccess:function () {
-                            $("#versionId").combobox("setValue",'${obj.versionId}');
-                        },
-                        onChange: function (versionValue) {
-                            $('#phaseId').combobox({
-                                url: '${contextPath}/project/phase/listPhase?versionId=' + versionValue,
-                                valueField: 'id',
-                                textField: 'name',
-                                onLoadSuccess:function () {
-                                    $("#phaseId").combobox("setValue",'${obj.phaseId}');
-                                }
-                            });
-                        }
-                    });
-                }
-            }
-        }
-    });
+
 
     $(function(){
+
+        $('#projectId').combobox({
+            url: '${contextPath}/project/getProjectList',
+            valueField: 'id',
+            textField: 'serialNumber',
+            onLoadSuccess:function () {
+                $("#projectId").combobox("setValue",'${obj.projectId}');
+            },
+            onChange: function (projectValue) {
+                var datas = $("#projectId").combobox('getData');
+                for (var i = 0; i < datas.length; i++) {
+                    var data = datas[i];
+                    if (data.id == projectValue) {
+                        $("#projectName").textbox("setText", data.name);
+                        $("#projectType").textbox("setText", data.type);
+                        $("#number").val(data.serialNumber);
+                        $('#versionId').combobox({
+                            url: '${contextPath}/project/version/listPage?projectId=' + projectValue,
+                            valueField: 'id',
+                            textField: 'version',
+                            onLoadSuccess:function () {
+                                $("#versionId").combobox("setValue",'${obj.versionId}');
+                            },
+                            onChange: function (versionValue) {
+                                $('#phaseId').combobox({
+                                    url: '${contextPath}/project/phase/listPhase?versionId=' + versionValue,
+                                    valueField: 'id',
+                                    textField: 'name',
+                                    onLoadSuccess:function () {
+                                        $("#phaseId").combobox("setValue",'${obj.phaseId}');
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
+            }
+        });
         $("#type").combobox("setValue",'${obj.type}');
         $("#affectsOnline").combobox("setValue",'${obj.affectsOnline}');
         $("#estimateLaunchDate").datebox("setValue",'${obj.estimateLaunchDate}');
