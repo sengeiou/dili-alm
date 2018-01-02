@@ -31,7 +31,7 @@
                             <#comboProvider _id="phaseName" _table="data_dictionary_value" _valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":10}' />
                         </td>
                         <td style="padding:5px;">
-                            <input name="owner" id="owner" class="easyui-combobox" style="width:100%;" data-options="label:'负责人:'">
+                            <input name="owner" id="owner" class="easyui-combobox" style="width:100%;" data-options="label:'责任人:'">
                         </td>
                         <td style="padding:5px;">
                             <input name="status" id="status" class="easyui-combobox" style="width: 100%;" panelWidth="auto" panelHeight="auto" editable="false" data-options="label:'状态:'">
@@ -71,7 +71,7 @@
                     所属阶段
                 </th>
                 <th data-options="field:'owner',width:'8%',align:'center', fixed:'false',_provider:'memberProvider'">
-                    负责人
+                    责任人
                 </th>
                 <th data-options="field:'planDays',width:'16%',align:'center', resizable:'true', fixed:'false'">
                     计划工时
@@ -161,7 +161,7 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input name="_owner" id="_owner" class="easyui-combobox" style="width:100%" data-options="label:'负责人:', required:true,validType:'isIds',prompt:'--请先选择项目--'">
+                    <input name="_owner" id="_owner" class="easyui-combobox" style="width:100%" data-options="label:'责任人:', required:true,validType:'isIds',prompt:'--请先选择项目--'">
                 </td>
             </tr>
             <tr>
