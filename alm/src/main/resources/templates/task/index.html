@@ -332,7 +332,7 @@
             _url = "${contextPath}/task/update";
         }
      	if(isProjectDate()){
-     		$.messager.alert('错误', "任务开始时间或结束时间早于项目开始时间");
+     		$.messager.alert('错误', "不符合项目开始时间和结束时间");
      		return;
      	}
         $('#dlg').dialog('close');
