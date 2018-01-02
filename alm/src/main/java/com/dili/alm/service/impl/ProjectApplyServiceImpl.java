@@ -111,7 +111,7 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
             as.setType(AlmConstants.ApproveType.APPLY.getCode());
 
             approveService.insertBefore(as);
-            sendMail(projectApply);
+            sendMail(this.get(projectApply.getId()));
         }
 
         this.updateSelective(projectApply);
