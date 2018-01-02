@@ -120,6 +120,8 @@
                 dom += '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/verify/' + row.id + '">验证</a></span>';
             }
             return dom;
+        }else if(row.$_status == 5){
+            return dom;
         }
     }
 
