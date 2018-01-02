@@ -184,7 +184,6 @@ function onEditClicked(id) {
 	}
 
 	var index = userGrid.datagrid("getRowIndex", selected);
-	userGrid.datagrid("selectRow", index);
 	$('#_passwordTd').show();
 	$('#_lastLoginIpTd').hide();
 	$('#_lastLoginTimeTd').hide();
@@ -210,7 +209,7 @@ function onEditClicked(id) {
 	$('#_fixedLineTelephone').textbox({
 				readonly : false
 			});
-	$('#_user_cellphoneName').textbox({
+	$('#_cellphone').textbox({
 				readonly : false
 			});
 	$('#_email').textbox({
@@ -253,18 +252,17 @@ function onEditClicked(id) {
 							}
 						}]
 			});
-
-	var formData = $.extend({}, selected);
 	$('#_department').combotree({
 				readonly : false,
 				validateOnCreate : false,
 				onLoadSuccess : function(node, data) {
-					$(selected.departments).each(function(index, item) {
+					$(data).each(function(index, item) {
 								var targetNode = $('#_department').combotree('tree').tree('find', item.id);;
 								$('#_department').combotree('tree').tree('check', targetNode.target);
 							});
 				}
 			});
+	var formData = $.extend(true,{}, selected);
 
 	formData = addKeyStartWith(getOriginalData(formData), "_");
 	formData._password = "";
@@ -282,7 +280,7 @@ function onDblClickRow(index, row) {
 
 // 打开某一行的查看窗口
 function onUserDetailClicked(id) {
-	var selected = null == id ? userGrid.datagrid("getSelected") : getRowById(id);
+	var selected = userGrid.datagrid("getSelected");
 	if (null == selected) {
 		$.messager.alert('警告', '请选中一条数据');
 		return;
@@ -356,13 +354,6 @@ function onUserDetailClicked(id) {
 
 	var formData = $.extend({}, selected);
 	formData = addKeyStartWith(getOriginalData(formData), "_");
-	var comboText = '';
-	$(formData._departments).each(function(index, item) {
-				comboText += item.name + ',';
-			});
-
-	comboText = comboText.substring(0, comboText.length - 1)
-	$('#_department').combotree('setText', comboText);
 	$('#_form').form('load', formData);
 	loadData4DataList("existsRole", "${contextPath!}/role/listByUserId", {
 				userid : selected.id
@@ -521,6 +512,7 @@ function onSaveClicked() {
 								}).datagrid("refreshRow", index);
 					}
 				}
+				$('#_form').form('clear');
 				$('#dlg').dialog('close');
 			});
 }
