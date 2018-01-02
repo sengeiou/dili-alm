@@ -504,6 +504,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 					taskDome.setStatus(TaskStatus.NOTCOMPLETE.code);// 更新状态为未完成
 					taskDome.setModified(new Date());
 					this.update(taskDome);
+					this.startTask(taskDome);
 				}
 			}
 		}
