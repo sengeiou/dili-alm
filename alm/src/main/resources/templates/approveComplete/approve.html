@@ -208,11 +208,13 @@
             }
         });
     }
-
     $('#projectId').combobox({
         url: '${contextPath}/project/getProjectList',
         valueField: 'id',
         textField: 'serialNumber',
+        onLoadSuccess: function () {
+            $("#projectId").combobox('setValue', '${complete.projectId}');
+        },
         onChange: function (projectValue) {
             var datas = $("#projectId").combobox('getData');
             for (var i = 0; i < datas.length; i++) {
@@ -237,7 +239,6 @@
     });
 
     $(function () {
-        $("#projectId").combobox('setValue', '${complete.projectId}');
         $("input[name='reason'][value='${complete.reason}']").attr("checked", true);
         $("input[name='information'][value='${complete.information}']").attr("checked", true);
         $('input[class^=easyui-]').textbox("disable");
