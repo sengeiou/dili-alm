@@ -662,7 +662,7 @@ function getMyDay(date){
 function generateWeekly() {
     // var wday = getMyDay(new Date()); //周报非周五时间段 限制提交
    	// if(wday!='周五'){
-   		// $.messager.alert('不能保存',' 不是周五  不可保存和提交周报');
+   		// $.messager.alert('不能提交周报',' 不是周五 不可提交周报');
    	//	 return false;
    	// }
             	  
