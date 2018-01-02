@@ -633,21 +633,24 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		}
 	}
 
+	/*
+	 * 执行任务权限2
+	 */
 	@Override
-	public boolean isManager(Long managerId) {
+	public boolean isManager(Long projectId) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		if (userTicket == null) {
 			throw new RuntimeException("未登录");
 		}
 		Team team = DTOUtils.newDTO(Team.class);
-		team.setProjectId(managerId);
+		team.setProjectId(projectId);
 		team.setMemberId(userTicket.getId());
 		List<Team> teamList = teamService.list(team);
 		for (Team team2 : teamList) {
 			if (team2.getRole().equalsIgnoreCase(TeamRole.PROJECT_MANAGER.getValue())) {
 				return true;
 			}
-			if (team2.getRole().equalsIgnoreCase(TeamRole.PRODUCT_MANAGER.getValue())) {
+/*			if (team2.getRole().equalsIgnoreCase(TeamRole.PRODUCT_MANAGER.getValue())) {
 				return true;
 			}
 			if (team2.getRole().equalsIgnoreCase(TeamRole.TEST_MANAGER.getValue())) {
@@ -655,7 +658,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			}
 			if (team2.getRole().equalsIgnoreCase(TeamRole.DEVELOP_MANAGER.getValue())) {
 				return true;
-			}
+			}*/
 		}
 		return false;
 	}
@@ -664,8 +667,8 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	public boolean validateBeginAndEnd(Task task) {
 		try {
 			Project project = projectService.get(task.getProjectId());
-			Date pstDate = project.getStartDate();// 开始时间
-			Date penDate = project.getEndDate();// 结束时间
+			Date pstDate = project.getStartDate();// 计划开始时间
+			Date penDate = project.getEndDate();// 计划结束时间
 			int startCompareVal = Integer.parseInt(DateUtil.getDatePoor(pstDate, task.getStartDate()));
 			int endCompareVal = Integer.parseInt(DateUtil.getDatePoor(penDate,task.getEndDate()));
 
