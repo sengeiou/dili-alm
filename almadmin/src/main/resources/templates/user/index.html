@@ -1,6 +1,11 @@
 <#body>
 <link rel="stylesheet" href="${contextPath}/resources/ztree/css/zTreeStyle/zTreeStyle.css" type="text/css">
 <script type="text/javascript" src="${contextPath}/resources/ztree/js/jquery.ztree.all.min.js"></script>
+<style>
+	#dlg .textbox-label{
+		width: 90px;
+	}
+</style>
 <div id="win" style="display: none;"></div>
 <div class="easyui-layout" fit="true">
 	<!-- ====================================================================================================================== -->
@@ -100,7 +105,7 @@
 	</div>
 </div>
 <!-- 隐藏编辑框 -->
-<div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="用户信息" style="padding: 20px;width: 500px"
+<div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="用户信息" style="padding: 20px;width: 600px"
 	modal="true" border="thin" closed="true"
 	data-options="
 				iconCls: 'icon-save',
@@ -123,71 +128,85 @@
 				<td>
 					<table style="width: 100%">
 						<tr>
-							<td style="padding: 5px; width: 50%"><input class="easyui-textbox" name="_userName" id="_userName" style="width: 100%"
-								data-options="label:'用户名:', validType:'length[0,50]'" required="true" validateOnCreate="false" /></td>
-							<td style="padding: 5px;width: 50%" id="_passwordTd"><input class="easyui-textbox" name="_password" id="_password" style="width: 100%"
-																			  data-options="label:'密码:', validType:'length[0,128]'" type="password" /></td>
+							<td colspan="2" style="padding: 5px; width: 50%">
+								<input class="easyui-textbox" name="_userName" id="_userName" style="width: 100%" data-options="label:'用户名:', validType:'length[0,50]'" required="true" validateOnCreate="false" />
+							</td>
+							<td style="padding: 5px;width: 50%" id="_passwordTd">
+								<input class="easyui-textbox" name="_password" id="_password" style="width: 100%" data-options="label:'密码:', validType:'length[0,128]'" type="password" />
+							</td>
 						</tr>
 						<!--<tr>-->
-							<!--<td style="padding: 5px;" id="_passwordTd"><input class="easyui-textbox" name="_password" id="_password" style="width: 100%"-->
-								<!--data-options="label:'密码:', validType:'length[0,128]'" type="password" /></td>-->
+						<!--<td style="padding: 5px;" id="_passwordTd"><input class="easyui-textbox" name="_password" id="_password" style="width: 100%"-->
+						<!--data-options="label:'密码:', validType:'length[0,128]'" type="password" /></td>-->
 						<!--</tr>-->
 						<tr>
-							<td style="padding: 5px;"><input class="easyui-textbox" name="_realName" id="_realName" style="width: 100%"
-								data-options="label:'真实姓名:', validType:'length[0,64]'" required="true" validateOnCreate="false" /></td>
-							<td style="padding: 5px;"><input class="easyui-textbox" name="_serialNumber" id="_serialNumber" style="width: 100%"
-															 data-options="label:'用户编号:', validType:'length[0,128]'" required="true" validateOnCreate="false" /></td>
+							<td style="width: 50%;padding: 5px;">
+								<input class="easyui-textbox" name="_realName" id="_realName" style="width: 100%" data-options="label:'真实姓名:', validType:'length[0,64]'" required="true" validateOnCreate="false" />
+							</td>
+							<td style="width: 50%;padding: 5px;">
+								<input class="easyui-textbox" name="_serialNumber" id="_serialNumber" style="width: 100%" data-options="label:'用户编号:', validType:'length[0,128]'" required="true" validateOnCreate="false" />
+							</td>
 						</tr>
 						<!--<tr>-->
-							<!--<td style="padding: 5px;"><input class="easyui-textbox" name="_serialNumber" id="_serialNumber" style="width: 100%"-->
-								<!--data-options="label:'用户编号:', validType:'length[0,128]'" required="true" validateOnCreate="false" /></td>-->
+						<!--<td style="padding: 5px;"><input class="easyui-textbox" name="_serialNumber" id="_serialNumber" style="width: 100%"-->
+						<!--data-options="label:'用户编号:', validType:'length[0,128]'" required="true" validateOnCreate="false" /></td>-->
 						<!--</tr>-->
 						<tr>
-							<td style="padding: 5px;"><input class="easyui-textbox" name="_fixedLineTelephone" id="_fixedLineTelephone" style="width: 100%"
-								data-options="label:'固定电话:', validType:'length[0,24]'" required="true" validateOnCreate="false" /></td>
-							<td style="padding: 5px;"><input class="easyui-textbox" name="_cellphone" id="_cellphone" style="width: 100%"
-															 data-options="label:'手机号码:', validType:'cellphone',validateOnCreate:false,required:true" /></td>
+							<td style="padding: 5px;">
+								<input class="easyui-textbox" name="_fixedLineTelephone" id="_fixedLineTelephone" style="width: 100%" data-options="label:'固定电话:', validType:'length[0,24]'" required="true" validateOnCreate="false" />
+							</td>
+							<td style="padding: 5px;">
+								<input class="easyui-textbox" name="_cellphone" id="_cellphone" style="width: 100%" data-options="label:'手机号码:', validType:'cellphone',validateOnCreate:false,required:true" />
+							</td>
 						</tr>
 						<tr>
-							<td colspan="2" style="padding: 5px;"><input class="easyui-textbox" name="_email" id="_email" style="width: 100%"
-								data-options="label:'邮箱:', validType:'email',validateOnCreate:false,required:true" /></td>
+							<td colspan="2" style="padding: 5px;">
+								<input class="easyui-textbox" name="_email" id="_email" style="width: 100%" data-options="label:'邮箱:', validType:'email',validateOnCreate:false,required:true" />
+							</td>
 						</tr>
 						<tr>
-							<td colspan="2" style="padding: 5px;"><select class="easyui-combotree" name="_department" id="_department" style="width: 100%"
-								data-options="checkbox:true,cascadeCheck:true,multiple:false,loadFilter:treeLoadFilter, _idField:'id', _textField:'name', _parentIdField:'parentId',label:'所属部门:', url:'${contextPath!}/department/listTree.json',editable:false,required:true,validateOnCreate:false"></select></td>
+							<td colspan="2" style="padding: 5px;">
+								<select class="easyui-combotree" name="_department" id="_department" style="width: 100%" data-options="checkbox:true,cascadeCheck:true,multiple:false,loadFilter:treeLoadFilter, _idField:'id', _textField:'name', _parentIdField:'parentId',label:'所属部门:', url:'${contextPath!}/department/listTree.json',editable:false,required:true,validateOnCreate:false"></select>
+							</td>
 						</tr>
 						<tr>
-							<td style="padding: 5px;" id="_lastLoginIpTd"><input class="easyui-textbox" name="_lastLoginIp" id="_lastLoginIp"
-								style="width: 100%" data-options="label:'最后登录ip:', validType:'length[0,20]'" /></td>
+							<td colspan="2" style="padding: 5px;" id="_lastLoginIpTd">
+								<input class="easyui-textbox" name="_lastLoginIp" id="_lastLoginIp" style="width: 100%" data-options="label:'最后登录ip:', validType:'length[0,20]'" />
+							</td>
 						</tr>
 						<tr>
-							<td style="padding: 5px;" id="_lastLoginTimeTd"><input class="easyui-datetimebox" name="_lastLoginTime" id="_lastLoginTime"
-								style="width: 100%" data-options="label:'最后登录时间:'" /></td>
+							<td colspan="2" style="padding: 5px;" id="_lastLoginTimeTd">
+								<input class="easyui-datetimebox" name="_lastLoginTime" id="_lastLoginTime" style="width: 100%" data-options="label:'最后登录时间:'" />
+							</td>
 						</tr>
 						<tr>
-							<td style="padding: 5px;" id="_createdTd"><input class="easyui-datetimebox" name="_created" id="_created" style="width: 100%"
-								data-options="label:'创建时间:'" /></td>
+							<td colspan="2" style="padding: 5px;" id="_createdTd">
+								<input class="easyui-datetimebox" name="_created" id="_created" style="width: 100%" data-options="label:'创建时间:'" />
+							</td>
 						</tr>
 						<tr>
-							<td style="padding: 5px;" id="_modifiedTd"><input class="easyui-datetimebox" name="_modified" id="_modified" style="width: 100%"
-								data-options="label:'修改时间:'" /></td>
+							<td colspan="2" style="padding: 5px;" id="_modifiedTd">
+								<input class="easyui-datetimebox" name="_modified" id="_modified" style="width: 100%" data-options="label:'修改时间:'" />
+							</td>
 						</tr>
 						<tr>
-							<td style="padding: 5px;" id="_statusTd"><input name="_status" id="_status" style="width: 100%;" panelWidth="auto"
-								panelHeight="auto" label="状态:" /> <#comboProvider _id="_status"
-									_data='[{"text":"-- 请选择 --"},{"text":"已启用","value":"1"},{"text":"已停用","value":"0"}]' /></td>
+							<td colspan="2" style="padding: 5px;" id="_statusTd">
+								<input name="_status" id="_status" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="状态:" />
+								<#comboProvider _id="_status" _data='[{"text":"-- 请选择 --"},{"text":"已启用","value":"1"},{"text":"已停用","value":"0"}]' />
+							</td>
 						</tr>
 						<tr>
-							<td style="padding: 5px;" id="_validTimeBeginTd"><input class="easyui-datetimebox" name="_validTimeBegin" id="_validTimeBegin"
-								style="width: 100%" data-options="label:'有效时间开始点:'" /></td>
+							<td style="padding: 5px;" id="_validTimeBeginTd">
+								<input class="easyui-datetimebox" name="_validTimeBegin" id="_validTimeBegin" style="width: 100%" data-options="label:'有效时间开始点:'" />
+							</td>
 						</tr>
 						<tr>
-							<td style="padding: 5px;" id="_validTimeEndTd"><input class="easyui-datetimebox" name="_validTimeEnd" id="_validTimeEnd"
-								style="width: 100%" data-options="label:'有效时间结束点:'" /></td>
+							<td style="padding: 5px;" id="_validTimeEndTd">
+								<input class="easyui-datetimebox" name="_validTimeEnd" id="_validTimeEnd" style="width: 100%" data-options="label:'有效时间结束点:'" />
+							</td>
 						</tr>
 					</table>
 				</td>
-
 				<td style="padding: 5px;" id="existsRoleTd">
 					<div id="existsRole" class="easyui-datalist" title="已分配角色" style="width: 100px; height: 390px" valueField="id" textField="roleName"></div>
 				</td>
