@@ -593,6 +593,11 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 				ids.add(projectPhase2.getId());
 			}
 		}
+		
+		if(!WebUtil.strIsEmpty(task.getName())){
+			String replaceAll = task.getName().replaceAll(" ", "");
+			task.setName(replaceAll);
+		}
 		List<Task> list = taskMapper.selectByTeam(task, userTicket.getId(), ids);// 查询出来
 		int count = taskMapper.selectByTeamCount(task, userTicket.getId(), ids);
 		@SuppressWarnings("unchecked")

@@ -310,7 +310,7 @@
    
     select distinct(t2.member_id) from alm.team as t2 where t2.project_id in
      
-       (select t.project_id from alm.team as t where t.member_id =#{selectOwner,jdbcType=BIGINT})) 
+       (select t.project_id from alm.team as t where t.member_id =#{selectOwner,jdbcType=BIGINT})
        
         ORDER BY t2.join_time DESC
    </select>
