@@ -66,27 +66,26 @@ public class MessageServiceImpl extends BaseServiceImpl<Message, Long> implement
 		if(WebUtil.strIsEmpty(userId)){
 			throw new RuntimeException("未登录");
 		}
-		
+		Message message=DTOUtils.newDTO(Message.class);
+		message.setRecipient(Long.parseLong(userId));
+		message.setIsRead(false);
+		List<MessageDto> listDto=new ArrayList<MessageDto>();
+		MessageDto messageDto=null;
 		synchronized (this) {// 这个很重要，必须使用一个锁， 
-			Message message=DTOUtils.newDTO(Message.class);
-			message.setRecipient(Long.parseLong(userId));
-			message.setIsRead(false);
-			
 			List<Message> list = this.getActualDao().selectMessages(message);
-			
-			List<MessageDto> listDto=new ArrayList<MessageDto>();
 			for (Message newMessage : list) {
-				 MessageDto messageDto=new MessageDto();
+				 messageDto=new MessageDto();
 				 messageDto.setId(newMessage.getId());
 				 messageDto.setIsRead(newMessage.getIsRead());
 				 messageDto.setUrl(newMessage.getUrl());
 				 messageDto.setMessageName(AlmCache.MESSAGE_TYPE_MAP.get(newMessage.getType().toString()));
 				 listDto.add(messageDto);
 			}
-			map.put("messages", listDto);
 			int count = this.getActualDao().selectMessagesCount(message);
+			map.put("messages", listDto);
 			map.put("count", count);
 		}
+		
 		return map;
 	}
 
