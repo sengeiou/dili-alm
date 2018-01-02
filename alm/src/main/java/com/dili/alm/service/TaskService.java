@@ -57,7 +57,7 @@ public interface TaskService extends BaseService<Task, Long> {
 	
 	boolean isCreater(Task task);
 
-	List<TaskDetails> otherProjectTaskHour(String updateDate);
+	List<TaskDetails> otherProjectTaskHour(String updateDate,Long owerId);
 	
-	int restTaskHour();
+	int restTaskHour(Long owerId);
 }
