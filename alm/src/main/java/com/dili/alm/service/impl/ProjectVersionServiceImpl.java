@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.FilesMapper;
 import com.dili.alm.dao.ProjectChangeMapper;
 import com.dili.alm.dao.ProjectPhaseMapper;
@@ -182,9 +183,10 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		}
 		ProjectVersionChangeStateViewDto dto = new ProjectVersionChangeStateViewDto();
 		dto.setVersion(version);
-		ProjectChange condition = DTOUtils.newDTO(ProjectChange.class);
-		condition.setVersionId(id);
-		List<ProjectChange> changes = this.projectChangeService.list(condition);
+		ProjectChange changeQuery = DTOUtils.newDTO(ProjectChange.class);
+		changeQuery.setStatus(AlmConstants.ChangeState.PASS.getCode());
+		changeQuery.setVersionId(id);
+		List<ProjectChange> changes = this.projectChangeService.list(changeQuery);
 
 		Map<Object, Object> metadata = new HashMap<>();
 

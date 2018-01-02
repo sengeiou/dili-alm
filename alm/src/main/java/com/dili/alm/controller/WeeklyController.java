@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +40,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 
 
+
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.dili.alm.domain.DataDictionaryValue;
@@ -53,6 +56,7 @@ import com.dili.alm.domain.dto.WeeklyPara;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.WeeklyDetailsService;
 import com.dili.alm.service.WeeklyService;
+import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 
@@ -222,17 +226,21 @@ public class WeeklyController  {
     public ModelAndView getDescAddByProjectId(String projectId) {
     	
     	 ModelAndView mv = new ModelAndView();
+    	/* if(!(DateUtil.getWeekOfDay(new Date()).endsWith("星期五"))){
+    		 mv.setViewName( "weekly/index");
+    		 return mv;
+    	 }*/
+    		
+    	 
       	 Map<String, Weekly> wkMap=weeklyService.insertWeeklyByprojectId(projectId);
       	 Weekly  wk=wkMap.get("three");
       	 
     	 Map<Object,Object> map=null;
-    	 if(wkMap.get("one")==null){
+    	 if(wkMap.get("one")==null)
     		  map=weeklyService.getDescAddById(wkMap.get("two").getId()+"");
-    		
-    	 }else{
-    		 map=weeklyService.getDescAddById(wkMap.get("one").getId()+"");
-    	 }
-    	
+    	 else
+    		  map=weeklyService.getDescAddById(wkMap.get("one").getId()+"");
+    	 
     	//项目周报
 		mv.addObject("pd", (ProjectWeeklyDto)map.get("pd"));
 		wk.setProgress(((ProjectWeeklyDto)map.get("pd")).getCompletedProgress());//存项目
@@ -255,10 +263,9 @@ public class WeeklyController  {
 	    mv.addObject("wq", map.get("wq"));
 	    //项目总体情况描述
 	    mv.addObject("wDetails", map.get("wDetails"));
-	  /*  if(wkMap.get("one")==null){
-	    	 mv.setViewName("weekly/indexDesc");
-    		 return mv;
-	    }*/
+	    
+	    mv.addObject("returnProjectId",projectId);
+	    
 		mv.setViewName("weekly/addWeeklyDesc");
         return mv;
     }

@@ -58,12 +58,23 @@ function openInsert(isRoot) {
 		parentId = node.id;
 	}
 	editId = 'temp';
-	deptGrid.treegrid('append', {
-				parent : parentId,
-				data : [{
-							id : 'temp'
-						}]
-			});
+	if (!parentId) {
+		var roots = deptGrid.treegrid('getRoots');
+		deptGrid.treegrid('insert', {
+					before : roots && roots.length > 0 ? roots[0].id : undefined,
+					data : {
+						id : 'temp'
+					}
+				});
+	} else {
+		var children = deptGrid.treegrid('getChildren', parentId);
+		deptGrid.treegrid('insert', {
+					before : children && children.length > 0 ? children[0].id : undefined,
+					data : {
+						id : 'temp'
+					}
+				});
+	}
 
 	deptGrid.treegrid('select', 'temp');
 	deptGrid.treegrid('beginEdit', 'temp');
