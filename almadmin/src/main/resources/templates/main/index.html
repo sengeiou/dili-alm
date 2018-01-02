@@ -199,10 +199,10 @@
     	            datatype : 'json',
     	            success : function (data) {
     	            	var flag = data.success;
-                        addOneTab(title, url);
                         if(flag){
-                        	messagesListen();
+                        	addOneTab(title, url);
     	            	}
+                        messagesListen();
     	            	
     	            }
     		});
