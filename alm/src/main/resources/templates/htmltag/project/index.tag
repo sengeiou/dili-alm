@@ -1,6 +1,17 @@
 // 编辑行索引
 var editId = undefined;
 
+function addClearIcon() {
+	$(this).combobox({
+				icons : [{
+							iconCls : 'icon-remove',
+							handler : function(e) {
+								$(e.data.target).textbox('initValue', '');
+							}
+						}]
+			});
+}
+
 function progressFormatter(value, rowData, rowIndex) {
 	var htmlstr = '<div class="easyui-progressbar progressbar easyui-fluid" style="width: 100%; height: 20px;">'
 			+ '<div class="progressbar-value" style="width: 100%; height: 20px; line-height: 20px;"> ' + '<div class="progressbar-text" style="width: ' + value
