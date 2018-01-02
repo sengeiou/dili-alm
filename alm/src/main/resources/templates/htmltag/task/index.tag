@@ -186,6 +186,7 @@
       $('#doTask').linkbutton({disabled:false});
       $('#pauseTask').linkbutton({disabled:false});
       $('#updateDetail').linkbutton({disabled:false});
+      $('#complate').linkbutton({disabled:false});
     }
     
     
@@ -216,6 +217,7 @@
       $('#doTask').linkbutton({disabled:true});
       $('#pauseTask').linkbutton({disabled:true});
       $('#updateDetail').linkbutton({disabled:true});
+      $('#complate').linkbutton({disabled:true});
     }
     
     
@@ -271,10 +273,14 @@
             	$("#doTask").show();
             	$("#pauseTask").hide();
             	$("#updateDetail").hide();
+            	$("#complate").hide();
             }
+            
             if(formData._status==2){
             	$("#task_detail").show();
             	$("#doTask").show();
+            	
+            	$("#complate").show();
             	$("#pauseTask").hide();
             	$("#updateDetail").hide();
             }
@@ -288,6 +294,7 @@
             	$("#doTask").hide();
             	$("#pauseTask").show();
             	$("#updateDetail").show();
+            	$("#complate").show();
             	$('#detail_form').form('clear');
             	getDetailInfo(formData._id);
             }
@@ -296,6 +303,7 @@
             	$('#_progressShow').progressbar({
             	    value: parseInt(formData._progress)
             	});
+            	$("#complate").hide();
             	$("#task_detail").show();
             	$("#doTask").hide();
             	$("#pauseTask").hide();
@@ -429,3 +437,39 @@ function isDefaultValue(val){
     return true;
   }
 }
+
+//是否填写过工时
+function isTask(id){
+	 var  htmlobj=$.ajax({url:"${contextPath}/task/isTask.json?id="+id,async:false});
+	 var str=htmlobj.responseText;
+	 var obj = $.parseJSON(str);
+	 return obj;
+ }
+ 
+ 
+ function complate() {
+        var id = $("#_id").val();
+        if(isTask(id)){
+	        $.ajax({
+	            type: "POST",
+	            url: "${contextPath}/task/complateTask?id=" + id,
+	            processData: true,
+	            dataType: "json",
+	            async: true,
+	            success: function(data) {
+	                if (data.code == "200") {
+	                    $("#grid").datagrid("reload");
+	                    $('#dlg').dialog('close');
+	                    LogUtils.saveLog("暂停任务：" + data.result, function() {});
+	                } else {
+	                    $.messager.alert('错误', data.result);
+	                }
+	            },
+	            error: function() {
+	                $.messager.alert('错误', '远程访问失败');
+	            }
+	        });
+		}else{
+		    $.messager.alert('错误', '任务时间为0');
+		}
+    }

@@ -319,8 +319,8 @@ public class TaskController {
 	// 剩余工时
 	@ResponseBody
 	@RequestMapping(value = "/restTaskHour.json", method = { RequestMethod.GET, RequestMethod.POST })
-	public int restTaskHour() {
-		int rest = taskService.restTaskHour();
+	public int restTaskHour(Long owerId) {
+		int rest = taskService.restTaskHour(owerId);
 		return rest;
 	}
 
@@ -336,9 +336,10 @@ public class TaskController {
 		if (taskHour <= 0) {
 			return BaseOutput.failure("工时必须大于0");
 		}
-		if (taskService.isSetTask(taskDetails.getId(), taskHour)) {
 
-			Task task = taskService.get(taskDetails.getTaskId());
+		Task task = taskService.get(taskDetails.getTaskId());
+		
+		if (taskService.isSetTask(task.getOwner(), taskHour)) {
 
 			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 
@@ -394,6 +395,42 @@ public class TaskController {
 		task.setModifyMemberId(userTicket.getId());
 		taskService.update(task);
 		return BaseOutput.success("已暂停任务");
+	}
+	
+	
+	// 完成任务
+	@ApiOperation("完成任务")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "complateTask", paramType = "form", value = "TaskDetails的form信息", required = true, dataType = "string") })
+	@RequestMapping(value = "/complateTask", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody BaseOutput complateTask(Long id) {
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		if (userTicket == null) {
+			return BaseOutput.failure("用户登录超时！");
+		}
+		Task task = taskService.get(id);
+		task.setStatus(TaskStatus.COMPLETE.code);// 更新状态为完成
+		task.setModified(new Date());
+		task.setModifyMemberId(userTicket.getId());
+		taskService.update(task);
+		
+		Project project = projectService.get(task.getProjectId());
+		project.setActualEndDate(new Date());
+		return BaseOutput.success("更新状态为完成");
+	}
+	
+	// 是否已经执行过
+	@ResponseBody
+	@RequestMapping(value = "/isTask.json", method = { RequestMethod.GET, RequestMethod.POST })
+	public boolean isTask(Long id) {
+		TaskDetails taskDetails = DTOUtils.newDTO(TaskDetails.class);
+		taskDetails.setTaskId(id);
+		List<TaskDetails> list = taskDetailsService.list(taskDetails);
+		taskDetails = list.get(0);
+		if (taskDetails.getTaskHour()>0) {
+			return true;
+		}
+		return false;
 	}
 
 	// 测试未完成任务
