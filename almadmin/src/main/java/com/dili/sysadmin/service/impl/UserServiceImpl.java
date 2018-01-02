@@ -303,13 +303,13 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 		metadata.put("validTimeEnd", provider);
 		metadata.put("created", provider);
 		metadata.put("modified", provider);
-		user.setMetadata(metadata);
+		metadata.put("lastLoginTime", provider);
 		try {
 			UserDepartmentQuery udQuery = new UserDepartmentQuery();
 			udQuery.setDepartmentId(dto.getDepartment().get(0));
 			@SuppressWarnings("unchecked")
 			List<UserDepartmentDto> results = this.parseToUserDepartmentDto(Arrays.asList(user), udQuery);
-			List users = ValueProviderUtils.buildDataByProvider(user, results);
+			List users = ValueProviderUtils.buildDataByProvider(metadata, results);
 			return BaseOutput.success().setData(users.get(0));
 		} catch (Exception e) {
 			return null;

@@ -221,7 +221,14 @@
 				        
 				          </td>
 				        <td style="width: 10%">
+				          <% if(wDetails!=null && wDetails.isSubmit==0 ){%>
 				            <a href="#"  onclick="delectTr(this)"  class="easyui-linkbutton" >删除</a>
+				          <%}else if(wDetails==null) {%>
+				              <a href="#"  onclick="delectTr(this)"  class="easyui-linkbutton" >删除</a>
+				          <%}else{%>
+				           
+				               <a href="#"  class="easyui-linkbutton" >删除</a>
+				          <%}%>
 				       </td>
 				     </tr>
 			        <%}%>
@@ -279,8 +286,14 @@
 					             
 					        </td>
 					        
-					      <td  style="width: 10%">
-					            <a href="#"  onclick="delectTr(this)"  class="easyui-linkbutton" >删除</a>
+					          <td  style="width: 10%">
+					              <% if(wDetails!=null && wDetails.isSubmit==0 ){%>
+					                  <a href="#"  onclick="delectTr(this)"  class="easyui-linkbutton" >删除</a>
+					             <%}else if(wDetails==null) {%>
+					                  <a href="#"  onclick="delectTr(this)"  class="easyui-linkbutton" >删除</a>
+					              <%}else{%>
+					                   <a href="#"    class="easyui-linkbutton" >删除</a>
+					              <%}%>
 					         </td>
 					    </tr>
 			         <%}%>
