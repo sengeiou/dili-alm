@@ -9,6 +9,7 @@ import com.dili.alm.domain.Project;
 import com.dili.alm.domain.Team;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
+import com.dili.alm.domain.dto.ProjectQueryDto;
 import com.dili.alm.domain.dto.UploadProjectFileDto;
 import com.dili.alm.exceptions.ProjectException;
 import com.dili.alm.rpc.UserRpc;
@@ -38,6 +39,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.net.URLDecoder;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,7 +86,7 @@ public class ProjectController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Project", paramType = "form", value = "Project的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody List<Map> list(Project project) {
+	public @ResponseBody List<Map> list(ProjectQueryDto project) {
 		refreshMember();
 		Map<Object, Object> metadata = new HashMap<>();
 
@@ -103,6 +105,16 @@ public class ProjectController {
 		metadata.put("testManager", memberProvider);
 		metadata.put("productManager", memberProvider);
 
+		if (project.getActualStartDate() != null) {
+			project.setActualBeginStartDate(project.getActualStartDate());
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(project.getActualStartDate());
+			calendar.set(Calendar.HOUR, 23);
+			calendar.set(Calendar.MINUTE, 59);
+			calendar.set(Calendar.SECOND, 59);
+			project.setActualEndStartDate(calendar.getTime());
+			project.setActualStartDate(null);
+		}
 		// 测试数据
 		List<Project> list = this.projectService.listByExample(project);
 		try {
@@ -124,8 +136,18 @@ public class ProjectController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Project", paramType = "form", value = "Project的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String listPage(Project project) throws Exception {
+	public @ResponseBody String listPage(ProjectQueryDto project) throws Exception {
 		refreshMember();
+		if (project.getActualStartDate() != null) {
+			project.setActualBeginStartDate(project.getActualStartDate());
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(project.getActualStartDate());
+			calendar.set(Calendar.HOUR, 23);
+			calendar.set(Calendar.MINUTE, 59);
+			calendar.set(Calendar.SECOND, 59);
+			project.setActualEndStartDate(calendar.getTime());
+			project.setActualStartDate(null);
+		}
 		return projectService.listEasyuiPageByExample(project, true).toString();
 	}
 
@@ -230,8 +252,8 @@ public class ProjectController {
 	@RequestMapping(value = "/files/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<Map> list(Files files) {
 		Example example = new Example(Files.class);
-        Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo("projectId", files.getProjectId()).andIsNotNull("type");
+		Example.Criteria criteria = example.createCriteria();
+		criteria.andEqualTo("projectId", files.getProjectId()).andIsNotNull("type");
 		List<Files> list = this.filesService.selectByExample(example);
 		Map<Object, Object> metadata = new HashMap<>();
 

@@ -214,7 +214,10 @@ public class ProjectPhaseServiceImpl extends BaseServiceImpl<ProjectPhase, Long>
 		almDateProvider.put("provider", "almDateProvider");
 		metadata.put("plannedStartDate", almDateProvider);
 		metadata.put("plannedEndDate", almDateProvider);
-		metadata.put("actualStartDate", almDateProvider);
+
+		JSONObject datetimeProvider = new JSONObject();
+		datetimeProvider.put("provider", "datetimeProvider");
+		metadata.put("actualStartDate", datetimeProvider);
 
 		return ValueProviderUtils.buildDataByProvider(metadata, list);
 	}
