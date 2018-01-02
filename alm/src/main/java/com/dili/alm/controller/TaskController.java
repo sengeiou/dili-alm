@@ -416,6 +416,7 @@ public class TaskController {
 		
 		Project project = projectService.get(task.getProjectId());
 		project.setActualEndDate(new Date());
+		projectService.update(project);
 		return BaseOutput.success("更新状态为完成");
 	}
 	
