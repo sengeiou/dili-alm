@@ -321,7 +321,7 @@
 
         var _formData = removeKeyStartWith($("#_form").serializeObject(), "_");
         var _url = null;
-
+		
         //没有id就新增
         if (_formData.id == null || _formData.id == "") {
             logIngo = "新增任务:";
@@ -330,6 +330,10 @@
             logIngo = "修改任务:";
             _url = "${contextPath}/task/update";
         }
+     	if(isProjectDate()){
+     		$.messager.alert('错误', "任务开始时间或结束时间早于项目开始时间");
+     		return;
+     	}
         $('#dlg').dialog('close');
         $.ajax({
             type: "POST",

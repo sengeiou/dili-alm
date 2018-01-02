@@ -664,13 +664,13 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	}
 
 	@Override
-	public boolean validateBeginAndEnd(Task task) {
+	public boolean validateBeginAndEnd(Long projectId,Date startDate,Date endDate) {
 		try {
-			Project project = projectService.get(task.getProjectId());
+			Project project = projectService.get(projectId);
 			Date pstDate = project.getStartDate();// 计划开始时间
 			Date penDate = project.getEndDate();// 计划结束时间
-			int startCompareVal = Integer.parseInt(DateUtil.getDatePoor(pstDate, task.getStartDate()));
-			int endCompareVal = Integer.parseInt(DateUtil.getDatePoor(penDate,task.getEndDate()));
+			int startCompareVal = Integer.parseInt(DateUtil.getDatePoor(pstDate, startDate));
+			int endCompareVal = Integer.parseInt(DateUtil.getDatePoor(penDate,endDate));
 
 			// 大于0，后者晚，小于0 后者早
 			if (startCompareVal > 0) {

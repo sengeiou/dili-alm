@@ -1,5 +1,6 @@
 package com.dili.alm.service;
 
+import java.util.Date;
 import java.util.List;
 
 import com.dili.alm.domain.Project;
@@ -36,7 +37,7 @@ public interface TaskService extends BaseService<Task, Long> {
 
 	EasyuiPageOutput listByTeam(Task task, String phaseName);
 
-	boolean validateBeginAndEnd(Task task);
+	boolean validateBeginAndEnd(Long projectId,Date startDate,Date endDate);
 	
 	boolean isProjectManager();
 	

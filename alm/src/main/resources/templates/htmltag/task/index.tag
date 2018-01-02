@@ -34,7 +34,20 @@
         });
     });
     
-    
+   function isProjectDate(){
+   	    
+     	// 获取到的项目ID
+    	var projectId = $('#_projectId').combobox('getValue');
+    	var stratDate = $('#startDateShow').val();
+    	var endDate = $('#endDateShow').val();
+    	var  htmlobj=$.ajax({url:"${contextPath}/task/isProjectDate.json?projectId="+projectId+"&startDateShow="+stratDate+"&endDateShow="+endDate,async:false});
+        var str=htmlobj.responseText;
+        var obj = $.parseJSON(str);
+        return obj;
+    	 
+    		
+    	
+   }
    function loadProjectSelect(){
     	$('#_projectId').combobox({
 				url:"${contextPath!}/task/listTreeProject.json",

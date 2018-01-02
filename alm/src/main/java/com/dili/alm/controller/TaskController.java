@@ -143,11 +143,6 @@ public class TaskController {
 			e.printStackTrace();
 			return BaseOutput.failure("请正确填写工时");
 		}
-
-		if (taskService.validateBeginAndEnd(task)) {
-			return BaseOutput.failure("开始时间和结束时间不能早于项目起始日期");
-		}
-
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		if (userTicket == null) {
 			return BaseOutput.failure("用户登录超时！");
@@ -186,9 +181,6 @@ public class TaskController {
 			task.setStartDate(fmt.parse(startDateShow));
 			task.setEndDate(fmt.parse(endDateShow));
 			task.setFlow(flowSt.equals("0")?true:false);
-			if (taskService.validateBeginAndEnd(task)) {
-				return BaseOutput.failure("开始时间和结束时间不能早于项目起始日期");
-			}
 			
 		} catch (Exception e) {
 			return BaseOutput.failure("请正确填写工时");
@@ -414,4 +406,22 @@ public class TaskController {
 		return BaseOutput.success("测试未完成任务");
 	}
 
+	
+	// 判断是否是项时间
+	@ResponseBody
+	@RequestMapping(value = "/isProjectDate.json", method = { RequestMethod.GET, RequestMethod.POST })
+	public boolean isProjectDate(Long projectId, String startDateShow, String endDateShow) {
+		DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
+		Date startDate = null;
+		Date endDate = null;
+		try {
+			startDate = fmt.parse(startDateShow);
+			endDate = fmt.parse(endDateShow);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return taskService.validateBeginAndEnd(projectId,startDate,endDate);
+			 
+	}
 }
