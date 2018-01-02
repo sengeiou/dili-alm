@@ -28,7 +28,7 @@
             	  $("#changeIdTr").css("display","block");
             	}else{
             	  $("#changeIdTr").css("display","none");
-            	  loadChangePorjectSelect();
+            	  loadChangePorjectSelect($('#_projectId').combobox('getValue'));
             	}
             }
         });
@@ -246,7 +246,7 @@
             $('#_form').form('load', formData);
             $('#_form').form('load',{planTimeStr:formData._planTime});
             if(selected.flow){ $("#changeIdTr").css("display","block");
-                                loadChangePorjectSelect(); 
+                                loadChangePorjectSelect(formData._projectId); 
                                 $('#_changeId').combobox('select',formData._changeId);
                                 $('#flowSt').combobox('select',0); 
                                }
