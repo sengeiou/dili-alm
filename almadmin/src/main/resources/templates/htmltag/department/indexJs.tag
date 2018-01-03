@@ -70,7 +70,7 @@ function openInsert(isRoot) {
 					});
 		} else {
 			deptGrid.treegrid('append', {
-						before : parentId,
+						parent : parentId,
 						data : [{
 									id : 'temp'
 								}]
@@ -88,7 +88,7 @@ function openInsert(isRoot) {
 					});
 		} else {
 			deptGrid.treegrid('append', {
-						before : parentId,
+						parent : parentId,
 						data : [{
 									id : 'temp'
 								}]
