@@ -4,14 +4,17 @@ import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
 import com.dili.ss.metadata.annotation.FieldDef;
-
-import javax.persistence.*;
 import java.util.Date;
+import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2017-10-23 11:17:08.
+ * This file was generated on 2017-12-14 15:53:30.
  */
 @Table(name = "`files`")
 public interface Files extends IBaseDomain {
@@ -52,19 +55,19 @@ public interface Files extends IBaseDomain {
 
     void setUrl(String url);
 
-    @Column(name = "`milestones_id`")
-    @FieldDef(label="里程碑id")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getMilestonesId();
-
-    void setMilestonesId(Long milestonesId);
-
     @Column(name = "`created`")
     @FieldDef(label="创建时间")
     @EditMode(editor = FieldEditor.Datetime, required = true)
     Date getCreated();
 
     void setCreated(Date created);
+
+    @Column(name = "`modified`")
+    @FieldDef(label="修改时间")
+    @EditMode(editor = FieldEditor.Datetime, required = true)
+    Date getModified();
+
+    void setModified(Date modified);
 
     @Column(name = "`create_member_id`")
     @FieldDef(label="创建人id")
@@ -73,4 +76,52 @@ public interface Files extends IBaseDomain {
 
     void setCreateMemberId(Long createMemberId);
 
+    @Column(name = "`modify_member_id`")
+    @FieldDef(label="修改人id")
+    @EditMode(editor = FieldEditor.Combo, required = false, params="{\"provider\":\"memberProvider\"}")
+    Long getModifyMemberId();
+
+    void setModifyMemberId(Long modifyMemberId);
+
+    @Column(name = "`type`")
+    @FieldDef(label="文档类型")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Integer getType();
+
+    void setType(Integer type);
+
+    @Column(name = "`project_id`")
+    @FieldDef(label="项目id")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Long getProjectId();
+
+    void setProjectId(Long projectId);
+
+    @Column(name = "`version_id`")
+    @FieldDef(label="版本id")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Long getVersionId();
+
+    void setVersionId(Long versionId);
+
+    @Column(name = "`phase_id`")
+    @FieldDef(label="阶段id")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Long getPhaseId();
+
+    void setPhaseId(Long phaseId);
+
+    @Column(name = "`record_id`")
+    @FieldDef(label="记录id，立项、结项、需求变更")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Long getRecordId();
+
+    void setRecordId(Long recordId);
+
+    @Column(name = "`notes`")
+    @FieldDef(label="文档描述")
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getNotes();
+
+    void setNotes(String notes);
 }

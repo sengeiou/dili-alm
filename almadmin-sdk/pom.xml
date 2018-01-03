@@ -16,7 +16,7 @@
     <parent>
         <artifactId>dili-alm</artifactId>
         <groupId>com.dili</groupId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>2.0.0-SNAPSHOT</version>
     </parent>
 
     <dependencies>
@@ -25,7 +25,7 @@
 		<dependency>
 			<groupId>com.dili</groupId>
 			<artifactId>sharp-sword</artifactId>
-			<version>1.5.6-SNAPSHOT</version>
+			<version>${sharp-sword.version}</version>
 		</dependency>
         <dependency>
             <groupId>org.mybatis.generator</groupId>

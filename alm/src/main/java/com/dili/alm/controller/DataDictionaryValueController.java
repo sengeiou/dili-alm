@@ -1,6 +1,8 @@
 package com.dili.alm.controller;
 
 import com.dili.alm.domain.DataDictionaryValue;
+import com.dili.alm.domain.dto.DataDictionaryDto;
+import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.DataDictionaryValueTreeView;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.DataDictionaryValueService;
@@ -52,6 +54,15 @@ public class DataDictionaryValueController {
 			RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public List<DataDictionaryValueTreeView> listTree(@RequestParam Long ddId) {
 		List<DataDictionaryValueTreeView> list = this.dataDictionaryValueService.listTree(ddId);
+		return list;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/listByCode.json", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public List<DataDictionaryValueDto> listByCode(@RequestParam String code) {
+		DataDictionaryDto dto = dataDictionaryService.findByCode(code);
+		List<DataDictionaryValueDto> list = dto== null ? null : dto.getValues();
 		return list;
 	}
 

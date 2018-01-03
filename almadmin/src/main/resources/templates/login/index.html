@@ -13,104 +13,230 @@
     <script type="text/javascript" src="${contextPath}/resources/easyui/js/jquery-3.2.1.min.js"></script>
     <style>
         /*reset*/
-        body,ul,ol,li,p,h1,h2,h3,h4,h5,h6,form,fieldset,table,td,img,div,dl,dt,dd,input { margin:0; padding:0; }
-        body {font:14px/1.5  "Microsoft YaHei","Helvetica", "Tahoma", "Arial", "STXihei", "SimSun",  "sans-serif";}
-        /*input.background:none;IE6*/
-        input, select, textarea { outline:none; border:none; background:none; }
-        textarea { resize:none; }
-        img { border:none; }
-        li { list-style:none;}
-        a { text-decoration:none; }
-        .clearfix:before,
-        .clearfix:after {content:""; display:block; clear:both;}
-        .clearfix { *zoom:1; }
-        .fl { float: left; }
-        .fr { float: right; }
-        i,span,em,strong,img,a,h1,h2,h3,h4,h5,h6{font-style: normal; font-weight: normal;}
+        body,ul,ol,li,p,h1,h2,h3,h4,h5,h6,form,fieldset,table,td,img,div,dl,dt, dd,input {
+            margin: 0;
+            padding: 0;
+        }
+
+        ::-webkit-input-placeholder {
+            /* WebKit browsers */
+            color: #bbb;
+        }
+
+        :-moz-placeholder {
+            /* Mozilla Firefox 4 to 18 */
+            color: #999;
+        }
+
+        ::-moz-placeholder {
+            /* Mozilla Firefox 19+ */
+            color: #999;
+        }
+
+        :-ms-input-placeholder {
+            /* Internet Explorer 10+ */
+            color: #999;
+        }
 
         body {
-            background-color: #ddd;
+            min-width: 1200px;
+            background: #000 url('../resources/images/bg.png') no-repeat top center;
+            font: 14px/1.5 "Microsoft YaHei", "Helvetica", "Tahoma", "Arial", "STXihei", "SimSun", "sans-serif";
         }
+        /*input.background:none;IE6*/
+
+        input,
+        select,
+        textarea {
+            outline: none;
+            border: none;
+            background: none;
+        }
+
+        textarea {
+            resize: none;
+        }
+
+        img {
+            border: none;
+        }
+
+        li {
+            list-style: none;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .clearfix:before,
+        .clearfix:after {
+            content: "";
+            display: block;
+            clear: both;
+        }
+
+        .clearfix {
+            *zoom: 1;
+        }
+
+        .fl {
+            float: left;
+        }
+
+        .fr {
+            float: right;
+        }
+
+        i,
+        span,
+        em,
+        strong,
+        img,
+        a,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-style: normal;
+            font-weight: normal;
+        }
+
+        input {
+            outline: none;
+        }
+
         .login {
-            width: 400px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 387px;
+            margin-left: -196px;
+            margin-top: -230px;
             background-color: #fff;
-            margin: 200px auto 0;
+            /*margin: 150px auto 0;*/
             border-spacing: 0;
+            border-radius: 5px;
+            overflow: hidden;
         }
-        .login h2 {
+
+        .login .login-title {
+            position: relative;
             width: 100%;
-            height: 46px;
-            background-color: #118bde;
+            height: 155px;
+            background-color: #fff;
             color: #fff;
-            line-height: 46px;
-            text-align: center;
+            background: url('../resources/images/login-title.png') no-repeat top left;
+            text-align:center;
+        }
+        .login .login-title img{
+            margin-top: 50px
         }
         .userinfo {
-            width: 300px;
-            margin: 30px auto 20px;
+            width: 264px;
+            margin: 34px auto 20px;
         }
+
         .userinfo td {
             display: inline-block;
-            height: 46px;
-            line-height: 46px;
+            height: 40px;
+            line-height: 40px;
             margin-top: 10px;
             margin-bottom: 10px;
             color: #666;
         }
+
         .userinfo input {
             width: 200px;
-            height: 46px;
+            height: 40px;
             box-sizing: border-box;
-            border: 2px solid #ddd;
-            line-height: 46px;
-            font-size: 13px;
-            color: #999;
-            text-indent: 20px;
+            /*border: none;*/
+            border-bottom: 1px solid #bbb;
+            line-height: 40px;
+            font-size: 16px;
+            color: #666;
+            text-indent: 10px;
         }
+
+        .userinfo input[type=text],
+        .userinfo input[type=password] {
+            width: 200px
+        }
+
+        .userinfo input:focus {
+            border-color: #4cb678;
+        }
+
         .userinfo tr:last-child td {
             margin-top: 40px;
         }
+
         .userinfo .submit {
-            margin-left: 56px;
-            background-color: #118bde;
-            border-radius: 5px;
-            border-color: #118bde;
+            width: 194px;
+            text-align: center;
+            margin-left: 34px;
+            background-color: #4cb678;
+            border-radius: 20px;
+            border-color: #4cb678;
             color: #fff;
-            font-size: 18px;
+            font-size: 16px;
             text-indent: 0;
             cursor: pointer;
         }
-        .userinfo .submit:hover {
-            background-color: #169cf7;
 
+        .userinfo .submit:hover {
+            background-color: #3fa368;
         }
 
-        .error-message{
+        .error-message {
             margin: 4px 0 0 0;
             padding: 0;
             color: red;
+        }
+
+        .login-icon {
+            background: darkseagreen;
+            text-indent: -9999px;
+        }
+
+        .login-user-icon {
+            background: url('../resources/images/login-user.png') no-repeat left center;
+        }
+
+        .login-password-icon {
+            background: url('../resources/images/login-password.png') no-repeat left center;
         }
 
     </style>
 </head>
 <body>
 <div class="login">
-    <div><h2>地利软件生命周期管理平台</h2></div>
+    <div class="login-title">
+        <img  src="${contextPath}/resources/images/title-name.png" alt="name">
+    </div>
     <div id="errMsg">
     </div>
     <form id="loginForm" method="post" action="${contextPath}/login/loginAction">
         <table class="userinfo">
             <tbody>
             <tr>
-                <td>帐号:&nbsp;</td>
-                <td><input id="username" name="username" value="" type="text"></td>
+                <td width="40" class="login-icon login-user-icon">帐号</td>
+                <td>
+                    <input id="username" name="username" value="" type="text" placeholder="请输入用户名" />
+                </td>
             </tr>
             <tr>
-                <td>密码:&nbsp;</td>
-                <td><input id="password" name="password" value="" type="password"></td>
+                <td width="40" class="login-icon login-password-icon">密码</td>
+                <td>
+                    <input id="password" name="password" value="" type="password" placeholder="请输入密码" />
+                </td>
             </tr>
             <tr>
-                <td colspan="2"><input type="button" class="submit" value="登录" onclick="doLogin()"></td>
+                <td colspan="2">
+                    <input type="button" class="submit" value="登   录" onclick="doLogin()">
+                </td>
             </tr>
             </tbody>
         </table>

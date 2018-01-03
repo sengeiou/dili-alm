@@ -1,6 +1,41 @@
 // 编辑行索引
 var editId = undefined;
 
+function addClearIcon() {
+	$(this).combobox({
+				icons : [{
+							iconCls : 'icon-remove',
+							handler : function(e) {
+								$(e.data.target).textbox('initValue', '');
+							}
+						}]
+			});
+}
+
+function progressFormatter(value, rowData, rowIndex) {
+	var htmlstr = '<div class="easyui-progressbar progressbar easyui-fluid" style="width: 100%; height: 20px;">'
+			+ '<div class="progressbar-value" style="width: 100%; height: 20px; line-height: 20px;"> ' + '<div class="progressbar-text" style="width: ' + value
+			+ '%; height: 20px; line-height: 20px;">' + value + '%</div>' + '</div>' + '</div>';
+	return htmlstr;
+}
+
+function projectNameFormatter(value, row) {
+	return '<a href="${contextPath!}/project/detail.html?id=' + row.id + '&backUrl=' + encodeURIComponent('${contextPath!}/project/index.html') + '">' + value + '</a>';
+}
+
+function taskFormatter(value, row, index) {
+	return '<a href="${contextPath!}/task/index.html?projectId=' + row.id + '">' + value + '</a>';
+}
+
+function memberFormatter(value, row, index) {
+	var backUrl = encodeURIComponent(window.location);
+	return '<a href="${contextPath!}/team/index.html?projectId=' + row.id + '&backUrl=' + backUrl + '">' + value + "</a>";
+}
+
+function optFormatter(value, row) {
+	return '<a href="${contextPath!}/project/detail.html?id=' + row.id + '&editable=true&backUrl=' + encodeURIComponent('${contextPath!}/project/index.html') + '">管理</a>';
+}
+
 function isEditing() {
 	return undefined != editId;
 }
@@ -147,6 +182,7 @@ function queryGrid() {
 // 清空表单
 function clearForm() {
 	$('#form').form('clear');
+	$('#originator').textbox('initValue', '');
 }
 
 // 表格表头右键菜单
@@ -514,9 +550,7 @@ function editorCallback(field) {
  * @submitFun 表单提交需执行的任务
  */
 $(function() {
-			$('#projectManager').textbox('addClearBtn', 'icon-clear');
-			$('#testManager').textbox('addClearBtn', 'icon-clear');
-			$('#productManager').textbox('addClearBtn', 'icon-clear');
+			$('#originator').textbox('addClearBtn', 'icon-clear');
 			bindFormEvent("form", "name", queryGrid);
 			if (document.addEventListener) {
 				document.addEventListener("keyup", getKey, false);
@@ -526,4 +560,5 @@ $(function() {
 				document.onkeyup = getKey;
 			}
 			window.projectGrid = $('#grid');
+			queryGrid();
 		});

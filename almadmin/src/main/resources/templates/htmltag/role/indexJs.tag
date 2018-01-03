@@ -107,6 +107,12 @@ function onRemoveClicked(id) {
 					requestDelete(index, {
 								id : selected.id
 							}, function(index) {
+								try {
+									LogUtils.saveLog("删除角色:" + selected.id, function() {
+											});
+								} catch (e) {
+									$.messager.alert('错误', e);
+								}
 								roleGrid.datagrid("deleteRow", index);
 							});
 					// 强制刷新 formatOptions() 中的 index
@@ -209,6 +215,22 @@ function onAfterEdit(index, row, changes) {
 	row.editing = false;
 
 	requestSave(index, row, function(index, retData) {
+				if (!row.id) {
+					debugger;
+					try {
+						LogUtils.saveLog("新增角色:" + retData.id, function() {
+								});
+					} catch (e) {
+						$.messager.alert('错误', e);
+					}
+				} else {
+					try {
+						LogUtils.saveLog("修改角色:" + retData.id, function() {
+								});
+					} catch (e) {
+						$.messager.alert('错误', e);
+					}
+				}
 				if (retData) {
 					var data = eval(retData);
 					data.created = dateFtt("yyyy-MM-dd hh:mm:ss", null == data.created ? new Date() : new Date(data.created));
@@ -291,6 +313,12 @@ function unbindRoleUser(id) {
 				if (r) {
 					var index = $('#userListGrid').datagrid("getRowIndex", selected);
 					requestUnbind(index, JSON.stringify(formData), function(index) {
+								try {
+									LogUtils.saveLog("解除绑定用户:" + JSON.stringify(formData), function() {
+											});
+								} catch (e) {
+									$.messager.alert('错误', e);
+								}
 								$('#userListGrid').datagrid("deleteRow", index);
 							});
 				}
@@ -310,7 +338,6 @@ function requestUnbind(index, data, callback) {
 				success : function(retData) {
 					if (retData.code == "200") {
 						(callback && typeof(callback) === "function") && callback(index);
-						// $("#userListGrid").datagrid("reload");
 					} else {
 						$.messager.alert('错误', retData.result);
 					}
@@ -334,11 +361,14 @@ function requestDelete(index, data, callback) {
 				success : function(retData) {
 					if (retData.code == "200") {
 						(callback && typeof(callback) === "function") && callback(index);
+						roleGrid.datagrid('acceptChanges');
 					} else {
+						roleGrid.datagrid('rejectChanges');
 						$.messager.alert('错误', retData.result);
 					}
 				},
 				error : function() {
+					roleGrid.datagrid('rejectChanges');
 					$.messager.alert('错误', '远程访问失败');
 				}
 			});
@@ -362,13 +392,35 @@ function requestSave(index, data, callback) {
 				processData : true,
 				async : true,
 				success : function(retData) {
+					
 					if (retData.code == "200") {
 						(callback && typeof(callback) === "function") && callback(index, retData.data);
+						var submitData = {
+							roleId : retData.data.id,
+							menuResources :[{id: 126, resource: false}]
+						};
+						$.ajax({
+								type : "POST",
+								url : '${contextPath!}/role/updateRoleMenuResource',
+								contentType : "application/json; charset=utf-8",
+								data : JSON.stringify(submitData),
+								dataType : "json",
+								success : function(data) {
+									if (data.code == 200) {
+										roleGrid.datagrid('acceptChanges');
+									} else {
+										$.messager.alert('提示', data.result);
+									}
+								}
+							});
+						
 					} else {
+						roleGrid.datagrid('rejectChanges');
 						$.messager.alert('错误', retData.result);
 					}
 				},
 				error : function() {
+					roleGrid.datagrid('rejectChanges');
 					$.messager.alert('错误', '远程访问失败');
 				}
 			});
@@ -578,6 +630,7 @@ $(function() {
 																	}
 																});
 													});
+													
 											$.fn.zTree.init($("#tree"), {
 														check : {
 															enable : true
@@ -591,6 +644,14 @@ $(function() {
 															}
 														},
 														callback : {
+															beforeCheck:function (event,treeId, treeNode) {
+																if(treeId.id==126){
+																	$.messager.alert('警告', '首页是必选项，不可编辑');
+																	return  false;
+																	
+																}
+																return  true;
+															},
 															onNodeCreated : function(event, treeId, treeNode) {
 																if (treeNode.resourceId) {
 																	$("#" + treeNode.tId).addClass("menuRes")
@@ -602,11 +663,18 @@ $(function() {
 														}
 
 													}, znodes);
+												var treeObj = $.fn.zTree.getZTreeObj("tree");
+												var node = treeObj.getNodeByParam("id", "126");
+												treeObj.checkNode(node, true, true);
+												
 										}, 'json');
 							}
 						});
 			};
-
+			function beforeCheck(treeId, treeNode) {
+				
+			return (treeNode.doCheck !== false);
+			}
 			window.editRoleDataAuth = function(roleId) {
 				$('#win').window({
 							title : '编辑数据权限',

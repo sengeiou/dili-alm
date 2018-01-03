@@ -1,0 +1,229 @@
+<#body>
+<div id="smDialog" style="display: none;"></div>
+<div class="easyui-layout" fit="true">
+    <!-- ====================================================================================================================== -->
+    <!-- 上方布局 -->
+    <!-- ====================================================================================================================== -->
+    <div region="north" height="auto" align="center">
+        <!-- =========================================================表单========================================================= -->
+        <div class="easyui-panel" style="width:100%;" align="left">
+            <form id="form" class="easyui-form" method="post" fit="true">
+                <table style="padding:10px;">
+                    <tr>
+                        <td style="padding:5px;">
+                            <input class="easyui-textbox" name="projectId" id="projectId" style="width:100%" data-options="label:'项目名称:', validType:'length[0,255]'" />
+
+                        </td>
+                        <td style="padding:5px;">
+                            <input class="easyui-textbox" name="status" id="status" style="width:100%" data-options="editable:false,label:'变更状态:'" />
+                            <#comboProvider _id="status" _provider='applyStateProvider'/>
+                        </td>
+                        <td style="padding:5px;">
+                            <input class="easyui-textbox" name="type" id="type" style="width:100%" data-options="editable:false,label:'变更类型:', validType:'length[0,19]'" />
+                            <#comboProvider _id="type" _provider='changeTypeProvider'/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px;">
+                            <input class="easyui-textbox" name="createMemberId" id="createMemberId" label="变更人:" style="width:100%" data-options="editable:false,
+									buttonText:'选择',
+									onClickButton:selectMember,onChange:_changeTextboxShowClear" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
+                               onclick="queryGrid()">查询</a>
+                            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">清除</a>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+    <!-- ====================================================================================================================== -->
+    <!-- 中央布局 -->
+    <!-- ====================================================================================================================== -->
+    <!-- 表格 -->
+    <div region="center" style="width:100%;" height="auto">
+        <!-- =========================================================表格========================================================= -->
+        <table class="easyui-datagrid" title="项目变更列表" id="grid" fitColumns="true"
+               pagination="true" pageSize="30" pageNumber="1" pagePosition="bottom" rownumbers="true" remoteSort="false"
+               loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="created" sortOrder="desc"
+               align="center" fit="true" striped="true" toolbar="#toolbar" idField="id">
+            <thead>
+            <tr>
+                <th data-options="field:'name', formatter:formatName,width:'19%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    变更名称
+                </th>
+                <th data-options="field:'projectName', width:'19%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    项目名称
+                </th>
+                <th data-options="field:'versionId',width:'10%', _provider:'projectVersionProvider',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    版本
+                </th>
+                <th data-options="field:'type',width:'10%',  _provider:'changeTypeProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    变更类型
+                </th>
+                <th data-options="field:'status',width:'10%',  _provider:'applyStateProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    变更状态
+                </th>
+                <th data-options="field:'estimateLaunchDate',width:'12%',  _provider:'dateProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    变更后上线日期
+                </th>
+                <th data-options="hidden:true,field:'created',width:'10%',  _provider:'datetimeProvider',  sortable:'true', order:'desc', align:'center', resizable:'true', fixed:'false'">
+                    创建日期
+                </th>
+                <th data-options="field:'createMemberId',width:'10%',  _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    变更人
+                </th>
+                <th data-options="field:'opt', width:'10%',formatter:formatStatus,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    操作
+                </th>
+            </tr>
+            </thead>
+        </table>
+        <!-- datagrid工具栏 -->
+        <div id="toolbar" style="padding:2px 5px;">
+            <a href="${contextPath}/projectChange/add" class="easyui-linkbutton" iconCls="icon-add" plain="true"></a>
+        </div>
+    </div>
+</div>
+<!-- 隐藏编辑框 -->
+<!-- ====================================================================================================================== -->
+<!-- style & script 分隔线 -->
+<!-- ====================================================================================================================== -->
+<script type="text/javascript">
+    var userid = '${sessionID}';
+    function formatStatus(value, row) {
+        if (row.$_status == 1) {
+            if (row.$_createMemberId == userid) {
+                return '<span class="opt" style="padding:5px;"><a href="${contextPath}/projectChange/edit?id=' + row.id + '">编辑</a></span><span class="opt" style="padding:5px;"><a href="javascript:void(0)" onclick="del(' + row.id + ')">删除</a></span>';
+            } else {
+                return '<span class="opt" style="padding:5px;"><a>编辑</a></span><span class="opt" style="padding:5px;"><a">删除</a></span>';
+            }
+        } else if (row.$_status == 2 || row.$_status == 3) {
+            return '<span class="opt" style="padding:5px;"><a>编辑</a></span><span class="opt" style="padding:5px;"><a>删除</a></span>';
+        } else if (row.$_status == 4) {
+            if (row.$_createMemberId == userid && row.restatus == undefined) {
+                return '<span class="opt" style="padding:5px;"><a href="${contextPath}/projectChange/reChange/' + row.id + '">重新申请</a></span>';
+            } else {
+                return '<span class="opt" style="padding:5px;"><a>重新申请</a></span>';
+            }
+        }
+    }
+
+    function formatName(value,row) {
+        return '<span class="opt" style="padding:5px;"><a href="${contextPath}/projectChange/toDetails/' + row.id + '">' + value + '</a></span>';
+    }
+
+    //根据主键删除
+    function del(id) {
+        $.messager.confirm('确认', '您确认想要删除记录吗？', function (r) {
+            if (r) {
+                $.ajax({
+                    type: "POST",
+                    url: "${contextPath}/projectChange/delete",
+                    data: {id: id},
+                    processData: true,
+                    dataType: "json",
+                    async: true,
+                    success: function (data) {
+                        if (data.code == "200") {
+                            try {
+                                LogUtils.saveLog("删除变更申请:" + id, function () {
+                                    $("#grid").datagrid("reload");
+                                    $('#dlg').dialog('close');
+                                });
+                            } catch (e) {
+                                $("#grid").datagrid("reload");
+                                $('#dlg').dialog('close');
+                            }
+                        } else {
+                            $.messager.alert('错误', data.result);
+                        }
+                    },
+                    error: function () {
+                        $.messager.alert('错误', '远程访问失败');
+                    }
+                });
+            }
+        });
+
+    }
+    //表格查询
+    function queryGrid() {
+        var opts = $("#grid").datagrid("options");
+        if (null == opts.url || "" == opts.url) {
+            opts.url = "${contextPath}/projectChange/listPage";
+        }
+        if(!$('#form').form("validate")){
+            return;
+        }
+        var param = bindMetadata("grid", true);
+        var formData = $("#form").serializeObject();
+        $.extend(param, formData);
+        $("#grid").datagrid("load", param);
+    }
+
+
+    //清空表单
+    function clearForm() {
+        $('#form').form('clear');
+        $("#createMemberId").textbox('initValue', '');
+        queryGrid();
+    }
+
+    $.messager.progress({
+        title:"提示",
+        msg:"加载中,请稍候...",
+        value : '10',
+        text: '{value}%',
+        interval:200
+    });
+    $.parser.onComplete = function(){
+        $.messager.progress("close");
+    }
+    //全局按键事件
+    function getKey(e){
+        e = e || window.event;
+        var keycode = e.which ? e.which : e.keyCode;
+        if(keycode == 46){ //如果按下删除键
+            var selected = $("#grid").datagrid("getSelected");
+            if(selected && selected!= null){
+                del();
+            }
+        }
+    }
+
+    /**
+     * 绑定页面回车事件，以及初始化页面时的光标定位
+     * @formId
+     *          表单ID
+     * @elementName
+     *          光标定位在指点表单元素的name属性的值
+     * @submitFun
+     *          表单提交需执行的任务
+     */
+    $(function () {
+        // bindFormEvent("form", "name", queryGrid);
+        if (document.addEventListener) {
+            document.addEventListener("keyup",getKey,false);
+        } else if (document.attachEvent) {
+            document.attachEvent("onkeyup",getKey);
+        } else {
+            document.onkeyup = getKey;
+        }
+        queryGrid();
+
+        $('#projectId').combobox({
+            url: '${contextPath}/project/getProjectList',
+            valueField: 'id',
+            textField: 'name'
+        });
+    })
+</script>
+<script type="text/javascript">
+    <#members_index/>
+</script>
+</#body>

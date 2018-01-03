@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.alm.dao.WeeklyMapper">
+  <resultMap id="BaseResultMap" type="com.dili.alm.domain.Weekly">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="project_id" jdbcType="BIGINT" property="projectId" />
+    <result column="start_date" jdbcType="TIMESTAMP" property="startDate" />
+    <result column="end_date" jdbcType="TIMESTAMP" property="endDate" />
+    <result column="risk" jdbcType="VARCHAR" property="risk" />
+    <result column="question" jdbcType="VARCHAR" property="question" />
+    <result column="progress" jdbcType="VARCHAR" property="progress" />
+    <result column="created" jdbcType="TIMESTAMP" property="created" />
+    <result column="modified" jdbcType="TIMESTAMP" property="modified" />
+    <result column="create_member_id" jdbcType="BIGINT" property="createMemberId" />
+    <result column="modify_member_id" jdbcType="BIGINT" property="modifyMemberId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, project_id, start_date, end_date, risk, question, progress, created, modified, 
+    create_member_id, modify_member_id
+  </sql>
+  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from weekly
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+   <select id="selecByProjectId" resultType="com.dili.alm.domain.Weekly" parameterType="com.dili.alm.domain.dto.WeeklyPara">
+         select  w.id  as 'id',w.project_id as 'projectId'
+          
+		   from  weekly  w
+		   
+		 <where>
+		        1=1
+		     <if test="projectId != null">
+			    and  w.project_id=#{projectId,jdbcType=BIGINT}
+			</if>
+			 <if test="startDate!=null and startDate!=''">
+	           and w.start_date &gt;=#{startDate,jdbcType=VARCHAR}
+			</if> 
+			<if test="endDate!=null and endDate!=''">
+			   and  w.end_date   &lt;=#{endDate,jdbcType=VARCHAR}
+			</if>
+		 <!--   <if test="userId != null">
+            AND   w.create_member_id = #{userId,jdbcType=BIGINT}
+           </if> -->
+		</where> 
+   </select>
+   
+  <update id="updateBy" parameterType="com.dili.alm.domain.Weekly">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update weekly
+    <set>
+      <if test="projectId != null">
+        project_id = #{projectId,jdbcType=BIGINT},
+      </if>
+      <if test="startDate != null">
+        start_date = #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null">
+        end_date = #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="risk != null">
+        risk = #{risk,jdbcType=VARCHAR},
+      </if>
+      <if test="question != null">
+        question = #{question,jdbcType=VARCHAR},
+      </if>
+      <if test="progress != null">
+        progress = #{progress,jdbcType=VARCHAR},
+      </if>
+      <if test="created != null">
+        created = #{created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modified != null">
+        modified = #{modified,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createMemberId != null">
+        create_member_id = #{createMemberId,jdbcType=BIGINT},
+      </if>
+      <if test="modifyMemberId != null">
+        modify_member_id = #{modifyMemberId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  
+  
+  <!-- 分页查询 -->
+  
+  <select id="selectListPageByWeeklyPara" parameterType="com.dili.alm.domain.dto.WeeklyPara" resultType="com.dili.alm.domain.dto.WeeklyPara">
+  
+    select   p.serial_number as "serialNumber",p.`name` as "projectName" , w.id as 'id',p.apply_id as "applyId",
+             p.type as "projectType",p.project_manager as "userName",p.id as "projectId",w.created as 'created',
+             p.completed_progress as "projectStatus",w.end_date as "endDate"  ,w.start_date as "startDate"
+         from   project p,weekly  w
+        <where>
+             p.id=w.project_id
+          
+            <if test="weeklyPara.projectName != null and weeklyPara.projectName!=''">
+            and   p.`name` = #{weeklyPara.projectName,jdbcType=VARCHAR}
+	        </if>
+	        
+	         <if test="weeklyPara.projectType != null">
+	         and   p.type = #{weeklyPara.projectType,jdbcType=VARCHAR}
+	        </if>
+		
+		    <if test="weeklyPara.userName != null">
+		    and  p.project_manager= #{weeklyPara.userName,jdbcType=VARCHAR}
+	        </if>
+	       
+	        <if test="weeklyPara.projectStatus != null">
+	        and   p.project_state= #{weeklyPara.projectStatus,jdbcType=INTEGER}
+	        </if>
+	        
+		    <if test="weeklyPara.serialNumber != null">
+		    and   p.serial_number = #{weeklyPara.serialNumber,jdbcType=VARCHAR}
+	        </if>
+	        <if test="weeklyPara.startDate!=null and weeklyPara.startDate!=''">
+	        and w.start_date &gt;=#{weeklyPara.startDate,jdbcType=VARCHAR}
+			</if> 
+			<if test="weeklyPara.endDate!=null and weeklyPara.endDate!=''">
+			and  w.end_date   &lt;=#{weeklyPara.endDate,jdbcType=VARCHAR}
+			</if>
+			
+			<if test="page.pageIndex!=-1">
+		    	limit ${(page.pageIndex-1)*page.pageSize},${page.pageSize}
+		    </if>
+		    
+	      
+		 </where>       
+              
+        
+  </select>
+  
+  <!-- 分页查询总条数 -->
+    <select id="selectPageByWeeklyParaCount" parameterType="com.dili.alm.domain.dto.WeeklyPara" resultType="int">
+  
+       select count(1)  as 'total' from (
+       
+           select   p.serial_number as "serialNumber",p.`name` as "projectName" , w.id as 'id',p.apply_id as "applyId",
+             p.type as "projectType",p.project_manager as "userName",
+              p.completed_progress as "projectStatus",w.end_date as "endDate"  ,w.start_date as "startDate"
+         from   project p,weekly  w
+        <where>
+             p.id=w.project_id
+          
+            <if test="projectName != null and projectName!=''">
+            and   p.`name` = #{projectName,jdbcType=VARCHAR}
+	        </if>
+	        
+	         <if test="projectType != null">
+	         and   p.type = #{projectType,jdbcType=VARCHAR}
+	        </if>
+		
+		    <if test="userName != null">
+		    and  p.project_manager= #{userName,jdbcType=VARCHAR}
+	        </if>
+	       
+	        <if test="projectStatus != null">
+	        and   p.project_state= #{projectStatus,jdbcType=INTEGER}
+	        </if>
+	        
+		    <if test="serialNumber != null">
+		    and   p.serial_number = #{serialNumber,jdbcType=VARCHAR}
+	        </if>
+	        <if test="startDate!=null and startDate!=''">
+	        and w.start_date &gt;=#{startDate,jdbcType=VARCHAR}
+			</if> 
+			<if test="endDate!=null and endDate!=''">
+			and  w.end_date   &lt;=#{endDate,jdbcType=VARCHAR}
+			</if>
+			
+		
+		    
+	      
+		 </where>   
+   
+    
+       )   as temp     
+       
+       
+       
+       
+       
+       
+       
+		
+   </select>
+   
+   
+   
+   
+   
+   <!-- 项目详情-->
+   <select id="selectProjectWeeklyDto" resultType="com.dili.alm.domain.dto.ProjectWeeklyDto" parameterType="Long">
+  
+           select  p.project_manager  as "userName", p.serial_number  as  "serialNumber", p.`name` as "projectName",w.created,w.start_date as "startDate",w.end_date as "endDate" ,
+           
+		           p.type  as "projectType" ,a.business_owner as "businessParty",a.expected_launch_date as  "planDate",p.completed_progress as "completedProgress",
+		           a.dep  as "projectInDept",p.id as "projectId",w.modify_member_id as "stageMan"
+		   from   project  p ,project_apply  a,weekly  w
+		   
+		 <where>
+		      a.ID=p.apply_id and  w.project_id=p.id
+		     <if test="_parameter != null">
+			    and w.id=#{_parameter,jdbcType=BIGINT}
+			</if>
+		  
+		</where> 
+   </select>
+   
+
+   
+   <!-- 本周项目版本 -->
+    <select id="selectProjectVersion" resultType="String" parameterType="com.dili.alm.domain.dto.WeeklyPara">
+    
+     select  v.version   from  project_version v
+          WHERE v.id in 
+         ( select     DISTINCT t.version_id   from  task t 
+		   <where>
+		           t.start_date &gt;=#{startDate,jdbcType=VARCHAR}
+		          and  t.end_date &lt;=#{endDate,jdbcType=VARCHAR}
+		          and  t.start_date &lt;= t.end_date 
+		          
+		          
+		      <if test="id != null">
+			     and   t.project_id=#{id,jdbcType=BIGINT}
+			  </if>
+		   
+		   </where> 
+         )
+		
+		
+		
+   </select>
+     <!-- 本周项目阶段 -->
+    <select id="selectProjectPhase" resultType="String" parameterType="com.dili.alm.domain.dto.WeeklyPara">
+  
+          select  v.name   from  project_phase v 
+          WHERE v.id in 
+         ( select     DISTINCT t.phase_id   from  task t 
+		   <where>
+		           t.start_date &gt;=#{startDate,jdbcType=VARCHAR}
+		          and  t.end_date &lt;= #{endDate,jdbcType=VARCHAR}
+		          and  t.start_date &lt;= t.end_date 
+		          
+		          
+		      <if test="id != null">
+			    and  t.project_id=#{id,jdbcType=BIGINT}
+			  </if>
+		   
+		   </where> 
+         )
+   </select>
+      <!-- 下周项目阶段 -->
+    <select id="selectNextProjectPhase" resultType="String" parameterType="com.dili.alm.domain.dto.WeeklyPara">
+  
+          select  v.name   from  project_phase v 
+          WHERE v.id in 
+         ( select     DISTINCT t.phase_id   from  task t 
+		   <where>
+		           t.start_date &gt;=#{startDate,jdbcType=VARCHAR}
+		          and  t.end_date &lt;= #{endDate,jdbcType=VARCHAR}
+		          and  t.start_date &lt; t.end_date 
+		          
+		      <if test="id != null">
+			    and  t.project_id=#{id,jdbcType=BIGINT}
+			  </if>
+		   
+		   </where> 
+         )
+   </select>
+   
+   
+   
+    <!-- 本周进展情况-->
+   <select id="selectWeeklyProgress"  resultType="com.dili.alm.domain.dto.TaskDto" parameterType="com.dili.alm.domain.dto.WeeklyPara">
+       
+       select   t.`name`   ,t.phase_id ,t.plan_time ,
+		        t.`owner`, t.version_id   ,
+		        t.status ,t.start_date ,
+		        t.end_date,t.status,
+		        d.over_hour ,d.task_hour  from
+		        task t LEFT JOIN  task_details d on  t.id=d.task_id 
+		       <where>
+		            t.start_date &gt;=#{startDate,jdbcType=VARCHAR}
+		            and  t.end_date &lt;= #{endDate,jdbcType=VARCHAR}
+		            and  t.start_date &lt;= t.end_date 
+		         <if test="id != null">
+			           and  t.project_id=#{id,jdbcType=BIGINT}
+			     </if>
+		       
+		      </where> 
+   </select>
+      <!-- 下周工作计划-->
+   <select id="selectNextWeeklyProgress"  resultType="com.dili.alm.domain.dto.NextWeeklyDto" parameterType="com.dili.alm.domain.dto.WeeklyPara">
+       
+       select   t.`name`  ,t.plan_time ,
+		        t.`owner`, t.describe  ,t.end_date
+		
+		     from  task  t
+		      <where>  
+		           t.start_date &gt;=#{startDate,jdbcType=VARCHAR}
+		          and  t.end_date &lt;= #{endDate,jdbcType=VARCHAR}
+		          and  t.start_date &lt;= t.end_date 
+		          
+		         <if test="id != null">
+			           and  t.project_id=#{id,jdbcType=BIGINT}
+			     </if>
+		       
+		      </where> 
+   </select>
+  <!--   当前重要风险 -->
+    <select id="selectWeeklyRist"  resultType="String" parameterType="com.dili.alm.domain.dto.WeeklyPara">
+       
+       select   w.risk
+		
+		     from    weekly  w
+		      <where>
+		      
+		        w.start_date &gt;=#{startDate,jdbcType=VARCHAR}
+		          and  w.end_date &lt;=#{endDate,jdbcType=VARCHAR}
+		          and  w.start_date &lt;= w.end_date 
+			    <if test="id != null">
+		         and      w.id = #{id,jdbcType=VARCHAR}
+		        </if>
+		    
+		       
+		      </where> 
+   </select>
+   
+   
+   
+   <!--   当前重大问题 -->
+    <select id="selectWeeklyQuestion"  resultType="String" parameterType="com.dili.alm.domain.dto.WeeklyPara">
+       
+       select   
+		    w.question  
+		         from  weekly  w
+		      <where>  
+		         
+		          w.start_date &gt;=#{startDate,jdbcType=VARCHAR}
+		          and  w.end_date &lt;=#{endDate,jdbcType=VARCHAR}
+		          and  w.start_date &lt;= w.end_date 
+			    <if test="id != null">
+		          and      w.id = #{id,jdbcType=VARCHAR}
+		        </if>
+		       
+		       
+		      </where> 
+   </select>
+   
+   <update id="updateRiskOrByQuestion" parameterType="com.dili.alm.domain.dto.WeeklyPara">
+   
+    update weekly
+    <set>
+     
+      <if test="risk != null">
+        risk = #{risk,jdbcType=VARCHAR},
+      </if>
+      <if test="question != null">
+        question = #{question,jdbcType=VARCHAR},
+      </if>
+     
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="getUser"  resultType="com.dili.alm.domain.dto.WeeklyPara">
+  
+         select   DISTINCT   p.project_manager as "userName" from   project p,weekly  w  where  p.id=w.project_id
+   
+  </select>
+  
+  
+
+   
+   
+  
+
+
+
+
+
+</mapper>

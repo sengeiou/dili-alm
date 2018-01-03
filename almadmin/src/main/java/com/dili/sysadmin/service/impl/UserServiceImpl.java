@@ -2,7 +2,9 @@ package com.dili.sysadmin.service.impl;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,6 +14,7 @@ import javax.annotation.Resource;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tomcat.util.buf.UEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,15 +31,15 @@ import com.alibaba.fastjson.TypeReference;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.dao.DepartmentMapper;
+import com.dili.sysadmin.dao.RoleMapper;
 import com.dili.sysadmin.dao.UserDataAuthMapper;
 import com.dili.sysadmin.dao.UserDepartmentMapper;
 import com.dili.sysadmin.dao.UserMapper;
 import com.dili.sysadmin.dao.UserRoleMapper;
-import com.dili.sysadmin.domain.DataAuth;
 import com.dili.sysadmin.domain.Department;
+import com.dili.sysadmin.domain.Role;
 import com.dili.sysadmin.domain.User;
 import com.dili.sysadmin.domain.UserDataAuth;
 import com.dili.sysadmin.domain.UserDepartment;
@@ -46,6 +49,9 @@ import com.dili.sysadmin.domain.dto.AddUserDto;
 import com.dili.sysadmin.domain.dto.UpdateUserDto;
 import com.dili.sysadmin.domain.dto.UpdateUserPasswordDto;
 import com.dili.sysadmin.domain.dto.UserDepartmentDto;
+import com.dili.sysadmin.domain.dto.UserDepartmentQuery;
+import com.dili.sysadmin.domain.dto.UserDepartmentRole;
+import com.dili.sysadmin.domain.dto.UserDepartmentRoleQuery;
 import com.dili.sysadmin.domain.dto.UserLoginDto;
 import com.dili.sysadmin.domain.dto.UserLoginResultDto;
 import com.dili.sysadmin.exception.UserException;
@@ -63,7 +69,6 @@ import com.dili.sysadmin.service.UserService;
 import com.dili.sysadmin.service.ValidatePwdService;
 import com.dili.sysadmin.utils.MD5Util;
 import com.github.pagehelper.Page;
-import com.netflix.discovery.converters.Auto;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-07-04 15:24:50.
@@ -107,6 +112,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 	private DepartmentMapper departmentMapper;
 	@Autowired
 	private UserDataAuthMapper userDataAuthMapper;
+	@Autowired
+	private RoleMapper roleMapper;
 
 	public UserMapper getActualDao() {
 		return (UserMapper) getDao();
@@ -230,7 +237,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 		}
 		UserDepartmentDto userDto = new UserDepartmentDto(user);
 		List<Department> departments = this.departmentMapper.findByUserId(user.getId());
-		userDto.setDepartments(departments);
+		userDto.setDepartment(departments.get(0));
 		return userDto;
 	}
 
@@ -243,6 +250,12 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 		int count = this.userMapper.selectCount(record);
 		if (count > 0) {
 			return BaseOutput.failure("用户名已存在");
+		}
+		record = new User();
+		record.setSerialNumber(dto.getSerialNumber());
+		count = this.getActualDao().selectCount(record);
+		if (count > 0) {
+			return BaseOutput.failure("用户编号已存在");
 		}
 		User user = new User();
 		BeanCopier copier = BeanCopier.create(AddUserDto.class, User.class, true);
@@ -277,29 +290,30 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 		if (user == null) {
 			return BaseOutput.failure("用户不存在");
 		}
-		List<User> singleUser = new ArrayList<>();
-		UserDepartmentDto userDto = new UserDepartmentDto(user);
-		List<Department> departments = this.departmentMapper.findByUserId(user.getId());
-		userDto.setDepartments(departments);
-		singleUser.add(userDto);
+		@SuppressWarnings("unchecked")
+		Map<Object, Object> metadata = null == user.getMetadata() ? new HashMap<>() : user.getMetadata();
+
+		JSONObject userStatusProvider = new JSONObject();
+		userStatusProvider.put("provider", "userStatusProvider");
+		metadata.put("status", userStatusProvider);
+
+		JSONObject provider = new JSONObject();
+		provider.put("provider", "datetimeProvider");
+		metadata.put("validTimeBegin", provider);
+		metadata.put("validTimeEnd", provider);
+		metadata.put("created", provider);
+		metadata.put("modified", provider);
+		metadata.put("lastLoginTime", provider);
 		try {
-			Map<Object, Object> metadata = new HashMap<>();
-			JSONObject datetimeProvider = new JSONObject();
-			datetimeProvider.put("provider", "datetimeProvider");
-			metadata.put("lastLoginTime", datetimeProvider);
-			metadata.put("created", datetimeProvider);
-			metadata.put("modified", datetimeProvider);
-			metadata.put("validTimeBegin", datetimeProvider);
-			JSONObject userStatusProvider = new JSONObject();
-			userStatusProvider.put("provider", "userStatusProvider");
-			metadata.put("status", userStatusProvider);
-
-			List<Map<Object, Object>> results = ValueProviderUtils.buildDataByProvider(metadata, singleUser);
-			return BaseOutput.success().setData(results.get(0));
+			UserDepartmentQuery udQuery = new UserDepartmentQuery();
+			udQuery.setDepartmentId(dto.getDepartment().get(0));
+			@SuppressWarnings("unchecked")
+			List<UserDepartmentDto> results = this.parseToUserDepartmentDto(Arrays.asList(user), udQuery);
+			List users = ValueProviderUtils.buildDataByProvider(metadata, results);
+			return BaseOutput.success().setData(users.get(0));
 		} catch (Exception e) {
+			return null;
 		}
-		return null;
-
 	}
 
 	/**
@@ -308,7 +322,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 	 * @param user
 	 */
 	private void jamUser(User user) {
-		if (this.manageConfig.getUserLimitOne() && this.sessionManager.existUserIdSessionDataKey(user.getId().toString())) {
+		if (this.manageConfig.getUserLimitOne()
+				&& this.sessionManager.existUserIdSessionDataKey(user.getId().toString())) {
 			String oldSessionId = this.userManager.clearUserSession(user.getId());
 			// 为了提示
 			this.sessionManager.addKickSessionKey(oldSessionId);
@@ -320,7 +335,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 		sessionData.put(SessionConstants.LOGGED_USER, JSON.toJSONString(user));
 
 		LOG.debug("--- Save Session Data To Redis ---");
-		this.redisUtil.set(SessionConstants.SESSION_KEY_PREFIX + sessionId, JSON.toJSONString(sessionData), SessionConstants.SESSION_TIMEOUT);
+		this.redisUtil.set(SessionConstants.SESSION_KEY_PREFIX + sessionId, JSON.toJSONString(sessionData),
+				SessionConstants.SESSION_TIMEOUT);
 		// redis: sessionId - userID
 		this.sessionManager.setSessionUserIdKey(sessionId, user.getId().toString());
 		// redis: userID - sessionId
@@ -443,7 +459,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<User> listOnlineUsers(User user) throws Exception {
+	public List<Map> listOnlineUsers(User user) throws Exception {
 		List<User> userList = new ArrayList<>();
 		Long userId = user.getId();
 		if (userId != null) {
@@ -481,8 +497,11 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 	}
 
 	@Override
-	public EasyuiPageOutput listPageUserDto(User user) {
-		List<User> list = this.listByExample(user);
+	public EasyuiPageOutput listPageUserDto(UserDepartmentQuery user) {
+		BeanCopier copier = BeanCopier.create(user.getClass(), User.class, false);
+		User query = new User();
+		copier.copy(user, query, null);
+		List<User> list = this.listByExample(query);
 		Page<User> page = (Page<User>) list;
 		@SuppressWarnings("unchecked")
 		Map<Object, Object> metadata = null == user.getMetadata() ? new HashMap<>() : user.getMetadata();
@@ -500,7 +519,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 		user.setMetadata(metadata);
 		try {
 			@SuppressWarnings("unchecked")
-			List<UserDepartmentDto> results = this.parseToUserDepartmentDto(list);
+			List<UserDepartmentDto> results = this.parseToUserDepartmentDto(list, user);
 			List users = ValueProviderUtils.buildDataByProvider(user, results);
 			return new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(page.getTotal()))), users);
 		} catch (Exception e) {
@@ -508,15 +527,29 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 		}
 	}
 
-	private List<UserDepartmentDto> parseToUserDepartmentDto(List<User> results) {
+	private List<UserDepartmentDto> parseToUserDepartmentDto(List<User> results, UserDepartmentQuery query) {
 		List<UserDepartmentDto> target = new ArrayList<>(results.size());
-		for (User user : results) {
+		Iterator<User> it = results.iterator();
+		while (it.hasNext()) {
+			User user = it.next();
 			UserDepartmentDto dto = new UserDepartmentDto(user);
 			List<Department> depts = this.departmentMapper.findByUserId(user.getId());
-			dto.setDepartments(depts);
+			Department dept = depts.get(0);
+			if (query.getDepartmentId() != null && !query.getDepartmentId().equals(dept.getId())) {
+				it.remove();
+				continue;
+			}
+			List<Role> roles = this.roleMapper.findByUserId(user.getId());
+			dto.setDepartment(dept);
+			dto.setRoles(roles);
 			target.add(dto);
 		}
 		return target;
+	}
+
+	@Override
+	public List<UserDepartmentRole> findUserContainDepartmentAndRole(UserDepartmentRoleQuery query) {
+		return this.getActualDao().findUserContainDepartmentAndRole(query);
 	}
 
 }

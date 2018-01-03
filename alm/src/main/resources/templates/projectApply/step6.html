@@ -1,0 +1,279 @@
+<#body>
+<style>
+    .title-first,
+    .title-second {
+        margin-top: 20px;
+        background: #f7f7f7;
+    }
+    .title-first {
+        padding-left: 0;
+    }
+
+</style>
+<div class="easyui-panel" title="立项申请(第六步)" >
+    <div id="smDialog" style="display: none;"></div>
+    <div style="padding:10px 60px 20px 60px">
+        <form id="ff" method="post">
+            <input type="hidden" name="id" value="${apply.id}"/>
+            <input type="hidden" id="impact" name="impact"/>
+            <input type="hidden" id="riskValue" name="risk"/>
+            <table cellpadding="5" width="100%">
+                <tr>
+                    <td>项目编号</td>
+                    <td>${apply.number}</td>
+                    <td>项目类别</td>
+                    <td>${apply.type}</td>
+                </tr>
+                <tr>
+                    <td class="title-first" colspan="4">6.项目影响</td>
+                </tr>
+            </table>
+            <table id="dg" class="easyui-datagrid"
+                   data-options="
+                url: '${contextPath}/projectApply/loadImpact?id=${apply.id}',
+                singleSelect: true,
+                method: 'get',
+                toolbar: '#tb',
+                rownumbers:true,
+                onClickCell: impact.onClickCell">
+                <thead>
+                <tr>
+                    <th style="text-align:center" data-options="field:'system',width:'20%',align:'center',editor:{type:'combobox',options:{required:true,url:'${contextPath}/project/list.json',method:'get',valueField:'name',textField:'name'}}">受影响系统</th>
+                    <th style="text-align:center" data-options="field:'dep',width:'20%',align:'center',editor:{type:'combobox',options:{editable:false,required:true,url:'${contextPath}/department/departments',method:'get',valueField:'name',textField:'name'}}">归属部门</th>
+                    <th style="text-align:center" data-options="width:'20%',field:'memberId',  _provider:'memberProvider', align:'center', resizable:'true', fixed:'false',editor : {
+								type : 'textbox',
+								options : {
+									required : true,
+									editable:false,
+									buttonText:'选择',
+									onClickButton:function(){
+										selectMember('editorCallback', 'memberId');
+									}
+								}
+							},onChange:_changeTextboxShowClear">负责人</th>
+                    <th style="text-align:center" data-options="field:'content',align:'center',width:'20%',editor:{type:'textbox',options:{multiline:true,validType:['length[0,50]']}}">影响内容</th>
+                    <th style="text-align:center" data-options="field:'level',width:'20%',align:'center',editor:{type:'combobox',options:{editable:false,required:true,url:'${contextPath}/dataDictionaryValue/listByCode.json?code=project_ importance',method:'get',valueField:'code',textField:'code'}}">项目重要性</th>
+                </tr>
+                </thead>
+            </table>
+
+            <div id="tb" style="height:auto">
+                <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="append()">新增</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="removeit()">删除</a>
+            </div>
+
+
+            <table cellpadding="5" width="100%" style="margin-top: 20px;">
+                <tr>
+                    <td class="title-first" colspan="4">7.项目风险问题描述</td>
+                </tr>
+            </table>
+            <table id="risk" class="easyui-datagrid" style="height:auto"
+                   data-options="
+                singleSelect: true,
+                url: '${contextPath}/projectApply/loadRisk?id=${apply.id}',
+                method: 'get',
+                onClickCell: risk.onClickCell
+            ">
+                <thead>
+                <tr>
+                    <th data-options="field:'type',align:'center'" width="10%">类别</th>
+                    <th data-options="field:'notes',align:'center',editor:{type:'textbox',options:{required:false,multiline:true,validType:['length[0,50]']}}" width="35%">
+                        描述
+                    </th>
+                    <th data-options="field:'level',align:'center',editor:{type:'combobox',options : {
+									required : false,
+									textField:'text',
+									valueField:'text',
+									editable:false,
+									data: [{
+										text: '高'
+									},{
+										text: '中'
+									},{
+										text: '低'
+									}]
+								}}" width="20%">
+                        等级（高、中、低）
+                    </th>
+                    <th data-options="field:'measure',width:250,align:'center',editor:{type:'textbox',options:{multiline:true,validType:['length[0,50]']}}" width="35%">
+                        应对措施
+                    </th>
+                </tr>
+                </thead>
+            </table>
+        </form>
+        <div style="text-align:center;padding:5px;margin-top:50px;">
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'" onclick="backForm()">上一步</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'" onclick="submitForm()">下一步</a>
+            <a href="${contextPath}/projectApply/index.html" class="easyui-linkbutton" style="width:80px">取消</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function backForm() {
+        window.location.href = "${contextPath}/projectApply/toStep/5/${apply.id}";
+    }
+
+    var impact = {
+        editIndex: undefined,
+        endEditing: function () {
+            if (impact.editIndex == undefined) {
+                return true
+            }
+            if ($('#dg').datagrid('validateRow', impact.editIndex)) {
+                $('#dg').datagrid('endEdit', impact.editIndex);
+                impact.editIndex = undefined;
+                return true;
+            } else {
+                return false;
+            }
+        },
+        onClickCell: function (index, field) {
+            if (impact.editIndex != index) {
+                if (impact.endEditing()) {
+                    $('#dg').datagrid('selectRow', index)
+                        .datagrid('beginEdit', index);
+                    var ed = $('#dg').datagrid('getEditor', {index: index, field: field});
+                    if (ed) {
+                        ($(ed.target).data('textbox') ? $(ed.target).textbox('textbox') : $(ed.target)).focus();
+                    }
+                    impact.editIndex = index;
+                } else {
+                    setTimeout(function () {
+                        $('#dg').datagrid('selectRow', impact.editIndex);
+                    }, 0);
+                }
+            }
+        }
+    };
+
+    var risk = {
+        editIndex: undefined,
+        endEditing: function () {
+            if (risk.editIndex == undefined) {
+                return true
+            }
+            if ($('#risk').datagrid('validateRow', risk.editIndex)) {
+                $('#risk').datagrid('endEdit', risk.editIndex);
+                risk.editIndex = undefined;
+                return true;
+            } else {
+                return false;
+            }
+        },
+        onClickCell: function (index, field) {
+            if (risk.editIndex != index) {
+                if (risk.endEditing()) {
+                    $('#risk').datagrid('selectRow', index)
+                        .datagrid('beginEdit', index);
+                    var ed = $('#risk').datagrid('getEditor', {index: index, field: field});
+                    if (ed) {
+                        ($(ed.target).data('textbox') ? $(ed.target).textbox('textbox') : $(ed.target)).focus();
+                    }
+                    risk.editIndex = index;
+                } else {
+                    setTimeout(function () {
+                        $('#risk').datagrid('selectRow', risk.editIndex);
+                    }, 0);
+                }
+            }
+        }
+    };
+
+    function append(){
+        if (impact.endEditing()){
+            $('#dg').datagrid('appendRow',{});
+            impact.editIndex = $('#dg').datagrid('getRows').length-1;
+            $('#dg').datagrid('selectRow', impact.editIndex)
+                .datagrid('beginEdit', impact.editIndex);
+        }
+    }
+    function removeit(){
+        if (impact.editIndex == undefined){return}
+        $('#dg').datagrid('cancelEdit', impact.editIndex)
+            .datagrid('deleteRow', impact.editIndex);
+        impact.editIndex = undefined;
+    }
+
+
+    function editorCallback(field) {
+        var selected =  $('#dg').datagrid("getSelected");
+        var index =  $('#dg').datagrid('getRowIndex', selected);
+        var editor =  $('#dg').datagrid('getEditor', {
+            index : index,
+            field : field
+        });
+        $(editor.target).attr("id", field + "_" + index);
+        showMembersDlg(field + "_" + index);
+    }
+
+    function submitForm() {
+        $('#ff').form('submit', {
+            url: "${contextPath}/projectApply/insertStep",
+            onSubmit: function () {
+                impact.endEditing();
+                risk.endEditing();
+                $("#impact").val(JSON.stringify($("#dg").datagrid("getData").rows));
+                $("#riskValue").val(JSON.stringify($("#risk").datagrid("getData").rows));
+                return $("#ff").form('validate');
+            },
+            success: function (data) {
+                var data = eval('(' + data + ')');
+                if (data.success == true) {
+                    try {
+                        LogUtils.saveLog("修改立项申请:" + data.result, function () {
+                            window.location.href="${contextPath}/projectApply/toStep/7/" + data.result;
+                        });
+                    } catch (e) {
+                        window.location.href="${contextPath}/projectApply/toStep/7/" + data.result;
+                    }
+                }
+            }
+        });
+    }
+
+</script>
+<script type="text/javascript">
+    // 打开选择用户弹出框
+    function selectMember(callback, args) {
+        if (callback) {
+            eval("(" + callback + "(args))");
+        } else {
+            showMembersDlg($(this)[0].id);
+        }
+    }
+    // 确认选择事件
+    function confirmMembersBtn(id) {
+        var selected = $('#smGridList').datagrid('getSelected');
+        $('#' + id).textbox('initValue', selected.realName);
+        $('#' + id).textbox('setText', selected.realName);
+        $('#smDialog').dialog('close');
+    }
+    // 根据id打开用户选择
+    function showMembersDlg(id) {
+        $('#smDialog').dialog({
+            title : '用户选择',
+            width : 600,
+            height : 400,
+            queryParams : {
+                textboxId : id
+            },
+            href : '${contextPath!}/member/members.html',
+            modal : true,
+            buttons : [{
+                text : '确定',
+                handler : function() {
+                    confirmMembersBtn(id);
+                }
+            }, {
+                text : '取消',
+                handler : function() {
+                    $('#smDialog').dialog('close');
+                }
+            }]
+        });
+    }
+</script>
+
+</#body>

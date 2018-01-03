@@ -1,0 +1,268 @@
+<#body>
+<style>
+    .title-first,
+    .title-second {
+        margin-top: 20px;
+        background: #f7f7f7;
+    }
+
+    .title-first {
+        padding-left: 0;
+    }
+
+    .ajax-file-upload {
+        line-height: 28px;
+    }
+
+    .ajax-file-upload-statusbar {
+        display: none;
+    }
+</style>
+<link href="${contextPath!}/resources/css/uploadfile.css" rel="stylesheet">
+<script type="text/javascript" src="${contextPath!}/resources/js/jquery.uploadfile.min.js"></script>
+<div class="easyui-panel" title="立项申请(第七步)">
+    <div style="padding:10px 60px 20px 60px">
+        <form id="ff" method="post">
+            <input type="hidden" name="id" value="${apply.id}"/>
+            <input type="hidden" name="files" id="files"/>
+            <input type="hidden" name="dels" id="dels"/>
+            <input type="hidden" name="status" id="status"/>
+            <input type="hidden" name="email" id="email"/>
+            <table cellpadding="5" width="100%">
+                <input type="hidden" name="id" value="${apply.id}"/>
+                <tr>
+                    <td>项目编号</td>
+                    <td>${apply.number}</td>
+                    <td>项目类别</td>
+                    <td>${apply.type}</td>
+                </tr>
+                <tr>
+                    <td class="title-first" colspan="4">8.项目相关材料</td>
+                </tr>
+                <tr>
+                    <td>*立项文件上传</td>
+                    <td colspan="3">
+                        <div id="fileuploader"></div>
+                    </td>
+                </tr>
+            </table>
+            <table id="dg" class="easyui-datagrid" style="height:auto"
+                   data-options="
+                singleSelect: true,
+                 url: '${contextPath}/projectApply/loadFiles?id=${apply.id}',
+                 toolbar: '#tb'
+            ">
+                <thead>
+                <tr>
+                    <th data-options="field:'id',width:80,hidden:true">ID</th>
+                    <th data-options="field:'name', width:'45%', align:'center',formatter:formatDown, resizable:'true', fixed:'false'">
+                        文件名
+                    </th>
+                    <th data-options="field:'length', width:'20%', align:'center', resizable:'true', fixed:'false',formatter:renderSize">
+                        大小
+                    </th>
+                    <th data-options="field:'created', width:'35%',  _provider:'dateProvider', align:'center', resizable:'true', fixed:'false'">
+                        上传日期
+                    </th>
+                </tr>
+                </thead>
+            </table>
+            <div id="tb" style="height:auto">
+                <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true"
+                   onclick="removeit()">删除</a>
+            </div>
+            <table cellpadding="5" width="100%" style="margin-top: 20px;">
+                <tr>
+                    <td class="title-first" colspan="4">9.邮件发送列表</td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <input class="easyui-tagbox" id="tagbx"
+                               data-options="prompt: '输完后回车才能生效哦!',validType: ['email']" value="${apply.email}"
+                               style="width:100%">
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <div style="text-align:center;padding:5px;margin-top:50px;">
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
+               onclick="backForm()">上一步</a>
+            <a href="${contextPath}/projectApply/index.html" class="easyui-linkbutton"
+               data-options="width:'80px'">取消</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
+               onclick="submitForm(1,this)">保存</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
+               onclick="submitForm(2,this)">提交</a>
+        </div>
+    </div>
+</div>
+<script>
+    function backForm() {
+        window.location.href = "${contextPath}/projectApply/toStep/6/${apply.id}";
+    }
+
+    function formatDown(value, row) {
+        return "<a href='${contextPath!}/files/download?id=" + row.id + "'>" + value + "</a>";
+    }
+
+    function renderSize(value) {
+        if (null == value || value == '') {
+            return "0 Bytes";
+        }
+        var unitArr = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+        var index = 0;
+        var srcsize = parseFloat(value);
+        index = Math.floor(Math.log(srcsize) / Math.log(1024));
+        var size = srcsize / Math.pow(1024, index);
+        size = size.toFixed(2);//保留的小数位数
+        return size + unitArr[index];
+    }
+
+    $("#tagbx").tagbox({
+        onBeforeRemoveTag: function (value) {
+            if (value == pmo_email) {
+                return false;
+            }
+        }
+    });
+
+    function progress() {
+        var win = $.messager.progress({
+            title: 'Please waiting',
+            msg: 'Loading data...'
+        });
+    }
+
+    var dels = [];
+    $("#fileuploader").uploadFile({
+        url: "${contextPath!}/files/filesUpload", // 文件上传url
+        fileName: "file", // 提交到服务器的文件名
+        uploadStr: '上传',
+        maxFileSize: 10485760, // 上传文件个数（多个时修改此处
+        returnType: 'json', // 服务返回数据
+        // allowedTypes : 'jpg,jpeg,png,gif', // 允许上传的文件式
+        showDone: true, // 是否显示"Done"(完成)按钮
+        showDelete: false, // 是否显示"Delete"(删除)
+        sizeErrorStr: '文件过大，允许上传文件最大为',//超过最大文件限制
+        onLoad: function (obj) {
+            // 页面加载时，onLoad回调。如果有需要在页面初始化时显示（比如：件修改时）的文件需要在此方法中处理
+            // obj.createProgress('/tmpImage.jpg'); //
+            // createProgress方法可以创建一个已上传的文件
+        },
+        onSelect: function (files) {
+            // console.log(files[0]);
+            // console.log($('#dg').datagrid('getData'));
+            var old = $('#dg').datagrid('getData').rows;
+            for (var i = 0; i < old.length; i++) {
+                if (files[0].name == old[i].name) {
+                    $('.ajax-upload-dragdrop').next('div').append('<div class="ajax-file-upload-error">请不要重复上传文件!</div>')
+                    return false;
+                }
+            }
+            progress();
+        },
+        deleteCallback: function (data, pd) {
+            // 文件删除时的回调方法。
+            // 如：以下ajax方法为调用服务器端删除方法删除服务器端的文件
+            $.ajax({
+                cache: false,
+                url: "file/upload",
+                type: "DELETE",
+                dataType: "json",
+                data: {
+                    file: data.url
+                },
+                success: function (data) {
+                    if (data.code === 0) {
+                        pd.statusbar.hide(); // 删除成功后隐藏进度条等
+                        $('#image').val('');
+                    } else {
+                        console.log(data.message); // 打印服务器返回的错误信息
+                    }
+                }
+            });
+        },
+        onSuccess: function (files, data, xhr, pd) {
+            $.messager.progress('close');
+            $('#dg').datagrid('appendRow', {
+                id: data.data[0].id,
+                name: data.data[0].name,
+                length: data.data[0].length,
+                created: new Date(data.data[0].created).format("yyyy-MM-dd hh:mm:ss")
+            });
+        }
+    });
+
+    function removeit() {
+
+        var row = $('#dg').datagrid('getSelected');
+        if (!row) {
+            $.messager.alert('警告', '请选中一条数据');
+            return;
+        }
+        dels.push(row);
+        var index = $("#dg").datagrid('getRowIndex', row);
+        $('#dg').datagrid('deleteRow', index);
+    }
+
+    function submitForm(type, obj) {
+        $('#ff').form('submit', {
+            url: "${contextPath}/projectApply/submit",
+            onSubmit: function () {
+                if ($("#ff").form('validate')) {
+                    $(obj).linkbutton('disable');
+                }
+                $("#files").val(JSON.stringify($("#dg").datagrid("getData").rows));
+                $("#dels").val(JSON.stringify(dels));
+                $("#status").val(type);
+                var data = $("#tagbx").tagbox("getValues");
+                $("#email").val(data.join());
+                return $("#ff").form('validate');
+            },
+            success: function (data) {
+                var data = eval('(' + data + ')');
+                if (data.success == true) {
+                    try {
+                        LogUtils.saveLog("保存立项申请:" + data.result, function () {
+                            window.location.href = "${contextPath}/projectApply/index.html";
+                        });
+                    } catch (e) {
+                        window.location.href = "${contextPath}/projectApply/index.html";
+                    }
+                }
+            }
+        });
+    }
+
+    Date.prototype.format = function (fmt) {
+        var o = {
+            "M+": this.getMonth() + 1,                 //月份
+            "d+": this.getDate(),                    //日
+            "h+": this.getHours(),                   //小时
+            "m+": this.getMinutes(),                 //分
+            "s+": this.getSeconds(),                 //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds()             //毫秒
+        };
+        if (/(y+)/.test(fmt)) {
+            fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        }
+        for (var k in o) {
+            if (new RegExp("(" + k + ")").test(fmt)) {
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            }
+        }
+        return fmt;
+    };
+
+    $(function () {
+        var value = $("#tagbx").tagbox('getValue');
+        if (value == undefined || value == '') {
+            $("#tagbx").tagbox('setValue', pmo_email);
+        }
+    })
+
+</script>
+
+
+</#body>

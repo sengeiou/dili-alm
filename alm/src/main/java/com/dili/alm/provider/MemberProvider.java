@@ -28,11 +28,11 @@ public class MemberProvider implements ValueProvider {
 	@PostConstruct
 	public void init(){
 		//应用启动时初始化userMap
-		if(AlmCache.userMap.isEmpty()){
+		if(AlmCache.USER_MAP.isEmpty()){
 			BaseOutput<List<User>> output = userRpc.list(new User());
 			if(output.isSuccess()){
 				output.getData().forEach(user ->{
-					AlmCache.userMap.put(user.getId(), user);
+					AlmCache.USER_MAP.put(user.getId(), user);
 				});
 			}
 		}
@@ -41,7 +41,7 @@ public class MemberProvider implements ValueProvider {
 	public List<ValuePair<?>> getLookupList(Object o, Map map, FieldMeta fieldMeta) {
 		init();
 		ArrayList buffer = new ArrayList<ValuePair<?>>();
-		AlmCache.userMap.forEach((k, v)->{
+		AlmCache.USER_MAP.forEach((k, v)->{
 			buffer.add(new ValuePairImpl(v.getRealName(), k));
 		});
 		return buffer;
@@ -51,7 +51,7 @@ public class MemberProvider implements ValueProvider {
 	public String getDisplayText(Object o, Map map, FieldMeta fieldMeta) {
 		if(o == null) return null;
 		init();
-		User user = AlmCache.userMap.get(o);
+		User user = AlmCache.USER_MAP.get(Long.parseLong(o.toString()));
 		return user == null ? null : user.getRealName();
 	}
 }

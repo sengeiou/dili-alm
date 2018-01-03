@@ -6,21 +6,23 @@ function selectMember(callback, args) {
 		showMembersDlg($(this)[0].id);
 	}
 }
+
 // 确认选择事件
 function confirmMembersBtn(id) {
 	var selected = $('#smGridList').datagrid('getSelected');
-	$('#' + id).textbox('setValue', selected.id);
+	$('#' + id).textbox('initValue', selected.id);
 	$('#' + id).textbox('setText', selected.realName);
 	$('#smDialog').dialog('close');
 }
 // 根据id打开用户选择
-function showMembersDlg(id) {
+function showMembersDlg(id, dep) {
 	$('#smDialog').dialog({
 				title : '用户选择',
-				width : 800,
+				width : 650,
 				height : 400,
 				queryParams : {
-					textboxId : id
+					textboxId : id,
+					dep : dep
 				},
 				href : '${contextPath!}/member/members.html',
 				modal : true,

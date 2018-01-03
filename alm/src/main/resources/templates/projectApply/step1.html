@@ -1,0 +1,261 @@
+<#body>
+<style>
+    td {
+        text-align: left;
+        /*box-sizing: border-box;*/
+        /*padding-left: 60px;*/
+    }
+
+    .datebox-button td{
+        padding-left: 0;
+    }
+
+    input[class^="easyui-"] {
+        width: 300px;
+    }
+
+    .title-first,
+    .title-second {
+        margin-top: 20px;
+        background: #f7f7f7;
+    }
+
+    .title-first {
+        padding-left: 0;
+    }
+
+    .title-second {
+        padding-left: 30px;
+    }
+    em{
+        display: inline-block;
+        width: 11px;
+    }
+    span.require{
+        width: 9px;
+        color: red;
+        line-height: 25px;
+    }
+    .textbox-label{
+        width: 110px;
+    }
+    </style>
+<div id="smDialog" style="display: none;"></div>
+<div class="easyui-panel" title="立项申请（第一步）">
+    <div style="padding:10px 50px 20px">
+        <form id="ff" method="post" action="">
+            <input type="hidden" name="id" value="${apply.id}">
+
+            <table cellpadding="10" id="tb" style="width: 100%">
+                <tr>
+                    <td width="25%">项目编号</td>
+                    <td width="25%">${apply.number}</td>
+                    <td width="25%">项目类别</td>
+                    <td width="25%">${apply.type}</td>
+                </tr>
+                <tr>
+                    <td class="title-first" colspan="4">1项目内容及资源</td>
+                </tr>
+                <tr>
+                    <td class="title-second" colspan="4">1.1项目基本信息</td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <span class="require">*</span>
+                        <input class="easyui-textbox" type="text" name="name"
+                               data-options="required:true,validType:'length[1,20]',label:'项目名称:'" style="width: calc(100% - 205px);">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <span class="require">*</span>
+                        <input class="easyui-textbox"  name="projectLeader" id="project_leader" style="width: calc(50% - 132px)"
+                               panelWidth="auto" panelHeight="auto" label="项目负责人:"
+                               data-options="editable:false,required:true,
+									buttonText:'选择',
+									onClickButton:selectMember,onChange:_changeTextboxShowClear"/>
+                    </td>
+                    <td colspan="2" >
+                        <span class="require">*</span>
+                        <input class="easyui-textbox" type="text" name="productManager" id="productManager"  style="width: calc(50% - 132px)"
+                               data-options="editable:false,required:true,label:'产品经理:',buttonText:'选择',
+									onClickButton:function(){
+										selectMember('editorCallback', 'productManager');
+									},onChange:_changeTextboxShowClear">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <span class="require">*</span>
+                        <input class="easyui-textbox" type="text" name="developmentManager" id="developmentManager" style="width: calc(50% - 132px)"
+                               data-options="editable:false,required:true,label:'研发经理:',buttonText:'选择',
+									onClickButton:selectMember,onChange:_changeTextboxShowClear">
+                    </td>
+                    <td colspan="2">
+                        <span class="require">*</span>
+                        <input class="easyui-textbox" type="text" name="testManager" id="testManager" style="width: calc(50% - 132px)"
+                               data-options="editable:false,required:true,label:'测试经理:',buttonText:'选择',
+									onClickButton:function(){
+										selectMember('editorCallback', 'testManager');
+									},onChange:_changeTextboxShowClear">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <span class="require">*</span>
+                        <input class="easyui-textbox" type="text" name="businessOwner" id="businessOwner" style="width: calc(50% - 132px)"
+                               data-options="editable:false,required:true,label:'业务负责人:',buttonText:'选择',
+									onClickButton:selectMember,onChange:_changeTextboxShowClear">
+                    </td>
+                    <td colspan="2">
+                        <span class="require">*</span>
+                        <input class="easyui-textbox" type="text" id="dep" name="dep" style="width: calc(50% - 132px)"
+                               data-options="editable:false,required:true,label:'需求所属业务部门:',buttonText:'选择',
+									onClickButton:selectDep,onChange:_changeTextboxShowClear">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <span class="require">*</span>
+                        <input class="easyui-datebox" name="expectedLaunchDate" id="" style="width: calc(50% - 132px)"
+                               data-options="editable:false,required:true,label:'业务期望上线日期:'"/>
+                    </td>
+                    <td colspan="2">
+                        <span class="require">*</span>
+                        <input class="easyui-datebox" name="estimateLaunchDate" id="" style="width: calc(50% - 132px)"
+                               data-options="editable:false,required:true,label:'预估最终上线日期:'"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <span class="require">*</span>
+                        <input class="easyui-datebox" name="startDate" id="" style="width: calc(50% - 132px)"
+                               data-options="editable:false,required:true,label:'计划开始日期:'"/>
+                    </td>
+                    <td colspan="2">
+                        <span class="require">*</span>
+                        <input class="easyui-datebox" name="endDate" id="" style="width: calc(50% - 132px)"
+                               data-options="editable:false,required:true,label:'计划结束日期:'"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="title-second" colspan="4">1.2.项目资源需求</td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <table id="requireTable" border="0" style="width: 100%">
+                            <tr>
+                                <td style="width: 30%">
+                                    <span class="require">*</span>
+                                    <input class="easyui-textbox" type="text" name="mainUser" id="mainUser" style="width: calc(30% - 78px)"
+                                    data-options="editable:false,required:true,label:'负责部门经理:',buttonText:'选择',
+                                    onClickButton:selectMember,onChange:_changeTextboxShowClear">
+                                </td>
+                                <td style="width: 30%">
+                                    <span class="require">*</span>
+                                    <input class="easyui-numberspinner" id="member" name="mainNumber" value="" style="width: calc(30% - 95px)"
+                                    data-options="required:true,increment:1,label:'预估所需人员:',min:1"> 人
+                                </td>
+                                <td style="width: 30%">
+                                    <span class="require">*</span>
+                                    <input class="easyui-numberbox" type="text" id="workTime" name="mainWorkTime" style="width: calc(30% - 105px)"
+                                    data-options="required:true,label:'预估工时:',min:1"> 人日
+                                </td>
+                                <td style="width: 10%;text-align: center">
+                                    <a href="javascript:void(0);" class="_add">新增</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <div style="text-align:center;padding:5px;margin-top:50px;">
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
+               onclick="submitForm()">下一步</a>
+            <a href="${contextPath}/projectApply/index.html" class="easyui-linkbutton" style="width:80px">取消</a>
+        </div>
+    </div>
+</div>
+<script>
+
+
+    function editorCallback(dep) {
+        showMembersDlg(dep,dep);
+    }
+    function submitForm() {
+        $('#ff').form('submit', {
+            url: "${contextPath}/projectApply/insertStep1",
+            onSubmit: function () {
+                return $("#ff").form('validate');
+            },
+            success: function (data) {
+                var data = eval('(' + data + ')');
+                if (data.success == true) {
+                    if (data.success == true) {
+                        try {
+                            LogUtils.saveLog("修改立项申请:" + data.result, function () {
+                                window.location.href = "${contextPath}/projectApply/toStep/2/" + data.result;
+                            });
+                        } catch (e) {
+                            window.location.href = "${contextPath}/projectApply/toStep/2/" + data.result;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    $("._add").on("click", function () {
+        appendRelated();
+    });
+
+    // $('.easyui-datebox').each(function(){
+    //     $(this).datebox().datebox('calendar').calendar({
+    //         validator: function(date){
+    //             var now = new Date();
+    //             var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    //             return date>=d1;
+    //         }
+    //     });
+    // });
+
+    function delRelated($_this) {
+        $($_this).closest("tr").remove();
+    }
+
+    function appendRelated(obj) {
+        // console.log(obj);
+        var index = jQuery('.related').length;
+        var parserId = "parser_" + new Date().getTime();
+        $("#requireTable").append("<tr class='related' id='" + parserId + "'><td><em></em><input style=\"width: calc(30% - 78px)\" class=\"easyui-textbox\" type=\"text\" id=\"" + index + "-user" + "\" name=\"relatedResources[" + index + "].relatedUser\" data-options=\"label:'相关部门经理:',editable:false,required:true,buttonText:'选择', onClickButton:selectMember,onChange:_changeTextboxShowClear\"></td><td><em></em><input style=\"width: calc(30% - 95px)\" class=\"easyui-numberspinner\" id='" + index + "-number' name='relatedResources[" + index + "].relatedNumber' value=\"\" data-options=\"increment:1,required:true,label:'预估所需人员:',min:1\"> 人</td><td><em></em><input style=\"width: calc(30% - 105px)\" class=\"easyui-numberbox\" type=\"text\" id='" + index + "-time' name='relatedResources[" + index + "].relatedWorkTime' data-options=\"label:'预估工时:',required:true,min:1\"> 人日</td><td style=\"width: 10%;text-align: center\"><a href=\"javascript:void(0);\" class=\"_del\" onclick='delRelated(this)'>删除</a></td></tr>");
+        $.parser.parse("#" + parserId);
+        if(obj!=undefined){
+            $("#" + index + "-user").textbox('initValue', obj['relatedUserValue']);
+            $("#" + index + "-user").textbox('setText', obj['relatedUserText']);
+            $("#" + index + "-number").textbox('initValue', obj['relatedNumber']);
+            $("#" + index + "-time").textbox('initValue', obj['relatedWorkTime']);
+        }
+    }
+
+    $(function () {
+        $('#ff').form('load', '${contextPath}/projectApply/loadApply?id=${apply.id}');
+        $("#mainUser").textbox('initValue', '${main.$_mainUser}');
+        $("#mainUser").textbox('setText', '${main.mainUser}');
+
+        $("#member").textbox("initValue", '${main.mainNumber}');
+        $("#workTime").textbox("initValue", '${main.mainWorkTime}');
+        <%
+        for (obj in related) {
+        %>
+                var data = {'relatedUserText':'${obj.relatedUser}','relatedUserValue':'${obj.$_relatedUser}','relatedNumber':'${obj.relatedNumber}','relatedWorkTime':'${obj.relatedWorkTime}'};
+                appendRelated(data);
+        <%}%>
+    })
+</script>
+
+<script type="text/javascript">
+    <#members_index/>
+    <#dep_index/>
+</script>
+</#body>

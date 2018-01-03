@@ -177,14 +177,13 @@ function onEditClicked(id) {
 	if (!dataAuth.editUser) {
 		return false;
 	}
-	var selected = null == id ? userGrid.datagrid("getSelected") : getRowById(id);
+	var selected = userGrid.datagrid("getSelected");
 	if (null == selected) {
 		$.messager.alert("警告", "请选中一条数据");
 		return;
 	}
 
 	var index = userGrid.datagrid("getRowIndex", selected);
-	userGrid.datagrid("selectRow", index);
 	$('#_passwordTd').show();
 	$('#_lastLoginIpTd').hide();
 	$('#_lastLoginTimeTd').hide();
@@ -210,7 +209,7 @@ function onEditClicked(id) {
 	$('#_fixedLineTelephone').textbox({
 				readonly : false
 			});
-	$('#_user_cellphoneName').textbox({
+	$('#_cellphone').textbox({
 				readonly : false
 			});
 	$('#_email').textbox({
@@ -253,18 +252,17 @@ function onEditClicked(id) {
 							}
 						}]
 			});
-
-	var formData = $.extend({}, selected);
 	$('#_department').combotree({
 				readonly : false,
 				validateOnCreate : false,
 				onLoadSuccess : function(node, data) {
-					$(selected.departments).each(function(index, item) {
+					$(data).each(function(index, item) {
 								var targetNode = $('#_department').combotree('tree').tree('find', item.id);;
 								$('#_department').combotree('tree').tree('check', targetNode.target);
 							});
 				}
 			});
+	var formData = $.extend(true,{}, selected);
 
 	formData = addKeyStartWith(getOriginalData(formData), "_");
 	formData._password = "";
@@ -282,7 +280,7 @@ function onDblClickRow(index, row) {
 
 // 打开某一行的查看窗口
 function onUserDetailClicked(id) {
-	var selected = null == id ? userGrid.datagrid("getSelected") : getRowById(id);
+	var selected = userGrid.datagrid("getSelected");
 	if (null == selected) {
 		$.messager.alert('警告', '请选中一条数据');
 		return;
@@ -312,7 +310,7 @@ function onUserDetailClicked(id) {
 	$('#_fixedLineTelephone').textbox({
 				readonly : true
 			});
-	$('#_user_cellphoneName').textbox({
+	$('#_cellphone').textbox({
 				readonly : true
 			});
 	$('#_email').textbox({
@@ -356,13 +354,6 @@ function onUserDetailClicked(id) {
 
 	var formData = $.extend({}, selected);
 	formData = addKeyStartWith(getOriginalData(formData), "_");
-	var comboText = '';
-	$(formData._departments).each(function(index, item) {
-				comboText += item.name + ',';
-			});
-
-	comboText = comboText.substring(0, comboText.length - 1)
-	$('#_department').combotree('setText', comboText);
 	$('#_form').form('load', formData);
 	loadData4DataList("existsRole", "${contextPath!}/role/listByUserId", {
 				userid : selected.id
@@ -477,11 +468,6 @@ function onSaveClicked() {
 	}
 
 	var _formData = removeKeyStartWith($("#_form").serializeObject(), "_");
-	var nodes = $('#_department').combotree('tree').tree('getChecked', 'checked');
-	_formData.department = new Array();
-	$(nodes).each(function(index, item) {
-				_formData.department.push(item.id)
-			});
 	var _url = null;
 
 	var isAdd = false;
@@ -505,8 +491,20 @@ function onSaveClicked() {
 	requestSave(_url, temp, function(retData) {
 				if (null != retData) {
 					if (isAdd) {
+						try {
+							LogUtils.saveLog("新增用户:" + retData.id, function() {
+									});
+						} catch (e) {
+							$.messager.alert('错误', e);
+						}
 						userGrid.datagrid("appendRow", retData);
 					} else {
+						try {
+							LogUtils.saveLog("修改用户:" + retData.id, function() {
+									});
+						} catch (e) {
+							$.messager.alert('错误', e);
+						}
 						var index = userGrid.datagrid("getRowIndex", userGrid.datagrid("getSelected"));
 						userGrid.datagrid("updateRow", {
 									index : index,
@@ -514,6 +512,7 @@ function onSaveClicked() {
 								}).datagrid("refreshRow", index);
 					}
 				}
+				$('#_form').form('clear');
 				$('#dlg').dialog('close');
 			});
 }
@@ -581,6 +580,7 @@ function queryRole(userid) {
 
 // 表格查询
 function queryGrid() {
+	userGrid.datagrid('unselectAll');
 	var opts = userGrid.datagrid("options");
 	if (null == opts.url || "" == opts.url) {
 		opts.url = "${contextPath}/user/listPage";

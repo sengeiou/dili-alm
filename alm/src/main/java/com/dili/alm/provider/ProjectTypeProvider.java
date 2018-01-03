@@ -36,10 +36,10 @@ public class ProjectTypeProvider implements ValueProvider, ApplicationListener<C
 	}
 
 	public void init() {
-		if (AlmCache.projectTypeMap.isEmpty()) {
+		if (AlmCache.PROJECT_TYPE_MAP.isEmpty()) {
 			List<DataDictionaryValueDto> list = projectService.getPojectTypes();
 			list.forEach(type -> {
-				AlmCache.projectTypeMap.put(type.getValue(), type.getCode());
+				AlmCache.PROJECT_TYPE_MAP.put(type.getValue(), type.getCode());
 			});
 		}
 	}
@@ -48,7 +48,7 @@ public class ProjectTypeProvider implements ValueProvider, ApplicationListener<C
 	public List<ValuePair<?>> getLookupList(Object obj, Map metaMap, FieldMeta fieldMeta) {
 		init();
 		List<ValuePair<?>> buffer = new ArrayList<ValuePair<?>>();
-		AlmCache.projectTypeMap.forEach((k, v) -> {
+		AlmCache.PROJECT_TYPE_MAP.forEach((k, v) -> {
 			buffer.add(new ValuePairImpl<String>(v, k));
 		});
 		return buffer;
@@ -58,6 +58,6 @@ public class ProjectTypeProvider implements ValueProvider, ApplicationListener<C
 	public String getDisplayText(Object obj, Map metaMap, FieldMeta fieldMeta) {
 		if (obj == null || obj.equals(""))
 			return null;
-		return AlmCache.projectTypeMap.get(obj.toString());
+		return AlmCache.PROJECT_TYPE_MAP.get(obj.toString());
 	}
 }

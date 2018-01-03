@@ -1,0 +1,36 @@
+<div style="margin: 5px 5px;">
+	部门名称: <input id="searchTextbox" class="easyui-textbox" data-options="buttonText:'查询',buttonIcon:'icon-search',onClickButton:search" onkeyup="searchBoxOnKeyup();" style="width: 300px">
+</div>
+<table class="easyui-datagrid" id="smGridList" sortName="name" sortOrder="asc" fitColumns="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="true"
+	align="center" fit="true" striped="true" idField="id" data-options="onDblClickRow:dbClickDep">
+	<thead>
+		<tr>
+			<th data-options="field:'id',hidden:true"></th>
+			<th data-options="field:'name',width:'50%'">部门名称</th>
+			<th data-options="field:'notes',width:'50%'">部门描述</th>
+		</tr>
+	</thead>
+</table>
+
+<script type="text/javascript">
+	function dbClickDep(index, row) {
+        confirmDepBtn("${textboxId}");
+	}
+	function search() {
+		var opts = $("#smGridList").datagrid("options");
+		opts.url = '${contextPath!}/department/departments';
+		var param = $('#searchTextbox').textbox('getText');
+		$('#smGridList').datagrid('load', {
+			name : param
+		});
+	}
+
+	$(function() {
+		$('#searchTextbox').textbox('addClearBtn', 'icon-clear');
+		$('#searchTextbox').textbox('textbox').focus();
+		$('#searchTextbox').textbox('textbox').bind('keydown', function(e) {
+			search();
+		});
+		search();
+	})
+</script>

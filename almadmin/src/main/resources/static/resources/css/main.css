@@ -1,21 +1,419 @@
+/*reset*/
+body, ul, ol, li, p, h1, h2, h3, h4, h5, h6, form, fieldset, table, td, img, div, dl, dt, dd, input {
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+::-webkit-input-placeholder {
+    /* WebKit browsers */
+    color: #bbb;
+}
+
+:-moz-placeholder {
+    /* Mozilla Firefox 4 to 18 */
+    color: #999;
+}
+
+::-moz-placeholder {
+    /* Mozilla Firefox 19+ */
+    color: #999;
+}
+
+:-ms-input-placeholder {
+    /* Internet Explorer 10+ */
+    color: #999;
+}
+html{
+    height: 100%;
+}
 body {
-    font-family:verdana,helvetica,arial,sans-serif;
-    padding:20px;
-    font-size:12px;
-    margin:0;
+    /*min-width: 1200px;*/
+    height: 100%;
+    font-family: "Microsoft YaHei", "微软雅黑", "sans-serif";
+    padding: 0px;
+    font-size: 13px;
+    margin: 0;
+}
+
+input,
+select,
+textarea {
+    outline: none;
+    border: none;
+    background: none;
+}
+
+textarea {
+    resize: none;
+}
+
+img {
+    border: none;
+}
+
+li {
+    list-style: none;
+}
+
+a {
+
+    text-decoration: none;
+}
+a:active{
+    color: #6d8eda;
+}
+
+.clearfix:before,
+.clearfix:after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.clearfix {
+    *zoom: 1;
+}
+
+.fl {
+    float: left;
+}
+
+.fr {
+    float: right;
+}
+
+i,
+span,
+em,
+strong,
+img,
+a,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-style: normal;
+    font-weight: normal;
+}
+
+input {
+    outline: none;
 }
 
 /* datagrid row border start */
-.lines-both .datagrid-body td{
+.lines-both .datagrid-body td {
 }
-.lines-no .datagrid-body td{
-    border-right:1px dotted transparent;
-    border-bottom:1px dotted transparent;
+
+.lines-no .datagrid-body td {
+    border-right: 1px dotted transparent;
+    border-bottom: 1px dotted transparent;
 }
-.lines-right .datagrid-body td{
-    border-bottom:1px dotted transparent;
+
+.lines-right .datagrid-body td {
+    border-bottom: 1px dotted transparent;
 }
-.lines-bottom .datagrid-body td{
-    border-right:1px dotted transparent;
+
+.lines-bottom .datagrid-body td {
+    border-right: 1px dotted transparent;
 }
+
+/* datagrid row border end */
+
+/*index start*/
+.index-layout{
+    width:100%;
+    min-width: 1200px;
+    height:100%;
+}
+.index-layout .head{
+    position: relative;
+    width: 100%;
+    margin:0 auto;
+    background: #000 url('../images/bg.png') no-repeat 0px -175px fixed;
+}
+.head > div{
+    box-sizing: border-box;
+    height: 72px;
+}
+.head .info,
+.head .logo{
+    width: 300px;
+}
+.head .logo{
+    float: left;
+    text-indent: -9999px;
+    background: url('../images/alm-name.png') no-repeat 15px 16px;
+}
+.head .menu-top{
+    margin:0 300px;
+    padding: 16px 0;
+    text-align: center;
+}
+.head .menu-top ul{
+    display: block;
+    margin: 0 auto;
+}
+.head .menu-top ul li{
+    display: inline-block;
+    width: 120px;
+    height: 40px;
+    margin: 0 15px;
+    border-radius: 4px;
+    background: #2a5d3f;
+}
+.head .menu-top ul li.on,
+.head .menu-top ul li:hover{
+    background: #299a58;
+}
+.head .menu-top ul li a{
+    color: #fff;
+    font-size: 16px;
+    line-height: 40px;
+}
+.head .info{
+    float: right;
+    padding: 15px 15px;
+}
+.info > div{
+    float: right;
+}
+.info .msg{
+    position: relative;
+    width: 40px;
+    height: 40px;
+    margin-right: 5px;
+    background: url('../images/news.png') no-repeat center center;
+}
+.info .msg span{
+    display: block;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    text-align: center;
+    width: 17px;
+    height: 17px;
+    line-height: 17px;
+    border-radius: 50%;
+    background: #e44a21;
+    color: #fff;
+    font-size: 12px;
+}
+.info .user-info{
+    position: relative;
+    /*width:150px;*/
+    cursor: pointer;
+    /*text-align: right;*/
+}
+.user-info .user-menu{
+    height: 40px;
+    font-size: 15px;
+    line-height: 40px;
+    color: #fff;
+    background: url('../images/user-show.png') no-repeat right center;
+    /*background: darkgreen;*/
+}
+.user-info .mouseover{
+    background-image: url('../images/user-hide.png');
+}
+.user-info .user-menu a{
+    float: left;
+    height: 40px;
+    margin-left: 5px;
+    color: #fff;
+}
+.user-info .user-img{
+    display: block;
+    overflow: hidden;
+    border-radius: 50%;
+}
+.user-info .user-name{
+    padding-right: 15px;
+}
+.menu-list{
+    display: none;
+    box-sizing: border-box;
+    position: absolute;
+    top:72px;
+    right: 10px;
+    width: 190px;
+    max-height: 230px;
+    padding: 0 8px;
+    /*z-index: 999;*/
+    background:#fafafa;
+    box-shadow: 0px 1px 6px #ccc;
+    overflow-y: scroll;
+}
+
+.menu-list ul li{
+    height: 45px;
+    /*width: 190px;*/
+    border-bottom: 1px solid #e5e5e5;
+    text-align: center;
+    overflow: hidden;
+}
+.menu-list ul li:last-child{
+    border: none;
+}
+.menu-list a{
+    line-height: 45px;
+    color: #666;
+    font-size: 14px;
+}
+.menu-list ul li:hover a{
+    color: #299a58;
+}
+#news-list{
+    right: 50px;
+}
+#news-list ul li{
+    text-align: left;
+}
+.menu-list .dot-top{
+    position: absolute;
+    left: 83px;
+    top: -10px;
+    width: 0;
+    height: 0;
+    border-bottom: 10px solid #fafafa;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+}
+/*左侧菜单*/
+.menu-left{
+    height: 100%;
+    background: #fafafa url("../images/left-back.png") no-repeat right bottom;
+    /*text-align: center;*/
+}
+.menu-left .menu-left-list{
+    overflow:hidden;
+    /*background: #f0f0f0;*/
+}
+.menu-left .menu-name{
+    height: 50px;
+    line-height: 50px;
+    text-indent: 50px;
+    font-size: 16px;
+    color: #041203;
+    /*background: url('../images/menu-open.png') no-repeat 31px center;*/
+}
+.menu-left .panel-header{
+    padding: 10px;
+}
+.menu-left .panel-title{
+    /*font-size: 14px;*/
+    padding-left: 75px;
+    font-weight: 100;
+}
+.menu-left .accordion,
+.menu-left .accordion .accordion-header,
+.menu-left .accordion .accordion-body{
+    border:none;
+}
+.menu-left .accordion .accordion-header{
+    background: #f0f0f0 url('../images/file-close.png') no-repeat 67px center;
+}
+.menu-left .accordion .accordion-header-selected{
+    /*color:#666;*/
+    background:#f0f0f0 url('../images/file-open.png') no-repeat 67px center;
+}
+.menu-left .accordion-header-selected .panel-title{
+    color:#666;
+}
+.menu-left .accordion-collapse{
+    display: none;
+}
+.menu-left .title-name{
+    box-sizing: border-box;
+    height: 45px;
+    /*padding-left: 85px;*/
+    line-height: 45px;
+    font-size: 15px;
+    color: #333;
+    /*text-align: center;*/
+    text-indent: 90px;
+    background: #ededed;
+    font-weight: bold;
+    /*background: #f0f0f0 url(../images/file-open.png) no-repeat 67px center;*/
+}
+.menu-left .close{
+    /*background: #f0f0f0 url(../images/file-close.png) no-repeat 67px center;*/
+}
+.menu-left ul li{
+    text-indent: 105px;
+    height: 40px;
+    /*text-align: center;*/
+    background: url("../images/list-decration.png") 90px center no-repeat;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.menu-left ul li a{
+    font-size: 14px;
+    line-height: 40px;
+    color: #666;
+}
+.menu-left ul li.on {
+    background: #299a58 url("../images/list-decration-on.png") 90px center no-repeat !important;
+    /*color: #fff !important;*/
+}
+.menu-left ul li.on a{
+    /*background: #2a5d3f !important;*/
+    color: #fff !important;
+}
+.menu-left ul li:hover{
+    background: #cdded4 url("../images/list-decration.png") 90px center no-repeat;
+}
+/*index end*/
+
+/* easyui基础字体设置 */
+/*更改表格标题文字大小*/
+.datagrid-header span {
+    /*font-size: 15px !important; }  */
+.datagrid-header-row {     /* background-color: #e3e3e3; */     /* color: #111 */     Height: 30px; }
+
+/*更改表格中单元格行间距*/
+#table .datagrid-btable tr{height: 60px;}
+
+/*更改表格标题的行间距*/
+.panel-title {
+    margin-top: 4px;
+    margin-bottom: 4px;
+    font-size: 14px;
+    color: inherit;
+}
+/*更改datagrid中的数据*/
+.datagrid-cell{
+    font-size: 13px;
+}
+/*更改treegrid的递归列*/
+.tree-title{
+    font-size: 13px;
+}
+/*textbox的label字体*/
+.textbox-label{
+    font-size: 13px;
+}
+/*按钮字体*/
+.l-btn-text{
+    font-size: 13px;
+}
+/*菜单字体*/
+.menu-text{
+    font-size: 13px;
+}
+/*tab字体*/
+.tabs-title{
+    font-size: 13px;
+}
+/*表格分页条字体*/
+.pagination-info{
+    font-size: 13px;
+}
+
 /* datagrid row border end */

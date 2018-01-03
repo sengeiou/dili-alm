@@ -1,0 +1,99 @@
+ <#body>
+     <style>
+         .textbox-label{width: 100px;}
+     </style>
+    <div class="easyui-layout" fit="true">
+    	<div id="smDialog" style="display: none;"></div>
+        <!-- ====================================================================================================================== -->
+        <!-- 上方布局 -->
+        <!-- ====================================================================================================================== -->
+        <div region="north" height="auto" align="center">
+            <!-- =========================================================表单========================================================= -->
+            <div class="easyui-panel" style="width:100%;" align="left">
+                <form id="form" class="easyui-form" method="post" fit="true">
+                    <table style="padding:10px;">
+                        <tr>
+                        	<td style="padding:5px;">
+                        		<input class="easyui-textbox" name="operatorId" id="operatorId" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="操作员:" style="width:100%" data-options="editable:false,
+									buttonText:'选择',
+									onClickButton:selectMember,onChange:_changeTextboxShowClear" />
+                            </td>
+
+                            <td style="padding:5px;">
+                                <input class="easyui-textbox" name="content" id="content" style="width:100%" data-options="label:'操作内容:', validType:'length[0,20]'" />
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px;">
+                                <input class="easyui-datetimebox" editable="false" name="beginTime" id="beginTime" style="width:100%" data-options="label:'操作开始时间:'" />
+
+                            </td>
+                            <td style="padding:5px;">
+                                <input class="easyui-datetimebox" editable="false"  name="endTime" id="endTime" style="width:100%" data-options="label:'操作结束时间:'" />
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
+                                   onclick="queryGrid()">查询</a>
+                                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">重置</a>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+        <!-- ====================================================================================================================== -->
+        <!-- 中央布局 -->
+        <!-- ====================================================================================================================== -->
+        <!-- 表格 -->
+        <div region="center" style="width:100%;" height="auto">
+            <!-- =========================================================表格========================================================= -->
+            <table class="easyui-datagrid" title="数据信息列表" id="grid" fitColumns="true"
+                   pagination="true" pageSize="20" pageNumber="1" pagePosition="both" rownumbers="true" remoteSort="false"
+                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="created" sortOrder="desc"
+                   align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" data-options="onHeaderContextMenu:headerContextMenu">
+                <thead>
+                    <tr>
+                        <th data-options="field:'logNumber',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'" style="width: 15%">
+                            日志ID
+                        </th>
+                        <th data-options="field:'operatorId',  _provider:'memberProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'" style="width: 15%">
+                            操作员
+                        </th>
+                        <th data-options="field:'created',  _provider:'datetimeProvider', sortable:'true', order:'desc', align:'center', resizable:'true', fixed:'false'" style="width: 30%">
+                            操作时间
+                        </th>
+                        <th data-options="field:'ip',   sortable:'true', order:'desc', align:'center', resizable:'true', fixed:'false'" style="width: 20%">
+         IP地址
+                        </th>
+                        <th data-options="field:'content', align:'center', resizable:'true', fixed:'false'" style="width: 20%">
+                            操作内容
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+            <!-- datagrid工具栏 -->
+            <div id="toolbar" style="height:20px;padding:5px 5px;">
+                <div style="float:right">
+                边框显示:<select onchange="changeBorder('grid',this.value)">
+                    <option value="lines-both">全边框</option>
+                    <option value="lines-no">无边框</option>
+                    <option value="lines-right">右边框</option>
+                    <option value="lines-bottom">下边框</option>
+                </select>
+                行条纹:<input type="checkbox" checked="checked" onclick="$('#grid').datagrid({striped:$(this).is(':checked')})">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ====================================================================================================================== -->
+    <!-- style & script 分隔线 -->
+    <!-- ====================================================================================================================== -->
+ <script type="text/javascript">
+ 	<#members_index/>
+	<#log_index/>
+</script>
+</#body>

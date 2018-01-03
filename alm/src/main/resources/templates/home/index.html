@@ -1,0 +1,252 @@
+<#body>
+    <style>
+        html,body{
+            height: 100%;
+        }
+        body{
+            box-sizing: border-box;
+            /*background: #fcf8e3;*/
+            padding: 10px 10px 0;
+        }
+        .main-left{
+            margin-right: 310px;
+            height: 100%;
+            /*background-color: #ffe6b8*/
+        }
+        .main-right{
+            float: right;
+            width: 300px;
+            height: 100%;
+            /*background-color: #ffe6b8*/
+        }
+        .tabs-panels{
+            height: calc(100% - 30px);
+        }
+        .tabs-header{
+            border: none;
+        }
+        #scheduleList li{
+            margin-bottom: 10px;
+            font-weight:400;
+            color: #333;
+
+        }
+        #scheduleList li a{
+            float: right;
+            text-decoration: none;
+            color: #A52A2A;
+        }
+    </style>
+
+    <div id="main" style="box-sizing:border-box;width:100%;height:100%;">
+        <div class="main-right">
+            <div id='calendar' style="width:300px;"></div>
+            <div style="width:300px;float:right;padding-top:20px;font-weight: bold">
+     日程安排       
+            <hr/>
+            <ol id="scheduleList">
+            <!--<li></li>-->
+            <!--<li></li>-->
+            </ol>
+            </div>
+        </div>
+        <div class="main-left">
+
+            <div class="easyui-tabs" style="width: 100%;height: 100%">
+                <div title="待办任务" style="width: 100%">
+                    <iframe scrolling="auto" frameborder="0"  src="/alm/home/taskList" style="width:100%;height:calc(100% - 3px);"></iframe>
+                </div>
+                <div title="我的项目">
+                    <iframe scrolling="auto" frameborder="0"  id="myProject" src="/alm/home/myProjectIndex" style="width:100%;height:calc(100% - 3px);"></iframe>
+                </div>
+            </div>
+        </div>
+
+
+
+          <!-- 隐藏编辑框 -->
+        <div id="dlg" class="easyui-dialog" shadow="false" resizable="false" constrain="true" shadow="true" draggable="false" title="日程详情"style="width:400px;height:200px;padding:10px" modal="true" border="thin" closed="true"
+             data-options="
+                    iconCls: 'icon-save',
+                    height: 200,
+                    buttons: [{
+                        text:'保存',
+                        iconCls:'icon-ok',
+                        handler:saveOrUpdate
+                    },{
+                        text:'取消',
+                        handler:function(){
+                            $('#dlg').dialog('close');
+                        }
+                    }]
+                ">
+            <form id="_form" class="easyui-form" method="post" fit="true">
+            <input name="_id" id="_id" type="hidden">
+            <table width="360px">
+                <tr>
+                    <td style="padding:5px;">
+                        <input class="easyui-textbox" name="scheduleDate" id="scheduleDate" style="width:100%" data-options="label:'编辑时间:'"
+                            required="true" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:5px;">
+                        <input class="easyui-textbox" name="scheduleText" id="scheduleText" style="width:100%" data-options="label:'编辑内容:', validType:'length[0,255]'" />
+                    </td>
+                </tr>
+            </table>
+            </form>
+        </div>
+	</div>
+
+<script type="text/javascript">
+$(function() {
+	  init();
+	});
+	function showNewDate(){
+    var newDate = new Date();
+    var str = "" + newDate.getFullYear() + "/";
+    str += (newDate.getMonth()+1) + "/";
+    str += newDate.getDate() ;
+    return str;
+   }
+   function init(){
+	   $('#calendar').empty();
+	   $("#scheduleList").empty();
+		var date = new Date();
+		var d = date.getDate();
+		var m = date.getMonth();
+		var y = date.getFullYear();
+		var events ;
+		$('#calendar').fullCalendar({
+			header: {},
+			firstDay:1,
+			editable: false,
+			timeFormat: 'H:mm',
+			axisFormat: 'H:mm',
+			events:function (start,end,callback){
+				//得到日期就显示样式
+ 			   	 var  htmlobj=$.ajax({url:"${contextPath}/workSchedule/getWorkScheduleDate.json",async:false});
+				 var str=htmlobj.responseText;
+				 var obj = $.parseJSON(str);
+				 events=[];
+				  $(obj).each(function(){
+	                  events.push({
+	                      title: "*",
+	                      start: this.scheduleDate, // will be parsed
+	                      color: '#A52A2A'
+	                  });
+					  });
+
+                  callback(events);
+			} ,dayClick: function(date, allDay, jsEvent, view) {
+				//弹出框
+	            var selDate =$.fullCalendar.formatDate(date,'yyyy-MM-dd');//格式化日期
+	            var oldDate = new Date(selDate.replace("-", "/").replace("-", "/"));
+	   		 	var newDate = new Date(showNewDate());
+	   		 	if(oldDate<newDate){
+	   		 		$.messager.alert('警告','不可添加日程');
+	   		 	}else{
+		            $('#dlg').dialog("open");
+		            $('#_form').form("clear");
+		            $('#_form').form("load",{scheduleDate:selDate});
+		            $('#dlg').panel('move',{top:$(document).scrollTop() + ($(window).height()-100) * 0.5});
+		            $('#dlg').panel('move',{left:$(document).scrollTop() + ($(window).height()+50) * 0.5});
+	   		 	}
+	        },eventMouseover:function(calEvent, jsEvent, view){
+
+	        	var selDate =$.fullCalendar.formatDate(calEvent.start,'yyyy-MM-dd');//格式化日期
+	        	listEvents(selDate);
+	        }
+		});
+
+   }
+		 //根据主键删除
+        function del(id) {
+            $.messager.confirm('确认','您确认想要删除记录吗？',function(r){
+                if (r){
+                    $.ajax({
+                        type: "POST",
+                        url: "${contextPath}/workSchedule/delete",
+                        data: {id:id},
+                        processData:true,
+                        dataType: "json",
+                        async : true,
+                        success: function (data) {
+                            if(data.code=="200"){
+                                init();
+                            }else{
+                                $.messager.alert('错误',data.result);
+                            }
+                        },
+                        error: function(){
+                            $.messager.alert('错误','远程访问失败');
+                        }
+                    });
+                }
+            });
+
+        }
+
+	//保存日程
+    function saveOrUpdate(){
+
+        if(!$('#_form').form("validate")){
+            return;
+        }
+        var _formData = $("#_form").serializeObject();
+        var _url = null;
+        //没有id就新增
+        if(_formData.id == null || _formData.id==""){
+            _url = "${contextPath}/workSchedule/insert";
+        }else{//有id就修改
+            _url = "${contextPath}/workSchedule/update";
+        }
+        $.ajax({
+            type: "POST",
+            url: _url,
+            data: _formData,
+            processData:true,
+            dataType: "json",
+            async : true,
+            success: function (data) {
+                if(data.code=="200"){
+                    $('#dlg').dialog('close');
+                    init();
+                }else{
+                    $.messager.alert('错误',data.result);
+                }
+            },
+            error: function(){
+                $.messager.alert('错误','远程访问失败');
+            }
+        });
+    }
+
+	//获取数据方法
+	function listEvents(selDate){
+		//得到日期就显示样式
+	   	 var  htmlobj=$.ajax({url:"${contextPath}/workSchedule/getWorkSchedule.json?scheduleDate="+selDate,async:false});
+		 var str=htmlobj.responseText;
+		 var obj = $.parseJSON(str);
+		 var htmlStr="";
+		 $("#scheduleList").empty();
+		 var oldDate = new Date(obj[0].scheduleDateStr.replace("-", "/").replace("-", "/"));
+		 var newDate = new Date(showNewDate());
+		 if(oldDate<newDate){
+			  $(obj).each(function(){
+		           htmlStr+="<li>"+this.scheduleText +"&nbsp;&nbsp;</li>";
+			  });
+		 }else{
+			 $(obj).each(function(){
+		           htmlStr+="<li>"+this.scheduleText +"&nbsp;&nbsp;<a href='javascript:void(0)' onclick='del("+this.id+")'>删除</a></li>";
+			  }); 
+		 }
+		 $("#scheduleList").html(htmlStr);
+
+	}
+</script>
+<script src='${contextPath}/resources/js/jquery-ui-1.10.2.custom.min.js'></script>
+<script src='${contextPath}/resources/js/fullcalendar.min.js'></script>
+<link rel="stylesheet" type="text/css" href="${contextPath}/resources/css/fullcalendar.css">
+</#body>

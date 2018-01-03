@@ -1,7 +1,7 @@
 package com.dili.alm.provider;
 
-import com.dili.alm.domain.Milestones;
-import com.dili.alm.service.MilestonesService;
+import com.dili.alm.domain.ProjectVersion;
+import com.dili.alm.service.ProjectVersionService;
 import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValueProvider;
@@ -18,7 +18,7 @@ import java.util.Map;
 public class MilestonesProvider implements ValueProvider {
 
 	@Autowired
-	private MilestonesService milestonesService;
+	private ProjectVersionService projectVersionService;
 
 
 	@Override
@@ -28,8 +28,7 @@ public class MilestonesProvider implements ValueProvider {
 
 	@Override
 	public String getDisplayText(Object o, Map map, FieldMeta fieldMeta) {
-		Milestones milestones = (Milestones)map.get("_rowData");
-		if(milestones.getParentId() == null) return null;
-		return milestonesService.get(milestones.getParentId()).getCode();
+		ProjectVersion projectVersion = (ProjectVersion)map.get("_rowData");
+		return projectVersionService.get(projectVersion.getId()).getCode();
 	}
 }

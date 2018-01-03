@@ -1,6 +1,7 @@
 package com.dili.sysadmin.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
@@ -10,6 +11,9 @@ import com.dili.sysadmin.domain.dto.AddUserDto;
 import com.dili.sysadmin.domain.dto.UpdateUserDto;
 import com.dili.sysadmin.domain.dto.UpdateUserPasswordDto;
 import com.dili.sysadmin.domain.dto.UserDepartmentDto;
+import com.dili.sysadmin.domain.dto.UserDepartmentQuery;
+import com.dili.sysadmin.domain.dto.UserDepartmentRole;
+import com.dili.sysadmin.domain.dto.UserDepartmentRoleQuery;
 import com.dili.sysadmin.domain.dto.UserLoginDto;
 import com.dili.sysadmin.domain.dto.UserLoginResultDto;
 import com.dili.sysadmin.exception.UserException;
@@ -42,10 +46,12 @@ public interface UserService extends BaseService<User, Long> {
 
 	void refreshUserPermission(Long userId);
 
-	List<User> listOnlineUsers(User user) throws Exception;
+	List<Map> listOnlineUsers(User user) throws Exception;
 
 	void kickUserOffline(Long userId);
 
-	EasyuiPageOutput listPageUserDto(User user);
+	EasyuiPageOutput listPageUserDto(UserDepartmentQuery query);
+
+	List<UserDepartmentRole> findUserContainDepartmentAndRole(UserDepartmentRoleQuery query);
 
 }

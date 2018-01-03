@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.ProjectApplyMapper">
+  <resultMap id="BaseResultMap" type="com.dili.alm.domain.ProjectApply">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="ID" jdbcType="BIGINT" property="id" />
+    <result column="number" jdbcType="VARCHAR" property="number" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="pid" jdbcType="BIGINT" property="pid" />
+    <result column="project_leader" jdbcType="BIGINT" property="projectLeader" />
+    <result column="product_manager" jdbcType="BIGINT" property="productManager" />
+    <result column="development_manager" jdbcType="BIGINT" property="developmentManager" />
+    <result column="test_manager" jdbcType="BIGINT" property="testManager" />
+    <result column="business_owner" jdbcType="BIGINT" property="businessOwner" />
+    <result column="dep" jdbcType="BIGINT" property="dep" />
+    <result column="expected_launch_date" jdbcType="TIMESTAMP" property="expectedLaunchDate" />
+    <result column="estimate_launch_date" jdbcType="TIMESTAMP" property="estimateLaunchDate" />
+    <result column="start_date" jdbcType="TIMESTAMP" property="startDate" />
+    <result column="end_date" jdbcType="TIMESTAMP" property="endDate" />
+    <result column="resource_require" jdbcType="VARCHAR" property="resourceRequire" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="goals_functions" jdbcType="VARCHAR" property="goalsFunctions" />
+    <result column="plan" jdbcType="VARCHAR" property="plan" />
+    <result column="roi" jdbcType="VARCHAR" property="roi" />
+    <result column="impact" jdbcType="VARCHAR" property="impact" />
+    <result column="risk" jdbcType="VARCHAR" property="risk" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="created" jdbcType="TIMESTAMP" property="created" />
+    <result column="modified" jdbcType="TIMESTAMP" property="modified" />
+    <result column="create_member_id" jdbcType="BIGINT" property="createMemberId" />
+    <result column="modify_member_id" jdbcType="BIGINT" property="modifyMemberId" />
+    <result column="reStatus" jdbcType="TINYINT" property="restatus" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    ID, number, name, type, pid, project_leader, product_manager, development_manager, 
+    test_manager, business_owner, dep, expected_launch_date, estimate_launch_date, start_date, 
+    end_date, resource_require, description, goals_functions, plan, roi, impact, risk, 
+    email, status, created, modified, create_member_id, modify_member_id, reStatus
+  </sql>
+  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from project_apply
+    where ID = #{id,jdbcType=BIGINT}
+  </select>
+  <update id="updateBy" parameterType="com.dili.alm.domain.ProjectApply">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update project_apply
+    <set>
+      <if test="number != null">
+        number = #{number,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="pid != null">
+        pid = #{pid,jdbcType=BIGINT},
+      </if>
+      <if test="projectLeader != null">
+        project_leader = #{projectLeader,jdbcType=BIGINT},
+      </if>
+      <if test="productManager != null">
+        product_manager = #{productManager,jdbcType=BIGINT},
+      </if>
+      <if test="developmentManager != null">
+        development_manager = #{developmentManager,jdbcType=BIGINT},
+      </if>
+      <if test="testManager != null">
+        test_manager = #{testManager,jdbcType=BIGINT},
+      </if>
+      <if test="businessOwner != null">
+        business_owner = #{businessOwner,jdbcType=BIGINT},
+      </if>
+      <if test="dep != null">
+        dep = #{dep,jdbcType=BIGINT},
+      </if>
+      <if test="expectedLaunchDate != null">
+        expected_launch_date = #{expectedLaunchDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="estimateLaunchDate != null">
+        estimate_launch_date = #{estimateLaunchDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="startDate != null">
+        start_date = #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null">
+        end_date = #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="resourceRequire != null">
+        resource_require = #{resourceRequire,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="goalsFunctions != null">
+        goals_functions = #{goalsFunctions,jdbcType=VARCHAR},
+      </if>
+      <if test="plan != null">
+        plan = #{plan,jdbcType=VARCHAR},
+      </if>
+      <if test="roi != null">
+        roi = #{roi,jdbcType=VARCHAR},
+      </if>
+      <if test="impact != null">
+        impact = #{impact,jdbcType=VARCHAR},
+      </if>
+      <if test="risk != null">
+        risk = #{risk,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="created != null">
+        created = #{created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modified != null">
+        modified = #{modified,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createMemberId != null">
+        create_member_id = #{createMemberId,jdbcType=BIGINT},
+      </if>
+      <if test="modifyMemberId != null">
+        modify_member_id = #{modifyMemberId,jdbcType=BIGINT},
+      </if>
+      <if test="restatus != null">
+        reStatus = #{restatus,jdbcType=TINYINT},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

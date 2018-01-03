@@ -105,6 +105,7 @@ public class RoleServiceImpl extends BaseServiceImpl<Role, Long> implements Role
 		return (List<Role>) CollectionUtils.subtract(allRoles, userRoles);
 	}
 
+	@Transactional
 	@Override
 	public BaseOutput<Object> deleteIfUserNotBind(Long roleId) {
 		UserRole record = new UserRole();
@@ -117,6 +118,9 @@ public class RoleServiceImpl extends BaseServiceImpl<Role, Long> implements Role
 		if (rows <= 0) {
 			return BaseOutput.failure("删除角色失败");
 		}
+		RoleMenu roleMenuQuery = new RoleMenu();
+		roleMenuQuery.setRoleId(roleId);
+		this.roleMenuMapper.delete(roleMenuQuery);
 		return BaseOutput.success();
 	}
 
@@ -204,12 +208,33 @@ public class RoleServiceImpl extends BaseServiceImpl<Role, Long> implements Role
 
 	@Override
 	public BaseOutput<Role> insertAndGet(Role role) {
+		Role query = new Role();
+		query.setRoleName(role.getRoleName());
+		int count = this.getActualDao().selectCount(query);
+		if (count > 0) {
+			return BaseOutput.failure("包含相同名称的角色");
+		}
 		int rows = this.roleMapper.insert(role);
 		if (rows <= 0) {
 			return BaseOutput.failure("插入失败");
 		}
 		role = this.roleMapper.selectByPrimaryKey(role.getId());
 		return BaseOutput.success("插入成功").setData(role);
+	}
+
+	@Override
+	public BaseOutput<Object> updateAfterCheck(Role role) {
+		Role query = new Role();
+		query.setRoleName(role.getRoleName());
+		Role old = this.getActualDao().selectOne(query);
+		if (old != null && !old.getId().equals(role.getId())) {
+			return BaseOutput.failure("包含相同名称的角色");
+		}
+		int result = this.updateSelective(role);
+		if (result > 0) {
+			return BaseOutput.success().setData(role);
+		}
+		return BaseOutput.failure();
 	}
 
 }

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.alm.dao.WeeklyDetailsMapper">
+  <resultMap id="BaseResultMap" type="com.dili.alm.domain.WeeklyDetails">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="overall_progress" jdbcType="VARCHAR" property="overallProgress" />
+    <result column="expected_deviation" jdbcType="VARCHAR" property="expectedDeviation" />
+    <result column="other" jdbcType="VARCHAR" property="other" />
+    <result column="weekly_id" jdbcType="BIGINT" property="weeklyId" />
+    <result column="is_submit" jdbcType="INTEGER" property="isSubmit" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, project_description, expected_deviation, other, weekly_id, 
+    is_submit
+  </sql>
+  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from weekly_details
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <update id="updateBy" parameterType="com.dili.alm.domain.WeeklyDetails">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update weekly_details
+    <set>
+     
+      <if test="projectDescription != null">
+        project_description = #{projectDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="expectedDeviation != null">
+        expected_deviation = #{expectedDeviation,jdbcType=VARCHAR},
+      </if>
+      <if test="other != null">
+        other = #{other,jdbcType=VARCHAR},
+      </if>
+      <if test="weeklyId != null">
+        weekly_id = #{weeklyId,jdbcType=BIGINT},
+      </if>
+      <if test="isSubmit != null">
+        is_submit = #{isSubmit,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="getWeeklyDetailsByWeeklyId" parameterType="Long" resultType="com.dili.alm.domain.WeeklyDetails">
+      
+         select 
+		   <include refid="Base_Column_List" />
+		   from weekly_details
+		   
+		   <where>
+		      <if test="_parameter != null">
+			     weekly_id=#{_parameter,jdbcType=BIGINT}
+			 </if>
+			
+		   </where>
+		 
+  </select>
+  
+
+  
+  
+  <insert id="createInsert" keyProperty="id" parameterType="com.dili.alm.domain.WeeklyDetails" useGeneratedKeys="true">
+      INSERT INTO `weekly_details`( `expected_deviation`,`other`,`project_description`,`weekly_id`,is_submit)
+    values (#{expectedDeviation,jdbcType=VARCHAR}, 
+      #{other,jdbcType=VARCHAR},#{projectDescription,jdbcType=VARCHAR},
+      #{weeklyId,jdbcType=BIGINT} , #{isSubmit,jdbcType=INTEGER} )
+  </insert>
+  
+  
+  <!-- <update id="updateByWeeklyId" parameterType="com.dili.alm.domain.WeeklyDetails">
+  
+   update weekly_details
+     <set>
+     
+      <if test="isSubmit != null">
+         is_submit = #{isSubmit,jdbcType=INTEGER},
+      </if>
+    </set>
+     where  weekly_id= #{weeklyId,jdbcType=BIGINT}
+  </update> -->
+  
+  
+</mapper>

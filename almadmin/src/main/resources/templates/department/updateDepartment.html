@@ -1,0 +1,61 @@
+<div class="easyui-layout" data-options="fit:true">
+	<div data-options="region:'center'" style="height: 20%">
+		<form id="form" method="post">
+			<input id="departmentId" type="hidden" name="id" value="${model.id!}">
+			<div style="margin: 5px;">
+				<label for="name">部门名称:</label> <input class="easyui-textbox" type="text" name="name" value="${model.name!}"
+					data-options="required : true,
+									validType:'length[0,10]',
+									missingMessage:'部门名称不能为空',
+									invalidMessage:'部门名称长度必须是1-20个字符'" />
+			</div>
+			<div style="margin: 5px;">
+				<label for="notes">部门描述:</label> <input class="easyui-textbox" type="text" name="notes" value="${model.notes!}"
+					data-options="validType:'length[0,40]',
+									invalidMessage:'部门描述不能超过40个字符'" />
+			</div>
+		</form>
+	</div>
+	<div data-options="region:'south'" style="height: 80%">
+		<table class="easyui-datagrid" title="角色信息" id="roleGrid" fitColumns="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true"
+			method="post" multiSort="true" align="center" fit="true" rownumbers="true" striped="true" toolbar="#positionToolbar" idField="id"
+			url="${contextPath!}/departmentRole/list?departmentId=${model.id!}"
+			data-options="onLoadSuccess:onGridLoadSuccess,onDblClickRow:openUpdatePosition,onBeginEdit:onDeptGridBeginEdit,onEndEdit:onDeptGridEndEdit">
+			<thead>
+				<tr>
+					<th
+						data-options="field:'roleId',width:'80%',editor:{
+						type : 'combobox',
+						options : {
+							required : true,
+							editable:false,
+							url:'${contextPath!}/role/list.json',
+							textField:'roleName',
+							valueField:'id'
+						}
+					}">职务</th>
+					<th
+						data-options="field:'rank',_provider:'rankProvider',width:'20%',_provider:'rankProvider',editor:{
+						type:'combobox',
+						options : {
+									required : true,
+									editable:false,
+									url:'${contextPath}/departmentRole/rank.json',
+									valueField:'value',
+									textField:'code'
+								}
+					}">职级</th>
+					<th data-options="field:'opt',width:'20%',hidden:true,formatter:positionColumnFormatter">操作</th>
+				</tr>
+			</thead>
+		</table>
+		<div id="positionToolbar" style="padding: 2px 5px;">
+			<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsertPosition(${model.id!})" plain="true">新增职务</a> <a href="#"
+				class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdatePosition()" plain="true">修改职务</a><a href="#" class="easyui-linkbutton"
+				iconCls="icon-remove" onclick="deletePosition()" plain="true">删除职务</a>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	<#department_updateDepartmentJs />
+</script>

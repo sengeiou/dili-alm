@@ -1,6 +1,6 @@
-/*==============================================================*/
+ï»¿/*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2017/10/18 ĞÇÆÚÈı 16:06:55                      */
+/* Created on:     2017/10/18 æ˜ŸæœŸä¸‰ 16:06:55                      */
 /*==============================================================*/
 
 
@@ -52,15 +52,15 @@ drop table if exists user_role;
 create table data_auth
 (
    id                   bigint(20) not null,
-   type                 varchar(20) not null comment 'Êı¾İÈ¨ÏŞ·ÖÀà##Õâ¸öÓÉ¾ßÌåµÄÒµÎñÏµÍ³È·¶¨',
-   data_id              varchar(50) not null comment 'Êı¾İÈ¨ÏŞID##ÒµÎñ±àºÅ',
-   name                 varchar(50) not null comment 'Ãû³Æ',
-   parent_data_id       bigint(20) not null default 0 comment '¸¸¼¶Êı¾İID##Íâ¼ü£¬¹ØÁª¸¸¼¶Êı¾İÈ¨ÏŞ',
+   type                 varchar(20) not null comment 'æ•°æ®æƒé™åˆ†ç±»##è¿™ä¸ªç”±å…·ä½“çš„ä¸šåŠ¡ç³»ç»Ÿç¡®å®š',
+   data_id              varchar(50) not null comment 'æ•°æ®æƒé™ID##ä¸šåŠ¡ç¼–å·',
+   name                 varchar(50) not null comment 'åç§°',
+   parent_data_id       bigint(20) not null default 0 comment 'çˆ¶çº§æ•°æ®ID##å¤–é”®ï¼Œå…³è”çˆ¶çº§æ•°æ®æƒé™',
    primary key (id)
 )
 ENGINE=InnoDB AUTO_INCREMENT=34768 DEFAULT CHARSET=utf8;
 
-alter table data_auth comment 'Êı¾İÈ¨ÏŞ';
+alter table data_auth comment 'æ•°æ®æƒé™';
 
 /*==============================================================*/
 /* Table: data_dictionary                                       */
@@ -71,15 +71,15 @@ create table data_dictionary
    code                 varchar(50),
    name                 varchar(50),
    notes                varchar(255),
-   created              timestamp default CURRENT_TIMESTAMP comment '´´½¨Ê±¼ä',
-   modified             timestamp default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment 'ĞŞ¸ÄÊ±¼ä',
-   yn                   integer(4) comment 'ÊÇ·ñ¿ÉÓÃ##{provider:"YnProvider"}',
+   created              timestamp default CURRENT_TIMESTAMP comment 'åˆ›å»ºæ—¶é—´',
+   modified             timestamp default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment 'ä¿®æ”¹æ—¶é—´',
+   yn                   integer(4) comment 'æ˜¯å¦å¯ç”¨##{provider:"YnProvider"}',
    primary key (id)
 );
 
-alter table data_dictionary comment 'Êı¾İ×Öµä
-Àı:
-ÏµÍ³Í¼Æ¬:IMAGE_CODE';
+alter table data_dictionary comment 'æ•°æ®å­—å…¸
+ä¾‹:
+ç³»ç»Ÿå›¾ç‰‡:IMAGE_CODE';
 
 /*==============================================================*/
 /* Table: data_dictionary_value                                 */
@@ -87,21 +87,21 @@ alter table data_dictionary comment 'Êı¾İ×Öµä
 create table data_dictionary_value
 (
    id                   bigint not null auto_increment,
-   parent_id            bigint comment 'ÉÏ¼¶id',
-   dd_id                bigint comment 'Êı¾İ×Öµäid',
-   order_number         int comment 'ÅÅĞòºÅ',
-   code                 varchar(255) comment '±àÂë',
-   value                varchar(30) comment 'Öµ',
-   notes                varchar(255) comment '±¸×¢',
-   period_begin         timestamp comment 'ÆôÓÃÊ±¼ä',
-   period_end           timestamp comment 'Í£ÓÃÊ±¼ä',
-   created              timestamp default CURRENT_TIMESTAMP comment '´´½¨Ê±¼ä',
-   modified             timestamp default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment 'ĞŞ¸ÄÊ±¼ä',
-   yn                   integer(4) comment 'ÊÇ·ñ¿ÉÓÃ##{provider:"YnProvider", data:[{value:0,text:"²»¿ÉÓÃ"},{value:1, text:"¿ÉÓÃ"}]}',
+   parent_id            bigint comment 'ä¸Šçº§id',
+   dd_id                bigint comment 'æ•°æ®å­—å…¸id',
+   order_number         int comment 'æ’åºå·',
+   code                 varchar(255) comment 'ç¼–ç ',
+   value                varchar(30) comment 'å€¼',
+   notes                varchar(255) comment 'å¤‡æ³¨',
+   period_begin         timestamp comment 'å¯ç”¨æ—¶é—´',
+   period_end           timestamp comment 'åœç”¨æ—¶é—´',
+   created              timestamp default CURRENT_TIMESTAMP comment 'åˆ›å»ºæ—¶é—´',
+   modified             timestamp default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment 'ä¿®æ”¹æ—¶é—´',
+   yn                   integer(4) comment 'æ˜¯å¦å¯ç”¨##{provider:"YnProvider", data:[{value:0,text:"ä¸å¯ç”¨"},{value:1, text:"å¯ç”¨"}]}',
    primary key (id)
 );
 
-alter table data_dictionary_value comment 'Êı¾İ×ÖµäÖµ';
+alter table data_dictionary_value comment 'æ•°æ®å­—å…¸å€¼';
 
 /*==============================================================*/
 /* Table: department                                            */
@@ -109,16 +109,16 @@ alter table data_dictionary_value comment 'Êı¾İ×ÖµäÖµ';
 create table department
 (
    id                   bigint not null auto_increment,
-   name                 varchar(20) comment '²¿ÃÅÃû',
-   code                 varchar(20) comment '±àºÅ',
-   operator_id          bigint comment '²Ù×÷Ô±id',
-   notes                varchar(255) comment '±¸×¢',
-   created              timestamp default CURRENT_TIMESTAMP comment '´´½¨Ê±¼ä',
-   modified             timestamp default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment '²Ù×÷Ê±¼ä',
+   name                 varchar(20) comment 'éƒ¨é—¨å',
+   code                 varchar(20) comment 'ç¼–å·',
+   operator_id          bigint comment 'æ“ä½œå‘˜id',
+   notes                varchar(255) comment 'å¤‡æ³¨',
+   created              timestamp default CURRENT_TIMESTAMP comment 'åˆ›å»ºæ—¶é—´',
+   modified             timestamp default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment 'æ“ä½œæ—¶é—´',
    primary key (id)
 );
 
-alter table department comment '²¿ÃÅ';
+alter table department comment 'éƒ¨é—¨';
 
 /*==============================================================*/
 /* Table: files                                                 */
@@ -126,17 +126,17 @@ alter table department comment '²¿ÃÅ';
 create table files
 (
    id                   bigint not null comment 'ID',
-   name                 varchar(200) comment 'ÎÄ¼şÃû',
-   suffix               varchar(10) comment 'ÎÄ¼şºó×º',
-   length               bigint comment 'ÎÄ¼ş´óĞ¡',
-   url                  varchar(120) comment 'ÎÄ¼şµØÖ·',
-   milestones_id        bigint comment 'Àï³Ì±®id',
-   created              timestamp default CURRENT_TIMESTAMP comment '´´½¨Ê±¼ä',
-   create_member_id     bigint comment '´´½¨ÈËid##{provider:"memberProvider"}',
+   name                 varchar(200) comment 'æ–‡ä»¶å',
+   suffix               varchar(10) comment 'æ–‡ä»¶åç¼€',
+   length               bigint comment 'æ–‡ä»¶å¤§å°',
+   url                  varchar(120) comment 'æ–‡ä»¶åœ°å€',
+   milestones_id        bigint comment 'é‡Œç¨‹ç¢‘id',
+   created              timestamp default CURRENT_TIMESTAMP comment 'åˆ›å»ºæ—¶é—´',
+   create_member_id     bigint comment 'åˆ›å»ºäººid##{provider:"memberProvider"}',
    primary key (id)
 );
 
-alter table files comment 'ĞèÇóÎÄµµ£¬²¿Êğ°ü£¬°²×°ÎÄ¼ş£¬ÅäÖÃÎÄ¼şµÈ';
+alter table files comment 'éœ€æ±‚æ–‡æ¡£ï¼Œéƒ¨ç½²åŒ…ï¼Œå®‰è£…æ–‡ä»¶ï¼Œé…ç½®æ–‡ä»¶ç­‰';
 
 /*==============================================================*/
 /* Table: member                                                */
@@ -144,40 +144,40 @@ alter table files comment 'ĞèÇóÎÄµµ£¬²¿Êğ°ü£¬°²×°ÎÄ¼ş£¬ÅäÖÃÎÄ¼şµÈ';
 create table member
 (
    id                   bigint not null comment 'ID',
-   name                 varchar(20) comment 'ĞÕÃû',
-   password             varchar(20) comment 'ÃÜÂë',
-   email                varchar(40) comment 'ÓÊÏäµØÖ·',
-   phone_number         varchar(20) comment 'ÊÖ»úºÅ',
-   type                 varchar(20) comment '³ÉÔ±ÀàĞÍ',
-   created              timestamp default CURRENT_TIMESTAMP comment '´´½¨Ê±¼ä',
-   modified             timestamp default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment 'ĞŞ¸ÄÊ±¼ä',
+   name                 varchar(20) comment 'å§“å',
+   password             varchar(20) comment 'å¯†ç ',
+   email                varchar(40) comment 'é‚®ç®±åœ°å€',
+   phone_number         varchar(20) comment 'æ‰‹æœºå·',
+   type                 varchar(20) comment 'æˆå‘˜ç±»å‹',
+   created              timestamp default CURRENT_TIMESTAMP comment 'åˆ›å»ºæ—¶é—´',
+   modified             timestamp default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment 'ä¿®æ”¹æ—¶é—´',
    primary key (id)
 );
 
-alter table member comment '²Î¼ûÈ¨ÏŞÏµÍ³µÄÓÃ»§±í';
+alter table member comment 'å‚è§æƒé™ç³»ç»Ÿçš„ç”¨æˆ·è¡¨';
 
 /*==============================================================*/
 /* Table: menu                                                  */
 /*==============================================================*/
 create table menu
 (
-   id                   bigint(20) not null auto_increment comment 'Ö÷¼ü',
-   parent_id            bigint(20) not null comment '¸¸¼¶²Ëµ¥id',
-   order_number         integer(11) not null comment 'ÅÅĞòºÅ',
-   menu_url             varchar(255) comment '²Ëµ¥url',
-   name                 varchar(255) not null comment 'Ãû³Æ',
-   description          varchar(255) not null comment 'ÃèÊö',
-   target               integer(4) comment '´ò¿ªÁ´½ÓµÄÎ»ÖÃ##{data:[{value:0, text:"µ±Ç°´°¿Ú"},{value:1, text:"ĞÂ¿ª´°¿Ú"}]}',
-   created              timestamp not null default CURRENT_TIMESTAMP comment '´´½¨Ê±¼ä',
-   modified             timestamp not null default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment 'ĞŞ¸ÄÊ±¼ä',
-   yn                   integer(4) not null comment 'ÓĞĞ§ĞÔ##Êı¾İÓĞĞ§ĞÔ£¬ÓÃÓÚÂß¼­É¾³ı##{data:[{value:0, text:"ÎŞĞ§"},{value:1, text:"ÓĞĞ§"}]}',
-   type                 integer(4) not null default 0 comment 'ÀàĞÍ##{data:[{value:0, text:"Ä¿Â¼"},{value:1, text:"Á´½Ó"}]}',
-   icon_cls             varchar(40) comment '²Ëµ¥Í¼±ê',
+   id                   bigint(20) not null auto_increment comment 'ä¸»é”®',
+   parent_id            bigint(20) not null comment 'çˆ¶çº§èœå•id',
+   order_number         integer(11) not null comment 'æ’åºå·',
+   menu_url             varchar(255) comment 'èœå•url',
+   name                 varchar(255) not null comment 'åç§°',
+   description          varchar(255) not null comment 'æè¿°',
+   target               integer(4) comment 'æ‰“å¼€é“¾æ¥çš„ä½ç½®##{data:[{value:0, text:"å½“å‰çª—å£"},{value:1, text:"æ–°å¼€çª—å£"}]}',
+   created              timestamp not null default CURRENT_TIMESTAMP comment 'åˆ›å»ºæ—¶é—´',
+   modified             timestamp not null default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment 'ä¿®æ”¹æ—¶é—´',
+   yn                   integer(4) not null comment 'æœ‰æ•ˆæ€§##æ•°æ®æœ‰æ•ˆæ€§ï¼Œç”¨äºé€»è¾‘åˆ é™¤##{data:[{value:0, text:"æ— æ•ˆ"},{value:1, text:"æœ‰æ•ˆ"}]}',
+   type                 integer(4) not null default 0 comment 'ç±»å‹##{data:[{value:0, text:"ç›®å½•"},{value:1, text:"é“¾æ¥"}]}',
+   icon_cls             varchar(40) comment 'èœå•å›¾æ ‡',
    primary key (id)
 )
 ENGINE=InnoDB AUTO_INCREMENT=345 DEFAULT CHARSET=utf8;
 
-alter table menu comment '²Ëµ¥';
+alter table menu comment 'èœå•';
 
 /*==============================================================*/
 /* Table: milestones                                            */
@@ -185,28 +185,28 @@ alter table menu comment '²Ëµ¥';
 create table milestones
 (
    id                   bigint not null,
-   code                 varchar(40) comment 'ÏîÄ¿·¢²¼±àºÅ##Ê¾Àı:HD-001##',
-   project_id           bigint comment 'ÏîÄ¿id##{provider:"projectProvider"}',
-   parent_id            bigint comment 'ÉÏ¼¶id',
-   git                  varchar(255) comment 'gitµØÖ·',
-   doc_url              varchar(255) comment 'redmineÎÄµµµØÖ·',
-   version              varchar(40) comment '°æ±¾ºÅ',
-   market               varchar(40) comment 'ËùÊôÊĞ³¡##{table:"data_dictionary_value", valueField:"value", textField:"code", queryParams:{yn:1, dd_id:1}, orderByClause: "order_number asc"}',
-   project_phase        varchar(40) comment 'ÏîÄ¿½×¶Î##µ÷ÑĞ£¬Éè¼Æ£¬¿ª·¢£¬²âÊÔ£¬²¿Êğ£¬ÉÏÏß£¬Î¬»¤##{table:"data_dictionary_value", valueField:"value", textField:"code", queryParams:{yn:1, dd_id:2}, orderByClause: "order_number asc"}',
-   notes                varchar(255) comment '±¸×¢##Ö÷ÏîÄ¿£¬sql£¬client##',
-   publish_member_id    bigint comment '·¢²¼ÈËid##{provider:"memberProvider"}',
-   modify_member_id     bigint comment 'ĞŞ¸ÄÈËid##{provider:"memberProvider"}',
-   created              timestamp default CURRENT_TIMESTAMP comment '·¢²¼Ê±¼ä',
-   modified             timestamp default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment 'ĞŞ¸ÄÊ±¼ä',
-   release_time         timestamp comment 'ÉÏÏßÊ±¼ä',
-   email_notice         int comment 'ÊÇ·ñÉÏÏßÍ¨Öª##{provider:"emailNoticeProvider", data:[{value:0,text:"Í¨Öª"},{value:1, text:"²»Í¨Öª"}]}',
-   host                 varchar(120) comment 'Ö÷»ú',
-   port                 int comment '¶Ë¿Ú',
-   visit_url            varchar(120) comment '·ÃÎÊµØÖ·',
+   code                 varchar(40) comment 'é¡¹ç›®å‘å¸ƒç¼–å·##ç¤ºä¾‹:HD-001##',
+   project_id           bigint comment 'é¡¹ç›®id##{provider:"projectProvider"}',
+   parent_id            bigint comment 'ä¸Šçº§id',
+   git                  varchar(255) comment 'gitåœ°å€',
+   doc_url              varchar(255) comment 'redmineæ–‡æ¡£åœ°å€',
+   version              varchar(40) comment 'ç‰ˆæœ¬å·',
+   market               varchar(40) comment 'æ‰€å±å¸‚åœº##{table:"data_dictionary_value", valueField:"value", textField:"code", queryParams:{yn:1, dd_id:1}, orderByClause: "order_number asc"}',
+   project_phase        varchar(40) comment 'é¡¹ç›®é˜¶æ®µ##è°ƒç ”ï¼Œè®¾è®¡ï¼Œå¼€å‘ï¼Œæµ‹è¯•ï¼Œéƒ¨ç½²ï¼Œä¸Šçº¿ï¼Œç»´æŠ¤##{table:"data_dictionary_value", valueField:"value", textField:"code", queryParams:{yn:1, dd_id:2}, orderByClause: "order_number asc"}',
+   notes                varchar(255) comment 'å¤‡æ³¨##ä¸»é¡¹ç›®ï¼Œsqlï¼Œclient##',
+   publish_member_id    bigint comment 'å‘å¸ƒäººid##{provider:"memberProvider"}',
+   modify_member_id     bigint comment 'ä¿®æ”¹äººid##{provider:"memberProvider"}',
+   created              timestamp default CURRENT_TIMESTAMP comment 'å‘å¸ƒæ—¶é—´',
+   modified             timestamp default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment 'ä¿®æ”¹æ—¶é—´',
+   release_time         timestamp comment 'ä¸Šçº¿æ—¶é—´',
+   email_notice         int comment 'æ˜¯å¦ä¸Šçº¿é€šçŸ¥##{provider:"emailNoticeProvider", data:[{value:0,text:"é€šçŸ¥"},{value:1, text:"ä¸é€šçŸ¥"}]}',
+   host                 varchar(120) comment 'ä¸»æœº',
+   port                 int comment 'ç«¯å£',
+   visit_url            varchar(120) comment 'è®¿é—®åœ°å€',
    primary key (id)
 );
 
-alter table milestones comment 'Àï³Ì±®(°æ±¾¼Æ»®)';
+alter table milestones comment 'é‡Œç¨‹ç¢‘(ç‰ˆæœ¬è®¡åˆ’)';
 
 /*==============================================================*/
 /* Table: project                                               */
@@ -214,55 +214,55 @@ alter table milestones comment 'Àï³Ì±®(°æ±¾¼Æ»®)';
 create table project
 (
    id                   bigint not null auto_increment comment 'ID',
-   parent_id            bigint comment 'ÉÏ¼¶ÏîÄ¿id',
-   name                 varchar(20) comment 'ÏîÄ¿Ãû³Æ',
-   type                 varchar(10) comment 'ÏîÄ¿ÀàĞÍ##»¥ÁªÍøÏîÄ¿,ÒÆ¶¯¶Ëapp,Å©²úÆ·ÏîÄ¿##{table:"data_dictionary_value", valueField:"value", textField:"code", queryParams:{yn:1, dd_id:3}, orderByClause: "order_number asc"}',
-   project_manager      bigint comment '¿ª·¢¸ºÔğÈË##{provider:"memberProvider"}',
-   test_manager         bigint comment '²âÊÔ¸ºÔğÈË##{provider:"memberProvider"}',
-   product_manager      bigint comment '²úÆ·¸ºÔğÈË##{provider:"memberProvider"}',
-   created              timestamp default CURRENT_TIMESTAMP comment '´´½¨Ê±¼ä',
-   modified             timestamp default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment 'ĞŞ¸ÄÊ±¼ä',
+   parent_id            bigint comment 'ä¸Šçº§é¡¹ç›®id',
+   name                 varchar(20) comment 'é¡¹ç›®åç§°',
+   type                 varchar(10) comment 'é¡¹ç›®ç±»å‹##äº’è”ç½‘é¡¹ç›®,ç§»åŠ¨ç«¯app,å†œäº§å“é¡¹ç›®##{table:"data_dictionary_value", valueField:"value", textField:"code", queryParams:{yn:1, dd_id:3}, orderByClause: "order_number asc"}',
+   project_manager      bigint comment 'å¼€å‘è´Ÿè´£äºº##{provider:"memberProvider"}',
+   test_manager         bigint comment 'æµ‹è¯•è´Ÿè´£äºº##{provider:"memberProvider"}',
+   product_manager      bigint comment 'äº§å“è´Ÿè´£äºº##{provider:"memberProvider"}',
+   created              timestamp default CURRENT_TIMESTAMP comment 'åˆ›å»ºæ—¶é—´',
+   modified             timestamp default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment 'ä¿®æ”¹æ—¶é—´',
    primary key (id)
 );
 
-alter table project comment 'ÏîÄ¿';
+alter table project comment 'é¡¹ç›®';
 
 /*==============================================================*/
 /* Table: resource                                              */
 /*==============================================================*/
 create table resource
 (
-   id                   bigint(20) not null auto_increment comment 'Ö÷¼ü',
-   name                 varchar(255) not null comment 'Ãû³Æ',
-   description          varchar(255) comment 'ÃèÊö',
-   menu_id              bigint(20) not null comment 'Íâ¼ü£¬¹ØÁªmenu±í',
-   code                 varchar(255) comment '±àÂë##Ô­resource URL',
-   status               integer(4) not null comment '×´Ì¬##{data:[{value:1, text:"ÆôÓÃ"},{value:0, text:"Í£ÓÃ"}]}',
-   created              timestamp not null default CURRENT_TIMESTAMP comment '´´½¨Ê±¼ä',
-   modified             timestamp not null default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment 'ĞŞ¸ÄÊ±¼ä',
-   yn                   integer(4) not null comment 'ÓĞĞ§ĞÔ##Êı¾İÓĞĞ§ĞÔ£¬ÓÃÓÚÂß¼­É¾³ı##{data:[{value:0, text:"ÎŞĞ§"},{value:1, text:"ÓĞĞ§"}]}',
+   id                   bigint(20) not null auto_increment comment 'ä¸»é”®',
+   name                 varchar(255) not null comment 'åç§°',
+   description          varchar(255) comment 'æè¿°',
+   menu_id              bigint(20) not null comment 'å¤–é”®ï¼Œå…³è”menuè¡¨',
+   code                 varchar(255) comment 'ç¼–ç ##åŸresource URL',
+   status               integer(4) not null comment 'çŠ¶æ€##{data:[{value:1, text:"å¯ç”¨"},{value:0, text:"åœç”¨"}]}',
+   created              timestamp not null default CURRENT_TIMESTAMP comment 'åˆ›å»ºæ—¶é—´',
+   modified             timestamp not null default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment 'ä¿®æ”¹æ—¶é—´',
+   yn                   integer(4) not null comment 'æœ‰æ•ˆæ€§##æ•°æ®æœ‰æ•ˆæ€§ï¼Œç”¨äºé€»è¾‘åˆ é™¤##{data:[{value:0, text:"æ— æ•ˆ"},{value:1, text:"æœ‰æ•ˆ"}]}',
    primary key (id),
    key FK_RESOURCE_NAVBAR (menu_id)
 )
 ENGINE=InnoDB AUTO_INCREMENT=11623 DEFAULT CHARSET=utf8;
 
-alter table resource comment '×ÊÔ´';
+alter table resource comment 'èµ„æº';
 
 /*==============================================================*/
 /* Table: role                                                  */
 /*==============================================================*/
 create table role
 (
-   id                   bigint(20) not null auto_increment comment 'Ö÷¼ü',
-   role_name            varchar(255) not null comment '½ÇÉ«Ãû',
-   description          varchar(255) not null comment '½ÇÉ«ÃèÊö',
-   created              timestamp not null default CURRENT_TIMESTAMP comment '´´½¨Ê±¼ä',
-   modified             timestamp not null default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment 'ĞŞ¸ÄÊ±¼ä',
+   id                   bigint(20) not null auto_increment comment 'ä¸»é”®',
+   role_name            varchar(255) not null comment 'è§’è‰²å',
+   description          varchar(255) not null comment 'è§’è‰²æè¿°',
+   created              timestamp not null default CURRENT_TIMESTAMP comment 'åˆ›å»ºæ—¶é—´',
+   modified             timestamp not null default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment 'ä¿®æ”¹æ—¶é—´',
    primary key (id)
 )
 ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8;
 
-alter table role comment '½ÇÉ«';
+alter table role comment 'è§’è‰²';
 
 /*==============================================================*/
 /* Table: role_data_auth                                        */
@@ -270,45 +270,45 @@ alter table role comment '½ÇÉ«';
 create table role_data_auth
 (
    id                   bigint(20) not null,
-   data_auth_id         bigint(20) not null comment 'Êı¾İÈ¨ÏŞ±íid',
+   data_auth_id         bigint(20) not null comment 'æ•°æ®æƒé™è¡¨id',
    role_id              bigint(20) not null comment 'role_id',
    primary key (id)
 )
 ENGINE=InnoDB AUTO_INCREMENT=34768 DEFAULT CHARSET=utf8;
 
-alter table role_data_auth comment '½ÇÉ«Êı¾İÈ¨ÏŞ¹ØÏµ';
+alter table role_data_auth comment 'è§’è‰²æ•°æ®æƒé™å…³ç³»';
 
 /*==============================================================*/
 /* Table: role_menu                                             */
 /*==============================================================*/
 create table role_menu
 (
-   id                   bigint(20) not null comment 'Ö÷¼ü',
-   role_id              bigint(20) not null comment '½ÇÉ«ID##Íâ¼ü',
-   menu_id              bigint(20) not null comment '²Ëµ¥ID##Íâ¼ü',
+   id                   bigint(20) not null comment 'ä¸»é”®',
+   role_id              bigint(20) not null comment 'è§’è‰²ID##å¤–é”®',
+   menu_id              bigint(20) not null comment 'èœå•ID##å¤–é”®',
    primary key (id),
    key FK_ROLEMENU_ROLE (role_id),
    key FK_MENUROLE_MENU (menu_id)
 )
 ENGINE=InnoDB AUTO_INCREMENT=39236 DEFAULT CHARSET=utf8;
 
-alter table role_menu comment '½ÇÉ«²Ëµ¥¹ØÏµ';
+alter table role_menu comment 'è§’è‰²èœå•å…³ç³»';
 
 /*==============================================================*/
 /* Table: role_resource                                         */
 /*==============================================================*/
 create table role_resource
 (
-   id                   bigint(20) not null comment 'Ö÷¼ü',
-   role_id              bigint(20) not null comment '½ÇÉ«ID##Íâ¼ü',
-   resource_id          bigint(20) not null comment '×ÊÔ´ID##Íâ¼ü',
+   id                   bigint(20) not null comment 'ä¸»é”®',
+   role_id              bigint(20) not null comment 'è§’è‰²ID##å¤–é”®',
+   resource_id          bigint(20) not null comment 'èµ„æºID##å¤–é”®',
    primary key (id),
    key FK_ROLEPERMISSION_ROLE (role_id),
    key FK_ROLEPERMISSION_RESOURCE (resource_id)
 )
 ENGINE=InnoDB AUTO_INCREMENT=1136 DEFAULT CHARSET=utf8;
 
-alter table role_resource comment '½ÇÉ«×ÊÔ´¹ØÏµ';
+alter table role_resource comment 'è§’è‰²èµ„æºå…³ç³»';
 
 /*==============================================================*/
 /* Table: schedule_job                                          */
@@ -320,24 +320,24 @@ create table schedule_job
    modified             datetime default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
    job_name             varchar(40),
    job_group            varchar(40),
-   job_status           int comment 'ÊÇ·ñÆô¶¯ÈÎÎñ,1:ÔËĞĞÖĞ,0:Í£Ö¹',
+   job_status           int comment 'æ˜¯å¦å¯åŠ¨ä»»åŠ¡,1:è¿è¡Œä¸­,0:åœæ­¢',
    job_data             varchar(1000) comment 'json',
    cron_expression      varchar(40),
-   repeat_interval      int comment '¼òµ¥µ÷¶È£¬Ä¬ÈÏÒÔÃëÎªµ¥Î»',
-   start_delay          int comment 'Æô¶¯µ÷¶ÈÆ÷ºó£¬¶àÉÙÃë¿ªÊ¼Ö´ĞĞµ÷¶È',
-   description          varchar(200) comment 'µ÷¶ÈÆ÷ÃèÊö',
-   bean_class           varchar(100) comment 'ÈÎÎñÖ´ĞĞÊ±µ÷ÓÃÀàµÄÈ«Ãû£¬ÓÃÓÚ·´Éä',
-   spring_id            varchar(40) comment 'springµÄbeanId£¬Ö±½Ó´ÓspringÖĞ»ñÈ¡',
-   url                  varchar(100) comment 'Ö§³ÖÔ¶³Ìµ÷ÓÃrestful url',
-   is_concurrent        int comment '1£º²¢·¢; 0:Í¬²½',
-   method_name          varchar(40) comment 'bean_classºÍspring_idĞèÒªÅäÖÃ·½·¨Ãû',
+   repeat_interval      int comment 'ç®€å•è°ƒåº¦ï¼Œé»˜è®¤ä»¥ç§’ä¸ºå•ä½',
+   start_delay          int comment 'å¯åŠ¨è°ƒåº¦å™¨åï¼Œå¤šå°‘ç§’å¼€å§‹æ‰§è¡Œè°ƒåº¦',
+   description          varchar(200) comment 'è°ƒåº¦å™¨æè¿°',
+   bean_class           varchar(100) comment 'ä»»åŠ¡æ‰§è¡Œæ—¶è°ƒç”¨ç±»çš„å…¨åï¼Œç”¨äºåå°„',
+   spring_id            varchar(40) comment 'springçš„beanIdï¼Œç›´æ¥ä»springä¸­è·å–',
+   url                  varchar(100) comment 'æ”¯æŒè¿œç¨‹è°ƒç”¨restful url',
+   is_concurrent        int comment '1ï¼šå¹¶å‘; 0:åŒæ­¥',
+   method_name          varchar(40) comment 'bean_classå’Œspring_idéœ€è¦é…ç½®æ–¹æ³•å',
    primary key (id)
 );
 
-alter table schedule_job comment 'ÈÎÎñµ÷¶È
+alter table schedule_job comment 'ä»»åŠ¡è°ƒåº¦
 
 enum JobStatus {
-        NONE(0,"ÎŞ")';
+        NONE(0,"æ— ")';
 
 /*==============================================================*/
 /* Table: system_config                                         */
@@ -349,13 +349,13 @@ create table system_config
    code                 varchar(100),
    value                varchar(100),
    notes                varchar(255),
-   ´´½¨Ê±¼ä                 timestamp default CURRENT_TIMESTAMP comment '´´½¨Ê±¼ä',
-   modified             timestamp default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment 'ĞŞ¸ÄÊ±¼ä',
-   yn                   integer(4) comment 'ÊÇ·ñ¿ÉÓÃ##{provider:"YnProvider"}',
+   åˆ›å»ºæ—¶é—´                 timestamp default CURRENT_TIMESTAMP comment 'åˆ›å»ºæ—¶é—´',
+   modified             timestamp default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment 'ä¿®æ”¹æ—¶é—´',
+   yn                   integer(4) comment 'æ˜¯å¦å¯ç”¨##{provider:"YnProvider"}',
    primary key (id)
 );
 
-alter table system_config comment 'ÅäÖÃÏµÍ³±äÁ¿,';
+alter table system_config comment 'é…ç½®ç³»ç»Ÿå˜é‡,';
 
 /*==============================================================*/
 /* Table: team                                                  */
@@ -363,43 +363,43 @@ alter table system_config comment 'ÅäÖÃÏµÍ³±äÁ¿,';
 create table team
 (
    id                   bigint not null comment 'ID',
-   project_id           bigint comment 'ËùÊôÏîÄ¿id##{provider:"projectProvider"}',
-   member_id            bigint comment 'ËùÊô³ÉÔ±id##{provider:"memberProvider"}',
-   type                 varchar(10) comment 'ÍÅ¶ÓÀàĞÍ##¿ª·¢£¬²úÆ·£¬²âÊÔ##{provider:"teamTypeProvider", data:[{value:1,text:"²úÆ·"},{value:2, text:"¿ª·¢"},{value:3, text:"²âÊÔ"}]}',
-   member_state         int comment '×´Ì¬##³ÉÔ±×´Ì¬:¼ÓÈë|Àë¿ª##{provider:"MemberStateProvider", data:[{value:0,text:"Àë¿ª"},{value:1, text:"¼ÓÈë"}]}',
-   join_time            timestamp comment '¼ÓÈëÊ±¼ä',
-   leave_time           timestamp comment 'Àë¿ªÊ±¼ä',
+   project_id           bigint comment 'æ‰€å±é¡¹ç›®id##{provider:"projectProvider"}',
+   member_id            bigint comment 'æ‰€å±æˆå‘˜id##{provider:"memberProvider"}',
+   type                 varchar(10) comment 'å›¢é˜Ÿç±»å‹##å¼€å‘ï¼Œäº§å“ï¼Œæµ‹è¯•##{provider:"teamTypeProvider", data:[{value:1,text:"äº§å“"},{value:2, text:"å¼€å‘"},{value:3, text:"æµ‹è¯•"}]}',
+   member_state         int comment 'çŠ¶æ€##æˆå‘˜çŠ¶æ€:åŠ å…¥|ç¦»å¼€##{provider:"MemberStateProvider", data:[{value:0,text:"ç¦»å¼€"},{value:1, text:"åŠ å…¥"}]}',
+   join_time            timestamp comment 'åŠ å…¥æ—¶é—´',
+   leave_time           timestamp comment 'ç¦»å¼€æ—¶é—´',
    primary key (id)
 );
 
-alter table team comment 'ÍÅ¶Ó';
+alter table team comment 'å›¢é˜Ÿ';
 
 /*==============================================================*/
 /* Table: user                                                  */
 /*==============================================================*/
 create table user
 (
-   id                   bigint(20) not null auto_increment comment 'Ö÷¼ü',
-   user_name            varchar(50) not null comment 'ÓÃ»§Ãû',
-   password             varchar(128) not null comment 'ÃÜÂë',
-   last_login_ip        varchar(20) comment '×îºóµÇÂ¼ip',
-   last_login_time      timestamp comment '×îºóµÇÂ¼Ê±¼ä',
-   created              timestamp not null default CURRENT_TIMESTAMP comment '´´½¨Ê±¼ä',
-   modified             timestamp not null default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment 'ĞŞ¸ÄÊ±¼ä',
-   status               integer(4) not null default 1 comment '×´Ì¬##×´Ì¬##{data:[{value:1,text:"ÆôÓÃ"},{value:0,text:"Í£ÓÃ"}]}',
-   yn                   integer(4) not null comment 'ÓĞĞ§ĞÔ##Êı¾İÓĞĞ§ĞÔ£¬ÓÃÓÚÂß¼­É¾³ı##{data:[{value:0, text:"ÎŞĞ§"},{value:1, text:"ÓĞĞ§"}]}',
-   real_name            varchar(64) not null default 'system_default' comment 'ÕæÊµĞÕÃû',
-   serial_number        varchar(128) not null default '000' comment 'ÓÃ»§±àºÅ',
-   fixed_line_telephone varchar(24) not null comment '¹Ì¶¨µç»°',
-   cellphone            varchar(24) not null comment 'ÊÖ»úºÅÂë',
-   email                varchar(64) not null comment 'ÓÊÏä',
-   valid_time_begin     timestamp default CURRENT_TIMESTAMP comment 'ÓĞĞ§Ê±¼ä¿ªÊ¼µã',
-   valid_time_end       timestamp comment 'ÓĞĞ§Ê±¼ä½áÊøµã',
+   id                   bigint(20) not null auto_increment comment 'ä¸»é”®',
+   user_name            varchar(50) not null comment 'ç”¨æˆ·å',
+   password             varchar(128) not null comment 'å¯†ç ',
+   last_login_ip        varchar(20) comment 'æœ€åç™»å½•ip',
+   last_login_time      timestamp comment 'æœ€åç™»å½•æ—¶é—´',
+   created              timestamp not null default CURRENT_TIMESTAMP comment 'åˆ›å»ºæ—¶é—´',
+   modified             timestamp not null default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment 'ä¿®æ”¹æ—¶é—´',
+   status               integer(4) not null default 1 comment 'çŠ¶æ€##çŠ¶æ€##{data:[{value:1,text:"å¯ç”¨"},{value:0,text:"åœç”¨"}]}',
+   yn                   integer(4) not null comment 'æœ‰æ•ˆæ€§##æ•°æ®æœ‰æ•ˆæ€§ï¼Œç”¨äºé€»è¾‘åˆ é™¤##{data:[{value:0, text:"æ— æ•ˆ"},{value:1, text:"æœ‰æ•ˆ"}]}',
+   real_name            varchar(64) not null default 'system_default' comment 'çœŸå®å§“å',
+   serial_number        varchar(128) not null default '000' comment 'ç”¨æˆ·ç¼–å·',
+   fixed_line_telephone varchar(24) not null comment 'å›ºå®šç”µè¯',
+   cellphone            varchar(24) not null comment 'æ‰‹æœºå·ç ',
+   email                varchar(64) not null comment 'é‚®ç®±',
+   valid_time_begin     timestamp default CURRENT_TIMESTAMP comment 'æœ‰æ•ˆæ—¶é—´å¼€å§‹ç‚¹',
+   valid_time_end       timestamp comment 'æœ‰æ•ˆæ—¶é—´ç»“æŸç‚¹',
    primary key (id)
 )
 ENGINE=InnoDB AUTO_INCREMENT=299 DEFAULT CHARSET=utf8;
 
-alter table user comment 'ÓÃ»§';
+alter table user comment 'ç”¨æˆ·';
 
 /*==============================================================*/
 /* Table: user_data_auth                                        */
@@ -407,13 +407,13 @@ alter table user comment 'ÓÃ»§';
 create table user_data_auth
 (
    id                   bigint(20) not null,
-   data_auth_id         bigint(20) not null comment 'Êı¾İÈ¨ÏŞid',
-   user_id              bigint(20) not null comment 'ÓÃ»§id',
+   data_auth_id         bigint(20) not null comment 'æ•°æ®æƒé™id',
+   user_id              bigint(20) not null comment 'ç”¨æˆ·id',
    primary key (id)
 )
 ENGINE=InnoDB AUTO_INCREMENT=34768 DEFAULT CHARSET=utf8;
 
-alter table user_data_auth comment 'ÓÃ»§Êı¾İÈ¨ÏŞ¹ØÏµ';
+alter table user_data_auth comment 'ç”¨æˆ·æ•°æ®æƒé™å…³ç³»';
 
 /*==============================================================*/
 /* Table: user_department                                       */
@@ -421,30 +421,30 @@ alter table user_data_auth comment 'ÓÃ»§Êı¾İÈ¨ÏŞ¹ØÏµ';
 create table user_department
 (
    id                   bigint not null auto_increment,
-   department_id        bigint(20) not null comment '²¿ÃÅid',
-   user_id              bigint(20) not null comment 'ÓÃ»§id',
+   department_id        bigint(20) not null comment 'éƒ¨é—¨id',
+   user_id              bigint(20) not null comment 'ç”¨æˆ·id',
    primary key (id)
 )
 ENGINE=InnoDB AUTO_INCREMENT=34768 DEFAULT CHARSET=utf8;
 
-alter table user_department comment 'ÓÃ»§²¿ÃÅ¹ØÏµ';
+alter table user_department comment 'ç”¨æˆ·éƒ¨é—¨å…³ç³»';
 
 /*==============================================================*/
 /* Table: user_role                                             */
 /*==============================================================*/
 create table user_role
 (
-   id                   bigint(20) not null comment 'Ö÷¼ü',
-   user_id              bigint(20) not null comment 'ÓÃ»§id##Íâ¼ü',
-   role_id              bigint(20) not null comment '½ÇÉ«id##Íâ¼ü',
+   id                   bigint(20) not null comment 'ä¸»é”®',
+   user_id              bigint(20) not null comment 'ç”¨æˆ·id##å¤–é”®',
+   role_id              bigint(20) not null comment 'è§’è‰²id##å¤–é”®',
    primary key (id),
    key FK_USERROLE_USER (user_id),
    key FK_USERROLE_ROLE (role_id)
 )
 ENGINE=InnoDB AUTO_INCREMENT=3277 DEFAULT CHARSET=utf8;
 
-alter table user_role comment 'ÓÃ»§½ÇÉ«¹ØÏµ';
+alter table user_role comment 'ç”¨æˆ·è§’è‰²å…³ç³»';
 
-INSERT INTO `data_dictionary` (`id`, `code`, `name`, `notes`, `created`, `modified`, `yn`) VALUES (1, 'market', 'ÊĞ³¡', 'ÊĞ³¡', now(), now(), 1);
-INSERT INTO `data_dictionary` (`id`, `code`, `name`, `notes`, `created`, `modified`, `yn`) VALUES (2, 'project_phase', 'ÏîÄ¿½×¶Î', 'ÏîÄ¿½×¶Î', now(), now(), 1);
-INSERT INTO `data_dictionary` (`id`, `code`, `name`, `notes`, `created`, `modified`, `yn`) VALUES (3, 'project_type', 'ÏîÄ¿ÀàĞÍ', 'ÏîÄ¿ÀàĞÍ', now(), now(), 1);
+INSERT INTO `data_dictionary` (`id`, `code`, `name`, `notes`, `created`, `modified`, `yn`) VALUES (1, 'market', 'å¸‚åœº', 'å¸‚åœº', now(), now(), 1);
+INSERT INTO `data_dictionary` (`id`, `code`, `name`, `notes`, `created`, `modified`, `yn`) VALUES (2, 'project_phase', 'é¡¹ç›®é˜¶æ®µ', 'é¡¹ç›®é˜¶æ®µ', now(), now(), 1);
+INSERT INTO `data_dictionary` (`id`, `code`, `name`, `notes`, `created`, `modified`, `yn`) VALUES (3, 'project_type', 'é¡¹ç›®ç±»å‹', 'é¡¹ç›®ç±»å‹', now(), now(), 1);

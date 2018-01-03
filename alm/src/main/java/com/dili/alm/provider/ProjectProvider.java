@@ -1,5 +1,6 @@
 package com.dili.alm.provider;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.Project;
@@ -9,6 +10,7 @@ import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValuePairImpl;
 import com.dili.ss.metadata.ValueProvider;
+import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.sdk.session.SessionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
@@ -16,6 +18,8 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,17 +32,16 @@ public class ProjectProvider implements ValueProvider, ApplicationListener<Conte
 	@Autowired
 	ProjectService projectService;
 
-
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		init();
 	}
 
-	public void init(){
-		if(AlmCache.projectMap.isEmpty()){
+	public void init() {
+		if (AlmCache.PROJECT_MAP.isEmpty()) {
 			List<Project> list = projectService.list(DTOUtils.newDTO(Project.class));
 			list.forEach(project -> {
-				AlmCache.projectMap.put(project.getId(), project);
+				AlmCache.PROJECT_MAP.put(project.getId(), project);
 			});
 		}
 	}
@@ -50,8 +53,8 @@ public class ProjectProvider implements ValueProvider, ApplicationListener<Conte
 		List<Map> dataauth = SessionContext.getSessionContext().dataAuth(AlmConstants.DATA_AUTH_TYPE_PROJECT);
 		dataauth.forEach(da -> {
 			Long key = Long.parseLong(da.get("dataId").toString());
-			if(AlmCache.projectMap.containsKey(key)) {
-				buffer.add(new ValuePairImpl(AlmCache.projectMap.get(key).getName(), key));
+			if (AlmCache.PROJECT_MAP.containsKey(key)) {
+				buffer.add(new ValuePairImpl(AlmCache.PROJECT_MAP.get(key).getName(), key));
 			}
 		});
 		return buffer;
@@ -59,10 +62,42 @@ public class ProjectProvider implements ValueProvider, ApplicationListener<Conte
 
 	@Override
 	public String getDisplayText(Object o, Map map, FieldMeta fieldMeta) {
-		if(o == null) return null;
+		if (o == null)
+			return null;
 		init();
-		Project project = AlmCache.projectMap.get(o);
+		Project project = AlmCache.PROJECT_MAP.get(o);
 		return project == null ? null : project.getName();
+	}
+
+	public static Map<Object, Object> parseEasyUiModel(Project project) throws Exception {
+		List<Map> list = parseEasyUiModelList(Arrays.asList(project));
+		return list.get(0);
+	}
+
+	public static List<Map> parseEasyUiModelList(List<Project> list) throws Exception {
+		Map<Object, Object> metadata = new HashMap<>();
+
+		JSONObject projectTypeProvider = new JSONObject();
+		projectTypeProvider.put("provider", "projectTypeProvider");
+		metadata.put("type", projectTypeProvider);
+
+		JSONObject almDateProvider = new JSONObject();
+		almDateProvider.put("provider", "almDateProvider");
+		metadata.put("startDate", almDateProvider);
+		metadata.put("endDate", almDateProvider);
+
+		JSONObject datetimeProvider = new JSONObject();
+		datetimeProvider.put("provider", "datetimeProvider");
+		metadata.put("actualStartDate", datetimeProvider);
+
+		JSONObject memberProvider = new JSONObject();
+		memberProvider.put("provider", "memberProvider");
+		metadata.put("projectManager", memberProvider);
+		metadata.put("testManager", memberProvider);
+		metadata.put("productManager", memberProvider);
+		metadata.put("developManager", memberProvider);
+		metadata.put("originator", memberProvider);
+		return ValueProviderUtils.buildDataByProvider(metadata, list);
 	}
 
 }

@@ -1,0 +1,124 @@
+<#body>
+<style>
+    td {
+        padding-left: 60px;
+        padding-right: 60px;
+    }
+
+    input[class^="easyui-"] {
+        width: 300px;
+    }
+
+    .title-first,
+    .title-second {
+        margin-top: 20px;
+        background: #f7f7f7;
+    }
+
+    .title-first {
+        padding-left: 0;
+    }
+
+    .title-second {
+        padding-left: 30px;
+    }
+    table{
+        width: 100%;
+    }
+</style>
+<div class="easyui-panel" title="立项申请（第二步）">
+    <div style="padding:10px 60px 20px 60px">
+        <form id="ff" method="post">
+            <input type="hidden" name="id" value="${apply.id}">
+            <table cellpadding="5">
+                <tr>
+                    <td>项目编号</td>
+                    <td>${apply.number}</td>
+                    <td>项目类别</td>
+                    <td>${apply.type}</td>
+                </tr>
+                <tr>
+                    <td class="title-first" colspan="4">2.项目说明</td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="padding:20px;">简述项目目的、范围、方法概要</td>
+                </tr>
+                <tr>
+                    <td class="title-second" colspan="4">目的</td>
+                </tr>
+                <tr>
+                    <td colspan="4"><input class="easyui-textbox" name="purpose"
+                                           data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
+                                           style="width:100%;height:120px"/></td>
+                </tr>
+                <tr>
+                    <td class="title-second" colspan="4">范围</td>
+                </tr>
+                <tr>
+                    <td colspan="4"><input class="easyui-textbox" name="range"
+                                           data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
+                                           style="width:100%;height:120px"/></td>
+                </tr>
+                <tr>
+                    <td class="title-second" colspan="4">方法概要</td>
+                </tr>
+                <tr>
+                    <td colspan="4"><input class="easyui-textbox" name="methodSummary"
+                                           data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
+                                           style="width:100%;height:120px"/></td>
+                </tr>
+
+            </table>
+
+
+        </form>
+        <div style="text-align:center;padding:5px;margin-top:50px;">
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
+               onclick="backForm()">上一步</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
+               onclick="submitForm()">下一步</a>
+            <a href="${contextPath}/projectApply/index.html" class="easyui-linkbutton" style="width:80px">取消</a>
+        </div>
+    </div>
+</div>
+<script>
+    function backForm() {
+        window.location.href = "${contextPath}/projectApply/toStep/1/${apply.id}";
+    }
+
+    function submitForm() {
+        $('#ff').form('submit', {
+            url: "${contextPath}/projectApply/insertStep2",
+            onSubmit: function () {
+                return $("#ff").form('validate');
+            },
+            success: function (data) {
+                var data = eval('(' + data + ')');
+                if (data.success == true) {
+                    if (data.success == true) {
+                        try {
+                            LogUtils.saveLog("修改立项申请:" + data.result, function () {
+                                window.location.href = "${contextPath}/projectApply/toStep/3/" + data.result;
+                            });
+                        } catch (e) {
+                            window.location.href = "${contextPath}/projectApply/toStep/3/" + data.result;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    $(function () {
+        try {
+            var description = '${apply.description}';
+            if (description != '') {
+                description = eval('(' + description + ')');
+                $('#ff').form('load', description);
+            }
+        } catch (ex) {}
+    })
+</script>
+
+
+</#body>

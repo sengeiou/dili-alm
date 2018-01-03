@@ -1,6 +1,26 @@
 // 编辑行索引
 var editId = undefined;
 
+function showOrgStructure() {
+	$('#win').dialog({
+				title : '组织结构',
+				width : 600,
+				height : 400,
+				cache : false,
+				href : '${contextPath!}/department/orgStructure.html',
+				modal : true,
+				onLoad : function() {
+
+				},
+				buttons : [{
+							text : '返回',
+							handler : function() {
+								$('#win').dialog('close');
+							}
+						}]
+			});
+}
+
 function isEditing() {
 	return undefined != editId;
 }
@@ -20,7 +40,7 @@ function endEditing() {
 }
 
 // 新增一行空数据并开启编辑模式
-function openInsert() {
+function openInsert(isRoot) {
 	if (!dataAuth.addDept) {
 		return;
 	}
@@ -28,18 +48,51 @@ function openInsert() {
 		$.messager.alert('警告', '有数据正在编辑');
 		return;
 	}
-	var node = deptGrid.treegrid('getSelected');
-	if (!node) {
-		$.messager.alert('警告', '请选择一条数据');
-		return;
+	var parentId = undefined;
+	if (!isRoot) {
+		var node = deptGrid.treegrid('getSelected');
+		if (!node) {
+			$.messager.alert('警告', '请选择一条数据');
+			return;
+		}
+		parentId = node.id;
 	}
 	editId = 'temp';
-	deptGrid.treegrid('append', {
-				parent : node.id,
-				data : [{
+	if (!parentId) {
+		var roots = deptGrid.treegrid('getRoots');
+		if (roots && roots.length > 0) {
+			deptGrid.treegrid('insert', {
+						before : roots[0].id,
+						data : {
 							id : 'temp'
-						}]
-			});
+						}
+					});
+		} else {
+			deptGrid.treegrid('append', {
+						parent : parentId,
+						data : [{
+									id : 'temp'
+								}]
+					});
+		}
+	} else {
+		var children = deptGrid.treegrid('getChildren', parentId);
+		if (children && children.length > 0) {
+			deptGrid.treegrid('insert', {
+						before : children[0].id,
+						data : {
+							id : 'temp'
+						}
+					});
+		} else {
+			deptGrid.treegrid('append', {
+						parent : parentId,
+						data : [{
+									id : 'temp'
+								}]
+					});
+		}
+	}
 
 	deptGrid.treegrid('select', 'temp');
 	deptGrid.treegrid('beginEdit', 'temp');
@@ -56,14 +109,62 @@ function openUpdate() {
 		return;
 	}
 	if (endEditing()) {
-		deptGrid.treegrid('select', selected.id).treegrid('beginEdit', selected.id);
-		editId = selected.id;
+		$('#win').dialog({
+					title : '编辑部门',
+					width : 600,
+					height : 400,
+					cache : false,
+					href : '${contextPath!}/department/updateDepartment.html?departmentId=' + selected.id,
+					modal : true,
+					onLoad : function() {
+
+					},
+					buttons : [{
+								text : '保存',
+								handler : function() {
+									if (!$('#form').form('validate')) {
+										return;
+									}
+									var data = $('#form').serializeArray();
+									$.post('${contextPath!}/department/update', data, function(res) {
+												if (res.success) {
+													try {
+														LogUtils.saveLog("修改部门:" + res.data.id, function() {
+																});
+													} catch (e) {
+														$.messager.alert('错误', e);
+													}
+													deptGrid.treegrid('update', {
+																id : res.data.id,
+																row : res.data
+															});
+													$.messager.alert('提示', '修改成功！', 'ok', function() {
+																$('#win').dialog('close');
+															});
+												} else {
+													$.messager.alert('提示', '修改失败！', 'no', function() {
+																$('#win').dialog('close');
+															});
+												}
+											}, 'json');
+								}
+							}, {
+								text : '取消',
+								handler : function() {
+									$('#win').dialog('close');
+								}
+							}]
+				});
+
 	}
 }
 
 // 根据主键删除
 function del() {
 	if (!dataAuth.deleteDept) {
+		return;
+	}
+	if (!$('#win').is(':hidden')) {
 		return;
 	}
 	var selected = deptGrid.treegrid("getSelected");
@@ -96,6 +197,14 @@ function del() {
 							});
 				}
 			});
+}
+
+function userCountFomartter(value, row) {
+	var target = deptGrid.treegrid('find', row.id).target;
+	if (deptGrid.treegrid('isLeaf', target)) {
+		return row.userCount;
+	}
+	var children = deptGrid.treegrid('getChildren', row.id);
 }
 
 var columnFormatter = function(value, row) {
@@ -234,6 +343,12 @@ function insertOrUpdateDept(row, changes) {
 					return;
 				}
 				if (postData.id == undefined) {
+					try {
+						LogUtils.saveLog("新增部门:" + data.data.id, function() {
+								});
+					} catch (e) {
+						$.messager.alert('错误', e);
+					}
 					deptGrid.treegrid('remove', 'temp');
 					deptGrid.treegrid('append', {
 								parent : data.data.parentId,
@@ -258,35 +373,6 @@ function insertOrUpdateDept(row, changes) {
  */
 function onClickRow(row) {
 	cancelEdit();
-}
-
-var loadFilter = function(data, parentId) {
-	if (parentId != undefined) {
-		return data;
-	}
-	var getChildren = function(parent) {
-		var children = new Array();
-		$(data).each(function(i, el) {
-					if (parent.id == el.parentId) {
-						var obj = new Object();
-						$.extend(true, obj, el);
-						obj.children = getChildren(obj);
-						children.push(obj);
-					}
-				});
-		return children;
-	};
-	var target = new Array();
-	$(data).each(function(i, el) {
-				if (el.id == -1) {
-					var obj = new Object();
-					$.extend(true, obj, el);
-					obj.children = getChildren(obj);
-					target.push(obj);
-					return false;
-				}
-			});
-	return target;
 }
 
 /**

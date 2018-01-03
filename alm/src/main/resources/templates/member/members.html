@@ -1,37 +1,73 @@
-<div style="margin: 5px 5px;">
-	真实姓名: <input id="searchTextbox" class="easyui-textbox" data-options="buttonText:'查询',buttonIcon:'icon-search',onClickButton:search" onkeyup="searchBoxOnKeyup();" style="width: 300px">
+<style>
+	#smform .textbox-label{
+		width: 60px;
+	}
+</style>
+<div class="easyui-panel" style="width: 100%;" align="left">
+	<form id="smform" class="easyui-form" method="post" fit="true">
+		<table style="padding: 10px;">
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-textbox" name="realName" id="realName" style="width: 100%"
+					data-options="label:'姓名:'" /></td>
+				<td style="padding: 5px;"><input value="${dep}" class="easyui-combotree" name="departmentId" id="departmentId" style="width: 100%"
+					data-options="loadFilter:treeLoadFilter, _idField:'id', _textField:'name', _parentIdField:'parentId',label:'部门:', url:'${contextPath!}/team/department.json'">
+				</td>
+				<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="a();">查询</a></td>
+				<td> <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearMemForm()">清除</a></td>
+			</tr>
+		</table>
+	</form>
 </div>
-<table class="easyui-datagrid" id="smGridList" sortName="userName" sortOrder="asc" fitColumns="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="true"
-	align="center" fit="true" striped="true" idField="id" data-options="onDblClickRow:dbClickMembers">
+
+<table class="easyui-datagrid" style="width: 100%; height: 262px" id="smGridList" sortName="userName" sortOrder="asc" fitColumns="true"
+	remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="true" align="center" striped="true" idField="id"
+	data-options="onDblClickRow:dbClickMembers">
 	<thead>
 		<tr>
 			<th data-options="field:'id',hidden:true"></th>
-			<th data-options="field:'userName',width:'25%'">用户名</th>
-			<th data-options="field:'realName',width:'25%'">真实姓名</th>
-			<th data-options="field:'cellPhone',width:'25%'">手机号</th>
-			<th data-options="field:'email',width:'25%'">邮箱</th>
+			<th data-options="field:'userName',width:'33.3%'">用户名</th>
+			<th data-options="field:'realName',width:'33.3%'">真实姓名</th>
+			<!--<th data-options="field:'cellphone',width:'25%'">手机号</th>-->
+			<th data-options="field:'department',width:'33.3%',formatter:formatDep">部门</th>
+			<!--<th data-options="field:'email',width:'25%'">邮箱</th>-->
 		</tr>
 	</thead>
 </table>
 
+
 <script type="text/javascript">
+	var dep = '${dep}';
+
+    function clearMemForm() {
+        $('#form').form('clear');
+        $("#departmentId").combotree('initValue','');
+        a();
+    }
+
+	function formatDep(val, row) {
+		return row.department.name;
+	}
+
 	function dbClickMembers(index, row) {
 		confirmMembersBtn("${textboxId}");
 	}
-	function search() {
+
+	function a() {
 		var opts = $("#smGridList").datagrid("options");
-		opts.url = '${contextPath!}/member/members';
-		var param = $('#searchTextbox').textbox('getText');
-		$('#smGridList').datagrid('load', {
-			realName : param
-		});
+		opts.url = '${contextPath}/member/members';
+		var formData = $("#smform").serializeObject();
+		$('#smGridList').datagrid('load', formData);
 	}
 
 	$(function() {
-		$('#searchTextbox').textbox('addClearBtn', 'icon-clear');
-		$('#searchTextbox').textbox('textbox').focus();
-		$('#searchTextbox').textbox('textbox').bind('keydown', function(e) {
-			search();
-		});
+		// if (dep != '') {
+		// 	$("#departmentId").combotreegrid('setValue', dep);
+		// }
+		a();
+		// $('#searchTextbox').textbox('addClearBtn', 'icon-clear');
+		// $('#searchTextbox').textbox('textbox').focus();
+		// $('#searchTextbox').textbox('textbox').bind('keydown', function(e) {
+		// 	search();
+		// });
 	})
 </script>

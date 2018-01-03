@@ -96,7 +96,7 @@ public class MenuServiceImpl extends BaseServiceImpl<Menu, Long> implements Menu
 		if (!dto.getMenuUrl().equals(url)) {
 			this.userManager.reloadUserUrlsByMenu(dto.getId());
 		}
-		return BaseOutput.success("修改成功");
+		return BaseOutput.success("修改成功").setData(menu);
 	}
 
 	@Override

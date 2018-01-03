@@ -1,23 +1,42 @@
 <#body>
-<form id="changePwdForm" class="easyui-form" fit="true" method="post" novalidate="novalidate">
-	<table width="360px">
-		<tr>
-			<td style="padding: 5px;"><input class="easyui-textbox" id="currentPwd" name="oldPassword" style="width: 100%" data-options="label:'当前密码:', validType:'length[0,32]',labelAlign:'right'"
-				type="password" required="true" validateOnCreate="false" /></td>
-		</tr>
-		<tr>
-			<td style="padding: 5px;"><input class="easyui-textbox" id="newPwd" name="newPassword" style="width: 100%" data-options="label:'新密码:',validType:'length[0,32]',labelAlign:'right'"
-				type="password" required="true" validateOnCreate="false" /></td>
-		</tr>
-		<tr>
-			<td style="padding: 5px;"><input class="easyui-textbox" id="reNewPwd" name="confirmPassword" style="width: 100%" data-options="label:'确认新密码:',labelAlign:'right'" type="password"
-				validType="pwdEquals['#newPwd']" required="true" validateOnCreate="false" /></td>
-		</tr>
-		<tr>
-			<td colspan="2"><input type="button" value="确认" onclick="changePwd()"></td>
-		</tr>
-	</table>
-</form>
+<style>
+	html,body{height: 100%}
+	.contain{
+
+		box-sizing: border-box;
+		width: 100%;
+		height: 100%;
+		border: 1px solid #eee;
+	}
+	.contain form{
+		width: 360px;
+		margin: 0 auto;
+		text-align: center;
+	}
+</style>
+<div class="easyui-panel" title="密码修改" style="height: 100%;padding:20px">
+	<form id="changePwdForm" class="easyui-form" fit="true" method="post" novalidate="novalidate">
+		<table width="360px">
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-textbox" id="currentPwd" name="oldPassword" style="width: 100%" data-options="label:'当前密码:', validType:'length[0,32]',labelAlign:'right'"
+												 type="password" required="true" validateOnCreate="false" /></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-textbox" id="newPwd" name="newPassword" style="width: 100%" data-options="label:'新密码:',validType:'length[0,32]',labelAlign:'right'"
+												 type="password" required="true" validateOnCreate="false" /></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-textbox" id="reNewPwd" name="confirmPassword" style="width: 100%" data-options="label:'确认新密码:',labelAlign:'right'" type="password"
+												 validType="pwdEquals['#newPwd']" required="true" validateOnCreate="false" /></td>
+			</tr>
+			<tr>
+				<td colspan="2" style="padding-top: 20px;text-align: center"><input class="easyui-linkbutton" style="width: 50px;height: 24px" type="button" value="确认" onclick="changePwd()"></td>
+			</tr>
+		</table>
+	</form>
+</div>
+
+
 
 <script type="text/javascript">
 	function changePwd() {
@@ -36,7 +55,7 @@
 			async : true,
 			success : function(data) {
 				if (data.code == "200") {
-					parent.closeTab("修改密码");
+					$.messager.alert('提示', '修改成功');
 				} else {
 					$.messager.alert('错误', data.result);
 				}

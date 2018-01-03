@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.alm.dao.LogMapper">
+  <resultMap id="BaseResultMap" type="com.dili.alm.domain.Log">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="created" jdbcType="TIMESTAMP" property="created" />
+    <result column="modified" jdbcType="TIMESTAMP" property="modified" />
+    <result column="operator_id" jdbcType="BIGINT" property="operatorId" />
+    <result column="ip" jdbcType="VARCHAR" property="ip" />
+     <result column="content" jdbcType="VARCHAR" property="content" />
+     <result column="log_number" jdbcType="BIGINT" property="logNumber" />
+     <result column="log_order" jdbcType="BIGINT" property="logOrder" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, created, modified, operator_id, ip,content,log_number,log_order
+  </sql>
+  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from log
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <update id="updateBy" parameterType="com.dili.alm.domain.Log">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update log
+    <set>
+      <if test="created != null">
+        created = #{created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modified != null">
+        modified = #{modified,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operatorId != null">
+        operator_id = #{operatorId,jdbcType=BIGINT},
+      </if>
+      <if test="ip != null">
+        ip = #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="logNumber != null">
+        log_number = #{logNumber,jdbcType=BIGINT},
+      </if>
+      <if test="logOrder != null">
+        log_order = #{logOrder,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="logLikeList"  resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from log
+    where 1=1
+    <if test="log.operatorId != null">
+        and operator_id = #{log.operatorId}
+    </if>
+    <if test="beginTime != null">
+        and created &gt;=#{beginTime} 
+    </if>
+    <if test="endTime != null">
+        and created &lt;=#{endTime} 
+    </if>
+    <if test="log.content != null">
+        and content like '%${log.content}%'
+    </if>
+    <if test="log.sort != null">
+    	ORDER BY ${log.sort} ${log.order}
+    </if>
+    <if test="log.page != null and log.rows != null">
+    limit ${(log.page-1)*log.rows},${log.rows}
+    </if>
+    
+  </select>
+  <select id="logLikeListCount" resultType="java.lang.Integer">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    count(1) AS 'total'
+    from log
+    where 1=1
+    <if test="log.operatorId != null">
+        and operator_id = #{log.operatorId}
+    </if>
+    <if test="beginTime != null">
+        and created &gt;=#{beginTime} 
+    </if>
+    <if test="endTime != null">
+        and created &lt;=#{endTime} 
+    </if>
+    <if test="log.content != null">
+        and content like '%${log.content}%'
+    </if>
+  </select>
+  
+  <select id="selectLogByCreated"  resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from log
+    where  created  &gt;=#{beginTime} 
+        and created &lt;=#{endTime} 
+    	ORDER BY log_order desc
+  </select>
+</mapper>

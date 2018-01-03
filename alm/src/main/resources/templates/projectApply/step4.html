@@ -1,0 +1,129 @@
+<#body>
+<style>
+
+    .title-first,
+    .title-second {
+        margin-top: 20px;
+        background: #f7f7f7;
+    }
+
+    .title-first {
+        padding-left: 0;
+    }
+
+    .title-second {
+        padding-left: 30px;
+    }
+
+</style>
+<div class="easyui-panel" title="立项申请（第四步）">
+    <div style="padding:10px 60px 20px 60px">
+        <form id="ff" method="post">
+            <input type="hidden" name="id" value="${apply.id}"/>
+            <input type="hidden" id="list" name="plan"/>
+            <table cellpadding="5" width="100%">
+                <tr>
+                    <td>项目编号</td>
+                    <td>${apply.number}</td>
+                    <td>项目类别</td>
+                    <td>${apply.type}</td>
+                </tr>
+                <tr>
+                    <td class="title-first" colspan="4">4.项目概要计划</td>
+                </tr>
+            </table>
+
+            <table id="dg" class="easyui-datagrid" style="height:auto"
+                   data-options="
+                singleSelect: true,
+                url: '${contextPath}/projectApply/loadPlan?id=${apply.id}',
+                method: 'get',
+                onClickCell: onClickCell
+            ">
+                <thead>
+                <tr>
+                    <th data-options="field:'phase',width:'15%',align:'center',">阶段/里程碑</th>
+                    <th data-options="editable:false,field:'startDate',_provider:'dateProvider',width:'25%',align:'center',editor:{type:'datebox',options:{editable:false,required:false}}">
+                        计划开始日期
+                    </th>
+                    <th data-options="editable:false,field:'endDate',_provider:'dateProvider',width:'25%',align:'center',editor:{type:'datebox',options:{editable:false,required:false}}">
+                        计划结束日期
+                    </th>
+                    <th data-options="field:'resources',width:'15%',align:'center',editor:{type:'numberspinner',options:{increment:1,min:1}}">
+                        计划投入资源
+                    </th>
+                    <th data-options="field:'workTime',width:'20%',align:'center',editor:{type:'numberbox',options:{min:1}}">计划工时（人日）</th>
+                </tr>
+                </thead>
+            </table>
+
+        </form>
+        <div style="text-align:center;padding:5px;margin-top:50px;">
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
+               onclick="backForm()">上一步</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
+               onclick="submitForm()">下一步</a>
+            <a href="${contextPath}/projectApply/index.html" class="easyui-linkbutton" style="width:80px">取消</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function backForm() {
+        window.location.href = "${contextPath}/projectApply/toStep/3/${apply.id}";
+    }
+    var editIndex = undefined;
+
+    function endEditing() {
+        if (editIndex == undefined) {
+            return true
+        }
+        if ($('#dg').datagrid('validateRow', editIndex)) {
+            $('#dg').datagrid('endEdit', editIndex);
+            editIndex = undefined;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function onClickCell(index, field) {
+        if (editIndex != index) {
+            if (endEditing()) {
+                $('#dg').datagrid('selectRow', index)
+                    .datagrid('beginEdit', index);
+                var ed = $('#dg').datagrid('getEditor', {index: index, field: field});
+                if (ed) {
+                    ($(ed.target).data('textbox') ? $(ed.target).textbox('textbox') : $(ed.target)).focus();
+                }
+                editIndex = index;
+            } else {
+                setTimeout(function () {
+                    $('#dg').datagrid('selectRow', editIndex);
+                }, 0);
+            }
+        }
+    }
+
+    function submitForm() {
+        $('#ff').form('submit', {
+            url: "${contextPath}/projectApply/insertStep",
+            onSubmit: function () {
+                var data = $("#dg").datagrid("getData");
+                endEditing();
+                $("#list").val(JSON.stringify(data.rows));
+                return $("#ff").form('validate');
+            },
+            success: function (data) {
+                var data = eval('(' + data + ')');
+                if (data.success == true) {
+                    if (data.success == true) {
+                        window.location.href = "${contextPath}/projectApply/toStep/5/" + data.result;
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+
+</#body>

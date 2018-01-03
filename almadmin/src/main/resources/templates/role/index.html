@@ -37,16 +37,16 @@
 			data-options="onBeforeEdit:onBeforeEdit, onAfterEdit:onAfterEdit, onCancelEdit:onCancelEdit, onHeaderContextMenu:headerContextMenu, onDblClickRow:onDblClickRow">
 			<thead>
 				<tr>
-					<th data-options="field:'id',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">角色编号</th>
-					<th data-options="field:'roleName',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',
+					<th data-options="field:'id', width:'12%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">角色编号</th>
+					<th data-options="field:'roleName', width:'13%', align:'center', resizable:'true', fixed:'false',
                          editor:{type:'textbox',options:{required:true}}">
 						角色名</th>
-					<th data-options="field:'description',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',
+					<th data-options="field:'description', width:'13%', align:'center', resizable:'true', fixed:'false',
                          editor:{type:'textbox',options:{required:true}}">
 						角色描述</th>
-					<th data-options="field:'created',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">创建时间</th>
-					<th data-options="field:'modified',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">修改时间</th>
-					<th data-options="field:'options', formatter:roleGridFormatter, align:'center', resizable:'true', fixed:'false'">操作</th>
+					<th data-options="field:'created', width:'22%', _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">创建时间</th>
+					<th data-options="field:'modified',width:'22%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">修改时间</th>
+					<th data-options="field:'options',width:'18%', formatter:roleGridFormatter, align:'center', resizable:'true', fixed:'false'">操作</th>
 				</tr>
 			</thead>
 		</table>
@@ -55,7 +55,7 @@
 			<#resource code='addRole'> <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="onAddClicked()" plain="true"></a> </#resource>
 			<#resource code="editRole"> <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="onEditClicked()" plain="true"></a> </#resource>
 			<#resource code="removeRole"> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="onRemoveClicked()" plain="true"></a> </#resource>
-			<a href="#" class="easyui-linkbutton" iconCls="icon-export" onclick="doExport('roleGrid')" plain="true"></a>
+			<!-- <a href="#" class="easyui-linkbutton" iconCls="icon-export" onclick="doExport('roleGrid')" plain="true"></a> -->
 			<div style="float: right">
 				边框显示:<select onchange="changeBorder('roleGrid',this.value)">
 					<option value="lines-both">全边框</option>

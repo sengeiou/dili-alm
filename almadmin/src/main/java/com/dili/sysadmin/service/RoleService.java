@@ -34,4 +34,6 @@ public interface RoleService extends BaseService<Role, Long> {
 
 	BaseOutput<Role> insertAndGet(Role role);
 
+	BaseOutput<Object> updateAfterCheck(Role role);
+
 }

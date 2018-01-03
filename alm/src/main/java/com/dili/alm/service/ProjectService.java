@@ -1,12 +1,17 @@
 package com.dili.alm.service;
 
+import java.util.List;
+import java.util.Map;
+
+import javax.mail.MessagingException;
+
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
+import com.dili.alm.domain.dto.UploadProjectFileDto;
 import com.dili.alm.exceptions.ProjectException;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
-
-import java.util.List;
+import com.dili.ss.domain.EasyuiPageOutput;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-10-18 17:22:54.
@@ -28,4 +33,15 @@ public interface ProjectService extends BaseService<Project, Long> {
 	BaseOutput<Object> insertAfterCheck(Project project) throws ProjectException;
 
 	BaseOutput<Object> updateAfterCheck(Project project);
+
+	List<DataDictionaryValueDto> getProjectStates();
+
+	EasyuiPageOutput listPageMyProject(Project project);
+
+	List<DataDictionaryValueDto> getFileTypes();
+
+	Map<Object, Object> getDetailViewData(Long id);
+
+	BaseOutput<Object> uploadFileAndSendMail(UploadProjectFileDto dto) throws MessagingException, InterruptedException;
+
 }

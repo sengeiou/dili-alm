@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.alm.dao.TaskMapper">
+	<resultMap id="BaseResultMap" type="com.dili.alm.domain.Task">
+		<!-- WARNING - @mbg.generated -->
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="project_id" jdbcType="BIGINT" property="projectId" />
+		<result column="version_id" jdbcType="BIGINT" property="versionId" />
+		<result column="phase_id" jdbcType="BIGINT" property="phaseId" />
+		<result column="start_date" jdbcType="TIMESTAMP" property="startDate" />
+		<result column="end_date" jdbcType="TIMESTAMP" property="endDate" />
+		<result column="before_task" jdbcType="BIGINT" property="beforeTask" />
+		<result column="type" jdbcType="INTEGER" property="type" />
+		<result column="owner" jdbcType="BIGINT" property="owner" />
+		<result column="plan_time" jdbcType="SMALLINT" property="planTime" />
+		<result column="flow" jdbcType="BIT" property="flow" />
+		<result column="change_id" jdbcType="BIGINT" property="changeId" />
+		<result column="describe" jdbcType="VARCHAR" property="describe" />
+		<result column="status" jdbcType="TINYINT" property="status" />
+		<result column="created" jdbcType="TIMESTAMP" property="created" />
+		<result column="modified" jdbcType="TIMESTAMP" property="modified" />
+		<result column="create_member_id" jdbcType="BIGINT" property="createMemberId" />
+		<result column="modify_member_id" jdbcType="BIGINT" property="modifyMemberId" />
+		<result column="fact_begin_date" jdbcType="TIMESTAMP" property="factBeginDate" />
+		<result column="fact_end_date" jdbcType="TIMESTAMP" property="factEndDate" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		<!-- WARNING - @mbg.generated -->
+		id, name, project_id, version_id, phase_id, start_date, end_date,
+		before_task, type,
+		owner, plan_time, flow, change_id, describe, status,
+		created, modified,
+		create_member_id,
+		modify_member_id,fact_begin_date,fact_end_date
+	</sql>
+
+	<sql id="Join_Column_List">
+		t.id,
+		t.name,
+		t.project_id,
+		t.version_id,
+		t.phase_id,
+		t.start_date,
+		t.end_date,
+		t.before_task,
+		t.type,
+		t.owner,
+		t.plan_time,
+		t.flow,
+		t.change_id,
+		t.describe,
+		t.status,
+		t.created,
+		t.modified,
+		t.create_member_id,
+		t.modify_member_id,
+		t.fact_begin_date,
+		t.fact_end_date
+	</sql>
+
+	<select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
+		<!-- WARNING - @mbg.generated -->
+		select
+		<include refid="Base_Column_List" />
+		from task
+		where id = #{id,jdbcType=BIGINT}
+	</select>
+	<update id="updateBy" parameterType="com.dili.alm.domain.Task">
+		<!-- WARNING - @mbg.generated -->
+		update task
+		<set>
+			<if test="name != null">
+				name = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="projectId != null">
+				project_id = #{projectId,jdbcType=BIGINT},
+			</if>
+			<if test="versionId != null">
+				version_id = #{versionId,jdbcType=BIGINT},
+			</if>
+			<if test="phaseId != null">
+				phase_id = #{phaseId,jdbcType=BIGINT},
+			</if>
+			<if test="startDate != null">
+				start_date = #{startDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="endDate != null">
+				end_date = #{endDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="beforeTask != null">
+				before_task = #{beforeTask,jdbcType=BIGINT},
+			</if>
+			<if test="type != null">
+				type = #{type,jdbcType=INTEGER},
+			</if>
+			<if test="owner != null">
+				owner = #{owner,jdbcType=BIGINT},
+			</if>
+			<if test="planTime != null">
+				plan_time = #{planTime,jdbcType=SMALLINT},
+			</if>
+			<if test="flow != null">
+				flow = #{flow,jdbcType=BIT},
+			</if>
+			<if test="changeId != null">
+				change_id = #{changeId,jdbcType=BIGINT},
+			</if>
+			<if test="describe != null">
+				describe = #{describe,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=TINYINT},
+			</if>
+			<if test="created != null">
+				created = #{created,jdbcType=TIMESTAMP},
+			</if>
+			<if test="modified != null">
+				modified = #{modified,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createMemberId != null">
+				create_member_id = #{createMemberId,jdbcType=BIGINT},
+			</if>
+			<if test="modifyMemberId != null">
+				modify_member_id = #{modifyMemberId,jdbcType=BIGINT},
+			</if>
+			<if test="factBeginDate != null">
+				start_date = #{factBeginDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="factEndDate != null">
+				end_date = #{factEndDate,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+
+	<select id="selectByProjectState" parameterType="Integer"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="Join_Column_List" />
+		FROM
+		task t
+		INNER JOIN project_phase pp ON t.phase_id = pp.id
+		INNER JOIN
+		project p ON pp.project_id = p.id
+		WHERE p.project_state = 1
+	</select>
+
+	<select id="countNotCompletedByPhaseId" parameterType="java.util.Map"
+		resultType="Integer">
+		select count(*) from task where (status = #{startStatus} or
+		status =
+		#{notCompletedStatus}) and phase_id = #{phaseId}
+	</select>
+	<!--  根据群组查询信息 -->
+    <select  id="selectByTeam"  resultType="com.dili.alm.domain.Task" >
+     select * from alm.task as task where task.project_id in 
+            (select t2.project_id from alm.team as t2 where t2.project_id in(select t.project_id from alm.team as t where t.member_id =#{selectOwner,jdbcType=BIGINT}))
+           
+          
+		     <if test="task.name != null">
+				and task.name like CONCAT("%",#{task.name,jdbcType=VARCHAR},"%") 
+			</if>
+			<if test="task.projectId != null and task.projectId != 0">
+				and task.project_id = #{task.projectId,jdbcType=BIGINT}
+			</if>
+			<if test="task.versionId != null and task.versionId != 0">
+				and task.version_id = #{task.versionId,jdbcType=BIGINT}
+			</if>
+			<if test="ids != null">
+				and task.phase_id in 
+				<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+				  #{item}  
+				</foreach>
+			</if>
+			<if test="task.owner != null and task.owner != 0">
+				and task.owner = #{task.owner,jdbcType=BIGINT}
+			</if>
+			<if test="task.startDate != null">
+				and task.start_date = #{task.startDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="task.endDate != null">
+				and task.end_date = #{task.endDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="task.beforeTask != null">
+				and task.before_task = #{task.beforeTask,jdbcType=BIGINT}
+			</if>
+			<if test="task.type != null">
+				and task.type = #{task.type,jdbcType=INTEGER}
+			</if>
+			<if test="task.planTime != null">
+				and task.plan_time = #{task.planTime,jdbcType=SMALLINT}
+			</if>
+			<if test="task.flow != null">
+				and task.flow = #{task.flow,jdbcType=BIT}
+			</if>
+			<if test="task.changeId != null">
+				and task.change_id = #{task.changeId,jdbcType=BIGINT}
+			</if>
+			<if test="task.describe != null">
+				and task.describe = #{task.describe,jdbcType=VARCHAR}
+			</if>
+			<if test="task.status != null">
+				and task.status = #{task.status,jdbcType=TINYINT}
+			</if>
+			<if test="task.created != null">
+				and task.created = #{task.created,jdbcType=TIMESTAMP}
+			</if>
+			<if test="task.modified != null">
+				and task.modified = #{task.modified,jdbcType=TIMESTAMP}
+			</if>
+			<if test="task.createMemberId != null">
+				and task.create_member_id = #{task.createMemberId,jdbcType=BIGINT}
+			</if>
+			<if test="task.modifyMemberId != null">
+				and task.modify_member_id = #{task.modifyMemberId,jdbcType=BIGINT}
+			</if>
+			<if test="task.factBeginDate != null">
+				and task.start_date = #{task.factBeginDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="task.factEndDate != null">
+				and task.end_date = #{task.factEndDate,jdbcType=TIMESTAMP}
+			</if>
+			ORDER BY task.created DESC
+ 			<if test="task.page != null and task.rows != null">
+            limit ${(task.page-1)*task.rows},${task.rows}
+            </if> 
+    </select>
+     <select  id="selectByTeamCount"  resultType="int" >
+     select count(1) from alm.task as task where task.project_id in 
+            (select t2.project_id from alm.team as t2 where t2.project_id in(select t.project_id from alm.team as t where t.member_id =#{selectOwner,jdbcType=BIGINT}))
+           
+          
+		     <if test="task.name != null">
+				and task.name like CONCAT("%",#{task.name,jdbcType=VARCHAR},"%") 
+			</if>
+			<if test="task.projectId != null and task.projectId != 0">
+				and task.project_id = #{task.projectId,jdbcType=BIGINT}
+			</if>
+			<if test="task.versionId != null and task.versionId != 0">
+				and task.version_id = #{task.versionId,jdbcType=BIGINT}
+			</if>
+			<if test="ids != null">
+				and task.phase_id in
+				<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+				  #{item}  
+				</foreach> 
+			</if>
+			<if test="task.owner != null and task.owner != 0">
+				and task.owner = #{task.owner,jdbcType=BIGINT}
+			</if>
+			<if test="task.startDate != null">
+				and task.start_date = #{task.startDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="task.endDate != null">
+				and task.end_date = #{task.endDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="task.beforeTask != null">
+				and task.before_task = #{task.beforeTask,jdbcType=BIGINT}
+			</if>
+			<if test="task.type != null">
+				and task.type = #{task.type,jdbcType=INTEGER}
+			</if>
+			<if test="task.planTime != null">
+				and task.plan_time = #{task.planTime,jdbcType=SMALLINT}
+			</if>
+			<if test="task.flow != null">
+				and task.flow = #{task.flow,jdbcType=BIT}
+			</if>
+			<if test="task.changeId != null">
+				and task.change_id = #{task.changeId,jdbcType=BIGINT}
+			</if>
+			<if test="task.describe != null">
+				and task.describe = #{task.describe,jdbcType=VARCHAR}
+			</if>
+			<if test="task.status != null">
+				and task.status = #{task.status,jdbcType=TINYINT}
+			</if>
+			<if test="task.created != null">
+				and task.created = #{task.created,jdbcType=TIMESTAMP}
+			</if>
+			<if test="task.modified != null">
+				and task.modified = #{task.modified,jdbcType=TIMESTAMP}
+			</if>
+			<if test="task.createMemberId != null">
+				and task.create_member_id = #{task.createMemberId,jdbcType=BIGINT}
+			</if>
+			<if test="task.modifyMemberId != null">
+				and task.modify_member_id = #{task.modifyMemberId,jdbcType=BIGINT}
+			</if>
+			<if test="task.factBeginDate != null">
+				and task.start_date = #{task.factBeginDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="task.factEndDate != null">
+				and task.end_date = #{task.factEndDate,jdbcType=TIMESTAMP}
+			</if>
+			
+    </select>
+    <select  id="selectProjectChangeByTeam"  resultType="com.dili.alm.domain.ProjectChange" >
+     select * from project_change as pc where pc.project_id in (select p.id  from project as p where p.id in
+		     (select t.project_id from team as t where t.member_id =#{selectOwner,jdbcType=BIGINT})) and pc.status = 3
+		   <if test="projectId != null">
+				and pc.project_id = #{projectId,jdbcType=BIGINT}
+			</if>
+    </select>
+    
+     <select  id="selectProjectByTeam"  resultType="com.dili.alm.domain.Project" >
+     select *  from project as p where p.id in
+		     (select t.project_id from team as t where t.member_id =#{selectOwner,jdbcType=BIGINT}) ORDER BY p.created DESC
+    </select>
+   <select  id="selectUserByTeam"  resultType="java.lang.Long" >
+   
+    select distinct(t2.member_id) from alm.team as t2 where t2.project_id in
+     
+       (select t.project_id from alm.team as t where t.member_id =#{selectOwner,jdbcType=BIGINT})
+       
+        ORDER BY t2.join_time DESC
+   </select>
+   <select  id="selectVersionByTeam"  resultType="com.dili.alm.domain.ProjectVersion" >
+     select * from alm.project_version as version where version.project_id in 
+      (select distinct(t2.project_id) from alm.team as t2 where t2.project_id in
+        (select t.project_id from alm.team as t where t.member_id =#{selectOwner,jdbcType=BIGINT})) ORDER BY version.created DESC
+   </select>
+   
+   
+    <select  id="selectOtherTaskDetail"  resultType="com.dili.alm.domain.TaskDetails" >
+    select * from alm.task_details  as td where  td.task_id in 
+    (select tt.id from task as tt where tt.owner = #{selectOwner,jdbcType=BIGINT}) and td.modified like CONCAT("%",#{selectDate,jdbcType=VARCHAR},"%") 
+   </select>
+   
+   
+  
+</mapper>

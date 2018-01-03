@@ -1,0 +1,225 @@
+<#body>
+<style>
+    td {
+        padding-left: 60px;
+        /*padding-right: 60px;*/
+    }
+
+    .datebox-button td{
+        padding-left: 0;
+    }
+
+    input[class^="easyui-"] {
+        width: 300px;
+    }
+
+    .title-first,
+    .title-second {
+        margin-top: 20px;
+        background: #f7f7f7;
+    }
+
+    .title-first {
+        padding-left: 0;
+    }
+
+    .title-second {
+        padding-left: 30px;
+    }
+    .l-btn-large .l-btn-text{
+        line-height: 28px;
+    }
+    .textbox-label{
+        width: 110px;
+    }
+    .panel-tool{
+        top:10px;
+        height: 24px;
+    }
+</style>
+<div id="smDialog" style="display: none;"></div>
+<!--<div id="cusTools">-->
+    <!--<a href="${contextPath}/approve/apply/index.html" style="width: 30px;color: #333;text-decoration: none">返回</a>-->
+<!--</div>-->
+<div id="cusTools">
+    <a onclick="window.location.href='${contextPath}/approve/apply/index.html';" class="easyui-linkbutton" style="width: 50px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">返回</a>
+</div>
+<div class="easyui-panel" title="项目立项审批" style="height: 100%"
+     data-options="tools:'#cusTools'">
+    <div style="padding:10px 60px 20px 60px">
+        <form id="ff" method="post" action="">
+            <input type="hidden" name="id" value="${apply.id}">
+            <input type="hidden" name="opt" id="opt" value="">
+            <table cellpadding="5" id="tb" style="width: 100%">
+                <tr>
+                    <td>项目编号</td>
+                    <td>${apply.number}</td>
+                    <td>项目审批状态</td>
+                    <td>${apply.status}</td>
+                </tr>
+                <tr>
+                    <td>申请人</td>
+                    <td>${apply.createMemberId}</td>
+                    <td>创建日期</td>
+                    <td>${apply.created}</td>
+                </tr>
+                <tr>
+                    <td class="title-first" colspan="4">1项目内容及资源</td>
+                </tr>
+                <tr>
+                    <td class="title-second" colspan="4">1.1项目基本信息</td>
+                </tr>
+                <tr>
+                    <td colspan="4"><input class="easyui-textbox" type="text" name="name"
+                                           data-options="label:'项目名称:'" style="width:600px"></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input class="easyui-textbox" name="projectLeader" style=""
+                               panelWidth="auto" panelHeight="auto" label="项目负责人:"
+                               data-options=""/></td>
+                    <td colspan="2"><input class="easyui-textbox" type="text" name="projectType"
+                               data-options="label:'项目类别:'"></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input class="easyui-textbox" type="text" name="businessOwner"
+                               data-options="label:'业务负责人:'"></td>
+                    <td colspan="2"><input class="easyui-textbox" type="text" name="dep" data-options="required:true,label:'需求所属业务部门:'"></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input class="easyui-datebox" name="expectedLaunchDate" id=""
+                               data-options="required:true,label:'业务期望上线日期:'"/></td>
+                    <td colspan="2"><input class="easyui-datebox" name="estimateLaunchDate" id=""
+                               data-options="required:true,label:'预估最终上线日期:'"/></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input class="easyui-datebox" name="startDate" id=""
+                               data-options="required:true,label:'计划开始日期:'"/>
+                    </td>
+                    <td colspan="2"><input class="easyui-datebox" name="endDate" id=""
+                               data-options="required:true,label:'计划结束日期:'"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="title-first" colspan="4">项目基本描述</td>
+                </tr>
+                <tr>
+                    <td class="title-second" colspan="4">目的</td>
+                </tr>
+                <tr>
+                    <td colspan="4"><input class="easyui-textbox" name="purpose"
+                                           data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
+                                           style="width:100%;height:120px"/></td>
+                </tr>
+                <tr>
+                    <td class="title-second" colspan="4">范围</td>
+                </tr>
+                <tr>
+                    <td colspan="4"><input class="easyui-textbox" name="range"
+                                           data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
+                                           style="width:100%;height:120px"/></td>
+                </tr>
+                <tr>
+                    <td class="title-second" colspan="4">方法概要</td>
+                </tr>
+                <tr>
+                    <td colspan="4"><input class="easyui-textbox" name="methodSummary"
+                                           data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
+                                           style="width:100%;height:120px"/></td>
+                </tr>
+                <tr>
+                    <td class="title-first" colspan="4">立项评审&审批</td>
+                </tr>
+                <tr>
+                    <td class="" colspan="4">
+                        <table id="dg" class="easyui-datagrid" style="height:auto;width: 100%"
+                               data-options="singleSelect: true,  url: '${contextPath}/approve/loadDesc?id=${apply.id}'">
+                            <thead>
+                            <tr>
+                                <th data-options="field:'approveDate',_provider:'dateProvider',width:'32%',align:'center'">
+                                    审批时间
+                                </th>
+                                <th data-options="field:'userId',width:'12%',align:'center'">
+                                    用户
+                                </th>
+                                <th data-options="field:'role',width:'32%',align:'center'">
+                                    职务
+                                </th>
+                                <th data-options="field:'result',width:'12%',align:'center',formatter:format">
+                                    审批结果
+                                </th>
+                                <th data-options="field:'notes',width:'12%',align:'center'">审批意见</th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <% if(!viewMode){ %>
+            <% if(canOpt){ %>
+            <table style="width: 100%">
+
+                <tr>
+                    <td colspan="4" style="padding-left: 0"><input id="notes" class="easyui-textbox" name="notes"
+                                           data-options="label:'审批意见',multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
+                                           style="width:calc(100% - 175px);height:120px"/></td>
+                </tr>
+            </table>
+            <% } %>
+            <% } %>
+        </form>
+        <div style="text-align:center;padding:5px;margin-top:50px;">
+            <!--<a href="${contextPath}/approve/apply/index.html" class="easyui-linkbutton" data-options="width:'80px'">返回</a>-->
+            <% if(!viewMode){ %>
+            <% if(canOpt){ %>
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="size:'large',width:'80px'"
+               onclick="submitForm('reject',this)">拒绝</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="size:'large',width:'80px'"
+               onclick="submitForm('accept',this)">同意</a>
+            <% } %>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function format(value) {
+        if (value != undefined) {
+            return value == "accept" ? "通过" : "未通过";
+        }
+        return value;
+    }
+    function submitForm(opt,obj) {
+        $('#ff').form('submit', {
+            url: "${contextPath}/approve/applyApprove",
+            onSubmit: function () {
+                $(obj).linkbutton('disable');
+                $("#opt").val(opt);
+            },
+            success: function (data) {
+                var data = eval('(' + data + ')');
+                if (data.success == true) {
+                    try {
+                        LogUtils.saveLog("立项审批:${apply.id}", function () {
+                            window.location.href = "${contextPath}/approve/apply/index.html";
+                        });
+                    } catch (e) {
+                        window.location.href = "${contextPath}/approve/apply/index.html";
+                    }
+                }
+            }
+        });
+    }
+
+    $(function(){
+        var json = '${json}';
+        var extend = '${extend}';
+        json = eval('(' + json + ')');
+        extend = eval('(' + extend + ')');
+        $.extend(json, extend);
+        $('#ff').form('load', json);
+        $('input[class^=easyui-]').textbox("disable");
+        $('#notes').textbox("enable");
+    });
+
+</script>
+</#body>

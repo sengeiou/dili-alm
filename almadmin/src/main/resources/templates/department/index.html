@@ -1,5 +1,6 @@
 
 <#body>
+<div id="win" style="display: none;"></div>
 <div class="easyui-layout" fit="true">
 	<!-- ====================================================================================================================== -->
 	<!-- 中央布局 -->
@@ -7,27 +8,56 @@
 	<!-- 表格 -->
 	<div region="center" style="width: 100%;" height="auto">
 		<!-- =========================================================表格========================================================= -->
-		<table class="easyui-treegrid" title="部门列表" id="grid" sortName="id" sortOrder="asc" fitColumns="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="true"
-			sortName="id" align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" treeField="name" url="${contextPath!}/department/list"
-			data-options="loadFilter:loadFilter,onClickRow:onClickRow,onDblClickRow:onDblClickRow, onAfterEdit:onAfterEdit,onCancelEdit:onCancelEdit,onBeforeEdit:onBeforeEdit,onEndEdit:onEndEdit">
+		<table class="easyui-treegrid" title="部门列表" id="grid" sortName="id" sortOrder="asc" fitColumns="true" remoteSort="false"
+			loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="true" sortName="id" align="center" fit="true" striped="true"
+			toolbar="#toolbar" idField="id" treeField="name" url="${contextPath!}/department/listDepartmentUserCount"
+			data-options="_parentIdField:'parentId', loadFilter:treegridLoadFilter, onClickRow:onClickRow,onDblClickRow:onDblClickRow, onAfterEdit:onAfterEdit,onCancelEdit:onCancelEdit,onBeforeEdit:onBeforeEdit,onEndEdit:onEndEdit">
 			<thead>
 				<tr>
 					<th data-options="field:'id',hidden:true">id</th>
-					<th data-options="field:'name',width:'20%',editor : {
+					<th
+						data-options="field:'name',width:'20%',editor : {
 								type : 'textbox',
 								options : {
-									required : true
+									required : true,
+									validType:'length[0,10]',
+									missingMessage:'部门名称不能为空',
+									invalidMessage:'部门名称长度必须是1-20个字符'
 								}
 							}">部门名称</th>
-					<th data-options="field:'notes',width:'60%',editor : 'textbox'">描述</th>
+					<th
+						data-options="field:'code',width:'30%',editor : {
+								type : 'textbox',
+								options : {
+									required : true,
+									validType:'length[1,20]',
+									missingMessage:'部门编码不能为空',
+									invalidMessage:'部门编码长度必须是1-20个字符'
+								}
+							}">部门编码</th>
+					<th
+						data-options="field:'notes',width:'40%',editor :{
+							type:'textbox',
+								options : {
+									validType:'length[0,40]',
+									invalidMessage:'部门描述不能超过40个字符'
+								}
+							}">描述</th>
+					<th data-options="field:'userCount',width:'10%',formatter:userCountFomartter">部门人员</th>
 					<th data-options="field:'opt',width:'20%',hidden:true,formatter:columnFormatter">操作</th>
 				</tr>
 			</thead>
 		</table>
 		<div id="toolbar" style="padding: 2px 5px;">
-			<#resource code="addDept"> <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true"></a> </#resource>
-			<#resource code="editDept"> <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()" plain="true"></a> </#resource>
-			<#resource code="deleteDept"> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true"></a> </#resource>
+			<#resource code="addDept"> <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert(true)" plain="true">添加一级部门</a>
+			</#resource>
+			<#resource code="addDept"> <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true">添加子集部门</a>
+			</#resource>
+			<#resource code="editDept"> <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()" plain="true">修改部门信息</a>
+			</#resource>
+			<#resource code="deleteDept"> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true">删除部门</a>
+			</#resource>
+			<a href="#" class="easyui-linkbutton" iconCls="icon-view" onclick="showOrgStructure();" plain="true">查看组织结构</a>
 		</div>
 	</div>
 </div>

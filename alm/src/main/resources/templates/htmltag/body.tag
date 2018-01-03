@@ -7,12 +7,14 @@
     <meta name="description" content="overview &amp; stats" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
     <#css/>
+    <script type="text/javascript">
+        var contextPath = '${contextPath}';
+        var pmo_email='tg@diligrp.com';
+    </script>
     <#js/>
 
 
-    <script type="text/javascript">
-        var contextPath = '${contextPath}';
-    </script>
+
 </head>
 <body>
 ${tag.body}
