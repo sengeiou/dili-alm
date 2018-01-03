@@ -41,6 +41,7 @@ function endEditing() {
 
 // 新增一行空数据并开启编辑模式
 function openInsert(isRoot) {
+	debugger;
 	if (!dataAuth.addDept) {
 		return;
 	}
@@ -60,20 +61,39 @@ function openInsert(isRoot) {
 	editId = 'temp';
 	if (!parentId) {
 		var roots = deptGrid.treegrid('getRoots');
-		deptGrid.treegrid('insert', {
-					before : roots && roots.length > 0 ? roots[0].id : undefined,
-					data : {
-						id : 'temp'
-					}
-				});
+		if (roots && roots.length > 0) {
+			deptGrid.treegrid('insert', {
+						before : roots[0].id,
+						data : {
+							id : 'temp'
+						}
+					});
+		} else {
+			deptGrid.treegrid('append', {
+						before : parentId,
+						data : [{
+									id : 'temp'
+								}]
+					});
+		}
 	} else {
 		var children = deptGrid.treegrid('getChildren', parentId);
-		deptGrid.treegrid('insert', {
-					before : children && children.length > 0 ? children[0].id : undefined,
-					data : {
-						id : 'temp'
-					}
-				});
+		alert(children && children.length > 0);
+		if (children && children.length > 0) {
+			deptGrid.treegrid('insert', {
+						before : children[0].id,
+						data : {
+							id : 'temp'
+						}
+					});
+		} else {
+			deptGrid.treegrid('append', {
+						before : parentId,
+						data : [{
+									id : 'temp'
+								}]
+					});
+		}
 	}
 
 	deptGrid.treegrid('select', 'temp');
