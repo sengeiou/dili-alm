@@ -312,12 +312,11 @@
 			                            <a href="#"   class="easyui-linkbutton" data-options="iconCls:'icon-add',toggle:true">新增重大问题</a>
 			                         <%}%>
 			             
-			             
+			                   <input id="returnProjectId" type='hidden' value="${returnProjectId}"/>
 								  <% if(wDetails!=null){%>
-								     <input id="sSubmit" type='hidden' value="${wDetails.isSubmit}"/>
-								     <input id="cancelSubmit" type='hidden' value="${wDetails.id}"/>
-								     
-								       <input id="returnProjectId" type='hidden' value="${returnProjectId}"/>
+								     <input id="sSubmit" type='hidden'       value="${wDetails.isSubmit}"/>
+								     <input id="cancelSubmit" type='hidden'   value="${wDetails.id}"/>
+								  
 								     
 								  <%}%>
 							  </td>
@@ -409,12 +408,13 @@
     <!-- style & script 分隔线 --> 
 
     <!-- ====================================================================================================================== -->
-    <script type="text/javascript">
+    <script type="text/javascript">	
     
 		    function pageReturn(){  
 		    	///window.history.go(-1);
 		    	//window.location.href="${contextPath}/weekly/index.html";
-		    	 var  tempid=$("#returnProjectId").val();
+		    
+                 var tempid=  $("#returnProjectId").val();
 		    	window.location.href="${contextPath}/project/detail?id="+tempid+"&editable=true";
 		    }
     
