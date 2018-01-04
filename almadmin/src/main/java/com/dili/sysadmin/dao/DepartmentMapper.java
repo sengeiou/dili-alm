@@ -9,4 +9,6 @@ public interface DepartmentMapper extends MyMapper<Department> {
 
 	List<Department> findByUserId(Long id);
 
+	List<Department> getChildDepartments(Long parentId);
+
 }

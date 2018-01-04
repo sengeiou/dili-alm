@@ -212,7 +212,6 @@ function openInsertVersion() {
 													}
 													$('#versionGrid').datagrid('appendRow', data.data);
 													$('#versionGrid').datagrid('acceptChanges');
-													console.log($('#versionGrid').datagrid('getRows'));
 													countVersionGrid();
 													if ($('#versionForm input[name=fileIds]').length > 0) {
 														$('#fileGrid').datagrid('reload');
