@@ -541,7 +541,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	@Override
 	public boolean isSetTask(Long id, short taskHour) {
 		//获取今日填写所有项目的总工时
-		int totalTaskHour = restTaskHour();
+		int totalTaskHour = restTaskHour(id);
 		
 		if (totalTaskHour!=0) {
 			
@@ -592,6 +592,11 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			for (ProjectPhase projectPhase2 : projectPhaseList) {
 				ids.add(projectPhase2.getId());
 			}
+		}
+		
+		if(!WebUtil.strIsEmpty(task.getName())){
+			String replaceAll = task.getName().replaceAll(" ", "");
+			task.setName(replaceAll);
 		}
 		List<Task> list = taskMapper.selectByTeam(task, userTicket.getId(), ids);// 查询出来
 		int count = taskMapper.selectByTeamCount(task, userTicket.getId(), ids);
@@ -838,16 +843,14 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	}
 
 	/**
-	 * 判断其他项目的填写工时是否超过，没有填写工时填flase,
+	 * 判断其他项目的填写工时是否超过，没有填写工时填flase
+	 * 任务责任人
 	 */
 	@Override
-	public List<TaskDetails> otherProjectTaskHour(String updateDate) {
-		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		if (userTicket == null) {
-			throw new RuntimeException("未登录");
-		}
+	public List<TaskDetails> otherProjectTaskHour(String updateDate,Long ownerId) {
+
 		//查询本日修改的其他项目的detail
-		List<TaskDetails> taskDetails = taskMapper.selectOtherTaskDetail(userTicket.getId(), updateDate);
+		List<TaskDetails> taskDetails = taskMapper.selectOtherTaskDetail(ownerId,updateDate);
 		
 		return taskDetails;
 	}
@@ -855,14 +858,14 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
      * 已经填写的工时
      */
 	@Override
-	public int restTaskHour() {
+	public int restTaskHour(Long ownerId) {
 		
 		String updateDate = this.dateToString(new Date());
 		
 		int dayTotal = 0;
 		
 		//本日更新其他项目的工时
-		List<TaskDetails> tdList =this.otherProjectTaskHour(updateDate);
+		List<TaskDetails> tdList =this.otherProjectTaskHour(updateDate,ownerId);
 		
 		//今日没有填写工时
 		if (tdList==null||tdList.size()==0) {

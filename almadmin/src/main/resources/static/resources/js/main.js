@@ -17,12 +17,12 @@ var LogUtils = {
 	}
 };
 
-$.fn.combobox.defaults.icons = [ {
-	iconCls : 'icon-clear',
-	handler : function(e) {
-		$(e.handleObj.data.target).combobox('clear');
-	}
-} ];
+//$.fn.combobox.defaults.icons = [ {
+//	iconCls : 'icon-clear',
+//	handler : function(e) {
+//		$(e.handleObj.data.target).combobox('clear');
+//	}
+//} ];
 
 $(function() {
 	var buttons = $.extend([], $.fn.datebox.defaults.buttons);
