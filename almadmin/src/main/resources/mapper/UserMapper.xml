@@ -333,8 +333,12 @@
 		<if test="serialNumber != null and serialNumber != ''">
 			AND serial_number = #{serialNumber}
 		</if>
-		<if test="departmentId != null and departmentId != ''">
-			AND ud.department_id = #{departmentId}
+		<if test="departmentId != null and departmentId.size > 0">
+			AND ud.department_id IN
+			<foreach collection="departmentId" item="deptId" open="("
+				separator="," close=")">
+				#{deptId}
+			</foreach>
 		</if>
 	</select>
 
