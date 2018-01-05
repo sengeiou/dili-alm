@@ -344,12 +344,16 @@
 
 	<select id="countByDepartmentIds" resultType="Integer"
 		parameterType="java.util.List">
-		SELECT count(*) FROM user_department WHERE department_id
-		IN
-		<foreach collection="list" item="dept" open="(" separator=","
-			close=")">
-			#{dept.id}
-		</foreach>
+		SELECT DISTINCT count(*) FROM user_department ud INNER JOIN `user` u ON
+		ud.user_id = u.id WHERE 1 = 1 
+		<if test="list != null and list.size > 0">
+			AND department_id IN
+			<foreach collection="list" item="dept" open="(" separator=","
+				close=")">
+				#{dept.id}
+			</foreach>
+		</if>
+		AND (u.yn = 1 OR u.yn IS NULL)
 	</select>
 
 </mapper>
