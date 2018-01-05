@@ -331,6 +331,9 @@ public class TaskController {
 	@RequestMapping(value = "/updateTaskDetails", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput updateTaskDetails(TaskDetails taskDetails, String planTimeStr, String overHourStr,
 			String taskHourStr) {
+		
+		TaskDetails taskDetailsSelect = taskDetailsService.get(taskDetails.getId());
+		
 		short taskHour = Optional.ofNullable(Short.parseShort(taskHourStr)).orElse((short) 0);
 		short overHour = Optional.ofNullable(Short.parseShort(overHourStr)).orElse((short) 0);
 		if (taskHour <= 0) {
@@ -338,13 +341,20 @@ public class TaskController {
 		}
 
 		Task task = taskService.get(taskDetails.getTaskId());
-		
-		if (taskService.isSetTask(task.getOwner(), taskHour)) {
+		//未超过8小时或者是项目经理
+		if (taskService.isSetTask(task.getOwner(), taskHour)||taskService.isManager(task.getProjectId())) {
 
 			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 
 			if (userTicket == null) {
 				return BaseOutput.failure("用户登录超时！");
+			}
+			
+			int totail = Integer.parseInt(taskHourStr)+taskDetailsSelect.getTaskHour();
+			
+			if (task.getPlanTime()<totail) {
+				
+				return BaseOutput.failure("已经超过计划工时！");
 			}
 			/* 基础信息设置 */
 			task.setModifyMemberId(userTicket.getId());
@@ -376,6 +386,7 @@ public class TaskController {
 		if (taskService.startTask(task) == 0) {
 			BaseOutput.failure("请勿重复添加数据");
 		}
+		taskService.update(task);
 		return BaseOutput.success("修改成功");
 	}
 
