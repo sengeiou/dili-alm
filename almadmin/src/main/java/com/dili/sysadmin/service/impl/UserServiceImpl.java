@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -306,10 +307,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 		metadata.put("modified", provider);
 		metadata.put("lastLoginTime", provider);
 		try {
-			UserDepartmentQuery udQuery = new UserDepartmentQuery();
-			udQuery.setDepartmentId(dto.getDepartment().get(0));
 			@SuppressWarnings("unchecked")
-			List<UserDepartmentDto> results = this.parseToUserDepartmentDto(Arrays.asList(user), udQuery);
+			List<UserDepartmentDto> results = this.parseToUserDepartmentDto(Arrays.asList(user),
+					dto.getDepartment().get(0));
 			List users = ValueProviderUtils.buildDataByProvider(metadata, results);
 			return BaseOutput.success().setData(users.get(0));
 		} catch (Exception e) {
@@ -499,9 +499,15 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
 	@Override
 	public EasyuiPageOutput listPageUserDto(UserDepartmentQuery user) {
-		// User query = new User();
-		// copier.copy(user, query, null);
-		// List<User> list = this.listByExample(query);
+		if (CollectionUtils.isNotEmpty(user.getDepartmentId())) {
+			List<Department> depts = this.departmentMapper
+					.getChildDepartments(user.getDepartmentId().iterator().next());
+			if (CollectionUtils.isNotEmpty(depts)) {
+				depts.forEach(d -> {
+					user.getDepartmentId().add(d.getId());
+				});
+			}
+		}
 		Integer page = user.getPage();
 		page = (page == null) ? Integer.valueOf(1) : page;
 		if (user.getRows() != null && user.getRows() >= 1) {
@@ -525,8 +531,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 		metadata.put("modified", provider);
 		user.setMetadata(metadata);
 		try {
-//			@SuppressWarnings("unchecked")
-//			List<UserDepartmentDto> results = this.parseToUserDepartmentDto(list, user);
 			List users = ValueProviderUtils.buildDataByProvider(user, list);
 			return new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(resultPage.getTotal()))),
 					users);
@@ -535,7 +539,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 		}
 	}
 
-	private List<UserDepartmentDto> parseToUserDepartmentDto(List<User> results, UserDepartmentQuery query) {
+	private List<UserDepartmentDto> parseToUserDepartmentDto(List<User> results, Long departmentId) {
 		List<UserDepartmentDto> target = new ArrayList<>(results.size());
 		Iterator<User> it = results.iterator();
 		while (it.hasNext()) {
@@ -543,7 +547,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 			UserDepartmentDto dto = new UserDepartmentDto(user);
 			List<Department> depts = this.departmentMapper.findByUserId(user.getId());
 			Department dept = depts.get(0);
-			if (query.getDepartmentId() != null && !query.getDepartmentId().equals(dept.getId())) {
+			if (departmentId != null && !departmentId.equals(dept.getId())) {
 				it.remove();
 				continue;
 			}
