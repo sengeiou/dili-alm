@@ -64,7 +64,10 @@ public class ProjectVersionProvider implements ValueProvider {
 		almDateProvider.put("provider", "almDateProvider");
 		metadata.put("plannedStartDate", almDateProvider);
 		metadata.put("plannedEndDate", almDateProvider);
-		metadata.put("actualStartDate", almDateProvider);
+
+		JSONObject datetimeProvider = new JSONObject();
+		datetimeProvider.put("provider", "datetimeProvider");
+		metadata.put("actualStartDate", datetimeProvider);
 
 		JSONObject onlineProvider = new JSONObject();
 		onlineProvider.put("provider", "onlineProvider");

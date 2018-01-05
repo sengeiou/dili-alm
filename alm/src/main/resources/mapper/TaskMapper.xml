@@ -300,6 +300,9 @@
     <select  id="selectProjectChangeByTeam"  resultType="com.dili.alm.domain.ProjectChange" >
      select * from project_change as pc where pc.project_id in (select p.id  from project as p where p.id in
 		     (select t.project_id from team as t where t.member_id =#{selectOwner,jdbcType=BIGINT})) and pc.status = 3
+		   <if test="projectId != null">
+				and pc.project_id = #{projectId,jdbcType=BIGINT}
+			</if>
     </select>
     
      <select  id="selectProjectByTeam"  resultType="com.dili.alm.domain.Project" >

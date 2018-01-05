@@ -257,7 +257,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 		if (taskDetailsFromDatabase.getTaskHour() >= task.getPlanTime()) {
 			// 更新状态为完成
-			task.setStatus(TaskStatus.COMPLETE.code);
+			/*task.setStatus(TaskStatus.COMPLETE.code);*/
 			task.setFactEndDate(new Date());
 			isComplete = true;
 		}
@@ -323,6 +323,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			List<TaskDetails> taskDetailsList = taskDetailsService.list(taskDetailsSelect);
 			for (TaskDetails taskDetailsResult : taskDetailsList) {
 				totalTaskTime += taskDetailsResult.getTaskHour();
+				totalTaskTime += taskDetailsResult.getOverHour();
 			}
 		}
 
@@ -352,6 +353,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			List<TaskDetails> taskDetailsList = taskDetailsService.list(taskDetailsSelect);
 			for (TaskDetails taskDetailsResult : taskDetailsList) {
 				totalTaskTime += taskDetailsResult.getTaskHour();
+				totalTaskTime += taskDetailsResult.getOverHour();
 			}
 		}
 

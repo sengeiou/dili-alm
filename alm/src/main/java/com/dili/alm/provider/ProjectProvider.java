@@ -85,7 +85,10 @@ public class ProjectProvider implements ValueProvider, ApplicationListener<Conte
 		almDateProvider.put("provider", "almDateProvider");
 		metadata.put("startDate", almDateProvider);
 		metadata.put("endDate", almDateProvider);
-		metadata.put("actualStartDate", almDateProvider);
+
+		JSONObject datetimeProvider = new JSONObject();
+		datetimeProvider.put("provider", "datetimeProvider");
+		metadata.put("actualStartDate", datetimeProvider);
 
 		JSONObject memberProvider = new JSONObject();
 		memberProvider.put("provider", "memberProvider");
