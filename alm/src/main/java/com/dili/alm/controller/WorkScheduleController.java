@@ -105,4 +105,13 @@ public class WorkScheduleController {
         workScheduleService.delete(id);
         return BaseOutput.success("删除成功");
     }
+    
+    @ApiOperation("根据Id查询WorkSchedule")
+    @ApiImplicitParams({
+		@ApiImplicitParam(name="id", paramType="form", value = "WorkSchedule的主键", required = true, dataType = "long")
+	})
+    @RequestMapping(value="/getWorkScheduleById", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody WorkSchedule getWorkScheduleById(Long id)  {
+        return workScheduleService.get(id);
+    }
 }
