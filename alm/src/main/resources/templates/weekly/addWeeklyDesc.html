@@ -233,6 +233,9 @@
 			              <td colspan="4"  >
 			               <% if(wDetails!=null && wDetails.isSubmit==0 ){%>
 			                   <a href="#" onclick="addRistTr()" class="easyui-linkbutton" data-options="iconCls:'icon-add',toggle:true">新增重要风险</a>
+			                     <%}else if(wDetails==null) {%>
+			                     
+			                      <a href="#" onclick="addRistTr()" class="easyui-linkbutton" data-options="iconCls:'icon-add',toggle:true">新增重要风险</a>
 			                  <%}else{%>
 			                    <a href="#"  class="easyui-linkbutton" data-options="iconCls:'icon-add',toggle:true">新增重要风险</a>
 			                  <%}%>
@@ -288,7 +291,10 @@
 
 							  <td colspan="4">
                                     <% if(wDetails!=null && wDetails.isSubmit==0 ){%>
-								        <a href="#"  onclick="addMaxTr()"class="easyui-linkbutton" data-options="iconCls:'icon-add',toggle:true">新增重大问题</a>
+								       <a href="#"  onclick="addMaxTr()"class="easyui-linkbutton" data-options="iconCls:'icon-add',toggle:true">新增重大问题</a>
+								        
+								     <%}else if(wDetails==null) {%>
+								          <a href="#"  onclick="addMaxTr()"class="easyui-linkbutton" data-options="iconCls:'icon-add',toggle:true">新增重大问题</a>
                                      <%}else{%>
 			                            <a href="#"   class="easyui-linkbutton" data-options="iconCls:'icon-add',toggle:true">新增重大问题</a>
 			                         <%}%>
@@ -350,15 +356,18 @@
 		     
 	            <button onclick="pageReturn()">取消</button>
                 
-                 <% if(wDetails!=null && wDetails.isSubmit==0 ){%>
+                 <% if(wDetails!=null && (wDetails.isSubmit==0) ){%>
 			                <button onclick="save(0)">保存</button>
                             <button onclick="save(1)">提交周报</button> 
 			                    
-			      <%}else{%>
-			            <font size="2">   周报已经提交  </font>
+			      <%}else if(wDetails==null) {%>
+			                 <button onclick="save(0)">保存</button>
+                             <button onclick="save(1)">提交周报 </button> 
+			            
+			        <%}else {%>
+			           <font size="2">   周报已经提交  </font>
 			       <%}%>
-            
-            
+                   
             
 		       
 		   <!--    <font size="3">  

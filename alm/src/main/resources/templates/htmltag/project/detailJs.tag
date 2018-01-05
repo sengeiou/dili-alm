@@ -647,6 +647,24 @@ function alarmConfig() {
 			});
 }
 
+function getMyDay(date){
+  	  var week;
+  	  if(date.getDay()==0) week="周日"
+  	  if(date.getDay()==1) week="周一"
+  	  if(date.getDay()==2) week="周二"
+  	  if(date.getDay()==3) week="周三"
+  	  if(date.getDay()==4) week="周四"
+  	  if(date.getDay()==5) week="周五"
+  	  if(date.getDay()==6) week="周六"
+  	  return week;
+}
+            	
 function generateWeekly() {
-	window.location.href = '${contextPath}/weekly/getDescAddByProjectId?projectId=' + $('#projectId').val();
+     <!-- var wday = getMyDay(new Date()); //周报非周五时间段 限制提交
+   	 if(wday!='周五'){
+   		 $.messager.alert('不能保存',' 不是周五  不可保存和提交周报');
+   		 return false;
+   	 } -->
+            	  
+  	window.location.href = '${contextPath}/weekly/getDescAddByProjectId?projectId=' + $('#projectId').val();
 }
