@@ -319,7 +319,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 				 ddv.setValue(weeklyPara2.getProjectType());
 				 ddv.setDdId(dditList.get(0).getId());
 			     weeklyPara2.setProjectType(dataDictionaryValueService.list(ddv).get(0).getCode());
-				
+			     weeklyPara2.setCreated(weeklyPara2.getCreated().substring(0,19));
 			     copyList.add(weeklyPara2);
 			}
 		}
