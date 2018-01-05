@@ -22,8 +22,11 @@
 								data-options="label:'用户名:', validType:'length[0,32]'" /></td>
 							<td style="padding: 5px;"><input class="easyui-textbox" name="realName" id="realName" style="width: 100%"
 								data-options="label:'真实姓名:', validType:'length[0,64]'" /></td>
-							<td style="padding: 5px;"><input name="status" id="status" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="状态:" data-options="editable:false" />
-								<#comboProvider _id="status" _data='[{"text":"-- 请选择 --"},{"text":"已启用","value":"1"},{"text":"已停用","value":"0"}]' /></td>
+							<td style="padding: 5px;">
+								<input name="status" id="status" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="状态:" />
+								<!--<input name="status" id="status" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="状态:" data-options="editable:false" />-->
+								<#comboProvider _id="status" _data='[{"text":"-- 请选择 --"},{"text":"已启用","value":"1"},{"text":"已停用","value":"0"}]' />
+							</td>
 
 						</tr>
 						<tr>
@@ -35,7 +38,7 @@
 						</tr>
 						<tr>
 							<td style="padding: 5px;"><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid()">查询</a>
-								<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload" onclick="$('#userForm').form('clear');">重置</a></td>
+								<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload" onclick="$('#userForm').form('clear');">清除</a></td>
 						</tr>
 					</table>
 				</div>
@@ -171,9 +174,10 @@
 								style="width: 100%" data-options="label:'修改时间:'" /></td>
 						</tr>
 						<tr>
-							<td colspan="2" style="padding: 5px;" id="_statusTd"><input name="_status" id="_status" style="width: 100%;" panelWidth="auto"
-								panelHeight="auto" label="状态:" /> <#comboProvider _id="_status"
-									_data='[{"text":"-- 请选择 --"},{"text":"已启用","value":"1"},{"text":"已停用","value":"0"}]' /></td>
+							<td colspan="2" style="padding: 5px;" id="_statusTd">
+								<input name="_status" id="_status" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="状态:" />
+								<#comboProvider _id="_status" _data='[{"text":"-- 请选择 --"},{"text":"已启用","value":"1"},{"text":"已停用","value":"0"}]' />
+							</td>
 						</tr>
 						<tr>
 							<td style="padding: 5px;" id="_validTimeBeginTd"><input class="easyui-datetimebox" name="_validTimeBegin" id="_validTimeBegin"

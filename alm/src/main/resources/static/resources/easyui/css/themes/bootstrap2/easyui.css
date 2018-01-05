@@ -2972,7 +2972,7 @@ select:focus{
 
 .progressbar-value .progressbar-text {
     background-color: #299a58;
-    color: #fff;
+    /*color: #fff;*/
 }
 
 .searchbox-button {
