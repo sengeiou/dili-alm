@@ -63,7 +63,7 @@ public interface WeeklyMapper extends MyMapper<Weekly> {
 	/** 
 	 * 下周项目阶段
 	 *   * */
-	List<String> selectNextProjectPhase(WeeklyPara weeklyPara);
+	List<String> selectNextProjectPhase(List list);
 	
 	/** 
 	 * 本周项目阶段
@@ -72,7 +72,7 @@ public interface WeeklyMapper extends MyMapper<Weekly> {
 	/** 
 	 * 本周项目版本
 	 * */
-	List<String> selectProjectVersion(WeeklyPara weeklyPara);
+	List<String> selectProjectVersion(List list);
 	
 	
 	/**

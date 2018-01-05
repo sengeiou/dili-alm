@@ -182,13 +182,15 @@ public class WordExport {
 		questionTableRowTwo.getCell(1).setText("跟踪简述");
 		questionTableRowTwo.getCell(2).setText("当前状态");
 
-		List<WeeklyJson> questionList = weeklyQuestionJson.toJavaList(WeeklyJson.class);
-		XWPFTableRow questionTabledd;
-		for (int i = 0; i < questionList.size(); i++) {
-			questionTabledd = questionTable.createRow();
-			questionTabledd.getCell(0).setText(questionList.get(i).getName());
-			questionTabledd.getCell(1).setText(questionList.get(i).getDesc());
-			questionTabledd.getCell(2).setText(questionList.get(i).getStatus());
+		if(weeklyQuestionJson!=null){
+			List<WeeklyJson> questionList = weeklyQuestionJson.toJavaList(WeeklyJson.class);
+			XWPFTableRow questionTabledd;
+			for (int i = 0; i < questionList.size(); i++) {
+				questionTabledd = questionTable.createRow();
+				questionTabledd.getCell(0).setText(questionList.get(i).getName());
+				questionTabledd.getCell(1).setText(questionList.get(i).getDesc());
+				questionTabledd.getCell(2).setText(questionList.get(i).getStatus());
+			}
 		}
 	}
 
@@ -211,15 +213,19 @@ public class WordExport {
 		ristTableRowTwo.getCell(1).setText("跟踪简述");
 		ristTableRowTwo.getCell(2).setText("当前状态");
 
-		List<WeeklyJson> ristList = weeklyRistJson.toJavaList(WeeklyJson.class);
-		XWPFTableRow ristTabledd;
-		for (int i = 0; i < ristList.size(); i++) {
-			ristTabledd = ristTable.createRow();
-
-			ristTabledd.getCell(0).setText(ristList.get(i).getName());
-			ristTabledd.getCell(1).setText(ristList.get(i).getDesc());
-			ristTabledd.getCell(2).setText(ristList.get(i).getStatus());
+		if(weeklyRistJson!=null){
+			List<WeeklyJson> ristList = weeklyRistJson.toJavaList(WeeklyJson.class);
+			XWPFTableRow ristTabledd;
+			for (int i = 0; i < ristList.size(); i++) {
+				ristTabledd = ristTable.createRow();
+	
+				ristTabledd.getCell(0).setText(ristList.get(i).getName());
+				ristTabledd.getCell(1).setText(ristList.get(i).getDesc());
+				ristTabledd.getCell(2).setText(ristList.get(i).getStatus());
+			}
 		}
+		
+		
 	}
 
 	private static void getNextWeekTable(List<String> nextprojectPhase, List<NextWeeklyDto> wk, XWPFDocument document) {

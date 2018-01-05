@@ -133,7 +133,12 @@ public class WeeklyController  {
     @RequestMapping(value="/updateWeeklyDetails", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput updateWeeklyDetails(WeeklyDetails WeeklyDetails) {
     	
-    	weeklyDetailsService.updateSelective(WeeklyDetails);
+    	 WeeklyDetails wd=weeklyDetailsService.getWeeklyDetailsByWeeklyId(WeeklyDetails.getWeeklyId());
+    	 if(wd==null)
+    		 weeklyDetailsService.createInsert(WeeklyDetails); 
+    	 else
+    		 weeklyDetailsService.updateSelective(WeeklyDetails);
+    	 
         return BaseOutput.success("保存成功");
     }
     @RequestMapping(value="/updateWeeklyDetailsCancel", method = {RequestMethod.GET, RequestMethod.POST})
@@ -226,12 +231,8 @@ public class WeeklyController  {
     public ModelAndView getDescAddByProjectId(String projectId) {
     	
     	 ModelAndView mv = new ModelAndView();
-    	/* if(!(DateUtil.getWeekOfDay(new Date()).endsWith("星期五"))){
-    		 mv.setViewName( "weekly/index");
-    		 return mv;
-    	 }*/
-    		
-    	 
+    	 mv.addObject("returnProjectId",projectId);
+   	    
       	 Map<String, Weekly> wkMap=weeklyService.insertWeeklyByprojectId(projectId);
       	 Weekly  wk=wkMap.get("three");
       	 
@@ -264,8 +265,7 @@ public class WeeklyController  {
 	    //项目总体情况描述
 	    mv.addObject("wDetails", map.get("wDetails"));
 	    
-	    mv.addObject("returnProjectId",projectId);
-	    
+	 
 		mv.setViewName("weekly/addWeeklyDesc");
         return mv;
     }

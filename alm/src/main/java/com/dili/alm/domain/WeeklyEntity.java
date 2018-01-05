@@ -14,6 +14,9 @@ public class WeeklyEntity extends BaseDomain implements Weekly {
 	private String risk;
 	private String question;
 	private String progress;
+	
+	private String currentWeek;
+	private String nextWeek;
 
 	private Date created;
 	private Date modified;
@@ -30,6 +33,24 @@ public class WeeklyEntity extends BaseDomain implements Weekly {
 	public void setProjectId(Long projectId) {
 		this.projectId = projectId;
 
+	}
+
+
+
+	public String getCurrentWeek() {
+		return currentWeek;
+	}
+
+	public void setCurrentWeek(String currentWeek) {
+		this.currentWeek = currentWeek;
+	}
+
+	public String getNextWeek() {
+		return nextWeek;
+	}
+
+	public void setNextWeek(String nextWeek) {
+		this.nextWeek = nextWeek;
 	}
 
 	@Override
