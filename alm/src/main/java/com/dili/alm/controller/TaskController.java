@@ -291,7 +291,7 @@ public class TaskController {
 		Task task = taskService.get(id);
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 
-		if (task.getOwner() == userTicket.getId()) {// 判断是否是任务所有人
+		if (task.getOwner().equals(userTicket.getId())) {// 判断是否是任务所有人
 			return true;
 		}
 		if (taskService.isManager(task.getProjectId())) {// 判断是否是项目经理
