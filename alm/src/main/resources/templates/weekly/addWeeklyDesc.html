@@ -316,6 +316,9 @@
 								  <% if(wDetails!=null){%>
 								     <input id="sSubmit" type='hidden' value="${wDetails.isSubmit}"/>
 								     <input id="cancelSubmit" type='hidden' value="${wDetails.id}"/>
+								     
+								       <input id="returnProjectId" type='hidden' value="${returnProjectId}"/>
+								     
 								  <%}%>
 							  </td>
 
@@ -367,7 +370,7 @@
 		      </br>
 		       
 		     
-	            <button onclick="pageReturn()">取消</button>
+	            <button onclick="pageReturn()">返回</button>
                 
                  <% if(wDetails!=null && (wDetails.isSubmit==0) ){%>
 			                <button onclick="save(0)">保存</button>
@@ -409,8 +412,10 @@
     <script type="text/javascript">
     
 		    function pageReturn(){  
-		    	//window.history.go(-1);
-		    	window.location.href="${contextPath}/weekly/index.html";
+		    	///window.history.go(-1);
+		    	//window.location.href="${contextPath}/weekly/index.html";
+		    	 var  tempid=$("#returnProjectId").val();
+		    	window.location.href="${contextPath}/project/detail?id="+tempid+"&editable=true";
 		    }
     
     
