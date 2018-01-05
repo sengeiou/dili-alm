@@ -52,7 +52,7 @@ public interface WeeklyService extends BaseService<Weekly, Long> {
 	/** 
 	 * 下周项目阶段
 	 *   * */
-	List<String> selectNextProjectPhase(WeeklyPara weeklyPara);
+	List<String> selectNextProjectPhase(List  List);
 	
 	/** 
 	 * 本周项目阶段
@@ -61,7 +61,7 @@ public interface WeeklyService extends BaseService<Weekly, Long> {
 	/** 
 	 * 本周项目版本
 	 * */
-	List<String> selectProjectVersion(WeeklyPara weeklyPara );
+	List<String> selectProjectVersion( List list );
 	/**
 	 * 保存当前重大问题 
 	 * @param list

@@ -54,6 +54,21 @@ public interface Weekly extends IBaseDomain {
     String getRisk();
 
     void setRisk(String risk);
+    
+    @Column(name = "`next_week`")
+    @FieldDef(label="下周", maxLength = 1000)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getNextWeek();
+
+    void setNextWeek(String nextWeek);
+    
+    
+    @Column(name = "`current_week`")
+    @FieldDef(label="本周", maxLength = 1000)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getCurrentWeek();
+    void setCurrentWeek(String currentWeek);
+    
 
     @Column(name = "`question`")
     @FieldDef(label="问题", maxLength = 255)

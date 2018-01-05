@@ -7,8 +7,14 @@ public class NextWeeklyDto {
 	private String describe;
 	private String endDate;
 	private int number;
+	private String  phaseId;
 	
-	
+	public String getPhaseId() {
+		return phaseId;
+	}
+	public void setPhaseId(String phaseId) {
+		this.phaseId = phaseId;
+	}
 	public int getNumber() {
 		return number;
 	}

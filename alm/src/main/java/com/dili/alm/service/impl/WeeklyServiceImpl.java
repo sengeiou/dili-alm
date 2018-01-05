@@ -9,8 +9,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.lang3.StringUtils;
@@ -64,7 +66,9 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	public static  final  Long PHASENAMEVALUE=10L;
 	public static  final  String PROJECTSTATUS="项目状态";
 	public static  final  String PROJECTTASKSTATUS="2";
-	public static DecimalFormat    df   = new DecimalFormat("######0.00");   
+	public static  final  String YES="YES";
+	public static  final  String NO="NO";
+	public static final  DecimalFormat    df   = new DecimalFormat("######0.00");   
 	@Autowired
 	WeeklyMapper weeklyMapper;
 	@Autowired
@@ -96,6 +100,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
     	pd.setCompletedProgressInt(Integer.parseInt(pd.getCompletedProgress()));
     	pd.setId(id);
 		map.put("pd", pd);
+		
 		Weekly wkly=weeklyMapper.selectByPrimaryKey(Long.parseLong(id));
 		/*String[]  strDate=pd.getBeginAndEndTime().split("到");*/
 		WeeklyPara weeklyPara=  new WeeklyPara();
@@ -103,17 +108,37 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		weeklyPara.setStartDate(DateUtil.getDateStr(wkly.getStartDate()));
 		weeklyPara.setEndDate(DateUtil.getDateStr(wkly.getEndDate()));
 		
-		// 本周项目版本
-		List<String> projectVersion=selectProjectVersion(weeklyPara);
-		map.put("pv", StringUtils.join(projectVersion.toArray(),","));
-		//本周项目阶段
-		List<String> projectPhase=selectProjectPhase(weeklyPara);
-		map.put("pp", StringUtils.join(projectPhase.toArray(),","));
 		//本周进展情况 
-		List<TaskDto> td=selectWeeklyProgress(weeklyPara);
+		JSONArray  tdJson=JSON.parseArray(wkly.getCurrentWeek());
+		List<TaskDto> td= tdJson.toJavaList(TaskDto.class);
+		
+		List<String> listVersion = new ArrayList<String> (); 
+		List<String> listPhase = new ArrayList<String> ();  
+		
 		for (int i = 0; i < td.size(); i++) {
 			td.get(i).setNumber(i+1);
+			listVersion.add(td.get(i).getVersionId());
+			listPhase.add(td.get(i).getPhaseId());
 		}
+		
+		HashSet  setVersion=new HashSet();
+		HashSet  setPhase=new HashSet();
+		setVersion.addAll(listVersion);//给set填充
+		setPhase.addAll(listPhase);//给set填充
+		listVersion.clear();//
+		listVersion.addAll(setVersion);//把set的
+		listPhase.clear();//
+		listPhase.addAll(setVersion);//把set的
+		
+		
+		// 本周项目版本
+		//List<String> projectVersion=selectProjectVersion(listVersion);
+		map.put("pv", StringUtils.join(listVersion.toArray(),","));
+		//本周项目阶段
+		//List<String> projectPhase=selectProjectPhase(weeklyPara);
+		map.put("pp", StringUtils.join(listPhase.toArray(),","));
+		
+				
 		map.put("td", td);	
 		weeklyPara.setId(Long.parseLong(id));
 		//当前重要风险
@@ -136,21 +161,29 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		weeklyPara.setId(Long.parseLong(pd.getProjectId()));
 		String dateone=DateUtil.getFirstAndFive(wkly.getStartDate()).get("one");
 		String datefive= DateUtil.getFirstAndFive(wkly.getEndDate()).get("five");
-		//Date  dateDateone=DateUtil.getStrDateyyyyMMdd(dateone);
-		//Date  dateDatetwo= DateUtil.getStrDateyyyyMMdd(datefive);
+		
 		weeklyPara.setStartDate(DateUtil.getAddDay(dateone+" 00:00:00",7));
 		weeklyPara.setEndDate(DateUtil.getAddDay(datefive+" 23:59:59",7));
 		
 		//下周工作计划
-		List<NextWeeklyDto> wk=selectNextWeeklyProgress(weeklyPara);
-	
+		JSONArray  wkJson=JSON.parseArray(wkly.getNextWeek());
+		List<NextWeeklyDto> wk=wkJson.toJavaList(NextWeeklyDto.class);
+		//List<NextWeeklyDto> wk=selectNextWeeklyProgress(weeklyPara);
+		
+		List<String> nextPhaseList = new ArrayList<String> ();  
+		HashSet  setnextPhase=new HashSet();
 		for (int i = 0; i < wk.size(); i++) {
 			wk.get(i).setNumber(i+1);
+			nextPhaseList.add(wk.get(i).getPhaseId());
+			
 		}
+		setnextPhase.addAll(nextPhaseList);
+		nextPhaseList.clear();
+		nextPhaseList.addAll(setnextPhase);
 		map.put("wk", wk);
 		
 		//下周项目阶段
-		List<String> nextprojectPhase=selectNextProjectPhase(weeklyPara);
+		List<String> nextprojectPhase=selectNextProjectPhase(nextPhaseList);
 		map.put("npp", StringUtils.join(nextprojectPhase.toArray(),","));
 		
 	    //项目总体情况描述
@@ -158,7 +191,6 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	  //（实际项目发生工时/立项申请预估工时-1）%
 	    
 	    if( wDetails!=null && wDetails.getIsSubmit()!=null &&wDetails.getIsSubmit()==0){
-	    	
 	    	wDetails.setIsSubmit(0);
 	    }
   
@@ -182,19 +214,37 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		weeklyPara.setStartDate(DateUtil.getDateStr(wkly.getStartDate()));
 		weeklyPara.setEndDate(DateUtil.getDateStr(wkly.getEndDate()));
 		
-		// 本周项目版本
-		List<String> projectVersion=selectProjectVersion(weeklyPara);
-		map.put("pv", StringUtils.join(projectVersion.toArray(),","));
-		//本周项目阶段
-		List<String> projectPhase=selectProjectPhase(weeklyPara);
-		map.put("pp", StringUtils.join(projectPhase.toArray(),","));
 		//本周进展情况 
-		List<TaskDto> td=selectWeeklyProgress(weeklyPara);
+		//List<TaskDto> td=selectWeeklyProgress(weeklyPara);
+		JSONArray  tdJson=JSON.parseArray(wkly.getCurrentWeek());
+		List<TaskDto> td= tdJson.toJavaList(TaskDto.class);
+		List<String> listVersion = new ArrayList<String> ();  
+		List<String> listPhase = new ArrayList<String> ();  
+		
 		for (int i = 0; i < td.size(); i++) {
 			td.get(i).setNumber(i+1);
+			listVersion.add(td.get(i).getVersionId());
+			listPhase.add(td.get(i).getPhaseId());
 		}
 		map.put("td", td);	
 		weeklyPara.setId(Long.parseLong(id));
+		
+		HashSet  setVersion=new HashSet();
+		HashSet  setPhase=new HashSet();
+		setVersion.addAll(listVersion);//给set填充
+		setPhase.addAll(listPhase);//给set填充
+		listVersion.clear();//
+		listVersion.addAll(setVersion);//把set的
+		listPhase.clear();//
+		listPhase.addAll(setVersion);//把set的
+		
+		// 本周项目版本
+		//List<String> projectVersion=selectProjectVersion(listVersion);
+		map.put("pv", StringUtils.join(listVersion.toArray(),","));
+		//本周项目阶段
+		//List<String> projectPhase=selectProjectPhase(weeklyPara);
+		map.put("pp", StringUtils.join(listPhase.toArray(),","));
+		
 		//当前重要风险
 		String weeklyRist=selectWeeklyRist(weeklyPara);
 		if(weeklyRist!=null){
@@ -215,28 +265,34 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		weeklyPara.setId(Long.parseLong(pd.getProjectId()));
 		String dateone=DateUtil.getFirstAndFive(wkly.getStartDate()).get("one");
 		String datefive= DateUtil.getFirstAndFive(wkly.getEndDate()).get("five");
-		//Date  dateDateone=DateUtil.getStrDateyyyyMMdd(dateone);
-		//Date  dateDatetwo= DateUtil.getStrDateyyyyMMdd(datefive);
 		weeklyPara.setStartDate(DateUtil.getAddDay(dateone+" 00:00:00",7));
 		weeklyPara.setEndDate(DateUtil.getAddDay(datefive+" 23:59:59",7));
 		
 		//下周工作计划
-		List<NextWeeklyDto> wk=selectNextWeeklyProgress(weeklyPara);
-	
+		//List<NextWeeklyDto> wk=selectNextWeeklyProgress(weeklyPara);
+		List<String> listnextPhase = new ArrayList<String> ();  
+		JSONArray  nextWeeklyJson=JSON.parseArray(wkly.getNextWeek());
+		List<NextWeeklyDto> wk= nextWeeklyJson.toJavaList(NextWeeklyDto.class);
+		
+		
 		for (int i = 0; i < wk.size(); i++) {
 			wk.get(i).setNumber(i+1);
+			listnextPhase.add(wk.get(i).getPhaseId());
 		}
 		map.put("wk", wk);
 		
+		HashSet  setnextPhase=new HashSet();
+		setnextPhase.addAll(listVersion);//给set填充
+		listnextPhase.clear();//
+		listnextPhase.addAll(setVersion);//把set的
 		//下周项目阶段
-		List<String> nextprojectPhase=selectNextProjectPhase(weeklyPara);
-		map.put("npp", StringUtils.join(nextprojectPhase.toArray(),","));
+		//List<String> nextprojectPhase=selectNextProjectPhase(weeklyPara);
+		map.put("npp", StringUtils.join(listnextPhase.toArray(),","));
 		
 	    //项目总体情况描述
 	    WeeklyDetails wDetails=  weeklyDetailsService.getWeeklyDetailsByWeeklyId(Long.parseLong(id));
 	  //（实际项目发生工时/立项申请预估工时-1）%
 	    if( wDetails!=null && wDetails.getIsSubmit()!=null &&wDetails.getIsSubmit()==0){
-	    	
 	    	wDetails.setIsSubmit(0);
 	    }
   
@@ -482,7 +538,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 
 		DataDictionary  ddit=DTOUtils.newDTO(DataDictionary.class);
 		ddit.setName(PROJECTSTATUS);
-		List<DataDictionary> dditList=dataDictionaryService.list(ddit);//查询出id
+		//List<DataDictionary> dditList=dataDictionaryService.list(ddit);//查询出id
 		 User user ;
 		for (int i = 0; i < td.size(); i++) {
 
@@ -512,27 +568,12 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			double  realHourandOverHour=td.get(i).getOverHour() + td.get(i).getTaskHour();//实际工时
 			double  planTime=td.get(i).getPlanTime();//计划工时
 			
-			
-			// 完成情况
-			//DataDictionaryValue  ddv=DTOUtils.newDTO(DataDictionaryValue.class);
-			//ddv.setValue(td.get(i).getStatus());
-			//ddv.setDdId(dditList.get(0).getId());
-			
-			// double pro = ( realHourandOverHour/(planTime) -1) * 100;
-			//  td.get(i).setHourDeviation(df.format(Math.abs(pro)));
-				
-			/* if(td.get(i).getStatus().equals("2")){//已完成就是等于二
-				 td.get(i).setStatus("YES");
-			 }else{
-				 td.get(i).setStatus("NO");
-			 }*/
-			  
 		     if(td.get(i).getStatus().equals(PROJECTTASKSTATUS)){//已完成就是等于二
-				 td.get(i).setStatus("YES");
+				 td.get(i).setStatus(YES);
 				 double pro = ( realHourandOverHour/(planTime) -1) * 100;
 				 td.get(i).setHourDeviation(df.format(pro) );
 			 }else{
-				 td.get(i).setStatus("NO");
+				 td.get(i).setStatus(NO);
 				 double pro = ((planTime- realHourandOverHour)/planTime) * 100; 
 				 td.get(i).setHourDeviation(df.format(Math.abs(pro)) );
 			 }
@@ -567,9 +608,9 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	 * 下周项目阶段
 	 * */
 	@Override
-	public List<String> selectNextProjectPhase(WeeklyPara weeklyPara) {
+	public List<String> selectNextProjectPhase(List listPhase) {
 		
-		List<String> listStr= weeklyMapper.selectNextProjectPhase(weeklyPara);
+		List<String> listStr= weeklyMapper.selectNextProjectPhase(listPhase);
 		DataDictionaryValue  ddvPhaseName=DTOUtils.newDTO(DataDictionaryValue.class);
 		ddvPhaseName.setDdId(PHASENAMEVALUE);
 		
@@ -605,8 +646,8 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	 * 本周项目版本
 	 * */
 	@Override
-	public List<String> selectProjectVersion(WeeklyPara weeklyPara) {
-		return weeklyMapper.selectProjectVersion(weeklyPara);
+	public List<String> selectProjectVersion(List list) {
+		return weeklyMapper.selectProjectVersion(list);
 	}
 
 	@Override
@@ -646,16 +687,39 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		weeklyPara.setStartDate(DateUtil.getDateStr(wkly.getStartDate()));
 		weeklyPara.setEndDate(DateUtil.getDateStr(wkly.getEndDate()));
 		
-		// 本周项目版本
-		List<String> projectVersion = selectProjectVersion(weeklyPara);
-		// 本周项目阶段
-		List<String> projectPhase = selectProjectPhase(weeklyPara);
+		
 		// 本周进展情况
-		List<TaskDto> td = selectWeeklyProgress(weeklyPara);
+		//List<TaskDto> td = selectWeeklyProgress(weeklyPara);
+		JSONArray  tdJson=JSON.parseArray(wkly.getCurrentWeek());
+		List<TaskDto> td= tdJson.toJavaList(TaskDto.class);
+		
+		List<String> listVersion = new ArrayList<String> (); 
+		List<String> listPhase = new ArrayList<String> ();  
+		
 		for (int i = 0; i < td.size(); i++) {
-			td.get(i).setNumber(i + 1);
+			td.get(i).setNumber(i+1);
+			listVersion.add(td.get(i).getVersionId());
+			listPhase.add(td.get(i).getPhaseId());
 		}
-		weeklyPara.setId(Long.parseLong(id));
+		
+		HashSet  setVersion=new HashSet();
+		HashSet  setPhase=new HashSet();
+		setVersion.addAll(listVersion);//给set填充
+		setPhase.addAll(listPhase);//给set填充
+		listVersion.clear();//
+		listVersion.addAll(setVersion);//把set的
+		listPhase.clear();//
+		listPhase.addAll(setVersion);//把set的
+		
+		
+		// 本周项目版本
+		//List<String> projectVersion = selectProjectVersion(listVersion);
+		List<String> projectVersion = listVersion;
+		// 本周项目阶段
+		//List<String> projectPhase = selectProjectPhase(weeklyPara);
+		List<String> projectPhase = listPhase;
+		
+		
 		// 当前重要风险
 		String weeklyRist = selectWeeklyRist(weeklyPara);
 		JSONArray weeklyRistJson = JSON.parseArray(weeklyRist);
@@ -669,18 +733,29 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		//weeklyPara.setEndDate(DateUtil.getNextFive(new Date())+" 23:59:59");
 		String dateone=DateUtil.getFirstAndFive(wkly.getStartDate()).get("one");
 		String datefive= DateUtil.getFirstAndFive(wkly.getEndDate()).get("five");
-	
 		weeklyPara.setStartDate(DateUtil.getAddDay(dateone+" 00:00:00",7));
 		weeklyPara.setEndDate(DateUtil.getAddDay(datefive+" 23:59:59",7));
 		
 		
-		List<String> nextprojectPhase = selectNextProjectPhase(weeklyPara);
+		//List<String> nextprojectPhase = selectNextProjectPhase(weeklyPara);
 		
 		// 下周工作计划
-		List<NextWeeklyDto> wk = selectNextWeeklyProgress(weeklyPara);
+		JSONArray  wkJson=JSON.parseArray(wkly.getNextWeek());
+		List<NextWeeklyDto> wk=wkJson.toJavaList(NextWeeklyDto.class);
+		//List<NextWeeklyDto> wk=selectNextWeeklyProgress(weeklyPara);
+		
+		List<String> nextPhaseList = new ArrayList<String> ();  
+		HashSet  setnextPhase=new HashSet();
 		for (int i = 0; i < wk.size(); i++) {
-			wk.get(i).setNumber(i + 1);
+			wk.get(i).setNumber(i+1);
+			nextPhaseList.add(wk.get(i).getPhaseId());
+			
 		}
+		setnextPhase.addAll(nextPhaseList);
+		nextPhaseList.clear();
+		nextPhaseList.addAll(setnextPhase);
+		
+		List<String> nextprojectPhase=selectNextProjectPhase(nextPhaseList);
 		
 		
 		// 项目总体情况描述
@@ -736,19 +811,42 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		weeklyPara.setStartDate(DateUtil.getFirstAndFive().get("one")+" 00:00:00");
 		weeklyPara.setEndDate(DateUtil.getFirstAndFive().get("five")+" 23:59:59");
 		
-		// 本周项目版本
-		List<String> projectVersion=selectProjectVersion(weeklyPara);
-		map.put("pv", StringUtils.join(projectVersion.toArray(),","));
-		//本周项目阶段
-		List<String> projectPhase=selectProjectPhase(weeklyPara);
-		map.put("pp", StringUtils.join(projectPhase.toArray(),","));
+	
 		//本周进展情况 
 		List<TaskDto> td=selectWeeklyProgress(weeklyPara);
+		
+		List<String> listVersion = new ArrayList<String> ();  
+		List<String> listPhase = new ArrayList<String> (); 
+		
 		for (int i = 0; i < td.size(); i++) {
 			td.get(i).setNumber(i+1);
+			listVersion.add(td.get(i).getVersionId());
+			listPhase.add(td.get(i).getPhaseId());
 		}
 		map.put("td", td);	
 		weeklyPara.setId(wk.getId());
+		
+		HashSet  setVersion=new HashSet();
+		HashSet  setPhase=new HashSet();
+		setVersion.addAll(listVersion);//给set填充
+		setPhase.addAll(listPhase);//给set填充
+		listVersion.clear();//
+		listVersion.addAll(setVersion);//把set的
+		listPhase.clear();//
+		listPhase.addAll(setVersion);//把set的
+		
+		
+		
+		
+		// 本周项目版本
+	//	List<String> projectVersion=selectProjectVersion(listVersion);
+		map.put("pv", StringUtils.join(listVersion.toArray(),","));
+		//本周项目阶段
+		//List<String> projectPhase=selectProjectPhase(weeklyPara);
+		map.put("pp", StringUtils.join(listPhase.toArray(),","));
+		
+		
+		
 		//当前重要风险
 		String weeklyRist=selectWeeklyRist(weeklyPara);
 		if(weeklyRist!=null){
@@ -778,8 +876,8 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		map.put("wk", wek);
 		
 		//下周项目阶段
-		List<String> nextprojectPhase=selectNextProjectPhase(weeklyPara);
-		map.put("npp", StringUtils.join(nextprojectPhase.toArray(),","));
+		//List<String> nextprojectPhase=selectNextProjectPhase(weeklyPara);
+		map.put("npp", StringUtils.join("1",","));
 		
 	    //项目总体情况描述
 	    WeeklyDetails wDetails=  weeklyDetailsService.getWeeklyDetailsByWeeklyId(wk.getId());
@@ -809,6 +907,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		weeklyPara.setProjectId(Long.parseLong(projectId));
 		
 	    wk = weeklyMapper.selecByProjectId(weeklyPara);
+		
 	    Weekly wkk=DTOUtils.newDTO(Weekly.class);
 		if(wk==null){
 			wkk.setProjectId(Long.parseLong(projectId));
@@ -823,14 +922,39 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			}
 	
 			weeklyMapper.insertSelective(wkk);
+			
+
+			WeeklyPara weeklyParaWeek=  new WeeklyPara();
+			weeklyParaWeek.setId(Long.parseLong(projectId));
+			weeklyParaWeek.setStartDate(DateUtil.getFirstAndFive().get("one")+" 00:00:00");
+			weeklyParaWeek.setEndDate(DateUtil.getFirstAndFive().get("five")+" 23:59:59");
+			//本周进展情况 
+			List<TaskDto> td=selectWeeklyProgress(weeklyParaWeek);
+			
+			weeklyParaWeek.setStartDate(DateUtil.getNextMonday(new Date())+" 00:00:00");
+			weeklyParaWeek.setEndDate(DateUtil.getNextFive(new Date())+" 23:59:59");
+			//下周工作计划
+			List<NextWeeklyDto> wek=selectNextWeeklyProgress(weeklyParaWeek);
+		
+			Weekly  nextAndcurrentWeek=DTOUtils.newDTO(Weekly.class);
+			nextAndcurrentWeek.setId(wkk.getId());
+			nextAndcurrentWeek.setCurrentWeek(JSON.toJSONString(td));
+			nextAndcurrentWeek.setNextWeek(JSON.toJSONString(wek));
+			weeklyMapper.updateByPrimaryKeySelective(nextAndcurrentWeek);//更新week本周周报
+			
 			map.put("one", wkk);
 				
 		}else{
 			map.put("two", wk);
 		}
 		map.put("three",  DTOUtils.newDTO(Weekly.class));
+		
+		
+		
+		
 		return map;
 	}
+
 
 	
 }
