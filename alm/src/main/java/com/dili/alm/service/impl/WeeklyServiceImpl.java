@@ -62,10 +62,9 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	public static  final  String PROJECTTYPE="项目类型";
 	public static  final  String PROJECTTYPEID="3";
 	public static  final  Long PHASENAMEVALUE=10L;
-	                             
-	
 	public static  final  String PROJECTSTATUS="项目状态";
-	
+	public static  final  String PROJECTTASKSTATUS="2";
+	public static DecimalFormat    df   = new DecimalFormat("######0.00");   
 	@Autowired
 	WeeklyMapper weeklyMapper;
 	@Autowired
@@ -512,20 +511,30 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			// 工时偏差% （实际任务工时/预估任务工时-1）%
 			double  realHourandOverHour=td.get(i).getOverHour() + td.get(i).getTaskHour();//实际工时
 			double  planTime=td.get(i).getPlanTime();//计划工时
-			DecimalFormat    df   = new DecimalFormat("######0.00");   
+			
 			
 			// 完成情况
 			//DataDictionaryValue  ddv=DTOUtils.newDTO(DataDictionaryValue.class);
 			//ddv.setValue(td.get(i).getStatus());
 			//ddv.setDdId(dditList.get(0).getId());
 			
-			 double pro = ( realHourandOverHour/(planTime) -1) * 100;
-				td.get(i).setHourDeviation(df.format(pro) );
+			// double pro = ( realHourandOverHour/(planTime) -1) * 100;
+			//  td.get(i).setHourDeviation(df.format(Math.abs(pro)));
 				
-			 if(td.get(i).getStatus().equals("2")){//已完成就是等于二
+			/* if(td.get(i).getStatus().equals("2")){//已完成就是等于二
 				 td.get(i).setStatus("YES");
 			 }else{
 				 td.get(i).setStatus("NO");
+			 }*/
+			  
+		     if(td.get(i).getStatus().equals(PROJECTTASKSTATUS)){//已完成就是等于二
+				 td.get(i).setStatus("YES");
+				 double pro = ( realHourandOverHour/(planTime) -1) * 100;
+				 td.get(i).setHourDeviation(df.format(pro) );
+			 }else{
+				 td.get(i).setStatus("NO");
+				 double pro = ((planTime- realHourandOverHour)/planTime) * 100; 
+				 td.get(i).setHourDeviation(df.format(Math.abs(pro)) );
 			 }
 			
 			
