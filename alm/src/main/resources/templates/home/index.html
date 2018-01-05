@@ -141,22 +141,14 @@ $(function() {
                   callback(events);
 			} ,dayClick: function(date, allDay, jsEvent, view) {
 				//弹出框
-	            var selDate =$.fullCalendar.formatDate(date,'yyyy-MM-dd');//格式化日期
-	            var oldDate = new Date(selDate.replace("-", "/").replace("-", "/"));
-	   		 	var newDate = new Date(showNewDate());
-	   		 	if(oldDate<newDate){
-	   		 		$.messager.alert('警告','不可添加日程');
-	   		 	}else{
-		            $('#dlg').dialog("open");
-		            $('#_form').form("clear");
-		            $('#_form').form("load",{scheduleDate:selDate});
-		            $('#dlg').panel('move',{top:$(document).scrollTop() + ($(window).height()-100) * 0.5});
-		            $('#dlg').panel('move',{left:$(document).scrollTop() + ($(window).height()+50) * 0.5});
-	   		 	}
+	            clickEvent(date);
 	        },eventMouseover:function(calEvent, jsEvent, view){
-
+				
 	        	var selDate =$.fullCalendar.formatDate(calEvent.start,'yyyy-MM-dd');//格式化日期
 	        	listEvents(selDate);
+	        },eventClick:function( event, jsEvent, view ) {
+	        	//弹出框
+	            clickEvent(event.start);
 	        }
 		});
 
@@ -245,6 +237,21 @@ $(function() {
 		 $("#scheduleList").html(htmlStr);
 
 	}
+	function clickEvent(date) {
+		//弹出框
+        	var selDate =$.fullCalendar.formatDate(date,'yyyy-MM-dd');//格式化日期
+        	var oldDate = new Date(selDate.replace("-", "/").replace("-", "/"));
+		 	var newDate = new Date(showNewDate());
+		 	if(oldDate<newDate){
+		 		$.messager.alert('警告','不可添加日程');
+		 	}else{
+            $('#dlg').dialog("open");
+            $('#_form').form("clear");
+            $('#_form').form("load",{scheduleDate:selDate});
+            $('#dlg').panel('move',{top:$(document).scrollTop() + ($(window).height()-100) * 0.5});
+            $('#dlg').panel('move',{left:$(document).scrollTop() + ($(window).height()+50) * 0.5});
+		 	}
+    }
 </script>
 <script src='${contextPath}/resources/js/jquery-ui-1.10.2.custom.min.js'></script>
 <script src='${contextPath}/resources/js/fullcalendar.min.js'></script>
