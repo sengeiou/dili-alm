@@ -199,10 +199,10 @@
     	            datatype : 'json',
     	            success : function (data) {
     	            	var flag = data.success;
-                        addOneTab(title, url);
                         if(flag){
-                        	messagesListen();
+                        	addOneTab(title, url);
     	            	}
+                        messagesListen();
     	            	
     	            }
     		});
@@ -228,7 +228,9 @@
                     region:'west',
                     width:251
                 });
-                $('.layout-panel-west .panel-body').append($('#menuTem').html());
+
+                $('.layout-panel-west .panel-body').html('').append($('#menuTem').html());
+
                 var id = $(this).children().get(0).id.replace("fMenu","");
                 $("#"+id+"").find("ul li").first().addClass('on');
                 var menuLi=$("#"+id+"").find("ul li").first().children().get(0);

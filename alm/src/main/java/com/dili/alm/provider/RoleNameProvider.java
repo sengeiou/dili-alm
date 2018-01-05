@@ -3,6 +3,7 @@ package com.dili.alm.provider;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.domain.VerifyApproval;
 import com.dili.alm.rpc.RoleRpc;
+import com.dili.alm.service.VerifyApprovalService;
 import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValueProvider;
@@ -22,6 +23,9 @@ public class RoleNameProvider implements ValueProvider {
 	@Autowired
 	private RoleRpc roleRpc;
 
+	@Autowired
+	private VerifyApprovalService verifyApprovalService;
+
 
 	@Override
 	public List<ValuePair<?>> getLookupList(Object o, Map map, FieldMeta fieldMeta) {
@@ -36,6 +40,7 @@ public class RoleNameProvider implements ValueProvider {
 			if (Objects.equals(json.getString("field"), "roleName")) {
 				if(json.get("_rowData") instanceof VerifyApproval){
 					VerifyApproval approve = json.getObject("_rowData", VerifyApproval.class);
+					approve = verifyApprovalService.get(approve.getId());
 					return roleRpc.listRoleNameByUserId(approve.getApprover()).getData();
 				}
 			}
