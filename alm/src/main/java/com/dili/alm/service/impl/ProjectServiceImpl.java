@@ -49,7 +49,6 @@ import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.TeamService;
-import com.dili.alm.utils.WebUtil;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
@@ -223,7 +222,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 			return BaseOutput.failure("已存在项目相同的项目");
 		}
 		int result = this.insertSelective(project);
-		Team t = new DTOUtils().newDTO(Team.class);
+		Team t = DTOUtils.newDTO(Team.class);
 		t.setProjectId(project.getId());
 		t.setMemberId(project.getProjectManager());
 		count = this.teamMapper.selectCount(t);

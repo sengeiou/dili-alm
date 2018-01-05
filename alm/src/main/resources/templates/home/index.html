@@ -85,7 +85,7 @@
             <table width="360px">
                 <tr>
                     <td style="padding:5px;">
-                        <input class="easyui-textbox" name="scheduleDate" id="scheduleDate" style="width:100%" data-options="label:'编辑时间:'"
+                        <input class="easyui-textbox" name="scheduleDate" id="scheduleDate" style="width:100%"  editable="false" data-options="label:'编辑时间:'"
                             required="true" />
                     </td>
                 </tr>
@@ -110,14 +110,20 @@ $(function() {
     str += newDate.getDate() ;
     return str;
    }
-   function init(){
+   function init(selectTime){
 	   $('#calendar').empty();
 	   $("#scheduleList").empty();
+	   
 		var date = new Date();
 		var d = date.getDate();
 		var m = date.getMonth();
 		var y = date.getFullYear();
 		var events ;
+		var selDate1 = $.fullCalendar.formatDate(date,'yyyy-MM-dd');
+		if(selectTime!=null){
+			 selDate1 =selectTime;
+		}
+		listEvents(selDate1);
 		$('#calendar').fullCalendar({
 			header: {},
 			firstDay:1,
@@ -143,7 +149,6 @@ $(function() {
 				//弹出框
 	            clickEvent(date);
 	        },eventMouseover:function(calEvent, jsEvent, view){
-				
 	        	var selDate =$.fullCalendar.formatDate(calEvent.start,'yyyy-MM-dd');//格式化日期
 	        	listEvents(selDate);
 	        },eventClick:function( event, jsEvent, view ) {
@@ -179,7 +184,20 @@ $(function() {
             });
 
         }
+        function update(id) {
+        	var  htmlobj=$.ajax({url:"${contextPath}/workSchedule/getWorkScheduleById?id="+id,async:false});
+        	var str=htmlobj.responseText;
+   		 	var obj = $.parseJSON(str);
+   		 	var date1 = new Date(obj.scheduleDate);
+        	var selDate =$.fullCalendar.formatDate(date1,'yyyy-MM-dd');//格式化日期
+ 			$('#dlg').dialog("open");
+            $('#_form').form("clear");
+            $('#_form').form("load",{_id:obj.id,scheduleDate:selDate,scheduleText:obj.scheduleText});
+            $('#dlg').panel('move',{top:$(document).scrollTop() + ($(window).height()-100) * 0.5});
+            $('#dlg').panel('move',{left:$(document).scrollTop() + ($(window).height()+50) * 0.5}); 
+       		
 
+        }
 	//保存日程
     function saveOrUpdate(){
 
@@ -189,9 +207,10 @@ $(function() {
         var _formData = $("#_form").serializeObject();
         var _url = null;
         //没有id就新增
-        if(_formData.id == null || _formData.id==""){
+        if(_formData._id == null || _formData._id==""){
             _url = "${contextPath}/workSchedule/insert";
         }else{//有id就修改
+        	_formData.id=_formData._id
             _url = "${contextPath}/workSchedule/update";
         }
         $.ajax({
@@ -204,7 +223,7 @@ $(function() {
             success: function (data) {
                 if(data.code=="200"){
                     $('#dlg').dialog('close');
-                    init();
+                    init(_formData.scheduleDate);
                 }else{
                     $.messager.alert('错误',data.result);
                 }
@@ -220,19 +239,22 @@ $(function() {
 		//得到日期就显示样式
 	   	 var  htmlobj=$.ajax({url:"${contextPath}/workSchedule/getWorkSchedule.json?scheduleDate="+selDate,async:false});
 		 var str=htmlobj.responseText;
-		 var obj = $.parseJSON(str);
 		 var htmlStr="";
-		 $("#scheduleList").empty();
-		 var oldDate = new Date(obj[0].scheduleDateStr.replace("-", "/").replace("-", "/"));
-		 var newDate = new Date(showNewDate());
-		 if(oldDate<newDate){
-			  $(obj).each(function(){
-		           htmlStr+="<li>"+this.scheduleText +"&nbsp;&nbsp;</li>";
-			  });
-		 }else{
-			 $(obj).each(function(){
-		           htmlStr+="<li>"+this.scheduleText +"&nbsp;&nbsp;<a href='javascript:void(0)' onclick='del("+this.id+")'>删除</a></li>";
-			  }); 
+		 var obj = $.parseJSON(str);
+		 if(obj.length>0){
+			 $("#scheduleList").empty();
+			 var oldDate = new Date(obj[0].scheduleDateStr.replace("-", "/").replace("-", "/"));
+			 var newDate = new Date(showNewDate());
+			 
+			 if(oldDate<newDate){
+				  $(obj).each(function(){
+			           htmlStr+="<li>"+this.scheduleText +"&nbsp;&nbsp;</li>";
+				  });
+			 }else{
+				 $(obj).each(function(){
+			           htmlStr+="<li>"+this.scheduleText +"<a href='javascript:void(0)' onclick='update("+this.id+")'>修改</a><a href='javascript:void(0)' onclick='del("+this.id+")'>删除&nbsp;&nbsp;</a></li>";
+				  }); 
+			 }
 		 }
 		 $("#scheduleList").html(htmlStr);
 

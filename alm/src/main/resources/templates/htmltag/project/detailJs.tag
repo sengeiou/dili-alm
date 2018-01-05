@@ -42,10 +42,14 @@ function dateFormatter(value, row, index) {
 }
 
 function progressFormatter(value, rowData, rowIndex) {
-	var htmlstr = '<div class="easyui-progressbar progressbar easyui-fluid" style="width: 100%; height: 20px;">'
-			+ '<div class="progressbar-value" style="width: 100%; height: 20px; line-height: 20px;"> ' + '<div class="progressbar-text" style="width: ' + value
-			+ '%; height: 20px; line-height: 20px;">' + value + '%</div>' + '</div>' + '</div>';
+	var progress = value;
+	if (value > 100) {
+		progress = 100;
+	}
+	var htmlstr = '<div style="width: 100px; height:20px;border: 1px solid #299a58;"><div style="width:' + progress + 'px; height:20px; background-color: #299a58;"><span>' + value
+			+ '%</span></div></div>';
 	return htmlstr;
+
 }
 
 function onlineFormatter(value) {
@@ -646,24 +650,31 @@ function alarmConfig() {
 			});
 }
 
-function getMyDay(date){
-  	  var week;
-  	  if(date.getDay()==0) week="周日"
-  	  if(date.getDay()==1) week="周一"
-  	  if(date.getDay()==2) week="周二"
-  	  if(date.getDay()==3) week="周三"
-  	  if(date.getDay()==4) week="周四"
-  	  if(date.getDay()==5) week="周五"
-  	  if(date.getDay()==6) week="周六"
-  	  return week;
+function getMyDay(date) {
+	var week;
+	if (date.getDay() == 0)
+		week = "周日"
+	if (date.getDay() == 1)
+		week = "周一"
+	if (date.getDay() == 2)
+		week = "周二"
+	if (date.getDay() == 3)
+		week = "周三"
+	if (date.getDay() == 4)
+		week = "周四"
+	if (date.getDay() == 5)
+		week = "周五"
+	if (date.getDay() == 6)
+		week = "周六"
+	return week;
 }
-            	
+
 function generateWeekly() {
-     var wday = getMyDay(new Date()); //周报非周五时间段 限制提交
-   	 if(wday!='周五'){
-   		   $.messager.alert('不能提交周报',' 不是周五 不可提交周报');
-   		 return false;
-   	 }
-            	  
-  	window.location.href = '${contextPath}/weekly/getDescAddByProjectId?projectId=' + $('#projectId').val();
+	var wday = getMyDay(new Date()); // 周报非周五时间段 限制提交
+	if (wday != '周五') {
+		$.messager.alert('不能提交周报', ' 不是周五 不可提交周报');
+		return false;
+	}
+
+	window.location.href = '${contextPath}/weekly/getDescAddByProjectId?projectId=' + $('#projectId').val();
 }
