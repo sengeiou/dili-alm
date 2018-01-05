@@ -1,13 +1,13 @@
 package com.dili.sysadmin.dao;
 
+import java.util.List;
+
 import com.dili.ss.base.MyMapper;
+import com.dili.sysadmin.domain.Department;
 import com.dili.sysadmin.domain.User;
-import com.dili.sysadmin.domain.dto.UserDepartmentDto;
 import com.dili.sysadmin.domain.dto.UserDepartmentQuery;
 import com.dili.sysadmin.domain.dto.UserDepartmentRole;
 import com.dili.sysadmin.domain.dto.UserDepartmentRoleQuery;
-
-import java.util.List;
 
 public interface UserMapper extends MyMapper<User> {
 
@@ -25,4 +25,7 @@ public interface UserMapper extends MyMapper<User> {
 
 	List<UserDepartmentRole> findUserContainDepartmentAndRole(UserDepartmentRoleQuery query);
 
+	List<UserDepartmentRole> selectByCondition(UserDepartmentQuery query);
+
+	Integer countByDepartmentIds(List<Department> children);
 }

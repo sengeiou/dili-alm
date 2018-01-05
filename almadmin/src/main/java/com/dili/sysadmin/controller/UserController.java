@@ -15,6 +15,8 @@ import com.dili.sysadmin.exception.UserException;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.util.WebContent;
 import com.dili.sysadmin.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -68,21 +70,26 @@ public class UserController {
 	}
 
 	@ApiOperation(value = "查询User", notes = "查询User，返回列表信息")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = false, dataType = "string") })
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<User> list(@ModelAttribute User user) {
 		return userService.list(user);
 	}
 
 	@ApiOperation(value = "分页查询User", notes = "分页查询User，返回easyui分页信息")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = false, dataType = "string") })
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String listPage(@ModelAttribute UserDepartmentQuery user) {
-		return this.userService.listPageUserDto(user).toString();
+	public @ResponseBody String listPage(@ModelAttribute UserDepartmentQuery user) throws JsonProcessingException {
+		EasyuiPageOutput output = this.userService.listPageUserDto(user);
+		ObjectMapper mapper = new ObjectMapper();
+		return mapper.writeValueAsString(output);
 	}
 
 	@ApiOperation("新增User")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = true, dataType = "string") })
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput insert(@Valid AddUserDto dto, BindingResult br) {
 		if (br.hasErrors()) {
@@ -93,7 +100,8 @@ public class UserController {
 
 	@SuppressWarnings("unchecked")
 	@ApiOperation("修改User")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = true, dataType = "string") })
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> update(@RequestBody UpdateUserDto dto) {
 		Map<Object, Object> metadata = new HashMap<>();
@@ -118,7 +126,8 @@ public class UserController {
 	}
 
 	@ApiOperation("添加一个新User")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = true, dataType = "string") })
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/add", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> add(@RequestBody AddUserDto dto) {
 		Map<Object, Object> metadata = new HashMap<>();
@@ -137,7 +146,8 @@ public class UserController {
 	}
 
 	@ApiOperation("删除User")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "id", paramType = "form", value = "User的主键", required = true, dataType = "long") })
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "id", paramType = "form", value = "User的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput delete(Long id) {
 		userService.delete(id);
@@ -145,14 +155,16 @@ public class UserController {
 	}
 
 	@ApiOperation("逻辑删除User")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "id", paramType = "form", value = "User的主键", required = true, dataType = "long") })
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "id", paramType = "form", value = "User的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/logicDelete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> logicDelete(Long id) {
 		return userService.logicDelete(id);
 	}
 
 	@ApiOperation("禁用User")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "id", paramType = "form", value = "User的主键", required = true, dataType = "long") })
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "id", paramType = "form", value = "User的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/disableUser", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput disableUser(Long id) {
 		try {
@@ -165,7 +177,8 @@ public class UserController {
 	}
 
 	@ApiOperation("启用User")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "id", paramType = "form", value = "User的主键", required = true, dataType = "long") })
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "id", paramType = "form", value = "User的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/enableUser", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput enableUser(Long id) {
 		try {
@@ -178,7 +191,8 @@ public class UserController {
 	}
 
 	@ApiOperation(value = "根据角色id查询User", notes = "根据角色id查询User，返回列表信息")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = false, dataType = "string") })
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/findUserByRole", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String findUserByRole(@ModelAttribute Role role) {
 		List<User> retList = userService.findUserByRole(role.getId());
@@ -198,21 +212,24 @@ public class UserController {
 	}
 
 	@ApiOperation("修改User密码")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "pwd", paramType = "form", value = "User的主键", required = false, dataType = "string") })
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "pwd", paramType = "form", value = "User的主键", required = false, dataType = "string") })
 	@RequestMapping(value = "/changePwd", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> changePwd(UpdateUserPasswordDto userPasswordDto) {
 		return userService.updateUserPassword(userPasswordDto);
 	}
 
 	@ApiOperation(value = "查询在线User", notes = "查询在线User，返回列表信息")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = false, dataType = "Long") })
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = false, dataType = "Long") })
 	@RequestMapping(value = "/listOnlineUsers", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<Map> listOnlineUsers(User user) throws Exception {
 		return userService.listOnlineUsers(user);
 	}
 
 	@ApiOperation("强制下线User")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "id", paramType = "form", value = "User的主键", required = true, dataType = "long") })
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "id", paramType = "form", value = "User的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/kickUserOffline", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput kickUserOffline(Long id) {
 		userService.kickUserOffline(id);

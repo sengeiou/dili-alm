@@ -3,6 +3,7 @@ package com.dili.sysadmin.service.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,10 +112,13 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department, Long> imp
 		List<DepartmentUserCountDto> dtos = new ArrayList<>(departments.size());
 		departments.forEach(d -> {
 			DepartmentUserCountDto dto = DTOUtils.toEntity(d, DepartmentUserCountDto.class, false);
-			UserDepartment record = new UserDepartment();
-			record.setDepartmentId(d.getId());
-			Integer userCount = this.userMapper.countByDepartmentId(d.getId());
-			dto.setUserCount(userCount);
+			List<Department> children = this.getActualDao().getChildDepartments(d.getId());
+			if (CollectionUtils.isEmpty(children)) {
+				dto.setUserCount(0);
+			} else {
+				Integer userCount = this.userMapper.countByDepartmentIds(children);
+				dto.setUserCount(userCount);
+			}
 			dtos.add(dto);
 		});
 		return dtos;

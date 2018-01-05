@@ -83,8 +83,6 @@ $(function() {
 							$('#uploadFileGrid').datagrid('appendRow', row);
 						},
 						onSelect : function(files) {
-							// console.log(files[0]);
-							// console.log($('#dg').datagrid('getData'));
 							var old = $('#uploadFileGrid').datagrid('getData').rows;
 							for (var i = 0; i < old.length; i++) {
 								if (files[0].name == old[i].name) {

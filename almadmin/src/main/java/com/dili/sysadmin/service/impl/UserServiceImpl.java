@@ -69,6 +69,7 @@ import com.dili.sysadmin.service.UserService;
 import com.dili.sysadmin.service.ValidatePwdService;
 import com.dili.sysadmin.utils.MD5Util;
 import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-07-04 15:24:50.
@@ -498,11 +499,17 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
 	@Override
 	public EasyuiPageOutput listPageUserDto(UserDepartmentQuery user) {
-		BeanCopier copier = BeanCopier.create(user.getClass(), User.class, false);
-		User query = new User();
-		copier.copy(user, query, null);
-		List<User> list = this.listByExample(query);
-		Page<User> page = (Page<User>) list;
+		// User query = new User();
+		// copier.copy(user, query, null);
+		// List<User> list = this.listByExample(query);
+		Integer page = user.getPage();
+		page = (page == null) ? Integer.valueOf(1) : page;
+		if (user.getRows() != null && user.getRows() >= 1) {
+			// 为了线程安全,请勿改动下面两行代码的顺序
+			PageHelper.startPage(page, user.getRows());
+		}
+		List<UserDepartmentRole> list = this.getActualDao().selectByCondition(user);
+		Page<UserDepartmentRole> resultPage = (Page<UserDepartmentRole>) list;
 		@SuppressWarnings("unchecked")
 		Map<Object, Object> metadata = null == user.getMetadata() ? new HashMap<>() : user.getMetadata();
 
@@ -518,10 +525,11 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 		metadata.put("modified", provider);
 		user.setMetadata(metadata);
 		try {
-			@SuppressWarnings("unchecked")
-			List<UserDepartmentDto> results = this.parseToUserDepartmentDto(list, user);
-			List users = ValueProviderUtils.buildDataByProvider(user, results);
-			return new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(page.getTotal()))), users);
+//			@SuppressWarnings("unchecked")
+//			List<UserDepartmentDto> results = this.parseToUserDepartmentDto(list, user);
+			List users = ValueProviderUtils.buildDataByProvider(user, list);
+			return new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(resultPage.getTotal()))),
+					users);
 		} catch (Exception e) {
 			return null;
 		}
