@@ -769,8 +769,9 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		setnextPhase.addAll(nextPhaseList);
 		nextPhaseList.clear();
 		nextPhaseList.addAll(setnextPhase);
-		
-		List<String> nextprojectPhase=selectNextProjectPhase(nextPhaseList);
+		List<String> nextprojectPhase=new ArrayList<String>();
+		if(nextPhaseList!=null&&nextPhaseList.size()>0)
+			 nextprojectPhase=selectNextProjectPhase(nextPhaseList);
 		
 		
 		// 项目总体情况描述
