@@ -497,6 +497,6 @@ function isTask(id){
 	            }
 	        });
 		}else{
-		    $.messager.alert('错误', '任务时间为0');
+		    $.messager.alert('错误', '任务工时加班工时其中一项不能为0');
 		}
     }
