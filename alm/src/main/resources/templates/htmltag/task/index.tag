@@ -361,15 +361,15 @@
         $.extend($.fn.validatebox.defaults.rules, {
             taskHours:{
                 validator: function (value, param) {
-                	
                 	var s = $("input[name=" + param[0] + "]").val();
+                	
 	                if(value > 0||s>0){
-               			if((value<=8&&value>0)||s>0){
-               				$.fn.validatebox.defaults.rules.overHours;
-               				return true;
-               			}else{
-                			$.fn.validatebox.defaults.rules.taskHours.message='当日所填任务工时只能是8小时！';
+               			if(value>8){
+               				$.fn.validatebox.defaults.rules.taskHours.message='当日所填任务工时只能是8小时！';
 	                		return false;
+               				
+               			}else{
+                			return true;
                			}
                			
                 	}else{
@@ -385,7 +385,6 @@
 		            validator: function(value, param) {
 		                var s = $("input[name=" + param[0] + "]").val();
 		                if(value > 0||s>0){
-		                	$.fn.validatebox.defaults.rules.taskHours;
                 			return true;
 	                	}else{
 	                		$.fn.validatebox.defaults.rules.overHours.message='工时或加班工时必选填写其中一项！';
