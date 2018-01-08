@@ -22,7 +22,8 @@
     .title-second {
         padding-left: 30px;
     }
-    table{
+
+    table {
         width: 100%;
     }
 </style>
@@ -111,12 +112,9 @@
 
     $(function () {
         try {
-            var description = '${apply.description}';
-            if (description != '') {
-                description = eval('(' + description + ')');
-                $('#ff').form('load', description);
-            }
-        } catch (ex) {}
+            $('#ff').form('load', ${apply.description});
+        } catch (ex) {
+        }
     })
 </script>
 

@@ -584,27 +584,15 @@
         <%}%>
 
         try {
-            var description = '${apply.description}';
-            if (description != '') {
-                description = eval('(' + description + ')');
-                $('#step2').form('load', description);
-            }
+            $('#step2').form('load', ${apply.description});
         } catch (ex) {}
 
         try {
-            var goalsFunctions = '${apply.goalsFunctions}';
-            if (goalsFunctions != '') {
-                goalsFunctions = eval('(' + goalsFunctions + ')');
-                $('#step3').form('load', goalsFunctions);
-            }
+            $('#step3').form('load', ${apply.goalsFunctions});
         } catch (ex) {}
 
         try {
-            var roi = '${apply.roi}';
-            if (roi != '') {
-                roi = eval('(' + roi + ')');
-                $('#step5').form('load', roi);
-            }
+            $('#step5').form('load', ${apply.roi});
         }catch (ex){}
 
         $('input[class^=easyui-]').textbox("disable");
