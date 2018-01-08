@@ -17,6 +17,7 @@ import com.dili.alm.service.TaskDetailsService;
 import com.dili.alm.service.TaskService;
 import com.dili.alm.service.ProjectPhaseService;
 import com.dili.alm.utils.DateUtil;
+import com.dili.alm.utils.WebUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -338,12 +339,12 @@ public class TaskController {
 		short overHour = 0;
 		/*		    2018-1-8 优化:工时，加班工时可任意填写一个 */
 		try {
-			taskHour =  taskHourStr.trim()==null?0:Short.parseShort(taskHourStr.trim());
+			taskHour =  WebUtil.strIsEmpty(taskHourStr)?0:Short.parseShort(taskHourStr.trim());
 		} catch (Exception e) {
 			return BaseOutput.failure("工时填写有误！");
 		}
 		try {
-			overHour =  overHourStr.trim()==null?0:Short.parseShort(overHourStr.trim());
+			overHour =  WebUtil.strIsEmpty(overHourStr)?0:Short.parseShort(overHourStr.trim());
 		} catch (Exception e) {
 			return BaseOutput.failure("加班工时填写有误！");
 		}
