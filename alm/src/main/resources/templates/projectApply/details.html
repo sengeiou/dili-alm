@@ -582,17 +582,19 @@
             var data = {'relatedUserText':'${obj.relatedUser}','relatedUserValue':'${obj.$_relatedUser}','relatedNumber':'${obj.relatedNumber}','relatedWorkTime':'${obj.relatedWorkTime}'};
             appendRelated(data);
         <%}%>
-
+    <%
+        var b="{}";
+    %>
         try {
-            $('#step2').form('load', ${apply.description});
+            $('#step2').form('load', ${isEmpty(apply.description)?b:apply.description});
         } catch (ex) {}
 
         try {
-            $('#step3').form('load', ${apply.goalsFunctions});
+            $('#step3').form('load', ${isEmpty(apply.goalsFunctions)?b:apply.goalsFunctions});
         } catch (ex) {}
 
         try {
-            $('#step5').form('load', ${apply.roi});
+            $('#step5').form('load', ${isEmpty(apply.roi)?b:apply.roi});
         }catch (ex){}
 
         $('input[class^=easyui-]').textbox("disable");

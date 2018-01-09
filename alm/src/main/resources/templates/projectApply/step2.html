@@ -109,10 +109,12 @@
             }
         });
     }
-
+    <%
+    var b="{}";
+    %>
     $(function () {
         try {
-            $('#ff').form('load', ${apply.description});
+            $('#ff').form('load',${isEmpty(apply.description)?b:apply.description});
         } catch (ex) {
         }
     })
