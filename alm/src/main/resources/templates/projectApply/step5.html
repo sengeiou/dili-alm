@@ -266,11 +266,7 @@
 
     $(function () {
         try {
-            var roi = '${apply.roi}';
-            if (roi != '') {
-                roi = eval('(' + roi + ')');
-                $('#ff').form('load', roi);
-            }
+            $('#ff').form('load', ${apply.roi});
         } catch (ex) {
         }
         // cal();

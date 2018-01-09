@@ -87,11 +87,7 @@
     }
     $(function () {
         try {
-            var goalsFunctions = '${apply.goalsFunctions}';
-            if (goalsFunctions != '') {
-                goalsFunctions = eval('(' + goalsFunctions + ')');
-                $('#ff').form('load', goalsFunctions);
-            }
+            $('#ff').form('load', ${apply.goalsFunctions});
         } catch (ex) {}
     })
 </script>

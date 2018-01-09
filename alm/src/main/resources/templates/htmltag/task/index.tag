@@ -360,13 +360,40 @@
         //工时填写校验
         $.extend($.fn.validatebox.defaults.rules, {
             taskHours:{
-                validator: function (value) {
-                    return value <= 8;
+                validator: function (value, param) {
+                	var s = $("input[name=" + param[0] + "]").val();
+                	
+	                if(value > 0||s>0){
+               			if(value>8){
+               				$.fn.validatebox.defaults.rules.taskHours.message='当日所填任务工时只能是8小时！';
+	                		return false;
+               				
+               			}else{
+                			return true;
+               			}
+               			
+                	}else{
+                		$.fn.validatebox.defaults.rules.taskHours.message='工时或加班工时必选填写其中一项！';
+                		return false;
+                	}
                 },
-                message: '当日所填任务工时只能是8小时！'
+               message: ''
         }
         })
-
+		$.extend($.fn.validatebox.defaults.rules, {
+		        overHours: {
+		            validator: function(value, param) {
+		                var s = $("input[name=" + param[0] + "]").val();
+		                if(value > 0||s>0){
+                			return true;
+	                	}else{
+	                		$.fn.validatebox.defaults.rules.overHours.message='工时或加班工时必选填写其中一项！';
+	                		return false;
+	                	}
+		            },
+		            message: ''
+		        }
+		    });
 
 		//判断是否是项目经理
         function isProjectManager(){
@@ -470,6 +497,6 @@ function isTask(id){
 	            }
 	        });
 		}else{
-		    $.messager.alert('错误', '任务时间为0');
+		    $.messager.alert('错误', '任务工时加班工时其中一项不能为0');
 		}
     }
