@@ -56,7 +56,7 @@ public interface TaskDetails extends IBaseDomain {
     void setDescribe(String describe);
 
     @Column(name = "`task_time`")
-    @FieldDef(label="工时填写时间", maxLength = 255)
+    @FieldDef(label="工时填写时间")
     @EditMode(editor = FieldEditor.Text, required = false)
     String getTaskTime();
 
