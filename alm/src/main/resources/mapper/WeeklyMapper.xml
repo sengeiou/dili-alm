@@ -9,8 +9,8 @@
     <result column="project_id" jdbcType="BIGINT" property="projectId" />
     <result column="start_date" jdbcType="TIMESTAMP" property="startDate" />
     <result column="end_date" jdbcType="TIMESTAMP" property="endDate" />
-    <result column="risk" jdbcType="LONGVARCHAR" property="risk" />
-    <result column="question" jdbcType="LONGVARCHAR" property="question" />
+    <result column="risk" jdbcType="VARCHAR" property="risk" />
+    <result column="question" jdbcType="VARCHAR" property="question" />
     <result column="progress" jdbcType="VARCHAR" property="progress" />
     <result column="next_week" jdbcType="LONGVARCHAR" property="nextWeek" />
     <result column="current_week"  jdbcType="LONGVARCHAR" property="currentWeek" />
@@ -74,10 +74,10 @@
         end_date = #{endDate,jdbcType=TIMESTAMP},
       </if>
       <if test="risk != null">
-        risk = #{risk,jdbcType=LONGVARCHAR},
+        risk = #{risk,jdbcType=VARCHAR},
       </if>
       <if test="question != null">
-        question = #{question,jdbcType=LONGVARCHAR},
+        question = #{question,jdbcType=VARCHAR},
       </if>
       <if test="progress != null">
         progress = #{progress,jdbcType=VARCHAR},
@@ -435,10 +435,10 @@
     <set>
      
       <if test="risk != null">
-        risk = #{risk,jdbcType=LONGVARCHAR},
+        risk = #{risk,jdbcType=VARCHAR},
       </if>
       <if test="question != null">
-        question = #{question,jdbcType=LONGVARCHAR},
+        question = #{question,jdbcType=VARCHAR},
       </if>
      
     </set>
