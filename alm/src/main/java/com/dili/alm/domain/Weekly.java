@@ -49,14 +49,14 @@ public interface Weekly extends IBaseDomain {
     void setEndDate(Date endDate);
 
     @Column(name = "`risk`")
-    @FieldDef(label="风险", maxLength = 255)
+    @FieldDef(label="风险", maxLength = 1000)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getRisk();
 
     void setRisk(String risk);
     
     @Column(name = "`next_week`")
-    @FieldDef(label="下周", maxLength = 1000)
+    @FieldDef(label="下周")
     @EditMode(editor = FieldEditor.Text, required = false)
     String getNextWeek();
 
@@ -64,14 +64,14 @@ public interface Weekly extends IBaseDomain {
     
     
     @Column(name = "`current_week`")
-    @FieldDef(label="本周", maxLength = 1000)
+    @FieldDef(label="本周")
     @EditMode(editor = FieldEditor.Text, required = false)
     String getCurrentWeek();
     void setCurrentWeek(String currentWeek);
     
 
     @Column(name = "`question`")
-    @FieldDef(label="问题", maxLength = 255)
+    @FieldDef(label="问题", maxLength = 1000)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getQuestion();
 

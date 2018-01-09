@@ -12,8 +12,8 @@
     <result column="risk" jdbcType="VARCHAR" property="risk" />
     <result column="question" jdbcType="VARCHAR" property="question" />
     <result column="progress" jdbcType="VARCHAR" property="progress" />
-    <result column="next_week" jdbcType="VARCHAR" property="nextWeek" />
-    <result column="current_week"  jdbcType="VARCHAR" property="currentWeek" />
+    <result column="next_week" jdbcType="LONGVARCHAR" property="nextWeek" />
+    <result column="current_week"  jdbcType="LONGVARCHAR" property="currentWeek" />
     <result column="created" jdbcType="TIMESTAMP" property="created" />
     <result column="modified" jdbcType="TIMESTAMP" property="modified" />
     <result column="create_member_id" jdbcType="BIGINT" property="createMemberId" />
@@ -95,10 +95,10 @@
         modify_member_id = #{modifyMemberId,jdbcType=BIGINT},
       </if>
        <if test="nextWeek != null">
-        next_week = #{nextWeek,jdbcType=VARCHAR},
+        next_week = #{nextWeek,jdbcType=LONGVARCHAR},
       </if>
       <if test="currentWeek != null">
-        current_week = #{currentWeek,jdbcType=VARCHAR},
+        current_week = #{currentWeek,jdbcType=LONGVARCHAR},
       </if>
       
       

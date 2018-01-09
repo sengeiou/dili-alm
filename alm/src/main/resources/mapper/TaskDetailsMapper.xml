@@ -10,7 +10,7 @@
     <result column="task_hour" jdbcType="SMALLINT" property="taskHour" />
     <result column="over_hour" jdbcType="SMALLINT" property="overHour" />
     <result column="describe" jdbcType="VARCHAR" property="describe" />
-    <result column="task_time" jdbcType="VARCHAR" property="taskTime" />
+    <result column="task_time" jdbcType="LONGVARCHAR" property="taskTime" />
     <result column="created" jdbcType="TIMESTAMP" property="created" />
     <result column="modified" jdbcType="TIMESTAMP" property="modified" />
     <result column="create_member_id" jdbcType="BIGINT" property="createMemberId" />
@@ -51,7 +51,7 @@
         describe = #{describe,jdbcType=VARCHAR},
       </if>
       <if test="taskTime != null">
-        task_time = #{taskTime,jdbcType=VARCHAR},
+        task_time = #{taskTime,jdbcType=LONGVARCHAR},
       </if>
       <if test="created != null">
         created = #{created,jdbcType=TIMESTAMP},
