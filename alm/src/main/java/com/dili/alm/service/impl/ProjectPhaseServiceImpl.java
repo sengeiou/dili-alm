@@ -1,11 +1,19 @@
 package com.dili.alm.service.impl;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.alibaba.fastjson.JSONObject;
+import com.dili.alm.dao.FilesMapper;
+import com.dili.alm.dao.ProjectChangeMapper;
+import com.dili.alm.dao.ProjectPhaseMapper;
+import com.dili.alm.dao.TaskMapper;
+import com.dili.alm.domain.*;
+import com.dili.alm.domain.dto.*;
+import com.dili.alm.service.*;
+import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.sysadmin.sdk.domain.UserTicket;
+import com.dili.sysadmin.sdk.session.SessionContext;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,34 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.alibaba.fastjson.JSONObject;
-import com.dili.alm.dao.FilesMapper;
-import com.dili.alm.dao.ProjectChangeMapper;
-import com.dili.alm.dao.ProjectPhaseMapper;
-import com.dili.alm.dao.TaskMapper;
-import com.dili.alm.domain.FileType;
-import com.dili.alm.domain.Files;
-import com.dili.alm.domain.Project;
-import com.dili.alm.domain.ProjectChange;
-import com.dili.alm.domain.ProjectPhase;
-import com.dili.alm.domain.ProjectVersion;
-import com.dili.alm.domain.Task;
-import com.dili.alm.domain.dto.DataDictionaryDto;
-import com.dili.alm.domain.dto.DataDictionaryValueDto;
-import com.dili.alm.domain.dto.ProjectPhaseAddViewDto;
-import com.dili.alm.domain.dto.ProjectPhaseEditViewDto;
-import com.dili.alm.domain.dto.ProjectPhaseFormDto;
-import com.dili.alm.service.DataDictionaryService;
-import com.dili.alm.service.FilesService;
-import com.dili.alm.service.ProjectPhaseService;
-import com.dili.alm.service.ProjectService;
-import com.dili.alm.service.ProjectVersionService;
-import com.dili.ss.base.BaseServiceImpl;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.metadata.ValueProviderUtils;
-import com.dili.sysadmin.sdk.domain.UserTicket;
-import com.dili.sysadmin.sdk.session.SessionContext;
+import java.util.*;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-11-30 16:05:32.
@@ -98,7 +79,9 @@ public class ProjectPhaseServiceImpl extends BaseServiceImpl<ProjectPhase, Long>
 		ProjectPhaseEditViewDto dto = DTOUtils.toEntity(po, ProjectPhaseEditViewDto.class, false);
 		Project project = this.projectService.get(dto.getProjectId());
 		dto.setProject(project);
-		List<ProjectVersion> versions = this.projectVersionService.list(null);
+		ProjectVersion version = DTOUtils.newDTO(ProjectVersion.class);
+		version.setProjectId(dto.getProjectId());
+		List<ProjectVersion> versions = this.projectVersionService.list(version);
 		dto.setAllVersions(versions);
 		dto.setPhaseNames(this.getPhaseNames());
 		Files query = DTOUtils.newDTO(Files.class);
