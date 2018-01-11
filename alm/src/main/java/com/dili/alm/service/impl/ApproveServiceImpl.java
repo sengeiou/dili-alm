@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.InputStream;
@@ -224,8 +223,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
     }
 
     @Override
-    @Transactional
-    public BaseOutput applyApprove(Long id, String opt, String notes) {
+    public synchronized BaseOutput applyApprove(Long id, String opt, String notes) {
         Approve approve = this.get(id);
         if (approve.getStatus() != AlmConstants.ApplyState.APPROVE.getCode()) {
             return BaseOutput.success();
