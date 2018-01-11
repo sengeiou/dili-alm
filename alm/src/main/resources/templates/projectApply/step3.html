@@ -85,13 +85,12 @@
             }
         });
     }
+    <%
+    var b="{}";
+    %>
     $(function () {
         try {
-            var goalsFunctions = '${apply.goalsFunctions}';
-            if (goalsFunctions != '') {
-                goalsFunctions = eval('(' + goalsFunctions + ')');
-                $('#ff').form('load', goalsFunctions);
-            }
+            $('#ff').form('load', ${isEmpty(apply.goalsFunctions)?b:apply.goalsFunctions});
         } catch (ex) {}
     })
 </script>

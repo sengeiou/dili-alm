@@ -582,29 +582,19 @@
             var data = {'relatedUserText':'${obj.relatedUser}','relatedUserValue':'${obj.$_relatedUser}','relatedNumber':'${obj.relatedNumber}','relatedWorkTime':'${obj.relatedWorkTime}'};
             appendRelated(data);
         <%}%>
-
+    <%
+        var b="{}";
+    %>
         try {
-            var description = '${apply.description}';
-            if (description != '') {
-                description = eval('(' + description + ')');
-                $('#step2').form('load', description);
-            }
+            $('#step2').form('load', ${isEmpty(apply.description)?b:apply.description});
         } catch (ex) {}
 
         try {
-            var goalsFunctions = '${apply.goalsFunctions}';
-            if (goalsFunctions != '') {
-                goalsFunctions = eval('(' + goalsFunctions + ')');
-                $('#step3').form('load', goalsFunctions);
-            }
+            $('#step3').form('load', ${isEmpty(apply.goalsFunctions)?b:apply.goalsFunctions});
         } catch (ex) {}
 
         try {
-            var roi = '${apply.roi}';
-            if (roi != '') {
-                roi = eval('(' + roi + ')');
-                $('#step5').form('load', roi);
-            }
+            $('#step5').form('load', ${isEmpty(apply.roi)?b:apply.roi});
         }catch (ex){}
 
         $('input[class^=easyui-]').textbox("disable");

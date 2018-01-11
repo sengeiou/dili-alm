@@ -211,7 +211,7 @@
                 </tr>
                 <tr>
                     <td style="width:50%;padding:5px;">
-                        <input class="easyui-numberbox" name="taskHourStr" id="taskHourStr" style="width:100%;height:26px;" data-options="label:'任务工时:',required:true,validType:'taskHours'" />
+                        <input class="easyui-numberbox" name="taskHourStr" id="taskHourStr" style="width:100%;height:26px;" data-options="label:'任务工时:',validType:'taskHours[\'overHourStr\']'" />
                     </td>
                     <td style="width:50%;padding:5px;">
                         <input class="easyui-numberbox" name="_taskHour" id="_taskHour" style="width:100%;height:26px;" data-options="label:'已填工时:',disabled:true" />
@@ -219,7 +219,7 @@
                 </tr>
                 <tr>
                     <td style="width:50%;padding:5px;">
-                        <input class="easyui-numberbox" name="overHourStr" id="overHourStr" style="width:100%;height:26px;" data-options="label:'加班工时:'" />
+                        <input class="easyui-numberbox" name="overHourStr" id="overHourStr" style="width:100%;height:26px;" data-options="label:'加班工时:',validType:'overHours[\'taskHourStr\']'" />
                     </td>
                     <td style="width:50%;padding:5px;">
                         <input class="easyui-numberbox" name="_overHour" id="_overHour" style="width:100%;height:26px;" data-options="label:'已填加班:',disabled:true" />

@@ -254,12 +254,12 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
                         } else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.CHANGE.getCode())) {
                             ProjectChange change = projectChangeService.get(approve.getProjectApplyId());
                             change.setStatus(AlmConstants.ApplyState.NOPASS.getCode());
-                            projectChangeService.update(change);
+                            projectChangeService.updateSelective(change);
                             sendMail(change, false);
                         } else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.COMPLETE.getCode())) {
                             ProjectComplete complete = projectCompleteService.get(approve.getProjectApplyId());
                             complete.setStatus(AlmConstants.ApplyState.NOPASS.getCode());
-                            projectCompleteService.update(complete);
+                            projectCompleteService.updateSelective(complete);
                             sendMail(complete, false);
                         }
                         break;
@@ -275,12 +275,12 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
                         } else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.CHANGE.getCode())) {
                             ProjectChange change = projectChangeService.get(approve.getProjectApplyId());
                             change.setStatus(AlmConstants.ApplyState.PASS.getCode());
-                            projectChangeService.update(change);
+                            projectChangeService.updateSelective(change);
                             sendMail(change, true);
                         } else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.COMPLETE.getCode())) {
                             ProjectComplete complete = projectCompleteService.get(approve.getProjectApplyId());
                             complete.setStatus(AlmConstants.ApplyState.PASS.getCode());
-                            projectCompleteService.update(complete);
+                            projectCompleteService.updateSelective(complete);
                             sendMail(complete, true);
                         }
                         break;

@@ -263,14 +263,12 @@
 
         $("#cal1").textbox('initValue',cal);
     }
-
+    <%
+    var b="{}";
+    %>
     $(function () {
         try {
-            var roi = '${apply.roi}';
-            if (roi != '') {
-                roi = eval('(' + roi + ')');
-                $('#ff').form('load', roi);
-            }
+            $('#ff').form('load', ${isEmpty(apply.roi)?b:apply.roi});
         } catch (ex) {
         }
         // cal();

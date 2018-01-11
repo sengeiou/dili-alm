@@ -48,8 +48,8 @@
 			<result column="department_id" property="id" />
 			<result column="department_name" property="name" />
 		</association>
-		<collection property="roles" column="department_id"
-			select="com.dili.sysadmin.dao.RoleMapper.findByDepartmentId" />
+		<collection property="roles" column="id"
+			select="com.dili.sysadmin.dao.RoleMapper.findByUserId" />
 	</resultMap>
 
 	<resultMap id="UDResultMap"

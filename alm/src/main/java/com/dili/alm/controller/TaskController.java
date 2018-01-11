@@ -17,6 +17,7 @@ import com.dili.alm.service.TaskDetailsService;
 import com.dili.alm.service.TaskService;
 import com.dili.alm.service.ProjectPhaseService;
 import com.dili.alm.utils.DateUtil;
+import com.dili.alm.utils.WebUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -334,14 +335,29 @@ public class TaskController {
 		
 		TaskDetails taskDetailsSelect = taskDetailsService.get(taskDetails.getId());
 		
-		short taskHour = Optional.ofNullable(Short.parseShort(taskHourStr)).orElse((short) 0);
-		short overHour = Optional.ofNullable(Short.parseShort(overHourStr)).orElse((short) 0);
-		if (taskHour <= 0) {
-			return BaseOutput.failure("工时必须大于0");
+		short taskHour = 0;
+		short overHour = 0;
+		/*		    2018-1-8 优化:工时，加班工时可任意填写一个 */
+		try {
+			taskHour =  WebUtil.strIsEmpty(taskHourStr)?0:Short.parseShort(taskHourStr.trim());
+		} catch (Exception e) {
+			return BaseOutput.failure("工时填写有误！");
 		}
+		try {
+			overHour =  WebUtil.strIsEmpty(overHourStr)?0:Short.parseShort(overHourStr.trim());
+		} catch (Exception e) {
+			return BaseOutput.failure("加班工时填写有误！");
+		}
+		if (taskHour==0&&overHour==0) {
+			return BaseOutput.failure("任务工时或者加班工时填必须填写其中一个！");
+		}
+		
+/*		if (taskHour <= 0) {
+			return BaseOutput.failure("工时必须大于0");
+		}*/
 
 		Task task = taskService.get(taskDetails.getTaskId());
-		//未超过8小时或者是项目经理
+		//未超过8小时或者是项目经理  
 		if (taskService.isSetTask(task.getOwner(), taskHour)||taskService.isManager(task.getProjectId())) {
 
 			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
@@ -349,17 +365,33 @@ public class TaskController {
 			if (userTicket == null) {
 				return BaseOutput.failure("用户登录超时！");
 			}
-			
-			int totail = Integer.parseInt(taskHourStr)+taskDetailsSelect.getTaskHour();
-			
-			if (task.getPlanTime()<totail) {
+/*		    2018-1-8 优化:实际工时可以任意填写     */
+ /*        int totail = Integer.parseInt(taskHourStr)+taskDetailsSelect.getTaskHour();
+  *        if (task.getPlanTime()<totail) {
 				
 				return BaseOutput.failure("已经超过计划工时！");
-			}
+			}*/
 			/* 基础信息设置 */
 			task.setModifyMemberId(userTicket.getId());
 			taskDetails.setTaskHour(taskHour);
 			taskDetails.setOverHour(overHour);
+			taskDetails.setCreateMemberId(userTicket.getId());
+			/* 基础信息设置 */
+			taskService.updateTaskDetail(taskDetails, task);// 保存任务
+
+			return BaseOutput.success("修改成功");
+			
+		}else if(taskHour==0&&overHour!=0){
+			
+			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+
+			if (userTicket == null) {
+				return BaseOutput.failure("用户登录超时！");
+			}
+			
+			/* 基础信息设置 */
+			task.setModifyMemberId(userTicket.getId());
+			taskDetails.setOverHour(overHour);//只写入加班工时
 			taskDetails.setCreateMemberId(userTicket.getId());
 			/* 基础信息设置 */
 			taskService.updateTaskDetail(taskDetails, task);// 保存任务
@@ -431,7 +463,7 @@ public class TaskController {
 		return BaseOutput.success("更新状态为完成");
 	}
 	
-	// 是否已经执行过
+	// 是否已经执行过,一次加班工时，或一次任务工时
 	@ResponseBody
 	@RequestMapping(value = "/isTask.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public boolean isTask(Long id) {
@@ -439,7 +471,8 @@ public class TaskController {
 		taskDetails.setTaskId(id);
 		List<TaskDetails> list = taskDetailsService.list(taskDetails);
 		taskDetails = list.get(0);
-		if (taskDetails.getTaskHour()>0) {
+		/*		    2018-1-8 优化:工时，加班工时任意填写其中一项，即可更新状态为完成 */
+		if (taskDetails.getTaskHour()>0||taskDetails.getOverHour()>0) {
 			return true;
 		}
 		return false;

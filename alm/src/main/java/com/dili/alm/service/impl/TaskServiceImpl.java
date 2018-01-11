@@ -286,12 +286,28 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		try {
 			// StringParseMap
 			Map<String, Integer> jsonMap = (Map<String, Integer>) JSON.parse(jsonMapStr);
-			if (jsonMap.size() > 0) {
-				jsonMap.put(this.dateToString(new Date()) + (jsonMap.size() + 1), taskHour);
-			} else {
+			if (jsonMap.size() > 0&&jsonMap.get(this.dateToString(new Date())+1)==null) {
+				//已经存有值，但没有今日的值
 				jsonMap.put(this.dateToString(new Date()) + 1, taskHour);
+				
+			} else if(jsonMap.size()==0) {//没有开始填写值
+				
+				jsonMap.put(this.dateToString(new Date()) + 1, taskHour);
+				
+			} else if(jsonMap.size() > 0&& jsonMap.get(this.dateToString(new Date())+1)!=null){//已经存有值，且已存入今日值
+				
+				for (int i = 0; i < 8; i++) {
+					int keyId = i+1;
+					if(jsonMap.get(this.dateToString(new Date())+keyId)==null){//找到没有存值的key里
+						
+						jsonMap.put(this.dateToString(new Date())+keyId, taskHour);
+						
+						break;
+						
+					}
+				}
+				
 			}
-			// MapParseString
 			ObjectMapper mapper = new ObjectMapper();
 			return mapper.writeValueAsString(jsonMap);
 
