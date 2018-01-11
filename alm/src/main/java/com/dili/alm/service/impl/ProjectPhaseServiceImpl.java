@@ -153,7 +153,7 @@ public class ProjectPhaseServiceImpl extends BaseServiceImpl<ProjectPhase, Long>
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		old.setModifierId(userTicket.getId());
 		old.setModified(new Date());
-		super.updateSelective(old);
+		super.update(old);
 		if (CollectionUtils.isNotEmpty(dto.getFileIds())) {
 			dto.getFileIds().forEach(id -> {
 				Files file = this.filesService.get(id);
