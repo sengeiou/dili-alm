@@ -224,7 +224,10 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		//本周进展情况 
 		//List<TaskDto> td=selectWeeklyProgress(weeklyPara);
 		JSONArray  tdJson=JSON.parseArray(wkly.getCurrentWeek());
-		List<TaskDto> td= tdJson.toJavaList(TaskDto.class);
+		List<TaskDto> td=new ArrayList<TaskDto>();
+		if(tdJson!=null)
+		   td= tdJson.toJavaList(TaskDto.class);
+		
 		List<String> listVersion = new ArrayList<String> ();  
 		List<String> listPhase = new ArrayList<String> ();  
 		
@@ -280,7 +283,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		List<String> listnextPhase = new ArrayList<String> ();  
 		JSONArray  nextWeeklyJson=JSON.parseArray(wkly.getNextWeek());
 		List<NextWeeklyDto> wk=new ArrayList<NextWeeklyDto>();
-		if(nextWeeklyJson!=null)
+		if(nextWeeklyJson!=null &&nextWeeklyJson.size()>0)
 	          wk= nextWeeklyJson.toJavaList(NextWeeklyDto.class);
 		
 		
