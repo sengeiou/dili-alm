@@ -144,7 +144,8 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		map.put("td", td);	
 		weeklyPara.setId(Long.parseLong(id));
 		//当前重要风险
-		String weeklyRist=selectWeeklyRist(weeklyPara);
+		//String weeklyRist=selectWeeklyRist(weeklyPara);
+		String weeklyRist=wkly.getRisk();
 		if(weeklyRist!=null){
 			JSONArray  weeklyRistJson=JSON.parseArray(weeklyRist);
 			map.put("wr", weeklyRistJson.toJavaList(WeeklyJson.class));
@@ -152,10 +153,11 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			map.put("wr", null);
 		
 		//当前重要问题
-		String weeklyQuestion=selectWeeklyQuestion(weeklyPara);
+		//String weeklyQuestion=selectWeeklyQuestion(weeklyPara);
+		String weeklyQuestion=wkly.getQuestion();
 		if(weeklyQuestion!=null){
-		JSONArray  weeklyQuestionJson=JSON.parseArray(weeklyQuestion);
-	    map.put("wq", weeklyQuestionJson);
+		    JSONArray  weeklyQuestionJson=JSON.parseArray(weeklyQuestion);
+	         map.put("wq", weeklyQuestionJson);
 		}else{
 			 map.put("wq", null);
 		}
@@ -256,7 +258,9 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		map.put("pp", StringUtils.join(listPhase.toArray(),","));
 		
 		//当前重要风险
-		String weeklyRist=selectWeeklyRist(weeklyPara);
+		//String weeklyRist=selectWeeklyRist(weeklyPara);
+		
+		String weeklyRist=wkly.getRisk();
 		if(weeklyRist!=null){
 			JSONArray  weeklyRistJson=JSON.parseArray(weeklyRist);
 			map.put("wr", weeklyRistJson.toJavaList(WeeklyJson.class));
@@ -264,7 +268,8 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			map.put("wr", null);
 		
 		//当前重要问题
-		String weeklyQuestion=selectWeeklyQuestion(weeklyPara);
+		//String weeklyQuestion=selectWeeklyQuestion(weeklyPara);
+		String weeklyQuestion=wkly.getQuestion();
 		if(weeklyQuestion!=null){
 		JSONArray  weeklyQuestionJson=JSON.parseArray(weeklyQuestion);
 	    map.put("wq", weeklyQuestionJson);
@@ -735,10 +740,14 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		
 		
 		// 当前重要风险
-		String weeklyRist = selectWeeklyRist(weeklyPara);
+		//String weeklyRist = selectWeeklyRist(weeklyPara);
+		
+		
+		String weeklyRist=wkly.getRisk();
 		JSONArray weeklyRistJson = JSON.parseArray(weeklyRist);
 		// 当前重要风险
-		String weeklyQuestion = selectWeeklyQuestion(weeklyPara);
+		//String weeklyQuestion = selectWeeklyQuestion(weeklyPara);
+		String   weeklyQuestion=wkly.getQuestion();
 		JSONArray weeklyQuestionJson = JSON.parseArray(weeklyQuestion);
 	
 		weeklyPara.setId(Long.parseLong(pd.getProjectId()));
