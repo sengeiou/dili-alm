@@ -130,7 +130,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		listVersion.clear();//
 		listVersion.addAll(setVersion);//把set的
 		listPhase.clear();//
-		listPhase.addAll(setVersion);//把set的
+		listPhase.addAll(setPhase);//把set的
 		
 		
 		// 本周项目版本
@@ -245,10 +245,11 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		HashSet  setPhase=new HashSet();
 		setVersion.addAll(listVersion);//给set填充
 		setPhase.addAll(listPhase);//给set填充
+		
 		listVersion.clear();//
 		listVersion.addAll(setVersion);//把set的
 		listPhase.clear();//
-		listPhase.addAll(setVersion);//把set的
+		listPhase.addAll(setPhase);//把set的
 		
 		// 本周项目版本
 		//List<String> projectVersion=selectProjectVersion(listVersion);
@@ -725,10 +726,11 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		HashSet  setPhase=new HashSet();
 		setVersion.addAll(listVersion);//给set填充
 		setPhase.addAll(listPhase);//给set填充
+		
 		listVersion.clear();//
 		listVersion.addAll(setVersion);//把set的
 		listPhase.clear();//
-		listPhase.addAll(setVersion);//把set的
+		listPhase.addAll(setPhase);//把set的
 		
 		
 		// 本周项目版本
