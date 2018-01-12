@@ -91,6 +91,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
     public ApproveMapper getActualDao() {
         return (ApproveMapper) getDao();
     }
+
     @Override
     public void buildApplyApprove(Map modelMap, Long id) {
         Approve approve = this.get(id);
@@ -222,8 +223,11 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
     }
 
     @Override
-    public BaseOutput applyApprove(Long id, String opt, String notes) {
+    public synchronized BaseOutput applyApprove(Long id, String opt, String notes) {
         Approve approve = this.get(id);
+        if (approve.getStatus() != AlmConstants.ApplyState.APPROVE.getCode()) {
+            return BaseOutput.success();
+        }
         String approveDescription = approve.getDescription();
         if (StringUtils.isNotBlank(approveDescription)) {
             List<ApplyApprove> approveList = JSON.parseArray(approveDescription, ApplyApprove.class);
@@ -513,13 +517,13 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         try {
             switch (type) {
                 case "apply":
-                    messageService.insertMessage("http://alm.diligrp.com:8083/alm/approve/apply/" + id, sender, recipient,AlmConstants.MessageType.APPLY.getCode());
+                    messageService.insertMessage("http://alm.diligrp.com:8083/alm/approve/apply/" + id, sender, recipient, AlmConstants.MessageType.APPLY.getCode());
                     break;
                 case "change":
-                    messageService.insertMessage("http://alm.diligrp.com:8083/alm/approve/change/" + id, sender, recipient,AlmConstants.MessageType.CHANGE.getCode());
+                    messageService.insertMessage("http://alm.diligrp.com:8083/alm/approve/change/" + id, sender, recipient, AlmConstants.MessageType.CHANGE.getCode());
                     break;
                 case "complete":
-                    messageService.insertMessage("http://alm.diligrp.com:8083/alm/approve/complete/" + id, sender, recipient,AlmConstants.MessageType.COMPLETE.getCode());
+                    messageService.insertMessage("http://alm.diligrp.com:8083/alm/approve/complete/" + id, sender, recipient, AlmConstants.MessageType.COMPLETE.getCode());
                     break;
             }
         } catch (Exception e) {

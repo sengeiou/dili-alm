@@ -9,7 +9,7 @@
     <#css/>
     <script type="text/javascript">
         var contextPath = '${contextPath}';
-        var pmo_email='tg@diligrp.com';
+        var pmo_email='pmo@diligrp.com';
     </script>
     <#js/>
 
