@@ -615,6 +615,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		User user ;
 		
 		for (NextWeeklyDto nextWeeklyDto : nwd) {
+			 nextWeeklyDto.setEndDate(nextWeeklyDto.getEndDate().substring(0, 10));
 			 user = new User();
 		     user.setId(Long.parseLong(nextWeeklyDto.getOwner()));
 			 BaseOutput<List<User>>  listByExample = userRpc.listByExample(user);
@@ -941,7 +942,8 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		weeklyPara.setProjectId(Long.parseLong(projectId));
 		
 	    wk = weeklyMapper.selecByProjectId(weeklyPara);
-		
+	  //  weeklyMapper.deleteByPrimaryKey(wk);
+	  //  wk = weeklyMapper.selecByProjectId(weeklyPara);
 	    Weekly wkk=DTOUtils.newDTO(Weekly.class);
 		if(wk==null){
 			wkk.setProjectId(Long.parseLong(projectId));
