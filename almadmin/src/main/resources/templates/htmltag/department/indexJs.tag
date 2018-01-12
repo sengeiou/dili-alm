@@ -6,6 +6,8 @@ function showOrgStructure() {
 				title : '组织结构',
 				width : 600,
 				height : 400,
+				maximizable:true,
+				maximized:true,
 				cache : false,
 				href : '${contextPath!}/department/orgStructure.html',
 				modal : true,
