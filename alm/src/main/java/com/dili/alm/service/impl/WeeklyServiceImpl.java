@@ -300,12 +300,16 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		map.put("wk", wk);
 		
 		HashSet  setnextPhase=new HashSet();
-		setnextPhase.addAll(listVersion);//给set填充
+		setnextPhase.addAll(listnextPhase);//给set填充
 		listnextPhase.clear();//
-		listnextPhase.addAll(setVersion);//把set的
+		listnextPhase.addAll(setnextPhase);//把set的
+		
 		//下周项目阶段
+		List<String> nextprojectPhase=new ArrayList<String>();
+		if(listnextPhase!=null&&listnextPhase.size()>0)
+		  	 nextprojectPhase=selectNextProjectPhase(listnextPhase);
 		//List<String> nextprojectPhase=selectNextProjectPhase(weeklyPara);
-		map.put("npp", StringUtils.join(listnextPhase.toArray(),","));
+		map.put("npp", StringUtils.join(nextprojectPhase.toArray(),","));
 		
 	    //项目总体情况描述
 	    WeeklyDetails wDetails=  weeklyDetailsService.getWeeklyDetailsByWeeklyId(Long.parseLong(id));
@@ -785,7 +789,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		nextPhaseList.addAll(setnextPhase);
 		List<String> nextprojectPhase=new ArrayList<String>();
 		if(nextPhaseList!=null&&nextPhaseList.size()>0)
-			 nextprojectPhase=selectNextProjectPhase(nextPhaseList);
+	  	 nextprojectPhase=selectNextProjectPhase(nextPhaseList);
 		
 		
 		// 项目总体情况描述
