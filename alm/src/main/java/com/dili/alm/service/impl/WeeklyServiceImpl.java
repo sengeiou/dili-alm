@@ -110,7 +110,9 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		
 		//本周进展情况 
 		JSONArray  tdJson=JSON.parseArray(wkly.getCurrentWeek());
-		List<TaskDto> td= tdJson.toJavaList(TaskDto.class);
+		List<TaskDto> td= new ArrayList<TaskDto>();
+	     if(tdJson!=null)	
+				tdJson.toJavaList(TaskDto.class);
 		
 		List<String> listVersion = new ArrayList<String> (); 
 		List<String> listPhase = new ArrayList<String> ();  
@@ -167,7 +169,9 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		
 		//下周工作计划
 		JSONArray  wkJson=JSON.parseArray(wkly.getNextWeek());
-		List<NextWeeklyDto> wk=wkJson.toJavaList(NextWeeklyDto.class);
+		List<NextWeeklyDto> wk=new ArrayList<NextWeeklyDto>();
+	    if(wkJson!=null)	
+				wkJson.toJavaList(NextWeeklyDto.class);
 		//List<NextWeeklyDto> wk=selectNextWeeklyProgress(weeklyPara);
 		
 		List<String> nextPhaseList = new ArrayList<String> ();  
@@ -183,7 +187,10 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		map.put("wk", wk);
 		
 		//下周项目阶段
-		List<String> nextprojectPhase=selectNextProjectPhase(nextPhaseList);
+		List<String> nextprojectPhase=new ArrayList<String>();
+		if(nextPhaseList!=null&& nextPhaseList.size()>0)
+		    nextprojectPhase=selectNextProjectPhase(nextPhaseList);
+		
 		map.put("npp", StringUtils.join(nextprojectPhase.toArray(),","));
 		
 	    //项目总体情况描述
@@ -272,7 +279,9 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		//List<NextWeeklyDto> wk=selectNextWeeklyProgress(weeklyPara);
 		List<String> listnextPhase = new ArrayList<String> ();  
 		JSONArray  nextWeeklyJson=JSON.parseArray(wkly.getNextWeek());
-		List<NextWeeklyDto> wk= nextWeeklyJson.toJavaList(NextWeeklyDto.class);
+		List<NextWeeklyDto> wk=new ArrayList<NextWeeklyDto>();
+		if(nextWeeklyJson!=null)
+	          wk= nextWeeklyJson.toJavaList(NextWeeklyDto.class);
 		
 		
 		for (int i = 0; i < wk.size(); i++) {
@@ -691,8 +700,10 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		// 本周进展情况
 		//List<TaskDto> td = selectWeeklyProgress(weeklyPara);
 		JSONArray  tdJson=JSON.parseArray(wkly.getCurrentWeek());
-		List<TaskDto> td= tdJson.toJavaList(TaskDto.class);
 		
+		List<TaskDto> td= new ArrayList<TaskDto>();
+		if(tdJson!=null)
+				tdJson.toJavaList(TaskDto.class);
 		List<String> listVersion = new ArrayList<String> (); 
 		List<String> listPhase = new ArrayList<String> ();  
 		
@@ -741,7 +752,11 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		
 		// 下周工作计划
 		JSONArray  wkJson=JSON.parseArray(wkly.getNextWeek());
-		List<NextWeeklyDto> wk=wkJson.toJavaList(NextWeeklyDto.class);
+		List<NextWeeklyDto> wk=new ArrayList<NextWeeklyDto>();
+		
+		if(wkJson!=null){
+			wk=wkJson.toJavaList(NextWeeklyDto.class);
+		}
 		//List<NextWeeklyDto> wk=selectNextWeeklyProgress(weeklyPara);
 		
 		List<String> nextPhaseList = new ArrayList<String> ();  
