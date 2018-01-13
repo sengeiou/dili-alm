@@ -328,7 +328,7 @@
 				 <where>
 	                 t.end_date &gt;=#{endDate,jdbcType=VARCHAR}
 	                 and  t.start_date &lt;= t.end_date 
-	                 and  t.start_date &lt;=#{startDate,jdbcType=VARCHAR}
+	                 and  t.start_date &lt;=#{endDate,jdbcType=VARCHAR}
 	        
 		              <if test="id != null">
 			           and  t.project_id=#{id,jdbcType=BIGINT}
@@ -361,7 +361,7 @@
 		
 		        from  task  t
 		      <where>  
-		                and t.end_date &gt;= #{startDate,jdbcType=VARCHAR}
+		               t.end_date &gt;= #{startDate,jdbcType=VARCHAR}
 		               and t.end_date &lt;= #{endDate,jdbcType=VARCHAR}
 		               and  t.start_date &lt;= t.end_date 
 
@@ -377,9 +377,9 @@
 		        from  task  t
 		       <where>  
 		           
-		           t.end_date &gt;=#{endDate,jdbcType=VARCHAR}
+		           	 t.end_date &gt;=#{endDate,jdbcType=VARCHAR}
 	                 and  t.start_date &lt;= t.end_date 
-	           and  t.start_date &lt;=#{startDate,jdbcType=VARCHAR}
+	           		 and  t.start_date &lt;=#{endDate,jdbcType=VARCHAR}
 		         <if test="id != null">
 			           and  t.project_id=#{id,jdbcType=BIGINT}
 			     </if>
