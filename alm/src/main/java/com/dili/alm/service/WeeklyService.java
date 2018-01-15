@@ -102,9 +102,11 @@ public interface WeeklyService extends BaseService<Weekly, Long> {
 	 */
 	List<WeeklyPara>  getUser();
 
-	//Map<Object, Object> addWeekly(Weekly week );
-	
-	
+	/**
+	 * 周报生产
+	 * @param projectId
+	 * @return
+	 */
 	 Map<String, Weekly>  insertWeeklyByprojectId(String projectId);
 	
 	
