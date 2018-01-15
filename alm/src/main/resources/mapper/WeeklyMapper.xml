@@ -280,26 +280,7 @@
     <!-- 本周进展情况-->
    <select id="selectWeeklyProgress"  resultType="com.dili.alm.domain.dto.TaskDto" parameterType="com.dili.alm.domain.dto.WeeklyPara">
        
-      <!--  select   t.`name`   ,t.phase_id ,t.plan_time ,
-		        t.`owner`, t.version_id   ,
-		        t.status ,t.start_date ,
-		        t.end_date,t.status,
-		        d.over_hour ,d.task_hour  from
-		        task t LEFT JOIN  task_details d on  t.id=d.task_id 
-		       <where>
-		            t.start_date &gt;=#{startDate,jdbcType=VARCHAR}
-		            and  t.end_date &lt;= #{endDate,jdbcType=VARCHAR}
-		            and  t.start_date &lt;= t.end_date 
-		         <if test="id != null">
-			           and  t.project_id=#{id,jdbcType=BIGINT}
-			     </if>
-		       
-		      </where> 
-		      
-		      union -->
-		      
-		      
-		      
+
 		      
 		      select   t.`name`   ,t.phase_id ,t.plan_time ,t.id ,
 		        t.`owner`, t.version_id   ,
@@ -355,29 +336,31 @@
 		      </where>  -->
 		      
 		      
-		       select   t.`name`  ,t.plan_time ,t.phase_id as 'phaseId',
+		       select   t.`name`  ,t.plan_time ,t.phase_id as 'phaseId',d.task_hour  as 'taskHour',
 		       
 		         t.`owner`, t.describe  ,t.end_date
 		
-		        from  task  t
+		        from  task  t,task_details  d
 		      <where>  
-		               t.end_date &gt;= #{startDate,jdbcType=VARCHAR}
-		               and t.end_date &lt;= #{endDate,jdbcType=VARCHAR}
-		               and  t.start_date &lt;= t.end_date 
+		               t.id= d.task_id
+		               and   t.end_date &gt;= #{startDate,jdbcType=VARCHAR}
+		               and   t.end_date &lt;= #{endDate,jdbcType=VARCHAR}
+		               and   t.start_date &lt;= t.end_date 
 
 		         <if test="id != null">
 			           and  t.project_id=#{id,jdbcType=BIGINT}
 			     </if>	      
 			     </where>
 		       UNION
-		       select   t.`name`  ,t.plan_time ,t.phase_id as 'phaseId',
+		       select   t.`name`  ,t.plan_time ,t.phase_id as 'phaseId',d.task_hour,
 		       
 		         t.`owner`, t.describe  ,t.end_date
 		
-		        from  task  t
+		        from  task  t,task_details  d
 		       <where>  
 		           
 		           	 t.end_date &gt;=#{endDate,jdbcType=VARCHAR}
+		           	 and t.id= d.task_id
 	                 and  t.start_date &lt;= t.end_date 
 	           		 and  t.start_date &lt;=#{endDate,jdbcType=VARCHAR}
 		         <if test="id != null">

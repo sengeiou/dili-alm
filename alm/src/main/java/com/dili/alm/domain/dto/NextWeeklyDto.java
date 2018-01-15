@@ -8,7 +8,14 @@ public class NextWeeklyDto {
 	private String endDate;
 	private int number;
 	private String  phaseId;
+	private  String  taskHour;
 	
+	public String getTaskHour() {
+		return taskHour;
+	}
+	public void setTaskHour(String taskHour) {
+		this.taskHour = taskHour;
+	}
 	public String getPhaseId() {
 		return phaseId;
 	}

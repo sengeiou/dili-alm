@@ -616,6 +616,13 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		
 		for (NextWeeklyDto nextWeeklyDto : nwd) {
 			 nextWeeklyDto.setEndDate(nextWeeklyDto.getEndDate().substring(0, 10));
+			 if(nextWeeklyDto.getPlanTime()!=null&&nextWeeklyDto.getPlanTime()!=""){
+				   if(nextWeeklyDto.getTaskHour()!=null&&nextWeeklyDto.getTaskHour()!=""){
+				      nextWeeklyDto.setPlanTime(Integer.parseInt(nextWeeklyDto.getPlanTime())
+				    		  -Integer.parseInt(nextWeeklyDto.getTaskHour())+"");//计算剩下的计划工时，
+			       }
+			 }
+			
 			 user = new User();
 		     user.setId(Long.parseLong(nextWeeklyDto.getOwner()));
 			 BaseOutput<List<User>>  listByExample = userRpc.listByExample(user);
@@ -831,8 +838,8 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		return userList;
 	}
 
-	@Override
-	public Map<Object, Object> addWeekly(Weekly wk) {
+//	@Override
+/*	public Map<Object, Object> addWeekly(Weekly wk) {
 		
 		//Weekly wk = insertWeeklyByprojectId(projectId);
 		Map<Object, Object>  map=new HashMap<Object, Object> ();
@@ -925,7 +932,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	    
 	    return  map;
 	}
-
+*/
 	public  Map<String, Weekly> insertWeeklyByprojectId(String projectId) {
 		
 		Map<String, Weekly>  map=new HashMap<String, Weekly>();
