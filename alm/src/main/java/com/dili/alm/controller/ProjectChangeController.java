@@ -7,12 +7,14 @@ import com.dili.alm.domain.VerifyApproval;
 import com.dili.alm.service.ProjectChangeService;
 import com.dili.alm.service.TaskService;
 import com.dili.alm.service.VerifyApprovalService;
+import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.sysadmin.sdk.session.SessionContext;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -79,6 +81,19 @@ public class ProjectChangeController {
     @ResponseBody
     public Object loadVerify(VerifyApproval verifyApproval) throws Exception {
         return verifyApprovalService.listEasyuiPageByExample(verifyApproval, true);
+    }
+
+    @RequestMapping(value = "loadProjectChange")
+    @ResponseBody
+    public Object loadProjectChange(ProjectChange change) {
+        change.setOrder("desc");
+        change.setSort("created");
+        List<ProjectChange> changes = projectChangeService.listByExample(change);
+        if (CollectionUtils.isNotEmpty(changes)) {
+            return DateUtil.getDate(changes.get(0).getEstimateLaunchDate());
+
+        }
+        return "";
     }
 
     @RequestMapping(value = "/toDetails/{id}", method = RequestMethod.GET)

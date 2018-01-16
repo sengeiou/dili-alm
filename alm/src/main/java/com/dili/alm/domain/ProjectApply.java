@@ -113,12 +113,14 @@ public interface ProjectApply extends IBaseDomain {
 
     @Column(name = "`start_date`")
     @FieldDef(label="计划开始日期")
+    @Operator(Operator.GREAT_EQUAL_THAN)
     @EditMode(editor = FieldEditor.Datetime, required = false)
     Date getStartDate();
 
     void setStartDate(Date startDate);
 
     @Column(name = "`end_date`")
+    @Operator(Operator.LITTLE_EQUAL_THAN)
     @FieldDef(label="计划结束日期")
     @EditMode(editor = FieldEditor.Datetime, required = false)
     Date getEndDate();

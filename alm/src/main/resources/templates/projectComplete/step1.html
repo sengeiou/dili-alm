@@ -161,6 +161,16 @@
                     $("#endDate").textbox("initValue", data.endDate);
                     $("#endDateVal").val(data.endDate);
                     $("#actualEndDate").textbox("initValue", data.actualEndDate);
+
+                    $.ajax({
+                        url: "${contextPath}/projectChange/loadProjectChange?projectId=" + data.id,
+                        success: function (d) {
+                            if (d != "") {
+                                $("#endDate").combobox("initValue", d);
+                                $("#endDateVal").val(d);
+                            }
+                        }
+                    });
                 }
             }
         }

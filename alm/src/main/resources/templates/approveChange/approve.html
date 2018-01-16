@@ -189,8 +189,11 @@
         $('#ff').form('submit', {
             url: "${contextPath}/approve/applyApprove",
             onSubmit: function () {
-                $(obj).linkbutton('disable');
+                if ($("#ff").form('validate')) {
+                    $(obj).linkbutton('disable');
+                }
                 $("#opt").val(opt);
+                return $("#ff").form('validate');
             },
             success: function (data) {
                 var data = eval('(' + data + ')');

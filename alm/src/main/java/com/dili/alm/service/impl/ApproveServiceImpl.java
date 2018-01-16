@@ -498,15 +498,22 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         if (roleId != null) {
             List<ApplyApprove> approveList = Lists.newArrayList();
             List<User> userByRole = userRpc.listUserByRole(Long.parseLong(roleId)).getData();
+            Long approveLeader = getApproveLeader();
+            final ApplyApprove[] leaderApprove = {null};
             userByRole.forEach(u -> {
                 ApplyApprove approve = new ApplyApprove();
                 approve.setUserId(u.getId());
                 approve.setRole(roleRpc.listRoleNameByUserId(Long.valueOf(u.getId())).getData());
-                approveList.add(approve);
-                if (!u.getId().equals(getApproveLeader())) {
+                if (!u.getId().equals(approveLeader)) {
+                    approveList.add(approve);
                     sendMessage(as.getId(), as.getType(), as.getCreateMemberId(), u.getId());
+                } else {
+                    leaderApprove[0] = approve;
                 }
             });
+            if (leaderApprove[0] != null) {
+                approveList.add(leaderApprove[0]);
+            }
             as.setDescription(JSON.toJSONString(approveList));
             updateSelective(as);
         }

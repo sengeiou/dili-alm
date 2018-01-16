@@ -237,6 +237,8 @@
             url: "${contextPath}/approve/verityApprove",
             onSubmit: function() {
                 $("#opt").val(opt);
+                $("#opt").val(opt);
+                return $("#ff").form('validate');
             },
             success: function(data) {
                 var data = eval('(' + data + ')');
