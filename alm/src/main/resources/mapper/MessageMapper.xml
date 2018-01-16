@@ -12,12 +12,13 @@
     <result column="created" jdbcType="TIMESTAMP" property="created" />
     <result column="type" jdbcType="INTEGER" property="type" />
     <result column="is_read" jdbcType="BIT" property="isRead" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
       WARNING - @mbg.generated
     -->
-    id, url, sender, recipient, created, type, is_read
+    id, url, sender, recipient, created, type, is_read, name
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -51,6 +52,9 @@
       </if>
       <if test="isRead != null">
         is_read = #{isRead,jdbcType=BIT},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
@@ -113,4 +117,8 @@
         and is_read = #{isRead,jdbcType=BIT}
       </if>
   </select>
+  <delete id="deleteLikeUrl" >
+  	DELETE FROM `message` WHERE url LIKE '%${url}'
+  </delete>
+
 </mapper>
