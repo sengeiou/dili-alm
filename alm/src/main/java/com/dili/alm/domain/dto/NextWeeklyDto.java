@@ -1,6 +1,8 @@
 package com.dili.alm.domain.dto;
 
 public class NextWeeklyDto {
+	
+	private Long id ;
 	private String name;
 	private String planTime;
 	private String owner;
@@ -10,6 +12,12 @@ public class NextWeeklyDto {
 	private String  phaseId;
 	private  String  taskHour;
 	
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
 	public String getTaskHour() {
 		return taskHour;
 	}

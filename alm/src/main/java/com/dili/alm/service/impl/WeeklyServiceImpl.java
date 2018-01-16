@@ -356,7 +356,6 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		}
 		
 		
-		
 		CopyOnWriteArrayList<WeeklyPara> copyList = new CopyOnWriteArrayList();
 		
 		DataDictionary  ddit=DTOUtils.newDTO(DataDictionary.class);
@@ -406,7 +405,6 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		
 		if(DateUtil.getWeekOfDate(new Date()).endsWith("星期日")){
 			HashMap<String,String>  map =DateUtil.getFirstAndFive();
-			
 			pd.setBeginAndEndTime(map.get("one").substring(0,10) + "到" +map.get("five").substring(0,10));
 		}
 		
@@ -481,13 +479,10 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	
 		 UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		 pd.setStageMan(userTicket.getRealName());
-		 
-		
-
 		 User user = new User();
 		 user.setId(Long.parseLong(pd.getBusinessParty()));
 		// 业务方
-		BaseOutput<List<User>>  listByExample = userRpc.listByExample(user);
+	     BaseOutput<List<User>>  listByExample = userRpc.listByExample(user);
 		 List<User> listUserParty = listByExample.getData();
 		 if(listUserParty!=null&&listUserParty.size()>0)
 		      pd.setBusinessParty(listUserParty.get(0).getRealName());
@@ -551,6 +546,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		ddit.setName(PROJECTSTATUS);
 		//List<DataDictionary> dditList=dataDictionaryService.list(ddit);//查询出id
 		 User user ;
+		 WeeklyPara weekPara;
 		for (int i = 0; i < td.size(); i++) {
 
 			// 责任人
@@ -570,9 +566,20 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			ddvPhaseName.setDdId(PHASENAMEVALUE);
 			td.get(i).setPhaseId(dataDictionaryValueService.list(ddvPhaseName).get(0).getCode());
 			
-			// 本周工时
-			Integer intweekHour=Integer.parseInt(DateUtil.differentDays( td.get(i).getStartDate(),td.get(i).getEndDate()));
-			td.get(i).setWeekHour((intweekHour)*8+"");
+			//设置加班时间 和  工时
+			weekPara=new WeeklyPara();
+			weekPara.setId(td.get(i).getId());
+			weekPara.setStartDate(weeklyPara.getStartDate());
+			weekPara.setEndDate(weeklyPara.getEndDate());
+			TaskDto	  task=weeklyMapper.selectWeeklyOverAndtaskHour(weekPara);
+			if(task!=null){
+				td.get(i).setTaskHour(task.getTaskHour());
+				td.get(i).setOverHour(task.getOverHour());
+				// 本周工时
+				//Integer intweekHour=Integer.parseInt(DateUtil.differentDays( td.get(i).getStartDate(),td.get(i).getEndDate()));
+				td.get(i).setWeekHour(task.getTaskHour()+"");
+			}
+			
 			// 实际工时
 			td.get(i).setRealHour(td.get(i).getOverHour() + td.get(i).getTaskHour() + "");
 			// 工时偏差% （实际任务工时/预估任务工时-1）%
@@ -605,12 +612,16 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		
 		for (NextWeeklyDto nextWeeklyDto : nwd) {
 			 nextWeeklyDto.setEndDate(nextWeeklyDto.getEndDate().substring(0, 10));
-			 if(nextWeeklyDto.getPlanTime()!=null&&nextWeeklyDto.getPlanTime()!=""){
+			 NextWeeklyDto  nd= weeklyMapper.selectNextWeeklyTaskHour(nextWeeklyDto.getId());
+			 int planTime=Integer.parseInt(nextWeeklyDto.getPlanTime())-Integer.parseInt(nd.getTaskHour());
+			 nextWeeklyDto.setPlanTime(planTime+"");
+			 
+			/* if(nextWeeklyDto.getPlanTime()!=null&&nextWeeklyDto.getPlanTime()!=""){
 				   if(nextWeeklyDto.getTaskHour()!=null&&nextWeeklyDto.getTaskHour()!=""){
 				      nextWeeklyDto.setPlanTime(Integer.parseInt(nextWeeklyDto.getPlanTime())
 				    		  -Integer.parseInt(nextWeeklyDto.getTaskHour())+"");//计算剩下的计划工时，
 			       }
-			 }
+			 }*/
 			
 			 user = new User();
 		     user.setId(Long.parseLong(nextWeeklyDto.getOwner()));

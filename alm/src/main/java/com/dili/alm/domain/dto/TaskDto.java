@@ -8,6 +8,7 @@ import java.util.Date;
  */
 public class TaskDto {
 
+	private  Long id;
     private  String name;
     private  String versionId;
     private  String phaseId;//
@@ -25,6 +26,12 @@ public class TaskDto {
     private String   realHour;//实际工时
     private String   hourDeviation;//工时偏差
     
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
 	public String getHourDeviation() {
 		return hourDeviation;
 	}
