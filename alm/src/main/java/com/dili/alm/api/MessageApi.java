@@ -42,6 +42,19 @@ public class MessageApi {
 		
 	}
 	
+	@ApiOperation("删除message")
+	@ApiImplicitParams({
+	@ApiImplicitParam(name="Message", paramType="form", value = "Message的form信息", required = true, dataType = "string")
+	})
+	@RequestMapping(value="/deleteMessage", method = {RequestMethod.GET, RequestMethod.POST})
+	public @ResponseBody BaseOutput delete(Long id,Integer type) {
+		if(id==null|| type==null){
+			return BaseOutput.failure("删除失败,包含空值type="+type.toString()+",id="+id);
+        }
+		messageService.deleteMessage(id,type);
+	    return BaseOutput.success("删除成功");
+		
+	}
 	@ApiOperation("修改message的状态")
 	@ApiImplicitParams({
 	@ApiImplicitParam(name="Message", paramType="form", value = "Message的form信息", required = true, dataType = "string")

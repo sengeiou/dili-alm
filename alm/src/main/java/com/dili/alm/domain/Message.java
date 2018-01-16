@@ -68,4 +68,11 @@ public interface Message extends IBaseDomain {
     Boolean getIsRead();
 
     void setIsRead(Boolean isRead);
+    
+    @Column(name = "`name`")
+    @FieldDef(label="消息名称", maxLength = 20)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getName();
+
+    void setName(String name);
 }

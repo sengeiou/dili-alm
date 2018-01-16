@@ -8,6 +8,7 @@ import com.dili.alm.domain.dto.apply.*;
 import com.dili.alm.provider.ProjectTypeProvider;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.FilesService;
+import com.dili.alm.service.MessageService;
 import com.dili.alm.service.ProjectApplyService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.BaseOutput;
@@ -17,10 +18,13 @@ import com.dili.ss.metadata.ValuePairImpl;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
+import com.sun.mail.handlers.message_rfc822;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -51,6 +55,8 @@ public class ProjectApplyController {
 
     @Autowired
     FilesService filesService;
+    @Autowired
+    private MessageService messageService;
 
 
     @ApiOperation("跳转到ProjectApply页面")
@@ -258,7 +264,8 @@ public class ProjectApplyController {
     BaseOutput delete(Long id) {
         ProjectApply apply = projectApplyService.get(id);
         if (apply != null && apply.getCreateMemberId().equals(SessionContext.getSessionContext().getUserTicket().getId())) {
-            projectApplyService.delete(id);
+        	messageService.deleteMessage(id, AlmConstants.MessageType.APPLY.code);
+        	projectApplyService.delete(id);
         }
         return BaseOutput.success("删除成功");
     }

@@ -43,6 +43,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -108,8 +109,11 @@ public class TaskController {
 			@ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listTeamPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listTeamPage(Task task, String phaseName) throws Exception {
-
-		return taskService.listByTeam(task, phaseName).toString();
+		if(task.getId()!=null){
+			return taskService.listEasyuiPageByExample(task,true).toString();
+		}else{
+			return taskService.listByTeam(task, phaseName).toString();
+		}
 	}
 
 	@ApiOperation(value = "分页查询Task,首页显示", notes = "分页查询Task，返回easyui分页信息")
@@ -151,11 +155,11 @@ public class TaskController {
 		task.setCreateMemberId(userTicket.getId());
 		task.setCreated(new Date());
 		task.setStatus(TaskStatus.NOTSTART.code);// 新增的初始化状态为0未开始状态
-		
-		messageService.insertMessage("http://alm.diligrp.com:8083/alm/task/index.html", userTicket.getId(),
-				task.getOwner(),AlmConstants.MessageType.TASK.getCode());
 		taskService.insertSelective(task);
 
+		messageService.insertMessage("http://alm.diligrp.com:8083/alm/task/task/"+task.getId(), userTicket.getId(),
+				task.getOwner(),AlmConstants.MessageType.TASK.getCode());
+		
 		return BaseOutput.success("新增成功");
 	}
 
@@ -201,6 +205,7 @@ public class TaskController {
 		if (!taskService.isCreater(task)) {
 			return BaseOutput.failure("不是本项目的创建者，不能进行删除");
 		}
+		messageService.deleteMessage(id, AlmConstants.MessageType.TASK.code);
 		taskService.delete(id);
 		return BaseOutput.success("删除成功");
 	}
@@ -505,5 +510,13 @@ public class TaskController {
 		}
 		return taskService.validateBeginAndEnd(projectId,startDate,endDate);
 			 
+	}
+	
+	@ApiOperation("跳转到Task页面")
+	@RequestMapping(value = "/task/{id}", method = RequestMethod.GET)
+	public String task(@PathVariable("id") Long id,ModelMap modelMap) throws UnsupportedEncodingException {
+		modelMap.put("sessionID", SessionContext.getSessionContext().getUserTicket().getId());
+		modelMap.put("taskId", id);
+		return "task/index";
 	}
 }

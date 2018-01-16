@@ -4,6 +4,7 @@ import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.ProjectChange;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.VerifyApproval;
+import com.dili.alm.service.MessageService;
 import com.dili.alm.service.ProjectChangeService;
 import com.dili.alm.service.TaskService;
 import com.dili.alm.service.VerifyApprovalService;
@@ -41,6 +42,9 @@ public class ProjectChangeController {
 
     @Autowired
     private VerifyApprovalService verifyApprovalService;
+    
+    @Autowired
+    private MessageService messageService;
 
     @ApiOperation("跳转到ProjectChange页面")
     @RequestMapping(value = "/index.html", method = RequestMethod.GET)
@@ -157,7 +161,8 @@ public class ProjectChangeController {
     BaseOutput delete(Long id) {
         ProjectChange change = projectChangeService.get(id);
         if (change != null && change.getCreateMemberId().equals(SessionContext.getSessionContext().getUserTicket().getId())) {
-            projectChangeService.delete(id);
+        	messageService.deleteMessage(id, AlmConstants.MessageType.CHANGE.code);
+        	projectChangeService.delete(id);
         }
         return BaseOutput.success("删除成功");
     }
