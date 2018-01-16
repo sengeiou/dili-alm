@@ -129,13 +129,13 @@
                 <tr>
                     <td colspan="2">
                         <span class="require">*</span>
-                        <input class="easyui-datebox" name="startDate" id="" style="width: calc(50% - 132px)"
+                        <input class="easyui-datebox" name="startDate" id="startDate" style="width: calc(50% - 132px)"
                                data-options="editable:false,required:true,label:'计划开始日期:'"/>
                     </td>
                     <td colspan="2">
                         <span class="require">*</span>
-                        <input class="easyui-datebox" name="endDate" id="" style="width: calc(50% - 132px)"
-                               data-options="editable:false,required:true,label:'计划结束日期:'"/>
+                        <input class="easyui-datebox" name="endDate" id="endDate" style="width: calc(50% - 132px)"
+                               data-options="editable:false,required:true,label:'计划结束日期:',validType:'md'"/>
                     </td>
                 </tr>
                 <tr>
@@ -219,6 +219,20 @@
     //         }
     //     });
     // });
+
+    $.extend($.fn.validatebox.defaults.rules, {
+        md: {
+            validator: function (value) {
+                if ($("#startDate").datebox("getValue") == ""){
+                    return true;
+                }
+                var d1 = $.fn.datebox.defaults.parser($("#startDate").datebox("getValue"));
+                var d2 = $.fn.datebox.defaults.parser(value);
+                return d2 >= d1;
+            },
+            message: '结束日期不能小于开始日期.'
+        }
+    });
 
     function delRelated($_this) {
         $($_this).closest("tr").remove();

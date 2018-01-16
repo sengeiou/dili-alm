@@ -114,7 +114,7 @@ CREATE TABLE `approve` (
 #   `create_member_id` BIGINT          NULL,
 #   `modify_member_id` BIGINT          NULL,
 #   PRIMARY KEY (`id`)
-# );
+# );c
 
 CREATE TABLE `project` (
   `id`                  BIGINT ZEROFILL NOT NULL AUTO_INCREMENT,
