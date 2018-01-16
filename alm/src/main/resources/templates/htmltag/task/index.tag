@@ -220,6 +220,69 @@
       $('#complate').linkbutton({disabled:true});
     }
     
+    //显示详情页面
+    function openDetail(row){
+        noEdit();
+        
+        $("#task_detail_list").show();//填写工时列表
+        $("#dialog_toolbar").show();
+        
+        $("#saveTask").hide();
+        $("#task_detail").hide();
+        $("#dialog_toolbar_detail").hide();
+        
+		var selected=$("#grid").datagrid('getData').rows[row];
+		
+		/*******加载显示数据 begin**********/
+		$('#_form').form({editable:true});
+            formFocus("_form", "_name");
+            var formData = $.extend({},selected);
+            formData = addKeyStartWith(getOriginalData(formData),"_");
+            $('#_form').form('load', formData);
+            $('#_form').form('load',{planTimeStr:formData._planTime});
+            if(selected.flow){ $("#changeIdTr").css("display","block");
+                                loadChangePorjectSelect(formData._projectId); 
+                                $('#_changeId').combobox('select',formData._changeId);
+                                $('#flowSt').combobox('select',0); 
+                               }
+            else{ $("#changeIdTr").css("display","none");$('#flowSt').combobox('select',1); }
+            
+            
+            
+            loadMemberSelect(formData._projectId);
+            $('#_owner').combobox('select',formData._owner);
+
+ 			loadVisionSelect(formData._projectId);
+            $('#_versionId').combobox('select',formData._versionId);
+            
+            loadPhaseSelect(formData._versionId);
+            $('#_phaseId').combobox('select',formData._phaseId);
+            
+            loadTaskSelect(formData._projectId);
+            $('#_beforeTask').combobox('select', formData._beforeTask);
+            
+            $('#_form').form('load', {startDateShow:dateFormat_1(formData._startDate)});
+            $('#_form').form('load', {endDateShow:dateFormat_1(formData._endDate)}); 
+            $('#_phaseId').combobox('select',formData._phaseId);
+		/*******加载显示数据 end**********/
+        queryDetail(formData._id);
+        
+            
+    	$('#dlg').dialog('open');
+        $('#dlg').dialog('center');
+    
+    }
+    
+    function queryDetail(id,owner){
+    	 var opts = $("#detail_grid").datagrid("options");
+        
+        opts.url = "${contextPath}/task/listTaskDetails?taskId="+id;
+        
+        var param = bindMetadata("grid", true);
+        
+        $("#detail_grid").datagrid("reload");
+    
+    }
     
             //打开执行任务窗口
         function openUpdateDetail(row){
@@ -229,6 +292,8 @@
         	$("#task_detail").hide();
         	$("#dialog_toolbar").hide();
         	$("#dialog_toolbar_detail").show();
+        	$("#task_detail_list").hide();
+        	
 			var selected=$("#grid").datagrid('getData').rows[row];
 			$("#task_detail").show();
 			
@@ -262,6 +327,9 @@
             
             loadPhaseSelect(formData._versionId);
             $('#_phaseId').combobox('select',formData._phaseId);
+            loadTaskSelect(formData._projectId);
+            $('#_beforeTask').combobox('select', formData._beforeTask);
+            
             
             $('#_form').form('load', {startDateShow:dateFormat_1(formData._startDate)});
             $('#_form').form('load', {endDateShow:dateFormat_1(formData._endDate)}); 

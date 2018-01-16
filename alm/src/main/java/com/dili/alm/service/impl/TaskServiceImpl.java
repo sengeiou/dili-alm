@@ -204,15 +204,28 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			
 			TaskDetails taskDetails = DTOUtils.newDTO(TaskDetails.class);
 			taskDetails.setTaskId(task.getId());
-			taskDetails = tdMapper.selectOne(taskDetails);
-			// 进度=已完成工时/计划工时*100
-			// 处理进度
-			double taskHover = (short) 0;
-			if (taskDetails != null && taskDetails.getTaskHour() != null) {
-				taskHover = (double) taskDetails.getTaskHour();
-				taskHover = (taskHover / (double) task.getPlanTime()) * 100;
+			//查询出列表
+			List<TaskDetails>  taskDetailsList = tdMapper.select(taskDetails);
+			double totalTaskHour = 0;
+			for (TaskDetails entity : taskDetailsList) {//循环累加
+				if (entity.getTaskHour() != null) {//排除只填写加班工时
+				   totalTaskHour += entity.getTaskHour();
+				}
+/*				if(entity.getOverHour() != null){ //排除只填写任务工时的情况
+					totalTaskHour += entity.getTaskHour();
+				}*/
 			}
+			// 进度=已完成工时/计划工时*100 
+			double taskHover = (totalTaskHour / task.getPlanTime()) * 100;
 			dto.setProgress((int) taskHover);
+			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+			if(task.getStatus()!=3&&this.isManager(task.getProjectId())){//不是完成状态或者是项目经理或者是任务责任人
+				dto.setUpdateDetail(true);
+			}else if(task.getStatus()!=3&&userTicket.getId().equals(task.getOwner())){
+				dto.setUpdateDetail(true);
+			}else{
+				dto.setUpdateDetail(false);
+			}
 			target.add(dto);
 		}
 		return target;
@@ -234,14 +247,14 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		//标识任务已完成，需要写入项目中实际完成时间
 		boolean isComplete =false;
 		// 查询当前要修改的任务工时信息
-		TaskDetails taskDetailsFromDatabase = taskDetailsService.get(taskDetails.getId());
+/*		TaskDetails taskDetailsFromDatabase = taskDetailsService.get(taskDetails.getId());
 		// 校验前台工时
 		int taskHour =(int)Optional.ofNullable(taskDetails.getTaskHour()).orElse((short) 0);
 		// 校验前台加班工时
 		int overHour =(int)Optional.ofNullable(taskDetails.getOverHour()).orElse((short) 0);
 		
 		int saveHour = taskHour;//用作保存每次存储的工时值
-		/* task表基础数据更新 */
+		 task表基础数据更新 
 		
 		int baseTaskHour =(int)taskDetailsFromDatabase.getTaskHour();
 		baseTaskHour+=taskHour;
@@ -254,26 +267,60 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		
 		// 工时信息填写
 		taskDetailsFromDatabase.setTaskTime(this.taskHoursMapAdd(taskDetailsFromDatabase.getTaskTime(), saveHour));
-
-		if (taskDetailsFromDatabase.getTaskHour() >= task.getPlanTime()) {
+		
+		taskDetailsFromDatabase.setModified(new Date());
+		
+		
+		if (taskDetailsFromDatabase.getTaskHour() >= task.getPlanTime()) {*/
+			// 更新状态为完成
+			/*task.setStatus(TaskStatus.COMPLETE.code);
+			task.setFactEndDate(new Date());
+			isComplete = true;
+		}
+		
+		
+		this.taskDetailsService.insert(taskDetailsFromDatabase);*/
+		
+		TaskDetails condtion = DTOUtils.newDTO(TaskDetails.class);
+		
+		condtion.setTaskId(task.getId());
+		
+		List<TaskDetails> list = this.taskDetailsService.list(condtion);
+		
+		int totalTaskHours = 0;
+		
+		for (TaskDetails entity : list) {
+			
+			totalTaskHours += entity.getTaskHour();
+		}
+		
+		if (totalTaskHours >= task.getPlanTime()) {
 			// 更新状态为完成
 			/*task.setStatus(TaskStatus.COMPLETE.code);*/
 			task.setFactEndDate(new Date());
 			isComplete = true;
 		}
-		taskDetailsFromDatabase.setModified(new Date());
 		
-		this.taskDetailsService.saveOrUpdate(taskDetailsFromDatabase);
-		this.saveOrUpdate(task);
-		// 进度总量写入project表中
-		saveProjectProgress(task,isComplete);
+		if (taskDetails.getTaskHour()==0&&taskDetails.getOverHour()==0) {//判断如果加班工时和任务工时同时都没有填写
+			return 0;
+		}
+		try {
+			// 进度总量写入project表中
+			saveProjectProgress(task,isComplete);
 
-		// 更新版本表中的进度
-		saveProjectVersion(task);
+			// 更新版本表中的进度
+			saveProjectVersion(task);
 
-		// 更新阶段表中的进度
-		saveProjectPhase(task);		
-		return 0;
+			// 更新阶段表中的进度
+			saveProjectPhase(task);	
+			
+			this.saveOrUpdate(task);
+			
+		} catch (Exception e) {//有异常返回不成功
+			return 0;
+		}
+
+		return taskDetailsService.insert(taskDetails);
 	}
 
 	/**
@@ -445,7 +492,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	@Transactional
 	@Override
 	public int startTask(Task task) {
-		
+		//TODO:只更新任务状态
 		TaskDetails taskDetails=DTOUtils.newDTO(TaskDetails.class);
 		taskDetails.setTaskId(task.getId());
 		List<TaskDetails> byExample = taskDetailsService.list(taskDetails);
@@ -457,14 +504,14 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			if(size>0){
 				return 0 ;
 			}
-			
+/*			
 			taskDetails.setTaskId(task.getId());
 			taskDetails.setCreated(new Date());
 			taskDetails.setTaskHour((short) 0);
 			taskDetails.setOverHour((short) 0);
 			taskDetails.setTaskTime("{}");
 			taskDetails.setCreateMemberId(task.getModifyMemberId());
-			taskDetailsService.insert(taskDetails);
+			taskDetailsService.insert(taskDetails);*/
 		}
 
 		task.setFactBeginDate(new Date());
@@ -491,18 +538,27 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			this.phaseMapper.updateByPrimaryKey(phase);
 		}
 		
-		/***初始化相关内容的进度***/
-		// 进度总量写入project表中
-		saveProjectProgress(task,false);
+		try {
+			
+			/***初始化相关内容的进度***/
+			// 进度总量写入project表中
+			saveProjectProgress(task,false);
 
-		// 更新版本表中的进度
-		saveProjectVersion(task);
+			// 更新版本表中的进度
+			saveProjectVersion(task);
 
-		// 更新阶段表中的进度
-		saveProjectPhase(task);	
-		/***初始化相关内容的进度***/
+			// 更新阶段表中的进度
+			saveProjectPhase(task);	
+			/***初始化相关内容的进度***/
+			
+		} catch (Exception e) {
+			return 0;
+		}
+
 		return this.update(task);
 	}
+	
+	
 
 	/**
 	 * 定时刷过期任务
@@ -892,12 +948,35 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		//累加做比较，计算本日填写的总工时是否超过8小时
 		for (TaskDetails taskDetails : tdList) {
 
-			int getInt = taskHoursPlus(taskDetails); 
-			dayTotal += getInt;//其他项目填写工时总和
+			//int getInt = taskHoursPlus(taskDetails); 
+			dayTotal += taskDetails.getTaskHour();//其他项目填写工时总和
 			
 		}
 		
 		return dayTotal;
+	}
+
+
+
+	@Override
+	public TaskDetails selectDetails(Long taskId) {
+		TaskDetails taskDetails = DTOUtils.newDTO(TaskDetails.class);
+		taskDetails.setTaskId(taskId);
+		List<TaskDetails> list = taskDetailsService.list(taskDetails);
+		if (list == null || list.size() == 0) {
+			return null;
+		}
+		short taskHour = 0;
+		short overHour = 0;
+		for (TaskDetails entity : list) {
+			taskHour+=entity.getTaskHour();//累加任务工时
+			overHour+=entity.getOverHour();//累加加班工时
+		}
+		
+		taskDetails.setTaskHour(taskHour);
+		taskDetails.setOverHour(overHour);
+		
+		return taskDetails;
 	}
 	
 	

@@ -1,5 +1,6 @@
 package com.dili.alm.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.constant.AlmConstants.TaskStatus;
 import com.dili.alm.domain.Project;
@@ -21,6 +22,7 @@ import com.dili.alm.utils.WebUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
 
@@ -35,9 +37,9 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -281,13 +283,8 @@ public class TaskController {
 	@ResponseBody
 	@RequestMapping(value = "/listTaskDetail.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public TaskDetails listTaskDetail(Long id) {
-		TaskDetails taskDetails = DTOUtils.newDTO(TaskDetails.class);
-		taskDetails.setTaskId(id);
-		List<TaskDetails> list = taskDetailsService.list(taskDetails);
-		if (list == null || list.size() == 0) {
-			return null;
-		}
-		return list.get(0);
+		TaskDetails taskDetails = taskService.selectDetails(id);
+		return taskDetails;
 	}
 
 	// 是否是任务所有人，传入任务ID
@@ -377,10 +374,11 @@ public class TaskController {
 				return BaseOutput.failure("已经超过计划工时！");
 			}*/
 			/* 基础信息设置 */
-			task.setModifyMemberId(userTicket.getId());
+			/*task.setModifyMemberId(userTicket.getId());*/
 			taskDetails.setTaskHour(taskHour);
 			taskDetails.setOverHour(overHour);
 			taskDetails.setCreateMemberId(userTicket.getId());
+			taskDetails.setCreated(new Date());
 			/* 基础信息设置 */
 			taskService.updateTaskDetail(taskDetails, task);// 保存任务
 
@@ -398,10 +396,13 @@ public class TaskController {
 			task.setModifyMemberId(userTicket.getId());
 			taskDetails.setOverHour(overHour);//只写入加班工时
 			taskDetails.setCreateMemberId(userTicket.getId());
+			taskDetails.setCreated(new Date());
 			/* 基础信息设置 */
-			taskService.updateTaskDetail(taskDetails, task);// 保存任务
-
-			return BaseOutput.success("修改成功");
+			int i = taskService.updateTaskDetail(taskDetails, task);// 保存任务
+            if (i!=0) {
+            	return BaseOutput.success("修改成功");
+			}
+			
 		}
 
 		return BaseOutput.failure("今日工时已填写超过8小时！");
@@ -512,6 +513,26 @@ public class TaskController {
 			 
 	}
 	
+
+    @ApiOperation(value="查询TaskDetails", notes = "查询TaskDetails，返回列表信息")
+    @ApiImplicitParams({
+		@ApiImplicitParam(name="TaskDetails", paramType="form", value = "TaskDetails的form信息", required = false, dataType = "string")
+	})
+    @RequestMapping(value="/listTaskDetails", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody List<Map> list(TaskDetails taskDetails) {
+    	Map<Object, Object> metadata = new HashMap<>();
+    	
+    	List<TaskDetails> list = taskDetailsService.list(taskDetails);
+    	
+		JSONObject datetimeProvider = new JSONObject();
+		datetimeProvider.put("provider", "datetimeProvider");
+		metadata.put("created", datetimeProvider);
+		try {
+			return ValueProviderUtils.buildDataByProvider(metadata, list);
+		} catch (Exception e) {
+			return null;
+		}
+    }
 	@ApiOperation("跳转到Task页面")
 	@RequestMapping(value = "/task/{id}", method = RequestMethod.GET)
 	public String task(@PathVariable("id") Long id,ModelMap modelMap) throws UnsupportedEncodingException {
@@ -519,4 +540,5 @@ public class TaskController {
 		modelMap.put("taskId", id);
 		return "task/index";
 	}
+
 }
