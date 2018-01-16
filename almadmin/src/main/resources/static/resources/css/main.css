@@ -238,9 +238,9 @@ input {
     position: absolute;
     top:72px;
     right: 10px;
-    width: 210px;
+    width: 213px;
     max-height: 230px;
-    padding: 0 8px;
+    padding: 0 20px;
     /*z-index: 999;*/
     background:#fafafa;
     box-shadow: 0px 1px 6px #ccc;
