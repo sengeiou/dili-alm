@@ -315,7 +315,6 @@
                     <if test="id != null">
 			            and  t.project_id=#{id,jdbcType=BIGINT}
 			        </if>
-			          and (t.status=3 or t.status=4)
 			      
                   
                 UNION
@@ -333,8 +332,6 @@
 		              <if test="id != null">
 			           and  t.project_id=#{id,jdbcType=BIGINT}
 			          </if>
-		              
-		              and t.`status`&lt;&gt;3 and t.`status`&lt;&gt;4 
 			      </where>    
 		      
    </select>
@@ -365,12 +362,10 @@
 		      <where>  
 		               t.end_date &lt;= #{endDate,jdbcType=VARCHAR}
 		                and  t.start_date &lt;= t.end_date 
-		                and (t.status=3 or t.status=4)
 		         <if test="id != null">
 			           and  t.project_id=#{id,jdbcType=BIGINT}
-			     </if>
-		          and (t.status=3 or t.status=4)
-		      </where>
+			     </if>	      
+			     </where>
 		       UNION
 		       select   t.`name`  ,t.plan_time ,t.phase_id as 'phaseId',
 		       
@@ -380,11 +375,9 @@
 		       <where>  
 		             t.end_date &gt;=#{endDate,jdbcType=VARCHAR}
 		                and  t.start_date &lt;= t.end_date 
-		                and (t.status=3 or t.status=4)
 		         <if test="id != null">
 			           and  t.project_id=#{id,jdbcType=BIGINT}
 			     </if>
-		          and t.`status`&lt;&gt;3 and t.`status`&lt;&gt;4
 		      </where>
 		      
 		      
