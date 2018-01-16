@@ -56,7 +56,7 @@ public interface Log extends IBaseDomain {
     void setIp(String ip);
 
     @Column(name = "`content`")
-    @FieldDef(label="内容")
+    @FieldDef(label="内容", maxLength = 100)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getContent();
 

@@ -1,5 +1,7 @@
 package com.dili.sysadmin.service;
 
+import java.util.List;
+
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.sysadmin.domain.Resource;
@@ -14,4 +16,6 @@ public interface ResourceService extends BaseService<Resource, Long> {
 	BaseOutput<Object> add(ResourceDto command);
 
 	BaseOutput<Object> update(ResourceDto dto);
+
+	List<String> findCodeByUserId(Long id);
 }

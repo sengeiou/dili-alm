@@ -8,6 +8,7 @@ import com.dili.sysadmin.domain.dto.ResourceDto;
 import com.dili.sysadmin.service.ResourceService;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -77,5 +78,11 @@ public class ResourceServiceImpl extends BaseServiceImpl<Resource, Long> impleme
 			return BaseOutput.failure("修改失败");
 		}
 		return BaseOutput.success("修改成功");
+	}
+
+	@Override
+	public List<String> findCodeByUserId(Long id) {
+		
+		return this.getActualDao().findResourceCodeByUserId(id);
 	}
 }

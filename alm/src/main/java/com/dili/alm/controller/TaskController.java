@@ -160,7 +160,7 @@ public class TaskController {
 		messageService.insertMessage("http://alm.diligrp.com:8083/alm/task/task/"+task.getId(), userTicket.getId(),
 				task.getOwner(),AlmConstants.MessageType.TASK.getCode());
 		
-		return BaseOutput.success("新增成功");
+		return BaseOutput.success(String.valueOf(task.getId()));
 	}
 
 	@ApiOperation("修改Task")

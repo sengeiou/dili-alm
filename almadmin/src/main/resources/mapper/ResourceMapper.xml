@@ -142,4 +142,16 @@
 		<include refid="Base_Column_List" /> 
 		FROM resource WHERE menu_id = #{menuId} AND yn = 1;		
 	</select>
+	
+	
+	<select id="findResourceCodeByUserId" parameterType="Long" resultType="java.lang.String">
+		SELECT r.code FROM `resource` r  RIGHT JOIN  ( 
+		SELECT DISTINCT rr.resource_id AS resource_id
+		FROM `role_resource` rr
+		LEFT JOIN  user_role ru ON ru.role_id = rr.role_id
+		WHERE
+		ru.user_id=#{userId})rru 
+		ON r.id = rru.resource_id 	
+	</select>
+	
 </mapper>
