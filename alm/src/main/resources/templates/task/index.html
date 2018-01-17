@@ -58,7 +58,7 @@
                data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
             <thead>
             <tr>
-                <th data-options="field:'name',width:'12%',fixed:'false'">
+                <th data-options="field:'name',width:'12%',formatter:formatNameOptions,fixed:'false'">
                     任务名称
                 </th>
                 <th data-options="field:'projectId',width:'12%',fixed:'false',_provider:'projectProvider'">
@@ -196,7 +196,6 @@
         <h3>工时任务信息</h3>
         <form name="detail_form" id="detail_form">
             <input name="taskId" id="taskId" type="hidden">
-            <input name="id" id="id" type="hidden">
             <input name="taskHour" id="taskHour" type="hidden">
             <table width="360px;" style="border:1px;">
                 <tr>
@@ -227,11 +226,38 @@
                 </tr>
                 <tr>
                     <td style="padding:5px;" colspan="2">
-                        <input class="easyui-textbox"  name="describe" id="describe" style="width:100%;" data-options="label:'描述:', validType:'length[0,255]',multiline:true" />
+                        <input class="easyui-textbox"  name="describe" id="describe" style="width:100%;" data-options="label:'工作内容描述:', validType:'length[0,255]',multiline:true" />
                     </td>
                 </tr>
             </table>
         </form>
+    </div>
+        <!-- 隐藏工时信息详情 -->
+    <div id="task_detail_list" style="display:none;width:350px;padding:5px;">
+        <hr>
+         <h3>工时任务信息</h3>
+ 		 <table class="easyui-datagrid" style="height:120px" id="detail_grid" loadMsg="数据加载中..."  idField="id"
+             >
+            <thead>
+            <tr>
+                <th data-options="field:'taskHour',width:'10%',fixed:'false'">
+                    工时
+                </th>
+                <th data-options="field:'overHour',width:'10%',fixed:'false'">
+                   加班
+                </th>
+                <th data-options="field:'owner',width:'15%',fixed:'false',formatter:ownerFormatter">
+                   责任人
+                </th>
+               <th data-options="field:'created',width:'25%', _provider:'datetimeProvider',nowarp:false">
+                   填写时间
+                </th>
+                <th data-options="field:'describe',width:'41%',fixed:'true'">
+                   工作内容描述
+                </th>
+            </tr>
+            </thead>
+        </table>
     </div>
     <div id="dialog_toolbar" style="diplay:show;">
         <a href="#" id="saveTask" class="easyui-linkbutton"  data-options="iconCls:'icon-edit',plain:true" onclick="saveOrUpdate()" style="border:1px solid #ccc;">保存</a>
@@ -256,6 +282,7 @@
         $("#task_detail").hide();
         $("#dialog_toolbar").show();
         $("#dialog_toolbar_detail").hide();
+        $("#task_detail_list").hide();
         $('#dlg').dialog('open');
         $('#dlg').dialog('center');
         $('#_form').form('clear');
@@ -266,7 +293,9 @@
     function openUpdate() {
         $("#task_detail").hide();
         $("#dialog_toolbar").show();
+        $("#saveTask").show();
         $("#dialog_toolbar_detail").hide();
+        $("#task_detail_list").hide();
 
         var selected = $("#grid").datagrid("getSelected");
         if (null == selected) {
@@ -299,7 +328,8 @@
         $('#_versionId').combobox('select', formData._versionId);
         loadPhaseSelect(formData._versionId);
         $('#_phaseId').combobox('select', formData._phaseId);
-
+        loadTaskSelect(formData._projectId);
+        $('#_beforeTask').combobox('select', formData._beforeTask);
         $('#_form').form('load', { startDateShow: dateFormat_1(formData._startDate) });
         $('#_form').form('load', { endDateShow: dateFormat_1(formData._endDate) });
         
@@ -489,7 +519,11 @@
     })
 
     function formatOptions(value, row, index) {
-        var content = '<span style="padding:5px;"><a href="javascript:void(0)" onclick="openUpdateDetail(' + index + ')">执行任务</a></span>';
+    	if(row.updateDetail){
+    		var content = '<span style="padding:5px;"><a href="javascript:void(0)" onclick="openUpdateDetail(' + index + ')">执行任务</a></span>';
+    	}else{
+    		var content = '<span style="padding:5px;color:#8B8B7A;text-decoration:underline;">执行任务</span>';
+    	}
         return content;
     }
     //进度条处理
@@ -511,7 +545,17 @@
         $('#detail_form').form('load', obj);
         $('#detail_form').form('load', { _taskHour: obj.taskHour, _overHour: obj.overHour });
     }
-
+    
+    function formatNameOptions(value, row, index) {
+        var content = '<span style="padding:5px;"><a href="javascript:void(0)" onclick="openDetail(' + index + ')">'+row.name+'</a></span>';
+        return content;
+    }
+    
+    function ownerFormatter(value, row, index) {
+        var content = $("#_owner").combobox('getText');
+        return content;
+    }
+    
     function startTask() {
         $('#dlg').dialog('close');
         var id = $("#_id").val();
