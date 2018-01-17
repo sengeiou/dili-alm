@@ -10,7 +10,7 @@
                    align="center" fit="true" striped="true" toolbar="#toolbar" idField="id"  >
                 <thead>
                     <tr>
-                        <th data-options="field:'name', width:'15%', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'name', width:'15%', order:'asc',formatter:formatNameOptions, align:'center', resizable:'true', fixed:'false'">
                             任务名称
                         </th>
                         <th data-options="field:'projectId', width:'15%',order:'asc', align:'center', resizable:'true', fixed:'false',_provider:'projectProvider'" >
@@ -160,8 +160,35 @@
             </table>
         </form>
     </div>
+            <!-- 隐藏工时信息详情 -->
+    <div id="task_detail_list" style="display:none;width:350px;padding:5px;">
+        <hr>
+         <h3>工时任务信息</h3>
+ 		 <table class="easyui-datagrid" style="height:120px" id="detail_grid" loadMsg="数据加载中..."  idField="id"
+             >
+            <thead>
+            <tr>
+                <th data-options="field:'taskHour',width:'10%',fixed:'false'">
+                    工时
+                </th>
+                <th data-options="field:'overHour',width:'10%',fixed:'false'">
+                   加班
+                </th>
+                <th data-options="field:'owner',width:'15%',fixed:'false',formatter:ownerFormatter">
+                   责任人
+                </th>
+               <th data-options="field:'created',width:'25%', _provider:'datetimeProvider',nowarp:false">
+                   填写时间
+                </th>
+                <th data-options="field:'describe',width:'41%',fixed:'true'">
+                   工作内容描述
+                </th>
+            </tr>
+            </thead>
+        </table>
+    </div>
     <div id="dialog_toolbar" style="display:show;">
-        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="saveOrUpdate()" style="border:1px solid #ccc;">保存</a>
+        <a href="#" class="easyui-linkbutton" id="saveTask" data-options="iconCls:'icon-edit',plain:true" onclick="saveOrUpdate()" style="border:1px solid #ccc;">保存</a>
         <a href="#" class="easyui-linkbutton" data-options="plain:true" onclick="$('#dlg').dialog('close');" style="border:1px solid #ccc;">取消</a>
     </div>
     <div id="dialog_toolbar_detail" style="display:none;">
@@ -176,74 +203,7 @@
 <!-- style & script 分隔线 -->
 <!-- ====================================================================================================================== -->
 <script type="text/javascript">
-    //打开新增窗口
-    function openInsert() {
-        $("#task_detail").hide();
-        $("#dialog_toolbar").show();
-        $("#dialog_toolbar_detail").hide();
-        $('#dlg').dialog('open');
-        $('#dlg').dialog('center');
-        $('#_form').form('clear');
-        formFocus("_form", "_name");
-    }
 
-    //打开修改窗口
-    function openUpdate() {
-        $("#task_detail").hide();
-        $("#dialog_toolbar").show();
-        $("#dialog_toolbar_detail").hide();
-        var selected = $("#grid").datagrid("getSelected");
-        if (null == selected) {
-            $.messager.alert('警告', '请选中一条数据');
-            return;
-        }
-        if (selected.status != "未开始") {
-            $.messager.alert('警告', '此项任务已经执行，不能再进行编辑！');
-            return;
-        }
-        $('#dlg').dialog('open');
-        $('#dlg').dialog('center');
-        formFocus("_form", "_name");
-        var formData = $.extend({}, selected);
-        formData = addKeyStartWith(getOriginalData(formData), "_");
-        $('#_form').form('load', formData);
-
-    }
-
-
-    function saveOrUpdate() {
-        $("#task_detail").hide();
-        if (!$('#_form').form("validate")) {
-            return;
-        }
-        var _formData = removeKeyStartWith($("#_form").serializeObject(), "_");
-        var _url = null;
-        //没有id就新增
-        if (_formData.id == null || _formData.id == "") {
-            _url = "${contextPath}/task/insert";
-        } else { //有id就修改
-            _url = "${contextPath}/task/update";
-        }
-        $.ajax({
-            type: "POST",
-            url: _url,
-            data: _formData,
-            processData: true,
-            dataType: "json",
-            async: true,
-            success: function(data) {
-                if (data.code == "200") {
-                    $("#grid").datagrid("reload");
-                    $('#dlg').dialog('close');
-                } else {
-                    $.messager.alert('错误', data.result);
-                }
-            },
-            error: function() {
-                $.messager.alert('错误', '远程访问失败');
-            }
-        });
-    }
     //表格查询
     function queryGrid() {
         var opts = $("#grid").datagrid("options");
@@ -344,7 +304,11 @@
     })
 
     function formatOptions(value, row, index) {
-        var content = '<span style="padding:5px;"><a href="javascript:void(0)" onclick="openUpdateDetail(' + index + ')">执行任务</a></span>';
+    	if(row.updateDetail){
+    		var content = '<span style="padding:5px;"><a href="javascript:void(0)" onclick="openUpdateDetail(' + index + ')">执行任务</a></span>';
+    	}else{
+    		var content = '<span style="padding:5px;color:#8B8B7A;text-decoration:underline;">执行任务</span>';
+    	}
         return content;
     }
     //进度条处理
@@ -356,7 +320,15 @@
         var htmlstr = '<div style="width: 100px; height:20px;border: 1px solid #299a58;"><div style="width:' + progress + 'px; height:20px; background-color: #299a58;"><span>' + rowData.progress + '%</span></div></div>';
         return htmlstr;
     }
-
+    function formatNameOptions(value, row, index) {
+        var content = '<span style="padding:5px;"><a href="javascript:void(0)" onclick="openDetail(' + index + ')">'+row.name+'</a></span>';
+        return content;
+    }
+    
+    function ownerFormatter(value, row, index) {
+        var content = $("#_owner").combobox('getText');
+        return content;
+    }
     function getDetailInfo(taskID) {
         var htmlobj = $.ajax({ url: "${contextPath}/task/listTaskDetail.json?id=" + taskID, async: false });
         var str = htmlobj.responseText;

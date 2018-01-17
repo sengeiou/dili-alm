@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.poi.ss.formula.ptg.Ptg;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -173,7 +174,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 		task.setMetadata(metadata);
 		try {
-			List<TaskEntity> results = this.TaskParseTaskSelectDto(list);// 转化为查询的DTO
+			List<TaskEntity> results = this.TaskParseTaskSelectDto(list,true);// 转化为查询的DTO
 			List taskList = ValueProviderUtils.buildDataByProvider(task, results);
 			EasyuiPageOutput taskEasyuiPageOutput = new EasyuiPageOutput(
 					Integer.valueOf(Integer.parseInt(String.valueOf(page.getTotal()))), taskList);
@@ -190,7 +191,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	 * @param results
 	 * @return
 	 */
-	private List<TaskEntity> TaskParseTaskSelectDto(List<Task> results) {
+	private List<TaskEntity> TaskParseTaskSelectDto(List<Task> results,boolean isUpdateDetail) {
 		List<TaskEntity> target = new ArrayList<>(results.size());
 		for (Task task : results) {
 			TaskEntity dto = new TaskEntity(task);
@@ -703,7 +704,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 		task.setMetadata(metadata);
 		try {
-			List<TaskEntity> results = this.TaskParseTaskSelectDto(list);// 转化为查询的DTO
+			List<TaskEntity> results = this.TaskParseTaskSelectDto(list,false);// 转化为查询的DTO
 			List taskList = ValueProviderUtils.buildDataByProvider(task, results);
 			EasyuiPageOutput taskEasyuiPageOutput = new EasyuiPageOutput(count, taskList);
 			return taskEasyuiPageOutput;
@@ -780,7 +781,9 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		if (userTicket == null) {
 			throw new RuntimeException("未登录");
 		}
-		return taskMapper.selectProjectByTeam(userTicket.getId());
+		List<Project> listProject = new ArrayList<Project>() ;
+
+		return listProject;
 	}
 
 	/**
@@ -963,20 +966,31 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		TaskDetails taskDetails = DTOUtils.newDTO(TaskDetails.class);
 		taskDetails.setTaskId(taskId);
 		List<TaskDetails> list = taskDetailsService.list(taskDetails);
-		if (list == null || list.size() == 0) {
-			return null;
-		}
 		short taskHour = 0;
 		short overHour = 0;
-		for (TaskDetails entity : list) {
-			taskHour+=entity.getTaskHour();//累加任务工时
-			overHour+=entity.getOverHour();//累加加班工时
+		if (list!=null||list.size()!=0) {
+			for (TaskDetails entity : list) {
+				taskHour+=entity.getTaskHour();//累加任务工时
+				overHour+=entity.getOverHour();//累加加班工时
+			}
 		}
-		
 		taskDetails.setTaskHour(taskHour);
 		taskDetails.setOverHour(overHour);
 		
 		return taskDetails;
+	}
+
+	@Override
+	public boolean isNoTeam() {
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		Team team = DTOUtils.newDTO(Team.class);
+		team.setMemberId(userTicket.getId());
+		
+		List<Team> teamList = teamMapper.select(team);
+		if (teamList.size()==0) {
+			return true;
+		}
+		return false;
 	}
 	
 	

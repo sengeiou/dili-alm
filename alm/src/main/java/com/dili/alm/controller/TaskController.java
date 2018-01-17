@@ -334,9 +334,6 @@ public class TaskController {
 	@RequestMapping(value = "/updateTaskDetails", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput updateTaskDetails(TaskDetails taskDetails, String planTimeStr, String overHourStr,
 			String taskHourStr) {
-		
-		TaskDetails taskDetailsSelect = taskDetailsService.get(taskDetails.getId());
-		
 		short taskHour = 0;
 		short overHour = 0;
 		/*		    2018-1-8 优化:工时，加班工时可任意填写一个 */
@@ -394,6 +391,7 @@ public class TaskController {
 			
 			/* 基础信息设置 */
 			task.setModifyMemberId(userTicket.getId());
+			taskDetails.setTaskHour(taskHour);
 			taskDetails.setOverHour(overHour);//只写入加班工时
 			taskDetails.setCreateMemberId(userTicket.getId());
 			taskDetails.setCreated(new Date());
