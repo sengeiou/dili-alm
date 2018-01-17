@@ -382,7 +382,7 @@ public class TaskController {
 			/* 基础信息设置 */
 			taskService.updateTaskDetail(taskDetails, task);// 保存任务
 
-			return BaseOutput.success("修改成功");
+			return BaseOutput.success(task.getId()+":"+task.getName()+":执行工时"+taskDetails.getTaskHour()+":加班工时"+taskDetails.getOverHour());
 			
 		}else if(taskHour==0&&overHour!=0){
 			
@@ -400,7 +400,7 @@ public class TaskController {
 			/* 基础信息设置 */
 			int i = taskService.updateTaskDetail(taskDetails, task);// 保存任务
             if (i!=0) {
-            	return BaseOutput.success("修改成功");
+            	return BaseOutput.success(task.getId()+":"+task.getName()+":执行工时"+taskDetails.getTaskHour()+":加班工时"+taskDetails.getOverHour());
 			}
 			
 		}

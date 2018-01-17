@@ -413,7 +413,7 @@
                 success: function (data) {
                     if(data.code=="200"){
                         $("#grid").datagrid("reload");
-                        //LogUtils.saveLog("添加执行任务时间：" + data.result, function () {});
+                        LogUtils.saveLog(53,"执行任务:" + data.result+":成功", function () {});
                     }else{
                         $.messager.alert('错误',data.result);
                     }
