@@ -62,4 +62,6 @@ public interface TaskService extends BaseService<Task, Long> {
 	int restTaskHour(Long owerId);
 	
 	TaskDetails selectDetails(Long taskId);
+	
+	boolean isNoTeam();
 }

@@ -326,7 +326,7 @@
    
     <select  id="selectOtherTaskDetail"  resultType="com.dili.alm.domain.TaskDetails" >
     select * from alm.task_details  as td where  td.task_id in 
-    (select tt.id from task as tt where tt.owner = #{selectOwner,jdbcType=BIGINT}) and td.modified like CONCAT("%",#{selectDate,jdbcType=VARCHAR},"%") 
+    (select tt.id from task as tt where tt.owner = #{selectOwner,jdbcType=BIGINT}) and td.created like CONCAT("%",#{selectDate,jdbcType=VARCHAR},"%") 
    </select>
    
    
