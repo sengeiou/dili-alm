@@ -4,7 +4,7 @@ var LogUtils = {
 			type : "POST",
 			url : contextPath + "/logApi/saveLog",
 			data : {
-				module:module,
+				logModule:module,
 				logText : content
 			},
 			complete : function() {
