@@ -113,7 +113,9 @@ public class TaskController {
 	public @ResponseBody String listTeamPage(Task task, String phaseName) throws Exception {
 		if(task.getId()!=null){
 			return taskService.listEasyuiPageByExample(task,true).toString();
-		}else{
+		}else  if(taskService.isNoTeam()){
+			return taskService.listPageSelectTaskDto(task).toString();
+		}else {
 			return taskService.listByTeam(task, phaseName).toString();
 		}
 	}
@@ -125,7 +127,7 @@ public class TaskController {
 	public @ResponseBody String listTaskPageTab(Task task) throws Exception {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		task.setOwner(userTicket.getId());// 设置登录人员信息
-		return taskService.listPageSelectTaskDto(task).toString();
+		return taskService.listByTeam(task,null).toString();
 	}
 
 	@ApiOperation("新增Task")

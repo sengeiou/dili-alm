@@ -781,8 +781,12 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		if (userTicket == null) {
 			throw new RuntimeException("未登录");
 		}
-		List<Project> listProject = new ArrayList<Project>() ;
-
+		List<Project> listProject = new ArrayList<Project>();
+		if (isNoTeam()) {
+			listProject = projectMapper.selectAll();
+		}else{
+			listProject = taskMapper.selectProjectByTeam(userTicket.getId());
+		}
 		return listProject;
 	}
 
@@ -823,13 +827,20 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			if (userTicket == null) {
 				throw new RuntimeException("未登录");
 			}
-		 List<Long> userIdList = taskMapper.selectUserByTeam(userTicket.getId());
-		 List<User> userList =new ArrayList<User>();
-		 for (Long userId : userIdList) {
-			 User user = userRpc.findUserById(userId).getData();
-			 userList.add(user);
-		 }
-		 
+			
+			List<User> userList =new ArrayList<User>();
+
+			if (isNoTeam()) {
+				userList=userRpc.list(new User()).getData();
+			}else{
+				 List<Long> userIdList = taskMapper.selectUserByTeam(userTicket.getId());
+				 userList =new ArrayList<User>();
+				 for (Long userId : userIdList) {
+					 User user = userRpc.findUserById(userId).getData();
+					 userList.add(user);
+				 }
+			}
+			
 		return userList;
 	}
 
