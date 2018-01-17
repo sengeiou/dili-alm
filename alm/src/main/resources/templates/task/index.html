@@ -344,7 +344,7 @@
     function saveOrUpdate() {
 
         var logInfo = "";
-
+		var moduleInfo="";
         $("#task_detail").hide();
         if (!$('#_form').form("validate")) {
             return;
@@ -356,9 +356,11 @@
         //没有id就新增
         if (_formData.id == null || _formData.id == "") {
             logIngo = "新增任务:";
+            moduleInfo=29;
             _url = "${contextPath}/task/insert";
         } else { //有id就修改
             logIngo = "修改任务:";
+            moduleInfo=30;
             _url = "${contextPath}/task/update";
         }
      	if(isProjectDate()){
@@ -376,7 +378,8 @@
             success: function(data) {
                 if (data.code == "200") {
                     $("#grid").datagrid("reload");
-                    LogUtils.saveLog(logIngo + data.result, function() {});
+                    console.log(data.result);
+                    LogUtils.saveLog(moduleInfo,logIngo + data.result+":成功", function() {});
                 } else {
                     $.messager.alert('错误', data.result);
                 }
@@ -419,7 +422,7 @@
                         if (data.code == "200") {
                             $("#grid").datagrid("reload");
                             $('#dlg').dialog('close');
-                            LogUtils.saveLog("删除任务：" + data.result, function() {});
+                            LogUtils.saveLog(31,"删除任务:" + data.result+":成功", function() {});
                         } else {
                             $.messager.alert('错误', data.result);
                         }
@@ -569,7 +572,7 @@
                 if (data.code == "200") {
                     $("#grid").datagrid("reload");
                     $.messager.alert('信息', '任务开始成功');
-                    LogUtils.saveLog("开始任务：" + data.result, function() {});
+                    LogUtils.saveLog(33,"开始任务:" + data.result+":成功", function() {});
                 } else {
                     $.messager.alert('错误', data.result);
                 }
@@ -593,7 +596,7 @@
             success: function(data) {
                 if (data.code == "200") {
                     $("#grid").datagrid("reload");
-                    LogUtils.saveLog("暂停任务：" + data.result, function() {});
+                    LogUtils.saveLog(32,"暂停任务:" + data.result+":成功", function() {});
                 } else {
                     $.messager.alert('错误', data.result);
                 }

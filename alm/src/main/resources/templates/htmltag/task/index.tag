@@ -555,7 +555,7 @@ function isTask(id){
 	                if (data.code == "200") {
 	                    $("#grid").datagrid("reload");
 	                    $('#dlg').dialog('close');
-	                    LogUtils.saveLog("暂停任务：" + data.result, function() {});
+	                    LogUtils.saveLog(32,"暂停任务：" + data.result+":成功", function() {});
 	                } else {
 	                    $.messager.alert('错误', data.result);
 	                }
