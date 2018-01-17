@@ -13,12 +13,14 @@
      <result column="content" jdbcType="VARCHAR" property="content" />
      <result column="log_number" jdbcType="BIGINT" property="logNumber" />
      <result column="log_order" jdbcType="BIGINT" property="logOrder" />
+     <result column="log_module" jdbcType="INTEGER" property="logModule" />
+     
   </resultMap>
   <sql id="Base_Column_List">
     <!--
       WARNING - @mbg.generated
     -->
-    id, created, modified, operator_id, ip,content,log_number,log_order
+    id, created, modified, operator_id, ip,content,log_number,log_order,log_module
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -56,6 +58,9 @@
       <if test="logOrder != null">
         log_order = #{logOrder,jdbcType=BIGINT},
       </if>
+      <if test="logModule != null">
+        log_module = #{logModule,jdbcType=INTEGER},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -78,6 +83,9 @@
     </if>
     <if test="log.content != null">
         and content like '%${log.content}%'
+    </if>
+    <if test="log.logModule != null">
+        and log_module = #{log.logModule,jdbcType=INTEGER}
     </if>
     <if test="log.sort != null">
     	ORDER BY ${log.sort} ${log.order}
@@ -106,6 +114,9 @@
     </if>
     <if test="log.content != null">
         and content like '%${log.content}%'
+    </if>
+    <if test="log.logModule != null">
+        and log_module = #{log.logModule,jdbcType=INTEGER}
     </if>
   </select>
   

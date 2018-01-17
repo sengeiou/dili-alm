@@ -1,9 +1,10 @@
 var LogUtils = {
-	saveLog : function(content, callback) {
+	saveLog : function(module,content, callback) {
 		$.ajax({
 			type : "POST",
 			url : contextPath + "/logApi/saveLog",
 			data : {
+				module:module,
 				logText : content
 			},
 			complete : function() {

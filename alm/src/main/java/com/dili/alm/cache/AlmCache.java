@@ -36,7 +36,8 @@ public class AlmCache {
 	public static final Map<String, String> CHANGE_TYPE = new ConcurrentHashMap<>();
 
 	public static final Map<Long, Department> DEP_MAP = new ConcurrentHashMap<>();
-
+	// 缓存日志操作模块
+	public static final Map<String, String> LOG_MODULE_MAP = new ConcurrentHashMap<>();
 	// 文件类型
 	public static final Map<Integer, String> FILE_TYPE_MAP = new ConcurrentHashMap<>();
 	// 团队角色

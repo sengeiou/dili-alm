@@ -25,11 +25,11 @@ public class LogApi {
 	@ApiImplicitParam(name="Log", paramType="form", value = "Log的form信息", required = true, dataType = "string")
 	})
 	@RequestMapping(value="/saveLog", method = {RequestMethod.GET, RequestMethod.POST})
-	public @ResponseBody BaseOutput insert(@RequestParam String logText) {
-		if(WebUtil.strIsEmpty(logText)){
-	        return BaseOutput.failure("新增失败,包含空值logText="+logText.toString());
+	public @ResponseBody BaseOutput insert(@RequestParam String logText,@RequestParam Integer logModule) {
+		if(WebUtil.strIsEmpty(logText)||logModule==null){
+	        return BaseOutput.failure("新增失败,包含空值logText="+logText.toString()+",logModule="+logModule);
         }else{
-        	logService.insertLog(logText);
+        	logService.insertLog(logText,logModule);
 		    return BaseOutput.success("新增成功");
         }
 		

@@ -75,4 +75,11 @@ public interface Log extends IBaseDomain {
     Long getLogOrder();
 
     void setLogOrder(Long logOrder);
+    
+    @Column(name = "`log_module`")
+    @FieldDef(label="操作模块")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Integer getLogModule();
+
+    void setLogModule(Integer logModule);
 }
