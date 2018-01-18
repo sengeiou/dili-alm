@@ -210,12 +210,12 @@
         });
     }
 
+    <%
+    var b="{}";
+    %>
     $(function(){
-        var json = '${json}';
-        var extend = '${extend}';
-        json = eval('(' + json + ')');
-        extend = eval('(' + extend + ')');
-        $.extend(json, extend);
+        var json = ${isEmpty(json)?b:json};
+        $.extend(json, ${isEmpty(extend)?b:extend});
         $('#ff').form('load', json);
         $('input[class^=easyui-]').textbox("disable");
         $('#notes').textbox("enable");
