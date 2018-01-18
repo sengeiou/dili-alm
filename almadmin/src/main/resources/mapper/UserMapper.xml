@@ -10,8 +10,8 @@
 		<result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime" />
 		<result column="created" jdbcType="TIMESTAMP" property="created" />
 		<result column="modified" jdbcType="TIMESTAMP" property="modified" />
-		<result column="status" jdbcType="TINYINT" property="status" />
-		<result column="yn" jdbcType="TINYINT" property="yn" />
+		<result column="status" jdbcType="INTEGER" property="status" />
+		<result column="yn" jdbcType="INTEGER" property="yn" />
 		<result column="real_name" jdbcType="VARCHAR" property="realName" />
 		<result column="serial_number" jdbcType="VARCHAR" property="serialNumber" />
 		<result column="fixed_line_telephone" jdbcType="VARCHAR"
@@ -21,92 +21,16 @@
 		<result column="valid_time_begin" jdbcType="TIMESTAMP"
 			property="validTimeBegin" />
 		<result column="valid_time_end" jdbcType="TIMESTAMP" property="validTimeEnd" />
+		<result column="department_id" jdbcType="BIGINT" property="departmentId" />
 	</resultMap>
-
-	<resultMap id="UDRResultMap"
-		type="com.dili.sysadmin.domain.dto.UserDepartmentRole">
-		<id column="id" jdbcType="BIGINT" property="id" />
-		<result column="user_name" jdbcType="VARCHAR" property="userName" />
-		<result column="password" jdbcType="VARCHAR" property="password" />
-		<result column="last_login_ip" jdbcType="VARCHAR" property="lastLoginIp" />
-		<result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime" />
-		<result column="created" jdbcType="TIMESTAMP" property="created" />
-		<result column="modified" jdbcType="TIMESTAMP" property="modified" />
-		<result column="status" jdbcType="TINYINT" property="status" />
-		<result column="yn" jdbcType="TINYINT" property="yn" />
-		<result column="real_name" jdbcType="VARCHAR" property="realName" />
-		<result column="serial_number" jdbcType="VARCHAR" property="serialNumber" />
-		<result column="fixed_line_telephone" jdbcType="VARCHAR"
-			property="fixedLineTelephone" />
-		<result column="cellphone" jdbcType="VARCHAR" property="cellphone" />
-		<result column="email" jdbcType="VARCHAR" property="email" />
-		<result column="valid_time_begin" jdbcType="TIMESTAMP"
-			property="validTimeBegin" />
-		<result column="valid_time_end" jdbcType="TIMESTAMP" property="validTimeEnd" />
-		<association property="department"
-			javaType="com.dili.sysadmin.domain.Department">
-			<result column="department_id" property="id" />
-			<result column="department_name" property="name" />
-		</association>
-		<collection property="roles" column="id"
-			select="com.dili.sysadmin.dao.RoleMapper.findByUserId" />
-	</resultMap>
-
-	<resultMap id="UDResultMap"
-		type="com.dili.sysadmin.domain.dto.UserDepartmentRole">
-		<id column="id" jdbcType="BIGINT" property="id" />
-		<result column="real_name" jdbcType="VARCHAR" property="realName" />
-		<result column="user_name" jdbcType="VARCHAR" property="userName" />
-		<result column="cellphone" jdbcType="VARCHAR" property="cellphone" />
-		<result column="email" jdbcType="VARCHAR" property="email" />
-		<association property="department"
-			javaType="com.dili.sysadmin.domain.Department">
-			<result column="department_id" property="id" />
-			<result column="department_name" property="name" />
-		</association>
-		<collection property="roles" javaType="java.util.ArrayList"
-			ofType="com.dili.sysadmin.domain.Role">
-			<result column="role_id" property="id" />
-			<result column="role_name" property="roleName" />
-		</collection>
-	</resultMap>
-
 	<sql id="Base_Column_List">
 		<!-- WARNING - @mbg.generated -->
-		id,
-		user_name,
-		password,
-		last_login_ip,
-		last_login_time,
-		created,
-		modified,
-		status,
-		yn,
-		real_name,
-		serial_number,
-		fixed_line_telephone,
-		cellphone,
-		email,
+		id, user_name, password, last_login_ip, last_login_time, created,
+		modified, status,
+		yn, real_name, serial_number, fixed_line_telephone,
+		cellphone, email,
 		valid_time_begin,
-		valid_time_end
-	</sql>
-	<sql id="Join_Column_List">
-		u.id
-		,u.user_name
-		,u.password
-		,u.last_login_ip
-		,u.last_login_time
-		,u.created
-		,u.modified
-		,u.status
-		,u.yn
-		,u.real_name
-		,u.serial_number
-		,u.fixed_line_telephone
-		,u.cellphone
-		,u.email
-		,u.valid_time_begin
-		,u.valid_time_end
+		valid_time_end, department_id
 	</sql>
 	<select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
 		<!-- WARNING - @mbg.generated -->
@@ -138,10 +62,10 @@
 				modified = #{modified,jdbcType=TIMESTAMP},
 			</if>
 			<if test="status != null">
-				status = #{status,jdbcType=TINYINT},
+				status = #{status,jdbcType=INTEGER},
 			</if>
 			<if test="yn != null">
-				yn = #{yn,jdbcType=TINYINT},
+				yn = #{yn,jdbcType=INTEGER},
 			</if>
 			<if test="realName != null">
 				real_name = #{realName,jdbcType=VARCHAR},
@@ -165,12 +89,78 @@
 			<if test="validTimeEnd != null">
 				valid_time_end = #{validTimeEnd,jdbcType=TIMESTAMP},
 			</if>
-			<if test="note != null">
-				note = #{note,jdbcType=VARCHAR},
+			<if test="departmentId != null">
+				department_id = #{departmentId,jdbcType=BIGINT},
 			</if>
 		</set>
 		where id = #{id,jdbcType=BIGINT}
 	</update>
+
+	<resultMap id="UDRResultMap"
+		type="com.dili.sysadmin.domain.dto.UserDepartmentRole">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="user_name" jdbcType="VARCHAR" property="userName" />
+		<result column="password" jdbcType="VARCHAR" property="password" />
+		<result column="last_login_ip" jdbcType="VARCHAR" property="lastLoginIp" />
+		<result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime" />
+		<result column="created" jdbcType="TIMESTAMP" property="created" />
+		<result column="modified" jdbcType="TIMESTAMP" property="modified" />
+		<result column="status" jdbcType="TINYINT" property="status" />
+		<result column="yn" jdbcType="TINYINT" property="yn" />
+		<result column="real_name" jdbcType="VARCHAR" property="realName" />
+		<result column="serial_number" jdbcType="VARCHAR" property="serialNumber" />
+		<result column="fixed_line_telephone" jdbcType="VARCHAR"
+			property="fixedLineTelephone" />
+		<result column="cellphone" jdbcType="VARCHAR" property="cellphone" />
+		<result column="email" jdbcType="VARCHAR" property="email" />
+		<result column="valid_time_begin" jdbcType="TIMESTAMP"
+			property="validTimeBegin" />
+		<result column="valid_time_end" jdbcType="TIMESTAMP" property="validTimeEnd" />
+		<association javaType="com.dili.sysadmin.domain.Department"
+			property="department">
+			<result column="department_id" property="id" />
+			<result column="department_name" property="name" />
+		</association>
+		<collection column="id" property="roles"
+			select="com.dili.sysadmin.dao.RoleMapper.findByUserId" />
+	</resultMap>
+
+	<resultMap id="UDResultMap"
+		type="com.dili.sysadmin.domain.dto.UserDepartmentRole">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="real_name" jdbcType="VARCHAR" property="realName" />
+		<result column="user_name" jdbcType="VARCHAR" property="userName" />
+		<result column="cellphone" jdbcType="VARCHAR" property="cellphone" />
+		<result column="email" jdbcType="VARCHAR" property="email" />
+		<association javaType="com.dili.sysadmin.domain.Department"
+			property="department">
+			<result column="department_id" property="id" />
+			<result column="department_name" property="name" />
+		</association>
+		<collection javaType="java.util.ArrayList" ofType="com.dili.sysadmin.domain.Role"
+			property="roles">
+			<result column="role_id" property="id" />
+			<result column="role_name" property="roleName" />
+		</collection>
+	</resultMap>
+	<sql id="Join_Column_List">
+		u.id
+		,u.user_name
+		,u.password
+		,u.last_login_ip
+		,u.last_login_time
+		,u.created
+		,u.modified
+		,u.status
+		,u.yn
+		,u.real_name
+		,u.serial_number
+		,u.fixed_line_telephone
+		,u.cellphone
+		,u.email
+		,u.valid_time_begin
+		,u.valid_time_end
+	</sql>
 
 	<select id="findUserByRole" parameterType="Long" resultMap="BaseResultMap">
         <![CDATA[
@@ -230,12 +220,7 @@
 	<select id="findByDepartmentId" parameterType="Long" resultMap="BaseResultMap">
 		SELECT
 		<include refid="Join_Column_List" />
-		FROM
-		`user` u
-		INNER JOIN
-		user_department ud ON u.id = ud.user_id
-		WHERE
-		ud.department_id = #{deptId} AND u.yn = 1
+		FROM `user` u WHERE u.department_id = #{deptId} AND u.yn = 1
 	</select>
 
 	<select id="countByDepartmentId" parameterType="Long"
@@ -243,9 +228,8 @@
 		SELECT
 		count(u.id)
 		FROM `user` u
-		INNER JOIN user_department ud
-		ON u.id = ud.user_id
-		WHERE ud.department_id = #{deptId} AND u.yn = 1
+		WHERE u.department_id =
+		#{deptId} AND u.yn = 1
 	</select>
 
 	<select id="findUserContainDepartmentAndRole"
@@ -257,29 +241,31 @@
 		u.user_name,
 		u.cellphone,
 		u.email,
-		d.id
-		AS department_id,
-		d. NAME AS department_name,
+		u.department_id,
+		d.`name` AS department_name,
 		r.id AS role_id,
 		r.role_name
 		FROM
 		`user` u
-		INNER JOIN user_department ud ON u.id =
-		ud.user_id
-		LEFT JOIN department d ON ud.department_id = d.id
+		LEFT JOIN department d ON u.department_id =
+		d.id
 		LEFT JOIN
 		user_role ur ON ur.user_id = u.id
-		LEFT JOIN role r ON r.id = ur.role_id
-		WHERE
-		(yn = 1 OR yn IS NULL)
+		LEFT JOIN role r ON r.id
+		= ur.role_id
+		WHERE (yn = 1 OR yn IS NULL)
 		<if test="userId != null">
 			AND u.id = #{userId}
 		</if>
 		<if test="realName != null">
 			AND u.real_name like <![CDATA[concat('%',#{realName},'%')]]>
 		</if>
-		<if test="departmentId != null">
-			AND ud.department_id = #{departmentId}
+		<if test="departmentId != null and departmentId.size > 0">
+			AND u.department_id IN
+			<foreach close=")" collection="departmentId" item="deptId"
+				open="(" separator=",">
+				#{deptId}
+			</foreach>
 		</if>
 		<if test="roleId != null">
 			AND dr.role_id = #{roleId}
@@ -289,14 +275,14 @@
 	<select id="selectByCondition" parameterType="com.dili.sysadmin.domain.dto.UserDepartmentQuery"
 		resultMap="UDRResultMap">
 		SELECT DISTINCT
-		ud.user_id AS id,
+		u.id,
 		u.user_name,
-		u. PASSWORD,
+		u.`password`,
 		u.last_login_ip,
 		u.last_login_time,
 		u.created,
 		u.modified,
-		u. STATUS,
+		u.`status`,
 		u.yn,
 		u.real_name,
 		u.serial_number,
@@ -305,51 +291,40 @@
 		u.email,
 		u.valid_time_begin,
 		u.valid_time_end,
-		ud.department_id,
+		u.department_id,
 		d.`name`
 		AS department_name
-		FROM
-		`user` u
-		INNER JOIN user_department ud ON u.id =
-		ud.user_id
-		LEFT JOIN department_role dr ON ud.department_id =
-		dr.department_id
-		LEFT JOIN department d ON ud.department_id = d.id
-		LEFT
-		JOIN role r ON dr.role_id = r.id
-		WHERE
-		1 = 1
-		AND (u.yn = 1 OR u.yn IS
-		NULL)
+		FROM `user` u LEFT JOIN department d ON
+		u.department_id = d.id
+		WHERE 1 = 1 AND (u.yn = 1 OR u.yn IS NULL)
 		<if test="userName != null and userName != ''">
-			AND user_name = #{userName}
+			AND u.user_name = #{userName}
 		</if>
 		<if test="realName != null and realName != ''">
-			AND real_name like CONCAT('%',#{realName},'%')
+			AND u.real_name like CONCAT('%',#{realName},'%')
 		</if>
 		<if test="status != null">
-			AND status = #{status}
+			AND u.status = #{status}
 		</if>
 		<if test="serialNumber != null and serialNumber != ''">
-			AND serial_number = #{serialNumber}
+			AND u.serial_number = #{serialNumber}
 		</if>
-		<if test="departmentId != null and departmentId.size > 0">
-			AND ud.department_id IN
-			<foreach collection="departmentId" item="deptId" open="("
-				separator="," close=")">
+		<if test="departmentIds != null and departmentIds.size > 0">
+			AND u.department_id IN
+			<foreach close=")" collection="departmentIds" item="deptId"
+				open="(" separator=",">
 				#{deptId}
 			</foreach>
 		</if>
 	</select>
 
-	<select id="countByDepartmentIds" resultType="Integer"
-		parameterType="java.util.List">
-		SELECT DISTINCT count(*) FROM user_department ud INNER JOIN `user` u ON
-		ud.user_id = u.id WHERE 1 = 1 
+	<select id="countByDepartmentIds" parameterType="java.util.List"
+		resultType="Integer">
+		SELECT DISTINCT count(*) FROM `user` WHERE 1 = 1
 		<if test="list != null and list.size > 0">
 			AND department_id IN
-			<foreach collection="list" item="dept" open="(" separator=","
-				close=")">
+			<foreach close=")" collection="list" item="dept" open="("
+				separator=",">
 				#{dept.id}
 			</foreach>
 		</if>

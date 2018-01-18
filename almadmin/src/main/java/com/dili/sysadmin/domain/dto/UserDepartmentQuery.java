@@ -12,14 +12,14 @@ public class UserDepartmentQuery extends User {
 	 */
 	private static final long serialVersionUID = -8184724215801301959L;
 
-	private Set<Long> departmentId = new HashSet<>();
+	private Set<Long> departmentIds = new HashSet<>();
 
-	public Set<Long> getDepartmentId() {
-		return departmentId;
+	public Set<Long> getDepartmentIds() {
+		return departmentIds;
 	}
 
-	public void setDepartmentId(Set<Long> departmentId) {
-		this.departmentId = departmentId;
+	public void setDepartmentIds(Set<Long> departmentIds) {
+		this.departmentIds = departmentIds;
 	}
 
 }

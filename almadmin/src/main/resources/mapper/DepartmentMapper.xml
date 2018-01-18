@@ -65,9 +65,10 @@
 		<!-- WARNING - @mbg.generated -->
 		select
 		<include refid="Join_Column_List" />
-		from department d inner join user_department ud on d.id =
-		ud.department_id
-		where ud.user_id = #{userId}
+		from department d inner join `user` u on d.id =
+		u.department_id
+		where
+		u.id = #{userId}
 	</select>
 
 	<select id="getChildDepartments" parameterType="java.lang.Long"

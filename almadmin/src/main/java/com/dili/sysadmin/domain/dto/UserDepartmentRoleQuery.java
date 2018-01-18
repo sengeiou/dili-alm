@@ -1,6 +1,7 @@
 package com.dili.sysadmin.domain.dto;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class UserDepartmentRoleQuery implements Serializable {
 
@@ -10,7 +11,7 @@ public class UserDepartmentRoleQuery implements Serializable {
 	private static final long serialVersionUID = -6910318745874677983L;
 
 	private Long userId;
-	private Long departmentId;
+	private List<Long> departmentId;
 	private Long roleId;
 	private String realName;
 
@@ -34,11 +35,11 @@ public class UserDepartmentRoleQuery implements Serializable {
 		this.userId = userId;
 	}
 
-	public Long getDepartmentId() {
+	public List<Long> getDepartmentId() {
 		return departmentId;
 	}
 
-	public void setDepartmentId(Long departmentId) {
+	public void setDepartmentId(List<Long> departmentId) {
 		this.departmentId = departmentId;
 	}
 

@@ -42,7 +42,7 @@ public class AddUserDto {
 	private String email;
 
 	private List<Long> roleId;
-	private List<Long> department;
+	private Long departmentId;
 
 	public Long getId() {
 		return id;
@@ -116,11 +116,12 @@ public class AddUserDto {
 		this.roleId = roleId;
 	}
 
-	public List<Long> getDepartment() {
-		return department;
+	public Long getDepartmentId() {
+		return departmentId;
 	}
 
-	public void setDepartment(List<Long> department) {
-		this.department = department;
+	public void setDepartmentId(Long departmentId) {
+		this.departmentId = departmentId;
 	}
+
 }
