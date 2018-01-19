@@ -883,12 +883,14 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		}
 		map.put("three",  DTOUtils.newDTO(Weekly.class));
 		
-		
-		
-		
 		return map;
 	}
-
+	@Override
+	public Weekly  getWeeklyById(Long weeklyId){
+	  	 Weekly  weekly=weeklyMapper.selectByPrimaryKey(weeklyId);
+		 return  weekly;
+	}
+	
 
 	
 }

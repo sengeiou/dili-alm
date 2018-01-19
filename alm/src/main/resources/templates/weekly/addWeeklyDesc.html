@@ -574,7 +574,8 @@
 		                    	 if(isSubmit==1){
 		                    		 alert("周报提交成功");
 		                    		 try {
-		   	                          LogUtils.saveLog("周报提交成功:" + data.result, function () {
+		   	                          LogUtils.saveLog(28,"周报提交:" + data.result+":成功", function () {
+		   	                        	 
 		   	                        	 window.location.href="${contextPath}/weekly/getDescAddByProjectId?projectId="+tempid;
 			   	                          });
 			   	                      } catch (e) {
@@ -584,7 +585,8 @@
 		                    	 }else{
 		                    		 alert("周报保存成功");
 	                    		      try {
-		   	                          LogUtils.saveLog("周报保存成功:" + data.result, function () {
+		   	                          LogUtils.saveLog(27,"周报保存:" + data.result+":成功", function () {
+		   	                        	
 		   	                        	 window.location.href="${contextPath}/weekly/getDescAddByProjectId?projectId="+tempid;
 			   	                          });
 			   	                      } catch (e) {

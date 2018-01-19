@@ -128,18 +128,25 @@ public class WeeklyController  {
     		 weeklyDetailsService.createInsert(WeeklyDetails); 
     	 else
     		 weeklyDetailsService.updateSelective(WeeklyDetails);
-        return BaseOutput.success("保存成功");
+    	  Weekly  weekly=weeklyService.getWeeklyById(wd.getWeeklyId());
+    	 
+    	  return BaseOutput.success(weekly.getId()+":"+DateUtil.getDate(weekly.getCreated())+"周报");
     }
     @RequestMapping(value="/updateWeeklyDetails", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput updateWeeklyDetails(WeeklyDetails WeeklyDetails) {
     	
     	 WeeklyDetails wd=weeklyDetailsService.getWeeklyDetailsByWeeklyId(WeeklyDetails.getWeeklyId());
-    	 if(wd==null)
+    	 if(wd==null){
     		 weeklyDetailsService.createInsert(WeeklyDetails); 
-    	 else
+    		  Weekly  weekly=weeklyService.getWeeklyById(WeeklyDetails.getWeeklyId());
+    		 return BaseOutput.success(weekly.getId()+":"+DateUtil.getDate(weekly.getCreated())+"周报");
+    	 }else{
     		 weeklyDetailsService.updateSelective(WeeklyDetails);
-    	 
-        return BaseOutput.success("保存成功");
+    		  Weekly  weekly=weeklyService.getWeeklyById(wd.getWeeklyId());
+    		 return BaseOutput.success(weekly.getId()+":"+DateUtil.getDate(weekly.getCreated())+"周报");
+    	 }
+    	
+       
     }
     @RequestMapping(value="/updateWeeklyDetailsCancel", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput updateWeeklyDetailsCancel(WeeklyDetails WeeklyDetails) {

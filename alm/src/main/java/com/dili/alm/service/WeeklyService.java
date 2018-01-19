@@ -31,7 +31,7 @@ public interface WeeklyService extends BaseService<Weekly, Long> {
 	
 	ProjectWeeklyDto  getProjectAddWeeklyDtoById(Long projectId);
 	
-	
+	Weekly  getWeeklyById(Long weeklyId);
 	/** 
 	 * 当前重大问题 -
 	 * */
