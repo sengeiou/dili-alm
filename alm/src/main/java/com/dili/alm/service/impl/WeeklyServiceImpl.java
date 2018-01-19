@@ -26,10 +26,14 @@ import com.dili.alm.dao.DataDictionaryValueMapper;
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.dao.ProjectPhaseMapper;
 import com.dili.alm.dao.ProjectVersionMapper;
+import com.dili.alm.dao.TaskDetailsMapper;
+import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.dao.WeeklyMapper;
 import com.dili.alm.domain.DataDictionary;
 import com.dili.alm.domain.DataDictionaryValue;
 import com.dili.alm.domain.Department;
+import com.dili.alm.domain.Task;
+import com.dili.alm.domain.TaskDetails;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.Weekly;
 import com.dili.alm.domain.WeeklyDetails;
@@ -43,6 +47,7 @@ import com.dili.alm.rpc.DepartmentRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.DataDictionaryValueService;
+import com.dili.alm.service.TaskService;
 import com.dili.alm.service.WeeklyDetailsService;
 import com.dili.alm.service.WeeklyService;
 import com.dili.alm.utils.DateUtil;
@@ -87,7 +92,10 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	DataDictionaryService dataDictionaryService;
 	@Autowired
 	DataDictionaryValueService dataDictionaryValueService;
-
+	@Autowired
+    private TaskMapper taskMapper;
+	@Autowired
+	TaskDetailsMapper taskDetailsMapper;
 	public WeeklyMapper getActualDao() {
 		return (WeeklyMapper) getDao();
 	}
@@ -583,7 +591,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			
 			// 本周工时
 			Integer intweekHour=Integer.parseInt(DateUtil.differentDays( td.get(i).getStartDate(),td.get(i).getEndDate()));
-			td.get(i).setWeekHour((intweekHour)*8+"");
+			td.get(i).setWeekHour("");
 			// 实际工时
 			td.get(i).setRealHour(td.get(i).getOverHour() + td.get(i).getTaskHour() + "");
 			// 工时偏差% （实际任务工时/预估任务工时-1）%
@@ -616,6 +624,13 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		
 		for (NextWeeklyDto nextWeeklyDto : nwd) {
 			 nextWeeklyDto.setEndDate(nextWeeklyDto.getEndDate().substring(0, 10));
+			 Task task= taskMapper.selectByPrimaryKey(nextWeeklyDto.getId());
+			 TaskDetails taskDetails= taskDetailsMapper.selectByPrimaryKey(nextWeeklyDto.getId());
+			 if(taskDetails!=null){
+				 short taskTime=(short) (task.getPlanTime()-taskDetails.getTaskHour());
+				 nextWeeklyDto.setPlanTime(taskTime+"");
+			 }
+			 
 			 user = new User();
 		     user.setId(Long.parseLong(nextWeeklyDto.getOwner()));
 			 BaseOutput<List<User>>  listByExample = userRpc.listByExample(user);

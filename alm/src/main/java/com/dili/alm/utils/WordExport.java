@@ -316,8 +316,8 @@ public class WordExport {
 		thisTableTHREE.getCell(3).setText("阶段");
 		thisTableTHREE.getCell(4).setText("责任人");
 		thisTableTHREE.getCell(5).setText("完成情况");
-		thisTableTHREE.getCell(6).setText("本周工时");
 		thisTableTHREE.getCell(7).setText("预计工时");
+//		thisTableTHREE.getCell(6).setText("本周工时");
 		thisTableTHREE.getCell(8).setText("实际工时");
 		thisTableTHREE.getCell(9).setText("工时偏差%");
 		thisTableTHREE.getCell(10).setText("备注");
@@ -333,7 +333,7 @@ public class WordExport {
 			thisTabledd.getCell(4).setText(td.get(i).getOwner() + "");
 			thisTabledd.getCell(5).setText(td.get(i).getStatus() + "");
 			thisTabledd.getCell(6).setText(td.get(i).getPlanTime() + "");
-			thisTabledd.getCell(7).setText(td.get(i).getWeekHour());
+		//	thisTabledd.getCell(7).setText(td.get(i).getWeekHour());
 			thisTabledd.getCell(8).setText(td.get(i).getRealHour());
 			thisTabledd.getCell(9).setText(td.get(i).getHourDeviation());
 			thisTabledd.getCell(10).setText(td.get(i).getDescribe());
