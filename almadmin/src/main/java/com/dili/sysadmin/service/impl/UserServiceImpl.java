@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
@@ -270,19 +269,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 			return BaseOutput.failure("用户不存在");
 		}
 		@SuppressWarnings("unchecked")
-		Map<Object, Object> metadata = null == user.getMetadata() ? new HashMap<>() : user.getMetadata();
+		Map<Object, Object> metadata = UserService.getMetadata();
 
-		JSONObject userStatusProvider = new JSONObject();
-		userStatusProvider.put("provider", "userStatusProvider");
-		metadata.put("status", userStatusProvider);
-
-		JSONObject provider = new JSONObject();
-		provider.put("provider", "datetimeProvider");
-		metadata.put("validTimeBegin", provider);
-		metadata.put("validTimeEnd", provider);
-		metadata.put("created", provider);
-		metadata.put("modified", provider);
-		metadata.put("lastLoginTime", provider);
 		try {
 			@SuppressWarnings("unchecked")
 			List<UserDepartmentDto> results = this.parseToUserDepartmentDto(Arrays.asList(user));
@@ -492,18 +480,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 		List<UserDepartmentRole> list = this.getActualDao().selectByCondition(user);
 		Page<UserDepartmentRole> resultPage = (Page<UserDepartmentRole>) list;
 		@SuppressWarnings("unchecked")
-		Map<Object, Object> metadata = null == user.getMetadata() ? new HashMap<>() : user.getMetadata();
+		Map<Object, Object> metadata = UserService.getMetadata();
 
-		JSONObject userStatusProvider = new JSONObject();
-		userStatusProvider.put("provider", "userStatusProvider");
-		metadata.put("status", userStatusProvider);
-
-		JSONObject provider = new JSONObject();
-		provider.put("provider", "datetimeProvider");
-		metadata.put("validTimeBegin", provider);
-		metadata.put("validTimeEnd", provider);
-		metadata.put("created", provider);
-		metadata.put("modified", provider);
 		user.setMetadata(metadata);
 		try {
 			List users = ValueProviderUtils.buildDataByProvider(user, list);

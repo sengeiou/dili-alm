@@ -22,11 +22,9 @@
 								data-options="label:'用户名:', validType:'length[0,32]'" /></td>
 							<td style="padding: 5px;"><input class="easyui-textbox" name="realName" id="realName" style="width: 100%"
 								data-options="label:'真实姓名:', validType:'length[0,64]'" /></td>
-							<td style="padding: 5px;">
-								<input name="status" id="status" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="状态:" />
+							<td style="padding: 5px;"><input name="status" id="status" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="状态:" />
 								<!--<input name="status" id="status" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="状态:" data-options="editable:false" />-->
-								<#comboProvider _id="status" _data='[{"text":"-- 请选择 --"},{"text":"已启用","value":"1"},{"text":"已停用","value":"0"}]' />
-							</td>
+								<#comboProvider _id="status" _data='[{"text":"-- 请选择 --"},{"text":"已启用","value":"1"},{"text":"已停用","value":"0"}]' /></td>
 
 						</tr>
 						<tr>
@@ -61,12 +59,9 @@
 					<th data-options="field:'userName',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',width:105">用户名</th>
 					<th data-options="field:'realName',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',width:80"">真实姓名</th>
 					<th
-						data-options="field:'department', align:'center', resizable:'true', fixed:'false',formatter:function(value,row,index){
-						return row.department.name;
-					},width:80"">所属部门</th>
+						data-options="field:'departmentId', align:'center', resizable:'true', fixed:'false',width:80, _provider:'departmentProvider'">所属部门</th>
 					<th
 						data-options="field:'职务', width:180, align:'center', resizable:'true', fixed:'false',formatter:function(value,row,index){
-						console.log(row.roles);
 						if(!row.roles || row.roles.length <= 0){
 							return '';
 						}
@@ -131,8 +126,8 @@
 				<td>
 					<table style="width: 100%">
 						<tr>
-							<td style="padding: 5px; width: 50%"><input class="easyui-textbox" name="_userName" id="_userName"
-								style="width: 100%" data-options="label:'用户名:', validType:'length[0,50]'" required="true" validateOnCreate="false" /></td>
+							<td style="padding: 5px; width: 50%"><input class="easyui-textbox" name="_userName" id="_userName" style="width: 100%"
+								data-options="label:'用户名:', validType:'length[0,50]'" required="true" validateOnCreate="false" /></td>
 							<td style="padding: 5px; width: 50%" id="_passwordTd"><input class="easyui-textbox" name="_password" id="_password"
 								style="width: 100%" data-options="label:'密码:', validType:'length[0,128]'" type="password" /></td>
 						</tr>
@@ -153,8 +148,8 @@
 								data-options="label:'邮箱:', validType:'email',validateOnCreate:false,required:true" /></td>
 						</tr>
 						<tr>
-							<td colspan="2" style="padding: 5px;"><select class="easyui-combotree" name="_department" id="_department" style="width: 100%"
-								data-options="checkbox:true,cascadeCheck:true,multiple:false,loadFilter:treeLoadFilter, _idField:'id', _textField:'name', _parentIdField:'parentId',label:'所属部门:', url:'${contextPath!}/department/listTree.json',editable:false,required:true,validateOnCreate:false"></select>
+							<td colspan="2" style="padding: 5px;"><select class="easyui-combotree" name="_departmentId" id="_departmentId" style="width: 100%"
+								data-options="checkbox:true,cascadeCheck:true,multiple:false,loadFilter:treeLoadFilter, _idField:'id', _textField:'name', _parentIdField:'parentId',label:'所属部门:', url:'${contextPath!}/department/listTree.json',editable:false,required:true,validateOnCreate:false,onChange:onDepartmentChange"></select>
 							</td>
 						</tr>
 						<tr>
@@ -174,10 +169,9 @@
 								style="width: 100%" data-options="label:'修改时间:'" /></td>
 						</tr>
 						<tr>
-							<td colspan="2" style="padding: 5px;" id="_statusTd">
-								<input name="_status" id="_status" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="状态:" />
-								<#comboProvider _id="_status" _data='[{"text":"-- 请选择 --"},{"text":"已启用","value":"1"},{"text":"已停用","value":"0"}]' />
-							</td>
+							<td colspan="2" style="padding: 5px;" id="_statusTd"><input name="_status" id="_status" style="width: 100%;" panelWidth="auto"
+								panelHeight="auto" label="状态:" /> <#comboProvider _id="_status"
+									_data='[{"text":"-- 请选择 --"},{"text":"已启用","value":"1"},{"text":"已停用","value":"0"}]' /></td>
 						</tr>
 						<tr>
 							<td style="padding: 5px;" id="_validTimeBeginTd"><input class="easyui-datetimebox" name="_validTimeBegin" id="_validTimeBegin"

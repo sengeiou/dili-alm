@@ -173,11 +173,23 @@ function onAddClicked() {
 	$('#_form').form('resetValidation');
 }
 
+var editUser;
+
+function onDepartmentChange(n, o) {
+	debugger;
+	if (n == o) {
+		return;
+	}
+	queryRole(editUser ? editUser.id : undefined);
+}
+
 function onEditClicked(id) {
+	debugger;
 	if (!dataAuth.editUser) {
 		return false;
 	}
 	var selected = userGrid.datagrid("getSelected");
+	editUser = selected;
 	if (null == selected) {
 		$.messager.alert("警告", "请选中一条数据");
 		return;
@@ -252,17 +264,17 @@ function onEditClicked(id) {
 							}
 						}]
 			});
-	$('#_department').combotree({
+	$('#_departmentId').combotree({
 				readonly : false,
 				validateOnCreate : false,
 				onLoadSuccess : function(node, data) {
 					$(data).each(function(index, item) {
-								var targetNode = $('#_department').combotree('tree').tree('find', item.id);;
-								$('#_department').combotree('tree').tree('check', targetNode.target);
+								var targetNode = $('#_departmentId').combotree('tree').tree('find', item.id);;
+								$('#_departmentId').combotree('tree').tree('check', targetNode.target);
 							});
 				}
 			});
-	var formData = $.extend(true,{}, selected);
+	var formData = $.extend(true, {}, selected);
 
 	formData = addKeyStartWith(getOriginalData(formData), "_");
 	formData._password = "";
@@ -337,7 +349,7 @@ function onUserDetailClicked(id) {
 	$('#_status').textbox({
 				readonly : true
 			});
-	$('#_department').textbox({
+	$('#_departmentId').textbox({
 				readonly : true
 			});
 	$('#roleForm').hide();
@@ -562,14 +574,15 @@ function requestSave(url, data, callback) {
 
 // 角色信息查询
 function queryRole(userid) {
-	if (null == userid || 0 > userid) {
-		loadData4DataList("withoutRoleDatalist", "${contextPath!}/role/list");
+	var departmentId = $('#_departmentId').combotree('getValue');
+	if (!userid) {
+		loadData4DataList("withoutRoleDatalist", "${contextPath!}/role/listByDepartment" + (departmentId ? departmentId : ''));
 		$('#withRoleDatalist').datalist("loadData", {
 					total : 0,
 					rows : []
 				});
 	} else {
-		loadData4DataList("withoutRoleDatalist", "${contextPath!}/role/listNotBindByUserId", {
+		loadData4DataList("withoutRoleDatalist", "${contextPath!}/role/listNotBindByUserId?departmentId=" + departmentId, {
 					userid : userid
 				});
 		loadData4DataList("withRoleDatalist", "${contextPath!}/role/listByUserId", {

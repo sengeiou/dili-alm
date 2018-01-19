@@ -610,7 +610,7 @@ function showMembers() {
 
 function alarmConfig() {
 	$('#win').dialog({
-				title : '编辑版本',
+				title : '告警设置',
 				width : 600,
 				height : 500,
 				href : '${contextPath!}/alarmConfig/config.html?projectId=' + $('#projectId').val(),

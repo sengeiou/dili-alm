@@ -237,4 +237,17 @@ public class RoleServiceImpl extends BaseServiceImpl<Role, Long> implements Role
 		return BaseOutput.failure();
 	}
 
+	@Override
+	public BaseOutput<Object> listByDepartment(Long departmentId) {
+		List<Role> roles = this.getActualDao().selectByDepartmentId(departmentId);
+		return BaseOutput.success().setData(roles);
+	}
+
+	@Override
+	public List<Role> findNotBindWithUserByDepartmentId(Long userId, Long departmentId) {
+		List<Role> userRoles = this.getActualDao().findByUserId(userId);
+		List<Role> allRoles = this.getActualDao().selectByDepartmentId(departmentId);
+		return (List<Role>) CollectionUtils.subtract(allRoles, userRoles);
+	}
+
 }

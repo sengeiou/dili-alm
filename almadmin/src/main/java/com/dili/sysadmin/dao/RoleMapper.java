@@ -22,4 +22,6 @@ public interface RoleMapper extends MyMapper<Role> {
 
 	List<Role> findByResource(Long id);
 
+	List<Role> selectByDepartmentId(Long departmentId);
+
 }

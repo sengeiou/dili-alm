@@ -117,7 +117,7 @@
 		]]>
 	</select>
 	
-	<select id="findByDepartmentId" parameterType="Long" resultMap="BaseResultMap">
+	<select id="selectByDepartmentId" parameterType="Long" resultMap="BaseResultMap">
 		SELECT
 		    r.id
 		    ,r.role_name

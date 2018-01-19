@@ -3,6 +3,7 @@ package com.dili.sysadmin.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.dao.UserMapper;
 import com.dili.sysadmin.domain.Role;
@@ -15,6 +16,7 @@ import com.dili.sysadmin.exception.UserException;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.util.WebContent;
 import com.dili.sysadmin.service.UserService;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
@@ -84,6 +86,7 @@ public class UserController {
 	public @ResponseBody String listPage(@ModelAttribute UserDepartmentQuery user) throws JsonProcessingException {
 		EasyuiPageOutput output = this.userService.listPageUserDto(user);
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.setSerializationInclusion(Include.NON_NULL);
 		return mapper.writeValueAsString(output);
 	}
 
@@ -104,20 +107,10 @@ public class UserController {
 			@ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> update(@RequestBody UpdateUserDto dto) {
-		Map<Object, Object> metadata = new HashMap<>();
-		JSONObject userStatusProvider = new JSONObject();
-		userStatusProvider.put("provider", "userStatusProvider");
-		metadata.put("status", userStatusProvider);
-		JSONObject datetimeProvider = new JSONObject();
-		datetimeProvider.put("provider", "datetimeProvider");
-		metadata.put("validTimeBegin", datetimeProvider);
-		metadata.put("validTimeEnd", datetimeProvider);
-		metadata.put("created", datetimeProvider);
-		metadata.put("modified", datetimeProvider);
-		metadata.put("lastLoginTime", datetimeProvider);
 
 		try {
 			User user = userService.update(dto);
+			Map<Object, Object> metadata = UserService.getMetadata();
 			List<Map> list = ValueProviderUtils.buildDataByProvider(metadata, Lists.newArrayList(user));
 			return BaseOutput.success("修改用户信息成功").setData(list.get(0));
 		} catch (Exception e) {
@@ -130,17 +123,6 @@ public class UserController {
 			@ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/add", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> add(@RequestBody AddUserDto dto) {
-		Map<Object, Object> metadata = new HashMap<>();
-		JSONObject userStatusProvider = new JSONObject();
-		userStatusProvider.put("provider", "userStatusProvider");
-		metadata.put("status", userStatusProvider);
-		JSONObject datetimeProvider = new JSONObject();
-		datetimeProvider.put("provider", "datetimeProvider");
-		metadata.put("validTimeBegin", datetimeProvider);
-		metadata.put("validTimeEnd", datetimeProvider);
-		metadata.put("created", datetimeProvider);
-		metadata.put("modified", datetimeProvider);
-		metadata.put("lastLoginTime", datetimeProvider);
 
 		return userService.add(dto);
 	}

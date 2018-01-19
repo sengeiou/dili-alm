@@ -70,8 +70,8 @@ public class RoleController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Role", paramType = "form", value = "Role的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listNotBindByUserId", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput listNotBindByUserId(Long userid) {
-		List<Role> retList = roleService.findNotBindWithUser(userid);
+	public @ResponseBody BaseOutput listNotBindByUserId(Long userid, Long departmentId) {
+		List<Role> retList = roleService.findNotBindWithUserByDepartmentId(userid, departmentId);
 		return BaseOutput.success("查询成功").setData(retList);
 	}
 
@@ -152,4 +152,12 @@ public class RoleController {
 		return BaseOutput.success("解绑成功");
 	}
 
+	@ResponseBody
+	@RequestMapping(value = "/listByDepartment", method = { RequestMethod.GET, RequestMethod.POST })
+	public BaseOutput<Object> listByDepartment(@RequestParam Long departmentId) {
+		if (departmentId == null) {
+			return this.list(new Role());
+		}
+		return this.roleService.listByDepartment(departmentId);
+	}
 }
