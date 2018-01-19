@@ -355,7 +355,7 @@
 		      </where>  -->
 		      
 		      
-		       select   t.`name`  ,t.plan_time ,t.phase_id as 'phaseId',
+		       select   t.`name`  ,t.plan_time ,t.phase_id as 'phaseId',t.id ,
 		       
 		         t.`owner`, t.describe  ,t.end_date
 		
@@ -370,7 +370,7 @@
 			     </if>	      
 			     </where>
 		       UNION
-		       select   t.`name`  ,t.plan_time ,t.phase_id as 'phaseId',
+		       select   t.`name`  ,t.plan_time ,t.phase_id as 'phaseId',t.id ,
 		       
 		         t.`owner`, t.describe  ,t.end_date
 		

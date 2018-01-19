@@ -257,7 +257,7 @@ public class WordExport {
 		nextTableTHREE.getCell(0).setText("序号");
 		nextTableTHREE.getCell(1).setText("任务名称");
 		nextTableTHREE.getCell(2).setText("责任人");
-		nextTableTHREE.getCell(3).setText("下周计划工时");
+		nextTableTHREE.getCell(3).setText("剩余计划工时");
 		nextTableTHREE.getCell(4).setText("计划完成日期");
 		nextTableTHREE.getCell(5).setText("备注");
 
@@ -316,11 +316,11 @@ public class WordExport {
 		thisTableTHREE.getCell(3).setText("阶段");
 		thisTableTHREE.getCell(4).setText("责任人");
 		thisTableTHREE.getCell(5).setText("完成情况");
-		thisTableTHREE.getCell(7).setText("预计工时");
+		thisTableTHREE.getCell(6).setText("预计工时");
 //		thisTableTHREE.getCell(6).setText("本周工时");
-		thisTableTHREE.getCell(8).setText("实际工时");
-		thisTableTHREE.getCell(9).setText("工时偏差%");
-		thisTableTHREE.getCell(10).setText("备注");
+		thisTableTHREE.getCell(7).setText("实际工时");
+		thisTableTHREE.getCell(8).setText("工时偏差%");
+		thisTableTHREE.getCell(9).setText("备注");
 
 		XWPFTableRow thisTabledd;
 		for (int i = 0; i < td.size(); i++) {
@@ -334,9 +334,9 @@ public class WordExport {
 			thisTabledd.getCell(5).setText(td.get(i).getStatus() + "");
 			thisTabledd.getCell(6).setText(td.get(i).getPlanTime() + "");
 		//	thisTabledd.getCell(7).setText(td.get(i).getWeekHour());
-			thisTabledd.getCell(8).setText(td.get(i).getRealHour());
-			thisTabledd.getCell(9).setText(td.get(i).getHourDeviation());
-			thisTabledd.getCell(10).setText(td.get(i).getDescribe());
+			thisTabledd.getCell(7).setText(td.get(i).getRealHour());
+			thisTabledd.getCell(8).setText(td.get(i).getHourDeviation());
+			thisTabledd.getCell(9).setText(td.get(i).getDescribe());
 		}
 	}
 

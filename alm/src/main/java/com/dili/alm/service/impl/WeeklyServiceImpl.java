@@ -624,6 +624,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		
 		for (NextWeeklyDto nextWeeklyDto : nwd) {
 			 nextWeeklyDto.setEndDate(nextWeeklyDto.getEndDate().substring(0, 10));
+			 nextWeeklyDto.setPlanTime("");
 			 Task task= taskMapper.selectByPrimaryKey(nextWeeklyDto.getId());
 			 TaskDetails taskDetails= taskDetailsMapper.selectByPrimaryKey(nextWeeklyDto.getId());
 			 if(taskDetails!=null){
