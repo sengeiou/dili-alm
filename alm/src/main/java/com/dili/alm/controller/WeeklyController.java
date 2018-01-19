@@ -130,7 +130,7 @@ public class WeeklyController  {
     		 weeklyDetailsService.updateSelective(WeeklyDetails);
     	  Weekly  weekly=weeklyService.getWeeklyById(wd.getWeeklyId());
     	 
-    	  return BaseOutput.success(weekly.getId()+":"+DateUtil.getDate(weekly.getCreated())+"周报");
+    	  return BaseOutput.success(weekly.getId()+":"+DateUtil.getDate(weekly.getCreated())+"周报提交");
     }
     @RequestMapping(value="/updateWeeklyDetails", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput updateWeeklyDetails(WeeklyDetails WeeklyDetails) {
