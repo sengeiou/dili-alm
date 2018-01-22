@@ -621,12 +621,14 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	public List<NextWeeklyDto> selectNextWeeklyProgress(WeeklyPara weeklyPara) {
 		List<NextWeeklyDto> nwd = weeklyMapper.selectNextWeeklyProgress(weeklyPara);
 		User user ;
-		
+		TaskDetails taskDetails=null;
 		for (NextWeeklyDto nextWeeklyDto : nwd) {
 			 nextWeeklyDto.setEndDate(nextWeeklyDto.getEndDate().substring(0, 10));
 			 nextWeeklyDto.setPlanTime("");
 			 Task task= taskMapper.selectByPrimaryKey(nextWeeklyDto.getId());
-			 TaskDetails taskDetails= taskDetailsMapper.selectByPrimaryKey(nextWeeklyDto.getId());
+			 taskDetails=DTOUtils.newDTO( TaskDetails.class);
+			 taskDetails.setTaskId(task.getId());
+			 taskDetails= taskDetailsMapper.selectOne(taskDetails);
 			 if(taskDetails!=null){
 				 short taskTime=(short) (task.getPlanTime()-taskDetails.getTaskHour());
 				 nextWeeklyDto.setPlanTime(taskTime+"");
@@ -847,7 +849,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		return userList;
 	}
 
-	@Override
+	/*@Override
 	public Map<Object, Object> addWeekly(Weekly wk) {
 		
 		//Weekly wk = insertWeeklyByprojectId(projectId);
@@ -940,7 +942,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	    map.put("wDetails", wDetails);
 	    
 	    return  map;
-	}
+	}*/
 
 	public  Map<String, Weekly> insertWeeklyByprojectId(String projectId) {
 		
