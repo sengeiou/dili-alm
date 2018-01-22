@@ -209,7 +209,7 @@ function openInsertVersion() {
 											success : function(data) {
 												if (data.code == 200) {
 													try {
-														LogUtils.saveLog("新增项目版本:" + data.data.id, function() {
+														LogUtils.saveLog(LOG_MODULE_OPS.ADD_PROJECT_VERSION, "新增项目版本:" + data.data.id, function() {
 																});
 													} catch (e) {
 														$.messager.alert('错误', e);
@@ -261,7 +261,7 @@ function editVersion(id) {
 											success : function(res) {
 												if (res.code == 200) {
 													try {
-														LogUtils.saveLog("修改项目版本:" + res.data.id, function() {
+														LogUtils.saveLog(LOG_MODULE_OPS.UPDATE_PROJECT_VERSION, "修改项目版本:" + res.data.id, function() {
 																});
 													} catch (e) {
 														$.messager.alert('错误', e);
@@ -311,7 +311,7 @@ function deleteVersion(id) {
 							success : function(data) {
 								if (data.code == 200) {
 									try {
-										LogUtils.saveLog("删除项目版本:" + id, function() {
+										LogUtils.saveLog(LOG_MODULE_OPS.DELETE_PROJECT_VERSION, "删除项目版本:" + id, function() {
 												});
 									} catch (e) {
 										$.messager.alert('错误', e);
@@ -361,7 +361,7 @@ function changeVersionState(id) {
 											success : function(data) {
 												if (data.code == 200) {
 													try {
-														LogUtils.saveLog("变更项目版本状态:" + data.data.id, function() {
+														LogUtils.saveLog(LOG_MODULE_OPS.UPDATE_PROJECT_VERSION_STATE, "变更项目版本状态:" + data.data.id, function() {
 																});
 													} catch (e) {
 														$.messager.alert('错误', e);
@@ -416,7 +416,7 @@ function openInsertPhase() {
 											success : function(data) {
 												if (data.code == 200) {
 													try {
-														LogUtils.saveLog("新增项目版本阶段:" + data.data.id, function() {
+														LogUtils.saveLog(LOG_MODULE_OPS.ADD_PROJECT_VERSION_PHASE, "新增项目版本阶段:" + data.data.id, function() {
 																});
 													} catch (e) {
 														$.messager.alert('错误', e);
@@ -468,7 +468,7 @@ function editPhase(id) {
 											success : function(data) {
 												if (data.code == 200) {
 													try {
-														LogUtils.saveLog("编辑项目版本阶段:" + data.data.id, function() {
+														LogUtils.saveLog(LOG_MODULE_OPS.UPDATE_PROJECT_VERSION, "编辑项目版本阶段:" + data.data.id, function() {
 																});
 													} catch (e) {
 														$.messager.alert('错误', e);
@@ -517,7 +517,7 @@ function deletePhase(id) {
 							success : function(data) {
 								if (data.code == 200) {
 									try {
-										LogUtils.saveLog("删除项目版本版本阶段:" + id, function() {
+										LogUtils.saveLog(LOG_MODULE_OPS.DELETE_PROJECT_VERSION_PHASE, "删除项目版本版本阶段:" + id, function() {
 												});
 									} catch (e) {
 										$.messager.alert('错误', e);
@@ -571,7 +571,7 @@ function uploadFile(projectId) {
 											success : function(data) {
 												if (data.code == 200) {
 													try {
-														LogUtils.saveLog("上传项目文档:" + data.data.name, function() {
+														LogUtils.saveLog(LOG_MODULE_OPS.UPLOAD_FILE, "上传项目文档:" + data.data.name, function() {
 																});
 													} catch (e) {
 														$.messager.alert('错误', e);
@@ -626,7 +626,7 @@ function alarmConfig() {
 											success : function(data) {
 												if (data.code == 200) {
 													try {
-														LogUtils.saveLog("设置项目进度告警:" + data.result, function() {
+														LogUtils.saveLog(LOG_MODULE_OPS.PROJECT_ALARM_CONFIG, "设置项目进度告警:" + data.result, function() {
 																});
 													} catch (e) {
 														$.messager.alert('错误', e);

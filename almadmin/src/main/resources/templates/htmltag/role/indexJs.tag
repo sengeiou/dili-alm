@@ -108,7 +108,7 @@ function onRemoveClicked(id) {
 								id : selected.id
 							}, function(index) {
 								try {
-									LogUtils.saveLog("删除角色:" + selected.id, function() {
+									LogUtils.saveLog(LOG_MODULE_OPS.DELETE_ROLE, "删除角色:" + selected.id, function() {
 											});
 								} catch (e) {
 									$.messager.alert('错误', e);
@@ -216,16 +216,15 @@ function onAfterEdit(index, row, changes) {
 
 	requestSave(index, row, function(index, retData) {
 				if (!row.id) {
-					debugger;
 					try {
-						LogUtils.saveLog("新增角色:" + retData.id, function() {
+						LogUtils.saveLog(LOG_MODULE_OPS.ADD_ROLE, "新增角色:" + retData.id, function() {
 								});
 					} catch (e) {
 						$.messager.alert('错误', e);
 					}
 				} else {
 					try {
-						LogUtils.saveLog("修改角色:" + retData.id, function() {
+						LogUtils.saveLog(LOG_MODULE_OPS.UPDATE_ROLE, "修改角色:" + retData.id, function() {
 								});
 					} catch (e) {
 						$.messager.alert('错误', e);
@@ -314,7 +313,7 @@ function unbindRoleUser(id) {
 					var index = $('#userListGrid').datagrid("getRowIndex", selected);
 					requestUnbind(index, JSON.stringify(formData), function(index) {
 								try {
-									LogUtils.saveLog("解除绑定用户:" + JSON.stringify(formData), function() {
+									LogUtils.saveLog(LOG_MODULE_OPS.UNBIND_USER_ROLE, "解除绑定用户:" + JSON.stringify(formData), function() {
 											});
 								} catch (e) {
 									$.messager.alert('错误', e);
@@ -392,28 +391,31 @@ function requestSave(index, data, callback) {
 				processData : true,
 				async : true,
 				success : function(retData) {
-					
+
 					if (retData.code == "200") {
 						(callback && typeof(callback) === "function") && callback(index, retData.data);
 						var submitData = {
 							roleId : retData.data.id,
-							menuResources :[{id: 126, resource: false}]
+							menuResources : [{
+										id : 126,
+										resource : false
+									}]
 						};
 						$.ajax({
-								type : "POST",
-								url : '${contextPath!}/role/updateRoleMenuResource',
-								contentType : "application/json; charset=utf-8",
-								data : JSON.stringify(submitData),
-								dataType : "json",
-								success : function(data) {
-									if (data.code == 200) {
-										roleGrid.datagrid('acceptChanges');
-									} else {
-										$.messager.alert('提示', data.result);
+									type : "POST",
+									url : '${contextPath!}/role/updateRoleMenuResource',
+									contentType : "application/json; charset=utf-8",
+									data : JSON.stringify(submitData),
+									dataType : "json",
+									success : function(data) {
+										if (data.code == 200) {
+											roleGrid.datagrid('acceptChanges');
+										} else {
+											$.messager.alert('提示', data.result);
+										}
 									}
-								}
-							});
-						
+								});
+
 					} else {
 						roleGrid.datagrid('rejectChanges');
 						$.messager.alert('错误', retData.result);
@@ -630,7 +632,7 @@ $(function() {
 																	}
 																});
 													});
-													
+
 											$.fn.zTree.init($("#tree"), {
 														check : {
 															enable : true
@@ -644,13 +646,13 @@ $(function() {
 															}
 														},
 														callback : {
-															beforeCheck:function (event,treeId, treeNode) {
-																if(treeId.id==126){
+															beforeCheck : function(event, treeId, treeNode) {
+																if (treeId.id == 126) {
 																	$.messager.alert('警告', '首页是必选项，不可编辑');
-																	return  false;
-																	
+																	return false;
+
 																}
-																return  true;
+																return true;
 															},
 															onNodeCreated : function(event, treeId, treeNode) {
 																if (treeNode.resourceId) {
@@ -663,17 +665,17 @@ $(function() {
 														}
 
 													}, znodes);
-												var treeObj = $.fn.zTree.getZTreeObj("tree");
-												var node = treeObj.getNodeByParam("id", "126");
-												treeObj.checkNode(node, true, true);
-												
+											var treeObj = $.fn.zTree.getZTreeObj("tree");
+											var node = treeObj.getNodeByParam("id", "126");
+											treeObj.checkNode(node, true, true);
+
 										}, 'json');
 							}
 						});
 			};
 			function beforeCheck(treeId, treeNode) {
-				
-			return (treeNode.doCheck !== false);
+
+				return (treeNode.doCheck !== false);
 			}
 			window.editRoleDataAuth = function(roleId) {
 				$('#win').window({
