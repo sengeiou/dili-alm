@@ -160,7 +160,10 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
 	@Transactional
 	@Override
-	public BaseOutput<Object> logicDelete(Long userId) {
+	public BaseOutput<Object> deleteAfterCheck(Long userId) {
+		if (userId.equals(1L)) {
+			return BaseOutput.failure("超级管理员不嫩删除");
+		}
 		UserDataAuth record = new UserDataAuth();
 		record.setUserId(userId);
 		int count = this.userDataAuthMapper.selectCount(record);

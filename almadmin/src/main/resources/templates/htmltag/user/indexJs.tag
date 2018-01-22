@@ -54,21 +54,35 @@ function loadData4DataList(datalistid, url, params) {
 				async : true,
 				success : function(data) {
 					if (data.code == "200") {
-						var roleList = data.data;
-						if (null != roleList && 0 < roleList.length) {
+						if (data.data && data.data.length > 0) {
+							var roleList = [];
+							if (datalistid == 'withoutRoleDatalist') {
+								$(data.data).each(function(index, item) {
+											var flag = false;
+											$($('#withRoleDatalist').datalist('getRows')).each(function(index1, item1) {
+														if (item.id == item1.id) {
+															flag = true;
+															return false;
+														}
+													});
+											if (!flag) {
+												roleList.push(item);
+											}
+										});
+							} else {
+								if ($('#withRoleDatalist').datalist('getRows').length > 0) {
+									return;
+								}
+								roleList = data.data;
+							}
 							$("#" + datalistid).datalist("loadData", {
 										total : roleList.length,
 										rows : roleList
 									});
-							return;
 						}
 					} else {
 						$.messager.alert('错误', data.result);
 					}
-					$("#" + datalistid).datalist("loadData", {
-								total : 0,
-								rows : []
-							});
 				},
 				error : function() {
 					$("#" + datalistid).datalist("loadData", {
@@ -165,7 +179,7 @@ function onAddClicked() {
 			});
 
 	formFocus("_form", "_userName");
-	queryRole();
+	// queryRole();
 
 	$('#dlg').dialog('open');
 	$('#dlg').dialog('center');
@@ -176,15 +190,17 @@ function onAddClicked() {
 var editUser;
 
 function onDepartmentChange(n, o) {
-	debugger;
-	if (n == o) {
+	if (!n || n == o) {
 		return;
 	}
+	$('#withoutRoleDatalist').datalist("loadData", {
+				total : 0,
+				rows : []
+			});
 	queryRole(editUser ? editUser.id : undefined);
 }
 
 function onEditClicked(id) {
-	debugger;
 	if (!dataAuth.editUser) {
 		return false;
 	}
@@ -577,15 +593,11 @@ function queryRole(userid) {
 	var departmentId = $('#_departmentId').combotree('getValue');
 	if (!userid) {
 		loadData4DataList("withoutRoleDatalist", "${contextPath!}/role/listByDepartment" + (departmentId ? departmentId : ''));
-		$('#withRoleDatalist').datalist("loadData", {
-					total : 0,
-					rows : []
-				});
 	} else {
-		loadData4DataList("withoutRoleDatalist", "${contextPath!}/role/listNotBindByUserId?departmentId=" + departmentId, {
+		loadData4DataList("withRoleDatalist", "${contextPath!}/role/listByUserId", {
 					userid : userid
 				});
-		loadData4DataList("withRoleDatalist", "${contextPath!}/role/listByUserId", {
+		loadData4DataList("withoutRoleDatalist", "${contextPath!}/role/listNotBindByUserId?departmentId=" + departmentId, {
 					userid : userid
 				});
 	}

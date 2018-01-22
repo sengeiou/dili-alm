@@ -108,6 +108,9 @@ public class RoleServiceImpl extends BaseServiceImpl<Role, Long> implements Role
 	@Transactional
 	@Override
 	public BaseOutput<Object> deleteIfUserNotBind(Long roleId) {
+		if (roleId.equals(1L)) {
+			return BaseOutput.failure("超级管理员角色不能删除");
+		}
 		UserRole record = new UserRole();
 		record.setRoleId(roleId);
 		int count = this.userRoleMapper.selectCount(record);

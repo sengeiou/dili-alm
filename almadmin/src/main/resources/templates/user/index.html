@@ -106,6 +106,17 @@
 <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="用户信息"
 	style="padding: 20px; width: 600px" modal="true" border="thin" closed="true"
 	data-options="
+				onClose:function(){
+					window.editUser=undefined;
+					$('#withRoleDatalist').datalist('loadData', {
+											total : 0,
+											rows : []
+										});
+					$('#withoutRoleDatalist').datalist('loadData', {
+											total : 0,
+											rows : []
+										});				
+				},
 				iconCls: 'icon-save',
 				buttons: [{
 					text:'确认',

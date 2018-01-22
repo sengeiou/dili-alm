@@ -31,7 +31,16 @@
 							editable:false,
 							url:'${contextPath!}/role/list.json',
 							textField:'roleName',
-							valueField:'id'
+							valueField:'id',
+							loadFilter:function(data){
+								$(data).each(function(index,item){
+									if(item.id == 1){
+										data.splice(index,1);
+										return false;
+									}
+								});
+								return data;											
+							}
 						}
 					}">职务</th>
 					<th

@@ -300,7 +300,6 @@ function insertOrUpdateTeam(index, row, changes) {
 		url += 'update'
 	}
 	$.post(url, postData, function(data) {
-				debugger;
 				if (data.code != 200) {
 					$('#grid').datagrid('rejectChanges');
 					$.messager.alert('提示', data.result);

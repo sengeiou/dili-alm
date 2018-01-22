@@ -141,7 +141,7 @@ public class UserController {
 			@ApiImplicitParam(name = "id", paramType = "form", value = "User的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/logicDelete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> logicDelete(Long id) {
-		return userService.logicDelete(id);
+		return userService.deleteAfterCheck(id);
 	}
 
 	@ApiOperation("禁用User")
