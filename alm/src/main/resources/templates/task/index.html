@@ -359,11 +359,11 @@
         //没有id就新增
         if (_formData.id == null || _formData.id == "") {
             logIngo = "新增任务:";
-            moduleInfo=29;
+            moduleInfo=LOG_MODULE_OPS.ADD_PROJECT_VERSION_PHASE_TASK;
             _url = "${contextPath}/task/insert";
         } else { //有id就修改
             logIngo = "修改任务:";
-            moduleInfo=30;
+            moduleInfo=LOG_MODULE_OPS.UPDATE_PROJECT_VERSION_PHASE_TASK;
             _url = "${contextPath}/task/update";
         }
      	if(isProjectDate()){
@@ -425,7 +425,7 @@
                         if (data.code == "200") {
                             $("#grid").datagrid("reload");
                             $('#dlg').dialog('close');
-                            LogUtils.saveLog(31,"删除任务:" + data.result+":成功", function() {});
+                            LogUtils.saveLog(LOG_MODULE_OPS.DELETE_PROJECT_VERSION_PHASE_TASK,"删除任务:" + data.result+":成功", function() {});
                         } else {
                             $.messager.alert('错误', data.result);
                         }
@@ -579,7 +579,7 @@
                 if (data.code == "200") {
                     $("#grid").datagrid("reload");
                     $.messager.alert('信息', '任务开始成功');
-                    LogUtils.saveLog(33,"开始任务:" + data.result+":成功", function() {});
+                    LogUtils.saveLog(LOG_MODULE_OPS.START_PROJECT_VERSION_PHASE_TASK,"开始任务:" + data.result+":成功", function() {});
                 } else {
                     $.messager.alert('错误', data.result);
                 }
@@ -603,7 +603,7 @@
             success: function(data) {
                 if (data.code == "200") {
                     $("#grid").datagrid("reload");
-                    LogUtils.saveLog(32,"暂停任务:" + data.result+":成功", function() {});
+                    LogUtils.saveLog(LOG_MODULE_OPS.PAUSE_PROJECT_VERSION_PHASE_TASK,"暂停任务:" + data.result+":成功", function() {});
                 } else {
                     $.messager.alert('错误', data.result);
                 }
