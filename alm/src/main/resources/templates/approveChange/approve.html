@@ -199,7 +199,7 @@
                 var data = eval('(' + data + ')');
                 if (data.success == true) {
                     try {
-                        LogUtils.saveLog("变更审批:${approve.id}", function () {
+                        LogUtils.saveLog("变更审批:${approve.id}:${approve.name}:成功", function () {
                             window.location.href = "${contextPath}/approve/change/index.html";
                         });
                     } catch (e) {

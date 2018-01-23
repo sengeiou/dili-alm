@@ -202,7 +202,7 @@
                 var data = eval('(' + data + ')');
                 if (data.success == true) {
                     try {
-                        LogUtils.saveLog("立项审批:${apply.id}", function () {
+                        LogUtils.saveLog("立项审批:${apply.id}:${apply.name}:成功", function () {
                             window.location.href = "${contextPath}/approve/apply/index.html";
                         });
                     } catch (e) {
