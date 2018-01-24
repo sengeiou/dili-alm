@@ -108,7 +108,7 @@ function onRemoveClicked(id) {
 								id : selected.id
 							}, function(index) {
 								try {
-									LogUtils.saveLog(LOG_MODULE_OPS.DELETE_ROLE, "删除角色:" + selected.id, function() {
+									LogUtils.saveLog(LOG_MODULE_OPS.DELETE_ROLE, "删除角色:" + selected.id+":成功", function() {
 											});
 								} catch (e) {
 									$.messager.alert('错误', e);
