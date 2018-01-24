@@ -170,7 +170,7 @@
                     var data = eval('(' + data + ')');
                     if (data.success == true) {
                         try {
-                            LogUtils.saveLog("新增项目变更", function () {
+                            LogUtils.saveLog(LOG_MODULE_OPS.ADD_PROJECT_CHANGE,"新增项目变更:"+data.data+":成功", function () {
                                 window.location.href = "${contextPath}/projectChange/index.html";
                             });
                         } catch (e) {

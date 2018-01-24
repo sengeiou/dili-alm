@@ -381,8 +381,7 @@
             success: function(data) {
                 if (data.code == "200") {
                     $("#grid").datagrid("reload");
-                    console.log(data.result);
-                    LogUtils.saveLog(moduleInfo,logIngo + data.result+":成功", function() {});
+                    LogUtils.saveLog(moduleInfo,logIngo + data.data+":成功", function() {});
                 } else {
                     $.messager.alert('错误', data.result);
                 }
@@ -425,7 +424,7 @@
                         if (data.code == "200") {
                             $("#grid").datagrid("reload");
                             $('#dlg').dialog('close');
-                            LogUtils.saveLog(LOG_MODULE_OPS.DELETE_PROJECT_VERSION_PHASE_TASK,"删除任务:" + data.result+":成功", function() {});
+                            LogUtils.saveLog(LOG_MODULE_OPS.DELETE_PROJECT_VERSION_PHASE_TASK,"删除任务:" + data.data+":成功", function() {});
                         } else {
                             $.messager.alert('错误', data.result);
                         }
@@ -579,7 +578,7 @@
                 if (data.code == "200") {
                     $("#grid").datagrid("reload");
                     $.messager.alert('信息', '任务开始成功');
-                    LogUtils.saveLog(LOG_MODULE_OPS.START_PROJECT_VERSION_PHASE_TASK,"开始任务:" + data.result+":成功", function() {});
+                    LogUtils.saveLog(LOG_MODULE_OPS.START_PROJECT_VERSION_PHASE_TASK,"开始任务:" + data.data+":成功", function() {});
                 } else {
                     $.messager.alert('错误', data.result);
                 }
@@ -603,7 +602,7 @@
             success: function(data) {
                 if (data.code == "200") {
                     $("#grid").datagrid("reload");
-                    LogUtils.saveLog(LOG_MODULE_OPS.PAUSE_PROJECT_VERSION_PHASE_TASK,"暂停任务:" + data.result+":成功", function() {});
+                    LogUtils.saveLog(LOG_MODULE_OPS.PAUSE_PROJECT_VERSION_PHASE_TASK,"暂停任务:" + data.data+":成功", function() {});
                 } else {
                     $.messager.alert('错误', data.result);
                 }

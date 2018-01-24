@@ -528,7 +528,7 @@ function onSaveClicked() {
 				if (null != retData) {
 					if (isAdd) {
 						try {
-							LogUtils.saveLog(LOG_MODULE_OPS.ADD_USER, "新增用户:" + retData.id, function() {
+							LogUtils.saveLog(LOG_MODULE_OPS.ADD_USER, "新增用户:" + retData.id+":"+retData.userName+":成功", function() {
 									});
 						} catch (e) {
 							$.messager.alert('错误', e);
@@ -536,7 +536,7 @@ function onSaveClicked() {
 						userGrid.datagrid("appendRow", retData);
 					} else {
 						try {
-							LogUtils.saveLog(LOG_MODULE_OPS.UPDATE_USER, "修改用户:" + retData.id, function() {
+							LogUtils.saveLog(LOG_MODULE_OPS.UPDATE_USER, "修改用户:" + retData.id+":"+retData.userName+":成功", function() {
 									});
 						} catch (e) {
 							$.messager.alert('错误', e);

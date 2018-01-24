@@ -219,7 +219,7 @@
                 var data = eval('(' + data + ')');
                 if (data.success == true) {
                     try {
-                        LogUtils.saveLog("保存结项申请:${apply.id}", function () {
+                        LogUtils.saveLog(LOG_MODULE_OPS.SAVE_PROJECT_COMPLETE,"保存结项申请:"+data.data+":成功", function () {
                             window.location.href = "${contextPath}/projectComplete/index.html";
                         });
                     } catch (e) {

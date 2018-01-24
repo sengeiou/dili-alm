@@ -413,7 +413,7 @@
                 success: function (data) {
                     if(data.code=="200"){
                         $("#grid").datagrid("reload");
-                        LogUtils.saveLog(LOG_MODULE_OPS.PERFORM_PROJECT_VERSION_PHASE_TASK,"执行任务:" + data.result+":成功", function () {});
+                        LogUtils.saveLog(LOG_MODULE_OPS.PERFORM_PROJECT_VERSION_PHASE_TASK,"执行任务:" + data.data+":成功", function () {});
                     }else{
                         $.messager.alert('错误',data.result);
                     }
@@ -555,7 +555,7 @@ function isTask(id){
 	                if (data.code == "200") {
 	                    $("#grid").datagrid("reload");
 	                    $('#dlg').dialog('close');
-	                    LogUtils.saveLog(LOG_MODULE_OPS.PAUSE_PROJECT_VERSION_PHASE_TASK,"暂停任务：" + data.result+":成功", function() {});
+	                    LogUtils.saveLog(LOG_MODULE_OPS.PAUSE_PROJECT_VERSION_PHASE_TASK,"暂停任务：" + data.data+":成功", function() {});
 	                } else {
 	                    $.messager.alert('错误', data.result);
 	                }

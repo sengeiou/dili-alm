@@ -140,7 +140,7 @@ public class ProjectChangeController {
         projectChange.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
         projectChangeService.insertSelective(projectChange);
         projectChangeService.approve(projectChange);
-        return BaseOutput.success("新增成功");
+        return BaseOutput.success("新增成功").setData(projectChange.getId()+":"+projectChange.getName());
     }
 
     @ApiOperation("修改ProjectChange")
@@ -151,7 +151,7 @@ public class ProjectChangeController {
         projectChange.setSubmitDate(new Date());
         projectChangeService.updateSelective(projectChange);
         projectChangeService.approve(projectChange);
-        return BaseOutput.success("修改成功");
+        return BaseOutput.success("修改成功").setData(projectChange.getId()+":"+projectChange.getName());
     }
 
     @ApiOperation("删除ProjectChange")
@@ -164,6 +164,6 @@ public class ProjectChangeController {
         	messageService.deleteMessage(id, AlmConstants.MessageType.CHANGE.code);
         	projectChangeService.delete(id);
         }
-        return BaseOutput.success("删除成功");
+        return BaseOutput.success("删除成功").setData(change.getId()+":"+change.getName());
     }
 }

@@ -147,7 +147,7 @@ public class ProjectCompleteController {
         projectComplete.setStatus(AlmConstants.ApplyState.APPLY.getCode());
         projectComplete.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
         projectCompleteService.insertSelective(projectComplete);
-        return BaseOutput.success(String.valueOf(projectComplete.getId()));
+        return BaseOutput.success(String.valueOf(projectComplete.getId())).setData(projectComplete.getId()+":"+projectComplete.getName());
     }
 
     @RequestMapping(value = "/reComplete/{id}", method = RequestMethod.GET)
@@ -170,7 +170,7 @@ public class ProjectCompleteController {
         }
         projectCompleteService.updateSelective(projectComplete);
         projectCompleteService.approve(projectComplete);
-        return BaseOutput.success(String.valueOf(projectComplete.getId()));
+        return BaseOutput.success(String.valueOf(projectComplete.getId())).setData(projectComplete.getId()+":"+projectComplete.getName());
     }
 
     @ApiOperation("删除ProjectComplete")
@@ -186,7 +186,7 @@ public class ProjectCompleteController {
 
         	projectCompleteService.delete(id);
         }
-        return BaseOutput.success("删除成功");
+        return BaseOutput.success("删除成功").setData(complete.getId()+":"+complete.getName());
     }
 
     @RequestMapping("/loadQuestion")

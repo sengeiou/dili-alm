@@ -201,7 +201,7 @@
                 var data = eval('(' + data + ')');
                 if (data.success == true) {
                     try {
-                        LogUtils.saveLog("结项审批:${approve.id}:${approve.name}:成功", function () {
+                        LogUtils.saveLog(LOG_MODULE_OPS.PROJECT_COMPLETE_APPROVE,"结项审批:${approve.id}:${approve.name}:成功", function () {
                             window.location.href = "${contextPath}/approve/complete/index.html";
                         });
                     } catch (e) {
