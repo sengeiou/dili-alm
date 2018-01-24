@@ -124,6 +124,9 @@ public class RoleServiceImpl extends BaseServiceImpl<Role, Long> implements Role
 		RoleMenu roleMenuQuery = new RoleMenu();
 		roleMenuQuery.setRoleId(roleId);
 		this.roleMenuMapper.delete(roleMenuQuery);
+		RoleResource roleResource = new RoleResource();
+		roleResource.setRoleId(roleId);
+		this.roleResourceMapper.delete(roleResource);
 		return BaseOutput.success();
 	}
 
@@ -227,6 +230,9 @@ public class RoleServiceImpl extends BaseServiceImpl<Role, Long> implements Role
 
 	@Override
 	public BaseOutput<Object> updateAfterCheck(Role role) {
+		if (role.getId().equals(1L)) {
+			return BaseOutput.failure("超级管理员角色不能编辑");
+		}
 		Role query = new Role();
 		query.setRoleName(role.getRoleName());
 		Role old = this.getActualDao().selectOne(query);

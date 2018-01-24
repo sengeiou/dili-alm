@@ -18,6 +18,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.sysadmin.domain.Resource;
 import com.dili.sysadmin.domain.dto.ResourceDto;
 import com.dili.sysadmin.service.ResourceService;
+import com.dili.sysadmin.service.impl.ResourceException;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -66,7 +67,11 @@ public class ResourceController {
 		if (br.hasErrors()) {
 			BaseOutput.failure(br.getFieldError().getDefaultMessage());
 		}
-		return resourceService.add(dto);
+		try {
+			return resourceService.add(dto);
+		} catch (ResourceException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
 	}
 
 	@ApiOperation("修改Resource")
@@ -85,7 +90,6 @@ public class ResourceController {
 			@ApiImplicitParam(name = "id", paramType = "form", value = "Resource的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput delete(Long id) {
-		resourceService.delete(id);
-		return BaseOutput.success("删除成功");
+		return resourceService.deleteWithOutput(id);
 	}
 }
