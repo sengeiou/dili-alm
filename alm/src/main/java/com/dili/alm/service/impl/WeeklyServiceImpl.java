@@ -581,9 +581,11 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			}
 			
 			// 实际工时
-			td.get(i).setRealHour(td.get(i).getOverHour() + td.get(i).getTaskHour() + "");
+			//td.get(i).setRealHour(td.get(i).getOverHour() + td.get(i).getTaskHour() + "");
+			td.get(i).setRealHour(td.get(i).getTaskHour() + "");
 			// 工时偏差% （实际任务工时/预估任务工时-1）%
-			double  realHourandOverHour=td.get(i).getOverHour() + td.get(i).getTaskHour();//实际工时
+			//double  realHourandOverHour=td.get(i).getOverHour() + td.get(i).getTaskHour();//实际工时
+			double  realHourandOverHour= td.get(i).getTaskHour();//实际工时
 			double  planTime=td.get(i).getPlanTime();//计划工时
 			
 		     if(td.get(i).getStatus().equals(PROJECTTASKSTATUS)){//已完成就是等于二
