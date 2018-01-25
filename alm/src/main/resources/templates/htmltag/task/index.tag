@@ -218,6 +218,7 @@
       $('#pauseTask').linkbutton({disabled:true});
       $('#updateDetail').linkbutton({disabled:true});
       $('#complate').linkbutton({disabled:true});
+      $("#modified").datebox({disabled:true});
     }
     
     //显示详情页面
@@ -288,7 +289,7 @@
         function openUpdateDetail(row){
         	noEdit();
         	noEditForTaskdetail();
-        	
+        	$('#modified').datebox({ editable:false });
         	$("#task_detail").hide();
         	$("#dialog_toolbar").hide();
         	$("#dialog_toolbar_detail").show();
@@ -300,6 +301,10 @@
 			if(isOwenr(selected.id)){
 				canEditForTaskdetail();
 			}
+
+
+			
+			
 			
             $('#dlg').dialog('open');
             $('#dlg').dialog('center');
@@ -334,7 +339,7 @@
             $('#_form').form('load', {startDateShow:dateFormat_1(formData._startDate)});
             $('#_form').form('load', {endDateShow:dateFormat_1(formData._endDate)}); 
             $('#_phaseId').combobox('select',formData._phaseId);
-            
+
             
             if(formData._status==0){
             	$("#task_detail").hide();
@@ -379,9 +384,14 @@
             	$('#detail_form').form('clear');
             	getDetailInfo(formData._id);
             }
+            
+            $('#detail_form').form('load', {modified:dateFormat_1(new Date())});
+			if(isProjectManager()){
+			 $("#modified").combobox({disabled:false});
+			}else{
+			 $("#modified").combobox({disabled:true });
+			}
 
-            $('#detail_form').form('load',{overHourStr:0});
-            $('#detail_form').form('load',{taskHourStr:0});
         }
         
         
@@ -568,3 +578,6 @@ function isTask(id){
 		    $.messager.alert('错误', '任务工时加班工时其中一项不能为0');
 		}
     }
+    
+
+  

@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.poi.ss.formula.ptg.Ptg;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -33,6 +32,7 @@ import com.dili.alm.domain.ProjectChange;
 import com.dili.alm.domain.ProjectPhase;
 import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.ProjectVersion;
+import com.dili.alm.domain.Role;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.TaskDetails;
 import com.dili.alm.domain.TaskEntity;
@@ -43,6 +43,7 @@ import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.apply.ApplyMajorResource;
 import com.dili.alm.domain.dto.apply.ApplyRelatedResource;
+import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.ProjectApplyService;
@@ -74,6 +75,10 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	DataDictionaryService dataDictionaryService;
 	@Autowired
 	UserRpc userRpc;
+	@Autowired
+	RoleRpc roleRpc;
+	
+	
 	@Autowired
 	private TeamMapper teamMapper;
     public TaskMapper getActualDao() {
@@ -1002,6 +1007,20 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			return true;
 		}
 		return false;
+	}
+
+
+	@Override
+	public boolean isCommittee() {
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		List<Role> currentUsercurrent = roleRpc.listRoleByUserId(userTicket.getId()).getData();
+		for (Role role : currentUsercurrent) {
+			//TODO:判断条件修改
+			if (role.getId().byteValue()==16||role.getId().byteValue()==17) {//委员会&委员会组长
+				return true;
+			}
+		}
+		return false; 
 	}
 	
 	

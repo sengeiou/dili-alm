@@ -64,4 +64,6 @@ public interface TaskService extends BaseService<Task, Long> {
 	TaskDetails selectDetails(Long taskId);
 	
 	boolean isNoTeam();
+	
+	boolean isCommittee();
 }

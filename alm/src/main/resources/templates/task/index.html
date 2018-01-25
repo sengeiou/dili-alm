@@ -120,14 +120,12 @@
                 height: 480">
     <form id="_form" class="easyui-form" method="post" fit="true">
         <input name="_id" id="_id" type="hidden">
-        <table width="360px">
+        <table width="560px">
             <tr>
-                <td style="padding:5px;">
+                <td style="padding:5px;width:50%;">
                     <input class="easyui-textbox" name="_name" id="_name" style="width:100%" data-options="label:'任务名称:', required:true,validType:'length[0,255]',prompt:'请填写任务名称'" />
                 </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
+                <td style="padding:5px;width:50%;">
                     <input name="_projectId" id="_projectId" class="easyui-combobox" style="width: 100%;" editable="false" data-options="label:'所属项目:', required:true,validType:'isIds',prompt:'--选择所属项目--'">
                 </td>
             </tr>
@@ -135,9 +133,7 @@
                 <td style="padding:5px;">
                     <input name="_versionId" id="_versionId" class="easyui-combobox" style="width: 100%;" editable="false" data-options="label:'所属版本:', required:true,validType:'isIds',prompt:'--选择所属版本--'">
                 </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
+               <td style="padding:5px;">
                     <input name="_phaseId" id="_phaseId" class="easyui-combobox" style="width: 100%;" editable="false" data-options="label:'所属阶段:', required:true,validType:'isIds',prompt:'--选择所属阶段--'">
                 </td>
             </tr>
@@ -145,9 +141,7 @@
                 <td style="padding:5px;">
                     <input class="easyui-datebox" name="startDateShow" id="startDateShow" editable="false" style="width:100%" data-options="label:'开始时间:', required:true,validType:'isIds',prompt:'任务开始时间不能早于项目开始时间'" />
                 </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
+               <td style="padding:5px;">
                     <input class="easyui-datebox" name="endDateShow" id="endDateShow" editable="false" style="width:100%" data-options="label:'结束时间:', required:true,validType:'endDateValidate[\'startDateShow\']',prompt:'任务结束时间不能晚于项目结束时间'" />
                 </td>
             </tr>
@@ -155,8 +149,6 @@
                 <td style="padding:5px;">
                     <input name="_beforeTask" id="_beforeTask" class="easyui-combobox" style="width: 100%;" editable=false data-options="label:'前置任务:',editable:false">
                 </td>
-            </tr>
-            <tr>
                 <td style="padding:5px;">
                     <input name="_type" id="_type" class="easyui-combobox" style="width: 100%;" editable=false panelWidth="auto" panelHeight="auto" data-options="label:'任务类型:', required:true,validType:'isIds',prompt:'--任务类型选择--'">
                     <#comboProvider _id="_type" _table="data_dictionary_value" _valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":17}' />
@@ -166,8 +158,6 @@
                 <td style="padding:5px;">
                     <input name="_owner" id="_owner" class="easyui-combobox" style="width:100%" data-options="label:'责任人:', required:true,validType:'isIds',prompt:'--请先选择项目--'">
                 </td>
-            </tr>
-            <tr>
                 <td style="padding:5px;">
                     <input class="easyui-numberbox" name="planTimeStr" id="planTimeStr" style="width:100%" min="0"
                            data-options="label:'计划工时:',validType:['length[0,5]'], required:true,prompt:'填写数字类型'" />
@@ -180,15 +170,13 @@
                         <option value=0>变更流程</option>
                     </select>
                 </td>
-            </tr>
-            <tr id="changeIdTr">
                 <td style="padding:5px;">
-                    <input name="_changeId" id="_changeId" class="easyui-combobox" style="width:340px" data-options="label:'变更项目:'">
+                    <div id="changeIdTr"><input name="_changeId" id="_changeId" class="easyui-combobox" style="width:265px"  data-options="label:'变更项目:'"></div>
                 </td>
             </tr>
             <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_describe" id="_describe" style="width:100%" data-options="label:'描述:', validType:'length[0,255]'" />
+                <td style="padding:5px;" colspan="2">
+                    <input class="easyui-textbox" name="_describe" id="_describe" style="width:100%;height:50px;" data-options="label:'描述:', validType:'length[0,255]'" />
                 </td>
             </tr>
         </table>
@@ -200,30 +188,29 @@
         <form name="detail_form" id="detail_form">
             <input name="taskId" id="taskId" type="hidden">
             <input name="taskHour" id="taskHour" type="hidden">
-            <table width="360px;" style="border:1px;">
+            <table width="550px;" style="border:1px;-moz-padding:5px 5px 45px 5px;">
                 <tr>
-                    <td style="padding:5px;" colspan="2">
-                        <label for="" style="float: left;width: 80px;height26px;line-height: 26px">任务进度</label>
-                        <div id="_progressShow" style="margin-left: 85px;margin-top: 2px;width:260px;"></div>
-                        <!--任务进度:-->
-                        <!--<div id="_progressShow" style="width:100%;"></div>-->
-                    </td>
+                    <td style="padding: 0 5px;width: 50%">
+                        <label  style="float: left;width:30%;">任务进度:</label>
+                        <div id="_progressShow" style="width:180px;"></div>
+                        </td>
+                         <td style="padding:5px;width: 50%">
+                        <input class="easyui-datebox"   name="modified" id="modified" style="width:100%;height:26px;" data-options="label:'任务日期:', required:true" />
+                        </td>
                 </tr>
                 <tr>
-                </tr>
-                <tr>
-                    <td style="width:50%;padding:5px;">
+                    <td style="padding:5px;">
                         <input class="easyui-numberbox" name="taskHourStr" id="taskHourStr" style="width:100%;height:26px;" data-options="label:'任务工时:',validType:'taskHours[\'overHourStr\']'" />
                     </td>
-                    <td style="width:50%;padding:5px;">
+                    <td style="padding:5px;">
                         <input class="easyui-numberbox" name="_taskHour" id="_taskHour" style="width:100%;height:26px;" data-options="label:'已填工时:',disabled:true" />
                     </td>
                 </tr>
                 <tr>
-                    <td style="width:50%;padding:5px;">
+                    <td style="padding:5px;">
                         <input class="easyui-numberbox" name="overHourStr" id="overHourStr" style="width:100%;height:26px;" data-options="label:'加班工时:',validType:'overHours[\'taskHourStr\']'" />
                     </td>
-                    <td style="width:50%;padding:5px;">
+                    <td style="padding:5px;">
                         <input class="easyui-numberbox" name="_overHour" id="_overHour" style="width:100%;height:26px;" data-options="label:'已填加班:',disabled:true" />
                     </td>
                 </tr>
@@ -236,37 +223,40 @@
         </form>
     </div>
         <!-- 隐藏工时信息详情 -->
-    <div id="task_detail_list" style="display:none;width:350px;padding:5px;">
+    <div id="task_detail_list" style="display:none;width:550px;-moz-padding:5px 5px 45px 5px;">
         <hr>
          <h3>工时任务信息</h3>
  		 <table class="easyui-datagrid" style="height:120px" id="detail_grid" loadMsg="数据加载中..."  idField="id"
              >
             <thead>
-            <tr>
+                <tr>
                 <th data-options="field:'taskHour',width:'10%',fixed:'false'">
                     工时
                 </th>
                 <th data-options="field:'overHour',width:'10%',fixed:'false'">
                    加班
                 </th>
-                <th data-options="field:'owner',width:'15%',fixed:'false',formatter:ownerFormatter">
+                <th data-options="field:'owner',width:'10%',fixed:'false',formatter:ownerFormatter">
                    责任人
                 </th>
-               <th data-options="field:'created',width:'25%', _provider:'datetimeProvider',nowarp:false">
+               <th data-options="field:'created',width:'20%', _provider:'datetimeProvider',nowarp:false">
                    填写时间
                 </th>
-                <th data-options="field:'describe',width:'41%',fixed:'true'">
+                <th data-options="field:'modified',width:'20%', _provider:'datetimeProvider',nowarp:false">
+                   任务日
+                </th>
+                <th data-options="field:'describe',width:'30%',fixed:'true'">
                    工作内容描述
                 </th>
             </tr>
             </thead>
         </table>
     </div>
-    <div id="dialog_toolbar" style="diplay:show;">
+    <div id="dialog_toolbar"  style="display:show;position: absolute;bottom:0;background-color:#fff;width: 100%;padding:4px;">
         <a href="#" id="saveTask" class="easyui-linkbutton"  data-options="iconCls:'icon-edit',plain:true" onclick="saveOrUpdate()" style="border:1px solid #ccc;">保存</a>
         <a href="#" class="easyui-linkbutton" data-options="plain:true" onclick="$('#dlg').dialog('close');" style="border:1px solid #ccc;">取消</a>
     </div>
-    <div id="dialog_toolbar_detail" style="diplay:none;">
+    <div id="dialog_toolbar_detail" style="display:none;position: absolute;bottom:0;background-color:#fff;width: 100%;padding: 4px;">
         <a href="#" id="doTask" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" style="border:1px solid #ccc;" onclick="startTask()">开始执行任务</a>
         <a href="#" id="pauseTask" class="easyui-linkbutton" data-options="plain:true" style="border:1px solid #ccc;" onclick="pauseTaskStatus()"> 暂停任务</a>
         <a href="#" id="complate" class="easyui-linkbutton" data-options="plain:true" style="border:1px solid #ccc;" onclick="complate()">完成任务</a>

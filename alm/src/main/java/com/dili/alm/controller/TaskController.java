@@ -113,7 +113,7 @@ public class TaskController {
 	public @ResponseBody String listTeamPage(Task task, String phaseName) throws Exception {
 		if(task.getId()!=null){
 			return taskService.listEasyuiPageByExample(task,true).toString();
-		}else  if(taskService.isNoTeam()){
+		}else  if(taskService.isNoTeam()||taskService.isCommittee()){//没有群组和委员会的都显示所有
 			return taskService.listPageSelectTaskDto(task).toString();
 		}else {
 			return taskService.listByTeam(task, phaseName).toString();
@@ -376,8 +376,10 @@ public class TaskController {
 			/*task.setModifyMemberId(userTicket.getId());*/
 			taskDetails.setTaskHour(taskHour);
 			taskDetails.setOverHour(overHour);
-			taskDetails.setCreateMemberId(userTicket.getId());
-			taskDetails.setCreated(new Date());
+			taskDetails.setCreateMemberId(userTicket.getId());//填写人
+			taskDetails.setCreated(new Date());//实际修改填写日期
+			taskDetails.setModified(taskDetails.getModified());//任务应该填写日期
+			taskDetails.setModifyMemberId(task.getOwner());//责任人
 			/* 基础信息设置 */
 			taskService.updateTaskDetail(taskDetails, task);// 保存任务
 
@@ -395,8 +397,10 @@ public class TaskController {
 			task.setModifyMemberId(userTicket.getId());
 			taskDetails.setTaskHour(taskHour);
 			taskDetails.setOverHour(overHour);//只写入加班工时
-			taskDetails.setCreateMemberId(userTicket.getId());
-			taskDetails.setCreated(new Date());
+			taskDetails.setCreateMemberId(userTicket.getId());//填写人
+			taskDetails.setCreated(new Date());//实际修改填写日期
+			taskDetails.setModified(taskDetails.getModified());//任务应该填写日期
+			taskDetails.setModifyMemberId(task.getOwner());//责任人
 			/* 基础信息设置 */
 			int i = taskService.updateTaskDetail(taskDetails, task);// 保存任务
             if (i!=0) {
@@ -524,9 +528,11 @@ public class TaskController {
     	
     	List<TaskDetails> list = taskDetailsService.list(taskDetails);
     	
-		JSONObject datetimeProvider = new JSONObject();
-		datetimeProvider.put("provider", "datetimeProvider");
-		metadata.put("created", datetimeProvider);
+		JSONObject dateProvider = new JSONObject();
+		dateProvider.put("provider", "dateProvider");
+		metadata.put("created", dateProvider);
+		metadata.put("modified", dateProvider);
+		
 		try {
 			return ValueProviderUtils.buildDataByProvider(metadata, list);
 		} catch (Exception e) {
