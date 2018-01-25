@@ -130,7 +130,7 @@ public class WeeklyController  {
     		 weeklyDetailsService.updateSelective(WeeklyDetails);
     	  Weekly  weekly=weeklyService.getWeeklyById(wd.getWeeklyId());
     	 
-    	  return BaseOutput.success(weekly.getId()+":"+DateUtil.getDate(weekly.getCreated())+"周报提交");
+    	  return BaseOutput.success("周报提交成功").setData(weekly.getId()+":"+DateUtil.getDate(weekly.getCreated())+"周报提交");
     }
     @RequestMapping(value="/updateWeeklyDetails", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput updateWeeklyDetails(WeeklyDetails WeeklyDetails) {
@@ -139,11 +139,11 @@ public class WeeklyController  {
     	 if(wd==null){
     		 weeklyDetailsService.createInsert(WeeklyDetails); 
     		  Weekly  weekly=weeklyService.getWeeklyById(WeeklyDetails.getWeeklyId());
-    		 return BaseOutput.success(weekly.getId()+":"+DateUtil.getDate(weekly.getCreated())+"周报");
+    		 return BaseOutput.success("周报保存成功").setData(weekly.getId()+":"+DateUtil.getDate(weekly.getCreated())+"周报");
     	 }else{
     		 weeklyDetailsService.updateSelective(WeeklyDetails);
     		  Weekly  weekly=weeklyService.getWeeklyById(wd.getWeeklyId());
-    		 return BaseOutput.success(weekly.getId()+":"+DateUtil.getDate(weekly.getCreated())+"周报");
+    		 return BaseOutput.success("周报保存成功").setData(weekly.getId()+":"+DateUtil.getDate(weekly.getCreated())+"周报");
     	 }
     	
        

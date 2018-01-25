@@ -16,7 +16,7 @@ function delUploadFile(id) {
 							success : function(data) {
 								if (data.code == 200) {
 									try {
-										LogUtils.saveLog(LOG_MODULE_OPS.DELETE_UPLOADED_FILE, "删除项目文档:" + data.result, function() {
+										LogUtils.saveLog(LOG_MODULE_OPS.DELETE_UPLOADED_FILE, "删除项目文档:" + data.result+":成功", function() {
 												});
 									} catch (e) {
 										$.messager.alert('错误', e);

@@ -164,7 +164,7 @@ public class TaskController {
 		messageService.insertMessage("http://alm.diligrp.com:8083/alm/task/task/"+task.getId(), userTicket.getId(),
 				task.getOwner(),AlmConstants.MessageType.TASK.getCode());
 		
-		return BaseOutput.success(task.getId()+":"+task.getName());
+		return BaseOutput.success("新增成功").setData(task.getId()+":"+task.getName());
 	}
 
 	@ApiOperation("修改Task")
@@ -195,7 +195,7 @@ public class TaskController {
 			return BaseOutput.failure("请正确填写工时");
 		}
 		taskService.updateSelective(task);
-		return BaseOutput.success(task.getId()+":"+task.getName());
+		return BaseOutput.success("修改成功").setData(task.getId()+":"+task.getName());
 	}
 
 	@ApiOperation("删除Task")
@@ -211,7 +211,7 @@ public class TaskController {
 		}
 		messageService.deleteMessage(id, AlmConstants.MessageType.TASK.code);
 		taskService.delete(id);
-		return BaseOutput.success(task.getId()+":"+task.getName());
+		return BaseOutput.success("删除成功").setData(task.getId()+":"+task.getName());
 	}
 
 	// 查询前置任务
@@ -429,7 +429,7 @@ public class TaskController {
 			BaseOutput.failure("请勿重复添加数据");
 		}
 		taskService.update(task);
-		return BaseOutput.success(task.getId()+":"+task.getName());
+		return BaseOutput.success("执行任务成功").setData(task.getId()+":"+task.getName());
 	}
 
 	// 暂停任务
@@ -447,7 +447,7 @@ public class TaskController {
 		task.setModified(new Date());
 		task.setModifyMemberId(userTicket.getId());
 		taskService.update(task);
-		return BaseOutput.success(task.getId()+":"+task.getName());
+		return BaseOutput.success("暂停任务成功").setData(task.getId()+":"+task.getName());
 	}
 	
 	

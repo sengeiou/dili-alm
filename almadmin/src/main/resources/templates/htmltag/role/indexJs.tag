@@ -108,7 +108,7 @@ function onRemoveClicked(id) {
 								id : selected.id
 							}, function(index) {
 								try {
-									LogUtils.saveLog(LOG_MODULE_OPS.DELETE_ROLE, "删除角色:" + selected.id, function() {
+									LogUtils.saveLog(LOG_MODULE_OPS.DELETE_ROLE, "删除角色:" + selected.id+":成功", function() {
 											});
 								} catch (e) {
 									$.messager.alert('错误', e);
@@ -215,16 +215,17 @@ function onAfterEdit(index, row, changes) {
 	row.editing = false;
 
 	requestSave(index, row, function(index, retData) {
+				
 				if (!row.id) {
 					try {
-						LogUtils.saveLog(LOG_MODULE_OPS.ADD_ROLE, "新增角色:" + retData.id, function() {
+						LogUtils.saveLog(LOG_MODULE_OPS.ADD_ROLE, "新增角色:" + retData.id+":"+retData.roleName+":成功", function() {
 								});
 					} catch (e) {
 						$.messager.alert('错误', e);
 					}
 				} else {
 					try {
-						LogUtils.saveLog(LOG_MODULE_OPS.UPDATE_ROLE, "修改角色:" + retData.id, function() {
+						LogUtils.saveLog(LOG_MODULE_OPS.UPDATE_ROLE, "修改角色:" + retData.id+":"+retData.roleName+":成功", function() {
 								});
 					} catch (e) {
 						$.messager.alert('错误', e);

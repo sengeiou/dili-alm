@@ -131,7 +131,7 @@
                     success: function (data) {
                         if (data.code == "200") {
                             try {
-                                LogUtils.saveLog("删除变更申请:" + id, function () {
+                                LogUtils.saveLog(LOG_MODULE_OPS.DELETE_PROJECT_CHANGE,"删除变更申请:" + data.data+":成功", function () {
                                     $("#grid").datagrid("reload");
                                     $('#dlg').dialog('close');
                                 });

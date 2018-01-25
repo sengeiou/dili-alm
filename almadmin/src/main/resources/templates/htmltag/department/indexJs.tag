@@ -131,7 +131,7 @@ function openUpdate() {
 									$.post('${contextPath!}/department/update', data, function(res) {
 												if (res.success) {
 													try {
-														LogUtils.saveLog(LOG_MODULE_OPS.UPDATE_DEPARTMENT, "修改部门:" + res.data.id, function() {
+														LogUtils.saveLog(LOG_MODULE_OPS.UPDATE_DEPARTMENT, "修改部门:" + res.data.id+":"+res.data.name+":成功", function() {
 																});
 													} catch (e) {
 														$.messager.alert('错误', e);
@@ -190,7 +190,7 @@ function del() {
 										deptGrid.treegrid('remove', selected.id);
 										$('#dlg').dialog('close');
 										try {
-											LogUtils.saveLog(LOG_MODULE_OPS.DELETE_DEPARTMENT, "新增部门:" + data.data.id, function() {
+											LogUtils.saveLog(LOG_MODULE_OPS.DELETE_DEPARTMENT, "新增部门:" + data.data.id+":"+data.data.name+":成功", function() {
 													});
 										} catch (e) {
 											$.messager.alert('错误', e);
@@ -352,7 +352,7 @@ function insertOrUpdateDept(row, changes) {
 				}
 				if (postData.id == undefined) {
 					try {
-						LogUtils.saveLog(LOG_MODULE_OPS.ADD_DEPARTMENT, "新增部门:" + data.data.id, function() {
+						LogUtils.saveLog(LOG_MODULE_OPS.ADD_DEPARTMENT, "新增部门:" + data.data.id+":"+data.data.name+":成功", function() {
 								});
 					} catch (e) {
 						$.messager.alert('错误', e);

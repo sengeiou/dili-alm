@@ -97,7 +97,7 @@ function del() {
 								success : function(data) {
 									if (data.code == "200") {
 										try {
-											LogUtils.saveLog(LOG_MODULE_OPS.DELETE_PROJECT_TEAM_MEMBER, "删除团队:" + selected.id, function() {
+											LogUtils.saveLog(LOG_MODULE_OPS.DELETE_PROJECT_TEAM_MEMBER, "删除团队:" + selected.id+":成功", function() {
 													});
 										} catch (e) {
 											$.messager.alert('错误', e);
@@ -307,7 +307,7 @@ function insertOrUpdateTeam(index, row, changes) {
 				}
 				if (!row.id) {
 					try {
-						LogUtils.saveLog(LOG_MODULE_OPS.ADD_PROJECT_TEAM_MEMBER, "新增团队成员:" + data.data.id, function() {
+						LogUtils.saveLog(LOG_MODULE_OPS.ADD_PROJECT_TEAM_MEMBER, "新增团队成员:" + data.data.id+":成功", function() {
 								});
 					} catch (e) {
 						$.messager.alert('错误', e);
@@ -317,7 +317,7 @@ function insertOrUpdateTeam(index, row, changes) {
 					$('#btnCancelTemp').prop('id', 'btnCancel' + row.id);
 				} else {
 					try {
-						LogUtils.saveLog(LOG_MODULE_OPS.UPDATE_PROJECT_TEAM_MEMBER, "修改团队成员:" + data.data.id, function() {
+						LogUtils.saveLog(LOG_MODULE_OPS.UPDATE_PROJECT_TEAM_MEMBER, "修改团队成员:" + data.data.id+":成功", function() {
 								});
 					} catch (e) {
 						$.messager.alert('错误', e);

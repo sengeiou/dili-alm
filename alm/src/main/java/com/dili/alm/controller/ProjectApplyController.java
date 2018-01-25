@@ -165,7 +165,7 @@ public class ProjectApplyController {
     public @ResponseBody
     BaseOutput insert(ProjectApply projectApply) {
         projectApplyService.insertApply(projectApply);
-        return BaseOutput.success(String.valueOf(projectApply.getId()));
+        return BaseOutput.success(String.valueOf(projectApply.getId())).setData(projectApply.getId()+":"+projectApply.getName());
     }
 
     @RequestMapping(value = "/insertStep1", method = {RequestMethod.GET, RequestMethod.POST})
@@ -173,7 +173,7 @@ public class ProjectApplyController {
     BaseOutput insertStep1(ProjectApply projectApply, ApplyMajorResource majorResource) {
         projectApply.setResourceRequire(JSON.toJSONString(majorResource));
         projectApplyService.updateSelective(projectApply);
-        return BaseOutput.success(String.valueOf(projectApply.getId()));
+        return BaseOutput.success(String.valueOf(projectApply.getId())).setData(projectApply.getId()+":"+projectApply.getName());
     }
 
     @RequestMapping(value = "/insertStep2", method = {RequestMethod.GET, RequestMethod.POST})
@@ -181,7 +181,7 @@ public class ProjectApplyController {
     BaseOutput insertStep2(ProjectApply projectApply, ApplyDescription description) {
         projectApply.setDescription(JSON.toJSONString(description));
         projectApplyService.updateSelective(projectApply);
-        return BaseOutput.success(String.valueOf(projectApply.getId()));
+        return BaseOutput.success(String.valueOf(projectApply.getId())).setData(projectApply.getId()+":"+projectApply.getName());
     }
 
     @RequestMapping(value = "/insertStep3", method = {RequestMethod.GET, RequestMethod.POST})
@@ -189,14 +189,14 @@ public class ProjectApplyController {
     BaseOutput insertStep3(ProjectApply projectApply, ApplyGoalsFunctions goalsFunctions) {
         projectApply.setGoalsFunctions(JSON.toJSONString(goalsFunctions));
         projectApplyService.updateSelective(projectApply);
-        return BaseOutput.success(String.valueOf(projectApply.getId()));
+        return BaseOutput.success(String.valueOf(projectApply.getId())).setData(projectApply.getId()+":"+projectApply.getName());
     }
 
     @RequestMapping(value = "/insertStep", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
     BaseOutput insertStep(ProjectApply projectApply) {
         projectApplyService.updateSelective(projectApply);
-        return BaseOutput.success(String.valueOf(projectApply.getId()));
+        return BaseOutput.success(String.valueOf(projectApply.getId())).setData(projectApply.getId()+":"+projectApply.getName());
     }
 
     @RequestMapping(value = "/submit", method = {RequestMethod.GET, RequestMethod.POST})
@@ -267,7 +267,7 @@ public class ProjectApplyController {
         	messageService.deleteMessage(id, AlmConstants.MessageType.APPLY.code);
         	projectApplyService.delete(id);
         }
-        return BaseOutput.success("删除成功");
+        return BaseOutput.success("删除成功").setData(apply.getId()+":"+apply.getName());
     }
 
 }
