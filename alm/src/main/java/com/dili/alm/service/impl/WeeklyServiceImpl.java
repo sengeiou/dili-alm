@@ -70,7 +70,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	public static  final  String PROJECTTYPEID="3";
 	public static  final  Long PHASENAMEVALUE=10L;
 	public static  final  String PROJECTSTATUS="项目状态";
-	public static  final  String PROJECTTASKSTATUS="2";
+	public static  final  String PROJECTTASKSTATUS="3";
 	public static  final  String YES="YES";
 	public static  final  String NO="NO";
 	public static final  DecimalFormat    df   = new DecimalFormat("######0.00");   
