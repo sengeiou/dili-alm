@@ -307,8 +307,8 @@
                 
                 <where>
                      d.task_id=#{id,jdbcType=BIGINT}
-                     and   d.created &gt;=#{startDate,jdbcType=VARCHAR}
-	                 and  d.created &lt;=#{endDate,jdbcType=VARCHAR}
+                     and   d.modified &gt;=#{startDate,jdbcType=VARCHAR}
+	                 and  d.modified &lt;=#{endDate,jdbcType=VARCHAR}
                 </where> 
 		      
    </select>
