@@ -1,4 +1,7 @@
 function getHyperlinkContext(text, handler, data) {
+	if (data == 1 && handler == 'onChangeUserStatusClicked') {
+		return '';
+	}
 	return '<span style="padding:5px;"><a href="javascript:void(0)" onclick="' + handler + '(' + data + ')">' + text + '</a></span>'
 }
 
@@ -211,6 +214,11 @@ function onEditClicked(id) {
 		return;
 	}
 
+	if (selected.id == 1) {
+		$.messager.alert("警告", "超级管理员不能编辑");
+		return;
+	}
+
 	var index = userGrid.datagrid("getRowIndex", selected);
 	$('#_passwordTd').show();
 	$('#_lastLoginIpTd').hide();
@@ -308,7 +316,7 @@ function onDblClickRow(index, row) {
 
 // 打开某一行的查看窗口
 function onUserDetailClicked(id) {
-	var selected = userGrid.datagrid("getSelected");
+	var selected = getRowById(id);
 	if (null == selected) {
 		$.messager.alert('警告', '请选中一条数据');
 		return;
@@ -394,7 +402,7 @@ function onUserDetailClicked(id) {
 
 // 禁用/启用某一行的用户
 function onChangeUserStatusClicked(id) {
-	var selected = null == id ? userGrid.datagrid("getSelected") : getRowById(id);
+	var selected = getRowById(id);
 	if (null == selected) {
 		$.messager.alert('警告', '请选中一条数据');
 		return;

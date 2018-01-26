@@ -1,6 +1,6 @@
 package com.dili.sysadmin.exception;
 
-public class MenuException extends Exception {
+public class MenuException extends ApplicationException {
 
 	/**
 	 * 

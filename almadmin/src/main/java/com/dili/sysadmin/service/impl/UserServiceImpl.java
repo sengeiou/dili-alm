@@ -186,6 +186,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 	@Transactional(rollbackFor = UserException.class)
 	@Override
 	public UserDepartmentDto update(UpdateUserDto dto) throws UserException {
+		if (dto.getId().equals(1L)) {
+			throw new UserException("超级管理员不能编辑");
+		}
 		User user = this.userMapper.selectByPrimaryKey(dto.getId());
 		if (user == null) {
 			throw new UserException("用户不存在");

@@ -22,4 +22,6 @@ public interface MenuService extends BaseService<Menu, Long> {
 
 	BaseOutput<Object> deleteCheckIsBinding(Long menuId);
 
+	void insertWithOutput(Menu menu) throws MenuException;
+
 }
