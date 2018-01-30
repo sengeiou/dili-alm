@@ -480,9 +480,16 @@ public class TaskController {
 		TaskDetails taskDetails = DTOUtils.newDTO(TaskDetails.class);
 		taskDetails.setTaskId(id);
 		List<TaskDetails> list = taskDetailsService.list(taskDetails);
-		taskDetails = list.get(0);
+		
+		int taskHour = 0;
+		int overHour = 0;
+		
+		for (TaskDetails entity : list) {
+			taskHour += entity.getTaskHour();
+			overHour += entity.getOverHour();
+		}
 		/*		    2018-1-8 优化:工时，加班工时任意填写其中一项，即可更新状态为完成 */
-		if (taskDetails.getTaskHour()>0||taskDetails.getOverHour()>0) {
+		if (taskHour>0||overHour>0) {
 			return true;
 		}
 		return false;
