@@ -186,7 +186,7 @@ public class ProjectCompleteController {
 
         	projectCompleteService.delete(id);
         }
-        return BaseOutput.success("删除成功").setData(complete.getId()+":"+complete.getName());
+        return BaseOutput.success("删除成功").setData(String.valueOf(complete.getId()+":"+complete.getName()));
     }
 
     @RequestMapping("/loadQuestion")
