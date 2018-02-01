@@ -112,7 +112,7 @@ public class TaskController {
 	@RequestMapping(value = "/listTeamPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listTeamPage(Task task, String phaseName) throws Exception {
 		if(task.getId()!=null){
-			return taskService.listEasyuiPageByExample(task,true).toString();
+			return taskService.listPageSelectTaskDto(task).toString();
 		}else  if(taskService.isNoTeam()||taskService.isCommittee()){//没有群组和委员会的都显示所有
 			return taskService.listPageSelectTaskDto(task).toString();
 		}else {

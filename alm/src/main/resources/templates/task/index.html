@@ -73,22 +73,22 @@
                 <th data-options="field:'phaseId',width:'10%',fixed:'false',_provider:'projectPhaseProvider'">
                     所属阶段
                 </th>
-                <th data-options="field:'owner',width:'8%',align:'center', fixed:'false',_provider:'memberProvider'">
+                <th data-options="field:'owner',width:'6%',align:'center', fixed:'false',_provider:'memberProvider'">
                     责任人
                 </th>
                 <th data-options="field:'planDays',width:'16%',align:'center', resizable:'true', fixed:'false'">
                     计划工时
                 </th>
-                <th data-options="field:'status',width:'6%', align:'center',  fixed:'false',_provider:'taskStateProvider'">
+                <th data-options="field:'status',width:'5%', align:'center',  fixed:'false',_provider:'taskStateProvider'">
                     状态
                 </th>
                 <th data-options="field:'progress',formatter:progressFormatter,fixed:'false'">
                     进度
                 </th>
-                <th data-options="field:'flowStr',width:'8%', align:'center', fixed:'false'">
+                <th data-options="field:'flowStr',width:'6%', align:'center', fixed:'false'">
                     流程
                 </th>
-                <th data-options="field:'options', width:'8%',formatter:formatOptions, align:'center', resizable:'true', fixed:'false'">
+                <th data-options="field:'options', width:'13%',formatter:formatOptions, align:'center', resizable:'true', fixed:'false'">
                     操作</th>
             </tr>
             </thead>
@@ -188,7 +188,7 @@
         <form name="detail_form" id="detail_form">
             <input name="taskId" id="taskId" type="hidden">
             <input name="taskHour" id="taskHour" type="hidden">
-            <table width="550px;" style="border:1px;-moz-padding:5px 5px 45px 5px;">
+            <table width="550px;" style="border:1px;padding:5px 5px 45px 5px;">
                 <tr>
                     <td style="padding: 0 5px;width: 50%">
                         <label  style="float: left;width:30%;">任务进度:</label>
@@ -223,7 +223,7 @@
         </form>
     </div>
         <!-- 隐藏工时信息详情 -->
-    <div id="task_detail_list" style="display:none;width:550px;-moz-padding:5px 5px 45px 5px;">
+    <div id="task_detail_list" style="display:none;width:550px;padding:5px 5px 45px 5px;">
         <hr>
          <h3>工时任务信息</h3>
  		 <table class="easyui-datagrid" style="height:120px" id="detail_grid" loadMsg="数据加载中..."  idField="id"
@@ -333,9 +333,58 @@
        }
        else{ $("#changeIdTr").css("display","none");$('#flowSt').combobox('select',1); }
     }
+    
+    function copyTask(row){
+        $("#task_detail").hide();
+        $("#dialog_toolbar").show();
+        $("#saveTask").show();
+        $("#dialog_toolbar_detail").hide();
+        $("#task_detail_list").hide();
+    	
+		var selected=$("#grid").datagrid('getData').rows[row];
+		
+		$('#dlg').dialog('open');
+        $('#dlg').dialog('center');	
+        
+        var formData = $.extend({},selected);
+        formData = addKeyStartWith(getOriginalData(formData),"_");
+        
+       
+        
+        $('#_form').form('load', formData);
+        $('#_form').form('load',{planTimeStr:formData._planTime});
+        
+        
+        
+        if(selected.flow){ $("#changeIdTr").css("display","block");
+                            loadChangePorjectSelect(formData._projectId); 
+                            $('#_changeId').combobox('select',formData._changeId);
+                            $('#flowSt').combobox('select',0); 
+                           }
+        else{ $("#changeIdTr").css("display","none");$('#flowSt').combobox('select',1); }
+        
+        
+        
+        loadMemberSelect(formData._projectId);
+        $('#_owner').combobox('select',formData._owner);
+
+			loadVisionSelect(formData._projectId);
+        $('#_versionId').combobox('select',formData._versionId);
+        
+        loadPhaseSelect(formData._versionId);
+        $('#_phaseId').combobox('select',formData._phaseId);
+        loadTaskSelect(formData._projectId);
+        $('#_beforeTask').combobox('select', formData._beforeTask);
+        
+        
+        $('#_form').form('load', {startDateShow:dateFormat_1(formData._startDate)});
+        $('#_form').form('load', {endDateShow:dateFormat_1(formData._endDate)}); 
+        $('#_phaseId').combobox('select',formData._phaseId);
+        $('#_form').form('load', {_id:formData.id});//清除ID
+    }
 
     function saveOrUpdate() {
-
+        
         var logInfo = "";
 		var moduleInfo="";
         $("#task_detail").hide();
@@ -523,6 +572,9 @@
     	}else{
     		var content = '<span style="padding:5px;color:#8B8B7A;text-decoration:underline;">执行任务</span>';
     	}
+    	if (isProjectManager()) {
+    		content += '<span style="padding:5px;"><a href="javascript:void(0)" onclick="copyTask(' + index + ')">复制任务</a></span>';
+        }
         return content;
     }
     //进度条处理
@@ -580,6 +632,8 @@
 
     }
 
+
+    
     function pauseTaskStatus() {
     	 $('#dlg').dialog('close');
         var id = $("#_id").val();

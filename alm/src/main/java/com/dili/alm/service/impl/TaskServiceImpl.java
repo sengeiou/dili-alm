@@ -148,7 +148,9 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 	@Override
 	public EasyuiPageOutput listPageSelectTaskDto(Task task) throws Exception {
-		List<Task> list = this.listByExample(task);// 查询出来
+		task.setOrder("desc");
+		task.setSort("created");
+		List<Task> list = this.listByExample(task);// 查询出来	
 		Page<Task> page = (Page<Task>) list;
 		@SuppressWarnings("unchecked")
 		Map<Object, Object> metadata = null == task.getMetadata() ? new HashMap<>() : task.getMetadata();
@@ -498,28 +500,28 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	@Transactional
 	@Override
 	public int startTask(Task task) {
-		//TODO:只更新任务状态
-		TaskDetails taskDetails=DTOUtils.newDTO(TaskDetails.class);
+		
+		/*TaskDetails taskDetails=DTOUtils.newDTO(TaskDetails.class);
 		taskDetails.setTaskId(task.getId());
 		List<TaskDetails> byExample = taskDetailsService.list(taskDetails);
 		int size = byExample.size();
 		
-		if (task.getStatus() != 2) {
+				if (task.getStatus() != 2) {
 			
 			//如果大于0判定为重复提交
 			if(size>0){
 				return 0 ;
 			}
-/*			
+			
 			taskDetails.setTaskId(task.getId());
 			taskDetails.setCreated(new Date());
 			taskDetails.setTaskHour((short) 0);
 			taskDetails.setOverHour((short) 0);
 			taskDetails.setTaskTime("{}");
 			taskDetails.setCreateMemberId(task.getModifyMemberId());
-			taskDetailsService.insert(taskDetails);*/
-		}
-
+			taskDetailsService.insert(taskDetails);
+		}*/
+		//只更新任务状态
 		task.setFactBeginDate(new Date());
 		task.setStatus(TaskStatus.START.code);// 更新状态为开始任务
 		Project project = this.projectMapper.selectByPrimaryKey(task.getProjectId());
@@ -1015,8 +1017,8 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		List<Role> currentUsercurrent = roleRpc.listRoleByUserId(userTicket.getId()).getData();
 		for (Role role : currentUsercurrent) {
-			//TODO:判断条件修改
-			if (role.getId().byteValue()==16||role.getId().byteValue()==17) {//委员会&委员会组长
+			//避免ID不一致的问题，用真实名字比对
+			if (role.getRoleName().equals("项目委员会")||role.getRoleName().equals("委员会组长")) {//委员会&委员会组长
 				return true;
 			}
 		}
