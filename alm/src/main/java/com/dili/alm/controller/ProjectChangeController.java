@@ -11,10 +11,12 @@ import com.dili.alm.service.VerifyApprovalService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.sysadmin.sdk.session.SessionContext;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -140,7 +142,7 @@ public class ProjectChangeController {
         projectChange.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
         projectChangeService.insertSelective(projectChange);
         projectChangeService.approve(projectChange);
-        return BaseOutput.success("新增成功").setData(projectChange.getId()+":"+projectChange.getName());
+        return BaseOutput.success("新增成功").setData(String.valueOf(projectChange.getId()+":"+projectChange.getName()));
     }
 
     @ApiOperation("修改ProjectChange")
@@ -151,7 +153,7 @@ public class ProjectChangeController {
         projectChange.setSubmitDate(new Date());
         projectChangeService.updateSelective(projectChange);
         projectChangeService.approve(projectChange);
-        return BaseOutput.success("修改成功").setData(projectChange.getId()+":"+projectChange.getName());
+        return BaseOutput.success("修改成功").setData(String.valueOf(projectChange.getId()+":"+projectChange.getName()));
     }
 
     @ApiOperation("删除ProjectChange")
@@ -164,6 +166,6 @@ public class ProjectChangeController {
         	messageService.deleteMessage(id, AlmConstants.MessageType.CHANGE.code);
         	projectChangeService.delete(id);
         }
-        return BaseOutput.success("删除成功").setData(change.getId()+":"+change.getName());
+        return BaseOutput.success("删除成功").setData(String.valueOf(change.getId()+":"+change.getName()));
     }
 }

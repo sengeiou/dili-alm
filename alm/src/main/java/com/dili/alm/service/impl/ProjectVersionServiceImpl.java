@@ -175,7 +175,7 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		if(projectVersion!=null){
 			super.delete(id);
 		}
-		return BaseOutput.success("删除成功").setData(projectVersion.getId()+":"+projectVersion.getVersion());
+		return BaseOutput.success("删除成功").setData(String.valueOf(projectVersion.getId()+":"+projectVersion.getVersion()));
 	}
 
 	@Override
