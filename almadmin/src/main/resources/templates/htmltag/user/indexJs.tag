@@ -600,7 +600,7 @@ function requestSave(url, data, callback) {
 function queryRole(userid) {
 	var departmentId = $('#_departmentId').combotree('getValue');
 	if (!userid) {
-		loadData4DataList("withoutRoleDatalist", "${contextPath!}/role/listByDepartment" + (departmentId ? departmentId : ''));
+		loadData4DataList("withoutRoleDatalist", "${contextPath!}/role/listByDepartment?departmentId=" + (departmentId ? departmentId : ''));
 	} else {
 		loadData4DataList("withRoleDatalist", "${contextPath!}/role/listByUserId", {
 					userid : userid
