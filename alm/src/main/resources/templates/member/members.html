@@ -47,6 +47,9 @@
     }
 
 	function formatDep(val, row) {
+		if(!row.department){
+			return '';
+		}
 		return row.department.name;
 	}
 

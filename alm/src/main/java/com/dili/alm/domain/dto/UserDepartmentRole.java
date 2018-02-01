@@ -1,13 +1,9 @@
 package com.dili.alm.domain.dto;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import com.dili.alm.domain.Department;
 import com.dili.alm.domain.Role;
-import com.dili.alm.domain.Team;
-import com.dili.alm.domain.TeamEntity;
 import com.dili.alm.domain.User;
 
 public class UserDepartmentRole extends User {
