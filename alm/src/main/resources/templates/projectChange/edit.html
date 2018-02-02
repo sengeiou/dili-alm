@@ -195,6 +195,7 @@
                         $("#projectName").textbox("setText", data.name);
                         $("#projectType").textbox("setText", data.type);
                         $("#number").val(data.serialNumber);
+                        $("#estimateLaunchDate").datebox('setValue', data.estimateLaunchDate);
                         $('#versionId').combobox({
                             url: '${contextPath}/project/version/listPage?projectId=' + projectValue,
                             valueField: 'id',
@@ -219,7 +220,6 @@
         });
         $("#type").combobox("setValue",'${obj.type}');
         $("#affectsOnline").combobox("setValue",'${obj.affectsOnline}');
-        $("#estimateLaunchDate").datebox("setValue",'${obj.estimateLaunchDate}');
     });
 </script>
 </#body>

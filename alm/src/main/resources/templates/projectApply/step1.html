@@ -63,7 +63,10 @@
                     <td colspan="4">
                         <span class="require">*</span>
                         <input class="easyui-textbox" type="text" name="name"
-                               data-options="required:true,validType:'length[1,20]',label:'项目名称:'" style="width: calc(100% - 205px);">
+                               data-options="required:true,tipPosition:'bottom',invalidMessage:'名称不超过20字符，且不能重复',validType:{
+		length:[1,20],
+		remote:['${contextPath}/projectApply/checkName','name']
+	},label:'项目名称:'" style="width: calc(100% - 205px);">
                     </td>
                 </tr>
                 <tr>
@@ -118,12 +121,12 @@
                     <td colspan="2">
                         <span class="require">*</span>
                         <input class="easyui-datebox" name="expectedLaunchDate" id="" style="width: calc(50% - 132px)"
-                               data-options="editable:false,required:true,label:'业务期望上线日期:'"/>
+                               data-options="editable:false,required:true,label:'业务期望上线日期:',validType:'md'"/>
                     </td>
                     <td colspan="2">
                         <span class="require">*</span>
                         <input class="easyui-datebox" name="estimateLaunchDate" id="" style="width: calc(50% - 132px)"
-                               data-options="editable:false,required:true,label:'预估最终上线日期:'"/>
+                               data-options="editable:false,required:true,label:'预估最终上线日期:',validType:'md'"/>
                     </td>
                 </tr>
                 <tr>
@@ -230,7 +233,7 @@
                 var d2 = $.fn.datebox.defaults.parser(value);
                 return d2 >= d1;
             },
-            message: '结束日期不能小于开始日期.'
+            message: '不能小于开始日期.'
         }
     });
 

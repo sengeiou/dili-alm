@@ -221,7 +221,7 @@ public class TaskController {
 		return taskService.listTaskByProjectId(projectId);
 	}
 
-	// 查询项目
+	// 查询变更项目
 	@ResponseBody
 	@RequestMapping(value = "/listTreeProjectChange.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public List<ProjectChange> listChangeProject(Long projectId) {
@@ -229,7 +229,7 @@ public class TaskController {
 		return list;
 	}
 
-	// 查询变更项目
+	// 查询项目
 	@ResponseBody
 	@RequestMapping(value = "/listTreeProject.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public List<Project> listProject() {

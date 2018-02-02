@@ -195,7 +195,7 @@
                         <div id="_progressShow" style="width:180px;"></div>
                         </td>
                          <td style="padding:5px;width: 50%">
-                        <input class="easyui-datebox"   name="modified" id="modified" style="width:100%;height:26px;" data-options="label:'任务日期:', required:true" />
+                        <input class="easyui-datebox"   name="modified" id="modified" editable="false" style="width:100%;height:26px;" data-options="label:'任务日期:', required:true" />
                         </td>
                 </tr>
                 <tr>
@@ -349,7 +349,7 @@
         var formData = $.extend({},selected);
         formData = addKeyStartWith(getOriginalData(formData),"_");
         
-       
+        canEdit();
         
         $('#_form').form('load', formData);
         $('#_form').form('load',{planTimeStr:formData._planTime});
