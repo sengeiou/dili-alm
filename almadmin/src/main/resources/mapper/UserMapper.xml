@@ -116,6 +116,7 @@
 		<result column="valid_time_begin" jdbcType="TIMESTAMP"
 			property="validTimeBegin" />
 		<result column="valid_time_end" jdbcType="TIMESTAMP" property="validTimeEnd" />
+		<result column="department_id" property="departmentId" />
 		<association javaType="com.dili.sysadmin.domain.Department"
 			property="department">
 			<result column="department_id" property="id" />
@@ -293,7 +294,8 @@
 		u.valid_time_end,
 		u.department_id
 		FROM `user` u
-		WHERE 1 = 1 AND (u.yn = 1 OR u.yn IS NULL)
+		WHERE
+		1 = 1 AND (u.yn = 1 OR u.yn IS NULL)
 		<if test="userName != null and userName != ''">
 			AND u.user_name = #{userName}
 		</if>
