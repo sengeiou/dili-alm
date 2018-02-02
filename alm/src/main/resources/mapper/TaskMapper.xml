@@ -307,7 +307,7 @@
     
      <select  id="selectProjectByTeam"  resultType="com.dili.alm.domain.Project" >
      select *  from project as p where p.id in
-		     (select t.project_id from team as t where t.member_id =#{selectOwner,jdbcType=BIGINT}) ORDER BY p.created DESC
+		     (select t.project_id from team as t where t.member_id =#{selectOwner,jdbcType=BIGINT}) and p.project_state &lt;&gt;2 and p.project_state &lt;&gt; 4 ORDER BY p.created DESC
     </select>
    <select  id="selectUserByTeam"  resultType="java.lang.Long" >
    

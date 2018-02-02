@@ -384,13 +384,10 @@
             	$('#detail_form').form('clear');
             	getDetailInfo(formData._id);
             }
-            
-            $('#detail_form').form('load', {modified:dateFormat_1(new Date())});
-			if(isProjectManager()){
-			 $("#modified").combobox({disabled:false});
-			}else{
-			 $("#modified").combobox({disabled:true });
+            if(isProjectManager()){
+			 $("#modified").datebox({disabled:false});
 			}
+            $('#detail_form').form('load', {modified:dateFormat_1(new Date())});
 
         }
         
