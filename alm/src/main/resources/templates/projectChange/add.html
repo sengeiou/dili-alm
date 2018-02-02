@@ -188,6 +188,10 @@
         url: '${contextPath}/project/getProjectList',
         valueField: 'id',
         textField: 'serialNumber',
+        formatter:function(row){
+            var opts = $(this).combobox('options');
+            return row[opts.textField] + "(" + row.name + ")";
+        },
         onChange: function (projectValue) {
             var datas = $("#projectId").combobox('getData');
             $("#projectName").textbox("initValue", "");
