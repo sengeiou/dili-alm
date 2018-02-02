@@ -17,4 +17,6 @@ public interface DepartmentRoleService extends BaseService<DepartmentRole, Long>
 	List<Map> listByProvider(DepartmentRole departmentRole);
 
 	BaseOutput<Object> updateAndGet(DepartmentRole departmentRole);
+
+	BaseOutput<Object> deleteAfterCheck(Long id);
 }

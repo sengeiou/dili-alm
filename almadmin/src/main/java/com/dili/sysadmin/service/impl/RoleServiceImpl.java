@@ -13,12 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.sysadmin.dao.DataAuthMapper;
+import com.dili.sysadmin.dao.DepartmentRoleMapper;
 import com.dili.sysadmin.dao.MenuMapper;
 import com.dili.sysadmin.dao.ResourceMapper;
 import com.dili.sysadmin.dao.RoleMapper;
 import com.dili.sysadmin.dao.RoleMenuMapper;
 import com.dili.sysadmin.dao.RoleResourceMapper;
 import com.dili.sysadmin.dao.UserRoleMapper;
+import com.dili.sysadmin.domain.DepartmentRole;
 import com.dili.sysadmin.domain.Menu;
 import com.dili.sysadmin.domain.Resource;
 import com.dili.sysadmin.domain.Role;
@@ -57,6 +59,8 @@ public class RoleServiceImpl extends BaseServiceImpl<Role, Long> implements Role
 	private RoleManager roleManager;
 	@Autowired
 	private DataAuthMapper dataAuthMapper;
+	@Autowired
+	private DepartmentRoleMapper departmentRoleMapper;
 
 	public RoleMapper getActualDao() {
 		return (RoleMapper) getDao();
@@ -116,6 +120,12 @@ public class RoleServiceImpl extends BaseServiceImpl<Role, Long> implements Role
 		int count = this.userRoleMapper.selectCount(record);
 		if (count > 0) {
 			return BaseOutput.failure("该角色下绑定了用户，请先解绑用户后再删除");
+		}
+		DepartmentRole dr = new DepartmentRole();
+		dr.setRoleId(roleId);
+		count = this.departmentRoleMapper.selectCount(dr);
+		if (count > 0) {
+			return BaseOutput.failure("角色绑定了部门，不能删除");
 		}
 		int rows = this.roleMapper.deleteByPrimaryKey(roleId);
 		if (rows <= 0) {

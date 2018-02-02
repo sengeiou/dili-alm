@@ -5,14 +5,18 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.dao.DepartmentRoleMapper;
+import com.dili.sysadmin.dao.UserRoleMapper;
 import com.dili.sysadmin.domain.DepartmentRole;
+import com.dili.sysadmin.domain.UserRole;
 import com.dili.sysadmin.service.DepartmentRoleService;
+import com.netflix.discovery.converters.Auto;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -20,6 +24,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class DepartmentRoleServiceImpl extends BaseServiceImpl<DepartmentRole, Long> implements DepartmentRoleService {
+
+	@Autowired
+	private UserRoleMapper userRoleMapper;
 
 	public DepartmentRoleMapper getActualDao() {
 		return (DepartmentRoleMapper) getDao();
@@ -87,6 +94,22 @@ public class DepartmentRoleServiceImpl extends BaseServiceImpl<DepartmentRole, L
 		metadata.put("roleId", roleNameProvider);
 
 		return ValueProviderUtils.buildDataByProvider(metadata, list);
+	}
+
+	@Override
+	public BaseOutput<Object> deleteAfterCheck(Long id) {
+		DepartmentRole dr = this.getActualDao().selectByPrimaryKey(id);
+		UserRole ur = new UserRole();
+		ur.setRoleId(dr.getRoleId());
+		int count = this.userRoleMapper.selectCount(ur);
+		if (count > 0) {
+			return BaseOutput.failure("该职位关联了用户，不能删除");
+		}
+		count = this.getActualDao().deleteByPrimaryKey(id);
+		if (count <= 0) {
+			return BaseOutput.failure("删除失败");
+		}
+		return BaseOutput.success();
 	}
 
 }
