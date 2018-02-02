@@ -97,7 +97,7 @@
                         </select>
                     </td>
                     <td>
-                        <input class="easyui-datebox" type="text" value="${obj.estimateLaunchDate}"
+                        <input class="easyui-datebox" type="text" value=""
                                id="estimateLaunchDate" name="estimateLaunchDate"
                                data-options="required:true,label:'变更后上线日期:'">
                     </td>
@@ -182,6 +182,7 @@
                 if (data.id == projectValue) {
                     $("#projectName").textbox("initValue", data.name);
                     $("#projectType").textbox("initValue", data.type);
+                    $("#estimateLaunchDate").datebox('setValue', data.estimateLaunchDate);
                     $("#number").val(data.serialNumber);
                     $('#versionId').combobox({
                         url: '${contextPath}/project/version/listPage?projectId=' + projectValue,
