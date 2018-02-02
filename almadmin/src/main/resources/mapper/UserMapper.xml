@@ -260,9 +260,9 @@
 		<if test="realName != null">
 			AND u.real_name like <![CDATA[concat('%',#{realName},'%')]]>
 		</if>
-		<if test="departmentId != null and departmentId.size > 0">
+		<if test="departmentIds != null and departmentIds.size > 0">
 			AND u.department_id IN
-			<foreach close=")" collection="departmentId" item="deptId"
+			<foreach close=")" collection="departmentIds" item="deptId"
 				open="(" separator=",">
 				#{deptId}
 			</foreach>

@@ -11,9 +11,10 @@ public class UserDepartmentRoleQuery implements Serializable {
 	private static final long serialVersionUID = -6910318745874677983L;
 
 	private Long userId;
-	private List<Long> departmentId;
+	private Long departmentId;
 	private Long roleId;
 	private String realName;
+	private List<Long> departmentIds;
 
 	public static long getSerialVersionUID() {
 		return serialVersionUID;
@@ -35,11 +36,11 @@ public class UserDepartmentRoleQuery implements Serializable {
 		this.userId = userId;
 	}
 
-	public List<Long> getDepartmentId() {
+	public Long getDepartmentId() {
 		return departmentId;
 	}
 
-	public void setDepartmentId(List<Long> departmentId) {
+	public void setDepartmentId(Long departmentId) {
 		this.departmentId = departmentId;
 	}
 
@@ -49,6 +50,14 @@ public class UserDepartmentRoleQuery implements Serializable {
 
 	public void setRoleId(Long roleId) {
 		this.roleId = roleId;
+	}
+
+	public List<Long> getDepartmentIds() {
+		return departmentIds;
+	}
+
+	public void setDepartmentIds(List<Long> departmentIds) {
+		this.departmentIds = departmentIds;
 	}
 
 }

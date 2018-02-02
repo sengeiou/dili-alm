@@ -516,6 +516,14 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
 	@Override
 	public List<UserDepartmentRole> findUserContainDepartmentAndRole(UserDepartmentRoleQuery query) {
+		if (query.getDepartmentId() != null && query.getDepartmentId() > 0) {
+			List<Department> depts = this.departmentMapper.getChildDepartments(query.getDepartmentId());
+			if (CollectionUtils.isNotEmpty(depts)) {
+				List<Long> ids = new ArrayList<>(depts.size());
+				depts.forEach(d -> ids.add(d.getId()));
+				query.setDepartmentIds(ids);
+			}
+		}
 		return this.getActualDao().findUserContainDepartmentAndRole(query);
 	}
 
