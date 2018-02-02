@@ -174,8 +174,10 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 		if (user == null) {
 			return BaseOutput.failure("用户不存在");
 		}
-		user.setYn(0);
-		this.userMapper.updateByPrimaryKey(user);
+		count = this.userMapper.deleteByPrimaryKey(userId);
+		if (count <= 0) {
+			return BaseOutput.failure("删除失败");
+		}
 		UserRole userRole = new UserRole();
 		userRole.setUserId(userId);
 		this.userRoleMapper.delete(userRole);
