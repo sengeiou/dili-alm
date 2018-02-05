@@ -284,6 +284,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
                         } else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.COMPLETE.getCode())) {
                             ProjectComplete complete = projectCompleteService.get(approve.getProjectApplyId());
                             complete.setStatus(AlmConstants.ApplyState.PASS.getCode());
+                            closeProject(complete);
                             projectCompleteService.updateSelective(complete);
                             sendMail(complete, true);
                         }
@@ -561,6 +562,13 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
         projectService.insertSelective(build);
         buildTeam(build);
 //        buildFile(apply.getId(), build.getId());
+    }
+
+    private void closeProject(ProjectComplete complete){
+        Long projectId = complete.getProjectId();
+        Project project = projectService.get(projectId);
+        project.setProjectState(ProjectState.CLOSED.getValue());
+        projectService.updateSelective(project);
     }
 
     /**
