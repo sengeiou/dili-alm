@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectQueryDto;
@@ -196,6 +197,9 @@ public class ProjectController {
 			UserTicket user = SessionContext.getSessionContext().getUserTicket();
 			Boolean projectManager = this.teamService.teamMemberIsProjectManager(user.getId(), id);
 			Boolean projectMember = this.teamService.currentUserIsTeamMember(user.getId(), id);
+			if (model.get("projectState").equals(ProjectState.CLOSED.getValue())) {
+				editable = false;
+			}
 			map.addAttribute("model", model).addAttribute("editable", editable)
 					.addAttribute("projectManager", projectManager).addAttribute("projectMember", projectMember)
 					.addAttribute("loginUserId", user.getId()).addAttribute("backUrl",

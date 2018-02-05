@@ -36,6 +36,9 @@ function memberFormatter(value, row, index) {
 }
 
 function optFormatter(value, row) {
+	if (row.$_projectState == 4) {
+		return '管理';
+	}
 	return '<a href="${contextPath!}/project/detail.html?id=' + row.id + '&editable=true&backUrl=' + encodeURIComponent('${contextPath!}/project/index.html') + '">管理</a>';
 }
 
