@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.codehaus.jackson.JsonGenerationException;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.constant.AlmConstants.TaskStatus;
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.dao.ProjectPhaseMapper;
@@ -26,6 +28,7 @@ import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.TaskDetailsMapper;
 import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.dao.TeamMapper;
+import com.dili.alm.domain.DataDictionaryValue;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.ProjectChange;
@@ -1014,11 +1017,22 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 	@Override
 	public boolean isCommittee() {
+        DataDictionaryDto code = dataDictionaryService.findByCode(AlmConstants.ROLE_CODE);
+        List<DataDictionaryValueDto> values = code.getValues();
+        String roleId = values.stream()
+                .filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH))
+                .findFirst().map(DataDictionaryValue::getValue)
+                .orElse(null);
+        
+        String roleId2 = values.stream()
+                .filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH_LEADER))
+                .findFirst().map(DataDictionaryValue::getValue)
+                .orElse(null);
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		List<Role> currentUsercurrent = roleRpc.listRoleByUserId(userTicket.getId()).getData();
 		for (Role role : currentUsercurrent) {
 			//避免ID不一致的问题，用真实名字比对
-			if (role.getRoleName().equals("项目委员会")||role.getRoleName().equals("委员会组长")) {//委员会&委员会组长
+			if (role.getId().toString().equals(roleId)||role.getId().toString().equals(roleId2)) {//委员会&委员会组长
 				return true;
 			}
 		}

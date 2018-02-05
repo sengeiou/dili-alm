@@ -465,6 +465,7 @@ public class TaskController {
 		task.setStatus(TaskStatus.COMPLETE.code);// 更新状态为完成
 		task.setModified(new Date());
 		task.setModifyMemberId(userTicket.getId());
+		task.setFactEndDate(new Date());
 		taskService.update(task);
 		
 		Project project = projectService.get(task.getProjectId());
