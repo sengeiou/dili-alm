@@ -298,7 +298,7 @@
 
         canEdit();
 
-        if(!isCreater(selected.id)){
+        if(!isCreater(selected.id)||!selected.updateDetail){
         	noEdit();
           }
 
@@ -441,6 +441,11 @@
        	 $.messager.alert('警告', '并非任务创建者,不能执行删除操作');
             return;
        }
+        
+        if(!selected.updateDetail){
+          	 $.messager.alert('警告', '已结项,不能执行删除操作');
+             return;
+        }
 
         if (selected.status != "未开始") {
         	$.messager.alert('警告', '不是未开始的任务不能删除！');
