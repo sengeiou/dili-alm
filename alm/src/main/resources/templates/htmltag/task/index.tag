@@ -576,5 +576,14 @@ function isTask(id){
 		}
     }
     
-
+    $.extend($.fn.validatebox.defaults.rules, {
+        checkDate: {
+            validator: function(value, param) {
+                var nowDate = new Date();
+                var d1 = new Date(value.replace(/\-/g, "\/")); 
+                return d1 < nowDate;
+            },
+            message: '不能选择未来日期！'
+        }
+    });
   
