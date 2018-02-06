@@ -272,7 +272,12 @@ public class ProjectApplyController {
 
     @RequestMapping(value = "/checkName")
     public @ResponseBody
-    Object checkName(String name) {
+    Object checkName(String name, String org) {
+        if (StringUtils.isNotBlank(name) && StringUtils.isNotBlank(org)) {
+            if (name.equals(org)) {
+                return true;
+            }
+        }
         if (StringUtils.isNotBlank(name)) {
             ProjectApplyQuery appExample = DTOUtils.newDTO(ProjectApplyQuery.class);
             appExample.setName(name);
