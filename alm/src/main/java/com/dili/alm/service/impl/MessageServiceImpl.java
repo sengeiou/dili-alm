@@ -12,6 +12,7 @@ import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.DataDictionaryValueMapper;
 import com.dili.alm.dao.MessageMapper;
+import com.dili.alm.domain.Approve;
 import com.dili.alm.domain.DataDictionaryValue;
 import com.dili.alm.domain.Message;
 import com.dili.alm.domain.ProjectApply;
@@ -21,6 +22,7 @@ import com.dili.alm.domain.Task;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.MessageDto;
+import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.MessageService;
 import com.dili.alm.service.ProjectApplyService;
@@ -51,14 +53,10 @@ public class MessageServiceImpl extends BaseServiceImpl<Message, Long> implement
     @Autowired
     private DataDictionaryService dataDictionaryService;
     @Autowired
-    private ProjectApplyService projectApplyService;
+    private ApproveService approveService;
     @Autowired
     private TaskService taskService;
-    @Autowired
-    private ProjectChangeService projectChangeService;
 
-    @Autowired
-    private ProjectCompleteService projectCompleteService;
     private static final String MESSAGE_TYPE_CODE = "message_type";
 	@Override
 	public int insertMessage(String messageUrl, Long sender, Long recipient,Integer type) {
@@ -144,7 +142,7 @@ public class MessageServiceImpl extends BaseServiceImpl<Message, Long> implement
 		 Long id =Long.parseLong(split[split.length-1]);
 		 switch (type) {
            case 1:
-               ProjectApply projectApply = projectApplyService.get(id);
+        	   Approve projectApply = approveService.get(id);
                if(projectApply.getName().length()>5){
                	messageName.append(projectApply.getName().substring(0,5)).append("...");
                }else{
@@ -160,7 +158,7 @@ public class MessageServiceImpl extends BaseServiceImpl<Message, Long> implement
                }
                break;
            case 4:
-           	ProjectComplete projectComplete = projectCompleteService.get(id);
+        	   Approve projectComplete = approveService.get(id);
            	if(projectComplete.getName().length()>5){
                	messageName.append(projectComplete.getName().substring(0,5)).append("...");
                }else{
@@ -168,7 +166,7 @@ public class MessageServiceImpl extends BaseServiceImpl<Message, Long> implement
                }
                break;
            case 6:
-           	ProjectChange projectChange = projectChangeService.get(id);
+        	   Approve projectChange = approveService.get(id);
                if(projectChange.getName().length()>5){
                	messageName.append(projectChange.getName().substring(0,5)).append("...");
                }else{
