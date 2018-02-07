@@ -225,6 +225,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			for (TaskDetails entity : taskDetailsList) {//循环累加
 				if (entity.getTaskHour() != null) {//排除只填写加班工时
 				   totalTaskHour += entity.getTaskHour();
+				   totalTaskHour += entity.getOverHour();
 				}
 /*				if(entity.getOverHour() != null){ //排除只填写任务工时的情况
 					totalTaskHour += entity.getTaskHour();
