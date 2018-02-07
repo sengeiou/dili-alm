@@ -195,7 +195,7 @@
                         <div id="_progressShow" style="width:170px;"></div>
                         </td>
                          <td style="padding:5px;width: 50%">
-                        <input class="easyui-datebox"   name="modified" id="modified" editable="false" style="width:100%;height:26px;" data-options="label:'任务日期:', required:true,validType:'checkDate'" />
+                        <input class="easyui-datebox"   name="modified" id="modified" editable="false" style="width:100%;height:26px;" editable="false" data-options="label:'任务日期:', required:true,validType:'checkDate'" />
                         </td>
                 </tr>
                 <tr>
@@ -577,8 +577,8 @@
     	}else{
     		var content = '<span style="padding:5px;color:#8B8B7A;text-decoration:underline;">执行任务</span>';
     	}
-    	if (isProjectManager()) {
-    		content += '<span style="padding:5px;"><a href="javascript:void(0)" onclick="copyTask(' + index + ')">复制任务</a></span>';
+    	if (row.copyButton) {
+    		content += '<span style="padding:5px;"><a href="javascript:void(0)" onclick="copyTask(' + index + ')">复制</a></span>';
         }
         return content;
     }

@@ -242,6 +242,13 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 					dto.setUpdateDetail(false);
 				}
 			}
+			
+			if (!isProjeactComplate(task.getProjectId())&&isProjectManager()) {
+				dto.setCopyButton(true);
+			}else
+			{
+				dto.setCopyButton(false);
+			}
 			target.add(dto);
 		}
 		return target;

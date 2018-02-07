@@ -69,8 +69,18 @@ public class TaskEntity extends BaseDomain implements Task {
 	
 	Boolean updateDetail;
 	
+	Boolean copyButton;
 	
 	
+	
+
+	public Boolean getCopyButton() {
+		return copyButton;
+	}
+
+	public void setCopyButton(Boolean copyButton) {
+		this.copyButton = copyButton;
+	}
 
 	public Boolean getUpdateDetail() {
 		return updateDetail;

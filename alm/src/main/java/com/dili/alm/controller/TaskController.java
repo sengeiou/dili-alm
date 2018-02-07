@@ -378,7 +378,12 @@ public class TaskController {
 			taskDetails.setOverHour(overHour);
 			taskDetails.setCreateMemberId(userTicket.getId());//填写人
 			taskDetails.setCreated(new Date());//实际修改填写日期
-			taskDetails.setModified(taskDetails.getModified());//任务应该填写日期
+			if (taskDetails.getModified()==null||taskDetails.getModified().equals("")) {
+				taskDetails.setModified(new Date());
+			}else{
+				taskDetails.setModified(taskDetails.getModified());//任务应该填写日期
+			}
+			
 			taskDetails.setModifyMemberId(task.getOwner());//责任人
 			/* 基础信息设置 */
 			taskService.updateTaskDetail(taskDetails, task);// 保存任务
