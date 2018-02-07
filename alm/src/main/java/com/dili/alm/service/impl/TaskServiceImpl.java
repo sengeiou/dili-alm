@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.constant.AlmConstants.TaskStatus;
 import com.dili.alm.dao.ProjectMapper;
@@ -29,7 +28,6 @@ import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.TaskDetailsMapper;
 import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.dao.TeamMapper;
-import com.dili.alm.domain.AlarmConfig;
 import com.dili.alm.domain.DataDictionaryValue;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectApply;
@@ -68,7 +66,6 @@ import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 
 
@@ -225,7 +222,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			for (TaskDetails entity : taskDetailsList) {//循环累加
 				if (entity.getTaskHour() != null) {//排除只填写加班工时
 				   totalTaskHour += entity.getTaskHour();
-				   totalTaskHour += entity.getOverHour();
 				}
 /*				if(entity.getOverHour() != null){ //排除只填写任务工时的情况
 					totalTaskHour += entity.getTaskHour();
@@ -246,7 +242,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 					dto.setUpdateDetail(false);
 				}
 			}
-			//TODO:项目完成 
 			target.add(dto);
 		}
 		return target;
@@ -401,32 +396,18 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		return "";
 	}
 
-	// 计算阶段进度  常规工时+加班工时/项目(版本，阶段）下任务计划工时+变更预估工时
+	// 计算阶段进度
 	private void saveProjectPhase(Task task) {
 		// 获取阶段信息 已执行的工时/计划工时累加
 		ProjectPhase projectPhase = projectPhaseService.get(task.getPhaseId());
 		int progress = 0;
 		double totalPlanTime = 0;
 		double totalTaskTime = 0;
-		
-		//查询项目变更的累加
-		ProjectChange projectChange  = DTOUtils.newDTO(ProjectChange.class);
-		projectChange.setPhaseId(task.getPhaseId());
-		
-		List<ProjectChange> projectChangeList =  projectChangeService.list(projectChange);
-		if (projectChangeList!=null&&projectChangeList.size()>0) {
-			for (ProjectChange projectChange2 : projectChangeList) {
-				if (!WebUtil.strIsEmpty(projectChange2.getWorkingHours())) {
-					totalPlanTime += Double.parseDouble(projectChange2.getWorkingHours());
-				}
-			}
-		}
-
 		Task taskSelect = DTOUtils.newDTO(Task.class);
 		taskSelect.setPhaseId(task.getPhaseId());
 		List<Task> taskList = this.list(taskSelect);
 		for (Task taskResult : taskList) {
-			totalPlanTime += taskResult.getPlanTime();//加上计划工时
+			totalPlanTime += taskResult.getPlanTime();
 			TaskDetails taskDetailsSelect = DTOUtils.newDTO(TaskDetails.class);
 			taskDetailsSelect.setTaskId(taskResult.getId());
 			List<TaskDetails> taskDetailsList = taskDetailsService.list(taskDetailsSelect);
@@ -443,26 +424,12 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 	// 计算版本进度
 	private void saveProjectVersion(Task task) {
-		
+		// 获取阶段信息 已执行的工时/计划工时累加
+		ProjectVersion projectVersion = projectVersionService.get(task.getVersionId());
+
 		int progress = 0;
 		double totalPlanTime = 0;
 		double totalTaskTime = 0;
-		
-		// 获取阶段信息 已执行的工时/计划工时累加
-		ProjectVersion projectVersion = projectVersionService.get(task.getVersionId());
-		//查询项目变更的累加
-		ProjectChange projectChange  = DTOUtils.newDTO(ProjectChange.class);
-		projectChange.setVersionId(task.getVersionId());
-		
-		List<ProjectChange> projectChangeList =  projectChangeService.list(projectChange);
-		if (projectChangeList!=null&&projectChangeList.size()>0) {
-			for (ProjectChange projectChange2 : projectChangeList) {
-				if (!WebUtil.strIsEmpty(projectChange2.getWorkingHours())) {
-					totalPlanTime += Double.parseDouble(projectChange2.getWorkingHours());
-				}
-			}
-		}
-
 
 		Task taskSelect = DTOUtils.newDTO(Task.class);
 		taskSelect.setVersionId(task.getVersionId());
@@ -490,9 +457,9 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	private void saveProjectProgress(Task task,boolean signComplate) {
 
 		int progress = 0;
-		double total = 0;
+
 		Project project = projectService.get(task.getProjectId());
-/*		// 相对应的立项信息
+		// 相对应的立项信息
 		ProjectApply projectApply = projectApplyService.get(project.getApplyId());
 
 		ApplyMajorResource applyMajorResource = JSON.parseObject(
@@ -507,8 +474,9 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		for (int i = 0; i < list.size(); i++) {
 			ApplyRelatedResource applyRelatedResource = list.get(i);
 			total += Optional.ofNullable(applyRelatedResource.getRelatedWorkTime()).orElse(0)*8;
-		}*/
+		}
 
+		
 		//查询项目变更的累加
 		ProjectChange projectChange  = DTOUtils.newDTO(ProjectChange.class);
 		projectChange.setProjectId(task.getProjectId());
@@ -537,7 +505,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 				taskTimes += taskDetailsDome.getTaskHour();
 				taskTimes += taskDetailsDome.getOverHour();
 			}
-			total += taskDome.getPlanTime();
 		}
 		progress = (int) (( taskTimes / total)* 100);
 		project.setCompletedProgress(progress);
