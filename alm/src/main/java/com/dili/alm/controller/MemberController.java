@@ -4,8 +4,11 @@ import com.dili.alm.cache.AlmCache;
 import com.dili.alm.domain.Department;
 import com.dili.alm.domain.dto.UserDepartmentRole;
 import com.dili.alm.domain.dto.UserDepartmentRoleQuery;
+import com.dili.alm.provider.DepProvider;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.ss.domain.BaseOutput;
+
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -25,14 +28,19 @@ public class MemberController {
 
 	@Autowired
 	private UserRpc userRPC;
+	@Autowired
+	private DepProvider depProvider;
 
 	@RequestMapping(value = "/members.html", method = RequestMethod.GET)
-	public String members(ModelMap modelMap, @RequestParam("textboxId") String textboxId ,String dep) {
+	public String members(ModelMap modelMap, @RequestParam("textboxId") String textboxId, String dep) {
 		modelMap.put("textboxId", textboxId);
 		modelMap.put("dep", dep);
-		if(StringUtils.isNotBlank(dep)){
-			AlmCache.DEP_MAP.forEach((Long k, Department v) ->{
-				if(Objects.equals(v.getCode(), dep)){
+		if (StringUtils.isNotBlank(dep)) {
+			if (MapUtils.isEmpty(AlmCache.DEP_MAP)) {
+				this.depProvider.init();
+			}
+			AlmCache.DEP_MAP.forEach((Long k, Department v) -> {
+				if (Objects.equals(v.getCode(), dep)) {
 					modelMap.put("dep", k);
 				}
 			});
@@ -41,7 +49,8 @@ public class MemberController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "/members", method = { RequestMethod.GET, RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@RequestMapping(value = "/members", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public List<UserDepartmentRole> membersJson(UserDepartmentRoleQuery user) {
 		BaseOutput<List<UserDepartmentRole>> output = this.userRPC.findUserContainDepartmentAndRole(user);
 		if (output.isSuccess()) {
