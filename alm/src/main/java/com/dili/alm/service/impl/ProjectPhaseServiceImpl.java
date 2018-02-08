@@ -1,6 +1,7 @@
 package com.dili.alm.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dili.alm.cache.AlmCache;
 import com.dili.alm.dao.FilesMapper;
 import com.dili.alm.dao.ProjectChangeMapper;
 import com.dili.alm.dao.ProjectPhaseMapper;
@@ -14,6 +15,7 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -220,14 +222,25 @@ public class ProjectPhaseServiceImpl extends BaseServiceImpl<ProjectPhase, Long>
 		if (count > 0) {
 			return BaseOutput.failure("该阶段关联了需求变更不能删除");
 		}
+		ProjectPhase projectPhase = this.get(id);
 		int result = this.delete(id);
 		if (result <= 0) {
 			return BaseOutput.failure("删除失败");
 		}
 		Files condition = DTOUtils.newDTO(Files.class);
 		condition.setPhaseId(id);
-		this.fileMapper.delete(condition);
-		return BaseOutput.success();
+		Files selectOne = fileMapper.selectOne(condition);
+		if(selectOne!=null){
+			this.fileMapper.delete(condition);
+		}
+		Map<Object, Object> model = null;
+		try {
+			model = this.parseEasyUiModel(projectPhase);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return BaseOutput.success("删除成功").setData(model);
 	}
 
 }

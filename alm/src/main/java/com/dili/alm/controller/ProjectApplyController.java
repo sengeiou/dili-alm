@@ -3,12 +3,12 @@ package com.dili.alm.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.constant.AlmConstants;
+import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectApply;
+import com.dili.alm.domain.ProjectApplyQuery;
 import com.dili.alm.domain.dto.apply.*;
 import com.dili.alm.provider.ProjectTypeProvider;
-import com.dili.alm.service.DataDictionaryService;
-import com.dili.alm.service.FilesService;
-import com.dili.alm.service.ProjectApplyService;
+import com.dili.alm.service.*;
 import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -22,6 +22,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -51,6 +52,11 @@ public class ProjectApplyController {
 
     @Autowired
     FilesService filesService;
+    @Autowired
+    private MessageService messageService;
+
+    @Autowired
+    private ProjectService projectService;
 
 
     @ApiOperation("跳转到ProjectApply页面")
@@ -159,7 +165,7 @@ public class ProjectApplyController {
     public @ResponseBody
     BaseOutput insert(ProjectApply projectApply) {
         projectApplyService.insertApply(projectApply);
-        return BaseOutput.success(String.valueOf(projectApply.getId()));
+        return BaseOutput.success(String.valueOf(projectApply.getId())).setData(projectApply.getId() + ":" + projectApply.getName());
     }
 
     @RequestMapping(value = "/insertStep1", method = {RequestMethod.GET, RequestMethod.POST})
@@ -167,7 +173,7 @@ public class ProjectApplyController {
     BaseOutput insertStep1(ProjectApply projectApply, ApplyMajorResource majorResource) {
         projectApply.setResourceRequire(JSON.toJSONString(majorResource));
         projectApplyService.updateSelective(projectApply);
-        return BaseOutput.success(String.valueOf(projectApply.getId()));
+        return BaseOutput.success(String.valueOf(projectApply.getId())).setData(projectApply.getId() + ":" + projectApply.getName());
     }
 
     @RequestMapping(value = "/insertStep2", method = {RequestMethod.GET, RequestMethod.POST})
@@ -175,7 +181,7 @@ public class ProjectApplyController {
     BaseOutput insertStep2(ProjectApply projectApply, ApplyDescription description) {
         projectApply.setDescription(JSON.toJSONString(description));
         projectApplyService.updateSelective(projectApply);
-        return BaseOutput.success(String.valueOf(projectApply.getId()));
+        return BaseOutput.success(String.valueOf(projectApply.getId())).setData(projectApply.getId() + ":" + projectApply.getName());
     }
 
     @RequestMapping(value = "/insertStep3", method = {RequestMethod.GET, RequestMethod.POST})
@@ -183,14 +189,14 @@ public class ProjectApplyController {
     BaseOutput insertStep3(ProjectApply projectApply, ApplyGoalsFunctions goalsFunctions) {
         projectApply.setGoalsFunctions(JSON.toJSONString(goalsFunctions));
         projectApplyService.updateSelective(projectApply);
-        return BaseOutput.success(String.valueOf(projectApply.getId()));
+        return BaseOutput.success(String.valueOf(projectApply.getId())).setData(projectApply.getId() + ":" + projectApply.getName());
     }
 
     @RequestMapping(value = "/insertStep", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
     BaseOutput insertStep(ProjectApply projectApply) {
         projectApplyService.updateSelective(projectApply);
-        return BaseOutput.success(String.valueOf(projectApply.getId()));
+        return BaseOutput.success(String.valueOf(projectApply.getId())).setData(projectApply.getId() + ":" + projectApply.getName());
     }
 
     @RequestMapping(value = "/submit", method = {RequestMethod.GET, RequestMethod.POST})
@@ -258,9 +264,30 @@ public class ProjectApplyController {
     BaseOutput delete(Long id) {
         ProjectApply apply = projectApplyService.get(id);
         if (apply != null && apply.getCreateMemberId().equals(SessionContext.getSessionContext().getUserTicket().getId())) {
+            messageService.deleteMessage(id, AlmConstants.MessageType.APPLY.code);
             projectApplyService.delete(id);
         }
-        return BaseOutput.success("删除成功");
+        return BaseOutput.success("删除成功").setData(apply.getId() + ":" + apply.getName());
     }
 
+    @RequestMapping(value = "/checkName")
+    public @ResponseBody
+    Object checkName(String name, String org) {
+        if (StringUtils.isNotBlank(name) && StringUtils.isNotBlank(org)) {
+            if (name.equals(org)) {
+                return true;
+            }
+        }
+        if (StringUtils.isNotBlank(name)) {
+            ProjectApplyQuery appExample = DTOUtils.newDTO(ProjectApplyQuery.class);
+            appExample.setName(name);
+            List<ProjectApply> applyList = projectApplyService.listByExample(appExample);
+
+            Project project = DTOUtils.newDTO(Project.class);
+            project.setName(name);
+            List<Project> projectList = projectService.listByExample(project);
+            return CollectionUtils.isEmpty(applyList) && CollectionUtils.isEmpty(projectList);
+        }
+        return false;
+    }
 }

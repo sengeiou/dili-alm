@@ -3,9 +3,11 @@
     td {
         padding-left: 60px;
     }
-    .easyui-textbox{
+
+    .easyui-textbox {
         width: 100%;
     }
+
     .datebox-button td {
         padding-left: 0;
     }
@@ -27,16 +29,19 @@
     .title-second {
         padding-left: 30px;
     }
-    .textbox-label{
+
+    .textbox-label {
         width: 100px;
     }
-    .panel-tool{
-        top:10px;
+
+    .panel-tool {
+        top: 10px;
         height: 24px;
     }
 </style>
 <div id="cusTools">
-    <a onclick="window.location.href='${contextPath}/projectChange/index.html';" class="easyui-linkbutton" style="width: 50px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">返回</a>
+    <a onclick="window.location.href='${contextPath}/projectChange/index.html';" class="easyui-linkbutton"
+       style="width: 50px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">返回</a>
 </div>
 <div id="smDialog" style="display: none;"></div>
 <div class="easyui-panel" title="变更申请" style="height: 100%"
@@ -89,7 +94,7 @@
                         </select>
                     </td>
                     <td>
-                        <input class="easyui-datebox" type="text" id="estimateLaunchDate" name="estimateLaunchDate"
+                        <input value='${obj.estimateLaunchDate,dateFormat ="yyyy-MM-dd"}' class="easyui-datebox" type="text" id="estimateLaunchDate" name="estimateLaunchDate"
                                data-options="editable:false,required:true,label:'变更后上线日期:'">
                     </td>
                 </tr>
@@ -120,7 +125,8 @@
                 </tr>
                 <tr>
                     <td colspan="4">
-                        <input class="easyui-tagbox" id="tagbx" data-options="prompt: '输完后回车才能生效哦!'" value="${obj.email}" style="width:100%">
+                        <input class="easyui-tagbox" id="tagbx" data-options="prompt: '输完后回车才能生效哦!'"
+                               value="${obj.email}" style="width:100%">
                     </td>
                 </tr>
             </table>
@@ -145,14 +151,16 @@
         }
     });
 
-    function submitForm(type,obj) {
+    var add = false;
+
+    function submitForm(type, obj) {
         $('#ff').form('submit', {
             url: "${contextPath}/projectChange/update",
             onSubmit: function () {
                 $("#status").val(type);
                 var data = $("#tagbx").tagbox("getValues");
                 $("#email").val(data.join());
-                if($("#ff").form('validate')){
+                if ($("#ff").form('validate')) {
                     $(obj).linkbutton('disable');
                 }
                 return $("#ff").form('validate');
@@ -161,7 +169,7 @@
                 var data = eval('(' + data + ')');
                 if (data.success == true) {
                     try {
-                        LogUtils.saveLog("修改项目变更:${obj.id}", function () {
+                        LogUtils.saveLog(LOG_MODULE_OPS.UPDATE_PROJECT_CHANGE, "修改项目变更:" + data.data + ":成功", function () {
                             window.location.href = "${contextPath}/projectChange/index.html";
                         });
                     } catch (e) {
@@ -173,15 +181,18 @@
     }
 
 
-
-    $(function(){
+    $(function () {
 
         $('#projectId').combobox({
             url: '${contextPath}/project/getProjectList',
             valueField: 'id',
             textField: 'serialNumber',
-            onLoadSuccess:function () {
-                $("#projectId").combobox("setValue",'${obj.projectId}');
+            formatter: function (row) {
+                var opts = $(this).combobox('options');
+                return row[opts.textField] + "(" + row.name + ")";
+            },
+            onLoadSuccess: function () {
+                $("#projectId").combobox("setValue", '${obj.projectId}');
             },
             onChange: function (projectValue) {
                 var datas = $("#projectId").combobox('getData');
@@ -191,20 +202,24 @@
                         $("#projectName").textbox("setText", data.name);
                         $("#projectType").textbox("setText", data.type);
                         $("#number").val(data.serialNumber);
+                        if (add == true) {
+                            $("#estimateLaunchDate").datebox('setValue', data.estimateLaunchDate);
+                        }
+                        add = true;
                         $('#versionId').combobox({
                             url: '${contextPath}/project/version/listPage?projectId=' + projectValue,
                             valueField: 'id',
                             textField: 'version',
-                            onLoadSuccess:function () {
-                                $("#versionId").combobox("setValue",'${obj.versionId}');
+                            onLoadSuccess: function () {
+                                $("#versionId").combobox("setValue", '${obj.versionId}');
                             },
                             onChange: function (versionValue) {
                                 $('#phaseId').combobox({
                                     url: '${contextPath}/project/phase/listPhase?versionId=' + versionValue,
                                     valueField: 'id',
                                     textField: 'name',
-                                    onLoadSuccess:function () {
-                                        $("#phaseId").combobox("setValue",'${obj.phaseId}');
+                                    onLoadSuccess: function () {
+                                        $("#phaseId").combobox("setValue", '${obj.phaseId}');
                                     }
                                 });
                             }
@@ -213,9 +228,8 @@
                 }
             }
         });
-        $("#type").combobox("setValue",'${obj.type}');
-        $("#affectsOnline").combobox("setValue",'${obj.affectsOnline}');
-        $("#estimateLaunchDate").datebox("setValue",'${obj.estimateLaunchDate}');
+        $("#type").combobox("setValue", '${obj.type}');
+        $("#affectsOnline").combobox("setValue", '${obj.affectsOnline}');
     });
 </script>
 </#body>

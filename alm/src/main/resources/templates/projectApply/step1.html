@@ -63,7 +63,10 @@
                     <td colspan="4">
                         <span class="require">*</span>
                         <input class="easyui-textbox" type="text" name="name"
-                               data-options="required:true,validType:'length[1,20]',label:'项目名称:'" style="width: calc(100% - 205px);">
+                               data-options="required:true,tipPosition:'bottom',invalidMessage:'名称不超过20字符，且不能重复',validType:{
+		length:[1,20],
+		remote:['${contextPath}/projectApply/checkName?org=${apply.name}','name']
+	},label:'项目名称:'" style="width: calc(100% - 205px);">
                     </td>
                 </tr>
                 <tr>
@@ -118,24 +121,24 @@
                     <td colspan="2">
                         <span class="require">*</span>
                         <input class="easyui-datebox" name="expectedLaunchDate" id="" style="width: calc(50% - 132px)"
-                               data-options="editable:false,required:true,label:'业务期望上线日期:'"/>
+                               data-options="editable:false,required:true,label:'业务期望上线日期:',validType:'md'"/>
                     </td>
                     <td colspan="2">
                         <span class="require">*</span>
                         <input class="easyui-datebox" name="estimateLaunchDate" id="" style="width: calc(50% - 132px)"
-                               data-options="editable:false,required:true,label:'预估最终上线日期:'"/>
+                               data-options="editable:false,required:true,label:'预估最终上线日期:',validType:'md'"/>
                     </td>
                 </tr>
                 <tr>
                     <td colspan="2">
                         <span class="require">*</span>
-                        <input class="easyui-datebox" name="startDate" id="" style="width: calc(50% - 132px)"
+                        <input class="easyui-datebox" name="startDate" id="startDate" style="width: calc(50% - 132px)"
                                data-options="editable:false,required:true,label:'计划开始日期:'"/>
                     </td>
                     <td colspan="2">
                         <span class="require">*</span>
-                        <input class="easyui-datebox" name="endDate" id="" style="width: calc(50% - 132px)"
-                               data-options="editable:false,required:true,label:'计划结束日期:'"/>
+                        <input class="easyui-datebox" name="endDate" id="endDate" style="width: calc(50% - 132px)"
+                               data-options="editable:false,required:true,label:'计划结束日期:',validType:'md'"/>
                     </td>
                 </tr>
                 <tr>
@@ -194,7 +197,7 @@
                 if (data.success == true) {
                     if (data.success == true) {
                         try {
-                            LogUtils.saveLog("修改立项申请:" + data.result, function () {
+                            LogUtils.saveLog(LOG_MODULE_OPS.UPDATE_PROJECT_APPLY,"修改立项申请:" + data.data+":成功", function () {
                                 window.location.href = "${contextPath}/projectApply/toStep/2/" + data.result;
                             });
                         } catch (e) {
@@ -219,6 +222,20 @@
     //         }
     //     });
     // });
+
+    $.extend($.fn.validatebox.defaults.rules, {
+        md: {
+            validator: function (value) {
+                if ($("#startDate").datebox("getValue") == ""){
+                    return true;
+                }
+                var d1 = $.fn.datebox.defaults.parser($("#startDate").datebox("getValue"));
+                var d2 = $.fn.datebox.defaults.parser(value);
+                return d2 >= d1;
+            },
+            message: '不能小于开始日期.'
+        }
+    });
 
     function delRelated($_this) {
         $($_this).closest("tr").remove();

@@ -13,12 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.sysadmin.dao.DataAuthMapper;
+import com.dili.sysadmin.dao.DepartmentRoleMapper;
 import com.dili.sysadmin.dao.MenuMapper;
 import com.dili.sysadmin.dao.ResourceMapper;
 import com.dili.sysadmin.dao.RoleMapper;
 import com.dili.sysadmin.dao.RoleMenuMapper;
 import com.dili.sysadmin.dao.RoleResourceMapper;
 import com.dili.sysadmin.dao.UserRoleMapper;
+import com.dili.sysadmin.domain.DepartmentRole;
 import com.dili.sysadmin.domain.Menu;
 import com.dili.sysadmin.domain.Resource;
 import com.dili.sysadmin.domain.Role;
@@ -57,6 +59,8 @@ public class RoleServiceImpl extends BaseServiceImpl<Role, Long> implements Role
 	private RoleManager roleManager;
 	@Autowired
 	private DataAuthMapper dataAuthMapper;
+	@Autowired
+	private DepartmentRoleMapper departmentRoleMapper;
 
 	public RoleMapper getActualDao() {
 		return (RoleMapper) getDao();
@@ -108,11 +112,20 @@ public class RoleServiceImpl extends BaseServiceImpl<Role, Long> implements Role
 	@Transactional
 	@Override
 	public BaseOutput<Object> deleteIfUserNotBind(Long roleId) {
+		if (roleId.equals(1L)) {
+			return BaseOutput.failure("超级管理员角色不能删除");
+		}
 		UserRole record = new UserRole();
 		record.setRoleId(roleId);
 		int count = this.userRoleMapper.selectCount(record);
 		if (count > 0) {
 			return BaseOutput.failure("该角色下绑定了用户，请先解绑用户后再删除");
+		}
+		DepartmentRole dr = new DepartmentRole();
+		dr.setRoleId(roleId);
+		count = this.departmentRoleMapper.selectCount(dr);
+		if (count > 0) {
+			return BaseOutput.failure("角色绑定了部门，不能删除");
 		}
 		int rows = this.roleMapper.deleteByPrimaryKey(roleId);
 		if (rows <= 0) {
@@ -121,6 +134,9 @@ public class RoleServiceImpl extends BaseServiceImpl<Role, Long> implements Role
 		RoleMenu roleMenuQuery = new RoleMenu();
 		roleMenuQuery.setRoleId(roleId);
 		this.roleMenuMapper.delete(roleMenuQuery);
+		RoleResource roleResource = new RoleResource();
+		roleResource.setRoleId(roleId);
+		this.roleResourceMapper.delete(roleResource);
 		return BaseOutput.success();
 	}
 
@@ -224,6 +240,9 @@ public class RoleServiceImpl extends BaseServiceImpl<Role, Long> implements Role
 
 	@Override
 	public BaseOutput<Object> updateAfterCheck(Role role) {
+		if (role.getId().equals(1L)) {
+			return BaseOutput.failure("超级管理员角色不能编辑");
+		}
 		Role query = new Role();
 		query.setRoleName(role.getRoleName());
 		Role old = this.getActualDao().selectOne(query);
@@ -235,6 +254,19 @@ public class RoleServiceImpl extends BaseServiceImpl<Role, Long> implements Role
 			return BaseOutput.success().setData(role);
 		}
 		return BaseOutput.failure();
+	}
+
+	@Override
+	public BaseOutput<Object> listByDepartment(Long departmentId) {
+		List<Role> roles = this.getActualDao().selectByDepartmentId(departmentId);
+		return BaseOutput.success().setData(roles);
+	}
+
+	@Override
+	public List<Role> findNotBindWithUserByDepartmentId(Long userId, Long departmentId) {
+		List<Role> userRoles = this.getActualDao().findByUserId(userId);
+		List<Role> allRoles = this.getActualDao().selectByDepartmentId(departmentId);
+		return (List<Role>) CollectionUtils.subtract(allRoles, userRoles);
 	}
 
 }

@@ -1,4 +1,7 @@
 function getHyperlinkContext(text, handler, data) {
+	if (data == 1 && handler == 'onChangeUserStatusClicked') {
+		return '';
+	}
 	return '<span style="padding:5px;"><a href="javascript:void(0)" onclick="' + handler + '(' + data + ')">' + text + '</a></span>'
 }
 
@@ -54,21 +57,35 @@ function loadData4DataList(datalistid, url, params) {
 				async : true,
 				success : function(data) {
 					if (data.code == "200") {
-						var roleList = data.data;
-						if (null != roleList && 0 < roleList.length) {
+						if (data.data && data.data.length > 0) {
+							var roleList = [];
+							if (datalistid == 'withoutRoleDatalist') {
+								$(data.data).each(function(index, item) {
+											var flag = false;
+											$($('#withRoleDatalist').datalist('getRows')).each(function(index1, item1) {
+														if (item.id == item1.id) {
+															flag = true;
+															return false;
+														}
+													});
+											if (!flag) {
+												roleList.push(item);
+											}
+										});
+							} else {
+								if ($('#withRoleDatalist').datalist('getRows').length > 0) {
+									return;
+								}
+								roleList = data.data;
+							}
 							$("#" + datalistid).datalist("loadData", {
 										total : roleList.length,
 										rows : roleList
 									});
-							return;
 						}
 					} else {
 						$.messager.alert('错误', data.result);
 					}
-					$("#" + datalistid).datalist("loadData", {
-								total : 0,
-								rows : []
-							});
 				},
 				error : function() {
 					$("#" + datalistid).datalist("loadData", {
@@ -165,7 +182,7 @@ function onAddClicked() {
 			});
 
 	formFocus("_form", "_userName");
-	queryRole();
+	// queryRole();
 
 	$('#dlg').dialog('open');
 	$('#dlg').dialog('center');
@@ -173,13 +190,32 @@ function onAddClicked() {
 	$('#_form').form('resetValidation');
 }
 
+var editUser;
+
+function onDepartmentChange(n, o) {
+	if (!n || n == o) {
+		return;
+	}
+	$('#withoutRoleDatalist').datalist("loadData", {
+				total : 0,
+				rows : []
+			});
+	queryRole(editUser ? editUser.id : undefined);
+}
+
 function onEditClicked(id) {
 	if (!dataAuth.editUser) {
 		return false;
 	}
 	var selected = userGrid.datagrid("getSelected");
+	editUser = selected;
 	if (null == selected) {
 		$.messager.alert("警告", "请选中一条数据");
+		return;
+	}
+
+	if (selected.id == 1) {
+		$.messager.alert("警告", "超级管理员不能编辑");
 		return;
 	}
 
@@ -252,17 +288,17 @@ function onEditClicked(id) {
 							}
 						}]
 			});
-	$('#_department').combotree({
+	$('#_departmentId').combotree({
 				readonly : false,
 				validateOnCreate : false,
 				onLoadSuccess : function(node, data) {
 					$(data).each(function(index, item) {
-								var targetNode = $('#_department').combotree('tree').tree('find', item.id);;
-								$('#_department').combotree('tree').tree('check', targetNode.target);
+								var targetNode = $('#_departmentId').combotree('tree').tree('find', item.id);;
+								$('#_departmentId').combotree('tree').tree('check', targetNode.target);
 							});
 				}
 			});
-	var formData = $.extend(true,{}, selected);
+	var formData = $.extend(true, {}, selected);
 
 	formData = addKeyStartWith(getOriginalData(formData), "_");
 	formData._password = "";
@@ -280,7 +316,7 @@ function onDblClickRow(index, row) {
 
 // 打开某一行的查看窗口
 function onUserDetailClicked(id) {
-	var selected = userGrid.datagrid("getSelected");
+	var selected = getRowById(id);
 	if (null == selected) {
 		$.messager.alert('警告', '请选中一条数据');
 		return;
@@ -337,7 +373,7 @@ function onUserDetailClicked(id) {
 	$('#_status').textbox({
 				readonly : true
 			});
-	$('#_department').textbox({
+	$('#_departmentId').textbox({
 				readonly : true
 			});
 	$('#roleForm').hide();
@@ -366,7 +402,7 @@ function onUserDetailClicked(id) {
 
 // 禁用/启用某一行的用户
 function onChangeUserStatusClicked(id) {
-	var selected = null == id ? userGrid.datagrid("getSelected") : getRowById(id);
+	var selected = getRowById(id);
 	if (null == selected) {
 		$.messager.alert('警告', '请选中一条数据');
 		return;
@@ -492,7 +528,7 @@ function onSaveClicked() {
 				if (null != retData) {
 					if (isAdd) {
 						try {
-							LogUtils.saveLog("新增用户:" + retData.id, function() {
+							LogUtils.saveLog(LOG_MODULE_OPS.ADD_USER, "新增用户:" + retData.id+":"+retData.userName+":成功", function() {
 									});
 						} catch (e) {
 							$.messager.alert('错误', e);
@@ -500,7 +536,7 @@ function onSaveClicked() {
 						userGrid.datagrid("appendRow", retData);
 					} else {
 						try {
-							LogUtils.saveLog("修改用户:" + retData.id, function() {
+							LogUtils.saveLog(LOG_MODULE_OPS.UPDATE_USER, "修改用户:" + retData.id+":"+retData.userName+":成功", function() {
 									});
 						} catch (e) {
 							$.messager.alert('错误', e);
@@ -562,17 +598,14 @@ function requestSave(url, data, callback) {
 
 // 角色信息查询
 function queryRole(userid) {
-	if (null == userid || 0 > userid) {
-		loadData4DataList("withoutRoleDatalist", "${contextPath!}/role/list");
-		$('#withRoleDatalist').datalist("loadData", {
-					total : 0,
-					rows : []
-				});
+	var departmentId = $('#_departmentId').combotree('getValue');
+	if (!userid) {
+		loadData4DataList("withoutRoleDatalist", "${contextPath!}/role/listByDepartment?departmentId=" + (departmentId ? departmentId : ''));
 	} else {
-		loadData4DataList("withoutRoleDatalist", "${contextPath!}/role/listNotBindByUserId", {
+		loadData4DataList("withRoleDatalist", "${contextPath!}/role/listByUserId", {
 					userid : userid
 				});
-		loadData4DataList("withRoleDatalist", "${contextPath!}/role/listByUserId", {
+		loadData4DataList("withoutRoleDatalist", "${contextPath!}/role/listNotBindByUserId?departmentId=" + departmentId, {
 					userid : userid
 				});
 	}

@@ -1,6 +1,9 @@
 package com.dili.alm.service;
 
+import java.util.List;
+
 import com.dili.alm.domain.Log;
+import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.EasyuiPageOutput;
 
@@ -10,9 +13,11 @@ import com.dili.ss.domain.EasyuiPageOutput;
  */
 public interface LogService extends BaseService<Log, Long> {
 
-	int insertLog( String logText);
-
 	int updateLog( Long logId,String logText);
 
 	EasyuiPageOutput listLogPage(Log log, String beginTime, String endTime);
+
+	List<DataDictionaryValueDto> getLogModules();
+
+	int insertLog(String logText, Integer logModule);
 }

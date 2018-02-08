@@ -20,7 +20,7 @@ public interface WeeklyMapper extends MyMapper<Weekly> {
 	 * @param id
 	 * @return
 	 */
-     Weekly selecByProjectId(WeeklyPara weeklyPara );
+    Weekly selecByProjectId(WeeklyPara weeklyPara );
 	/**
 	 * 周报搜索条件查询
 	 * @param weeklyPara
@@ -55,11 +55,20 @@ public interface WeeklyMapper extends MyMapper<Weekly> {
 	 * 本周进展情况 
 	 *  */
 	List<TaskDto>  selectWeeklyProgress(WeeklyPara weeklyPara);
+	
+	/** 
+	 * 本周展进工时情况
+	 *  */
+	TaskDto	selectWeeklyOverAndtaskHour(WeeklyPara weeklyPara);
 	/**
 	 *  下周工作计划
 	 * */
 	List<NextWeeklyDto>  selectNextWeeklyProgress(WeeklyPara weeklyPara);
 	
+	/**
+	 *  已用工时
+	 * */
+	NextWeeklyDto  selectNextWeeklyTaskHour(Long id);
 	/** 
 	 * 下周项目阶段
 	 *   * */

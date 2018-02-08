@@ -84,9 +84,8 @@ public class DepartmentRoleController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "id", paramType = "form", value = "DepartmentRole的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput delete(Long id) {
-		departmentRoleService.delete(id);
-		return BaseOutput.success("删除成功");
+	public @ResponseBody BaseOutput<Object> delete(Long id) {
+		return departmentRoleService.deleteAfterCheck(id);
 	}
 
 	@ResponseBody

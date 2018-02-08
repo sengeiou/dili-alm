@@ -43,7 +43,7 @@ public class UpdateUserDto {
 
 	private List<Long> roleId;
 
-	private List<Long> department;
+	private Long departmentId;
 
 	public String getUserName() {
 		return userName;
@@ -117,12 +117,12 @@ public class UpdateUserDto {
 		this.id = id;
 	}
 
-	public List<Long> getDepartment() {
-		return department;
+	public Long getDepartmentId() {
+		return departmentId;
 	}
 
-	public void setDepartment(List<Long> department) {
-		this.department = department;
+	public void setDepartmentId(Long departmentId) {
+		this.departmentId = departmentId;
 	}
 
 }

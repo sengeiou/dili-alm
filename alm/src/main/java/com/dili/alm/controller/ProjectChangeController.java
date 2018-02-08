@@ -4,15 +4,20 @@ import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.ProjectChange;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.VerifyApproval;
+import com.dili.alm.service.MessageService;
 import com.dili.alm.service.ProjectChangeService;
 import com.dili.alm.service.TaskService;
 import com.dili.alm.service.VerifyApprovalService;
+import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.sysadmin.sdk.session.SessionContext;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -39,6 +44,9 @@ public class ProjectChangeController {
 
     @Autowired
     private VerifyApprovalService verifyApprovalService;
+    
+    @Autowired
+    private MessageService messageService;
 
     @ApiOperation("跳转到ProjectChange页面")
     @RequestMapping(value = "/index.html", method = RequestMethod.GET)
@@ -81,6 +89,19 @@ public class ProjectChangeController {
         return verifyApprovalService.listEasyuiPageByExample(verifyApproval, true);
     }
 
+    @RequestMapping(value = "loadProjectChange")
+    @ResponseBody
+    public Object loadProjectChange(ProjectChange change) {
+        change.setOrder("desc");
+        change.setSort("created");
+        List<ProjectChange> changes = projectChangeService.listByExample(change);
+        if (CollectionUtils.isNotEmpty(changes)) {
+            return DateUtil.getDate(changes.get(0).getEstimateLaunchDate());
+
+        }
+        return "";
+    }
+
     @RequestMapping(value = "/toDetails/{id}", method = RequestMethod.GET)
     public String toDetails(ModelMap modelMap, @PathVariable("id") Long id) {
         ProjectChange change = projectChangeService.get(id);
@@ -121,7 +142,7 @@ public class ProjectChangeController {
         projectChange.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
         projectChangeService.insertSelective(projectChange);
         projectChangeService.approve(projectChange);
-        return BaseOutput.success("新增成功");
+        return BaseOutput.success("新增成功").setData(String.valueOf(projectChange.getId()+":"+projectChange.getName()));
     }
 
     @ApiOperation("修改ProjectChange")
@@ -132,7 +153,7 @@ public class ProjectChangeController {
         projectChange.setSubmitDate(new Date());
         projectChangeService.updateSelective(projectChange);
         projectChangeService.approve(projectChange);
-        return BaseOutput.success("修改成功");
+        return BaseOutput.success("修改成功").setData(String.valueOf(projectChange.getId()+":"+projectChange.getName()));
     }
 
     @ApiOperation("删除ProjectChange")
@@ -142,8 +163,9 @@ public class ProjectChangeController {
     BaseOutput delete(Long id) {
         ProjectChange change = projectChangeService.get(id);
         if (change != null && change.getCreateMemberId().equals(SessionContext.getSessionContext().getUserTicket().getId())) {
-            projectChangeService.delete(id);
+        	messageService.deleteMessage(id, AlmConstants.MessageType.CHANGE.code);
+        	projectChangeService.delete(id);
         }
-        return BaseOutput.success("删除成功");
+        return BaseOutput.success("删除成功").setData(String.valueOf(change.getId()+":"+change.getName()));
     }
 }

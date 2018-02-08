@@ -3,14 +3,19 @@ package com.dili.sysadmin.service.impl;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.sysadmin.dao.ResourceMapper;
+import com.dili.sysadmin.dao.RoleResourceMapper;
 import com.dili.sysadmin.domain.Resource;
+import com.dili.sysadmin.domain.RoleResource;
 import com.dili.sysadmin.domain.dto.ResourceDto;
+import com.dili.sysadmin.exception.ApplicationException;
 import com.dili.sysadmin.service.ResourceService;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-07-04 15:24:51.
@@ -20,13 +25,16 @@ public class ResourceServiceImpl extends BaseServiceImpl<Resource, Long> impleme
 
 	@Autowired
 	private ResourceMapper resourceMapper;
+	@Autowired
+	private RoleResourceMapper roleResourceMapper;
 
 	public ResourceMapper getActualDao() {
 		return (ResourceMapper) getDao();
 	}
 
+	@Transactional(rollbackFor = ApplicationException.class)
 	@Override
-	public BaseOutput<Object> add(ResourceDto dto) {
+	public BaseOutput<Object> add(ResourceDto dto) throws ResourceException {
 		Resource query = new Resource();
 		query.setName(dto.getName());
 		int count = this.resourceMapper.selectCount(query);
@@ -46,6 +54,13 @@ public class ResourceServiceImpl extends BaseServiceImpl<Resource, Long> impleme
 		count = this.resourceMapper.insertSelective(resource);
 		if (count <= 0) {
 			return BaseOutput.failure("新增失败");
+		}
+		RoleResource rr = new RoleResource();
+		rr.setRoleId(1L);
+		rr.setResourceId(resource.getId());
+		count = this.roleResourceMapper.insertSelective(rr);
+		if (count <= 0) {
+			throw new ResourceException("资源绑定超级管理员失败");
 		}
 		return BaseOutput.success("新增成功").setData(resource);
 	}
@@ -77,5 +92,21 @@ public class ResourceServiceImpl extends BaseServiceImpl<Resource, Long> impleme
 			return BaseOutput.failure("修改失败");
 		}
 		return BaseOutput.success("修改成功");
+	}
+
+	@Override
+	public List<String> findCodeByUserId(Long id) {
+
+		return this.getActualDao().findResourceCodeByUserId(id);
+	}
+
+	@Transactional
+	@Override
+	public BaseOutput<Object> deleteWithOutput(Long id) {
+		this.getActualDao().deleteByPrimaryKey(id);
+		RoleResource record = new RoleResource();
+		record.setResourceId(id);
+		this.roleResourceMapper.delete(record);
+		return null;
 	}
 }

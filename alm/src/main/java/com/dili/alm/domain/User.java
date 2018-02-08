@@ -112,6 +112,8 @@ public class User extends BaseDomain {
 	@Column(name = "`valid_time_end`")
 	private Date validTimeEnd;
 
+	private Long departmentId;
+
 	/**
 	 * 获取主键
 	 *
@@ -417,4 +419,13 @@ public class User extends BaseDomain {
 	public void setValidTimeEnd(Date validTimeEnd) {
 		this.validTimeEnd = validTimeEnd;
 	}
+
+	public Long getDepartmentId() {
+		return departmentId;
+	}
+
+	public void setDepartmentId(Long departmentId) {
+		this.departmentId = departmentId;
+	}
+
 }

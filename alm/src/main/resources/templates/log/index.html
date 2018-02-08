@@ -13,11 +13,13 @@
                 <form id="form" class="easyui-form" method="post" fit="true">
                     <table style="padding:10px;">
                         <tr>
+                        <#resource code="selectAllUsersLog">
                         	<td style="padding:5px;">
                         		<input class="easyui-textbox" name="operatorId" id="operatorId" style="width: 100%;" panelWidth="auto" panelHeight="auto" label="操作员:" style="width:100%" data-options="editable:false,
 									buttonText:'选择',
 									onClickButton:selectMember,onChange:_changeTextboxShowClear" />
                             </td>
+                         </#resource>
                             <td style="padding:5px;">
                                 <input class="easyui-datetimebox" editable="false" name="beginTime" id="beginTime" style="width:100%" data-options="label:'操作开始时间:'" />
 
@@ -37,7 +39,7 @@
                             <td>
                                 <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
                                    onclick="queryGrid()">查询</a>
-                                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">清除</a>
+                                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">重置</a>
                             </td>
                         </tr>
                     </table>
@@ -56,36 +58,28 @@
                    align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" data-options="onHeaderContextMenu:headerContextMenu">
                 <thead>
                     <tr>
-                        <th data-options="field:'logNumber',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'" style="width: 15%">
+                        <th data-options="field:'logNumber',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'" style="width: 12%">
                             日志ID
                         </th>
-                        <th data-options="field:'operatorId',  _provider:'memberProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'" style="width: 15%">
+                        <th data-options="field:'operatorId',  _provider:'memberProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'" style="width: 8%">
                             操作员
                         </th>
-                        <th data-options="field:'created',  _provider:'datetimeProvider', sortable:'true', order:'desc', align:'center', resizable:'true', fixed:'false'" style="width: 30%">
+                        <th data-options="field:'created',  _provider:'datetimeProvider', sortable:'true', order:'desc', align:'center', resizable:'true', fixed:'false'" style="width: 18%">
                             操作时间
                         </th>
-                        <th data-options="field:'ip',   sortable:'true', order:'desc', align:'center', resizable:'true', fixed:'false'" style="width: 20%">
+                        <th data-options="field:'ip',   sortable:'true', order:'desc', align:'center', resizable:'true', fixed:'false'" style="width: 12%">
          IP地址
                         </th>
-                        <th data-options="field:'content', align:'center', resizable:'true', fixed:'false'" style="width: 20%">
+                        <th data-options="field:'logModule',   _provider:'moduleProvider',  align:'center', resizable:'true', fixed:'false'" style="width: 18%">
+                            操作模块
+                        </th>
+                        <th data-options="field:'content', align:'center', resizable:'true', fixed:'false'" style="width: 32%">
                             操作内容
                         </th>
                     </tr>
                 </thead>
             </table>
             <!-- datagrid工具栏 -->
-            <div id="toolbar" style="height:20px;padding:5px 5px;">
-                <div style="float:right">
-                边框显示:<select onchange="changeBorder('grid',this.value)">
-                    <option value="lines-both">全边框</option>
-                    <option value="lines-no">无边框</option>
-                    <option value="lines-right">右边框</option>
-                    <option value="lines-bottom">下边框</option>
-                </select>
-                行条纹:<input type="checkbox" checked="checked" onclick="$('#grid').datagrid({striped:$(this).is(':checked')})">
-                </div>
-            </div>
         </div>
     </div>
     <!-- ====================================================================================================================== -->

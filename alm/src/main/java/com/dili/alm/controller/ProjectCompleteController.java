@@ -4,16 +4,19 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.ProjectComplete;
+import com.dili.alm.service.MessageService;
 import com.dili.alm.service.ProjectCompleteService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.sdk.session.SessionContext;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +42,8 @@ import java.util.Map;
 public class ProjectCompleteController {
     @Autowired
     ProjectCompleteService projectCompleteService;
+    @Autowired
+    private MessageService messageService;
 
 
     @ApiOperation("跳转到ProjectComplete页面")
@@ -142,7 +147,7 @@ public class ProjectCompleteController {
         projectComplete.setStatus(AlmConstants.ApplyState.APPLY.getCode());
         projectComplete.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
         projectCompleteService.insertSelective(projectComplete);
-        return BaseOutput.success(String.valueOf(projectComplete.getId()));
+        return BaseOutput.success(String.valueOf(projectComplete.getId())).setData(projectComplete.getId()+":"+projectComplete.getName());
     }
 
     @RequestMapping(value = "/reComplete/{id}", method = RequestMethod.GET)
@@ -165,7 +170,7 @@ public class ProjectCompleteController {
         }
         projectCompleteService.updateSelective(projectComplete);
         projectCompleteService.approve(projectComplete);
-        return BaseOutput.success(String.valueOf(projectComplete.getId()));
+        return BaseOutput.success(String.valueOf(projectComplete.getId())).setData(projectComplete.getId()+":"+projectComplete.getName());
     }
 
     @ApiOperation("删除ProjectComplete")
@@ -177,9 +182,11 @@ public class ProjectCompleteController {
     BaseOutput delete(Long id) {
         ProjectComplete complete = projectCompleteService.get(id);
         if (complete != null && complete.getCreateMemberId().equals(SessionContext.getSessionContext().getUserTicket().getId())) {
-            projectCompleteService.delete(id);
+        	messageService.deleteMessage(id, AlmConstants.MessageType.CHANGE.code);
+
+        	projectCompleteService.delete(id);
         }
-        return BaseOutput.success("删除成功");
+        return BaseOutput.success("删除成功").setData(String.valueOf(complete.getId()+":"+complete.getName()));
     }
 
     @RequestMapping("/loadQuestion")

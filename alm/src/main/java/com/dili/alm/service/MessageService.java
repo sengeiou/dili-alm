@@ -20,4 +20,6 @@ public interface MessageService extends BaseService<Message, Long> {
 	Map<String,Object> mapMessagges(String userId);
 
 	List<DataDictionaryValueDto> getMessageTypes();
+
+	int deleteMessage(Long id, Integer type);
 }

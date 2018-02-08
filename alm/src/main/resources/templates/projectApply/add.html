@@ -62,7 +62,7 @@
                 var data = eval('(' + data + ')');
                 if (data.success == true) {
                     try {
-                        LogUtils.saveLog("新增立项申请:" + data.result, function() {
+                        LogUtils.saveLog(LOG_MODULE_OPS.ADD_PROJECT_APPLY,"新增立项申请:" + data.data + ":成功", function() {
                             window.location.href = "${contextPath}/projectApply/toStep/1/" + data.result;
                         });
                     } catch (e) {

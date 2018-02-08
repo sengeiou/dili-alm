@@ -16,4 +16,6 @@ public interface ResourceMapper extends MyMapper<Resource> {
 	List<Resource> listAllResourceJson(Resource resource);
 
 	List<Resource> findByUserId(Long userId);
+	
+	List<String> findResourceCodeByUserId(Long userId);
 }

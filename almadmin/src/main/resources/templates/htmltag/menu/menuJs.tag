@@ -71,9 +71,10 @@ function del(gridId) {
 	}
 	$.messager.confirm('确认', '您确认想要删除记录吗？', function(r) {
 				if (r) {
+					var isResourceGrid = typeof(selected.type) == "undefined";
 					$.ajax({
 								type : "POST",
-								url : (typeof(selected.type) == "undefined" ? '${contextPath!}/resource/' : '${contextPath!}/menu/') + '/delete',
+								url : (isResourceGrid ? '${contextPath!}/resource/' : '${contextPath!}/menu/') + '/delete',
 								data : {
 									id : selected.id
 								},
@@ -87,6 +88,13 @@ function del(gridId) {
 										var removeNode = menuTree.tree('find', selected.id);
 										if (removeNode) {
 											menuTree.tree('remove', removeNode.target);
+										}
+										try {
+											LogUtils.saveLog(isResourceGrid ? LOG_MODULE_OPS.DELETE_RESOURCE : LOG_MODULE_OPS.DELETE_MENU, isResourceGrid ? '删除资源' : "删除菜单:" + data.data.id+":"+data.data.name+":成功",
+													function() {
+													});
+										} catch (e) {
+											$.messager.alert('错误', e);
 										}
 									} else {
 										$.messager.alert('错误', data.result);
@@ -590,10 +598,9 @@ function insertOrUpdateMenu(gridId, node, index, row, changes) {
 					$.messager.alert('提示', data.result);
 					return;
 				}
-				debugger;
 				if (!row.id) {
 					try {
-						LogUtils.saveLog("新增菜单:" + data.data.id, function() {
+						LogUtils.saveLog(LOG_MODULE_OPS.ADD_MENU, "新增菜单:" + data.data.id+":"+data.data.name+":成功", function() {
 								});
 					} catch (e) {
 						$.messager.alert('错误', e);
@@ -613,7 +620,7 @@ function insertOrUpdateMenu(gridId, node, index, row, changes) {
 							});
 				} else {
 					try {
-						LogUtils.saveLog("修改菜单:" + data.data.id, function() {
+						LogUtils.saveLog(LOG_MODULE_OPS.UPDATE_MENU, "修改菜单:" + data.data.id+":"+data.data.name+":成功", function() {
 								});
 					} catch (e) {
 						$.messager.alert('错误', e);
@@ -678,7 +685,7 @@ function insertOrUpdateResource(gridId, node, index, row, changes) {
 				}
 				if (!row.id) {
 					try {
-						LogUtils.saveLog("新增资源:" + data.data.id, function() {
+						LogUtils.saveLog(LOG_MODULE_OPS.ADD_RESOURCE, "新增资源:" + data.data.id+":"+data.data.name+":成功", function() {
 								});
 					} catch (e) {
 						$.messager.alert('错误', e);
@@ -686,7 +693,7 @@ function insertOrUpdateResource(gridId, node, index, row, changes) {
 					row.id = data.data.id;
 				} else {
 					try {
-						LogUtils.saveLog("修改资源:" + data.data.id, function() {
+						LogUtils.saveLog(LOG_MODULE_OPS.UPDATE_RESOURCE, "修改资源:" + data.data.id+":"+data.data.name+":成功", function() {
 								});
 					} catch (e) {
 						$.messager.alert('错误', e);

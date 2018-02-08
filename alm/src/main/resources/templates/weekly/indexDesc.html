@@ -61,10 +61,10 @@
 				        <td style="padding:5px;background-color:#f5f5f5;font-weight:bold">本周起止日期 </td>
 				        <td style="padding:5px;">${pd.beginAndEndTime}</td>
 				        <td style="padding:5px;background-color:#f5f5f5;font-weight:bold">总体进展</td>
-				       <td style="padding:5px;">
+				        <td  id="progressTotal"   style="padding:5px;">
 				          
 				            
-								  <%if(pd.completedProgressInt >15){%>
+								<!--   <%if(pd.completedProgressInt >15){%>
 								      <font color="red">  预警--8%&lt;偏差&lt;15%</font>
 								  <%}%>
 								  
@@ -74,11 +74,12 @@
 								  
 								   <%if(pd.completedProgressInt <8){%>
 								        <font color="green">  正常--偏差&lt;8% </font>
-								   <%}%>
-						
-				          
+								   <%}%> -->
+				             
+				             
 				        </td>
-				    
+				           <input id="pdprojectId" type='hidden' value="${pd.projectId}"/>
+				             <input id="completedProgressInt" type='hidden' value="${pd.completedProgressInt}"/>
 				   </tr>
 				</tbody>
 				
@@ -87,9 +88,9 @@
 				     <tr>
 				           <td  style="padding:5px;" colspan="6" rowspan='4'">  
 				               <% if(wDetails!=null){%>
-				                <input class="easyui-textbox" name="projectDescription" id="projectDescription" value="${wDetails.projectDescription}" style="width:100%;height:40px" data-options=" validType:'length[0,500]'" />
+				                <input class="easyui-textbox"  disabled="true"  name="projectDescription" id="projectDescription" value="${wDetails.projectDescription}" style="width:100%;height:40px" data-options=" validType:'length[0,500]'" />
 				              <%}else{%>
-				                <input class="easyui-textbox" name="projectDescription" id="projectDescription" value="" style="width:100%;height:40px" data-options=" validType:'length[0,500]'" />
+				                <input class="easyui-textbox"  disabled="true" name="projectDescription" id="projectDescription" value="" style="width:100%;height:40px" data-options=" validType:'length[0,500]'" />
 				                <%}%> 
 				          </td>
 				    </tr>
@@ -112,12 +113,12 @@
 				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">版本</th>
 				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">阶段 </th>
 				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">责任人</th>
-				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">完成情况 </th>
-				       
-				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">预计工时</th>
-				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">实际工时</th>
-				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">工时偏差% </th>
-				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">备注</th>
+				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">是否完成 </th>
+				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">计划完成日期 </th>
+				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">任务计划工时</th>
+				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">本周实际工时 </th>
+				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">实际总工时</th>
+				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">实际完成日期</th>
 				    </tr>
 				</thead>
 				
@@ -133,10 +134,11 @@
 						        <td> ${item.owner} </td>
 						        <td> ${item.status}  </td>
 						        
+						        <td> ${item.endDateStr}  </td>
 						        <td> ${item.planTime}  </td>
+						        <td> ${item.weekHour} </td>
 						        <td> ${item.realHour} </td>
-						        <td> ${item.hourDeviation} </td>
-						        <td> ${item.describe}</td>
+						        <td> ${item.fackEndDate}</td>
 						   </tr>
 					      <%}%>
 						    <%}%> 
@@ -163,8 +165,9 @@
 				        <td style="padding:5px;background-color:#f5f5f5;font-weight:bold"> 序号 </td>
 				        <td style="padding:5px;background-color:#f5f5f5;font-weight:bold">任务名称 </td>
 				        <td style="padding:5px;background-color:#f5f5f5;font-weight:bold"> 责任人</td>
-				        <td style="padding:5px;background-color:#f5f5f5;font-weight:bold">剩余计划工时</td>
-				        <td style="padding:5px;background-color:#f5f5f5;font-weight:bold"> 计划完成日期</td>
+				        <td style="padding:5px;background-color:#f5f5f5;font-weight:bold">任务计划工时</td>
+				        <td style="padding:5px;background-color:#f5f5f5;font-weight:bold"> 剩余计划工时</td>
+				        <td style="padding:5px;background-color:#f5f5f5;font-weight:bold">计划完成日期</td>
 				        <td style="padding:5px;background-color:#f5f5f5;font-weight:bold">备注</td>
 				    </tr>
               <% if(wk!=null){%>
@@ -174,6 +177,7 @@
 				        <td>    ${item.name} </td>
 				        <td>    ${item.owner}  </td>
 				        <td> ${item.planTime}  </td>
+				        <td> ${item.surplus}  </td>
 				        <td> ${item.endDate}   </td>
 				        <td> ${item.describe}    </td>
 				    </tr>
@@ -286,9 +290,9 @@
 							<td style="padding:5px;background-color:#f5f5f5;font-weight:bold">预期偏差</td>
 							<td colspan="3" >
 								<% if(wDetails!=null){%>
-								<input class="easyui-textbox" id="expectedDeviation" value= "${wDetails.expectedDeviation}"    data-options="multiline:true"  style="width:100%;height:50px">
+								<input class="easyui-textbox"  disabled="true"  id="expectedDeviation" value= "${wDetails.expectedDeviation}"    data-options="multiline:true"  style="width:100%;height:50px">
 								<%}else{%>
-								<input class="easyui-textbox" id="expectedDeviation"     data-options="multiline:true"  style="width:100%;height:50px">
+								<input class="easyui-textbox"  disabled="true" id="expectedDeviation"     data-options="multiline:true"  style="width:100%;height:50px">
 								<%}%>
 							</td>
 
@@ -297,10 +301,10 @@
 							<td style="padding:5px;background-color:#f5f5f5;font-weight:bold">其他</td>
 							<td colspan="3" >
 								<% if(wDetails!=null){%>
-								<input class="easyui-textbox" id="other"  value= "${wDetails.other}"   data-options="multiline:true"  style="width:100%;height:50px">
+								<input class="easyui-textbox"  disabled="true" id="other"  value= "${wDetails.other}"   data-options="multiline:true"  style="width:100%;height:50px">
 
 								<%}else{%>
-								<input class="easyui-textbox" id="other"   data-options="multiline:true"  style="width:100%;height:50px">
+								<input class="easyui-textbox"  disabled="true"  id="other"   data-options="multiline:true"  style="width:100%;height:50px">
 								<%}%>
 							</td>
 
@@ -437,7 +441,7 @@
 	                    	 if(isSubmit==1){
 	                    		 alert("周报提交成功");
 	                    		 try {
-	   	                          LogUtils.saveLog("周报提交成功:" + data.result, function () {
+	   	                          LogUtils.saveLog(LOG_MODULE_OPS.SUBMIT_WEEKLY,"周报提交:" + data.data+":成功", function () {
 		   	                        	  window.location.href="${contextPath}/weekly/getDescById?id="+tempid;
 		   	                          });
 		   	                      } catch (e) {
@@ -447,7 +451,7 @@
 	                    	 }else{
 	                    		 alert("周报保存成功");
                     		      try {
-	   	                          LogUtils.saveLog("周报保存成功:" + data.result, function () {
+	   	                          LogUtils.saveLog(LOG_MODULE_OPS.SAVE_WEEKLY,"周报保存:" + data.data+":成功", function () {
 		   	                        	  window.location.href="${contextPath}/weekly/getDescById?id="+tempid;
 		   	                          });
 		   	                      } catch (e) {
@@ -741,8 +745,22 @@
      	   
     	   
     	   
-    	   
-    	   
+       
+	       function progressFormatter() {
+	    	   
+	    	
+	    	   var progress =$("#completedProgressInt").val();
+	    	
+	           if (progress > 100) {
+	               progress = 100;
+	           }
+	           
+	           var htmlstr = '<div style="width: 100px; height:20px;border: 1px solid #299a58;"><div style="width:' + progress + 'px; height:20px; background-color: #299a58;"><span>' + progress + '%</span></div></div>';
+	           
+	           
+	           $("#progressTotal").html(htmlstr)
+	       }
+	   	progressFormatter();
     	   
     	   
     	};

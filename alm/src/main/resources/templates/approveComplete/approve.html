@@ -191,14 +191,17 @@
         $('#ff').form('submit', {
             url: "${contextPath}/approve/applyApprove",
             onSubmit: function () {
-                $(obj).linkbutton('disable');
+                if ($("#ff").form('validate')) {
+                    $(obj).linkbutton('disable');
+                }
                 $("#opt").val(opt);
+                return $("#ff").form('validate');
             },
             success: function (data) {
                 var data = eval('(' + data + ')');
                 if (data.success == true) {
                     try {
-                        LogUtils.saveLog("结项审批:${approve.id}", function () {
+                        LogUtils.saveLog(LOG_MODULE_OPS.PROJECT_COMPLETE_APPROVE,"结项审批:${approve.id}:${approve.name}:成功", function () {
                             window.location.href = "${contextPath}/approve/complete/index.html";
                         });
                     } catch (e) {

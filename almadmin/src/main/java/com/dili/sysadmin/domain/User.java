@@ -1,20 +1,16 @@
 package com.dili.sysadmin.domain;
 
-import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 import com.dili.ss.domain.BaseDomain;
-import com.dili.ss.domain.annotation.Like;
+import com.dili.ss.metadata.FieldEditor;
+import com.dili.ss.metadata.annotation.EditMode;
+import com.dili.ss.metadata.annotation.FieldDef;
+import java.util.Date;
+import javax.persistence.*;
 
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2017-07-11 16:56:50.
+ * This file was generated on 2018-01-18 15:59:47.
  */
 @Table(name = "`user`")
 public class User extends BaseDomain {
@@ -29,7 +25,6 @@ public class User extends BaseDomain {
 	/**
 	 * 用户名
 	 */
-	@Like(Like.BOTH)
 	@Column(name = "`user_name`")
 	private String userName;
 
@@ -79,7 +74,6 @@ public class User extends BaseDomain {
 	 * 真实姓名
 	 */
 	@Column(name = "`real_name`")
-	@Like(Like.BOTH)
 	private String realName;
 
 	/**
@@ -118,11 +112,16 @@ public class User extends BaseDomain {
 	@Column(name = "`valid_time_end`")
 	private Date validTimeEnd;
 
+	@Column(name = "`department_id`")
+	private Long departmentId;
+
 	/**
 	 * 获取主键
 	 *
 	 * @return id - 主键
 	 */
+	@FieldDef(label = "主键")
+	@EditMode(editor = FieldEditor.Number, required = true)
 	public Long getId() {
 		return id;
 	}
@@ -142,6 +141,8 @@ public class User extends BaseDomain {
 	 *
 	 * @return user_name - 用户名
 	 */
+	@FieldDef(label = "用户名", maxLength = 50)
+	@EditMode(editor = FieldEditor.Text, required = true)
 	public String getUserName() {
 		return userName;
 	}
@@ -161,6 +162,8 @@ public class User extends BaseDomain {
 	 *
 	 * @return password - 密码
 	 */
+	@FieldDef(label = "密码", maxLength = 128)
+	@EditMode(editor = FieldEditor.Text, required = true)
 	public String getPassword() {
 		return password;
 	}
@@ -180,6 +183,8 @@ public class User extends BaseDomain {
 	 *
 	 * @return last_login_ip - 最后登录ip
 	 */
+	@FieldDef(label = "最后登录ip", maxLength = 20)
+	@EditMode(editor = FieldEditor.Text, required = false)
 	public String getLastLoginIp() {
 		return lastLoginIp;
 	}
@@ -199,6 +204,8 @@ public class User extends BaseDomain {
 	 *
 	 * @return last_login_time - 最后登录时间
 	 */
+	@FieldDef(label = "最后登录时间")
+	@EditMode(editor = FieldEditor.Datetime, required = true)
 	public Date getLastLoginTime() {
 		return lastLoginTime;
 	}
@@ -218,6 +225,8 @@ public class User extends BaseDomain {
 	 *
 	 * @return created - 创建时间
 	 */
+	@FieldDef(label = "创建时间")
+	@EditMode(editor = FieldEditor.Datetime, required = true)
 	public Date getCreated() {
 		return created;
 	}
@@ -237,6 +246,8 @@ public class User extends BaseDomain {
 	 *
 	 * @return modified - 修改时间
 	 */
+	@FieldDef(label = "修改时间")
+	@EditMode(editor = FieldEditor.Datetime, required = true)
 	public Date getModified() {
 		return modified;
 	}
@@ -256,6 +267,8 @@ public class User extends BaseDomain {
 	 *
 	 * @return status - 状态##状态##{data:[{value:1,text:"启用"},{value:0,text:"停用"}]}
 	 */
+	@FieldDef(label = "状态")
+	@EditMode(editor = FieldEditor.Combo, required = true, params = "{\"data\":[{\"text\":\"启用\",\"value\":1},{\"text\":\"停用\",\"value\":0}]}")
 	public Integer getStatus() {
 		return status;
 	}
@@ -276,6 +289,8 @@ public class User extends BaseDomain {
 	 * @return yn - 有效性##数据有效性，用于逻辑删除##{data:[{value:0, text:"无效"},{value:1,
 	 *         text:"有效"}]}
 	 */
+	@FieldDef(label = "有效性")
+	@EditMode(editor = FieldEditor.Combo, required = true, params = "{\"data\":[{\"text\":\"无效\",\"value\":0},{\"text\":\"有效\",\"value\":1}]}")
 	public Integer getYn() {
 		return yn;
 	}
@@ -296,6 +311,8 @@ public class User extends BaseDomain {
 	 *
 	 * @return real_name - 真实姓名
 	 */
+	@FieldDef(label = "真实姓名", maxLength = 64)
+	@EditMode(editor = FieldEditor.Text, required = true)
 	public String getRealName() {
 		return realName;
 	}
@@ -315,6 +332,8 @@ public class User extends BaseDomain {
 	 *
 	 * @return serial_number - 用户编号
 	 */
+	@FieldDef(label = "用户编号", maxLength = 128)
+	@EditMode(editor = FieldEditor.Text, required = true)
 	public String getSerialNumber() {
 		return serialNumber;
 	}
@@ -334,6 +353,8 @@ public class User extends BaseDomain {
 	 *
 	 * @return fixed_line_telephone - 固定电话
 	 */
+	@FieldDef(label = "固定电话", maxLength = 24)
+	@EditMode(editor = FieldEditor.Text, required = true)
 	public String getFixedLineTelephone() {
 		return fixedLineTelephone;
 	}
@@ -353,6 +374,8 @@ public class User extends BaseDomain {
 	 *
 	 * @return cellphone - 手机号码
 	 */
+	@FieldDef(label = "手机号码", maxLength = 24)
+	@EditMode(editor = FieldEditor.Text, required = true)
 	public String getCellphone() {
 		return cellphone;
 	}
@@ -372,6 +395,8 @@ public class User extends BaseDomain {
 	 *
 	 * @return email - 邮箱
 	 */
+	@FieldDef(label = "邮箱", maxLength = 64)
+	@EditMode(editor = FieldEditor.Text, required = true)
 	public String getEmail() {
 		return email;
 	}
@@ -391,6 +416,8 @@ public class User extends BaseDomain {
 	 *
 	 * @return valid_time_begin - 有效时间开始点
 	 */
+	@FieldDef(label = "有效时间开始点")
+	@EditMode(editor = FieldEditor.Datetime, required = true)
 	public Date getValidTimeBegin() {
 		return validTimeBegin;
 	}
@@ -410,6 +437,8 @@ public class User extends BaseDomain {
 	 *
 	 * @return valid_time_end - 有效时间结束点
 	 */
+	@FieldDef(label = "有效时间结束点")
+	@EditMode(editor = FieldEditor.Datetime, required = false)
 	public Date getValidTimeEnd() {
 		return validTimeEnd;
 	}
@@ -422,5 +451,21 @@ public class User extends BaseDomain {
 	 */
 	public void setValidTimeEnd(Date validTimeEnd) {
 		this.validTimeEnd = validTimeEnd;
+	}
+
+	/**
+	 * @return department_id
+	 */
+	@FieldDef(label = "departmentId")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	public Long getDepartmentId() {
+		return departmentId;
+	}
+
+	/**
+	 * @param departmentId
+	 */
+	public void setDepartmentId(Long departmentId) {
+		this.departmentId = departmentId;
 	}
 }

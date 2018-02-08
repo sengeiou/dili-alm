@@ -12,6 +12,7 @@ public class MessageEntity  extends BaseDomain implements Message{
 	private Date created;
 	private Integer type;
 	private Boolean isRead;
+	private String name;
 	public Long getId() {
 		return id;
 	}
@@ -53,6 +54,12 @@ public class MessageEntity  extends BaseDomain implements Message{
 	}
 	public void setIsRead(Boolean isRead) {
 		this.isRead = isRead;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 }

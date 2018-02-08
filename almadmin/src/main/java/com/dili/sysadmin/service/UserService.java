@@ -1,8 +1,10 @@
 package com.dili.sysadmin.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
@@ -24,13 +26,33 @@ import com.dili.sysadmin.sdk.domain.UserTicket;
  */
 public interface UserService extends BaseService<User, Long> {
 
+	public static Map<Object, Object> getMetadata() {
+		Map<Object, Object> metadata = new HashMap<>();
+
+		JSONObject departmentProvider = new JSONObject();
+		departmentProvider.put("provider", "departmentProvider");
+		metadata.put("departmentId", departmentProvider);
+
+		JSONObject userStatusProvider = new JSONObject();
+		userStatusProvider.put("provider", "userStatusProvider");
+		metadata.put("status", userStatusProvider);
+		JSONObject datetimeProvider = new JSONObject();
+		datetimeProvider.put("provider", "datetimeProvider");
+		metadata.put("validTimeBegin", datetimeProvider);
+		metadata.put("validTimeEnd", datetimeProvider);
+		metadata.put("created", datetimeProvider);
+		metadata.put("modified", datetimeProvider);
+		metadata.put("lastLoginTime", datetimeProvider);
+		return metadata;
+	}
+
 	UserLoginResultDto doLogin(UserLoginDto command) throws UserException;
 
 	void disableUser(Long userId) throws UserException;
 
 	void enableUser(Long userId) throws UserException;
 
-	BaseOutput<Object> logicDelete(Long userId);
+	BaseOutput<Object> deleteAfterCheck(Long userId);
 
 	BaseOutput<Object> add(AddUserDto dto);
 

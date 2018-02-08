@@ -20,6 +20,7 @@ import com.dili.sysadmin.domain.Menu;
 import com.dili.sysadmin.domain.MenuType;
 import com.dili.sysadmin.domain.dto.MenuListDto;
 import com.dili.sysadmin.domain.dto.UpdateMenuDto;
+import com.dili.sysadmin.exception.MenuException;
 import com.dili.sysadmin.service.MenuService;
 
 import io.swagger.annotations.Api;
@@ -78,8 +79,12 @@ public class MenuController {
 			@ApiImplicitParam(name = "Menu", paramType = "form", value = "Menu的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput insert(@ModelAttribute Menu menu) {
-		menuService.insertSelective(menu);
-		return BaseOutput.success("新增成功").setData(menu);
+		try {
+			menuService.insertWithOutput(menu);
+			return BaseOutput.success().setData(menu);
+		} catch (MenuException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
 	}
 
 	@ApiOperation("修改Menu")

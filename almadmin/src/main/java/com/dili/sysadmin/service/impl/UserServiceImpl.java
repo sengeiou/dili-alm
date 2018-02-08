@@ -4,7 +4,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +14,6 @@ import javax.annotation.Resource;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.tomcat.util.buf.UEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +25,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
@@ -36,14 +33,12 @@ import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.dao.DepartmentMapper;
 import com.dili.sysadmin.dao.RoleMapper;
 import com.dili.sysadmin.dao.UserDataAuthMapper;
-import com.dili.sysadmin.dao.UserDepartmentMapper;
 import com.dili.sysadmin.dao.UserMapper;
 import com.dili.sysadmin.dao.UserRoleMapper;
 import com.dili.sysadmin.domain.Department;
 import com.dili.sysadmin.domain.Role;
 import com.dili.sysadmin.domain.User;
 import com.dili.sysadmin.domain.UserDataAuth;
-import com.dili.sysadmin.domain.UserDepartment;
 import com.dili.sysadmin.domain.UserRole;
 import com.dili.sysadmin.domain.UserStatus;
 import com.dili.sysadmin.domain.dto.AddUserDto;
@@ -109,8 +104,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 	@Autowired
 	private UserManager userManager;
 	@Autowired
-	private UserDepartmentMapper userDepartmentMapper;
-	@Autowired
 	private DepartmentMapper departmentMapper;
 	@Autowired
 	private UserDataAuthMapper userDataAuthMapper;
@@ -167,7 +160,10 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
 	@Transactional
 	@Override
-	public BaseOutput<Object> logicDelete(Long userId) {
+	public BaseOutput<Object> deleteAfterCheck(Long userId) {
+		if (userId.equals(1L)) {
+			return BaseOutput.failure("超级管理员不嫩删除");
+		}
 		UserDataAuth record = new UserDataAuth();
 		record.setUserId(userId);
 		int count = this.userDataAuthMapper.selectCount(record);
@@ -178,8 +174,10 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 		if (user == null) {
 			return BaseOutput.failure("用户不存在");
 		}
-		user.setYn(0);
-		this.userMapper.updateByPrimaryKey(user);
+		count = this.userMapper.deleteByPrimaryKey(userId);
+		if (count <= 0) {
+			return BaseOutput.failure("删除失败");
+		}
 		UserRole userRole = new UserRole();
 		userRole.setUserId(userId);
 		this.userRoleMapper.delete(userRole);
@@ -190,6 +188,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 	@Transactional(rollbackFor = UserException.class)
 	@Override
 	public UserDepartmentDto update(UpdateUserDto dto) throws UserException {
+		if (dto.getId().equals(1L)) {
+			throw new UserException("超级管理员不能编辑");
+		}
 		User user = this.userMapper.selectByPrimaryKey(dto.getId());
 		if (user == null) {
 			throw new UserException("用户不存在");
@@ -211,16 +212,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 		int result = this.userMapper.updateByPrimaryKey(user);
 		if (result <= 0) {
 			throw new UserException("修改用户信息失败");
-		}
-
-		// 修改部门信息
-		UserDepartment userDept = new UserDepartment();
-		userDept.setUserId(dto.getId());
-		this.userDepartmentMapper.delete(userDept);
-		for (Long deptId : dto.getDepartment()) {
-			userDept.setId(null);
-			userDept.setDepartmentId(deptId);
-			this.userDepartmentMapper.insert(userDept);
 		}
 
 		// 修改角色
@@ -271,13 +262,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 		if (result <= 0) {
 			return BaseOutput.failure("新增用户失败");
 		}
-		UserDepartment userDept = new UserDepartment();
-		userDept.setUserId(user.getId());
-		for (Long deptId : dto.getDepartment()) {
-			userDept.setId(null);
-			userDept.setDepartmentId(deptId);
-			this.userDepartmentMapper.insertSelective(userDept);
-		}
 		if (CollectionUtils.isNotEmpty(dto.getRoleId())) {
 			UserRole userRole = new UserRole();
 			userRole.setUserId(user.getId());
@@ -293,23 +277,11 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 			return BaseOutput.failure("用户不存在");
 		}
 		@SuppressWarnings("unchecked")
-		Map<Object, Object> metadata = null == user.getMetadata() ? new HashMap<>() : user.getMetadata();
+		Map<Object, Object> metadata = UserService.getMetadata();
 
-		JSONObject userStatusProvider = new JSONObject();
-		userStatusProvider.put("provider", "userStatusProvider");
-		metadata.put("status", userStatusProvider);
-
-		JSONObject provider = new JSONObject();
-		provider.put("provider", "datetimeProvider");
-		metadata.put("validTimeBegin", provider);
-		metadata.put("validTimeEnd", provider);
-		metadata.put("created", provider);
-		metadata.put("modified", provider);
-		metadata.put("lastLoginTime", provider);
 		try {
 			@SuppressWarnings("unchecked")
-			List<UserDepartmentDto> results = this.parseToUserDepartmentDto(Arrays.asList(user),
-					dto.getDepartment().get(0));
+			List<UserDepartmentDto> results = this.parseToUserDepartmentDto(Arrays.asList(user));
 			List users = ValueProviderUtils.buildDataByProvider(metadata, results);
 			return BaseOutput.success().setData(users.get(0));
 		} catch (Exception e) {
@@ -499,12 +471,11 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
 	@Override
 	public EasyuiPageOutput listPageUserDto(UserDepartmentQuery user) {
-		if (CollectionUtils.isNotEmpty(user.getDepartmentId())) {
-			List<Department> depts = this.departmentMapper
-					.getChildDepartments(user.getDepartmentId().iterator().next());
+		if (user.getDepartmentId() != null) {
+			List<Department> depts = this.departmentMapper.getChildDepartments(user.getDepartmentId());
 			if (CollectionUtils.isNotEmpty(depts)) {
 				depts.forEach(d -> {
-					user.getDepartmentId().add(d.getId());
+					user.getDepartmentIds().add(d.getId());
 				});
 			}
 		}
@@ -517,18 +488,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 		List<UserDepartmentRole> list = this.getActualDao().selectByCondition(user);
 		Page<UserDepartmentRole> resultPage = (Page<UserDepartmentRole>) list;
 		@SuppressWarnings("unchecked")
-		Map<Object, Object> metadata = null == user.getMetadata() ? new HashMap<>() : user.getMetadata();
+		Map<Object, Object> metadata = UserService.getMetadata();
 
-		JSONObject userStatusProvider = new JSONObject();
-		userStatusProvider.put("provider", "userStatusProvider");
-		metadata.put("status", userStatusProvider);
-
-		JSONObject provider = new JSONObject();
-		provider.put("provider", "datetimeProvider");
-		metadata.put("validTimeBegin", provider);
-		metadata.put("validTimeEnd", provider);
-		metadata.put("created", provider);
-		metadata.put("modified", provider);
 		user.setMetadata(metadata);
 		try {
 			List users = ValueProviderUtils.buildDataByProvider(user, list);
@@ -539,18 +500,14 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 		}
 	}
 
-	private List<UserDepartmentDto> parseToUserDepartmentDto(List<User> results, Long departmentId) {
+	private List<UserDepartmentDto> parseToUserDepartmentDto(List<User> results) {
 		List<UserDepartmentDto> target = new ArrayList<>(results.size());
 		Iterator<User> it = results.iterator();
 		while (it.hasNext()) {
 			User user = it.next();
 			UserDepartmentDto dto = new UserDepartmentDto(user);
-			List<Department> depts = this.departmentMapper.findByUserId(user.getId());
-			Department dept = depts.get(0);
-			if (departmentId != null && !departmentId.equals(dept.getId())) {
-				it.remove();
-				continue;
-			}
+			Department dept = this.departmentMapper.selectByPrimaryKey(user.getDepartmentId());
+			dto.setDepartment(dept);
 			List<Role> roles = this.roleMapper.findByUserId(user.getId());
 			dto.setDepartment(dept);
 			dto.setRoles(roles);
@@ -561,6 +518,14 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
 	@Override
 	public List<UserDepartmentRole> findUserContainDepartmentAndRole(UserDepartmentRoleQuery query) {
+		if (query.getDepartmentId() != null && query.getDepartmentId() > 0) {
+			List<Department> depts = this.departmentMapper.getChildDepartments(query.getDepartmentId());
+			if (CollectionUtils.isNotEmpty(depts)) {
+				List<Long> ids = new ArrayList<>(depts.size());
+				depts.forEach(d -> ids.add(d.getId()));
+				query.setDepartmentIds(ids);
+			}
+		}
 		return this.getActualDao().findUserContainDepartmentAndRole(query);
 	}
 

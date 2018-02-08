@@ -92,10 +92,12 @@
                     <td class="title-second" colspan="4">1.2结项原因</td>
                 </tr>
                 <tr>
-                    <td><input type="radio" checked name="reason" value="0"><span>正常结项</span></td>
-                    <td><input type="radio" name="reason" value="1"><span>项目取消</span></td>
-                    <td colspan="2"><input type="radio" name="reason" value="2"><span>其他原因 </span><input
-                            class="easyui-textbox" name="reasonText" id="reasonText" disabled
+                    <td><input type="radio" checked name="reason" value="0"><span  style="display:inline-block;line-height: 26px">正常结项1</span></td>
+                    <td><input type="radio" name="reason" value="1"><span  style="display:inline-block;line-height: 26px">项目取消</span></td>
+                    <td colspan="2">
+                        <input type="radio" name="reason" value="2" style="float: left;margin-top: 6px">
+                        <span style="float: left;margin-top: 4px;margin-right: 5px">其他原因 </span>
+                        <input class="easyui-textbox" name="reasonText" id="reasonText" disabled
                             data-options="width:'70%',required:true,validType:'length[1,20]'"></td>
                 </tr>
                 <tr>
@@ -138,6 +140,10 @@
         url: '${contextPath}/project/getProjectList',
         valueField: 'id',
         textField: 'serialNumber',
+        formatter:function(row){
+            var opts = $(this).combobox('options');
+            return row[opts.textField] + "(" + row.name + ")";
+        },
         onLoadSuccess: function () {
             $("#projectId").combobox('setValue', '${apply.projectId}');
         },
@@ -159,6 +165,16 @@
                     $("#endDate").textbox("initValue", data.endDate);
                     $("#endDateVal").val(data.endDate);
                     $("#actualEndDate").textbox("initValue", data.actualEndDate);
+
+                    $.ajax({
+                        url: "${contextPath}/projectChange/loadProjectChange?projectId=" + data.id,
+                        success: function (d) {
+                            if (d != "") {
+                                $("#endDate").combobox("initValue", d);
+                                $("#endDateVal").val(d);
+                            }
+                        }
+                    });
                 }
             }
         }

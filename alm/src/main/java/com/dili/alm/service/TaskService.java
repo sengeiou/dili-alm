@@ -60,4 +60,10 @@ public interface TaskService extends BaseService<Task, Long> {
 	List<TaskDetails> otherProjectTaskHour(String updateDate,Long owerId);
 	
 	int restTaskHour(Long owerId);
+	
+	TaskDetails selectDetails(Long taskId);
+	
+	boolean isNoTeam();
+	
+	boolean isCommittee();
 }

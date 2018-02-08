@@ -1,6 +1,8 @@
 package com.dili.alm.domain.dto;
 
 public class NextWeeklyDto {
+	
+	private Long id ;
 	private String name;
 	private String planTime;
 	private String owner;
@@ -8,13 +10,34 @@ public class NextWeeklyDto {
 	private String endDate;
 	private int number;
 	private String  phaseId;
-	private Long  id;
+	private  String  taskHour;
+	private String overHour;
+	private  String   surplus;//项目剩余计划工时
 	
+	
+	public String getSurplus() {
+		return surplus;
+	}
+	public void setSurplus(String surplus) {
+		this.surplus = surplus;
+	}
+	public String getOverHour() {
+		return overHour;
+	}
+	public void setOverHour(String overHour) {
+		this.overHour = overHour;
+	}
 	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+	public String getTaskHour() {
+		return taskHour;
+	}
+	public void setTaskHour(String taskHour) {
+		this.taskHour = taskHour;
 	}
 	public String getPhaseId() {
 		return phaseId;

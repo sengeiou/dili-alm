@@ -3,7 +3,6 @@ package com.dili.sysadmin.service.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +13,8 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.sysadmin.dao.DepartmentMapper;
-import com.dili.sysadmin.dao.RoleMapper;
-import com.dili.sysadmin.dao.UserDepartmentMapper;
 import com.dili.sysadmin.dao.UserMapper;
 import com.dili.sysadmin.domain.Department;
-import com.dili.sysadmin.domain.UserDepartment;
 import com.dili.sysadmin.domain.dto.DepartmentTree;
 import com.dili.sysadmin.domain.dto.DepartmentUserCountDto;
 import com.dili.sysadmin.service.DepartmentService;
@@ -33,10 +29,6 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department, Long> imp
 
 	@Autowired
 	private UserMapper userMapper;
-	@Autowired
-	private UserDepartmentMapper userDepartmentMapper;
-	@Autowired
-	private RoleMapper roleMapper;
 
 	public DepartmentMapper getActualDao() {
 		return (DepartmentMapper) getDao();

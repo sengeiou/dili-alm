@@ -3,6 +3,9 @@
     .textbox-label{
         width: 100px;
     }
+    .datagrid-cell-c1-opt span a{
+        	color:#999;
+        }
 </style>
 <div class="easyui-layout" fit="true">
     <!-- ====================================================================================================================== -->
@@ -51,7 +54,7 @@
                         <td>
                             <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
                                onclick="queryGrid()">查询</a>
-                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload"  onclick="clearForm()">清除</a>
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload"  onclick="clearForm()">重置</a>
                         </td>
                     </tr>
                 </table>
@@ -201,7 +204,7 @@
                     success: function (data) {
                         if (data.code == "200") {
                             try {
-                                LogUtils.saveLog("删除结项申请:" + id, function () {
+                                LogUtils.saveLog(LOG_MODULE_OPS.DELETE_PROJECT_COMPLETE,"删除结项申请:" + data.data+":成功", function () {
                                     $("#grid").datagrid("reload");
                                     $('#dlg').dialog('close');
                                 });

@@ -72,7 +72,8 @@
                         <#comboProvider _id="type" _provider='changeTypeProvider'/>
                     </td>
                     <td><input class="easyui-numberbox" type="text" name="workingHours"
-                               data-options="required:true,min:0,max:99999999,label:'变更工作量预估:'">H</td>
+                               data-options="required:true,min:0,max:99999999,label:'变更工作量预估:'">H
+                    </td>
                 </tr>
                 <tr>
                     <td>
@@ -85,7 +86,7 @@
                     </td>
                     <td>
                         <input class="easyui-datebox" type="text" id="estimateLaunchDate" name="estimateLaunchDate"
-                               data-options="editable:false,required:true,label:'变更后上线日期:'">
+                               data-options="editable:false,required:true,label:'变更后上线日期:',validType:'md'">
                     </td>
                 </tr>
                 <tr>
@@ -115,7 +116,8 @@
                 </tr>
                 <tr>
                     <td colspan="4">
-                        <input class="easyui-tagbox" data-options="prompt: '输完后回车才能生效哦!'" id="tagbx" value="" style="width:100%">
+                        <input class="easyui-tagbox" data-options="prompt: '输完后回车才能生效哦!'" id="tagbx" value=""
+                               style="width:100%">
                     </td>
                 </tr>
             </table>
@@ -131,12 +133,23 @@
     </div>
 </div>
 <script>
-
+    var d;
     $("#tagbx").tagbox({
         onBeforeRemoveTag: function (value) {
             if (value == pmo_email) {
                 return false;
             }
+        }
+    });
+
+    $.extend($.fn.validatebox.defaults.rules, {
+        md: {
+            validator: function (value) {
+                var d1 = $.fn.datebox.defaults.parser(d);
+                var d2 = $.fn.datebox.defaults.parser(value);
+                return d2 >= d1;
+            },
+            message: '结束日期不能小于开始日期.'
         }
     });
 
@@ -157,7 +170,7 @@
                     var data = eval('(' + data + ')');
                     if (data.success == true) {
                         try {
-                            LogUtils.saveLog("新增项目变更", function () {
+                            LogUtils.saveLog(LOG_MODULE_OPS.ADD_PROJECT_CHANGE,"新增项目变更:"+data.data+":成功", function () {
                                 window.location.href = "${contextPath}/projectChange/index.html";
                             });
                         } catch (e) {
@@ -175,6 +188,10 @@
         url: '${contextPath}/project/getProjectList',
         valueField: 'id',
         textField: 'serialNumber',
+        formatter:function(row){
+            var opts = $(this).combobox('options');
+            return row[opts.textField] + "(" + row.name + ")";
+        },
         onChange: function (projectValue) {
             var datas = $("#projectId").combobox('getData');
             $("#projectName").textbox("initValue", "");
@@ -186,6 +203,7 @@
                     $("#projectType").textbox("initValue", data.type);
                     $("#number").val(data.serialNumber);
                     $("#estimateLaunchDate").datebox('setValue', data.estimateLaunchDate);
+                    d = data.estimateLaunchDate;
                     $('#versionId').combobox({
                         url: '${contextPath}/project/version/listPage?projectId=' + projectValue,
                         valueField: 'id',

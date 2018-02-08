@@ -8,11 +8,13 @@ import java.util.Date;
  */
 public class TaskDto {
 
+	private  Long id;
     private  String name;
     private  String versionId;
     private  String phaseId;//
     private Date startDate;
     private Date endDate;
+    private String endDateStr;
     private String owner;//负责人
     private Short planTime;//计划时间
     private String describe;  //备注
@@ -24,7 +26,36 @@ public class TaskDto {
     private String   weekHour;//本周工时
     private String   realHour;//实际工时
     private String   hourDeviation;//工时偏差
+    private String fackEndDate;//项目实际完成时间
+    private String  projectId;
     
+    
+    
+    
+	public String getProjectId() {
+		return projectId;
+	}
+	public void setProjectId(String projectId) {
+		this.projectId = projectId;
+	}
+	public String getEndDateStr() {
+		return endDateStr;
+	}
+	public void setEndDateStr(String endDateStr) {
+		this.endDateStr = endDateStr;
+	}
+	public String getFackEndDate() {
+		return fackEndDate;
+	}
+	public void setFackEndDate(String fackEndDate) {
+		this.fackEndDate = fackEndDate;
+	}
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
 	public String getHourDeviation() {
 		return hourDeviation;
 	}

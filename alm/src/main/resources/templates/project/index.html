@@ -24,7 +24,7 @@
 						<td style="padding: 5px;"><select id="type" class="easyui-combobox" name="type" style="width: 100%"
 							data-options="url:'${contextPath!}/project/type.json',textField:'code',valueField:'value',label:'项目类型:',editable:false,
 							icons : [{
-								iconCls : 'icon-cancel',
+
 								handler : function(e) {
 									$(e.data.target).textbox('initValue', '');
 								}
@@ -40,7 +40,6 @@
 						<td style="padding: 5px;"><select id="projectState" class="easyui-combobox" name="projectState" style="width: 100%"
 							data-options="url:'${contextPath!}/project/state.json',textField:'code',valueField:'value',label:'项目状态:',editable:false,
 							icons : [{
-								iconCls : 'icon-cancel',
 								handler : function(e) {
 									$(e.data.target).textbox('initValue', '');
 								}
@@ -57,7 +56,7 @@
 					</tr>
 					<tr>
 						<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid();">查询</a> <a
-							href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload" onclick="clearForm()">清除</a></td>
+							href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload" onclick="clearForm()">重置</a></td>
 					</tr>
 				</table>
 			</form>

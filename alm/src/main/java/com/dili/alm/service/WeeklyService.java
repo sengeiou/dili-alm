@@ -14,6 +14,7 @@ import com.dili.alm.domain.dto.TaskDto;
 import com.dili.alm.domain.dto.WeeklyPara;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.sysadmin.sdk.domain.UserTicket;
 
 /**
  * ��MyBatis Generator�����Զ�����
@@ -31,7 +32,7 @@ public interface WeeklyService extends BaseService<Weekly, Long> {
 	
 	ProjectWeeklyDto  getProjectAddWeeklyDtoById(Long projectId);
 	
-	
+	Weekly  getWeeklyById(Long weeklyId);
 	/** 
 	 * 当前重大问题 -
 	 * */
@@ -102,10 +103,12 @@ public interface WeeklyService extends BaseService<Weekly, Long> {
 	 */
 	List<WeeklyPara>  getUser();
 
-//	Map<Object, Object> addWeekly(Weekly week );
-	
-	
+	/**
+	 * 周报生产
+	 * @param projectId
+	 * @return
+	 */
 	 Map<String, Weekly>  insertWeeklyByprojectId(String projectId);
 	
-	
+	 Weekly insertWeekAndWeekDetail(String projectId, UserTicket userTicket, Weekly wkk);
 }

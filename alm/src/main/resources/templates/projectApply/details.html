@@ -51,7 +51,7 @@
     }
     em{
         display: inline-block;
-        width: 11px;}
+        width: 0px;}
     .panel-tool{
         top:10px;
         height: 24px;
@@ -81,39 +81,39 @@
                 </tr>
                 <tr>
                     <td colspan="4"><input class="easyui-textbox" type="text" name="name"
-                                           data-options="required:true,validType:'length[1,10]',label:'*项目名称:'"
+                                           data-options="required:true,validType:'length[1,10]',label:'项目名称:'"
                                            style="width:576px"></td>
                 </tr>
                 <tr>
                     <td colspan="2"><input class="easyui-textbox" name="projectLeader" id="project_leader"
-                               panelWidth="auto" panelHeight="auto" label="*项目负责人:"/></td>
+                               panelWidth="auto" panelHeight="auto" label="项目负责人:"/></td>
                     <td colspan="2"><input class="easyui-textbox" type="text" name="productManager" id="productManager"
-                               data-options="label:'*产品经理:'"></td>
+                               data-options="label:'产品经理:'"></td>
                 </tr>
                 <tr>
                     <td colspan="2"><input class="easyui-textbox" type="text" name="developmentManager" id="developmentManager"
-                               data-options="label:'*研发经理:'"></td>
+                               data-options="label:'研发经理:'"></td>
                     <td colspan="2"><input class="easyui-textbox" type="text" name="testManager" id="testManager"
-                               data-options="label:'*测试经理:'"></td>
+                               data-options="label:'测试经理:'"></td>
                 </tr>
                 <tr>
                     <td colspan="2"><input class="easyui-textbox" type="text" name="businessOwner" id="businessOwner"
-                               data-options="label:'*业务负责人:'"></td>
-                    <td colspan="2"><input class="easyui-textbox" type="text" id="dep" name="dep" data-options="label:'*需求所属业务部门:'">
+                               data-options="label:'业务负责人:'"></td>
+                    <td colspan="2"><input class="easyui-textbox" type="text" id="dep" name="dep" data-options="label:'需求所属业务部门:'">
                     </td>
                 </tr>
                 <tr>
                     <td colspan="2"><input class="easyui-datebox" name="expectedLaunchDate" id=""
-                               data-options="label:'*业务期望上线日期:'"/></td>
+                               data-options="label:'业务期望上线日期:'"/></td>
                     <td colspan="2"><input class="easyui-datebox" name="estimateLaunchDate" id=""
-                               data-options="label:'*预估最终上线日期:'"/></td>
+                               data-options="label:'预估最终上线日期:'"/></td>
                 </tr>
                 <tr>
                     <td colspan="2"><input class="easyui-datebox" name="startDate" id=""
-                               data-options="label:'*计划开始日期:'"/>
+                               data-options="label:'计划开始日期:'"/>
                     </td>
                     <td colspan="2"><input class="easyui-datebox" name="endDate" id=""
-                               data-options="label:'*计划结束日期:'"/>
+                               data-options="label:'计划结束日期:'"/>
                     </td>
                 </tr>
                 <tr>
@@ -124,17 +124,17 @@
                         <table id="requireTable" border="0" style="width: 100%;">
                             <tr>
                                 <td style="width: 33%; padding-left:0;">
-                                    <span class="require">*</span>
+                                    <!--<span class="require"></span>-->
                                     <input class="easyui-textbox" type="text" name="mainUser" id="mainUser" style="width: calc(30% - 88px)"
                                            data-options="label:'负责部门经理:'">
                                 </td>
                                 <td style="width: 33%; padding-left:0;">
-                                    <span class="require">*</span>
+                                    <!--<span class="require"></span>-->
                                     <input class="easyui-numberspinner" id="member" name="mainNumber" value="" style="width: calc(30% - 105px)"
                                            data-options="label:'预估所需人员:'"> <span style="opacity: .6">人</span>
                                 </td>
                                 <td style="width: 33%; padding-left:0;">
-                                    <span class="require">*</span>
+                                    <!--<span class="require"></span>-->
                                     <input class="easyui-numberbox" type="text" id="workTime" name="mainWorkTime" style="width: calc(30% - 115px)"
                                            data-options="label:'预估工时:'"> <span style="opacity: .6">人日</span>
                                 </td>
@@ -159,9 +159,11 @@
                     <td class="title-second" colspan="4">目的</td>
                 </tr>
                 <tr>
-                    <td colspan="4"><input class="easyui-textbox" name="purpose"
+                    <td colspan="4">
+                        <input class="easyui-textbox" name="purpose"
                                            data-options="multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
-                                           style="width:100%;height:120px"/></td>
+                                           style="width:100%;height:120px"/>
+                    </td>
                 </tr>
                 <tr>
                     <td class="title-second" colspan="4">范围</td>
@@ -560,7 +562,7 @@
     function appendRelated(obj) {
         var index = jQuery('.related').length;
         var parserId = "parser_" + new Date().getTime();
-        $("#requireTable").append("<tr class='related' id='" + parserId + "'><td><em></em><input style=\"width: calc(30% - 88px)\"  class=\"easyui-textbox\" type=\"text\" id=\"" + index + "-user" + "\" name=\"relatedResources[" + index + "].relatedUser\" data-options=\"label:'相关部门经理:'\"></td><td><em></em><input style=\"width: calc(30% - 105px)\" class=\"easyui-numberspinner\" id='" + index + "-number' name='relatedResources[" + index + "].relatedNumber' value=\"\" data-options=\"increment:1,label:'预估所需人员:',min:1\"><span style=\"opacity: .6\"> 人</span></td><td><em></em><input style=\"width: calc(30% - 115px)\" class=\"easyui-numberbox\" type=\"text\" id='" + index + "-time' name='relatedResources[" + index + "].relatedWorkTime' data-options=\"label:'预估工时:',min:1\"> <span style=\"opacity: .6\">人日</span></td></tr>");
+        $("#requireTable").append("<tr class='related' id='" + parserId + "'><td><input style=\"width: calc(30% - 88px)\"  class=\"easyui-textbox\" type=\"text\" id=\"" + index + "-user" + "\" name=\"relatedResources[" + index + "].relatedUser\" data-options=\"label:'相关部门经理:'\"></td><td><input style=\"width: calc(30% - 105px)\" class=\"easyui-numberspinner\" id='" + index + "-number' name='relatedResources[" + index + "].relatedNumber' value=\"\" data-options=\"increment:1,label:'预估所需人员:',min:1\"><span style=\"opacity: .6\"> 人</span></td><td><input style=\"width: calc(30% - 115px)\" class=\"easyui-numberbox\" type=\"text\" id='" + index + "-time' name='relatedResources[" + index + "].relatedWorkTime' data-options=\"label:'预估工时:',min:1\"> <span style=\"opacity: .6\">人日</span></td></tr>");
         $.parser.parse("#" + parserId);
         if(obj!=undefined){
             $("#" + index + "-user").textbox('initValue', obj['relatedUserValue']);

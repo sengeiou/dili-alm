@@ -36,4 +36,8 @@ public interface RoleService extends BaseService<Role, Long> {
 
 	BaseOutput<Object> updateAfterCheck(Role role);
 
+	BaseOutput<Object> listByDepartment(Long departmentId);
+
+	List<Role> findNotBindWithUserByDepartmentId(Long userid, Long departmentId);
+
 }

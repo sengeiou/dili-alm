@@ -13,6 +13,9 @@ import com.dili.alm.dao.LogMapper;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.Log;
 import com.dili.alm.domain.Task;
+import com.dili.alm.domain.dto.DataDictionaryDto;
+import com.dili.alm.domain.dto.DataDictionaryValueDto;
+import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.LogService;
 import com.dili.alm.utils.WebUtil;
 import com.dili.ss.base.BaseServiceImpl;
@@ -36,9 +39,12 @@ public class LogServiceImpl extends BaseServiceImpl<Log, Long> implements LogSer
     public LogMapper getActualDao() {
         return (LogMapper)getDao();
     }
-
+    @Autowired
+    private DataDictionaryService dataDictionaryService;
+    
+    private final String LOG_MODULE_CODE="log_module";
 	@Override
-	public int insertLog(String logText) {
+	public int insertLog(String logText,Integer logModule) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		if(userTicket==null){
 			throw new RuntimeException("未登录");
@@ -68,6 +74,7 @@ public class LogServiceImpl extends BaseServiceImpl<Log, Long> implements LogSer
 			record.setOperatorId(userTicket.getId());
 			record.setContent(logText);
 			record.setCreated(date);
+			record.setLogModule(logModule);
 			record.setIp(userTicket.getLastLoginIp());
 			return this.getActualDao().insertSelective(record);
 		}
@@ -107,6 +114,10 @@ public class LogServiceImpl extends BaseServiceImpl<Log, Long> implements LogSer
 		memberProvider.put("provider", "memberProvider");
 		metadata.put("operatorId", memberProvider);
 		
+		JSONObject moduleProvider = new JSONObject();
+		moduleProvider.put("provider", "moduleProvider");
+		metadata.put("logModule", moduleProvider);
+		
 		JSONObject provider = new JSONObject();
 		provider.put("provider", "datetimeProvider");;
 		metadata.put("created", provider);
@@ -118,6 +129,15 @@ public class LogServiceImpl extends BaseServiceImpl<Log, Long> implements LogSer
 		} catch (Exception e) {
 			return null;
 		}
+	}
+
+	@Override
+	public List<DataDictionaryValueDto> getLogModules() {
+		DataDictionaryDto dto = this.dataDictionaryService.findByCode(LOG_MODULE_CODE);
+		if (dto == null) {
+			return null;
+		}
+		return dto.getValues();
 	}
 
 }

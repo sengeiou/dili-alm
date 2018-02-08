@@ -218,23 +218,93 @@
       $('#pauseTask').linkbutton({disabled:true});
       $('#updateDetail').linkbutton({disabled:true});
       $('#complate').linkbutton({disabled:true});
+      $("#modified").datebox({disabled:true});
     }
     
+    //显示详情页面
+    function openDetail(row){
+        noEdit();
+        
+        $("#task_detail_list").show();//填写工时列表
+        $("#dialog_toolbar").show();
+        
+        $("#saveTask").hide();
+        $("#task_detail").hide();
+        $("#dialog_toolbar_detail").hide();
+        
+		var selected=$("#grid").datagrid('getData').rows[row];
+		
+		/*******加载显示数据 begin**********/
+		$('#_form').form({editable:true});
+            formFocus("_form", "_name");
+            var formData = $.extend({},selected);
+            formData = addKeyStartWith(getOriginalData(formData),"_");
+            $('#_form').form('load', formData);
+            $('#_form').form('load',{planTimeStr:formData._planTime});
+            if(selected.flow){ $("#changeIdTr").css("display","block");
+                                loadChangePorjectSelect(formData._projectId); 
+                                $('#_changeId').combobox('select',formData._changeId);
+                                $('#flowSt').combobox('select',0); 
+                               }
+            else{ $("#changeIdTr").css("display","none");$('#flowSt').combobox('select',1); }
+            
+            
+            
+            loadMemberSelect(formData._projectId);
+            $('#_owner').combobox('select',formData._owner);
+
+ 			loadVisionSelect(formData._projectId);
+            $('#_versionId').combobox('select',formData._versionId);
+            
+            loadPhaseSelect(formData._versionId);
+            $('#_phaseId').combobox('select',formData._phaseId);
+            
+            loadTaskSelect(formData._projectId);
+            $('#_beforeTask').combobox('select', formData._beforeTask);
+            
+            $('#_form').form('load', {startDateShow:dateFormat_1(formData._startDate)});
+            $('#_form').form('load', {endDateShow:dateFormat_1(formData._endDate)}); 
+            $('#_phaseId').combobox('select',formData._phaseId);
+		/*******加载显示数据 end**********/
+        queryDetail(formData._id);
+        
+            
+    	$('#dlg').dialog('open');
+        $('#dlg').dialog('center');
+    
+    }
+    
+    function queryDetail(id,owner){
+    	 var opts = $("#detail_grid").datagrid("options");
+        
+        opts.url = "${contextPath}/task/listTaskDetails?taskId="+id;
+        
+        var param = bindMetadata("grid", true);
+        
+        $("#detail_grid").datagrid("reload");
+    
+    }
     
             //打开执行任务窗口
         function openUpdateDetail(row){
         	noEdit();
         	noEditForTaskdetail();
-        	
+        	$('#modified').datebox({ editable:false });
         	$("#task_detail").hide();
         	$("#dialog_toolbar").hide();
         	$("#dialog_toolbar_detail").show();
+        	$("#task_detail_list").hide();
+        	
 			var selected=$("#grid").datagrid('getData').rows[row];
 			$("#task_detail").show();
 			
 			if(isOwenr(selected.id)){
 				canEditForTaskdetail();
 			}
+
+
+			
+			
 			
             $('#dlg').dialog('open');
             $('#dlg').dialog('center');
@@ -262,11 +332,14 @@
             
             loadPhaseSelect(formData._versionId);
             $('#_phaseId').combobox('select',formData._phaseId);
+            loadTaskSelect(formData._projectId);
+            $('#_beforeTask').combobox('select', formData._beforeTask);
+            
             
             $('#_form').form('load', {startDateShow:dateFormat_1(formData._startDate)});
             $('#_form').form('load', {endDateShow:dateFormat_1(formData._endDate)}); 
             $('#_phaseId').combobox('select',formData._phaseId);
-            
+
             
             if(formData._status==0){
             	$("#task_detail").hide();
@@ -311,9 +384,11 @@
             	$('#detail_form').form('clear');
             	getDetailInfo(formData._id);
             }
+            if(isProjectManager()){
+			 $("#modified").datebox({disabled:false});
+			}
+            $('#detail_form').form('load', {modified:dateFormat_1(new Date())});
 
-            $('#detail_form').form('load',{overHourStr:0});
-            $('#detail_form').form('load',{taskHourStr:0});
         }
         
         
@@ -345,7 +420,7 @@
                 success: function (data) {
                     if(data.code=="200"){
                         $("#grid").datagrid("reload");
-                        //LogUtils.saveLog("添加执行任务时间：" + data.result, function () {});
+                        LogUtils.saveLog(LOG_MODULE_OPS.PERFORM_PROJECT_VERSION_PHASE_TASK,"执行任务:" + data.data+":成功", function () {});
                     }else{
                         $.messager.alert('错误',data.result);
                     }
@@ -487,7 +562,7 @@ function isTask(id){
 	                if (data.code == "200") {
 	                    $("#grid").datagrid("reload");
 	                    $('#dlg').dialog('close');
-	                    LogUtils.saveLog("暂停任务：" + data.result, function() {});
+	                    LogUtils.saveLog(LOG_MODULE_OPS.PAUSE_PROJECT_VERSION_PHASE_TASK,"完成任务：" + data.data+":成功", function() {});
 	                } else {
 	                    $.messager.alert('错误', data.result);
 	                }
@@ -500,3 +575,15 @@ function isTask(id){
 		    $.messager.alert('错误', '任务工时加班工时其中一项不能为0');
 		}
     }
+    
+    $.extend($.fn.validatebox.defaults.rules, {
+        checkDate: {
+            validator: function(value, param) {
+                var nowDate = new Date();
+                var d1 = new Date(value.replace(/\-/g, "\/")); 
+                return d1 < nowDate;
+            },
+            message: '不能选择未来日期！'
+        }
+    });
+  

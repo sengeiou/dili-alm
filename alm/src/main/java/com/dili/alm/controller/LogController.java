@@ -1,13 +1,21 @@
 package com.dili.alm.controller;
 
 import com.dili.alm.domain.Log;
+import com.dili.alm.rpc.ResourceRpc;
 import com.dili.alm.service.LogService;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.sysadmin.sdk.domain.UserTicket;
+import com.dili.sysadmin.sdk.session.SessionContext;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.List;
+
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -25,7 +33,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class LogController {
     @Autowired
     LogService logService;
-
+    @Autowired
+    private ResourceRpc resourceRpc;
+    
+    private final String ALL_USER_LOG_PERMISSIONS="selectAllUsersLog";
+    private final String MY_USER_LOG_PERMISSIONS="getMyUserLog";
     @ApiOperation("跳转到Log页面")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
@@ -47,7 +59,19 @@ public class LogController {
 	})
     @RequestMapping(value="/listPage", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String listPage(Log log,String beginTime,String endTime) throws Exception {
-        return logService.listLogPage(log,beginTime,endTime).toString();
+    	UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		if (userTicket == null) {
+			throw new RuntimeException("未登录");
+		}
+		List<String> data = resourceRpc.listResourceCodeByUserId(userTicket.getId()).getData();
+		if(data.contains(ALL_USER_LOG_PERMISSIONS)){
+			return logService.listLogPage(log,beginTime,endTime).toString();
+		}else if(data.contains(MY_USER_LOG_PERMISSIONS)){
+			log.setOperatorId(userTicket.getId());
+			return logService.listLogPage(log,beginTime,endTime).toString();
+		}else{
+			return null;
+		}	
     }
     
     @ApiOperation("修改Log")

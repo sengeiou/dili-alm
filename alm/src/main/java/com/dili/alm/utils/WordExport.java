@@ -242,7 +242,8 @@ public class WordExport {
 		nextWeekTableRowone.addNewTableCell();
 		nextWeekTableRowone.addNewTableCell();
 		nextWeekTableRowone.addNewTableCell();
-
+		nextWeekTableRowone.addNewTableCell();
+		
 		mergeCellsHorizontal(nextWeekTable, 0, 0, 5);
 		getParagraph(nextWeekTableRowone.getCell(0), "下周工作计划");
 		// 表格第二行
@@ -257,10 +258,10 @@ public class WordExport {
 		nextTableTHREE.getCell(0).setText("序号");
 		nextTableTHREE.getCell(1).setText("任务名称");
 		nextTableTHREE.getCell(2).setText("责任人");
-		nextTableTHREE.getCell(3).setText("剩余计划工时");
-		nextTableTHREE.getCell(4).setText("计划完成日期");
-		nextTableTHREE.getCell(5).setText("备注");
-
+		nextTableTHREE.getCell(3).setText("任务计划工时");
+		nextTableTHREE.getCell(4).setText("剩余计划工时");
+		nextTableTHREE.getCell(5).setText("计划完成日期");
+		nextTableTHREE.getCell(6).setText("备注");
 		XWPFTableRow nextTabledd;
 		for (int i = 0; i < wk.size(); i++) {
 			nextTabledd = nextWeekTable.createRow();
@@ -269,8 +270,9 @@ public class WordExport {
 			nextTabledd.getCell(1).setText(wk.get(i).getName() + "");
 			nextTabledd.getCell(2).setText(wk.get(i).getOwner());
 			nextTabledd.getCell(3).setText(wk.get(i).getPlanTime());
-			nextTabledd.getCell(4).setText(wk.get(i).getEndDate());
-			nextTabledd.getCell(5).setText(wk.get(i).getDescribe());
+			nextTabledd.getCell(4).setText(wk.get(i).getSurplus());
+			nextTabledd.getCell(5).setText(wk.get(i).getEndDate());
+			nextTabledd.getCell(6).setText(wk.get(i).getDescribe());
 
 		}
 	}
@@ -315,12 +317,12 @@ public class WordExport {
 		thisTableTHREE.getCell(2).setText("版本");
 		thisTableTHREE.getCell(3).setText("阶段");
 		thisTableTHREE.getCell(4).setText("责任人");
-		thisTableTHREE.getCell(5).setText("完成情况");
-		thisTableTHREE.getCell(6).setText("预计工时");
-//		thisTableTHREE.getCell(6).setText("本周工时");
-		thisTableTHREE.getCell(7).setText("实际工时");
-		thisTableTHREE.getCell(8).setText("工时偏差%");
-		thisTableTHREE.getCell(9).setText("备注");
+		thisTableTHREE.getCell(5).setText("是否完成");
+		thisTableTHREE.getCell(6).setText("计划完成日期");
+		thisTableTHREE.getCell(7).setText("任务计划工时");
+		thisTableTHREE.getCell(8).setText("本周实际工时");
+		thisTableTHREE.getCell(9).setText("实际总工时");
+		thisTableTHREE.getCell(10).setText("实际完成日期");
 
 		XWPFTableRow thisTabledd;
 		for (int i = 0; i < td.size(); i++) {
@@ -332,11 +334,12 @@ public class WordExport {
 			thisTabledd.getCell(3).setText(td.get(i).getPhaseId());
 			thisTabledd.getCell(4).setText(td.get(i).getOwner() + "");
 			thisTabledd.getCell(5).setText(td.get(i).getStatus() + "");
-			thisTabledd.getCell(6).setText(td.get(i).getPlanTime() + "");
-		//	thisTabledd.getCell(7).setText(td.get(i).getWeekHour());
-			thisTabledd.getCell(7).setText(td.get(i).getRealHour());
-			thisTabledd.getCell(8).setText(td.get(i).getHourDeviation());
-			thisTabledd.getCell(9).setText(td.get(i).getDescribe());
+			
+			thisTabledd.getCell(6).setText(td.get(i).getEndDateStr() );
+			thisTabledd.getCell(7).setText(td.get(i).getPlanTime()+"");
+			thisTabledd.getCell(8).setText(td.get(i).getWeekHour());
+			thisTabledd.getCell(9).setText(td.get(i).getRealHour());
+			thisTabledd.getCell(10).setText(td.get(i).getFackEndDate());
 		}
 	}
 
@@ -373,13 +376,16 @@ public class WordExport {
 		comTableRowThree.getCell(2).setText("本周起止日期");
 		comTableRowThree.getCell(3).setText(pd.getBeginAndEndTime());
 		comTableRowThree.getCell(4).setText("总体进展");
-		  if(Integer.parseInt(pd.getCompletedProgress())<8){
-			  comTableRowThree.getCell(5).setText("正常--偏差<8%");
-		  } else if(Integer.parseInt(pd.getCompletedProgress())>15){
-			  comTableRowThree.getCell(5).setText("警戒--偏差>15%");
-		  }else{
-			  comTableRowThree.getCell(5).setText("预警--8%<偏差<15%");
-		  }
+		  //if(Integer.parseInt(pd.getCompletedProgress())<8){
+		    if(Integer.parseInt(pd.getCompletedProgress())>100){
+		    	pd.setCompletedProgress("100");
+		    }
+			comTableRowThree.getCell(5).setText(pd.getCompletedProgress()+"%");
+		  //} else if(Integer.parseInt(pd.getCompletedProgress())>15){
+		  //	 comTableRowThree.getCell(5).setText("警戒--偏差>15%");
+		  //}else{
+		  //  comTableRowThree.getCell(5).setText("预警--8%<偏差<15%");
+		  //}
 		
 
 		XWPFTableRow comTableRowFive = ComTable.createRow();

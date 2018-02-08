@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+
+
+
+
 
 
 
@@ -124,22 +129,34 @@ public class WeeklyController  {
     public @ResponseBody BaseOutput save(WeeklyDetails WeeklyDetails) {
     	 WeeklyDetails.setIsSubmit(1);
         WeeklyDetails wd=weeklyDetailsService.getWeeklyDetailsByWeeklyId(WeeklyDetails.getWeeklyId());
-    	 if(wd==null)
-    		 weeklyDetailsService.createInsert(WeeklyDetails); 
-    	 else
-    		 weeklyDetailsService.updateSelective(WeeklyDetails);
-        return BaseOutput.success("保存成功");
+        Weekly  weekly=null;
+    	 if(wd==null){
+    		  weeklyDetailsService.createInsert(WeeklyDetails); 
+    	      weekly=weeklyService.getWeeklyById(WeeklyDetails.getWeeklyId());
+    	 }else{
+    		  weeklyDetailsService.updateSelective(WeeklyDetails);
+    		  weekly=weeklyService.getWeeklyById(WeeklyDetails.getWeeklyId());
+    		 
+    	 }
+    	
+    	 
+    	  return BaseOutput.success("周报提交成功").setData(String.valueOf(weekly.getId()+":"+DateUtil.getDate(weekly.getCreated())+"周报提交"));
     }
     @RequestMapping(value="/updateWeeklyDetails", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput updateWeeklyDetails(WeeklyDetails WeeklyDetails) {
     	
     	 WeeklyDetails wd=weeklyDetailsService.getWeeklyDetailsByWeeklyId(WeeklyDetails.getWeeklyId());
-    	 if(wd==null)
+    	 if(wd==null){
     		 weeklyDetailsService.createInsert(WeeklyDetails); 
-    	 else
+    		  Weekly  weekly=weeklyService.getWeeklyById(WeeklyDetails.getWeeklyId());
+    		 return BaseOutput.success("周报保存成功").setData(String.valueOf(weekly.getId()+":"+DateUtil.getDate(weekly.getCreated())+"周报"));
+    	 }else{
     		 weeklyDetailsService.updateSelective(WeeklyDetails);
-    	 
-        return BaseOutput.success("保存成功");
+    		  Weekly  weekly=weeklyService.getWeeklyById(wd.getWeeklyId());
+    		 return BaseOutput.success("周报保存成功").setData(String.valueOf(weekly.getId()+":"+DateUtil.getDate(weekly.getCreated())+"周报"));
+    	 }
+    	
+       
     }
     @RequestMapping(value="/updateWeeklyDetailsCancel", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput updateWeeklyDetailsCancel(WeeklyDetails WeeklyDetails) {
@@ -179,6 +196,14 @@ public class WeeklyController  {
     @RequestMapping(value="/delete", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput delete(Long id) {
         weeklyService.delete(id);
+        WeeklyDetails newDTO = DTOUtils.newDTO(WeeklyDetails.class);
+        newDTO.setWeeklyId(id);
+        List<WeeklyDetails> list = weeklyDetailsService.listByExample(newDTO);
+        List<Long> keys=new ArrayList<Long>();
+        for (WeeklyDetails weeklyDetails : list) {
+			keys.add(weeklyDetails.getId());
+		}
+        weeklyDetailsService.delete(keys);
         return BaseOutput.success("删除成功");
     }
     
@@ -234,8 +259,7 @@ public class WeeklyController  {
     	 mv.addObject("returnProjectId",projectId);
    	    
       	 Map<String, Weekly> wkMap=weeklyService.insertWeeklyByprojectId(projectId);
-      	 Weekly  wk=wkMap.get("three");
-      	 
+      	 Weekly  wk= DTOUtils.newDTO(Weekly.class);
     	 Map<Object,Object> map=null;
     	 if(wkMap.get("one")==null)
     		  map=weeklyService.getDescAddById(wkMap.get("two").getId()+"");

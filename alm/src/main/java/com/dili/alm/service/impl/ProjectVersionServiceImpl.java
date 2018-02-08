@@ -171,8 +171,11 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		filesList.forEach(f -> {
 			this.filesMapper.delete(f);
 		});
-		super.delete(id);
-		return BaseOutput.success("删除成功");
+		ProjectVersion projectVersion = super.get(id);
+		if(projectVersion!=null){
+			super.delete(id);
+		}
+		return BaseOutput.success("删除成功").setData(String.valueOf(projectVersion.getId()+":"+projectVersion.getVersion()));
 	}
 
 	@Override

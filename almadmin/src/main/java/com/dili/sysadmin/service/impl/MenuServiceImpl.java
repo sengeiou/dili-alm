@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
@@ -20,6 +21,7 @@ import com.dili.sysadmin.domain.Resource;
 import com.dili.sysadmin.domain.RoleMenu;
 import com.dili.sysadmin.domain.dto.MenuListDto;
 import com.dili.sysadmin.domain.dto.UpdateMenuDto;
+import com.dili.sysadmin.exception.ApplicationException;
 import com.dili.sysadmin.exception.MenuException;
 import com.dili.sysadmin.manager.UserManager;
 import com.dili.sysadmin.service.MenuService;
@@ -120,7 +122,7 @@ public class MenuServiceImpl extends BaseServiceImpl<Menu, Long> implements Menu
 		RoleMenu record = new RoleMenu();
 		record.setMenuId(menuId);
 		count = this.roleMenuMapper.selectCount(record);
-		if (count > 0) {
+		if (count > 1) {
 			return BaseOutput.failure("该菜单下绑定有角色，不能删除");
 		}
 		count = this.menuDao.deleteByPrimaryKey(menuId);
@@ -129,6 +131,22 @@ public class MenuServiceImpl extends BaseServiceImpl<Menu, Long> implements Menu
 		}
 		this.userManager.reloadUserUrlsByMenu(menuId);
 		return BaseOutput.success("删除成功");
+	}
+
+	@Transactional(rollbackFor = ApplicationException.class)
+	@Override
+	public void insertWithOutput(Menu menu) throws MenuException {
+		int result = this.insertSelective(menu);
+		if (result <= 0) {
+			throw new MenuException("新增菜单失败");
+		}
+		RoleMenu record = new RoleMenu();
+		record.setRoleId(1L);
+		record.setMenuId(menu.getId());
+		result = this.roleMenuMapper.insertSelective(record);
+		if (result <= 0) {
+			throw new MenuException("绑定超级管理员角色失败");
+		}
 	}
 
 }

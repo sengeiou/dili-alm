@@ -37,7 +37,7 @@
   </select>
   
    <select id="selecByProjectId" resultType="com.dili.alm.domain.Weekly" parameterType="com.dili.alm.domain.dto.WeeklyPara">
-         select  w.id  as 'id',w.project_id as 'projectId'
+         select  w.id as 'id',w.project_id as 'projectId'
           
 		   from  weekly  w
 		   
@@ -55,6 +55,7 @@
 		 <!--   <if test="userId != null">
             AND   w.create_member_id = #{userId,jdbcType=BIGINT}
            </if> -->
+          
 		</where> 
    </select>
    
@@ -192,20 +193,10 @@
 			<if test="endDate!=null and endDate!=''">
 			and  w.end_date   &lt;=#{endDate,jdbcType=VARCHAR}
 			</if>
-			
-		
-		    
 	      
 		 </where>   
-   
     
        )   as temp     
-       
-       
-       
-       
-       
-       
        
 		
    </select>
@@ -280,52 +271,25 @@
     <!-- 本周进展情况-->
    <select id="selectWeeklyProgress"  resultType="com.dili.alm.domain.dto.TaskDto" parameterType="com.dili.alm.domain.dto.WeeklyPara">
        
-      <!--  select   t.`name`   ,t.phase_id ,t.plan_time ,
-		        t.`owner`, t.version_id   ,
-		        t.status ,t.start_date ,
-		        t.end_date,t.status,
-		        d.over_hour ,d.task_hour  from
-		        task t LEFT JOIN  task_details d on  t.id=d.task_id 
-		       <where>
-		            t.start_date &gt;=#{startDate,jdbcType=VARCHAR}
-		            and  t.end_date &lt;= #{endDate,jdbcType=VARCHAR}
-		            and  t.start_date &lt;= t.end_date 
-		         <if test="id != null">
-			           and  t.project_id=#{id,jdbcType=BIGINT}
-			     </if>
-		       
-		      </where> 
-		      
-		      union -->
-		      
-		      
-		      
-		      
-		      select   t.`name`   ,t.phase_id ,t.plan_time ,t.id ,
-		        t.`owner`, t.version_id   ,
-		        t.status ,t.start_date ,
-		        t.end_date,
-		        d.over_hour ,d.task_hour  from
-		        task t LEFT JOIN  task_details d on  t.id=d.task_id 
-		        where 1=1
-		        	   and t.end_date &gt;= #{startDate,jdbcType=VARCHAR}
+		      select   t.`name`   ,t.phase_id ,t.plan_time ,t.id ,t.project_id,
+		         t.`owner`, t.version_id, t.status ,t.start_date ,t.end_date
+		         from task t 
+		        <where> 
+		        	    t.end_date &gt;= #{startDate,jdbcType=VARCHAR}
 		               and t.end_date &lt;= #{endDate,jdbcType=VARCHAR}
 		               and  t.start_date &lt;= t.end_date 
 			          
                     <if test="id != null">
 			            and  t.project_id=#{id,jdbcType=BIGINT}
 			        </if>
-			      
+			    </where>     
                   
                 UNION
 
-				  select   t.`name`   ,t.phase_id ,t.plan_time ,t.id ,
-					        t.`owner`, t.version_id   ,
-					        t.status ,t.start_date ,
-					        t.end_date,
-					        d.over_hour ,d.task_hour  from
-					        task t LEFT JOIN  task_details d on  t.id=d.task_id 
-				 <where>
+			  select   t.`name`   ,t.phase_id ,t.plan_time ,t.id ,t.project_id,
+					  t.`owner`, t.version_id   , t.status ,t.start_date ,t.end_date
+				 from   task t 
+				<where>
 	                 t.end_date &gt;=#{endDate,jdbcType=VARCHAR}
 	                 and  t.start_date &lt;= t.end_date 
 	                 and  t.start_date &lt;=#{endDate,jdbcType=VARCHAR}
@@ -333,66 +297,79 @@
 		              <if test="id != null">
 			           and  t.project_id=#{id,jdbcType=BIGINT}
 			          </if>
-			      </where>    
+			    </where>    
 		      
    </select>
+    <!-- 本周展进工时情况-->
+   <select id="selectWeeklyOverAndtaskHour"  resultType="com.dili.alm.domain.dto.TaskDto" parameterType="com.dili.alm.domain.dto.WeeklyPara">
+       
+	   SELECT  SUM( IFNULL(d.over_hour,0))  as 'overHour' ,sum(IFNULL(d.task_hour,0)) as 'taskHour' 
+	             from  task_details  d 
+                
+                <where>
+                     d.task_id=#{id,jdbcType=BIGINT}
+                     and   d.modified &gt;=#{startDate,jdbcType=VARCHAR}
+	                 and  d.modified &lt;=#{endDate,jdbcType=VARCHAR}
+                </where> 
+		      
+   </select>
+   
+   
+    <!-- 已用工时情况-->
+   <select id="selectNextWeeklyTaskHour"  resultType="com.dili.alm.domain.dto.NextWeeklyDto"  parameterType="Long">
+       
+	   SELECT  SUM( IFNULL(d.over_hour,0))  as 'overHour' ,sum(IFNULL(d.task_hour,0)) as 'taskHour' 
+	             from  task_details  d 
+                
+                 <where>
+                       <if test="_parameter != null">
+						     d.task_id=#{_parameter,jdbcType=BIGINT}
+						</if>
+                </where> 
+		      
+   </select>
+   
       <!-- 下周工作计划-->
    <select id="selectNextWeeklyProgress"  resultType="com.dili.alm.domain.dto.NextWeeklyDto" parameterType="com.dili.alm.domain.dto.WeeklyPara">
        
-      <!--  select   t.`name`  ,t.plan_time ,
-		        t.`owner`, t.describe  ,t.end_date
-		
-		     from  task  t
-		      <where>  
-		           t.start_date &gt;=#{startDate,jdbcType=VARCHAR}
-		          and  t.end_date &lt;= #{endDate,jdbcType=VARCHAR}
-		          and  t.start_date &lt;= t.end_date 
-		          
-		         <if test="id != null">
-			           and  t.project_id=#{id,jdbcType=BIGINT}
-			     </if>
-		       
-		      </where>  -->
 		      
-		      
-		       select   t.`name`  ,t.plan_time ,t.phase_id as 'phaseId',t.id ,
-		       
+		       select   t.`name`  ,t.plan_time ,t.phase_id as 'phaseId',t.id,
 		         t.`owner`, t.describe  ,t.end_date
-		
 		        from  task  t
-		      <where>  
+		       <where>  
 		               t.end_date &gt;= #{startDate,jdbcType=VARCHAR}
-		               and t.end_date &lt;= #{endDate,jdbcType=VARCHAR}
-		               and  t.start_date &lt;= t.end_date 
-
+		               and   t.end_date &lt;= #{endDate,jdbcType=VARCHAR}
+		               and   t.start_date &lt;= t.end_date 
 		         <if test="id != null">
 			           and  t.project_id=#{id,jdbcType=BIGINT}
 			     </if>	      
-			     </where>
-		       UNION
-		       select   t.`name`  ,t.plan_time ,t.phase_id as 'phaseId',t.id ,
-		       
-		         t.`owner`, t.describe  ,t.end_date
-		
-		        from  task  t
+			   </where>
+			     
+		        UNION
+		      
+		       select   t.`name`  ,t.plan_time ,t.phase_id as 'phaseId',t.id,
+		                 t.`owner`, t.describe  ,t.end_date
+		       from  task  t
 		       <where>  
-		           
 		           	 t.end_date &gt;=#{endDate,jdbcType=VARCHAR}
 	                 and  t.start_date &lt;= t.end_date 
 	           		 and  t.start_date &lt;=#{endDate,jdbcType=VARCHAR}
 		         <if test="id != null">
-			           and  t.project_id=#{id,jdbcType=BIGINT}
+			         and  t.project_id=#{id,jdbcType=BIGINT}
 			     </if>
 		      </where>
 		      
 		      
    </select>
+   
+   
+   
+   
+   
   <!--   当前重要风险 -->
     <select id="selectWeeklyRist"  resultType="String" parameterType="com.dili.alm.domain.dto.WeeklyPara">
        
-       select   w.risk
-		
-		     from    weekly  w
+       select   w.risk  from    weekly  w
 		      <where>
 		      
 		        w.start_date &gt;=#{startDate,jdbcType=VARCHAR}
@@ -411,9 +388,7 @@
    <!--   当前重大问题 -->
     <select id="selectWeeklyQuestion"  resultType="String" parameterType="com.dili.alm.domain.dto.WeeklyPara">
        
-       select   
-		    w.question  
-		         from  weekly  w
+       select    w.question  from  weekly  w
 		      <where>  
 		         
 		          w.start_date &gt;=#{startDate,jdbcType=VARCHAR}

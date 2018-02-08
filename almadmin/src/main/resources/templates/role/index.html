@@ -20,7 +20,7 @@
 				</div>
 				<div style="padding: 0px 10px 20px;">
 					<a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid()">查询</a> <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload"
-						onclick="$('#form').form('clear');">清除</a>
+						onclick="$('#form').form('clear');">重置</a>
 				</div>
 			</form>
 		</div>
@@ -68,7 +68,7 @@
 </div>
 
 <!-- 隐藏编辑框 -->
-<div id="userListDlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="角色的用户列表" style="padding: 20px; height: 300px; width: 330px" modal="true"
+<div id="userListDlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="角色的用户列表" style="padding: 20px; height: 500px; width: 800px" modal="true"
 	border="thin" closed="true" data-options="
 				iconCls: 'icon-save',
 				buttons: [{
@@ -82,10 +82,10 @@
 		fit="true" striped="true" idField="id">
 		<thead>
 			<tr>
-				<th data-options="field:'serialNumber',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">用户编号</th>
-				<th data-options="field:'userName',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">用户名</th>
-				<th data-options="field:'realName',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">真实姓名</th>
-				<th data-options="field:'options', formatter:userListGridFormatter, align:'center', resizable:'true', fixed:'false'">操作</th>
+				<th data-options="field:'serialNumber',width:'25%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">用户编号</th>
+				<th data-options="field:'userName',width:'25%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">用户名</th>
+				<th data-options="field:'realName',width:'25%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">真实姓名</th>
+				<th data-options="field:'options',width:'25%', formatter:userListGridFormatter, align:'center', resizable:'true', fixed:'false'">操作</th>
 			</tr>
 		</thead>
 	</table>
