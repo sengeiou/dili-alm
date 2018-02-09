@@ -590,8 +590,13 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 				td.get(i).setWeekHour(task.getTaskHour()+task.getOverHour()+"");// 本周工时
 			}
 			NextWeeklyDto  realHourTotal=weeklyMapper.selectNextWeeklyTaskHour(td.get(i).getId());//算出总加班时间和总正常时间
-			// 实际总工时 =正常工时+加班工时                                   -------------只是实际总工时
-			td.get(i).setRealHour(Integer.parseInt(realHourTotal.getOverHour() )+ Integer.parseInt(realHourTotal.getTaskHour()) + "");
+			
+			if(realHourTotal!=null){
+				// 实际总工时 =正常工时+加班工时                                   -------------只是实际总工时
+				td.get(i).setRealHour(Integer.parseInt(realHourTotal.getOverHour() )+ Integer.parseInt(realHourTotal.getTaskHour()) + "");
+			}else{
+				td.get(i).setRealHour("");
+			}
 			
 			// 工时偏差% （实际任务工时/预估任务工时-1）%      ***也是算加班工时的
 			double  realHourandOverHour=td.get(i).getOverHour() + td.get(i).getTaskHour();//实际工时
