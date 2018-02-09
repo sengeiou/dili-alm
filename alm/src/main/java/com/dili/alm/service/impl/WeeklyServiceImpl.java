@@ -597,7 +597,16 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			
 			if(realHourTotal!=null){
 				// 实际总工时 =正常工时+加班工时                                   -------------只是实际总工时
-				td.get(i).setRealHour(Integer.parseInt(realHourTotal.getOverHour() )+ Integer.parseInt(realHourTotal.getTaskHour()) + "");
+				 int   overHour=0;
+			 	 int   taskHour =0;
+			 	 if(realHourTotal.getOverHour()!=null){
+			 		   overHour=Integer.parseInt(realHourTotal.getOverHour() ); 
+			 	 }
+			 	 if(realHourTotal.getTaskHour()!=null){
+			 		taskHour=Integer.parseInt(realHourTotal.getTaskHour() ); 
+			 	 }
+			 	 
+				td.get(i).setRealHour(overHour+ taskHour + "");
 			}else{
 				td.get(i).setRealHour("0");
 			}
