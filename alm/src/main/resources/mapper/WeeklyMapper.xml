@@ -37,7 +37,7 @@
   </select>
   
    <select id="selecByProjectId" resultType="com.dili.alm.domain.Weekly" parameterType="com.dili.alm.domain.dto.WeeklyPara">
-         select  max(w.id) as 'id',w.project_id as 'projectId'
+         select  w.id as 'id',w.project_id as 'projectId'
           
 		   from  weekly  w
 		   
@@ -55,7 +55,7 @@
 		 <!--   <if test="userId != null">
             AND   w.create_member_id = #{userId,jdbcType=BIGINT}
            </if> -->
-           GROUP BY id  ORDER BY 1  DESC
+          
 		</where> 
    </select>
    
