@@ -529,7 +529,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		
 		if(DateUtil.getWeekOfDate(new Date()).endsWith("星期日")){
 			HashMap<String,String>  map =DateUtil.getFirstAndFive();
-			pd.setBeginAndEndTime(map.get("one").substring(0,10) + "到" +map.get("five").substring(0,10));
+			//pd.setBeginAndEndTime(map.get("one").substring(0,10) + "到" +map.get("five").substring(0,10));
 		}
 		
 		 if(pd.getStageMan()!=null|pd.getStageMan()!=""){
