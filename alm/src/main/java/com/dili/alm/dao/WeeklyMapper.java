@@ -20,7 +20,7 @@ public interface WeeklyMapper extends MyMapper<Weekly> {
 	 * @param id
 	 * @return
 	 */
-     Weekly selecByProjectId(WeeklyPara weeklyPara );
+     List<Weekly> selecByProjectId(WeeklyPara weeklyPara );
 	/**
 	 * 周报搜索条件查询
 	 * @param weeklyPara

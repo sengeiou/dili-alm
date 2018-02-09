@@ -845,8 +845,8 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		}
 		weeklyPara.setProjectId(Long.parseLong(projectId));
 		
-	    wk = weeklyMapper.selecByProjectId(weeklyPara);
-	
+		List<Weekly>  wkList = weeklyMapper.selecByProjectId(weeklyPara);
+	    wk=wkList.get(0);
 	    Weekly wkk=DTOUtils.newDTO(Weekly.class);
 		if(wk==null){
 			insertWeekAndWeekDetail(projectId, userTicket, wkk);
