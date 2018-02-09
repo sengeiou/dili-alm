@@ -661,7 +661,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			 if(nd!=null&&nd.getTaskHour()!=null){
 				 taskHour=Integer.parseInt(nd.getTaskHour());
 			 }
-			 if(nd!=null&&nd.getTaskHour()!=null){
+			 if(nd!=null&&nd.getOverHour()!=null){
 				 overHour=Integer.parseInt(nd.getOverHour());
 			 }
 			
