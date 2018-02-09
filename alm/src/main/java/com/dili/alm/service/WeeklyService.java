@@ -14,6 +14,7 @@ import com.dili.alm.domain.dto.TaskDto;
 import com.dili.alm.domain.dto.WeeklyPara;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.sysadmin.sdk.domain.UserTicket;
 
 /**
  * ��MyBatis Generator�����Զ�����
@@ -109,5 +110,5 @@ public interface WeeklyService extends BaseService<Weekly, Long> {
 	 */
 	 Map<String, Weekly>  insertWeeklyByprojectId(String projectId);
 	
-	
+	 Weekly insertWeekAndWeekDetail(String projectId, UserTicket userTicket, Weekly wkk);
 }

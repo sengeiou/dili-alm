@@ -57,7 +57,7 @@
   <select id="getWeeklyDetailsByWeeklyId" parameterType="Long" resultType="com.dili.alm.domain.WeeklyDetails">
       
          select 
-		     id, max(weekly_id)  as "weeklyId" , is_submit
+		    <include refid="Base_Column_List" />
 		   from weekly_details
 		   
 		   <where>

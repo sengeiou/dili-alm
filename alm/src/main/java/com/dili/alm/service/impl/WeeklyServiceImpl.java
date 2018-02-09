@@ -18,6 +18,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -61,6 +63,7 @@ import com.dili.sysadmin.sdk.session.SessionContext;
  * 14:08:40.
  */
 @Service
+@Transactional
 public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements WeeklyService {
 
 	public static  final  String PROJECTTYPE="项目类型";
@@ -829,7 +832,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		
 		return userList;
 	}
-	
+	@Transactional(propagation=Propagation.REQUIRES_NEW)  
 	public  Map<String, Weekly> insertWeeklyByprojectId(String projectId) {
 		
 		Map<String, Weekly>  map=new HashMap<String, Weekly>();
@@ -870,7 +873,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		    	weeklyMapper.deleteByPrimaryKey(wk.getId());
 		    	if(weeklyDetails!=null){
 		    	    weeklyDetails.setWeeklyId(wkk.getId());
-		    	    weeklyDetailsMapper.updateByPrimaryKeySelective(weeklyDetails);
+		    	    weeklyDetailsMapper.updateByPrimaryKey(weeklyDetails);
 		    	}
 		    	
 		    	map.put("two", wkk);
@@ -882,7 +885,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		return map;
 	}
 
-	private Weekly insertWeekAndWeekDetail(String projectId, UserTicket userTicket, Weekly wkk) {
+	public  Weekly insertWeekAndWeekDetail(String projectId, UserTicket userTicket, Weekly wkk) {
 		wkk.setProjectId(Long.parseLong(projectId));
 		wkk.setCreated(new Date());
 		wkk.setModified(null);
