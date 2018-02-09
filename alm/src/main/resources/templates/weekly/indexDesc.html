@@ -112,12 +112,12 @@
 				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">版本</th>
 				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">阶段 </th>
 				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">责任人</th>
-				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">完成情况 </th>
-				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">本周工时 </th>
-				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">预计工时</th>
-				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">实际工时</th>
-				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">工时偏差% </th>
-				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">备注</th>
+				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">是否完成 </th>
+				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">计划完成日期 </th>
+				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">任务计划工时</th>
+				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">本周实际工时 </th>
+				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">实际总工时</th>
+				        <th  style="padding:5px;background-color:#f5f5f5;font-weight:bold">实际完成日期</th>
 				    </tr>
 				</thead>
 				
@@ -132,11 +132,12 @@
 						        <td> ${item.phaseId}</td>
 						        <td> ${item.owner} </td>
 						        <td> ${item.status}  </td>
-						        <td> ${item.weekHour}  </td>
+						        
+						        <td> ${item.endDateStr}  </td>
 						        <td> ${item.planTime}  </td>
+						        <td> ${item.weekHour} </td>
 						        <td> ${item.realHour} </td>
-						        <td> ${item.hourDeviation} </td>
-						        <td> ${item.describe}</td>
+						        <td> ${item.fackEndDate}</td>
 						   </tr>
 					      <%}%>
 						    <%}%> 
@@ -163,8 +164,9 @@
 				        <td style="padding:5px;background-color:#f5f5f5;font-weight:bold"> 序号 </td>
 				        <td style="padding:5px;background-color:#f5f5f5;font-weight:bold">任务名称 </td>
 				        <td style="padding:5px;background-color:#f5f5f5;font-weight:bold"> 责任人</td>
-				        <td style="padding:5px;background-color:#f5f5f5;font-weight:bold">剩余计划工时</td>
-				        <td style="padding:5px;background-color:#f5f5f5;font-weight:bold"> 计划完成日期</td>
+				        <td style="padding:5px;background-color:#f5f5f5;font-weight:bold">任务计划工时</td>
+				        <td style="padding:5px;background-color:#f5f5f5;font-weight:bold"> 剩余计划工时</td>
+				        <td style="padding:5px;background-color:#f5f5f5;font-weight:bold">计划完成日期</td>
 				        <td style="padding:5px;background-color:#f5f5f5;font-weight:bold">备注</td>
 				    </tr>
               <% if(wk!=null){%>
@@ -174,6 +176,7 @@
 				        <td>    ${item.name} </td>
 				        <td>    ${item.owner}  </td>
 				        <td> ${item.planTime}  </td>
+				        <td> ${item.surplus}  </td>
 				        <td> ${item.endDate}   </td>
 				        <td> ${item.describe}    </td>
 				    </tr>

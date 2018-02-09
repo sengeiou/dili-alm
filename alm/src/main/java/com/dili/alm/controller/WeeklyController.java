@@ -254,8 +254,7 @@ public class WeeklyController  {
     	 mv.addObject("returnProjectId",projectId);
    	    
       	 Map<String, Weekly> wkMap=weeklyService.insertWeeklyByprojectId(projectId);
-      	 Weekly  wk=wkMap.get("three");
-      	 
+      	 Weekly  wk= DTOUtils.newDTO(Weekly.class);
     	 Map<Object,Object> map=null;
     	 if(wkMap.get("one")==null)
     		  map=weeklyService.getDescAddById(wkMap.get("two").getId()+"");

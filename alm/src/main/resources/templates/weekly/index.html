@@ -96,6 +96,7 @@
                                 <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
                                    onclick="queryGrid()">查询</a>
                                 <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload" onclick="clearForm()">重置</a>
+                                  <a href="javascript:void(0)" class="easyui-linkbutton"  onclick="clearadd()">shengc置</a>
 
                             </td>
                         </tr>
@@ -176,7 +177,10 @@
        
      }
    
-
+     function clearadd(){  
+     	
+        	window.location.href="${contextPath}/weekly/getDescAddByProjectId?projectId=26";
+     }
     
     
     
