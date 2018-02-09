@@ -61,10 +61,10 @@
 				        <td style="padding:5px;background-color:#f5f5f5;font-weight:bold">本周起止日期 </td>
 				        <td style="padding:5px;">${pd.beginAndEndTime}</td>
 				        <td style="padding:5px;background-color:#f5f5f5;font-weight:bold">总体进展</td>
-				       <td style="padding:5px;">
+				        <td  id="progressTotal"   style="padding:5px;">
 				          
 				            
-								  <%if(pd.completedProgressInt >15){%>
+								<!--   <%if(pd.completedProgressInt >15){%>
 								      <font color="red">  预警--8%&lt;偏差&lt;15%</font>
 								  <%}%>
 								  
@@ -74,9 +74,12 @@
 								  
 								   <%if(pd.completedProgressInt <8){%>
 								        <font color="green">  正常--偏差&lt;8% </font>
-								   <%}%>
+								   <%}%> -->
 						
 				             <input id="pdprojectId" type='hidden' value="${pd.projectId}"/>
+				             <input id="completedProgressInt" type='hidden' value="${pd.completedProgressInt}"/>
+				             
+				             
 				        </td>
 				    
 				   </tr>
@@ -636,7 +639,6 @@
             }
             
           
-          
         })
         
         
@@ -846,9 +848,17 @@
 	          $table.append($tr);  
 		   
 	       }
-
-   	  
-
+         
+	       function progressFormatter() {
+	    	   
+	    	   var progress =$("#completedProgressInt").val();
+	           if (progress > 100) {
+	               progress = 100;
+	           }
+	           var htmlstr = '<div style="width: 100px; height:20px;border: 1px solid #299a58;"><div style="width:' + progress + 'px; height:20px; background-color: #299a58;"><span>' + progress + '%</span></div></div>';
+	           $("#progressTotal").html(htmlstr)
+	       }
+	   	   progressFormatter();
    	   
    	};
 
