@@ -129,11 +129,16 @@ public class WeeklyController  {
     public @ResponseBody BaseOutput save(WeeklyDetails WeeklyDetails) {
     	 WeeklyDetails.setIsSubmit(1);
         WeeklyDetails wd=weeklyDetailsService.getWeeklyDetailsByWeeklyId(WeeklyDetails.getWeeklyId());
-    	 if(wd==null)
-    		 weeklyDetailsService.createInsert(WeeklyDetails); 
-    	 else
-    		 weeklyDetailsService.updateSelective(WeeklyDetails);
-    	  Weekly  weekly=weeklyService.getWeeklyById(wd.getWeeklyId());
+        Weekly  weekly=null;
+    	 if(wd==null){
+    		  weeklyDetailsService.createInsert(WeeklyDetails); 
+    	      weekly=weeklyService.getWeeklyById(WeeklyDetails.getWeeklyId());
+    	 }else{
+    		  weeklyDetailsService.updateSelective(WeeklyDetails);
+    		  weekly=weeklyService.getWeeklyById(WeeklyDetails.getWeeklyId());
+    		 
+    	 }
+    	
     	 
     	  return BaseOutput.success("周报提交成功").setData(String.valueOf(weekly.getId()+":"+DateUtil.getDate(weekly.getCreated())+"周报提交"));
     }
