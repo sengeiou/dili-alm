@@ -70,7 +70,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	public static  final  String PROJECTTYPEID="3";
 	public static  final  Long PHASENAMEVALUE=10L;
 	public static  final  String PROJECTSTATUS="项目状态";
-	public static  final  String PROJECTTASKSTATUS="2";
+	public static  final  String PROJECTTASKSTATUS="3";
 	public static  final  String YES="YES";
 	public static  final  String NO="NO";
 	public static  final  int ISSUBMIT=1;//已经提交
@@ -602,7 +602,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			double  realHourandOverHour=td.get(i).getOverHour() + td.get(i).getTaskHour();//实际工时
 			double  planTime=td.get(i).getPlanTime();//计划工时
 			
-		     if(td.get(i).getStatus().equals(PROJECTTASKSTATUS)){//已完成就是等于二
+		     if(td.get(i).getStatus().equals(PROJECTTASKSTATUS)){//已完成就是等于
 				 td.get(i).setStatus(YES);
 				 double pro = ( realHourandOverHour/(planTime) -1) * 100;
 				 td.get(i).setHourDeviation(df.format(pro) );
