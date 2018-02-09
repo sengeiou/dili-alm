@@ -476,7 +476,7 @@ public class TaskController {
 		Project project = projectService.get(task.getProjectId());
 		project.setActualEndDate(new Date());
 		projectService.update(project);
-		return BaseOutput.success("更新状态为完成");
+		return BaseOutput.success("更新状态为完成").setData(String.valueOf(task.getId()+":"+task.getName()));
 	}
 	
 	// 是否已经执行过,一次加班工时，或一次任务工时

@@ -562,7 +562,7 @@ function isTask(id){
 	                if (data.code == "200") {
 	                    $("#grid").datagrid("reload");
 	                    $('#dlg').dialog('close');
-	                    LogUtils.saveLog(LOG_MODULE_OPS.PAUSE_PROJECT_VERSION_PHASE_TASK,"完成任务：" + data.data+":成功", function() {});
+	                    LogUtils.saveLog(LOG_MODULE_OPS.COMPLETE_PROJECT_VERSION_PHASE_TASK,"完成任务：" + data.data+":成功", function() {});
 	                } else {
 	                    $.messager.alert('错误', data.result);
 	                }
