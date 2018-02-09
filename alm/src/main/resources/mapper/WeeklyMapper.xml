@@ -270,7 +270,7 @@
     <!-- 本周进展情况-->
    <select id="selectWeeklyProgress"  resultType="com.dili.alm.domain.dto.TaskDto" parameterType="com.dili.alm.domain.dto.WeeklyPara">
        
-		      select   t.`name`   ,t.phase_id ,t.plan_time ,t.id ,
+		      select   t.`name`   ,t.phase_id ,t.plan_time ,t.id ,t.project_id,
 		         t.`owner`, t.version_id, t.status ,t.start_date ,t.end_date
 		         from task t 
 		        <where> 
@@ -285,7 +285,7 @@
                   
                 UNION
 
-			  select   t.`name`   ,t.phase_id ,t.plan_time ,t.id ,
+			  select   t.`name`   ,t.phase_id ,t.plan_time ,t.id ,t.project_id,
 					  t.`owner`, t.version_id   , t.status ,t.start_date ,t.end_date
 				 from   task t 
 				<where>

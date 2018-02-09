@@ -27,9 +27,17 @@ public class TaskDto {
     private String   realHour;//实际工时
     private String   hourDeviation;//工时偏差
     private String fackEndDate;//项目实际完成时间
+    private String  projectId;
     
     
     
+    
+	public String getProjectId() {
+		return projectId;
+	}
+	public void setProjectId(String projectId) {
+		this.projectId = projectId;
+	}
 	public String getEndDateStr() {
 		return endDateStr;
 	}

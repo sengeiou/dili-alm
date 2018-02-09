@@ -376,13 +376,16 @@ public class WordExport {
 		comTableRowThree.getCell(2).setText("本周起止日期");
 		comTableRowThree.getCell(3).setText(pd.getBeginAndEndTime());
 		comTableRowThree.getCell(4).setText("总体进展");
-		  if(Integer.parseInt(pd.getCompletedProgress())<8){
-			  comTableRowThree.getCell(5).setText("正常--偏差<8%");
-		  } else if(Integer.parseInt(pd.getCompletedProgress())>15){
-			  comTableRowThree.getCell(5).setText("警戒--偏差>15%");
-		  }else{
-			  comTableRowThree.getCell(5).setText("预警--8%<偏差<15%");
-		  }
+		  //if(Integer.parseInt(pd.getCompletedProgress())<8){
+		    if(Integer.parseInt(pd.getCompletedProgress())>100){
+		    	pd.setCompletedProgress("100");
+		    }
+			comTableRowThree.getCell(5).setText(pd.getCompletedProgress()+"%");
+		  //} else if(Integer.parseInt(pd.getCompletedProgress())>15){
+		  //	 comTableRowThree.getCell(5).setText("警戒--偏差>15%");
+		  //}else{
+		  //  comTableRowThree.getCell(5).setText("预警--8%<偏差<15%");
+		  //}
 		
 
 		XWPFTableRow comTableRowFive = ComTable.createRow();

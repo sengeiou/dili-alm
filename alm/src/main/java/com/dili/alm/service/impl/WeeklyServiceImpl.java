@@ -31,6 +31,7 @@ import com.dili.alm.dao.WeeklyMapper;
 import com.dili.alm.domain.DataDictionary;
 import com.dili.alm.domain.DataDictionaryValue;
 import com.dili.alm.domain.Department;
+import com.dili.alm.domain.Project;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.Weekly;
 import com.dili.alm.domain.WeeklyDetails;
@@ -92,6 +93,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	DataDictionaryService dataDictionaryService;
 	@Autowired
 	DataDictionaryValueService dataDictionaryValueService;
+	
 
 	public WeeklyMapper getActualDao() {
 		return (WeeklyMapper) getDao();
@@ -601,8 +603,12 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 				 double pro = ((planTime- realHourandOverHour)/planTime) * 100; 
 				 td.get(i).setHourDeviation(df.format(Math.abs(pro)) );
 			 }
-			
-			
+		     Project project=   projectMapper.selectByPrimaryKey(Long.parseLong( td.get(i).getProjectId()));
+		     if(project.getActualEndDate()!=null){
+		         td.get(i).setFackEndDate(DateUtil.getDateStr(project.getActualEndDate()).substring(0,10));
+		     }else{
+		    	 td.get(i).setFackEndDate(null);
+		     }
 
 		}
 		return td;
