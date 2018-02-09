@@ -856,7 +856,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		
 		    WeeklyDetails weeklyDetails=DTOUtils.newDTO(WeeklyDetails.class);
 		    weeklyDetails.setWeeklyId(wk.getId());
-		    weeklyDetails =weeklyDetailsMapper.selectOne(weeklyDetails);
+		    weeklyDetails =weeklyDetailsMapper.getListWeeklyDetailsByWeeklyId(wk.getId()).get(0);
 		    
 		    if(weeklyDetails==null||weeklyDetails.getIsSubmit()!=ISSUBMIT){
 		    	

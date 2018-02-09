@@ -57,7 +57,24 @@
   <select id="getWeeklyDetailsByWeeklyId" parameterType="Long" resultType="com.dili.alm.domain.WeeklyDetails">
       
          select 
-		   <include refid="Base_Column_List" />
+		     id, max(weekly_id)  as "weeklyId" , is_submit
+		   from weekly_details
+		   
+		   <where>
+		      <if test="_parameter != null">
+			     weekly_id=#{_parameter,jdbcType=BIGINT}
+			 </if>
+			
+		   </where>
+		   GROUP BY weekly_id ORDER BY weekly_id desc
+		 
+  </select>
+  
+    <select id="getListWeeklyDetailsByWeeklyId" parameterType="Long" resultType="com.dili.alm.domain.WeeklyDetails">
+      
+         select 
+		  
+               id, project_description, expected_deviation, other, max(weekly_id) , is_submit
 		   from weekly_details
 		   
 		   <where>
@@ -68,6 +85,7 @@
 		   </where>
 		 
   </select>
+  
   
 
   
