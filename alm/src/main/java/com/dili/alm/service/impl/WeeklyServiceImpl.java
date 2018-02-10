@@ -892,9 +892,6 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		    	
 		    	Weekly weekly=weeklyMapper.selectByPrimaryKey(wk.getId());
 		    	
-		    	wkk.setRisk(weekly.getRisk());
-		    	wkk.setQuestion(weekly.getQuestion());
-		    	wkk.setProjectId(Long.parseLong(projectId));
 		    	wkk=updateWeekAndWeekDetail(projectId, userTicket, weekly);
 		    	
 		    	map.put("two", wkk);
@@ -950,7 +947,6 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		wkk.setEndDate(DateUtil.getStrDate(DateUtil.getFirstAndFive().get("five")+" 23:59:59"));
 		
 		if (userTicket != null) {
-			wkk.setCreateMemberId(userTicket.getId());
 			wkk.setModifyMemberId(userTicket.getId());
 		}
 		WeeklyPara weeklyParaWeek=  new WeeklyPara();
