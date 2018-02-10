@@ -588,6 +588,10 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 				td.get(i).setTaskHour(task.getTaskHour());
 				td.get(i).setOverHour(task.getOverHour());
 				td.get(i).setWeekHour(task.getTaskHour()+task.getOverHour()+"");// 本周工时
+			}else{
+				td.get(i).setTaskHour(0);
+				td.get(i).setOverHour(0);
+				td.get(i).setWeekHour(String.valueOf(0));
 			}
 			NextWeeklyDto  realHourTotal=weeklyMapper.selectNextWeeklyTaskHour(td.get(i).getId());//算出总加班时间和总正常时间
 			
@@ -595,7 +599,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 				// 实际总工时 =正常工时+加班工时                                   -------------只是实际总工时
 				td.get(i).setRealHour(Integer.parseInt(realHourTotal.getOverHour() )+ Integer.parseInt(realHourTotal.getTaskHour()) + "");
 			}else{
-				td.get(i).setRealHour("");
+				td.get(i).setRealHour("0");
 			}
 			
 			// 工时偏差% （实际任务工时/预估任务工时-1）%      ***也是算加班工时的
@@ -611,9 +615,9 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 				 double pro = ((planTime- realHourandOverHour)/planTime) * 100; 
 				 td.get(i).setHourDeviation(df.format(Math.abs(pro)) );
 			 }
-		     Project project=   projectMapper.selectByPrimaryKey(Long.parseLong( td.get(i).getProjectId()));
-		     if(project.getActualEndDate()!=null){
-		         td.get(i).setFackEndDate(DateUtil.getDateStr(project.getActualEndDate()).substring(0,10));
+		   //  Project project=   projectMapper.selectByPrimaryKey(Long.parseLong( td.get(i).getProjectId()));
+		     if(td.get(i).getFackEndDate()!=null){
+		         td.get(i).setFackEndDate(td.get(i).getFackEndDate().substring(0,10));
 		     }else{
 		    	 td.get(i).setFackEndDate(null);
 		     }
@@ -631,11 +635,29 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		User user ;
 		NextWeeklyDto  nd=null;
 		for (NextWeeklyDto nextWeeklyDto : nwd) {
-			 nextWeeklyDto.setEndDate(nextWeeklyDto.getEndDate().substring(0, 10));//时间截取
+			
+			 if(nextWeeklyDto.getEndDate()!=null){
+				 nextWeeklyDto.setEndDate(nextWeeklyDto.getEndDate().substring(0, 10));//时间截取
+			 }
+			
 			 nd=null;
 			 nd= weeklyMapper.selectNextWeeklyTaskHour(nextWeeklyDto.getId());//算出正常工时和加班工时
 			 //计划工时-正常工时-加班工时=剩余工时
-			 int surplus=Integer.parseInt(nextWeeklyDto.getPlanTime())-Integer.parseInt(nd.getTaskHour())-Integer.parseInt(nd.getOverHour());
+			 int  planTime=0;
+			 int  taskHour=0;
+			 int  overHour=0;
+			 if(nextWeeklyDto.getPlanTime()!=null){
+				  planTime =Integer.parseInt(nextWeeklyDto.getPlanTime());
+			 }
+			 if(nd!=null&&nd.getTaskHour()!=null){
+				 taskHour=Integer.parseInt(nd.getTaskHour());
+			 }
+			 if(nd!=null&&nd.getTaskHour()!=null){
+				 overHour=Integer.parseInt(nd.getOverHour());
+			 }
+			
+			 int surplus=planTime-overHour-taskHour;
+			 //int surplus=Integer.parseInt(nextWeeklyDto.getPlanTime())-Integer.parseInt(nd.getTaskHour())-Integer.parseInt(nd.getOverHour());
 			 nextWeeklyDto.setSurplus(surplus+"");//剩余工时
 			 user = new User();//字典接口
 		     user.setId(Long.parseLong(nextWeeklyDto.getOwner()));
@@ -864,7 +886,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		
 		    WeeklyDetails weeklyDetails=DTOUtils.newDTO(WeeklyDetails.class);
 		    weeklyDetails.setWeeklyId(wk.getId());
-		   // weeklyDetails =weeklyDetailsMapper.getListWeeklyDetailsByWeeklyId(wk.getId()).get(0);
+		  
 		    weeklyDetails =weeklyDetailsMapper.selectOne(weeklyDetails);
 		    if(weeklyDetails==null||weeklyDetails.getIsSubmit()!=ISSUBMIT){
 		    	
@@ -873,13 +895,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		    	wkk.setRisk(weekly.getRisk());
 		    	wkk.setQuestion(weekly.getQuestion());
 		    	wkk.setProjectId(Long.parseLong(projectId));
-		    	wkk=insertWeekAndWeekDetail(projectId, userTicket, wkk);
-		    	
-		    	weeklyMapper.deleteByPrimaryKey(wk.getId());
-		    	if(weeklyDetails!=null){
-		    	    weeklyDetails.setWeeklyId(wkk.getId());
-		    	    weeklyDetailsMapper.updateByPrimaryKey(weeklyDetails);
-		    	}
+		    	wkk=updateWeekAndWeekDetail(projectId, userTicket, weekly);
 		    	
 		    	map.put("two", wkk);
 		    }else
@@ -925,6 +941,45 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		
 		return wkk;
 	}
+	
+	public  Weekly updateWeekAndWeekDetail(String projectId, UserTicket userTicket, Weekly wkk) {
+		wkk.setProjectId(Long.parseLong(projectId));
+		wkk.setCreated(new Date());
+		wkk.setModified(null);
+		wkk.setStartDate(DateUtil.getStrDate(DateUtil.getFirstAndFive().get("one")+" 00:00:00"));
+		wkk.setEndDate(DateUtil.getStrDate(DateUtil.getFirstAndFive().get("five")+" 23:59:59"));
+		
+		if (userTicket != null) {
+			wkk.setCreateMemberId(userTicket.getId());
+			wkk.setModifyMemberId(userTicket.getId());
+		}
+		WeeklyPara weeklyParaWeek=  new WeeklyPara();
+		weeklyParaWeek.setId(Long.parseLong(projectId));
+		weeklyParaWeek.setStartDate(DateUtil.getFirstAndFive().get("one")+" 00:00:00");
+		weeklyParaWeek.setEndDate(DateUtil.getFirstAndFive().get("five")+" 23:59:59");
+		//本周进展情况 
+		List<TaskDto> td=selectWeeklyProgress(weeklyParaWeek);
+		
+		weeklyParaWeek.setStartDate(DateUtil.getNextMonday(new Date())+" 00:00:00");
+		weeklyParaWeek.setEndDate(DateUtil.getNextFive(new Date())+" 23:59:59");
+		//下周工作计划
+		List<NextWeeklyDto> wek=selectNextWeeklyProgress(weeklyParaWeek);
+
+		Weekly  nextAndcurrentWeek=DTOUtils.newDTO(Weekly.class);
+		nextAndcurrentWeek.setId(wkk.getId());
+		nextAndcurrentWeek.setCurrentWeek(JSON.toJSONString(td));
+		nextAndcurrentWeek.setNextWeek(JSON.toJSONString(wek));
+		weeklyMapper.updateByPrimaryKeySelective(nextAndcurrentWeek);//更新week本周周报
+		
+		return wkk;
+	}
+	
+	
+	
+	
+	
+	
+	
 	@Override
 	public Weekly  getWeeklyById(Long weeklyId){
 	  	 Weekly  weekly=weeklyMapper.selectByPrimaryKey(weeklyId);
