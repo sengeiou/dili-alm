@@ -77,8 +77,8 @@
 			loadFilter:treegridLoadFilter">
 			<thead>
 				<tr>
-					<th data-options="field:'serialNumber',width:'12%', align:'left',formatter:projectNameFormatter">项目编号</th>
-					<th data-options="field:'name',width:'18%', align:'left',formatter:projectNameFormatter">项目名称</th>
+					<th data-options="field:'serialNumber',width:'10%', align:'left',formatter:projectNameFormatter">项目编号</th>
+					<th data-options="field:'name',width:'16%', align:'left',formatter:projectNameFormatter">项目名称</th>
 					<th
 						data-options="field:'type',width:'9%', _provider:'projectTypeProvider', _table:'data_dictionary_value',_valueField:'value',_textField:'code',_queryParams:{'yn':1,'dd_id':3}, align:'center'">
 						项目类型</th>
@@ -88,7 +88,7 @@
 					<th data-options="field:'projectState',width:'5%',  _provider:'projectStateProvider', align:'center'">项目状态</th>
 					<th data-options="field:'taskCount',width:'5%', align:'center',formatter:taskFormatter">任务数</th>
 					<th data-options="field:'memberCount',width:'5%', align:'center',formatter:memberFormatter">成员数</th>
-					<th data-options="field:'completedProgress',width:'5%', align:'center',formatter:progressFormatter">完成进度</th>
+					<th data-options="field:'completedProgress',width:'110', align:'center',formatter:progressFormatter">完成进度</th>
 					<th data-options="field:'originator', width:'6%',_provider:'memberProvider', align:'center'">项目发起人</th>
 					<th data-options="field:'opt',align:'center',width:'5%',formatter:optFormatter">操作</th>
 				</tr>
