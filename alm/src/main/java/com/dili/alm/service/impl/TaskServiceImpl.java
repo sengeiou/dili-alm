@@ -815,7 +815,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			throw new RuntimeException("未登录");
 		}
 		List<Project> listProject = new ArrayList<Project>();
-		if (isNoTeam()) {
+		if (isNoTeam()||isCommittee()) {
 			listProject = projectMapper.selectAll();
 		}else{
 			listProject = taskMapper.selectProjectByTeam(userTicket.getId());
@@ -863,7 +863,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			
 			List<User> userList =new ArrayList<User>();
 
-			if (isNoTeam()) {
+			if (isNoTeam()||isCommittee()) {
 				userList=userRpc.list(new User()).getData();
 			}else{
 				 List<Long> userIdList = taskMapper.selectUserByTeam(userTicket.getId());
