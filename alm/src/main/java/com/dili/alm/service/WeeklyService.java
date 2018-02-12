@@ -89,6 +89,9 @@ public interface WeeklyService extends BaseService<Weekly, Long> {
 	 * @return
 	 */
 	Map<Object,Object> getDescById(String id);
+	
+	
+	Map<Object,Object> getDescByIdWeek(String id);
 	/**
 	 * 根据id返回页面详情
 	 * @param id

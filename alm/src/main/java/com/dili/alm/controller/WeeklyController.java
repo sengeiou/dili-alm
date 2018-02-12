@@ -212,7 +212,7 @@ public class WeeklyController  {
     @RequestMapping(value="/getDescById", method = RequestMethod.GET)
     public ModelAndView getDescById(String id) {
     	
-    	Map<Object,Object> map=weeklyService.getDescById(id);
+    	Map<Object,Object> map=weeklyService.getDescByIdWeek(id);
     	ModelAndView mv = new ModelAndView();
     	//项目周报
 		mv.addObject("pd", (ProjectWeeklyDto)map.get("pd"));
