@@ -248,30 +248,7 @@
 			<!--<version>${boot.version}</version> -->
 			<scope>test</scope>
 		</dependency>
-		<!--mybatis -->
-		<dependency>
-			<groupId>org.mybatis.spring.boot</groupId>
-			<artifactId>mybatis-spring-boot-starter</artifactId>
-			<version>1.1.1</version>
-		</dependency>
-		<!--pagehelper -->
-		<dependency>
-			<groupId>com.github.pagehelper</groupId>
-			<artifactId>pagehelper-spring-boot-starter</artifactId>
-			<version>1.1.1</version>
-		</dependency>
-
-		<!--<dependency> -->
-		<!--<groupId>com.github.pagehelper</groupId> -->
-		<!--<artifactId>pagehelper</artifactId> -->
-		<!--<version>5.0.0</version> -->
-		<!--</dependency> -->
-		<!--mapper -->
-		<dependency>
-			<groupId>tk.mybatis</groupId>
-			<artifactId>mapper-spring-boot-starter</artifactId>
-			<version>1.1.1</version>
-		</dependency>
+		
 		<!-- mongo -->
 		<!--<dependency> -->
 		<!--<groupId>org.springframework.boot</groupId> -->
@@ -297,11 +274,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
 			<!--<scope>provided</scope> -->
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-freemarker</artifactId>
 		</dependency>
 
 		<dependency>
