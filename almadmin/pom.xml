@@ -19,10 +19,11 @@
 	<parent>
 		<artifactId>dili-alm</artifactId>
 		<groupId>com.dili</groupId>
-		<version>2.0.2-RELEASE</version>
+		<version>2.0.3-RELEASE</version>
 	</parent>
 
 	<build>
+		<finalName>almadmin</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -44,7 +45,6 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.16.18</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
 		<dependency>
@@ -131,11 +131,6 @@
 		<!--<artifactId>mariadb-java-client</artifactId> -->
 		<!--<version>1.1.7</version> -->
 		<!--</dependency> -->
-		<!-- mysql -->
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-		</dependency>
 
 		<!-- druid -->
 		<dependency>
@@ -176,30 +171,7 @@
 			<!--<version>${boot.version}</version> -->
 			<scope>test</scope>
 		</dependency>
-		<!--mybatis -->
-		<dependency>
-			<groupId>org.mybatis.spring.boot</groupId>
-			<artifactId>mybatis-spring-boot-starter</artifactId>
-			<version>1.1.1</version>
-		</dependency>
-		<!--pagehelper -->
-		<dependency>
-			<groupId>com.github.pagehelper</groupId>
-			<artifactId>pagehelper-spring-boot-starter</artifactId>
-			<version>1.1.1</version>
-		</dependency>
 
-		<!--<dependency> -->
-		<!--<groupId>com.github.pagehelper</groupId> -->
-		<!--<artifactId>pagehelper</artifactId> -->
-		<!--<version>5.0.0</version> -->
-		<!--</dependency> -->
-		<!--mapper -->
-		<dependency>
-			<groupId>tk.mybatis</groupId>
-			<artifactId>mapper-spring-boot-starter</artifactId>
-			<version>1.1.1</version>
-		</dependency>
 		<!-- mongo -->
 		<!--<dependency> -->
 		<!--<groupId>org.springframework.boot</groupId> -->
@@ -267,40 +239,40 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-hystrix</artifactId>
 		</dependency>
-		<!--<dependency>-->
-		<!--<groupId>org.springframework.cloud</groupId>-->
-		<!--<artifactId>spring-cloud-starter-hystrix-dashboard</artifactId>-->
-		<!--</dependency>-->
-		<!--<dependency>-->
-		<!--<groupId>org.springframework.boot</groupId>-->
-		<!--<artifactId>spring-boot-starter-freemarker</artifactId>-->
-		<!--</dependency>-->
-		<!--<dependency>-->
-		<!--<groupId>org.springframework.cloud</groupId>-->
-		<!--<artifactId>spring-cloud-starter-config</artifactId>-->
-		<!--</dependency>-->
+		<!--<dependency> -->
+		<!--<groupId>org.springframework.cloud</groupId> -->
+		<!--<artifactId>spring-cloud-starter-hystrix-dashboard</artifactId> -->
+		<!--</dependency> -->
+		<!--<dependency> -->
+		<!--<groupId>org.springframework.boot</groupId> -->
+		<!--<artifactId>spring-boot-starter-freemarker</artifactId> -->
+		<!--</dependency> -->
+		<!--<dependency> -->
+		<!--<groupId>org.springframework.cloud</groupId> -->
+		<!--<artifactId>spring-cloud-starter-config</artifactId> -->
+		<!--</dependency> -->
 
-		<!--<dependency>-->
-		<!--<groupId>org.springframework.cloud</groupId>-->
-		<!--<artifactId>spring-cloud-starter-turbine</artifactId>-->
-		<!--</dependency>-->
-		<!--<dependency>-->
-		<!--<groupId>org.springframework.cloud</groupId>-->
-		<!--<artifactId>spring-cloud-stream</artifactId>-->
-		<!--</dependency>-->
-		<!--<dependency>-->
-		<!--<groupId>org.springframework.cloud</groupId>-->
-		<!--<artifactId>spring-cloud-stream-binder-kafka</artifactId>-->
-		<!--</dependency>-->
-		<!--<dependency>-->
-		<!--<groupId>org.springframework.cloud</groupId>-->
-		<!--<artifactId>spring-cloud-stream-reactive</artifactId>-->
-		<!--</dependency>-->
+		<!--<dependency> -->
+		<!--<groupId>org.springframework.cloud</groupId> -->
+		<!--<artifactId>spring-cloud-starter-turbine</artifactId> -->
+		<!--</dependency> -->
+		<!--<dependency> -->
+		<!--<groupId>org.springframework.cloud</groupId> -->
+		<!--<artifactId>spring-cloud-stream</artifactId> -->
+		<!--</dependency> -->
+		<!--<dependency> -->
+		<!--<groupId>org.springframework.cloud</groupId> -->
+		<!--<artifactId>spring-cloud-stream-binder-kafka</artifactId> -->
+		<!--</dependency> -->
+		<!--<dependency> -->
+		<!--<groupId>org.springframework.cloud</groupId> -->
+		<!--<artifactId>spring-cloud-stream-reactive</artifactId> -->
+		<!--</dependency> -->
 		<!-- eureka-client -->
-		<!--<dependency>-->
-		<!--<groupId>org.springframework.cloud</groupId>-->
-		<!--<artifactId>spring-cloud-starter-bus-kafka</artifactId>-->
-		<!--</dependency>-->
+		<!--<dependency> -->
+		<!--<groupId>org.springframework.cloud</groupId> -->
+		<!--<artifactId>spring-cloud-starter-bus-kafka</artifactId> -->
+		<!--</dependency> -->
 
 		<!-- springloaded -->
 		<!-- https://mvnrepository.com/artifact/org.springframework/springloaded -->
