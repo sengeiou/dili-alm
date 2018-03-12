@@ -397,7 +397,7 @@ function changeVersionState(id) {
 
 function openInsertPhase() {
 	$('#win').dialog({
-				title : '新建文档',
+				title : '新建阶段',
 				width : 600,
 				height : 500,
 				href : '${contextPath!}/project/phase/add?projectId=' + $('#projectId').val(),
@@ -449,7 +449,7 @@ function openInsertPhase() {
 
 function editPhase(id) {
 	$('#win').dialog({
-				title : '编辑版本',
+				title : '编辑阶段',
 				width : 600,
 				height : 500,
 				href : '${contextPath!}/project/phase/edit?id=' + id,

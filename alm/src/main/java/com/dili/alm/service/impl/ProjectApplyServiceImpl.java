@@ -101,6 +101,7 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
         if (projectApply.getStatus() == AlmConstants.ApplyState.APPROVE.getCode()) {
             Approve as = DTOUtils.as(this.get(projectApply.getId()), Approve.class);
             as.setId(null);
+            as.setCreatedStart(null);
             as.setCreated(new Date());
             as.setProjectApplyId(projectApply.getId());
             as.setStatus(AlmConstants.ApplyState.APPROVE.getCode());
