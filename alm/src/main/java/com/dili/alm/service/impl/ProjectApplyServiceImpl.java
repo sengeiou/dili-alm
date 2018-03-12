@@ -115,7 +115,8 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
         }
 
         this.updateSelective(projectApply);
-        return BaseOutput.success(String.valueOf(projectApply.getId())).setData(projectApply.getId()+":"+projectApply.getName());
+        ProjectApply projectApply2 = this.get(projectApply.getId());
+        return BaseOutput.success(String.valueOf(projectApply2.getId())).setData(projectApply2.getId()+":"+projectApply2.getName());
     }
 
     public void sendMail(ProjectApply projectApply) {
