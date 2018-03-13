@@ -67,8 +67,6 @@ import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
 
-
-
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-11-23 10:23:05.
  */
@@ -80,31 +78,31 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	UserRpc userRpc;
 	@Autowired
 	RoleRpc roleRpc;
-	
-	
+
 	@Autowired
 	private TeamMapper teamMapper;
-    public TaskMapper getActualDao() {
-        return (TaskMapper)getDao();
-    }
-    
-    @Autowired
-    private TaskMapper taskMapper;
-    
-    @Autowired
-    private ProjectMapper projectMapper;
-    
-    @Autowired
-    private ProjectPhaseMapper ppMapper;
-    
-    @Autowired
-    private ProjectVersionMapper pvMapper;
-    
-    @Autowired
-    private TaskDetailsMapper tdMapper;
-    
-    @Autowired
-    private TaskDetailsService taskDetailsService;
+
+	public TaskMapper getActualDao() {
+		return (TaskMapper) getDao();
+	}
+
+	@Autowired
+	private TaskMapper taskMapper;
+
+	@Autowired
+	private ProjectMapper projectMapper;
+
+	@Autowired
+	private ProjectPhaseMapper ppMapper;
+
+	@Autowired
+	private ProjectVersionMapper pvMapper;
+
+	@Autowired
+	private TaskDetailsMapper tdMapper;
+
+	@Autowired
+	private TaskDetailsService taskDetailsService;
 	@Autowired
 	ProjectVersionService projectVersionService;
 	@Autowired
@@ -122,11 +120,12 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	private ProjectPhaseMapper phaseMapper;
 	@Autowired
 	private ProjectChangeService projectChangeService;
-	
+
 	private static final String TASK_STATUS_CODE = "task_status";
 	private static final String TASK_TYPE_CODE = "task_type";
 	private static final Integer PROJECT_STATE_SHUT = 4;
 	private static final Integer PROJECT_STATE_COMPLATE = 2;
+
 	@Override
 	public int insert(Task t) {
 		Project project = this.projectMapper.selectByPrimaryKey(t.getProjectId());
@@ -149,12 +148,11 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		return super.insertSelective(t);
 	}
 
-
 	@Override
 	public EasyuiPageOutput listPageSelectTaskDto(Task task) throws Exception {
 		task.setOrder("desc");
 		task.setSort("created");
-		List<Task> list = this.listByExample(task);// 查询出来	
+		List<Task> list = this.listByExample(task);// 查询出来
 		Page<Task> page = (Page<Task>) list;
 		@SuppressWarnings("unchecked")
 		Map<Object, Object> metadata = null == task.getMetadata() ? new HashMap<>() : task.getMetadata();
@@ -185,7 +183,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 		task.setMetadata(metadata);
 		try {
-			List<TaskEntity> results = this.TaskParseTaskSelectDto(list,true);// 转化为查询的DTO
+			List<TaskEntity> results = this.TaskParseTaskSelectDto(list, true);// 转化为查询的DTO
 			List taskList = ValueProviderUtils.buildDataByProvider(task, results);
 			EasyuiPageOutput taskEasyuiPageOutput = new EasyuiPageOutput(
 					Integer.valueOf(Integer.parseInt(String.valueOf(page.getTotal()))), taskList);
@@ -202,7 +200,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	 * @param results
 	 * @return
 	 */
-	private List<TaskEntity> TaskParseTaskSelectDto(List<Task> results,boolean isUpdateDetail) {
+	private List<TaskEntity> TaskParseTaskSelectDto(List<Task> results, boolean isUpdateDetail) {
 		List<TaskEntity> target = new ArrayList<>(results.size());
 		for (Task task : results) {
 			TaskEntity dto = new TaskEntity(task);
@@ -212,41 +210,39 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			String planDays = this.dateToString(task.getStartDate()) + "至" + this.dateToString(task.getEndDate());
 			dto.setPlanDays(planDays);
 
-			
-			
 			TaskDetails taskDetails = DTOUtils.newDTO(TaskDetails.class);
 			taskDetails.setTaskId(task.getId());
-			//查询出列表
-			List<TaskDetails>  taskDetailsList = tdMapper.select(taskDetails);
+			// 查询出列表
+			List<TaskDetails> taskDetailsList = tdMapper.select(taskDetails);
 			double totalTaskHour = 0;
-			for (TaskDetails entity : taskDetailsList) {//循环累加
-				if (entity.getTaskHour() != null) {//排除只填写加班工时
-				   totalTaskHour += entity.getTaskHour();
-				}
-/*				if(entity.getOverHour() != null){ //排除只填写任务工时的情况
+			for (TaskDetails entity : taskDetailsList) {// 循环累加
+				if (entity.getTaskHour() != null) {// 排除只填写加班工时
 					totalTaskHour += entity.getTaskHour();
-				}*/
+				}
+				/*
+				 * if(entity.getOverHour() != null){ //排除只填写任务工时的情况 totalTaskHour +=
+				 * entity.getTaskHour(); }
+				 */
 			}
-			// 进度=已完成工时/计划工时*100 
+			// 进度=已完成工时/计划工时*100
 			double taskHover = (totalTaskHour / task.getPlanTime()) * 100;
 			dto.setProgress((int) taskHover);
 			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-			if(isProjeactComplate(task.getProjectId())){//TODO:项目已完成、关闭都置灰
+			if (isProjeactComplate(task.getProjectId())) {// TODO:项目已完成、关闭都置灰
 				dto.setUpdateDetail(false);
-			}else{
-				if(task.getStatus()!=3&&this.isManager(task.getProjectId())){//不是完成状态或者是项目经理或者是任务责任人
+			} else {
+				if (task.getStatus() != 3 && this.isManager(task.getProjectId())) {// 不是完成状态或者是项目经理或者是任务责任人
 					dto.setUpdateDetail(true);
-				}else if(task.getStatus()!=3&&userTicket.getId().equals(task.getOwner())){
+				} else if (task.getStatus() != 3 && userTicket.getId().equals(task.getOwner())) {
 					dto.setUpdateDetail(true);
-				}else{
+				} else {
 					dto.setUpdateDetail(false);
 				}
 			}
-			
-			if (!isProjeactComplate(task.getProjectId())&&isProjectManager()) {
+
+			if (!isProjeactComplate(task.getProjectId()) && isProjectManager()) {
 				dto.setCopyButton(true);
-			}else
-			{
+			} else {
 				dto.setCopyButton(false);
 			}
 			target.add(dto);
@@ -264,101 +260,104 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		return sdf.format(date);
 	}
-	
-	private boolean isProjeactComplate(Long id){
+
+	private boolean isProjeactComplate(Long id) {
 		Project project = projectService.get(id);
-		if (project.getProjectState().equals(PROJECT_STATE_SHUT)||project.getProjectState().equals(PROJECT_STATE_COMPLATE)) {
-			return true;	
+		if (project.getProjectState().equals(PROJECT_STATE_SHUT)
+				|| project.getProjectState().equals(PROJECT_STATE_COMPLATE)) {
+			return true;
 		}
 		return false;
 	}
 
 	@Override
 	public int updateTaskDetail(TaskDetails taskDetails, Task task) {
-		//标识任务已完成，需要写入项目中实际完成时间
-		boolean isComplete =false;
+		// 标识任务已完成，需要写入项目中实际完成时间
+		boolean isComplete = false;
 		// 查询当前要修改的任务工时信息
-/*		TaskDetails taskDetailsFromDatabase = taskDetailsService.get(taskDetails.getId());
-		// 校验前台工时
-		int taskHour =(int)Optional.ofNullable(taskDetails.getTaskHour()).orElse((short) 0);
-		// 校验前台加班工时
-		int overHour =(int)Optional.ofNullable(taskDetails.getOverHour()).orElse((short) 0);
-		
-		int saveHour = taskHour;//用作保存每次存储的工时值
-		 task表基础数据更新 
-		
-		int baseTaskHour =(int)taskDetailsFromDatabase.getTaskHour();
-		baseTaskHour+=taskHour;
-		taskDetailsFromDatabase.setTaskHour((short)baseTaskHour);
+		/*
+		 * TaskDetails taskDetailsFromDatabase =
+		 * taskDetailsService.get(taskDetails.getId()); // 校验前台工时 int taskHour
+		 * =(int)Optional.ofNullable(taskDetails.getTaskHour()).orElse((short) 0); //
+		 * 校验前台加班工时 int overHour
+		 * =(int)Optional.ofNullable(taskDetails.getOverHour()).orElse((short) 0);
+		 * 
+		 * int saveHour = taskHour;//用作保存每次存储的工时值 task表基础数据更新
+		 * 
+		 * int baseTaskHour =(int)taskDetailsFromDatabase.getTaskHour();
+		 * baseTaskHour+=taskHour;
+		 * taskDetailsFromDatabase.setTaskHour((short)baseTaskHour);
+		 * 
+		 * 
+		 * int baseOverHour =(int)taskDetailsFromDatabase.getOverHour();
+		 * baseOverHour+=overHour;
+		 * taskDetailsFromDatabase.setOverHour((short)baseOverHour);
+		 * 
+		 * // 工时信息填写 taskDetailsFromDatabase.setTaskTime(this.taskHoursMapAdd(
+		 * taskDetailsFromDatabase.getTaskTime(), saveHour));
+		 * 
+		 * taskDetailsFromDatabase.setModified(new Date());
+		 * 
+		 * 
+		 * if (taskDetailsFromDatabase.getTaskHour() >= task.getPlanTime()) {
+		 */
+		// 更新状态为完成
+		/*
+		 * task.setStatus(TaskStatus.COMPLETE.code); task.setFactEndDate(new Date());
+		 * isComplete = true; }
+		 * 
+		 * 
+		 * this.taskDetailsService.insert(taskDetailsFromDatabase);
+		 */
 
-		
-		int baseOverHour =(int)taskDetailsFromDatabase.getOverHour();
-		baseOverHour+=overHour;
-		taskDetailsFromDatabase.setOverHour((short)baseOverHour);
-		
-		// 工时信息填写
-		taskDetailsFromDatabase.setTaskTime(this.taskHoursMapAdd(taskDetailsFromDatabase.getTaskTime(), saveHour));
-		
-		taskDetailsFromDatabase.setModified(new Date());
-		
-		
-		if (taskDetailsFromDatabase.getTaskHour() >= task.getPlanTime()) {*/
-			// 更新状态为完成
-			/*task.setStatus(TaskStatus.COMPLETE.code);
-			task.setFactEndDate(new Date());
-			isComplete = true;
-		}
-		
-		
-		this.taskDetailsService.insert(taskDetailsFromDatabase);*/
-		
 		TaskDetails condtion = DTOUtils.newDTO(TaskDetails.class);
-		
+
 		condtion.setTaskId(task.getId());
-		
+
 		List<TaskDetails> list = this.taskDetailsService.list(condtion);
-		
+
 		int totalTaskHours = 0;
-		
+
 		for (TaskDetails entity : list) {
-			
+
 			totalTaskHours += entity.getTaskHour();
 		}
-		
+
 		if (totalTaskHours >= task.getPlanTime()) {
 			// 更新状态为完成
-			/*task.setStatus(TaskStatus.COMPLETE.code);*/
+			/* task.setStatus(TaskStatus.COMPLETE.code); */
 			task.setFactEndDate(new Date());
 			isComplete = true;
 		}
-		
-		if (taskDetails.getTaskHour()==0&&taskDetails.getOverHour()==0) {//判断如果加班工时和任务工时同时都没有填写
+
+		if (taskDetails.getTaskHour() == 0 && taskDetails.getOverHour() == 0) {// 判断如果加班工时和任务工时同时都没有填写
 			return 0;
 		}
-		
+
 		int insert = taskDetailsService.insert(taskDetails);
-		
+
 		try {
 			// 进度总量写入project表中
-			saveProjectProgress(task,isComplete);
+			saveProjectProgress(task, isComplete);
 
 			// 更新版本表中的进度
 			saveProjectVersion(task);
 
 			// 更新阶段表中的进度
-			saveProjectPhase(task);	
-			
+			saveProjectPhase(task);
+
 			this.saveOrUpdate(task);
-			
-		} catch (Exception e) {//有异常返回不成功
+
+		} catch (Exception e) {// 有异常返回不成功
 			return 0;
 		}
 		return insert;
-		
+
 	}
 
 	/**
 	 * 读取填入的工时记录
+	 * 
 	 * @param jsonMapStr
 	 * @param taskHour
 	 * @return
@@ -367,27 +366,27 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		try {
 			// StringParseMap
 			Map<String, Integer> jsonMap = (Map<String, Integer>) JSON.parse(jsonMapStr);
-			if (jsonMap.size() > 0&&jsonMap.get(this.dateToString(new Date())+1)==null) {
-				//已经存有值，但没有今日的值
+			if (jsonMap.size() > 0 && jsonMap.get(this.dateToString(new Date()) + 1) == null) {
+				// 已经存有值，但没有今日的值
 				jsonMap.put(this.dateToString(new Date()) + 1, taskHour);
-				
-			} else if(jsonMap.size()==0) {//没有开始填写值
-				
+
+			} else if (jsonMap.size() == 0) {// 没有开始填写值
+
 				jsonMap.put(this.dateToString(new Date()) + 1, taskHour);
-				
-			} else if(jsonMap.size() > 0&& jsonMap.get(this.dateToString(new Date())+1)!=null){//已经存有值，且已存入今日值
-				
+
+			} else if (jsonMap.size() > 0 && jsonMap.get(this.dateToString(new Date()) + 1) != null) {// 已经存有值，且已存入今日值
+
 				for (int i = 0; i < 8; i++) {
-					int keyId = i+1;
-					if(jsonMap.get(this.dateToString(new Date())+keyId)==null){//找到没有存值的key里
-						
-						jsonMap.put(this.dateToString(new Date())+keyId, taskHour);
-						
+					int keyId = i + 1;
+					if (jsonMap.get(this.dateToString(new Date()) + keyId) == null) {// 找到没有存值的key里
+
+						jsonMap.put(this.dateToString(new Date()) + keyId, taskHour);
+
 						break;
-						
+
 					}
 				}
-				
+
 			}
 			ObjectMapper mapper = new ObjectMapper();
 			return mapper.writeValueAsString(jsonMap);
@@ -461,7 +460,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	}
 
 	// 计算项目总进度
-	private void saveProjectProgress(Task task,boolean signComplate) {
+	private void saveProjectProgress(Task task, boolean signComplate) {
 
 		int progress = 0;
 
@@ -473,22 +472,21 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 				Optional.ofNullable(projectApply.getResourceRequire()).orElse("{}"), ApplyMajorResource.class);
 
 		// 整体项目预估时间
-		double total = Optional.ofNullable(applyMajorResource.getMainWorkTime()).orElse(0)*8;
+		double total = Optional.ofNullable(applyMajorResource.getMainWorkTime()).orElse(0) * 8;
 
 		List<ApplyRelatedResource> list = Optional.ofNullable(applyMajorResource.getRelatedResources())
 				.orElse(new ArrayList<ApplyRelatedResource>());
 
 		for (int i = 0; i < list.size(); i++) {
 			ApplyRelatedResource applyRelatedResource = list.get(i);
-			total += Optional.ofNullable(applyRelatedResource.getRelatedWorkTime()).orElse(0)*8;
+			total += Optional.ofNullable(applyRelatedResource.getRelatedWorkTime()).orElse(0) * 8;
 		}
 
-		
-		//查询项目变更的累加
-		ProjectChange projectChange  = DTOUtils.newDTO(ProjectChange.class);
+		// 查询项目变更的累加
+		ProjectChange projectChange = DTOUtils.newDTO(ProjectChange.class);
 		projectChange.setProjectId(task.getProjectId());
-		List<ProjectChange> projectChangeList =  projectChangeService.list(projectChange);
-		if (projectChangeList!=null&&projectChangeList.size()>0) {
+		List<ProjectChange> projectChangeList = projectChangeService.list(projectChange);
+		if (projectChangeList != null && projectChangeList.size() > 0) {
 			for (ProjectChange projectChange2 : projectChangeList) {
 				if (!WebUtil.strIsEmpty(projectChange2.getWorkingHours())) {
 					total += Double.parseDouble(projectChange2.getWorkingHours());
@@ -513,10 +511,10 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 				taskTimes += taskDetailsDome.getOverHour();
 			}
 		}
-		progress = (int) (( taskTimes / total)* 100);
+		progress = (int) ((taskTimes / total) * 100);
 		project.setCompletedProgress(progress);
-		
-		//接收到true的标识就写入日期
+
+		// 接收到true的标识就写入日期
 		if (signComplate) {
 			project.setActualEndDate(new Date());
 		}
@@ -526,28 +524,23 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	@Transactional
 	@Override
 	public int startTask(Task task) {
-		
-		/*TaskDetails taskDetails=DTOUtils.newDTO(TaskDetails.class);
-		taskDetails.setTaskId(task.getId());
-		List<TaskDetails> byExample = taskDetailsService.list(taskDetails);
-		int size = byExample.size();
-		
-				if (task.getStatus() != 2) {
-			
-			//如果大于0判定为重复提交
-			if(size>0){
-				return 0 ;
-			}
-			
-			taskDetails.setTaskId(task.getId());
-			taskDetails.setCreated(new Date());
-			taskDetails.setTaskHour((short) 0);
-			taskDetails.setOverHour((short) 0);
-			taskDetails.setTaskTime("{}");
-			taskDetails.setCreateMemberId(task.getModifyMemberId());
-			taskDetailsService.insert(taskDetails);
-		}*/
-		//只更新任务状态
+
+		/*
+		 * TaskDetails taskDetails=DTOUtils.newDTO(TaskDetails.class);
+		 * taskDetails.setTaskId(task.getId()); List<TaskDetails> byExample =
+		 * taskDetailsService.list(taskDetails); int size = byExample.size();
+		 * 
+		 * if (task.getStatus() != 2) {
+		 * 
+		 * //如果大于0判定为重复提交 if(size>0){ return 0 ; }
+		 * 
+		 * taskDetails.setTaskId(task.getId()); taskDetails.setCreated(new Date());
+		 * taskDetails.setTaskHour((short) 0); taskDetails.setOverHour((short) 0);
+		 * taskDetails.setTaskTime("{}");
+		 * taskDetails.setCreateMemberId(task.getModifyMemberId());
+		 * taskDetailsService.insert(taskDetails); }
+		 */
+		// 只更新任务状态
 		task.setFactBeginDate(new Date());
 		task.setStatus(TaskStatus.START.code);// 更新状态为开始任务
 		Project project = this.projectMapper.selectByPrimaryKey(task.getProjectId());
@@ -555,13 +548,14 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			throw new RuntimeException("项目不存在");
 		}
 		Date now = new Date();
-		if (project.getProjectState().equals(ProjectState.NOT_START.getValue())||project.getActualStartDate()==null) {
+		if (project.getProjectState().equals(ProjectState.NOT_START.getValue())
+				|| project.getActualStartDate() == null) {
 			project.setActualStartDate(now);
 			project.setProjectState(ProjectState.IN_PROGRESS.getValue());
 			this.projectMapper.updateByPrimaryKey(project);
 		}
 		ProjectVersion version = this.versionMapper.selectByPrimaryKey(task.getVersionId());
-		if (version.getVersionState().equals(ProjectState.NOT_START.getValue())||version.getActualEndDate()==null) {
+		if (version.getVersionState().equals(ProjectState.NOT_START.getValue()) || version.getActualEndDate() == null) {
 			version.setActualStartDate(now);
 			version.setVersionState(ProjectState.IN_PROGRESS.getValue());
 			this.versionMapper.updateByPrimaryKey(version);
@@ -571,28 +565,26 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			phase.setActualStartDate(now);
 			this.phaseMapper.updateByPrimaryKey(phase);
 		}
-		
+
 		try {
-			
-			/***初始化相关内容的进度***/
+
+			/*** 初始化相关内容的进度 ***/
 			// 进度总量写入project表中
-			saveProjectProgress(task,false);
+			saveProjectProgress(task, false);
 
 			// 更新版本表中的进度
 			saveProjectVersion(task);
 
 			// 更新阶段表中的进度
-			saveProjectPhase(task);	
-			/***初始化相关内容的进度***/
-			
+			saveProjectPhase(task);
+			/*** 初始化相关内容的进度 ***/
+
 		} catch (Exception e) {
 			return 0;
 		}
 
 		return this.update(task);
 	}
-	
-	
 
 	/**
 	 * 定时刷过期任务
@@ -604,8 +596,8 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		// 查询任务表里 项目下的所有任务
 		List<Task> taskList = this.list(taskSelect);
 		for (Task taskDome : taskList) {
-			//只判断未开始，已开始状态的任务
-			if (taskDome.getStatus()==TaskStatus.START.code||taskDome.getStatus()==TaskStatus.NOTSTART.code) {
+			// 只判断未开始，已开始状态的任务
+			if (taskDome.getStatus() == TaskStatus.START.code || taskDome.getStatus() == TaskStatus.NOTSTART.code) {
 				// dateUtil 计算相差天数大于0，更新状态为未完成
 				int days = Integer.parseInt(DateUtil.getDatePoor(new Date(), taskDome.getEndDate()).trim());
 				if (days > 0) {
@@ -619,7 +611,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	}
 
 	/*
-	 *字典
+	 * 字典
 	 */
 	@Override
 	public List<DataDictionaryValueDto> getTaskStates() {
@@ -638,9 +630,9 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		}
 		return dto.getValues();
 	}
-	
+
 	/*
-	 *字典
+	 * 字典
 	 */
 
 	/**
@@ -648,14 +640,14 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	 */
 	@Override
 	public boolean isSetTask(Long id, short taskHour) {
-		//获取今日填写所有项目的总工时
+		// 获取今日填写所有项目的总工时
 		int totalTaskHour = restTaskHour(id);
-		
-		if (totalTaskHour!=0) {
-			
-			totalTaskHour+=taskHour;
-			//加上此次添加的超过8小时
-			if (totalTaskHour>8) {
+
+		if (totalTaskHour != 0) {
+
+			totalTaskHour += taskHour;
+			// 加上此次添加的超过8小时
+			if (totalTaskHour > 8) {
 				return false;
 			}
 		}
@@ -664,19 +656,19 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 	/*
 	 * 
-     * 已经填写的工时
-     *
+	 * 已经填写的工时
+	 *
 	 */
 	private int taskHoursPlus(TaskDetails taskDetails) {
-		
+
 		int dayTotal = 0;
-		
+
 		Map<String, Integer> taskHourMap = new HashMap<String, Integer>();
-		
+
 		String taskUpdateDate = this.dateToString(taskDetails.getModified());
-		
+
 		taskHourMap = (Map<String, Integer>) JSON.parse(taskDetails.getTaskTime());
-        // 获取最后跟新的日期，用日期在map里取值，一天最多能存8次值
+		// 获取最后跟新的日期，用日期在map里取值，一天最多能存8次值
 		for (int i = 0; i < 8; i++) {
 			if (taskHourMap.get(taskUpdateDate + (i + 1)) == null)
 				break;
@@ -684,16 +676,16 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		}
 		return dayTotal;
 	}
-	
+
 	@Override
 	public EasyuiPageOutput listByTeam(Task task, String phaseName) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		if (userTicket == null) {
 			throw new RuntimeException("未登录");
 		}
-		ProjectPhase projectPhase=DTOUtils.newDTO(ProjectPhase.class);
+		ProjectPhase projectPhase = DTOUtils.newDTO(ProjectPhase.class);
 		List<Long> ids = null;
-		if (phaseName!=null) {
+		if (phaseName != null) {
 			projectPhase.setName(phaseName);
 			List<ProjectPhase> projectPhaseList = projectPhaseService.listByExample(projectPhase);
 			ids = new ArrayList<Long>();
@@ -701,13 +693,14 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 				ids.add(projectPhase2.getId());
 			}
 		}
-		
-		if(!WebUtil.strIsEmpty(task.getName())){
+
+		if (!WebUtil.strIsEmpty(task.getName())) {
 			String replaceAll = task.getName().replaceAll(" ", "");
 			task.setName(replaceAll);
 		}
-		List<Task> list = taskMapper.selectByTeam(task, userTicket.getId(), ids);// 查询出来
-		int count = taskMapper.selectByTeamCount(task, userTicket.getId(), ids);
+		// List<Task> list = taskMapper.selectByTeam(task, userTicket.getId(), ids);
+		// 查询出来
+		Page<Task> list = (Page<Task>) this.listByExample(task);
 		@SuppressWarnings("unchecked")
 		Map<Object, Object> metadata = null == task.getMetadata() ? new HashMap<>() : task.getMetadata();
 
@@ -737,9 +730,10 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 		task.setMetadata(metadata);
 		try {
-			List<TaskEntity> results = this.TaskParseTaskSelectDto(list,false);// 转化为查询的DTO
+			List<TaskEntity> results = this.TaskParseTaskSelectDto(list, false);// 转化为查询的DTO
 			List taskList = ValueProviderUtils.buildDataByProvider(task, results);
-			EasyuiPageOutput taskEasyuiPageOutput = new EasyuiPageOutput(count, taskList);
+			EasyuiPageOutput taskEasyuiPageOutput = new EasyuiPageOutput(Long.valueOf(list.getTotal()).intValue(),
+					taskList);
 			return taskEasyuiPageOutput;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -764,27 +758,26 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			if (team2.getRole().equalsIgnoreCase(TeamRole.PROJECT_MANAGER.getValue())) {
 				return true;
 			}
-/*			if (team2.getRole().equalsIgnoreCase(TeamRole.PRODUCT_MANAGER.getValue())) {
-				return true;
-			}
-			if (team2.getRole().equalsIgnoreCase(TeamRole.TEST_MANAGER.getValue())) {
-				return true;
-			}
-			if (team2.getRole().equalsIgnoreCase(TeamRole.DEVELOP_MANAGER.getValue())) {
-				return true;
-			}*/
+			/*
+			 * if (team2.getRole().equalsIgnoreCase(TeamRole.PRODUCT_MANAGER.getValue())) {
+			 * return true; } if
+			 * (team2.getRole().equalsIgnoreCase(TeamRole.TEST_MANAGER.getValue())) { return
+			 * true; } if
+			 * (team2.getRole().equalsIgnoreCase(TeamRole.DEVELOP_MANAGER.getValue())) {
+			 * return true; }
+			 */
 		}
 		return false;
 	}
 
 	@Override
-	public boolean validateBeginAndEnd(Long projectId,Date startDate,Date endDate) {
+	public boolean validateBeginAndEnd(Long projectId, Date startDate, Date endDate) {
 		try {
 			Project project = projectService.get(projectId);
 			Date pstDate = project.getStartDate();// 计划开始时间
 			Date penDate = project.getEndDate();// 计划结束时间
 			int startCompareVal = Integer.parseInt(DateUtil.getDatePoor(pstDate, startDate));
-			int endCompareVal = Integer.parseInt(DateUtil.getDatePoor(penDate,endDate));
+			int endCompareVal = Integer.parseInt(DateUtil.getDatePoor(penDate, endDate));
 
 			// 大于0，后者晚，小于0 后者早
 			if (startCompareVal > 0) {
@@ -805,9 +798,9 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		if (userTicket == null) {
 			throw new RuntimeException("未登录");
 		}
-		return taskMapper.selectProjectChangeByTeam(userTicket.getId(),projectId);
+		return taskMapper.selectProjectChangeByTeam(userTicket.getId(), projectId);
 	}
-	
+
 	@Override
 	public List<Project> projectList() {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
@@ -815,11 +808,11 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			throw new RuntimeException("未登录");
 		}
 		List<Project> listProject = new ArrayList<Project>();
-		/*if (isNoTeam()||isCommittee()) {*/
-			listProject = projectMapper.selectAll();
-		/*}else{
-			listProject = taskMapper.selectProjectByTeam(userTicket.getId());
-		}*/
+		/* if (isNoTeam()||isCommittee()) { */
+		listProject = projectMapper.selectAll();
+		/*
+		 * }else{ listProject = taskMapper.selectProjectByTeam(userTicket.getId()); }
+		 */
 		return listProject;
 	}
 
@@ -835,9 +828,9 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		Team team = DTOUtils.newDTO(Team.class);
 		team.setMemberId(userTicket.getId());
 		List<Team> teamList = teamService.list(team);
-		
+
 		for (Team team2 : teamList) {
-			
+
 			if (team2.getRole().equalsIgnoreCase(TeamRole.PROJECT_MANAGER.getValue())) {
 				return true;
 			}
@@ -856,24 +849,22 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 	@Override
 	public List<User> listUserByTeam() {
-		 UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-			if (userTicket == null) {
-				throw new RuntimeException("未登录");
-			}
-			
-			List<User> userList =new ArrayList<User>();
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		if (userTicket == null) {
+			throw new RuntimeException("未登录");
+		}
 
-/*			if (isNoTeam()||isCommittee()) {*/
-				userList=userRpc.list(new User()).getData();
-			/*}else{
-				 List<Long> userIdList = taskMapper.selectUserByTeam(userTicket.getId());
-				 userList =new ArrayList<User>();
-				 for (Long userId : userIdList) {
-					 User user = userRpc.findUserById(userId).getData();
-					 userList.add(user);
-				 }
-			}*/
-			
+		List<User> userList = new ArrayList<User>();
+
+		/* if (isNoTeam()||isCommittee()) { */
+		userList = userRpc.list(new User()).getData();
+		/*
+		 * }else{ List<Long> userIdList =
+		 * taskMapper.selectUserByTeam(userTicket.getId()); userList =new
+		 * ArrayList<User>(); for (Long userId : userIdList) { User user =
+		 * userRpc.findUserById(userId).getData(); userList.add(user); } }
+		 */
+
 		return userList;
 	}
 
@@ -894,14 +885,13 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		Team team = DTOUtils.newDTO(Team.class);
 		team.setProjectId(projectId);
 		List<Long> resultIds = teamMapper.selectByProjectId(projectId);
-		List<User> userList =new ArrayList<User>();
+		List<User> userList = new ArrayList<User>();
 		for (Long userId : resultIds) {
-			 User user = userRpc.findUserById(userId).getData();
-			 userList.add(user);
+			User user = userRpc.findUserById(userId).getData();
+			userList.add(user);
 		}
 		return userList;
 	}
-
 
 	@Override
 	public List<Task> listTaskByProjectId(Long projectId) {
@@ -913,7 +903,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		task.setProjectId(projectId);
 		return taskMapper.selectByTeam(task, userTicket.getId(), null);
 	}
-
 
 	/**
 	 * 项目经理判断
@@ -927,9 +916,9 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		Team team = DTOUtils.newDTO(Team.class);
 		team.setMemberId(userTicket.getId());
 		team.setProjectId(projectId);
-		
+
 		List<Team> teamList = teamService.list(team);
-		
+
 		for (Team team2 : teamList) {
 			if (team2.getRole().equalsIgnoreCase(TeamRole.PROJECT_MANAGER.getValue())) {
 				return true;
@@ -952,8 +941,8 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	 */
 	@Override
 	public boolean isCreater(Task task) {
-        Task taskSelect = this.get(task.getId());
-        UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		Task taskSelect = this.get(task.getId());
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		if (userTicket == null) {
 			throw new RuntimeException("未登录");
 		}
@@ -964,46 +953,44 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	}
 
 	/**
-	 * 判断其他项目的填写工时是否超过，没有填写工时填flase
-	 * 任务责任人
+	 * 判断其他项目的填写工时是否超过，没有填写工时填flase 任务责任人
 	 */
 	@Override
-	public List<TaskDetails> otherProjectTaskHour(String updateDate,Long ownerId) {
+	public List<TaskDetails> otherProjectTaskHour(String updateDate, Long ownerId) {
 
-		//查询本日修改的其他项目的detail
-		List<TaskDetails> taskDetails = taskMapper.selectOtherTaskDetail(ownerId,updateDate);
-		
+		// 查询本日修改的其他项目的detail
+		List<TaskDetails> taskDetails = taskMapper.selectOtherTaskDetail(ownerId, updateDate);
+
 		return taskDetails;
 	}
-    /*
-     * 已经填写的工时
-     */
+
+	/*
+	 * 已经填写的工时
+	 */
 	@Override
 	public int restTaskHour(Long ownerId) {
-		
+
 		String updateDate = this.dateToString(new Date());
-		
+
 		int dayTotal = 0;
-		
-		//本日更新其他项目的工时
-		List<TaskDetails> tdList =this.otherProjectTaskHour(updateDate,ownerId);
-		
-		//今日没有填写工时
-		if (tdList==null||tdList.size()==0) {
+
+		// 本日更新其他项目的工时
+		List<TaskDetails> tdList = this.otherProjectTaskHour(updateDate, ownerId);
+
+		// 今日没有填写工时
+		if (tdList == null || tdList.size() == 0) {
 			return 0;
 		}
-		//累加做比较，计算本日填写的总工时是否超过8小时
+		// 累加做比较，计算本日填写的总工时是否超过8小时
 		for (TaskDetails taskDetails : tdList) {
 
-			//int getInt = taskHoursPlus(taskDetails); 
-			dayTotal += taskDetails.getTaskHour();//其他项目填写工时总和
-			
+			// int getInt = taskHoursPlus(taskDetails);
+			dayTotal += taskDetails.getTaskHour();// 其他项目填写工时总和
+
 		}
-		
+
 		return dayTotal;
 	}
-
-
 
 	@Override
 	public TaskDetails selectDetails(Long taskId) {
@@ -1012,15 +999,15 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		List<TaskDetails> list = taskDetailsService.list(taskDetails);
 		short taskHour = 0;
 		short overHour = 0;
-		if (list!=null||list.size()!=0) {
+		if (list != null || list.size() != 0) {
 			for (TaskDetails entity : list) {
-				taskHour+=entity.getTaskHour();//累加任务工时
-				overHour+=entity.getOverHour();//累加加班工时
+				taskHour += entity.getTaskHour();// 累加任务工时
+				overHour += entity.getOverHour();// 累加加班工时
 			}
 		}
 		taskDetails.setTaskHour(taskHour);
 		taskDetails.setOverHour(overHour);
-		
+
 		return taskDetails;
 	}
 
@@ -1029,38 +1016,32 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		Team team = DTOUtils.newDTO(Team.class);
 		team.setMemberId(userTicket.getId());
-		
+
 		List<Team> teamList = teamMapper.select(team);
-		if (teamList.size()==0) {
+		if (teamList.size() == 0) {
 			return true;
 		}
 		return false;
 	}
 
-
 	@Override
 	public boolean isCommittee() {
-        DataDictionaryDto code = dataDictionaryService.findByCode(AlmConstants.ROLE_CODE);
-        List<DataDictionaryValueDto> values = code.getValues();
-        String roleId = values.stream()
-                .filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH))
-                .findFirst().map(DataDictionaryValue::getValue)
-                .orElse(null);
-        
-        String roleId2 = values.stream()
-                .filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH_LEADER))
-                .findFirst().map(DataDictionaryValue::getValue)
-                .orElse(null);
+		DataDictionaryDto code = dataDictionaryService.findByCode(AlmConstants.ROLE_CODE);
+		List<DataDictionaryValueDto> values = code.getValues();
+		String roleId = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH)).findFirst()
+				.map(DataDictionaryValue::getValue).orElse(null);
+
+		String roleId2 = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH_LEADER))
+				.findFirst().map(DataDictionaryValue::getValue).orElse(null);
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		List<Role> currentUsercurrent = roleRpc.listRoleByUserId(userTicket.getId()).getData();
 		for (Role role : currentUsercurrent) {
-			//避免ID不一致的问题，用真实名字比对
-			if (role.getId().toString().equals(roleId)||role.getId().toString().equals(roleId2)) {//委员会&委员会组长
+			// 避免ID不一致的问题，用真实名字比对
+			if (role.getId().toString().equals(roleId) || role.getId().toString().equals(roleId2)) {// 委员会&委员会组长
 				return true;
 			}
 		}
-		return false; 
+		return false;
 	}
-	
-	
+
 }

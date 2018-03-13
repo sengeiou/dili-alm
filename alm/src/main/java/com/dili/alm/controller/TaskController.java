@@ -9,6 +9,7 @@ import com.dili.alm.domain.ProjectPhase;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.TaskDetails;
+import com.dili.alm.domain.TaskQueryInProjectId;
 import com.dili.alm.domain.User;
 import com.dili.alm.service.MessageService;
 import com.dili.alm.service.ProjectApplyService;
@@ -36,11 +37,13 @@ import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -58,6 +61,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("/task")
 public class TaskController {
+
+	private static final String DATA_AUTH_TYPE = "Project";
+
 	@Autowired
 	TaskService taskService;
 
@@ -111,13 +117,16 @@ public class TaskController {
 			@ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listTeamPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listTeamPage(Task task, String phaseName) throws Exception {
-		if(task.getId()!=null){
-			return taskService.listPageSelectTaskDto(task).toString();
-		}else  if(taskService.isNoTeam()||taskService.isCommittee()){//没有群组和委员会的都显示所有
-			return taskService.listPageSelectTaskDto(task).toString();
-		}else {
-			return taskService.listByTeam(task, phaseName).toString();
+		@SuppressWarnings({ "rawtypes" })
+		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
+		if (CollectionUtils.isEmpty(dataAuths)) {
+			return new EasyuiPageOutput(0, new ArrayList<>(0)).toString();
 		}
+		List<Long> projectIds = new ArrayList<>();
+		TaskQueryInProjectId query = DTOUtils.as(task, TaskQueryInProjectId.class);
+		query.setInProjectIds(projectIds);
+		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
+		return taskService.listByTeam(query, phaseName).toString();
 	}
 
 	@ApiOperation(value = "分页查询Task,首页显示", notes = "分页查询Task，返回easyui分页信息")
@@ -127,15 +136,15 @@ public class TaskController {
 	public @ResponseBody String listTaskPageTab(Task task) throws Exception {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		task.setOwner(userTicket.getId());// 设置登录人员信息
-		return taskService.listByTeam(task,null).toString();
+		return taskService.listByTeam(task, null).toString();
 	}
 
 	@ApiOperation("新增Task")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput insert(Task task, String planTimeStr, String startDateShow, String endDateShow,String flowSt)
-			throws ParseException {
+	public @ResponseBody BaseOutput insert(Task task, String planTimeStr, String startDateShow, String endDateShow,
+			String flowSt) throws ParseException {
 
 		// 判断是否是本项目的项目经理
 		if (!taskService.isThisProjectManger(task.getProjectId())) {
@@ -147,7 +156,7 @@ public class TaskController {
 			task.setPlanTime(planTime);
 			task.setStartDate(fmt.parse(startDateShow));
 			task.setEndDate(fmt.parse(endDateShow));
-			task.setFlow(flowSt.equals("0")?true:false);
+			task.setFlow(flowSt.equals("0") ? true : false);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return BaseOutput.failure("请正确填写工时");
@@ -161,17 +170,18 @@ public class TaskController {
 		task.setStatus(TaskStatus.NOTSTART.code);// 新增的初始化状态为0未开始状态
 		taskService.insertSelective(task);
 
-		messageService.insertMessage("http://alm.diligrp.com:8083/alm/task/task/"+task.getId(), userTicket.getId(),
-				task.getOwner(),AlmConstants.MessageType.TASK.getCode());
-		
-		return BaseOutput.success("新增成功").setData(String.valueOf(task.getId()+":"+task.getName()));
+		messageService.insertMessage("http://alm.diligrp.com:8083/alm/task/task/" + task.getId(), userTicket.getId(),
+				task.getOwner(), AlmConstants.MessageType.TASK.getCode());
+
+		return BaseOutput.success("新增成功").setData(String.valueOf(task.getId() + ":" + task.getName()));
 	}
 
 	@ApiOperation("修改Task")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput update(Task task, String planTimeStr, String startDateShow, String endDateShow,String flowSt) {
+	public @ResponseBody BaseOutput update(Task task, String planTimeStr, String startDateShow, String endDateShow,
+			String flowSt) {
 
 		if (!taskService.isCreater(task)) {
 			return BaseOutput.failure("不是本项目的创建者，不能进行编辑");
@@ -189,13 +199,13 @@ public class TaskController {
 			task.setPlanTime(planTime);
 			task.setStartDate(fmt.parse(startDateShow));
 			task.setEndDate(fmt.parse(endDateShow));
-			task.setFlow(flowSt.equals("0")?true:false);
-			
+			task.setFlow(flowSt.equals("0") ? true : false);
+
 		} catch (Exception e) {
 			return BaseOutput.failure("请正确填写工时");
 		}
 		taskService.updateSelective(task);
-		return BaseOutput.success("修改成功").setData(String.valueOf(task.getId()+":"+task.getName()));
+		return BaseOutput.success("修改成功").setData(String.valueOf(task.getId() + ":" + task.getName()));
 	}
 
 	@ApiOperation("删除Task")
@@ -211,7 +221,7 @@ public class TaskController {
 		}
 		messageService.deleteMessage(id, AlmConstants.MessageType.TASK.code);
 		taskService.delete(id);
-		return BaseOutput.success("删除成功").setData(String.valueOf(task.getId()+":"+task.getName()));
+		return BaseOutput.success("删除成功").setData(String.valueOf(task.getId() + ":" + task.getName()));
 	}
 
 	// 查询前置任务
@@ -338,80 +348,83 @@ public class TaskController {
 			String taskHourStr) {
 		short taskHour = 0;
 		short overHour = 0;
-		/*		    2018-1-8 优化:工时，加班工时可任意填写一个 */
+		/* 2018-1-8 优化:工时，加班工时可任意填写一个 */
 		try {
-			taskHour =  WebUtil.strIsEmpty(taskHourStr)?0:Short.parseShort(taskHourStr.trim());
+			taskHour = WebUtil.strIsEmpty(taskHourStr) ? 0 : Short.parseShort(taskHourStr.trim());
 		} catch (Exception e) {
 			return BaseOutput.failure("工时填写有误！");
 		}
 		try {
-			overHour =  WebUtil.strIsEmpty(overHourStr)?0:Short.parseShort(overHourStr.trim());
+			overHour = WebUtil.strIsEmpty(overHourStr) ? 0 : Short.parseShort(overHourStr.trim());
 		} catch (Exception e) {
 			return BaseOutput.failure("加班工时填写有误！");
 		}
-		if (taskHour==0&&overHour==0) {
+		if (taskHour == 0 && overHour == 0) {
 			return BaseOutput.failure("任务工时或者加班工时填必须填写其中一个！");
 		}
-		
-/*		if (taskHour <= 0) {
-			return BaseOutput.failure("工时必须大于0");
-		}*/
+
+		/*
+		 * if (taskHour <= 0) { return BaseOutput.failure("工时必须大于0"); }
+		 */
 
 		Task task = taskService.get(taskDetails.getTaskId());
-		//未超过8小时或者是项目经理  
-		if (taskService.isSetTask(task.getOwner(), taskHour)||taskService.isManager(task.getProjectId())) {
+		// 未超过8小时或者是项目经理
+		if (taskService.isSetTask(task.getOwner(), taskHour) || taskService.isManager(task.getProjectId())) {
 
 			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 
 			if (userTicket == null) {
 				return BaseOutput.failure("用户登录超时！");
 			}
-/*		    2018-1-8 优化:实际工时可以任意填写     */
- /*        int totail = Integer.parseInt(taskHourStr)+taskDetailsSelect.getTaskHour();
-  *        if (task.getPlanTime()<totail) {
-				
-				return BaseOutput.failure("已经超过计划工时！");
-			}*/
+			/* 2018-1-8 优化:实际工时可以任意填写 */
+			/*
+			 * int totail = Integer.parseInt(taskHourStr)+taskDetailsSelect.getTaskHour();
+			 * if (task.getPlanTime()<totail) {
+			 * 
+			 * return BaseOutput.failure("已经超过计划工时！"); }
+			 */
 			/* 基础信息设置 */
-			/*task.setModifyMemberId(userTicket.getId());*/
+			/* task.setModifyMemberId(userTicket.getId()); */
 			taskDetails.setTaskHour(taskHour);
 			taskDetails.setOverHour(overHour);
-			taskDetails.setCreateMemberId(userTicket.getId());//填写人
-			taskDetails.setCreated(new Date());//实际修改填写日期
-			if (taskDetails.getModified()==null||taskDetails.getModified().equals("")) {
+			taskDetails.setCreateMemberId(userTicket.getId());// 填写人
+			taskDetails.setCreated(new Date());// 实际修改填写日期
+			if (taskDetails.getModified() == null || taskDetails.getModified().equals("")) {
 				taskDetails.setModified(new Date());
-			}else{
-				taskDetails.setModified(taskDetails.getModified());//任务应该填写日期
+			} else {
+				taskDetails.setModified(taskDetails.getModified());// 任务应该填写日期
 			}
-			
-			taskDetails.setModifyMemberId(task.getOwner());//责任人
+
+			taskDetails.setModifyMemberId(task.getOwner());// 责任人
 			/* 基础信息设置 */
 			taskService.updateTaskDetail(taskDetails, task);// 保存任务
 
-			return BaseOutput.success("执行任务成功").setData(String.valueOf(task.getId()+":"+task.getName()+":执行工时"+taskDetails.getTaskHour()+":加班工时"+taskDetails.getOverHour()));
-			
-		}else if(taskHour==0&&overHour!=0){
-			
+			return BaseOutput.success("执行任务成功").setData(String.valueOf(task.getId() + ":" + task.getName() + ":执行工时"
+					+ taskDetails.getTaskHour() + ":加班工时" + taskDetails.getOverHour()));
+
+		} else if (taskHour == 0 && overHour != 0) {
+
 			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 
 			if (userTicket == null) {
 				return BaseOutput.failure("用户登录超时！");
 			}
-			
+
 			/* 基础信息设置 */
 			task.setModifyMemberId(userTicket.getId());
 			taskDetails.setTaskHour(taskHour);
-			taskDetails.setOverHour(overHour);//只写入加班工时
-			taskDetails.setCreateMemberId(userTicket.getId());//填写人
-			taskDetails.setCreated(new Date());//实际修改填写日期
-			taskDetails.setModified(taskDetails.getModified());//任务应该填写日期
-			taskDetails.setModifyMemberId(task.getOwner());//责任人
+			taskDetails.setOverHour(overHour);// 只写入加班工时
+			taskDetails.setCreateMemberId(userTicket.getId());// 填写人
+			taskDetails.setCreated(new Date());// 实际修改填写日期
+			taskDetails.setModified(taskDetails.getModified());// 任务应该填写日期
+			taskDetails.setModifyMemberId(task.getOwner());// 责任人
 			/* 基础信息设置 */
 			int i = taskService.updateTaskDetail(taskDetails, task);// 保存任务
-            if (i!=0) {
-            	return BaseOutput.success("执行任务成功").setData(String.valueOf(task.getId()+":"+task.getName()+":执行工时"+taskDetails.getTaskHour()+":加班工时"+taskDetails.getOverHour()));
+			if (i != 0) {
+				return BaseOutput.success("执行任务成功").setData(String.valueOf(task.getId() + ":" + task.getName() + ":执行工时"
+						+ taskDetails.getTaskHour() + ":加班工时" + taskDetails.getOverHour()));
 			}
-			
+
 		}
 
 		return BaseOutput.failure("今日工时已填写超过8小时！");
@@ -434,7 +447,7 @@ public class TaskController {
 			BaseOutput.failure("请勿重复添加数据");
 		}
 		taskService.update(task);
-		return BaseOutput.success("执行任务成功").setData(String.valueOf(task.getId()+":"+task.getName()));
+		return BaseOutput.success("执行任务成功").setData(String.valueOf(task.getId() + ":" + task.getName()));
 	}
 
 	// 暂停任务
@@ -452,10 +465,9 @@ public class TaskController {
 		task.setModified(new Date());
 		task.setModifyMemberId(userTicket.getId());
 		taskService.update(task);
-		return BaseOutput.success("暂停任务成功").setData(String.valueOf(task.getId()+":"+task.getName()));
+		return BaseOutput.success("暂停任务成功").setData(String.valueOf(task.getId() + ":" + task.getName()));
 	}
-	
-	
+
 	// 完成任务
 	@ApiOperation("完成任务")
 	@ApiImplicitParams({
@@ -472,13 +484,13 @@ public class TaskController {
 		task.setModifyMemberId(userTicket.getId());
 		task.setFactEndDate(new Date());
 		taskService.update(task);
-		
+
 		Project project = projectService.get(task.getProjectId());
 		project.setActualEndDate(new Date());
 		projectService.update(project);
-		return BaseOutput.success("更新状态为完成").setData(String.valueOf(task.getId()+":"+task.getName()));
+		return BaseOutput.success("更新状态为完成").setData(String.valueOf(task.getId() + ":" + task.getName()));
 	}
-	
+
 	// 是否已经执行过,一次加班工时，或一次任务工时
 	@ResponseBody
 	@RequestMapping(value = "/isTask.json", method = { RequestMethod.GET, RequestMethod.POST })
@@ -486,16 +498,16 @@ public class TaskController {
 		TaskDetails taskDetails = DTOUtils.newDTO(TaskDetails.class);
 		taskDetails.setTaskId(id);
 		List<TaskDetails> list = taskDetailsService.list(taskDetails);
-		
+
 		int taskHour = 0;
 		int overHour = 0;
-		
+
 		for (TaskDetails entity : list) {
 			taskHour += entity.getTaskHour();
 			overHour += entity.getOverHour();
 		}
-		/*		    2018-1-8 优化:工时，加班工时任意填写其中一项，即可更新状态为完成 */
-		if (taskHour>0||overHour>0) {
+		/* 2018-1-8 优化:工时，加班工时任意填写其中一项，即可更新状态为完成 */
+		if (taskHour > 0 || overHour > 0) {
 			return true;
 		}
 		return false;
@@ -511,7 +523,6 @@ public class TaskController {
 		return BaseOutput.success("测试未完成任务");
 	}
 
-	
 	// 判断是否是项时间
 	@ResponseBody
 	@RequestMapping(value = "/isProjectDate.json", method = { RequestMethod.GET, RequestMethod.POST })
@@ -526,35 +537,34 @@ public class TaskController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return taskService.validateBeginAndEnd(projectId,startDate,endDate);
-			 
-	}
-	
+		return taskService.validateBeginAndEnd(projectId, startDate, endDate);
 
-    @ApiOperation(value="查询TaskDetails", notes = "查询TaskDetails，返回列表信息")
-    @ApiImplicitParams({
-		@ApiImplicitParam(name="TaskDetails", paramType="form", value = "TaskDetails的form信息", required = false, dataType = "string")
-	})
-    @RequestMapping(value="/listTaskDetails", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody List<Map> list(TaskDetails taskDetails) {
-    	Map<Object, Object> metadata = new HashMap<>();
-    	
-    	List<TaskDetails> list = taskDetailsService.list(taskDetails);
-    	
+	}
+
+	@ApiOperation(value = "查询TaskDetails", notes = "查询TaskDetails，返回列表信息")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "TaskDetails", paramType = "form", value = "TaskDetails的form信息", required = false, dataType = "string") })
+	@RequestMapping(value = "/listTaskDetails", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody List<Map> list(TaskDetails taskDetails) {
+		Map<Object, Object> metadata = new HashMap<>();
+
+		List<TaskDetails> list = taskDetailsService.list(taskDetails);
+
 		JSONObject dateProvider = new JSONObject();
 		dateProvider.put("provider", "dateProvider");
 		metadata.put("created", dateProvider);
 		metadata.put("modified", dateProvider);
-		
+
 		try {
 			return ValueProviderUtils.buildDataByProvider(metadata, list);
 		} catch (Exception e) {
 			return null;
 		}
-    }
+	}
+
 	@ApiOperation("跳转到Task页面")
 	@RequestMapping(value = "/task/{id}", method = RequestMethod.GET)
-	public String task(@PathVariable("id") Long id,ModelMap modelMap) throws UnsupportedEncodingException {
+	public String task(@PathVariable("id") Long id, ModelMap modelMap) throws UnsupportedEncodingException {
 		modelMap.put("sessionID", SessionContext.getSessionContext().getUserTicket().getId());
 		modelMap.put("taskId", id);
 		return "task/index";

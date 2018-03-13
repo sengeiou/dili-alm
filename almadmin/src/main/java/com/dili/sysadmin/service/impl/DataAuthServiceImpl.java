@@ -170,8 +170,8 @@ public class DataAuthServiceImpl extends BaseServiceImpl<DataAuth, Long> impleme
 		map.put("type", dto.getType());
 		List<DataAuth> userDataAuths = this.dataAuthMapper.findByUserIdAndTypeAndDataId(map);
 		UserDataAuth userDataRecord = new UserDataAuth();
+		userDataRecord.setUserId(dto.getUserId());
 		if (CollectionUtils.isNotEmpty(userDataAuths)) {
-			userDataRecord.setUserId(dto.getUserId());
 			for (DataAuth dataAuth : userDataAuths) {
 				userDataRecord.setDataAuthId(dataAuth.getId());
 				this.userDataAuthMapper.delete(userDataRecord);
