@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.alm.dao.OnlineSystemMapper">
+  <resultMap id="BaseResultMap" type="com.dili.alm.domain.OnlineSystem">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="apply_id" jdbcType="BIGINT" property="applyId" />
+    <result column="git" jdbcType="VARCHAR" property="git" />
+    <result column="sql_file_id" jdbcType="BIGINT" property="sqlFileId" />
+    <result column="startup_script_file_id" jdbcType="BIGINT" property="startupScriptFileId" />
+    <result column="dependency_system" jdbcType="VARCHAR" property="dependencySystem" />
+    <result column="other_description" jdbcType="VARCHAR" property="otherDescription" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, apply_id, git, sql_file_id, startup_script_file_id, dependency_system, other_description
+  </sql>
+  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from online_system
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <update id="updateBy" parameterType="com.dili.alm.domain.OnlineSystem">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update online_system
+    <set>
+      <if test="applyId != null">
+        apply_id = #{applyId,jdbcType=BIGINT},
+      </if>
+      <if test="git != null">
+        git = #{git,jdbcType=VARCHAR},
+      </if>
+      <if test="sqlFileId != null">
+        sql_file_id = #{sqlFileId,jdbcType=BIGINT},
+      </if>
+      <if test="startupScriptFileId != null">
+        startup_script_file_id = #{startupScriptFileId,jdbcType=BIGINT},
+      </if>
+      <if test="dependencySystem != null">
+        dependency_system = #{dependencySystem,jdbcType=VARCHAR},
+      </if>
+      <if test="otherDescription != null">
+        other_description = #{otherDescription,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

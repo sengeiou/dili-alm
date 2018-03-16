@@ -1,0 +1,372 @@
+
+<#body>
+<div class="easyui-layout" fit="true">
+	<!-- ====================================================================================================================== -->
+	<!-- 上方布局 -->
+	<!-- ====================================================================================================================== -->
+	<div region="north" height="auto" align="center">
+		<!-- =========================================================表单========================================================= -->
+		<div class="easyui-panel" style="width: 100%;" align="left">
+			<form id="form" class="easyui-form" method="post" fit="true">
+				<table style="padding: 10px;">
+					<tr>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="projectName" id="projectName" style="width: 100%"
+							data-options="label:'项目名称:', validType:'length[0,255]'" /></td>
+						<td style="padding: 5px;"><input class="easyui-numberbox" name="projectId" id="projectId" style="width: 100%"
+							data-options="label:'项目id:', validType:'length[0,19]'" /></td>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="projectSerialNumber" id="projectSerialNumber" style="width: 100%"
+							data-options="label:'项目编号:', validType:'length[0,255]'" /></td>
+						<td style="padding: 5px;"><input class="easyui-numberbox" name="versionId" id="versionId" style="width: 100%"
+							data-options="label:'项目版本id:', validType:'length[0,19]'" /></td>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="version" id="version" style="width: 100%"
+							data-options="label:'版本名称:', validType:'length[0,255]'" /></td>
+					</tr>
+					<tr>
+						<td style="padding: 5px;"><input class="easyui-numberbox" name="projectManagerId" id="projectManagerId" style="width: 100%"
+							data-options="label:'项目经理id:', validType:'length[0,19]'" /></td>
+						<td style="padding: 5px;"><input class="easyui-numberbox" name="productManagerId" id="productManagerId" style="width: 100%"
+							data-options="label:'产品经理id:', validType:'length[0,19]'" /></td>
+						<td style="padding: 5px;"><input class="easyui-numberbox" name="testManagerId" id="testManagerId" style="width: 100%"
+							data-options="label:'测试经理id:', validType:'length[0,19]'" /></td>
+						<td style="padding: 5px;"><input class="easyui-numberbox" name="developmentManagerId" id="developmentManagerId"
+							style="width: 100%" data-options="label:'研发经理id:', validType:'length[0,19]'" /></td>
+						<td style="padding: 5px;"><input class="easyui-datetimebox" name="onlineDate" id="onlineDate" style="width: 100%"
+							data-options="label:'申请上线日期:'" /></td>
+					</tr>
+					<tr>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="dependencyDescription" id="dependencyDescription"
+							style="width: 100%" data-options="label:'上线子系统及依赖关系描述:', validType:'length[0,500]'" /></td>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="scopeDescription" id="scopeDescription" style="width: 100%"
+							data-options="label:'上线影响范围描述:', validType:'length[0,500]'" /></td>
+						<td style="padding: 5px;"><input class="easyui-numberbox" name="applicantId" id="applicantId" style="width: 100%"
+							data-options="label:'申请人id:', validType:'length[0,19]'" /></td>
+						<td style="padding: 5px;"><input class="easyui-datetimebox" name="created" id="created" style="width: 100%"
+							data-options="label:'创建时间:'" /></td>
+						<td style="padding: 5px;"><input class="easyui-numberbox" name="applyState" id="applyState" style="width: 100%"
+							data-options="label:'状态:', validType:'length[0,10]'" /></td>
+					</tr>
+					<tr>
+						<td style="padding: 5px;"><input class="easyui-datetimebox" name="actualOnlineDate" id="actualOnlineDate" style="width: 100%"
+							data-options="label:'实际上线日期:'" /></td>
+					</tr>
+					<tr>
+						<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid()">查询</a> <a
+							href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">清除</a></td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>
+	<!-- ====================================================================================================================== -->
+	<!-- 中央布局 -->
+	<!-- ====================================================================================================================== -->
+	<!-- 表格 -->
+	<div region="center" style="width: 100%;" height="auto">
+		<!-- =========================================================表格========================================================= -->
+		<table class="easyui-datagrid" title="ProjectOnlineApply列表" id="grid" fitColumns="true" pagination="true" pageSize="30" pageNumber="1"
+			pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
+			sortName="projectName" align="center" fit="true" striped="true" toolbar="#toolbar" idField="id"
+			data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
+			<thead>
+				<tr>
+					<th data-options="field:'projectName',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目名称</th>
+					<th data-options="field:'projectSerialNumber',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						项目编号</th>
+					<th data-options="field:'version',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">版本名称</th>
+					<th
+						data-options="field:'projectManagerId', _provider='memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目经理</th>
+					<th
+						data-options="field:'productManagerId', _provider='memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						产品经理</th>
+					<th data-options="field:'testManagerId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">测试经理id</th>
+					<th data-options="field:'developmentManagerId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						研发经理id</th>
+					<th
+						data-options="field:'onlineDate',  _provider:'almDateProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						上线日期</th>
+					<th
+						data-options="field:'applicantId', _provider='memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">申请人</th>
+					<th
+						data-options="field:'created',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						创建时间</th>
+					<th data-options="field:'applyState',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">状态</th>
+					<th
+						data-options="field:'actualOnlineDate',  _provider:'almDateProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						实际上线日期</th>
+				</tr>
+			</thead>
+		</table>
+		<!-- datagrid工具栏 -->
+		<div id="toolbar" style="padding: 2px 5px;">
+			<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true"></a> <a href="#" class="easyui-linkbutton"
+				iconCls="icon-edit" onclick="openUpdate()" plain="true"></a> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()"
+				plain="true"></a> <a href="#" class="easyui-linkbutton" iconCls="icon-export" onclick="doExport('grid')" plain="true"></a>
+			<div style="float: right">
+				边框显示:<select onchange="changeBorder('grid',this.value)">
+					<option value="lines-both">全边框</option>
+					<option value="lines-no">无边框</option>
+					<option value="lines-right">右边框</option>
+					<option value="lines-bottom">下边框</option>
+				</select> 行条纹:<input type="checkbox" checked="checked" onclick="$('#grid').datagrid({striped:$(this).is(':checked')})">
+			</div>
+		</div>
+	</div>
+</div>
+<!-- 隐藏编辑框 -->
+<div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="ProjectOnlineApply信息"
+	style="padding: 20px" modal="true" border="thin" closed="true"
+	data-options="
+				iconCls: 'icon-save',
+				height: 480,
+				buttons: [{
+					text:'Ok',
+					iconCls:'icon-ok',
+					handler:saveOrUpdate
+				},{
+					text:'取消',
+					handler:function(){
+						$('#dlg').dialog('close');
+					}
+				}]
+			">
+	<form id="_form" class="easyui-form" method="post" fit="true">
+		<input name="_id" id="_id" type="hidden">
+		<table width="360px">
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-textbox" name="_projectName" id="_projectName" style="width: 100%"
+					data-options="label:'项目名称:', validType:'length[0,255]'" required="true" /></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-numberbox" name="_projectId" id="_projectId" style="width: 100%"
+					data-options="label:'项目id:'" required="true" /></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-textbox" name="_projectSerialNumber" id="_projectSerialNumber" style="width: 100%"
+					data-options="label:'项目编号:', validType:'length[0,255]'" required="true" /></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-numberbox" name="_versionId" id="_versionId" style="width: 100%"
+					data-options="label:'项目版本id:'" required="true" /></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-textbox" name="_version" id="_version" style="width: 100%"
+					data-options="label:'版本名称:', validType:'length[0,255]'" required="true" /></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-numberbox" name="_projectManagerId" id="_projectManagerId" style="width: 100%"
+					data-options="label:'项目经理id:'" required="true" /></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-numberbox" name="_productManagerId" id="_productManagerId" style="width: 100%"
+					data-options="label:'产品经理id:'" required="true" /></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-numberbox" name="_testManagerId" id="_testManagerId" style="width: 100%"
+					data-options="label:'测试经理id:'" required="true" /></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-numberbox" name="_developmentManagerId" id="_developmentManagerId"
+					style="width: 100%" data-options="label:'研发经理id:'" required="true" /></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-datetimebox" name="_onlineDate" id="_onlineDate" style="width: 100%"
+					data-options="label:'申请上线日期:'" required="true" /></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-textbox" name="_dependencyDescription" id="_dependencyDescription"
+					style="width: 100%" data-options="label:'上线子系统及依赖关系描述:', validType:'length[0,500]'" /></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-textbox" name="_scopeDescription" id="_scopeDescription" style="width: 100%"
+					data-options="label:'上线影响范围描述:', validType:'length[0,500]'" /></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-numberbox" name="_applicantId" id="_applicantId" style="width: 100%"
+					data-options="label:'申请人id:'" required="true" /></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-datetimebox" name="_created" id="_created" style="width: 100%"
+					data-options="label:'创建时间:'" required="true" /></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-numberbox" name="_applyState" id="_applyState" style="width: 100%"
+					data-options="label:'状态:'" required="true" /></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-datetimebox" name="_actualOnlineDate" id="_actualOnlineDate" style="width: 100%"
+					data-options="label:'实际上线日期:'" /></td>
+			</tr>
+		</table>
+	</form>
+
+</div>
+<!-- ====================================================================================================================== --> <!-- style & script 分隔线 -->
+<!-- ====================================================================================================================== --> <script
+	type="text/javascript">
+	//打开新增窗口
+	function openInsert() {
+		$('#dlg').dialog('open');
+		$('#dlg').dialog('center');
+		$('#_form').form('clear');
+		formFocus("_form", "_projectName");
+	}
+
+	//打开修改窗口
+	function openUpdate() {
+		var selected = $("#grid").datagrid("getSelected");
+		if (null == selected) {
+			$.messager.alert('警告', '请选中一条数据');
+			return;
+		}
+		$('#dlg').dialog('open');
+		$('#dlg').dialog('center');
+		formFocus("_form", "_projectName");
+		var formData = $.extend({}, selected);
+		formData = addKeyStartWith(getOriginalData(formData), "_");
+		$('#_form').form('load', formData);
+	}
+
+	function saveOrUpdate() {
+		if (!$('#_form').form("validate")) {
+			return;
+		}
+		var _formData = removeKeyStartWith($("#_form").serializeObject(), "_");
+		var _url = null;
+		//没有id就新增
+		if (_formData.id == null || _formData.id == "") {
+			_url = "${contextPath}/projectOnlineApply/insert";
+		} else {//有id就修改
+			_url = "${contextPath}/projectOnlineApply/update";
+		}
+		$.ajax({
+			type : "POST",
+			url : _url,
+			data : _formData,
+			processData : true,
+			dataType : "json",
+			async : true,
+			success : function(data) {
+				if (data.code == "200") {
+					$("#grid").datagrid("reload");
+					$('#dlg').dialog('close');
+				} else {
+					$.messager.alert('错误', data.result);
+				}
+			},
+			error : function() {
+				$.messager.alert('错误', '远程访问失败');
+			}
+		});
+	}
+
+	//根据主键删除
+	function del() {
+		var selected = $("#grid").datagrid("getSelected");
+		if (null == selected) {
+			$.messager.alert('警告', '请选中一条数据');
+			return;
+		}
+		$.messager.confirm('确认', '您确认想要删除记录吗？', function(r) {
+			if (r) {
+				$.ajax({
+					type : "POST",
+					url : "${contextPath}/projectOnlineApply/delete",
+					data : {
+						id : selected.id
+					},
+					processData : true,
+					dataType : "json",
+					async : true,
+					success : function(data) {
+						if (data.code == "200") {
+							$("#grid").datagrid("reload");
+							$('#dlg').dialog('close');
+						} else {
+							$.messager.alert('错误', data.result);
+						}
+					},
+					error : function() {
+						$.messager.alert('错误', '远程访问失败');
+					}
+				});
+			}
+		});
+
+	}
+	//表格查询
+	function queryGrid() {
+		var opts = $("#grid").datagrid("options");
+		if (null == opts.url || "" == opts.url) {
+			opts.url = "${contextPath}/projectOnlineApply/listPage";
+		}
+		if (!$('#form').form("validate")) {
+			return;
+		}
+		var param = bindMetadata("grid", true);
+		var formData = $("#form").serializeObject();
+		$.extend(param, formData);
+		$("#grid").datagrid("load", param);
+	}
+
+	//清空表单
+	function clearForm() {
+		$('#form').form('clear');
+	}
+
+	//表格表头右键菜单
+	function headerContextMenu(e, field) {
+		e.preventDefault();
+		if (!cmenu) {
+			createColumnMenu("grid");
+		}
+		cmenu.menu('show', {
+			left : e.pageX,
+			top : e.pageY
+		});
+	}
+
+	$.messager.progress({
+		title : "提示",
+		msg : "加载中,请稍候...",
+		value : '10',
+		text : '{value}%',
+		interval : 200
+	});
+	$.parser.onComplete = function() {
+		$.messager.progress("close");
+	}
+	//全局按键事件
+	function getKey(e) {
+		e = e || window.event;
+		var keycode = e.which ? e.which : e.keyCode;
+		if (keycode == 46) { //如果按下删除键
+			var selected = $("#grid").datagrid("getSelected");
+			if (selected && selected != null) {
+				del();
+			}
+		}
+	}
+
+	/**
+	 * 绑定页面回车事件，以及初始化页面时的光标定位
+	 * @formId
+	 *          表单ID
+	 * @elementName
+	 *          光标定位在指点表单元素的name属性的值
+	 * @submitFun
+	 *          表单提交需执行的任务
+	 */
+	$(function() {
+		bindFormEvent("form", "projectName", queryGrid);
+		bindFormEvent("_form", "_projectName", saveOrUpdate, function() {
+			$('#dlg').dialog('close');
+		});
+		if (document.addEventListener) {
+			document.addEventListener("keyup", getKey, false);
+		} else if (document.attachEvent) {
+			document.attachEvent("onkeyup", getKey);
+		} else {
+			document.onkeyup = getKey;
+		}
+	})
+</script> </#body>
