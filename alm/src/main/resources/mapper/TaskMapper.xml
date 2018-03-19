@@ -329,6 +329,7 @@
     (select tt.id from task as tt where tt.owner = #{selectOwner,jdbcType=BIGINT}) and td.created like CONCAT("%",#{selectDate,jdbcType=VARCHAR},"%") 
    </select>
    
+
    <!-- 数据统计相关 begin -->
    <!-- 首页饼图 -->
    <select id="selectTaskHourByUser" resultType="com.dili.alm.domain.TaskByUsersDto">
@@ -346,4 +347,14 @@
 	GROUP BY ut.id ;
    </select>
    <!-- 数据统计相关 end  -->
+
+   
+   <select  id="selectTaskStateCount"  resultType="com.dili.alm.domain.dto.TaskStateCountDto" >
+    select d.`code` as taskState,count(*) as stateCount from alm.task as t LEFT JOIN alm.data_dictionary_value as d ON t.`status` = d.`value`  where d.dd_id =16 and t.project_id in 
+  	<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+  		#{item}  
+ 	</foreach> 
+ 	GROUP BY t.`status`
+ 	</select>
+
 </mapper>

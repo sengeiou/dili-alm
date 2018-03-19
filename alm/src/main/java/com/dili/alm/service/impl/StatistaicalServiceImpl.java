@@ -45,6 +45,7 @@ import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectDto;
 import com.dili.alm.domain.dto.ProjectStatusCountDto;
 import com.dili.alm.domain.dto.ProjectTypeCountDTO;
+import com.dili.alm.domain.dto.TaskStateCountDto;
 import com.dili.alm.domain.dto.UploadProjectFileDto;
 import com.dili.alm.exceptions.ProjectException;
 import com.dili.alm.provider.ProjectProvider;
@@ -70,6 +71,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	
 	@Autowired 
 	ProjectMapper projectMapper;
+
 	@Autowired 
 	TaskMapper taskMapper;
 	
@@ -119,8 +121,17 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		return null;
 
 	}
-	/***查询工时相关services****by******JING***BEGIN****/
 	
+	@Override
+	public List<TaskStateCountDto> getProjectToTaskCount(String startTime,
+			String endTime) {
+		List<Long> projectIds = projectMapper.getProjectIds(startTime, endTime);
+		return taskMapper.selectTaskStateCount(projectIds);
+	}
+
+	
+	/***查询工时相关services****by******JING***BEGIN****/
+
 	@Override
 	public List<TaskByUsersDto> listTaskHoursByUser(String startTime,
 			String endTime, Long userId, Long departmentId) {

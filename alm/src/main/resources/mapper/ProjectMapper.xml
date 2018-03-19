@@ -184,4 +184,17 @@
 
 
 	</select>
+	
+	<select id="getProjectIds" resultType="java.lang.Long">
+		SELECT id
+		FROM `project` 
+		WHERE 
+		(
+			(#{startTime}&lt;=start_date AND start_date&lt;=#{endTime})
+			OR
+			(#{endTime}&lt;=end_date OR 
+				(#{startTime}&lt;=end_date AND end_date&lt;=#{endTime})
+			)
+		) 
+	</select>
 </mapper>
