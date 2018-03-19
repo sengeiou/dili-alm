@@ -30,6 +30,7 @@ import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.dao.TeamMapper;
 import com.dili.alm.domain.Files;
+import com.dili.alm.domain.Log;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectEntity;
 import com.dili.alm.domain.ProjectPhase;
@@ -52,6 +53,7 @@ import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.StatisticalService;
 import com.dili.alm.service.TeamService;
+import com.dili.alm.utils.WebUtil;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
@@ -73,26 +75,46 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	
 	private static final String PROJECT_TYPE_CODE = "project_type";
 	
+	private static final String PROJECT_STATE_CODE = "project_state";
+	
 	@Override
-	public Map<String,ProjectTypeCountDTO> getProjectTypeCountDTO(String startTime,String endTime) {
-		Map<String,ProjectTypeCountDTO> map=new HashMap<String, ProjectTypeCountDTO>();
+	public EasyuiPageOutput getProjectTypeCountDTO(String startTime,String endTime) {	
+		List<ProjectTypeCountDTO> list=new ArrayList<ProjectTypeCountDTO>();
 		DataDictionaryDto dto = this.dataDictionaryService.findByCode(PROJECT_TYPE_CODE);
 		if (dto != null) {
-			List<DataDictionaryValueDto> list = dto.getValues();
-			for (DataDictionaryValueDto dataDictionaryValueDto : list) {
+			List<DataDictionaryValueDto> ddvdList = dto.getValues();
+			for (DataDictionaryValueDto dataDictionaryValueDto : ddvdList) {
 				ProjectTypeCountDTO ptc=new ProjectTypeCountDTO();
+				ptc.setType(dataDictionaryValueDto.getCode());
 				List<ProjectStatusCountDto> statusCount = projectMapper.getTpyeByProjectCount(dataDictionaryValueDto.getValue(), startTime, endTime);
-				ptc.setStatusCount(statusCount);
 				int total=0;
 				for (ProjectStatusCountDto projectStatusCountDto : statusCount) {
 					total=total+projectStatusCountDto.getStateCount();
+					switch (projectStatusCountDto.getProjectState()) {
+						case 0:
+							ptc.setNotStartCount(projectStatusCountDto.getStateCount());
+							break;
+						case 1:
+							ptc.setOngoingConut(projectStatusCountDto.getStateCount());
+							break;
+						case 2:
+							ptc.setCompleteCount(projectStatusCountDto.getStateCount());
+							break;
+						case 3:
+							ptc.setSuspendedCount(projectStatusCountDto.getStateCount());
+							break;
+						case 4:
+							ptc.setShutCount(projectStatusCountDto.getStateCount());
+							break;
+					}
 				}
 				ptc.setTypeCount(total);
-				map.put(dataDictionaryValueDto.getValue(), ptc);
+				list.add(ptc);
 			}
+			return new EasyuiPageOutput(ddvdList.size(), list);
 		}
-		
-		return map;
+		return null;
+
 	}
 	
 	

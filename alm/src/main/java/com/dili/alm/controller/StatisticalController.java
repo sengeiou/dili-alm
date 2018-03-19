@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.domain.Files;
+import com.dili.alm.domain.Log;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.User;
@@ -14,7 +15,10 @@ import com.dili.alm.exceptions.ProjectException;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.ProjectService;
+import com.dili.alm.service.StatisticalService;
 import com.dili.alm.service.TeamService;
+import com.dili.alm.utils.DateUtil;
+import com.dili.alm.utils.WebUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
@@ -39,6 +43,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import tk.mybatis.mapper.entity.Example;
 
 import java.net.URLDecoder;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +56,8 @@ import java.util.Map;
 @Controller
 @RequestMapping("/statistical")
 public class StatisticalController {
+	@Autowired
+	private StatisticalService statisticalService;
 	
 	@ApiOperation("跳转到projectOverview页面")
 	@RequestMapping(value = "/projectOverview", method = RequestMethod.GET)
@@ -69,4 +76,28 @@ public class StatisticalController {
 	public String projectType(ModelMap modelMap) {
 		return "statistical/projectType";
 	}
+	
+	
+	
+	
+	
+	@ApiOperation(value="查询项目", notes = "查询返回easyui信息")
+    @RequestMapping(value="/ProjectOverviewlist", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody String ProjectOverviewlist(String startTime,String endTime,Integer flat) throws Exception {
+		if(flat!=null){
+			startTime = DateUtil.getPastDate(flat);
+			endTime = DateUtil.getToDay();
+		}else{
+			if(WebUtil.strIsEmpty(startTime)&&WebUtil.strIsEmpty(endTime)){
+				startTime = DateUtil.getPastDate(7);
+				endTime = DateUtil.getToDay();
+			}else if(!WebUtil.strIsEmpty(startTime)&&WebUtil.strIsEmpty(endTime)){
+				endTime =DateUtil.getFutureDate(30);
+			}else if(WebUtil.strIsEmpty(startTime)&&(!WebUtil.strIsEmpty(endTime))){
+				startTime =DateUtil.getFutureDate(30);
+			}
+		}
+		return statisticalService.getProjectTypeCountDTO(startTime, endTime).toString();
+   
+    }
 }

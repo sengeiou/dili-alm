@@ -19,7 +19,7 @@ import com.dili.ss.domain.EasyuiPageOutput;
 
 public interface StatisticalService {
 
-	Map<String,ProjectTypeCountDTO> getProjectTypeCountDTO(String startTime,
+	EasyuiPageOutput getProjectTypeCountDTO(String startTime,
 			String endTime);
 	
 }
