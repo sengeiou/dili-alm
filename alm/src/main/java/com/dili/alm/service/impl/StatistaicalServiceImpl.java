@@ -41,6 +41,8 @@ import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectDto;
+import com.dili.alm.domain.dto.ProjectStatusCountDto;
+import com.dili.alm.domain.dto.ProjectTypeCountDTO;
 import com.dili.alm.domain.dto.UploadProjectFileDto;
 import com.dili.alm.exceptions.ProjectException;
 import com.dili.alm.provider.ProjectProvider;
@@ -61,6 +63,38 @@ import com.dili.sysadmin.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
 
 @Service
-public class StatistaicalServiceImpl extends BaseServiceImpl<Project, Long> implements StatisticalService {
+public class StatistaicalServiceImpl implements StatisticalService {
 	
+	@Autowired 
+	ProjectMapper projectMapper;
+	
+	@Autowired
+	DataDictionaryService dataDictionaryService;
+	
+	private static final String PROJECT_TYPE_CODE = "project_type";
+	
+	@Override
+	public Map<String,ProjectTypeCountDTO> getProjectTypeCountDTO(String startTime,String endTime) {
+		Map<String,ProjectTypeCountDTO> map=new HashMap<String, ProjectTypeCountDTO>();
+		DataDictionaryDto dto = this.dataDictionaryService.findByCode(PROJECT_TYPE_CODE);
+		if (dto != null) {
+			List<DataDictionaryValueDto> list = dto.getValues();
+			for (DataDictionaryValueDto dataDictionaryValueDto : list) {
+				ProjectTypeCountDTO ptc=new ProjectTypeCountDTO();
+				List<ProjectStatusCountDto> statusCount = projectMapper.getTpyeByProjectCount(dataDictionaryValueDto.getValue(), startTime, endTime);
+				ptc.setStatusCount(statusCount);
+				int total=0;
+				for (ProjectStatusCountDto projectStatusCountDto : statusCount) {
+					total=total+projectStatusCountDto.getStateCount();
+				}
+				ptc.setTypeCount(total);
+				map.put(dataDictionaryValueDto.getValue(), ptc);
+			}
+		}
+		
+		return map;
+	}
+	
+	
+
 }
