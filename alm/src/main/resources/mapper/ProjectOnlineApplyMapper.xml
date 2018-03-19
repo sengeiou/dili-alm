@@ -22,6 +22,7 @@
     <result column="created" jdbcType="TIMESTAMP" property="created" />
     <result column="apply_state" jdbcType="INTEGER" property="applyState" />
     <result column="actual_online_date" jdbcType="TIMESTAMP" property="actualOnlineDate" />
+    <result column="submit_time" jdbcType="TIMESTAMP" property="submitTime" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
@@ -29,7 +30,7 @@
     -->
     id, project_name, project_id, project_serial_number, version_id, version, project_manager_id, 
     product_manager_id, test_manager_id, development_manager_id, online_date, dependency_description, 
-    scope_description, applicant_id, created, apply_state, actual_online_date
+    scope_description, applicant_id, created, apply_state, actual_online_date, submit_time
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -93,6 +94,9 @@
       </if>
       <if test="actualOnlineDate != null">
         actual_online_date = #{actualOnlineDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="submitTime != null">
+        submit_time = #{submitTime,jdbcType=TIMESTAMP},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

@@ -14,7 +14,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2018-03-16 11:49:48.
+ * This file was generated on 2018-03-19 16:36:42.
  */
 @Table(name = "`project_online_apply`")
 public interface ProjectOnlineApply extends IBaseDomain {
@@ -138,4 +138,11 @@ public interface ProjectOnlineApply extends IBaseDomain {
     Date getActualOnlineDate();
 
     void setActualOnlineDate(Date actualOnlineDate);
+
+    @Column(name = "`submit_time`")
+    @FieldDef(label="申请提交日期")
+    @EditMode(editor = FieldEditor.Datetime, required = false)
+    Date getSubmitTime();
+
+    void setSubmitTime(Date submitTime);
 }

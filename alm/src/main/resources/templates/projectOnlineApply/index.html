@@ -12,42 +12,14 @@
 					<tr>
 						<td style="padding: 5px;"><input class="easyui-textbox" name="projectName" id="projectName" style="width: 100%"
 							data-options="label:'项目名称:', validType:'length[0,255]'" /></td>
-						<td style="padding: 5px;"><input class="easyui-numberbox" name="projectId" id="projectId" style="width: 100%"
-							data-options="label:'项目id:', validType:'length[0,19]'" /></td>
-						<td style="padding: 5px;"><input class="easyui-textbox" name="projectSerialNumber" id="projectSerialNumber" style="width: 100%"
-							data-options="label:'项目编号:', validType:'length[0,255]'" /></td>
-						<td style="padding: 5px;"><input class="easyui-numberbox" name="versionId" id="versionId" style="width: 100%"
-							data-options="label:'项目版本id:', validType:'length[0,19]'" /></td>
-						<td style="padding: 5px;"><input class="easyui-textbox" name="version" id="version" style="width: 100%"
-							data-options="label:'版本名称:', validType:'length[0,255]'" /></td>
 					</tr>
 					<tr>
-						<td style="padding: 5px;"><input class="easyui-numberbox" name="projectManagerId" id="projectManagerId" style="width: 100%"
-							data-options="label:'项目经理id:', validType:'length[0,19]'" /></td>
-						<td style="padding: 5px;"><input class="easyui-numberbox" name="productManagerId" id="productManagerId" style="width: 100%"
-							data-options="label:'产品经理id:', validType:'length[0,19]'" /></td>
-						<td style="padding: 5px;"><input class="easyui-numberbox" name="testManagerId" id="testManagerId" style="width: 100%"
-							data-options="label:'测试经理id:', validType:'length[0,19]'" /></td>
-						<td style="padding: 5px;"><input class="easyui-numberbox" name="developmentManagerId" id="developmentManagerId"
-							style="width: 100%" data-options="label:'研发经理id:', validType:'length[0,19]'" /></td>
-						<td style="padding: 5px;"><input class="easyui-datetimebox" name="onlineDate" id="onlineDate" style="width: 100%"
-							data-options="label:'申请上线日期:'" /></td>
-					</tr>
-					<tr>
-						<td style="padding: 5px;"><input class="easyui-textbox" name="dependencyDescription" id="dependencyDescription"
-							style="width: 100%" data-options="label:'上线子系统及依赖关系描述:', validType:'length[0,500]'" /></td>
-						<td style="padding: 5px;"><input class="easyui-textbox" name="scopeDescription" id="scopeDescription" style="width: 100%"
-							data-options="label:'上线影响范围描述:', validType:'length[0,500]'" /></td>
 						<td style="padding: 5px;"><input class="easyui-numberbox" name="applicantId" id="applicantId" style="width: 100%"
 							data-options="label:'申请人id:', validType:'length[0,19]'" /></td>
 						<td style="padding: 5px;"><input class="easyui-datetimebox" name="created" id="created" style="width: 100%"
 							data-options="label:'创建时间:'" /></td>
 						<td style="padding: 5px;"><input class="easyui-numberbox" name="applyState" id="applyState" style="width: 100%"
 							data-options="label:'状态:', validType:'length[0,10]'" /></td>
-					</tr>
-					<tr>
-						<td style="padding: 5px;"><input class="easyui-datetimebox" name="actualOnlineDate" id="actualOnlineDate" style="width: 100%"
-							data-options="label:'实际上线日期:'" /></td>
 					</tr>
 					<tr>
 						<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid()">查询</a> <a
@@ -69,27 +41,18 @@
 			data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
 			<thead>
 				<tr>
-					<th data-options="field:'projectName',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目名称</th>
 					<th data-options="field:'projectSerialNumber',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
 						项目编号</th>
+					<th data-options="field:'projectName',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目名称</th>
 					<th data-options="field:'version',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">版本名称</th>
 					<th
-						data-options="field:'projectManagerId', _provider='memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目经理</th>
-					<th
-						data-options="field:'productManagerId', _provider='memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-						产品经理</th>
-					<th data-options="field:'testManagerId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">测试经理id</th>
-					<th data-options="field:'developmentManagerId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-						研发经理id</th>
-					<th
 						data-options="field:'onlineDate',  _provider:'almDateProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-						上线日期</th>
+						申请上线日期</th>
 					<th
-						data-options="field:'applicantId', _provider='memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">申请人</th>
+						data-options="field:'applicantId', _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">申请人id</th>
 					<th
 						data-options="field:'created',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-						创建时间</th>
-					<th data-options="field:'applyState',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">状态</th>
+						状态</th>
 					<th
 						data-options="field:'actualOnlineDate',  _provider:'almDateProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
 						实际上线日期</th>
@@ -133,68 +96,36 @@
 		<input name="_id" id="_id" type="hidden">
 		<table width="360px">
 			<tr>
-				<td style="padding: 5px;"><input class="easyui-textbox" name="_projectName" id="_projectName" style="width: 100%"
-					data-options="label:'项目名称:', validType:'length[0,255]'" required="true" /></td>
-			</tr>
-			<tr>
-				<td style="padding: 5px;"><input class="easyui-numberbox" name="_projectId" id="_projectId" style="width: 100%"
-					data-options="label:'项目id:'" required="true" /></td>
-			</tr>
-			<tr>
 				<td style="padding: 5px;"><input class="easyui-textbox" name="_projectSerialNumber" id="_projectSerialNumber" style="width: 100%"
 					data-options="label:'项目编号:', validType:'length[0,255]'" required="true" /></td>
 			</tr>
 			<tr>
-				<td style="padding: 5px;"><input class="easyui-numberbox" name="_versionId" id="_versionId" style="width: 100%"
-					data-options="label:'项目版本id:'" required="true" /></td>
+				<td style="padding: 5px;"><input class="easyui-textbox" name="_projectName" id="_projectName" style="width: 100%"
+					data-options="label:'项目名称:', validType:'length[0,255]'" required="true" /></td>
 			</tr>
 			<tr>
 				<td style="padding: 5px;"><input class="easyui-textbox" name="_version" id="_version" style="width: 100%"
 					data-options="label:'版本名称:', validType:'length[0,255]'" required="true" /></td>
 			</tr>
 			<tr>
-				<td style="padding: 5px;"><input class="easyui-numberbox" name="_projectManagerId" id="_projectManagerId" style="width: 100%"
-					data-options="label:'项目经理id:'" required="true" /></td>
-			</tr>
-			<tr>
-				<td style="padding: 5px;"><input class="easyui-numberbox" name="_productManagerId" id="_productManagerId" style="width: 100%"
-					data-options="label:'产品经理id:'" required="true" /></td>
-			</tr>
-			<tr>
-				<td style="padding: 5px;"><input class="easyui-numberbox" name="_testManagerId" id="_testManagerId" style="width: 100%"
-					data-options="label:'测试经理id:'" required="true" /></td>
-			</tr>
-			<tr>
-				<td style="padding: 5px;"><input class="easyui-numberbox" name="_developmentManagerId" id="_developmentManagerId"
-					style="width: 100%" data-options="label:'研发经理id:'" required="true" /></td>
-			</tr>
-			<tr>
 				<td style="padding: 5px;"><input class="easyui-datetimebox" name="_onlineDate" id="_onlineDate" style="width: 100%"
 					data-options="label:'申请上线日期:'" required="true" /></td>
 			</tr>
 			<tr>
-				<td style="padding: 5px;"><input class="easyui-textbox" name="_dependencyDescription" id="_dependencyDescription"
-					style="width: 100%" data-options="label:'上线子系统及依赖关系描述:', validType:'length[0,500]'" /></td>
-			</tr>
-			<tr>
-				<td style="padding: 5px;"><input class="easyui-textbox" name="_scopeDescription" id="_scopeDescription" style="width: 100%"
-					data-options="label:'上线影响范围描述:', validType:'length[0,500]'" /></td>
+				<td style="padding: 5px;"><input class="easyui-datetimebox" name="_actualOnlineDate" id="_actualOnlineDate" style="width: 100%"
+					data-options="label:'实际上线日期:'" /></td>
 			</tr>
 			<tr>
 				<td style="padding: 5px;"><input class="easyui-numberbox" name="_applicantId" id="_applicantId" style="width: 100%"
 					data-options="label:'申请人id:'" required="true" /></td>
 			</tr>
 			<tr>
-				<td style="padding: 5px;"><input class="easyui-datetimebox" name="_created" id="_created" style="width: 100%"
-					data-options="label:'创建时间:'" required="true" /></td>
-			</tr>
-			<tr>
 				<td style="padding: 5px;"><input class="easyui-numberbox" name="_applyState" id="_applyState" style="width: 100%"
 					data-options="label:'状态:'" required="true" /></td>
 			</tr>
 			<tr>
-				<td style="padding: 5px;"><input class="easyui-datetimebox" name="_actualOnlineDate" id="_actualOnlineDate" style="width: 100%"
-					data-options="label:'实际上线日期:'" /></td>
+				<td style="padding: 5px;"><input class="easyui-datetimebox" name="_submitTime" id="_submit" style="width: 100%"
+					data-options="label:'申请时间:'" required="true" /></td>
 			</tr>
 		</table>
 	</form>
@@ -368,5 +299,6 @@
 		} else {
 			document.onkeyup = getKey;
 		}
+		queryGrid();
 	})
 </script> </#body>

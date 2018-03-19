@@ -33,10 +33,20 @@ public class ProjectOnlineApplyDto extends BaseDomain implements ProjectOnlineAp
 	private Long applicantId;
 
 	private Date created;
+	/**
+	 * 上线系统列表
+	 */
 	private List<OnlineSystemDto> onlineSystems;
+	/**
+	 * 邮件通知列表
+	 */
 	private List<String> emailAddresses;
 
 	private Integer applyState;
+
+	private Date actualOnlineDate;
+
+	private Date submitTime;
 
 	@Override
 	public String getProjectName() {
@@ -202,6 +212,26 @@ public class ProjectOnlineApplyDto extends BaseDomain implements ProjectOnlineAp
 	@Override
 	public void setApplyState(Integer applyState) {
 		this.applyState = applyState;
+	}
+
+	@Override
+	public Date getActualOnlineDate() {
+		return actualOnlineDate;
+	}
+
+	@Override
+	public void setActualOnlineDate(Date actualOnlineDate) {
+		this.actualOnlineDate = actualOnlineDate;
+	}
+
+	@Override
+	public Date getSubmitTime() {
+		return submitTime;
+	}
+
+	@Override
+	public void setSubmitTime(Date submitTime) {
+		this.submitTime = submitTime;
 	}
 
 }
