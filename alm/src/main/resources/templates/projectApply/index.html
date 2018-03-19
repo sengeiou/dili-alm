@@ -176,7 +176,7 @@
     function queryGrid() {
         var opts = $("#grid").datagrid("options");
         if (null == opts.url || "" == opts.url) {
-            opts.url = "${contextPath}/projectApply/listPage";
+            opts.url = "${contextPath}/projectApply/taskHoursByUser";
         }
         if (!$('#form').form("validate")) {
             return;

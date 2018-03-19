@@ -7,6 +7,8 @@ import com.dili.alm.domain.Files;
 import com.dili.alm.domain.Log;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectState;
+import com.dili.alm.domain.TaskByUsersDto;
+import com.dili.alm.domain.TaskDetails;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectQueryDto;
@@ -78,7 +80,23 @@ public class StatisticalController {
 	}
 	
 	
+	@ApiOperation("跳转到taskHoursForUser页面")
+	@RequestMapping(value = "/taskHoursForUser", method = RequestMethod.GET)
+	public String taskHoursForUser(ModelMap modelMap) {
+		return "statistical/taskHoursForUser";
+	}
 	
+	@ApiOperation("跳转到taskHoursForProject页面")
+	@RequestMapping(value = "/taskHoursForProject", method = RequestMethod.GET)
+	public String taskHoursForProject(ModelMap modelMap) {
+		return "statistical/taskHoursForProject";
+	}
+	
+	@ApiOperation("跳转到projectType页面")
+	@RequestMapping(value = "/projectYearCover", method = RequestMethod.GET)
+	public String projectYearCover(ModelMap modelMap) {
+		return "statistical/projectYearCover";
+	}
 	
 	
 	@ApiOperation(value="查询项目", notes = "查询返回easyui信息")
@@ -99,5 +117,21 @@ public class StatisticalController {
 		}
 		return statisticalService.getProjectTypeCountDTO(startTime, endTime).toString();
    
+    }
+	
+	
+	@ApiOperation(value="查询时间段内员工工时", notes = "查询返回easyui信息")
+    @RequestMapping(value="/taskHoursByUser", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody List<TaskByUsersDto> taskHoursByUser(String startTime,String endTime,Long userId,Long departmentId) throws Exception {
+
+		return statisticalService.listTaskHoursByUser(startTime, endTime, userId, departmentId);
+   
+    }
+	
+	@ApiOperation(value="查询时间段内每个项目员工工时", notes = "查询返回easyui信息")
+    @RequestMapping(value="/taskHoursByProject", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody List<TaskDetails> taskHoursByProject(String startTime,String endTime,Long userId,Long departmentId) throws Exception {
+
+		return null;
     }
 }

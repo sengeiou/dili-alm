@@ -36,6 +36,7 @@ import com.dili.alm.domain.ProjectEntity;
 import com.dili.alm.domain.ProjectPhase;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
+import com.dili.alm.domain.TaskByUsersDto;
 import com.dili.alm.domain.Team;
 import com.dili.alm.domain.TeamRole;
 import com.dili.alm.domain.User;
@@ -69,6 +70,8 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	
 	@Autowired 
 	ProjectMapper projectMapper;
+	@Autowired 
+	TaskMapper taskMapper;
 	
 	@Autowired
 	DataDictionaryService dataDictionaryService;
@@ -116,7 +119,13 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		return null;
 
 	}
+	/***查询工时相关services****by******JING***BEGIN****/
 	
-	
+	@Override
+	public List<TaskByUsersDto> listTaskHoursByUser(String startTime,
+			String endTime, Long userId, Long departmentId) {
+		return taskMapper.selectTaskHourByUser(startTime, endTime, departmentId, userId);
+	}
+	/***查询工时相关services****by******JING***END****/
 
 }

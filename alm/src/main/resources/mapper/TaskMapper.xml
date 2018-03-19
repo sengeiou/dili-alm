@@ -329,6 +329,21 @@
     (select tt.id from task as tt where tt.owner = #{selectOwner,jdbcType=BIGINT}) and td.created like CONCAT("%",#{selectDate,jdbcType=VARCHAR},"%") 
    </select>
    
-   
-  
+   <!-- 数据统计相关 begin -->
+   <!-- 首页饼图 -->
+   <select id="selectTaskHourByUser" resultType="com.dili.alm.domain.TaskByUsersDto">
+	select ut.id as userNo,ut.real_name as userName,ut.departmentId as departmentId,ut.departmentName as departmentName,(SUM(taskInfo.taskHour)+SUM(taskInfo.overHour)) as totalHour,SUM(taskInfo.taskHour) as  taskHour,SUM(taskInfo.overHour)  as overHour FROM 
+	(select  tt.id as detailId,tt.task_hour as taskHour,tt.over_hour as overHour,t.`owner` as ownerId,t.id as taskId  from alm.task_details as tt LEFT JOIN  alm.task as t ON  tt.task_id = t.id
+	where tt.modified BETWEEN  #{beginTime,jdbcType=TIMESTAMP}  AND  #{task.endTime,jdbcType=TIMESTAMP} ) as taskInfo LEFT JOIN 
+	(select utt.id as id,utt.real_name as real_name,dt.`name` as departmentName,utt.department_id as departmentId  from alm.`user` as utt LEFT JOIN alm.department as dt on utt.department_id = dt.id) as ut 
+	ON taskInfo.ownerId = ut.id where 1=1   
+	<if test="departmentId != null">
+		and ut.departmentId = #{departmentId,jdbcType=BIGINT} 
+	</if>
+	<if test="task.name != null">
+		and ut.id = #{uId,jdbcType=BIGINT} 
+	</if>
+	GROUP BY ut.id ;
+   </select>
+   <!-- 数据统计相关 end  -->
 </mapper>
