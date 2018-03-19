@@ -330,5 +330,11 @@
    </select>
    
    
-  
+   <select  id="selectTaskStateCount"  resultType="com.dili.alm.domain.dto.TaskStateCountDto" >
+    select d.`code` as taskState,count(*) as stateCount from alm.task as t LEFT JOIN alm.data_dictionary_value as d ON t.`status` = d.`value`  where d.dd_id =16 and t.project_id in 
+  	<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+  		#{item}  
+ 	</foreach> 
+ 	GROUP BY t.`status`
+ 	</select>
 </mapper>

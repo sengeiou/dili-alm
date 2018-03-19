@@ -26,5 +26,7 @@ public interface ProjectMapper extends MyMapper<Project> {
 	int getPageByProjectCount(@Param("owner")Long owner);
 		
 	List<ProjectStatusCountDto> getTpyeByProjectCount(@Param("type")String type,@Param("startTime")String startTime,@Param("endTime")String endTime);
+	
+	List<Long> getProjectIds(@Param("startTime")String startTime,@Param("endTime")String endTime);
  
 }

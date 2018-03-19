@@ -11,6 +11,7 @@ import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.TaskDetails;
 import com.dili.alm.domain.TaskEntity;
+import com.dili.alm.domain.dto.TaskStateCountDto;
 import com.dili.ss.base.MyMapper;
 
 public interface TaskMapper extends MyMapper<Task> {
@@ -32,4 +33,6 @@ public interface TaskMapper extends MyMapper<Task> {
 	List<Project> selectProjectByTeam(@Param("selectOwner")Long selectOwner);
 	
 	List<TaskDetails> selectOtherTaskDetail(@Param("selectOwner")Long selectOwner,@Param("selectDate")String selectDate);
+	
+	List<TaskStateCountDto>  selectTaskStateCount(@Param("list")List<Long> list);
 }

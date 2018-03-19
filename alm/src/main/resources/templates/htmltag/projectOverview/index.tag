@@ -1,21 +1,70 @@
  //表格查询
         function queryGrid(n) {
+        	var nums=[];
+        	var nums1=[];
             var opts = $("#grid").datagrid("options");
+            var opts1 = $("#grid1").datagrid("options");
            	if(n!=0){
            		$('#form').form('clear');
            		opts.url = "${contextPath}/statistical/ProjectOverviewlist?flat="+n;
+           		opts1.url = "${contextPath}/statistical/ProjectOverviewTasklist?flat="+n;
            	}else{
                	opts.url = "${contextPath}/statistical/ProjectOverviewlist";
+               	opts1.url = "${contextPath}/statistical/ProjectOverviewTasklist";
             }
             if(!$('#form').form("validate")){
                 return;
             }
             var param = bindMetadata("grid", true);
+            var param1 = bindMetadata("grid1", true);
             var formData = $("#form").serializeObject();
             $.extend(param, formData);
+            $.extend(param1, formData);
             $("#grid").datagrid("load", param);
+            $("#grid1").datagrid("load", param1);
+            $.ajax({
+	         type : "post",
+	         async : true,           
+	         url : opts.url,   
+	         data :{"startTime":$("#startTime").val(),"endTime":$("#endTime").val()},
+	         dataType : "json",       
+	         success : function(result) {  
+	         		var res=result.rows;
+	         		for(var i=0;i<res.length;i++){
+	         			var enti={"name": res[i].type,"type":'bar',"label": labelOption,"data": [res[i].notStartCount,res[i].ongoingConut,res[i].completeCount,res[i].suspendedCount,res[i].shutCount]};   
+                       nums.push(enti);    
+                     }    
+					echarts.init(document.getElementById('project')).hideLoading();   
+                    echarts.init(document.getElementById('project')).setOption({        
+                        series: nums
+                    });
+	         }
+                  
+	   		})
+	   		 $.ajax({
+	         type : "post",
+	         async : true,           
+	         url : opts1.url,   
+	         data :{"startTime":$("#startTime").val(),"endTime":$("#endTime").val()},
+	         dataType : "json",       
+	         success : function(result) {  
+	         		
+	    			for(var i=0;i<result.length;i++){
+	         			var enti={"name": result[i].taskState,"value": result[i].stateCount};   
+                       nums1.push(enti);    
+                     } 
+                     console.log(nums1);
+					echarts.init(document.getElementById('task')).hideLoading();   
+                    echarts.init(document.getElementById('task')).setOption({ 
+     					series: [{
+                        	data: nums1
+                         }]
+                    });
+	         }
+                  
+	   		})
         }
-    
+    	
         //清空表单
 	    function clearForm() {
 	        $('#form').form('clear');

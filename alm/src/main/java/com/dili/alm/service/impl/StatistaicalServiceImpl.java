@@ -44,6 +44,7 @@ import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectDto;
 import com.dili.alm.domain.dto.ProjectStatusCountDto;
 import com.dili.alm.domain.dto.ProjectTypeCountDTO;
+import com.dili.alm.domain.dto.TaskStateCountDto;
 import com.dili.alm.domain.dto.UploadProjectFileDto;
 import com.dili.alm.exceptions.ProjectException;
 import com.dili.alm.provider.ProjectProvider;
@@ -69,6 +70,9 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	
 	@Autowired 
 	ProjectMapper projectMapper;
+	
+	@Autowired 
+	TaskMapper taskMapper;
 	
 	@Autowired
 	DataDictionaryService dataDictionaryService;
@@ -115,6 +119,13 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		}
 		return null;
 
+	}
+
+	@Override
+	public List<TaskStateCountDto> getProjectToTaskCount(String startTime,
+			String endTime) {
+		List<Long> projectIds = projectMapper.getProjectIds(startTime, endTime);
+		return taskMapper.selectTaskStateCount(projectIds);
 	}
 	
 	

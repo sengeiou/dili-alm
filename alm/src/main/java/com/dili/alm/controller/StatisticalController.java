@@ -10,6 +10,7 @@ import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectQueryDto;
+import com.dili.alm.domain.dto.TaskStateCountDto;
 import com.dili.alm.domain.dto.UploadProjectFileDto;
 import com.dili.alm.exceptions.ProjectException;
 import com.dili.alm.rpc.UserRpc;
@@ -98,6 +99,26 @@ public class StatisticalController {
 			}
 		}
 		return statisticalService.getProjectTypeCountDTO(startTime, endTime).toString();
+   
+    }
+	
+	@ApiOperation(value="查询项目任务数量", notes = "查询返回easyui信息")
+    @RequestMapping(value="/ProjectOverviewTasklist", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody List<TaskStateCountDto> ProjectOverviewTasklist(String startTime,String endTime,Integer flat) throws Exception {
+		if(flat!=null){
+			startTime = DateUtil.getPastDate(flat);
+			endTime = DateUtil.getToDay();
+		}else{
+			if(WebUtil.strIsEmpty(startTime)&&WebUtil.strIsEmpty(endTime)){
+				startTime = DateUtil.getPastDate(7);
+				endTime = DateUtil.getToDay();
+			}else if(!WebUtil.strIsEmpty(startTime)&&WebUtil.strIsEmpty(endTime)){
+				endTime =DateUtil.getFutureDate(30);
+			}else if(WebUtil.strIsEmpty(startTime)&&(!WebUtil.strIsEmpty(endTime))){
+				startTime =DateUtil.getFutureDate(30);
+			}
+		}
+		return statisticalService.getProjectToTaskCount(startTime, endTime);
    
     }
 }
