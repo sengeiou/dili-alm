@@ -1,6 +1,7 @@
 
 <#body>
 <div class="easyui-layout" fit="true">
+	<div id="smDialog" style="display: none;"></div>
 	<!-- ====================================================================================================================== -->
 	<!-- 上方布局 -->
 	<!-- ====================================================================================================================== -->
@@ -12,14 +13,19 @@
 					<tr>
 						<td style="padding: 5px;"><input class="easyui-textbox" name="projectName" id="projectName" style="width: 100%"
 							data-options="label:'项目名称:', validType:'length[0,255]'" /></td>
+						<td style="padding: 5px;"><input class="easyui-combobox" name="applyState" id="applyState" style="width: 100%"
+							data-options="label:'状态:', validType:'length[0,10]'" /> <#comboProvider _id="applyState" _provider='projectOnlineApplyStateProvider' /></td>
 					</tr>
 					<tr>
-						<td style="padding: 5px;"><input class="easyui-numberbox" name="applicantId" id="applicantId" style="width: 100%"
-							data-options="label:'申请人id:', validType:'length[0,19]'" /></td>
-						<td style="padding: 5px;"><input class="easyui-datetimebox" name="created" id="created" style="width: 100%"
-							data-options="label:'创建时间:'" /></td>
-						<td style="padding: 5px;"><input class="easyui-numberbox" name="applyState" id="applyState" style="width: 100%"
-							data-options="label:'状态:', validType:'length[0,10]'" /></td>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="applicantId" id="applicantId" style="width: 100%;"
+							panelWidth="auto" panelHeight="auto" label="申请人:"
+							data-options="editable:false,
+									buttonText:'选择',
+									onClickButton:selectMember,onChange:_changeTextboxShowClear" /></td>
+						<td style="padding: 5px;"><input class="easyui-datebox" name="submitStartDate" id="submitStartDate" style="width: 100%"
+							data-options="label:'申请日期:',editable:false" /></td>
+						<td style="padding: 5px;"><input class="easyui-datebox" style="width: 180px;" labelWidth="20" name="submitEndDate"
+							id="submitEndDate" style="width: 100%" data-options="label:'至',editable:false" /></td>
 					</tr>
 					<tr>
 						<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid()">查询</a> <a
@@ -46,16 +52,16 @@
 					<th data-options="field:'projectName',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目名称</th>
 					<th data-options="field:'version',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">版本名称</th>
 					<th
-						data-options="field:'onlineDate',  _provider:'almDateProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-						申请上线日期</th>
-					<th
-						data-options="field:'applicantId', _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">申请人id</th>
-					<th
-						data-options="field:'created',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-						状态</th>
-					<th
 						data-options="field:'actualOnlineDate',  _provider:'almDateProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
 						实际上线日期</th>
+					<th
+						data-options="field:'applicantId', _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">申请人</th>
+					<th
+						data-options="field:'applyState', _provider:'projectOnlineApplyStateProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">状态</th>
+					<th
+						data-options="field:'submitTime',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						申请时间</th>
+					<th data-options="field:'opt',align:'center',formatter:optFormatter">操作</th>
 				</tr>
 			</thead>
 		</table>
@@ -131,174 +137,7 @@
 	</form>
 
 </div>
-<!-- ====================================================================================================================== --> <!-- style & script 分隔线 -->
-<!-- ====================================================================================================================== --> <script
-	type="text/javascript">
-	//打开新增窗口
-	function openInsert() {
-		$('#dlg').dialog('open');
-		$('#dlg').dialog('center');
-		$('#_form').form('clear');
-		formFocus("_form", "_projectName");
-	}
-
-	//打开修改窗口
-	function openUpdate() {
-		var selected = $("#grid").datagrid("getSelected");
-		if (null == selected) {
-			$.messager.alert('警告', '请选中一条数据');
-			return;
-		}
-		$('#dlg').dialog('open');
-		$('#dlg').dialog('center');
-		formFocus("_form", "_projectName");
-		var formData = $.extend({}, selected);
-		formData = addKeyStartWith(getOriginalData(formData), "_");
-		$('#_form').form('load', formData);
-	}
-
-	function saveOrUpdate() {
-		if (!$('#_form').form("validate")) {
-			return;
-		}
-		var _formData = removeKeyStartWith($("#_form").serializeObject(), "_");
-		var _url = null;
-		//没有id就新增
-		if (_formData.id == null || _formData.id == "") {
-			_url = "${contextPath}/projectOnlineApply/insert";
-		} else {//有id就修改
-			_url = "${contextPath}/projectOnlineApply/update";
-		}
-		$.ajax({
-			type : "POST",
-			url : _url,
-			data : _formData,
-			processData : true,
-			dataType : "json",
-			async : true,
-			success : function(data) {
-				if (data.code == "200") {
-					$("#grid").datagrid("reload");
-					$('#dlg').dialog('close');
-				} else {
-					$.messager.alert('错误', data.result);
-				}
-			},
-			error : function() {
-				$.messager.alert('错误', '远程访问失败');
-			}
-		});
-	}
-
-	//根据主键删除
-	function del() {
-		var selected = $("#grid").datagrid("getSelected");
-		if (null == selected) {
-			$.messager.alert('警告', '请选中一条数据');
-			return;
-		}
-		$.messager.confirm('确认', '您确认想要删除记录吗？', function(r) {
-			if (r) {
-				$.ajax({
-					type : "POST",
-					url : "${contextPath}/projectOnlineApply/delete",
-					data : {
-						id : selected.id
-					},
-					processData : true,
-					dataType : "json",
-					async : true,
-					success : function(data) {
-						if (data.code == "200") {
-							$("#grid").datagrid("reload");
-							$('#dlg').dialog('close');
-						} else {
-							$.messager.alert('错误', data.result);
-						}
-					},
-					error : function() {
-						$.messager.alert('错误', '远程访问失败');
-					}
-				});
-			}
-		});
-
-	}
-	//表格查询
-	function queryGrid() {
-		var opts = $("#grid").datagrid("options");
-		if (null == opts.url || "" == opts.url) {
-			opts.url = "${contextPath}/projectOnlineApply/listPage";
-		}
-		if (!$('#form').form("validate")) {
-			return;
-		}
-		var param = bindMetadata("grid", true);
-		var formData = $("#form").serializeObject();
-		$.extend(param, formData);
-		$("#grid").datagrid("load", param);
-	}
-
-	//清空表单
-	function clearForm() {
-		$('#form').form('clear');
-	}
-
-	//表格表头右键菜单
-	function headerContextMenu(e, field) {
-		e.preventDefault();
-		if (!cmenu) {
-			createColumnMenu("grid");
-		}
-		cmenu.menu('show', {
-			left : e.pageX,
-			top : e.pageY
-		});
-	}
-
-	$.messager.progress({
-		title : "提示",
-		msg : "加载中,请稍候...",
-		value : '10',
-		text : '{value}%',
-		interval : 200
-	});
-	$.parser.onComplete = function() {
-		$.messager.progress("close");
-	}
-	//全局按键事件
-	function getKey(e) {
-		e = e || window.event;
-		var keycode = e.which ? e.which : e.keyCode;
-		if (keycode == 46) { //如果按下删除键
-			var selected = $("#grid").datagrid("getSelected");
-			if (selected && selected != null) {
-				del();
-			}
-		}
-	}
-
-	/**
-	 * 绑定页面回车事件，以及初始化页面时的光标定位
-	 * @formId
-	 *          表单ID
-	 * @elementName
-	 *          光标定位在指点表单元素的name属性的值
-	 * @submitFun
-	 *          表单提交需执行的任务
-	 */
-	$(function() {
-		bindFormEvent("form", "projectName", queryGrid);
-		bindFormEvent("_form", "_projectName", saveOrUpdate, function() {
-			$('#dlg').dialog('close');
-		});
-		if (document.addEventListener) {
-			document.addEventListener("keyup", getKey, false);
-		} else if (document.attachEvent) {
-			document.attachEvent("onkeyup", getKey);
-		} else {
-			document.onkeyup = getKey;
-		}
-		queryGrid();
-	})
+<script type="text/javascript">
+	<#members_index/>
+	<#projectOnlineApply_index />
 </script> </#body>

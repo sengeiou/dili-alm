@@ -55,7 +55,7 @@ public class ProjectOnlineApplyController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "ProjectOnlineApply", paramType = "form", value = "ProjectOnlineApply的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String listPage(ProjectOnlineApply projectOnlineApply) throws Exception {
+	public @ResponseBody String listPage(ProjectOnlineApplyListQueryDto projectOnlineApply) throws Exception {
 		return projectOnlineApplyService.listEasyuiPageByExample(projectOnlineApply, true).toString();
 	}
 

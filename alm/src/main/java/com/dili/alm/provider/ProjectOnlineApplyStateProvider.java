@@ -29,7 +29,7 @@ public class ProjectOnlineApplyStateProvider implements ValueProvider {
 		if (val == null) {
 			return null;
 		}
-		return ProjectOnlineApplyState.valueOf(val.toString()).getName();
+		return ProjectOnlineApplyState.valueOf((Integer) val).getName();
 	}
 
 }
