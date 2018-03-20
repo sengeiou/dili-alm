@@ -197,4 +197,76 @@
 			)
 		) 
 	</select>
+	
+	
+	<select id="getProjectProgressList" resultType="com.dili.alm.domain.dto.ProjectProgressDto">
+		SELECT 
+		p.id as id,p.name as name ,p.type as type,p.project_manager as projectManager,p.project_state as projectState,
+		p.completed_progress as completedProgress,pa.estimate_launch_date as estimateLaunchDate,
+		pa.`start_date` as startDate,pa.`end_date` as endDate 
+		FROM `project` p 
+		LEFT JOIN 
+		`project_apply` pa 
+		ON p.apply_id=pa.id 
+		WHERE 1=1
+		<if test="list == null or list.size==0">
+		AND (
+			(#{startTime}&lt;=pa.start_date AND pa.start_date&lt;=#{endTime})
+			OR
+			(#{endTime}&lt;=pa.end_date OR 
+				(#{startTime}&lt;=pa.end_date AND pa.end_date&lt;=#{endTime})
+			)
+		)  
+		</if>
+		<if test="list != null and list.size>0">
+			AND p.id IN 
+			<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+	  			#{item}  
+	 		</foreach> 
+	 	</if>
+	 	<if test="project.page != null and project.rows != null">
+    		limit ${(project.page-1)*project.rows},${project.rows}
+    	</if>
+	</select>
+	<select id="getProjectProgressListCount" resultType="int">
+		SELECT 
+		count(*)
+		FROM `project` p 
+		LEFT JOIN 
+		`project_apply` pa 
+		ON p.apply_id=pa.id 
+		WHERE 1=1
+		<if test="list == null or list.size==0">
+		AND (
+			(#{startTime}&lt;=pa.start_date AND pa.start_date&lt;=#{endTime})
+			OR
+			(#{endTime}&lt;=pa.end_date OR 
+				(#{startTime}&lt;=pa.end_date AND pa.end_date&lt;=#{endTime})
+			)
+		)  
+		</if>
+		<if test="list != null and list.size>0">
+			AND p.id IN 
+			<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+	  			#{item}  
+	 		</foreach> 
+	 	</if>
+	 	
+	</select>
+	
+	
+	<select id="getProjectTypeAllCount" resultType="int">
+		SELECT COUNT(*)
+		FROM `project` 
+		WHERE 
+		(
+			(#{startTime}&lt;=start_date AND start_date&lt;=#{endTime})
+			OR
+			(#{endTime}&lt;=end_date OR 
+				(#{startTime}&lt;=end_date AND end_date&lt;=#{endTime})
+			)
+		) 
+
+
+	</select>
 </mapper>
