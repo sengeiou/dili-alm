@@ -11,6 +11,7 @@ import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.TaskByUsersDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
+import com.dili.alm.domain.dto.ProjectProgressDto;
 import com.dili.alm.domain.dto.ProjectTypeCountDTO;
 import com.dili.alm.domain.dto.TaskStateCountDto;
 import com.dili.alm.domain.dto.UploadProjectFileDto;
@@ -37,5 +38,16 @@ public interface StatisticalService {
 
 	List<TaskStateCountDto> getProjectToTaskCount(String startTime,
 			String endTime);
+
+
+	EasyuiPageOutput getProjectProgresstDTO(Project project,
+			String startTime, String endTime, List<Long> ids);
+
+
+
+
+	List<ProjectTypeCountDTO> getProjectToTypeSummary(String startTime,
+			String endTime);
+
 
 }

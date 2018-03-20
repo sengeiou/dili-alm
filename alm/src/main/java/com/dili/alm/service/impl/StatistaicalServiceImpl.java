@@ -43,6 +43,7 @@ import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectDto;
+import com.dili.alm.domain.dto.ProjectProgressDto;
 import com.dili.alm.domain.dto.ProjectStatusCountDto;
 import com.dili.alm.domain.dto.ProjectTypeCountDTO;
 import com.dili.alm.domain.dto.TaskStateCountDto;
@@ -55,6 +56,7 @@ import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.StatisticalService;
 import com.dili.alm.service.TeamService;
+import com.dili.alm.utils.DateUtil;
 import com.dili.alm.utils.WebUtil;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
@@ -138,5 +140,93 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		return taskMapper.selectTaskHourByUser(startTime, endTime, departmentId, userId);
 	}
 	/***查询工时相关services****by******JING***END****/
+	@Override
+	public EasyuiPageOutput getProjectProgresstDTO(Project project,String startTime,String endTime,List<Long> ids) {	
+		List<ProjectProgressDto> projectProgressList = projectMapper.getProjectProgressList(project,startTime, endTime, ids);
+		int projectProgressListCount = projectMapper.getProjectProgressListCount(startTime, endTime, ids);
+		for (ProjectProgressDto projectProgressDto : projectProgressList) {
+			switch (projectProgressDto.getProjectState()) {
+			case 0:
+				projectProgressDto.setDateProgress(0);
+				break;
+			case 1:
+				projectProgressDto.setDateProgress(getDateProgress(projectProgressDto.getStartDate(), projectProgressDto.getEndDate()));
+				break;
+			case 2:
+				projectProgressDto.setDateProgress(null);
+				break;
+			case 3:
+				projectProgressDto.setDateProgress(getDateProgress(projectProgressDto.getStartDate(), projectProgressDto.getEndDate()));
+				break;
+			case 4:
+				projectProgressDto.setCompletedProgress(null);
+				projectProgressDto.setDateProgress(null);
+				break;
+			}
+		}
+		@SuppressWarnings("unchecked")
+		Map<Object, Object> metadata = null == project.getMetadata() ? new HashMap<>() : project.getMetadata();
+		
+		JSONObject projectStateProvider = new JSONObject();
+		projectStateProvider.put("provider", "projectStateProvider");
+		metadata.put("projectState", projectStateProvider);
+
+		JSONObject projectTypeProvider = new JSONObject();
+		projectTypeProvider.put("provider", "projectTypeProvider");
+		metadata.put("type", projectTypeProvider);
+
+		JSONObject memberProvider = new JSONObject();
+		memberProvider.put("provider", "memberProvider");
+		metadata.put("projectManager", memberProvider);
+
+		JSONObject provider = new JSONObject();
+		provider.put("provider", "datetimeProvider");
+		metadata.put("estimateLaunchDate", provider);
+
+		project.setMetadata(metadata);
+		try {
+			List list = ValueProviderUtils.buildDataByProvider(project, projectProgressList);
+			return new EasyuiPageOutput(projectProgressListCount, list);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	/**
+	 * 
+	 */
+	public static Integer getDateProgress(Date startTime,Date endTime){
+		int toNowDays = DateUtil.differentDaysByMillisecond(startTime, new Date())+1;
+		int planDays = DateUtil.differentDaysByMillisecond(startTime, endTime)+1;
+		int dateProgress = ((int)(((double)toNowDays/(double)planDays)*100));
+		return dateProgress;
+	}
+
+	@Override
+	public List<ProjectTypeCountDTO> getProjectToTypeSummary(String startTime,
+			String endTime) {
+		List<ProjectTypeCountDTO> list=new ArrayList<ProjectTypeCountDTO>();
+		DataDictionaryDto dto = this.dataDictionaryService.findByCode(PROJECT_TYPE_CODE);
+		int projectTotal = projectMapper.getProjectTypeAllCount(startTime, endTime);
+		if (dto != null) {
+			List<DataDictionaryValueDto> ddvdList = dto.getValues();
+			for (DataDictionaryValueDto dataDictionaryValueDto : ddvdList) {
+				ProjectTypeCountDTO ptc=new ProjectTypeCountDTO();
+				ptc.setType(dataDictionaryValueDto.getCode());
+				List<ProjectStatusCountDto> statusCount = projectMapper.getTpyeByProjectCount(dataDictionaryValueDto.getValue(), startTime, endTime);
+				int typeTotal=0;
+				for (ProjectStatusCountDto projectStatusCountDto : statusCount) {
+					typeTotal=typeTotal+projectStatusCountDto.getStateCount();
+				}
+				ptc.setTypeCount(typeTotal);
+				if(projectTotal!=0){
+					
+					ptc.setProjectTypeProgress((int)(((double)typeTotal/(double)projectTotal)*100));
+				}
+				list.add(ptc);
+			}
+			return list;
+		}
+		return null;
+	}
 
 }

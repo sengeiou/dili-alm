@@ -9,16 +9,30 @@
         height: 330px;
         margin-top: 20px;
     }
+    .task-left,.task-right{
+        float: left;
+        box-sizing: border-box;
+        height: 370px;
 
+    }
+    .task-left{
+        width: 40%;
+    }
+    .task-right{
+        width: 60%;
+    }
     .textbox .textbox-text{
         color: #999;
     }
 </style>
-<div class="easyui-panel" style="width: 100%;height: 100%;" title="项目类型统计">
+<div class="easyui-panel" style="width: 100%;height: 100%;" title="项目进展汇总">
     <div style="box-sizing:border-box;height: 100%;width: 100%;padding: 10px;">
         <div class="easyui-layout" style="box-sizing:border-box;width:100%;height:100%;">
             <!--工具栏-->
             <div id="infoToolbar">
+            <form id="form" class="easyui-form" method="post" fit="true">
+            	 <table style="padding:10px;">
+            	 <tr>
                 <a href="#" class="easyui-linkbutton"
                    style="width: 40px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">
                     打印
@@ -27,47 +41,45 @@
                    style="width: 80px;height: 24px; margin-right:3px;text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">
                     导出EXCEL
                 </a>
-                <select class="easyui-combobox" name="state" style="width:100px;height: 24px;color: #999">
-                    <option value="AL">项目</option>
-                    <option value="AK">Alaska</option>
-                    <option value="AZ">Arizona</option>
-                </select>
                 <a href="#" class="easyui-linkbutton"
-                   style="width: 80px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">
-                    最近7天
-                </a>
-                <a href="#" class="easyui-linkbutton"
-                   style="width: 80px;height: 24px; margin-right:3px;text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">
-                    最近30天
-                </a>
-                <input class="easyui-datebox" name="endDate" id="endDate" style="width:100px;height:24px;margin-left: 5px"
-                       data-options=""/>
-                <span style="display: inline-block;width: 20px;text-align: center;color: #999">至</span>
-                <input class="easyui-datebox" name="endDate" id="endDate2" style="width:100px;height:24px;margin-left: 5px"
-                       data-options=""/>
-                <a href="#" class="easyui-linkbutton"
-                   style="width: 60px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">
-                    查询
-                </a>
+	                   style="width: 80px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="queryGrid(7)">
+	                    最近7天
+	                </a>
+	                <a href="#" class="easyui-linkbutton"
+	                   style="width: 80px;height: 24px; margin-right:3px;text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="queryGrid(30)">
+	                    最近30天
+	                </a>
+	                <input class="easyui-datebox" name="startTime" id="startTime" style="width:100px;height:24px;margin-left: 5px"
+	                       data-options=""/>
+	                <span style="display: inline-block;width: 20px;text-align: center;color: #999">至</span>
+	                <input class="easyui-datebox" name="endTime" id="endTime" style="width:100px;height:24px;margin-left: 5px"
+	                       data-options=""/>
+	                <a href="#" class="easyui-linkbutton"
+	                   style="width: 60px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef"  onclick="queryGrid(0)">
+	                    查询
+	                </a>
+	                 </tr>
+                 </table>
+                </form>
             </div>
-            <!--项目数据列表-->
-            <div data-options="region:'center',collapsible:false,split:true,tools:'#infoToolbar'" style="height:100%" title="类型统计">
-                <table class="easyui-datagrid" style="width: 100%"
-                       data-options="singleSelect:true,collapsible:true,url:'${contextPath}/resources/echarts/datagrid_data1.json',method:'get',"
-                       pagination="true" pageSize="30" pageNumber="1" >
+            <!--任务数据列表-->
+            <div data-options="region:'north',collapsible:false,split:true,tools:'#infoToolbar', " style="height: 530px" title="项目列表">
+                <table class="easyui-datagrid" style="width: 100%" id="grid" toolbar='#toolbar'
+                       data-options="singleSelect:true,collapsible:true">
                     <thead>
                     <tr>
-                        <th data-options="field:'productid',width:'33.3%',align:'center'">任务名</th>
-                        <th data-options="field:'itemid',width:'33.3%',align:'center'">项目名</th>
-                        <th data-options="field:'listprice',width:'33.3%',align:'center'">责任人</th>
-
+                        <th data-options="field:'type',width:'17%',align:'center'">项目类型</th>
+                        <th data-options="field:'typeCount',width:'17%',align:'center'">项目数量</th>
+                        <th data-options="field:'projectTypeProgress',formatter:progressFormatter,width:'17%',align:'center'">占比</th>
                     </tr>
                     </thead>
                 </table>
-                <!--项目列表-->
+                <!--任务列表-->
                 <div style="height: 420px;margin-top: 20px">
-                    <!--项目图表-->
-                    <div id="project" class="project-box"></div>
+          
+                    <!--任务图表-->
+                    <div id="task" class="task-right"></div>
+                    <div style="height: 20px"></div>
                 </div>
             </div>
 
@@ -77,96 +89,94 @@
 <script src="${contextPath}/resources/echarts/echarts.common.min.js"></script>
 <script>
 
-    option = {
-        tooltip: {
-            trigger: 'axis',
-            axisPointer: { // 坐标轴指示器，坐标轴触发有效
-                type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+/*     //任务图表
+    var data1 = {
+        legendData: ['未开始', '进行中', '已完成', '暂停中', '已关闭'],//项目图例
+        seriesData: [//项目数据
+            { name: '未开始', value: 3 },
+            { name: '进行中', value: 8 },
+            { name: '已完成', value: 13 },
+            { name: '暂停中', value: 4 },
+            { name: '已关闭', value: 6 }
+        ]
+    }; */
+    /* 任务 option */
+    var taskoption = {
+        title: {
+            text: '',
+            x: 'left',
+            textStyle:{
+                fontSize:14
             }
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} ({d}%)"
         },
         legend: {
-            data: ['未开始', '进行中', '暂停', '完成', '取消']
-        },
-        grid: {
-            left: '3%',
-            right: '4%',
-            bottom: '3%',
-            containLabel: true
-        },
-        xAxis: {
-            type: 'value'
-        },
-        yAxis: {
-            type: 'category',
-            data: ['内部项目', '重点项目', '预研项目', '一般项目']
+            // orient: 'vertical',
+            left: 'center',
+            bottom: '0',
+            data: [] //项目图例
         },
         series: [{
-            name: '未开始',
-            type: 'bar',
-            stack: '总量',
+            name: '任务状况',
+            type: 'pie',
+            // radius: '75%',//显示为普通饼图
+            radius: [20, 110],//显示为环状图
+            roseType: 'radius',//去除此项为普通饼图
+            center: ['50%', '43%'],
             label: {
+                show: false,
                 normal: {
-                    show: true,
-                    position: 'insideRight'
+                    // formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
+                    formatter: ' {b|{b}：}{c}  {per|{d}%}  ',
+                    backgroundColor: '#eee',
+                    borderColor: '#aaa',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    rich: {
+                        a: {
+                            color: '#999',
+                            lineHeight: 22,
+                            align: 'center'
+                        },
+                        hr: {
+                            borderColor: '#aaa',
+                            width: '100%',
+                            borderWidth: 0.5,
+                            height: 0
+                        },
+                        b: {
+                            // fontSize: 16,
+                            lineHeight: 33
+                        },
+                        per: {
+                            color: '#eee',
+                            backgroundColor: '#334455',
+                            padding: [2, 4],
+                            borderRadius: 2
+                        }
+                    }
                 }
             },
-            data: [320, 302, 301, 334]
-        },
-            {
-                name: '进行中',
-                type: 'bar',
-                stack: '总量',
-                label: {
-                    normal: {
-                        show: true,
-                        position: 'insideRight'
-                    }
-                },
-                data: [120, 132, 101, 134]
-            },
-            {
-                name: '暂停',
-                type: 'bar',
-                stack: '总量',
-                label: {
-                    normal: {
-                        show: true,
-                        position: 'insideRight'
-                    }
-                },
-                data: [220, 182, 191, 234]
-            },
-            {
-                name: '完成',
-                type: 'bar',
-                stack: '总量',
-                label: {
-                    normal: {
-                        show: true,
-                        position: 'insideRight'
-                    }
-                },
-                data: [150, 212, 201, 154]
-            },
-            {
-                name: '取消',
-                type: 'bar',
-                stack: '总量',
-                label: {
-                    normal: {
-                        show: true,
-                        position: 'insideRight'
-                    }
-                },
-                data: [820, 832, 901, 934]
+            data: [],//项目图表数据
+            itemStyle: {
+                emphasis: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
             }
-        ]
+        }]
     };
 
-    echarts.init(document.getElementById('project')).setOption(option);
+    echarts.init(document.getElementById('task')).setOption(taskoption);
 
 
 
 </script>
-
+ <script type="text/javascript">
+	<#projectType_index/>
+</script>
 </#body>
