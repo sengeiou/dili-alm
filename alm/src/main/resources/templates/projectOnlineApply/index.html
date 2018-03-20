@@ -1,0 +1,143 @@
+
+<#body>
+<div class="easyui-layout" fit="true">
+	<div id="smDialog" style="display: none;"></div>
+	<!-- ====================================================================================================================== -->
+	<!-- 上方布局 -->
+	<!-- ====================================================================================================================== -->
+	<div region="north" height="auto" align="center">
+		<!-- =========================================================表单========================================================= -->
+		<div class="easyui-panel" style="width: 100%;" align="left">
+			<form id="form" class="easyui-form" method="post" fit="true">
+				<table style="padding: 10px;">
+					<tr>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="projectName" id="projectName" style="width: 100%"
+							data-options="label:'项目名称:', validType:'length[0,255]'" /></td>
+						<td style="padding: 5px;"><input class="easyui-combobox" name="applyState" id="applyState" style="width: 100%"
+							data-options="label:'状态:', validType:'length[0,10]'" /> <#comboProvider _id="applyState" _provider='projectOnlineApplyStateProvider' /></td>
+					</tr>
+					<tr>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="applicantId" id="applicantId" style="width: 100%;"
+							panelWidth="auto" panelHeight="auto" label="申请人:"
+							data-options="editable:false,
+									buttonText:'选择',
+									onClickButton:selectMember,onChange:_changeTextboxShowClear" /></td>
+						<td style="padding: 5px;"><input class="easyui-datebox" name="submitStartDate" id="submitStartDate" style="width: 100%"
+							data-options="label:'申请日期:',editable:false" /></td>
+						<td style="padding: 5px;"><input class="easyui-datebox" style="width: 180px;" labelWidth="20" name="submitEndDate"
+							id="submitEndDate" style="width: 100%" data-options="label:'至',editable:false" /></td>
+					</tr>
+					<tr>
+						<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid()">查询</a> <a
+							href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">清除</a></td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>
+	<!-- ====================================================================================================================== -->
+	<!-- 中央布局 -->
+	<!-- ====================================================================================================================== -->
+	<!-- 表格 -->
+	<div region="center" style="width: 100%;" height="auto">
+		<!-- =========================================================表格========================================================= -->
+		<table class="easyui-datagrid" title="ProjectOnlineApply列表" id="grid" fitColumns="true" pagination="true" pageSize="30" pageNumber="1"
+			pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
+			sortName="projectName" align="center" fit="true" striped="true" toolbar="#toolbar" idField="id"
+			data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
+			<thead>
+				<tr>
+					<th data-options="field:'projectSerialNumber',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						项目编号</th>
+					<th data-options="field:'projectName',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目名称</th>
+					<th data-options="field:'version',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">版本名称</th>
+					<th
+						data-options="field:'actualOnlineDate',  _provider:'almDateProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						实际上线日期</th>
+					<th
+						data-options="field:'applicantId', _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">申请人</th>
+					<th
+						data-options="field:'applyState', _provider:'projectOnlineApplyStateProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">状态</th>
+					<th
+						data-options="field:'submitTime',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						申请时间</th>
+					<th data-options="field:'opt',align:'center',formatter:optFormatter">操作</th>
+				</tr>
+			</thead>
+		</table>
+		<!-- datagrid工具栏 -->
+		<div id="toolbar" style="padding: 2px 5px;">
+			<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true"></a> <a href="#" class="easyui-linkbutton"
+				iconCls="icon-edit" onclick="openUpdate()" plain="true"></a> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()"
+				plain="true"></a> <a href="#" class="easyui-linkbutton" iconCls="icon-export" onclick="doExport('grid')" plain="true"></a>
+			<div style="float: right">
+				边框显示:<select onchange="changeBorder('grid',this.value)">
+					<option value="lines-both">全边框</option>
+					<option value="lines-no">无边框</option>
+					<option value="lines-right">右边框</option>
+					<option value="lines-bottom">下边框</option>
+				</select> 行条纹:<input type="checkbox" checked="checked" onclick="$('#grid').datagrid({striped:$(this).is(':checked')})">
+			</div>
+		</div>
+	</div>
+</div>
+<!-- 隐藏编辑框 -->
+<div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="ProjectOnlineApply信息"
+	style="padding: 20px" modal="true" border="thin" closed="true"
+	data-options="
+				iconCls: 'icon-save',
+				height: 480,
+				buttons: [{
+					text:'Ok',
+					iconCls:'icon-ok',
+					handler:saveOrUpdate
+				},{
+					text:'取消',
+					handler:function(){
+						$('#dlg').dialog('close');
+					}
+				}]
+			">
+	<form id="_form" class="easyui-form" method="post" fit="true">
+		<input name="_id" id="_id" type="hidden">
+		<table width="360px">
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-textbox" name="_projectSerialNumber" id="_projectSerialNumber" style="width: 100%"
+					data-options="label:'项目编号:', validType:'length[0,255]'" required="true" /></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-textbox" name="_projectName" id="_projectName" style="width: 100%"
+					data-options="label:'项目名称:', validType:'length[0,255]'" required="true" /></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-textbox" name="_version" id="_version" style="width: 100%"
+					data-options="label:'版本名称:', validType:'length[0,255]'" required="true" /></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-datetimebox" name="_onlineDate" id="_onlineDate" style="width: 100%"
+					data-options="label:'申请上线日期:'" required="true" /></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-datetimebox" name="_actualOnlineDate" id="_actualOnlineDate" style="width: 100%"
+					data-options="label:'实际上线日期:'" /></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-numberbox" name="_applicantId" id="_applicantId" style="width: 100%"
+					data-options="label:'申请人id:'" required="true" /></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-numberbox" name="_applyState" id="_applyState" style="width: 100%"
+					data-options="label:'状态:'" required="true" /></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-datetimebox" name="_submitTime" id="_submit" style="width: 100%"
+					data-options="label:'申请时间:'" required="true" /></td>
+			</tr>
+		</table>
+	</form>
+
+</div>
+<script type="text/javascript">
+	<#members_index/>
+	<#projectOnlineApply_index />
+</script> </#body>
