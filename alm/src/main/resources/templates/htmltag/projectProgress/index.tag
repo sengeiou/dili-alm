@@ -1,3 +1,7 @@
+
+function print(){
+			$("#dy").jqprint();
+		}
  function progressFormatter(value, rowData, rowIndex) {
 	var progress = value;
 	var htmlstr;

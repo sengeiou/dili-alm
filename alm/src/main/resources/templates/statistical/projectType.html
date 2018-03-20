@@ -25,7 +25,7 @@
         color: #999;
     }
 </style>
-<div class="easyui-panel" style="width: 100%;height: 100%;" title="项目进展汇总">
+<div class="easyui-panel" id="dy" style="width: 100%;height: 100%;" title="项目类型汇总">
     <div style="box-sizing:border-box;height: 100%;width: 100%;padding: 10px;">
         <div class="easyui-layout" style="box-sizing:border-box;width:100%;height:100%;">
             <!--工具栏-->
@@ -34,7 +34,7 @@
             	 <table style="padding:10px;">
             	 <tr>
                 <a href="#" class="easyui-linkbutton"
-                   style="width: 40px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">
+                   style="width: 40px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="print()">
                     打印
                 </a>
                 <a href="#" class="easyui-linkbutton"
@@ -87,6 +87,8 @@
     </div>
 </div>
 <script src="${contextPath}/resources/echarts/echarts.common.min.js"></script>
+<script src="${contextPath}/resources/js/jquery.jqprint-0.3.js"></script>
+<script src="${contextPath}/resources/js/jquery-migrate-1.1.0.js"></script>
 <script>
 
 /*     //任务图表
