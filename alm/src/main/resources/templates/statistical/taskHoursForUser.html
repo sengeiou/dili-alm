@@ -1,0 +1,113 @@
+<#body>
+<style>
+    .textbox-label{
+        width: 60px;
+    }
+    .datagrid-cell-c1-opt span a{
+        color:#999;
+    }
+</style>
+<div class="easyui-layout" fit="true">
+    <!-- ====================================================================================================================== -->
+    <!-- 上方布局 -->
+    <!-- ====================================================================================================================== -->
+    <div region="north" height="auto" align="center">
+        <!-- =========================================================表单========================================================= -->
+        <div class="easyui-panel" style="width:100%;" align="left">
+            <form id="form" class="easyui-form" method="post" fit="true">
+                <table style="padding:10px;">
+                    <tr>
+                        <td style="padding:5px;">
+                            <input class="easyui-datetimebox" name="startDate" id="startDate" style="width:100%" data-options="editable:false,label:'起止日期:'" />
+                        </td>
+                        <td style="padding:5px;">
+                            <input class="easyui-datetimebox" name="endDate" id="endDate" style="width:100%" data-options="editable:false,label:'至:'" />
+
+                        </td>
+                        <td style="padding:5px;">
+                            <input class="easyui-datebox" name="created" id="created" style="width:100%"
+                                   data-options="editable:false,label:'部门:'"/>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px;">
+                            <input class="easyui-textbox" name="status" id="status" style="width:100%"
+                                   data-options="editable:false,label:'人员:', validType:'length[0,3]'"/>
+                            <#comboProvider _id="status" _provider='applyStateProvider'/>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
+                               onclick="queryGrid()">查询</a>
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload" onclick="clearForm()">重置</a>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+    <!-- ====================================================================================================================== -->
+    <!-- 中央布局 -->
+    <!-- ====================================================================================================================== -->
+    <!-- 表格 -->
+    <div region="center" style="width:100%;" height="auto">
+        <!-- =========================================================表格========================================================= -->
+        <table class="easyui-datagrid" title="数据列表" style="width:100%;height:'auto'"
+               pagination="true" pageSize="30" pageNumber="1" pagePosition="bottom"
+               data-options="
+                rownumbers: true,
+                singleSelect: true,
+                url: '${contextPath}/resources/echarts/datagrid_data1.json',
+                method: 'get',
+                onLoadSuccess: onLoadSuccess
+            ">
+            <thead>
+            <tr>
+                <th data-options="field:'attr1',width:'26%',align:'center'">统计日期</th>
+                <th data-options="field:'productid',width:'16%',align:'center'">姓名</th>
+                <th data-options="field:'itemid',width:'16%',align:'center'">部门</th>
+                <th data-options="field:'listprice',width:'14%',align:'center'">总工时(H)</th>
+                <th data-options="field:'unitcost',width:'14%',align:'center'">实际工时(H)</th>
+                <th data-options="field:'status',width:'14%',align:'center'">加班工时(H)</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+<!-- ====================================================================================================================== -->
+<!-- style & script 分隔线 -->
+<!-- ====================================================================================================================== -->
+<script type="text/javascript">
+    function onLoadSuccess(data){
+        var merges = [{
+            index: 1,
+            rowspan: 5
+        },];
+        for(var i=0; i<merges.length; i++){
+            $(this).datagrid('mergeCells',{
+                index: merges[i].index,
+                field: 'attr1',
+                rowspan: merges[i].rowspan
+            });
+        }
+    }
+    
+    //表格查询
+    function queryGrid() {
+        var opts = $("#grid").datagrid("options");
+        if (null == opts.url || "" == opts.url) {
+            opts.url = "${contextPath}/statistical/listPage";
+        }
+        if (!$('#form').form("validate")) {
+            return;
+        }
+        var param = bindMetadata("grid", true);
+        var formData = $("#form").serializeObject();
+        $.extend(param, formData);
+        $("#grid").datagrid("load", param);
+    }
+</script>
+</#body>

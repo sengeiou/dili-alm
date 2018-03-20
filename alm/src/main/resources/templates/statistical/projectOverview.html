@@ -1,0 +1,314 @@
+<#body>
+<style>
+    .panel-tool{
+        top:9px;
+        height: 24px;
+    }
+    .project-box{
+        width: 100%;
+        height: 330px;
+        margin-top: 20px;
+    }
+    .task-left,.task-right{
+        float: left;
+        box-sizing: border-box;
+        height: 370px;
+
+    }
+    .task-left{
+        width: 40%;
+    }
+    .task-right{
+        width: 60%;
+    }
+</style>
+<div class="easyui-panel" style="width: 100%;height: auto" title="项目总览">
+    <div style="box-sizing:border-box;height: 100%;width: 100%;padding: 10px;">
+        <div class="easyui-layout" style="width:100%;height:950px;">
+            <!-- datagrid工具栏 -->
+            <div id="toolbar" style="padding:2px 5px;text-align: right">
+            	<form id="form" class="easyui-form" method="post" fit="true">
+            	 <table style="padding:10px;">
+            	 <tr>
+	                <!--<a href="${contextPath}/projectApply/add" class="easyui-linkbutton" iconCls="icon-add" plain="true"></a>-->
+	                <a href="#" class="easyui-linkbutton"
+	                   style="width: 40px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">
+	                    打印
+	                </a>
+	                <a href="#" class="easyui-linkbutton"
+	                   style="width: 80px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">
+	                    导出EXCEL
+	                </a>
+	                <a href="#" class="easyui-linkbutton"
+	                   style="width: 80px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="queryGrid(7)">
+	                    最近7天
+	                </a>
+	                <a href="#" class="easyui-linkbutton"
+	                   style="width: 80px;height: 24px; margin-right:3px;text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="queryGrid(30)">
+	                    最近30天
+	                </a>
+	                <input class="easyui-datebox" name="startTime" id="startTime" style="width:100px;height:24px;margin-left: 5px"
+	                       data-options=""/>
+	                <span style="display: inline-block;width: 20px;text-align: center;color: #999">至</span>
+	                <input class="easyui-datebox" name="endTime" id="endTime" style="width:100px;height:24px;margin-left: 5px"
+	                       data-options=""/>
+	                <a href="#" class="easyui-linkbutton"
+	                   style="width: 60px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef"  onclick="queryGrid(0)">
+	                    查询
+	                </a>
+	                </tr>
+                  </table>
+                </form>
+            </div>
+            <!--项目列表-->
+            <div data-options="region:'north',collapsible:false,split:true,tools:'#infoToolbar', " style="height: 530px" title="项目列表">
+                <table class="easyui-datagrid" style="width: 100%" id="grid" toolbar='#toolbar'
+                       data-options="singleSelect:true,collapsible:true">
+                    <thead>
+                    <tr>
+                        <th data-options="field:'type',width:'16%',align:'center'">类型</th>
+                        <th data-options="field:'typeCount',width:'14%',align:'center'">项目数</th>
+                        <th data-options="field:'notStartCount',width:'14%',align:'center'">未开始</th>
+                        <th data-options="field:'ongoingConut',width:'14%',align:'center'">进行中</th>
+                        <th data-options="field:'completeCount',width:'14%',align:'center'">已完成</th>
+                        <th data-options="field:'suspendedCount',width:'14%',align:'center'">暂停中</th>
+                        <th data-options="field:'shutCount',width:'14%',align:'center'">已关闭</th>
+                    </tr>
+                    </thead>
+                </table>
+                
+                <!--项目图表-->
+                <div class="project-box" id="project"></div>
+            </div>
+            <!--任务列表-->
+            <div data-options="region:'center'" style="height: 420px" title="任务列表">
+                <div class="task-left">
+                    <table class="easyui-datagrid" style="width: 100%" id="grid1"
+                           data-options="singleSelect:true,collapsible:true">
+                        <thead>
+                        <tr>
+                            <th data-options="field:'taskState',width:'50%',align:'center'">类型</th>
+                            <th data-options="field:'stateCount',width:'50%',align:'center'">项目数</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+                <!--任务图表-->
+                <div id="task" class="task-right"></div>
+                <div style="height: 20px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="${contextPath}/resources/echarts/echarts.common.min.js"></script>
+<script>
+    //项目图表
+    var app={};
+    var posList = [
+        'left', 'right', 'top', 'bottom',
+        'inside',
+        'insideTop', 'insideLeft', 'insideRight', 'insideBottom',
+        'insideTopLeft', 'insideTopRight', 'insideBottomLeft', 'insideBottomRight'
+    ];
+
+    app.configParameters = {
+        rotate: {
+            min: -90,
+            max: 90
+        },
+        align: {
+            options: {
+                left: 'left',
+                center: 'center',
+                right: 'right'
+            }
+        },
+        verticalAlign: {
+            options: {
+                top: 'top',
+                middle: 'middle',
+                bottom: 'bottom'
+            }
+        },
+        position: {
+            options: echarts.util.reduce(posList, function(map, pos) {
+                map[pos] = pos;
+                return map;
+            }, {})
+        },
+        distance: {
+            min: 0,
+            max: 100
+        }
+    };
+
+    app.config = {
+        rotate: 90,
+        align: 'left',
+        verticalAlign: 'middle',
+        position: 'insideBottom',
+        distance: 15,
+        onChange: function() {
+            var labelOption = {
+                normal: {
+                    rotate: app.config.rotate,
+                    align: app.config.align,
+                    verticalAlign: app.config.verticalAlign,
+                    position: app.config.position,
+                    distance: app.config.distance
+                }
+            };
+            myChart.setOption({
+                series: [{
+                    label: labelOption
+                }, {
+                    label: labelOption
+                }, {
+                    label: labelOption
+                }, {
+                    label: labelOption
+                }]
+            });
+        }
+    };
+
+
+    var labelOption = {
+        normal: {
+            show: true,
+            position: app.config.position,
+            distance: app.config.distance,
+            align: app.config.align,
+            verticalAlign: app.config.verticalAlign,
+            rotate: app.config.rotate,
+            formatter: '{c}  {name|{a}}',
+            fontSize: 16,
+            rich: {
+                name: {
+                    textBorderColor: '#fff'
+                }
+            }
+        }
+    };
+    //项目option
+    var option = {
+        color: ['#e5323e','#003366', '#006699', '#4cabce'],
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            }
+        },
+        legend: {
+            data: ['重点项目', '一般项目', '预研项目', '内部项目']
+        },
+        toolbox: {
+            show: true,
+            orient: 'vertical',
+            left: 'right',
+            top: 'center',
+            feature: {
+                mark: {show: true},
+                dataView: {show: true, readOnly: false},
+                magicType: {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+                restore: {show: true},
+                saveAsImage: {show: true}
+            }
+        },
+        calculable: true,
+        xAxis: [
+            {
+                type: 'category',
+                axisTick: {show: false},
+                data: ['未开始', '进行中', '已完成', '暂停中', '已关闭']
+            }
+        ],
+        yAxis: [
+            {
+                type: 'value'
+            }
+        ],
+        series: [
+            
+        ]
+    };
+    echarts.init(document.getElementById('project')).setOption(option);
+   
+
+    /* 任务 option */
+    var taskoption = {
+        title: {
+            text: '',
+            x: 'left',
+            textStyle:{
+                fontSize:14
+            }
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+        legend: {
+            // orient: 'vertical',
+            left: 'center',
+            bottom: '0',
+            data: ['未开始', '进行中', '已完成', '暂停中', '已关闭']//项目图例
+        },
+        series: [{
+            name: '任务状况',
+            type: 'pie',
+            // radius: '75%',//显示为普通饼图
+            radius: [20, 110],//显示为环状图
+            roseType: 'radius',//去除此项为普通饼图
+            center: ['50%', '43%'],
+            label: {
+                show: false,
+                normal: {
+                    // formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
+                    formatter: ' {b|{b}：}{c}  {per|{d}%}  ',
+                    backgroundColor: '#eee',
+                    borderColor: '#aaa',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    rich: {
+                        a: {
+                            color: '#999',
+                            lineHeight: 22,
+                            align: 'center'
+                        },
+                        hr: {
+                            borderColor: '#aaa',
+                            width: '100%',
+                            borderWidth: 0.5,
+                            height: 0
+                        },
+                        b: {
+                            // fontSize: 16,
+                            lineHeight: 33
+                        },
+                        per: {
+                            color: '#eee',
+                            backgroundColor: '#334455',
+                            padding: [2, 4],
+                            borderRadius: 2
+                        }
+                    }
+                }
+            },
+            data: [],//项目图表数据
+            itemStyle: {
+                emphasis: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+            }
+        }]
+    };
+
+    echarts.init(document.getElementById('task')).setOption(taskoption);
+</script>
+ <script type="text/javascript">
+	<#projectOverview_index/>
+</script>
+</#body>

@@ -1,0 +1,172 @@
+<#body>
+<style>
+    .panel-tool{
+        top:9px;
+        height: 24px;
+    }
+    .project-box{
+        width: 100%;
+        height: 330px;
+        margin-top: 20px;
+    }
+
+    .textbox .textbox-text{
+        color: #999;
+    }
+</style>
+<div class="easyui-panel" style="width: 100%;height: 100%;" title="项目类型统计">
+    <div style="box-sizing:border-box;height: 100%;width: 100%;padding: 10px;">
+        <div class="easyui-layout" style="box-sizing:border-box;width:100%;height:100%;">
+            <!--工具栏-->
+            <div id="infoToolbar">
+                <a href="#" class="easyui-linkbutton"
+                   style="width: 40px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">
+                    打印
+                </a>
+                <a href="#" class="easyui-linkbutton"
+                   style="width: 80px;height: 24px; margin-right:3px;text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">
+                    导出EXCEL
+                </a>
+                <select class="easyui-combobox" name="state" style="width:100px;height: 24px;color: #999">
+                    <option value="AL">项目</option>
+                    <option value="AK">Alaska</option>
+                    <option value="AZ">Arizona</option>
+                </select>
+                <a href="#" class="easyui-linkbutton"
+                   style="width: 80px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">
+                    最近7天
+                </a>
+                <a href="#" class="easyui-linkbutton"
+                   style="width: 80px;height: 24px; margin-right:3px;text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">
+                    最近30天
+                </a>
+                <input class="easyui-datebox" name="endDate" id="endDate" style="width:100px;height:24px;margin-left: 5px"
+                       data-options=""/>
+                <span style="display: inline-block;width: 20px;text-align: center;color: #999">至</span>
+                <input class="easyui-datebox" name="endDate" id="endDate2" style="width:100px;height:24px;margin-left: 5px"
+                       data-options=""/>
+                <a href="#" class="easyui-linkbutton"
+                   style="width: 60px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">
+                    查询
+                </a>
+            </div>
+            <!--项目数据列表-->
+            <div data-options="region:'center',collapsible:false,split:true,tools:'#infoToolbar'" style="height:100%" title="类型统计">
+                <table class="easyui-datagrid" style="width: 100%"
+                       data-options="singleSelect:true,collapsible:true,url:'${contextPath}/resources/echarts/datagrid_data1.json',method:'get',"
+                       pagination="true" pageSize="30" pageNumber="1" >
+                    <thead>
+                    <tr>
+                        <th data-options="field:'productid',width:'33.3%',align:'center'">任务名</th>
+                        <th data-options="field:'itemid',width:'33.3%',align:'center'">项目名</th>
+                        <th data-options="field:'listprice',width:'33.3%',align:'center'">责任人</th>
+
+                    </tr>
+                    </thead>
+                </table>
+                <!--项目列表-->
+                <div style="height: 420px;margin-top: 20px">
+                    <!--项目图表-->
+                    <div id="project" class="project-box"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="${contextPath}/resources/echarts/echarts.common.min.js"></script>
+<script>
+
+    option = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: { // 坐标轴指示器，坐标轴触发有效
+                type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+            }
+        },
+        legend: {
+            data: ['未开始', '进行中', '暂停', '完成', '取消']
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'value'
+        },
+        yAxis: {
+            type: 'category',
+            data: ['内部项目', '重点项目', '预研项目', '一般项目']
+        },
+        series: [{
+            name: '未开始',
+            type: 'bar',
+            stack: '总量',
+            label: {
+                normal: {
+                    show: true,
+                    position: 'insideRight'
+                }
+            },
+            data: [320, 302, 301, 334]
+        },
+            {
+                name: '进行中',
+                type: 'bar',
+                stack: '总量',
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'insideRight'
+                    }
+                },
+                data: [120, 132, 101, 134]
+            },
+            {
+                name: '暂停',
+                type: 'bar',
+                stack: '总量',
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'insideRight'
+                    }
+                },
+                data: [220, 182, 191, 234]
+            },
+            {
+                name: '完成',
+                type: 'bar',
+                stack: '总量',
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'insideRight'
+                    }
+                },
+                data: [150, 212, 201, 154]
+            },
+            {
+                name: '取消',
+                type: 'bar',
+                stack: '总量',
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'insideRight'
+                    }
+                },
+                data: [820, 832, 901, 934]
+            }
+        ]
+    };
+
+    echarts.init(document.getElementById('project')).setOption(option);
+
+
+
+</script>
+
+</#body>

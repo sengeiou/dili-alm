@@ -9,8 +9,10 @@ import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectChange;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
+import com.dili.alm.domain.TaskByUsersDto;
 import com.dili.alm.domain.TaskDetails;
 import com.dili.alm.domain.TaskEntity;
+import com.dili.alm.domain.dto.TaskStateCountDto;
 import com.dili.ss.base.MyMapper;
 
 public interface TaskMapper extends MyMapper<Task> {
@@ -32,4 +34,13 @@ public interface TaskMapper extends MyMapper<Task> {
 	List<Project> selectProjectByTeam(@Param("selectOwner")Long selectOwner);
 	
 	List<TaskDetails> selectOtherTaskDetail(@Param("selectOwner")Long selectOwner,@Param("selectDate")String selectDate);
+	
+
+	
+	/***数据统计相关 begin***/
+	List<TaskByUsersDto> selectTaskHourByUser(@Param("beginTime")String beginTime,@Param("endTime")String endTime,@Param("departmentId")Long departmentId,@Param("uId")Long uId);
+	/***数据统计相关 end***/
+
+	List<TaskStateCountDto>  selectTaskStateCount(@Param("list")List<Long> list);
+
 }
