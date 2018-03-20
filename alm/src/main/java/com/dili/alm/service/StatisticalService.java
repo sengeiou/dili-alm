@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.ProjectYearCoverDto;
 import com.dili.alm.domain.TaskByUsersDto;
+import com.dili.alm.domain.TaskHoursByProjectDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectTypeCountDTO;
 import com.dili.alm.domain.dto.TaskStateCountDto;
@@ -30,9 +32,9 @@ public interface StatisticalService {
 	/***查询工时相关services****by******JING***BEGIN****/
 	List<TaskByUsersDto> listTaskHoursByUser(String startTime,String endTime,Long userId,Long departmentId);
 	
+	List<TaskHoursByProjectDto> listProject(String startTime,String endTime);
 	
-	
-	
+	List<ProjectYearCoverDto> listProjectYearCover(String startTime,String endTime);
 	/***查询工时相关services****by******JING***END****/
 
 	List<TaskStateCountDto> getProjectToTaskCount(String startTime,

@@ -8,10 +8,12 @@ import org.apache.ibatis.annotations.Param;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectChange;
 import com.dili.alm.domain.ProjectVersion;
+import com.dili.alm.domain.ProjectYearCoverDto;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.TaskByUsersDto;
 import com.dili.alm.domain.TaskDetails;
 import com.dili.alm.domain.TaskEntity;
+import com.dili.alm.domain.TaskHoursByProjectDto;
 import com.dili.alm.domain.dto.TaskStateCountDto;
 import com.dili.ss.base.MyMapper;
 
@@ -39,6 +41,10 @@ public interface TaskMapper extends MyMapper<Task> {
 	
 	/***数据统计相关 begin***/
 	List<TaskByUsersDto> selectTaskHourByUser(@Param("beginTime")String beginTime,@Param("endTime")String endTime,@Param("departmentId")Long departmentId,@Param("uId")Long uId);
+	
+	List<TaskHoursByProjectDto> selectselectProjectHours(@Param("beginTime")String beginTime,@Param("endTime")String endTime);
+	
+	List<ProjectYearCoverDto> selectProjectYearsCover(@Param("beginTime")String beginTime,@Param("endTime")String endTime);
 	/***数据统计相关 end***/
 
 	List<TaskStateCountDto>  selectTaskStateCount(@Param("list")List<Long> list);

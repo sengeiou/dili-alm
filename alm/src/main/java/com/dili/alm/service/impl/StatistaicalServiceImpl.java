@@ -35,8 +35,10 @@ import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectEntity;
 import com.dili.alm.domain.ProjectPhase;
 import com.dili.alm.domain.ProjectVersion;
+import com.dili.alm.domain.ProjectYearCoverDto;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.TaskByUsersDto;
+import com.dili.alm.domain.TaskHoursByProjectDto;
 import com.dili.alm.domain.Team;
 import com.dili.alm.domain.TeamRole;
 import com.dili.alm.domain.User;
@@ -137,6 +139,23 @@ public class StatistaicalServiceImpl implements StatisticalService {
 			String endTime, Long userId, Long departmentId) {
 		return taskMapper.selectTaskHourByUser(startTime, endTime, departmentId, userId);
 	}
+	
+	
+	@Override
+	public List<TaskHoursByProjectDto> listProject(String startTime,
+			String endTime) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<ProjectYearCoverDto> listProjectYearCover(String startTime,
+			String endTime) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	/***查询工时相关services****by******JING***END****/
+
+
 
 }
