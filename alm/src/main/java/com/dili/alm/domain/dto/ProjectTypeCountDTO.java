@@ -16,6 +16,8 @@ public class ProjectTypeCountDTO {
 	private int suspendedCount;
 	
 	private int shutCount;
+	
+	private int projectTypeProgress;
 
 	public String getType() {
 		return type;
@@ -73,4 +75,13 @@ public class ProjectTypeCountDTO {
 		this.shutCount = shutCount;
 	}
 
+	public int getProjectTypeProgress() {
+		return projectTypeProgress;
+	}
+
+	public void setProjectTypeProgress(int projectTypeProgress) {
+		this.projectTypeProgress = projectTypeProgress;
+	}
+
+	
 }

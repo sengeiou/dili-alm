@@ -1,101 +1,155 @@
 <#body>
 <style>
-    .textbox-label{
-        width: 60px;
+    .panel-tool{
+        top:9px;
+        height: 24px;
     }
-    .datagrid-cell-c1-opt span a{
-        color:#999;
+    .project-box{
+        width: 100%;
+        height: 330px;
+        margin-top: 20px;
+    }
+    .task-left,.task-right{
+        float: left;
+        box-sizing: border-box;
+        height: 370px;
+
+    }
+    .task-left{
+        width: 40%;
+    }
+    .task-right{
+        width: 60%;
+    }
+    .textbox .textbox-text{
+        color: #999;
     }
 </style>
-<div class="easyui-layout" fit="true">
-    <!-- ====================================================================================================================== -->
-    <!-- 上方布局 -->
-    <!-- ====================================================================================================================== -->
-    <div region="north" height="auto" align="center">
-        <!-- =========================================================表单========================================================= -->
-        <div class="easyui-panel" style="width:100%;" align="left">
+<div class="easyui-panel" id="dy" style="width: 100%;height: 100%;" title="项目进展总览">
+    <div style="box-sizing:border-box;height: 100%;width: 100%;padding: 10px;">
+        <div class="easyui-layout" style="box-sizing:border-box;width:100%;height:100%;">
+            <!--工具栏-->
+            <div id="infoToolbar">
             <form id="form" class="easyui-form" method="post" fit="true">
-                <table style="padding:10px;">
+            	 <table style="padding:10px;">
+            	 <tr>
+                <a href="#" class="easyui-linkbutton"
+                   style="width: 40px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="print()">
+                    打印
+                </a>
+                <a href="#" class="easyui-linkbutton"
+                   style="width: 80px;height: 24px; margin-right:3px;text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">
+                    导出EXCEL
+                </a>
+                <input class="easyui-combobox" id="ids" style="width:130px;height: 24px;color: #999"/>
+               <!--  <select class="easyui-combobox" name="ids" id="ids" style="width:100px;height: 24px;color: #999" multiple="true">
+                    <option value="26">项目</option>
+                    <option value="28">Alaska</option>
+                    <option value="29">Arizona</option>
+                </select> -->
+                    <a href="#" class="easyui-linkbutton"
+	                   style="width: 80px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="queryGrid(7)">
+	                    最近7天
+	                </a>
+	                <a href="#" class="easyui-linkbutton"
+	                   style="width: 80px;height: 24px; margin-right:3px;text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="queryGrid(30)">
+	                    最近30天
+	                </a>
+	                <input class="easyui-datebox" name="startTime" id="startTime" style="width:100px;height:24px;margin-left: 5px"
+	                       data-options=""/>
+	                <span style="display: inline-block;width: 20px;text-align: center;color: #999">至</span>
+	                <input class="easyui-datebox" name="endTime" id="endTime" style="width:100px;height:24px;margin-left: 5px"
+	                       data-options=""/>
+	                <a href="#" class="easyui-linkbutton"
+	                   style="width: 60px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef"  onclick="queryGrid(0)">
+	                    查询
+	                </a>
+	                <a href="#" class="easyui-linkbutton"
+	                   style="width: 60px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef"  onclick="clearForm()">
+	      	 重置
+	                </a>
+	              
+                 </tr>
+                 </table>
+                </form>
+            </div>
+            <div data-options="region:'center',collapsible:false,split:true,tools:'#infoToolbar'" style="height:100%" title="数据列表">
+                <table class="easyui-datagrid" style="width: 100%" id="grid"
+                       data-options="singleSelect:true,collapsible:true"
+                       pagination="true" pageSize="30" pageNumber="1" >
+                    <thead>
                     <tr>
-                        <td style="padding:5px;">
-                            <input class="easyui-datetimebox" name="startDate" id="startDate" style="width:100%" data-options="editable:false,label:'起止日期:'" />
-
-
-
-                        </td>
-                        <td style="padding:5px;">
-                            <input class="easyui-datetimebox" name="endDate" id="endDate" style="width:100%" data-options="editable:false,label:'至:'" />
-
-                        </td>
-                        <td style="padding:5px;">
-                            <input class="easyui-datebox" name="created" id="created" style="width:100%"
-                                   data-options="editable:false,label:'部门:'"/>
-
-                        </td>
+                       	<th data-options="field:'name',width:'17%',align:'center'">项目名称</th>
+                        <th data-options="field:'type', _provider:'projectTypeProvider',width:'14%',align:'center'">项目类型</th>
+                        <th data-options="field:'projectManager',_provider:'memberProvider',width:'10%',align:'center'">项目责任人</th>
+                        <th data-options="field:'projectState',_provider:'projectStateProvider',width:'12%',align:'center'">项目状态</th>
+                        <th data-options="field:'completedProgress',formatter:progressFormatter,width:'15%',align:'center'">项目总体进度</th>
+                        <th data-options="field:'dateProgress',formatter:progressFormatter,width:'15%',align:'center'">时间进度</th>
+                        <th data-options="field:'estimateLaunchDate',_provider:'datetimeProvider',width:'15%',align:'center'">计划上线时间</th>
                     </tr>
-                    <tr>
-                        <td style="padding:5px;">
-                            <input class="easyui-textbox" name="status" id="status" style="width:100%"
-                                   data-options="editable:false,label:'人员:', validType:'length[0,3]'"/>
-                            <#comboProvider _id="status" _provider='applyStateProvider'/>
-
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
-                               onclick="queryGrid()">查询</a>
-                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload" onclick="clearForm()">重置</a>
-                        </td>
-                    </tr>
+                    </thead>
                 </table>
-            </form>
+
+            </div>
+
         </div>
     </div>
-    <!-- ====================================================================================================================== -->
-    <!-- 中央布局 -->
-    <!-- ====================================================================================================================== -->
-    <!-- 表格 -->
-    <div region="center" style="width:100%;" height="auto">
-        <!-- =========================================================表格========================================================= -->
-        <table class="easyui-datagrid" title="数据列表" style="width:100%;height:'auto'"
-               pagination="true" pageSize="30" pageNumber="1" pagePosition="bottom"
-               data-options="
-                rownumbers: true,
-                singleSelect: true,
-                url: '${contextPath}/resources/echarts/datagrid_data1.json',
-                method: 'get',
-                onLoadSuccess: onLoadSuccess
-            ">
-            <thead>
-            <tr>
-                <th data-options="field:'attr1',width:'26%',align:'center'">统计日期</th>
-                <th data-options="field:'productid',width:'16%',align:'center'">姓名</th>
-                <th data-options="field:'itemid',width:'16%',align:'center'">部门</th>
-                <th data-options="field:'listprice',width:'14%',align:'center'">总工时(H)</th>
-                <th data-options="field:'unitcost',width:'14%',align:'center'">实际工时(H)</th>
-                <th data-options="field:'status',width:'14%',align:'center'">加班工时(H)</th>
-            </tr>
-            </thead>
-        </table>
-    </div>
 </div>
-<!-- ====================================================================================================================== -->
-<!-- style & script 分隔线 -->
-<!-- ====================================================================================================================== -->
+<script src="${contextPath}/resources/js/jquery.jqprint-0.3.js"></script>
+<script src="${contextPath}/resources/js/jquery-migrate-1.1.0.js"></script>
 <script type="text/javascript">
-    function onLoadSuccess(data){
-        var merges = [{
-            index: 1,
-            rowspan: 5
-        },];
-        for(var i=0; i<merges.length; i++){
-            $(this).datagrid('mergeCells',{
-                index: merges[i].index,
-                field: 'attr1',
-                rowspan: merges[i].rowspan
-            });
-        }
-    }
+    <#projectProgress_index />
+    <#members_index />
 </script>
+<script type="text/javascript">
+
+$(function(){  
+	  
+	 //初始化多选复选框  
+	 initCombobox('ids');
+}) ; 
+	function initCombobox(id){  
+	            var value = "";  
+	            //加载下拉框复选框  
+	            $('#'+id).combobox({  
+	            	url:'${contextPath}/statistical/projectList',
+					panelHeight:'200px',
+	                method:'post',
+	                valueField:'id',
+					textField:'name',
+	                multiple:true,  
+	                formatter: function (row) { //formatter方法就是实现了在每个下拉选项前面增加checkbox框的方法  
+	                    var opts = $(this).combobox('options');  
+	                    return '<input type="checkbox" class="combobox-checkbox">' + row[opts.textField]  
+	                },  
+	                onLoadSuccess: function () {  //下拉框数据加载成功调用  
+	                    var opts = $(this).combobox('options');  
+	                    var target = this;  
+	                    var values = $(target).combobox('getValues');//获取选中的值的values  
+	                    $.map(values, function (value) {  
+	                        var el = opts.finder.getEl(target, value);  
+	                        el.find('input.combobox-checkbox')._propAttr('checked', true);   
+	                    })  
+	                },  
+	                onSelect: function (row) { //选中一个选项时调用  
+	                    var opts = $(this).combobox('options');  
+	                    //获取选中的值的values  
+	                    $("#"+id).val($(this).combobox('getValues'));  
+	                     
+	                   //设置选中值所对应的复选框为选中状态  
+	                    var el = opts.finder.getEl(this, row[opts.valueField]);  
+	                    el.find('input.combobox-checkbox')._propAttr('checked', true);  
+	                },  
+	                onUnselect: function (row) {//不选中一个选项时调用  
+	                    var opts = $(this).combobox('options');  
+	                    //获取选中的值的values  
+	                    $("#"+id).val($(this).combobox('getValues'));  
+	                    
+	                    var el = opts.finder.getEl(this, row[opts.valueField]);  
+	                    el.find('input.combobox-checkbox')._propAttr('checked', false);  
+	                }  
+	            });  
+	        }  
+</script>
+
 </#body>

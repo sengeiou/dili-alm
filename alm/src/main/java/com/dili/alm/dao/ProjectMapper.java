@@ -1,6 +1,7 @@
 package com.dili.alm.dao;
 
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.dto.ProjectProgressDto;
 import com.dili.alm.domain.dto.ProjectStatusCountDto;
 import com.dili.alm.domain.dto.ProjectTypeCountDTO;
 import com.dili.alm.domain.dto.WeeklyPara;
@@ -28,5 +29,10 @@ public interface ProjectMapper extends MyMapper<Project> {
 	List<ProjectStatusCountDto> getTpyeByProjectCount(@Param("type")String type,@Param("startTime")String startTime,@Param("endTime")String endTime);
 	
 	List<Long> getProjectIds(@Param("startTime")String startTime,@Param("endTime")String endTime);
+	
+	List<ProjectProgressDto> getProjectProgressList(@Param("project")Project project,@Param("startTime")String startTime,@Param("endTime")String endTime,@Param("list")List<Long> list);
+
+	int getProjectProgressListCount(@Param("startTime")String startTime,@Param("endTime")String endTime,@Param("list")List<Long> list);
  
+	int getProjectTypeAllCount(@Param("startTime")String startTime,@Param("endTime")String endTime);
 }
