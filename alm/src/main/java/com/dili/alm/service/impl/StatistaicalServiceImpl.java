@@ -1,74 +1,33 @@
 package com.dili.alm.service.impl;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.mail.MessagingException;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dili.alm.cache.AlmCache;
-import com.dili.alm.component.MailManager;
-import com.dili.alm.constant.AlmConstants;
-import com.dili.alm.dao.FilesMapper;
 import com.dili.alm.dao.ProjectMapper;
-import com.dili.alm.dao.ProjectPhaseMapper;
-import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.TaskMapper;
-import com.dili.alm.dao.TeamMapper;
-import com.dili.alm.domain.Files;
-import com.dili.alm.domain.Log;
 import com.dili.alm.domain.Project;
-import com.dili.alm.domain.ProjectEntity;
-import com.dili.alm.domain.ProjectPhase;
-import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.ProjectYearCoverDto;
-import com.dili.alm.domain.Task;
 import com.dili.alm.domain.TaskByUsersDto;
 import com.dili.alm.domain.TaskHoursByProjectDto;
-import com.dili.alm.domain.Team;
-import com.dili.alm.domain.TeamRole;
-import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
-import com.dili.alm.domain.dto.ProjectDto;
 import com.dili.alm.domain.dto.ProjectProgressDto;
 import com.dili.alm.domain.dto.ProjectStatusCountDto;
 import com.dili.alm.domain.dto.ProjectTypeCountDTO;
 import com.dili.alm.domain.dto.TaskStateCountDto;
-import com.dili.alm.domain.dto.UploadProjectFileDto;
-import com.dili.alm.exceptions.ProjectException;
-import com.dili.alm.provider.ProjectProvider;
-import com.dili.alm.rpc.DataAuthRpc;
-import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
-import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.StatisticalService;
-import com.dili.alm.service.TeamService;
 import com.dili.alm.utils.DateUtil;
-import com.dili.alm.utils.WebUtil;
-import com.dili.ss.base.BaseServiceImpl;
-import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
-import com.dili.ss.util.SystemConfigUtils;
-import com.dili.sysadmin.sdk.domain.UserTicket;
-import com.dili.sysadmin.sdk.session.SessionContext;
-import com.github.pagehelper.Page;
 
 @Service
 public class StatistaicalServiceImpl implements StatisticalService {
@@ -84,7 +43,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	
 	private static final String PROJECT_TYPE_CODE = "project_type";
 	
-	private static final String PROJECT_STATE_CODE = "project_state";
+	private static final String SELECT_HOURS_BY_USER_START_DATE = "2018-01-01";//项目上线日期
 	
 	@Override
 	public EasyuiPageOutput getProjectTypeCountDTO(String startTime,String endTime) {	
@@ -133,28 +92,172 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		return taskMapper.selectTaskStateCount(projectIds);
 	}
 
-	
+
 	/***查询工时相关services****by******JING***BEGIN****/
 
 	@Override
 	public List<TaskByUsersDto> listTaskHoursByUser(String startTime,
-			String endTime, Long userId, Long departmentId) {
-		return taskMapper.selectTaskHourByUser(startTime, endTime, departmentId, userId);
-	}
-	
-	
-	@Override
-	public List<TaskHoursByProjectDto> listProject(String startTime,
-			String endTime) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+			String endTime, List<Long> dids, List<Long> uids) {
+		if (startTime==null) {
+			startTime = SELECT_HOURS_BY_USER_START_DATE;
+		}else{
+			startTime+="";
+		}
+		if (endTime==null) {//没有默认为至今
+			endTime = DateUtil.getDate(new Date())+"";
+		}else{
+			endTime+="";
+		}
 
+		List<TaskByUsersDto> list = taskMapper.selectTaskHourByUser(startTime, endTime, null, null);
+		return list;
+	}
+	
+	
 	@Override
-	public List<ProjectYearCoverDto> listProjectYearCover(String startTime,
+	public List<TaskHoursByProjectDto> listProjectHours(String startTime,
 			String endTime) {
-		// TODO Auto-generated method stub
-		return null;
+		return taskMapper.selectProjectHours(startTime, endTime);
+	}
+	@Override
+	public List<ProjectYearCoverDto> listProjectYearCover(String year,
+			String month) {
+
+		return taskMapper.selectProjectYearsCover(getAppedDate(year,month,true), getAppedDate(year,month,false));
+	}
+	
+	
+	private static String getAppedDate(String year,String month,Boolean isBegin){
+		Calendar now = Calendar.getInstance();
+		String retrunDate ="";
+		
+		if (year!=null) {
+			retrunDate+=year;
+		}else{
+			retrunDate+=now.get(Calendar.YEAR);
+		}
+		
+		if (month==null) {
+			month=now.get(Calendar.MONTH)+"";
+		}
+		if (isBegin) {
+			switch (month) {
+			case "1":
+				retrunDate+="-01-01";
+				break;
+			case "2":
+				retrunDate+="-02-01";
+				break;
+			case "3":
+				retrunDate+="-03-01";
+				break;
+			case "4":
+				retrunDate+="-04-01";
+				break;
+			case "5":
+				retrunDate+="-05-01";
+				break;
+			case "6":
+				retrunDate+="-06-01";
+				break;
+			case "7":
+				retrunDate+="-07-01";
+				break;
+			case "8":
+				retrunDate+="-08-01";
+				break;
+			case "9":
+				retrunDate+="-09-01";
+				break;
+			case "10":
+				retrunDate+="-10-01";
+				break;
+			case "11":
+				retrunDate+="-11-01";
+				break;
+			case "12":
+				retrunDate+="-12-01";
+				break;
+			case "13":
+				retrunDate+="-01-01";
+				break;
+			case "14":
+				retrunDate+="-04-01";
+				break;
+			case "15":
+				retrunDate+="-07-01";
+				break;
+			case "16":
+				retrunDate+="-10-01";
+				break;
+			default:
+				retrunDate = SELECT_HOURS_BY_USER_START_DATE;
+				break;
+			}
+		}else{
+			switch (month) {
+			case "1":
+				retrunDate  +="-01-31";
+				break;
+			case "2":
+				retrunDate  +="-02-28";
+				break;
+			case "3":
+				retrunDate  +="-03-31";
+				break;
+			case "4":
+				retrunDate  +="-04-30";
+				break;
+			case "5":
+				retrunDate  +="-05-31";
+				break;
+			case "6":
+				retrunDate  +="-06-30";
+				break;
+			case "7":
+				retrunDate  +="-07-31";
+				break;
+			case "8":
+				retrunDate  +="-08-31";
+				break;
+			case "9":
+				retrunDate  +="-09-30";
+				break;
+			case "10":
+				retrunDate  +="-10-31";
+				break;
+			case "11":
+				retrunDate  +="-11-30";
+				break;
+			case "12":
+				retrunDate  +="-12-31";
+				break;
+			case "13":
+				retrunDate  +="-03-31";
+				break;
+			case "14":
+				retrunDate  +="-06-30";
+				break;
+			case "15":
+				retrunDate  +="-09-30";
+				break;
+			case "16":
+				retrunDate  +="-12-31";
+				break;
+			default:
+				retrunDate  = DateUtil.getDate(new Date());
+				break;
+			}
+		}
+		return retrunDate;
+	}
+	
+	@Override
+	public String getSearchDate(String year, String month) {
+		String begin = getAppedDate(year,month,true);
+		String end =getAppedDate(year,month,false);
+		String returnStr = begin+"至"+end;
+		return returnStr;
 	}
 	/***查询工时相关services****by******JING***END****/
 	@Override

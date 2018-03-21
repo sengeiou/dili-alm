@@ -1,8 +1,5 @@
 package com.dili.alm.controller;
 
-
-import com.dili.alm.dao.ProjectMapper;
-import com.dili.alm.domain.dto.ProjectProgressDto;
 import com.dili.alm.domain.dto.ProjectTypeCountDTO;
 import com.dili.alm.domain.dto.TaskStateCountDto;
 import com.dili.alm.service.ProjectService;
@@ -10,18 +7,9 @@ import com.dili.alm.service.StatisticalService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.alm.utils.WebUtil;
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.ProjectYearCoverDto;
 import com.dili.alm.domain.TaskByUsersDto;
-
-
-
-
-
-
-
-
-
-
-
+import com.dili.alm.domain.TaskHoursByProjectDto;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -40,13 +28,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 
 
-
-
-
-
-
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -56,6 +40,8 @@ import java.util.List;
 @Controller
 @RequestMapping("/statistical")
 public class StatisticalController {
+	
+	private static final String SELECT_HOURS_BY_USER_START_DATE = "2018-01-01";//项目上线日期
 	@Autowired
 	private StatisticalService statisticalService;
 	
@@ -148,12 +134,34 @@ public class StatisticalController {
 	
 	@ApiOperation(value="查询时间段内员工工时", notes = "查询返回easyui信息")
     @RequestMapping(value="/taskHoursByUser", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody List<TaskByUsersDto> taskHoursByUser(String startTime,String endTime,Long userId,Long departmentId) throws Exception {
+    public @ResponseBody List<TaskByUsersDto> taskHoursByUser(String startTime,String endTime,List<Long> userId,List<Long> departmentId) throws Exception {
+		List<TaskByUsersDto> taskByUserDtoList = statisticalService.listTaskHoursByUser(startTime, endTime,departmentId , userId);
+		return taskByUserDtoList;
+   
+    }
+	@ApiOperation(value="查询年度报表", notes = "查询返回easyui信息")
+    @RequestMapping(value="/listProjectYearCover", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody List<ProjectYearCoverDto> listProjectYearCover(String year,String month) throws Exception {
 
-		return statisticalService.listTaskHoursByUser(startTime, endTime, userId, departmentId);
+		return statisticalService.listProjectYearCover(year, month);
    
     }
 	
+	@ApiOperation(value="返回查询后的日期", notes = "查询返回easyui信息")
+    @RequestMapping(value="/getSearchDate", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody String getSearchDate(String year,String month) throws Exception {
+
+		return statisticalService.getSearchDate(year, month);
+   
+    }
+	
+	@ApiOperation(value="项目工时查询", notes = "查询返回easyui信息")
+    @RequestMapping(value="/listProjectHours", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody List<TaskHoursByProjectDto> listProjectHours(String startTime,String endTime) throws Exception {
+
+		return statisticalService.listProjectHours(startTime, endTime);
+   
+    }
 	/***查询工时相关services****by******JING***END****/
 	
 	
