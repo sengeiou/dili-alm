@@ -281,14 +281,15 @@ public class StatisticalController {
 	   if (userTicket == null) {
 			throw new RuntimeException("未登录");
 		}
-	   Long userId=null;
+	   Long userId=userTicket.getId();
 	   if(!WebUtil.strIsEmpty(flat)&&flat.equals("1")){
 		   @SuppressWarnings({ "rawtypes" })
 			List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
 			if (CollectionUtils.isEmpty(dataAuths)) {
-				userId=userTicket.getId();
+				return null;
 			}
-			dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
+			dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString()))); 
+			userId=null;
 	   }
 	   return statisticalService.getHomeProject(userId,projectIds);
    }
@@ -299,14 +300,15 @@ public class StatisticalController {
 	   if (userTicket == null) {
 			throw new RuntimeException("未登录");
 		}
-	   Long userId=null;
+	   Long userId=userTicket.getId();
 	   if(!WebUtil.strIsEmpty(flat)&&flat.equals("1")){	
 		   @SuppressWarnings({ "rawtypes" })
 			List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
 			if (CollectionUtils.isEmpty(dataAuths)) {
-				userId=userTicket.getId();
+				return null;
 			}
 			dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
+			userId = null;
 	   }
 	   return statisticalService.getHomeProjectTask(userId,projectIds);
 

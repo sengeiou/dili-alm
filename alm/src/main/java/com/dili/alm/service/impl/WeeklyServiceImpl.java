@@ -30,6 +30,7 @@ import com.dili.alm.dao.DataDictionaryValueMapper;
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.dao.ProjectPhaseMapper;
 import com.dili.alm.dao.ProjectVersionMapper;
+import com.dili.alm.dao.TeamMapper;
 import com.dili.alm.dao.WeeklyDetailsMapper;
 import com.dili.alm.dao.WeeklyMapper;
 import com.dili.alm.dao.WorkDayMapper;
@@ -38,6 +39,7 @@ import com.dili.alm.domain.DataDictionaryValue;
 import com.dili.alm.domain.Department;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.Task;
+import com.dili.alm.domain.Team;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.Weekly;
 import com.dili.alm.domain.WeeklyDetails;
@@ -53,6 +55,7 @@ import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.DataDictionaryValueService;
 import com.dili.alm.service.TaskService;
+import com.dili.alm.service.TeamService;
 import com.dili.alm.service.WeeklyDetailsService;
 import com.dili.alm.service.WeeklyService;
 import com.dili.alm.service.WorkDayService;
@@ -61,6 +64,7 @@ import com.dili.alm.utils.WordExport;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.dto.DTO;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
@@ -80,6 +84,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	public static  final  String PROJECTTASKSTATUS="3";
 	public static  final  String YES="YES";
 	public static  final  String NO="NO";
+	private static  final  int PROJECTFORSTATUS=1;
 	public static  final  int ISSUBMIT=1;//已经提交
 	public static final  DecimalFormat    df   = new DecimalFormat("######0.00");   
 	@Autowired
@@ -105,6 +110,12 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	DataDictionaryValueService dataDictionaryValueService;
 	@Autowired
 	WorkDayService workDayService;
+	@Autowired
+	WorkDayMapper workDayMapper;
+	@Autowired
+	TeamMapper teamMapper;
+	
+	private static final String WEEKLY_SUBIMT_ROLE="project_manager";
 	
 
 	public WeeklyMapper getActualDao() {
@@ -1092,8 +1103,8 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		wkk.setCreated(new Date());
 		wkk.setModified(null);
 		WorkDay workDay = workDayService.getNowWeeklyWorkDay();
-		wkk.setStartDate(DateUtil.getStrDate(workDay.getWorkStartTime()+" 00:00:00"));
-		wkk.setEndDate(DateUtil.getStrDate(workDay.getWorkStartTime()+" 23:59:59"));
+		wkk.setStartDate(DateUtil.getStrDate(DateUtil.getDate(workDay.getWorkStartTime())+" 00:00:00"));
+		wkk.setEndDate(DateUtil.getStrDate(DateUtil.getDate(workDay.getWorkStartTime())+" 23:59:59"));
 		
 		if (userTicket != null) {
 			wkk.setModifyMemberId(userTicket.getId());
@@ -1134,6 +1145,115 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		 return  weekly;
 	}
 	
+
+	/**
+	 * 定时刷过期任务
+	 */
+	@Scheduled(cron = "0 0 0 * * ? ")
+	@Override
+	@Transactional
+	public void submitWeekly() {
+		Date as = new Date(new Date().getTime()-24*60*60*1000);
+		WorkDay workDayNowDate = workDayMapper.getWorkDayNowDate(DateUtil.getDate(as));
+		WorkDay nextWeeklyWorkDays = workDayService.getNextWorkDay(as);
+		if(workDayNowDate==null){
+			return;
+		}
+		if(!DateUtil.getDate(as).equals(DateUtil.getDate(workDayNowDate.getWorkEndTime()))){
+			return;
+		}
+		String starThisTimeStr = DateUtil.getDate(workDayNowDate.getWorkStartTime())+" 00:00:00";
+		String endThisTimeStr = DateUtil.getDate(workDayNowDate.getWorkEndTime())+" 23:59:59";
+		String endNextTimeStr = DateUtil.getDate(nextWeeklyWorkDays.getWorkEndTime())+" 23:59:59";
+		String starNextTimeStr =DateUtil.getDate(nextWeeklyWorkDays.getWorkStartTime())+" 00:00:00";
+		List<Long> projectIds = projectMapper.selectNotSubmitWeekly(starThisTimeStr,endThisTimeStr);
+		Weekly weekly=DTOUtils.newDTO(Weekly.class);
+		weekly.setStartDate(DateUtil.getStrDate(starThisTimeStr));
+		weekly.setEndDate(DateUtil.getStrDate(endThisTimeStr));
+		List<Weekly> weeklyList = this.weeklyMapper.select(weekly);
+		List<Long> weeklyProjectId=new ArrayList<Long>();
+		for (Weekly weekly2 : weeklyList) {
+			WeeklyDetails weeklyDetails=DTOUtils.newDTO(WeeklyDetails.class);
+			weeklyDetails.setWeeklyId(weekly2.getId());
+			WeeklyDetails selectOne = this.weeklyDetailsMapper.selectOne(weeklyDetails);
+			if(selectOne!=null){
+				if(selectOne.getIsSubmit()==0){
+					selectOne.setIsSubmit(1);
+					this.weeklyDetailsMapper.updateByPrimaryKeySelective(selectOne);
+				}
+			}else{
+
+				WeeklyPara weeklyParaWeek=  new WeeklyPara();
+				weeklyParaWeek.setId(weekly2.getProjectId());
+				weeklyParaWeek.setStartDate(starThisTimeStr);
+				weeklyParaWeek.setEndDate(endThisTimeStr);
+				//本周进展情况 
+				List<TaskDto> td=selectWeeklyProgress(weeklyParaWeek);
+				
+				weeklyParaWeek.setStartDate(starNextTimeStr);
+				weeklyParaWeek.setEndDate(endNextTimeStr);
+				//下周工作计划
+				List<NextWeeklyDto> wek=selectNextWeeklyProgress(weeklyParaWeek);
+
+				Weekly  nextAndcurrentWeek=DTOUtils.newDTO(Weekly.class);
+				nextAndcurrentWeek.setId(weekly2.getId());
+				nextAndcurrentWeek.setCurrentWeek(JSON.toJSONString(td));
+				nextAndcurrentWeek.setNextWeek(JSON.toJSONString(wek));
+				ProjectWeeklyDto pd = getProjectWeeklyDtoById(weekly2.getId());
+				nextAndcurrentWeek.setProgress(pd.getCompletedProgress());
+				weeklyMapper.updateByPrimaryKeySelective(nextAndcurrentWeek);//更新week本周周报
+				weeklyDetails.setIsSubmit(1);
+				weeklyDetailsMapper.createInsert(weeklyDetails);
+			}
+			weeklyProjectId.add(weekly2.getProjectId());
+		}
+		projectIds.removeAll(weeklyProjectId);
+		for (Long projectId : projectIds) {
+			Weekly newWeekly=DTOUtils.newDTO(Weekly.class);
+			WeeklyDetails newWeeklyDetails =DTOUtils.newDTO(WeeklyDetails.class);
+			
+			WeeklyPara weeklyParaWeek=  new WeeklyPara();
+			weeklyParaWeek.setId(projectId);
+			weeklyParaWeek.setStartDate(starThisTimeStr);
+			weeklyParaWeek.setEndDate(endThisTimeStr);
+			//本周进展情况 
+
+			List<TaskDto> td=selectWeeklyProgress(weeklyParaWeek);
+			
+			weeklyParaWeek.setStartDate(starNextTimeStr);
+			weeklyParaWeek.setEndDate(endNextTimeStr);
+			//下周工作计划
+			List<NextWeeklyDto> wek=selectNextWeeklyProgress(weeklyParaWeek);
+			
+			newWeekly.setStartDate(DateUtil.getStrDate(starThisTimeStr));
+			newWeekly.setEndDate(DateUtil.getStrDate(endThisTimeStr));
+			newWeekly.setProjectId(projectId);
+			newWeekly.setRisk("[]");
+			newWeekly.setQuestion("[]");
+			newWeekly.setCurrentWeek(JSON.toJSONString(td));
+			newWeekly.setNextWeek(JSON.toJSONString(wek));
+			newWeekly.setCreated(new Date());
+			newWeekly.setModified(new Date());
+			//获取项目经理
+			Team team=DTOUtils.newDTO(Team.class);
+			team.setProjectId(projectId);
+			team.setRole(WEEKLY_SUBIMT_ROLE);
+			Team projectManager = teamMapper.selectOne(team);
+			
+			newWeekly.setCreateMemberId(projectManager.getMemberId());
+			newWeekly.setModifyMemberId(projectManager.getMemberId());
+			
+			//
+			Project selectByPrimaryKey = projectMapper.selectByPrimaryKey(projectId);
+			newWeekly.setProgress(selectByPrimaryKey.getCompletedProgress().toString());
+			this.weeklyMapper.insert(newWeekly);
+			newWeeklyDetails.setWeeklyId(newWeekly.getId());
+			newWeeklyDetails.setIsSubmit(1);
+			this.weeklyDetailsMapper.insert(newWeeklyDetails);
+		}
+
 	
+	}
+
 	
 }

@@ -291,4 +291,15 @@
 
 
 	</select>
+	<select id="selectNotSubmitWeekly" resultType="java.lang.Long">
+	SELECT 
+	id
+	FROM `project` 
+	WHERE 
+	project_state=1 
+	OR 
+	( #{startTime}&lt;=end_date AND end_date&lt;=#{endTime}
+		AND project_state = 2
+	)
+	</select>
 </mapper>
