@@ -14,7 +14,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2018-03-16 10:20:26.
+ * This file was generated on 2018-03-23 11:45:33.
  */
 @Table(name = "`project_online_operation_record`")
 public interface ProjectOnlineOperationRecord extends IBaseDomain {
@@ -27,12 +27,12 @@ public interface ProjectOnlineOperationRecord extends IBaseDomain {
 
     void setId(Long id);
 
-    @Column(name = "`manager_title`")
-    @FieldDef(label="负责人标题（用来表格显示）", maxLength = 255)
+    @Column(name = "`operation_name`")
+    @FieldDef(label="操作名称", maxLength = 255)
     @EditMode(editor = FieldEditor.Text, required = true)
-    String getManagerTitle();
+    String getOperationName();
 
-    void setManagerTitle(String managerTitle);
+    void setOperationName(String operationName);
 
     @Column(name = "`description`")
     @FieldDef(label="描述", maxLength = 255)
@@ -62,10 +62,17 @@ public interface ProjectOnlineOperationRecord extends IBaseDomain {
 
     void setApplyId(Long applyId);
 
-    @Column(name = "`flow_id`")
-    @FieldDef(label="流程id", maxLength = 0)
-    @EditMode(editor = FieldEditor.Text, required = true)
-    String getFlowId();
+    @Column(name = "`operation_type`")
+    @FieldDef(label="操作类型，确认是什么角色的人做的操作")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Integer getOperationType();
 
-    void setFlowId(String flowId);
+    void setOperationType(Integer operationType);
+
+    @Column(name = "`operator_id`")
+    @FieldDef(label="操作人")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Long getOperatorId();
+
+    void setOperatorId(Long operatorId);
 }

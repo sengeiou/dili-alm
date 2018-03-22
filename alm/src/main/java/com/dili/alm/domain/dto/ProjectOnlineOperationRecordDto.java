@@ -11,22 +11,13 @@ public class ProjectOnlineOperationRecordDto extends BaseDomain implements Proje
 	 * 
 	 */
 	private static final long serialVersionUID = -3259079666144431650L;
-	private String managerTitle;
 	private String description;
 	private Date operateTime;
 	private Integer opertateResult;
 	private Long applyId;
-	private String flowId;
-
-	@Override
-	public String getManagerTitle() {
-		return managerTitle;
-	}
-
-	@Override
-	public void setManagerTitle(String managerTitle) {
-		this.managerTitle = managerTitle;
-	}
+	private Integer operationType;
+	private String operationName;
+	private Long operatorId;
 
 	@Override
 	public String getDescription() {
@@ -69,13 +60,33 @@ public class ProjectOnlineOperationRecordDto extends BaseDomain implements Proje
 	}
 
 	@Override
-	public String getFlowId() {
-		return flowId;
+	public Integer getOperationType() {
+		return operationType;
 	}
 
 	@Override
-	public void setFlowId(String flowId) {
-		this.flowId = flowId;
+	public void setOperationType(Integer operationType) {
+		this.operationType = operationType;
+	}
+
+	@Override
+	public String getOperationName() {
+		return operationName;
+	}
+
+	@Override
+	public void setOperationName(String operationName) {
+		this.operationName = operationName;
+	}
+
+	@Override
+	public Long getOperatorId() {
+		return operatorId;
+	}
+
+	@Override
+	public void setOperatorId(Long operatorId) {
+		this.operatorId = operatorId;
 	}
 
 }

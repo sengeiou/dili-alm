@@ -49,6 +49,8 @@ public class ProjectOnlineApplyDto extends BaseDomain implements ProjectOnlineAp
 
 	private Long businessOwnerId;
 
+	private String executorId;
+
 	@Override
 	public String getProjectName() {
 		return projectName;
@@ -237,6 +239,16 @@ public class ProjectOnlineApplyDto extends BaseDomain implements ProjectOnlineAp
 	@Override
 	public void setBusinessOwnerId(Long businessOwnerId) {
 		this.businessOwnerId = businessOwnerId;
+	}
+
+	@Override
+	public String getExecutorId() {
+		return executorId;
+	}
+
+	@Override
+	public void setExecutorId(String executorId) {
+		this.executorId = executorId;
 	}
 
 }

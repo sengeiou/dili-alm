@@ -11,6 +11,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,9 +22,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.domain.ProjectOnlineApply;
 import com.dili.alm.domain.dto.ProjectOnlineApplyUpdateDto;
 import com.dili.alm.domain.dto.apply.ApplyMajorResource;
+import com.dili.alm.exceptions.ProjectOnlineApplyException;
 import com.dili.alm.service.ProjectOnlineApplyService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.sysadmin.sdk.domain.UserTicket;
+import com.dili.sysadmin.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
 
 import io.swagger.annotations.Api;
@@ -72,6 +76,12 @@ public class ProjectOnlineApplyController {
 		if (br.hasErrors()) {
 			return BaseOutput.failure(br.getFieldError().getDefaultMessage());
 		}
+		// 获取申请人
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		if (user == null) {
+			return BaseOutput.failure("请先登录");
+		}
+		projectOnlineApply.setApplicantId(user.getId());
 		try {
 			projectOnlineApplyService.saveOrUpdate(projectOnlineApply);
 			return BaseOutput.success();
@@ -99,7 +109,11 @@ public class ProjectOnlineApplyController {
 			@ApiImplicitParam(name = "id", paramType = "form", value = "ProjectOnlineApply的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput delete(Long id) {
-		projectOnlineApplyService.delete(id);
-		return BaseOutput.success("删除成功");
+		try {
+			projectOnlineApplyService.deleteProjectOnlineApply(id);
+			return BaseOutput.success();
+		} catch (ProjectOnlineApplyException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
 	}
 }
