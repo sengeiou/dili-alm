@@ -340,6 +340,7 @@
 		               t.end_date &gt;= #{startDate,jdbcType=VARCHAR}
 		               and   t.end_date &lt;= #{endDate,jdbcType=VARCHAR}
 		               and   t.start_date &lt;= t.end_date 
+		               and   t.status &lt;&gt; 3
 		         <if test="id != null">
 			           and  t.project_id=#{id,jdbcType=BIGINT}
 			     </if>	      
@@ -354,6 +355,7 @@
 		           	 t.end_date &gt;=#{endDate,jdbcType=VARCHAR}
 	                 and  t.start_date &lt;= t.end_date 
 	           		 and  t.start_date &lt;=#{endDate,jdbcType=VARCHAR}
+	           		 and   t.status &lt;&gt; 3
 		         <if test="id != null">
 			         and  t.project_id=#{id,jdbcType=BIGINT}
 			     </if>

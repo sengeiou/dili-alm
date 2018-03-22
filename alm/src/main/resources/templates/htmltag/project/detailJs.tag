@@ -651,29 +651,18 @@ function alarmConfig() {
 			});
 }
 
-function getMyDay(date) {
-	var week;
-	if (date.getDay() == 0)
-		week = "周日"
-	if (date.getDay() == 1)
-		week = "周一"
-	if (date.getDay() == 2)
-		week = "周二"
-	if (date.getDay() == 3)
-		week = "周三"
-	if (date.getDay() == 4)
-		week = "周四"
-	if (date.getDay() == 5)
-		week = "周五"
-	if (date.getDay() == 6)
-		week = "周六"
-	return week;
+function getMyDay() {
+	 var  htmlobj=$.ajax({url:"${contextPath!}/workDay/isWorkEndDayDate",async:false});
+     var str=htmlobj.responseText;
+     var obj = $.parseJSON(str);
+     return obj;
 }
 
 function generateWeekly() {
-	var wday = getMyDay(new Date()); // 周报非周五时间段 限制提交
-	if (wday != '周五') {
-		$.messager.alert('不能提交周报', ' 不是周五 不可提交周报');
+	var wday = getMyDay(new Date()); // 周报非最后时间段 限制提交
+	
+	if (!getMyDay()) {
+		$.messager.alert('不能提交周报', ' 不是工作日最后一天 不可提交周报');
 		return false;
 	}
 
