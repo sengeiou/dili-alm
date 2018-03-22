@@ -5,8 +5,29 @@ import com.dili.ss.base.MyMapper;
 
 public interface SequenceMapper extends MyMapper<Sequence> {
 
-    Integer get();
+	public static final class SequenceUpdateDto {
+		private Integer number;
+		private String type;
 
-    void update(int number);
+		public Integer getNumber() {
+			return number;
+		}
+
+		public void setNumber(Integer number) {
+			this.number = number;
+		}
+
+		public String getType() {
+			return type;
+		}
+
+		public void setType(String type) {
+			this.type = type;
+		}
+	}
+
+	Integer get();
+
+	void updateByType(SequenceUpdateDto param);
 
 }

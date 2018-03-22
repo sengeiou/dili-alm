@@ -1,4 +1,4 @@
-package com.dili.alm.cache;
+package com.dili.alm.component;
 
 import com.dili.alm.dao.SequenceMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +10,7 @@ import java.text.DecimalFormat;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
-public class ProjectNumberGenerator {
+public class ProjectNumberGenerator implements NumberGenerator {
     @Autowired
     private SequenceMapper sequenceMapper;
 
@@ -23,14 +23,14 @@ public class ProjectNumberGenerator {
 
     @PreDestroy
     private void destory() {
-        sequenceMapper.update(number.get());
+        sequenceMapper.updateByType(null);
     }
 
-    /**
-     * 格式化序列
-     * @return 序列 xxxx
-     */
-    public String get() {
+    /* (non-Javadoc)
+	 * @see com.dili.alm.cache.NumberGenerator#get()
+	 */
+    @Override
+	public String get() {
         DecimalFormat df = new DecimalFormat("0000");
         return df.format(number.getAndIncrement());
     }

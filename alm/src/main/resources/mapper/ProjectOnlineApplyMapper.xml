@@ -6,6 +6,7 @@
       WARNING - @mbg.generated
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="serial_number" jdbcType="VARCHAR" property="serialNumber" />
     <result column="project_name" jdbcType="VARCHAR" property="projectName" />
     <result column="project_id" jdbcType="BIGINT" property="projectId" />
     <result column="project_serial_number" jdbcType="VARCHAR" property="projectSerialNumber" />
@@ -28,9 +29,10 @@
     <!--
       WARNING - @mbg.generated
     -->
-    id, project_name, project_id, project_serial_number, version_id, version, project_manager_id, 
-    product_manager_id, test_manager_id, development_manager_id, online_date, dependency_description, 
-    scope_description, applicant_id, created, apply_state, actual_online_date, submit_time
+    id, serial_number, project_name, project_id, project_serial_number, version_id, version, 
+    project_manager_id, product_manager_id, test_manager_id, development_manager_id, 
+    online_date, dependency_description, scope_description, applicant_id, created, apply_state, 
+    actual_online_date, submit_time
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -47,6 +49,9 @@
     -->
     update project_online_apply
     <set>
+      <if test="serialNumber != null">
+        serial_number = #{serialNumber,jdbcType=VARCHAR},
+      </if>
       <if test="projectName != null">
         project_name = #{projectName,jdbcType=VARCHAR},
       </if>

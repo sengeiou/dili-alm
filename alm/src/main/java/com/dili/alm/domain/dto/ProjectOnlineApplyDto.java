@@ -48,6 +48,8 @@ public class ProjectOnlineApplyDto extends BaseDomain implements ProjectOnlineAp
 
 	private Date submitTime;
 
+	private String serialNumber;
+
 	@Override
 	public String getProjectName() {
 		return projectName;
@@ -232,6 +234,16 @@ public class ProjectOnlineApplyDto extends BaseDomain implements ProjectOnlineAp
 	@Override
 	public void setSubmitTime(Date submitTime) {
 		this.submitTime = submitTime;
+	}
+
+	@Override
+	public String getSerialNumber() {
+		return serialNumber;
+	}
+
+	@Override
+	public void setSerialNumber(String serialNumber) {
+		this.serialNumber = serialNumber;
 	}
 
 }

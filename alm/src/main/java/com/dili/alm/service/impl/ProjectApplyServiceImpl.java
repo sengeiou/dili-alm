@@ -1,7 +1,7 @@
 package com.dili.alm.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.dili.alm.cache.ProjectNumberGenerator;
+import com.dili.alm.component.NumberGenerator;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.ProjectApplyMapper;
 import com.dili.alm.domain.Approve;
@@ -44,7 +44,7 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
     protected static final Logger LOGGER = LoggerFactory.getLogger(ProjectApplyServiceImpl.class);
 
     @Autowired
-    private ProjectNumberGenerator projectNumberGenerator;
+    private NumberGenerator projectNumberGenerator;
     @Autowired
     private DataDictionaryService dataDictionaryService;
 
