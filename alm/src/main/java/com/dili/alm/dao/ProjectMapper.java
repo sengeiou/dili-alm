@@ -3,7 +3,7 @@ package com.dili.alm.dao;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.dto.ProjectProgressDto;
 import com.dili.alm.domain.dto.ProjectStatusCountDto;
-import com.dili.alm.domain.dto.ProjectTypeCountDTO;
+import com.dili.alm.domain.dto.ProjectTypeCountDto;
 import com.dili.alm.domain.dto.WeeklyPara;
 import com.dili.ss.base.MyMapper;
 

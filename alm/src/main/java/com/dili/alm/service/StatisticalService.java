@@ -1,5 +1,6 @@
 package com.dili.alm.service;
 
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +15,7 @@ import com.dili.alm.domain.TaskByUsersDto;
 import com.dili.alm.domain.TaskHoursByProjectDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectProgressDto;
-import com.dili.alm.domain.dto.ProjectTypeCountDTO;
+import com.dili.alm.domain.dto.ProjectTypeCountDto;
 import com.dili.alm.domain.dto.TaskStateCountDto;
 import com.dili.alm.domain.dto.UploadProjectFileDto;
 import com.dili.alm.exceptions.ProjectException;
@@ -48,10 +49,11 @@ public interface StatisticalService {
 			String startTime, String endTime, List<Long> ids);
 
 
-
-
-	List<ProjectTypeCountDTO> getProjectToTypeSummary(String startTime,
+	List<ProjectTypeCountDto> getProjectToTypeSummary(String startTime,
 			String endTime);
+
+
+	void downloadProjectType(OutputStream os, String startTime, String endTime) throws Exception;
 
 
 }

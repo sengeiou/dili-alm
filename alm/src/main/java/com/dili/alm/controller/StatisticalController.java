@@ -1,6 +1,9 @@
 package com.dili.alm.controller;
 
-import com.dili.alm.domain.dto.ProjectTypeCountDTO;
+
+import com.dili.alm.dao.ProjectMapper;
+import com.dili.alm.domain.dto.ProjectProgressDto;
+import com.dili.alm.domain.dto.ProjectTypeCountDto;
 import com.dili.alm.domain.dto.TaskStateCountDto;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.StatisticalService;
@@ -9,6 +12,28 @@ import com.dili.alm.utils.WebUtil;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectYearCoverDto;
 import com.dili.alm.domain.TaskByUsersDto;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import com.dili.alm.domain.TaskHoursByProjectDto;
 
 import io.swagger.annotations.Api;
@@ -28,10 +53,30 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-10-18 17:22:54.
@@ -40,8 +85,6 @@ import java.util.List;
 @Controller
 @RequestMapping("/statistical")
 public class StatisticalController {
-	
-	private static final String SELECT_HOURS_BY_USER_START_DATE = "2018-01-01";//项目上线日期
 	@Autowired
 	private StatisticalService statisticalService;
 	
@@ -89,20 +132,9 @@ public class StatisticalController {
 	@ApiOperation(value="查询项目", notes = "查询返回easyui信息")
     @RequestMapping(value="/ProjectOverviewlist", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String ProjectOverviewlist(String startTime,String endTime,Integer flat) throws Exception {
-		if(flat!=null){
-			startTime = DateUtil.getPastDate(flat);
-			endTime = DateUtil.getToDay();
-		}else{
-			if(WebUtil.strIsEmpty(startTime)&&WebUtil.strIsEmpty(endTime)){
-				startTime = DateUtil.getPastDate(7);
-				endTime = DateUtil.getToDay();
-			}else if(!WebUtil.strIsEmpty(startTime)&&WebUtil.strIsEmpty(endTime)){
-				endTime =DateUtil.getFutureDate(30);
-			}else if(WebUtil.strIsEmpty(startTime)&&(!WebUtil.strIsEmpty(endTime))){
-				startTime =DateUtil.getFutureDate(30);
-			}
-		}
-		return statisticalService.getProjectTypeCountDTO(startTime, endTime).toString();
+		String startTime2 = getStartTime(startTime, endTime, flat);
+		String endTime2 = getEndTime(startTime, endTime, flat);
+		return statisticalService.getProjectTypeCountDTO(startTime2, endTime2).toString();
    
     }
 	
@@ -113,20 +145,9 @@ public class StatisticalController {
 	@ApiOperation(value="查询项目任务数量", notes = "查询返回List信息")
     @RequestMapping(value="/ProjectOverviewTasklist", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody List<TaskStateCountDto> ProjectOverviewTasklist(String startTime,String endTime,Integer flat) throws Exception {
-		if(flat!=null){
-			startTime = DateUtil.getPastDate(flat);
-			endTime = DateUtil.getToDay();
-		}else{
-			if(WebUtil.strIsEmpty(startTime)&&WebUtil.strIsEmpty(endTime)){
-				startTime = DateUtil.getPastDate(7);
-				endTime = DateUtil.getToDay();
-			}else if(!WebUtil.strIsEmpty(startTime)&&WebUtil.strIsEmpty(endTime)){
-				endTime =DateUtil.getFutureDate(30);
-			}else if(WebUtil.strIsEmpty(startTime)&&(!WebUtil.strIsEmpty(endTime))){
-				startTime =DateUtil.getFutureDate(30);
-			}
-		}
-		return statisticalService.getProjectToTaskCount(startTime, endTime);
+		String startTime2 = getStartTime(startTime, endTime, flat);
+		String endTime2 = getEndTime(startTime, endTime, flat);
+		return statisticalService.getProjectToTaskCount(startTime2, endTime2);
 
     }
 	
@@ -134,8 +155,8 @@ public class StatisticalController {
 	
 	@ApiOperation(value="查询时间段内员工工时", notes = "查询返回easyui信息")
     @RequestMapping(value="/taskHoursByUser", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody List<TaskByUsersDto> taskHoursByUser(String startTime,String endTime,String aaa,String aaaaa) throws Exception {
-		List<TaskByUsersDto> taskByUserDtoList = statisticalService.listTaskHoursByUser(startTime, endTime,null , null);
+    public @ResponseBody List<TaskByUsersDto> taskHoursByUser(String startTime,String endTime,List<Long> userId,List<Long> departmentId) throws Exception {
+		List<TaskByUsersDto> taskByUserDtoList = statisticalService.listTaskHoursByUser(startTime, endTime,departmentId , userId);
 		return taskByUserDtoList;
    
     }
@@ -168,19 +189,8 @@ public class StatisticalController {
 	@ApiOperation(value="查询项目进展总汇", notes = "查询返回easyui信息")
     @RequestMapping(value="/ProjectProgressList", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String ProjectProgressList(Project project,String startTime,String endTime,Integer flat,String ids) throws Exception {
-		if(flat!=null){
-			startTime = DateUtil.getPastDate(flat);
-			endTime = DateUtil.getToDay();
-		}else{
-			if(WebUtil.strIsEmpty(startTime)&&WebUtil.strIsEmpty(endTime)){
-				startTime = DateUtil.getPastDate(7);
-				endTime = DateUtil.getToDay();
-			}else if(!WebUtil.strIsEmpty(startTime)&&WebUtil.strIsEmpty(endTime)){
-				endTime =DateUtil.getFutureDate(30);
-			}else if(WebUtil.strIsEmpty(startTime)&&(!WebUtil.strIsEmpty(endTime))){
-				startTime =DateUtil.getFutureDate(30);
-			}
-		}
+		String startTime2 = getStartTime(startTime, endTime, flat);
+		String endTime2 = getEndTime(startTime, endTime, flat);
 		List<Long> list=new ArrayList<Long>();
 		if(!WebUtil.strIsEmpty(ids)){
 			String[] split = ids.split(",");
@@ -188,27 +198,16 @@ public class StatisticalController {
 				list.add(Long.parseLong(string));
 			}
 		}
-		return statisticalService.getProjectProgresstDTO(project,startTime, endTime, list).toString();
+		return statisticalService.getProjectProgresstDTO(project,startTime2, endTime2, list).toString();
    
     }
 	
 	@ApiOperation(value="查询所有", notes = "查询返回List信息")
     @RequestMapping(value="/projecTypetList", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody List<ProjectTypeCountDTO> projecTypetList(String startTime,String endTime,Integer flat) throws Exception {
-		if(flat!=null){
-			startTime = DateUtil.getPastDate(flat);
-			endTime = DateUtil.getToDay();
-		}else{
-			if(WebUtil.strIsEmpty(startTime)&&WebUtil.strIsEmpty(endTime)){
-				startTime = DateUtil.getPastDate(7);
-				endTime = DateUtil.getToDay();
-			}else if(!WebUtil.strIsEmpty(startTime)&&WebUtil.strIsEmpty(endTime)){
-				endTime =DateUtil.getFutureDate(30);
-			}else if(WebUtil.strIsEmpty(startTime)&&(!WebUtil.strIsEmpty(endTime))){
-				startTime =DateUtil.getFutureDate(30);
-			}
-		}
-		return statisticalService.getProjectToTypeSummary(startTime, endTime); 
+    public @ResponseBody List<ProjectTypeCountDto> projecTypetList(String startTime,String endTime,Integer flat) throws Exception {
+		String startTime2 = getStartTime(startTime, endTime, flat);
+		String endTime2 = getEndTime(startTime, endTime, flat);
+		return statisticalService.getProjectToTypeSummary(startTime2, endTime2); 
 
     }
 	
@@ -217,5 +216,79 @@ public class StatisticalController {
     public @ResponseBody List<Project> projectList(Project project) throws Exception {
 		return projectService.list(project);
 
+    }
+   @RequestMapping(value="/projecOverViewDownload", method = {RequestMethod.GET, RequestMethod.POST})
+    public void projecOverViewDownload(String startTime,String endTime,HttpServletRequest request, HttpServletResponse response) throws Exception {
+    	String startTime2 = getStartTime(startTime, endTime, null);
+		String endTime2 = getEndTime(startTime, endTime, null);
+		String fileName = "项目总览.xls";
+        // 默认使用IE的方式进行编码
+	    try {
+	    	String rtn = getRtn(fileName, request);
+	        response.setContentType("application/octet-stream");
+	        response.setHeader("Content-Disposition", "attachment;" + rtn);
+	        statisticalService.downloadProjectType(response.getOutputStream(), startTime2, endTime2);
+	    } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    public static String getStartTime(String startTime,String endTime,Integer flat){
+    	if(flat!=null){
+			startTime = DateUtil.getPastDate(flat);
+		}else{
+			if(WebUtil.strIsEmpty(startTime)&&WebUtil.strIsEmpty(endTime)){
+				startTime = DateUtil.getPastDate(7);
+			}else if(WebUtil.strIsEmpty(startTime)&&(!WebUtil.strIsEmpty(endTime))){
+				startTime =DateUtil.getFutureDate(30);
+			}
+		}
+    	return startTime;
+    }
+    public static String getEndTime(String startTime,String endTime,Integer flat){
+    	if(flat!=null){
+			endTime = DateUtil.getToDay();
+		}else{
+			if(WebUtil.strIsEmpty(startTime)&&WebUtil.strIsEmpty(endTime)){
+				endTime = DateUtil.getToDay();
+			}else if(!WebUtil.strIsEmpty(startTime)&&WebUtil.strIsEmpty(endTime)){
+				endTime =DateUtil.getFutureDate(30);
+			}
+		}
+    	return endTime;
+    }
+    public static String getRtn(String fileName,HttpServletRequest request) throws UnsupportedEncodingException{
+    	String userAgent = request.getHeader("User-Agent");
+        String rtn = "filename=\"" + fileName + "\"";
+        if (userAgent != null) {
+            userAgent = userAgent.toLowerCase();
+            // IE浏览器，只能采用URLEncoder编码
+            if (userAgent.contains("msie")) {
+                rtn = "filename=\"" + fileName + "\"";
+            }
+            // Opera浏览器只能采用filename*
+            else if (userAgent.contains("opera")) {
+                rtn = "filename*=UTF-8''" + fileName;
+            }
+            // Safari浏览器，只能采用ISO编码的中文输出
+            else if (userAgent.contains("safari")) {
+                rtn = "filename=\"" + new String(fileName.getBytes("UTF-8"), "ISO8859-1") + "\"";
+            } else if (userAgent.contains("mozilla")) {
+                rtn = "filename*=UTF-8''" + fileName;
+            }
+        }
+		return rtn;
     }
 }
