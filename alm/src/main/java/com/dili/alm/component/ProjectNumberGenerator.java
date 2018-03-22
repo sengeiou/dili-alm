@@ -11,27 +11,32 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 public class ProjectNumberGenerator implements NumberGenerator {
-    @Autowired
-    private SequenceMapper sequenceMapper;
 
-    private AtomicInteger number = new AtomicInteger(0);
+	public static final String PROJECT_NUMBER_GENERATOR_TYPE = "projectNumberGenerator";
 
-    @PostConstruct
-    private void init() {
-        number.set(sequenceMapper.get());
-    }
+	@Autowired
+	private SequenceMapper sequenceMapper;
 
-    @PreDestroy
-    private void destory() {
-        sequenceMapper.updateByType(null);
-    }
+	private AtomicInteger number = new AtomicInteger(0);
 
-    /* (non-Javadoc)
+	@PostConstruct
+	private void init() {
+		number.set(sequenceMapper.get());
+	}
+
+	@PreDestroy
+	private void destory() {
+		sequenceMapper.updateByType(null);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.dili.alm.cache.NumberGenerator#get()
 	 */
-    @Override
+	@Override
 	public String get() {
-        DecimalFormat df = new DecimalFormat("0000");
-        return df.format(number.getAndIncrement());
-    }
+		DecimalFormat df = new DecimalFormat("0000");
+		return df.format(number.getAndIncrement());
+	}
 }
