@@ -14,7 +14,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2018-03-22 10:47:39.
+ * This file was generated on 2018-03-22 16:10:00.
  */
 @Table(name = "`project_online_apply`")
 public interface ProjectOnlineApply extends IBaseDomain {
@@ -68,6 +68,13 @@ public interface ProjectOnlineApply extends IBaseDomain {
     String getVersion();
 
     void setVersion(String version);
+
+    @Column(name = "`business_owner_id`")
+    @FieldDef(label="业务负责人id")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Long getBusinessOwnerId();
+
+    void setBusinessOwnerId(Long businessOwnerId);
 
     @Column(name = "`project_manager_id`")
     @FieldDef(label="项目经理id")

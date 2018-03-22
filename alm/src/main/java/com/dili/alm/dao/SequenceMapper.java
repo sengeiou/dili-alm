@@ -9,6 +9,17 @@ public interface SequenceMapper extends MyMapper<Sequence> {
 		private Integer number;
 		private String type;
 
+		public SequenceUpdateDto() {
+			super();
+			// TODO Auto-generated constructor stub
+		}
+
+		public SequenceUpdateDto(Integer number, String type) {
+			super();
+			this.number = number;
+			this.type = type;
+		}
+
 		public Integer getNumber() {
 			return number;
 		}
@@ -26,7 +37,7 @@ public interface SequenceMapper extends MyMapper<Sequence> {
 		}
 	}
 
-	Integer get();
+	Integer getByType(String type);
 
 	void updateByType(SequenceUpdateDto param);
 

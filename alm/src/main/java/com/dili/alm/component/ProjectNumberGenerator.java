@@ -1,6 +1,8 @@
 package com.dili.alm.component;
 
 import com.dili.alm.dao.SequenceMapper;
+import com.dili.alm.dao.SequenceMapper.SequenceUpdateDto;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,12 +23,12 @@ public class ProjectNumberGenerator implements NumberGenerator {
 
 	@PostConstruct
 	private void init() {
-		number.set(sequenceMapper.get());
+		number.set(sequenceMapper.getByType(PROJECT_NUMBER_GENERATOR_TYPE));
 	}
 
 	@PreDestroy
 	private void destory() {
-		sequenceMapper.updateByType(null);
+		sequenceMapper.updateByType(new SequenceUpdateDto(this.number.get(), PROJECT_NUMBER_GENERATOR_TYPE));
 	}
 
 	/*

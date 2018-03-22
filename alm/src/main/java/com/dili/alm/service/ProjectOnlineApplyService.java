@@ -2,7 +2,7 @@ package com.dili.alm.service;
 
 import com.dili.alm.domain.OperationResult;
 import com.dili.alm.domain.ProjectOnlineApply;
-import com.dili.alm.domain.dto.ProjectOnlineApplyDto;
+import com.dili.alm.domain.dto.ProjectOnlineApplyUpdateDto;
 import com.dili.alm.exceptions.ProjectOnlineApplyException;
 import com.dili.ss.base.BaseService;
 
@@ -20,7 +20,7 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 	 * @param dto
 	 *            数据模型
 	 */
-	void saveOrUpdate(ProjectOnlineApplyDto dto);
+	void saveOrUpdate(ProjectOnlineApplyUpdateDto dto);
 
 	/**
 	 * 查看申请详情
@@ -44,11 +44,11 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 	 * 
 	 * @param applyId
 	 *            申请id
-	 * @param result
+	 * @param description
 	 *            执行结果
 	 * @throws ProjectOnlineApplyException
 	 */
-	void startExecute(Long applyId, OperationResult result) throws ProjectOnlineApplyException;
+	void startExecute(Long applyId, String description) throws ProjectOnlineApplyException;
 
 	/**
 	 * 测试确认
@@ -80,4 +80,8 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 	 * @throws ProjectOnlineApplyException
 	 */
 	void validate(Long applyId) throws ProjectOnlineApplyException;
+
+	void insertProjectOnlineApply(ProjectOnlineApplyUpdateDto projectOnlineApply);
+
+	void updateProjectOnlineApply(ProjectOnlineApplyUpdateDto dto);
 }

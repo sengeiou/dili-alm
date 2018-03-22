@@ -3,6 +3,8 @@ package com.dili.alm.domain.dto;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 import com.dili.alm.domain.ProjectOnlineApply;
 import com.dili.ss.domain.BaseDomain;
 
@@ -14,8 +16,10 @@ public class ProjectOnlineApplyDto extends BaseDomain implements ProjectOnlineAp
 	private static final long serialVersionUID = -8354171445080544962L;
 
 	private String projectName;
+	@NotNull(message = "项目不能为空")
 	private Long projectId;
 	private String projectSerialNumber;
+	@NotNull(message = "版本不能为空")
 	private Long versionId;
 	private String version;
 	private Long projectManagerId;
@@ -24,6 +28,7 @@ public class ProjectOnlineApplyDto extends BaseDomain implements ProjectOnlineAp
 
 	private Long developmentManagerId;
 
+	@NotNull(message = "申请上线日期不能为空")
 	private Date onlineDate;
 
 	private String dependencyDescription;
@@ -33,14 +38,6 @@ public class ProjectOnlineApplyDto extends BaseDomain implements ProjectOnlineAp
 	private Long applicantId;
 
 	private Date created;
-	/**
-	 * 上线系统列表
-	 */
-	private List<OnlineSystemDto> onlineSystems;
-	/**
-	 * 邮件通知列表
-	 */
-	private List<String> emailAddresses;
 
 	private Integer applyState;
 
@@ -49,6 +46,8 @@ public class ProjectOnlineApplyDto extends BaseDomain implements ProjectOnlineAp
 	private Date submitTime;
 
 	private String serialNumber;
+
+	private Long businessOwnerId;
 
 	@Override
 	public String getProjectName() {
@@ -190,22 +189,6 @@ public class ProjectOnlineApplyDto extends BaseDomain implements ProjectOnlineAp
 		this.created = created;
 	}
 
-	public List<OnlineSystemDto> getOnlineSystems() {
-		return onlineSystems;
-	}
-
-	public void setOnlineSystems(List<OnlineSystemDto> onlineSystems) {
-		this.onlineSystems = onlineSystems;
-	}
-
-	public List<String> getEmailAddresses() {
-		return emailAddresses;
-	}
-
-	public void setEmailAddresses(List<String> emailAddresses) {
-		this.emailAddresses = emailAddresses;
-	}
-
 	@Override
 	public Integer getApplyState() {
 		return applyState;
@@ -244,6 +227,16 @@ public class ProjectOnlineApplyDto extends BaseDomain implements ProjectOnlineAp
 	@Override
 	public void setSerialNumber(String serialNumber) {
 		this.serialNumber = serialNumber;
+	}
+
+	@Override
+	public Long getBusinessOwnerId() {
+		return businessOwnerId;
+	}
+
+	@Override
+	public void setBusinessOwnerId(Long businessOwnerId) {
+		this.businessOwnerId = businessOwnerId;
 	}
 
 }

@@ -6,9 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.domain.ProjectOnlineApply;
+import com.dili.alm.domain.dto.ProjectOnlineApplyUpdateDto;
 import com.dili.alm.domain.dto.apply.ApplyMajorResource;
 import com.dili.alm.service.ProjectOnlineApplyService;
 import com.dili.ss.domain.BaseOutput;
@@ -63,18 +67,31 @@ public class ProjectOnlineApplyController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "ProjectOnlineApply", paramType = "form", value = "ProjectOnlineApply的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput insert(ProjectOnlineApply projectOnlineApply) {
-		projectOnlineApplyService.insertSelective(projectOnlineApply);
-		return BaseOutput.success("新增成功");
+	public @ResponseBody BaseOutput<Object> insert(@Valid ProjectOnlineApplyUpdateDto projectOnlineApply,
+			BindingResult br) {
+		if (br.hasErrors()) {
+			return BaseOutput.failure(br.getFieldError().getDefaultMessage());
+		}
+		try {
+			projectOnlineApplyService.saveOrUpdate(projectOnlineApply);
+			return BaseOutput.success();
+		} catch (Exception e) {
+			return BaseOutput.failure(e.getMessage());
+		}
 	}
 
 	@ApiOperation("修改ProjectOnlineApply")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "ProjectOnlineApply", paramType = "form", value = "ProjectOnlineApply的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput update(ProjectOnlineApply projectOnlineApply) {
-		projectOnlineApplyService.updateSelective(projectOnlineApply);
-		return BaseOutput.success("修改成功");
+	public @ResponseBody BaseOutput<Object> update(@Valid ProjectOnlineApplyUpdateDto projectOnlineApply,
+			BindingResult br) {
+		try {
+			projectOnlineApplyService.saveOrUpdate(projectOnlineApply);
+			return BaseOutput.success();
+		} catch (Exception e) {
+			return BaseOutput.failure(e.getMessage());
+		}
 	}
 
 	@ApiOperation("删除ProjectOnlineApply")
