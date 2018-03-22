@@ -1,3 +1,57 @@
+<%-- 	function downExcel(){
+		var startTime=$("#startTime").val();
+		var endTime=$("#endTime").val();
+		window.location.href="${contextPath}/statistical/projecTypetDownload?startTime="+startTime+"&endTime="+endTime;
+	} --%>
+//打印列表
+		
+		function btnPrintClick(){
+		    var imgBox = $('#img_box');
+		    var chartBox = $('#main');
+		    if (imgBox.length <= 0) {
+		        chartBox.after('<div id="img_box"></div>');
+		        imgBox = $('#img_box');
+		    }
+		    imgBox.html('< img src="' + myChart.getDataURL() + '"/>').css('display','block');
+		    chartBox.css('display','none');
+		    var img = imgBox.find('img');
+		    var imgWidth = img.width();
+		    var showWidth = 1000; 
+		    if (imgWidth > showWidth) { 
+		        var imgNewHeight = img.height() / (imgWidth / showWidth);
+		        img.css({'width': showWidth + 'px', 'height': imgNewHeight + 'px'});
+		    }
+		
+		    var imgBox2 = $('#img_box2');
+		    var chartBox2 = $('#main2');
+		    if (imgBox2.length <= 0) {
+		        chartBox2.after('<div id="img_box2"></div>');
+		        imgBox2 = $('#img_box2');
+		    }
+		
+		    imgBox2.html('< img src="' + myChart2.getDataURL() + '"/>').css('display','block');
+		        chartBox2.css('display','none');
+		    var img2 = imgBox2.find('img');
+		    var img2Width = img2.width();
+		    var show2Width = 1000; 
+		    if (img2Width > show2Width) { 
+		        var img2NewHeight = img2.height() / (img2Width / show2Width);
+		        img2.css({'width': show2Width + 'px', 'height': img2NewHeight + 'px'});
+		    }
+		
+		    // 打印
+		    $("#dy").jqprint();
+		
+		    // 执行打印后再切换回来
+		    // 显示echart图chart-box
+		    chartBox.css('display','block');
+		    chartBox2.css('display','block');
+		    // 隐藏图片img-box
+		    imgBox.css('display','none');
+		    imgBox2.css('display','none');
+		}
+
+
  function progressFormatter(value, rowData, rowIndex) {
 	var progress = value;
 	var htmlstr;
@@ -21,6 +75,14 @@
            	}else{
                	opts.url = "${contextPath}/statistical/projecTypetList";
             }
+            <!-- if(n==30){
+            	var date=new Date();
+   				var dat=new Date((+date)-30*24*3600*1000);
+   				var startdate=dat.Format("yyyy-MM-dd");
+   				var enddate=date.Format("yyyy-MM-dd");
+   				$("#startTime").val(startdate);
+   				$("#endTime").val(enddate);
+            } -->
             if(!$('#form').form("validate")){
                 return;
             }
@@ -28,6 +90,7 @@
             var formData = $("#form").serializeObject();
             $.extend(param, formData);
             $("#grid").datagrid("load", param);
+            
 	   		 $.ajax({
 	         type : "post",
 	         async : true,           

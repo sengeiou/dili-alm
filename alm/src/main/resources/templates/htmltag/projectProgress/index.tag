@@ -1,3 +1,7 @@
+
+function print(){
+			$("#dy").jqprint();
+		}
  function progressFormatter(value, rowData, rowIndex) {
 	var progress = value;
 	var htmlstr;
@@ -13,7 +17,6 @@
  //表格查询
         function queryGrid(n) {
             var opts = $("#grid").datagrid("options");
-            console.log($("#ids").val())
            	if(n!=0){
            		$('#form').form('clear');
            		opts.url = "${contextPath}/statistical/ProjectProgressList?flat="+n;
@@ -90,3 +93,7 @@
             }
             queryGrid(0) 
         })
+
+
+
+

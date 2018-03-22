@@ -331,20 +331,51 @@
    
 
    <!-- 数据统计相关 begin -->
-   <!-- 首页饼图 -->
+   <!-- 人员工时查询 -->
    <select id="selectTaskHourByUser" resultType="com.dili.alm.domain.TaskByUsersDto">
-	select ut.id as userNo,ut.real_name as userName,ut.departmentId as departmentId,ut.departmentName as departmentName,(SUM(taskInfo.taskHour)+SUM(taskInfo.overHour)) as totalHour,SUM(taskInfo.taskHour) as  taskHour,SUM(taskInfo.overHour)  as overHour FROM 
-	(select  tt.id as detailId,tt.task_hour as taskHour,tt.over_hour as overHour,t.`owner` as ownerId,t.id as taskId  from alm.task_details as tt LEFT JOIN  alm.task as t ON  tt.task_id = t.id
-	where tt.modified BETWEEN  #{beginTime,jdbcType=TIMESTAMP}  AND  #{task.endTime,jdbcType=TIMESTAMP} ) as taskInfo LEFT JOIN 
-	(select utt.id as id,utt.real_name as real_name,dt.`name` as departmentName,utt.department_id as departmentId  from alm.`user` as utt LEFT JOIN alm.department as dt on utt.department_id = dt.id) as ut 
+	
+    select CONCAT(#{beginTime,jdbcType=VARCHAR},'至',#{endTime,jdbcType=VARCHAR}) as selectDate,ut.id as userNo,ut.real_name as userName,ut.departmentId as departmentId,ut.departmentName as departmentName,(SUM(taskInfo.taskHour)+SUM(taskInfo.overHour)) as totalHour,SUM(taskInfo.taskHour) as  taskHours,SUM(taskInfo.overHour)  as overHours FROM 
+	(select  tt.id as detailId,tt.task_hour as taskHour,tt.over_hour as overHour,t.`owner` as ownerId,t.id as taskId  from task_details as tt LEFT JOIN task as t ON  tt.task_id = t.id
+	 where tt.modified BETWEEN CONCAT(#{beginTime,jdbcType=VARCHAR},' 00:00:00') AND CONCAT(#{endTime,jdbcType=VARCHAR},' 23:59:59') ) as taskInfo LEFT JOIN 
+	(select utt.id as id,utt.real_name as real_name,dt.`name` as departmentName,utt.department_id as departmentId  from `user` as utt LEFT JOIN department as dt on utt.department_id = dt.id) as ut 
 	ON taskInfo.ownerId = ut.id where 1=1   
-	<if test="departmentId != null">
-		and ut.departmentId = #{departmentId,jdbcType=BIGINT} 
+ 	<if test="uIds != null">
+				and ut.id in 
+				<foreach item="item" index="index" collection="uIds" open="(" separator="," close=")">  
+				  #{item}  
+				</foreach> 
 	</if>
-	<if test="task.name != null">
-		and ut.id = #{uId,jdbcType=BIGINT} 
-	</if>
-	GROUP BY ut.id ;
+	<if test="departmentIds != null">
+				and ut.departmentId in
+		<foreach item="item" index="index" collection="departmentIds" open="(" separator="," close=")">  
+				  #{item}  
+		</foreach> 
+	</if> 
+	GROUP BY ut.id 
+   </select>
+    <!-- 项目以及时间-->
+    <select id="selectProjectHours" resultType="com.dili.alm.domain.TaskHoursByProjectDto">
+	select p.id as projectId,p.`name` as projectName,ifnull(t2.totalHour,0) as sumHour  FROM (select* from project where actual_start_date BETWEEN #{beginTime,jdbcType=TIMESTAMP} AND #{endTime,jdbcType=TIMESTAMP} or actual_end_date BETWEEN #{beginTime,jdbcType=TIMESTAMP} AND #{endTime,jdbcType=TIMESTAMP})as p LEFT JOIN 
+	(select t1.project_id as pid ,SUM(td1.taskHours+td1.overHours) as totalHour from task as t1 LEFT JOIN 
+	(SELECT task_id as tid,task_hour as taskHours,over_hour as overHours FROM task_details ) as td1 on t1.id = td1.tid GROUP BY t1.project_id) as t2 ON  p.id = t2.pid  
+   </select>
+   <!-- 年度总汇-->
+    <select id="selectProjectYearsCover" resultType="com.dili.alm.domain.ProjectYearCoverDto">
+		select pp.pid as projectId,pp.pname as projectName,pp.ptype as projectType,pp.pstate as projectstate,t.task_count as taskCount,t.finishCount as finishCount,t.ongoing as ongoing,t.completion_rate as completionRate,t.noFinish as noFinish,t.overdue_rate as overdueRate from 
+		(select ps.pid as pid ,ps.pname as pname,dd2.`code` as ptype ,ps.pstate from 
+		(select p.id as pid,p.`name` as pname ,p.type as ptype ,p.actual_start_date as pstart,p.actual_end_date as pend,dd.`code` as pstate from alm.project as p LEFT JOIN alm.data_dictionary_value  dd ON p.project_state=dd.`value` where dd.dd_id=6)
+		as ps LEFT JOIN alm.data_dictionary_value as dd2 ON  ps.ptype = dd2.`value` where dd2.dd_id= 3  AND ps.pstart BETWEEN #{beginTime,jdbcType=TIMESTAMP} AND #{endTime,jdbcType=TIMESTAMP} or ps.pend BETWEEN #{beginTime,jdbcType=TIMESTAMP} AND #{endTime,jdbcType=TIMESTAMP}) as pp 
+		LEFT JOIN (
+		select  tt1.tpid as tpid,tt1.ttcount as task_count,tt2.finishCount as finishCount,tt2.dottcount as ongoing,tt2.dottcount/tt1.ttcount as completion_rate,tt1.noFinish as noFinish,tt1.noFinish/tt1.ttcount as overdue_rate FROM
+		(select t1.tpid as tpid ,t1.ttcount as ttcount,t2.nfcount as noFinish from
+		(select project_id as tpid,count(*) as ttcount from alm.task GROUP BY project_id)as t1 LEFT JOIN (select project_id as tpid,count(*) as nfcount from alm.task  where `status` =  4 GROUP BY project_id ) as t2 on 
+		t1.tpid=t2.tpid) as tt1  
+		LEFT JOIN 
+		(select t1.tpid as tpid ,t1.do_count as dottcount,t2.finishCount as finishCount from
+		(select project_id as tpid,count(*) as do_count from alm.task  where `status` =  1 GROUP BY project_id)as t1 LEFT JOIN (select project_id as tpid,count(*) as finishCount from alm.task  where `status` =  4 GROUP BY project_id ) as t2 on 
+		t1.tpid=t2.tpid )as tt2
+		ON tt1.tpid=tt2.tpid
+		) as t on pp.pid =t.tpid
    </select>
    <!-- 数据统计相关 end  -->
 

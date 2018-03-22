@@ -22,7 +22,8 @@
         width: 60%;
     }
 </style>
-<div class="easyui-panel" style="width: 100%;height: auto" title="项目总览">
+<div class="easyui-panel" id ="dy" style="width: 100%;height: auto" title="项目总览">
+
     <div style="box-sizing:border-box;height: 100%;width: 100%;padding: 10px;">
         <div class="easyui-layout" style="width:100%;height:950px;">
             <!-- datagrid工具栏 -->
@@ -32,11 +33,11 @@
             	 <tr>
 	                <!--<a href="${contextPath}/projectApply/add" class="easyui-linkbutton" iconCls="icon-add" plain="true"></a>-->
 	                <a href="#" class="easyui-linkbutton"
-	                   style="width: 40px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">
+	                   style="width: 40px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="print()">
 	                    打印
 	                </a>
 	                <a href="#" class="easyui-linkbutton"
-	                   style="width: 80px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">
+	                   style="width: 80px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="ExportExcel()" >
 	                    导出EXCEL
 	                </a>
 	                <a href="#" class="easyui-linkbutton"
@@ -63,7 +64,7 @@
             <!--项目列表-->
             <div data-options="region:'north',collapsible:false,split:true,tools:'#infoToolbar', " style="height: 530px" title="项目列表">
                 <table class="easyui-datagrid" style="width: 100%" id="grid" toolbar='#toolbar'
-                       data-options="singleSelect:true,collapsible:true">
+                       data-options="singleSelect:true,collapsible:true" title="项目总览">
                     <thead>
                     <tr>
                         <th data-options="field:'type',width:'16%',align:'center'">类型</th>
@@ -101,6 +102,9 @@
     </div>
 </div>
 <script src="${contextPath}/resources/echarts/echarts.common.min.js"></script>
+<script src="${contextPath}/resources/js/jquery.jqprint-0.3.js"></script>
+<script src="${contextPath}/resources/js/dateFormat.js"></script>
+<script src="${contextPath}/resources/js/jquery-migrate-1.1.0.js"></script>
 <script>
     //项目图表
     var app={};

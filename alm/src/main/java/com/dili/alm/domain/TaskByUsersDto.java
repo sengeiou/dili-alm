@@ -7,17 +7,24 @@ package com.dili.alm.domain;
  * @author lijing
  *
  */
-public class TaskByUsersDto  {
+public class TaskByUsersDto {
 	
+	String selectDate;
 	Long userNo;
     String userName;
     Long departmentId;
     String departmentName;
     int totalHour;
-    int taskHour;
-    int overHour;
+    int taskHours;
+    int overHours;
     
     
+	public String getSelectDate() {
+		return selectDate;
+	}
+	public void setSelectDate(String selectDate) {
+		this.selectDate = selectDate;
+	}
 	public Long getUserNo() {
 		return userNo;
 	}
@@ -42,23 +49,23 @@ public class TaskByUsersDto  {
 	public void setDepartmentName(String departmentName) {
 		this.departmentName = departmentName;
 	}
-	public int getTotalHour() {
+		public int getTotalHour() {
 		return totalHour;
 	}
 	public void setTotalHour(int totalHour) {
 		this.totalHour = totalHour;
 	}
-	public int getTaskHour() {
-		return taskHour;
+	public int getTaskHours() {
+		return taskHours;
 	}
-	public void setTaskHour(int taskHour) {
-		this.taskHour = taskHour;
+	public void setTaskHours(int taskHours) {
+		this.taskHours = taskHours;
 	}
-	public int getOverHour() {
-		return overHour;
+	public int getOverHours() {
+		return overHours;
 	}
-	public void setOverHour(int overHour) {
-		this.overHour = overHour;
+	public void setOverHours(int overHours) {
+		this.overHours = overHours;
 	}
     
     
