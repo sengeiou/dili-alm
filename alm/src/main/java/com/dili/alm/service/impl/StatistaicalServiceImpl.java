@@ -185,6 +185,135 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	public List<ProjectYearCoverDto> listProjectYearCover(String year,
 			String month) {
 
+		return taskMapper.selectProjectYearsCover(getAppedDate(year,month,true), getAppedDate(year,month,false));
+	}
+	
+	
+	private static String getAppedDate(String year,String month,Boolean isBegin){
+		Calendar now = Calendar.getInstance();
+		String retrunDate ="";
+		
+		if (year!=null) {
+			retrunDate+=year;
+		}else{
+			retrunDate+=now.get(Calendar.YEAR);
+		}
+		
+		if (month==null) {
+			month=now.get(Calendar.MONTH)+"";
+		}
+		if (isBegin) {
+			switch (month) {
+			case "1":
+				retrunDate+="-01-01";
+				break;
+			case "2":
+				retrunDate+="-02-01";
+				break;
+			case "3":
+				retrunDate+="-03-01";
+				break;
+			case "4":
+				retrunDate+="-04-01";
+				break;
+			case "5":
+				retrunDate+="-05-01";
+				break;
+			case "6":
+				retrunDate+="-06-01";
+				break;
+			case "7":
+				retrunDate+="-07-01";
+				break;
+			case "8":
+				retrunDate+="-08-01";
+				break;
+			case "9":
+				retrunDate+="-09-01";
+				break;
+			case "10":
+				retrunDate+="-10-01";
+				break;
+			case "11":
+				retrunDate+="-11-01";
+				break;
+			case "12":
+				retrunDate+="-12-01";
+				break;
+			case "13":
+				retrunDate+="-01-01";
+				break;
+			case "14":
+				retrunDate+="-04-01";
+				break;
+			case "15":
+				retrunDate+="-07-01";
+				break;
+			case "16":
+				retrunDate+="-10-01";
+				break;
+			default:
+				retrunDate = SELECT_HOURS_BY_USER_START_DATE;
+				break;
+			}
+		}else{
+			switch (month) {
+			case "1":
+				retrunDate  +="-01-31";
+				break;
+			case "2":
+				retrunDate  +="-02-28";
+				break;
+			case "3":
+				retrunDate  +="-03-31";
+				break;
+			case "4":
+				retrunDate  +="-04-30";
+				break;
+			case "5":
+				retrunDate  +="-05-31";
+				break;
+			case "6":
+				retrunDate  +="-06-30";
+				break;
+			case "7":
+				retrunDate  +="-07-31";
+				break;
+			case "8":
+				retrunDate  +="-08-31";
+				break;
+			case "9":
+				retrunDate  +="-09-30";
+				break;
+			case "10":
+				retrunDate  +="-10-31";
+				break;
+			case "11":
+				retrunDate  +="-11-30";
+				break;
+			case "12":
+				retrunDate  +="-12-31";
+				break;
+			case "13":
+				retrunDate  +="-03-31";
+				break;
+			case "14":
+				retrunDate  +="-06-30";
+				break;
+			case "15":
+				retrunDate  +="-09-30";
+				break;
+			case "16":
+				retrunDate  +="-12-31";
+				break;
+			default:
+				retrunDate  = DateUtil.getDate(new Date());
+				break;
+			}
+		}
+		return retrunDate;
+	}
+	
 	@Override
 	public String getSearchDate(String year, String month) {
 		String begin = getAppedDate(year,month,true);
