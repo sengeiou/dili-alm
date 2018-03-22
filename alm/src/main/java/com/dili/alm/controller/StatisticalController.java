@@ -149,12 +149,34 @@ public class StatisticalController {
 	
 	@ApiOperation(value="查询时间段内员工工时", notes = "查询返回easyui信息")
     @RequestMapping(value="/taskHoursByUser", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody List<TaskByUsersDto> taskHoursByUser(String startTime,String endTime,Long userId,Long departmentId) throws Exception {
+    public @ResponseBody List<TaskByUsersDto> taskHoursByUser(String startTime,String endTime,List<Long> userId,List<Long> departmentId) throws Exception {
+		List<TaskByUsersDto> taskByUserDtoList = statisticalService.listTaskHoursByUser(startTime, endTime,departmentId , userId);
+		return taskByUserDtoList;
+   
+    }
+	@ApiOperation(value="查询年度报表", notes = "查询返回easyui信息")
+    @RequestMapping(value="/listProjectYearCover", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody List<ProjectYearCoverDto> listProjectYearCover(String year,String month) throws Exception {
 
-		return statisticalService.listTaskHoursByUser(startTime, endTime, userId, departmentId);
+		return statisticalService.listProjectYearCover(year, month);
    
     }
 	
+	@ApiOperation(value="返回查询后的日期", notes = "查询返回easyui信息")
+    @RequestMapping(value="/getSearchDate", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody String getSearchDate(String year,String month) throws Exception {
+
+		return statisticalService.getSearchDate(year, month);
+   
+    }
+	
+	@ApiOperation(value="项目工时查询", notes = "查询返回easyui信息")
+    @RequestMapping(value="/listProjectHours", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody List<TaskHoursByProjectDto> listProjectHours(String startTime,String endTime) throws Exception {
+
+		return statisticalService.listProjectHours(startTime, endTime);
+   
+    }
 	/***查询工时相关services****by******JING***END****/
 	
 	

@@ -18,10 +18,10 @@
                 <table style="padding:10px;">
                     <tr>
                         <td style="padding:5px;">
-                            <input class="easyui-datetimebox" name="startDate" id="startDate" style="width:100%" data-options="editable:false,label:'起止日期:'" />
+                            <input class="easyui-datebox" name="startTime" id="startDate" style="width:100%" data-options="editable:false,label:'起止日期:'" />
                         </td>
                         <td style="padding:5px;">
-                            <input class="easyui-datetimebox" name="endDate" id="endDate" style="width:100%" data-options="editable:false,label:'至:'" />
+                            <input class="easyui-datebox" name="endTime" id="endDate" style="width:100%" data-options="editable:false,label:'至:'" />
 
                         </td>
                         <td style="padding:5px;">
@@ -32,9 +32,10 @@
                     </tr>
                     <tr>
                         <td style="padding:5px;">
-                            <input class="easyui-textbox" name="status" id="status" style="width:100%"
-                                   data-options="editable:false,label:'人员:', validType:'length[0,3]'"/>
-                            <#comboProvider _id="status" _provider='applyStateProvider'/>
+                            <input class="combobox-checkbox" name="userId" id="userId" style="width:100%"
+                                   data-options="editable:false,label:'人员:',valueField:'id',textField:'text'"/>
+                            <#comboProvider _id="userId" _title="人员"  
+                    _nameField="real_name" _valueField="id" _provider='memberProvider'></#comboProvider>
 
                         </td>
                     </tr>
@@ -55,23 +56,23 @@
     <!-- 表格 -->
     <div region="center" style="width:100%;" height="auto">
         <!-- =========================================================表格========================================================= -->
-        <table class="easyui-datagrid" title="数据列表" style="width:100%;height:'auto'"
-               pagination="true" pageSize="30" pageNumber="1" pagePosition="bottom"
+        <table id="grid" class="easyui-datagrid" title="数据列表" style="width:100%;height:'auto'"
+               
                data-options="
                 rownumbers: true,
                 singleSelect: true,
-                url: '${contextPath}/resources/echarts/datagrid_data1.json',
+                url: '${contextPath}/statistical/taskHoursByUser',
                 method: 'get',
                 onLoadSuccess: onLoadSuccess
             ">
             <thead>
             <tr>
-                <th data-options="field:'attr1',width:'26%',align:'center'">统计日期</th>
-                <th data-options="field:'productid',width:'16%',align:'center'">姓名</th>
-                <th data-options="field:'itemid',width:'16%',align:'center'">部门</th>
-                <th data-options="field:'listprice',width:'14%',align:'center'">总工时(H)</th>
-                <th data-options="field:'unitcost',width:'14%',align:'center'">实际工时(H)</th>
-                <th data-options="field:'status',width:'14%',align:'center'">加班工时(H)</th>
+                <th data-options="field:'selectDate',width:'26%',align:'center'">统计日期</th>
+                <th data-options="field:'userName',width:'16%',align:'center'">姓名</th>
+                <th data-options="field:'departmentName',width:'16%',align:'center'">部门</th>
+                <th data-options="field:'totalHour',width:'14%',align:'center'">总工时(H)</th>
+                <th data-options="field:'taskHours',width:'14%',align:'center'">实际工时(H)</th>
+                <th data-options="field:'overHours',width:'14%',align:'center'">加班工时(H)</th>
             </tr>
             </thead>
         </table>
@@ -99,7 +100,7 @@
     function queryGrid() {
         var opts = $("#grid").datagrid("options");
         if (null == opts.url || "" == opts.url) {
-            opts.url = "${contextPath}/statistical/listPage";
+            opts.url = '${contextPath}/statistical/taskHoursByUser';
         }
         if (!$('#form').form("validate")) {
             return;

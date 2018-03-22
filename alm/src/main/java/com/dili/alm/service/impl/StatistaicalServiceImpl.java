@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -97,7 +98,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	
 	private static final String PROJECT_TYPE_CODE = "project_type";
 	
-	private static final String PROJECT_STATE_CODE = "project_state";
+	private static final String SELECT_HOURS_BY_USER_START_DATE = "2018-01-01";//项目上线日期
 	private static final String FILE_NAME_STR="项目总览.xls";
 	private static final String PROJECT_TYPE_TITLE="项目列表";
 	private static final String TASK_STATE_TITLE="任务列表";
@@ -158,23 +159,38 @@ public class StatistaicalServiceImpl implements StatisticalService {
 
 	@Override
 	public List<TaskByUsersDto> listTaskHoursByUser(String startTime,
-			String endTime, Long userId, Long departmentId) {
-		return taskMapper.selectTaskHourByUser(startTime, endTime, departmentId, userId);
+			String endTime, List<Long> dids, List<Long> uids) {
+		if (startTime==null) {
+			startTime = SELECT_HOURS_BY_USER_START_DATE;
+		}else{
+			startTime+="";
+		}
+		if (endTime==null) {//没有默认为至今
+			endTime = DateUtil.getDate(new Date())+"";
+		}else{
+			endTime+="";
+		}
+
+		List<TaskByUsersDto> list = taskMapper.selectTaskHourByUser(startTime, endTime, null, null);
+		return list;
 	}
 	
 	
 	@Override
-	public List<TaskHoursByProjectDto> listProject(String startTime,
+	public List<TaskHoursByProjectDto> listProjectHours(String startTime,
 			String endTime) {
-		// TODO Auto-generated method stub
-		return null;
+		return taskMapper.selectProjectHours(startTime, endTime);
 	}
+	@Override
+	public List<ProjectYearCoverDto> listProjectYearCover(String year,
+			String month) {
 
 	@Override
-	public List<ProjectYearCoverDto> listProjectYearCover(String startTime,
-			String endTime) {
-		// TODO Auto-generated method stub
-		return null;
+	public String getSearchDate(String year, String month) {
+		String begin = getAppedDate(year,month,true);
+		String end =getAppedDate(year,month,false);
+		String returnStr = begin+"至"+end;
+		return returnStr;
 	}
 	/***查询工时相关services****by******JING***END****/
 	

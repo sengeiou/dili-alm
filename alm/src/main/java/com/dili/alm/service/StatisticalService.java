@@ -32,11 +32,13 @@ public interface StatisticalService {
 	
 	
 	/***查询工时相关services****by******JING***BEGIN****/
-	List<TaskByUsersDto> listTaskHoursByUser(String startTime,String endTime,Long userId,Long departmentId);
+	List<TaskByUsersDto> listTaskHoursByUser(String startTime,String endTime,List<Long> userId,List<Long> departmentId);
 	
-	List<TaskHoursByProjectDto> listProject(String startTime,String endTime);
+	List<TaskHoursByProjectDto> listProjectHours(String startTime,String endTime);
 	
 	List<ProjectYearCoverDto> listProjectYearCover(String startTime,String endTime);
+	
+	String getSearchDate(String year,String month);
 	/***查询工时相关services****by******JING***END****/
 
 	List<TaskStateCountDto> getProjectToTaskCount(String startTime,

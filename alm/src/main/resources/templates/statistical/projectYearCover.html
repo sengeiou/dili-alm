@@ -6,9 +6,9 @@
 时间轴样式
 -->
 .years{width: 150px;float: left;}
-.time{float: left;width: 75%;}
+.time{float: left;width: 90%;}
 .time ul,li{list-style: none;display: block;}
-.time li a{ text-decoration: none; width: 55px;height:20px; display: block;}
+.time li a{ text-decoration: none; width: 55px;height:20px; display: block; text-align: center;}
 </style>
 
 <div class="easyui-layout" fit="true">
@@ -19,10 +19,15 @@
     <div region="north" height="auto" >
     <!-- 时间轴 -->
     <div style="width: 100%;clear: both;height: 55px;">
-    <div class="years" style="width: 25%;float: left;height:55px;line-height: 55px;"><select><option value="2017">2017年</option><option value="2018">2018年</option></select></div>
-    <div class="time"><ul style="list-style: none;display: block;"><li style="float: left;"><a href="javascript:void(0);" >一月</a></li><li style="float: left;"><a href="javascript:void(0);">二月</a></li><li style="float: left;"><a href="javascript:void(0);">三月</a></li><li style="float: left;"><a href="javascript:void(0);">第一季度</a></li></ul></div>
+    <div class="years" style="width: 10%;float: left;height:55px;line-height: 55px;"><select id="year_select"><option value="2017">2017年</option><option value="2018" selected="selected">2018年</option></select></div>
+    <div class="time"><ul style="list-style: none;display: block;">
+                     <li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('1')">一月</a></li><li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('2')">二月</a></li><li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('3')">三月</a></li><li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('13')">第一季度</a></li>
+                     <li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('4')">四月</a></li><li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('5')">五月</a></li><li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('6')">六月</a></li><li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('14')">第二季度</a></li>
+                     <li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('7')">七月</a></li><li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('8')">八月</a></li><li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('9')">九月</a></li><li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('15')">第三季度</a></li>
+                     <li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('10')">十月</a></li><li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('11')">十一月</a></li><li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('12')">十二月</a></li><li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('16')">第四季度</a></li>
+                     </ul></div>
     </div>
-    <div class="show">查询时间：<span>2017年1月01日 - 2017年1月31日</span>	 
+    <div class="show">查询时间：<span id="search_date">2018年01月01日 - 2018年3月21日</span>	 
     <div class="tools" style="float: right;">               
 	                <a href="#" class="easyui-linkbutton"
 	                   style="width: 40px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">
@@ -40,25 +45,25 @@
     <!-- 表格 -->
     <div region="center" style="width:100%;" height="auto">
         <!-- =========================================================表格========================================================= -->
-        <table class="easyui-datagrid" title="年度数据列表" style="width:100%;height:'auto'"
+        <table class="easyui-datagrid" id = "grid"  title="年度数据列表" style="width:100%;height:'auto'"
                pagination="false"
                data-options="
                 rownumbers: true,
                 singleSelect: true,
-                url: '${contextPath}/resources/echarts/datagrid_data1.json',
+                url: '${contextPath}/statistical/listProjectYearCover',
                 method: 'get',
                 onLoadSuccess: onLoadSuccess">
             <thead>
             <tr>
-                <th data-options="field:'attr1',width:'14%',align:'center'">项目名称</th>
-                <th data-options="field:'productid',width:'12%',align:'center'">项目类型</th>
-                <th data-options="field:'itemid',width:'10%',align:'center'">项目状态</th>
-                <th data-options="field:'listprice',width:'9%',align:'center'">任务数量</th>
-                <th data-options="field:'unitcost',width:'9%',align:'center'">完成数</th>
-                <th data-options="field:'status',width:'9%',align:'center'">进行中</th>
-                <th data-options="field:'status',width:'9%',align:'center'">正常完成率</th>
-                <th data-options="field:'status',width:'9%',align:'center'">逾期数</th>
-                <th data-options="field:'status',width:'9%',align:'center'">逾期率</th>
+                <th data-options="field:'projectName',width:'14%',align:'center'">项目名称</th>
+                <th data-options="field:'projectType',width:'12%',align:'center'">项目类型</th>
+                <th data-options="field:'projectstate',width:'10%',align:'center'">项目状态</th>
+                <th data-options="field:'taskCount',width:'9%',align:'center'">任务数量</th>
+                <th data-options="field:'finishCount',width:'9%',align:'center'">完成数</th>
+                <th data-options="field:'ongoing',width:'9%',align:'center'">进行中</th>
+                <th data-options="field:'completionRate',width:'11%',align:'center'">正常完成率（%）</th>
+                <th data-options="field:'noFinish',width:'9%',align:'center'">逾期数</th>
+                <th data-options="field:'overdueRate',width:'9%',align:'center'">逾期率（%）</th>
             </tr>
             </thead>
         </table>
@@ -83,18 +88,14 @@
     }
     
     //表格查询
-    function queryGrid() {
+    function queryGrid(mouth) {
+    	var year=$("#year_select").val();
         var opts = $("#grid").datagrid("options");
         if (null == opts.url || "" == opts.url) {
-            opts.url = "${contextPath}/statistical/listPage";
+            opts.url = "${contextPath}/statistical/listProjectYearCover";
         }
-        if (!$('#form').form("validate")) {
-            return;
-        }
-        var param = bindMetadata("grid", true);
-        var formData = $("#form").serializeObject();
-        $.extend(param, formData);
-        $("#grid").datagrid("load", param);
+        var param = {"year" :year,"mouth" :mouth};
+        $("#grid").datagrid("load",param);
     }
 </script>
 
