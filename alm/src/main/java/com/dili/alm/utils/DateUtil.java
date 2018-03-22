@@ -252,7 +252,7 @@ public class DateUtil {
 	        return days;
 	    }
 	 
-	 
+	/* 
 	// 获得本周星期五的日期  
 		public static Date getThisFriDay() {
 			int mondayPlus = DateUtil.getMondayPlus(new Date());
@@ -283,5 +283,6 @@ public class DateUtil {
 				Date as1 = new Date(as.getTime()+24*60*60*1000*7);
 				return as1;
 
-			}  
+			}*/  
+			
 }

@@ -14,7 +14,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2018-03-23 10:29:38.
+ * This file was generated on 2018-03-22 14:52:13.
  */
 @Table(name = "`work_day`")
 public interface WorkDay extends IBaseDomain {
@@ -27,16 +27,30 @@ public interface WorkDay extends IBaseDomain {
 
     void setId(Long id);
 
+    @Column(name = "`word_day_week`")
+    @FieldDef(label="工作日每年度周数")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Integer getWordDayWeek();
+
+    void setWordDayWeek(Integer wordDayWeek);
+
+    @Column(name = "`work_day_year`")
+    @FieldDef(label="工作日年度", maxLength = 20)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getWorkDayYear();
+
+    void setWorkDayYear(String workDayYear);
+
     @Column(name = "`work_start_time`")
     @FieldDef(label="工作日开始日期")
-    @EditMode(editor = FieldEditor.Datetime, required = false)
+    @EditMode(editor = FieldEditor.Date, required = false)
     Date getWorkStartTime();
 
     void setWorkStartTime(Date workStartTime);
 
     @Column(name = "`work_end_time`")
     @FieldDef(label="工作日结束日期")
-    @EditMode(editor = FieldEditor.Datetime, required = false)
+    @EditMode(editor = FieldEditor.Date, required = false)
     Date getWorkEndTime();
 
     void setWorkEndTime(Date workEndTime);

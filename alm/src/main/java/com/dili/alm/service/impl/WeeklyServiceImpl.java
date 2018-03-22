@@ -43,7 +43,6 @@ import com.dili.alm.domain.Weekly;
 import com.dili.alm.domain.WeeklyDetails;
 import com.dili.alm.domain.WeeklyJson;
 import com.dili.alm.domain.WorkDay;
-import com.dili.alm.domain.WorkDayEntity;
 import com.dili.alm.domain.dto.NextWeeklyDto;
 import com.dili.alm.domain.dto.Page;
 import com.dili.alm.domain.dto.ProjectWeeklyDto;
@@ -81,7 +80,6 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	public static  final  String YES="YES";
 	public static  final  String NO="NO";
 	public static  final  int ISSUBMIT=1;//已经提交
-	public static final Long WORKDAYID=1L;
 	public static final  DecimalFormat    df   = new DecimalFormat("######0.00");   
 	@Autowired
 	WeeklyMapper weeklyMapper;
@@ -177,9 +175,9 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		}
 		
 		weeklyPara.setId(Long.parseLong(pd.getProjectId()));
-		
-		weeklyPara.setStartDate(DateUtil.getDate(DateUtil.getNextFriDay())+" 00:00:00");
-		weeklyPara.setEndDate(DateUtil.getDate(DateUtil.getNextMonDay())+" 23:59:59");
+		WorkDay nextWeeklyWorkDays = workDayService.getNextWeeklyWorkDays();
+		weeklyPara.setStartDate(DateUtil.getDate(nextWeeklyWorkDays.getWorkStartTime())+" 00:00:00");
+		weeklyPara.setEndDate(DateUtil.getDate(nextWeeklyWorkDays.getWorkEndTime())+" 23:59:59");
 		
 		//下周工作计划
 		JSONArray  wkJson=JSON.parseArray(wkly.getNextWeek());
@@ -288,8 +286,9 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		}
 		
 		weeklyPara.setId(Long.parseLong(pd.getProjectId()));
-		weeklyPara.setStartDate(DateUtil.getDate(DateUtil.getNextFriDay())+" 00:00:00");
-		weeklyPara.setEndDate(DateUtil.getDate(DateUtil.getNextMonDay())+" 23:59:59");
+		WorkDay nextWeeklyWorkDays = workDayService.getNextWeeklyWorkDays();
+		weeklyPara.setStartDate(DateUtil.getDate(nextWeeklyWorkDays.getWorkStartTime())+" 00:00:00");
+		weeklyPara.setEndDate(DateUtil.getDate(nextWeeklyWorkDays.getWorkStartTime())+" 23:59:59");
 		
 		//下周工作计划
 		JSONArray  wkJson=JSON.parseArray(wkly.getNextWeek());
@@ -406,9 +405,9 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		
 		DateUtil.getDate(DateUtil.getThisMonDay());*/
 		
-		
-		weeklyPara.setStartDate(DateUtil.getDate(DateUtil.getNextMonDay())+" 00:00:00");
-		weeklyPara.setEndDate(DateUtil.getDate(DateUtil.getNextFriDay())+" 23:59:59");
+		WorkDay nextWeeklyWorkDays = workDayService.getNextWeeklyWorkDays();
+		weeklyPara.setStartDate(DateUtil.getDate(nextWeeklyWorkDays.getWorkStartTime())+" 00:00:00");
+		weeklyPara.setEndDate(DateUtil.getDate(nextWeeklyWorkDays.getWorkEndTime())+" 23:59:59");
 		
 		//下周工作计划
 		//List<NextWeeklyDto> wk=selectNextWeeklyProgress(weeklyPara);
@@ -883,7 +882,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		//weeklyPara.setStartDate(DateUtil.getFirstAndFive().get("one")+" 00:00:00");
 		
 		
-		WorkDay workDay = workDayService.get(WORKDAYID);
+		WorkDay workDay = workDayService.getNowWeeklyWorkDay();
 		weeklyPara.setStartDate(DateUtil.getDate(workDay.getWorkStartTime())+" 00:00:00");
 		weeklyPara.setEndDate(DateUtil.getDate(workDay.getWorkEndTime())+" 23:59:59");
 		
@@ -939,9 +938,9 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		// 下周项目阶段
 		//weeklyPara.setStartDate(DateUtil.getNextMonday(new Date())+" 00:00:00");
 		//weeklyPara.setEndDate(DateUtil.getNextFive(new Date())+" 23:59:59");
-
-		weeklyPara.setStartDate(DateUtil.getDate(DateUtil.getNextMonDay())+" 00:00:00");
-		weeklyPara.setEndDate(DateUtil.getDate(DateUtil.getNextFriDay())+" 23:59:59");
+		WorkDay nextWeeklyWorkDays = workDayService.getNextWeeklyWorkDays();
+		weeklyPara.setStartDate(DateUtil.getDate(nextWeeklyWorkDays.getWorkStartTime())+" 00:00:00");
+		weeklyPara.setEndDate(DateUtil.getDate(nextWeeklyWorkDays.getWorkEndTime())+" 23:59:59");
 		
 		// 下周工作计划
 		JSONArray  wkJson=JSON.parseArray(wkly.getNextWeek());
@@ -1009,7 +1008,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		Weekly wk=DTOUtils.newDTO(Weekly.class);
 		WeeklyPara weeklyPara= new WeeklyPara();
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		WorkDay workDay = workDayService.get(WORKDAYID);
+		WorkDay workDay = workDayService.getNowWeeklyWorkDay();
 		weeklyPara.setStartDate(DateUtil.getDate(workDay.getWorkStartTime())+" 00:00:00");
 		weeklyPara.setEndDate  (DateUtil.getDate(workDay.getWorkEndTime())+" 23:59:59");
 		
@@ -1047,8 +1046,8 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	}
 
 	public  Weekly insertWeekAndWeekDetail(String projectId, UserTicket userTicket, Weekly wkk) {
-		WorkDay workDay = workDayService.get(WORKDAYID);
-		
+		WorkDay workDay = workDayService.getNowWeeklyWorkDay();
+		WorkDay nextWeeklyWorkDays = workDayService.getNextWeeklyWorkDays();
 	   wkk.setProjectId(Long.parseLong(projectId));
 		wkk.setCreated(new Date());
 		wkk.setModified(null);
@@ -1071,8 +1070,8 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		//本周进展情况 
 		List<TaskDto> td=selectWeeklyProgress(weeklyParaWeek);
 		
-		weeklyParaWeek.setStartDate(DateUtil.getDate(DateUtil.getNextMonDay())+" 00:00:00");
-		weeklyParaWeek.setEndDate(DateUtil.getDate(DateUtil.getNextFriDay())+" 23:59:59");
+		weeklyParaWeek.setStartDate(DateUtil.getDate(nextWeeklyWorkDays.getWorkStartTime())+" 00:00:00");
+		weeklyParaWeek.setEndDate(DateUtil.getDate(nextWeeklyWorkDays.getWorkEndTime())+" 23:59:59");
 		//下周工作计划
 		List<NextWeeklyDto> wek=selectNextWeeklyProgress(weeklyParaWeek);
 
@@ -1091,7 +1090,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		wkk.setProjectId(Long.parseLong(projectId));
 		wkk.setCreated(new Date());
 		wkk.setModified(null);
-		WorkDay workDay = workDayService.get(WORKDAYID);
+		WorkDay workDay = workDayService.getNowWeeklyWorkDay();
 		wkk.setStartDate(DateUtil.getStrDate(workDay.getWorkStartTime()+" 00:00:00"));
 		wkk.setEndDate(DateUtil.getStrDate(workDay.getWorkStartTime()+" 23:59:59"));
 		
@@ -1104,9 +1103,10 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		weeklyParaWeek.setEndDate(workDay.getWorkStartTime()+" 23:59:59");
 		//本周进展情况 
 		List<TaskDto> td=selectWeeklyProgress(weeklyParaWeek);
+		WorkDay nextWeeklyWorkDays = workDayService.getNextWeeklyWorkDays();
 		
-		weeklyParaWeek.setStartDate(DateUtil.getDate(DateUtil.getNextMonDay())+" 00:00:00");
-		weeklyParaWeek.setEndDate(DateUtil.getDate(DateUtil.getNextFriDay())+" 23:59:59");
+		weeklyParaWeek.setStartDate(DateUtil.getDate(nextWeeklyWorkDays.getWorkStartTime())+" 00:00:00");
+		weeklyParaWeek.setEndDate(DateUtil.getDate(nextWeeklyWorkDays.getWorkEndTime())+" 23:59:59");
 		//下周工作计划
 		List<NextWeeklyDto> wek=selectNextWeeklyProgress(weeklyParaWeek);
 
