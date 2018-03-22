@@ -1,4 +1,8 @@
-
+<%-- 	function downExcel(){
+		var startTime=$("#startTime").val();
+		var endTime=$("#endTime").val();
+		window.location.href="${contextPath}/statistical/projecTypetDownload?startTime="+startTime+"&endTime="+endTime;
+	} --%>
 //打印列表
 		
 		function btnPrintClick(){
@@ -71,6 +75,14 @@
            	}else{
                	opts.url = "${contextPath}/statistical/projecTypetList";
             }
+            <!-- if(n==30){
+            	var date=new Date();
+   				var dat=new Date((+date)-30*24*3600*1000);
+   				var startdate=dat.Format("yyyy-MM-dd");
+   				var enddate=date.Format("yyyy-MM-dd");
+   				$("#startTime").val(startdate);
+   				$("#endTime").val(enddate);
+            } -->
             if(!$('#form').form("validate")){
                 return;
             }
@@ -78,6 +90,7 @@
             var formData = $("#form").serializeObject();
             $.extend(param, formData);
             $("#grid").datagrid("load", param);
+            
 	   		 $.ajax({
 	         type : "post",
 	         async : true,           

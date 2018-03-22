@@ -1,3 +1,8 @@
+	function ExportExcel(){
+		var startTime=$("#startTime").val();
+		var endTime=$("#endTime").val();
+		window.location.href="${contextPath}/statistical/projecOverViewDownload?startTime="+startTime+"&endTime="+endTime;
+	} 
  //表格查询
         function queryGrid(n) {
         	var nums=[];
@@ -14,6 +19,14 @@
                	opts.url = "${contextPath}/statistical/ProjectOverviewlist";
                	opts1.url = "${contextPath}/statistical/ProjectOverviewTasklist";
             }
+            if(n==30){
+            	var date=new Date();
+   				var dat=new Date((+date)-30*24*3600*1000);
+   				var startdate=dat.Format("yyyy-MM-dd");
+   				var enddate=date.Format("yyyy-MM-dd");
+   				$("#startTime").val(startdate);
+   				$("#endTime").val(enddate);
+   			}
             if(!$('#form').form("validate")){
                 return;
             }

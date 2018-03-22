@@ -17,7 +17,6 @@ function print(){
  //表格查询
         function queryGrid(n) {
             var opts = $("#grid").datagrid("options");
-            console.log($("#ids").val())
            	if(n!=0){
            		$('#form').form('clear');
            		opts.url = "${contextPath}/statistical/ProjectProgressList?flat="+n;
@@ -94,3 +93,7 @@ function print(){
             }
             queryGrid(0) 
         })
+
+
+
+
