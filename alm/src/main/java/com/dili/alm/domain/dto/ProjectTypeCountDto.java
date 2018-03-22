@@ -1,10 +1,5 @@
 package com.dili.alm.domain.dto;
 
-public class ProjectTypeCountDto {
-
-}
-package com.dili.alm.domain.dto;
-
 import java.util.List;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
