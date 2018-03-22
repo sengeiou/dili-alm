@@ -25,18 +25,26 @@
 
                         </td>
                         <td style="padding:5px;">
-                            <input class="easyui-datebox" name="created" id="created" style="width:100%"
-                                   data-options="editable:false,label:'部门:'"/>
-
+                            <input class="combobox-checkbox" name="aaa" id="aaa" style="width:100%"
+                                   data-options="url:'${contextPath!}/task/listTreeProject.json',
+													method:'get',
+													valueField:'id',
+													textField:'name',
+													multiple:true,
+													panelHeight:'auto'
+											"/>
                         </td>
                     </tr>
                     <tr>
                         <td style="padding:5px;">
-                            <input class="combobox-checkbox" name="userId" id="userId" style="width:100%"
-                                   data-options="editable:false,label:'人员:',valueField:'id',textField:'text'"/>
-                            <#comboProvider _id="userId" _title="人员"  
-                    _nameField="real_name" _valueField="id" _provider='memberProvider'></#comboProvider>
+                            <input class="combobox-checkbox" name="aaaaa" id="aaaaa" style="width:100%"
+                                   data-options="url:'${contextPath!}/department/departments',method:'get',editable:false,label:'人员:',valueField:'id',textField:'name',multiple:true"/>
 
+                        </td>
+                         <td style="padding:5px;">
+                             <input class="easyui-textbox" type="text" id="dep" name="dep" style="width:250px"
+                               data-options="editable:false,label:'人员:',buttonText:'选择',
+									onClickButton:selectDep,onChange:aa">
                         </td>
                     </tr>
                     <tr>
@@ -56,7 +64,11 @@
     <!-- 表格 -->
     <div region="center" style="width:100%;" height="auto">
         <!-- =========================================================表格========================================================= -->
-        <table id="grid" class="easyui-datagrid" title="数据列表" style="width:100%;height:'auto'"
+                <!-- datagrid工具栏 -->
+        <div id="toolbar" style="padding:2px 5px;">
+                <a href="#" class="easyui-linkbutton" iconCls="icon-export" onclick="doExport('grid')" plain="true"></a>
+        </div>
+        <table id="grid" class="easyui-datagrid" title="数据列表" style="width:98%;height:'auto'"
                
                data-options="
                 rownumbers: true,
@@ -78,6 +90,7 @@
         </table>
     </div>
 </div>
+<div id="smDialog" style="display: none;"></div>
 <!-- ====================================================================================================================== -->
 <!-- style & script 分隔线 -->
 <!-- ====================================================================================================================== -->
@@ -108,7 +121,49 @@
         var param = bindMetadata("grid", true);
         var formData = $("#form").serializeObject();
         $.extend(param, formData);
+        alert(formData.aaa);
+        alert(formData.startTime);
         $("#grid").datagrid("load", param);
+    }
+    function aa(){
+    	
+    }
+    function getCheckBoxSelect(row){
+
+            var opts = $(this).combobox('options');
+            return '<input type="checkbox" class="combobox-checkbox">' + row[opts.textField];//关键在这一步，在项前面加一个checkbox。opts这个是combobox对象。
+
+ 
+    }
+    
+ // 打开选择用户弹出框
+    function selectDep(callback, args) {
+    	if (callback) {
+    		eval("(" + callback + "(args))");
+    	} else {
+    		showDepDlg($(this)[0].id);
+    	}
+    }
+ 
+    function showDepDlg(id) {
+    	$('#smDialog').dialog({
+    				title : '部门选择',
+    				width : 600,
+    				height : 400,
+    				href : '${contextPath}/department/departments',
+    				modal : true,
+    				buttons : [{
+    							text : '确定',
+    							handler : function() {
+    								confirmDepBtn(id);
+    							}
+    						}, {
+    							text : '取消',
+    							handler : function() {
+    								$('#smDialog').dialog('close');
+    							}
+    						}]
+    			});
     }
 </script>
 </#body>

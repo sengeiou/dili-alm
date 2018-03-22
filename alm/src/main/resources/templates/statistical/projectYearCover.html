@@ -7,8 +7,15 @@
 -->
 .years{width: 150px;float: left;}
 .time{float: left;width: 90%;}
-.time ul,li{list-style: none;display: block;}
-.time li a{ text-decoration: none; width: 55px;height:20px; display: block; text-align: center;}
+.time ul{list-style: none;display: block;}
+
+
+.time li.on{ color: #000;}
+.time li a{ text-decoration: none; width: 55px;height:20px; display: block; text-align: center;color: #ccc;}
+.time li a:hover{color: #000;}
+.timp_point{list-style: none;display: block;}
+.timp_point li{float: left;}
+.show{width: 350px;float: right;}
 </style>
 
 <div class="easyui-layout" fit="true">
@@ -20,32 +27,26 @@
     <!-- 时间轴 -->
     <div style="width: 100%;clear: both;height: 55px;">
     <div class="years" style="width: 10%;float: left;height:55px;line-height: 55px;"><select id="year_select"><option value="2017">2017年</option><option value="2018" selected="selected">2018年</option></select></div>
-    <div class="time"><ul style="list-style: none;display: block;">
-                     <li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('1')">一月</a></li><li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('2')">二月</a></li><li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('3')">三月</a></li><li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('13')">第一季度</a></li>
-                     <li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('4')">四月</a></li><li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('5')">五月</a></li><li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('6')">六月</a></li><li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('14')">第二季度</a></li>
-                     <li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('7')">七月</a></li><li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('8')">八月</a></li><li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('9')">九月</a></li><li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('15')">第三季度</a></li>
-                     <li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('10')">十月</a></li><li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('11')">十一月</a></li><li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('12')">十二月</a></li><li style="float: left;"><a href="javascript:void(0);" onclick="queryGrid('16')">第四季度</a></li>
+    <div class="time"><ul class="timp_point">
+                     <li><a href="javascript:void(0);" onclick="queryGrid('1')"  class="on">一月</a></li><li><a href="javascript:void(0);" onclick="queryGrid('2')">二月</a></li><li><a href="javascript:void(0);" onclick="queryGrid('3')">三月</a></li><li><a href="javascript:void(0);" onclick="queryGrid('13')">第一季度</a></li>
+                     <li><a href="javascript:void(0);" onclick="queryGrid('4')">四月</a></li><li><a href="javascript:void(0);" onclick="queryGrid('5')">五月</a></li><li><a href="javascript:void(0);" onclick="queryGrid('6')">六月</a></li><li><a href="javascript:void(0);" onclick="queryGrid('14')">第二季度</a></li>
+                     <li><a href="javascript:void(0);" onclick="queryGrid('7')">七月</a></li><li><a href="javascript:void(0);" onclick="queryGrid('8')">八月</a></li><li><a href="javascript:void(0);" onclick="queryGrid('9')">九月</a></li><li><a href="javascript:void(0);" onclick="queryGrid('15')">第三季度</a></li>
+                     <li><a href="javascript:void(0);" onclick="queryGrid('10')">十月</a></li><li><a href="javascript:void(0);" onclick="queryGrid('11')">十一月</a></li><li><a href="javascript:void(0);" onclick="queryGrid('12')">十二月</a></li><li><a href="javascript:void(0);" onclick="queryGrid('16')">第四季度</a></li>
                      </ul></div>
     </div>
-    <div class="show">查询时间：<span id="search_date">2018年01月01日 - 2018年3月21日</span>	 
-    <div class="tools" style="float: right;">               
-	                <a href="#" class="easyui-linkbutton"
-	                   style="width: 40px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">
-	                    打印
-	                </a>
-	                <a href="#" class="easyui-linkbutton"
-	                   style="width: 80px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">
-	                    导出EXCEL
-	                </a>
-	                </div></div>
     </div>
     <!-- ====================================================================================================================== -->
     <!-- 中央布局 -->
     <!-- ====================================================================================================================== -->
     <!-- 表格 -->
     <div region="center" style="width:100%;" height="auto">
+        <!-- datagrid工具栏 -->
+        <div id="toolbar" style="padding:2px 5px;">
+                <a href="#" class="easyui-linkbutton" iconCls="icon-export" onclick="doExport('grid')" plain="true"></a>
+                <div class="show">查询时间：<span id="search_date">2018年01月01日 - 2018年3月21日</span></div>
+        </div>
         <!-- =========================================================表格========================================================= -->
-        <table class="easyui-datagrid" id = "grid"  title="年度数据列表" style="width:100%;height:'auto'"
+        <table class="easyui-datagrid" id = "grid"  title="年度数据列表" style="width:98%;height:auto"
                pagination="false"
                data-options="
                 rownumbers: true,
@@ -67,11 +68,16 @@
             </tr>
             </thead>
         </table>
+        <div style="width:90%;height: 500px;" id="div">
+        
+        </div>
     </div>
 </div>
+
 <!-- ====================================================================================================================== -->
 <!-- style & script 分隔线 -->
 <!-- ====================================================================================================================== -->
+<script src="${contextPath}/resources/echarts/echarts.common.min.js"></script>
 <script type="text/javascript">
     function onLoadSuccess(data){
         var merges = [{
@@ -87,16 +93,105 @@
         }
     }
     
+    function selectOn(obj,month){
+    	//检查一下所有的li下A标签是否选中
+      var liA =	$(".timp_point li");
+    }
     //表格查询
-    function queryGrid(mouth) {
+    function queryGrid(month) {
     	var year=$("#year_select").val();
         var opts = $("#grid").datagrid("options");
         if (null == opts.url || "" == opts.url) {
             opts.url = "${contextPath}/statistical/listProjectYearCover";
         }
-        var param = {"year" :year,"mouth" :mouth};
+        var param = {"year" :year,"month" :month};
         $("#grid").datagrid("load",param);
+        $("#search_date").html(searchDate(year,month));
     }
+    
+    //返回查询日期
+    
+    function searchDate(year,month){
+        var  htmlobj=$.ajax({url:"${contextPath}/statistical/getSearchDate.json?year="+year+"&month="+month,async:false});
+        var str=htmlobj.responseText;
+        return str;
+    }
+    
+    $.ajax({
+        type : 'post',
+        async : false, //同步执行
+            url :'${contextPath}/statistical/listProjectYearCover', //web.xml中注册的Servlet的url-pattern
+            data : {}, //无参数
+            dataType : 'json', //返回数据形式为json
+            success : function(result) {
+                if (result) {
+                    //把result(即Json数据)以参数形式放入Echarts代码中
+                    bind(result);
+                }
+            },
+            error : function(errorMsg) {
+                alert("加载数据失败");
+            }
+        }); //ajax
+    
+    var echartsPie;  
+    var json = [  
+                {value:50,name:'已完成'},    
+                {value:10,name:'逾期'}
+                ];  
+    var option = {  
+            title : {  
+                text: '项目统计图',  
+                subtext: '所有项目',  
+                x:'center'  
+            },  
+            tooltip : {  
+                trigger: 'item',  
+                formatter: "{a} <br/>{b} : {c} %"  
+            },  
+            legend: {  
+                orient : 'vertical',  
+                x : 'left',  
+                data:['逾期','已完成']  
+            },  
+            toolbox: {  
+                show : true,  
+                feature : {  
+                    mark : {show: true},  
+                    dataView : {show: true, readOnly: false},  
+                    magicType : {  
+                        show: true,   
+                        type: ['pie', 'funnel'],  
+                        option: {  
+                            funnel: {  
+                                x: '25%',  
+                                width: '50%',  
+                                funnelAlign: 'left',  
+                                max: 1548  
+                            }  
+                        }  
+                    },  
+                    restore : {show: true},  
+                    saveAsImage : {show: true}  
+                }  
+            },  
+            calculable : true,  
+            series : [  
+                {  
+                    name:'项目完成率',  
+                    type:'pie',  
+                    radius : '50%',//饼图的半径大小  
+                    center: ['50%', '60%'],//饼图的位置  
+                    data:json  
+                }  
+            ]  
+        };   
+      
+    echartsPie = echarts.init(document.getElementById('div'));  
+    $(function(){  
+        echartsPie.setOption(option);  
+          
+    });
 </script>
 
 </#body>

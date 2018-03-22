@@ -134,8 +134,8 @@ public class StatisticalController {
 	
 	@ApiOperation(value="查询时间段内员工工时", notes = "查询返回easyui信息")
     @RequestMapping(value="/taskHoursByUser", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody List<TaskByUsersDto> taskHoursByUser(String startTime,String endTime,List<Long> userId,List<Long> departmentId) throws Exception {
-		List<TaskByUsersDto> taskByUserDtoList = statisticalService.listTaskHoursByUser(startTime, endTime,departmentId , userId);
+    public @ResponseBody List<TaskByUsersDto> taskHoursByUser(String startTime,String endTime,String aaa,String aaaaa) throws Exception {
+		List<TaskByUsersDto> taskByUserDtoList = statisticalService.listTaskHoursByUser(startTime, endTime,null , null);
 		return taskByUserDtoList;
    
     }
@@ -148,7 +148,7 @@ public class StatisticalController {
     }
 	
 	@ApiOperation(value="返回查询后的日期", notes = "查询返回easyui信息")
-    @RequestMapping(value="/getSearchDate", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value="/getSearchDate.json", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String getSearchDate(String year,String month) throws Exception {
 
 		return statisticalService.getSearchDate(year, month);
