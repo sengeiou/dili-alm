@@ -12,17 +12,21 @@
     <result column="project_manager_id" jdbcType="BIGINT" property="projectManagerId" />
     <result column="application_department_id" jdbcType="BIGINT" property="applicationDepartmentId" />
     <result column="applicant_id" jdbcType="BIGINT" property="applicantId" />
-    <result column="application_date" jdbcType="TIMESTAMP" property="applicationDate" />
+    <result column="submit_time" jdbcType="TIMESTAMP" property="submitTime" />
     <result column="service_environment" jdbcType="VARCHAR" property="serviceEnvironment" />
     <result column="apply_reason" jdbcType="VARCHAR" property="applyReason" />
     <result column="other_description" jdbcType="VARCHAR" property="otherDescription" />
+    <result column="configuration_requirement" jdbcType="VARCHAR" property="configurationRequirement" />
+    <result column="created" jdbcType="TIMESTAMP" property="created" />
+    <result column="apply_state" jdbcType="INTEGER" property="applyState" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
       WARNING - @mbg.generated
     -->
     id, project_id, project_name, project_serial_number, project_manager_id, application_department_id, 
-    applicant_id, application_date, service_environment, apply_reason, other_description
+    applicant_id, submit_time, service_environment, apply_reason, other_description, 
+    configuration_requirement, created, apply_state
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -57,8 +61,8 @@
       <if test="applicantId != null">
         applicant_id = #{applicantId,jdbcType=BIGINT},
       </if>
-      <if test="applicationDate != null">
-        application_date = #{applicationDate,jdbcType=TIMESTAMP},
+      <if test="submitTime != null">
+        submit_time = #{submitTime,jdbcType=TIMESTAMP},
       </if>
       <if test="serviceEnvironment != null">
         service_environment = #{serviceEnvironment,jdbcType=VARCHAR},
@@ -68,6 +72,15 @@
       </if>
       <if test="otherDescription != null">
         other_description = #{otherDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="configurationRequirement != null">
+        configuration_requirement = #{configurationRequirement,jdbcType=VARCHAR},
+      </if>
+      <if test="created != null">
+        created = #{created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="applyState != null">
+        apply_state = #{applyState,jdbcType=INTEGER},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

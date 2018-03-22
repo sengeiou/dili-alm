@@ -46,4 +46,7 @@ public class AlmCache {
 	// 告警类型
 	public static final Map<String, String> ALARM_TYPE_MAP = new ConcurrentHashMap<>();
 
+	// 资源环境
+	public static final Map<Integer, String> RESOURCE_ENVIRONMENT_MAP = new ConcurrentHashMap<>();
+
 }

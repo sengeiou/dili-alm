@@ -14,7 +14,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2018-03-13 15:29:59.
+ * This file was generated on 2018-03-21 10:18:19.
  */
 @Table(name = "`hardware_resource_apply`")
 public interface HardwareResourceApply extends IBaseDomain {
@@ -69,12 +69,12 @@ public interface HardwareResourceApply extends IBaseDomain {
 
     void setApplicantId(Long applicantId);
 
-    @Column(name = "`application_date`")
-    @FieldDef(label="申请日期")
+    @Column(name = "`submit_time`")
+    @FieldDef(label="申请提交时间")
     @EditMode(editor = FieldEditor.Datetime, required = false)
-    Date getApplicationDate();
+    Date getSubmitTime();
 
-    void setApplicationDate(Date applicationDate);
+    void setSubmitTime(Date submitTime);
 
     @Column(name = "`service_environment`")
     @FieldDef(label="使用环境（数据字典）", maxLength = 255)
@@ -96,4 +96,25 @@ public interface HardwareResourceApply extends IBaseDomain {
     String getOtherDescription();
 
     void setOtherDescription(String otherDescription);
+
+    @Column(name = "`configuration_requirement`")
+    @FieldDef(label="配置要求", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getConfigurationRequirement();
+
+    void setConfigurationRequirement(String configurationRequirement);
+
+    @Column(name = "`created`")
+    @FieldDef(label="创建时间")
+    @EditMode(editor = FieldEditor.Datetime, required = true)
+    Date getCreated();
+
+    void setCreated(Date created);
+
+    @Column(name = "`apply_state`")
+    @FieldDef(label="申请状态")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Integer getApplyState();
+
+    void setApplyState(Integer applyState);
 }
