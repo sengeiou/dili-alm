@@ -339,13 +339,13 @@
 	 where tt.modified BETWEEN CONCAT(#{beginTime,jdbcType=VARCHAR},' 00:00:00') AND CONCAT(#{endTime,jdbcType=VARCHAR},' 23:59:59') ) as taskInfo LEFT JOIN 
 	(select utt.id as id,utt.real_name as real_name,dt.`name` as departmentName,utt.department_id as departmentId  from `user` as utt LEFT JOIN department as dt on utt.department_id = dt.id) as ut 
 	ON taskInfo.ownerId = ut.id where 1=1   
- 	<if test="uIds != null">
+ 	<if test="uIds != null and uIds.size>0">
 				and ut.id in 
 				<foreach item="item" index="index" collection="uIds" open="(" separator="," close=")">  
 				  #{item}  
 				</foreach> 
 	</if>
-	<if test="departmentIds != null">
+	<if test="departmentIds != null and departmentIds.size>0">
 				and ut.departmentId in
 		<foreach item="item" index="index" collection="departmentIds" open="(" separator="," close=")">  
 				  #{item}  
@@ -361,21 +361,24 @@
    </select>
    <!-- 年度总汇-->
     <select id="selectProjectYearsCover" resultType="com.dili.alm.domain.ProjectYearCoverDto">
-		select pp.pid as projectId,pp.pname as projectName,pp.ptype as projectType,pp.pstate as projectstate,t.task_count as taskCount,t.finishCount as finishCount,t.ongoing as ongoing,t.completion_rate as completionRate,t.noFinish as noFinish,t.overdue_rate as overdueRate from 
+		select pp.pid as projectId,pp.pname as projectName,pp.ptype as projectType,pp.pstate as projectstate,t.total as taskCount,t.finish as finishCount,t.begining as ongoing,t.finish/t.total as completionRate,t.noFinish as noFinish,t.noFinish/t.total as overdueRate
+		,t.pause  as pauseTotal,t.begining  as beginingTotal,t.noBegin  as noBeginTotal from 
 		(select ps.pid as pid ,ps.pname as pname,dd2.`code` as ptype ,ps.pstate from 
 		(select p.id as pid,p.`name` as pname ,p.type as ptype ,p.actual_start_date as pstart,p.actual_end_date as pend,dd.`code` as pstate from alm.project as p LEFT JOIN alm.data_dictionary_value  dd ON p.project_state=dd.`value` where dd.dd_id=6)
 		as ps LEFT JOIN alm.data_dictionary_value as dd2 ON  ps.ptype = dd2.`value` where dd2.dd_id= 3  AND ps.pstart BETWEEN #{beginTime,jdbcType=TIMESTAMP} AND #{endTime,jdbcType=TIMESTAMP} or ps.pend BETWEEN #{beginTime,jdbcType=TIMESTAMP} AND #{endTime,jdbcType=TIMESTAMP}) as pp 
-		LEFT JOIN (
-		select  tt1.tpid as tpid,tt1.ttcount as task_count,tt2.finishCount as finishCount,tt2.dottcount as ongoing,tt2.dottcount/tt1.ttcount as completion_rate,tt1.noFinish as noFinish,tt1.noFinish/tt1.ttcount as overdue_rate FROM
-		(select t1.tpid as tpid ,t1.ttcount as ttcount,t2.nfcount as noFinish from
-		(select project_id as tpid,count(*) as ttcount from alm.task GROUP BY project_id)as t1 LEFT JOIN (select project_id as tpid,count(*) as nfcount from alm.task  where `status` =  4 GROUP BY project_id ) as t2 on 
-		t1.tpid=t2.tpid) as tt1  
 		LEFT JOIN 
-		(select t1.tpid as tpid ,t1.do_count as dottcount,t2.finishCount as finishCount from
-		(select project_id as tpid,count(*) as do_count from alm.task  where `status` =  1 GROUP BY project_id)as t1 LEFT JOIN (select project_id as tpid,count(*) as finishCount from alm.task  where `status` =  4 GROUP BY project_id ) as t2 on 
-		t1.tpid=t2.tpid )as tt2
-		ON tt1.tpid=tt2.tpid
-		) as t on pp.pid =t.tpid
+		(select task.project_id as tpid,count(*) as total,count(case when `status`=0 then '0'  end)as noBegin,count(case when `status`=1 then 1 end)as begining,count(case when `status`=2 then 2 end)as pause,count(case when `status`=3 then 3 end)as finish,count(case when `status`=4 then 4 end)as noFinish
+		from task group by project_id order by project_id, `status`) as t on pp.pid =t.tpid
+   </select>
+      <!-- 年度总汇.图标-->
+    <select id="selectProjectYearsCoverForAll" resultType="com.dili.alm.domain.ProjectYearCoverForAllDto">
+		select IFNULL(pp.pid,0) as pid,IFNULL(sum(t.total),0) as taskCount,IFNULL(sum(t.finish),0) as finishCount,IFNULL(sum(t.begining),0) as ongoing ,IFNULL(sum(t.noFinish),0) as noFinish 
+         ,IFNULL(sum(t.pause),0)  as pauseTotal,IFNULL(sum(t.begining),0)  as beginingTotal,IFNULL(t.noBegin,0)  as noBeginTotal from 
+		(select p.id as pid,actual_start_date as startDate,actual_end_date as endDate from alm.project as p WHERE  actual_start_date BETWEEN #{beginTime,jdbcType=TIMESTAMP} AND #{endTime,jdbcType=TIMESTAMP}  or actual_end_date BETWEEN #{beginTime,jdbcType=TIMESTAMP} AND #{endTime,jdbcType=TIMESTAMP}) as pp 
+		LEFT JOIN 
+		( select task.project_id as tpid,count(*) as total,count(case when `status`=0 then '0'  end)as noBegin,count(case when `status`=1 then 1 end)as begining,count(case when `status`=2 then 2 end)as pause,count(case when `status`=3 then 3 end)as finish,count(case when `status`=4 then 4 end)as noFinish
+		from task group by project_id order by project_id, `status` 
+		) as t on pp.pid =t.tpid 
    </select>
    <!-- 数据统计相关 end  -->
 

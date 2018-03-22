@@ -14,6 +14,7 @@ import com.dili.alm.domain.TaskByUsersDto;
 import com.dili.alm.domain.TaskDetails;
 import com.dili.alm.domain.TaskEntity;
 import com.dili.alm.domain.TaskHoursByProjectDto;
+import com.dili.alm.domain.dto.ProjectYearCoverForAllDto;
 import com.dili.alm.domain.dto.TaskStateCountDto;
 import com.dili.ss.base.MyMapper;
 
@@ -45,6 +46,8 @@ public interface TaskMapper extends MyMapper<Task> {
 	List<TaskHoursByProjectDto> selectProjectHours(@Param("beginTime")String beginTime,@Param("endTime")String endTime);
 	
 	List<ProjectYearCoverDto> selectProjectYearsCover(@Param("beginTime")String beginTime,@Param("endTime")String endTime);
+	
+	ProjectYearCoverForAllDto selectProjectYearsCoverForAll(@Param("beginTime")String beginTime,@Param("endTime")String endTime);
 	/***数据统计相关 end***/
 
 	List<TaskStateCountDto>  selectTaskStateCount(@Param("list")List<Long> list);

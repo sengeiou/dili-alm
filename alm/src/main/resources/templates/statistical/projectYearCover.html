@@ -107,6 +107,7 @@
         var param = {"year" :year,"month" :month};
         $("#grid").datagrid("load",param);
         $("#search_date").html(searchDate(year,month));
+        loadEchartForProject(year,month);
     }
     
     //返回查询日期
@@ -116,80 +117,89 @@
         var str=htmlobj.responseText;
         return str;
     }
+    function loadEchartForProject(thisYear,thisMonth){
+   	 $.ajax({
+   	        type : 'post',
+   	        async : false, //同步执行
+   	            url :'${contextPath}/statistical/projectYearCoverForAll', //web.xml中注册的Servlet的url-pattern
+   	            data : {month:thisMonth,year:thisYear}, //无参数
+   	            dataType : 'json', //返回数据形式为json
+   	            success : function(result) {
+   	                if (result) {
+   	                    //把result(即Json数据)以参数形式放入Echarts代码中
+   	                    bind(result);
+   	                }
+   	            },
+   	            error : function(errorMsg) {
+   	                alert("加载数据失败");
+   	            }
+   	        }); //ajax
+   }
     
-    $.ajax({
-        type : 'post',
-        async : false, //同步执行
-            url :'${contextPath}/statistical/listProjectYearCover', //web.xml中注册的Servlet的url-pattern
-            data : {}, //无参数
-            dataType : 'json', //返回数据形式为json
-            success : function(result) {
-                if (result) {
-                    //把result(即Json数据)以参数形式放入Echarts代码中
-                    bind(result);
-                }
-            },
-            error : function(errorMsg) {
-                alert("加载数据失败");
-            }
-        }); //ajax
     
-    var echartsPie;  
-    var json = [  
-                {value:50,name:'已完成'},    
-                {value:10,name:'逾期'}
-                ];  
-    var option = {  
-            title : {  
-                text: '项目统计图',  
-                subtext: '所有项目',  
-                x:'center'  
-            },  
-            tooltip : {  
-                trigger: 'item',  
-                formatter: "{a} <br/>{b} : {c} %"  
-            },  
-            legend: {  
-                orient : 'vertical',  
-                x : 'left',  
-                data:['逾期','已完成']  
-            },  
-            toolbox: {  
-                show : true,  
-                feature : {  
-                    mark : {show: true},  
-                    dataView : {show: true, readOnly: false},  
-                    magicType : {  
-                        show: true,   
-                        type: ['pie', 'funnel'],  
-                        option: {  
-                            funnel: {  
-                                x: '25%',  
-                                width: '50%',  
-                                funnelAlign: 'left',  
-                                max: 1548  
-                            }  
-                        }  
-                    },  
-                    restore : {show: true},  
-                    saveAsImage : {show: true}  
-                }  
-            },  
-            calculable : true,  
-            series : [  
-                {  
-                    name:'项目完成率',  
-                    type:'pie',  
-                    radius : '50%',//饼图的半径大小  
-                    center: ['50%', '60%'],//饼图的位置  
-                    data:json  
-                }  
-            ]  
-        };   
-      
-    echartsPie = echarts.init(document.getElementById('div'));  
+   function bind(result){
+	   var echartsPie;  
+	    var json = [  
+	                {value:result.finishCount,name:'正常完成'},    
+	                {value:result.ongoing,name:'进行中'},    
+	                {value:result.noFinish,name:'逾期未完成'},    
+	                {value:result.pauseTotal,name:'暂停'},    
+	                {value:result.noBeginTotal,name:'未开始'}
+	                ];  
+	    
+	    var option = {  
+	            title : {  
+	                text: '项目统计图',  
+	                subtext: '所有项目',  
+	                x:'center'  
+	            },  
+	            tooltip : {  
+	                trigger: 'item',
+	                	 formatter: "{a}{b} : {c} ({d}%)"
+	            },  
+	            legend: {  
+	                orient : 'vertical',  
+	                x : 'left',  
+	                data:["正常完成","进行中","逾期未完成","暂停","未开始"]  
+	            },  
+	            toolbox: {  
+	                show : true,  
+	                feature : {  
+	                    mark : {show: true},  
+	                    dataView : {show: true, readOnly: false},  
+	                    magicType : {  
+	                        show: true,   
+	                        type: ['pie', 'funnel'],  
+	                        option: {  
+	                            funnel: {  
+	                                x: '25%',  
+	                                width: '50%',  
+	                                funnelAlign: 'left',  
+	                                max: 1548  
+	                            }  
+	                        }  
+	                    },  
+	                    restore : {show: true},  
+	                    saveAsImage : {show: true}  
+	                }  
+	            },  
+	            calculable : true,  
+	            series : [  
+	                {  
+	                    name:'项目完成率',  
+	                    type:'pie',  
+	                    radius : '50%',//饼图的半径大小  
+	                    center: ['50%', '60%'],//饼图的位置  
+	                    data:json  
+	                }  
+	            ]  
+	        };   
+	    echartsPie = echarts.init(document.getElementById('div')); 
+	    echartsPie.setOption(option);
+   }
+  
     $(function(){  
-        echartsPie.setOption(option);  
+    	loadEchartForProject();  
           
     });
 </script>

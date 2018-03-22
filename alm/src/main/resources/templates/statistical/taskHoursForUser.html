@@ -25,26 +25,16 @@
 
                         </td>
                         <td style="padding:5px;">
-                            <input class="combobox-checkbox" name="aaa" id="aaa" style="width:100%"
-                                   data-options="url:'${contextPath!}/task/listTreeProject.json',
-													method:'get',
-													valueField:'id',
-													textField:'name',
-													multiple:true,
-													panelHeight:'auto'
-											"/>
+                            <input class="combobox-checkbox" name="userId" id="userId" style="width:100%"
+                                   data-options="editable:false,label:'人员',multiple:true"/>
+											<#comboProvider _id="userId" _title="人员"  
+                    _nameField="real_name" _valueField="id" _provider='memberProvider'></#comboProvider>
                         </td>
                     </tr>
                     <tr>
                         <td style="padding:5px;">
-                            <input class="combobox-checkbox" name="aaaaa" id="aaaaa" style="width:100%"
-                                   data-options="url:'${contextPath!}/department/departments',method:'get',editable:false,label:'人员:',valueField:'id',textField:'name',multiple:true"/>
+                            <input class="combobox-checkbox"  id="departmentId" name="departmentId" data-options="editable:false,label:'部门:'" style="width:100%"/>
 
-                        </td>
-                         <td style="padding:5px;">
-                             <input class="easyui-textbox" type="text" id="dep" name="dep" style="width:250px"
-                               data-options="editable:false,label:'人员:',buttonText:'选择',
-									onClickButton:selectDep,onChange:aa">
                         </td>
                     </tr>
                     <tr>
@@ -69,14 +59,12 @@
                 <a href="#" class="easyui-linkbutton" iconCls="icon-export" onclick="doExport('grid')" plain="true"></a>
         </div>
         <table id="grid" class="easyui-datagrid" title="数据列表" style="width:98%;height:'auto'"
-               
                data-options="
                 rownumbers: true,
                 singleSelect: true,
                 url: '${contextPath}/statistical/taskHoursByUser',
                 method: 'get',
-                onLoadSuccess: onLoadSuccess
-            ">
+                onLoadSuccess: onLoadSuccess">
             <thead>
             <tr>
                 <th data-options="field:'selectDate',width:'26%',align:'center'">统计日期</th>
@@ -120,14 +108,57 @@
         }
         var param = bindMetadata("grid", true);
         var formData = $("#form").serializeObject();
-        $.extend(param, formData);
-        alert(formData.aaa);
-        alert(formData.startTime);
-        $("#grid").datagrid("load", param);
+        formData.departmentId=$("#departmentId").val();
+        formData.userId=$("#userId").val();
+        $("#grid").datagrid("load", formData);
     }
-    function aa(){
-    	
-    }
+    $(function(){  
+  	  
+   	 //初始化多选复选框  
+   	 initCombobox('departmentId');
+   }) ; 
+   	function initCombobox(id){  
+   	            var value = "";  
+   	            //加载下拉框复选框  
+   	            $('#'+id).combobox({  
+   	            	url:'${contextPath}/department/departments',
+   					panelHeight:'200px',
+   	                method:'post',
+   	                valueField:'id',
+   					textField:'name',
+   	                multiple:true,  
+   	                formatter: function (row) { //formatter方法就是实现了在每个下拉选项前面增加checkbox框的方法  
+   	                    var opts = $(this).combobox('options');  
+   	                    return '<input type="checkbox" class="combobox-checkbox">' + row[opts.textField]  
+   	                },  
+   	                onLoadSuccess: function () {  //下拉框数据加载成功调用  
+   	                    var opts = $(this).combobox('options');  
+   	                    var target = this;  
+   	                    var values = $(target).combobox('getValues');//获取选中的值的values  
+   	                    $.map(values, function (value) {  
+   	                        var el = opts.finder.getEl(target, value);  
+   	                        el.find('input.combobox-checkbox')._propAttr('checked', true);   
+   	                    })  
+   	                },  
+   	                onSelect: function (row) { //选中一个选项时调用  
+   	                    var opts = $(this).combobox('options');  
+   	                    //获取选中的值的values  
+   	                    $("#"+id).val($(this).combobox('getValues'));  
+   	                     
+   	                   //设置选中值所对应的复选框为选中状态  
+   	                    var el = opts.finder.getEl(this, row[opts.valueField]);  
+   	                    el.find('input.combobox-checkbox')._propAttr('checked', true);  
+   	                },  
+   	                onUnselect: function (row) {//不选中一个选项时调用  
+   	                    var opts = $(this).combobox('options');  
+   	                    //获取选中的值的values  
+   	                    $("#"+id).val($(this).combobox('getValues'));  
+   	                    
+   	                    var el = opts.finder.getEl(this, row[opts.valueField]);  
+   	                    el.find('input.combobox-checkbox')._propAttr('checked', false);  
+   	                }  
+   	            });  
+   	        }  
     function getCheckBoxSelect(row){
 
             var opts = $(this).combobox('options');
@@ -144,7 +175,7 @@
     		showDepDlg($(this)[0].id);
     	}
     }
- 
+    function aa(){}
     function showDepDlg(id) {
     	$('#smDialog').dialog({
     				title : '部门选择',
