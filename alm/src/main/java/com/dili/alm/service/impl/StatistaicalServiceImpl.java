@@ -62,6 +62,7 @@ import com.dili.alm.domain.dto.ProjectDto;
 import com.dili.alm.domain.dto.ProjectProgressDto;
 import com.dili.alm.domain.dto.ProjectStatusCountDto;
 import com.dili.alm.domain.dto.ProjectTypeCountDto;
+import com.dili.alm.domain.dto.ProjectYearCoverForAllDto;
 import com.dili.alm.domain.dto.TaskStateCountDto;
 import com.dili.alm.domain.dto.UploadProjectFileDto;
 import com.dili.alm.exceptions.ProjectException;
@@ -159,7 +160,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 
 	@Override
 	public List<TaskByUsersDto> listTaskHoursByUser(String startTime,
-			String endTime, List<Long> dids, List<Long> uids) {
+			String endTime, List<Long> uids, List<Long> dids) {
 		if (startTime==null) {
 			startTime = SELECT_HOURS_BY_USER_START_DATE;
 		}else{
@@ -171,7 +172,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 			endTime+="";
 		}
 
-		List<TaskByUsersDto> list = taskMapper.selectTaskHourByUser(startTime, endTime, null, null);
+		List<TaskByUsersDto> list = taskMapper.selectTaskHourByUser(startTime, endTime, dids,uids);
 		return list;
 	}
 	
@@ -320,6 +321,13 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		String end =getAppedDate(year,month,false);
 		String returnStr = begin+"至"+end;
 		return returnStr;
+	}
+	
+	@Override
+	public ProjectYearCoverForAllDto getProjectYearsCoverForAll(String year, String month) {
+		String startDate = getAppedDate(year, month, true);
+		String endDate = getAppedDate(year, month, false);
+		return taskMapper.selectProjectYearsCoverForAll(startDate,endDate);
 	}
 	/***查询工时相关services****by******JING***END****/
 	

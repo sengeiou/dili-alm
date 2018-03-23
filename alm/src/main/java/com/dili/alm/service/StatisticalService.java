@@ -16,6 +16,7 @@ import com.dili.alm.domain.TaskHoursByProjectDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectProgressDto;
 import com.dili.alm.domain.dto.ProjectTypeCountDto;
+import com.dili.alm.domain.dto.ProjectYearCoverForAllDto;
 import com.dili.alm.domain.dto.TaskStateCountDto;
 import com.dili.alm.domain.dto.UploadProjectFileDto;
 import com.dili.alm.exceptions.ProjectException;
@@ -39,6 +40,8 @@ public interface StatisticalService {
 	List<ProjectYearCoverDto> listProjectYearCover(String startTime,String endTime);
 	
 	String getSearchDate(String year,String month);
+	
+	ProjectYearCoverForAllDto getProjectYearsCoverForAll(String year,String month);
 	/***查询工时相关services****by******JING***END****/
 
 	List<TaskStateCountDto> getProjectToTaskCount(String startTime,
