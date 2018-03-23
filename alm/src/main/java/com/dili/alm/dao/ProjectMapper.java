@@ -35,4 +35,6 @@ public interface ProjectMapper extends MyMapper<Project> {
 	int getProjectProgressListCount(@Param("startTime")String startTime,@Param("endTime")String endTime,@Param("list")List<Long> list);
  
 	int getProjectTypeAllCount(@Param("startTime")String startTime,@Param("endTime")String endTime);
+	
+	List<ProjectStatusCountDto> getStateByProjectCount(@Param("owner")Long owner,@Param("list")List<Long> list);
 }

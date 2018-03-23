@@ -59,4 +59,13 @@ public interface StatisticalService {
 	void downloadProjectType(OutputStream os, String startTime, String endTime) throws Exception;
 
 
+
+	List<Map<String, Object>> getHomeProject(List<Long> projectId);
+
+
+
+
+	List<Map<String, Object>> getHomeProjectTask(List<Long> projectId);
+
+
 }

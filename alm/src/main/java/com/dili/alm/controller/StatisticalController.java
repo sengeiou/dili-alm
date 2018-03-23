@@ -16,9 +16,16 @@ import com.dili.alm.domain.Project;
 
 
 
+
+import com.dili.alm.domain.TaskQueryInProjectId;
+import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.dto.DTOUtils;
+import com.dili.sysadmin.sdk.session.SessionContext;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -33,9 +40,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 
 
+
+
+
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,6 +58,8 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 @RequestMapping("/statistical")
 public class StatisticalController {
+	
+	private static final String DATA_AUTH_TYPE = "Project";
 	@Autowired
 	private StatisticalService statisticalService;
 	
@@ -221,7 +234,34 @@ public class StatisticalController {
     }
     
     
-    
+   @RequestMapping(value="/homeProjectCount", method = {RequestMethod.GET, RequestMethod.POST})
+   public @ResponseBody List<Map<String,Object>> homeProjectCount(String flat) {
+	   List<Long> projectIds = new ArrayList<>();
+	   if(!WebUtil.strIsEmpty(flat)&&flat.equals("1")){
+		   @SuppressWarnings({ "rawtypes" })
+			List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
+			if (CollectionUtils.isEmpty(dataAuths)) {
+				return null;
+			}
+			dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
+	   }
+	   return statisticalService.getHomeProject(projectIds);
+   }
+   @RequestMapping(value="/homeTaskCount", method = {RequestMethod.GET, RequestMethod.POST})
+   public @ResponseBody List<Map<String,Object>> homeTaskCount(String flat) {
+	   List<Long> projectIds = new ArrayList<>();
+	   if(!WebUtil.strIsEmpty(flat)&&flat.equals("1")){	
+		   @SuppressWarnings({ "rawtypes" })
+			List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
+			if (CollectionUtils.isEmpty(dataAuths)) {
+				return null;
+			}
+			dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
+	   }
+	   return statisticalService.getHomeProjectTask(projectIds);
+
+   }
+   
     
     
     
