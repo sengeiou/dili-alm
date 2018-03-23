@@ -487,12 +487,6 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	 */
 	@SuppressWarnings("unused")
 	private void exportExcel(OutputStream os,List<Map<String, Object>> list) throws Exception {
-		
-        InputStream stream = getClass().getClassLoader().getResourceAsStream("excel/"+FILE_NAME_STR);
-        File targetFile = new File(FILE_NAME_STR);
-        if (!targetFile.exists()) {
-            FileUtils.copyInputStreamToFile(stream, targetFile);
-        }
         HSSFWorkbook excel = (HSSFWorkbook) ExcelExportUtil.exportExcel(list,ExcelType.HSSF);
         excel.write(os);
         os.flush();
