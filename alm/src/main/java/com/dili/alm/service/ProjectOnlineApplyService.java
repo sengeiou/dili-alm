@@ -1,5 +1,7 @@
 package com.dili.alm.service;
 
+import java.util.List;
+
 import com.dili.alm.domain.OperationResult;
 import com.dili.alm.domain.ProjectOnlineApply;
 import com.dili.alm.domain.dto.ProjectOnlineApplyUpdateDto;
@@ -19,8 +21,9 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 	 * 
 	 * @param dto
 	 *            数据模型
+	 * @throws ProjectOnlineApplyException 
 	 */
-	void saveOrUpdate(ProjectOnlineApplyUpdateDto dto);
+	void saveOrUpdate(ProjectOnlineApplyUpdateDto dto) throws ProjectOnlineApplyException;
 
 	/**
 	 * 查看申请详情
@@ -44,33 +47,37 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 	 * 
 	 * @param applyId
 	 *            申请id
-	 * @param description
-	 *            执行结果
+	 * @param executorId TODO
+	 * @param executors TODO
+	 * @param description TODO
 	 * @throws ProjectOnlineApplyException
 	 */
-	void startExecute(Long applyId, String description) throws ProjectOnlineApplyException;
+	void startExecute(Long applyId, Long executorId, List<Long> executors, String description) throws ProjectOnlineApplyException;
 
 	/**
 	 * 测试确认
 	 * 
 	 * @param applyId
 	 *            申请id
-	 * @param result
-	 *            执行结果
+	 * @param executorId TODO
+	 * @param result TODO
+	 * @param description TODO
 	 * @throws ProjectOnlineApplyException
 	 */
-	void testerConfirm(Long applyId, OperationResult result) throws ProjectOnlineApplyException;
+	void testerConfirm(Long applyId, Long executorId, OperationResult result, String description) throws ProjectOnlineApplyException;
 
 	/**
 	 * 执行确认
 	 * 
 	 * @param applyId
 	 *            申请id
+	 * @param executorId TODO
 	 * @param result
 	 *            执行结果
+	 * @param description TODO
 	 * @throws ProjectOnlineApplyException
 	 */
-	void excuteConfirm(Long applyId, OperationResult result) throws ProjectOnlineApplyException;
+	void excuteConfirm(Long applyId, Long executorId, OperationResult result, String description) throws ProjectOnlineApplyException;
 
 	/**
 	 * 验证
@@ -79,9 +86,11 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 	 *            申请id
 	 * @throws ProjectOnlineApplyException
 	 */
-	void validate(Long applyId) throws ProjectOnlineApplyException;
+	void verify(Long applyId) throws ProjectOnlineApplyException;
 
-	void insertProjectOnlineApply(ProjectOnlineApplyUpdateDto projectOnlineApply);
+	void insertProjectOnlineApply(ProjectOnlineApplyUpdateDto projectOnlineApply) throws ProjectOnlineApplyException;
 
-	void updateProjectOnlineApply(ProjectOnlineApplyUpdateDto dto);
+	void updateProjectOnlineApply(ProjectOnlineApplyUpdateDto dto) throws ProjectOnlineApplyException;
+
+	void deleteProjectOnlineApply(Long id) throws ProjectOnlineApplyException;
 }

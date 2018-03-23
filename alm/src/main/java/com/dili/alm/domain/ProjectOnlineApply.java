@@ -14,7 +14,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2018-03-22 16:10:00.
+ * This file was generated on 2018-03-23 11:18:17.
  */
 @Table(name = "`project_online_apply`")
 public interface ProjectOnlineApply extends IBaseDomain {
@@ -159,4 +159,11 @@ public interface ProjectOnlineApply extends IBaseDomain {
     Date getSubmitTime();
 
     void setSubmitTime(Date submitTime);
+
+    @Column(name = "`executor_id`")
+    @FieldDef(label="运维执行人id，多个，逗号分隔，运维部经理分配谁来执行操作", maxLength = 0)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getExecutorId();
+
+    void setExecutorId(String executorId);
 }
