@@ -1,4 +1,4 @@
-package com.dili.alm.domain;
+package com.dili.alm.domain.dto;
 
 
 

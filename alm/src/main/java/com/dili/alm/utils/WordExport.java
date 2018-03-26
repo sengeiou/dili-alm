@@ -6,6 +6,12 @@ import java.math.BigInteger;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -43,6 +49,359 @@ import com.dili.alm.domain.dto.TaskDto;
  * Created by on 2017/1/9.
  */
 public class WordExport {
+	
+	
+	public static File getFileExecel(File file ,ProjectWeeklyDto pd, List<String> projectVersion, List<String> projectPhase, List<String> nextprojectPhase, List<TaskDto> td, List<NextWeeklyDto> wk,
+			JSONArray weeklyRistJson, JSONArray weeklyQuestionJson, WeeklyDetails wDetails) throws Exception {
+		
+		FileOutputStream  out=new FileOutputStream(file);
+		//创建HSSFWorkbook对象(excel的文档对象)
+        HSSFWorkbook wb = new HSSFWorkbook();
+        //建立新的sheet对象（excel的表单）
+        HSSFSheet sheet=wb.createSheet("周报");
+        //在sheet里创建第一行，参数为行索引(excel的行)，可以是0～65535之间的任何一个
+        getExeclProjectDesc(pd, wDetails, sheet);
+        
+        
+       /***********************************本周进展情况**********************************/
+        getExecelThisWeekHeader(projectVersion, projectPhase, sheet);
+        
+        int descLength=11;
+        int length=td.size();
+        getExecelThisWeekList(td, sheet, descLength);
+        /***********************************下周工作计划**********************************/
+       
+        getExeclNextWeekTableHeader(sheet, descLength, length);
+      
+        
+        
+        int  nextWeekLength=descLength+length+2;
+        int  nextLength=wk.size();
+        
+        getExeclNextWeekTableList(wk, sheet, nextWeekLength, nextLength);
+        
+        
+        /***********************************当前重要风险**********************************/
+       int  currentRistLength=nextWeekLength+nextLength+1;
+        getExcelRistHeader(sheet, currentRistLength);
+        
+        
+        
+        int  currentRistLengthTemp=currentRistLength+1;
+        int  currentRistfor=0;
+    
+        
+        if(weeklyRistJson!=null){
+        	
+        	List<WeeklyJson> ristList = weeklyRistJson.toJavaList(WeeklyJson.class);
+        	currentRistfor=ristList.size();
+	        for (int i = 0; i <currentRistfor; i++) {
+	        	
+	        	HSSFRow row15Temp=sheet.createRow(currentRistLengthTemp+1+i);
+	        	 
+	        	row15Temp.createCell(0).setCellValue(ristList.get(i).getName());
+	            sheet.addMergedRegion(new CellRangeAddress(currentRistLengthTemp+1+i,currentRistLengthTemp+1+i,0,3));
+	            row15Temp.createCell(4).setCellValue(ristList.get(i).getDesc());
+	            sheet.addMergedRegion(new CellRangeAddress(currentRistLengthTemp+1+i,currentRistLengthTemp+1+i,4,7));
+	            row15Temp.createCell(8).setCellValue(ristList.get(i).getStatus());
+	            sheet.addMergedRegion(new CellRangeAddress(currentRistLengthTemp+1+i,currentRistLengthTemp+1+i,8,11));
+	            
+	        }
+        }
+        
+         if(currentRistfor==0){
+        	HSSFRow row15Temp=sheet.createRow(currentRistLengthTemp+1);
+        	row15Temp.createCell(0).setCellValue("");
+        	sheet.addMergedRegion(new CellRangeAddress(currentRistLengthTemp+1,currentRistLengthTemp+1,0,11));
+       	    currentRistfor=1;
+         }
+        
+        /***********************************当前重大问题**********************************/
+        
+        
+        int  questlength=currentRistLengthTemp+currentRistfor+1;
+        getExcelquestHeader(sheet, questlength);
+        
+        int  questTempLength=questlength+1;
+        int  questTemp=0;
+        
+        
+    
+        if(weeklyQuestionJson!=null){
+        	List<WeeklyJson> questionList = weeklyQuestionJson.toJavaList(WeeklyJson.class);
+        	questTemp=questionList.size();
+	        for (int i = 0; i <questTemp; i++) {
+	        	
+	        	HSSFRow row17Temp=sheet.createRow(questTempLength+1+i);
+	        	row17Temp.createCell(0).setCellValue(questionList.get(i).getName());
+	            sheet.addMergedRegion(new CellRangeAddress(questTempLength+1+i,questTempLength+1+i,0,3));
+	            row17Temp.createCell(4).setCellValue(questionList.get(i).getDesc());
+	            sheet.addMergedRegion(new CellRangeAddress(questTempLength+1+i,questTempLength+1+i,4,7));
+	            row17Temp.createCell(8).setCellValue(questionList.get(i).getStatus());
+	            sheet.addMergedRegion(new CellRangeAddress(questTempLength+1+i,questTempLength+1+i,8,11));
+	            
+	        }
+        }
+        if(questTemp==0){
+        	 HSSFRow row17Temp=sheet.createRow(questTempLength+1);
+        	 row17Temp.createCell(0).setCellValue("");
+        	 sheet.addMergedRegion(new CellRangeAddress(questTempLength+1,questTempLength+1,0,11));
+         	 questTemp=1;
+         }
+        
+        
+        execlOther(wDetails, sheet, questTempLength, questTemp);//
+        
+        int other=questTempLength+questTemp+2+1;
+        
+        HSSFRow row20=sheet.createRow(other);
+        row20.createCell(0).setCellValue("");
+        sheet.addMergedRegion(new CellRangeAddress(other,other,0,11));
+        
+        int userLength=other+1;
+        HSSFRow row21=sheet.createRow(userLength);
+        row21.createCell(0).setCellValue("创建人:");
+        sheet.addMergedRegion(new CellRangeAddress(userLength,userLength,0,1));
+        row21.createCell(2).setCellValue(pd.getUserName());
+        sheet.addMergedRegion(new CellRangeAddress(userLength,userLength,2,3));
+        
+        row21.createCell(4).setCellValue("创建时间  : ");
+        sheet.addMergedRegion(new CellRangeAddress(userLength,userLength,4,5));
+        
+        row21.createCell(6).setCellValue(pd.getCreated());
+        sheet.addMergedRegion(new CellRangeAddress(userLength,userLength,6,11));
+        
+        
+        
+        out.flush();
+        wb.write(out);
+    
+		out.close();
+		return  file;
+	}
+
+	private static void getExcelquestHeader(HSSFSheet sheet, int questlength) {
+		HSSFRow row16=sheet.createRow(questlength);
+        row16.createCell(0).setCellValue("当前重要问题");
+        sheet.addMergedRegion(new CellRangeAddress(questlength,questlength,0,11));
+       
+        
+        
+        HSSFRow row17=sheet.createRow(questlength+1);
+        row17.createCell(0).setCellValue("风险名称");
+        sheet.addMergedRegion(new CellRangeAddress(questlength+1,questlength+1,0,3));
+        row17.createCell(4).setCellValue("跟踪简述");
+        sheet.addMergedRegion(new CellRangeAddress(questlength+1,questlength+1,4,7));
+        row17.createCell(8).setCellValue("当前状态");
+        sheet.addMergedRegion(new CellRangeAddress(questlength+1,questlength+1,8,11));
+	}
+
+	private static void getExcelRistHeader(HSSFSheet sheet, int currentRistLength) {
+		HSSFRow row14=sheet.createRow(currentRistLength);
+        row14.createCell(0).setCellValue("当前重要风险");
+        sheet.addMergedRegion(new CellRangeAddress(currentRistLength,currentRistLength,0,11));
+        
+        HSSFRow row15=sheet.createRow(currentRistLength+1);
+        row15.createCell(0).setCellValue("风险名称");
+        sheet.addMergedRegion(new CellRangeAddress(currentRistLength+1,currentRistLength+1,0,3));
+        row15.createCell(4).setCellValue("跟踪简述");
+        sheet.addMergedRegion(new CellRangeAddress(currentRistLength+1,currentRistLength+1,4,7));
+        row15.createCell(8).setCellValue("当前状态");
+        sheet.addMergedRegion(new CellRangeAddress(currentRistLength+1,currentRistLength+1,8,11));
+	}
+
+	private static void getExeclNextWeekTableList(List<NextWeeklyDto> wk, HSSFSheet sheet, int nextWeekLength, int nextLength) {
+		for (int i = 0; i <nextLength; i++) {
+        	
+        	   HSSFRow row13Temp=sheet.createRow(nextWeekLength+1+i);
+        	   row13Temp.createCell(0).setCellValue(wk.get(i).getNumber() + "");
+               row13Temp.createCell(1).setCellValue(wk.get(i).getName() + "");
+               sheet.addMergedRegion(new CellRangeAddress(nextWeekLength+i+1,nextWeekLength+i+1,1,2));
+               row13Temp.createCell(3).setCellValue(wk.get(i).getOwner());
+               sheet.addMergedRegion(new CellRangeAddress(nextWeekLength+i+1,nextWeekLength+i+1,3,4));
+               row13Temp.createCell(5).setCellValue(wk.get(i).getPlanTime());
+               sheet.addMergedRegion(new CellRangeAddress(nextWeekLength+i+1,nextWeekLength+i+1,5,6));
+               row13Temp.createCell(7).setCellValue(wk.get(i).getSurplus());
+               sheet.addMergedRegion(new CellRangeAddress(nextWeekLength+i+1,nextWeekLength+i+1,7,8));
+               row13Temp.createCell(9).setCellValue(wk.get(i).getEndDate());
+               sheet.addMergedRegion(new CellRangeAddress(nextWeekLength+i+1,nextWeekLength+i+1,9,10));
+               row13Temp.createCell(11).setCellValue(wk.get(i).getDescribe());
+             
+		}
+	}
+
+	private static void getExeclNextWeekTableHeader(HSSFSheet sheet, int descLength, int length) {
+		HSSFRow row11=sheet.createRow(descLength+length);
+        
+        row11.createCell(0).setCellValue("下周工作计划");
+        sheet.addMergedRegion(new CellRangeAddress(descLength+length,descLength+length,0,11));
+        
+        HSSFRow row12=sheet.createRow(descLength+length+1);
+        row12.createCell(0).setCellValue("下周所处阶段:");
+        sheet.addMergedRegion(new CellRangeAddress(descLength+length+1,descLength+length+1,0,4));
+        row12.createCell(5).setCellValue("需求确认阶段");
+        sheet.addMergedRegion(new CellRangeAddress(descLength+length+1,descLength+length+1,5,11));
+        /***********/
+        
+        
+        HSSFRow row13=sheet.createRow(descLength+length+1+1);
+        row13.createCell(0).setCellValue("序号");
+        row13.createCell(1).setCellValue("任务名称");
+        sheet.addMergedRegion(new CellRangeAddress(descLength+length+1+1,descLength+length+1+1,1,2));
+        row13.createCell(3).setCellValue("责任人");
+        sheet.addMergedRegion(new CellRangeAddress(descLength+length+1+1,descLength+length+1+1,3,4));
+        row13.createCell(5).setCellValue("下周计划工时  ");
+        sheet.addMergedRegion(new CellRangeAddress(descLength+length+1+1,descLength+length+1+1,5,6));
+        row13.createCell(7).setCellValue("剩余计划工时");
+        sheet.addMergedRegion(new CellRangeAddress(descLength+length+1+1,descLength+length+1+1,7,8));
+        row13.createCell(9).setCellValue("计划完成日期");
+        sheet.addMergedRegion(new CellRangeAddress(descLength+length+1+1,descLength+length+1+1,9,10));
+        row13.createCell(11).setCellValue("备注");
+       // sheet.addMergedRegion(new CellRangeAddress(descLength+length+1+1,descLength+length+1+1,10,11));
+	}
+
+	private static void getExecelThisWeekList(List<TaskDto> td, HSSFSheet sheet, int descLength) {
+		for(int i=0;i<td.size();i++){
+        	  HSSFRow row10Temp=sheet.createRow(descLength+i);
+        	 
+        	  row10Temp.createCell(0).setCellValue(td.get(i).getNumber() + "");
+        	  row10Temp.createCell(1).setCellValue(td.get(i).getName() + "");
+        	  row10Temp.createCell(2).setCellValue(td.get(i).getVersionId());
+        	  row10Temp.createCell(3).setCellValue(td.get(i).getPhaseId());
+        	  row10Temp.createCell(4).setCellValue(td.get(i).getOwner() + "");
+        	  row10Temp.createCell(5).setCellValue(td.get(i).getStatus() + "");
+        	  
+        	  row10Temp.createCell(6).setCellValue(td.get(i).getEndDateStr() );
+        	  row10Temp.createCell(7).setCellValue(td.get(i).getPlanTime()+"");
+        	  row10Temp.createCell(8).setCellValue(td.get(i).getWeekHour());
+        	  row10Temp.createCell(9).setCellValue(td.get(i).getRealHour());
+        	  row10Temp.createCell(10).setCellValue(td.get(i).getFackEndDate());
+        	
+        }
+	}
+
+	private static void getExecelThisWeekHeader(List<String> projectVersion, List<String> projectPhase, HSSFSheet sheet) {
+		HSSFRow row8=sheet.createRow(8);
+        row8.createCell(0).setCellValue("本周进展情况");
+        sheet.addMergedRegion(new CellRangeAddress(8,8,0,11));
+        
+        HSSFRow row9=sheet.createRow(9);
+        row9.createCell(0).setCellValue("本周项目版本:");
+        sheet.addMergedRegion(new CellRangeAddress(9,9,0,2));
+        
+        row9.createCell(3).setCellValue(StringUtils.join(projectVersion.toArray(), ","));
+        sheet.addMergedRegion(new CellRangeAddress(9,9,3,5));
+        row9.createCell(6).setCellValue("本周项目阶段:");
+        sheet.addMergedRegion(new CellRangeAddress(9,9,6,8));
+           
+        row9.createCell(9).setCellValue(StringUtils.join(projectPhase.toArray(), ","));
+        sheet.addMergedRegion(new CellRangeAddress(9,9,9,11));
+        /***********/
+        HSSFRow row10=sheet.createRow(10);
+        row10.createCell(0).setCellValue("序号");
+        row10.createCell(1).setCellValue("任务名称");
+        row10.createCell(2).setCellValue("版本");
+        row10.createCell(3).setCellValue("阶段");
+        row10.createCell(4).setCellValue("责任人");
+        row10.createCell(5).setCellValue("是否完成");
+        row10.createCell(6).setCellValue("计划完成日期");
+        row10.createCell(7).setCellValue("任务计划工时");
+        row10.createCell(8).setCellValue("本周实际工时");
+        row10.createCell(9).setCellValue("实际总工时");
+        row10.createCell(10).setCellValue("实际完成日期");
+	}
+
+	private static void getExeclProjectDesc(ProjectWeeklyDto pd, WeeklyDetails wDetails, HSSFSheet sheet) {
+		HSSFRow row1=sheet.createRow(0);
+         //创建单元格（excel的单元格，参数为列索引，可以是0～255之间的任何一个
+        HSSFCell cell=row1.createCell(0);
+        //设置单元格内容
+        cell.setCellValue("项目周报");
+        //合并单元格CellRangeAddress构造参数依次表示起始行，截至行，起始列， 截至列
+        //int firstRow, int lastRow, int firstCol, int lastCol
+        sheet.addMergedRegion(new CellRangeAddress(0,1,0,11));
+        //在sheet里创建第二行
+        HSSFRow row2=sheet.createRow(2);
+        row2.createCell(0).setCellValue("项目名称:");
+        sheet.addMergedRegion(new CellRangeAddress(2,2,0,1));
+        //创建单元格并设置单元格内容
+        
+        row2.createCell(2).setCellValue(pd.getProjectName());
+        sheet.addMergedRegion(new CellRangeAddress(2,2,2,3));
+        
+        row2.createCell(4).setCellValue("项目编号:");
+        sheet.addMergedRegion(new CellRangeAddress(2,2,4,5));
+        
+        row2.createCell(6).setCellValue(pd.getSerialNumber());
+        sheet.addMergedRegion(new CellRangeAddress(2,2,6,7));
+        
+        row2.createCell(8).setCellValue("项目经理");
+        sheet.addMergedRegion(new CellRangeAddress(2,2,8,9));
+  
+        row2.createCell(10).setCellValue(pd.getUserName());
+        sheet.addMergedRegion(new CellRangeAddress(2,2,10,11));
+        
+        //在sheet里创建第三行
+        HSSFRow row3=sheet.createRow(3);
+        row3.createCell(0).setCellValue("项目类型:");
+        sheet.addMergedRegion(new CellRangeAddress(3,3,0,1));
+        //创建单元格并设置单元格内容
+        row3.createCell(2).setCellValue(pd.getProjectType());
+        sheet.addMergedRegion(new CellRangeAddress(3,3,2,3));
+        row3.createCell(4).setCellValue("项目所在部门:");
+        sheet.addMergedRegion(new CellRangeAddress(3,3,4,5));
+        row3.createCell(6).setCellValue(pd.getProjectInDept());
+        sheet.addMergedRegion(new CellRangeAddress(3,3,6,7));
+        row3.createCell(8).setCellValue("业务方：");
+        sheet.addMergedRegion(new CellRangeAddress(3,3,8,9));
+        row3.createCell(10).setCellValue(pd.getBusinessParty());
+        sheet.addMergedRegion(new CellRangeAddress(3,3,10,11));
+        
+       
+        //在sheet里创建第三行
+        HSSFRow row4=sheet.createRow(4);
+        row4.createCell(0).setCellValue("计划上线日期:");
+        sheet.addMergedRegion(new CellRangeAddress(4,4,0,1));
+        //创建单元格并设置单元格内容
+        row4.createCell(2).setCellValue(pd.getPlanDate());
+        sheet.addMergedRegion(new CellRangeAddress(4,4,2,3));
+        row4.createCell(4).setCellValue("本周起止日期:");
+        sheet.addMergedRegion(new CellRangeAddress(4,4,4,5));
+        row4.createCell(6).setCellValue(pd.getBeginAndEndTime());
+        sheet.addMergedRegion(new CellRangeAddress(4,4,6,7));
+        row4.createCell(8).setCellValue("总体进展：");
+        sheet.addMergedRegion(new CellRangeAddress(4,4,8,9));
+        
+        if(Integer.parseInt(pd.getCompletedProgress())>100){
+	    	pd.setCompletedProgress("100");
+	    }
+        row4.createCell(10).setCellValue(pd.getCompletedProgress()+"%");
+        sheet.addMergedRegion(new CellRangeAddress(4,4,10,11));
+        
+        
+        HSSFRow row5=sheet.createRow(5);
+        row5.createCell(0).setCellValue("项目总体情况描述");
+        sheet.addMergedRegion(new CellRangeAddress(5,5,0,11));
+        
+        HSSFRow row6=sheet.createRow(6);
+        row6.createCell(0).setCellValue(wDetails!=null?wDetails.getProjectDescription():"");
+        sheet.addMergedRegion(new CellRangeAddress(6,7,0,11));
+	}
+
+	private static void execlOther(WeeklyDetails wDetails, HSSFSheet sheet, int questTempLength, int questTemp) {
+		HSSFRow row18=sheet.createRow(questTempLength+questTemp+1);
+        row18.createCell(0).setCellValue("预期偏差");
+        sheet.addMergedRegion(new CellRangeAddress(questTempLength+questTemp+1,questTempLength+questTemp+1,0,3));
+        row18.createCell(4).setCellValue(wDetails!=null?wDetails.getExpectedDeviation():"");
+        sheet.addMergedRegion(new CellRangeAddress(questTempLength+questTemp+1,questTempLength+questTemp+1,4,11));
+        
+        
+        HSSFRow row19=sheet.createRow(questTempLength+questTemp+2);
+        row19.createCell(0).setCellValue("其他");
+        sheet.addMergedRegion(new CellRangeAddress(questTempLength+questTemp+2,questTempLength+questTemp+2,0,3));
+        row19.createCell(4).setCellValue(wDetails!=null?wDetails.getOther():"");
+        sheet.addMergedRegion(new CellRangeAddress(questTempLength+questTemp+2,questTempLength+questTemp+2,4,11));
+	}
 
 	public static File getFile(File file,ProjectWeeklyDto pd, List<String> projectVersion, List<String> projectPhase, List<String> nextprojectPhase, List<TaskDto> td, List<NextWeeklyDto> wk,
 			JSONArray weeklyRistJson, JSONArray weeklyQuestionJson, WeeklyDetails wDetails
@@ -139,6 +498,7 @@ public class WordExport {
 		policy.createFooter(XWPFHeaderFooterPolicy.DEFAULT, parsFooter);
 
 		document.write(out);
+		out.flush();
 		out.close();
 		return  file;
 	}

@@ -178,7 +178,7 @@
    
      function clearadd(){  
      	
-        	window.location.href="${contextPath}/weekly/getDescAddByProjectId?projectId=26";
+        	window.location.href="${contextPath}/weekly/getDescAddByProjectId?projectId=47";
      }
     
     
@@ -333,11 +333,22 @@
                 }
             }
         }
-
+		function isWeekSubmit(id){
+	        var  htmlobj=$.ajax({url:"${contextPath!}/weekly/IsWeeklySubmit?weeklyId="+id,async:false});
+	        var str=htmlobj.responseText;
+	        var obj = $.parseJSON(str);
+	        return obj;
+		}
         
         function formatOper(val,row,index){  
         	//alert(row.serialNumber);
-            return '<a href="${contextPath}/weekly/getDescById?id='+row.id+'">周报预览</a>   <a href="${contextPath}/weekly/download?id='+row.id+'">下载</a>';  
+        	var out='<a href="${contextPath}/weekly/getDescById?id='+row.id+'">周报预览</a>  ';
+        	if(isWeekSubmit(row.id)){
+        		out=out+'<a href="${contextPath}/weekly/download?id='+row.id+'">下载</a>';
+        	}else{
+        		out=out+'<span style="padding:5px;color:#8B8B7A;text-decoration:underline;">下载</span>'
+        	}
+            return out;  
         }
         //项目编号
         function formatserialNumber(val,row,index){  

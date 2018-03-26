@@ -1,40 +1,20 @@
 package com.dili.alm.controller;
 
 
-import com.dili.alm.dao.ProjectMapper;
-import com.dili.alm.domain.dto.ProjectProgressDto;
 import com.dili.alm.domain.dto.ProjectTypeCountDto;
+import com.dili.alm.domain.dto.ProjectYearCoverDto;
+import com.dili.alm.domain.dto.ProjectYearCoverForAllDto;
+import com.dili.alm.domain.dto.TaskByUsersDto;
+import com.dili.alm.domain.dto.TaskHoursByProjectDto;
 import com.dili.alm.domain.dto.TaskStateCountDto;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.StatisticalService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.alm.utils.WebUtil;
 import com.dili.alm.domain.Project;
-import com.dili.alm.domain.ProjectYearCoverDto;
-import com.dili.alm.domain.TaskByUsersDto;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-import com.dili.alm.domain.TaskHoursByProjectDto;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -53,26 +33,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -155,11 +117,29 @@ public class StatisticalController {
 	
 	@ApiOperation(value="查询时间段内员工工时", notes = "查询返回easyui信息")
     @RequestMapping(value="/taskHoursByUser", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody List<TaskByUsersDto> taskHoursByUser(String startTime,String endTime,List<Long> userId,List<Long> departmentId) throws Exception {
-		List<TaskByUsersDto> taskByUserDtoList = statisticalService.listTaskHoursByUser(startTime, endTime,departmentId , userId);
+    public @ResponseBody List<TaskByUsersDto> taskHoursByUser(String startTime,String endTime,String[] userId,String[] departmentId) throws Exception {
+		
+		List<Long> userIds =null;
+		List<Long> departmentIds=null;
+		
+		if (userId!=null) {
+			userIds = new ArrayList<Long>(userId.length);
+			for (String long1 : userId) {
+				userIds.add(Long.parseLong(long1));
+			}
+		}
+        if (departmentId!=null){ 
+        	departmentIds = new ArrayList<Long>(departmentId.length);
+	    	for (String long1 : departmentId) {
+	    		departmentIds.add(Long.parseLong(long1));
+			}
+		}
+		List<TaskByUsersDto> taskByUserDtoList = statisticalService.listTaskHoursByUser(startTime, endTime,userIds, departmentIds);
 		return taskByUserDtoList;
    
     }
+	
+	
 	@ApiOperation(value="查询年度报表", notes = "查询返回easyui信息")
     @RequestMapping(value="/listProjectYearCover", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody List<ProjectYearCoverDto> listProjectYearCover(String year,String month) throws Exception {
@@ -168,6 +148,12 @@ public class StatisticalController {
    
     }
 	
+	@ApiOperation(value="报表图显示", notes = "查询返回easyui信息")
+    @RequestMapping(value="/projectYearCoverForAll", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody ProjectYearCoverForAllDto projectYearCoverForAll(String year,String month) throws Exception {
+		ProjectYearCoverForAllDto qq =statisticalService.getProjectYearsCoverForAll(year, month);
+		return qq;
+    }
 	@ApiOperation(value="返回查询后的日期", notes = "查询返回easyui信息")
     @RequestMapping(value="/getSearchDate.json", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String getSearchDate(String year,String month) throws Exception {
@@ -178,7 +164,7 @@ public class StatisticalController {
 	
 	@ApiOperation(value="项目工时查询", notes = "查询返回easyui信息")
     @RequestMapping(value="/listProjectHours", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody List<TaskHoursByProjectDto> listProjectHours(String startTime,String endTime) throws Exception {
+    public @ResponseBody List<TaskHoursByProjectDto> getSearchAllDto(String startTime,String endTime) throws Exception {
 
 		return statisticalService.listProjectHours(startTime, endTime);
    

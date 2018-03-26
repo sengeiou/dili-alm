@@ -86,26 +86,7 @@ public class DateUtil {
             return day2-day1+"";
         }
     }
-	/**
-	 * 当前日期添加一天
-	 * @param dateStr
-	 * @return
-	 */
-	public static String getAddDay(String dateStr,int n){
-		
-		SimpleDateFormat sdf= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date date = null;
-		 try {
-			date = sdf.parse(dateStr);
-		 } catch (ParseException e) {
-			e.printStackTrace();
-		 }
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(date);  
-		calendar.add(Calendar.DATE, n);//增加一天   
-	      
-		return    sdf.format(calendar.getTime());  
-	}
+	
     public static String getCurenntDay(){
 		
 		SimpleDateFormat sdf= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -114,55 +95,12 @@ public class DateUtil {
 	}
 
 	
-	public static String getWeekOfDate(Date dt) { 
-        String[] weekDays = {"星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"}; 
-        Calendar cal = Calendar.getInstance(); 
-        cal.setTime(dt); 
-
-        int w = cal.get(Calendar.DAY_OF_WEEK) - 1; 
-        if (w < 0) 
-            w = 0; 
-
-        return weekDays[w]; 
-    } 
 	
-	public static HashMap<String,String>  getFirstAndFive() {
-		
-		
-		HashMap<String,String> map=new HashMap<String,String>();
-		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//小写的mm表示的是分钟  
-		java.util.Date date=new Date();
-		if(getWeekOfDate(date).endsWith("星期日")){
-			String strend=getAddDay(sdf.format(date),-2);//周五
-			String  strbegin=getAddDay(sdf.format(date),-6);//周一
-			map.put("one", strbegin);
-			map.put("five", strend);
-		}else{
-		    map.put("one", getWeekFristDay());
-		    map.put("five", getWeekFriday());
-		}
-		
-		return map;
-	}
-public static HashMap<String,String>  getFirstAndFive(Date date) {
-		
-		
-		HashMap<String,String> map=new HashMap<String,String>();
-		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//小写的mm表示的是分钟  
-		if(getWeekOfDate(date).endsWith("星期日")){
-			String strend=getAddDay(sdf.format(date),-2);//周五
-			String  strbegin=getAddDay(sdf.format(date),-6);//周一
-			map.put("one", strbegin);
-			map.put("five", strend);
-		}else{
-		    map.put("one", getWeekFristDay());
-		    map.put("five", getWeekFriday());
-		}
-		
-		return map;
-	}
+	
+	
 
-	// 获得当前日期与本周日相差的天数  
+
+	// 获得当前日期与本周一相差的天数  
 	private static int getMondayPlus(Date gmtCreate) {  
 	    Calendar cd = Calendar.getInstance();  
 	    cd.setTime(gmtCreate);  
@@ -175,43 +113,6 @@ public static HashMap<String,String>  getFirstAndFive(Date date) {
 	    }  
 	}  
 	  
-	// 获得下周星期一的日期  
-	public static String getNextMondayAdd(Date gmtCreate) {  
-		SimpleDateFormat sdf=new SimpleDateFormat("YYYY-MM-dd");
-	    GregorianCalendar currentDate = new GregorianCalendar();  
-	    currentDate.add(GregorianCalendar.DATE,   7);  
-	    Date monday = currentDate.getTime();  
-	   
-	    return sdf.format(monday);  
-	}  
-	// 获得下周星期一的日期  
-		public static String getNextMonday(Date gmtCreate) {  
-			SimpleDateFormat sdf=new SimpleDateFormat("YYYY-MM-dd");
-		    int mondayPlus = getMondayPlus(gmtCreate);  
-		    GregorianCalendar currentDate = new GregorianCalendar();  
-		    currentDate.add(GregorianCalendar.DATE, mondayPlus + 7);  
-		    Date monday = currentDate.getTime();  
-		    return sdf.format(monday);  
-		}  
-	// 获得下周星期五的日期  
-	 public static String getNextFiveAdd(Date gmtCreate) {  
-		SimpleDateFormat sdf=new SimpleDateFormat("YYYY-MM-dd");
-	  
-	    GregorianCalendar currentDate = new GregorianCalendar();  
-	    currentDate.add(GregorianCalendar.DATE,  13);  
-	    Date nextFive = currentDate.getTime();  
-	    return  sdf.format(nextFive);  
-	 }  
-	// 获得下周星期五的日期  
-		public static String getNextFive(Date gmtCreate) {  
-			SimpleDateFormat sdf=new SimpleDateFormat("YYYY-MM-dd");
-		    int mondayPlus = getMondayPlus(gmtCreate);  
-		    GregorianCalendar currentDate = new GregorianCalendar();  
-		    currentDate.add(GregorianCalendar.DATE, mondayPlus + 13);  
-		    Date nextFive = currentDate.getTime();  
-		    return  sdf.format(nextFive);  
-		}  
-
 	
     public static Date getStrDate(String date){
 		
@@ -227,7 +128,7 @@ public static HashMap<String,String>  getFirstAndFive(Date date) {
 	}
  public static Date getStrDateyyyyMMdd(String date){
 		
-		SimpleDateFormat sdf= new SimpleDateFormat("YYYY-MM-dd");
+		SimpleDateFormat sdf= new SimpleDateFormat("yyyy-MM-dd");
 		Date mydate=null;
 		try {
 			mydate  = sdf.parse(date);
@@ -341,10 +242,46 @@ public static HashMap<String,String>  getFirstAndFive(Date date) {
 	  * @param date1起始时间
 	  * @param date2结束时间
 	  * @return
+	 * @throws ParseException 
 	  */
 	 public static int differentDaysByMillisecond(Date date1,Date date2)
-	    {
-	        int days = (int) ((date2.getTime() - date1.getTime()) / (1000*3600*24));
+	    { 
+	        Date time1 = DateUtil.getStrDateyyyyMMdd(DateUtil.getDate(date1));                     
+	        Date time2 = DateUtil.getStrDateyyyyMMdd(DateUtil.getDate(date2));          
+	        int days = (int) ((time2.getTime() - time1.getTime()) / (1000*3600*24));
 	        return days;
 	    }
+	 
+	 
+	// 获得本周星期五的日期  
+		public static Date getThisFriDay() {
+			int mondayPlus = DateUtil.getMondayPlus(new Date());
+			Date as = new Date(new Date().getTime()-24*60*60*1000*Math.abs(mondayPlus));
+			Date as1 = new Date(as.getTime()+24*60*60*1000*4);
+			return as1;  
+
+		}  
+	// 获得本周星期一的日期  
+		public static Date getThisMonDay() {
+			int mondayPlus = DateUtil.getMondayPlus(new Date());
+			Date as = new Date(new Date().getTime()-24*60*60*1000*Math.abs(mondayPlus));
+			return as;
+
+		}  
+		// 获得下周星期五的日期  
+				public static Date getNextFriDay() {
+					int mondayPlus = DateUtil.getMondayPlus(new Date());
+					Date as = new Date(new Date().getTime()-24*60*60*1000*Math.abs(mondayPlus));
+					Date as1 = new Date(as.getTime()+24*60*60*1000*11);
+					return as1;  
+
+				}  
+		// 获得下周星期一的日期  
+			public static Date getNextMonDay() {
+				int mondayPlus = DateUtil.getMondayPlus(new Date());
+				Date as = new Date(new Date().getTime()-24*60*60*1000*Math.abs(mondayPlus));
+				Date as1 = new Date(as.getTime()+24*60*60*1000*7);
+				return as1;
+
+			}  
 }

@@ -10,12 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.domain.Project;
-import com.dili.alm.domain.ProjectYearCoverDto;
-import com.dili.alm.domain.TaskByUsersDto;
-import com.dili.alm.domain.TaskHoursByProjectDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectProgressDto;
 import com.dili.alm.domain.dto.ProjectTypeCountDto;
+import com.dili.alm.domain.dto.ProjectYearCoverDto;
+import com.dili.alm.domain.dto.ProjectYearCoverForAllDto;
+import com.dili.alm.domain.dto.TaskByUsersDto;
+import com.dili.alm.domain.dto.TaskHoursByProjectDto;
 import com.dili.alm.domain.dto.TaskStateCountDto;
 import com.dili.alm.domain.dto.UploadProjectFileDto;
 import com.dili.alm.exceptions.ProjectException;
@@ -39,6 +40,8 @@ public interface StatisticalService {
 	List<ProjectYearCoverDto> listProjectYearCover(String startTime,String endTime);
 	
 	String getSearchDate(String year,String month);
+	
+	ProjectYearCoverForAllDto getProjectYearsCoverForAll(String year,String month);
 	/***查询工时相关services****by******JING***END****/
 
 	List<TaskStateCountDto> getProjectToTaskCount(String startTime,

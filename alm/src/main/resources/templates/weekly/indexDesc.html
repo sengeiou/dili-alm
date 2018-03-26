@@ -395,9 +395,20 @@
             	
   	          
              }
-
+              function getMyDay() {
+         		 var  htmlobj=$.ajax({url:"${contextPath!}/workDay/isWorkEndDayDate",async:false});
+         	     var str=htmlobj.responseText;
+         	     var obj = $.parseJSON(str);
+         	     return obj;
+         	}
+         	  
 		    function save(isSubmit){  
-		    	
+	         	 if(!getMyDay()){
+	         	
+	         		 $.messager.alert('不能保存',' 不是工作日最后一天  不可保存和提交周报');
+	         		 return false;
+	         	 }
+         	  
 		    	 var  tempid=$("#inHidden").val();
 		    	 
 		    	if($("#sSubmit").val()==1){//如果已经提交不可以修改和提交周报
