@@ -102,11 +102,11 @@
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <input class="easyui-datebox" type="text" value="${complete.launchDate}" name="launchDate"
+                        <input class="easyui-datebox" type="text" value="${complete.launchDate!,'yyyy-MM-dd'}" name="launchDate"
                                data-options="required:true,label:'实际上线日期:'">
                     </td>
                     <td colspan="2">
-                        <input class="easyui-datebox" type="text" value="${approve.created}"
+                        <input class="easyui-datebox" type="text" value="${approve.created!}"
                                data-options="required:true,label:'提交结项日期:'">
                     </td>
                 </tr>
