@@ -332,7 +332,7 @@
 
    <!-- 数据统计相关 begin -->
    <!-- 人员工时查询 -->
-   <select id="selectTaskHourByUser" resultType="com.dili.alm.domain.TaskByUsersDto">
+   <select id="selectTaskHourByUser" resultType="com.dili.alm.domain.dto.TaskByUsersDto">
 	
     select CONCAT(#{beginTime,jdbcType=VARCHAR},'至',#{endTime,jdbcType=VARCHAR}) as selectDate,ut.id as userNo,ut.real_name as userName,ut.departmentId as departmentId,ut.departmentName as departmentName,(SUM(taskInfo.taskHour)+SUM(taskInfo.overHour)) as totalHour,SUM(taskInfo.taskHour) as  taskHours,SUM(taskInfo.overHour)  as overHours FROM 
 	(select  tt.id as detailId,tt.task_hour as taskHour,tt.over_hour as overHour,t.`owner` as ownerId,t.id as taskId  from task_details as tt LEFT JOIN task as t ON  tt.task_id = t.id
@@ -354,13 +354,13 @@
 	GROUP BY ut.id 
    </select>
     <!-- 项目以及时间-->
-    <select id="selectProjectHours" resultType="com.dili.alm.domain.TaskHoursByProjectDto">
+    <select id="selectProjectHours" resultType="com.dili.alm.domain.dto.TaskHoursByProjectDto">
 	select p.id as projectId,p.`name` as projectName,ifnull(t2.totalHour,0) as sumHour  FROM (select* from project where actual_start_date BETWEEN #{beginTime,jdbcType=TIMESTAMP} AND #{endTime,jdbcType=TIMESTAMP} or actual_end_date BETWEEN #{beginTime,jdbcType=TIMESTAMP} AND #{endTime,jdbcType=TIMESTAMP})as p LEFT JOIN 
 	(select t1.project_id as pid ,SUM(td1.taskHours+td1.overHours) as totalHour from task as t1 LEFT JOIN 
 	(SELECT task_id as tid,task_hour as taskHours,over_hour as overHours FROM task_details ) as td1 on t1.id = td1.tid GROUP BY t1.project_id) as t2 ON  p.id = t2.pid  
    </select>
    <!-- 年度总汇-->
-    <select id="selectProjectYearsCover" resultType="com.dili.alm.domain.ProjectYearCoverDto">
+    <select id="selectProjectYearsCover" resultType="com.dili.alm.domain.dto.ProjectYearCoverDto">
 		select pp.pid as projectId,pp.pname as projectName,pp.ptype as projectType,pp.pstate as projectstate,t.total as taskCount,t.finish as finishCount,t.begining as ongoing,t.finish/t.total as completionRate,t.noFinish as noFinish,t.noFinish/t.total as overdueRate
 		,t.pause  as pauseTotal,t.begining  as beginingTotal,t.noBegin  as noBeginTotal from 
 		(select ps.pid as pid ,ps.pname as pname,dd2.`code` as ptype ,ps.pstate from 
@@ -371,7 +371,7 @@
 		from task group by project_id order by project_id, `status`) as t on pp.pid =t.tpid
    </select>
       <!-- 年度总汇.图标-->
-    <select id="selectProjectYearsCoverForAll" resultType="com.dili.alm.domain.ProjectYearCoverForAllDto">
+    <select id="selectProjectYearsCoverForAll" resultType="com.dili.alm.domain.dto.ProjectYearCoverForAllDto">
 		select IFNULL(pp.pid,0) as pid,IFNULL(sum(t.total),0) as taskCount,IFNULL(sum(t.finish),0) as finishCount,IFNULL(sum(t.begining),0) as ongoing ,IFNULL(sum(t.noFinish),0) as noFinish 
          ,IFNULL(sum(t.pause),0)  as pauseTotal,IFNULL(sum(t.begining),0)  as beginingTotal,IFNULL(t.noBegin,0)  as noBeginTotal from 
 		(select p.id as pid,actual_start_date as startDate,actual_end_date as endDate from alm.project as p WHERE  actual_start_date BETWEEN #{beginTime,jdbcType=TIMESTAMP} AND #{endTime,jdbcType=TIMESTAMP}  or actual_end_date BETWEEN #{beginTime,jdbcType=TIMESTAMP} AND #{endTime,jdbcType=TIMESTAMP}) as pp 
