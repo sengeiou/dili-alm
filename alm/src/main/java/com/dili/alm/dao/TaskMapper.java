@@ -8,13 +8,13 @@ import org.apache.ibatis.annotations.Param;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectChange;
 import com.dili.alm.domain.ProjectVersion;
-import com.dili.alm.domain.ProjectYearCoverDto;
 import com.dili.alm.domain.Task;
-import com.dili.alm.domain.TaskByUsersDto;
 import com.dili.alm.domain.TaskDetails;
 import com.dili.alm.domain.TaskEntity;
-import com.dili.alm.domain.TaskHoursByProjectDto;
+import com.dili.alm.domain.dto.ProjectYearCoverDto;
 import com.dili.alm.domain.dto.ProjectYearCoverForAllDto;
+import com.dili.alm.domain.dto.TaskByUsersDto;
+import com.dili.alm.domain.dto.TaskHoursByProjectDto;
 import com.dili.alm.domain.dto.TaskStateCountDto;
 import com.dili.ss.base.MyMapper;
 
