@@ -1,4 +1,22 @@
 function optFormatter(value, row, index) {
+	var content = '';
+	if (row.editable) {
+		content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="openUpdate(' + row.id + ');">编辑</a>';
+		content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="del(' + row.id + ');">删除</a>';
+	}
+	if (row.testConfirmable) {
+		content += '<a href="javascript:void(0);" onclick="textConfirm(' + row.id + ');">测试确认</a>';
+	}
+	if (row.startExecutable) {
+		content += '<a href="javascript:void(0);" onclick="textConfirm(' + row.id + ');">开始执行</a>';
+	}
+	if (row.confirmExecutable) {
+		content += '<a href="javascript:void(0);" onclick="confirmExecute(' + row.id + ');">确认执行</a>';
+	}
+	if (row.verifiable) {
+		content += '<a href="javascript:void(0);" onclick="verify(' + row.id + ');">验证</a>';
+	}
+	return content;
 
 }
 
@@ -11,7 +29,7 @@ function openInsert() {
 }
 
 // 打开修改窗口
-function openUpdate() {
+function openUpdate(id) {
 	var selected = $("#grid").datagrid("getSelected");
 	if (null == selected) {
 		$.messager.alert('警告', '请选中一条数据');
@@ -59,7 +77,7 @@ function saveOrUpdate() {
 }
 
 // 根据主键删除
-function del() {
+function del(id) {
 	var selected = $("#grid").datagrid("getSelected");
 	if (null == selected) {
 		$.messager.alert('警告', '请选中一条数据');

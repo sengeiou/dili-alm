@@ -84,9 +84,12 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 	 * 
 	 * @param applyId
 	 *            申请id
+	 * @param verifierId TODO
+	 * @param result TODO
+	 * @param description TODO
 	 * @throws ProjectOnlineApplyException
 	 */
-	void verify(Long applyId) throws ProjectOnlineApplyException;
+	void verify(Long applyId, Long verifierId, OperationResult result, String description) throws ProjectOnlineApplyException;
 
 	void insertProjectOnlineApply(ProjectOnlineApplyUpdateDto projectOnlineApply) throws ProjectOnlineApplyException;
 

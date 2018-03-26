@@ -2,7 +2,7 @@ package com.dili.alm.domain;
 
 public enum ProjectOnlineApplyOperationType {
 
-	TEST_MANAGER(1, "测试经理"), OPERATION_MANAGER(2, "运维负责人"), OPERATION_EXECUTOR(3, "运维上线责任人"), VALIDATOR(4, "验证人");
+	TEST_MANAGER(1, "测试经理"), OPERATION_MANAGER(2, "运维负责人"), OPERATION_EXECUTOR(3, "运维上线责任人"), VERIFIER(4, "验证人");
 
 	private Integer value;
 	private String name;
