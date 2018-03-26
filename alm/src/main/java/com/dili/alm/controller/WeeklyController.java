@@ -240,11 +240,11 @@ public class WeeklyController  {
     @RequestMapping("download") 
     public ResponseEntity<byte[]> download(String id) throws IOException {  
     	
-    	File file=new File(WEEKLY+".docx");
+    	File file=new File(WEEKLY+".xls");
          weeklyService.downLoad(file,id);
     	
         HttpHeaders headers = new HttpHeaders();    
-        String fileName=new String("周报下载.docx".getBytes("UTF-8"),"iso-8859-1");//为了解决中文名称乱码问题  
+        String fileName=new String("周报下载.xls".getBytes("UTF-8"),"iso-8859-1");//为了解决中文名称乱码问题  
         headers.setContentDispositionFormData("attachment", fileName);   
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);  
        
@@ -292,5 +292,23 @@ public class WeeklyController  {
 	 
 		mv.setViewName("weekly/addWeeklyDesc");
         return mv;
+    }
+    @ResponseBody
+    @RequestMapping(value="/IsWeeklySubmit", method = {RequestMethod.GET, RequestMethod.POST})
+    public  boolean IsWeeklySubmit(String weeklyId) {
+    	boolean flat=false;
+    	if(weeklyId!=null){
+    		WeeklyDetails wd=weeklyDetailsService.getWeeklyDetailsByWeeklyId(Long.parseLong(weeklyId));
+    		if(wd!=null){
+    			if(wd.getIsSubmit()==1){
+    				flat=true;
+    			}
+    		}
+    	}
+		return flat;
+    	    
+    	
+    	 
+    	 
     }
 }

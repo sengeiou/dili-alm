@@ -412,7 +412,8 @@ function openDdValueWindow(ddId) {
 
 // 清空表单
 function clearForm() {
-	$('#form').form('clear');
+	//$('#form').form('clear');
+window.location.href = '${contextPath}/weekly/getDescAddByProjectId?projectId=18';
 }
 
 /**
