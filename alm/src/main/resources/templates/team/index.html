@@ -92,6 +92,9 @@
 						if(!row.userInfo){
 							return '';
 						}
+						if(row.userInfo.department==null){
+							return '';
+						}
 						return row.userInfo.department.name;
 					}">部门</th>
 						<th
