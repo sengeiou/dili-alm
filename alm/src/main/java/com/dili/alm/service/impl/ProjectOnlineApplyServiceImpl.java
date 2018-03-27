@@ -1,21 +1,32 @@
 package com.dili.alm.service.impl;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.mail.MessagingException;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.beetl.core.Template;
+import org.beetl.ext.spring.BeetlGroupUtilConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.component.MailManager;
 import com.dili.alm.dao.EmailAddressMapper;
 import com.dili.alm.dao.ProjectMapper;
@@ -35,12 +46,16 @@ import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectOnlineApplyUpdateDto;
 import com.dili.alm.domain.dto.ProjectOnlineOperationRecordDto;
+import com.dili.alm.domain.dto.UserDepartmentRole;
+import com.dili.alm.domain.dto.UserDepartmentRoleQuery;
 import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.ProjectOnlineApplyException;
+import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.ProjectOnlineApplyDetailDto;
 import com.dili.alm.service.ProjectOnlineApplyService;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
@@ -61,6 +76,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	private static final String DEPARTMENT_MANAGER_ROLE_CONFIG_CODE = "department_manager_role_config";
 	private static final String TEST_MANAGER_CODE = "test_manager";
 	private static final String OPERATION_MANAGER_CODE = "operation_manager";
+	private static final String OPERATION_DEPARTMENT_CODE = "maintenance";
 
 	@Autowired
 	private ProjectMapper projectMapper;
@@ -74,10 +90,12 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	private MailManager mailManager;
 	@Value("${spring.mail.username:}")
 	private String mailFrom;
-	@Value("${com.dili.project.online.apply.submit.message:'项目上线啦'}")
-	private String submitEmailContent;
 	@Autowired
 	private DataDictionaryService ddService;
+	@Autowired
+	private BeetlGroupUtilConfiguration beetlConfig;
+	@Autowired
+	private UserRpc userRpc;
 
 	public ProjectOnlineApplyMapper getActualDao() {
 		return (ProjectOnlineApplyMapper) getDao();
@@ -188,21 +206,105 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			throw new ProjectOnlineApplyException("更新状态失败");
 		}
 		// 发送邮件
+		this.sendMail(apply, "上线申请");
+	}
+
+	private void sendMail(ProjectOnlineApply apply, String string) {
 		EmailAddress record = DTOUtils.newDTO(EmailAddress.class);
-		record.setApplyId(applyId);
+		record.setApplyId(apply.getId());
 		List<EmailAddress> emails = this.emailAddressMapper.select(record);
 		if (CollectionUtils.isEmpty(emails)) {
 			return;
 		}
 		emails.forEach(e -> {
-			// String from = SystemConfigUtils.getProperty("spring.mail.username");
 			String subject = "上线申请";
 			try {
-				this.mailManager.sendMail(this.mailFrom, e.getEmailAddress(), this.submitEmailContent, subject, null);
+				String content = this.getMailContent();
+				Template template = this.beetlConfig.getGroupTemplate().getTemplate(content);
+				template.binding("apply", this.buildApplyViewModel(apply));
+				ProjectOnlineOperationRecord poor = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
+				poor.setApplyId(apply.getId());
+				List<ProjectOnlineOperationRecord> list = this.poorMapper.select(poor);
+				template.binding("opRecords", this.buildOperationRecordViewModel(list));
+				this.mailManager.sendMail(this.mailFrom, e.getEmailAddress(), template.render(), subject, null);
 			} catch (MessagingException ex) {
+				LOGGER.error(ex.getMessage(), ex);
+			} catch (Exception ex) {
 				LOGGER.error(ex.getMessage(), ex);
 			}
 		});
+	}
+
+	@SuppressWarnings("rawtypes")
+	private List<Map> buildOperationRecordViewModel(List<ProjectOnlineOperationRecord> list) {
+		Map<Object, Object> metadata = new HashMap<>();
+		JSONObject memberProvider = new JSONObject();
+		memberProvider.put("provider", "memberProvider");
+		metadata.put("operatorId", memberProvider);
+
+		JSONObject datetimeProvider = new JSONObject();
+		datetimeProvider.put("provider", "datetimeProvider");
+		metadata.put("operateTime", datetimeProvider);
+		try {
+			return ValueProviderUtils.buildDataByProvider(metadata, list);
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			return null;
+		}
+	}
+
+	private Map<Object, Object> buildApplyViewModel(ProjectOnlineApply apply) {
+		Map<Object, Object> metadata = new HashMap<>();
+
+		JSONObject memberProvider = new JSONObject();
+		memberProvider.put("provider", "memberProvider");
+		metadata.put("businessOwnerId", memberProvider);
+		metadata.put("projectManagerId", memberProvider);
+		metadata.put("productManagerId", memberProvider);
+		metadata.put("testManagerId", memberProvider);
+		metadata.put("developmentManagerId", memberProvider);
+		metadata.put("applicantId", memberProvider);
+
+		JSONObject datetimeProvider = new JSONObject();
+		datetimeProvider.put("provider", "almDateProvider");
+		metadata.put("onlineDate", datetimeProvider);
+		metadata.put("actualOnlineDate", datetimeProvider);
+
+		JSONObject applyStateProvider = new JSONObject();
+		applyStateProvider.put("provider", "projectOnlineApplyStateProvider");
+		metadata.put("applyState", applyStateProvider);
+
+		try {
+			@SuppressWarnings("rawtypes")
+			List<Map> viewModelList = ValueProviderUtils.buildDataByProvider(metadata, Arrays.asList(apply));
+			if (CollectionUtils.isEmpty(viewModelList)) {
+				return null;
+			}
+			return viewModelList.get(0);
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			return null;
+		}
+	}
+
+	private String getMailContent() {
+		Resource res = new ClassPathResource("conf/projectOlineApplyMailContentTemplate.html");
+		InputStream in = null;
+		try {
+			in = res.getInputStream();
+			return IOUtils.toString(in);
+		} catch (IOException e) {
+			LOGGER.error(e.getMessage(), e);
+			return null;
+		} finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					LOGGER.error(e.getMessage(), e);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -216,6 +318,27 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		// 验证状态
 		if (!apply.getApplyState().equals(ProjectOnlineApplyState.EXECUTING.getValue())) {
 			throw new ProjectOnlineApplyException("当前状态不能执行测试确认");
+		}
+		// 分配的执行人最多两人，且都是运维部员工
+		if (CollectionUtils.isEmpty(executors)) {
+			throw new ProjectOnlineApplyException("执行人不能为空");
+		}
+		if (executors.size() > 2) {
+			throw new ProjectOnlineApplyException("最多只能分配2个执行人");
+		}
+		for (Long value : executors) {
+			UserDepartmentRoleQuery dto = new UserDepartmentRoleQuery();
+			dto.setUserId(value);
+			BaseOutput<List<UserDepartmentRole>> output = this.userRpc.findUserContainDepartmentAndRole(dto);
+			if (output.isSuccess()) {
+				throw new ProjectOnlineApplyException("查询执行人信息失败");
+			}
+			if (CollectionUtils.isEmpty(output.getData())) {
+				throw new ProjectOnlineApplyException("执行人不存在");
+			}
+			if (!OPERATION_DEPARTMENT_CODE.equals(output.getData().get(0).getDepartment().getCode())) {
+				throw new ProjectOnlineApplyException("执行人不是运维部员工");
+			}
 		}
 		// 还要判断有没有分配执行人，分配了的话就不能再执行“开始执行”的操作了
 		if (StringUtils.isNotEmpty(apply.getExecutorId())) {
@@ -313,24 +436,9 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		if (OperationResult.FAILURE.equals(result)) {
 			apply.setApplyState(ProjectOnlineApplyState.FAILURE.getValue());
 		}
-		// 执行成功,产品经理验证，这个地方要判断是不是所有被分配的执行人都执行了，如果所有人都执行了则跳到下一个状态（产品经理验证）
-		flag = true;
+		// 执行成功,产品经理验证，任意执行人执行确认操作都跳转到产品验证状态
 		if (OperationResult.SUCCESS.equals(result)) {
-			ProjectOnlineOperationRecord record = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
-			record.setApplyId(applyId);
-			record.setOperationType(ProjectOnlineApplyOperationType.OPERATION_EXECUTOR.getValue());
-			List<ProjectOnlineOperationRecord> list = this.poorMapper.select(record);
-			for (String str : apply.getExecutorId().split(",")) {
-				ProjectOnlineOperationRecord t = list.stream().filter(v -> v.getOperatorId().equals(Long.valueOf(str)))
-						.findFirst().orElse(null);
-				if (t == null) {
-					flag = false;
-					break;
-				}
-			}
-			if (flag) {
-				apply.setApplyState(ProjectOnlineApplyState.VARIFING.getValue());
-			}
+			apply.setApplyState(ProjectOnlineApplyState.VARIFING.getValue());
 		}
 		// 更新状态
 		int rows = this.getActualDao().updateByPrimaryKey(apply);
@@ -349,8 +457,9 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		if (rows <= 0) {
 			throw new ProjectOnlineApplyException("生成操作记录失败");
 		}
-		if (flag) {
-			// TODO 发邮件
+		// 发邮件
+		if (OperationResult.FAILURE.equals(result)) {
+			this.sendMail(apply, "上线失败");
 		}
 	}
 
@@ -389,7 +498,13 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		if (rows <= 0) {
 			throw new ProjectOnlineApplyException("新增操作记录失败");
 		}
-		// TODO 发邮件
+		// 发邮件
+		if (OperationResult.FAILURE.equals(result)) {
+			this.sendMail(apply, "上线失败");
+		}
+		if (OperationResult.SUCCESS.equals(result)) {
+			this.sendMail(apply, "上线成功");
+		}
 	}
 
 	@Transactional
@@ -491,16 +606,11 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 				// 检查当前的执行人是否在运维经理分配的执行人当中,同时要判断当前用户是否已经确认执行过
 				for (String str : a.getExecutorId().split(",")) {
 					if (user.getId().equals(Long.valueOf(str))) {
-						ProjectOnlineOperationRecord poor = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
-						poor.setApplyId(a.getId());
-						ProjectOnlineOperationRecord target = this.poorMapper.select(poor).stream()
-								.filter(v -> v.getOperatorId().equals(user.getId())).findFirst().orElse(null);
-						if (target != null) {
-							confirmExecutable = false;
-							break;
-						}
+						confirmExecutable = true;
+						break;
 					}
 				}
+				confirmExecutable = false;
 			} else {
 				confirmExecutable = false;
 			}
@@ -513,8 +623,11 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			verifiable = a.getTestManagerId().equals(user.getId());
 			a.aset("verifiable", verifiable);
 		});
+		@SuppressWarnings("rawtypes")
 		long total = list instanceof Page ? ((Page) list).getTotal() : list.size();
+		@SuppressWarnings("rawtypes")
 		List results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, list) : list;
 		return new EasyuiPageOutput(Long.valueOf(total).intValue(), results);
 	}
+
 }

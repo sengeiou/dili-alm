@@ -21,7 +21,7 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 	 * 
 	 * @param dto
 	 *            数据模型
-	 * @throws ProjectOnlineApplyException 
+	 * @throws ProjectOnlineApplyException
 	 */
 	void saveOrUpdate(ProjectOnlineApplyUpdateDto dto) throws ProjectOnlineApplyException;
 
@@ -47,53 +47,69 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 	 * 
 	 * @param applyId
 	 *            申请id
-	 * @param executorId TODO
-	 * @param executors TODO
-	 * @param description TODO
+	 * @param executorId
+	 *            TODO
+	 * @param executors
+	 *            TODO
+	 * @param description
+	 *            TODO
 	 * @throws ProjectOnlineApplyException
 	 */
-	void startExecute(Long applyId, Long executorId, List<Long> executors, String description) throws ProjectOnlineApplyException;
+	void startExecute(Long applyId, Long executorId, List<Long> executors, String description)
+			throws ProjectOnlineApplyException;
 
 	/**
 	 * 测试确认
 	 * 
 	 * @param applyId
 	 *            申请id
-	 * @param executorId TODO
-	 * @param result TODO
-	 * @param description TODO
+	 * @param executorId
+	 *            TODO
+	 * @param result
+	 *            TODO
+	 * @param description
+	 *            TODO
 	 * @throws ProjectOnlineApplyException
 	 */
-	void testerConfirm(Long applyId, Long executorId, OperationResult result, String description) throws ProjectOnlineApplyException;
+	void testerConfirm(Long applyId, Long executorId, OperationResult result, String description)
+			throws ProjectOnlineApplyException;
 
 	/**
 	 * 执行确认
 	 * 
 	 * @param applyId
 	 *            申请id
-	 * @param executorId TODO
+	 * @param executorId
+	 *            TODO
 	 * @param result
 	 *            执行结果
-	 * @param description TODO
+	 * @param description
+	 *            TODO
 	 * @throws ProjectOnlineApplyException
 	 */
-	void excuteConfirm(Long applyId, Long executorId, OperationResult result, String description) throws ProjectOnlineApplyException;
+	void excuteConfirm(Long applyId, Long executorId, OperationResult result, String description)
+			throws ProjectOnlineApplyException;
 
 	/**
 	 * 验证
 	 * 
 	 * @param applyId
 	 *            申请id
-	 * @param verifierId TODO
-	 * @param result TODO
-	 * @param description TODO
+	 * @param verifierId
+	 *            TODO
+	 * @param result
+	 *            TODO
+	 * @param description
+	 *            TODO
 	 * @throws ProjectOnlineApplyException
 	 */
-	void verify(Long applyId, Long verifierId, OperationResult result, String description) throws ProjectOnlineApplyException;
+	void verify(Long applyId, Long verifierId, OperationResult result, String description)
+			throws ProjectOnlineApplyException;
 
 	void insertProjectOnlineApply(ProjectOnlineApplyUpdateDto projectOnlineApply) throws ProjectOnlineApplyException;
 
 	void updateProjectOnlineApply(ProjectOnlineApplyUpdateDto dto) throws ProjectOnlineApplyException;
 
 	void deleteProjectOnlineApply(Long id) throws ProjectOnlineApplyException;
+
 }

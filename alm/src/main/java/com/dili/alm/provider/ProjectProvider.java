@@ -96,6 +96,7 @@ public class ProjectProvider implements ValueProvider, ApplicationListener<Conte
 		metadata.put("testManager", memberProvider);
 		metadata.put("productManager", memberProvider);
 		metadata.put("developManager", memberProvider);
+		metadata.put("businessOwner", memberProvider);
 		metadata.put("originator", memberProvider);
 		return ValueProviderUtils.buildDataByProvider(metadata, list);
 	}

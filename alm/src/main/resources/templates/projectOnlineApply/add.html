@@ -1,0 +1,99 @@
+<style>
+</style>
+<div class="easyui-panel" style="width: 100%; height: 100%;" title="项目类型统计">
+	<div style="box-sizing: border-box; height: 100%; width: 100%; padding: 10px;">
+		<div class="easyui-layout" style="box-sizing: border-box; width: 100%; height: 100%;">
+			<form action="" method="post" enctype="multipart/form-data">
+				<table class="table-box">
+					<tr>
+						<td class="table-title">项目名称</td>
+						<td class="table-combo" style="padding: 0"><select class="easyui-combobox" id="projectId" name=projectId
+							style="width: 100%; text-align: center;" data-options="editable:false,onLoadSuccess:loadProject,onChange:loadVersion">
+								<%for(item in projects){%>
+								<option value="${item.id!}">${item.name!}</option> <%}%>
+						</select></td>
+						<td class="table-title">项目编号</td>
+						<td><input class="easyui-textbox" style="width: 100%; text-align: center;" id="serialNumber" data-options="editable:false"></td>
+						<td class="table-title">版本</td>
+						<td class="table-combo" style="padding: 0"><select class="easyui-combobox" id="versionId" name="versionId" disabled="disabled"
+							style="width: 100%; text-align: center;" textField="version" valueField="id" editable="false" required="true">
+						</select></td>
+					</tr>
+					<tr>
+						<td class="table-title">项目经理</td>
+						<td><input class="easyui-textbox" style="width: 100%; text-align: center;" id="projectManager" data-options="editable:false"></td>
+						<td class="table-title">产品经理</td>
+						<td><input class="easyui-textbox" style="width: 100%; text-align: center;" id="productManager" data-options="editable:false"></td>
+						<td class="table-title">业务负责人</td>
+						<td><input class="easyui-textbox" style="width: 100%; text-align: center;" id="businessOwner" data-options="editable:false"></td>
+					</tr>
+					<tr>
+						<td class="table-title">测试经理</td>
+						<td><input class="easyui-textbox" style="width: 100%; text-align: center;" id="testManager" data-options="editable:false"></td>
+						<td class="table-title">研发经理</td>
+						<td><input class="easyui-textbox" style="width: 100%; text-align: center;" id="developManager" data-options="editable:false"></td>
+						<td class="table-title">申请上线日期</td>
+						<td style="padding: 0" class="table-combo"><input class="easyui-datebox" name="onlineDate"
+							style="width: 100%; border: none; text-align: center;" data-options="editable:false"></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6">上线系统及依赖关系描述</td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6"><input class="easyui-textbox" name="dependencyDescription" data-options="multiline:true"
+							style="width: 100%; height: 60px"></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6">上线影响范围描述</td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6"><input class="easyui-textbox" name="scopeDescription" data-options="multiline:true"
+							style="width: 100%; height: 60px"></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6">上线系统详情</td>
+					</tr>
+					<div class="subsystem"><tr>
+						<td class="table-title">系统名称</td>
+						<td class="table-combo" style="padding: 0"><input class="easyui-combobox" name="projectName"
+							style="width: 100%; text-align: center;" url="${contextPath!}/project/list.json" textField="name" valueField="name" /></td>
+						<td class="table-title">负责人</td>
+						<td class="table-combo" colspan="3" style="padding: 0"><select class="easyui-combobox" name="state"
+							url="${contextPath!}/member/members" textField="realName" valueField="id" style="width: 100%; text-align: center;">
+						</select></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="2">git地址</td>
+						<td colspan="4"><input class="easyui-textbox" name="git[0]"></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="2">分支</td>
+						<td colspan="4"><input class="easyui-textbox" name="branch[0]"></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="2">SQL脚本</td>
+						<td class="table-combo" colspan="4" style="padding: 0"><input class="easyui-filebox" name="sqlFileId[0]"
+							data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 100%"></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="2">系统启动脚本</td>
+						<td class="table-combo" colspan="4" style="padding: 0"><input class="easyui-filebox" name="startupScriptFileId[0]"
+							data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 100%"></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="2">依赖系统</td>
+						<td class="table-combo" colspan="4" style="padding: 0"><input class="easyui-textbox" name="dependencySystem[0]" data-options=""
+							style="width: 50%"><input class="easyui-filebox" name="dependencySystemFileId[0]"
+							data-options="prompt:'添加附件...',	buttonText:'选择'" style="width: 50%"></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="2">其他说明</td>
+						<td colspan="4"><input class="easyui-textbox" name="otherDescription[0]" data-options="prompt:'添加附件...',buttonText:'选择'"
+							style="width: 100%"></td>
+					</tr>
+					</div>
+				</table>
+			</form>
+		</div>
+	</div>
+</div>

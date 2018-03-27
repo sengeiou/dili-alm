@@ -17,6 +17,9 @@ public class ProjectOnlineSubsystemDto extends BaseDomain implements ProjectOnli
 	private String otherDescription;
 	private String projectName;
 	private Long projectId;
+	private Long managerId;
+	private String branch;
+	private Long dependencySystemFileId;
 
 	@Override
 	public Long getApplyId() {
@@ -96,6 +99,36 @@ public class ProjectOnlineSubsystemDto extends BaseDomain implements ProjectOnli
 	@Override
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
+	}
+
+	@Override
+	public Long getManagerId() {
+		return managerId;
+	}
+
+	@Override
+	public void setManagerId(Long managerId) {
+		this.managerId = managerId;
+	}
+
+	@Override
+	public String getBranch() {
+		return branch;
+	}
+
+	@Override
+	public void setBranch(String branch) {
+		this.branch = branch;
+	}
+
+	@Override
+	public Long getDependencySystemFileId() {
+		return dependencySystemFileId;
+	}
+
+	@Override
+	public void setDependencySystemFileId(Long dependencySystemFileId) {
+		this.dependencySystemFileId = dependencySystemFileId;
 	}
 
 }

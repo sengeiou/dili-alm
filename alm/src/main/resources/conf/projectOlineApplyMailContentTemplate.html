@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<title>Basic Accordion - jQuery EasyUI Demo</title>
+<style>
+html, body {
+	height: 100%;
+	padding: 0;
+	margin: 0
+}
+</style>
+</head>
+
+<body>
+	<style>
+.table-box {
+	width: 100%;
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+.table-box, .table-box tr td {
+	border: 1px solid #ddd;
+	border-collapse: collapse;
+}
+
+.table-box tr td {
+	width: calc(100%/ 6);
+	padding: 5px;
+}
+
+.table-box .table-title {
+	background-color: #f5f5f5;
+	font-weight: bold;
+}
+
+.table-combo .textbox {
+	border: none;
+	border-radius: 0;
+}
+</style>
+	<div class="easyui-panel" style="width: 100%; height: 100%;" title="项目类型统计">
+		<div style="box-sizing: border-box; height: 100%; width: 100%; padding: 10px;">
+			<div class="easyui-layout" style="box-sizing: border-box; width: 100%; height: 100%;">
+				<table class="table-box">
+					<tr>
+						<td class="table-title">项目名称</td>
+						<td>${apply.projectName!}</td>
+						<td class="table-title">项目编号</td>
+						<td>${apply.projectSerialNumber!}</td>
+						<td class="table-title">版本</td>
+						<td>${apply.version!}</td>
+					</tr>
+					<tr>
+						<td class="table-title">项目经理</td>
+						<td>${apply.projectManagerId!}</td>
+						<td class="table-title">产品经理</td>
+						<td>${apply.productManagerId!}</td>
+						<td class="table-title">业务负责人</td>
+						<td>${apply.businessOwnerId!}</td>
+					</tr>
+					<tr>
+						<td class="table-title">测试经理</td>
+						<td>${apply.testManagerId!}</td>
+						<td class="table-title">研发经理</td>
+						<td>${apply.developmentManagerId!}</td>
+						<td class="table-title">申请上线日期</td>
+						<td>${apply.onlineDate!}</td>
+					</tr>
+				</table>
+				<table class="table-box">
+					<tr>
+						<td class="table-title" colspan="6">操作记录</td>
+					</tr>
+					<%for(item in opRecords){%>
+					<tr>
+						<td class="table-title">${item.operationName!}</td>
+						<td>${item.operatorId!}</td>
+						<td class="table-title">描述</td>
+						<td>${item.description!}</td>
+						<td class="table-title">时间</td>
+						<td>${item.operateTime!}</td>
+					</tr>
+					<%}%>
+				</table>
+				<div>
+					<p>状态：${apply.applyState!}</p>
+					<p>
+						链接地址：<a href="http://almadmin.diligrp.com/almadmin/main/index.html">http://almadmin.diligrp.com/almadmin/main/index.html</a>
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

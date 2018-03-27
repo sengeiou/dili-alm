@@ -1,3 +1,5 @@
+var paramCount=0;
+
 function optFormatter(value, row, index) {
 	var content = '';
 	if (row.editable) {
@@ -20,12 +22,142 @@ function optFormatter(value, row, index) {
 
 }
 
+function appendSubsystem(){
+	paramCount++;
+	var content='<div class="subsystem"><tr>'+
+						'<td class="table-title">系统名称</td>'+
+						'<td class="table-combo" style="padding: 0"><input class="easyui-combobox" name="projectName"'+
+							'style="width: 100%; text-align: center;" url="${contextPath!}/project/list.json" textField="name" valueField="name" /></td>'+
+						'<td class="table-title">负责人</td>'+
+						'<td class="table-combo" colspan="3" style="padding: 0"><select class="easyui-combobox" name="state"'+
+							'url="${contextPath!}/member/members" textField="realName" valueField="id" style="width: 100%; text-align: center;">'+
+						'</select></td>'
+					'</tr>'+
+					'<tr>'+
+						'<td class="table-title" colspan="2">git地址</td>'+
+						'<td colspan="4"><input class="easyui-textbox" name="git[0]"></td>'+
+					'</tr>'+
+					'<tr>'+
+						'<td class="table-title" colspan="2">分支</td>'+
+						'<td colspan="4"><input class="easyui-textbox" name="branch[0]"></td>'+
+					'</tr>'+
+					'<tr>'+
+						'<td class="table-title" colspan="2">SQL脚本</td>'+
+						'<td class="table-combo" colspan="4" style="padding: 0"><input class="easyui-filebox" name="sqlFileId[0]"'+
+							'data-options="prompt:\'添加附件...\',buttonText:\'选择\'" style="width: 100%"></td>'+
+					'</tr>'+
+					'<tr>'+
+						'<td class="table-title" colspan="2">系统启动脚本</td>'+
+						'<td class="table-combo" colspan="4" style="padding: 0"><input class="easyui-filebox" name="startupScriptFileId[0]"'+
+							'data-options="prompt:\'添加附件...\',buttonText:\'选择\'" style="width: 100%"></td>'+
+					'</tr>'+
+					'<tr>'+
+						'<td class="table-title" colspan="2">依赖系统</td>'
+						'<td class="table-combo" colspan="4" style="padding: 0"><input class="easyui-textbox" name="dependencySystem[0]" data-options=""'+
+							'style="width: 50%"><input class="easyui-filebox" name="dependencySystemFileId[0]"'+
+							'data-options="prompt:\'添加附件...\',	buttonText:\'选择\'" style="width: 50%"></td>'+
+					'</tr>'+
+					'<tr>'+
+						<td class="table-title" colspan="2">其他说明</td>
+						<td colspan="4"><input class="easyui-textbox" name="otherDescription[0]" data-options="prompt:'添加附件...',buttonText:'选择'"
+							style="width: 100%"></td>
+					</tr>
+					</div>';
+}
+
+function loadProject() {
+	var data = $('#projectId').combobox('getData');
+	if (data) {
+		$.post('${contextPath!}/project/listViewData.json', {
+					id : data[0].id
+				}, function(res) {
+					if (res && res.length > 0) {
+						var p = res[0];
+						$('#projectManager').textbox('initValue', p.projectManager);
+						$('#serialNumber').textbox('initValue', p.serialNumber);
+						$('#productManager').textbox('initValue', p.productManager);
+						$('#businessOwner').textbox('initValue', p.businessOwner);
+						$('#testManager').textbox('initValue', p.testManager);
+						$('#developManager').textbox('initValue', p.developManager);
+					}
+				}, 'json');
+	}
+}
+
+function loadVersion(nval, oval) {
+	$('#versionId').combobox('reload', '${contextPath!}/project/version/list?projectId=' + nval);
+	$('#versionId').combobox('enable');
+	$.post('${contextPath!}/project/listViewData.json', {
+				id : nval
+			}, function(res) {
+				if (res && res.length > 0) {
+					var p = res[0];
+					$('#projectManager').textbox('initValue', p.projectManager);
+					$('#serialNumber').textbox('initValue', p.serialNumber);
+					$('#productManager').textbox('initValue', p.productManager);
+					$('#businessOwner').textbox('initValue', p.businessOwner);
+					$('#testManager').textbox('initValue', p.testManager);
+					$('#developManager').textbox('initValue', p.developManager);
+				}
+			}, 'json');
+}
+
 // 打开新增窗口
 function openInsert() {
-	$('#dlg').dialog('open');
-	$('#dlg').dialog('center');
-	$('#_form').form('clear');
-	formFocus("_form", "_projectName");
+	$('#win').dialog({
+				title : '上线申请',
+				width : 800,
+				height : 600,
+				href : '${contextPath!}/projectOnlineApply/add',
+				modal : true,
+				buttons : [{
+							text : '保存',
+							handler : function() {
+								if (!$('#versionForm').form('validate')) {
+									return;
+								}
+								var data = $("#versionForm").serializeArray();
+								$.ajax({
+											type : "POST",
+											url : '${contextPath!}/project/version/insert',
+											data : data,
+											success : function(data) {
+												if (data.code == 200) {
+													try {
+														LogUtils.saveLog(LOG_MODULE_OPS.ADD_PROJECT_VERSION, "新增项目版本:" + data.data.id + ":" + data.data.version + ":成功", function() {
+																});
+													} catch (e) {
+														$.messager.alert('错误', e);
+													}
+													$('#versionGrid').datagrid('appendRow', data.data);
+													$('#versionGrid').datagrid('acceptChanges');
+													countVersionGrid();
+													if ($('#versionForm input[name=fileIds]').length > 0) {
+														$('#fileGrid').datagrid('reload');
+														countFileGrid();
+													}
+													$('#win').dialog('close');
+												} else {
+													$.messager.alert('错误', data.result);
+												}
+											},
+											error : function() {
+												$.messager.alert('错误', '远程访问失败');
+											}
+										});
+							}
+						}, {
+							text : '取消',
+							handler : function() {
+								$('#win').dialog('close');
+							}
+						}, {
+							text : '提交',
+							handler : function() {
+
+							}
+						}]
+			});
 }
 
 // 打开修改窗口
@@ -172,7 +304,7 @@ function getKey(e) {
  * @submitFun 表单提交需执行的任务
  */
 $(function() {
-			$('#applicantId').textbox('addClearBtn', 'icon-clear');
+			// $('#applicantId').textbox('addClearBtn', 'icon-clear');
 			bindFormEvent("form", "projectName", queryGrid);
 			bindFormEvent("_form", "_projectName", saveOrUpdate, function() {
 						$('#dlg').dialog('close');
