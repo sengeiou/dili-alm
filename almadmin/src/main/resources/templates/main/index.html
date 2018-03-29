@@ -13,6 +13,11 @@
         <!--消息通知、用户信息-->
         <div class="head" data-options="region:'north'" style="height:72px;border:none;">
             <div class="info">
+                <!--工作日-->
+                <div class="workday show-list" data-id="user-workday">
+                <p>01/01</p>
+                <p>31/05</p>
+                </div>
                 <!--用户设置-->
                 <div class="user-info show-list" data-id="user-menu">
                     <div class="user-menu">
@@ -40,16 +45,20 @@
         <!--<div data-options="region:'south'" style="height:50px;"></div>-->
         <!--左侧菜单栏-->
          <div  data-options="region:'west'" style="width:251px;height:100%;padding-top:0px;border: none">
-
-        </div>
+         </div>
         <!--页面主体内容-->
         <div data-options="region:'center'" id="center" style="width:100%;height:100%;border: none;" >
            <iframe id="homeIndex" scrolling="auto" frameborder="0"  style="width:100%; height: 99.6%; display:block;"></iframe>
            <div id="tabs" style="width:100%; height: 99.6%;display: none;padding:10px 10px 0;box-sizing: border-box;min-width:929px"></div>
         </div>
     </div>
+    <!--工作日-->
+    <div class="menu-list workday-list" id="user-workday" data-index="0">
+        <span>2018 第一周 03/13 -- 04/18</span>
+        <a href="javascript:;" onclick="$('#workdayBox').dialog('open')">设置</a>
+    </div>
     <!--用户菜单-->
-    <div class="menu-list" id="user-menu" data-index="0">
+    <div class="menu-list" id="user-menu" data-index="1">
         <ul>
             <li><a href="javascript:void(0)" onclick="menuClickHandler(this)">用户信息</a></li>
             <li><a  href="javascript:void(0)" onclick="menuClickHandler(this)">修改密码</a></li>
@@ -58,14 +67,106 @@
         <!--<span class="item dot-top"></span>-->
     </div>
     <!--消息列表-->
-    <div class="menu-list" id="news-list" data-index="1">
+    <div class="menu-list" id="news-list" data-index="2">
         <ul id="messageList">
 
         </ul>
         <!--<span class="item dot-top"></span>-->
     </div>
+<style>
+    #workdayBox .contain-box{
+        box-sizing: border-box;
+        width: 100%;
+        padding:10px 30px;
+        font-size: 14px;
+        color: #666;
+    }
+    #workdayBox .contain-box .label-top{
+        display: inline-block;
+        width: 20%;
+        padding-right: 18px;
+        text-align: right;
+    }
+    #workdayBox .contain-box div.box-item{
+        margin-bottom: 24px;
+        height: 40px;
+        /*line-height: 40px;*/
+    }
+    #workdayBox .contain-box span.span-box{
+        display: inline-block;
+        width: 60px;
+        border-radius: 15px;
+        line-height: 28px;
+        text-align: center;
+        color: #666;
+        background: #eee;
+    }
+    #workdayBox div.box-item .button{
+        width: 80px;
+        height: 36px;
+        border-radius: 5px;
+        text-align: center;
+        font-size: 15px;
+        margin-right: 16px;
+        cursor: pointer;
+    }
+    #workdayBox div.box-item .confirm{
+        background: #2fa060;
+        color: #fff;
+    }
+    #workdayBox div.box-item .confirm:hover{
+        background: #26b564;
+    }
+    #workdayBox div.box-item .cancel{
+        background: #e5e8e9;
+        color: #666;
+    }
+    #workdayBox div.box-item .cancel:hover{
+        background: #d4d9dc;
+    }
+    #workdayBox div.box-item .hint{
+        margin-left: 18px;
+        margin-top: 5px;
+        padding-left: 21%;
+        font-size: 12px;
+        color: #bbb;
+    }
 
+</style>
+    <!--工作日设置弹窗-->
+    <div id="workdayBox" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="设置" style="padding:20px" modal="true" border="thin" closed="true"
+         data-options="
+				width:480,
+				height: 330,">
+        <div class="contain-box">
+            <form action="">
+                <div class="box-item">
+                    <label for="" class="label-top">已设定年份:</label>
+                    <span class="span-box">2018</span>
+                </div>
+                <div class="box-item">
+                    <label for="" class="label-top">年度:</label>
+                    <select class="easyui-combobox" name="state" style="width:60%;">
+                        <option value="AL">Alabama</option>
+                        <option value="AK">Alaska</option>
+                        <option value="AZ">Arizona</option>
+                        <option value="AR">Arkansas</option>
+                    </select>
+                </div>
+                <div class="box-item">
+                    <label for="" class="label-top">数据内容:</label>
+                    <input class="easyui-filebox" buttonText="选择上传文件"  data-options="prompt:'文件'" style="width:60%;color: #666">
+                    <p class="hint">仅支持excel文件，文件不超过1M</p>
+                </div>
+                <div class="box-item">
+                    <label for="" class="label-top"></label>
+                    <input type="submit" class="button confirm" value="确认" >
+                    <input type="button" class="button cancel" value="取消" >
+                </div>
+            </form>
+        </div>
 
+    </div>
 
     <script type="text/javascript">
 
@@ -129,28 +230,28 @@
             clearTimeout(timer[$(this).index()]);
         }).on('mouseout',function(){
             var buttonObj=$(this);
-            var obj=$('#'+$(this).data('id'));
-            timer[$(this).index()]=setTimeout(function(){
-                obj.hide();
-                if(buttonObj.data('id')=='user-menu'){
-                    buttonObj.find('.user-menu').removeClass('mouseover');
-                }
-            }, 300);
+            // var obj=$('#'+$(this).data('id'));
+            // timer[$(this).index()]=setTimeout(function(){
+            //     obj.hide();
+            //     if(buttonObj.data('id')=='user-menu'){
+            //         buttonObj.find('.user-menu').removeClass('mouseover');
+            //     }
+            // }, 300);
         });
 
         $('.menu-list').on('mouseover',function(){
-//            console.log(1,$(this).data('index'));
+           console.log(1,$(this).data('index'));
             clearTimeout(timer[$(this).data('index')]);
             $(this).show();
         }).on('mouseout',function(){
             var obj = $(this);
             // console.log($(this).data('index')===0)
-            timer[$(this).data('index')]=setTimeout(function(){
-                if(obj.data('index')===0){
-                    $('.user-menu').removeClass('mouseover');
-                }
-                obj.hide();
-            }, 300);
+            // timer[$(this).data('index')]=setTimeout(function(){
+            //     if(obj.data('index')===0){
+            //         $('.user-menu').removeClass('mouseover');
+            //     }
+            //     obj.hide();
+            // }, 300);
         });
         messagesListen();
 
@@ -218,7 +319,7 @@
     	$('#css3menu ul li').on('click',function(){
             let index= $(this).index();
             if(index<1){
-                $('#page-layout').layout('remove','west')
+                $('#page-layout').layout('remove','west');
                 $("#homeIndex").css('display','block');
                 $('#homeIndex').attr("src","http://alm.diligrp.com:8083/alm/home/index");
                 $("#tabs").empty().hide();
@@ -238,29 +339,34 @@
             };
             $('.menu-left-list').eq(index).show().siblings().hide();
             $(this).addClass('on').siblings().removeClass('on');
+        });
 
-        })
+    	// console.log($('#menuList').html())
+
     });
-
+    //左侧菜单折叠展开
+    function showHide(obj){
+        console.log($(obj))
+        $(obj).hasClass('close') ? $(obj).removeClass('close').next('ul').show() : $(obj).addClass('close').next('ul').hide()
+    }
 
     </script>
-<script type="text/template" id="menuTem">
-    <div id="menuList" class="menu-left">
-        <% for(item in menu){ %>
-        <div id="${item.id}" class="menu-left-list">
-            <% for(item1 in item.children){ %>
-            <div class="title-name">${item1.name}</div>
-            <ul>
-                <% for(item2 in item1.children){ %>
-                <li>
-                    <a href="javascript:void(0)" id="${item2.id }" rel="${item2.menuUrl}" onclick="menuClickHandler(this)">${item2.name}</a>
-                </li>
+    <script type="text/template" id="menuTem">
+        <div id="menuList" class="menu-left">
+            <% for(item in menu){ %>
+            <div id="${item.id}" class="menu-left-list">
+                <% for(item1 in item.children){ %>
+                <div class="title-name" onclick="showHide(this)">${item1.name}</div>
+                <ul>
+                    <% for(item2 in item1.children){ %>
+                    <li>
+                        <a href="javascript:void(0)" id="${item2.id }" rel="${item2.menuUrl}" onclick="menuClickHandler(this)">${item2.name}</a>
+                    </li>
+                    <% } %>
+                </ul>
                 <% } %>
-            </ul>
+            </div>
             <% } %>
         </div>
-        <% } %>
-    </div>
-
-</script>
+    </script>
 </#body>
