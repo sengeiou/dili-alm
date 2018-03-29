@@ -12,8 +12,7 @@ public class ProjectOnlineApplyUpdateDto extends ProjectOnlineApplyDto {
 	private static final long serialVersionUID = -7624328628824598772L;
 
 	private List<ProjectOnlineSubsystemDto> subsystem;
-	@NotBlank(message = "邮件通知列表不能为空")
-	private String emailAddress;
+	private List<String> emailAddress;
 
 	public List<ProjectOnlineSubsystemDto> getSubsystem() {
 		return subsystem;
@@ -23,11 +22,12 @@ public class ProjectOnlineApplyUpdateDto extends ProjectOnlineApplyDto {
 		this.subsystem = subsystem;
 	}
 
-	public String getEmailAddress() {
+	public List<String> getEmailAddress() {
 		return emailAddress;
 	}
 
-	public void setEmailAddress(String emailAddress) {
+	public void setEmailAddress(List<String> emailAddress) {
 		this.emailAddress = emailAddress;
 	}
+
 }

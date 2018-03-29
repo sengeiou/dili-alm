@@ -9,21 +9,14 @@
     <result column="apply_id" jdbcType="BIGINT" property="applyId" />
     <result column="project_id" jdbcType="BIGINT" property="projectId" />
     <result column="project_name" jdbcType="VARCHAR" property="projectName" />
-    <result column="git" jdbcType="VARCHAR" property="git" />
-    <result column="sql_file_id" jdbcType="BIGINT" property="sqlFileId" />
-    <result column="startup_script_file_id" jdbcType="BIGINT" property="startupScriptFileId" />
-    <result column="dependency_system" jdbcType="VARCHAR" property="dependencySystem" />
-    <result column="other_description" jdbcType="VARCHAR" property="otherDescription" />
     <result column="manager_id" jdbcType="BIGINT" property="managerId" />
-    <result column="branch" jdbcType="VARCHAR" property="branch" />
-    <result column="dependency_system_file_id" jdbcType="BIGINT" property="dependencySystemFileId" />
+    <result column="manager_name" jdbcType="VARCHAR" property="managerName" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
       WARNING - @mbg.generated
     -->
-    id, apply_id, project_id, project_name, git, sql_file_id, startup_script_file_id, 
-    dependency_system, other_description, manager_id, branch, dependency_system_file_id
+    id, apply_id, project_id, project_name, manager_id, manager_name
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -49,29 +42,11 @@
       <if test="projectName != null">
         project_name = #{projectName,jdbcType=VARCHAR},
       </if>
-      <if test="git != null">
-        git = #{git,jdbcType=VARCHAR},
-      </if>
-      <if test="sqlFileId != null">
-        sql_file_id = #{sqlFileId,jdbcType=BIGINT},
-      </if>
-      <if test="startupScriptFileId != null">
-        startup_script_file_id = #{startupScriptFileId,jdbcType=BIGINT},
-      </if>
-      <if test="dependencySystem != null">
-        dependency_system = #{dependencySystem,jdbcType=VARCHAR},
-      </if>
-      <if test="otherDescription != null">
-        other_description = #{otherDescription,jdbcType=VARCHAR},
-      </if>
       <if test="managerId != null">
         manager_id = #{managerId,jdbcType=BIGINT},
       </if>
-      <if test="branch != null">
-        branch = #{branch,jdbcType=VARCHAR},
-      </if>
-      <if test="dependencySystemFileId != null">
-        dependency_system_file_id = #{dependencySystemFileId,jdbcType=BIGINT},
+      <if test="managerName != null">
+        manager_name = #{managerName,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

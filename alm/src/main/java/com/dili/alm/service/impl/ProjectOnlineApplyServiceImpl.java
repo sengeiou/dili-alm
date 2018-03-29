@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,12 +29,16 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dili.alm.cache.AlmCache;
 import com.dili.alm.component.MailManager;
+import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.EmailAddressMapper;
+import com.dili.alm.dao.FilesMapper;
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.dao.ProjectOnlineApplyMapper;
 import com.dili.alm.dao.ProjectOnlineOperationRecordMapper;
 import com.dili.alm.dao.ProjectOnlineSubsystemMapper;
+import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.domain.ApplyType;
 import com.dili.alm.domain.EmailAddress;
 import com.dili.alm.domain.OperationResult;
@@ -42,6 +48,9 @@ import com.dili.alm.domain.ProjectOnlineApplyOperationType;
 import com.dili.alm.domain.ProjectOnlineApplyState;
 import com.dili.alm.domain.ProjectOnlineOperationRecord;
 import com.dili.alm.domain.ProjectOnlineSubsystem;
+import com.dili.alm.domain.ProjectVersion;
+import com.dili.alm.domain.ProjectVersionOnlineState;
+import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectOnlineApplyUpdateDto;
@@ -50,6 +59,7 @@ import com.dili.alm.domain.dto.UserDepartmentRole;
 import com.dili.alm.domain.dto.UserDepartmentRoleQuery;
 import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.ProjectOnlineApplyException;
+import com.dili.alm.provider.ProjectVersionProvider;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.ProjectOnlineApplyDetailDto;
@@ -76,7 +86,6 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	private static final String DEPARTMENT_MANAGER_ROLE_CONFIG_CODE = "department_manager_role_config";
 	private static final String TEST_MANAGER_CODE = "test_manager";
 	private static final String OPERATION_MANAGER_CODE = "operation_manager";
-	private static final String OPERATION_DEPARTMENT_CODE = "maintenance";
 
 	@Autowired
 	private ProjectMapper projectMapper;
@@ -96,6 +105,12 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	private BeetlGroupUtilConfiguration beetlConfig;
 	@Autowired
 	private UserRpc userRpc;
+	@Autowired
+	private ProjectVersionProvider versionProvider;
+	@Autowired
+	private ProjectVersionMapper versionMapper;
+	@Autowired
+	private FilesMapper filesMapper;
 
 	public ProjectOnlineApplyMapper getActualDao() {
 		return (ProjectOnlineApplyMapper) getDao();
@@ -115,7 +130,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 
 		// 判断状态必须是未提交状态才能编辑
 		ProjectOnlineApply old = this.getActualDao().selectByPrimaryKey(apply.getId());
-		if (old.getApplyState().equals(ProjectOnlineApplyState.APPLING.getValue())) {
+		if (!old.getApplyState().equals(ProjectOnlineApplyState.APPLING.getValue())) {
 			throw new ProjectOnlineApplyException("当前状态不能编辑");
 		}
 
@@ -127,9 +142,16 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		apply.setProductManagerId(project.getProductManager());
 		apply.setTestManagerId(project.getTestManager());
 		apply.setDevelopmentManagerId(project.getDevelopManager());
+		apply.setVersion(this.versionProvider.getDisplayText(apply.getVersionId(), null, null));
 
 		// 判断申请上线日期是否大于当前日期
-		if (apply.getOnlineDate().getTime() > System.currentTimeMillis()) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		if (apply.getOnlineDate().getTime() < calendar.getTimeInMillis()) {
 			throw new ProjectOnlineApplyException("申请上线日期不能小于当前日期");
 		}
 
@@ -142,16 +164,40 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 
 			// 插入
 			apply.getSubsystem().forEach(s -> {
-				if (s.getProjectId() != null) {
-					Project p = this.projectMapper.selectByPrimaryKey(s.getProjectId());
-					s.setProjectName(p.getName());
+				s.setApplyId(apply.getId());
+				if (StringUtils.isNumeric(s.getManagerName())) {
+					Long managerId = Long.valueOf(s.getManagerName());
+					User u = AlmCache.USER_MAP.get(managerId);
+					if (u != null) {
+						s.setManagerId(managerId);
+						s.setManagerName(u.getRealName());
+					}
+				}
+				if (StringUtils.isNumeric(s.getProjectName())) {
+					Long projectId = Long.valueOf(s.getProjectName());
+					Project p = this.projectMapper.selectByPrimaryKey(projectId);
+					if (p != null) {
+						s.setProjectId(p.getId());
+						s.setProjectName(p.getName());
+					}
 				}
 				this.posMapper.insert(s);
 			});
 		}
 
+		// 更新附件
+		if (apply.getDependencySystemFileId() != null) {
+			this.filesMapper.deleteByPrimaryKey(old.getDependencySystemFileId());
+		}
+		if (apply.getSqlFileId() != null) {
+			this.filesMapper.deleteByPrimaryKey(old.getSqlFileId());
+		}
+		if (apply.getStartupScriptFileId() != null) {
+			this.filesMapper.deleteByPrimaryKey(old.getStartupScriptFileId());
+		}
+
 		int result = this.getActualDao().updateByPrimaryKeySelective(apply);
-		if (result > 0) {
+		if (result <= 0) {
 			throw new ProjectOnlineApplyException("更新失败");
 		}
 
@@ -162,18 +208,18 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		this.emailAddressMapper.delete(eaCondition);
 
 		// 插入
-		for (String str : apply.getEmailAddress().split(";")) {
+		apply.getEmailAddress().forEach(s -> {
 			EmailAddress ea = DTOUtils.newDTO(EmailAddress.class);
 			ea.setApplyId(apply.getId());
 			ea.setApplyType(ApplyType.ONLINE.getValue());
-			ea.setEmailAddress(str);
+			ea.setEmailAddress(s);
 			this.emailAddressMapper.insert(ea);
-		}
+		});
 	}
 
 	@Transactional(rollbackFor = ApplicationException.class, propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
 	@Override
-	public ProjectOnlineApplyDetailDto getEditViewDataById(Long applyId) {
+	public ProjectOnlineApplyDetailDto getViewDataById(Long applyId) {
 		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(applyId);
 		if (apply == null) {
 			return null;
@@ -221,7 +267,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			try {
 				String content = this.getMailContent();
 				Template template = this.beetlConfig.getGroupTemplate().getTemplate(content);
-				template.binding("apply", this.buildApplyViewModel(apply));
+				template.binding("apply", buildApplyViewModel(apply));
 				ProjectOnlineOperationRecord poor = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
 				poor.setApplyId(apply.getId());
 				List<ProjectOnlineOperationRecord> list = this.poorMapper.select(poor);
@@ -253,7 +299,8 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		}
 	}
 
-	private Map<Object, Object> buildApplyViewModel(ProjectOnlineApply apply) {
+	@SuppressWarnings("unchecked")
+	public static Map<Object, Object> buildApplyViewModel(ProjectOnlineApply apply) {
 		Map<Object, Object> metadata = new HashMap<>();
 
 		JSONObject memberProvider = new JSONObject();
@@ -273,6 +320,12 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		JSONObject applyStateProvider = new JSONObject();
 		applyStateProvider.put("provider", "projectOnlineApplyStateProvider");
 		metadata.put("applyState", applyStateProvider);
+
+		JSONObject filesProvider = new JSONObject();
+		filesProvider.put("provider", "filesProvider");
+		metadata.put("sqlFileId", filesProvider);
+		metadata.put("startupScriptFileId", filesProvider);
+		metadata.put("dependencySystemFileId", filesProvider);
 
 		try {
 			@SuppressWarnings("rawtypes")
@@ -336,7 +389,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			if (CollectionUtils.isEmpty(output.getData())) {
 				throw new ProjectOnlineApplyException("执行人不存在");
 			}
-			if (!OPERATION_DEPARTMENT_CODE.equals(output.getData().get(0).getDepartment().getCode())) {
+			if (!AlmConstants.OPERATION_DEPARTMENT_CODE.equals(output.getData().get(0).getDepartment().getCode())) {
 				throw new ProjectOnlineApplyException("执行人不是运维部员工");
 			}
 		}
@@ -505,6 +558,14 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		if (OperationResult.SUCCESS.equals(result)) {
 			this.sendMail(apply, "上线成功");
 		}
+
+		// 更新项目的版本状态为已上线
+		ProjectVersion version = this.versionMapper.selectByPrimaryKey(apply.getVersionId());
+		version.setOnline(ProjectVersionOnlineState.ONLINE.getValue());
+		rows = this.versionMapper.updateByPrimaryKey(version);
+		if (rows <= 0) {
+			throw new ProjectOnlineApplyException("更新版本上线状态失败");
+		}
 	}
 
 	@Transactional
@@ -518,43 +579,95 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		apply.setProductManagerId(project.getProductManager());
 		apply.setTestManagerId(project.getTestManager());
 		apply.setDevelopmentManagerId(project.getDevelopManager());
+		apply.setProjectSerialNumber(project.getSerialNumber());
+		apply.setVersion(this.versionProvider.getDisplayText(apply.getVersionId(), null, null));
 
 		// 判断申请上线日期是否大于当前日期
-		if (apply.getOnlineDate().getTime() > System.currentTimeMillis()) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		if (apply.getOnlineDate().getTime() < calendar.getTimeInMillis()) {
 			throw new ProjectOnlineApplyException("申请上线日期不能小于当前日期");
+		}
+
+		int result = this.getActualDao().insertSelective(apply);
+		if (result <= 0) {
+			throw new ProjectOnlineApplyException("插入失败");
 		}
 
 		// 插入子系统
 		if (CollectionUtils.isNotEmpty(apply.getSubsystem())) {
 			apply.getSubsystem().forEach(s -> {
-				if (s.getProjectId() != null) {
-					Project p = this.projectMapper.selectByPrimaryKey(s.getProjectId());
-					s.setProjectName(p.getName());
+				s.setApplyId(apply.getId());
+				if (StringUtils.isNumeric(s.getManagerName())) {
+					Long managerId = Long.valueOf(s.getManagerName());
+					User u = AlmCache.USER_MAP.get(managerId);
+					if (u != null) {
+						s.setManagerId(managerId);
+						s.setManagerName(u.getRealName());
+					}
+				}
+				if (StringUtils.isNumeric(s.getProjectName())) {
+					Long projectId = Long.valueOf(s.getProjectName());
+					Project p = this.projectMapper.selectByPrimaryKey(projectId);
+					if (p != null) {
+						s.setProjectId(p.getId());
+						s.setProjectName(p.getName());
+					}
 				}
 				this.posMapper.insert(s);
 			});
 		}
 
-		int result = this.getActualDao().insertSelective(apply);
-		if (result > 0) {
-			throw new ProjectOnlineApplyException("插入失败");
-		}
+		// 更新邮件通知地址，先删除后插入
+		// 先删除
+		EmailAddress eaCondition = DTOUtils.newDTO(EmailAddress.class);
+		eaCondition.setApplyId(apply.getId());
+		this.emailAddressMapper.delete(eaCondition);
 
-		for (String str : apply.getEmailAddress().split(";")) {
+		// 插入
+		apply.getEmailAddress().forEach(s -> {
 			EmailAddress ea = DTOUtils.newDTO(EmailAddress.class);
 			ea.setApplyId(apply.getId());
 			ea.setApplyType(ApplyType.ONLINE.getValue());
-			ea.setEmailAddress(str);
+			ea.setEmailAddress(s);
 			this.emailAddressMapper.insert(ea);
-		}
+		});
 	}
 
 	@Override
 	public void deleteProjectOnlineApply(Long id) throws ProjectOnlineApplyException {
 		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(id);
+		if (apply == null) {
+			throw new ProjectOnlineApplyException("申请不存在");
+		}
 		if (!apply.getApplyState().equals(ProjectOnlineApplyState.APPLING.getValue())) {
 			throw new ProjectOnlineApplyException("当前状态不能编辑");
 		}
+		// 删除子系统
+		ProjectOnlineSubsystem posQuery = DTOUtils.newDTO(ProjectOnlineSubsystem.class);
+		posQuery.setApplyId(id);
+		this.posMapper.delete(posQuery);
+
+		// 删除邮件
+		EmailAddress emailQuery = DTOUtils.newDTO(EmailAddress.class);
+		emailQuery.setApplyId(id);
+		this.emailAddressMapper.delete(emailQuery);
+
+		// 删除文件
+		if (apply.getDependencySystemFileId() != null) {
+			this.filesMapper.deleteByPrimaryKey(apply.getDependencySystemFileId());
+		}
+		if (apply.getSqlFileId() != null) {
+			this.filesMapper.deleteByPrimaryKey(apply.getSqlFileId());
+		}
+		if (apply.getStartupScriptFileId() != null) {
+			this.filesMapper.deleteByPrimaryKey(apply.getStartupScriptFileId());
+		}
+
 		int result = super.delete(id);
 		if (result <= 0) {
 			throw new ProjectOnlineApplyException("删除失败");
@@ -628,6 +741,30 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		@SuppressWarnings("rawtypes")
 		List results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, list) : list;
 		return new EasyuiPageOutput(Long.valueOf(total).intValue(), results);
+	}
+
+	@Override
+	public void saveAndSubmit(ProjectOnlineApplyUpdateDto dto) throws ProjectOnlineApplyException {
+		this.saveOrUpdate(dto);
+		this.submit(dto.getId());
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public ProjectOnlineApply getEditViewDataById(Long id) throws ProjectOnlineApplyException {
+		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(id);
+		if (apply == null) {
+			throw new ProjectOnlineApplyException("申请不存在");
+		}
+		ProjectOnlineSubsystem subsysQuery = DTOUtils.newDTO(ProjectOnlineSubsystem.class);
+		subsysQuery.setApplyId(id);
+		List<ProjectOnlineSubsystem> subsystems = this.posMapper.select(subsysQuery);
+		apply.aset("subsystems", subsystems);
+		EmailAddress emailQuery = DTOUtils.newDTO(EmailAddress.class);
+		emailQuery.setApplyId(id);
+		List<EmailAddress> emails = this.emailAddressMapper.select(emailQuery);
+		apply.aset("emails", emails);
+		return apply;
 	}
 
 }

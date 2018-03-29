@@ -1,4 +1,4 @@
-package com.dili.alm.domain.dto;
+package com.dili.alm.controller;
 
 import java.util.Date;
 import java.util.List;
@@ -6,16 +6,17 @@ import java.util.List;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dili.alm.domain.ProjectOnlineApply;
 import com.dili.ss.domain.BaseDomain;
 
-public class ProjectOnlineApplyDto extends BaseDomain implements ProjectOnlineApply {
+public class ProjectOnlineApplyAddDto extends BaseDomain implements ProjectOnlineApply {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -8354171445080544962L;
+	private static final long serialVersionUID = 8993438986960351998L;
 
 	private String projectName;
 	@NotNull(message = "项目不能为空")
@@ -50,26 +51,29 @@ public class ProjectOnlineApplyDto extends BaseDomain implements ProjectOnlineAp
 	private String serialNumber;
 
 	private Long businessOwnerId;
+	@NotBlank(message = "邮件通知列表不能为空")
+	private String emailAddress;
 
 	private String executorId;
-
 	private String git;
-
 	private String branch;
-	@NotBlank(message = "sql脚本不能为空")
-	private String sqlScript;
-
-	private Long sqlFileId;
-	@NotBlank(message = "启动脚本不能为空")
-	private String startupScript;
-
-	private Long startupScriptFileId;
-	@NotBlank(message = "依赖系统不能为空")
+	private MultipartFile sqlFile;
+	private MultipartFile startupScriptFile;
 	private String dependencySystem;
+	private MultipartFile dependencySystemFile;
+	private String otherDescription;
+	private List<String> managerId;
+	private List<String> subProjectName;
 
 	private Long dependencySystemFileId;
 
-	private String otherDescription;
+	private Long startupScriptFileId;
+
+	private String startupScript;
+
+	private Long sqlFileId;
+
+	private String sqlScript;
 
 	@Override
 	public String getProjectName() {
@@ -271,24 +275,84 @@ public class ProjectOnlineApplyDto extends BaseDomain implements ProjectOnlineAp
 		this.executorId = executorId;
 	}
 
-	@Override
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+
 	public String getGit() {
 		return git;
 	}
 
-	@Override
 	public void setGit(String git) {
 		this.git = git;
 	}
 
-	@Override
 	public String getBranch() {
 		return branch;
 	}
 
-	@Override
 	public void setBranch(String branch) {
 		this.branch = branch;
+	}
+
+	public MultipartFile getSqlFile() {
+		return sqlFile;
+	}
+
+	public void setSqlFile(MultipartFile sqlFile) {
+		this.sqlFile = sqlFile;
+	}
+
+	public MultipartFile getStartupScriptFile() {
+		return startupScriptFile;
+	}
+
+	public void setStartupScriptFile(MultipartFile startupScriptFile) {
+		this.startupScriptFile = startupScriptFile;
+	}
+
+	public String getDependencySystem() {
+		return dependencySystem;
+	}
+
+	public void setDependencySystem(String dependencySystem) {
+		this.dependencySystem = dependencySystem;
+	}
+
+	public MultipartFile getDependencySystemFile() {
+		return dependencySystemFile;
+	}
+
+	public void setDependencySystemFile(MultipartFile dependencySystemFile) {
+		this.dependencySystemFile = dependencySystemFile;
+	}
+
+	public String getOtherDescription() {
+		return otherDescription;
+	}
+
+	public void setOtherDescription(String otherDescription) {
+		this.otherDescription = otherDescription;
+	}
+
+	public List<String> getManagerId() {
+		return managerId;
+	}
+
+	public void setManagerId(List<String> managerId) {
+		this.managerId = managerId;
+	}
+
+	public List<String> getSubProjectName() {
+		return subProjectName;
+	}
+
+	public void setSubProjectName(List<String> subProjectName) {
+		this.subProjectName = subProjectName;
 	}
 
 	@Override
@@ -332,16 +396,6 @@ public class ProjectOnlineApplyDto extends BaseDomain implements ProjectOnlineAp
 	}
 
 	@Override
-	public String getDependencySystem() {
-		return dependencySystem;
-	}
-
-	@Override
-	public void setDependencySystem(String dependencySystem) {
-		this.dependencySystem = dependencySystem;
-	}
-
-	@Override
 	public Long getDependencySystemFileId() {
 		return dependencySystemFileId;
 	}
@@ -349,16 +403,6 @@ public class ProjectOnlineApplyDto extends BaseDomain implements ProjectOnlineAp
 	@Override
 	public void setDependencySystemFileId(Long dependencySystemFileId) {
 		this.dependencySystemFileId = dependencySystemFileId;
-	}
-
-	@Override
-	public String getOtherDescription() {
-		return otherDescription;
-	}
-
-	@Override
-	public void setOtherDescription(String otherDescription) {
-		this.otherDescription = otherDescription;
 	}
 
 }

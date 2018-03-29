@@ -32,7 +32,7 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 	 *            申请id
 	 * @return 数据模型
 	 */
-	ProjectOnlineApplyDetailDto getEditViewDataById(Long applyId);
+	ProjectOnlineApplyDetailDto getViewDataById(Long applyId);
 
 	/**
 	 * 提交申请进入上线操作流程
@@ -41,6 +41,15 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 	 *            申请id
 	 */
 	void submit(Long applyId) throws ProjectOnlineApplyException;
+
+	/**
+	 * 保存并提交
+	 * 
+	 * @param dto
+	 *            数据模型
+	 * @throws ProjectOnlineApplyException 
+	 */
+	void saveAndSubmit(ProjectOnlineApplyUpdateDto dto) throws ProjectOnlineApplyException;
 
 	/**
 	 * 开始执行
@@ -111,5 +120,7 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 	void updateProjectOnlineApply(ProjectOnlineApplyUpdateDto dto) throws ProjectOnlineApplyException;
 
 	void deleteProjectOnlineApply(Long id) throws ProjectOnlineApplyException;
+
+	ProjectOnlineApply getEditViewDataById(Long id) throws ProjectOnlineApplyException;
 
 }

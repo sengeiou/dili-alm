@@ -14,7 +14,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2018-03-23 11:18:17.
+ * This file was generated on 2018-03-28 16:43:26.
  */
 @Table(name = "`project_online_apply`")
 public interface ProjectOnlineApply extends IBaseDomain {
@@ -64,7 +64,7 @@ public interface ProjectOnlineApply extends IBaseDomain {
 
     @Column(name = "`version`")
     @FieldDef(label="版本名称", maxLength = 255)
-    @EditMode(editor = FieldEditor.Text, required = true)
+    @EditMode(editor = FieldEditor.Text, required = false)
     String getVersion();
 
     void setVersion(String version);
@@ -166,4 +166,67 @@ public interface ProjectOnlineApply extends IBaseDomain {
     String getExecutorId();
 
     void setExecutorId(String executorId);
+
+    @Column(name = "`git`")
+    @FieldDef(label="git地址", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = true)
+    String getGit();
+
+    void setGit(String git);
+
+    @Column(name = "`branch`")
+    @FieldDef(label="分支", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = true)
+    String getBranch();
+
+    void setBranch(String branch);
+
+    @Column(name = "`sql_script`")
+    @FieldDef(label="sql脚本", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = true)
+    String getSqlScript();
+
+    void setSqlScript(String sqlScript);
+
+    @Column(name = "`sql_file_id`")
+    @FieldDef(label="Sql脚本文件id")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Long getSqlFileId();
+
+    void setSqlFileId(Long sqlFileId);
+
+    @Column(name = "`startup_script`")
+    @FieldDef(label="启动脚本", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = true)
+    String getStartupScript();
+
+    void setStartupScript(String startupScript);
+
+    @Column(name = "`startup_script_file_id`")
+    @FieldDef(label="sql启动脚本文件id")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Long getStartupScriptFileId();
+
+    void setStartupScriptFileId(Long startupScriptFileId);
+
+    @Column(name = "`dependency_system`")
+    @FieldDef(label="依赖系统", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = true)
+    String getDependencySystem();
+
+    void setDependencySystem(String dependencySystem);
+
+    @Column(name = "`dependency_system_file_id`")
+    @FieldDef(label="依赖系统附件id")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Long getDependencySystemFileId();
+
+    void setDependencySystemFileId(Long dependencySystemFileId);
+
+    @Column(name = "`other_description`")
+    @FieldDef(label="其他说明", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getOtherDescription();
+
+    void setOtherDescription(String otherDescription);
 }

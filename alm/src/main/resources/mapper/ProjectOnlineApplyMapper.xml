@@ -26,6 +26,15 @@
     <result column="actual_online_date" jdbcType="TIMESTAMP" property="actualOnlineDate" />
     <result column="submit_time" jdbcType="TIMESTAMP" property="submitTime" />
     <result column="executor_id" jdbcType="VARCHAR" property="executorId" />
+    <result column="git" jdbcType="VARCHAR" property="git" />
+    <result column="branch" jdbcType="VARCHAR" property="branch" />
+    <result column="sql_script" jdbcType="VARCHAR" property="sqlScript" />
+    <result column="sql_file_id" jdbcType="BIGINT" property="sqlFileId" />
+    <result column="startup_script" jdbcType="VARCHAR" property="startupScript" />
+    <result column="startup_script_file_id" jdbcType="BIGINT" property="startupScriptFileId" />
+    <result column="dependency_system" jdbcType="VARCHAR" property="dependencySystem" />
+    <result column="dependency_system_file_id" jdbcType="BIGINT" property="dependencySystemFileId" />
+    <result column="other_description" jdbcType="VARCHAR" property="otherDescription" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
@@ -34,7 +43,9 @@
     id, serial_number, project_name, project_id, project_serial_number, version_id, version, 
     business_owner_id, project_manager_id, product_manager_id, test_manager_id, development_manager_id, 
     online_date, dependency_description, scope_description, applicant_id, created, apply_state, 
-    actual_online_date, submit_time, executor_id
+    actual_online_date, submit_time, executor_id, git, branch, sql_script, sql_file_id, 
+    startup_script, startup_script_file_id, dependency_system, dependency_system_file_id, 
+    other_description
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -110,6 +121,33 @@
       </if>
       <if test="executorId != null">
         executor_id = #{executorId,jdbcType=VARCHAR},
+      </if>
+      <if test="git != null">
+        git = #{git,jdbcType=VARCHAR},
+      </if>
+      <if test="branch != null">
+        branch = #{branch,jdbcType=VARCHAR},
+      </if>
+      <if test="sqlScript != null">
+        sql_script = #{sqlScript,jdbcType=VARCHAR},
+      </if>
+      <if test="sqlFileId != null">
+        sql_file_id = #{sqlFileId,jdbcType=BIGINT},
+      </if>
+      <if test="startupScript != null">
+        startup_script = #{startupScript,jdbcType=VARCHAR},
+      </if>
+      <if test="startupScriptFileId != null">
+        startup_script_file_id = #{startupScriptFileId,jdbcType=BIGINT},
+      </if>
+      <if test="dependencySystem != null">
+        dependency_system = #{dependencySystem,jdbcType=VARCHAR},
+      </if>
+      <if test="dependencySystemFileId != null">
+        dependency_system_file_id = #{dependencySystemFileId,jdbcType=BIGINT},
+      </if>
+      <if test="otherDescription != null">
+        other_description = #{otherDescription,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
