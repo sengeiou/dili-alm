@@ -230,13 +230,13 @@
             clearTimeout(timer[$(this).index()]);
         }).on('mouseout',function(){
             var buttonObj=$(this);
-            // var obj=$('#'+$(this).data('id'));
-            // timer[$(this).index()]=setTimeout(function(){
-            //     obj.hide();
-            //     if(buttonObj.data('id')=='user-menu'){
-            //         buttonObj.find('.user-menu').removeClass('mouseover');
-            //     }
-            // }, 300);
+            var obj=$('#'+$(this).data('id'));
+            timer[$(this).index()]=setTimeout(function(){
+                obj.hide();
+                if(buttonObj.data('id')=='user-menu'){
+                    buttonObj.find('.user-menu').removeClass('mouseover');
+                }
+            }, 300);
         });
 
         $('.menu-list').on('mouseover',function(){
@@ -246,12 +246,12 @@
         }).on('mouseout',function(){
             var obj = $(this);
             // console.log($(this).data('index')===0)
-            // timer[$(this).data('index')]=setTimeout(function(){
-            //     if(obj.data('index')===0){
-            //         $('.user-menu').removeClass('mouseover');
-            //     }
-            //     obj.hide();
-            // }, 300);
+            timer[$(this).data('index')]=setTimeout(function(){
+                if(obj.data('index')===0){
+                    $('.user-menu').removeClass('mouseover');
+                }
+                obj.hide();
+            }, 300);
         });
         messagesListen();
 
