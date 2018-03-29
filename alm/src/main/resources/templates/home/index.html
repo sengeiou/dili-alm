@@ -36,6 +36,11 @@
         text-decoration: none;
         color: #A52A2A;
     }
+    .panel-tool{
+        top:9px;
+        height: 24px;
+    }
+
 
 </style>
 
@@ -50,11 +55,14 @@
         </div>
     </div>
     <div class="main-left">
-        <div class="easyui-panel" style="width: 100%;height: 322px;margin-bottom: 10px" title="数据看台">
-        	<select id="flat" onchange="gradeChange()">
-        		<option value="0">个人数据</option>
-        		<option value="1">公司数据</option>
-        	</select>
+        <div id="toolbar" style="margin-top: -3px">
+            <select id="flat" class="easyui-combobox" onchange="gradeChange()" style="width: 100px;height: 22px">
+                <option value="0">个人数据</option>
+                <option value="1">公司数据</option>
+            </select>
+        </div>
+        <div class="easyui-panel" style="width: 100%;height: 302px;margin-bottom: 10px" title="数据看台" data-options="tools:'#toolbar'">
+
             <div style="height: 250px;width: 100%">
                 <div class="charts-box" id="project-box">
 
