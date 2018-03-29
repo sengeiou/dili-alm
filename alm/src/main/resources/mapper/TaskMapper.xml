@@ -389,6 +389,27 @@
   		#{item}  
  	</foreach> 
  	GROUP BY t.`status`
- 	</select>
-
+   </select>
+ 	
+	<select id="getStateByTaskCount" resultType="com.dili.alm.domain.dto.TaskStateCountDto">
+		SELECT d.`code` AS taskState,COUNT(*) AS stateCount 
+		FROM 
+		alm.task AS t 
+		LEFT JOIN 
+		alm.data_dictionary_value AS d 
+		ON t.`status` = d.`value`  
+		WHERE 
+		d.dd_id =16  
+		<if test="list != null and list.size>0">
+			and t.project_id in 
+			<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+	  			#{item}  
+	 		</foreach> 
+	 	</if>
+		<if test="owner != null">
+			AND t.owner=#{owner} 
+	 	</if>
+		 
+		GROUP BY t.`status`
+	</select>
 </mapper>

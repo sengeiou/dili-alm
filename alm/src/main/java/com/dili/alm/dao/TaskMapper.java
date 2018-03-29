@@ -51,5 +51,7 @@ public interface TaskMapper extends MyMapper<Task> {
 	/***数据统计相关 end***/
 
 	List<TaskStateCountDto>  selectTaskStateCount(@Param("list")List<Long> list);
+	
+	List<TaskStateCountDto>  getStateByTaskCount(@Param("owner")Long owner,@Param("list")List<Long> list);
 
 }

@@ -269,4 +269,28 @@
 
 
 	</select>
+	
+	<select id="getStateByProjectCount" resultType="com.dili.alm.domain.dto.ProjectStatusCountDto">
+		SELECT s.projectState AS projectState,COUNT(*) as stateCount
+		FROM
+		(SELECT DISTINCT p.id,p.project_state AS projectState
+		FROM `project` p 
+		LEFT JOIN 
+		`team` t 
+		ON p.id = t.`project_id` 
+		WHERE 1=1 
+		<if test="list != null and list.size>0">
+			AND p.id IN 
+			<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+	  			#{item}  
+	 		</foreach> 
+	 	</if>
+		<if test="owner != null">
+			AND t.member_id = #{owner} 
+	 	</if>
+		) s
+		GROUP BY s.projectState
+
+
+	</select>
 </mapper>

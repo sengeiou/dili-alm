@@ -98,7 +98,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	DataDictionaryService dataDictionaryService;
 	
 	private static final String PROJECT_TYPE_CODE = "project_type";
-	
+	private static final String PROJECT_STATE_CODE = "project_state";
 	private static final String SELECT_HOURS_BY_USER_START_DATE = "2018-01-01";//项目上线日期
 	private static final String FILE_NAME_STR="项目总览.xls";
 	private static final String PROJECT_TYPE_TITLE="项目列表";
@@ -487,15 +487,47 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	 */
 	@SuppressWarnings("unused")
 	private void exportExcel(OutputStream os,List<Map<String, Object>> list) throws Exception {
-		
-        InputStream stream = getClass().getClassLoader().getResourceAsStream("excel/"+FILE_NAME_STR);
-        File targetFile = new File(FILE_NAME_STR);
-        if (!targetFile.exists()) {
-            FileUtils.copyInputStreamToFile(stream, targetFile);
-        }
         HSSFWorkbook excel = (HSSFWorkbook) ExcelExportUtil.exportExcel(list,ExcelType.HSSF);
         excel.write(os);
         os.flush();
         os.close();
     }
+	@Override
+	public List<Map<String,Object>> getHomeProject(List<Long> projectId) {
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		List<Map<String,Object>> list=new ArrayList<Map<String,Object>>();
+		
+		Long userId=null;
+		if(projectId==null||projectId.size()==0){
+			userId=userTicket.getId();
+		}
+		List<ProjectStatusCountDto> projectCount = projectMapper.getStateByProjectCount(userId,projectId);
+		for (ProjectStatusCountDto projectStatusCountDto : projectCount) {
+			Map<String,Object> map=new HashMap<String, Object>();
+			String string = AlmCache.PROJECT_STATE_MAP.get(projectStatusCountDto.getProjectState().toString());
+			map.put("name", string);
+			map.put("value", projectStatusCountDto.getStateCount());
+			list.add(map);
+		}
+		return list;	
+	}
+	
+	
+	@Override
+	public List<Map<String,Object>> getHomeProjectTask(List<Long> projectId) {
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		Long userId=null;
+		if(projectId==null||projectId.size()==0){
+			userId=userTicket.getId();
+		}
+		List<Map<String,Object>> list=new ArrayList<Map<String,Object>>();
+	   List<TaskStateCountDto> taskCount = taskMapper.getStateByTaskCount(userId,projectId);
+	   for (TaskStateCountDto taskStateCountDto : taskCount) {
+			Map<String,Object> map=new HashMap<String, Object>();
+			map.put("name", taskStateCountDto.getTaskState());
+			map.put("value", taskStateCountDto.getStateCount());
+			list.add(map);
+		}
+	   return list;
+	}
 }

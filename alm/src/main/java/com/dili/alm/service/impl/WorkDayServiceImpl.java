@@ -71,7 +71,7 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 				WorkDay minWeekWorkDay = this.getActualDao().getMaxOrMinWeekWorkDay(0,String.valueOf(newYear));
 				int oldWorkDaysByMillisecond = DateUtil.differentDaysByMillisecond(nextWork.getWorkStartTime(),nextWork.getWorkEndTime());
 				int newWorkDaysByMillisecond = DateUtil.differentDaysByMillisecond( minWeekWorkDay.getWorkStartTime(),minWeekWorkDay.getWorkEndTime());
-				if(oldWorkDaysByMillisecond<=3&&newWorkDaysByMillisecond<=3){
+				if(oldWorkDaysByMillisecond<=2&&newWorkDaysByMillisecond<=2){
 					nextWork.setWorkStartTime(nextWork.getWorkStartTime());
 					nextWork.setWorkEndTime(minWeekWorkDay.getWorkEndTime());
 				}
@@ -93,7 +93,7 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 				WorkDay minWeekWorkDay = this.getActualDao().getMaxOrMinWeekWorkDay(0,String.valueOf(newYear));
 				int oldWorkDaysByMillisecond = DateUtil.differentDaysByMillisecond(workDayNowDate.getWorkStartTime(),workDayNowDate.getWorkEndTime());
 				int newWorkDaysByMillisecond = DateUtil.differentDaysByMillisecond( minWeekWorkDay.getWorkStartTime(),minWeekWorkDay.getWorkEndTime());
-				if(oldWorkDaysByMillisecond<=3&&newWorkDaysByMillisecond<=3){
+				if(oldWorkDaysByMillisecond<=2&&newWorkDaysByMillisecond<=2){
 					workDayNowDate.setWorkStartTime(workDayNowDate.getWorkStartTime());
 					workDayNowDate.setWorkEndTime(minWeekWorkDay.getWorkEndTime());
 				}
@@ -113,7 +113,10 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 		@Override
 		@Transactional
 		public boolean upload(MultipartFile myfile,String year) {
+			
 			boolean flat=false;
+			//先删除
+			this.getActualDao().deteleWorkDaysByYear(year);
 			// 指定当前项目的相对路径
 			String path = MILESTONES_PATH_PREFIX + "/";
 			File pathFile = new File(path);
@@ -231,4 +234,5 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 		  }
 		return list;
 		}
+
 }

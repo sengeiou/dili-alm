@@ -36,6 +36,11 @@
         text-decoration: none;
         color: #A52A2A;
     }
+    .panel-tool{
+        top:9px;
+        height: 24px;
+    }
+
 
 </style>
 
@@ -50,8 +55,15 @@
         </div>
     </div>
     <div class="main-left">
-        <div class="easyui-panel" style="width: 100%;height: 300px;margin-bottom: 10px" title="数据看台">
-            <div style="height: 272px;width: 100%">
+        <div id="toolbar" style="margin-top: -3px">
+            <select id="flat" class="easyui-combobox" onchange="gradeChange()" style="width: 100px;height: 22px">
+                <option value="0">个人数据</option>
+                <option value="1">公司数据</option>
+            </select>
+        </div>
+        <div class="easyui-panel" style="width: 100%;height: 302px;margin-bottom: 10px" title="数据看台" data-options="tools:'#toolbar'">
+
+            <div style="height: 250px;width: 100%">
                 <div class="charts-box" id="project-box">
 
                 </div>
@@ -61,7 +73,7 @@
             </div>
 
         </div>
-        <div class="easyui-tabs" style="width: 100%;height: 100%">
+        <div class="easyui-tabs" style="width: 100%;height: 80%">
             <div title="待办任务" style="width: 100%">
                 <iframe scrolling="auto" frameborder="0"  src="/alm/home/taskList" style="width:100%;height:calc(100% - 3px);"></iframe>
             </div>
@@ -111,7 +123,15 @@
 <script type="text/javascript">
     $(function() {
         init();
+        taskCount();
+        projectCount();
     });
+    function gradeChange(){
+        var d=$("#flat").val();
+        taskCount(d);
+        projectCount(d);
+    }
+
     function showNewDate(){
         var newDate = new Date();
         var str = "" + newDate.getFullYear() + "/";
@@ -283,33 +303,79 @@
             $('#dlg').panel('move',{left:$(document).scrollTop() + ($(window).height()+50) * 0.5});
         }
     }
+    function taskCount(d){
+    	var formData;
+    	if(d!=null){
+    		formData={flat:d};
+    	}
+    	var nums=[];
+    	var names=[];
+    	 $.ajax({
+             type: "POST",
+             url: "${contextPath}/statistical/homeTaskCount",
+             data: formData,
+             processData:true,
+             async : true,
+             success: function (data) {
+            	 for(var i=0;i<data.length;i++){
+                     nums.push(data[i]);  
+                     names.push(data[i].name);  
+                   } 
+                  echarts.init(document.getElementById('task-box')).hideLoading();   
+                  echarts.init(document.getElementById('task-box')).setOption({        
+                 	 series: [{
+                 		 data: nums,
+                 	 }],
+                       legend: {
+ 					            data:names
+ 					        },
+                  });
+             },
+             error: function(){
+                 $.messager.alert('错误','远程访问失败');
+             }
+         });
+    }
+    function projectCount(d){
+    	var formData;
+    	if(d!=null){
+    		formData={flat:d};
+    	}
+    	var nums=[];
+    	var names=[];
+    	 $.ajax({
+             type: "POST",
+             url: "${contextPath}/statistical/homeProjectCount",
+             data: formData,
+             processData:true,
+             async : true,
+             success: function (data) {
+            	 
+                 for(var i=0;i<data.length;i++){
+                    nums.push(data[i]);  
+                    names.push(data[i].name);  
+                  } 
+                 echarts.init(document.getElementById('project-box')).hideLoading();   
+                 echarts.init(document.getElementById('project-box')).setOption({        
+                	 series: [{
+                		 data: nums,
+                	 }],
+                      legend: {
+					            data:names
+					        },
+                 });
+             },
+             error: function(){
+                 $.messager.alert('错误','远程访问失败');
+             }
+         });
+    }
 </script>
 <script src='${contextPath}/resources/js/jquery-ui-1.10.2.custom.min.js'></script>
 <script src='${contextPath}/resources/js/fullcalendar.min.js'></script>
 <script src="${contextPath}/resources/echarts/echarts.common.min.js"></script>
 <link rel="stylesheet" type="text/css" href="${contextPath}/resources/css/fullcalendar.css">
 <script>
-    /* 图表 */
-    var data1 = {
-        legendData: ['未开始', '进行中', '已完成', '暂停中', '已关闭'],//项目图例
-        seriesData: [//项目数据
-            { name: '未开始', value: 3 },
-            { name: '进行中', value: 8 },
-            { name: '已完成', value: 13 },
-            { name: '暂停中', value: 4 },
-            { name: '已关闭', value: 6 }
-        ]
-    };
-    var data2 = {
-        legendData: ['未进行', '进行中', '已完成', '暂停中', '未完成'],//项目图例
-        seriesData: [//项目数据
-            { name: '未进行', value: 5 },
-            { name: '进行中', value: 6 },
-            { name: '已完成', value: 4 },
-            { name: '暂停中', value: 2 },
-            { name: '未完成', value: 8 }
-        ]
-    };
     /* 项目图表 option */
     var option1 = {
         title: {
@@ -327,7 +393,7 @@
             orient: 'vertical',
             left: 20,
             top: 'center',
-            data: data1.legendData //项目图例
+            data: [] //项目图例
         },
         series: [{
             name: '项目状况',
@@ -370,7 +436,7 @@
                 //     }
                 // }
             },
-            data: data1.seriesData,//项目图表数据
+            data: [],//项目图表数据
             itemStyle: {
                 emphasis: {
                     shadowBlur: 10,
@@ -397,7 +463,7 @@
             orient: 'vertical',
             left: 20,
             top: 'center',
-            data: data2.legendData,//任务图例
+            data: [],//任务图例
         },
         series: [{
             name: '任务状况',
@@ -409,7 +475,7 @@
             label: {
                 show: false
             },
-            data: data2.seriesData,//任务图表数据
+            data: [],//任务图表数据
             itemStyle: {
                 emphasis: {
                     shadowBlur: 10,
