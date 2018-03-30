@@ -211,39 +211,90 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		}
 		
 		List<SelectTaskHoursByUserDto> list = taskMapper.selectUsersHours(startTime, endTime, projectIds);
-		
+
+		if (list==null||list.size()==0) {
+			return null;
+		}
 		List<TaskHoursByProjectDto> taskHoursForPoject = taskMapper.selectProjectHours(startTime, endTime,projectIds);
 		
-		//组织str
-		//Map<Long, SelectTaskHoursByUserProjectDto> map = new HashMap<Long, SelectTaskHoursByUserProjectDto>();
+		
 		for (SelectTaskHoursByUserDto userHoursEntity : list) {
-			String projectHoursStr = new String();
 			int totalTaskHours = 0;
 			int totalOverHours = 0;
 			int totalAllHours = 0;
 			Map<String,String> hoursMap = new HashMap<String, String>();
+			
 			for (TaskHoursByProjectDto projectHours : taskHoursForPoject) {
-				Long userId=userHoursEntity.getUserNo();
-				Long projectId=projectHours.getProjectId();
-				SelectTaskHoursByUserProjectDto entity = taskMapper.selectUsersProjectHours(userId,projectId);
 				
-				if (entity!=null) {
-					projectHoursStr +="{project_"+projectHours.getProjectId()+":{sumUPTaskHours:"+entity.getSumUPTaskHours()+",sumUPOverHours:"+entity.getSumUPOverHours()+"}}";
+				List<Long>  userLongIds= new ArrayList<Long>(); 
+				userLongIds.add(userHoursEntity.getUserNo());
+				
+				List<Long>  projectLongIds= new ArrayList<Long>(); 
+				Long projectId =projectHours.getProjectId();
+				projectLongIds.add(projectId);
+				
+			List<SelectTaskHoursByUserProjectDto> result=taskMapper.selectUsersProjectHours(userLongIds,projectLongIds);
+				 //只能查出来一条
+				if (result!=null||result.size()>0) {
+			       SelectTaskHoursByUserProjectDto entity = result.get(0);
+				
 					hoursMap.put("project"+projectId, "sumUPTaskHours:"+entity.getSumUPTaskHours()+",sumUPOverHours:"+entity.getSumUPOverHours());
-					
 					totalTaskHours+=entity.getSumUPTaskHours();
 					totalOverHours+=entity.getSumUPOverHours();
 						
 				}
 			} 
 			totalAllHours = totalTaskHours+totalOverHours;
-			userHoursEntity.setProjectHoursStr(projectHoursStr);
 			userHoursEntity.setSumOverHours(totalOverHours);
 			userHoursEntity.setSumTaskHours(totalTaskHours);
 			userHoursEntity.setTotalHours(totalAllHours);
 			userHoursEntity.setProjectHours(hoursMap);
 		}
+		
+		
+		//处理项目合计正常工时，加班工时
+		List<Long> projectTotalHoursSelectList = new ArrayList<Long>();
+		
+		for (int i = 0; i < taskHoursForPoject.size(); i++) {
+			projectTotalHoursSelectList.add(taskHoursForPoject.get(i).getProjectId());
+		}
+		
+		SelectTaskHoursByUserDto totalTaskandOverHour = this.selectTotalTaskAndOverHours(projectTotalHoursSelectList);
+		list.add(totalTaskandOverHour);
+		
+		
 		return list;
+	}
+	
+	
+	@Override
+	public SelectTaskHoursByUserDto selectTotalTaskAndOverHours(List<Long> projectIds) {
+		
+		 List<SelectTaskHoursByUserProjectDto> listProjectTaskOverHours = taskMapper.selectUsersProjectHours(null,projectIds);
+		 SelectTaskHoursByUserDto totalTaskandOverHour= new SelectTaskHoursByUserDto();
+		 totalTaskandOverHour.setUserName("合计");
+		 totalTaskandOverHour.setUserNo((long) 0);
+				
+		 Map<String,String> hoursMap = new HashMap<String, String>();
+		 
+		 int totalTaskHours = 0;
+		 int totalOverHours = 0;
+		 int totalAllHours = 0;
+		 
+		 
+		 for (SelectTaskHoursByUserProjectDto dto:listProjectTaskOverHours) {
+				 if (dto!=null) {
+						hoursMap.put("project"+dto.getProjectId(), "sumUPTaskHours:"+dto.getSumUPTaskHours()+",sumUPOverHours:"+dto.getSumUPOverHours());
+						totalTaskHours+=dto.getSumUPTaskHours();
+						totalAllHours +=dto.getSumUPOverHours();
+					}
+			 }
+		 totalAllHours = totalTaskHours + totalAllHours;
+		 totalTaskandOverHour.setProjectHours(hoursMap);
+		 totalTaskandOverHour.setSumTaskHours(totalTaskHours);
+		 totalTaskandOverHour.setSumOverHours(totalOverHours);
+		 totalTaskandOverHour.setTotalHours(totalAllHours);
+		return totalTaskandOverHour;
 	}
 	@Override
 	public List<ProjectYearCoverDto> listProjectYearCover(String year,
@@ -599,5 +650,6 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		}
 	   return list;
 	}
+
 
 }

@@ -49,7 +49,7 @@ public interface TaskMapper extends MyMapper<Task> {
 	
 	List<SelectTaskHoursByUserDto> selectUsersHours(@Param("beginTime")String beginTime,@Param("endTime")String endTime,@Param("pids")List<Long> projectId);
 	
-	SelectTaskHoursByUserProjectDto selectUsersProjectHours(@Param("userId")Long userId,@Param("projectId")Long projectId);
+	List<SelectTaskHoursByUserProjectDto> selectUsersProjectHours(@Param("userIds")List<Long> userId,@Param("projectIds")List<Long> projectId);
 	
 	List<ProjectYearCoverDto> selectProjectYearsCover(@Param("beginTime")String beginTime,@Param("endTime")String endTime);
 	

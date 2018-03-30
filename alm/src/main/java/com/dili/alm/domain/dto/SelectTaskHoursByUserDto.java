@@ -17,9 +17,8 @@ public class SelectTaskHoursByUserDto {
     int sumOverHours;
     int totalHours;
     
-    Map<String,String> projectHours;//key-项目id，value-taskHour:value;overHour:value;
+    Map<String,String> projectHours;//key-项目'project'id，value-taskHour:value;overHour:value;
     
-    String projectHoursStr ;
     
     
 	public String getSelectDate() {
@@ -63,12 +62,6 @@ public class SelectTaskHoursByUserDto {
 	}
 	public void setTotalHours(int totalHours) {
 		this.totalHours = totalHours;
-	}
-	public String getProjectHoursStr() {
-		return projectHoursStr;
-	}
-	public void setProjectHoursStr(String projectHoursStr) {
-		this.projectHoursStr = projectHoursStr;
 	}
 
     

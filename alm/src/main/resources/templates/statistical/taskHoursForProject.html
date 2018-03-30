@@ -13,7 +13,7 @@
     <!-- ====================================================================================================================== -->
     <div region="north" height="auto" align="center">
         <!-- =========================================================表单========================================================= -->
-        <div class="easyui-panel" style="width:100%;" align="left">
+        <div class="easyui-panel" style="width:100%;" align="left"  height="auto">
             <form id="form" class="easyui-form" method="post" fit="true">
                 <table style="padding:10px;">
                     <tr>
@@ -46,13 +46,22 @@
     <!-- 表格 -->
     <div region="center" style="width:100%;" height="auto">
         <!-- =========================================================表格========================================================= -->
-        <table id="grid" title="数据列表"> 
+        <table id="grid" title="数据列表" pagination="false" data-options="rownumbers: true,singleSelect: true, fit:false"  style="width:98%;height:auto"> 
         </table> 
     </div>
+    <!-- 图表 -->
+    <div region="south" style="width:100%;" height="auto">
+        <!-- =========================================================图表========================================================= -->
+        <div id="bar2"  style="width:100%;height:300px" >22222222222222222</div>
+    
+    </div>    
+    
 </div>
+
 <!-- ====================================================================================================================== -->
 <!-- style & script 分隔线 -->
 <!-- ====================================================================================================================== -->
+<script src="${contextPath}/resources/echarts/echarts.common.min.js"></script>
 <script type="text/javascript">
     function onLoadSuccess(data){
         var merges = [{
@@ -157,13 +166,16 @@
     	dataType: "json",
     	async: false,
     	success: function (returnValue) {
+    		
+    		var projectIds = new Array();
     		columns1.push({"title": " ", "width": 80 , align: "center"});	
     		columns2.push({"field":"userName", "title": "人员", "width": 80 , align: "center"});
     		
     	$.each(returnValue, function (i, item) {
     		 columns1.push({field:"userNo", title: item.projectName+"<br/>("+item.sumHour+"H)", width:160 , align: "center",colspan:2});
-      	     columns2.push({"field":"ptHours"+item.projectId, "title": "常规工时", "width": 80 , align: "center","rowspan":1,"formatter":projectTashHour});//实际工时	
-    	     columns2.push({"field":"poHours"+item.projectId, "title": "加班工时", "width": 80, align: "center","rowspan":1,"formatter":aaa});//加班工时
+      	     columns2.push({"field":"ptHours"+item.projectId, "title": "常规工时", "width": 80 , align: "center","rowspan":1,"formatter":projectTaskHour});//实际工时	
+    	     columns2.push({"field":"poHours"+item.projectId, "title": "加班工时", "width": 80, align: "center","rowspan":1,"formatter":projectOverHour});//加班工时
+    	     projectIds.push(item.projectId);
     	});
     	     
     	     columns1.push({"field":"", "title": "合计", "width": 240 , align: "center","colspan":3});	
@@ -178,20 +190,20 @@
     	$datagrid.columns=  columns;
     	
     	$('#grid').datagrid($datagrid);
-    	
-    	 bindDate(param);
+    	 bindDate(param,projectIds);
     	}
     	});
     	}
- 		function bindDate(param){
+ 		function bindDate(param,projectIds){
  			  var opts = $("#grid").datagrid("options");
  		        if (null == opts.url || "" == opts.url) {
  		            opts.url = "${contextPath}/statistical/listUserHours";
  		        }
  		       $("#grid").datagrid("load", param);
+ 		      loadInitEchartForProject(projectIds);
  		}
    
- 		function projectTashHour(value,row,index){
+ 		function projectTaskHour(value,row,index){
  			var projectHoursObj = row.projectHours;
  			var str="project"+this.field.slice(7); 
  			var aahours=0;
@@ -205,7 +217,7 @@
  			}
  			 return aahours;
  		}
- 		function aaa(value,row,index){
+ 		function projectOverHour(value,row,index){
  			var projectHoursObj = row.projectHours;
  			var str="project"+this.field.slice(7); 
  			var aahours=0;
@@ -220,4 +232,168 @@
  			 return aahours;
 	 	}
 </script>
+
+<script type="text/javascript">
+
+
+function loadInitEchartForProject(param){
+  	 $.ajax({
+  	        type : 'post',
+  	        async : false, //同步执行
+  	            url :'${contextPath}/statistical/listProjectForEchar', //web.xml中注册的Servlet的url-pattern
+  	            data : {projectIds:param}, //无参数
+  	            dataType : 'json', //返回数据形式为json
+  	            traditional:true,
+  	            success : function(result) {
+  	                if (result) {
+  	                    //把result(即Json数据)以参数形式放入Echarts代码中
+  	                    bindDateForEchats(result);
+  	                   
+  	                }
+  	            },
+  	            error : function(errorMsg) {
+  	                alert("加载数据失败");
+  	            }
+  	        }); //ajax
+  }
+function bindDateForEchats(result){
+	//处理result集
+	var projectName= new Array();
+	
+	var taskHours= new Array();
+	
+	var overHours= new Array();
+	
+	var totalHours= new Array();
+	
+/*  	var resultMapList= result.projectHours;
+	
+ 	for (var i in resultMapList) { 
+ 		
+ 		      var hoursStr = resultMapList[i];
+			 var aa = hoursStr.split(",");
+			 var taskHoursValue = aa[0].split(":")[1];
+			 var overHoursValue = aa[1].split(":")[1];
+			 taskHours.push(taskHours);
+			 overHours.push(overHours);
+			 console.log(taskHours);
+			}  */
+    var option3 = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: { // 坐标轴指示器，坐标轴触发有效
+                type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+            }
+        },
+        legend: {
+            data: ['常规工时', '加班工时']
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'value'
+        },
+        yAxis: {
+            type: 'category',
+            data: (function(){
+            	var resultMapList= result.projectHours;
+            	var res = [];
+            	
+             	 for (var i in resultMapList) { 
+             		res.unshift(i);  
+             		alert(i);
+            	 }
+             	 console.log(res);
+             	return res;
+            })()
+        },
+        series: [
+            {
+                name: '加班工时',
+                type: 'bar',
+                stack: '总量',
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'insideRight'
+                    }
+                },
+                data: (function(){
+                	var resultMapList= result.projectHours;
+                	var res = [];
+                	
+                 	 for (var i in resultMapList) { 
+                 		var hoursStr = resultMapList[i];
+           			    var aa = hoursStr.split(",");
+           			    var overHoursValue = aa[1].split(":")[1];
+                 		res.unshift(overHoursValue);  
+                	 }
+                 	return res;
+                })()
+            },
+            {
+                name: '正常工时',
+                type: 'bar',
+                stack: '总量',
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'insideRight'
+                    }
+                },
+                data: (function(){
+                	var resultMapList= result.projectHours;
+                	var res = [];
+                	
+                 	 for (var i in resultMapList) { 
+                 		var hoursStr = resultMapList[i];
+           			    var aa = hoursStr.split(",");
+           			    var taskHoursValue = aa[0].split(":")[1];
+                 		res.unshift(taskHoursValue);  
+                	 }
+                 	return res;
+                })()
+            },
+            { // 总和计算
+                name: '总计',
+                type: 'bar',
+                barGap: '-100%',
+                label: {
+                    normal: { //显示数据
+                        show: true,
+                        position: 'insideRight',
+                        formatter: '{c}',
+                        fontSize: 16,
+                        textStyle: { color: '#333' }
+                    }
+                },
+                itemStyle: {
+                    normal: {
+                        color: 'rgba(128, 128, 128, 0)'
+                    }
+                },
+                data:  (function(){
+                	var resultMapList= result.projectHours;
+                	var res = [];
+                	
+                 	 for (var i in resultMapList) { 
+                 		var hoursStr = resultMapList[i];
+           			    var aa = hoursStr.split(",");
+           			    var overHoursValue = aa[1].split(":")[1];
+           			    var taskHoursValue = aa[0].split(":")[1];
+           			    var totalHours = parseInt(overHoursValue)+parseInt(taskHoursValue);
+                 		res.unshift(totalHours);  
+                	 }
+                 	return res;
+                })()//总和数据
+            }
+        ]
+    };
+    echarts.init(document.getElementById('bar2')).setOption(option3);
+}
+    </script>
 </#body>
