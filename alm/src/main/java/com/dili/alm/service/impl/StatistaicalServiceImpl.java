@@ -33,6 +33,7 @@ import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import cn.afterturn.easypoi.word.WordExportUtil;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.component.MailManager;
@@ -61,6 +62,8 @@ import com.dili.alm.domain.dto.ProjectStatusCountDto;
 import com.dili.alm.domain.dto.ProjectTypeCountDto;
 import com.dili.alm.domain.dto.ProjectYearCoverDto;
 import com.dili.alm.domain.dto.ProjectYearCoverForAllDto;
+import com.dili.alm.domain.dto.SelectTaskHoursByUserDto;
+import com.dili.alm.domain.dto.SelectTaskHoursByUserProjectDto;
 import com.dili.alm.domain.dto.TaskByUsersDto;
 import com.dili.alm.domain.dto.TaskHoursByProjectDto;
 import com.dili.alm.domain.dto.TaskStateCountDto;
@@ -179,8 +182,68 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	
 	@Override
 	public List<TaskHoursByProjectDto> listProjectHours(String startTime,
-			String endTime) {
-		return taskMapper.selectProjectHours(startTime, endTime);
+			String endTime,List<Long> projectIds) {
+		if (startTime==null) {
+			startTime = DateUtil.getPastDate(7);
+		}else{
+			startTime+="";
+		}
+		if (endTime==null) {//没有默认为至今
+			endTime = DateUtil.getDate(new Date())+"";
+		}else{
+			endTime+="";
+		}
+		return taskMapper.selectProjectHours(startTime, endTime,projectIds);
+	}
+	
+	@Override
+	public List<SelectTaskHoursByUserDto> listUserHours(String startTime,
+			String endTime, List<Long> projectIds) {
+		if (startTime==null) {
+			startTime = DateUtil.getPastDate(7);;
+		}else{
+			startTime+="";
+		}
+		if (endTime==null) {//没有默认为至今
+			endTime = DateUtil.getDate(new Date())+"";
+		}else{
+			endTime+="";
+		}
+		
+		List<SelectTaskHoursByUserDto> list = taskMapper.selectUsersHours(startTime, endTime, projectIds);
+		
+		List<TaskHoursByProjectDto> taskHoursForPoject = taskMapper.selectProjectHours(startTime, endTime,projectIds);
+		
+		//组织str
+		//Map<Long, SelectTaskHoursByUserProjectDto> map = new HashMap<Long, SelectTaskHoursByUserProjectDto>();
+		for (SelectTaskHoursByUserDto userHoursEntity : list) {
+			String projectHoursStr = new String();
+			int totalTaskHours = 0;
+			int totalOverHours = 0;
+			int totalAllHours = 0;
+			Map<String,String> hoursMap = new HashMap<String, String>();
+			for (TaskHoursByProjectDto projectHours : taskHoursForPoject) {
+				Long userId=userHoursEntity.getUserNo();
+				Long projectId=projectHours.getProjectId();
+				SelectTaskHoursByUserProjectDto entity = taskMapper.selectUsersProjectHours(userId,projectId);
+				
+				if (entity!=null) {
+					projectHoursStr +="{project_"+projectHours.getProjectId()+":{sumUPTaskHours:"+entity.getSumUPTaskHours()+",sumUPOverHours:"+entity.getSumUPOverHours()+"}}";
+					hoursMap.put("project"+projectId, "sumUPTaskHours:"+entity.getSumUPTaskHours()+",sumUPOverHours:"+entity.getSumUPOverHours());
+					
+					totalTaskHours+=entity.getSumUPTaskHours();
+					totalOverHours+=entity.getSumUPOverHours();
+						
+				}
+			} 
+			totalAllHours = totalTaskHours+totalOverHours;
+			userHoursEntity.setProjectHoursStr(projectHoursStr);
+			userHoursEntity.setSumOverHours(totalOverHours);
+			userHoursEntity.setSumTaskHours(totalTaskHours);
+			userHoursEntity.setTotalHours(totalAllHours);
+			userHoursEntity.setProjectHours(hoursMap);
+		}
+		return list;
 	}
 	@Override
 	public List<ProjectYearCoverDto> listProjectYearCover(String year,
@@ -487,6 +550,12 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	 */
 	@SuppressWarnings("unused")
 	private void exportExcel(OutputStream os,List<Map<String, Object>> list) throws Exception {
+		
+        InputStream stream = getClass().getClassLoader().getResourceAsStream("excel/"+FILE_NAME_STR);
+        File targetFile = new File(FILE_NAME_STR);
+        if (!targetFile.exists()) {
+            FileUtils.copyInputStreamToFile(stream, targetFile);
+        }
         HSSFWorkbook excel = (HSSFWorkbook) ExcelExportUtil.exportExcel(list,ExcelType.HSSF);
         excel.write(os);
         os.flush();
@@ -530,4 +599,5 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		}
 	   return list;
 	}
+
 }

@@ -13,6 +13,8 @@ import com.dili.alm.domain.TaskDetails;
 import com.dili.alm.domain.TaskEntity;
 import com.dili.alm.domain.dto.ProjectYearCoverDto;
 import com.dili.alm.domain.dto.ProjectYearCoverForAllDto;
+import com.dili.alm.domain.dto.SelectTaskHoursByUserDto;
+import com.dili.alm.domain.dto.SelectTaskHoursByUserProjectDto;
 import com.dili.alm.domain.dto.TaskByUsersDto;
 import com.dili.alm.domain.dto.TaskHoursByProjectDto;
 import com.dili.alm.domain.dto.TaskStateCountDto;
@@ -43,7 +45,11 @@ public interface TaskMapper extends MyMapper<Task> {
 	/***数据统计相关 begin***/
 	List<TaskByUsersDto> selectTaskHourByUser(@Param("beginTime")String beginTime,@Param("endTime")String endTime,@Param("departmentIds")List<Long> dids,@Param("uIds")List<Long> uids);
 	
-	List<TaskHoursByProjectDto> selectProjectHours(@Param("beginTime")String beginTime,@Param("endTime")String endTime);
+	List<TaskHoursByProjectDto> selectProjectHours(@Param("beginTime")String beginTime,@Param("endTime")String endTime,@Param("pids")List<Long> projectId);
+	
+	List<SelectTaskHoursByUserDto> selectUsersHours(@Param("beginTime")String beginTime,@Param("endTime")String endTime,@Param("pids")List<Long> projectId);
+	
+	SelectTaskHoursByUserProjectDto selectUsersProjectHours(@Param("userId")Long userId,@Param("projectId")Long projectId);
 	
 	List<ProjectYearCoverDto> selectProjectYearsCover(@Param("beginTime")String beginTime,@Param("endTime")String endTime);
 	
