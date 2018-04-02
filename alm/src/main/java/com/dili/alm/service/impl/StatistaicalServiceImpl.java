@@ -33,6 +33,7 @@ import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import cn.afterturn.easypoi.word.WordExportUtil;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.component.MailManager;
@@ -61,6 +62,8 @@ import com.dili.alm.domain.dto.ProjectStatusCountDto;
 import com.dili.alm.domain.dto.ProjectTypeCountDto;
 import com.dili.alm.domain.dto.ProjectYearCoverDto;
 import com.dili.alm.domain.dto.ProjectYearCoverForAllDto;
+import com.dili.alm.domain.dto.SelectTaskHoursByUserDto;
+import com.dili.alm.domain.dto.SelectTaskHoursByUserProjectDto;
 import com.dili.alm.domain.dto.TaskByUsersDto;
 import com.dili.alm.domain.dto.TaskHoursByProjectDto;
 import com.dili.alm.domain.dto.TaskStateCountDto;
@@ -179,8 +182,116 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	
 	@Override
 	public List<TaskHoursByProjectDto> listProjectHours(String startTime,
-			String endTime) {
-		return taskMapper.selectProjectHours(startTime, endTime);
+			String endTime,List<Long> projectIds) {
+		if (startTime==null) {
+			startTime = DateUtil.getPastDate(7);
+		}else{
+			startTime+="";
+		}
+		if (endTime==null) {//没有默认为至今
+			endTime = DateUtil.getDate(new Date())+"";
+		}else{
+			endTime+="";
+		}
+		return taskMapper.selectProjectHours(startTime, endTime,projectIds);
+	}
+	
+	@Override
+	public List<SelectTaskHoursByUserDto> listUserHours(String startTime,
+			String endTime, List<Long> projectIds) {
+		if (startTime==null) {
+			startTime = DateUtil.getPastDate(7);;
+		}else{
+			startTime+="";
+		}
+		if (endTime==null) {//没有默认为至今
+			endTime = DateUtil.getDate(new Date())+"";
+		}else{
+			endTime+="";
+		}
+		
+		List<SelectTaskHoursByUserDto> list = taskMapper.selectUsersHours(startTime, endTime, projectIds);
+
+		if (list==null||list.size()==0) {
+			return null;
+		}
+		List<TaskHoursByProjectDto> taskHoursForPoject = taskMapper.selectProjectHours(startTime, endTime,projectIds);
+		
+		
+		for (SelectTaskHoursByUserDto userHoursEntity : list) {
+			int totalTaskHours = 0;
+			int totalOverHours = 0;
+			int totalAllHours = 0;
+			Map<String,String> hoursMap = new HashMap<String, String>();
+			
+			for (TaskHoursByProjectDto projectHours : taskHoursForPoject) {
+				
+				List<Long>  userLongIds= new ArrayList<Long>(); 
+				userLongIds.add(userHoursEntity.getUserNo());
+				
+				List<Long>  projectLongIds= new ArrayList<Long>(); 
+				Long projectId =projectHours.getProjectId();
+				projectLongIds.add(projectId);
+				
+			List<SelectTaskHoursByUserProjectDto> result=taskMapper.selectUsersProjectHours(userLongIds,projectLongIds);
+				 //只能查出来一条
+				for (SelectTaskHoursByUserProjectDto entity: result) {
+					hoursMap.put("project"+projectId, "sumUPTaskHours:"+entity.getSumUPTaskHours()+",sumUPOverHours:"+entity.getSumUPOverHours());
+					totalTaskHours+=entity.getSumUPTaskHours();
+					totalOverHours+=entity.getSumUPOverHours();
+				}
+			} 
+			totalAllHours = totalTaskHours+totalOverHours;
+			userHoursEntity.setSumOverHours(totalOverHours);
+			userHoursEntity.setSumTaskHours(totalTaskHours);
+			userHoursEntity.setTotalHours(totalAllHours);
+			userHoursEntity.setProjectHours(hoursMap);
+		}
+		
+		
+		//处理项目合计正常工时，加班工时
+		List<Long> projectTotalHoursSelectList = new ArrayList<Long>();
+		
+		for (int i = 0; i < taskHoursForPoject.size(); i++) {
+			projectTotalHoursSelectList.add(taskHoursForPoject.get(i).getProjectId());
+		}
+		
+		SelectTaskHoursByUserDto totalTaskandOverHour = this.selectTotalTaskAndOverHours(projectTotalHoursSelectList);
+		list.add(totalTaskandOverHour);
+		
+		
+		return list;
+	}
+	
+	
+	@Override
+	public SelectTaskHoursByUserDto selectTotalTaskAndOverHours(List<Long> projectIds) {
+		
+		 List<SelectTaskHoursByUserProjectDto> listProjectTaskOverHours = taskMapper.selectUsersProjectHours(null,projectIds);
+		 SelectTaskHoursByUserDto totalTaskandOverHour= new SelectTaskHoursByUserDto();
+		 totalTaskandOverHour.setUserName("合计");
+		 totalTaskandOverHour.setUserNo((long) 0);
+				
+		 Map<String,String> hoursMap = new HashMap<String, String>();
+		 
+		 int totalTaskHours = 0;
+		 int totalOverHours = 0;
+		 int totalAllHours = 0;
+		 
+		 
+		 for (SelectTaskHoursByUserProjectDto dto:listProjectTaskOverHours) {
+				 if (dto!=null) {
+						hoursMap.put("project"+dto.getProjectId(), "sumUPTaskHours:"+dto.getSumUPTaskHours()+",sumUPOverHours:"+dto.getSumUPOverHours());
+						totalTaskHours+=dto.getSumUPTaskHours();
+						totalAllHours +=dto.getSumUPOverHours();
+					}
+			 }
+		 totalAllHours = totalTaskHours + totalAllHours;
+		 totalTaskandOverHour.setProjectHours(hoursMap);
+		 totalTaskandOverHour.setSumTaskHours(totalTaskHours);
+		 totalTaskandOverHour.setSumOverHours(totalOverHours);
+		 totalTaskandOverHour.setTotalHours(totalAllHours);
+		return totalTaskandOverHour;
 	}
 	@Override
 	public List<ProjectYearCoverDto> listProjectYearCover(String year,
@@ -487,6 +598,12 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	 */
 	@SuppressWarnings("unused")
 	private void exportExcel(OutputStream os,List<Map<String, Object>> list) throws Exception {
+		
+        InputStream stream = getClass().getClassLoader().getResourceAsStream("excel/"+FILE_NAME_STR);
+        File targetFile = new File(FILE_NAME_STR);
+        if (!targetFile.exists()) {
+            FileUtils.copyInputStreamToFile(stream, targetFile);
+        }
         HSSFWorkbook excel = (HSSFWorkbook) ExcelExportUtil.exportExcel(list,ExcelType.HSSF);
         excel.write(os);
         os.flush();
@@ -530,4 +647,6 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		}
 	   return list;
 	}
+
+
 }

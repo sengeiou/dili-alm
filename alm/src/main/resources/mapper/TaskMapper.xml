@@ -330,7 +330,7 @@
    </select>
    
 
-   <!-- 数据统计相关 begin -->
+     <!-- 数据统计相关 begin -->
    <!-- 人员工时查询 -->
    <select id="selectTaskHourByUser" resultType="com.dili.alm.domain.dto.TaskByUsersDto">
 	
@@ -353,11 +353,58 @@
 	</if> 
 	GROUP BY ut.id 
    </select>
-    <!-- 项目以及时间-->
+    <!-- 项目以及项目所用总工时-->
     <select id="selectProjectHours" resultType="com.dili.alm.domain.dto.TaskHoursByProjectDto">
-	select p.id as projectId,p.`name` as projectName,ifnull(t2.totalHour,0) as sumHour  FROM (select* from project where actual_start_date BETWEEN #{beginTime,jdbcType=TIMESTAMP} AND #{endTime,jdbcType=TIMESTAMP} or actual_end_date BETWEEN #{beginTime,jdbcType=TIMESTAMP} AND #{endTime,jdbcType=TIMESTAMP})as p LEFT JOIN 
-	(select t1.project_id as pid ,SUM(td1.taskHours+td1.overHours) as totalHour from task as t1 LEFT JOIN 
-	(SELECT task_id as tid,task_hour as taskHours,over_hour as overHours FROM task_details ) as td1 on t1.id = td1.tid GROUP BY t1.project_id) as t2 ON  p.id = t2.pid  
+	select p.id as projectId,p.`name` as projectName,ifnull(t2.totalHour,0) as sumHour  FROM 
+	(select* from project where actual_start_date BETWEEN CONCAT(#{beginTime,jdbcType=VARCHAR},' 00:00:00') AND CONCAT(#{endTime,jdbcType=VARCHAR},' 23:59:59') 
+	                           or actual_end_date BETWEEN CONCAT(#{beginTime,jdbcType=VARCHAR},' 00:00:00') AND CONCAT(#{endTime,jdbcType=VARCHAR},' 23:59:59'))
+	 as p LEFT JOIN 
+	           (select t1.project_id as pid ,SUM(td1.taskHours+td1.overHours) as totalHour from task as t1 LEFT JOIN 
+	            (SELECT task_id as tid,task_hour as taskHours,over_hour as overHours FROM task_details ) as td1
+	            on t1.id = td1.tid GROUP BY t1.project_id) 
+	as t2 ON  p.id = t2.pid  
+	where 1=1
+		<if test="pids != null and pids.size>0">
+				and p.id in
+		<foreach item="item" index="index" collection="pids" open="(" separator="," close=")">  
+				  #{item}  
+		</foreach> 
+	</if> 
+	ORDER BY p.id DESC
+   </select>
+   <!-- 员工以及总工时-->
+     <select id="selectUsersHours" resultType="com.dili.alm.domain.dto.SelectTaskHoursByUserDto">
+		SELECT distinct(utt2.uid) as userNo ,utt2.real_name as userName FROM
+		(select utt.id as uid ,team.project_id as projectId ,utt.real_name as real_name from team as team LEFT JOIN alm.`user` as utt ON team.member_id =  utt.id) as utt2
+		where  utt2.projectId in 
+		(select id  from alm.project as prt where prt.actual_start_date  BETWEEN CONCAT(#{beginTime,jdbcType=VARCHAR},' 00:00:00') AND CONCAT(#{endTime,jdbcType=VARCHAR},' 23:59:59') or prt.actual_end_date  BETWEEN CONCAT(#{beginTime,jdbcType=VARCHAR},' 00:00:00') AND CONCAT(#{endTime,jdbcType=VARCHAR},' 23:59:59') 
+			<if test="pids != null and pids.size>0">
+				and prt.id in
+				<foreach item="item" index="index" collection="pids" open="(" separator="," close=")">  
+						  #{item}  
+				</foreach> 
+			</if> 
+		 ) 
+	    ORDER BY utt2.uid ASC
+   </select>
+   
+  <!--每个人单独项目下的总工时-->
+    <select id="selectUsersProjectHours" resultType="com.dili.alm.domain.dto.SelectTaskHoursByUserProjectDto">
+    select   SUM(tt.task_hour) as sumUPTaskHours,sum(tt.over_hour) as sumUPOverHours,t.`owner` as ownerId,t.project_id as projectId   from alm.task_details as tt LEFT JOIN  alm.task as t ON  tt.task_id = t.id   
+    where 1=1
+   		<if test="projectIds != null and projectIds.size>0">
+			and t.project_id in 
+			<foreach item="item" index="index" collection="projectIds" open="(" separator="," close=")">  
+	  			#{item}  
+	 		</foreach> 
+	 	</if>		
+	 	<if test="userIds != null and userIds.size>0">
+			and t.`owner` in 
+			<foreach item="item" index="index" collection="userIds" open="(" separator="," close=")">  
+	  			#{item}  
+	 		</foreach> 
+	 	</if>
+	 	GROUP BY t.project_id
    </select>
    <!-- 年度总汇-->
     <select id="selectProjectYearsCover" resultType="com.dili.alm.domain.dto.ProjectYearCoverDto">
