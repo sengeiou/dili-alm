@@ -22,12 +22,19 @@ public class MailManager {
 	@Async
 	public void sendMail(String from, String to, String content, String subject, Collection<File> attachments)
 			throws MessagingException {
+		this.sendMail(from, to, content, false, subject, attachments);
+
+	}
+
+	@Async
+	public void sendMail(String from, String to, String content, boolean html, String subject,
+			Collection<File> attachments) throws MessagingException {
 		MimeMessage mimeMessage = this.mailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 		helper.setFrom(from);
 		helper.setTo(to);
 		helper.setSubject(subject);
-		helper.setText(content);
+		helper.setText(content, html);
 		if (CollectionUtils.isNotEmpty(attachments)) {
 			for (File file : attachments) {
 				helper.addAttachment(file.getName(), file);

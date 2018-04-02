@@ -12,6 +12,15 @@ public enum OperationResult {
 		this.name = name;
 	}
 
+	public static OperationResult valueOf(Integer value) {
+		for (OperationResult result : OperationResult.values()) {
+			if (result.getValue().equals(value)) {
+				return result;
+			}
+		}
+		throw new IllegalArgumentException("未知的操作结果");
+	}
+
 	public Integer getValue() {
 		return value;
 	}
