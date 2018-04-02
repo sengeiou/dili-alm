@@ -235,13 +235,10 @@ public class StatistaicalServiceImpl implements StatisticalService {
 				
 			List<SelectTaskHoursByUserProjectDto> result=taskMapper.selectUsersProjectHours(userLongIds,projectLongIds);
 				 //只能查出来一条
-				if (result!=null||result.size()>0) {
-			       SelectTaskHoursByUserProjectDto entity = result.get(0);
-				
+				for (SelectTaskHoursByUserProjectDto entity: result) {
 					hoursMap.put("project"+projectId, "sumUPTaskHours:"+entity.getSumUPTaskHours()+",sumUPOverHours:"+entity.getSumUPOverHours());
 					totalTaskHours+=entity.getSumUPTaskHours();
 					totalOverHours+=entity.getSumUPOverHours();
-						
 				}
 			} 
 			totalAllHours = totalTaskHours+totalOverHours;
