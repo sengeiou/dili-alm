@@ -40,15 +40,18 @@ import com.dili.alm.dao.EmailAddressMapper;
 import com.dili.alm.dao.FilesMapper;
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.dao.ProjectOnlineApplyMapper;
+import com.dili.alm.dao.ProjectOnlineApplyMarketMapper;
 import com.dili.alm.dao.ProjectOnlineOperationRecordMapper;
 import com.dili.alm.dao.ProjectOnlineSubsystemMapper;
 import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.TeamMapper;
+import com.dili.alm.dao.VersionMarketOnlineRecordMapper;
 import com.dili.alm.domain.ApplyType;
 import com.dili.alm.domain.EmailAddress;
 import com.dili.alm.domain.OperationResult;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectOnlineApply;
+import com.dili.alm.domain.ProjectOnlineApplyMarket;
 import com.dili.alm.domain.ProjectOnlineApplyOperationType;
 import com.dili.alm.domain.ProjectOnlineApplyState;
 import com.dili.alm.domain.ProjectOnlineOperationRecord;
@@ -56,6 +59,7 @@ import com.dili.alm.domain.ProjectOnlineSubsystem;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.ProjectVersionOnlineState;
 import com.dili.alm.domain.User;
+import com.dili.alm.domain.VersionMarketOnlineRecord;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectOnlineApplyUpdateDto;
@@ -78,6 +82,8 @@ import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
+
+import tk.mybatis.mapper.entity.Example;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2018-03-13 15:31:10.
@@ -125,6 +131,10 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	@Qualifier("projectOnlineApplyNumberGenerator")
 	@Autowired
 	private NumberGenerator serialNumberGenerator;
+	@Autowired
+	private VersionMarketOnlineRecordMapper versionMaketMapper;
+	@Autowired
+	private ProjectOnlineApplyMarketMapper applyMarketMapper;
 
 	public ProjectOnlineApplyServiceImpl() {
 		super();
@@ -192,6 +202,14 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			throw new ProjectOnlineApplyException("申请上线日期不能小于当前日期");
 		}
 
+		// 判断市场在当前版本是否上过线
+		int count = this.versionMaketMapper
+				.selectCountByExample(new Example(VersionMarketOnlineRecord.class).createCriteria()
+						.andEqualTo("versionId", apply.getVersionId()).andIn("marketCode", apply.getMarkets()));
+		if (count > 0) {
+			throw new ProjectOnlineApplyException("改版本已在指定市场上线，不能重复上线");
+		}
+
 		// 更新子系统，先删除后插入
 		if (CollectionUtils.isNotEmpty(apply.getSubsystem())) {
 			// 先删除
@@ -237,6 +255,20 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		if (result <= 0) {
 			throw new ProjectOnlineApplyException("更新失败");
 		}
+
+		// 更新上线申请和市场关系表
+		// 先删除
+		this.applyMarketMapper.deleteByExample(new Example(VersionMarketOnlineRecord.class).createCriteria()
+				.andEqualTo("applyId", apply.getId()).andIn("marketCode", apply.getMarkets()));
+		// 再插入
+		List<ProjectOnlineApplyMarket> list = new ArrayList<>(apply.getMarkets().size());
+		apply.getMarkets().forEach(m -> {
+			ProjectOnlineApplyMarket am = DTOUtils.newDTO(ProjectOnlineApplyMarket.class);
+			am.setApplyId(apply.getId());
+			am.setMarketCode(m);
+			list.add(am);
+		});
+		this.applyMarketMapper.insertList(list);
 
 		// 更新邮件通知地址，先删除后插入
 		// 先删除
@@ -380,6 +412,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		datetimeProvider.put("provider", "almDateProvider");
 		metadata.put("onlineDate", datetimeProvider);
 		metadata.put("actualOnlineDate", datetimeProvider);
+		metadata.put("submitTime", datetimeProvider);
 
 		JSONObject applyStateProvider = new JSONObject();
 		applyStateProvider.put("provider", "projectOnlineApplyStateProvider");
@@ -596,12 +629,17 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			throw new ProjectOnlineApplyException("新增操作记录失败");
 		}
 		if (OperationResult.SUCCESS.equals(result)) {
-			// 更新项目的版本状态为已上线
-			ProjectVersion version = this.versionMapper.selectByPrimaryKey(apply.getVersionId());
-			version.setOnline(ProjectVersionOnlineState.ONLINE.getValue());
-			rows = this.versionMapper.updateByPrimaryKey(version);
-			if (rows <= 0) {
-				throw new ProjectOnlineApplyException("更新版本上线状态失败");
+			// 插入上线记录表
+			ProjectOnlineApplyMarket poamQuery = DTOUtils.newDTO(ProjectOnlineApplyMarket.class);
+			poamQuery.setApplyId(apply.getId());
+			List<ProjectOnlineApplyMarket> poamList = this.applyMarketMapper.select(poamQuery);
+			if (CollectionUtils.isNotEmpty(poamList)) {
+				poamList.forEach(a -> {
+					VersionMarketOnlineRecord vmor = DTOUtils.newDTO(VersionMarketOnlineRecord.class);
+					vmor.setMarketCode(a.getMarketCode());
+					vmor.setVersionId(apply.getVersionId());
+					this.versionMaketMapper.insert(vmor);
+				});
 			}
 		}
 		// 发邮件
@@ -640,6 +678,14 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			throw new ProjectOnlineApplyException("申请上线日期不能小于当前日期");
 		}
 
+		// 判断市场在当前版本是否上过线
+		int count = this.versionMaketMapper
+				.selectCountByExample(new Example(VersionMarketOnlineRecord.class).createCriteria()
+						.andEqualTo("versionId", apply.getVersionId()).andIn("marketCode", apply.getMarkets()));
+		if (count > 0) {
+			throw new ProjectOnlineApplyException("改版本已在指定市场上线，不能重复上线");
+		}
+
 		int result = this.getActualDao().insertSelective(apply);
 		if (result <= 0) {
 			throw new ProjectOnlineApplyException("插入失败");
@@ -668,6 +714,14 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 				this.posMapper.insert(s);
 			});
 		}
+
+		// 插入上线申请和市场关联表
+		apply.getMarkets().forEach(m -> {
+			ProjectOnlineApplyMarket am = DTOUtils.newDTO(ProjectOnlineApplyMarket.class);
+			am.setApplyId(apply.getId());
+			am.setMarketCode(m);
+			this.applyMarketMapper.insert(am);
+		});
 
 		// 更新邮件通知地址，先删除后插入
 		// 先删除

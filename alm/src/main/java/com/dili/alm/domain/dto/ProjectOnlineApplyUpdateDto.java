@@ -2,8 +2,6 @@ package com.dili.alm.domain.dto;
 
 import java.util.List;
 
-import org.hibernate.validator.constraints.NotBlank;
-
 public class ProjectOnlineApplyUpdateDto extends ProjectOnlineApplyDto {
 
 	/**
@@ -13,6 +11,7 @@ public class ProjectOnlineApplyUpdateDto extends ProjectOnlineApplyDto {
 
 	private List<ProjectOnlineSubsystemDto> subsystem;
 	private List<String> emailAddress;
+	private List<String> markets;
 
 	public List<ProjectOnlineSubsystemDto> getSubsystem() {
 		return subsystem;
@@ -28,6 +27,14 @@ public class ProjectOnlineApplyUpdateDto extends ProjectOnlineApplyDto {
 
 	public void setEmailAddress(List<String> emailAddress) {
 		this.emailAddress = emailAddress;
+	}
+
+	public List<String> getMarkets() {
+		return markets;
+	}
+
+	public void setMarkets(List<String> markets) {
+		this.markets = markets;
 	}
 
 }

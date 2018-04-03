@@ -475,8 +475,10 @@ function openInsert() {
 													// $.messager.alert('错误',
 													// e);
 													// }
-													$('#grid').datagrid('updateRow', {
-																index : $('#grid').datagrid('getRowIndex', $('#grid').datagrid('getSelected')),
+													var index = $('#grid').datagrid('getRowIndex', $('#grid').datagrid('getSelected'));
+													$('#grid').datagrid('deleteRow', index);
+													$('#grid').datagrid('insertRow', {
+																index : index,
 																row : obj.data
 															});
 													$('#grid').datagrid('acceptChanges');
