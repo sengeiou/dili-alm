@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.druid.support.json.JSONUtils;
+import com.alibaba.fastjson.JSONArray;
 import com.dili.alm.domain.HardwareResource;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.User;
@@ -74,9 +76,10 @@ public class HardwareResourceController {
 		@ApiImplicitParam(name="HardwareResource", paramType="form", value = "HardwareResource的form信息", required = true, dataType = "string")
 	})
     @RequestMapping(value="/insert", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput insert(List<HardwareResource> hardwareResources) {
-    	
-    	return hardwareResourceService.insertHardwareResourceSelective(hardwareResources);
+    public @ResponseBody BaseOutput insert(String hardwareResources) {
+    	  List<HardwareResource> parseArray = JSONArray.parseArray(hardwareResources,HardwareResource.class);
+
+    	return hardwareResourceService.insertHardwareResourceSelective(parseArray);
     }
 
     @ApiOperation("修改HardwareResource")

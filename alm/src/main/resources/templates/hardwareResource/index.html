@@ -196,9 +196,7 @@
 				}]
 			">
     <div id="heard">
-        <input  type="hidden" name="_isSubmit" id="_isSubmit"/>
         <table width="560px">
-        	
             <tr>
                 <td style="padding:5px;width: 50%">
                     <input class="easyui-combobox" name="_projectIdText" id="_projectIdText" style="width:100%" editable="false" data-options="label:'项目名称:'" 
@@ -226,7 +224,7 @@
        <div id="formCennet">
          <form id="_form" class="easyui-form" method="post" fit="true">
           <table width="560px">
-          	 <input  type="hidden" name="_isSubmit" id="_isSubmit"/>
+          	  <input  type="hidden" name="_isSubmit" id="_isSubmit"/>
           	  <input name="_projectId" id="_projectId" type="hidden">
             <tr>
                 <td style="padding:5px;">
@@ -368,7 +366,12 @@
             if(!$('#_form').form("validate")){
                 return;
             }
-            var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
+            var _formDataList=[];
+            var _formData1 = removeKeyStartWith($("#_form").serializeObject(),"_");
+            _formDataList.push(_formData1);
+           
+            var _formData = {"hardwareResources":JSON.stringify(_formDataList)}
+            console.log(_formData);
             $.ajax({
                 type: "POST",
                 url:  "${contextPath}/hardwareResource/insert",
@@ -548,17 +551,22 @@
         function formatOptions(val,row,index){  
         	
         	var selected=$("#grid").datagrid('getData').rows[index];
-        	var out="<span style='padding:5px;color:#8B8B7A;text-decoration:underline;'>编辑</span>"+
-    		"<span style='padding:5px;color:#8B8B7A;text-decoration:underline;'>删除</span>";
+        	var out;
         	
         	if(selected.isSubmit==0){
-        		out="<a href='javascript:void(0)' onclick='openUpdate(" + index + ")'>编辑  </a>"+ 
-        		"<a href='javascript:void(0)' onclick='del(" + index + ")'> 删除</a>";
+        		if(isOperation(selected.id)){
+            		out="<a href='javascript:void(0)' onclick='openUpdate(" + index + ")'>编辑  </a>"+ 
+            		"<a href='javascript:void(0)' onclick='del(" + index + ")'> 删除</a>";
+            	}else{
+            		out="<span style='padding:5px;color:#8B8B7A;text-decoration:underline;'>编辑</span>"+
+            		"<span style='padding:5px;color:#8B8B7A;text-decoration:underline;'>删除</span>";
+            	}
+        		
+        	}else{
+        		out="<span style='padding:5px;color:#8B8B7A;text-decoration:underline;'>编辑</span>"+
+        		"<span style='padding:5px;color:#8B8B7A;text-decoration:underline;'>删除</span>";
         	}
-        	if(isOperation(selected.id)){
-        		out="<a href='javascript:void(0)' onclick='openUpdate(" + index + ")'>编辑  </a>"+ 
-        		"<a href='javascript:void(0)' onclick='del(" + index + ")'> 删除</a>";
-        	}
+        	
             return out;  
         }
          function isOperation(id){
