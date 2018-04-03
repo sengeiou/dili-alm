@@ -2,8 +2,10 @@ package com.dili.alm.controller;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,6 +13,8 @@ import javax.validation.Valid;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -26,6 +30,7 @@ import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.Department;
 import com.dili.alm.domain.Files;
+import com.dili.alm.domain.OperationResult;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectOnlineApply;
 import com.dili.alm.domain.User;
@@ -37,6 +42,7 @@ import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.ProjectOnlineApplyService;
 import com.dili.alm.service.ProjectService;
+import com.dili.alm.service.TeamService;
 import com.dili.alm.service.impl.ProjectOnlineApplyServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -57,6 +63,7 @@ import tk.mybatis.mapper.entity.Example;
 @RequestMapping("/projectOnlineApply")
 public class ProjectOnlineApplyController {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(ProjectOnlineApplyController.class);
 	private static final String DATA_AUTH_TYPE = "Project";
 
 	@Autowired
@@ -65,11 +72,139 @@ public class ProjectOnlineApplyController {
 	private ProjectService projectService;
 	@Autowired
 	private FilesService fileService;
-	@Autowired
-	private UserRpc userRpc;
-	@Autowired
-	private DepartmentRpc deptRpc;
 	private static final String EMAIL_REGEX = "^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$";
+
+	@RequestMapping(value = "/testConfirm", method = RequestMethod.GET)
+	public String testConfirmView(@RequestParam Long id, ModelMap modelMap) {
+		try {
+			ProjectOnlineApply vm = this.projectOnlineApplyService.getTestConfirmViewModel(id);
+			modelMap.addAttribute("apply", ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
+		} catch (ProjectOnlineApplyException e) {
+			LOGGER.error(e.getMessage(), e);
+			return null;
+		}
+		return "projectOnlineApply/testConfirm";
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/testConfirm", method = RequestMethod.POST)
+	public BaseOutput<Object> testConfirm(@RequestParam Long id, @RequestParam Integer result,
+			@RequestParam(required = false) String description) {
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		if (user == null) {
+			return BaseOutput.failure("请先登录");
+		}
+		try {
+			this.projectOnlineApplyService.testerConfirm(id, user.getId(), OperationResult.valueOf(result),
+					description);
+			ProjectOnlineApply vm = this.projectOnlineApplyService.getEasyUiRowData(id);
+			return BaseOutput.success().setData(ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
+		} catch (ProjectOnlineApplyException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/startExecute", method = RequestMethod.POST)
+	public BaseOutput<Object> startExecute(@RequestParam Long id, @RequestParam String executor,
+			@RequestParam Integer result, @RequestParam(required = false) String description) {
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		if (user == null) {
+			return BaseOutput.failure("请先登录");
+		}
+		if (StringUtils.isBlank(executor)) {
+			return BaseOutput.failure("执行人不能为空");
+		}
+		String[] strs = executor.split(",");
+		if (strs.length <= 0) {
+			return BaseOutput.failure("执行人不能为空");
+		}
+		if (strs.length > 2) {
+			return BaseOutput.failure("只能分配两个执行人");
+		}
+		Set<Long> executors = new HashSet<>(2);
+		for (String str : strs) {
+			executors.add(Long.valueOf(str));
+		}
+		try {
+			this.projectOnlineApplyService.startExecute(id, user.getId(), executors, description);
+			ProjectOnlineApply vm = this.projectOnlineApplyService.getEasyUiRowData(id);
+			return BaseOutput.success().setData(ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
+		} catch (ProjectOnlineApplyException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+
+	@RequestMapping(value = "/startExecute", method = RequestMethod.GET)
+	public String startExecuteView(@RequestParam Long id, ModelMap modelMap) {
+		try {
+			ProjectOnlineApply vm = this.projectOnlineApplyService.getStartExecuteViewData(id);
+			modelMap.addAttribute("apply", ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
+		} catch (ProjectOnlineApplyException e) {
+			LOGGER.error(e.getMessage(), e);
+			return null;
+		}
+		return "projectOnlineApply/startExecute";
+	}
+
+	@RequestMapping(value = "/confirmExecute", method = RequestMethod.GET)
+	public String confirmExecuteView(@RequestParam Long id, ModelMap modelMap) {
+		try {
+			ProjectOnlineApply vm = this.projectOnlineApplyService.getConfirmExecuteViewModel(id);
+			modelMap.addAttribute("apply", ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
+		} catch (ProjectOnlineApplyException e) {
+			LOGGER.error(e.getMessage(), e);
+			return null;
+		}
+		return "projectOnlineApply/confirmExecute";
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/confirmExecute", method = RequestMethod.POST)
+	public BaseOutput<Object> confirmExecute(@RequestParam Long id, @RequestParam Integer result,
+			@RequestParam(required = false) String description) {
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		if (user == null) {
+			return BaseOutput.failure("请先登录");
+		}
+		try {
+			this.projectOnlineApplyService.excuteConfirm(id, user.getId(), OperationResult.valueOf(result),
+					description);
+			ProjectOnlineApply vm = this.projectOnlineApplyService.getEasyUiRowData(id);
+			return BaseOutput.success().setData(ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
+		} catch (ProjectOnlineApplyException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+
+	@RequestMapping(value = "/verify", method = RequestMethod.GET)
+	public String verifyView(@RequestParam Long id, ModelMap modelMap) {
+		try {
+			ProjectOnlineApply vm = this.projectOnlineApplyService.getVerifyViewData(id);
+			modelMap.addAttribute("apply", ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
+		} catch (ProjectOnlineApplyException e) {
+			LOGGER.error(e.getMessage(), e);
+			return null;
+		}
+		return "projectOnlineApply/verify";
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/verify", method = RequestMethod.POST)
+	public BaseOutput<Object> verify(@RequestParam Long id, @RequestParam Integer result,
+			@RequestParam(required = false) String description) {
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		if (user == null) {
+			return BaseOutput.failure("请先登录");
+		}
+		try {
+			this.projectOnlineApplyService.verify(id, user.getId(), OperationResult.valueOf(result), description);
+			ProjectOnlineApply vm = this.projectOnlineApplyService.getEasyUiRowData(id);
+			return BaseOutput.success().setData(ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
+		} catch (ProjectOnlineApplyException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
 
 	@ApiOperation("跳转到ProjectOnlineApply页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
@@ -77,6 +212,7 @@ public class ProjectOnlineApplyController {
 		return "projectOnlineApply/index";
 	}
 
+	@SuppressWarnings("unchecked")
 	@ResponseBody
 	@RequestMapping(value = "/saveAndSubmit", method = RequestMethod.POST)
 	public BaseOutput<Object> saveAndSubmit(@Valid ProjectOnlineApplyAddDto apply, BindingResult br) {
@@ -90,7 +226,8 @@ public class ProjectOnlineApplyController {
 		ProjectOnlineApplyUpdateDto dto = this.parseServiceModel(apply);
 		try {
 			projectOnlineApplyService.saveAndSubmit(dto);
-			return BaseOutput.success().setData(ProjectOnlineApplyServiceImpl.buildApplyViewModel(dto));
+			ProjectOnlineApply vm = this.projectOnlineApplyService.getEasyUiRowData(dto.getId());
+			return BaseOutput.success().setData(ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
 		} catch (Exception e) {
 			return BaseOutput.failure(e.getMessage());
 		}
@@ -110,20 +247,6 @@ public class ProjectOnlineApplyController {
 		criteria.andIn("id", projectIds);
 		List<Project> projects = this.projectService.selectByExample(example);
 		modelMap.addAttribute("projects", projects);
-		Department deptQuery = new Department();
-		deptQuery.setCode(AlmConstants.OPERATION_DEPARTMENT_CODE);
-		BaseOutput<List<Department>> deptOutput = this.deptRpc.list(deptQuery);
-		if (deptOutput.isSuccess() && CollectionUtils.isNotEmpty(deptOutput.getData())) {
-			Long departmentId = deptOutput.getData().get(0).getId();
-			User userQuery = new User();
-			userQuery.setDepartmentId(departmentId);
-			BaseOutput<List<User>> userOutput = this.userRpc.list(userQuery);
-			if (userOutput.isSuccess() && CollectionUtils.isNotEmpty(userOutput.getData())) {
-				StringBuilder sb = new StringBuilder();
-				userOutput.getData().forEach(u -> sb.append(u.getEmail()).append(";"));
-				modelMap.addAttribute("opUsers", sb.substring(0, sb.length() - 1));
-			}
-		}
 		return "projectOnlineApply/add";
 	}
 
@@ -185,7 +308,7 @@ public class ProjectOnlineApplyController {
 		ProjectOnlineApplyUpdateDto dto = this.parseServiceModel(apply);
 		try {
 			projectOnlineApplyService.saveOrUpdate(dto);
-			ProjectOnlineApply vm = this.projectOnlineApplyService.get(dto.getId());
+			ProjectOnlineApply vm = this.projectOnlineApplyService.getEasyUiRowData(dto.getId());
 			return BaseOutput.success().setData(ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
 		} catch (Exception e) {
 			return BaseOutput.failure(e.getMessage());
@@ -207,7 +330,7 @@ public class ProjectOnlineApplyController {
 		ProjectOnlineApplyUpdateDto dto = this.parseServiceModel(apply);
 		try {
 			projectOnlineApplyService.saveOrUpdate(dto);
-			ProjectOnlineApply vm = this.projectOnlineApplyService.get(dto.getId());
+			ProjectOnlineApply vm = this.projectOnlineApplyService.getEasyUiRowData(dto.getId());
 			return BaseOutput.success().setData(ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
 		} catch (Exception e) {
 			return BaseOutput.failure(e.getMessage());

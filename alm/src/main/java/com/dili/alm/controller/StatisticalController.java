@@ -4,6 +4,7 @@ package com.dili.alm.controller;
 import com.dili.alm.domain.dto.ProjectTypeCountDto;
 import com.dili.alm.domain.dto.ProjectYearCoverDto;
 import com.dili.alm.domain.dto.ProjectYearCoverForAllDto;
+import com.dili.alm.domain.dto.SelectTaskHoursByUserDto;
 import com.dili.alm.domain.dto.TaskByUsersDto;
 import com.dili.alm.domain.dto.TaskHoursByProjectDto;
 import com.dili.alm.domain.dto.TaskStateCountDto;
@@ -177,9 +178,45 @@ public class StatisticalController {
 	
 	@ApiOperation(value="项目工时查询", notes = "查询返回easyui信息")
     @RequestMapping(value="/listProjectHours", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody List<TaskHoursByProjectDto> getSearchAllDto(String startTime,String endTime) throws Exception {
-
-		return statisticalService.listProjectHours(startTime, endTime);
+    public @ResponseBody List<TaskHoursByProjectDto> getSearchAllDto(String startDate,String endDate,String[] project) throws Exception {
+		List<Long> projectIds=null;
+		if (project!=null) {
+			projectIds = new ArrayList<Long>(project.length);
+			for (String long1 : project) {
+				projectIds.add(Long.parseLong(long1));
+			}
+		}
+		return statisticalService.listProjectHours(startDate, endDate,projectIds);
+   
+    }
+	
+	
+	@ApiOperation(value="项目工时图表查询", notes = "查询返回easyui信息")
+    @RequestMapping(value="/listProjectForEchar", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody SelectTaskHoursByUserDto listProjectForEchar(String[] projectIds,Long userId) throws Exception {
+		List<Long> projectIdList=null;
+		if (projectIds!=null) {
+			projectIdList = new ArrayList<Long>(projectIds.length);
+			for (String long1 : projectIds) {
+				projectIdList.add(Long.parseLong(long1));
+			}
+		}
+		return statisticalService.selectTotalTaskAndOverHours(projectIdList);
+   
+    }
+	
+	@ApiOperation(value="项目总工时查询", notes = "查询返回easyui信息")
+    @RequestMapping(value="/listUserHours", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody List<SelectTaskHoursByUserDto> listUserHours(String startDate,String endDate,String[] project) throws Exception {
+		List<Long> projectIds=null;
+		if (project!=null) {
+			projectIds = new ArrayList<Long>(project.length);
+			for (String long1 : project) {
+				projectIds.add(Long.parseLong(long1));
+			}
+		}
+		
+		return statisticalService.listUserHours(startDate, endDate,projectIds);
    
     }
 	/***查询工时相关services****by******JING***END****/

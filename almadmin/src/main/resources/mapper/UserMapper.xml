@@ -121,6 +121,7 @@
 			property="department">
 			<result column="department_id" property="id" />
 			<result column="department_name" property="name" />
+			<result column="code" property="code" />
 		</association>
 		<collection column="id" property="roles"
 			select="com.dili.sysadmin.dao.RoleMapper.findByUserId" />
@@ -244,6 +245,7 @@
 		u.email,
 		u.department_id,
 		d.`name` AS department_name,
+		d.`code`,
 		r.id AS role_id,
 		r.role_name
 		FROM

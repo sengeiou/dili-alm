@@ -1,6 +1,6 @@
 package com.dili.alm.service;
 
-import java.util.List;
+import java.util.Set;
 
 import com.dili.alm.domain.OperationResult;
 import com.dili.alm.domain.ProjectOnlineApply;
@@ -64,7 +64,7 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 	 *            TODO
 	 * @throws ProjectOnlineApplyException
 	 */
-	void startExecute(Long applyId, Long executorId, List<Long> executors, String description)
+	void startExecute(Long applyId, Long executorId, Set<Long> executors, String description)
 			throws ProjectOnlineApplyException;
 
 	/**
@@ -122,5 +122,15 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 	void deleteProjectOnlineApply(Long id) throws ProjectOnlineApplyException;
 
 	ProjectOnlineApply getEditViewDataById(Long id) throws ProjectOnlineApplyException;
+
+	ProjectOnlineApply getEasyUiRowData(Long id);
+
+	ProjectOnlineApply getTestConfirmViewModel(Long id) throws ProjectOnlineApplyException;
+
+	ProjectOnlineApply getStartExecuteViewData(Long id) throws ProjectOnlineApplyException;
+
+	ProjectOnlineApply getConfirmExecuteViewModel(Long id) throws ProjectOnlineApplyException;
+
+	ProjectOnlineApply getVerifyViewData(Long id) throws ProjectOnlineApplyException;
 
 }

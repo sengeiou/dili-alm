@@ -6,20 +6,320 @@ function optFormatter(value, row, index) {
 	if (row.editable) {
 		content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="openUpdate(' + row.id + ');">编辑</a>';
 		content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="del(' + row.id + ');">删除</a>';
+	} else if (row.$_applyState == 1) {
+		content += '<span style="padding:0px 2px;">编辑</span>';
+		content += '<span style="padding:0px 2px;">删除</span>';
 	}
 	if (row.testConfirmable) {
 		content += '<a href="javascript:void(0);" onclick="textConfirm(' + row.id + ');">测试确认</a>';
+	} else if (row.$_applyState == 2) {
+		content += '<span">测试确认</span>';
 	}
 	if (row.startExecutable) {
-		content += '<a href="javascript:void(0);" onclick="textConfirm(' + row.id + ');">开始执行</a>';
+		content += '<a href="javascript:void(0);" onclick="startExecute(' + row.id + ');">开始执行</a>';
+	} else if (row.$_applyState == 3 && !row.executorId) {
+		content += '<span>开始执行</span>';
 	}
 	if (row.confirmExecutable) {
 		content += '<a href="javascript:void(0);" onclick="confirmExecute(' + row.id + ');">确认执行</a>';
+	} else if (row.$_applyState == 3 && row.executorId) {
+		content += '<span>确认执行</span>'
 	}
 	if (row.verifiable) {
 		content += '<a href="javascript:void(0);" onclick="verify(' + row.id + ');">验证</a>';
+	} else if (row.$_applyState == 4) {
+		content += '<span>验证</span>'
 	}
 	return content;
+
+}
+
+function downloadFile(id) {
+	window.open('${contextPath!}/files/download?id=' + id);
+}
+
+function textConfirm(id) {
+	$('#win').dialog({
+				title : '测试确认',
+				width : 800,
+				height : 600,
+				href : '${contextPath!}/projectOnlineApply/testConfirm?id=' + id,
+				modal : true,
+				buttons : [{
+							text : '确认',
+							handler : function() {
+								var data = $("#editForm").serializeArray();
+								$('#editForm').form('submit', {
+											url : '${contextPath!}/projectOnlineApply/testConfirm',
+											queryParams : {
+												result : 1
+											},
+											success : function(data) {
+												var obj = $.parseJSON(data);
+												if (obj.code == 200) {
+													// try {
+													// LogUtils.saveLog(LOG_MODULE_OPS.ADD_PROJECT_ONLINE_APPLY,
+													// "新增上线申请:" + data.data.id
+													// + ":" + data.data.version
+													// + ":成功", function() {
+													// });
+													// } catch (e) {
+													// $.messager.alert('错误',
+													// e);
+													$('#grid').datagrid('updateRow', {
+																index : $('#grid').datagrid('getRowIndex', $('#grid').datagrid('getSelected')),
+																row : obj.data
+															});
+													$('#grid').datagrid('acceptChanges');
+													$('#win').dialog('close');
+												} else {
+													$.messager.alert('错误', obj.result);
+												}
+											}
+										});
+							}
+						}, {
+							text : '回退',
+							handler : function() {
+								var data = $("#editForm").serializeArray();
+								$('#editForm').form('submit', {
+											url : '${contextPath!}/projectOnlineApply/testConfirm',
+											queryParams : {
+												result : 0
+											},
+											success : function(data) {
+												var obj = $.parseJSON(data);
+												if (obj.code == 200) {
+													// try {
+													// LogUtils.saveLog(LOG_MODULE_OPS.ADD_PROJECT_ONLINE_APPLY,
+													// "新增上线申请:" + data.data.id
+													// + ":" + data.data.version
+													// + ":成功", function() {
+													// });
+													// } catch (e) {
+													// $.messager.alert('错误',
+													// e);
+													// }
+													$('#grid').datagrid('updateRow', {
+																index : $('#grid').datagrid('getRowIndex', $('#grid').datagrid('getSelected')),
+																row : obj.data
+															});
+													$('#grid').datagrid('acceptChanges');
+													$('#win').dialog('close');
+												} else {
+													$.messager.alert('错误', obj.result);
+												}
+											}
+										});
+							}
+						}]
+			});
+
+}
+
+function startExecute(id) {
+	$('#win').dialog({
+				title : '测试确认',
+				width : 800,
+				height : 600,
+				href : '${contextPath!}/projectOnlineApply/startExecute?id=' + id,
+				modal : true,
+				buttons : [{
+							text : '开始',
+							handler : function() {
+								var data = $("#editForm").serializeArray();
+								$('#editForm').form('submit', {
+											url : '${contextPath!}/projectOnlineApply/startExecute',
+											queryParams : {
+												result : 1
+											},
+											success : function(data) {
+												var obj = $.parseJSON(data);
+												if (obj.code == 200) {
+													// try {
+													// LogUtils.saveLog(LOG_MODULE_OPS.ADD_PROJECT_ONLINE_APPLY,
+													// "新增上线申请:" + data.data.id
+													// + ":" + data.data.version
+													// + ":成功", function() {
+													// });
+													// } catch (e) {
+													// $.messager.alert('错误',
+													// e);
+													$('#grid').datagrid('updateRow', {
+																index : $('#grid').datagrid('getRowIndex', $('#grid').datagrid('getSelected')),
+																row : obj.data
+															});
+													$('#grid').datagrid('acceptChanges');
+													$('#win').dialog('close');
+												} else {
+													$.messager.alert('错误', obj.result);
+												}
+											}
+										});
+							}
+						}, {
+							text : '返回',
+							handler : function() {
+								$('#win').dialog('close');
+							}
+						}]
+			});
+
+}
+
+function confirmExecute(id) {
+	$('#win').dialog({
+				title : '测试确认',
+				width : 800,
+				height : 600,
+				href : '${contextPath!}/projectOnlineApply/confirmExecute?id=' + id,
+				modal : true,
+				buttons : [{
+							text : '完成',
+							handler : function() {
+								var data = $("#editForm").serializeArray();
+								$('#editForm').form('submit', {
+											url : '${contextPath!}/projectOnlineApply/confirmExecute',
+											queryParams : {
+												result : 1
+											},
+											success : function(data) {
+												var obj = $.parseJSON(data);
+												if (obj.code == 200) {
+													// try {
+													// LogUtils.saveLog(LOG_MODULE_OPS.ADD_PROJECT_ONLINE_APPLY,
+													// "新增上线申请:" + data.data.id
+													// + ":" + data.data.version
+													// + ":成功", function() {
+													// });
+													// } catch (e) {
+													// $.messager.alert('错误',
+													// e);
+													$('#grid').datagrid('updateRow', {
+																index : $('#grid').datagrid('getRowIndex', $('#grid').datagrid('getSelected')),
+																row : obj.data
+															});
+													$('#grid').datagrid('acceptChanges');
+													$('#win').dialog('close');
+												} else {
+													$.messager.alert('错误', obj.result);
+												}
+											}
+										});
+							}
+						}, {
+							text : '失败',
+							handler : function() {
+								var data = $("#editForm").serializeArray();
+								$('#editForm').form('submit', {
+											url : '${contextPath!}/projectOnlineApply/confirmExecute',
+											queryParams : {
+												result : 0
+											},
+											success : function(data) {
+												var obj = $.parseJSON(data);
+												if (obj.code == 200) {
+													// try {
+													// LogUtils.saveLog(LOG_MODULE_OPS.ADD_PROJECT_ONLINE_APPLY,
+													// "新增上线申请:" + data.data.id
+													// + ":" + data.data.version
+													// + ":成功", function() {
+													// });
+													// } catch (e) {
+													// $.messager.alert('错误',
+													// e);
+													$('#grid').datagrid('updateRow', {
+																index : $('#grid').datagrid('getRowIndex', $('#grid').datagrid('getSelected')),
+																row : obj.data
+															});
+													$('#grid').datagrid('acceptChanges');
+													$('#win').dialog('close');
+												} else {
+													$.messager.alert('错误', obj.result);
+												}
+											}
+										});
+							}
+						}]
+			});
+
+}
+
+function verify(id) {
+	$('#win').dialog({
+				title : '测试确认',
+				width : 800,
+				height : 600,
+				href : '${contextPath!}/projectOnlineApply/verify?id=' + id,
+				modal : true,
+				buttons : [{
+							text : '完成',
+							handler : function() {
+								var data = $("#editForm").serializeArray();
+								$('#editForm').form('submit', {
+											url : '${contextPath!}/projectOnlineApply/verify',
+											queryParams : {
+												result : 1
+											},
+											success : function(data) {
+												var obj = $.parseJSON(data);
+												if (obj.code == 200) {
+													// try {
+													// LogUtils.saveLog(LOG_MODULE_OPS.ADD_PROJECT_ONLINE_APPLY,
+													// "新增上线申请:" + data.data.id
+													// + ":" + data.data.version
+													// + ":成功", function() {
+													// });
+													// } catch (e) {
+													// $.messager.alert('错误',
+													// e);
+													$('#grid').datagrid('updateRow', {
+																index : $('#grid').datagrid('getRowIndex', $('#grid').datagrid('getSelected')),
+																row : obj.data
+															});
+													$('#grid').datagrid('acceptChanges');
+													$('#win').dialog('close');
+												} else {
+													$.messager.alert('错误', obj.result);
+												}
+											}
+										});
+							}
+						}, {
+							text : '失败',
+							handler : function() {
+								var data = $("#editForm").serializeArray();
+								$('#editForm').form('submit', {
+											url : '${contextPath!}/projectOnlineApply/verify',
+											queryParams : {
+												result : 0
+											},
+											success : function(data) {
+												var obj = $.parseJSON(data);
+												if (obj.code == 200) {
+													// try {
+													// LogUtils.saveLog(LOG_MODULE_OPS.ADD_PROJECT_ONLINE_APPLY,
+													// "新增上线申请:" + data.data.id
+													// + ":" + data.data.version
+													// + ":成功", function() {
+													// });
+													// } catch (e) {
+													// $.messager.alert('错误',
+													// e);
+													$('#grid').datagrid('updateRow', {
+																index : $('#grid').datagrid('getRowIndex', $('#grid').datagrid('getSelected')),
+																row : obj.data
+															});
+													$('#grid').datagrid('acceptChanges');
+													$('#win').dialog('close');
+												} else {
+													$.messager.alert('错误', obj.result);
+												}
+											}
+										});
+							}
+						}]
+			});
 
 }
 
@@ -63,6 +363,10 @@ function loadProject() {
 }
 
 function selectFirst() {
+	if ($('#versionId').combobox('getData').length <= 0) {
+		$('#versionId').combobox('setText', '');
+		return;
+	}
 	$('#versionId').combobox('initValue', $('#versionId').combobox('getData')[0].id);
 	$('#versionId').combobox('setText', $('#versionId').combobox('getData')[0].version);
 }
@@ -70,6 +374,10 @@ function selectFirst() {
 function loadVersion(nval, oval) {
 	$('#versionId').combobox('reload', '${contextPath!}/project/version/list?projectId=' + nval + '&online=0');
 	$('#versionId').combobox('enable');
+}
+
+function updateExecutor(args) {
+	console.log(args);
 }
 
 // 打开新增窗口
@@ -116,8 +424,6 @@ function openInsert() {
 													// $.messager.alert('错误',
 													// e);
 													// }
-													obj.data.$_applyState = 1;
-													obj.data.applyState = "申请中";
 													$('#grid').datagrid('appendRow', obj.data);
 													$('#grid').datagrid('acceptChanges');
 													$('#win').dialog('close');
@@ -135,7 +441,51 @@ function openInsert() {
 						}, {
 							text : '提交',
 							handler : function() {
-								$.post('${contextPath!}/projectOnlineApply/saveAndSubmit');
+								var data = $("#editForm").serializeArray();
+								$('#editForm').form('submit', {
+											url : '${contextPath!}/projectOnlineApply/saveAndSubmit',
+											onSubmit : function() {
+												if (!$(this).form('validate')) {
+													return false;
+												}
+												if (!$('input[name=sqlScript]').val() && !$('input[name=sqlFile]').val()) {
+													$.messager.alert('错误', 'sql脚本不能为空');
+													return false;
+												}
+												if (!$('input[name=startupScript]').val() && !$('input[name=startupScriptFile]').val()) {
+													$.messager.alert('错误', '启动脚本不能为空');
+													return false;
+												}
+												if (!$('input[name=dependencySystem]').val() && !$('input[name=dependencySystemFile]').val()) {
+													$.messager.alert('错误', '依赖系统不能为空');
+													return false;
+												}
+											},
+											success : function(data) {
+												debugger;
+												var obj = $.parseJSON(data);
+												if (obj.code == 200) {
+													// try {
+													// LogUtils.saveLog(LOG_MODULE_OPS.ADD_PROJECT_ONLINE_APPLY,
+													// "新增上线申请:" + data.data.id
+													// + ":" + data.data.version
+													// + ":成功", function() {
+													// });
+													// } catch (e) {
+													// $.messager.alert('错误',
+													// e);
+													// }
+													$('#grid').datagrid('updateRow', {
+																index : $('#grid').datagrid('getRowIndex', $('#grid').datagrid('getSelected')),
+																row : obj.data
+															});
+													$('#grid').datagrid('acceptChanges');
+													$('#win').dialog('close');
+												} else {
+													$.messager.alert('错误', obj.result);
+												}
+											}
+										});
 							}
 						}]
 			});
@@ -187,7 +537,7 @@ function openUpdate(id) {
 													// }
 													$('#grid').datagrid('updateRow', {
 																index : $('#grid').datagrid('getRowIndex', $('#grid').datagrid('getSelected')),
-																data : obj.data
+																row : obj.data
 															});
 													$('#grid').datagrid('acceptChanges');
 													$('#win').dialog('close');
@@ -205,8 +555,49 @@ function openUpdate(id) {
 						}, {
 							text : '提交',
 							handler : function() {
-								$.post('${contextPath!}/projectOnlineApply/saveAndSubmit', {
-											id : id
+								var data = $("#editForm").serializeArray();
+								$('#editForm').form('submit', {
+											url : '${contextPath!}/projectOnlineApply/saveAndSubmit',
+											onSubmit : function() {
+												if (!$(this).form('validate')) {
+													return false;
+												}
+												if (!$('input[name=sqlScript]').val() && !$('input[name=sqlFile]').val()) {
+													$.messager.alert('错误', 'sql脚本不能为空');
+													return false;
+												}
+												if (!$('input[name=startupScript]').val() && !$('input[name=startupScriptFile]').val()) {
+													$.messager.alert('错误', '启动脚本不能为空');
+													return false;
+												}
+												if (!$('input[name=dependencySystem]').val() && !$('input[name=dependencySystemFile]').val()) {
+													$.messager.alert('错误', '依赖系统不能为空');
+													return false;
+												}
+											},
+											success : function(data) {
+												var obj = $.parseJSON(data);
+												if (obj.code == 200) {
+													// try {
+													// LogUtils.saveLog(LOG_MODULE_OPS.ADD_PROJECT_ONLINE_APPLY,
+													// "新增上线申请:" + data.data.id
+													// + ":" + data.data.version
+													// + ":成功", function() {
+													// });
+													// } catch (e) {
+													// $.messager.alert('错误',
+													// e);
+													// }
+													$('#grid').datagrid('updateRow', {
+																index : $('#grid').datagrid('getRowIndex', $('#grid').datagrid('getSelected')),
+																row : obj.data
+															});
+													$('#grid').datagrid('acceptChanges');
+													$('#win').dialog('close');
+												} else {
+													$.messager.alert('错误', obj.result);
+												}
+											}
 										});
 							}
 						}]

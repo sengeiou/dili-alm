@@ -115,9 +115,9 @@
 </div>
 </div>
 <!-- 隐藏编辑框 -->
-<div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="任务信息" style="padding:20px" modal="true" border="thin" closed="true" data-options="
+<div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="任务信息" style="padding:0px 20px 20px;" modal="true" border="thin" closed="true" data-options="
                 iconCls: 'icon-save',
-                height: 480">
+                height:'auto'">
     <form id="_form" class="easyui-form" method="post" fit="true">
         <input name="_id" id="_id" type="hidden">
         <table width="560px">
@@ -184,19 +184,20 @@
     <!-- 隐藏工时信息 -->
     <div id="task_detail" style="display:none;">
         <hr>
-        <h3>工时任务信息</h3>
+        <h3 style="margin: 15px 0 5px">工时任务信息</h3>
         <form name="detail_form" id="detail_form">
             <input name="taskId" id="taskId" type="hidden">
             <input name="taskHour" id="taskHour" type="hidden">
-            <table width="550px;" style="border:1px;padding:5px 5px 45px 5px;">
+            <table width="550px;" style="border:1px;padding:5px 5px 15px 5px;">
                 <tr>
+                    <td style="padding:5px;width: 50%">
+                        <input class="easyui-datebox"   name="modified" id="modified" editable="false" style="width:100%;height:26px;" editable="false" data-options="label:'任务日期:', required:true,validType:'checkDate'" />
+                    </td>
                     <td style="padding: 0 5px;width: 50%">
                         <label  style="float: left;width:30%;">任务进度:</label>
                         <div id="_progressShow" style="width:170px;"></div>
                         </td>
-                         <td style="padding:5px;width: 50%">
-                        <input class="easyui-datebox"   name="modified" id="modified" editable="false" style="width:100%;height:26px;" editable="false" data-options="label:'任务日期:', required:true,validType:'checkDate'" />
-                        </td>
+
                 </tr>
                 <tr>
                     <td style="padding:5px;">
@@ -223,7 +224,7 @@
         </form>
     </div>
         <!-- 隐藏工时信息详情 -->
-    <div id="task_detail_list" style="display:none;width:550px;padding:5px 5px 45px 5px;">
+    <div id="task_detail_list" style="display:none;width:550px;padding:5px 5px 10px 5px;">
         <hr>
          <h3>工时任务信息</h3>
  		 <table class="easyui-datagrid" style="height:120px" id="detail_grid" loadMsg="数据加载中..."  idField="id"
@@ -252,11 +253,11 @@
             </thead>
         </table>
     </div>
-    <div id="dialog_toolbar"  style="display:show;position: absolute;bottom:0;background-color:#fff;width: 100%;padding:4px;">
+    <div id="dialog_toolbar"  style="display:show;position: absolute;bottom:0;background-color:#fff;width: 100%;padding:4px 4px 10px;">
         <a href="#" id="saveTask" class="easyui-linkbutton"  data-options="iconCls:'icon-edit',plain:true" onclick="saveOrUpdate()" style="border:1px solid #ccc;">保存</a>
         <a href="#" class="easyui-linkbutton" data-options="plain:true" onclick="$('#dlg').dialog('close');" style="border:1px solid #ccc;">取消</a>
     </div>
-    <div id="dialog_toolbar_detail" style="display:none;position: absolute;bottom:0;background-color:#fff;width: 100%;padding: 4px;">
+    <div id="dialog_toolbar_detail" style="display:none;position: absolute;bottom:0;background-color:#fff;width: 100%;padding: 4px 4px 10px;">
         <a href="#" id="doTask" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" style="border:1px solid #ccc;" onclick="startTask()">开始执行任务</a>
         <a href="#" id="pauseTask" class="easyui-linkbutton" data-options="plain:true" style="border:1px solid #ccc;" onclick="pauseTaskStatus()"> 暂停任务</a>
         <a href="#" id="complate" class="easyui-linkbutton" data-options="plain:true" style="border:1px solid #ccc;" onclick="complate()">完成任务</a>

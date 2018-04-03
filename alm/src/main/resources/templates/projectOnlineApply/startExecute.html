@@ -1,0 +1,119 @@
+<div class="easyui-panel" style="width: 100%;" title="项目类型统计">
+	<form id="editForm" action="" method="post">
+		<input type="hidden" name="id" value="${apply.id!}">
+		<div style="box-sizing: border-box; height: 1000px; width: 100%; padding: 10px;">
+			<div class="easyui-layout" style="box-sizing: border-box; width: 100%; height: 100%;">
+				<table class="table-box">
+					<tr>
+						<td class="table-title">项目名称</td>
+						<td class="table-combo" style="padding: 0">${apply.projectName!}</td>
+						<td class="table-title">项目编号</td>
+						<td>${apply.projectSerialNumber!}</td>
+						<td class="table-title">版本</td>
+						<td class="table-combo" style="padding: 0">${apply.version!}</td>
+					</tr>
+					<tr>
+						<td class="table-title">项目经理</td>
+						<td>${apply.projectManagerId!}</td>
+						<td class="table-title">产品经理</td>
+						<td>${apply.productManagerId!}</td>
+						<td class="table-title">业务负责人</td>
+						<td>${apply.businessOwnerId!}</td>
+					</tr>
+					<tr>
+						<td class="table-title">测试经理</td>
+						<td>${apply.testManagerId!}</td>
+						<td class="table-title">研发经理</td>
+						<td>${apply.developmentManagerId!}</td>
+						<td class="table-title">申请上线日期</td>
+						<td style="padding: 0" class="table-combo">${apply.onlineDate!}</td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6">上线系统及依赖关系描述</td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6"><input class="easyui-textbox" name="dependencyDescription"
+							value="${apply.dependencyDescription!}" data-options="multiline:true,editable:false" style="width: 100%; height: 60px"></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6">上线影响范围描述</td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6"><input class="easyui-textbox" name="scopeDescription" value="${apply.scopeDescription!}"
+							data-options="multiline:true,editable:false" style="width: 100%; height: 60px"></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6">上线系统详情</td>
+					</tr>
+					<%for(item in apply.subsystems){%>
+					<tr class="subsystem">
+						<td class="table-title">系统名称</td>
+						<td class="table-combo" style="padding: 0">${item.projectName!}</td>
+						<td class="table-title">负责人</td>
+						<td class="table-combo" colspan="3" style="padding: 0">${item.managerName!}</td>
+					</tr>
+					<%}%>
+					<tr>
+						<td class="table-title" colspan="2">git地址</td>
+						<td colspan="4">${apply.git!}</td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="2">分支</td>
+						<td colspan="4">${apply.branch!}</td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="2">SQL脚本</td>
+						<td class="table-combo" colspan="2" style="padding: 0">${apply.sqlScript!}</td>
+						<td class="table-combo" colspan="2" style="padding: 0"><a href="javascript:void(0);"
+							onclick="downloadFile(${apply.$_sqlFileId});">${apply.sqlFileId!}</a></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="2">系统启动脚本</td>
+						<td class="table-combo" colspan="2" style="padding: 0">${apply.startupScript!}</td>
+						<td class="table-combo" colspan="2" style="padding: 0"><a href="javascript:void(0);"
+							onclick="downloadFile(${apply.$_startupScriptFileId});">${apply.startupScriptFileId!}</a></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="2">依赖系统</td>
+						<td class="table-combo" colspan="2" style="padding: 0">${apply.dependencySystem!}</td>
+						<td class="table-combo" colspan="2" style="padding: 0"><a href="javascript:void(0);"
+							onclick="downloadFile(${apply.$_dependencySystemFileId});">${apply.dependencySystemFileId!}</a></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="2">其他说明</td>
+						<td colspan="4">${apply.otherDescription!}</td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6">执行操作记录</td>
+					</tr>
+					<%for(item in apply.opRecords){%>
+					<tr>
+						<td class="table-title">${item.operationName!}</td>
+						<td class="table-combo" style="padding: 0">${item.operatorId!}</td>
+						<td class="table-title">描述</td>
+						<td class="table-combo" style="padding: 0">${item.description!}</td>
+						<td class="table-title">时间</td>
+						<td class="table-combo" style="padding: 0">${item.operateTime!}</td>
+					</tr>
+					<%}%>
+					<tr>
+						<td class="table-title">描述</td>
+						<td class="table-combo" style="padding: 0"><input class="easyui-textbox" name="description"
+							style="width: 100%; text-align: center;" data-options=""></td>
+						<td class="table-title">上线责任人</td>
+						<td class="table-combo" colspan="3" style="padding: 0"><input class="easyui-textbox" id="executor" name="executor"
+							style="width: 100%; text-align: center;"
+							data-options="editable:false, buttonText:'选择',
+                                    onClickButton:function(){
+                                        showMembersDlg('executor');
+                                    },onChange:_changeTextboxShowClear""></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+
+	</form>
+</div>
+<script type="text/javascript">
+<#projectOnlineApply_members />
+</script>
