@@ -1,0 +1,117 @@
+<style>
+.table-box {
+	width: 100%;
+	text-align: center;
+	margin-bottom: 20px;
+}
+.table-box-mini{width:400px;}
+.table-box, .table-box tr td {
+	border: 1px solid #ddd;
+	border-collapse: collapse;
+}
+
+.table-box tr td {
+	padding: 5px;
+}
+
+.table-box .table-title {
+	background-color: #f5f5f5;
+	font-weight: bold;
+}
+
+.table-combo .textbox {
+	border: none;
+	border-radius: 0;
+}
+</style>
+<div class="easyui-panel" >
+	<form id="editForm" action="" method="post" enctype="multipart/form-data">
+		<div style="box-sizing: border-box; padding: 10px;">
+			<div class="easyui-layout" style="box-sizing: border-box; width: 100%; height: 100%;">
+				<table class="table-box">
+					<tr>
+					    <td class="table-title">项目编号</td>
+						<td><input class="easyui-textbox" style="width: 100%; text-align: center;" id="serialNumber" name="serialNumber"
+							data-options="editable:false"></td>
+						<td class="table-title">项目名称</td>
+						<td style="padding: 0">
+						<select class="easyui-combobox" id="projectId" name="projectId"
+							style="width: 95%; text-align: center;"data-options="editable:false,onLoadSuccess:loadProject
+							,onChange:changeProject">
+								<%for(item in projects){%>
+								<option value="${item.id!}">${item.name!}</option> <%}%>
+						</select></td>
+						<td class="table-title">项目经理</td>
+						<td><input class="easyui-textbox" style="width: 100%; text-align: center;" id="projectManager" data-options="editable:false"></td>
+					</tr>
+					<tr>
+						<td class="table-title">申请部门</td>
+						<td>
+                           <select class="easyui-combobox" id="departmentId" name="projectId"
+							style="width: 95%; text-align: center;"data-options="editable:false">
+								<%for(item in departments){%>
+								<option value="${item.id!}">${item.name!}</option> <%}%>
+						</select>
+                        </td>
+						<td class="table-title">申请人</td>
+						<td><input class="easyui-textbox" style="width: 100%; text-align: center;" id="applyOwner" data-options="editable:false" value="${userInfo.realName}"></td>
+						<td class="table-title">申请时间</td>
+						<td><input class="easyui-datebox" style="width: 100%; text-align: center;" id="applyDate" data-options="editable:false"></td>
+					</tr>
+					<tr>
+						<td class="table-title">使用环境</td>
+						<td colspan="5"><%for(item in ddValue){%><input type="checkbox" value="${item.value!}"/> ${item.code!} <%}%></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6">申请原因</td>
+					</tr>
+					<tr>
+					<td class="table-combo" colspan="6">             
+                    <input class="easyui-textbox" name="_describe" id="_describe" style="width:100%;height:50px;" data-options="label:'', validType:'length[0,255]'" />
+                 </td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6">配置要求</td>
+					</tr>
+					<tr>
+					 <td class="table-combo" colspan="6">  
+						<a href="#" class="easyui-linkbutton" style="border:1px solid #ccc;"  onclick="javascript:$('#addConfig').dialog('open');">+</a>
+                     </td>
+					</tr>
+					<tr>        
+						<td class="table-title" colspan="6">其他说明</td>
+					</tr>
+					<tr>
+						<td class="table-combo" colspan="6">           
+                    <input class="easyui-textbox" name="_describe" id="_describe" style="width:100%;height:50px;" data-options="label:'', validType:'length[0,255]'" />
+                </td>
+					</tr>
+				</table>
+			</div>
+		</div>
+
+	</form>
+	<div id="addConfig"    class="easyui-dialog" title="添加配置要求" style="padding:13px" closed="true"   data-options="
+				iconCls: 'icon-save',
+				height: 260,
+				width:550,
+				buttons: [{
+					text:'添加',
+					iconCls:'icon-ok',
+					handler:saveOrUpdate
+				},{
+					text:'取消',
+					handler:function(){
+						$('#addConfig').dialog('close');
+					}
+				}]
+			">
+	<form name="configForm" id="configForm">
+	<table class="table-box table-box-mini" >
+	<tr><td class="table-title">CPU内核数</td><td><input class="easyui-textbox" name="cpu"/></td><td class="table-title">内存（GB）</td><td><input class="easyui-textbox" name="SSD"/></td></tr>
+	<tr><td class="table-title">磁盘（GB）</td><td><input class="easyui-textbox" name="disk"/></td><td class="table-title">IP地址</td><td><input class="easyui-textbox" name="ip"/></td></tr>
+	<tr><td class="table-title">备注</td><td><input class="easyui-textbox" name="mark" /></td><td>&nbsp;</td><td>&nbsp;</td></tr>
+	</table>
+	</form>
+	</div>
+</div>

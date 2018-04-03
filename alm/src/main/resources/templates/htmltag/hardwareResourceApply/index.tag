@@ -11,6 +11,97 @@ function envFormatter(v, r, i) {
 	return content;
 }
 
+//初始化
+function loadProject() {
+	var data = $('#projectId').combobox('getData');
+	if (data) {
+		changeProjectSetValue(data[0].value);
+	}
+}
+//项目框有变
+function changeProject(){
+	var id = $('#projectId').combobox('getValue');
+	changeProjectSetValue(id);
+}
+
+
+function changeProjectSetValue(id) {
+		$.post('${contextPath!}/project/listViewData.json', {
+					id :id
+				}, function(res) {
+					if (res && res.length > 0) {
+						var p = res[0];
+						$('#projectManager').textbox('initValue', p.projectManager);
+						$('#serialNumber').textbox('initValue', p.serialNumber);
+					}
+				}, 'json');
+}
+// 打开新增窗口
+function openInsert() {
+
+	$('#win').dialog({
+				title : '申请资源',
+				width : 830,
+				height : 500,
+				href : '${contextPath!}/hardwareResourceApply/add',
+				modal : true,
+				buttons : [{
+							text : '保存',
+							handler : function() {
+							}
+						}, {
+							text : '取消',
+							handler : function() {
+								$('#win').dialog('close');
+							}
+						}, {
+							text : '提交',
+							handler : function() {
+								//$.post('${contextPath!}/projectOnlineApply/saveAndSubmit');
+							}
+						}]
+			});
+			
+}
+
+// 打开修改窗口
+function openUpdate() {
+    var id = 1;
+ /*   if(id==null){
+    	var selected = $("#grid").datagrid("getSelected");
+		if (null == selected) {
+			$.messager.alert('警告', '请选中一条数据');
+			return;
+		}
+    }*/
+    
+	$('#win').dialog({
+				title : '修改资源',
+				width : 830,
+				height : 500,
+				href : '${contextPath!}/hardwareResourceApply/toUpdate?id=' + id,
+				modal : true,
+				buttons : [{
+							text : '保存',
+							handler : function() {
+							}
+						}, {
+							text : '取消',
+							handler : function() {
+								$('#win').dialog('close');
+							}
+						}, {
+							text : '提交',
+							handler : function() {
+								$.post('${contextPath!}/projectOnlineApply/saveAndSubmit', {
+											id : id
+										});
+							}
+						}]
+			});
+}
+
+/********* 
 // 打开新增窗口
 function openInsert() {
 	$('#dlg').dialog('open');
@@ -33,7 +124,7 @@ function openUpdate() {
 	formData = addKeyStartWith(getOriginalData(formData), "_");
 	$('#_form').form('load', formData);
 }
-
+*********/
 function saveOrUpdate() {
 	if (!$('#_form').form("validate")) {
 		return;
@@ -163,10 +254,10 @@ function getKey(e) {
  * @submitFun 表单提交需执行的任务
  */
 $(function() {
-			bindFormEvent("form", "projectId", queryGrid);
+		/**	bindFormEvent("form", "projectId", queryGrid);
 			bindFormEvent("_form", "_projectId", saveOrUpdate, function() {
 						$('#dlg').dialog('close');
-					});
+					});**/
 			if (document.addEventListener) {
 				document.addEventListener("keyup", getKey, false);
 			} else if (document.attachEvent) {
