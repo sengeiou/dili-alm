@@ -166,4 +166,11 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department, Long> imp
 		return trees;
 	}
 
+	@Override
+	public Department findByDepartmentName(String departmentName) {
+		Department record = new Department();
+		record.setName(departmentName);
+		return this.getActualDao().selectOne(record);
+	}
+
 }

@@ -27,4 +27,6 @@ public interface DepartmentService extends BaseService<Department, Long> {
 	List<Department> findByUserId(Long userId);
 
 	List<DepartmentTree> listTree();
+
+	Department findByDepartmentName(String departmentName);
 }
