@@ -66,7 +66,7 @@ public class ProjectPhaseServiceImpl extends BaseServiceImpl<ProjectPhase, Long>
 	public ProjectPhase getAddViewData(Long projectId) {
 		ProjectPhase dto = DTOUtils.newDTO(ProjectPhase.class);
 		Project project = this.projectService.get(projectId);
-		dto.aset("project", project);
+		dto.aset("project1", project);
 		ProjectVersion query = DTOUtils.newDTO(ProjectVersion.class);
 		query.setProjectId(projectId);
 		List<ProjectVersion> allVersions = this.projectVersionService.list(query);
@@ -79,7 +79,7 @@ public class ProjectPhaseServiceImpl extends BaseServiceImpl<ProjectPhase, Long>
 	public ProjectPhase getEditViewData(Long id) {
 		ProjectPhase dto = this.getActualDao().selectByPrimaryKey(id);
 		Project project = this.projectService.get(dto.getProjectId());
-		dto.aset("project", project);
+		dto.aset("project1", project);
 		ProjectVersion version = DTOUtils.newDTO(ProjectVersion.class);
 		version.setProjectId(dto.getProjectId());
 		List<ProjectVersion> versions = this.projectVersionService.list(version);
