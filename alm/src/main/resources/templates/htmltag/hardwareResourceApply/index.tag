@@ -48,6 +48,7 @@ function openInsert() {
 				buttons : [{
 							text : '保存',
 							handler : function() {
+							  //
 							}
 						}, {
 							text : '取消',

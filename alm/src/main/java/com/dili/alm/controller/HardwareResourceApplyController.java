@@ -166,7 +166,7 @@ public class HardwareResourceApplyController {
     @ApiImplicitParams({
 		@ApiImplicitParam(name="HardwareResourceApply", paramType="form", value = "HardwareResourceApply的form信息", required = true, dataType = "string")
 	})
-    @RequestMapping(value="/insert", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value="/save", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput insert(HardwareResourceApply hardwareResourceApply) {
         hardwareResourceApplyService.insertSelective(hardwareResourceApply);
         return BaseOutput.success("新增成功");

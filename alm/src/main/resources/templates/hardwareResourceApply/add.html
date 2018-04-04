@@ -117,7 +117,7 @@
 				height: 260,
 				width:550,
 				buttons: [{
-					text:'添加',
+					text:'保存',
 					iconCls:'icon-ok',
 					handler:add
 				},{
@@ -129,21 +129,25 @@
 			">
 	<form name="configForm" id="configForm" method="post">
 	<table class="table-box table-box-mini" >
-	<tr><td class="table-title">CPU内核数</td><td><input class="easyui-textbox" name="CPU" id="CPU" /></td><td class="table-title">内存（GB）</td><td><input class="easyui-textbox" name="DDR"/></td></tr>
-	<tr><td class="table-title">磁盘（GB）</td><td><input class="easyui-numberbox" type="text" id="disk" name="disk" style="width: calc(30% - 105px)"
-                                    data-options="required:true,min:1"></td><td class="table-title">IP地址</td><td><input class="easyui-textbox" name="IP"/></td></tr>
-	<tr><td class="table-title">备注</td><td><input class="easyui-textbox" name="mark" /></td><td>&nbsp;</td><td>&nbsp;</td></tr>
+	<tr><td class="table-title">CPU内核数</td><td><input class="easyui-textbox" name="CPU" id="CPU" /></td><td class="table-title">内存（GB）</td><td><input id="DDR" name="DDR" class="easyui-numberspinner" style="width:100%"
+    required="required" data-options="min:1,editable:false"></td></tr>
+	<tr><td class="table-title">磁盘（GB）</td><td><input id="disk" name="disk" class="easyui-numberspinner" style="width:100%"
+    required="required" data-options="min:1,editable:false"></td><td class="table-title">IP地址</td><td><input class="easyui-textbox" name="IP"/></td></tr>
+	<tr><td class="table-title">备注</td><td><input class="easyui-textbox" name="mark" /></td><td><input type="hidden" name="updateSige" id="updateSige"/></td><td>&nbsp;</td></tr>
 	</table>
 	</form>
 	</div>
 </div>
 <script type="text/javascript">
+/* 允许编辑单元格 */  
 function add(){
 	 var rows = $('#configGrid').datagrid('getRows');
 	 
 	 var formInput= $('#configForm').serializeArray();
 	 var formData = $.extend({}, formInput);
-	 
+
+	 var addIndex =  rows.length+1;
+
 	 var map = new Array();
 	$.each(formData, function (i, item) {
 		if(item.name=='CPU'){
@@ -166,22 +170,55 @@ function add(){
 			var key='mark';
 			map[key]=item.value;
 		}
-  	});
+ 	});
+	console.log($("#updateSige").val());
+ 	if($("#updateSige").val()!=""){
+		 $('#configGrid').datagrid('updateRow',{  //updateRow
+			 index:0,
+		     row : map  
+		}) ;
+	}else{
+		 $('#configGrid').datagrid('insertRow',{  
+			 index:addIndex,
+		     row : map  
+		}) ;
+	} 
 	
-	 $('#configGrid').datagrid('insertRow',{  
-	     index : rows.length+1,  
-	     row : map  
-	}) 
+	$('#configForm').form('clear');
+	$('#addConfig').dialog('close');
 }
+
+function delConfig(index,map){
+
+ }
+ function addConfig(map){
+
+ }
 //保存列表配置
 function saveConfig(){
-
-}
-
-function optionFormatter(){
 	
 }
-
+//保存列表配置
+function del(index){
+	$('#configGrid').datagrid('deleteRow',index)
+}
+function update(rowId){
+	var row =  $('#configGrid').datagrid('getRows')[rowId];
+    var formData = $.extend({}, row);
+    $('#configForm').form('load', formData);
+    $('#addConfig').dialog('open');
+    $('#updateSige').val(rowId);
+}
+function optionFormatter(value, row, index){
+	return "<a href='JavaScript:del("+index+")'>删除</a>&nbsp;&nbsp;<a href='JavaScript:update("+index+")'>修改</a>";
+}
+function formatterIsu(value, row, index){  
+    if(row.isu==1){  
+        return "启用";  
+    }else if(row.isu==2){  
+        return "禁用";  
+    }  
+}  
 //$('#applyDate').datebox('setValue', getCurentDateStr());  
 /* $('#applyDate').datebox('calendar').calendar({  
     validator : function(date){  
