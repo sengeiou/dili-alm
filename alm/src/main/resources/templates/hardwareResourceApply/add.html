@@ -74,7 +74,28 @@
 						<td class="table-title" colspan="6">配置要求</td>
 					</tr>
 					<tr>
-					 <td class="table-combo" colspan="6">  
+					 <td class="table-combo" colspan="6">
+					    <table   class="easyui-datagrid" id="configGrid" >
+					    <thead>
+					  		<tr>
+								<th data-options="field:'CPU',width:'20%', align:'center'">
+									CPU</th>
+								<th data-options="field:'DDR',width:'20%', align:'center'">内存</th>
+								<th
+									data-options="field:'disk',width:'13%', align:'center'">
+									磁盘</th>
+								<th
+									data-options="field:'IP',width:'10%', align:'center'">
+									IP地址</th>
+								<th
+									data-options="field:'mark',width:'15%', align:'center'">
+									备注</th>
+								<th
+									data-options="field:'options',width:'15%', align:'center',formatter:optionFormatter">
+									操作</th>	
+				          </tr>
+					    </thead>
+					    </table>  
 						<a href="#" class="easyui-linkbutton" style="border:1px solid #ccc;"  onclick="javascript:$('#addConfig').dialog('open');">+</a>
                      </td>
 					</tr>
@@ -98,7 +119,7 @@
 				buttons: [{
 					text:'添加',
 					iconCls:'icon-ok',
-					handler:saveOrUpdate
+					handler:add
 				},{
 					text:'取消',
 					handler:function(){
@@ -106,12 +127,83 @@
 					}
 				}]
 			">
-	<form name="configForm" id="configForm">
+	<form name="configForm" id="configForm" method="post">
 	<table class="table-box table-box-mini" >
-	<tr><td class="table-title">CPU内核数</td><td><input class="easyui-textbox" name="cpu"/></td><td class="table-title">内存（GB）</td><td><input class="easyui-textbox" name="SSD"/></td></tr>
-	<tr><td class="table-title">磁盘（GB）</td><td><input class="easyui-textbox" name="disk"/></td><td class="table-title">IP地址</td><td><input class="easyui-textbox" name="ip"/></td></tr>
+	<tr><td class="table-title">CPU内核数</td><td><input class="easyui-textbox" name="CPU" id="CPU" /></td><td class="table-title">内存（GB）</td><td><input class="easyui-textbox" name="DDR"/></td></tr>
+	<tr><td class="table-title">磁盘（GB）</td><td><input class="easyui-numberbox" type="text" id="disk" name="disk" style="width: calc(30% - 105px)"
+                                    data-options="required:true,min:1"></td><td class="table-title">IP地址</td><td><input class="easyui-textbox" name="IP"/></td></tr>
 	<tr><td class="table-title">备注</td><td><input class="easyui-textbox" name="mark" /></td><td>&nbsp;</td><td>&nbsp;</td></tr>
 	</table>
 	</form>
 	</div>
 </div>
+<script type="text/javascript">
+function add(){
+	 var rows = $('#configGrid').datagrid('getRows');
+	 
+	 var formInput= $('#configForm').serializeArray();
+	 var formData = $.extend({}, formInput);
+	 
+	 var map = new Array();
+	$.each(formData, function (i, item) {
+		if(item.name=='CPU'){
+			var key='CPU';
+			map[key]=item.value;
+		}
+		if(item.name=='IP'){
+			var key='IP';
+			map[key]=item.value;
+		}
+		if(item.name=='disk'){
+			var key='disk';
+			map[key]=item.value;
+		}
+		if(item.name=='DDR'){
+			var key='DDR';
+			map[key]=item.value;
+		}
+		if(item.name=='mark'){
+			var key='mark';
+			map[key]=item.value;
+		}
+  	});
+	
+	 $('#configGrid').datagrid('insertRow',{  
+	     index : rows.length+1,  
+	     row : map  
+	}) 
+}
+//保存列表配置
+function saveConfig(){
+
+}
+
+function optionFormatter(){
+	
+}
+
+//$('#applyDate').datebox('setValue', getCurentDateStr());  
+/* $('#applyDate').datebox('calendar').calendar({  
+    validator : function(date){  
+        var now = new Date();  
+        var d1 = new Date(now.getFullYear(),now.getMonth(),now.getDate());  
+        return date <= d1;  
+    }  
+});  
+ */
+ console.log(getCurentDateStr());
+function getCurentDateStr()  
+{   
+	
+	var now = new Date();  
+	var year = now.getFullYear();       //年  
+	var month = now.getMonth() + 1;     //月  
+	var day = now.getDate();            //日  
+	var clock = year + "-";  
+	if(month < 10) clock += "0";         
+	clock += month + "-";  
+	if(day < 10) clock += "0";   
+	clock += day;  
+	return clock;   
+}
+</script>
