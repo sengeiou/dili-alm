@@ -716,12 +716,21 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		}
 
 		// 插入上线申请和市场关联表
-		apply.getMarkets().forEach(m -> {
+		// 判断是否根据市场上线
+		if (apply.getMarketVersion()) {
+			// 针对市场上线
+			apply.getMarkets().forEach(m -> {
+				ProjectOnlineApplyMarket am = DTOUtils.newDTO(ProjectOnlineApplyMarket.class);
+				am.setApplyId(apply.getId());
+				am.setMarketCode(m);
+				this.applyMarketMapper.insert(am);
+			});
+		} else {
+			// 不针对市场上线
 			ProjectOnlineApplyMarket am = DTOUtils.newDTO(ProjectOnlineApplyMarket.class);
 			am.setApplyId(apply.getId());
-			am.setMarketCode(m);
-			this.applyMarketMapper.insert(am);
-		});
+			am.setMarketCode("-1");
+		}
 
 		// 更新邮件通知地址，先删除后插入
 		// 先删除

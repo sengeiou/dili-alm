@@ -12,6 +12,7 @@ public class ProjectOnlineApplyUpdateDto extends ProjectOnlineApplyDto {
 	private List<ProjectOnlineSubsystemDto> subsystem;
 	private List<String> emailAddress;
 	private List<String> markets;
+	private Boolean marketVersion = false;
 
 	public List<ProjectOnlineSubsystemDto> getSubsystem() {
 		return subsystem;
@@ -35,6 +36,14 @@ public class ProjectOnlineApplyUpdateDto extends ProjectOnlineApplyDto {
 
 	public void setMarkets(List<String> markets) {
 		this.markets = markets;
+	}
+
+	public Boolean getMarketVersion() {
+		return marketVersion;
+	}
+
+	public void setMarketVersion(Boolean marketVersion) {
+		this.marketVersion = marketVersion;
 	}
 
 }
