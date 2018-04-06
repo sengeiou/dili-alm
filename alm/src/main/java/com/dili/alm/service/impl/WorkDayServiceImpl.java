@@ -90,6 +90,9 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 		@Override
 		public WorkDay getNowWeeklyWorkDay() {
 			WorkDay workDayNowDate = this.getActualDao().getWorkDayNowDate(DateUtil.getDate(new Date()));	
+			if(workDayNowDate==null){
+				return null;
+			}
 			WorkDay maxWeekWorkDay = this.getActualDao().getMaxOrMinWeekWorkDay(1, workDayNowDate.getWorkDayYear());
 			if(maxWeekWorkDay.getId()==workDayNowDate.getId()){
 				String workDayYear = workDayNowDate.getWorkDayYear();
@@ -270,7 +273,9 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 			WorkDay workDayNowDate = this.getActualDao().getWorkDayNowDate(DateUtil.getDate(new Date()));
 			
 		
-			
+			if(workDayNowDate==null){
+				return null;
+			}
 			WorkDay maxWeekWorkDay = this.getActualDao().getMaxOrMinWeekWorkDay(1, workDayNowDate.getWorkDayYear());
 			if(maxWeekWorkDay.getId()==workDayNowDate.getId()){
 				String workDayYear = workDayNowDate.getWorkDayYear();

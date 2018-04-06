@@ -659,10 +659,12 @@ function getMyDay() {
 }
 
 function generateWeekly() {
-	var wday = getMyDay(new Date()); // 周报非最后时间段 限制提交
-	
-	if (!getMyDay()) {
+	console.log(getMyDay());
+	if (getMyDay()==0) {
 		$.messager.alert('不能提交周报', ' 不是工作日最后一天 不可提交周报');
+		return false;
+	}else if(getMyDay()==1){
+		$.messager.alert('不能提交周报', ' 今天不是工作日');
 		return false;
 	}
 
