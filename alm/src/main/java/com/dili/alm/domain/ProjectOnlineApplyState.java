@@ -2,8 +2,8 @@ package com.dili.alm.domain;
 
 public enum ProjectOnlineApplyState {
 
-	APPLING(1, "申请中"), TESTER_CONFIRING(2, "测试确认中"), EXECUTING(3, "执行中"), VARIFING(4, "验证中"), COMPLETED(5, "上线成功"), FAILURE(-1,
-			"上线失败");
+	APPLING(1, "申请中"), TESTER_CONFIRMING(2, "测试确认中"), EXECUTING(3, "执行中"), VARIFING(4, "验证中"), COMPLETED(5,
+			"上线成功"), FAILURE(-1, "上线失败"), PROJECT_MANAGER_CONFIRMING(6, "项目经理确认中");
 
 	private Integer value;
 	private String name;

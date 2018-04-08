@@ -16,14 +16,35 @@ import com.dili.ss.base.BaseService;
  */
 public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineApply, Long> {
 
+	void deleteProjectOnlineApply(Long id) throws ProjectOnlineApplyException;
+
 	/**
-	 * 新增或修改上线申请
+	 * 执行确认
 	 * 
-	 * @param dto
-	 *            数据模型
+	 * @param applyId
+	 *            申请id
+	 * @param executorId
+	 *            执行人id
+	 * @param result
+	 *            执行结果
+	 * @param description
+	 *            描述
 	 * @throws ProjectOnlineApplyException
 	 */
-	void saveOrUpdate(ProjectOnlineApplyUpdateDto dto) throws ProjectOnlineApplyException;
+	void excuteConfirm(Long applyId, Long executorId, OperationResult result, String description)
+			throws ProjectOnlineApplyException;
+
+	ProjectOnlineApply getConfirmExecuteViewModel(Long id) throws ProjectOnlineApplyException;
+
+	ProjectOnlineApply getEasyUiRowData(Long id);
+
+	ProjectOnlineApply getEditViewDataById(Long id) throws ProjectOnlineApplyException;
+
+	ProjectOnlineApply getStartExecuteViewData(Long id) throws ProjectOnlineApplyException;
+
+	ProjectOnlineApply getTestConfirmViewModel(Long id) throws ProjectOnlineApplyException;
+
+	ProjectOnlineApply getVerifyViewData(Long id) throws ProjectOnlineApplyException;
 
 	/**
 	 * 查看申请详情
@@ -34,6 +55,58 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 	 */
 	ProjectOnlineApplyDetailDto getViewDataById(Long applyId);
 
+	void insertProjectOnlineApply(ProjectOnlineApplyUpdateDto projectOnlineApply) throws ProjectOnlineApplyException;
+
+	/**
+	 * 项目经理确认
+	 * 
+	 * @param applyId
+	 *            申请id
+	 * @param executorId
+	 *            执行人id
+	 * @param result
+	 *            审批意见
+	 * @param description
+	 *            描述
+	 * @throws ProjectOnlineApplyException
+	 */
+	void projectManagerConfirm(Long applyId, Long executorId, OperationResult result, String description)
+			throws ProjectOnlineApplyException;
+
+	/**
+	 * 保存并提交
+	 * 
+	 * @param dto
+	 *            数据模型
+	 * @throws ProjectOnlineApplyException
+	 */
+	void saveAndSubmit(ProjectOnlineApplyUpdateDto dto) throws ProjectOnlineApplyException;
+
+	/**
+	 * 新增或修改上线申请
+	 * 
+	 * @param dto
+	 *            数据模型
+	 * @throws ProjectOnlineApplyException
+	 */
+	void saveOrUpdate(ProjectOnlineApplyUpdateDto dto) throws ProjectOnlineApplyException;
+
+	/**
+	 * 开始执行
+	 * 
+	 * @param applyId
+	 *            申请id
+	 * @param executorId
+	 *            执行人id
+	 * @param executors
+	 *            运维分配的执行人
+	 * @param description
+	 *            描述
+	 * @throws ProjectOnlineApplyException
+	 */
+	void startExecute(Long applyId, Long executorId, Set<Long> executors, String description)
+			throws ProjectOnlineApplyException;
+
 	/**
 	 * 提交申请进入上线操作流程
 	 * 
@@ -43,61 +116,22 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 	void submit(Long applyId) throws ProjectOnlineApplyException;
 
 	/**
-	 * 保存并提交
-	 * 
-	 * @param dto
-	 *            数据模型
-	 * @throws ProjectOnlineApplyException 
-	 */
-	void saveAndSubmit(ProjectOnlineApplyUpdateDto dto) throws ProjectOnlineApplyException;
-
-	/**
-	 * 开始执行
-	 * 
-	 * @param applyId
-	 *            申请id
-	 * @param executorId
-	 *            TODO
-	 * @param executors
-	 *            TODO
-	 * @param description
-	 *            TODO
-	 * @throws ProjectOnlineApplyException
-	 */
-	void startExecute(Long applyId, Long executorId, Set<Long> executors, String description)
-			throws ProjectOnlineApplyException;
-
-	/**
 	 * 测试确认
 	 * 
 	 * @param applyId
 	 *            申请id
 	 * @param executorId
-	 *            TODO
+	 *            执行人id
 	 * @param result
-	 *            TODO
+	 *            审批意见
 	 * @param description
-	 *            TODO
+	 *            描述
 	 * @throws ProjectOnlineApplyException
 	 */
 	void testerConfirm(Long applyId, Long executorId, OperationResult result, String description)
 			throws ProjectOnlineApplyException;
 
-	/**
-	 * 执行确认
-	 * 
-	 * @param applyId
-	 *            申请id
-	 * @param executorId
-	 *            TODO
-	 * @param result
-	 *            执行结果
-	 * @param description
-	 *            TODO
-	 * @throws ProjectOnlineApplyException
-	 */
-	void excuteConfirm(Long applyId, Long executorId, OperationResult result, String description)
-			throws ProjectOnlineApplyException;
+	void updateProjectOnlineApply(ProjectOnlineApplyUpdateDto dto) throws ProjectOnlineApplyException;
 
 	/**
 	 * 验证
@@ -105,32 +139,16 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 	 * @param applyId
 	 *            申请id
 	 * @param verifierId
-	 *            TODO
+	 *            验证人id
 	 * @param result
-	 *            TODO
+	 *            验证结果
 	 * @param description
-	 *            TODO
+	 *            描述
 	 * @throws ProjectOnlineApplyException
 	 */
 	void verify(Long applyId, Long verifierId, OperationResult result, String description)
 			throws ProjectOnlineApplyException;
 
-	void insertProjectOnlineApply(ProjectOnlineApplyUpdateDto projectOnlineApply) throws ProjectOnlineApplyException;
-
-	void updateProjectOnlineApply(ProjectOnlineApplyUpdateDto dto) throws ProjectOnlineApplyException;
-
-	void deleteProjectOnlineApply(Long id) throws ProjectOnlineApplyException;
-
-	ProjectOnlineApply getEditViewDataById(Long id) throws ProjectOnlineApplyException;
-
-	ProjectOnlineApply getEasyUiRowData(Long id);
-
-	ProjectOnlineApply getTestConfirmViewModel(Long id) throws ProjectOnlineApplyException;
-
-	ProjectOnlineApply getStartExecuteViewData(Long id) throws ProjectOnlineApplyException;
-
-	ProjectOnlineApply getConfirmExecuteViewModel(Long id) throws ProjectOnlineApplyException;
-
-	ProjectOnlineApply getVerifyViewData(Long id) throws ProjectOnlineApplyException;
+	ProjectOnlineApply getProjectManagerConfirmViewModel(Long id) throws ProjectOnlineApplyException;
 
 }

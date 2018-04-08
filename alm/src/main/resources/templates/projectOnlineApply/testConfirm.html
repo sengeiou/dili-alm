@@ -1,5 +1,3 @@
-
-</style>
 <div class="easyui-panel" style="width: 100%;" title="项目类型统计">
 	<form id="editForm" action="" method="post" enctype="multipart/form-data">
 		<input type="hidden" name="id" value="${apply.id!}">
@@ -29,6 +27,10 @@
 						<td>${apply.developmentManagerId!}</td>
 						<td class="table-title">申请上线日期</td>
 						<td style="padding: 0" class="table-combo">${apply.onlineDate!}</td>
+					</tr>
+					<tr>
+						<td class="table-title">上线市场</td>
+						<td colspan="5"><%if(apply.marketVersion){%><%for(item in markets){if(itemLP.last){%>${item.code!}<%}else{%>${item.code!}<%}}}%></td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="6">上线系统及依赖关系描述</td>
