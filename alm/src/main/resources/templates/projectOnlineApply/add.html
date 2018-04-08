@@ -39,7 +39,7 @@
 						<td colspan="1" class="table-title" style="width: 16.6%;">项目名称</td>
 						<td colspan="1" class="table-combo" style="width: 16.6%;padding: 0">
 							<select class="easyui-combobox" id="projectId" name="projectId"
-							style="width: 92%; text-align: center;" data-options="editable:false,onLoadSuccess:loadProject,onChange:loadVersion">
+							style="width: 92%; text-align: center;" data-options="editable:false,onLoadSuccess:loadProject,onChange:loadProject">
 								<%for(item in projects){%>
 								<option value="${item.id!}">${item.name!}</option> <%}%>
 							</select>
@@ -84,6 +84,19 @@
 							<input class="easyui-datebox" name="onlineDate"
 							style="width: 92%; border: none; text-align: center;" data-options="editable:false,required:true">
 						</td>
+					</tr>
+					<tr>
+						<td class="table-title">是否分市场上线</td>
+						<td><select class="easyui-combobox" style="width: 100%; text-align: center;" id="marketVersion" name="marketVersion"
+							data-options="editable:false,onChange:checkMarketComboState">
+								<option value="0">否</option>
+								<option value="1">是</option>
+						</select></td>
+						<td class="table-title">市场</td>
+						<td colspan="2"><select class="easyui-combobox" id="market" name="market" style="width: 100%; text-align: center;"
+							data-options="multiple:true,editable:false,disabled:true"> <%for(item in markets){%>
+								<option value="${item.value!}">${item.code!}</option> <%}%>
+						</select></td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="6">上线系统及依赖关系描述</td>

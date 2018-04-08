@@ -74,6 +74,9 @@ public class ProjectOnlineApplyAddDto extends BaseDomain implements ProjectOnlin
 	private Long sqlFileId;
 
 	private String sqlScript;
+	@NotNull(message = "请选择是否针对市场上线")
+	private Boolean marketVersion;
+	private List<String> market;
 
 	@Override
 	public String getProjectName() {
@@ -403,6 +406,22 @@ public class ProjectOnlineApplyAddDto extends BaseDomain implements ProjectOnlin
 	@Override
 	public void setDependencySystemFileId(Long dependencySystemFileId) {
 		this.dependencySystemFileId = dependencySystemFileId;
+	}
+
+	public Boolean getMarketVersion() {
+		return marketVersion;
+	}
+
+	public void setMarketVersion(Boolean marketVersion) {
+		this.marketVersion = marketVersion;
+	}
+
+	public List<String> getMarket() {
+		return market;
+	}
+
+	public void setMarket(List<String> market) {
+		this.market = market;
 	}
 
 }
