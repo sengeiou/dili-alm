@@ -148,6 +148,29 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 		return false;
 	}
 
-		
+	@Override
+	public BaseOutput insertOneSelective(HardwareResource hardwareResource) {
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		if (userTicket == null) {
+			throw new RuntimeException("未登录");
+		}
+		hardwareResource.setMaintenanceOwner(userTicket.getId());
+		hardwareResource.setLastModifyDate(new Date());
+		int insertList = this.hardwareResourceMapper.insert(hardwareResource);
+		if(insertList==1){
+			return  BaseOutput.success("新增成功");
+		}
+		return  BaseOutput.failure("新增失败");
+	}
+
+	@Override
+	public void submit(Long projectId, Long userId) {
+		HardwareResource hardwareResource=DTOUtils.newDTO(HardwareResource.class);
+  		hardwareResource.setProjectId(projectId);
+  		hardwareResource.setLastModifyDate(new Date());
+  		hardwareResource.setMaintenanceOwner(userId);
+  		hardwareResourceMapper.updateByProjectId(hardwareResource);
+	}
+
 
 }

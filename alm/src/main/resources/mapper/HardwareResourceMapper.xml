@@ -143,4 +143,18 @@
  		</foreach> 
  	</if>
   </select>
+  
+  
+  <update id="updateByProjectId" parameterType="com.dili.alm.domain.HardwareResource">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update hardware_resource
+    set
+        maintenance_owner = #{maintenanceOwner,jdbcType=BIGINT},
+        last_modify_date = #{lastModifyDate,jdbcType=TIMESTAMP},
+		is_submit = 1
+    where  project_id = #{projectId,jdbcType=BIGINT} AND is_submit = 0
+  </update>
+  
 </mapper>

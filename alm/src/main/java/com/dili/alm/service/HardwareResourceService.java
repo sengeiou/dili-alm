@@ -30,4 +30,8 @@ public interface HardwareResourceService extends BaseService<HardwareResource, L
 
 	boolean isOperation(Long id);
 
+	BaseOutput insertOneSelective(HardwareResource hardwareResource);
+
+	void submit(Long projectId, Long userId);
+
 }
