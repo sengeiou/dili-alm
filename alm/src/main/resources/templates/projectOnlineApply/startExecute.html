@@ -136,6 +136,25 @@
 					<%}%>
 					<tr>
 						<td class="table-title">描述</td>
+						<td class="table-combo" style="padding: 0" colspan="5">
+							<input class="easyui-textbox" name="description"
+								   style="width: 100%; text-align: center;" data-options="">
+						</td>
+
+					</tr>
+					<tr>
+						<td class="table-title">上线责任人</td>
+						<td class="table-combo" style="padding: 0" colspan="5">
+							<input class="easyui-textbox" id="executor" name="executor"
+								   style="width: 96%; text-align: center;"
+								   data-options="editable:false, buttonText:'选择',
+                                    onClickButton:function(){
+                                        showMembersDlg('executor');
+                                    },onChange:_changeTextboxShowClear"">
+						</td>
+					</tr>
+					<tr>
+						<td class="table-title">描述</td>
 						<td class="table-combo" style="padding: 0" colspan="3">
 							<input class="easyui-textbox" name="description"
 								   style="width: 100%; text-align: center;" data-options="">
@@ -143,7 +162,7 @@
 						<td class="table-title">上线责任人</td>
 						<td class="table-combo" style="padding: 0">
 							<input class="easyui-textbox" id="executor" name="executor"
-							style="width: 91%; text-align: center;"
+							style="width: 85%; text-align: center;"
 							data-options="editable:false, buttonText:'选择',
                                     onClickButton:function(){
                                         showMembersDlg('executor');
