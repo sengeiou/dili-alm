@@ -65,18 +65,18 @@
             <!--任务数据列表-->
             <div data-options="region:'north',collapsible:false,split:true,tools:'#infoToolbar', " style="height: 530px" title="类型列表">
                 <table  class="easyui-datagrid" style="width: 100%" id="grid"
-                       data-options="singleSelect:true,collapsible:true" title="项目类型汇总"
+                       data-options="singleSelect:true,collapsible:true"
                        >
                     <thead>
                     <tr>
-                        <th data-options="field:'type',width:'17%',align:'center'">项目类型</th>
-                        <th data-options="field:'typeCount',width:'17%',align:'center'">项目数量</th>
-                        <th data-options="field:'projectTypeProgress',formatter:progressFormatter,width:'17%',align:'center'">占比</th>
+                        <th data-options="field:'type',width:'33.3%',align:'center'">项目类型</th>
+                        <th data-options="field:'typeCount',width:'33.3%',align:'center'">项目数量</th>
+                        <th data-options="field:'projectTypeProgress',formatter:progressFormatter,width:'33.3%',align:'center'">占比</th>
                     </tr>
                     </thead>
                 </table>
                 <!--任务列表-->
-                <div style="height: 420px;margin-top: 20px">
+                <div style="width:100%;height: 420px;margin-top: 20px">
           
                     <!--任务图表-->
                     <div id="task" class="task-right"></div>

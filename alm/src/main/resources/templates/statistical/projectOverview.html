@@ -27,44 +27,79 @@
     <div style="box-sizing:border-box;height: 100%;width: 100%;padding: 10px;">
         <div class="easyui-layout" style="width:100%;height:950px;">
             <!-- datagrid工具栏 -->
-            <div id="toolbar" style="padding:2px 5px;text-align: right">
-            	<form id="form" class="easyui-form" method="post" fit="true">
-            	 <table style="padding:10px;">
-            	 <tr>
-	                <!--<a href="${contextPath}/projectApply/add" class="easyui-linkbutton" iconCls="icon-add" plain="true"></a>-->
-	                <a href="#" class="easyui-linkbutton"
-	                   style="width: 40px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="print()">
-	                    打印
-	                </a>
-	                <a href="#" class="easyui-linkbutton"
-	                   style="width: 80px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="ExportExcel()" >
-	                    导出EXCEL
-	                </a>
-	                <a href="#" class="easyui-linkbutton"
-	                   style="width: 80px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="queryGrid(7)">
-	                    最近7天
-	                </a>
-	                <a href="#" class="easyui-linkbutton"
-	                   style="width: 80px;height: 24px; margin-right:3px;text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="queryGrid(30)">
-	                    最近30天
-	                </a>
-	                <input class="easyui-datebox" name="startTime" id="startTime" style="width:100px;height:24px;margin-left: 5px"
-	                       data-options=""/>
-	                <span style="display: inline-block;width: 20px;text-align: center;color: #999">至</span>
-	                <input class="easyui-datebox" name="endTime" id="endTime" style="width:100px;height:24px;margin-left: 5px"
-	                       data-options=""/>
-	                <a href="#" class="easyui-linkbutton"
-	                   style="width: 60px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef"  onclick="queryGrid(0)">
-	                    查询
-	                </a>
-	                </tr>
-                  </table>
+            <div id="infoToolbar">
+                <form id="form" class="easyui-form" method="post" fit="true">
+                    <table style="padding:10px;">
+                        <tr>
+                            <!--<a href="${contextPath}/projectApply/add" class="easyui-linkbutton" iconCls="icon-add" plain="true"></a>-->
+                            <a href="#" class="easyui-linkbutton"
+                               style="width: 40px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="print()">
+                                打印
+                            </a>
+                            <a href="#" class="easyui-linkbutton"
+                               style="width: 80px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="ExportExcel()" >
+                                导出EXCEL
+                            </a>
+                            <a href="#" class="easyui-linkbutton"
+                               style="width: 80px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="queryGrid(7)">
+                                最近7天
+                            </a>
+                            <a href="#" class="easyui-linkbutton"
+                               style="width: 80px;height: 24px; margin-right:3px;text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="queryGrid(30)">
+                                最近30天
+                            </a>
+                            <input class="easyui-datebox" name="startTime" id="startTime" style="width:100px;height:24px;margin-left: 5px"
+                                   data-options=""/>
+                            <span style="display: inline-block;width: 20px;text-align: center;color: #999">至</span>
+                            <input class="easyui-datebox" name="endTime" id="endTime" style="width:100px;height:24px;margin-left: 5px"
+                                   data-options=""/>
+                            <a href="#" class="easyui-linkbutton"
+                               style="width: 60px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef"  onclick="queryGrid(0)">
+                                查询
+                            </a>
+                        </tr>
+                    </table>
                 </form>
             </div>
+
+            <!--<div id="toolbar" style="padding:2px 5px;text-align: right">-->
+            	<!--<form id="form" class="easyui-form" method="post" fit="true">-->
+            	 <!--<table style="padding:10px;">-->
+            	 <!--<tr>-->
+	                <!--&lt;!&ndash;<a href="${contextPath}/projectApply/add" class="easyui-linkbutton" iconCls="icon-add" plain="true"></a>&ndash;&gt;-->
+	                <!--<a href="#" class="easyui-linkbutton"-->
+	                   <!--style="width: 40px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="print()">-->
+	                    <!--打印-->
+	                <!--</a>-->
+	                <!--<a href="#" class="easyui-linkbutton"-->
+	                   <!--style="width: 80px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="ExportExcel()" >-->
+	                    <!--导出EXCEL-->
+	                <!--</a>-->
+	                <!--<a href="#" class="easyui-linkbutton"-->
+	                   <!--style="width: 80px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="queryGrid(7)">-->
+	                    <!--最近7天-->
+	                <!--</a>-->
+	                <!--<a href="#" class="easyui-linkbutton"-->
+	                   <!--style="width: 80px;height: 24px; margin-right:3px;text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="queryGrid(30)">-->
+	                    <!--最近30天-->
+	                <!--</a>-->
+	                <!--<input class="easyui-datebox" name="startTime" id="startTime" style="width:100px;height:24px;margin-left: 5px"-->
+	                       <!--data-options=""/>-->
+	                <!--<span style="display: inline-block;width: 20px;text-align: center;color: #999">至</span>-->
+	                <!--<input class="easyui-datebox" name="endTime" id="endTime" style="width:100px;height:24px;margin-left: 5px"-->
+	                       <!--data-options=""/>-->
+	                <!--<a href="#" class="easyui-linkbutton"-->
+	                   <!--style="width: 60px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef"  onclick="queryGrid(0)">-->
+	                    <!--查询-->
+	                <!--</a>-->
+	                <!--</tr>-->
+                  <!--</table>-->
+                <!--</form>-->
+            <!--</div>-->
             <!--项目列表-->
             <div data-options="region:'north',collapsible:false,split:true,tools:'#infoToolbar', " style="height: 530px" title="项目列表">
                 <table class="easyui-datagrid" style="width: 100%" id="grid" toolbar='#toolbar'
-                       data-options="singleSelect:true,collapsible:true" title="项目总览">
+                       data-options="singleSelect:true,collapsible:true" >
                     <thead>
                     <tr>
                         <th data-options="field:'type',width:'16%',align:'center'">类型</th>
@@ -77,7 +112,7 @@
                     </tr>
                     </thead>
                 </table>
-                
+
                 <!--项目图表-->
                 <div class="project-box" id="project"></div>
             </div>
@@ -233,11 +268,11 @@
             }
         ],
         series: [
-            
+
         ]
     };
     echarts.init(document.getElementById('project')).setOption(option);
-   
+
 
     /* 任务 option */
     var taskoption = {
