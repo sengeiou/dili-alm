@@ -214,7 +214,7 @@
                        />
                 </td>
                 <td style="padding:5px;">
-                    <a href=	#" class="easyui-linkbutton" id="queryBtn" onclick="hardwareResourceInsert()">新增</a>
+                    <a href="javascript:;" class="easyui-linkbutton" data-options="iconCls:'icon-add'" id="queryBtn" onclick="hardwareResourceInsert()">新增</a>
                 </td>
             </tr>
             </table>
@@ -229,11 +229,11 @@
 		        <table width="800">
 		        	
 		            <tr>
-		                <td style="padding:5px;">
+		                <td style="padding:5px;width: 50%">
 		                    <input class="easyui-textbox" name="_addmaintenanceDate" id="_addmaintenanceDate" editable="false"  style="width:100%" data-options="label:'维护日期:'"
 		                    />
 		                </td>
-		                <td style="padding:5px;">
+		                <td style="padding:5px;;width: 50%">
 		                    <input class="easyui-textbox" name="_addmachineName" id="_addmachineName" style="width:100%" data-options="label:'机器名称:', validType:'length[0,255]'"
 		                           required="true" />
 		                </td>
@@ -274,8 +274,8 @@
 		                    <input class="easyui-textbox" name="_addcost" id="_addcost" style="width:100%" data-options="label:'成本:', validType:'length[0,10]'" required="true"/>
 		                </td>
 		 				<td style="padding:5px;">
-		                     <a href=	#" class="easyui-linkbutton" id="queryBtn" onclick="save()">保存</a>
-		                     <a href=	#" class="easyui-linkbutton" id="queryBtn" onclick="cancel()">取消</a>
+		                     <a href="javascript:;" class="easyui-linkbutton" data-options="iconCls:'icon-save'" id="queryBtn" onclick="save()">保存</a>
+		                     <a href="javascript:;" class="easyui-linkbutton" data-options="iconCls:'icon-undo'" id="queryBtn" onclick="cancel()">取消</a>
 		                </td>
 		            </tr>
 		
@@ -305,60 +305,7 @@
            </div>
 
 
-       <!--  <script type="text/javascript">
-            var editIndex = undefined;
-            function endEditing(){
-                if (editIndex == undefined){return true}
-                if ($('#dg').datagrid('validateRow', editIndex)){
-                    var ed = $('#dg').datagrid('getEditor', {index:editIndex,field:'productid'});
-                    var productname = $(ed.target).combobox('getText');
-                    $('#dg').datagrid('getRows')[editIndex]['productname'] = productname;
-                    $('#dg').datagrid('endEdit', editIndex);
-                    editIndex = undefined;
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-            function onClickRow(index){
-                if (editIndex != index){
-                    if (endEditing()){
-                        $('#dg').datagrid('selectRow', index)
-                            .datagrid('beginEdit', index);
-                        editIndex = index;
-                    } else {
-                        $('#dg').datagrid('selectRow', editIndex);
-                    }
-                }
-            }
-            function append(){
-                if (endEditing()){
-                    $('#dg').datagrid('appendRow',{status:'P'});
-                    editIndex = $('#dg').datagrid('getRows').length-1;
-                    $('#dg').datagrid('selectRow', editIndex)
-                        .datagrid('beginEdit', editIndex);
-                }
-            }
-            function removeit(){
-                if (editIndex == undefined){return}
-                $('#dg').datagrid('cancelEdit', editIndex)
-                    .datagrid('deleteRow', editIndex);
-                editIndex = undefined;
-            }
-            function accept(){
-                if (endEditing()){
-                    $('#dg').datagrid('acceptChanges');
-                }
-            }
-            function reject(){
-                $('#dg').datagrid('rejectChanges');
-                editIndex = undefined;
-            }
-            function getChanges(){
-                var rows = $('#dg').datagrid('getChanges');
-                alert(rows.length+' rows are changed!');
-            }
-        </script> -->
+
     <!-- ====================================================================================================================== -->
     <!-- style & script 分隔线 -->
     <!-- ====================================================================================================================== -->
