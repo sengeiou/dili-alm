@@ -86,13 +86,14 @@
 					</tr>
 					<tr>
 						<td class="table-title">是否分市场上线</td>
-						<td><select class="easyui-combobox" style="width: 100%; text-align: center;" id="marketVersion" name="marketVersion"
+						<td>
+							<select class="easyui-combobox" style="width: 92%; text-align: center;" id="marketVersion" name="marketVersion"
 							data-options="editable:false,onChange:checkMarketComboState">
 							<option value="1" <%if(apply.marketVersion){%>selected="selected"<%}%>>是</option>
 							<option value="0" <%if(!apply.marketVersion){%>selected="selected"<%}%>>否</option>
 							</select></td>
 						<td class="table-title">市场</td>
-						<td colspan="2"><select class="easyui-combobox" id="market" name="market" style="width: 100%; text-align: center;"
+						<td colspan="2"><select class="easyui-combobox" id="market" name="market" style="width: 96%; text-align: center;"
 							data-options="multiple:true,editable:false<%if(!apply.marketVersion){%>,disabled:true<%}%>"> <%for(item in markets){%>
 								<option value="${item.value!}">${item.code!}</option> <%}%>
 						</select></td>
