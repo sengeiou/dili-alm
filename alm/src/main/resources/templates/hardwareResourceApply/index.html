@@ -1,6 +1,9 @@
 
 <#body>
+<div id="win" style="display: none;"></div>
+<div id="smDialog" style="display: none;height:auto;"></div>
 <div class="easyui-layout" fit="true">
+
 	<!-- ====================================================================================================================== -->
 	<!-- 上方布局 -->
 	<!-- ====================================================================================================================== -->
@@ -17,8 +20,11 @@
 								_provider='hardwareResourceApplyStateProvider' /></td>
 					</tr>
 					<tr>
-						<td style="padding: 5px;"><input class="easyui-numberbox" name="applicantId" id="applicantId" style="width: 100%"
-							data-options="label:'申请人:', validType:'length[0,19]'" /></td>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="originator" id="originator" style="width: 100%;" panelWidth="auto"
+							panelHeight="auto" label="项目发起人:"
+							data-options="editable:false,
+									buttonText:'选择',
+									onClickButton:selectMember,onChange:_changeTextboxShowClear" /></td>
 						<td style="padding: 5px;"><input class="easyui-datebox" name="submitTime" id="submitTime" style="width: 100%"
 							data-options="label:'申请日期:',editable:false" /></td>
 						<td style="padding: 5px;"><input class="easyui-datebox" style="width: 200px;" name="submitTime" id="submitTime"
@@ -38,7 +44,7 @@
 	<!-- 表格 -->
 	<div region="center" style="width: 100%;" height="auto">
 		<!-- =========================================================表格========================================================= -->
-		<table class="easyui-datagrid" title="HardwareResourceApply列表" id="grid" fitColumns="true" pagination="true" pageSize="30" pageNumber="1"
+		<table class="easyui-datagrid" title="资源申请列表" id="grid" fitColumns="true" pagination="true" pageSize="30" pageNumber="1"
 			pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
 			sortName="projectId" align="center" fit="true" striped="true" toolbar="#toolbar" idField="id"
 			data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
@@ -58,6 +64,12 @@
 						申请时间</th>
 					<th
 						data-options="field:'applyState', _provider:'hardwareResourceApplyStateProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">状态</th>
+					<th
+						data-options="field:'applyState2',  sortable:'true', order:'asc', align:'center', resizable:'true',  resizable:'true', fixed:'false',width:'9%'">
+						使用期限</th>	
+					<th
+						data-options="field:'options',  sortable:'true', order:'asc', align:'center', resizable:'true',  resizable:'true', fixed:'false',width:'9%'">
+						操作</th>	
 				</tr>
 			</thead>
 		</table>
@@ -97,10 +109,7 @@
 	<form id="_form" class="easyui-form" method="post" fit="true">
 		<input name="_id" id="_id" type="hidden">
 		<table width="360px">
-			<tr>
-				<td style="padding: 5px;"><input class="easyui-numberbox" name="_projectId" id="_projectId" style="width: 100%"
-					data-options="label:'项目id:'" required="true" /></td>
-			</tr>
+
 			<tr>
 				<td style="padding: 5px;"><input class="easyui-textbox" name="_projectName" id="_projectName" style="width: 100%"
 					data-options="label:'项目名称:', validType:'length[0,255]'" required="true" /></td>
@@ -144,14 +153,6 @@
 			<tr>
 				<td style="padding: 5px;"><input class="easyui-textbox" name="_configurationRequirement" id="_configurationRequirement"
 					style="width: 100%" data-options="label:'配置要求:', validType:'length[0,255]'" /></td>
-			</tr>
-			<tr>
-				<td style="padding: 5px;"><input class="easyui-datetimebox" name="_created" id="_created" style="width: 100%"
-					data-options="label:'创建时间:'" required="true" /></td>
-			</tr>
-			<tr>
-				<td style="padding: 5px;"><input class="easyui-numberbox" name="_applyState" id="_applyState" style="width: 100%"
-					data-options="label:'申请状态:'" required="true" /></td>
 			</tr>
 		</table>
 	</form>

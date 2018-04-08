@@ -1,46 +1,88 @@
 <style>
+
+	.table-box {
+		width: 100%;
+		text-align: center;
+		margin-bottom: 10px;
+	}
+
+	.table-box,
+	.table-box tr td {
+		border: 1px solid #ddd;
+		border-collapse: collapse;
+	}
+
+	.table-box tr td {
+		/*display: block;*/
+		box-sizing: border-box;
+		/*width: 16.6% !important;*/
+		padding: 5px;
+	}
+
+	.table-box .table-title {
+		background-color: #f5f5f5;
+		font-weight: bold;
+	}
+
+	.table-combo .textbox,
+	.table-combo .filebox {
+		border: none;
+		border-radius: 0;
+	}
 </style>
-<div class="easyui-panel" style="width: 100%;" title="项目类型统计">
+<div class="easyui-panel" style="width: 100%;" title="编辑">
 	<form id="editForm" action="" method="post" enctype="multipart/form-data">
 		<input type="hidden" name="id" value="${apply.id!}">
-		<div style="box-sizing: border-box; height: 1000px; width: 100%; padding: 10px;">
-			<div class="easyui-layout" style="box-sizing: border-box; width: 100%; height: 100%;">
+		<div style="box-sizing: border-box;  width: 100%; padding: 10px;">
+			<div class="easyui-layout" style="box-sizing: border-box; width: 100%; height: 'auto';">
 				<table class="table-box">
 					<tr>
-						<td class="table-title">项目名称</td>
-						<td class="table-combo" style="padding: 0"><select class="easyui-combobox" id="projectId" name="projectId"
-							style="width: 100%; text-align: center;" data-options="editable:false,onChange:loadVersion"> <%for(item in projects){%>
+						<td style="width: 16.6%;" class="table-title">项目名称</td>
+						<td style="width: 16.6%;" class="table-combo" style="padding: 0">
+							<select class="easyui-combobox" id="projectId" name="projectId"
+								style="width: 93%; text-align: center;" data-options="editable:false,onChange:loadVersion"> <%for(item in projects){%>
 								<option value="${item.id!}"<%if(apply.projectId == item.id){%>selected="selected"<%}%>>${item.name!}</option> <%}%>
-						</select></td>
-						<td class="table-title">项目编号</td>
-						<td><input class="easyui-textbox" style="width: 100%; text-align: center;" id="serialNumber" name="serialNumber"
-							value="${apply.projectSerialNumber!}" data-options="editable:false"></td>
-						<td class="table-title">版本</td>
-						<td class="table-combo" style="padding: 0"><input class="easyui-combobox" id="versionId" name="versionId"
-							style="width: 100%; text-align: center;"
-							data-options="textField:'version',valueField:'id',editable:false,required:true,onLoadSuccess:selectFirst"></td>
+							</select>
+						</td>
+						<td style="width: 16.6%;" class="table-title">项目编号</td>
+						<td style="width: 16.6%;">
+							<input class="easyui-textbox" style="width: 93%; text-align: center;" id="serialNumber" name="serialNumber"
+							value="${apply.projectSerialNumber!}" data-options="editable:false">
+						</td>
+						<td style="width: 16.6%;" class="table-title">版本</td>
+						<td style="width: 16.6%;" class="table-combo" style="padding: 0">
+							<input class="easyui-combobox" id="versionId" name="versionId"
+							style="width: 93%; text-align: center;"
+							data-options="textField:'version',valueField:'id',editable:false,required:true,onLoadSuccess:selectFirst">
+						</td>
 					</tr>
 					<tr>
 						<td class="table-title">项目经理</td>
-						<td><input class="easyui-textbox" style="width: 100%; text-align: center;" id="projectManager" value="${apply.projectManagerId!}"
+						<td><input class="easyui-textbox" style="width: 93%; text-align: center;" id="projectManager" value="${apply.projectManagerId!}"
 							data-options="editable:false"></td>
 						<td class="table-title">产品经理</td>
-						<td><input class="easyui-textbox" style="width: 100%; text-align: center;" id="productManager" value="${apply.productManagerId!}"
+						<td><input class="easyui-textbox" style="width: 93%; text-align: center;" id="productManager" value="${apply.productManagerId!}"
 							data-options="editable:false"></td>
 						<td class="table-title">业务负责人</td>
-						<td><input class="easyui-textbox" style="width: 100%; text-align: center;" id="businessOwner" value="${apply.businessOwnerId!}"
+						<td><input class="easyui-textbox" style="width: 93%; text-align: center;" id="businessOwner" value="${apply.businessOwnerId!}"
 							data-options="editable:false"></td>
 					</tr>
 					<tr>
 						<td class="table-title">测试经理</td>
-						<td><input class="easyui-textbox" style="width: 100%; text-align: center;" id="testManager" value="${apply.testManagerId!}"
-							data-options="editable:false"></td>
+						<td>
+							<input class="easyui-textbox" style="width: 93%; text-align: center;" id="testManager" value="${apply.testManagerId!}"
+							data-options="editable:false">
+						</td>
 						<td class="table-title">研发经理</td>
-						<td><input class="easyui-textbox" style="width: 100%; text-align: center;" id="developManager"
-							value="${apply.developmentManagerId!}" data-options="editable:false"></td>
+						<td>
+							<input class="easyui-textbox" style="width: 93%; text-align: center;" id="developManager"
+							value="${apply.developmentManagerId!}" data-options="editable:false">
+						</td>
 						<td class="table-title">申请上线日期</td>
-						<td style="padding: 0" class="table-combo"><input class="easyui-datebox" name="onlineDate" value="${apply.onlineDate!}"
-							style="width: 100%; border: none; text-align: center;" data-options="editable:false,required:true"></td>
+						<td style="padding: 0" class="table-combo">
+							<input class="easyui-datebox" name="onlineDate" value="${apply.onlineDate!}"
+							style="width: 93%; border: none; text-align: center;" data-options="editable:false,required:true">
+						</td>
 					</tr>
 					<tr>
 						<td class="table-title">是否分市场上线</td>
@@ -59,80 +101,104 @@
 						<td class="table-title" colspan="6">上线系统及依赖关系描述</td>
 					</tr>
 					<tr>
-						<td class="table-title" colspan="6"><input class="easyui-textbox" name="dependencyDescription"
-							value="${apply.dependencyDescription!}" data-options="multiline:true" style="width: 100%; height: 60px"></td>
+						<td class="table-title" colspan="6">
+							<input class="easyui-textbox" name="dependencyDescription"
+							value="${apply.dependencyDescription!}" data-options="multiline:true" style="width: 94%; height: 60px">
+						</td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="6">上线影响范围描述</td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="6"><input class="easyui-textbox" name="scopeDescription" value="${apply.scopeDescription!}"
-							data-options="multiline:true" style="width: 100%; height: 60px"></td>
+							data-options="multiline:true" style="width: 94%; height: 60px"></td>
 					</tr>
 					<tr>
-						<td class="table-title" colspan="4">上线系统详情</td>
-						<td><a id="btn" href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-add',onClick:appendSubsystem">新增</a></td>
-						<td><a id="btn" href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-remove',onClick:removeSubsystem">删除</a></td>
+						<td class="table-title" colspan="2">上线系统详情</td>
+						<td colspan="2">
+							<a id="btn" style="width: 40%;" href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-add',onClick:appendSubsystem">新增</a>
+						</td>
+						<td colspan="2">
+							<a id="btn" style="width: 40%;" href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-remove',onClick:removeSubsystem">删除</a>
+						</td>
 					</tr>
 					<%for(item in apply.subsystems){%>
 					<tr class="subsystem">
-						<td class="table-title">系统名称</td>
-						<td class="table-combo" style="padding: 0"><%if(item.projectId != null){%> <select class="easyui-combobox"
-							name="subProjectName[${itemLP.index-1}]" style="width: 100%; text-align: center;"
+						<td colspan="2" class="table-title">系统名称</td>
+						<td colspan="2" class="table-combo" style="padding: 0">
+						<%if(item.projectId != null){%> 
+						<select class="easyui-combobox" name="subProjectName[${itemLP.index-1}]" style="width: 94%; text-align: center;"
 							data-options="textField:'name',valueField:'id',required:true"> <%for(pitem in plist){%>
 								<option value="${pitem.id!}"<%if(pitem.id == item.projectId){%>selected="selected"<%}%>>${pitem.name!}</option> <%}%>
-						</select> <%}else{%> <input class="easyui-combobox" name="subProjectName[${itemLP.index-1}]" value="${item.projectName!}"
-							style="width: 100%; text-align: center;"
-							data-options="url:'${contextPath!}/project/list.json',textField:'name',valueField:'id',required:true"> <%}%>
+						</select> 
+						<%}else{%> 
+						<input class="easyui-combobox" name="subProjectName[${itemLP.index-1}]" value="${item.projectName!}"
+							style="width: 94%; text-align: center;"
+							data-options="url:'${contextPath!}/project/list.json',textField:'name',valueField:'id',required:true"> 
+						<%}%>
 						</td>
 						<td class="table-title">负责人</td>
-						<td class="table-combo" colspan="3" style="padding: 0"><%if(item.managerId != null){%> <select class="easyui-combobox"
+						<td class="table-combo" colspan="1" style="padding: 0"><%if(item.managerId != null){%>
+							<select class="easyui-combobox"
 							name="managerId[${itemLP.index-1}]" data-options="textField:'realName',valueField:'id',required:true"
-							style="width: 100%; text-align: center;"> <%for(uitem in ulist){%>
+							style="width: 94%; text-align: center;"> <%for(uitem in ulist){%>
 								<option value="${uitem.id!}"<%if(uitem.id == item.managerId){%>selected="selected"<%}%>>${uitem.realName!}</option> <%}%>
-						</select> <%}else{%> <input class="easyui-combobox" name="managerId[${itemLP.index-1}]" value="${item.managerName!}"
-							data-options="url:'${contextPath!}/member/members',textField:'realName',valueField:'id',required:true"
-							style="width: 100%; text-align: center;"> <%}%>
+							</select>
+							<%}else{%>
+								<input class="easyui-combobox" name="managerId[${itemLP.index-1}]" value="${item.managerName!}"
+								data-options="url:'${contextPath!}/member/members',textField:'realName',valueField:'id',required:true"
+								style="width: 94%; text-align: center;">
+							<%}%>
 						</td>
 					</tr>
 					<%}%>
 					<tr>
 						<td class="table-title" colspan="2">git地址</td>
-						<td colspan="4"><input class="easyui-textbox" name="git" value="${apply.git!}" data-options="required:true"></td>
+						<td colspan="4"><input class="easyui-textbox" style="width: 93%;" name="git" value="${apply.git!}" data-options="required:true"></td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="2">分支</td>
-						<td colspan="4"><input class="easyui-textbox" name="branch" value="${apply.branch!}" data-options="required:true"></td>
+						<td colspan="4"><input class="easyui-textbox" style="width: 93%;" name="branch" value="${apply.branch!}" data-options="required:true"></td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="2">SQL脚本</td>
-						<td class="table-combo" colspan="4" style="padding: 0"><input class="easyui-textbox" name="sqlScript" value="${apply.sqlScript!}"
-							data-options="" style="width: 50%"><input class="easyui-filebox" name="sqlFile" value="${apply.sqlFileId!}"
-							data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 50%"></td>
+						<td class="table-combo" colspan="4" style="padding: 0">
+							<input class="easyui-textbox" name="sqlScript" value="${apply.sqlScript!}"
+							data-options="" style="width: 46%">
+							<input class="easyui-filebox" name="sqlFile" value="${apply.sqlFileId!}"
+							data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 46%">
+						</td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="2">系统启动脚本</td>
-						<td class="table-combo" colspan="4" style="padding: 0"><input class="easyui-textbox" name="startupScript"
-							value="${apply.startupScript!}" data-options="" style="width: 50%"><input class="easyui-filebox" name="startupScriptFile"
-							value="${apply.startupScriptFileId!}" data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 50%"></td>
+						<td class="table-combo" colspan="4" style="padding: 0">
+							<input class="easyui-textbox" name="startupScript"
+							value="${apply.startupScript!}" data-options="" style="width: 46%">
+							<input class="easyui-filebox" name="startupScriptFile"
+							value="${apply.startupScriptFileId!}" data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 46%"></td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="2">依赖系统</td>
-						<td class="table-combo" colspan="4" style="padding: 0"><input class="easyui-textbox" name="dependencySystem"
-							value="${apply.dependencySystem!}" data-options="" style="width: 50%"><input class="easyui-filebox"
+						<td class="table-combo" colspan="4" style="padding: 0">
+							<input class="easyui-textbox" name="dependencySystem"
+							value="${apply.dependencySystem!}" data-options="" style="width: 46%">
+							<input class="easyui-filebox"
 							name="dependencySystemFile" value="${apply.dependencySystemFileId!}" data-options="prompt:'添加附件...',	buttonText:'选择'"
-							style="width: 50%"></td>
+							style="width: 46%">
+						</td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="2">其他说明</td>
-						<td colspan="4"><input class="easyui-textbox" name="otherDescription" value="${apply.otherDescription!}" data-options=""
-							style="width: 100%"></td>
+						<td colspan="4">
+							<input class="easyui-textbox" name="otherDescription" value="${apply.otherDescription!}" data-options=""
+							style="width: 93%">
+						</td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="2">邮件发送列表</td>
 						<td colspan="4"><input class="easyui-textbox" name="emailAddress"
 							value="<%for(item in apply.emails){if(itemLP.last){%>${item.emailAddress!}<%}else{%>${item.emailAddress!};<%}}%>"
-							data-options="multiline:true" style="width: 100%"></td>
+							data-options="multiline:true" style="width: 93%"></td>
 					</tr>
 				</table>
 			</div>

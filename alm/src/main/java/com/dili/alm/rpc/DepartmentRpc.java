@@ -17,5 +17,9 @@ public interface DepartmentRpc {
 
 	@POST("/api/department/findByUserId")
 	BaseOutput<List<Department>> findByUserId(@VOSingleParameter Long memberId);
+	
+	@POST("/api/department/findByDepartmentName")
+	BaseOutput<Department> findByDepartmentName(@VOSingleParameter String departmentName);
+
 
 }

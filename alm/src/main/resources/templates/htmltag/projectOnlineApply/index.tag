@@ -427,12 +427,24 @@ function verify(id) {
 
 function appendSubsystem() {
 	paramCount++;
-	var content = '<tr>' + '<td class="table-title">系统名称</td>' + '<td class="table-combo" style="padding: 0"><input class="easyui-combobox" name="subProjectName[' + paramCount + ']"'
-			+ 'style="width: 100%; text-align: center;" data-options="url:\'${contextPath!}/project/list.json\',textField:\'name\',valueField:\'name\',required:true" /></td>'
-			+ '<td class="table-title">负责人</td>' + '<td class="table-combo" colspan="3" style="padding: 0"><select class="easyui-combobox" name="managerId[' + paramCount + ']"'
-			+ ' data-options="url:\'${contextPath!}/member/members\',textField:\'realName\',valueField:\'id\',required:true" style="width: 100%; text-align: center;">' + '</select></td>' + '</tr>';
+	var content = '<tr class="subsystem">'+
+						'<td colspan="2" class="table-title">系统名称</td>'+
+						'<td colspan="2" class="table-combo" style="padding: 0">'+
+							'<input class="easyui-combobox" name="subProjectName['+paramCount+']"'+
+							'style="width: 96%; text-align: center;"'+
+							'data-options="url:\'${contextPath!}/project/list.json\',textField:\'name\',valueField:\'id\',required:true" />'+
+						'</td>'+
+						'<td class="table-title">负责人</td>'+
+						'<td class="table-combo"  style="padding: 0">'+
+							'<select class="easyui-combobox" name="managerId['+paramCount+']"'+
+							'data-options="url:\'${contextPath!}/member/members\',textField:\'realName\',valueField:\'id\',required:true"'+
+							'style="width: 96%; text-align: center;">'+
+							'</select>'+
+						'</td>'+
+					'</tr>';
+			alert($('.table-box .subsystem:last').length);
 	$('.table-box .subsystem:last').after(content);
-	$.parser.parse($('.table-box tr:eq(' + (paramCount + 8) + ')'));
+	$.parser.parse($('.table-box tr:eq(' + (paramCount + 9) + ')'));
 
 }
 
@@ -440,7 +452,7 @@ function removeSubsystem() {
 	if (paramCount <= 0) {
 		return;
 	}
-	$('.table-box tr:eq(' + (paramCount + 8) + ')').remove();
+	$('.table-box tr:eq(' + (paramCount + 9) + ')').remove();
 	paramCount--;
 }
 

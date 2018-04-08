@@ -1,4 +1,3 @@
-
 <#body>
 <div id="win" style="display: none;"></div>
 <div class="easyui-layout" fit="true">
@@ -48,21 +47,21 @@
 			data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
 			<thead>
 				<tr>
-					<th data-options="field:'projectSerialNumber',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+					<th data-options="field:'projectSerialNumber',width:'12.5%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
 						项目编号</th>
-					<th data-options="field:'projectName',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目名称</th>
-					<th data-options="field:'version',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">版本名称</th>
+					<th data-options="field:'projectName', width:'12.5%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目名称</th>
+					<th data-options="field:'version', width:'12.5%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">版本名称</th>
 					<th
-						data-options="field:'actualOnlineDate',  _provider:'almDateProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						data-options="field:'actualOnlineDate',width:'15%',   _provider:'almDateProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
 						实际上线日期</th>
 					<th
-						data-options="field:'applicantId', _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">申请人</th>
+						data-options="field:'applicantId',width:'10%',  _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">申请人</th>
 					<th
-						data-options="field:'applyState', _provider:'projectOnlineApplyStateProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">状态</th>
+						data-options="field:'applyState',width:'12.5%',  _provider:'projectOnlineApplyStateProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">状态</th>
 					<th
-						data-options="field:'submitTime',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						data-options="field:'submitTime',width:'15%',   _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
 						申请时间</th>
-					<th data-options="field:'opt',align:'center',formatter:optFormatter">操作</th>
+					<th data-options="field:'opt',width:'10%', align:'center',formatter:optFormatter">操作</th>
 				</tr>
 			</thead>
 		</table>
