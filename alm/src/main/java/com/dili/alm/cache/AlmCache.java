@@ -22,6 +22,11 @@ public class AlmCache {
 
 	// 任务状态
 	public static final Map<String, String> TASK_STATE_MAP = new ConcurrentHashMap<>();
+	// 使用环境
+	public static final Map<String, String> ENVIRONMENT_MAP = new ConcurrentHashMap<>();
+	// 地域
+	public static final Map<String, String> REGIONAL_MAP = new ConcurrentHashMap<>();
+	
 	// 任务类型
 	public static final Map<String, String> TASK_TYPE_MAP = new ConcurrentHashMap<>();
 	// 消息类型

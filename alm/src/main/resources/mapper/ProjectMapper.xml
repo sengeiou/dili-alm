@@ -175,10 +175,10 @@
 		(
 			(#{startTime}&lt;=start_date AND start_date&lt;=#{endTime})
 			OR
-			(#{endTime}&lt;=end_date OR 
-				(#{startTime}&lt;=end_date AND end_date&lt;=#{endTime})
-			)
-		) 
+			(#{startTime}&lt;=end_date AND end_date&lt;=#{endTime})
+			OR
+			(start_date&lt;=#{startTime} AND #{endTime}&lt;=end_date)
+		)
 		AND TYPE=#{type,jdbcType=VARCHAR} 
 		GROUP BY project_state
 
@@ -189,13 +189,13 @@
 		SELECT id
 		FROM `project` 
 		WHERE 
-		(
+			(
 			(#{startTime}&lt;=start_date AND start_date&lt;=#{endTime})
 			OR
-			(#{endTime}&lt;=end_date OR 
-				(#{startTime}&lt;=end_date AND end_date&lt;=#{endTime})
+			(#{startTime}&lt;=end_date AND end_date&lt;=#{endTime})
+			OR
+			(start_date&lt;=#{startTime} AND #{endTime}&lt;=end_date)
 			)
-		) 
 	</select>
 	
 	
@@ -211,12 +211,12 @@
 		WHERE 1=1
 		<if test="list == null or list.size==0">
 		AND (
-			(#{startTime}&lt;=pa.start_date AND pa.start_date&lt;=#{endTime})
+			(#{startTime}&lt;=p.start_date AND p.start_date&lt;=#{endTime})
 			OR
-			(#{endTime}&lt;=pa.end_date OR 
-				(#{startTime}&lt;=pa.end_date AND pa.end_date&lt;=#{endTime})
+			(#{startTime}&lt;=p.end_date AND p.end_date&lt;=#{endTime})
+			OR
+			(p.start_date&lt;=#{startTime} AND #{endTime}&lt;=p.end_date)
 			)
-		)  
 		</if>
 		<if test="list != null and list.size>0">
 			AND p.id IN 
@@ -238,12 +238,12 @@
 		WHERE 1=1
 		<if test="list == null or list.size==0">
 		AND (
-			(#{startTime}&lt;=pa.start_date AND pa.start_date&lt;=#{endTime})
+			(#{startTime}&lt;=p.start_date AND p.start_date&lt;=#{endTime})
 			OR
-			(#{endTime}&lt;=pa.end_date OR 
-				(#{startTime}&lt;=pa.end_date AND pa.end_date&lt;=#{endTime})
+			(#{startTime}&lt;=p.end_date AND p.end_date&lt;=#{endTime})
+			OR
+			(p.start_date&lt;=#{startTime} AND #{endTime}&lt;=p.end_date)
 			)
-		)  
 		</if>
 		<if test="list != null and list.size>0">
 			AND p.id IN 
@@ -259,15 +259,13 @@
 		SELECT COUNT(*)
 		FROM `project` 
 		WHERE 
-		(
+			(
 			(#{startTime}&lt;=start_date AND start_date&lt;=#{endTime})
 			OR
-			(#{endTime}&lt;=end_date OR 
-				(#{startTime}&lt;=end_date AND end_date&lt;=#{endTime})
+			(#{startTime}&lt;=end_date AND end_date&lt;=#{endTime})
+			OR
+			(start_date&lt;=#{startTime} AND #{endTime}&lt;=end_date)
 			)
-		) 
-
-
 	</select>
 	
 	<select id="getStateByProjectCount" resultType="com.dili.alm.domain.dto.ProjectStatusCountDto">

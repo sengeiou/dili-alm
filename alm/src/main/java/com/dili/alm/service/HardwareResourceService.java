@@ -6,6 +6,7 @@ import com.dili.alm.domain.HardwareResource;
 import com.dili.alm.domain.HardwareResourceApply;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.User;
+import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
@@ -33,5 +34,9 @@ public interface HardwareResourceService extends BaseService<HardwareResource, L
 	BaseOutput insertOneSelective(HardwareResource hardwareResource);
 
 	void submit(Long projectId, Long userId);
+
+	List<DataDictionaryValueDto> getEnvironments();
+
+	List<DataDictionaryValueDto> getRegionals();
 
 }

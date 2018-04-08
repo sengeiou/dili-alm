@@ -158,12 +158,12 @@
             <tr>
                 <td style="padding:5px;">
                     <input class="easyui-combobox" name="_updateserviceEnvironment" id="_updateserviceEnvironment" style="width:100%" editable="false" data-options="label:'使用环境（数据字典）:'"  required="true"/>
-                    <#comboProvider _id="_updateserviceEnvironment" _table="data_dictionary_value" _valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":22}' />
+                    <#comboProvider _id="_updateserviceEnvironment" _table="data_dictionary_value" _valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":23}' />
                 </td>
                 <td style="padding:5px;">
                     <input class="easyui-combobox" name="_updateregional" id="_updateregional" style="width:100%" editable="false" data-options="label:'地域:'"
                            required="true" />
-                    <#comboProvider _id="_updateregional" _table="data_dictionary_value" _valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":22}' />
+                    <#comboProvider _id="_updateregional" _table="data_dictionary_value" _valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":24}' />
                 </td>
             </tr>
             <tr>
@@ -224,6 +224,7 @@
 		<div id="formCennet">
 				<hr>
 				<form id="_addform" class="easyui-form" method="post" fit="true">
+				<input  type="hidden" name="_addid" id="_addid"/>
 				<input  type="hidden" name="_addisSubmit" id="_addisSubmit"/>
 				<input name="_addprojectId" id="_addprojectId" type="hidden">
 		        <table width="800">
@@ -260,13 +261,13 @@
 		            </tr>
 		            <tr>
 		                <td style="padding:5px;">
-		                    <input class="easyui-combobox" name="_addserviceEnvironment" id="_addserviceEnvironment" style="width:100%" editable="false" data-options="label:'使用环境（数据字典）:'"  required="true"/>
-		                    <#comboProvider _id="_addserviceEnvironment" _table="data_dictionary_value" _valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":22}' />
+		                    <input class="easyui-combobox" name="_addserviceEnvironment" id="_addserviceEnvironment" style="width:100%" editable="false" data-options="label:'使用环境:'"  required="true"/>
+		                    <#comboProvider _id="_addserviceEnvironment" _table="data_dictionary_value" _valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":23}' />
 		                </td>
 		                <td style="padding:5px;">
 		                    <input class="easyui-combobox" name="_addregional" id="_addregional" style="width:100%" editable="false" data-options="label:'地域:'"
 		                           required="true" />
-		                    <#comboProvider _id="_addregional" _table="data_dictionary_value" _valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":22}' />
+		                    <#comboProvider _id="_addregional" _table="data_dictionary_value" _valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":24}' />
 		                </td>
 		            </tr>
 		            <tr>
@@ -293,9 +294,9 @@
                        <th data-options="field:'cpuCoreAmount',width:'8%',align:'center'">cpu内核数</th>
                        <th data-options="field:'memory',width:'7%',align:'center'">内存(GB)</th>
                        <th data-options="field:'disk',width:'7%',align:'center'">磁盘(GB)</th>
-                       <th data-options="field:'ip',width:'10%',align:'center' ">IP地址</th>
-                       <th data-options="field:'serviceEnvironment',width:'12%',align:'center'">使用环境(数字字典)</th>
-                       <th data-options="field:'regional',width:'12%',align:'center'">地域</th>
+                       <th data-options="field:'ip',width:'14%',align:'center' ">IP地址</th>
+                       <th data-options="field:'serviceEnvironment',_provider:'environmentProvider',width:'10%',align:'center'">使用环境</th>
+                       <th data-options="field:'regional',_provider:'regionalProvider',width:'10%',align:'center'">地域</th>
                        <th data-options="field:'cost',width:'8%',align:'center'">成本</th>
                        <th data-options="field:'options',formatter:addOptions, width:'10%', align:'center'">操作</th>
                    </tr>
@@ -358,7 +359,23 @@
             $('#_form').form('clear');
            
         }
-
+        
+      //打开列表修改窗口
+        function openAddUpdate(row){
+        	var selected=$("#dg").datagrid('getData').rows[row];
+            if (null == selected) {
+                $.messager.alert('警告','请选中一条数据');
+                return;
+            }
+            $("#formCennet").css("display", "block");
+            var formData = $.extend({},selected);
+            formData = addKeyStartWith(getOriginalData(formData),"_add");
+            $('#_addform').form('load', formData);
+            var updateDate= dateFormat_1(new Date());
+            $('#_addmaintenanceDate').textbox('setValue',updateDate);
+            
+        }
+      
         //打开修改窗口
         function openUpdate(row){
         	var selected=$("#grid").datagrid('getData').rows[row];
@@ -405,7 +422,6 @@
                     $.messager.alert('错误','远程访问失败');
                 }
             });
-            num=0;
         }
 
         function submit(){
@@ -440,11 +456,19 @@
         }
         
         function save(){
-			var _url="${contextPath}/hardwareResource/insert";
-			var _formData = removeKeyStartWith($("#_addform").serializeObject(),"_add");
-            if(!$('#_addform').form("validate")){
+        	// 没有id就新增
+        	if(!$('#_addform').form("validate")){
                 return;
             }
+        	var _url;
+        	var _formData = removeKeyStartWith($("#_addform").serializeObject(),"_add");
+        	if (_formData.id == null || _formData.id == "") {
+        		_url = "${contextPath}/hardwareResource/insert";
+        	} else {// 有id就修改
+        		_url = "${contextPath}/hardwareResource/update";
+        	}
+			
+			
             
 	            $.ajax({
 	                type: "POST",
@@ -682,7 +706,7 @@
         	var selected=$("#dg").datagrid('getData').rows[index];
         	var out;
         	if(selected.isSubmit==0){
-            	out="<a href='javascript:void(0)' onclick='AddListDel(" + index + ")'> 删除</a>";
+            	out="<a href='javascript:void(0)' onclick='openAddUpdate(" + index + ")'>编辑  </a><a href='javascript:void(0)' onclick='AddListDel(" + index + ")'> 删除</a>";
         	}
             return out;  
         }
