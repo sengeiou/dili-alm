@@ -442,7 +442,6 @@ function appendSubsystem() {
 							'</select>'+
 						'</td>'+
 					'</tr>';
-			alert($('.table-box .subsystem:last').length);
 	$('.table-box .subsystem:last').after(content);
 	$.parser.parse($('.table-box tr:eq(' + (paramCount + 9) + ')'));
 

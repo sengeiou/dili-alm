@@ -51,6 +51,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
+import com.google.common.collect.Lists;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -273,19 +274,20 @@ public class ProjectOnlineApplyController {
 		@SuppressWarnings("rawtypes")
 		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
 		if (CollectionUtils.isEmpty(dataAuths)) {
-			return null;
+			modelMap.addAttribute("projects", new ArrayList<>(0));
+		} else {
+			List<Long> projectIds = new ArrayList<>();
+			dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
+			Example example = new Example(ProjectOnlineApply.class);
+			Example.Criteria criteria = example.createCriteria();
+			criteria.andIn("id", projectIds);
+			List<Project> projects = this.projectService.selectByExample(example);
+			modelMap.addAttribute("projects", projects);
 		}
-		List<Long> projectIds = new ArrayList<>();
-		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
-		Example example = new Example(ProjectOnlineApply.class);
-		Example.Criteria criteria = example.createCriteria();
-		criteria.andIn("id", projectIds);
-		List<Project> projects = this.projectService.selectByExample(example);
 		DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.MARKET_CODE);
 		if (dd != null) {
 			modelMap.addAttribute("markets", dd.getValues());
 		}
-		modelMap.addAttribute("projects", projects);
 		return "projectOnlineApply/add";
 	}
 
