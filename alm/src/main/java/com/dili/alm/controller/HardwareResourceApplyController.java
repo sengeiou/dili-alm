@@ -1,6 +1,7 @@
 package com.dili.alm.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -8,6 +9,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,22 +17,26 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import tk.mybatis.mapper.entity.Example;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
-import com.dili.alm.domain.DataDictionary;
 import com.dili.alm.domain.DataDictionaryValue;
 import com.dili.alm.domain.Department;
 import com.dili.alm.domain.HardwareResourceApply;
+import com.dili.alm.domain.HardwareResourceApplyState;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectOnlineApply;
+import com.dili.alm.domain.ResourceEnvironment;
 import com.dili.alm.domain.User;
-import com.dili.alm.exceptions.ProjectOnlineApplyException;
+import com.dili.alm.domain.dto.HardwareConfigurationDto;
 import com.dili.alm.rpc.DepartmentRpc;
 import com.dili.alm.rpc.UserRpc;
+import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.DataDictionaryValueService;
 import com.dili.alm.service.HardwareResourceApplyService;
 import com.dili.alm.service.ProjectService;
-import com.dili.alm.service.impl.ProjectOnlineApplyServiceImpl;
+import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
@@ -58,8 +64,10 @@ public class HardwareResourceApplyController {
 	@Autowired
 	private DepartmentRpc deptRpc;
 	@Autowired
-	private DataDictionaryValueService ddService;
+	private DataDictionaryValueService ddvService;
 	
+	@Autowired
+	private DataDictionaryService ddService;
 	
 	private static final String DATA_AUTH_TYPE = "Project";
 	
@@ -95,8 +103,8 @@ public class HardwareResourceApplyController {
 		
 		/***环境**/
 		DataDictionaryValue dd = DTOUtils.newDTO(DataDictionaryValue.class);
-		dd.setDdId((long) 22);
-		List<DataDictionaryValue> ddValue = ddService.list(dd);
+		dd.setDdId((long) 23);
+		List<DataDictionaryValue> ddValue = ddvService.list(dd);
 		modelMap.addAttribute("ddValue", ddValue);
 		/***运维部门下的所有人员查询 begin**/
 		Department deptQuery = new Department();
@@ -127,21 +135,38 @@ public class HardwareResourceApplyController {
 		}
 		List<Long> projectIds = new ArrayList<>();
 		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
-		Example example = new Example(ProjectOnlineApply.class);
+		Example example = new Example(HardwareResourceApply.class);
 		Example.Criteria criteria = example.createCriteria();
 		criteria.andIn("id", projectIds);
 		List<Project> projects = this.projectService.selectByExample(example);
 		modelMap.addAttribute("projects", projects);
 		List<Project> plist = this.projectService.list(null);
 		modelMap.addAttribute("plist", plist).addAttribute("ulist", AlmCache.USER_MAP.values());
-		/*		try {
-			ProjectOnlineApply dto = this.projectOnlineApplyService.getEditViewDataById(id);
-			Map<Object, Object> model = ProjectOnlineApplyServiceImpl.buildApplyViewModel(dto);
-			modelMap.addAttribute("apply", model);*/
-			return "hardwareResourceApply/add";
-		/*} catch (ProjectOnlineApplyException e) {
-			return "";
-		}*/
+		
+		/**查询 所有部门***/
+		List<Department> departments =  this.deptRpc.list(new Department()).getData();
+		modelMap.addAttribute("departments", departments);
+		
+		/**个人信息**/
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		modelMap.addAttribute("userInfo", userTicket);
+		
+		/***环境**/
+		DataDictionaryValue dd = DTOUtils.newDTO(DataDictionaryValue.class);
+		dd.setDdId((long) 23);
+		List<DataDictionaryValue> ddValue = ddvService.list(dd);
+		modelMap.addAttribute("ddValue", ddValue);
+		
+		/***运维部门下的所有人员查询 begin**/
+		Department deptQuery = new Department();
+		deptQuery.setCode(AlmConstants.OPERATION_DEPARTMENT_CODE);
+		BaseOutput<List<Department>> deptOutput = this.deptRpc.list(deptQuery);
+		HardwareResourceApply dto = this.hardwareResourceApplyService.get(id);
+		modelMap.addAttribute("apply", dto);
+		String[] se=dto.getServiceEnvironment().split(";");
+		modelMap.addAttribute("se", se);
+		modelMap.addAttribute("submit",DateUtil.getDate(dto.getSubmitTime()));//转化时间
+		return "hardwareResourceApply/edit";
 	}
     
     @ApiOperation(value="查询HardwareResourceApply", notes = "查询HardwareResourceApply，返回列表信息")
@@ -167,8 +192,19 @@ public class HardwareResourceApplyController {
 		@ApiImplicitParam(name="HardwareResourceApply", paramType="form", value = "HardwareResourceApply的form信息", required = true, dataType = "string")
 	})
     @RequestMapping(value="/save", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput insert(HardwareResourceApply hardwareResourceApply) {
+    public @ResponseBody BaseOutput insert(HardwareResourceApply hardwareResourceApply,String[] serviceEnvironmentChk,String configurationRequirementJsonStr) {
+    	
+    	String serviceEnvironmentStr ="";
+    	for (int i = 0; i < serviceEnvironmentChk.length; i++) {
+    		serviceEnvironmentStr += serviceEnvironmentChk[i]+";";
+		}
+    	
+    	hardwareResourceApply.setServiceEnvironment(serviceEnvironmentStr);
+    	hardwareResourceApply.setCreated(new Date());
+    	hardwareResourceApply.setApplyState(HardwareResourceApplyState.APPLING.getValue());
+    	//hardwareResourceApply.setConfigurationRequirement(configurationRequirementJsonStr);
         hardwareResourceApplyService.insertSelective(hardwareResourceApply);
+        
         return BaseOutput.success("新增成功");
     }
 
@@ -177,11 +213,37 @@ public class HardwareResourceApplyController {
 		@ApiImplicitParam(name="HardwareResourceApply", paramType="form", value = "HardwareResourceApply的form信息", required = true, dataType = "string")
 	})
     @RequestMapping(value="/update", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput update(HardwareResourceApply hardwareResourceApply) {
+    public @ResponseBody BaseOutput update(HardwareResourceApply hardwareResourceApply,String[] serviceEnvironmentChk,List<HardwareConfigurationDto> configurationRequirementJsonStr) {
         hardwareResourceApplyService.updateSelective(hardwareResourceApply);
+    	String serviceEnvironmentStr ="";
+    	for (int i = 0; i < serviceEnvironmentChk.length; i++) {
+    		serviceEnvironmentStr += serviceEnvironmentChk[i]+";";
+		}
+    	hardwareResourceApply.setServiceEnvironment(serviceEnvironmentStr);
+    	//hardwareResourceApply.setConfigurationRequirement("123125465");
         return BaseOutput.success("修改成功");
     }
-
+    @ApiOperation("删除HardwareResourceApply")
+    @ApiImplicitParams({
+		@ApiImplicitParam(name="id", paramType="form", value = "HardwareResourceApply的主键", required = true, dataType = "long")
+	})
+    @RequestMapping(value="/updateeeee", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput updateeeee(Long id) {
+        hardwareResourceApplyService.delete(id);
+        return BaseOutput.success("删除成功");
+    }
+    
+    public static JSONArray ProLogList2Json(List<HardwareConfigurationDto> list){
+        JSONArray json = new JSONArray();
+        for(HardwareConfigurationDto pLog : list){
+            JSONObject jo = new JSONObject();
+            jo.put("CPU", pLog.getCPU());
+            jo.put("DDR", pLog.getDDR());
+             
+            json.add(jo);
+        }
+        return json;
+   }
     @ApiOperation("删除HardwareResourceApply")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="id", paramType="form", value = "HardwareResourceApply的主键", required = true, dataType = "long")
@@ -190,5 +252,19 @@ public class HardwareResourceApplyController {
     public @ResponseBody BaseOutput delete(Long id) {
         hardwareResourceApplyService.delete(id);
         return BaseOutput.success("删除成功");
+    }
+    
+    @ApiOperation("删除HardwareResourceApply")
+    @ApiImplicitParams({
+		@ApiImplicitParam(name="id", paramType="form", value = "HardwareResourceApply的主键", required = true, dataType = "long")
+	})
+    @RequestMapping(value="/submit", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput submit(Long id) {
+    	HardwareResourceApply dto = DTOUtils.newDTO(HardwareResourceApply.class);
+    	dto.setId(id);
+    	dto=hardwareResourceApplyService.get(id);
+    	dto.setApplyState(HardwareResourceApplyState.APPROVING.getValue());
+    	hardwareResourceApplyService.saveOrUpdate(dto);
+        return BaseOutput.success("提交成功");
     }
 }
