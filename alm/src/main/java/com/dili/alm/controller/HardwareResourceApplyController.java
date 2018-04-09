@@ -202,7 +202,7 @@ public class HardwareResourceApplyController {
     	hardwareResourceApply.setServiceEnvironment(serviceEnvironmentStr);
     	hardwareResourceApply.setCreated(new Date());
     	hardwareResourceApply.setApplyState(HardwareResourceApplyState.APPLING.getValue());
-    	hardwareResourceApply.setConfigurationRequirement(configurationRequirementJsonStr);
+    	//hardwareResourceApply.setConfigurationRequirement(configurationRequirementJsonStr);
         hardwareResourceApplyService.insertSelective(hardwareResourceApply);
         
         return BaseOutput.success("新增成功");
@@ -220,7 +220,7 @@ public class HardwareResourceApplyController {
     		serviceEnvironmentStr += serviceEnvironmentChk[i]+";";
 		}
     	hardwareResourceApply.setServiceEnvironment(serviceEnvironmentStr);
-    	hardwareResourceApply.setConfigurationRequirement("123125465");
+    	//hardwareResourceApply.setConfigurationRequirement("123125465");
         return BaseOutput.success("修改成功");
     }
     @ApiOperation("删除HardwareResourceApply")
