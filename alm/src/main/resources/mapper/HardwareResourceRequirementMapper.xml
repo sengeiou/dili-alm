@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.alm.dao.HardwareResourceRequirementMapper">
+  <resultMap id="BaseResultMap" type="com.dili.alm.domain.HardwareResourceRequirement">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="cpu_amount" jdbcType="INTEGER" property="cpuAmount" />
+    <result column="memory_amount" jdbcType="INTEGER" property="memoryAmount" />
+    <result column="disk_amount" jdbcType="INTEGER" property="diskAmount" />
+    <result column="notes" jdbcType="VARCHAR" property="notes" />
+    <result column="apply_id" jdbcType="BIGINT" property="applyId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, cpu_amount, memory_amount, disk_amount, notes, apply_id
+  </sql>
+  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from hardware_resource_requirement
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <update id="updateBy" parameterType="com.dili.alm.domain.HardwareResourceRequirement">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update hardware_resource_requirement
+    <set>
+      <if test="cpuAmount != null">
+        cpu_amount = #{cpuAmount,jdbcType=INTEGER},
+      </if>
+      <if test="memoryAmount != null">
+        memory_amount = #{memoryAmount,jdbcType=INTEGER},
+      </if>
+      <if test="diskAmount != null">
+        disk_amount = #{diskAmount,jdbcType=INTEGER},
+      </if>
+      <if test="notes != null">
+        notes = #{notes,jdbcType=VARCHAR},
+      </if>
+      <if test="applyId != null">
+        apply_id = #{applyId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
