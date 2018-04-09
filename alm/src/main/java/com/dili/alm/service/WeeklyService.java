@@ -114,4 +114,6 @@ public interface WeeklyService extends BaseService<Weekly, Long> {
 	 Map<String, Weekly>  insertWeeklyByprojectId(String projectId);
 	
 	 Weekly insertWeekAndWeekDetail(String projectId, UserTicket userTicket, Weekly wkk);
+
+	void submitWeekly();
 }

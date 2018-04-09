@@ -234,5 +234,29 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 		  }
 		return list;
 		}
-
+		@Override
+		public WorkDay getNextWorkDay(Date date) {
+//			Date as = new Date(new Date().getTime()-24*60*60*1000);
+			WorkDay selectByPrimaryKey = this.getActualDao().getWorkDayNowDate(DateUtil.getDate(date));
+			WorkDay workDay=DTOUtils.newDTO(WorkDay.class);
+			workDay.setWorkDayYear(selectByPrimaryKey.getWorkDayYear());
+			workDay.setWordDayWeek(selectByPrimaryKey.getWordDayWeek()+1);
+			WorkDay maxWeekWorkDay = this.getActualDao().getMaxOrMinWeekWorkDay(1, selectByPrimaryKey.getWorkDayYear());
+			WorkDay nextWork=DTOUtils.newDTO(WorkDay.class); 
+			nextWork = this.getActualDao().selectOne(workDay);
+			if(maxWeekWorkDay.getId()==nextWork.getId()){
+				String workDayYear = nextWork.getWorkDayYear();
+				int newYear = Integer.parseInt(workDayYear)+1;
+				WorkDay minWeekWorkDay = this.getActualDao().getMaxOrMinWeekWorkDay(0,String.valueOf(newYear));
+				int oldWorkDaysByMillisecond = DateUtil.differentDaysByMillisecond(nextWork.getWorkStartTime(),nextWork.getWorkEndTime());
+				int newWorkDaysByMillisecond = DateUtil.differentDaysByMillisecond( minWeekWorkDay.getWorkStartTime(),minWeekWorkDay.getWorkEndTime());
+				if(oldWorkDaysByMillisecond<=2&&newWorkDaysByMillisecond<=2){
+					nextWork.setWorkStartTime(nextWork.getWorkStartTime());
+					nextWork.setWorkEndTime(minWeekWorkDay.getWorkEndTime());
+				}
+				
+			}
+			return nextWork;	
+			
+		}
 }

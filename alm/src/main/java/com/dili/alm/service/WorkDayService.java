@@ -1,6 +1,7 @@
 package com.dili.alm.service;
 
 import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -21,5 +22,7 @@ public interface WorkDayService extends BaseService<WorkDay, Long> {
 	WorkDay getNowWeeklyWorkDay();
 
 	List<String> getWorkDayYaers();
+
+	WorkDay getNextWorkDay(Date date);
 	
 }
