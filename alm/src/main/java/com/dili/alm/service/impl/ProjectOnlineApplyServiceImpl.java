@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
@@ -40,22 +41,24 @@ import com.dili.alm.dao.EmailAddressMapper;
 import com.dili.alm.dao.FilesMapper;
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.dao.ProjectOnlineApplyMapper;
+import com.dili.alm.dao.ProjectOnlineApplyMarketMapper;
 import com.dili.alm.dao.ProjectOnlineOperationRecordMapper;
 import com.dili.alm.dao.ProjectOnlineSubsystemMapper;
 import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.TeamMapper;
+import com.dili.alm.dao.VersionMarketOnlineRecordMapper;
 import com.dili.alm.domain.ApplyType;
 import com.dili.alm.domain.EmailAddress;
 import com.dili.alm.domain.OperationResult;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectOnlineApply;
+import com.dili.alm.domain.ProjectOnlineApplyMarket;
 import com.dili.alm.domain.ProjectOnlineApplyOperationType;
 import com.dili.alm.domain.ProjectOnlineApplyState;
 import com.dili.alm.domain.ProjectOnlineOperationRecord;
 import com.dili.alm.domain.ProjectOnlineSubsystem;
-import com.dili.alm.domain.ProjectVersion;
-import com.dili.alm.domain.ProjectVersionOnlineState;
 import com.dili.alm.domain.User;
+import com.dili.alm.domain.VersionMarketOnlineRecord;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectOnlineApplyUpdateDto;
@@ -79,6 +82,8 @@ import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
 
+import tk.mybatis.mapper.entity.Example;
+
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2018-03-13 15:31:10.
  */
@@ -87,281 +92,11 @@ import com.github.pagehelper.Page;
 public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnlineApply, Long>
 		implements ProjectOnlineApplyService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ProjectOnlineApplyServiceImpl.class);
-
 	private static final String DEPARTMENT_MANAGER_ROLE_CONFIG_CODE = "department_manager_role_config";
-	private static final String TEST_MANAGER_CODE = "test_manager";
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ProjectOnlineApplyServiceImpl.class);
 	private static final String OPERATION_MANAGER_CODE = "operation_manager";
-
-	@Autowired
-	private ProjectMapper projectMapper;
-	@Autowired
-	private ProjectOnlineSubsystemMapper posMapper;
-	@Autowired
-	private EmailAddressMapper emailAddressMapper;
-	@Autowired
-	private ProjectOnlineOperationRecordMapper poorMapper;
-	@Autowired
-	private MailManager mailManager;
-	@Value("${spring.mail.username:}")
-	private String mailFrom;
-	@Autowired
-	private DataDictionaryService ddService;
-	@Autowired
-	private UserRpc userRpc;
-	@Autowired
-	private ProjectVersionProvider versionProvider;
-	@Autowired
-	private ProjectVersionMapper versionMapper;
-	@Autowired
-	private FilesMapper filesMapper;
-	@Autowired
-	private DepartmentRpc deptRpc;
-	@Autowired
-	private TeamMapper teamMapper;
-	private GroupTemplate groupTemplate;
-
-	private String contentTemplate;
-	@Qualifier("projectOnlineApplyNumberGenerator")
-	@Autowired
-	private NumberGenerator serialNumberGenerator;
-
-	public ProjectOnlineApplyServiceImpl() {
-		super();
-		InputStream in = null;
-		StringTemplateResourceLoader resourceLoader = new StringTemplateResourceLoader();
-		try {
-			Configuration cfg = Configuration.defaultConfiguration();
-			this.groupTemplate = new GroupTemplate(resourceLoader, cfg);
-			Resource res = new ClassPathResource("conf/projectOlineApplyMailContentTemplate.html");
-			in = res.getInputStream();
-			this.contentTemplate = IOUtils.toString(in);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} finally {
-			if (in != null) {
-				try {
-					in.close();
-				} catch (IOException e) {
-					LOGGER.error(e.getMessage(), e);
-				}
-			}
-		}
-	}
-
-	public ProjectOnlineApplyMapper getActualDao() {
-		return (ProjectOnlineApplyMapper) getDao();
-	}
-
-	@Override
-	public void saveOrUpdate(ProjectOnlineApplyUpdateDto dto) throws ProjectOnlineApplyException {
-		if (dto.getId() == null) {
-			this.insertProjectOnlineApply(dto);
-		} else {
-			this.updateProjectOnlineApply(dto);
-		}
-	}
-
-	@Override
-	public void updateProjectOnlineApply(ProjectOnlineApplyUpdateDto apply) throws ProjectOnlineApplyException {
-
-		// 判断状态必须是未提交状态才能编辑
-		ProjectOnlineApply old = this.getActualDao().selectByPrimaryKey(apply.getId());
-		if (!old.getApplyState().equals(ProjectOnlineApplyState.APPLING.getValue())) {
-			throw new ProjectOnlineApplyException("当前状态不能编辑");
-		}
-
-		// 查询出项目信息
-		Project project = this.projectMapper.selectByPrimaryKey(apply.getProjectId());
-		apply.setProjectName(project.getName());
-		apply.setBusinessOwnerId(project.getBusinessOwner());
-		apply.setProjectManagerId(project.getProjectManager());
-		apply.setProductManagerId(project.getProductManager());
-		apply.setTestManagerId(project.getTestManager());
-		apply.setDevelopmentManagerId(project.getDevelopManager());
-		apply.setVersion(this.versionProvider.getDisplayText(apply.getVersionId(), null, null));
-
-		// 判断申请上线日期是否大于当前日期
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(new Date());
-		calendar.set(Calendar.HOUR_OF_DAY, 0);
-		calendar.set(Calendar.MINUTE, 0);
-		calendar.set(Calendar.SECOND, 0);
-		calendar.set(Calendar.MILLISECOND, 0);
-		if (apply.getOnlineDate().getTime() < calendar.getTimeInMillis()) {
-			throw new ProjectOnlineApplyException("申请上线日期不能小于当前日期");
-		}
-
-		// 更新子系统，先删除后插入
-		if (CollectionUtils.isNotEmpty(apply.getSubsystem())) {
-			// 先删除
-			ProjectOnlineSubsystem record = DTOUtils.newDTO(ProjectOnlineSubsystem.class);
-			record.setApplyId(apply.getId());
-			this.posMapper.delete(record);
-
-			// 插入
-			apply.getSubsystem().forEach(s -> {
-				s.setApplyId(apply.getId());
-				if (StringUtils.isNumeric(s.getManagerName())) {
-					Long managerId = Long.valueOf(s.getManagerName());
-					User u = AlmCache.USER_MAP.get(managerId);
-					if (u != null) {
-						s.setManagerId(managerId);
-						s.setManagerName(u.getRealName());
-					}
-				}
-				if (StringUtils.isNumeric(s.getProjectName())) {
-					Long projectId = Long.valueOf(s.getProjectName());
-					Project p = this.projectMapper.selectByPrimaryKey(projectId);
-					if (p != null) {
-						s.setProjectId(p.getId());
-						s.setProjectName(p.getName());
-					}
-				}
-				this.posMapper.insert(s);
-			});
-		}
-
-		// 更新附件
-		if (apply.getDependencySystemFileId() != null) {
-			this.filesMapper.deleteByPrimaryKey(old.getDependencySystemFileId());
-		}
-		if (apply.getSqlFileId() != null) {
-			this.filesMapper.deleteByPrimaryKey(old.getSqlFileId());
-		}
-		if (apply.getStartupScriptFileId() != null) {
-			this.filesMapper.deleteByPrimaryKey(old.getStartupScriptFileId());
-		}
-
-		int result = this.getActualDao().updateByPrimaryKeySelective(apply);
-		if (result <= 0) {
-			throw new ProjectOnlineApplyException("更新失败");
-		}
-
-		// 更新邮件通知地址，先删除后插入
-		// 先删除
-		EmailAddress eaCondition = DTOUtils.newDTO(EmailAddress.class);
-		eaCondition.setApplyId(apply.getId());
-		this.emailAddressMapper.delete(eaCondition);
-
-		// 插入
-		apply.getEmailAddress().forEach(s -> {
-			EmailAddress ea = DTOUtils.newDTO(EmailAddress.class);
-			ea.setApplyId(apply.getId());
-			ea.setApplyType(ApplyType.ONLINE.getValue());
-			ea.setEmailAddress(s);
-			this.emailAddressMapper.insert(ea);
-		});
-	}
-
-	@Transactional(rollbackFor = ApplicationException.class, propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
-	@Override
-	public ProjectOnlineApplyDetailDto getViewDataById(Long applyId) {
-		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(applyId);
-		if (apply == null) {
-			return null;
-		}
-		ProjectOnlineApplyDetailDto dto = DTOUtils.toEntity(apply, ProjectOnlineApplyDetailDto.class, true);
-		ProjectOnlineOperationRecord record = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
-		record.setApplyId(applyId);
-		List<ProjectOnlineOperationRecord> list = this.poorMapper.select(record);
-		if (CollectionUtils.isNotEmpty(list)) {
-			List<ProjectOnlineOperationRecordDto> poorDtos = new ArrayList<>(list.size());
-			list.forEach(e -> poorDtos.add(DTOUtils.toEntity(e, ProjectOnlineOperationRecordDto.class, true)));
-			dto.setOperations(poorDtos);
-		}
-		return dto;
-	}
-
-	@Override
-	public void submit(Long applyId) throws ProjectOnlineApplyException {
-		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(applyId);
-		if (apply == null) {
-			throw new ProjectOnlineApplyException("申请记录不存在");
-		}
-		if (!apply.getApplyState().equals(ProjectOnlineApplyState.APPLING.getValue())) {
-			throw new ProjectOnlineApplyException("当前状态不能提交申请");
-		}
-		// 提交申请进入测试确认状态
-		apply.setApplyState(ProjectOnlineApplyState.TESTER_CONFIRING.getValue());
-		apply.setSubmitTime(new Date());
-		int result = this.getActualDao().updateByPrimaryKey(apply);
-		if (result <= 0) {
-			throw new ProjectOnlineApplyException("更新状态失败");
-		}
-		// 发送邮件
-		this.sendMail(apply, "上线申请");
-	}
-
-	private void sendMail(ProjectOnlineApply apply, String subject) {
-		Set<String> emailStrs = new HashSet<>();
-		EmailAddress record = DTOUtils.newDTO(EmailAddress.class);
-		record.setApplyId(apply.getId());
-		List<EmailAddress> emails = this.emailAddressMapper.select(record);
-		emails.forEach(e -> emailStrs.add(e.getEmailAddress()));
-
-		// 构建邮件内容
-		Template template = this.groupTemplate.getTemplate(this.contentTemplate);
-		template.binding("apply", buildApplyViewModel(apply));
-		ProjectOnlineOperationRecord poor = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
-		poor.setApplyId(apply.getId());
-		List<ProjectOnlineOperationRecord> list = this.poorMapper.select(poor);
-		template.binding("opRecords", this.buildOperationRecordViewModel(list));
-
-		// 默认邮件发送列表，运维组和项目组成员
-		// 运维部成员
-		// Department deptQuery = new Department();
-		// deptQuery.setCode(AlmConstants.OPERATION_DEPARTMENT_CODE);
-		// BaseOutput<List<Department>> deptOutput = this.deptRpc.list(deptQuery);
-		// if (deptOutput.isSuccess() &&
-		// CollectionUtils.isNotEmpty(deptOutput.getData())) {
-		// Long departmentId = deptOutput.getData().get(0).getId();
-		// User userQuery = new User();
-		// userQuery.setDepartmentId(departmentId);
-		// BaseOutput<List<User>> userOutput = this.userRpc.list(userQuery);
-		// if (userOutput.isSuccess() &&
-		// CollectionUtils.isNotEmpty(userOutput.getData())) {
-		// userOutput.getData().forEach(u -> emailStrs.add(u.getEmail()));
-		// }
-		// }
-		// // 项目组成员
-		// Team teamQuery = DTOUtils.newDTO(Team.class);
-		// teamQuery.setProjectId(apply.getProjectId());
-		// List<Team> teams = this.teamMapper.select(teamQuery);
-		// teams.forEach(t -> {
-		// User u = AlmCache.USER_MAP.get(t.getMemberId());
-		// if (u != null) {
-		// emailStrs.add(u.getEmail());
-		// }
-		// });
-
-		// 发送
-		emailStrs.forEach(s -> {
-			try {
-				this.mailManager.sendMail(this.mailFrom, s, template.render(), true, subject, null);
-			} catch (Exception e) {
-				LOGGER.error(e.getMessage(), e);
-			}
-		});
-	}
-
-	@SuppressWarnings("rawtypes")
-	private List<Map> buildOperationRecordViewModel(List<ProjectOnlineOperationRecord> list) {
-		Map<Object, Object> metadata = new HashMap<>();
-		JSONObject memberProvider = new JSONObject();
-		memberProvider.put("provider", "memberProvider");
-		metadata.put("operatorId", memberProvider);
-
-		JSONObject datetimeProvider = new JSONObject();
-		datetimeProvider.put("provider", "datetimeProvider");
-		metadata.put("operateTime", datetimeProvider);
-		try {
-			return ValueProviderUtils.buildDataByProvider(metadata, list);
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
-			return null;
-		}
-	}
+	private static final String TEST_MANAGER_CODE = "test_manager";
 
 	@SuppressWarnings("unchecked")
 	public static Map<Object, Object> buildApplyViewModel(ProjectOnlineApply apply) {
@@ -380,6 +115,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		datetimeProvider.put("provider", "almDateProvider");
 		metadata.put("onlineDate", datetimeProvider);
 		metadata.put("actualOnlineDate", datetimeProvider);
+		metadata.put("submitTime", datetimeProvider);
 
 		JSONObject applyStateProvider = new JSONObject();
 		applyStateProvider.put("provider", "projectOnlineApplyStateProvider");
@@ -404,100 +140,118 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		}
 	}
 
-	@Override
-	public void startExecute(Long applyId, Long executorId, Set<Long> executors, String description)
-			throws ProjectOnlineApplyException {
-		// 验证记录是否存在
-		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(applyId);
-		if (apply == null) {
-			throw new ProjectOnlineApplyException("申请记录不存在");
-		}
-		// 验证状态
-		if (!apply.getApplyState().equals(ProjectOnlineApplyState.EXECUTING.getValue())) {
-			throw new ProjectOnlineApplyException("当前状态不能执行测试确认");
-		}
-		// 分配的执行人最多两人，且都是运维部员工
-		if (CollectionUtils.isEmpty(executors)) {
-			throw new ProjectOnlineApplyException("执行人不能为空");
-		}
-		if (executors.size() > 2) {
-			throw new ProjectOnlineApplyException("最多只能分配2个执行人");
-		}
-		for (Long value : executors) {
-			UserDepartmentRoleQuery dto = new UserDepartmentRoleQuery();
-			dto.setUserId(value);
-			BaseOutput<List<UserDepartmentRole>> output = this.userRpc.findUserContainDepartmentAndRole(dto);
-			if (!output.isSuccess()) {
-				throw new ProjectOnlineApplyException("查询执行人信息失败");
+	@Autowired
+	private ProjectOnlineApplyMarketMapper applyMarketMapper;
+	private String contentTemplate;
+	@Autowired
+	private DataDictionaryService ddService;
+	@Autowired
+	private DepartmentRpc deptRpc;
+	@Autowired
+	private EmailAddressMapper emailAddressMapper;
+	@Autowired
+	private FilesMapper filesMapper;
+	private GroupTemplate groupTemplate;
+	@Value("${spring.mail.username:}")
+	private String mailFrom;
+	@Autowired
+	private MailManager mailManager;
+	@Autowired
+	private ProjectOnlineOperationRecordMapper poorMapper;
+	@Autowired
+	private ProjectOnlineSubsystemMapper posMapper;
+	@Autowired
+	private ProjectMapper projectMapper;
+	@Qualifier("projectOnlineApplyNumberGenerator")
+	@Autowired
+	private NumberGenerator serialNumberGenerator;
+
+	@Autowired
+	private TeamMapper teamMapper;
+	@Autowired
+	private UserRpc userRpc;
+	@Autowired
+	private VersionMarketOnlineRecordMapper versionMaketMapper;
+	@Autowired
+	private ProjectVersionMapper versionMapper;
+
+	@Autowired
+	private ProjectVersionProvider versionProvider;
+
+	public ProjectOnlineApplyServiceImpl() {
+		super();
+		InputStream in = null;
+		StringTemplateResourceLoader resourceLoader = new StringTemplateResourceLoader();
+		try {
+			Configuration cfg = Configuration.defaultConfiguration();
+			this.groupTemplate = new GroupTemplate(resourceLoader, cfg);
+			Resource res = new ClassPathResource("conf/projectOlineApplyMailContentTemplate.html");
+			in = res.getInputStream();
+			this.contentTemplate = IOUtils.toString(in);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					LOGGER.error(e.getMessage(), e);
+				}
 			}
-			if (CollectionUtils.isEmpty(output.getData())) {
-				throw new ProjectOnlineApplyException("执行人不存在");
-			}
-			if (!AlmConstants.OPERATION_DEPARTMENT_CODE.equals(output.getData().get(0).getDepartment().getCode())) {
-				throw new ProjectOnlineApplyException("执行人不是运维部员工");
-			}
 		}
-		// 还要判断有没有分配执行人，分配了的话就不能再执行“开始执行”的操作了
-		if (StringUtils.isNotEmpty(apply.getExecutorId())) {
-			throw new ProjectOnlineApplyException("已分配执行人的申请不能重复执行");
-		}
-		StringBuilder sb = new StringBuilder();
-		executors.forEach(e -> sb.append(e).append(","));
-		apply.setExecutorId(sb.substring(0, sb.length() - 1));
-		int rows = this.getActualDao().updateByPrimaryKey(apply);
-		if (rows <= 0) {
-			throw new ProjectOnlineApplyException("更新数据失败");
-		}
-		// 生成操作记录
-		ProjectOnlineOperationRecord record = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
-		record.setApplyId(applyId);
-		record.setOperatorId(executorId);
-		record.setOperationType(ProjectOnlineApplyOperationType.OPERATION_MANAGER.getValue());
-		record.setOperationName(ProjectOnlineApplyOperationType.OPERATION_MANAGER.getName());
-		record.setDescription(description);
-		record.setOpertateResult(OperationResult.SUCCESS.getValue());
-		rows = this.poorMapper.insertSelective(record);
-		if (rows <= 0) {
-			throw new ProjectOnlineApplyException("生成操作记录失败");
+	}
+
+	@SuppressWarnings("rawtypes")
+	private List<Map> buildOperationRecordViewModel(List<ProjectOnlineOperationRecord> list) {
+		Map<Object, Object> metadata = new HashMap<>();
+		JSONObject memberProvider = new JSONObject();
+		memberProvider.put("provider", "memberProvider");
+		metadata.put("operatorId", memberProvider);
+
+		JSONObject datetimeProvider = new JSONObject();
+		datetimeProvider.put("provider", "datetimeProvider");
+		metadata.put("operateTime", datetimeProvider);
+		try {
+			return ValueProviderUtils.buildDataByProvider(metadata, list);
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			return null;
 		}
 	}
 
 	@Override
-	public void testerConfirm(Long applyId, Long executorId, OperationResult result, String description)
-			throws ProjectOnlineApplyException {
-		// 验证记录是否存在
-		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(applyId);
+	public void deleteProjectOnlineApply(Long id) throws ProjectOnlineApplyException {
+		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(id);
 		if (apply == null) {
-			throw new ProjectOnlineApplyException("申请记录不存在");
+			throw new ProjectOnlineApplyException("申请不存在");
 		}
-		// 验证状态
-		if (!apply.getApplyState().equals(ProjectOnlineApplyState.TESTER_CONFIRING.getValue())) {
-			throw new ProjectOnlineApplyException("当前状态不能执行测试确认");
+		if (!apply.getApplyState().equals(ProjectOnlineApplyState.APPLING.getValue())) {
+			throw new ProjectOnlineApplyException("当前状态不能编辑");
 		}
-		// 测试回退
-		if (OperationResult.FAILURE.equals(result)) {
-			apply.setApplyState(ProjectOnlineApplyState.APPLING.getValue());
+		// 删除子系统
+		ProjectOnlineSubsystem posQuery = DTOUtils.newDTO(ProjectOnlineSubsystem.class);
+		posQuery.setApplyId(id);
+		this.posMapper.delete(posQuery);
+
+		// 删除邮件
+		EmailAddress emailQuery = DTOUtils.newDTO(EmailAddress.class);
+		emailQuery.setApplyId(id);
+		this.emailAddressMapper.delete(emailQuery);
+
+		// 删除文件
+		if (apply.getDependencySystemFileId() != null) {
+			this.filesMapper.deleteByPrimaryKey(apply.getDependencySystemFileId());
 		}
-		// 测试确认
-		if (OperationResult.SUCCESS.equals(result)) {
-			apply.setApplyState(ProjectOnlineApplyState.EXECUTING.getValue());
+		if (apply.getSqlFileId() != null) {
+			this.filesMapper.deleteByPrimaryKey(apply.getSqlFileId());
 		}
-		// 更新状态
-		int rows = this.getActualDao().updateByPrimaryKey(apply);
-		if (rows <= 0) {
-			throw new ProjectOnlineApplyException("更新状态失败");
+		if (apply.getStartupScriptFileId() != null) {
+			this.filesMapper.deleteByPrimaryKey(apply.getStartupScriptFileId());
 		}
-		// 生成操作记录
-		ProjectOnlineOperationRecord record = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
-		record.setApplyId(applyId);
-		record.setOperatorId(executorId);
-		record.setOperationType(ProjectOnlineApplyOperationType.TEST_MANAGER.getValue());
-		record.setOperationName(ProjectOnlineApplyOperationType.TEST_MANAGER.getName());
-		record.setDescription(description);
-		record.setOpertateResult(result.getValue());
-		rows = this.poorMapper.insertSelective(record);
-		if (rows <= 0) {
-			throw new ProjectOnlineApplyException("生成操作记录失败");
+
+		int result = super.delete(id);
+		if (result <= 0) {
+			throw new ProjectOnlineApplyException("删除失败");
 		}
 	}
 
@@ -560,60 +314,98 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		}
 	}
 
+	public ProjectOnlineApplyMapper getActualDao() {
+		return (ProjectOnlineApplyMapper) getDao();
+	}
+
 	@Override
-	public void verify(Long applyId, Long verifierId, OperationResult result, String description)
-			throws ProjectOnlineApplyException {
-		// 验证记录是否存在
-		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(applyId);
+	public ProjectOnlineApply getConfirmExecuteViewModel(Long id) throws ProjectOnlineApplyException {
+		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(id);
 		if (apply == null) {
 			throw new ProjectOnlineApplyException("申请记录不存在");
 		}
-		// 验证状态
-		if (!apply.getApplyState().equals(ProjectOnlineApplyState.VARIFING.getValue())) {
-			throw new ProjectOnlineApplyException("当前状态不能执行确认操作");
-		}
-		if (OperationResult.FAILURE.equals(result)) {
-			apply.setApplyState(ProjectOnlineApplyState.FAILURE.getValue());
-		}
-		if (OperationResult.SUCCESS.equals(result)) {
-			apply.setApplyState(ProjectOnlineApplyState.COMPLETED.getValue());
-		}
-		// 更新状态
-		int rows = this.getActualDao().updateByPrimaryKey(apply);
-		if (rows <= 0) {
-			throw new ProjectOnlineApplyException("更新状态失败");
-		}
-		// 生成操作记录
-		ProjectOnlineOperationRecord record = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
-		record.setApplyId(applyId);
-		record.setOperatorId(verifierId);
-		record.setOperationType(ProjectOnlineApplyOperationType.VERIFIER.getValue());
-		record.setOperationName(ProjectOnlineApplyOperationType.VERIFIER.getName());
-		record.setDescription(description);
-		record.setOpertateResult(result.getValue());
-		rows = this.poorMapper.insertSelective(record);
-		if (rows <= 0) {
-			throw new ProjectOnlineApplyException("新增操作记录失败");
-		}
-		if (OperationResult.SUCCESS.equals(result)) {
-			// 更新项目的版本状态为已上线
-			ProjectVersion version = this.versionMapper.selectByPrimaryKey(apply.getVersionId());
-			version.setOnline(ProjectVersionOnlineState.ONLINE.getValue());
-			rows = this.versionMapper.updateByPrimaryKey(version);
-			if (rows <= 0) {
-				throw new ProjectOnlineApplyException("更新版本上线状态失败");
-			}
-		}
-		// 发邮件
-		if (OperationResult.FAILURE.equals(result)) {
-			this.sendMail(apply, "上线失败");
-		}
-		if (OperationResult.SUCCESS.equals(result)) {
-			this.sendMail(apply, "上线成功");
-		}
+		// 上线子系统
+		ProjectOnlineSubsystem subsysQuery = DTOUtils.newDTO(ProjectOnlineSubsystem.class);
+		subsysQuery.setApplyId(id);
+		List<ProjectOnlineSubsystem> subsystems = this.posMapper.select(subsysQuery);
+		apply.aset("subsystems", subsystems);
+		// 操作记录
+		ProjectOnlineOperationRecord poorQuery = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
+		poorQuery.setApplyId(id);
+		List<ProjectOnlineOperationRecord> poorList = this.poorMapper.select(poorQuery);
+		apply.aset("opRecords", this.buildOperationRecordViewModel(poorList));
+		return apply;
 	}
 
-	@Transactional
+	@Override
+	public ProjectOnlineApply getEasyUiRowData(Long id) {
+		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(id);
+		this.setOperationColumn(apply);
+		return apply;
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public ProjectOnlineApply getEditViewDataById(Long id) throws ProjectOnlineApplyException {
+		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(id);
+		if (apply == null) {
+			throw new ProjectOnlineApplyException("申请不存在");
+		}
+		ProjectOnlineSubsystem subsysQuery = DTOUtils.newDTO(ProjectOnlineSubsystem.class);
+		subsysQuery.setApplyId(id);
+		List<ProjectOnlineSubsystem> subsystems = this.posMapper.select(subsysQuery);
+		apply.aset("subsystems", subsystems);
+		EmailAddress emailQuery = DTOUtils.newDTO(EmailAddress.class);
+		emailQuery.setApplyId(id);
+		List<EmailAddress> emails = this.emailAddressMapper.select(emailQuery);
+		apply.aset("emails", emails);
+		ProjectOnlineApplyMarket poamQuery = DTOUtils.newDTO(ProjectOnlineApplyMarket.class);
+		poamQuery.setApplyId(id);
+		// 判断是否针对市场上线
+		List<ProjectOnlineApplyMarket> poamList = this.applyMarketMapper.select(poamQuery);
+		if (poamList.size() == 1 && poamList.get(0).getMarketCode().equals("-1")) {
+			apply.aset("marketVersion", false);
+		} else {
+			apply.aset("marketVersion", true);
+			apply.aset("selectedMarkets", poamList);
+		}
+		return apply;
+	}
+
+	@Override
+	public ProjectOnlineApply getStartExecuteViewData(Long id) throws ProjectOnlineApplyException {
+		return this.getFlowViewData(id);
+	}
+
+	@Override
+	public ProjectOnlineApply getTestConfirmViewModel(Long id) throws ProjectOnlineApplyException {
+		return this.getFlowViewData(id);
+	}
+
+	@Override
+	public ProjectOnlineApply getVerifyViewData(Long id) throws ProjectOnlineApplyException {
+		return this.getFlowViewData(id);
+	}
+
+	@Transactional(rollbackFor = ApplicationException.class, propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
+	@Override
+	public ProjectOnlineApplyDetailDto getViewDataById(Long applyId) {
+		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(applyId);
+		if (apply == null) {
+			return null;
+		}
+		ProjectOnlineApplyDetailDto dto = DTOUtils.toEntity(apply, ProjectOnlineApplyDetailDto.class, true);
+		ProjectOnlineOperationRecord record = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
+		record.setApplyId(applyId);
+		List<ProjectOnlineOperationRecord> list = this.poorMapper.select(record);
+		if (CollectionUtils.isNotEmpty(list)) {
+			List<ProjectOnlineOperationRecordDto> poorDtos = new ArrayList<>(list.size());
+			list.forEach(e -> poorDtos.add(DTOUtils.toEntity(e, ProjectOnlineOperationRecordDto.class, true)));
+			dto.setOperations(poorDtos);
+		}
+		return dto;
+	}
+
 	@Override
 	public void insertProjectOnlineApply(ProjectOnlineApplyUpdateDto apply) throws ProjectOnlineApplyException {
 		// 查询出项目信息
@@ -638,6 +430,14 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		calendar.set(Calendar.MILLISECOND, 0);
 		if (apply.getOnlineDate().getTime() < calendar.getTimeInMillis()) {
 			throw new ProjectOnlineApplyException("申请上线日期不能小于当前日期");
+		}
+
+		// 判断市场在当前版本是否上过线
+		Example example = new Example(VersionMarketOnlineRecord.class);
+		example.createCriteria().andEqualTo("versionId", apply.getVersionId()).andIn("marketCode", apply.getMarkets());
+		int count = this.versionMaketMapper.selectCountByExample(example);
+		if (count > 0) {
+			throw new ProjectOnlineApplyException("改版本已在指定市场上线，不能重复上线");
 		}
 
 		int result = this.getActualDao().insertSelective(apply);
@@ -669,6 +469,24 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			});
 		}
 
+		// 插入上线申请和市场关联表
+		// 判断是否根据市场上线
+		if (apply.getMarketVersion()) {
+			// 针对市场上线
+			apply.getMarkets().forEach(m -> {
+				ProjectOnlineApplyMarket am = DTOUtils.newDTO(ProjectOnlineApplyMarket.class);
+				am.setApplyId(apply.getId());
+				am.setMarketCode(m);
+				this.applyMarketMapper.insert(am);
+			});
+		} else {
+			// 不针对市场上线
+			ProjectOnlineApplyMarket am = DTOUtils.newDTO(ProjectOnlineApplyMarket.class);
+			am.setApplyId(apply.getId());
+			am.setMarketCode("-1");
+			this.applyMarketMapper.insertSelective(am);
+		}
+
 		// 更新邮件通知地址，先删除后插入
 		// 先删除
 		EmailAddress eaCondition = DTOUtils.newDTO(EmailAddress.class);
@@ -686,42 +504,6 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	}
 
 	@Override
-	public void deleteProjectOnlineApply(Long id) throws ProjectOnlineApplyException {
-		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(id);
-		if (apply == null) {
-			throw new ProjectOnlineApplyException("申请不存在");
-		}
-		if (!apply.getApplyState().equals(ProjectOnlineApplyState.APPLING.getValue())) {
-			throw new ProjectOnlineApplyException("当前状态不能编辑");
-		}
-		// 删除子系统
-		ProjectOnlineSubsystem posQuery = DTOUtils.newDTO(ProjectOnlineSubsystem.class);
-		posQuery.setApplyId(id);
-		this.posMapper.delete(posQuery);
-
-		// 删除邮件
-		EmailAddress emailQuery = DTOUtils.newDTO(EmailAddress.class);
-		emailQuery.setApplyId(id);
-		this.emailAddressMapper.delete(emailQuery);
-
-		// 删除文件
-		if (apply.getDependencySystemFileId() != null) {
-			this.filesMapper.deleteByPrimaryKey(apply.getDependencySystemFileId());
-		}
-		if (apply.getSqlFileId() != null) {
-			this.filesMapper.deleteByPrimaryKey(apply.getSqlFileId());
-		}
-		if (apply.getStartupScriptFileId() != null) {
-			this.filesMapper.deleteByPrimaryKey(apply.getStartupScriptFileId());
-		}
-
-		int result = super.delete(id);
-		if (result <= 0) {
-			throw new ProjectOnlineApplyException("删除失败");
-		}
-	}
-
-	@Override
 	public EasyuiPageOutput listEasyuiPageByExample(ProjectOnlineApply domain, boolean useProvider) throws Exception {
 		List<ProjectOnlineApply> list = listByExample(domain);
 		list.forEach(a -> {
@@ -732,6 +514,73 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		@SuppressWarnings("rawtypes")
 		List results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, list) : list;
 		return new EasyuiPageOutput(Long.valueOf(total).intValue(), results);
+	}
+
+	@Override
+	public void saveAndSubmit(ProjectOnlineApplyUpdateDto dto) throws ProjectOnlineApplyException {
+		this.saveOrUpdate(dto);
+		this.submit(dto.getId());
+	}
+
+	@Override
+	public void saveOrUpdate(ProjectOnlineApplyUpdateDto dto) throws ProjectOnlineApplyException {
+		if (dto.getId() == null) {
+			this.insertProjectOnlineApply(dto);
+		} else {
+			this.updateProjectOnlineApply(dto);
+		}
+	}
+
+	private void sendMail(ProjectOnlineApply apply, String subject) {
+		Set<String> emailStrs = new HashSet<>();
+		EmailAddress record = DTOUtils.newDTO(EmailAddress.class);
+		record.setApplyId(apply.getId());
+		List<EmailAddress> emails = this.emailAddressMapper.select(record);
+		emails.forEach(e -> emailStrs.add(e.getEmailAddress()));
+
+		// 构建邮件内容
+		Template template = this.groupTemplate.getTemplate(this.contentTemplate);
+		template.binding("apply", buildApplyViewModel(apply));
+		ProjectOnlineOperationRecord poor = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
+		poor.setApplyId(apply.getId());
+		List<ProjectOnlineOperationRecord> list = this.poorMapper.select(poor);
+		template.binding("opRecords", this.buildOperationRecordViewModel(list));
+
+		// 默认邮件发送列表，运维组和项目组成员
+		// 运维部成员
+		// Department deptQuery = new Department();
+		// deptQuery.setCode(AlmConstants.OPERATION_DEPARTMENT_CODE);
+		// BaseOutput<List<Department>> deptOutput = this.deptRpc.list(deptQuery);
+		// if (deptOutput.isSuccess() &&
+		// CollectionUtils.isNotEmpty(deptOutput.getData())) {
+		// Long departmentId = deptOutput.getData().get(0).getId();
+		// User userQuery = new User();
+		// userQuery.setDepartmentId(departmentId);
+		// BaseOutput<List<User>> userOutput = this.userRpc.list(userQuery);
+		// if (userOutput.isSuccess() &&
+		// CollectionUtils.isNotEmpty(userOutput.getData())) {
+		// userOutput.getData().forEach(u -> emailStrs.add(u.getEmail()));
+		// }
+		// }
+		// // 项目组成员
+		// Team teamQuery = DTOUtils.newDTO(Team.class);
+		// teamQuery.setProjectId(apply.getProjectId());
+		// List<Team> teams = this.teamMapper.select(teamQuery);
+		// teams.forEach(t -> {
+		// User u = AlmCache.USER_MAP.get(t.getMemberId());
+		// if (u != null) {
+		// emailStrs.add(u.getEmail());
+		// }
+		// });
+
+		// 发送
+		emailStrs.forEach(s -> {
+			try {
+				this.mailManager.sendMail(this.mailFrom, s, template.render(), true, subject, null);
+			} catch (Exception e) {
+				LOGGER.error(e.getMessage(), e);
+			}
+		});
 	}
 
 	private void setOperationColumn(ProjectOnlineApply apply) {
@@ -747,9 +596,18 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		editable = !editable ? editable : user.getId().equals(apply.getApplicantId());
 		apply.aset("editable", editable);
 
+		// 判断界面上用户是否可以点击项目经理确认按钮
+		// 判断申请状态是否是项目经理确认状态
+		boolean projectManagerConfirmable = apply.getApplyState()
+				.equals(ProjectOnlineApplyState.PROJECT_MANAGER_CONFIRMING.getValue());
+		// 判断当前登录用户是否是测试负责人
+		projectManagerConfirmable = !projectManagerConfirmable ? projectManagerConfirmable
+				: user.getId().equals(apply.getProjectManagerId());
+		apply.aset("projectManagerConfirmable", projectManagerConfirmable);
+
 		// 判断界面上用户是否可以点击测试确认按钮
 		// 判断申请状态是否是测试确认状态
-		boolean testConfirmable = apply.getApplyState().equals(ProjectOnlineApplyState.TESTER_CONFIRING.getValue());
+		boolean testConfirmable = apply.getApplyState().equals(ProjectOnlineApplyState.TESTER_CONFIRMING.getValue());
 		// 判断当前登录用户是否是测试负责人
 		DataDictionaryValueDto ddValueDto = ddDto.getValues().stream()
 				.filter(v -> v.getCode().equals(TEST_MANAGER_CODE)).findFirst().orElse(null);
@@ -798,38 +656,348 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	}
 
 	@Override
-	public void saveAndSubmit(ProjectOnlineApplyUpdateDto dto) throws ProjectOnlineApplyException {
-		this.saveOrUpdate(dto);
-		this.submit(dto.getId());
-	}
-
-	@Transactional(readOnly = true)
-	@Override
-	public ProjectOnlineApply getEditViewDataById(Long id) throws ProjectOnlineApplyException {
-		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(id);
+	public void startExecute(Long applyId, Long executorId, Set<Long> executors, String description)
+			throws ProjectOnlineApplyException {
+		// 验证记录是否存在
+		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(applyId);
 		if (apply == null) {
-			throw new ProjectOnlineApplyException("申请不存在");
+			throw new ProjectOnlineApplyException("申请记录不存在");
 		}
-		ProjectOnlineSubsystem subsysQuery = DTOUtils.newDTO(ProjectOnlineSubsystem.class);
-		subsysQuery.setApplyId(id);
-		List<ProjectOnlineSubsystem> subsystems = this.posMapper.select(subsysQuery);
-		apply.aset("subsystems", subsystems);
-		EmailAddress emailQuery = DTOUtils.newDTO(EmailAddress.class);
-		emailQuery.setApplyId(id);
-		List<EmailAddress> emails = this.emailAddressMapper.select(emailQuery);
-		apply.aset("emails", emails);
-		return apply;
+		// 验证状态
+		if (!apply.getApplyState().equals(ProjectOnlineApplyState.EXECUTING.getValue())) {
+			throw new ProjectOnlineApplyException("当前状态不能执行测试确认");
+		}
+		// 分配的执行人最多两人，且都是运维部员工
+		if (CollectionUtils.isEmpty(executors)) {
+			throw new ProjectOnlineApplyException("执行人不能为空");
+		}
+		if (executors.size() > 2) {
+			throw new ProjectOnlineApplyException("最多只能分配2个执行人");
+		}
+		for (Long value : executors) {
+			UserDepartmentRoleQuery dto = new UserDepartmentRoleQuery();
+			dto.setUserId(value);
+			BaseOutput<List<UserDepartmentRole>> output = this.userRpc.findUserContainDepartmentAndRole(dto);
+			if (!output.isSuccess()) {
+				throw new ProjectOnlineApplyException("查询执行人信息失败");
+			}
+			if (CollectionUtils.isEmpty(output.getData())) {
+				throw new ProjectOnlineApplyException("执行人不存在");
+			}
+			if (!AlmConstants.OPERATION_DEPARTMENT_CODE.equals(output.getData().get(0).getDepartment().getCode())) {
+				throw new ProjectOnlineApplyException("执行人不是运维部员工");
+			}
+		}
+		// 还要判断有没有分配执行人，分配了的话就不能再执行“开始执行”的操作了
+		if (StringUtils.isNotEmpty(apply.getExecutorId())) {
+			throw new ProjectOnlineApplyException("已分配执行人的申请不能重复执行");
+		}
+		StringBuilder sb = new StringBuilder();
+		executors.forEach(e -> sb.append(e).append(","));
+		apply.setExecutorId(sb.substring(0, sb.length() - 1));
+		int rows = this.getActualDao().updateByPrimaryKey(apply);
+		if (rows <= 0) {
+			throw new ProjectOnlineApplyException("更新数据失败");
+		}
+		// 生成操作记录
+		ProjectOnlineOperationRecord record = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
+		record.setApplyId(applyId);
+		record.setOperatorId(executorId);
+		record.setOperationType(ProjectOnlineApplyOperationType.OPERATION_MANAGER.getValue());
+		record.setOperationName(ProjectOnlineApplyOperationType.OPERATION_MANAGER.getName());
+		record.setDescription(description);
+		record.setOpertateResult(OperationResult.SUCCESS.getValue());
+		rows = this.poorMapper.insertSelective(record);
+		if (rows <= 0) {
+			throw new ProjectOnlineApplyException("生成操作记录失败");
+		}
 	}
 
 	@Override
-	public ProjectOnlineApply getEasyUiRowData(Long id) {
-		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(id);
-		this.setOperationColumn(apply);
-		return apply;
+	public void submit(Long applyId) throws ProjectOnlineApplyException {
+		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(applyId);
+		if (apply == null) {
+			throw new ProjectOnlineApplyException("申请记录不存在");
+		}
+		if (!apply.getApplyState().equals(ProjectOnlineApplyState.APPLING.getValue())) {
+			throw new ProjectOnlineApplyException("当前状态不能提交申请");
+		}
+		// 提交申请进入项目经理确认状态
+		apply.setApplyState(ProjectOnlineApplyState.PROJECT_MANAGER_CONFIRMING.getValue());
+		apply.setSubmitTime(new Date());
+		int result = this.getActualDao().updateByPrimaryKey(apply);
+		if (result <= 0) {
+			throw new ProjectOnlineApplyException("更新状态失败");
+		}
+		// 发送邮件
+		this.sendMail(apply, "上线申请");
 	}
 
 	@Override
-	public ProjectOnlineApply getTestConfirmViewModel(Long id) throws ProjectOnlineApplyException {
+	public void testerConfirm(Long applyId, Long executorId, OperationResult result, String description)
+			throws ProjectOnlineApplyException {
+		// 验证记录是否存在
+		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(applyId);
+		if (apply == null) {
+			throw new ProjectOnlineApplyException("申请记录不存在");
+		}
+		// 验证状态
+		if (!apply.getApplyState().equals(ProjectOnlineApplyState.TESTER_CONFIRMING.getValue())) {
+			throw new ProjectOnlineApplyException("当前状态不能执行测试确认");
+		}
+		// 测试回退
+		if (OperationResult.FAILURE.equals(result)) {
+			apply.setApplyState(ProjectOnlineApplyState.APPLING.getValue());
+		}
+		// 测试确认
+		if (OperationResult.SUCCESS.equals(result)) {
+			apply.setApplyState(ProjectOnlineApplyState.EXECUTING.getValue());
+		}
+		// 更新状态
+		int rows = this.getActualDao().updateByPrimaryKey(apply);
+		if (rows <= 0) {
+			throw new ProjectOnlineApplyException("更新状态失败");
+		}
+		// 生成操作记录
+		ProjectOnlineOperationRecord record = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
+		record.setApplyId(applyId);
+		record.setOperatorId(executorId);
+		record.setOperationType(ProjectOnlineApplyOperationType.TEST_MANAGER.getValue());
+		record.setOperationName(ProjectOnlineApplyOperationType.TEST_MANAGER.getName());
+		record.setDescription(description);
+		record.setOpertateResult(result.getValue());
+		rows = this.poorMapper.insertSelective(record);
+		if (rows <= 0) {
+			throw new ProjectOnlineApplyException("生成操作记录失败");
+		}
+	}
+
+	@Override
+	public void updateProjectOnlineApply(ProjectOnlineApplyUpdateDto apply) throws ProjectOnlineApplyException {
+
+		// 判断状态必须是未提交状态才能编辑
+		ProjectOnlineApply old = this.getActualDao().selectByPrimaryKey(apply.getId());
+		if (!old.getApplyState().equals(ProjectOnlineApplyState.APPLING.getValue())) {
+			throw new ProjectOnlineApplyException("当前状态不能编辑");
+		}
+
+		// 查询出项目信息
+		Project project = this.projectMapper.selectByPrimaryKey(apply.getProjectId());
+		apply.setProjectName(project.getName());
+		apply.setBusinessOwnerId(project.getBusinessOwner());
+		apply.setProjectManagerId(project.getProjectManager());
+		apply.setProductManagerId(project.getProductManager());
+		apply.setTestManagerId(project.getTestManager());
+		apply.setDevelopmentManagerId(project.getDevelopManager());
+		apply.setVersion(this.versionProvider.getDisplayText(apply.getVersionId(), null, null));
+
+		// 判断申请上线日期是否大于当前日期
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		if (apply.getOnlineDate().getTime() < calendar.getTimeInMillis()) {
+			throw new ProjectOnlineApplyException("申请上线日期不能小于当前日期");
+		}
+
+		// 判断市场在当前版本是否上过线
+		Example example = new Example(VersionMarketOnlineRecord.class);
+		example.createCriteria().andEqualTo("versionId", apply.getVersionId()).andIn("marketCode", apply.getMarkets());
+		int count = this.versionMaketMapper.selectCountByExample(example);
+		if (count > 0) {
+			throw new ProjectOnlineApplyException("改版本已在指定市场上线，不能重复上线");
+		}
+
+		// 更新子系统，先删除后插入
+		if (CollectionUtils.isNotEmpty(apply.getSubsystem())) {
+			// 先删除
+			ProjectOnlineSubsystem record = DTOUtils.newDTO(ProjectOnlineSubsystem.class);
+			record.setApplyId(apply.getId());
+			this.posMapper.delete(record);
+
+			// 插入
+			apply.getSubsystem().forEach(s -> {
+				s.setApplyId(apply.getId());
+				if (StringUtils.isNumeric(s.getManagerName())) {
+					Long managerId = Long.valueOf(s.getManagerName());
+					User u = AlmCache.USER_MAP.get(managerId);
+					if (u != null) {
+						s.setManagerId(managerId);
+						s.setManagerName(u.getRealName());
+					}
+				}
+				if (StringUtils.isNumeric(s.getProjectName())) {
+					Long projectId = Long.valueOf(s.getProjectName());
+					Project p = this.projectMapper.selectByPrimaryKey(projectId);
+					if (p != null) {
+						s.setProjectId(p.getId());
+						s.setProjectName(p.getName());
+					}
+				}
+				this.posMapper.insert(s);
+			});
+		}
+
+		// 更新附件
+		if (apply.getDependencySystemFileId() != null) {
+			this.filesMapper.deleteByPrimaryKey(old.getDependencySystemFileId());
+		}
+		if (apply.getSqlFileId() != null) {
+			this.filesMapper.deleteByPrimaryKey(old.getSqlFileId());
+		}
+		if (apply.getStartupScriptFileId() != null) {
+			this.filesMapper.deleteByPrimaryKey(old.getStartupScriptFileId());
+		}
+
+		int result = this.getActualDao().updateByPrimaryKeySelective(apply);
+		if (result <= 0) {
+			throw new ProjectOnlineApplyException("更新失败");
+		}
+
+		// 更新上线申请和市场关系表
+		// 先删除
+		ProjectOnlineApplyMarket applyMarketQuery = DTOUtils.newDTO(ProjectOnlineApplyMarket.class);
+		applyMarketQuery.setApplyId(apply.getId());
+		this.applyMarketMapper.delete(applyMarketQuery);
+		// 再插入
+		if (apply.getMarketVersion()) {
+			List<ProjectOnlineApplyMarket> list = new ArrayList<>(apply.getMarkets().size());
+			apply.getMarkets().forEach(m -> {
+				ProjectOnlineApplyMarket am = DTOUtils.newDTO(ProjectOnlineApplyMarket.class);
+				am.setApplyId(apply.getId());
+				am.setMarketCode(m);
+				list.add(am);
+			});
+			this.applyMarketMapper.insertList(list);
+		} else {
+			ProjectOnlineApplyMarket poma = DTOUtils.newDTO(ProjectOnlineApplyMarket.class);
+			poma.setApplyId(apply.getId());
+			poma.setMarketCode("-1");
+			this.applyMarketMapper.insertSelective(poma);
+		}
+
+		// 更新邮件通知地址，先删除后插入
+		// 先删除
+		EmailAddress eaCondition = DTOUtils.newDTO(EmailAddress.class);
+		eaCondition.setApplyId(apply.getId());
+		this.emailAddressMapper.delete(eaCondition);
+
+		// 插入
+		apply.getEmailAddress().forEach(s -> {
+			EmailAddress ea = DTOUtils.newDTO(EmailAddress.class);
+			ea.setApplyId(apply.getId());
+			ea.setApplyType(ApplyType.ONLINE.getValue());
+			ea.setEmailAddress(s);
+			this.emailAddressMapper.insert(ea);
+		});
+	}
+
+	@Override
+	public void verify(Long applyId, Long verifierId, OperationResult result, String description)
+			throws ProjectOnlineApplyException {
+		// 验证记录是否存在
+		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(applyId);
+		if (apply == null) {
+			throw new ProjectOnlineApplyException("申请记录不存在");
+		}
+		// 验证状态
+		if (!apply.getApplyState().equals(ProjectOnlineApplyState.VARIFING.getValue())) {
+			throw new ProjectOnlineApplyException("当前状态不能执行确认操作");
+		}
+		if (OperationResult.FAILURE.equals(result)) {
+			apply.setApplyState(ProjectOnlineApplyState.FAILURE.getValue());
+		}
+		if (OperationResult.SUCCESS.equals(result)) {
+			apply.setApplyState(ProjectOnlineApplyState.COMPLETED.getValue());
+		}
+		// 更新状态
+		int rows = this.getActualDao().updateByPrimaryKey(apply);
+		if (rows <= 0) {
+			throw new ProjectOnlineApplyException("更新状态失败");
+		}
+		// 生成操作记录
+		ProjectOnlineOperationRecord record = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
+		record.setApplyId(applyId);
+		record.setOperatorId(verifierId);
+		record.setOperationType(ProjectOnlineApplyOperationType.VERIFIER.getValue());
+		record.setOperationName(ProjectOnlineApplyOperationType.VERIFIER.getName());
+		record.setDescription(description);
+		record.setOpertateResult(result.getValue());
+		rows = this.poorMapper.insertSelective(record);
+		if (rows <= 0) {
+			throw new ProjectOnlineApplyException("新增操作记录失败");
+		}
+		if (OperationResult.SUCCESS.equals(result)) {
+			// 插入上线记录表
+			ProjectOnlineApplyMarket poamQuery = DTOUtils.newDTO(ProjectOnlineApplyMarket.class);
+			poamQuery.setApplyId(apply.getId());
+			List<ProjectOnlineApplyMarket> poamList = this.applyMarketMapper.select(poamQuery);
+			if (CollectionUtils.isNotEmpty(poamList)) {
+				poamList.forEach(a -> {
+					VersionMarketOnlineRecord vmor = DTOUtils.newDTO(VersionMarketOnlineRecord.class);
+					vmor.setMarketCode(a.getMarketCode());
+					vmor.setVersionId(apply.getVersionId());
+					this.versionMaketMapper.insert(vmor);
+				});
+			}
+		}
+		// 发邮件
+		if (OperationResult.FAILURE.equals(result)) {
+			this.sendMail(apply, "上线失败");
+		}
+		if (OperationResult.SUCCESS.equals(result)) {
+			this.sendMail(apply, "上线成功");
+		}
+	}
+
+	@Override
+	public void projectManagerConfirm(Long applyId, Long executorId, OperationResult result, String description)
+			throws ProjectOnlineApplyException {
+		// 验证记录是否存在
+		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(applyId);
+		if (apply == null) {
+			throw new ProjectOnlineApplyException("申请记录不存在");
+		}
+		// 验证状态
+		if (!apply.getApplyState().equals(ProjectOnlineApplyState.PROJECT_MANAGER_CONFIRMING.getValue())) {
+			throw new ProjectOnlineApplyException("当前状态不能执行项目经理确认");
+		}
+		// 项目经理回退
+		if (OperationResult.FAILURE.equals(result)) {
+			apply.setApplyState(ProjectOnlineApplyState.APPLING.getValue());
+		}
+		// 项目经理确认
+		if (OperationResult.SUCCESS.equals(result)) {
+			// 下一步测试经理确认
+			apply.setApplyState(ProjectOnlineApplyState.TESTER_CONFIRMING.getValue());
+		}
+		// 更新状态
+		int rows = this.getActualDao().updateByPrimaryKey(apply);
+		if (rows <= 0) {
+			throw new ProjectOnlineApplyException("更新状态失败");
+		}
+		// 生成操作记录
+		ProjectOnlineOperationRecord record = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
+		record.setApplyId(applyId);
+		record.setOperatorId(executorId);
+		record.setOperationType(ProjectOnlineApplyOperationType.PROJECT_MANAGER.getValue());
+		record.setOperationName(ProjectOnlineApplyOperationType.PROJECT_MANAGER.getName());
+		record.setDescription(description);
+		record.setOpertateResult(result.getValue());
+		rows = this.poorMapper.insertSelective(record);
+		if (rows <= 0) {
+			throw new ProjectOnlineApplyException("生成操作记录失败");
+		}
+	}
+
+	@Override
+	public ProjectOnlineApply getProjectManagerConfirmViewModel(Long id) throws ProjectOnlineApplyException {
+		return this.getFlowViewData(id);
+	}
+
+	private ProjectOnlineApply getFlowViewData(Long id) throws ProjectOnlineApplyException {
 		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(id);
 		if (apply == null) {
 			throw new ProjectOnlineApplyException("申请记录不存在");
@@ -844,64 +1012,24 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		poorQuery.setApplyId(id);
 		List<ProjectOnlineOperationRecord> poorList = this.poorMapper.select(poorQuery);
 		apply.aset("opRecords", this.buildOperationRecordViewModel(poorList));
-		return apply;
-	}
-
-	@Override
-	public ProjectOnlineApply getStartExecuteViewData(Long id) throws ProjectOnlineApplyException {
-		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(id);
-		if (apply == null) {
-			throw new ProjectOnlineApplyException("申请记录不存在");
+		// 查询上线市场
+		ProjectOnlineApplyMarket poamQuery = DTOUtils.newDTO(ProjectOnlineApplyMarket.class);
+		poamQuery.setApplyId(id);
+		List<ProjectOnlineApplyMarket> poamList = this.applyMarketMapper.select(poamQuery);
+		if (CollectionUtils.isEmpty(poamList)) {
+			throw new IllegalArgumentException("数据异常");
 		}
-		// 上线子系统
-		ProjectOnlineSubsystem subsysQuery = DTOUtils.newDTO(ProjectOnlineSubsystem.class);
-		subsysQuery.setApplyId(id);
-		List<ProjectOnlineSubsystem> subsystems = this.posMapper.select(subsysQuery);
-		apply.aset("subsystems", subsystems);
-		// 操作记录
-		ProjectOnlineOperationRecord poorQuery = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
-		poorQuery.setApplyId(id);
-		List<ProjectOnlineOperationRecord> poorList = this.poorMapper.select(poorQuery);
-		apply.aset("opRecords", this.buildOperationRecordViewModel(poorList));
-		return apply;
-	}
-
-	@Override
-	public ProjectOnlineApply getConfirmExecuteViewModel(Long id) throws ProjectOnlineApplyException {
-		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(id);
-		if (apply == null) {
-			throw new ProjectOnlineApplyException("申请记录不存在");
+		if (poamList.size() == 1 && poamList.get(0).getMarketCode().equals("-1")) {
+			apply.aset("marketVersion", false);
+		} else {
+			apply.aset("marketVersion", true);
+			DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.MARKET_CODE);
+			List<DataDictionaryValueDto> ddValueDtos = dd
+					.getValues().stream().filter(v -> poamList.stream()
+							.filter(pv -> pv.getMarketCode().equals(v.getValue())).findFirst().orElse(null) != null)
+					.collect(Collectors.toList());
+			apply.aset("markets", ddValueDtos);
 		}
-		// 上线子系统
-		ProjectOnlineSubsystem subsysQuery = DTOUtils.newDTO(ProjectOnlineSubsystem.class);
-		subsysQuery.setApplyId(id);
-		List<ProjectOnlineSubsystem> subsystems = this.posMapper.select(subsysQuery);
-		apply.aset("subsystems", subsystems);
-		// 操作记录
-		ProjectOnlineOperationRecord poorQuery = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
-		poorQuery.setApplyId(id);
-		List<ProjectOnlineOperationRecord> poorList = this.poorMapper.select(poorQuery);
-		apply.aset("opRecords", this.buildOperationRecordViewModel(poorList));
 		return apply;
 	}
-
-	@Override
-	public ProjectOnlineApply getVerifyViewData(Long id) throws ProjectOnlineApplyException {
-		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(id);
-		if (apply == null) {
-			throw new ProjectOnlineApplyException("申请记录不存在");
-		}
-		// 上线子系统
-		ProjectOnlineSubsystem subsysQuery = DTOUtils.newDTO(ProjectOnlineSubsystem.class);
-		subsysQuery.setApplyId(id);
-		List<ProjectOnlineSubsystem> subsystems = this.posMapper.select(subsysQuery);
-		apply.aset("subsystems", subsystems);
-		// 操作记录
-		ProjectOnlineOperationRecord poorQuery = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
-		poorQuery.setApplyId(id);
-		List<ProjectOnlineOperationRecord> poorList = this.poorMapper.select(poorQuery);
-		apply.aset("opRecords", this.buildOperationRecordViewModel(poorList));
-		return apply;
-	}
-
 }

@@ -25,24 +25,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.alibaba.fastjson.JSONArray;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
-import com.dili.alm.domain.Department;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.OperationResult;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectOnlineApply;
-import com.dili.alm.domain.User;
+import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.ProjectOnlineApplyUpdateDto;
 import com.dili.alm.domain.dto.ProjectOnlineSubsystemDto;
 import com.dili.alm.exceptions.ProjectOnlineApplyException;
-import com.dili.alm.rpc.DepartmentRpc;
-import com.dili.alm.rpc.UserRpc;
+import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.ProjectOnlineApplyService;
 import com.dili.alm.service.ProjectService;
-import com.dili.alm.service.TeamService;
 import com.dili.alm.service.impl.ProjectOnlineApplyServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -72,7 +68,39 @@ public class ProjectOnlineApplyController {
 	private ProjectService projectService;
 	@Autowired
 	private FilesService fileService;
+	@Autowired
+	private DataDictionaryService ddService;
 	private static final String EMAIL_REGEX = "^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$";
+
+	@RequestMapping(value = "/projectManagerConfirm", method = RequestMethod.GET)
+	public String projectManagerConfirmView(@RequestParam Long id, ModelMap modelMap) {
+		try {
+			ProjectOnlineApply vm = this.projectOnlineApplyService.getProjectManagerConfirmViewModel(id);
+			modelMap.addAttribute("apply", ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
+		} catch (ProjectOnlineApplyException e) {
+			LOGGER.error(e.getMessage(), e);
+			return null;
+		}
+		return "projectOnlineApply/projectManagerConfirm";
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/projectManagerConfirm", method = RequestMethod.POST)
+	public BaseOutput<Object> projectManagerConfirm(@RequestParam Long id, @RequestParam Integer result,
+			@RequestParam(required = false) String description) {
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		if (user == null) {
+			return BaseOutput.failure("请先登录");
+		}
+		try {
+			this.projectOnlineApplyService.projectManagerConfirm(id, user.getId(), OperationResult.valueOf(result),
+					description);
+			ProjectOnlineApply vm = this.projectOnlineApplyService.getEasyUiRowData(id);
+			return BaseOutput.success().setData(ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
+		} catch (ProjectOnlineApplyException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
 
 	@RequestMapping(value = "/testConfirm", method = RequestMethod.GET)
 	public String testConfirmView(@RequestParam Long id, ModelMap modelMap) {
@@ -238,15 +266,20 @@ public class ProjectOnlineApplyController {
 		@SuppressWarnings("rawtypes")
 		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
 		if (CollectionUtils.isEmpty(dataAuths)) {
-			return null;
+			modelMap.addAttribute("projects", new ArrayList<>(0));
+		} else {
+			List<Long> projectIds = new ArrayList<>();
+			dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
+			Example example = new Example(ProjectOnlineApply.class);
+			Example.Criteria criteria = example.createCriteria();
+			criteria.andIn("id", projectIds);
+			List<Project> projects = this.projectService.selectByExample(example);
+			modelMap.addAttribute("projects", projects);
 		}
-		List<Long> projectIds = new ArrayList<>();
-		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
-		Example example = new Example(ProjectOnlineApply.class);
-		Example.Criteria criteria = example.createCriteria();
-		criteria.andIn("id", projectIds);
-		List<Project> projects = this.projectService.selectByExample(example);
-		modelMap.addAttribute("projects", projects);
+		DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.MARKET_CODE);
+		if (dd != null) {
+			modelMap.addAttribute("markets", dd.getValues());
+		}
 		return "projectOnlineApply/add";
 	}
 
@@ -266,6 +299,10 @@ public class ProjectOnlineApplyController {
 		modelMap.addAttribute("projects", projects);
 		List<Project> plist = this.projectService.list(null);
 		modelMap.addAttribute("plist", plist).addAttribute("ulist", AlmCache.USER_MAP.values());
+		DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.MARKET_CODE);
+		if (dd != null) {
+			modelMap.addAttribute("markets", dd.getValues());
+		}
 		try {
 			ProjectOnlineApply dto = this.projectOnlineApplyService.getEditViewDataById(id);
 			Map<Object, Object> model = ProjectOnlineApplyServiceImpl.buildApplyViewModel(dto);
@@ -376,6 +413,8 @@ public class ProjectOnlineApplyController {
 
 	private ProjectOnlineApplyUpdateDto parseServiceModel(ProjectOnlineApplyAddDto apply) {
 		ProjectOnlineApplyUpdateDto dto = DTOUtils.toEntity(apply, ProjectOnlineApplyUpdateDto.class, false);
+		dto.setMarkets(apply.getMarket());
+		dto.setMarketVersion(apply.getMarketVersion());
 		Files f = null;
 		if (!apply.getDependencySystemFile().isEmpty()) {
 			f = this.fileService.uploadFile(new MultipartFile[] { apply.getDependencySystemFile() }, null).get(0);

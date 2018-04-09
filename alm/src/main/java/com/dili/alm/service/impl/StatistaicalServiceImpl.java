@@ -101,6 +101,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	DataDictionaryService dataDictionaryService;
 	
 	private static final String PROJECT_TYPE_CODE = "project_type";
+	private static final String TASK_STATE_CODE = "task_status";
 	private static final String PROJECT_STATE_CODE = "project_state";
 	private static final String SELECT_HOURS_BY_USER_START_DATE = "2018-01-01";//项目上线日期
 	private static final String FILE_NAME_STR="项目总览.xls";
@@ -155,7 +156,21 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	public List<TaskStateCountDto> getProjectToTaskCount(String startTime,
 			String endTime) {
 		List<Long> projectIds = projectMapper.getProjectIds(startTime, endTime);
-		return taskMapper.selectTaskStateCount(projectIds);
+		List<TaskStateCountDto> list=new ArrayList<TaskStateCountDto>();
+		if(projectIds!=null&&projectIds.size()>0){
+			return taskMapper.selectTaskStateCount(projectIds);
+		}
+		DataDictionaryDto dto = this.dataDictionaryService.findByCode(TASK_STATE_CODE);
+		if (dto != null) {
+			List<DataDictionaryValueDto> ddvdList = dto.getValues();
+			for (DataDictionaryValueDto dataDictionaryValueDto : ddvdList) {
+				TaskStateCountDto tscDto=new TaskStateCountDto();
+				tscDto.setTaskState(dataDictionaryValueDto.getCode());
+				tscDto.setStateCount("0");
+				list.add(tscDto);
+			}
+		}
+		return list;
 	}
 
 	
@@ -610,14 +625,9 @@ public class StatistaicalServiceImpl implements StatisticalService {
         os.close();
     }
 	@Override
-	public List<Map<String,Object>> getHomeProject(List<Long> projectId) {
-		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		List<Map<String,Object>> list=new ArrayList<Map<String,Object>>();
+	public List<Map<String,Object>> getHomeProject(Long userId,List<Long> projectId) {
 		
-		Long userId=null;
-		if(projectId==null||projectId.size()==0){
-			userId=userTicket.getId();
-		}
+		List<Map<String,Object>> list=new ArrayList<Map<String,Object>>();
 		List<ProjectStatusCountDto> projectCount = projectMapper.getStateByProjectCount(userId,projectId);
 		for (ProjectStatusCountDto projectStatusCountDto : projectCount) {
 			Map<String,Object> map=new HashMap<String, Object>();
@@ -631,13 +641,9 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	
 	
 	@Override
-	public List<Map<String,Object>> getHomeProjectTask(List<Long> projectId) {
-		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		Long userId=null;
-		if(projectId==null||projectId.size()==0){
-			userId=userTicket.getId();
-		}
-		List<Map<String,Object>> list=new ArrayList<Map<String,Object>>();
+	public List<Map<String,Object>> getHomeProjectTask(Long userId,List<Long> projectId) {
+
+	   List<Map<String,Object>> list=new ArrayList<Map<String,Object>>();
 	   List<TaskStateCountDto> taskCount = taskMapper.getStateByTaskCount(userId,projectId);
 	   for (TaskStateCountDto taskStateCountDto : taskCount) {
 			Map<String,Object> map=new HashMap<String, Object>();

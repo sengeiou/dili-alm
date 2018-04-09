@@ -21,6 +21,7 @@ import com.dili.alm.domain.Project;
 import com.dili.alm.domain.TaskQueryInProjectId;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
 
 import io.swagger.annotations.Api;
@@ -33,6 +34,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+
 
 
 
@@ -274,19 +277,30 @@ public class StatisticalController {
    @RequestMapping(value="/homeProjectCount", method = {RequestMethod.GET, RequestMethod.POST})
    public @ResponseBody List<Map<String,Object>> homeProjectCount(String flat) {
 	   List<Long> projectIds = new ArrayList<>();
+	   UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+	   if (userTicket == null) {
+			throw new RuntimeException("未登录");
+		}
+	   Long userId=userTicket.getId();
 	   if(!WebUtil.strIsEmpty(flat)&&flat.equals("1")){
 		   @SuppressWarnings({ "rawtypes" })
 			List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
 			if (CollectionUtils.isEmpty(dataAuths)) {
 				return null;
 			}
-			dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
+			dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString()))); 
+			userId=null;
 	   }
-	   return statisticalService.getHomeProject(projectIds);
+	   return statisticalService.getHomeProject(userId,projectIds);
    }
    @RequestMapping(value="/homeTaskCount", method = {RequestMethod.GET, RequestMethod.POST})
    public @ResponseBody List<Map<String,Object>> homeTaskCount(String flat) {
 	   List<Long> projectIds = new ArrayList<>();
+	   UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+	   if (userTicket == null) {
+			throw new RuntimeException("未登录");
+		}
+	   Long userId=userTicket.getId();
 	   if(!WebUtil.strIsEmpty(flat)&&flat.equals("1")){	
 		   @SuppressWarnings({ "rawtypes" })
 			List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
@@ -294,8 +308,9 @@ public class StatisticalController {
 				return null;
 			}
 			dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
+			userId = null;
 	   }
-	   return statisticalService.getHomeProjectTask(projectIds);
+	   return statisticalService.getHomeProjectTask(userId,projectIds);
 
    }
    

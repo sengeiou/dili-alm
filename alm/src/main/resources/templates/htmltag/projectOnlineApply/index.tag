@@ -10,8 +10,13 @@ function optFormatter(value, row, index) {
 		content += '<span style="padding:0px 2px;">编辑</span>';
 		content += '<span style="padding:0px 2px;">删除</span>';
 	}
+	if (row.projectManagerConfirmable) {
+		content += '<a href="javascript:void(0);" onclick="projectManagerConfirm(' + row.id + ');">项目经理确认</a>';
+	} else if (row.$_applyState == 6) {
+		content += '<span">项目经理确认</span>';
+	}
 	if (row.testConfirmable) {
-		content += '<a href="javascript:void(0);" onclick="textConfirm(' + row.id + ');">测试确认</a>';
+		content += '<a href="javascript:void(0);" onclick="testConfirm(' + row.id + ');">测试确认</a>';
 	} else if (row.$_applyState == 2) {
 		content += '<span">测试确认</span>';
 	}
@@ -34,11 +39,108 @@ function optFormatter(value, row, index) {
 
 }
 
+function formatMarkets(row) {
+	var opts = $(this).combobox('options');
+	var val = $(this).combobox('getValue');
+	if (row.value == val) {
+		return '<input type="checkbox" checked="checked" class="combobox-checkbox">' + row[opts.textField]
+	} else {
+		return '<input type="checkbox" class="combobox-checkbox">' + row[opts.textField];
+	}
+}
+
+function checkMarketComboState(nval, oval) {
+	if (nval == 1) {
+		$('#market').textbox('enable');
+	} else {
+		$('#market').textbox('disable');
+	}
+}
+
 function downloadFile(id) {
 	window.open('${contextPath!}/files/download?id=' + id);
 }
 
-function textConfirm(id) {
+function projectManagerConfirm(id) {
+	$('#win').dialog({
+				title : '项目经理确认',
+				width : 800,
+				height : 600,
+				href : '${contextPath!}/projectOnlineApply/projectManagerConfirm?id=' + id,
+				modal : true,
+				buttons : [{
+							text : '确认',
+							handler : function() {
+								var data = $("#editForm").serializeArray();
+								$('#editForm').form('submit', {
+											url : '${contextPath!}/projectOnlineApply/projectManagerConfirm',
+											queryParams : {
+												result : 1
+											},
+											success : function(data) {
+												var obj = $.parseJSON(data);
+												if (obj.code == 200) {
+													// try {
+													// LogUtils.saveLog(LOG_MODULE_OPS.ADD_PROJECT_ONLINE_APPLY,
+													// "新增上线申请:" + data.data.id
+													// + ":" + data.data.version
+													// + ":成功", function() {
+													// });
+													// } catch (e) {
+													// $.messager.alert('错误',
+													// e);
+													$('#grid').datagrid('updateRow', {
+																index : $('#grid').datagrid('getRowIndex', $('#grid').datagrid('getSelected')),
+																row : obj.data
+															});
+													$('#grid').datagrid('acceptChanges');
+													$('#win').dialog('close');
+												} else {
+													$.messager.alert('错误', obj.result);
+												}
+											}
+										});
+							}
+						}, {
+							text : '回退',
+							handler : function() {
+								var data = $("#editForm").serializeArray();
+								$('#editForm').form('submit', {
+											url : '${contextPath!}/projectOnlineApply/projectManagerConfirm',
+											queryParams : {
+												result : 0
+											},
+											success : function(data) {
+												var obj = $.parseJSON(data);
+												if (obj.code == 200) {
+													// try {
+													// LogUtils.saveLog(LOG_MODULE_OPS.ADD_PROJECT_ONLINE_APPLY,
+													// "新增上线申请:" + data.data.id
+													// + ":" + data.data.version
+													// + ":成功", function() {
+													// });
+													// } catch (e) {
+													// $.messager.alert('错误',
+													// e);
+													// }
+													$('#grid').datagrid('updateRow', {
+																index : $('#grid').datagrid('getRowIndex', $('#grid').datagrid('getSelected')),
+																row : obj.data
+															});
+													$('#grid').datagrid('acceptChanges');
+													$('#win').dialog('close');
+												} else {
+													$.messager.alert('错误', obj.result);
+												}
+											}
+										});
+							}
+						}]
+			});
+
+}
+
+function testConfirm(id) {
 	$('#win').dialog({
 				title : '测试确认',
 				width : 800,
@@ -325,12 +427,23 @@ function verify(id) {
 
 function appendSubsystem() {
 	paramCount++;
-	var content = '<tr>' + '<td class="table-title">系统名称</td>' + '<td class="table-combo" style="padding: 0"><input class="easyui-combobox" name="subProjectName[' + paramCount + ']"'
-			+ 'style="width: 100%; text-align: center;" data-options="url:\'${contextPath!}/project/list.json\',textField:\'name\',valueField:\'name\',required:true" /></td>'
-			+ '<td class="table-title">负责人</td>' + '<td class="table-combo" colspan="3" style="padding: 0"><select class="easyui-combobox" name="managerId[' + paramCount + ']"'
-			+ ' data-options="url:\'${contextPath!}/member/members\',textField:\'realName\',valueField:\'id\',required:true" style="width: 100%; text-align: center;">' + '</select></td>' + '</tr>';
+	var content = '<tr class="subsystem">'+
+						'<td colspan="2" class="table-title">系统名称</td>'+
+						'<td colspan="2" class="table-combo" style="padding: 0">'+
+							'<input class="easyui-combobox" name="subProjectName['+paramCount+']"'+
+							'style="width: 96%; text-align: center;"'+
+							'data-options="url:\'${contextPath!}/project/list.json\',textField:\'name\',valueField:\'id\',required:true" />'+
+						'</td>'+
+						'<td class="table-title">负责人</td>'+
+						'<td class="table-combo"  style="padding: 0">'+
+							'<select class="easyui-combobox" name="managerId['+paramCount+']"'+
+							'data-options="url:\'${contextPath!}/member/members\',textField:\'realName\',valueField:\'id\',required:true"'+
+							'style="width: 96%; text-align: center;">'+
+							'</select>'+
+						'</td>'+
+					'</tr>';
 	$('.table-box .subsystem:last').after(content);
-	$.parser.parse($('.table-box tr:eq(' + (paramCount + 8) + ')'));
+	$.parser.parse($('.table-box tr:eq(' + (paramCount + 9) + ')'));
 
 }
 
@@ -338,15 +451,15 @@ function removeSubsystem() {
 	if (paramCount <= 0) {
 		return;
 	}
-	$('.table-box tr:eq(' + (paramCount + 8) + ')').remove();
+	$('.table-box tr:eq(' + (paramCount + 9) + ')').remove();
 	paramCount--;
 }
 
 function loadProject() {
-	var data = $('#projectId').combobox('getData');
-	if (data) {
+	var id = $('#projectId').combobox('getValue');
+	if (id) {
 		$.post('${contextPath!}/project/listViewData.json', {
-					id : data[0].id
+					id : id
 				}, function(res) {
 					if (res && res.length > 0) {
 						var p = res[0];
@@ -462,7 +575,6 @@ function openInsert() {
 												}
 											},
 											success : function(data) {
-												debugger;
 												var obj = $.parseJSON(data);
 												if (obj.code == 200) {
 													// try {
@@ -475,10 +587,16 @@ function openInsert() {
 													// $.messager.alert('错误',
 													// e);
 													// }
-													$('#grid').datagrid('updateRow', {
-																index : $('#grid').datagrid('getRowIndex', $('#grid').datagrid('getSelected')),
-																row : obj.data
-															});
+													var index = $('#grid').datagrid('getRowIndex', $('#grid').datagrid('getSelected'));
+													if (index >= 0) {
+														$('#grid').datagrid('deleteRow', index);
+														$('#grid').datagrid('insertRow', {
+																	index : index,
+																	row : obj.data
+																});
+													} else {
+														$('#grid').datagrid('appendRow', obj.data);
+													}
 													$('#grid').datagrid('acceptChanges');
 													$('#win').dialog('close');
 												} else {

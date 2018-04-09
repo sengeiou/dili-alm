@@ -85,6 +85,20 @@
 						</td>
 					</tr>
 					<tr>
+						<td class="table-title">是否分市场上线</td>
+						<td>
+							<select class="easyui-combobox" style="width: 92%; text-align: center;" id="marketVersion" name="marketVersion"
+							data-options="editable:false,onChange:checkMarketComboState">
+							<option value="1" <%if(apply.marketVersion){%>selected="selected"<%}%>>是</option>
+							<option value="0" <%if(!apply.marketVersion){%>selected="selected"<%}%>>否</option>
+							</select></td>
+						<td class="table-title">市场</td>
+						<td colspan="2"><select class="easyui-combobox" id="market" name="market" style="width: 96%; text-align: center;"
+							data-options="multiple:true,editable:false<%if(!apply.marketVersion){%>,disabled:true<%}%>"> <%for(item in markets){%>
+								<option value="${item.value!}">${item.code!}</option> <%}%>
+						</select></td>
+					</tr>
+					<tr>
 						<td class="table-title" colspan="6">上线系统及依赖关系描述</td>
 					</tr>
 					<tr>
@@ -113,18 +127,15 @@
 					<tr class="subsystem">
 						<td colspan="2" class="table-title">系统名称</td>
 						<td colspan="2" class="table-combo" style="padding: 0">
-						<%if(item.projectId != null){%>
-							<select class="easyui-combobox"
-							name="subProjectName[${itemLP.index-1}]" style="width: 94%; text-align: center;"
-							data-options="textField:'name',valueField:'id',required:true">
-							<%for(pitem in plist){%>
-								<option value="${pitem.id!}"<%if(pitem.id == item.projectId){%>selected="selected"<%}%>>${pitem.name!}</option>
-							<%}%>
-							</select>
-						<%}else{%>
-							<input class="easyui-combobox" name="subProjectName[${itemLP.index-1}]" value="${item.projectName!}"
+						<%if(item.projectId != null){%> 
+						<select class="easyui-combobox" name="subProjectName[${itemLP.index-1}]" style="width: 94%; text-align: center;"
+							data-options="textField:'name',valueField:'id',required:true"> <%for(pitem in plist){%>
+								<option value="${pitem.id!}"<%if(pitem.id == item.projectId){%>selected="selected"<%}%>>${pitem.name!}</option> <%}%>
+						</select> 
+						<%}else{%> 
+						<input class="easyui-combobox" name="subProjectName[${itemLP.index-1}]" value="${item.projectName!}"
 							style="width: 94%; text-align: center;"
-							data-options="url:'${contextPath!}/project/list.json',textField:'name',valueField:'id',required:true">
+							data-options="url:'${contextPath!}/project/list.json',textField:'name',valueField:'id',required:true"> 
 						<%}%>
 						</td>
 						<td class="table-title">负责人</td>
@@ -196,7 +207,19 @@
 
 	</form>
 </div>
-
 <script type="text/javascript">
+	var selectedMarkets=[		
+		<%
+		if(has(apply.selectedMarkets)){
+		for(smarket in apply.selectedMarkets){%>
+			<%if(smarketLP.last){%>
+				'${smarket.marketCode!}'
+			<%}else{%>
+				'${smarket.marketCode!}',
+			<%}%>
+		<%}
+		}
+		%>
+	];
 	<#projectOnlineApply_update />
 </script>

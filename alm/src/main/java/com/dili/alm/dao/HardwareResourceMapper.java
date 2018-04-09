@@ -12,4 +12,6 @@ public interface HardwareResourceMapper extends MyMapper<HardwareResource> {
 	List<HardwareResource> selectByIds(@Param("hardwareResource")HardwareResource hardwareResource, @Param("list")List<Long> list);
 
 	int selectByIdsCounts(@Param("hardwareResource")HardwareResource hardwareResource, @Param("list")List<Long> list);
+
+	int updateByProjectId(HardwareResource hardwareResource);
 }

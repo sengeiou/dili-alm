@@ -37,4 +37,6 @@ public interface ProjectMapper extends MyMapper<Project> {
 	int getProjectTypeAllCount(@Param("startTime")String startTime,@Param("endTime")String endTime);
 	
 	List<ProjectStatusCountDto> getStateByProjectCount(@Param("owner")Long owner,@Param("list")List<Long> list);
+
+	List<Long> selectNotSubmitWeekly(@Param("startTime")String startTime,@Param("endTime")String endTime);
 }

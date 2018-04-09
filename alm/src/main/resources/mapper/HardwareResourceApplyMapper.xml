@@ -16,9 +16,9 @@
     <result column="service_environment" jdbcType="VARCHAR" property="serviceEnvironment" />
     <result column="apply_reason" jdbcType="VARCHAR" property="applyReason" />
     <result column="other_description" jdbcType="VARCHAR" property="otherDescription" />
-    <result column="configuration_requirement" jdbcType="VARCHAR" property="configurationRequirement" />
     <result column="created" jdbcType="TIMESTAMP" property="created" />
     <result column="apply_state" jdbcType="INTEGER" property="applyState" />
+    <result column="apply_date" jdbcType="TIMESTAMP" property="applyDate" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
@@ -26,7 +26,7 @@
     -->
     id, project_id, project_name, project_serial_number, project_manager_id, application_department_id, 
     applicant_id, submit_time, service_environment, apply_reason, other_description, 
-    configuration_requirement, created, apply_state
+    created, apply_state, apply_date
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -73,14 +73,14 @@
       <if test="otherDescription != null">
         other_description = #{otherDescription,jdbcType=VARCHAR},
       </if>
-      <if test="configurationRequirement != null">
-        configuration_requirement = #{configurationRequirement,jdbcType=VARCHAR},
-      </if>
       <if test="created != null">
         created = #{created,jdbcType=TIMESTAMP},
       </if>
       <if test="applyState != null">
         apply_state = #{applyState,jdbcType=INTEGER},
+      </if>
+      <if test="applyDate != null">
+        apply_date = #{applyDate,jdbcType=TIMESTAMP},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

@@ -10,9 +10,12 @@ import com.dili.alm.domain.HardwareResourceApply;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ResourceEnvironment;
 import com.dili.alm.domain.User;
+import com.dili.alm.domain.dto.DataDictionaryDto;
+import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.rpc.DepartmentRpc;
 import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.rpc.UserRpc;
+import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.HardwareResourceApplyService;
 import com.dili.alm.service.HardwareResourceService;
 import com.dili.alm.utils.WebUtil;
@@ -46,6 +49,13 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 	private ProjectMapper projectMapper;
 	@Autowired
 	private HardwareResourceMapper hardwareResourceMapper;
+	@Autowired
+	private DataDictionaryService dataDictionaryService;
+	
+	private static final String REGIONAL_CODE = "regional";
+	private static final String ENVIRONMENT_CODE = "environment";
+	
+	
 	@Override
 	public List<User> listUserByDepartment() {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
@@ -106,14 +116,7 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 	
 	@Override
 	public EasyuiPageOutput listEasyuiPageByExample(HardwareResource domain,List<Long> projectIds, boolean useProvider) throws Exception {
-		SessionContext sessionContext = SessionContext.getSessionContext();
-		if (sessionContext == null) {
-			throw new RuntimeException("未登录");
-		}
-		UserTicket user = sessionContext.getUserTicket();
-		if (user == null) {
-			throw new RuntimeException("未登录");
-		}
+		
 		String sort = domain.getSort();
 		if(WebUtil.strIsEmpty(sort)){
 			domain.setSort("id");
@@ -123,9 +126,6 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 			domain.setSort("project_id");
 		}else if(sort.equals("maintenanceDate")){
 			domain.setSort("maintenance_date");
-		}
-		if(projectIds==null||projectIds.size()<=0){
-			domain.setMaintenanceOwner(user.getId());
 		}
 		List<HardwareResource> list = this.hardwareResourceMapper.selectByIds(domain,projectIds);
 		int total = this.hardwareResourceMapper.selectByIdsCounts(domain,projectIds);
@@ -148,6 +148,47 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 		return false;
 	}
 
-		
+	@Override
+	public BaseOutput insertOneSelective(HardwareResource hardwareResource) {
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		if (userTicket == null) {
+			throw new RuntimeException("未登录");
+		}
+		hardwareResource.setMaintenanceOwner(userTicket.getId());
+		hardwareResource.setLastModifyDate(new Date());
+		int insertList = this.hardwareResourceMapper.insert(hardwareResource);
+		if(insertList==1){
+			return  BaseOutput.success("新增成功");
+		}
+		return  BaseOutput.failure("新增失败");
+	}
+
+	@Override
+	public void submit(Long projectId, Long userId) {
+		HardwareResource hardwareResource=DTOUtils.newDTO(HardwareResource.class);
+  		hardwareResource.setProjectId(projectId);
+  		hardwareResource.setLastModifyDate(new Date());
+  		hardwareResource.setMaintenanceOwner(userId);
+  		hardwareResourceMapper.updateByProjectId(hardwareResource);
+	}
+
+	@Override
+	public List<DataDictionaryValueDto> getEnvironments() {
+		DataDictionaryDto dto = this.dataDictionaryService.findByCode(ENVIRONMENT_CODE);
+		if (dto == null) {
+			return null;
+		}
+		return dto.getValues();
+	}
+
+	@Override
+	public List<DataDictionaryValueDto> getRegionals() {
+		DataDictionaryDto dto = this.dataDictionaryService.findByCode(REGIONAL_CODE);
+		if (dto == null) {
+			return null;
+		}
+		return dto.getValues();
+	}
+
 
 }
