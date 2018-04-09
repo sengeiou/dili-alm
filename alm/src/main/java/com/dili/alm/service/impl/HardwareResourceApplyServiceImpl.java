@@ -5,7 +5,7 @@ import com.dili.alm.dao.ResourceEnvironmentMapper;
 import com.dili.alm.domain.ApproveResult;
 import com.dili.alm.domain.HardwareResourceApply;
 import com.dili.alm.domain.ResourceEnvironment;
-import com.dili.alm.domain.dto.HardwaerResourceApplyUpdateDto;
+import com.dili.alm.domain.dto.HardwareResourceApplyUpdateDto;
 import com.dili.alm.exceptions.HardwareResourceApplyException;
 import com.dili.alm.service.HardwareResourceApplyService;
 import com.dili.ss.base.BaseServiceImpl;
@@ -50,7 +50,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 	}
 
 	@Override
-	public void saveOrUpdate(HardwaerResourceApplyUpdateDto dto) throws HardwareResourceApplyException {
+	public void saveOrUpdate(HardwareResourceApplyUpdateDto dto) throws HardwareResourceApplyException {
 		// TODO Auto-generated method stub
 		
 	}

@@ -7,7 +7,7 @@ import java.util.Set;
 import com.dili.alm.domain.HardwareResourceApply;
 import com.dili.ss.domain.BaseDomain;
 
-public class HardwaerResourceApplyUpdateDto extends BaseDomain implements HardwareResourceApply {
+public class HardwareResourceApplyUpdateDto extends BaseDomain implements HardwareResourceApply {
 
 	/**
 	 * 
