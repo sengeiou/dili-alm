@@ -36,7 +36,7 @@ public class HardwareResourceApplyUpdateDto extends BaseDomain implements Hardwa
 	private String serialNumber;
 	private String serviceEnvironment;
 	// 使用环境
-	private Set<String> serviceEnvironments;
+	private Set<Long> serviceEnvironments;
 
 	private Date submitTime;
 
@@ -109,7 +109,7 @@ public class HardwareResourceApplyUpdateDto extends BaseDomain implements Hardwa
 		return serviceEnvironment;
 	}
 
-	public Set<String> getServiceEnvironments() {
+	public Set<Long> getServiceEnvironments() {
 		return serviceEnvironments;
 	}
 
@@ -187,7 +187,7 @@ public class HardwareResourceApplyUpdateDto extends BaseDomain implements Hardwa
 		this.serviceEnvironment = serviceEnvironment;
 	}
 
-	public void setServiceEnvironments(Set<String> serviceEnvironments) {
+	public void setServiceEnvironments(Set<Long> serviceEnvironments) {
 		this.serviceEnvironments = serviceEnvironments;
 	}
 
