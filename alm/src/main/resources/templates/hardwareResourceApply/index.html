@@ -45,30 +45,27 @@
 	<div region="center" style="width: 100%;" height="auto">
 		<!-- =========================================================表格========================================================= -->
 		<table class="easyui-datagrid" title="资源申请列表" id="grid" fitColumns="true" pagination="true" pageSize="30" pageNumber="1"
-			pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
+			pagePosition="both" rownumbers="true"   loadMsg="数据加载中..." singleSelect="true" method="post" 
 			sortName="projectId" align="center" fit="true" striped="true" toolbar="#toolbar" idField="id"
 			data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
 			<thead>
 				<tr>
-					<th data-options="field:'projectSerialNumber',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+					<th data-options="field:'projectSerialNumber',     order:'asc', align:'center', resizable:'true', fixed:'false'">
 						项目编号</th>
-					<th data-options="field:'projectName',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目名称</th>
+					<th data-options="field:'projectName',    order:'asc', align:'center', resizable:'true', fixed:'false'">项目名称</th>
 					<th
-						data-options="field:'deptMember',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:deptMemberFormatter">
+						data-options="field:'deptMember',  order:'asc', align:'center', resizable:'true', fixed:'false',formatter:deptMemberFormatter">
 						申请部门/人</th>
 					<th
-						data-options="field:'envList',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:envFormatter">
+						data-options="field:'envList',   order:'asc',align:'center', resizable:'true', fixed:'false',formatter:envFormatter">
 						使用环境</th>
 					<th
-						data-options="field:'submitTime',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						data-options="field:'submitTime',  _provider:'datetimeProvider',  order:'asc', align:'center', resizable:'true', fixed:'false'">
 						申请时间</th>
 					<th
-						data-options="field:'applyState', _provider:'hardwareResourceApplyStateProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">状态</th>
+						data-options="field:'applyState', _provider:'hardwareResourceApplyStateProvider',   order:'asc', align:'center', resizable:'true', fixed:'false'">状态</th>
 					<th
-						data-options="field:'applyState2',  sortable:'true', order:'asc', align:'center', resizable:'true',  resizable:'true', fixed:'false',width:'9%'">
-						使用期限</th>	
-					<th
-						data-options="field:'options',  sortable:'true', order:'asc', align:'center', resizable:'true',  resizable:'true', fixed:'false',width:'9%'">
+						data-options="field:'options',   order:'asc', align:'center',  resizable:'true', fixed:'false',width:'9%',formatter:opptFormatter">
 						操作</th>	
 				</tr>
 			</thead>

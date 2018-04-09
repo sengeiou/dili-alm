@@ -2,10 +2,18 @@ function deptMemberFormatter(value, row, index) {
 	return row.applicationDepartmentId + '/' + row.applicantId;
 }
 
+function opptFormatter(value, row, index) {
+    var returnStr = "";
+    if(row.applyState=="申请中"){
+      returnStr = "<span><a href='javascr:void(0)' onclick='openUpdate("+row.id+")'>编辑</a>&nbsp;<a href='javascr:void(0)' onclick='del("+row.id+")'>删除</a></span>"
+    }
+	return returnStr;
+}
+
 function envFormatter(v, r, i) {
 	var content = '';
 	$(v).each(function(index, item) {
-				content += item.environment + ',';
+				content += item + ',';
 			});
 	content = content ? content.substring(0, content.length - 1) : '';
 	return content;
@@ -32,7 +40,9 @@ function changeProjectSetValue(id) {
 					if (res && res.length > 0) {
 						var p = res[0];
 						$('#projectManager').textbox('initValue', p.projectManager);
-						$('#serialNumber').textbox('initValue', p.serialNumber);
+						$('#projectSerialNumber').textbox('initValue', p.serialNumber);
+						$('#projectName-a').val(p.name);
+						$('#projectManagerId').val(p.$_projectManager);
 					}
 				}, 'json');
 }
@@ -48,7 +58,37 @@ function openInsert() {
 				buttons : [{
 							text : '保存',
 							handler : function() {
-							  //
+							 var data = $("#editForm").serializeArray();
+							 //var data2= JSON.parse(createConfigurationRequirementJson());
+							 //组织配置要求的json串
+								$('#editForm').form('submit', {
+											url : '${contextPath!}/hardwareResourceApply/save',
+											queryParams : {
+												//configurationRequirementJsonStr:data2
+											},
+											success : function(data) {
+												var obj = $.parseJSON(data);
+												if (obj.code == 200) {
+													// try {
+													// LogUtils.saveLog(LOG_MODULE_OPS.ADD_PROJECT_ONLINE_APPLY,
+													// "新增上线申请:" + data.data.id
+													// + ":" + data.data.version
+													// + ":成功", function() {
+													// });
+													// } catch (e) {
+													// $.messager.alert('错误',
+													// e);
+													$('#grid').datagrid('updateRow', {
+																index : $('#grid').datagrid('getRowIndex', $('#grid').datagrid('getSelected')),
+																row : obj.data
+															});
+													$('#grid').datagrid('acceptChanges');
+													$('#win').dialog('close');
+												} else {
+													$.messager.alert('错误', obj.result);
+												}
+											}
+										});
 							}
 						}, {
 							text : '取消',
@@ -58,33 +98,81 @@ function openInsert() {
 						}, {
 							text : '提交',
 							handler : function() {
-								//$.post('${contextPath!}/projectOnlineApply/saveAndSubmit');
+								$.post('${contextPath!}/hardwareResourceApply/submit');
 							}
 						}]
 			});
 			
 }
-
+//配置要求的json串
+function createConfigurationRequirementJson(){
+   var testList=[];
+	var rowobj = $('#configGrid').datagrid('getRows'); 
+	var rowsJson ="";
+   for( var index = 0; index < rowobj.length; index ++){
+       var aa={};
+	   aa.CPU=1;
+	   aa.IP='jack';
+	   testList.push(aa);
+       console.log(testList);
+    }
+	return testList;
+}
 // 打开修改窗口
-function openUpdate() {
-    var id = 1;
- /*   if(id==null){
+function openUpdate(id) {
+
+    if(id==null){
     	var selected = $("#grid").datagrid("getSelected");
 		if (null == selected) {
 			$.messager.alert('警告', '请选中一条数据');
 			return;
+		}else{
+		  id = selected.id;
 		}
-    }*/
+    }
+    
     
 	$('#win').dialog({
 				title : '修改资源',
 				width : 830,
 				height : 500,
-				href : '${contextPath!}/hardwareResourceApply/toUpdate?id=' + id,
+				href : '${contextPath!}/hardwareResourceApply/toUpdate?id='+id,
 				modal : true,
 				buttons : [{
 							text : '保存',
 							handler : function() {
+							 var data = $("#editForm2").serializeArray();
+							// var data2= createConfigurationRequirementJson();
+								$('#editForm2').form('submit', {
+											url : '${contextPath!}/hardwareResourceApply/update',
+											queryParams : {
+												//configurationRequirementJsonStr:data2
+											},
+											success : function(data) {
+												var obj = $.parseJSON(data);
+												if (obj.code == 200) {
+													// try {
+													// LogUtils.saveLog(LOG_MODULE_OPS.ADD_PROJECT_ONLINE_APPLY,
+													// "新增上线申请:" + data.data.id
+													// + ":" + data.data.version
+													// + ":成功", function() {
+													// });
+													// } catch (e) {
+													// $.messager.alert('错误',
+													// e);
+													
+													$('#grid').datagrid('reload'); 
+													$('#grid').datagrid('updateRow', {
+																index : $('#grid').datagrid('getRowIndex', $('#grid').datagrid('getSelected')),
+																row : obj.data
+															});
+													//$('#grid').datagrid('acceptChanges');
+													$('#win').dialog('close');
+												} else {
+													$.messager.alert('错误', obj.result);
+												}
+											}
+										});
 							}
 						}, {
 							text : '取消',
@@ -94,9 +182,8 @@ function openUpdate() {
 						}, {
 							text : '提交',
 							handler : function() {
-								$.post('${contextPath!}/projectOnlineApply/saveAndSubmit', {
-											id : id
-										});
+							  //拼接提交数据
+							  createConfigurationRequirementJson();
 							}
 						}]
 			});
@@ -112,8 +199,13 @@ function openInsert() {
 }
 
 // 打开修改窗口
-function openUpdate() {
+function openUpdate(id) {
 	var selected = $("#grid").datagrid("getSelected");
+	
+	if(id!=null){
+       selected =id;
+    }
+	
 	if (null == selected) {
 		$.messager.alert('警告', '请选中一条数据');
 		return;
@@ -160,8 +252,13 @@ function saveOrUpdate() {
 }
 
 // 根据主键删除
-function del() {
+function del(id) {
+
 	var selected = $("#grid").datagrid("getSelected");
+	if(id!=null){
+       selected.id =id;
+    }
+	
 	if (null == selected) {
 		$.messager.alert('警告', '请选中一条数据');
 		return;
@@ -172,7 +269,7 @@ function del() {
 								type : "POST",
 								url : "${contextPath}/hardwareResourceApply/delete",
 								data : {
-									id : selected.id
+									id :selected.id
 								},
 								processData : true,
 								dataType : "json",
@@ -259,6 +356,7 @@ $(function() {
 			bindFormEvent("_form", "_projectId", saveOrUpdate, function() {
 						$('#dlg').dialog('close');
 					});**/
+			queryGrid();
 			if (document.addEventListener) {
 				document.addEventListener("keyup", getKey, false);
 			} else if (document.attachEvent) {
