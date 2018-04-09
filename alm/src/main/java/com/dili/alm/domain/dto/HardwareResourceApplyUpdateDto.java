@@ -33,9 +33,11 @@ public class HardwareResourceApplyUpdateDto extends BaseDomain implements Hardwa
 	private Long projectManagerId;
 	private String projectName;
 	private String projectSerialNumber;
+	private String serialNumber;
 	private String serviceEnvironment;
 	// 使用环境
 	private Set<String> serviceEnvironments;
+
 	private Date submitTime;
 
 	@Override
@@ -95,6 +97,11 @@ public class HardwareResourceApplyUpdateDto extends BaseDomain implements Hardwa
 	@Override
 	public String getProjectSerialNumber() {
 		return projectSerialNumber;
+	}
+
+	@Override
+	public String getSerialNumber() {
+		return serialNumber;
 	}
 
 	@Override
@@ -168,6 +175,11 @@ public class HardwareResourceApplyUpdateDto extends BaseDomain implements Hardwa
 	@Override
 	public void setProjectSerialNumber(String projectSerialNumber) {
 		this.projectSerialNumber = projectSerialNumber;
+	}
+
+	@Override
+	public void setSerialNumber(String serialNumber) {
+		this.serialNumber = serialNumber;
 	}
 
 	@Override
