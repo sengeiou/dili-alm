@@ -103,7 +103,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		}
 		BaseOutput<DataDictionaryDto> output = dataAuthRpc.updateDataAuth(condtion.getId().toString(),
 				AlmConstants.DATA_AUTH_TYPE_PROJECT, condtion.getName());
-		if (output.isSuccess()) {
+		if (!output.isSuccess()) {
 			throw new RuntimeException(output.getResult());
 		}
 		return super.update(condtion);
@@ -118,7 +118,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		String parentId = project.getParentId() == null ? null : project.getParentId().toString();
 		BaseOutput<DataDictionaryDto> output = dataAuthRpc.addDataAuth(project.getId().toString(),
 				AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName(), parentId);
-		if (output.isSuccess()) {
+		if (!output.isSuccess()) {
 			throw new RuntimeException(output.getResult());
 		}
 		return i;
@@ -133,7 +133,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		String parentId = project.getParentId() == null ? null : project.getParentId().toString();
 		BaseOutput<DataDictionaryDto> output = dataAuthRpc.addDataAuth(project.getId().toString(),
 				AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName(), parentId);
-		if (output.isSuccess()) {
+		if (!output.isSuccess()) {
 			throw new RuntimeException(output.getResult());
 		}
 		return i;
@@ -144,7 +144,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		AlmCache.PROJECT_MAP.remove(id);
 		BaseOutput<DataDictionaryDto> output = dataAuthRpc.deleteDataAuth(id.toString(),
 				AlmConstants.DATA_AUTH_TYPE_PROJECT);
-		if (output.isSuccess()) {
+		if (!output.isSuccess()) {
 			throw new RuntimeException(output.getResult());
 		}
 		return super.delete(id);
@@ -156,7 +156,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 			AlmCache.PROJECT_MAP.remove(id);
 			BaseOutput<DataDictionaryDto> output = dataAuthRpc.deleteDataAuth(id.toString(),
 					AlmConstants.DATA_AUTH_TYPE_PROJECT);
-			if (output.isSuccess()) {
+			if (!output.isSuccess()) {
 				throw new RuntimeException(output.getResult());
 			}
 		});
