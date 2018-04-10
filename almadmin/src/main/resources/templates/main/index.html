@@ -302,11 +302,14 @@
 	          contentType: false,  
 	          processData: false,  
 	          success: function (data) {  
+        		 $("#user-workday-outer").empty();
+        	  	 $("#user-workday").empty();
 	        	  if (data != ""&&data!=null) {
-	        	  	$("#user-workday-outer").empty();
-	        	  	$("#user-workday").empty();
-	        	  	$("#user-workday-outer").append("<p>"+UnixToDate(data.workStartTime)+"</p><p>"+UnixToDate(data.workEndTime)+"</p>");
-	        		$("#user-workday").append("<span>"+data.workDayYear+"年 第"+data.wordDayWeek+"周  "+UnixToDate(data.workStartTime)+" -- "+UnixToDate(data.workEndTime)+"</span><a href='javascript:;' onclick='workDayOpen()'>设置</a>");
+	        	  		$("#user-workday-outer").append("<p>"+UnixToDate(data.workStartTime)+"</p><p>"+UnixToDate(data.workEndTime)+"</p>");
+	        			$("#user-workday").append("<span>"+data.workDayYear+"年 第"+data.wordDayWeek+"周  "+UnixToDate(data.workStartTime)+" -- "+UnixToDate(data.workEndTime)+"</span><a href='javascript:;' onclick='workDayOpen()'>设置</a>");
+	        	  }else{
+		        	  	$("#user-workday-outer").append("<span>不是工作日</span>");
+		        		$("#user-workday").append("<span>不是工作日</span>");
 	        	  }
 	          },  
 	          error: function (data) {  
