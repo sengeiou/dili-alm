@@ -85,7 +85,7 @@
 			targetProject="${targetJavaProject}" type="XMLMAPPER" />
 
 		<!-- 生成所有表模型 -->
-		<table tableName="hardware_resource_apply">
+		<table tableName="hardware_apply_operation_record">
 			<generatedKey column="id" sqlStatement="Mysql" identity="true" />
 		</table>
 		<!-- 生成指定表模型 -->

@@ -10,15 +10,6 @@
 				<span class="require">*</span>
 				<input class="easyui-textbox" style="width: calc(50% - 50px);" value="${project.name!}" panelWidth="auto" panelHeight="auto" label="项目名称:" readonly="readonly" />
 			</td>
-			<td style="width:50%;padding: 5px;">
-				<span class="require">*</span>
-				<select editable="false" panelWidth="auto" panelHeight="auto" label="上线:" class="easyui-combobox" name="online" id="online" style="width: calc(50% - 44px);">
-					<option value="1" <%if(has(model) && model.online==1 ){%>selected="selected"
-					<%}%>>是</option>
-					<option value="0" <%if(has(model) && model.online==0 ){%>selected="selected"
-					<%}%>>否</option>
-				</select>
-			</td>
 		</tr>
 		<tr>
 			<td style="padding: 5px;">

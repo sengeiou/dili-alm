@@ -9,13 +9,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import tk.mybatis.mapper.entity.Example;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -27,7 +24,6 @@ import com.dili.alm.domain.HardwareResourceApply;
 import com.dili.alm.domain.HardwareResourceApplyState;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectOnlineApply;
-import com.dili.alm.domain.ResourceEnvironment;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.HardwareConfigurationDto;
 import com.dili.alm.rpc.DepartmentRpc;
@@ -46,6 +42,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import tk.mybatis.mapper.entity.Example;
 
 /**
  * 由MyBatis Generator工具自动生成

@@ -101,8 +101,11 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		if (StringUtils.isNotBlank(condtion.getName())) {
 			AlmCache.PROJECT_MAP.get(condtion.getId()).setName(condtion.getName());
 		}
-		dataAuthRpc.updateDataAuth(condtion.getId().toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT,
-				condtion.getName());
+		BaseOutput<DataDictionaryDto> output = dataAuthRpc.updateDataAuth(condtion.getId().toString(),
+				AlmConstants.DATA_AUTH_TYPE_PROJECT, condtion.getName());
+		if (output.isSuccess()) {
+			throw new RuntimeException(output.getResult());
+		}
 		return super.update(condtion);
 	}
 
@@ -113,8 +116,11 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		AlmCache.PROJECT_MAP.put(project.getId(), project);
 		// 向权限系统中添加项目数据权限
 		String parentId = project.getParentId() == null ? null : project.getParentId().toString();
-		dataAuthRpc.addDataAuth(project.getId().toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName(),
-				parentId);
+		BaseOutput<DataDictionaryDto> output = dataAuthRpc.addDataAuth(project.getId().toString(),
+				AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName(), parentId);
+		if (output.isSuccess()) {
+			throw new RuntimeException(output.getResult());
+		}
 		return i;
 	}
 
@@ -125,15 +131,22 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		AlmCache.PROJECT_MAP.put(project.getId(), project);
 		// 向权限系统中添加项目数据权限
 		String parentId = project.getParentId() == null ? null : project.getParentId().toString();
-		dataAuthRpc.addDataAuth(project.getId().toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName(),
-				parentId);
+		BaseOutput<DataDictionaryDto> output = dataAuthRpc.addDataAuth(project.getId().toString(),
+				AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName(), parentId);
+		if (output.isSuccess()) {
+			throw new RuntimeException(output.getResult());
+		}
 		return i;
 	}
 
 	@Override
 	public int delete(Long id) {
 		AlmCache.PROJECT_MAP.remove(id);
-		dataAuthRpc.deleteDataAuth(id.toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT);
+		BaseOutput<DataDictionaryDto> output = dataAuthRpc.deleteDataAuth(id.toString(),
+				AlmConstants.DATA_AUTH_TYPE_PROJECT);
+		if (output.isSuccess()) {
+			throw new RuntimeException(output.getResult());
+		}
 		return super.delete(id);
 	}
 
@@ -141,7 +154,11 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	public int delete(List<Long> ids) {
 		ids.forEach(id -> {
 			AlmCache.PROJECT_MAP.remove(id);
-			dataAuthRpc.deleteDataAuth(id.toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT);
+			BaseOutput<DataDictionaryDto> output = dataAuthRpc.deleteDataAuth(id.toString(),
+					AlmConstants.DATA_AUTH_TYPE_PROJECT);
+			if (output.isSuccess()) {
+				throw new RuntimeException(output.getResult());
+			}
 		});
 		return super.delete(ids);
 	}
