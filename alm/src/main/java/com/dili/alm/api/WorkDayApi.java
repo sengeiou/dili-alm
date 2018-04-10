@@ -19,10 +19,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.dili.alm.domain.Message;
 import com.dili.alm.domain.WorkDay;
+import com.dili.alm.domain.dto.WorkDayRoleDto;
 import com.dili.alm.service.MessageService;
 import com.dili.alm.service.WorkDayService;
 import com.dili.alm.utils.WebUtil;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.sysadmin.sdk.domain.UserTicket;
+import com.dili.sysadmin.sdk.session.SessionContext;
 
 @Api("/workDayApi")
 @Controller
@@ -72,12 +75,15 @@ public class WorkDayApi {
 		})
 	 @CrossOrigin(origins = {"http://almadmin.diligrp.com", "null"})
 	 @RequestMapping(value="/getWorkDay", method = {RequestMethod.GET, RequestMethod.POST})
-	 public  @ResponseBody WorkDay  getWorkDay() {
-	 	return workDayService.getNowWeeklyWorkDay();	
+	 public  @ResponseBody WorkDayRoleDto  getWorkDay(String userId) {
+		 if (WebUtil.strIsEmpty(userId)) {
+				throw new RuntimeException("未登录");
+			}
+	 	return workDayService.showWorkDay(Long.parseLong(userId));	
 	 }
 	 
 	 /**
-	  * 查询当前工作时间
+	  * 查询当前年份
 	  * @return
 	  */
 	 @ApiImplicitParams({

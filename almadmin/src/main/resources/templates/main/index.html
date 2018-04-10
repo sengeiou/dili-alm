@@ -293,26 +293,30 @@
 	}
 	
 	function getWorkDay(){
+		console.log(userIdVal);
 		$.ajax({  
 	          url: 'http://alm.diligrp.com:8083/alm/workDayApi/getWorkDay' ,  
 	          type: 'POST',  
-	          data: {},  
-	          async: false,  
-	          cache: false,  
-	          contentType: false,  
-	          processData: false,  
-	          success: function (data) {  
+	          data: {'userId':userIdVal},  
+	          dataType:'json',
+	          async: false,   
+	          success: function (data1) {  
         		 $("#user-workday-outer").empty();
         	  	 $("#user-workday").empty();
-	        	  if (data != ""&&data!=null) {
-	        	  		$("#user-workday-outer").append("<p>"+UnixToDate(data.workStartTime)+"</p><p>"+UnixToDate(data.workEndTime)+"</p>");
-	        			$("#user-workday").append("<span>"+data.workDayYear+"年 第"+data.wordDayWeek+"周  "+UnixToDate(data.workStartTime)+" -- "+UnixToDate(data.workEndTime)+"</span><a href='javascript:;' onclick='workDayOpen()'>设置</a>");
+	        	  if (data1 != ""&&data1!=null) {
+	        		  console.log(data1)
+	        	  		$("#user-workday-outer").append("<p>"+UnixToDate(data1.workStartTime)+"</p><p>"+UnixToDate(data1.workEndTime)+"</p>");
+	        	  		if(data1.isRole==1){
+	        				$("#user-workday").append("<span>"+data1.workDayYear+"年 第"+data1.wordDayWeek+"周  "+UnixToDate(data1.workStartTime)+" -- "+UnixToDate(data1.workEndTime)+"</span><a href='javascript:;' onclick='workDayOpen()'>设置</a>");
+	        	  		}else{
+	        	  			$("#user-workday").append("<span>"+data1.workDayYear+"年 第"+data1.wordDayWeek+"周  "+UnixToDate(data1.workStartTime)+" -- "+UnixToDate(data1.workEndTime)+"</span>");
+	        	  		}
 	        	  }else{
 		        	  	$("#user-workday-outer").append("<span>不是工作日</span>");
 		        		$("#user-workday").append("<span>不是工作日</span>");
 	        	  }
 	          },  
-	          error: function (data) {  
+	          error: function (data1) {  
 	        	  $.messager.alert('错误', '远程访问失败');
 	          }  
 	     });  
@@ -411,11 +415,11 @@
 
     });
     /** 得到消息通知信息  **/
-    var userId =${userid}
+    var userIdVal =${userid}
     var getMessages = {
     		type: "POST",
             url:'http://alm.diligrp.com:8083/alm/messageApi/list',
-            data:{userId,userId},
+            data:{'userId':userIdVal},
             dataType:'json',
             success:function(data) {
             	if(data.count==0){
