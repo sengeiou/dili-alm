@@ -14,6 +14,8 @@ public class AlmConstants {
 	// 运维部门编码
 	public static final String OPERATION_DEPARTMENT_CODE = "maintenance";
 	public static final String MARKET_CODE = "market";
+	public static final String ENVIRONMENT_CODE = "environment";
+	public static final String REGIONAL_CODE = "regional";
 
 	// 团队成员状态: 加入/离开
 	public enum MemberState {

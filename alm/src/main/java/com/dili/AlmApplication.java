@@ -1,36 +1,44 @@
 package com.dili;
 
-import tk.mybatis.spring.annotation.MapperScan;
+import java.io.IOException;
+
+import org.beetl.core.Configuration;
+import org.beetl.core.GroupTemplate;
+import org.beetl.core.resource.StringTemplateResourceLoader;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
 import org.springframework.boot.web.support.SpringBootServletInitializer;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.dili.ss.retrofitful.annotation.RestfulScan;
 
+import tk.mybatis.spring.annotation.MapperScan;
+
 /**
  * 由MyBatis Generator工具自动生成
  */
-//@EnableDiscoveryClient
-//@EnableFeignClients
-//@EnableHystrix
-//@EnableHystrixDashboard
-//@EnableAspectJAutoProxy(proxyTargetClass = true)
+// @EnableDiscoveryClient
+// @EnableFeignClients
+// @EnableHystrix
+// @EnableHystrixDashboard
+// @EnableAspectJAutoProxy(proxyTargetClass = true)
 @SpringBootApplication
-//@EnableScheduling
+// @EnableScheduling
 @EnableTransactionManagement
-@MapperScan(basePackages = {"com.dili.alm.dao", "com.dili.ss.dao", "com.dili.ss.quartz.dao"})
-//@ImportResource(locations = "classpath:applicationContext.xml")
-@ComponentScan(basePackages={"com.dili.ss","com.dili.alm","com.dili.sysadmin"})
+@MapperScan(basePackages = { "com.dili.alm.dao", "com.dili.ss.dao", "com.dili.ss.quartz.dao" })
+// @ImportResource(locations = "classpath:applicationContext.xml")
+@ComponentScan(basePackages = { "com.dili.ss", "com.dili.alm", "com.dili.sysadmin" })
 @RestfulScan("com.dili.alm.rpc")
-//@EnableEncryptableProperties
-//@PropertySource(name="EncryptedProperties", value = "classpath:security.properties")
-//@EncryptablePropertySource(name = "EncryptedProperties", value = "classpath:security.properties")
-//@ServletComponentScan
-//@Import({DynamicRoutingDataSourceRegister.class}) // 注册动态多数据源
+// @EnableEncryptableProperties
+// @PropertySource(name="EncryptedProperties", value =
+// "classpath:security.properties")
+// @EncryptablePropertySource(name = "EncryptedProperties", value =
+// "classpath:security.properties")
+// @ServletComponentScan
+// @Import({DynamicRoutingDataSourceRegister.class}) // 注册动态多数据源
 @EnableAsync
 /**
  * 除了内嵌容器的部署模式，Spring Boot也支持将应用部署至已有的Tomcat容器, 或JBoss, WebLogic等传统Java EE应用服务器。
@@ -39,9 +47,15 @@ import com.dili.ss.retrofitful.annotation.RestfulScan;
  */
 public class AlmApplication extends SpringBootServletInitializer {
 
-    public static void main(String[] args) {
-            SpringApplication.run(AlmApplication.class, args);
-    }
+	@Bean
+	public GroupTemplate mailContentTemplate() throws IOException {
+		Configuration cfg = Configuration.defaultConfiguration();
+		StringTemplateResourceLoader resourceLoader = new StringTemplateResourceLoader();
+		return new GroupTemplate(resourceLoader, cfg);
+	}
 
+	public static void main(String[] args) {
+		SpringApplication.run(AlmApplication.class, args);
+	}
 
 }
