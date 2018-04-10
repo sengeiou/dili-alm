@@ -117,7 +117,6 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		version.setPlannedEndDate(dto.getPlannedEndDate());
 		version.setGit(dto.getGit());
 		version.setVisitUrl(dto.getVisitUrl());
-		version.setOnline(dto.getOnline());
 		version.setPlannedOnlineDate(dto.getPlannedOnlineDate());
 		version.setHost(dto.getHost());
 		version.setPort(dto.getPort());

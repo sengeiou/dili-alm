@@ -4,7 +4,7 @@ import java.util.Set;
 
 import com.dili.alm.domain.ApproveResult;
 import com.dili.alm.domain.HardwareResourceApply;
-import com.dili.alm.domain.dto.HardwaerResourceApplyUpdateDto;
+import com.dili.alm.domain.dto.HardwareResourceApplyUpdateDto;
 import com.dili.alm.exceptions.HardwareResourceApplyException;
 import com.dili.ss.base.BaseService;
 
@@ -18,7 +18,7 @@ public interface HardwareResourceApplyService extends BaseService<HardwareResour
 	 * 
 	 * @param dto
 	 */
-	void saveOrUpdate(HardwaerResourceApplyUpdateDto dto) throws HardwareResourceApplyException;
+	void saveOrUpdate(HardwareResourceApplyUpdateDto dto) throws HardwareResourceApplyException;
 
 	/**
 	 * 删除申请

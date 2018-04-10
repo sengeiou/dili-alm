@@ -427,21 +427,12 @@ function verify(id) {
 
 function appendSubsystem() {
 	paramCount++;
-	var content = '<tr class="subsystem">'+
-						'<td colspan="2" class="table-title">系统名称</td>'+
-						'<td colspan="2" class="table-combo" style="padding: 0">'+
-							'<input class="easyui-combobox" name="subProjectName['+paramCount+']"'+
-							'style="width: 96%; text-align: center;"'+
-							'data-options="url:\'${contextPath!}/project/list.json\',textField:\'name\',valueField:\'id\',required:true" />'+
-						'</td>'+
-						'<td class="table-title">负责人</td>'+
-						'<td class="table-combo"  style="padding: 0">'+
-							'<select class="easyui-combobox" name="managerId['+paramCount+']"'+
-							'data-options="url:\'${contextPath!}/member/members\',textField:\'realName\',valueField:\'id\',required:true"'+
-							'style="width: 96%; text-align: center;">'+
-							'</select>'+
-						'</td>'+
-					'</tr>';
+	var content = '<tr class="subsystem">' + '<td colspan="2" class="table-title">系统名称</td>' + '<td colspan="2" class="table-combo" style="padding: 0">'
+			+ '<input class="easyui-combobox" name="subProjectName[' + paramCount + ']"' + 'style="width: 96%; text-align: center;"'
+			+ 'data-options="url:\'${contextPath!}/project/list.json\',textField:\'name\',valueField:\'id\',required:true" />' + '</td>' + '<td class="table-title">负责人</td>'
+			+ '<td class="table-combo"  style="padding: 0">' + '<select class="easyui-combobox" name="managerId[' + paramCount + ']"'
+			+ 'data-options="url:\'${contextPath!}/member/members\',textField:\'realName\',valueField:\'id\',required:true"' + 'style="width: 96%; text-align: center;">' + '</select>' + '</td>'
+			+ '</tr>';
 	$('.table-box .subsystem:last').after(content);
 	$.parser.parse($('.table-box tr:eq(' + (paramCount + 9) + ')'));
 
@@ -611,6 +602,15 @@ function openInsert() {
 
 // 打开修改窗口
 function openUpdate(id) {
+	var selected = $('#grid').datagrid('getSelected');
+	if (!selected) {
+		$.messager.alert('提示', '请选择一条记录');
+		return;
+	}
+	if (selected.$_applyState != 1) {
+		$.messager.alert('提示', '当前状态不能编辑');
+		return;
+	}
 	$('#win').dialog({
 				title : '上线申请',
 				width : 800,
@@ -654,7 +654,7 @@ function openUpdate(id) {
 													// e);
 													// }
 													$('#grid').datagrid('updateRow', {
-																index : $('#grid').datagrid('getRowIndex', $('#grid').datagrid('getSelected')),
+																index : $('#grid').datagrid('getRowIndex', selected),
 																row : obj.data
 															});
 													$('#grid').datagrid('acceptChanges');

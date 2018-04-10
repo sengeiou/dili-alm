@@ -1,22 +1,23 @@
 package com.dili.alm.service.impl;
 
-import com.dili.alm.dao.HardwareResourceApplyMapper;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.dili.alm.dao.HardwareResourceMapper;
 import com.dili.alm.dao.ProjectMapper;
-import com.dili.alm.dao.ResourceEnvironmentMapper;
 import com.dili.alm.domain.Department;
 import com.dili.alm.domain.HardwareResource;
-import com.dili.alm.domain.HardwareResourceApply;
 import com.dili.alm.domain.Project;
-import com.dili.alm.domain.ResourceEnvironment;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.rpc.DepartmentRpc;
-import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
-import com.dili.alm.service.HardwareResourceApplyService;
 import com.dili.alm.service.HardwareResourceService;
 import com.dili.alm.utils.WebUtil;
 import com.dili.ss.base.BaseServiceImpl;
@@ -26,14 +27,6 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
-import com.github.pagehelper.Page;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2018-03-20 17:22:08.

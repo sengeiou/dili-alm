@@ -7,9 +7,12 @@ import com.dili.alm.domain.User;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.stereotype.Component;
+
 /**
  * Created by asiamaster on 2017/10/19 0019.
  */
+@Component
 public class AlmCache {
 	// 缓存用户，key为主键id
 	public static final Map<Long, User> USER_MAP = new ConcurrentHashMap<>();
@@ -26,7 +29,7 @@ public class AlmCache {
 	public static final Map<String, String> ENVIRONMENT_MAP = new ConcurrentHashMap<>();
 	// 地域
 	public static final Map<String, String> REGIONAL_MAP = new ConcurrentHashMap<>();
-	
+
 	// 任务类型
 	public static final Map<String, String> TASK_TYPE_MAP = new ConcurrentHashMap<>();
 	// 消息类型
@@ -54,4 +57,6 @@ public class AlmCache {
 	// 资源环境
 	public static final Map<Integer, String> RESOURCE_ENVIRONMENT_MAP = new ConcurrentHashMap<>();
 
+	public void clearCache() {
+	}
 }

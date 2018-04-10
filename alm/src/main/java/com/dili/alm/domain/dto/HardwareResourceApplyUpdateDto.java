@@ -7,7 +7,7 @@ import java.util.Set;
 import com.dili.alm.domain.HardwareResourceApply;
 import com.dili.ss.domain.BaseDomain;
 
-public class HardwaerResourceApplyUpdateDto extends BaseDomain implements HardwareResourceApply {
+public class HardwareResourceApplyUpdateDto extends BaseDomain implements HardwareResourceApply {
 
 	/**
 	 * 
@@ -33,9 +33,11 @@ public class HardwaerResourceApplyUpdateDto extends BaseDomain implements Hardwa
 	private Long projectManagerId;
 	private String projectName;
 	private String projectSerialNumber;
+	private String serialNumber;
 	private String serviceEnvironment;
 	// 使用环境
-	private Set<String> serviceEnvironments;
+	private Set<Long> serviceEnvironments;
+
 	private Date submitTime;
 
 	@Override
@@ -98,11 +100,16 @@ public class HardwaerResourceApplyUpdateDto extends BaseDomain implements Hardwa
 	}
 
 	@Override
+	public String getSerialNumber() {
+		return serialNumber;
+	}
+
+	@Override
 	public String getServiceEnvironment() {
 		return serviceEnvironment;
 	}
 
-	public Set<String> getServiceEnvironments() {
+	public Set<Long> getServiceEnvironments() {
 		return serviceEnvironments;
 	}
 
@@ -171,11 +178,16 @@ public class HardwaerResourceApplyUpdateDto extends BaseDomain implements Hardwa
 	}
 
 	@Override
+	public void setSerialNumber(String serialNumber) {
+		this.serialNumber = serialNumber;
+	}
+
+	@Override
 	public void setServiceEnvironment(String serviceEnvironment) {
 		this.serviceEnvironment = serviceEnvironment;
 	}
 
-	public void setServiceEnvironments(Set<String> serviceEnvironments) {
+	public void setServiceEnvironments(Set<Long> serviceEnvironments) {
 		this.serviceEnvironments = serviceEnvironments;
 	}
 

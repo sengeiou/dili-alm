@@ -6,6 +6,7 @@
       WARNING - @mbg.generated
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="serial_number" jdbcType="VARCHAR" property="serialNumber" />
     <result column="project_id" jdbcType="BIGINT" property="projectId" />
     <result column="project_name" jdbcType="VARCHAR" property="projectName" />
     <result column="project_serial_number" jdbcType="VARCHAR" property="projectSerialNumber" />
@@ -24,9 +25,9 @@
     <!--
       WARNING - @mbg.generated
     -->
-    id, project_id, project_name, project_serial_number, project_manager_id, application_department_id, 
-    applicant_id, submit_time, service_environment, apply_reason, other_description, 
-    created, apply_state, apply_date
+    id, serial_number, project_id, project_name, project_serial_number, project_manager_id, 
+    application_department_id, applicant_id, submit_time, service_environment, apply_reason, 
+    other_description, created, apply_state, apply_date
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -43,6 +44,9 @@
     -->
     update hardware_resource_apply
     <set>
+      <if test="serialNumber != null">
+        serial_number = #{serialNumber,jdbcType=VARCHAR},
+      </if>
       <if test="projectId != null">
         project_id = #{projectId,jdbcType=BIGINT},
       </if>

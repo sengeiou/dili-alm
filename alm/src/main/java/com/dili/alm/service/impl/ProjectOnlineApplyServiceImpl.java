@@ -98,6 +98,46 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	private static final String OPERATION_MANAGER_CODE = "operation_manager";
 	private static final String TEST_MANAGER_CODE = "test_manager";
 
+	@Autowired
+	private ProjectOnlineApplyMarketMapper applyMarketMapper;
+
+	private String contentTemplate;
+	@Autowired
+	private DataDictionaryService ddService;
+	@Autowired
+	private DepartmentRpc deptRpc;
+	@Autowired
+	private EmailAddressMapper emailAddressMapper;
+	@Autowired
+	private FilesMapper filesMapper;
+	@Qualifier("mailContentTemplate")
+	@Autowired
+	private GroupTemplate groupTemplate;
+	@Value("${spring.mail.username:}")
+	private String mailFrom;
+	@Autowired
+	private MailManager mailManager;
+	@Autowired
+	private ProjectOnlineOperationRecordMapper poorMapper;
+	@Autowired
+	private ProjectOnlineSubsystemMapper posMapper;
+	@Autowired
+	private ProjectMapper projectMapper;
+	@Qualifier("projectOnlineApplyNumberGenerator")
+	@Autowired
+	private NumberGenerator serialNumberGenerator;
+	@Autowired
+	private TeamMapper teamMapper;
+
+	@Autowired
+	private UserRpc userRpc;
+	@Autowired
+	private VersionMarketOnlineRecordMapper versionMaketMapper;
+	@Autowired
+	private ProjectVersionMapper versionMapper;
+	@Autowired
+	private ProjectVersionProvider versionProvider;
+
 	@SuppressWarnings("unchecked")
 	public static Map<Object, Object> buildApplyViewModel(ProjectOnlineApply apply) {
 		Map<Object, Object> metadata = new HashMap<>();
@@ -140,51 +180,10 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		}
 	}
 
-	@Autowired
-	private ProjectOnlineApplyMarketMapper applyMarketMapper;
-	private String contentTemplate;
-	@Autowired
-	private DataDictionaryService ddService;
-	@Autowired
-	private DepartmentRpc deptRpc;
-	@Autowired
-	private EmailAddressMapper emailAddressMapper;
-	@Autowired
-	private FilesMapper filesMapper;
-	private GroupTemplate groupTemplate;
-	@Value("${spring.mail.username:}")
-	private String mailFrom;
-	@Autowired
-	private MailManager mailManager;
-	@Autowired
-	private ProjectOnlineOperationRecordMapper poorMapper;
-	@Autowired
-	private ProjectOnlineSubsystemMapper posMapper;
-	@Autowired
-	private ProjectMapper projectMapper;
-	@Qualifier("projectOnlineApplyNumberGenerator")
-	@Autowired
-	private NumberGenerator serialNumberGenerator;
-
-	@Autowired
-	private TeamMapper teamMapper;
-	@Autowired
-	private UserRpc userRpc;
-	@Autowired
-	private VersionMarketOnlineRecordMapper versionMaketMapper;
-	@Autowired
-	private ProjectVersionMapper versionMapper;
-
-	@Autowired
-	private ProjectVersionProvider versionProvider;
-
 	public ProjectOnlineApplyServiceImpl() {
 		super();
 		InputStream in = null;
-		StringTemplateResourceLoader resourceLoader = new StringTemplateResourceLoader();
 		try {
-			Configuration cfg = Configuration.defaultConfiguration();
-			this.groupTemplate = new GroupTemplate(resourceLoader, cfg);
 			Resource res = new ClassPathResource("conf/projectOlineApplyMailContentTemplate.html");
 			in = res.getInputStream();
 			this.contentTemplate = IOUtils.toString(in);
@@ -198,24 +197,6 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 					LOGGER.error(e.getMessage(), e);
 				}
 			}
-		}
-	}
-
-	@SuppressWarnings("rawtypes")
-	private List<Map> buildOperationRecordViewModel(List<ProjectOnlineOperationRecord> list) {
-		Map<Object, Object> metadata = new HashMap<>();
-		JSONObject memberProvider = new JSONObject();
-		memberProvider.put("provider", "memberProvider");
-		metadata.put("operatorId", memberProvider);
-
-		JSONObject datetimeProvider = new JSONObject();
-		datetimeProvider.put("provider", "datetimeProvider");
-		metadata.put("operateTime", datetimeProvider);
-		try {
-			return ValueProviderUtils.buildDataByProvider(metadata, list);
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
-			return null;
 		}
 	}
 
@@ -373,6 +354,11 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	}
 
 	@Override
+	public ProjectOnlineApply getProjectManagerConfirmViewModel(Long id) throws ProjectOnlineApplyException {
+		return this.getFlowViewData(id);
+	}
+
+	@Override
 	public ProjectOnlineApply getStartExecuteViewData(Long id) throws ProjectOnlineApplyException {
 		return this.getFlowViewData(id);
 	}
@@ -517,6 +503,46 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	}
 
 	@Override
+	public void projectManagerConfirm(Long applyId, Long executorId, OperationResult result, String description)
+			throws ProjectOnlineApplyException {
+		// 验证记录是否存在
+		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(applyId);
+		if (apply == null) {
+			throw new ProjectOnlineApplyException("申请记录不存在");
+		}
+		// 验证状态
+		if (!apply.getApplyState().equals(ProjectOnlineApplyState.PROJECT_MANAGER_CONFIRMING.getValue())) {
+			throw new ProjectOnlineApplyException("当前状态不能执行项目经理确认");
+		}
+		// 项目经理回退
+		if (OperationResult.FAILURE.equals(result)) {
+			apply.setApplyState(ProjectOnlineApplyState.APPLING.getValue());
+		}
+		// 项目经理确认
+		if (OperationResult.SUCCESS.equals(result)) {
+			// 下一步测试经理确认
+			apply.setApplyState(ProjectOnlineApplyState.TESTER_CONFIRMING.getValue());
+		}
+		// 更新状态
+		int rows = this.getActualDao().updateByPrimaryKey(apply);
+		if (rows <= 0) {
+			throw new ProjectOnlineApplyException("更新状态失败");
+		}
+		// 生成操作记录
+		ProjectOnlineOperationRecord record = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
+		record.setApplyId(applyId);
+		record.setOperatorId(executorId);
+		record.setOperationType(ProjectOnlineApplyOperationType.PROJECT_MANAGER.getValue());
+		record.setOperationName(ProjectOnlineApplyOperationType.PROJECT_MANAGER.getName());
+		record.setDescription(description);
+		record.setOpertateResult(result.getValue());
+		rows = this.poorMapper.insertSelective(record);
+		if (rows <= 0) {
+			throw new ProjectOnlineApplyException("生成操作记录失败");
+		}
+	}
+
+	@Override
 	public void saveAndSubmit(ProjectOnlineApplyUpdateDto dto) throws ProjectOnlineApplyException {
 		this.saveOrUpdate(dto);
 		this.submit(dto.getId());
@@ -529,130 +555,6 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		} else {
 			this.updateProjectOnlineApply(dto);
 		}
-	}
-
-	private void sendMail(ProjectOnlineApply apply, String subject) {
-		Set<String> emailStrs = new HashSet<>();
-		EmailAddress record = DTOUtils.newDTO(EmailAddress.class);
-		record.setApplyId(apply.getId());
-		List<EmailAddress> emails = this.emailAddressMapper.select(record);
-		emails.forEach(e -> emailStrs.add(e.getEmailAddress()));
-
-		// 构建邮件内容
-		Template template = this.groupTemplate.getTemplate(this.contentTemplate);
-		template.binding("apply", buildApplyViewModel(apply));
-		ProjectOnlineOperationRecord poor = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
-		poor.setApplyId(apply.getId());
-		List<ProjectOnlineOperationRecord> list = this.poorMapper.select(poor);
-		template.binding("opRecords", this.buildOperationRecordViewModel(list));
-
-		// 默认邮件发送列表，运维组和项目组成员
-		// 运维部成员
-		// Department deptQuery = new Department();
-		// deptQuery.setCode(AlmConstants.OPERATION_DEPARTMENT_CODE);
-		// BaseOutput<List<Department>> deptOutput = this.deptRpc.list(deptQuery);
-		// if (deptOutput.isSuccess() &&
-		// CollectionUtils.isNotEmpty(deptOutput.getData())) {
-		// Long departmentId = deptOutput.getData().get(0).getId();
-		// User userQuery = new User();
-		// userQuery.setDepartmentId(departmentId);
-		// BaseOutput<List<User>> userOutput = this.userRpc.list(userQuery);
-		// if (userOutput.isSuccess() &&
-		// CollectionUtils.isNotEmpty(userOutput.getData())) {
-		// userOutput.getData().forEach(u -> emailStrs.add(u.getEmail()));
-		// }
-		// }
-		// // 项目组成员
-		// Team teamQuery = DTOUtils.newDTO(Team.class);
-		// teamQuery.setProjectId(apply.getProjectId());
-		// List<Team> teams = this.teamMapper.select(teamQuery);
-		// teams.forEach(t -> {
-		// User u = AlmCache.USER_MAP.get(t.getMemberId());
-		// if (u != null) {
-		// emailStrs.add(u.getEmail());
-		// }
-		// });
-
-		// 发送
-		emailStrs.forEach(s -> {
-			try {
-				this.mailManager.sendMail(this.mailFrom, s, template.render(), true, subject, null);
-			} catch (Exception e) {
-				LOGGER.error(e.getMessage(), e);
-			}
-		});
-	}
-
-	private void setOperationColumn(ProjectOnlineApply apply) {
-		UserTicket user = SessionContext.getSessionContext().getUserTicket();
-		if (user == null) {
-			throw new IllegalArgumentException("用户未登录");
-		}
-		DataDictionaryDto ddDto = this.ddService.findByCode(DEPARTMENT_MANAGER_ROLE_CONFIG_CODE);
-		// 判断界面上用户是否可以编辑申请记录
-		// 判断当前申请状态是否是申请中状态
-		boolean editable = apply.getApplyState().equals(ProjectOnlineApplyState.APPLING.getValue());
-		// 判断当前登录用户是否是申请人
-		editable = !editable ? editable : user.getId().equals(apply.getApplicantId());
-		apply.aset("editable", editable);
-
-		// 判断界面上用户是否可以点击项目经理确认按钮
-		// 判断申请状态是否是项目经理确认状态
-		boolean projectManagerConfirmable = apply.getApplyState()
-				.equals(ProjectOnlineApplyState.PROJECT_MANAGER_CONFIRMING.getValue());
-		// 判断当前登录用户是否是测试负责人
-		projectManagerConfirmable = !projectManagerConfirmable ? projectManagerConfirmable
-				: user.getId().equals(apply.getProjectManagerId());
-		apply.aset("projectManagerConfirmable", projectManagerConfirmable);
-
-		// 判断界面上用户是否可以点击测试确认按钮
-		// 判断申请状态是否是测试确认状态
-		boolean testConfirmable = apply.getApplyState().equals(ProjectOnlineApplyState.TESTER_CONFIRMING.getValue());
-		// 判断当前登录用户是否是测试负责人
-		DataDictionaryValueDto ddValueDto = ddDto.getValues().stream()
-				.filter(v -> v.getCode().equals(TEST_MANAGER_CODE)).findFirst().orElse(null);
-		testConfirmable = !testConfirmable ? testConfirmable
-				: ddValueDto != null && user.getUserName().equals(ddValueDto.getValue());
-		apply.aset("testConfirmable", testConfirmable);
-
-		// 判断界面上用户是否可点击开始执行按钮
-		// 判断申请状态是否是执行中
-		boolean startExecutable = apply.getApplyState().equals(ProjectOnlineApplyState.EXECUTING.getValue());
-		// 判断当前申请是否分配了执行人
-		if (startExecutable && StringUtils.isNotEmpty(apply.getExecutorId())) {
-			startExecutable = false;
-		}
-		// 判断当前登录用户是否是运维负责人
-		ddValueDto = ddDto.getValues().stream().filter(v -> v.getCode().equals(OPERATION_MANAGER_CODE)).findFirst()
-				.orElse(null);
-		startExecutable = !startExecutable ? startExecutable
-				: ddValueDto != null && user.getUserName().equals(ddValueDto.getValue());
-		apply.aset("startExecutable", startExecutable);
-
-		// 判断界面上用户是否可点击确认执行按钮
-		// 判断申请状态是否是执行中
-		boolean confirmExecutable = apply.getApplyState().equals(ProjectOnlineApplyState.EXECUTING.getValue());
-		// 判断当前申请是否分配了执行人
-		if (confirmExecutable && StringUtils.isNotEmpty(apply.getExecutorId())) {
-			// 检查当前的执行人是否在运维经理分配的执行人当中,同时要判断当前用户是否已经确认执行过
-			confirmExecutable = false;
-			for (String str : apply.getExecutorId().split(",")) {
-				if (user.getId().equals(Long.valueOf(str))) {
-					confirmExecutable = true;
-					break;
-				}
-			}
-		} else {
-			confirmExecutable = false;
-		}
-		apply.aset("confirmExecutable", confirmExecutable);
-
-		// 判断界面上用户是否可以点击验证按钮
-		// 判断申请状态是否是验证中
-		boolean verifiable = apply.getApplyState().equals(ProjectOnlineApplyState.VARIFING.getValue());
-		// 判断当前登录用户是否是当前项目的产品经理
-		verifiable = !verifiable ? verifiable : apply.getProductManagerId().equals(user.getId());
-		apply.aset("verifiable", verifiable);
 	}
 
 	@Override
@@ -911,6 +813,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		}
 		if (OperationResult.SUCCESS.equals(result)) {
 			apply.setApplyState(ProjectOnlineApplyState.COMPLETED.getValue());
+			apply.setActualOnlineDate(new Date());
 		}
 		// 更新状态
 		int rows = this.getActualDao().updateByPrimaryKey(apply);
@@ -952,49 +855,22 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		}
 	}
 
-	@Override
-	public void projectManagerConfirm(Long applyId, Long executorId, OperationResult result, String description)
-			throws ProjectOnlineApplyException {
-		// 验证记录是否存在
-		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(applyId);
-		if (apply == null) {
-			throw new ProjectOnlineApplyException("申请记录不存在");
-		}
-		// 验证状态
-		if (!apply.getApplyState().equals(ProjectOnlineApplyState.PROJECT_MANAGER_CONFIRMING.getValue())) {
-			throw new ProjectOnlineApplyException("当前状态不能执行项目经理确认");
-		}
-		// 项目经理回退
-		if (OperationResult.FAILURE.equals(result)) {
-			apply.setApplyState(ProjectOnlineApplyState.APPLING.getValue());
-		}
-		// 项目经理确认
-		if (OperationResult.SUCCESS.equals(result)) {
-			// 下一步测试经理确认
-			apply.setApplyState(ProjectOnlineApplyState.TESTER_CONFIRMING.getValue());
-		}
-		// 更新状态
-		int rows = this.getActualDao().updateByPrimaryKey(apply);
-		if (rows <= 0) {
-			throw new ProjectOnlineApplyException("更新状态失败");
-		}
-		// 生成操作记录
-		ProjectOnlineOperationRecord record = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
-		record.setApplyId(applyId);
-		record.setOperatorId(executorId);
-		record.setOperationType(ProjectOnlineApplyOperationType.PROJECT_MANAGER.getValue());
-		record.setOperationName(ProjectOnlineApplyOperationType.PROJECT_MANAGER.getName());
-		record.setDescription(description);
-		record.setOpertateResult(result.getValue());
-		rows = this.poorMapper.insertSelective(record);
-		if (rows <= 0) {
-			throw new ProjectOnlineApplyException("生成操作记录失败");
-		}
-	}
+	@SuppressWarnings("rawtypes")
+	private List<Map> buildOperationRecordViewModel(List<ProjectOnlineOperationRecord> list) {
+		Map<Object, Object> metadata = new HashMap<>();
+		JSONObject memberProvider = new JSONObject();
+		memberProvider.put("provider", "memberProvider");
+		metadata.put("operatorId", memberProvider);
 
-	@Override
-	public ProjectOnlineApply getProjectManagerConfirmViewModel(Long id) throws ProjectOnlineApplyException {
-		return this.getFlowViewData(id);
+		JSONObject datetimeProvider = new JSONObject();
+		datetimeProvider.put("provider", "datetimeProvider");
+		metadata.put("operateTime", datetimeProvider);
+		try {
+			return ValueProviderUtils.buildDataByProvider(metadata, list);
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			return null;
+		}
 	}
 
 	private ProjectOnlineApply getFlowViewData(Long id) throws ProjectOnlineApplyException {
@@ -1031,5 +907,129 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			apply.aset("markets", ddValueDtos);
 		}
 		return apply;
+	}
+
+	private void sendMail(ProjectOnlineApply apply, String subject) {
+		Set<String> emailStrs = new HashSet<>();
+		EmailAddress record = DTOUtils.newDTO(EmailAddress.class);
+		record.setApplyId(apply.getId());
+		List<EmailAddress> emails = this.emailAddressMapper.select(record);
+		emails.forEach(e -> emailStrs.add(e.getEmailAddress()));
+
+		// 构建邮件内容
+		Template template = this.groupTemplate.getTemplate(this.contentTemplate);
+		template.binding("apply", buildApplyViewModel(apply));
+		ProjectOnlineOperationRecord poor = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
+		poor.setApplyId(apply.getId());
+		List<ProjectOnlineOperationRecord> list = this.poorMapper.select(poor);
+		template.binding("opRecords", this.buildOperationRecordViewModel(list));
+
+		// 默认邮件发送列表，运维组和项目组成员
+		// 运维部成员
+		// Department deptQuery = new Department();
+		// deptQuery.setCode(AlmConstants.OPERATION_DEPARTMENT_CODE);
+		// BaseOutput<List<Department>> deptOutput = this.deptRpc.list(deptQuery);
+		// if (deptOutput.isSuccess() &&
+		// CollectionUtils.isNotEmpty(deptOutput.getData())) {
+		// Long departmentId = deptOutput.getData().get(0).getId();
+		// User userQuery = new User();
+		// userQuery.setDepartmentId(departmentId);
+		// BaseOutput<List<User>> userOutput = this.userRpc.list(userQuery);
+		// if (userOutput.isSuccess() &&
+		// CollectionUtils.isNotEmpty(userOutput.getData())) {
+		// userOutput.getData().forEach(u -> emailStrs.add(u.getEmail()));
+		// }
+		// }
+		// // 项目组成员
+		// Team teamQuery = DTOUtils.newDTO(Team.class);
+		// teamQuery.setProjectId(apply.getProjectId());
+		// List<Team> teams = this.teamMapper.select(teamQuery);
+		// teams.forEach(t -> {
+		// User u = AlmCache.USER_MAP.get(t.getMemberId());
+		// if (u != null) {
+		// emailStrs.add(u.getEmail());
+		// }
+		// });
+
+		// 发送
+		emailStrs.forEach(s -> {
+			try {
+				this.mailManager.sendMail(this.mailFrom, s, template.render(), true, subject, null);
+			} catch (Exception e) {
+				LOGGER.error(e.getMessage(), e);
+			}
+		});
+	}
+
+	private void setOperationColumn(ProjectOnlineApply apply) {
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		if (user == null) {
+			throw new IllegalArgumentException("用户未登录");
+		}
+		DataDictionaryDto ddDto = this.ddService.findByCode(DEPARTMENT_MANAGER_ROLE_CONFIG_CODE);
+		// 判断界面上用户是否可以编辑申请记录
+		// 判断当前申请状态是否是申请中状态
+		boolean editable = apply.getApplyState().equals(ProjectOnlineApplyState.APPLING.getValue());
+		// 判断当前登录用户是否是申请人
+		editable = !editable ? editable : user.getId().equals(apply.getApplicantId());
+		apply.aset("editable", editable);
+
+		// 判断界面上用户是否可以点击项目经理确认按钮
+		// 判断申请状态是否是项目经理确认状态
+		boolean projectManagerConfirmable = apply.getApplyState()
+				.equals(ProjectOnlineApplyState.PROJECT_MANAGER_CONFIRMING.getValue());
+		// 判断当前登录用户是否是测试负责人
+		projectManagerConfirmable = !projectManagerConfirmable ? projectManagerConfirmable
+				: user.getId().equals(apply.getProjectManagerId());
+		apply.aset("projectManagerConfirmable", projectManagerConfirmable);
+
+		// 判断界面上用户是否可以点击测试确认按钮
+		// 判断申请状态是否是测试确认状态
+		boolean testConfirmable = apply.getApplyState().equals(ProjectOnlineApplyState.TESTER_CONFIRMING.getValue());
+		// 判断当前登录用户是否是测试负责人
+		DataDictionaryValueDto ddValueDto = ddDto.getValues().stream()
+				.filter(v -> v.getCode().equals(TEST_MANAGER_CODE)).findFirst().orElse(null);
+		testConfirmable = !testConfirmable ? testConfirmable
+				: ddValueDto != null && user.getUserName().equals(ddValueDto.getValue());
+		apply.aset("testConfirmable", testConfirmable);
+
+		// 判断界面上用户是否可点击开始执行按钮
+		// 判断申请状态是否是执行中
+		boolean startExecutable = apply.getApplyState().equals(ProjectOnlineApplyState.EXECUTING.getValue());
+		// 判断当前申请是否分配了执行人
+		if (startExecutable && StringUtils.isNotEmpty(apply.getExecutorId())) {
+			startExecutable = false;
+		}
+		// 判断当前登录用户是否是运维负责人
+		ddValueDto = ddDto.getValues().stream().filter(v -> v.getCode().equals(OPERATION_MANAGER_CODE)).findFirst()
+				.orElse(null);
+		startExecutable = !startExecutable ? startExecutable
+				: ddValueDto != null && user.getUserName().equals(ddValueDto.getValue());
+		apply.aset("startExecutable", startExecutable);
+
+		// 判断界面上用户是否可点击确认执行按钮
+		// 判断申请状态是否是执行中
+		boolean confirmExecutable = apply.getApplyState().equals(ProjectOnlineApplyState.EXECUTING.getValue());
+		// 判断当前申请是否分配了执行人
+		if (confirmExecutable && StringUtils.isNotEmpty(apply.getExecutorId())) {
+			// 检查当前的执行人是否在运维经理分配的执行人当中,同时要判断当前用户是否已经确认执行过
+			confirmExecutable = false;
+			for (String str : apply.getExecutorId().split(",")) {
+				if (user.getId().equals(Long.valueOf(str))) {
+					confirmExecutable = true;
+					break;
+				}
+			}
+		} else {
+			confirmExecutable = false;
+		}
+		apply.aset("confirmExecutable", confirmExecutable);
+
+		// 判断界面上用户是否可以点击验证按钮
+		// 判断申请状态是否是验证中
+		boolean verifiable = apply.getApplyState().equals(ProjectOnlineApplyState.VARIFING.getValue());
+		// 判断当前登录用户是否是当前项目的产品经理
+		verifiable = !verifiable ? verifiable : apply.getProductManagerId().equals(user.getId());
+		apply.aset("verifiable", verifiable);
 	}
 }
