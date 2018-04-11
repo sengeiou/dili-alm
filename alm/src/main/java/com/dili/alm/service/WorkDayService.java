@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dili.alm.domain.WorkDay;
+import com.dili.alm.domain.dto.WorkDayRoleDto;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
 
@@ -24,5 +25,6 @@ public interface WorkDayService extends BaseService<WorkDay, Long> {
 	List<String> getWorkDayYaers();
 
 	WorkDay getNextWorkDay(Date date);
-	
+
+	WorkDayRoleDto showWorkDay(Long userId);
 }

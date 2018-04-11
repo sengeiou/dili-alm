@@ -6,6 +6,8 @@ function opptFormatter(value, row, index) {
     var returnStr = "";
     if(row.applyState=="申请中"){
       returnStr = "<span><a href='javascr:void(0)' onclick='openUpdate("+row.id+")'>编辑</a>&nbsp;<a href='javascr:void(0)' onclick='del("+row.id+")'>删除</a></span>"
+    }else{
+        returnStr = "<span><a href='javascr:void(0)' onclick='openUpdate("+row.id+")'>审批</a></span>"
     }
 	return returnStr;
 }
@@ -13,7 +15,7 @@ function opptFormatter(value, row, index) {
 function envFormatter(v, r, i) {
 	var content = '';
 	$(v).each(function(index, item) {
-				content += item + ',';
+				content += item.environment + ',';
 			});
 	content = content ? content.substring(0, content.length - 1) : '';
 	return content;
@@ -59,13 +61,14 @@ function openInsert() {
 							text : '保存',
 							handler : function() {
 							 var data = $("#editForm").serializeArray();
-							 //var data2= JSON.parse(createConfigurationRequirementJson());
-							 //组织配置要求的json串
+							 var data2= createConfigurationRequirementJson();
+							 if(data2==""){
+							  $.messager.alert('错误',"配置信息尚未添加！");
+							  return;
+							 }
 								$('#editForm').form('submit', {
 											url : '${contextPath!}/hardwareResourceApply/save',
-											queryParams : {
-												//configurationRequirementJsonStr:data2
-											},
+											queryParams :data2,
 											success : function(data) {
 												var obj = $.parseJSON(data);
 												if (obj.code == 200) {
@@ -104,50 +107,61 @@ function openInsert() {
 			});
 			
 }
-//配置要求的json串
-function createConfigurationRequirementJson(){
-   var testList=[];
-	var rowobj = $('#configGrid').datagrid('getRows'); 
-	var rowsJson ="";
-   for( var index = 0; index < rowobj.length; index ++){
-       var aa={};
-	   aa.CPU=1;
-	   aa.IP='jack';
-	   testList.push(aa);
-       console.log(testList);
-    }
-	return testList;
-}
+
 // 打开修改窗口
 function openUpdate(id) {
-
+    var selected = $("#grid").datagrid("getSelected");
     if(id==null){
-    	var selected = $("#grid").datagrid("getSelected");
 		if (null == selected) {
 			$.messager.alert('警告', '请选中一条数据');
 			return;
 		}else{
 		  id = selected.id;
+   
+         }
 		}
+		var rows = $("#grid").datagrid('getRows');  
+		            
+		        
+        var length = rows.length;   
+        var rowindex;    
+        for (var i = 0; i < length; i++) { 
+           if (rows[i]['id'] == id) {    
+                rowindex = i;   
+                selected = rows[rowindex];//根据index获得其中一行。
+                break;    
+          } 
     }
-    
-    
+   
 	$('#win').dialog({
-				title : '修改资源',
+				title : '资源申请详情',
 				width : 830,
 				height : 500,
 				href : '${contextPath!}/hardwareResourceApply/toUpdate?id='+id,
-				modal : true,
-				buttons : [{
-							text : '保存',
-							handler : function() {
-							 var data = $("#editForm2").serializeArray();
-							// var data2= createConfigurationRequirementJson();
+				modal : true  
+			});
+			loadButtons(selected);
+			
+}
+
+function loadButtons(obj){
+
+				   if(obj.applyState=='申请中'){
+				    $("#win").dialog({buttons :'#win-button'});
+				   }else{
+				     $("#win").dialog({buttons :'#win-button2'});
+				   }
+				   }
+function updateForms(){
+		 var data = $("#editForm2").serializeArray();
+		 var data2= createConfigurationRequirementJson();
+							 if(data2==""){
+							  $.messager.alert('错误',"配置信息尚未添加！");
+							  return;
+							 }
 								$('#editForm2').form('submit', {
 											url : '${contextPath!}/hardwareResourceApply/update',
-											queryParams : {
-												//configurationRequirementJsonStr:data2
-											},
+											queryParams :data2,
 											success : function(data) {
 												var obj = $.parseJSON(data);
 												if (obj.code == 200) {
@@ -158,37 +172,20 @@ function openUpdate(id) {
 													// + ":成功", function() {
 													// });
 													// } catch (e) {
-													// $.messager.alert('错误',
-													// e);
+													// $.messager.alert('错误', e);
 													
 													$('#grid').datagrid('reload'); 
 													$('#grid').datagrid('updateRow', {
 																index : $('#grid').datagrid('getRowIndex', $('#grid').datagrid('getSelected')),
 																row : obj.data
 															});
-													//$('#grid').datagrid('acceptChanges');
 													$('#win').dialog('close');
 												} else {
 													$.messager.alert('错误', obj.result);
 												}
 											}
 										});
-							}
-						}, {
-							text : '取消',
-							handler : function() {
-								$('#win').dialog('close');
-							}
-						}, {
-							text : '提交',
-							handler : function() {
-							  //拼接提交数据
-							  createConfigurationRequirementJson();
-							}
-						}]
-			});
 }
-
 /********* 
 // 打开新增窗口
 function openInsert() {
@@ -365,3 +362,87 @@ $(function() {
 				document.onkeyup = getKey;
 			}
 		});
+		
+		
+		
+/***添加配置要求****/		
+function add(){
+	 var rows = $('#configGrid').datagrid('getRows');
+	 
+	 var formInput= $('#configForm').serializeArray();
+	 var formData = $.extend({}, formInput);
+
+	 var addIndex =  rows.length+1;
+
+	 var map = new Array();
+	$.each(formData, function (i, item) {
+		if(item.name=='cpuAmount'){
+			var key='cpuAmount';
+			map[key]=item.value;
+		}
+		if(item.name=='diskAmount'){
+			var key='diskAmount';
+			map[key]=item.value;
+		}
+		if(item.name=='memoryAmount'){
+			var key='memoryAmount';
+			map[key]=item.value;
+		}
+		if(item.name=='notes'){
+			var key='notes';
+			map[key]=item.value;
+		}
+ 	});
+ 	if($("#updateSige").val()!=""){
+		 $('#configGrid').datagrid('updateRow',{  //updateRow
+			 index:0,
+		     row : map  
+		}) ;
+	}else{
+		 $('#configGrid').datagrid('insertRow',{  
+			 index:addIndex,
+		     row : map  
+		}) ;
+	} 
+	
+	$('#configForm').form('clear');
+	$('#addConfig').dialog('close');
+}
+
+//保存列表配置
+function del(index){
+	$('#configGrid').datagrid('deleteRow',index)
+}
+function update(rowId){
+	var row =  $('#configGrid').datagrid('getRows')[rowId];
+    var formData = $.extend({}, row);
+    $('#configForm').form('load', formData);
+    $('#addConfig').dialog('open');
+    $('#updateSige').val(rowId);
+}
+function optionFormatter(value, row, index){
+	return "<a href='JavaScript:del("+index+")'>删除</a>&nbsp;&nbsp;<a href='JavaScript:update("+index+")'>修改</a>";
+}
+
+
+//配置要求的json串
+function createConfigurationRequirementJson(){
+   var objList=[];
+   var rowobj = $('#configGrid').datagrid('getRows'); 
+   if(rowobj.length<1){return "";}
+   for( var index = 0; index < rowobj.length; index ++){
+       var obj={};
+	   obj.memoryAmount=rowobj[index].memoryAmount;
+	   obj.cpuAmount=rowobj[index].cpuAmount;
+	   obj.diskAmount=rowobj[index].diskAmount;
+	   obj.notes=rowobj[index].notes;
+	   objList.push(obj);
+      
+    }
+    var _formData ={"configurationRequirementJsonStr":JSON.stringify(objList)};
+	return _formData;
+}
+
+function submitApply(){
+
+}
