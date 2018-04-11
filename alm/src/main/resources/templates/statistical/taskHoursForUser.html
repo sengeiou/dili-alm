@@ -52,12 +52,25 @@
     <!-- 中央布局 -->
     <!-- ====================================================================================================================== -->
     <!-- 表格 -->
-    <div region="center" style="width:100%;" height="auto">
+    <div region="center" style="width:100%;" height="auto" id="dy">
         <!-- =========================================================表格========================================================= -->
                 <!-- datagrid工具栏 -->
-        <div id="toolbar" style="padding:2px 5px;">
-                <a href="#" class="easyui-linkbutton" iconCls="icon-export" onclick="doExport('grid')" plain="true"></a>
-        </div>
+        <div id="toolbar" style="float: right">
+            	 <table style="padding:10px;">
+            	 <tr><td>
+                <a href="#" class="easyui-linkbutton"
+                   style="width: 40px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="print()">
+                    打印
+                </a>
+                <a href="#" class="easyui-linkbutton"
+                   style="width: 80px;height: 24px; margin-right:3px;text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="doExport('grid')" plain="true" >
+                    导出EXCEL
+                </a>
+              
+	              </td>
+                 </tr>
+                 </table>
+            </div>
         <table id="grid" class="easyui-datagrid" title="数据列表" style="width:100%;height:'auto'" toolbar='#toolbar'
                data-options="
                 rownumbers: true,
@@ -82,6 +95,8 @@
 <!-- ====================================================================================================================== -->
 <!-- style & script 分隔线 -->
 <!-- ====================================================================================================================== -->
+<script src="${contextPath}/resources/js/jquery.jqprint-0.3.js"></script>
+<script src="${contextPath}/resources/js/jquery-migrate-1.1.0.js"></script>
 <script type="text/javascript">
     function onLoadSuccess(data){
         var merges = [{
@@ -96,7 +111,11 @@
             });
         }
     }
-
+    //清空表单
+    function clearForm() {
+        $('#form').form('clear');
+        queryGrid();
+    }
     //表格查询
     function queryGrid() {
         var opts = $("#grid").datagrid("options");
@@ -195,5 +214,10 @@
     						}]
     			});
     }
+    
+    
+    function print(){
+		$("#dy").jqprint();
+	}
 </script>
 </#body>

@@ -28,9 +28,11 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import cn.afterturn.easypoi.entity.vo.MapExcelConstants;
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
+import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import cn.afterturn.easypoi.word.WordExportUtil;
 
 import com.alibaba.fastjson.JSONArray;
@@ -238,22 +240,24 @@ public class StatistaicalServiceImpl implements StatisticalService {
 			int totalOverHours = 0;
 			int totalAllHours = 0;
 			Map<String,String> hoursMap = new HashMap<String, String>();
-			
-			for (TaskHoursByProjectDto projectHours : taskHoursForPoject) {
+	        //查询出所有人员的所有项目工
+			List<Long>  userLongIds= new ArrayList<Long>(); 
+			userLongIds.add(userHoursEntity.getUserNo());
+			List<SelectTaskHoursByUserProjectDto> result=taskMapper.selectUsersProjectHours(userLongIds,null);
+			for (TaskHoursByProjectDto projectHours : taskHoursForPoject) {//大项目下的循环
 				
-				List<Long>  userLongIds= new ArrayList<Long>(); 
-				userLongIds.add(userHoursEntity.getUserNo());
-				
-				List<Long>  projectLongIds= new ArrayList<Long>(); 
 				Long projectId =projectHours.getProjectId();
-				projectLongIds.add(projectId);
-				
-			List<SelectTaskHoursByUserProjectDto> result=taskMapper.selectUsersProjectHours(userLongIds,projectLongIds);
+
 				 //只能查出来一条
+				
 				for (SelectTaskHoursByUserProjectDto entity: result) {
-					hoursMap.put("project"+projectId, "sumUPTaskHours:"+entity.getSumUPTaskHours()+",sumUPOverHours:"+entity.getSumUPOverHours());
-					totalTaskHours+=entity.getSumUPTaskHours();
-					totalOverHours+=entity.getSumUPOverHours();
+					if (projectId.equals(entity.getProjectId())) {
+						hoursMap.put("project"+projectId, "sumUPTaskHours:"+entity.getSumUPTaskHours()+",sumUPOverHours:"+entity.getSumUPOverHours());
+						hoursMap.put("project"+projectId+"sumUPTaskHours",entity.getSumUPTaskHours()+"");
+						hoursMap.put("project"+projectId+"sumUPOverHours",entity.getSumUPTaskHours()+"");
+						totalTaskHours+=entity.getSumUPTaskHours();
+						totalOverHours+=entity.getSumUPOverHours();
+					}
 				}
 			} 
 			totalAllHours = totalTaskHours+totalOverHours;
@@ -297,6 +301,8 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		 for (SelectTaskHoursByUserProjectDto dto:listProjectTaskOverHours) {
 				 if (dto!=null) {
 						hoursMap.put("project"+dto.getProjectId(), "sumUPTaskHours:"+dto.getSumUPTaskHours()+",sumUPOverHours:"+dto.getSumUPOverHours());
+						hoursMap.put("project"+dto.getProjectId()+"sumUPTaskHours",dto.getSumUPTaskHours()+"");
+						hoursMap.put("project"+dto.getProjectId()+"sumUPOverHours",dto.getSumUPTaskHours()+"");
 						totalTaskHours+=dto.getSumUPTaskHours();
 						totalAllHours +=dto.getSumUPOverHours();
 					}
@@ -307,6 +313,60 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		 totalTaskandOverHour.setSumOverHours(totalOverHours);
 		 totalTaskandOverHour.setTotalHours(totalAllHours);
 		return totalTaskandOverHour;
+	}
+	
+	
+	
+	/**
+	 * 项目工时sheet导出
+	 */
+	@Override
+	public HSSFWorkbook downloadProjectHours(OutputStream os,String startTime,String endTime, List<Long> projectIds) throws Exception {
+		List<Long> projectIds2=new ArrayList<Long>();
+		projectIds2.add((long) 15);
+		projectIds2.add((long) 23);
+		startTime="2018-03-14";
+		endTime="2018-04-11";
+		List<SelectTaskHoursByUserDto>  objs= listUserHours(startTime,endTime,projectIds2);
+		List<TaskHoursByProjectDto> projects = listProjectHours(startTime,endTime,projectIds2);
+        List<Map<String, Object>> list=new ArrayList<Map<String,Object>>();
+
+		//标题  
+        List<ExcelExportEntity> entityList = new ArrayList<ExcelExportEntity>();  
+        //内容  
+        List<Map<String,Object>> dataResult = new ArrayList<Map<String,Object>>();  
+        entityList.add(new ExcelExportEntity("员工&项目", "name", 25)); 
+        int t = 1;
+        for (TaskHoursByProjectDto dto:projects) {
+        	t=t+1;
+        	entityList.add(new ExcelExportEntity(dto.getProjectName()+"（"+dto.getSumHour()+"）-常规工时", "table"+t, 25));t=t+1; 
+        	entityList.add(new ExcelExportEntity(dto.getProjectName()+"（"+dto.getSumHour()+"）-加班工时", "table"+t, 25)); 
+		}
+        entityList.add(new ExcelExportEntity("合计-常规工时", "table"+(t+1), 25));t=t+1;
+        entityList.add(new ExcelExportEntity("合计-加班工时", "table"+(t+1), 25));t=t+1;
+        entityList.add(new ExcelExportEntity("合计-总工时", "table"+(t+1), 25));
+        for (SelectTaskHoursByUserDto dto2:objs) {  
+            Map<String, Object> map = new HashMap<String, Object>();  
+            map.put("name", dto2.getUserName()); 
+            map.put("table"+t, dto2.getTotalHours());t=t-1; 
+            map.put("table"+t, dto2.getSumOverHours());t=t-1;
+            int i=1;
+            for (TaskHoursByProjectDto dto:projects) {
+            	 i=i+1;
+            	 map.put("table"+i, dto2.getProjectHours().get("project"+dto.getProjectId()+"sumUPTaskHours"));i=i+1; 
+            	 map.put("table"+i, dto2.getProjectHours().get("project"+dto.getProjectId()+"sumUPTaskHours")); 
+            }
+            entityList.add(new ExcelExportEntity("合计-常规工时", "table"+(i+1), 25));i=i+1;
+            entityList.add(new ExcelExportEntity("合计-加班工时", "table"+(i+1), 25));i=i+1;
+            entityList.add(new ExcelExportEntity("合计-总工时", "table"+(i+1), 25));
+            dataResult.add(map);  
+        }  
+        HSSFWorkbook excel = (HSSFWorkbook) ExcelExportUtil.exportExcel(new ExportParams(
+    			"项目工时总览", "项目工时总览"+DateUtil.getDate(new Date())), entityList, dataResult);
+       
+        
+        return excel;
+
 	}
 	@Override
 	public List<ProjectYearCoverDto> listProjectYearCover(String year,
@@ -455,6 +515,9 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		String endDate = getAppedDate(year, month, false);
 		return taskMapper.selectProjectYearsCoverForAll(startDate,endDate);
 	}
+	
+	
+	
 	/***查询工时相关services****by******JING***END****/
 	
 	
@@ -605,6 +668,9 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		
 		exportExcel(os,list);
 	}
+	
+	
+
 	/**
 	 * 调用ExcelUtil方法
 	 * @param os

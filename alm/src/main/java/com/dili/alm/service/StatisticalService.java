@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.mail.MessagingException;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dili.alm.dao.ProjectMapper;
@@ -48,6 +49,8 @@ public interface StatisticalService {
 	SelectTaskHoursByUserDto selectTotalTaskAndOverHours(List<Long> projectIds);
 	
 	ProjectYearCoverForAllDto getProjectYearsCoverForAll(String year,String month);
+	
+	HSSFWorkbook downloadProjectHours(OutputStream os, String startTime,String endTime, List<Long> projectIds) throws Exception;
 	/***查询工时相关services****by******JING***END****/
 
 	List<TaskStateCountDto> getProjectToTaskCount(String startTime,
@@ -75,5 +78,5 @@ public interface StatisticalService {
 	List<Map<String, Object>> getHomeProjectTask(Long userId,
 			List<Long> projectId);
 
-
+	
 }

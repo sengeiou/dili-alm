@@ -1,6 +1,13 @@
 package com.dili.alm.controller;
 
 
+import cn.afterturn.easypoi.entity.vo.MapExcelConstants;
+import cn.afterturn.easypoi.entity.vo.NormalExcelConstants;
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
+import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
+import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
+
 import com.dili.alm.domain.dto.ProjectTypeCountDto;
 import com.dili.alm.domain.dto.ProjectYearCoverDto;
 import com.dili.alm.domain.dto.ProjectYearCoverForAllDto;
@@ -28,6 +35,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -47,8 +56,22 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 
 
+
+
+
+
+
+
+
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -182,13 +205,17 @@ public class StatisticalController {
 	@ApiOperation(value="项目工时查询", notes = "查询返回easyui信息")
     @RequestMapping(value="/listProjectHours", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody List<TaskHoursByProjectDto> getSearchAllDto(String startDate,String endDate,String[] project) throws Exception {
-		List<Long> projectIds=null;
+		List<Long> projectIds=new ArrayList<Long>();
 		if (project!=null) {
 			projectIds = new ArrayList<Long>(project.length);
 			for (String long1 : project) {
 				projectIds.add(Long.parseLong(long1));
 			}
 		}
+		projectIds.add((long) 15);
+		projectIds.add((long) 23);
+		startDate="2018-03-14";
+		endDate="2018-04-11";
 		return statisticalService.listProjectHours(startDate, endDate,projectIds);
    
     }
@@ -212,15 +239,57 @@ public class StatisticalController {
     @RequestMapping(value="/listUserHours", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody List<SelectTaskHoursByUserDto> listUserHours(String startDate,String endDate,String[] project) throws Exception {
 		List<Long> projectIds=null;
+
 		if (project!=null) {
 			projectIds = new ArrayList<Long>(project.length);
 			for (String long1 : project) {
 				projectIds.add(Long.parseLong(long1));
 			}
 		}
-		
+		projectIds.add((long) 15);
+		projectIds.add((long) 23);
+		startDate="2018-03-14";
+		endDate="2018-04-11";
 		return statisticalService.listUserHours(startDate, endDate,projectIds);
    
+    }
+	
+	@RequestMapping(value = "/export",method = {RequestMethod.POST,RequestMethod.GET})  
+    public void export(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws IOException{  
+		 try {
+		    	String rtn = getRtn("aa.xls", request);
+		        response.setContentType("text/html");
+		        response.setHeader("Content-Disposition", "attachment;" + rtn);
+		        OutputStream os=response.getOutputStream();
+		        
+		        HSSFWorkbook excel =statisticalService.downloadProjectHours(os,null,null,null);
+		        excel.write(os);
+		        os.flush();
+		        os.close();
+	    } catch (Exception e) {
+            e.printStackTrace();
+        }
+        }  
+	
+	
+	/**
+	 * 调用ExcelUtil方法
+	 * @param os
+	 * @param list
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unused")
+	private void exportExcel(OutputStream os,List<Map<String, Object>> list) throws Exception {
+		
+        InputStream stream = getClass().getClassLoader().getResourceAsStream("excel/aa.xls");
+        File targetFile = new File("aa.xls");
+        if (!targetFile.exists()) {
+            FileUtils.copyInputStreamToFile(stream, targetFile);
+        }
+        HSSFWorkbook excel = (HSSFWorkbook) ExcelExportUtil.exportExcel(list,ExcelType.HSSF);
+        excel.write(os);
+        os.flush();
+        os.close();
     }
 	/***查询工时相关services****by******JING***END****/
 	
