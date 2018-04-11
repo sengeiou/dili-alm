@@ -14,7 +14,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2018-04-09 15:46:43.
+ * This file was generated on 2018-04-11 14:42:02.
  */
 @Table(name = "`hardware_resource_apply`")
 public interface HardwareResourceApply extends IBaseDomain {
@@ -124,4 +124,11 @@ public interface HardwareResourceApply extends IBaseDomain {
     Date getApplyDate();
 
     void setApplyDate(Date applyDate);
+
+    @Column(name = "`executors`")
+    @FieldDef(label="实施人id,最多两个，jsonarray类型", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getExecutors();
+
+    void setExecutors(String executors);
 }

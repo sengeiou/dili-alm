@@ -26,6 +26,7 @@ public class HardwareResourceApplyUpdateDto extends BaseDomain implements Hardwa
 	// 配置要求
 	private List<HardwareResourceRequirementDto> configurationRequirement;
 	private Date created;
+	private String executors;
 	// 其他说明
 	private String otherDescription;
 	// 项目id
@@ -35,6 +36,7 @@ public class HardwareResourceApplyUpdateDto extends BaseDomain implements Hardwa
 	private String projectSerialNumber;
 	private String serialNumber;
 	private String serviceEnvironment;
+
 	// 使用环境
 	private Set<Long> serviceEnvironments;
 
@@ -72,6 +74,11 @@ public class HardwareResourceApplyUpdateDto extends BaseDomain implements Hardwa
 	@Override
 	public Date getCreated() {
 		return created;
+	}
+
+	@Override
+	public String getExecutors() {
+		return executors;
 	}
 
 	@Override
@@ -150,6 +157,11 @@ public class HardwareResourceApplyUpdateDto extends BaseDomain implements Hardwa
 	@Override
 	public void setCreated(Date created) {
 		this.created = created;
+	}
+
+	@Override
+	public void setExecutors(String executors) {
+		this.executors = executors;
 	}
 
 	@Override

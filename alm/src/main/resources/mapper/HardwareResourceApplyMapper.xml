@@ -20,6 +20,7 @@
     <result column="created" jdbcType="TIMESTAMP" property="created" />
     <result column="apply_state" jdbcType="INTEGER" property="applyState" />
     <result column="apply_date" jdbcType="TIMESTAMP" property="applyDate" />
+    <result column="executors" jdbcType="VARCHAR" property="executors" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
@@ -27,7 +28,7 @@
     -->
     id, serial_number, project_id, project_name, project_serial_number, project_manager_id, 
     application_department_id, applicant_id, submit_time, service_environment, apply_reason, 
-    other_description, created, apply_state, apply_date
+    other_description, created, apply_state, apply_date, executors
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -85,6 +86,9 @@
       </if>
       <if test="applyDate != null">
         apply_date = #{applyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="executors != null">
+        executors = #{executors,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

@@ -38,13 +38,16 @@ public class WorkDayController {
 	})
     @ResponseBody
     @RequestMapping(value="/isWorkEndDayDate", method = {RequestMethod.GET, RequestMethod.POST})
-    public boolean isWorkEndDayDate() {
+    public int isWorkEndDayDate() {
 		WorkDay workDay = workDayService.getNowWeeklyWorkDay();
+		if(workDay==null){
+			return 1;
+		}
         int differentDaysByMillisecond = DateUtil.differentDaysByMillisecond(new Date(), workDay.getWorkEndTime());
         if(differentDaysByMillisecond==0){
-        	return true;
+        	return 2;
         }
-       return false;
+       return 0;
     }
     
     @ApiImplicitParams({
