@@ -34,22 +34,23 @@
 	<form id="editForm" action="" method="post" enctype="multipart/form-data" style="box-sizing: border-box;display: block;width: 100%">
 		<div style="box-sizing: border-box; ; width: 100%; padding: 10px;">
 			<div class="easyui-layout" style="box-sizing: border-box; width: 100%; height: 100%;">
-				<table class="table-box">
+				<table class="table-box" width="100%">
 					<tr>
 						<td colspan="1" class="table-title" style="width: 16.6%;">项目名称</td>
-						<td colspan="1" class="table-combo" style="width: 16.6%;padding: 0">
+						<td colspan="1" class="" style="width: 16.6%;">
 							<select class="easyui-combobox" id="projectId" name="projectId"
-							style="width: 92%; text-align: center;" data-options="editable:false,onLoadSuccess:loadProject,onChange:loadProject">
+							    style="width: 92%; text-align: center;"
+									data-options="editable:false,onLoadSuccess:loadProject,onChange:loadProject">
 								<%for(item in projects){%>
 								<option value="${item.id!}">${item.name!}</option> <%}%>
 							</select>
 						</td>
 						<td style="width: 16.6%;" colspan="1" class="table-title">项目编号</td>
-						<td style="width: 16.6%;"colspan="1">
-							<!--<input class="easyui-textbox" style="width: 100%; text-align: center;" id="serialNumber" name="serialNumber" data-options="editable:false">-->
+						<td style="width: 16.6%;" colspan="1">
+							<input class="easyui-textbox" style="width: 92%; text-align: center;" id="serialNumber" name="serialNumber" data-options="editable:false">
 						</td>
 						<td style="width: 16.6%;" colspan="1" class="table-title">版本</td>
-						<td colspan="1" class="table-combo" style="width:16.6%;padding: 0">
+						<td colspan="1" style="width:16.6%;">
 							<select class="easyui-combobox" id="versionId" name="versionId"
 							style="width: 92%; text-align: center;"
 							data-options="disabled:true,textField:'version',valueField:'id',editable:false,required:true,onLoadSuccess:selectFirst">
@@ -82,17 +83,19 @@
 						<td class="table-title">申请上线日期</td>
 						<td style="padding: 0" class="table-combo">
 							<input class="easyui-datebox" name="onlineDate"
-							style="width: 96%; border: none; text-align: center;" data-options="editable:false,required:true">
+							style="width: 92%; border: none; text-align: center;" data-options="editable:false,required:true">
 						</td>
 					</tr>
 					<tr>
 						<td class="table-title">是否分市场上线</td>
 						<td>
-							<select class="easyui-combobox" style="width: 92%; text-align: center;" id="marketVersion" name="marketVersion"
-							data-options="editable:false,onChange:checkMarketComboState">
+							<select class="easyui-combobox" id="marketVersion" name="marketVersion"
+									style="width: 92%; text-align: center;"
+									data-options="editable:false,onChange:checkMarketComboState">
 								<option value="0">否</option>
 								<option value="1">是</option>
-						</select></td>
+							</select>
+						</td>
 						<td colspan="1" class="table-title">市场</td>
 						<td colspan="3">
 							<select class="easyui-combobox" id="market" name="market" style="width: 92%; text-align: center;"
