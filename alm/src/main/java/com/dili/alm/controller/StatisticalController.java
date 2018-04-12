@@ -185,10 +185,6 @@ public class StatisticalController {
 				projectIds.add(Long.parseLong(long1));
 			}
 		}
-		projectIds.add((long) 15);
-		projectIds.add((long) 23);
-		startDate = "2018-03-14";
-		endDate = "2018-04-11";
 		return statisticalService.listProjectHours(startDate, endDate, projectIds);
 
 	}
@@ -230,23 +226,27 @@ public class StatisticalController {
 				projectIds.add(Long.parseLong(long1));
 			}
 		}
-		projectIds.add((long) 15);
-		projectIds.add((long) 23);
-		startDate = "2018-03-14";
-		endDate = "2018-04-11";
 		return statisticalService.listUserHours(startDate, endDate, projectIds);
 
 	}
 
 	@RequestMapping(value = "/export", method = { RequestMethod.POST, RequestMethod.GET })
-	public void export(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) throws IOException {
+	public void export(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap,String startDate, String endDate,
+			String[] project) throws IOException {
 		try {
 			String rtn = getRtn("aa.xls", request);
 			response.setContentType("text/html");
 			response.setHeader("Content-Disposition", "attachment;" + rtn);
 			OutputStream os = response.getOutputStream();
+			List<Long> projectIds = null;
 
-			HSSFWorkbook excel = statisticalService.downloadProjectHours(os, null, null, null);
+			if (project != null) {
+				projectIds = new ArrayList<Long>(project.length);
+				for (String long1 : project) {
+					projectIds.add(Long.parseLong(long1));
+				}
+			}
+			HSSFWorkbook excel = statisticalService.downloadProjectHours(os, startDate, endDate, projectIds);
 			excel.write(os);
 			os.flush();
 			os.close();
