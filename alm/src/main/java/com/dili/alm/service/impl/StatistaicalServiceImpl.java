@@ -196,7 +196,9 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		return list;
 	}
 	
-	
+	/***
+	 * 查询项目以及项目工时  ，表头
+	 */
 	@Override
 	public List<TaskHoursByProjectDto> listProjectHours(String startTime,
 			String endTime,List<Long> projectIds) {
@@ -212,7 +214,9 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		}
 		return taskMapper.selectProjectHours(startTime, endTime,projectIds);
 	}
-	
+	/***
+	 * 查询时间段内工作的人员，数据填充内容
+	 */
 	@Override
 	public List<SelectTaskHoursByUserDto> listUserHours(String startTime,
 			String endTime, List<Long> projectIds) {
@@ -227,34 +231,43 @@ public class StatistaicalServiceImpl implements StatisticalService {
 			endTime+="";
 		}
 		
+		//查出人员信息，既数据，缺少项目的加班工时和正常工时
 		List<SelectTaskHoursByUserDto> list = taskMapper.selectUsersHours(startTime, endTime, projectIds);
 
 		if (list==null||list.size()==0) {
 			return null;
 		}
+		//查出项目列表，既表头
 		List<TaskHoursByProjectDto> taskHoursForPoject = taskMapper.selectProjectHours(startTime, endTime,projectIds);
 		
 		
-		for (SelectTaskHoursByUserDto userHoursEntity : list) {
+		for (SelectTaskHoursByUserDto userHoursEntity : list) {//根据人员信息去查找相应的项目工时
 			int totalTaskHours = 0;
 			int totalOverHours = 0;
 			int totalAllHours = 0;
-			Map<String,String> hoursMap = new HashMap<String, String>();
-	        //查询出所有人员的所有项目工
+			Map<String,String> hoursMap = new HashMap<String, String>();//保存每个项目的加班工时和任务工时
+			
+			
+	        //设置人员ID信息，查询出每个人员的所有项目 加班工时和正常工时
 			List<Long>  userLongIds= new ArrayList<Long>(); 
 			userLongIds.add(userHoursEntity.getUserNo());
 			List<SelectTaskHoursByUserProjectDto> result=taskMapper.selectUsersProjectHours(userLongIds,null);
-			for (TaskHoursByProjectDto projectHours : taskHoursForPoject) {//大项目下的循环
+			
+			//循环读取项目，将项目的工时，以key-value的形式和人员信息保存在一起
+			for (TaskHoursByProjectDto projectHours : taskHoursForPoject) {
 				
-				Long projectId =projectHours.getProjectId();
+				Long projectId =projectHours.getProjectId();//key值  project+projectId
 
-				 //只能查出来一条
+				 //excel，预设，为0 ，防止出现空
+				hoursMap.put("project"+projectId+"sumUPOverHours",0+"");
+				hoursMap.put("project"+projectId+"sumUPTaskHours",0+"");
 				
+				//循环项目工时
 				for (SelectTaskHoursByUserProjectDto entity: result) {
 					if (projectId.equals(entity.getProjectId())) {
 						hoursMap.put("project"+projectId, "sumUPTaskHours:"+entity.getSumUPTaskHours()+",sumUPOverHours:"+entity.getSumUPOverHours());
-						hoursMap.put("project"+projectId+"sumUPTaskHours",entity.getSumUPTaskHours()+"");
-						hoursMap.put("project"+projectId+"sumUPOverHours",entity.getSumUPTaskHours()+"");
+						hoursMap.put("project"+projectId+"sumUPTaskHours",entity.getSumUPTaskHours()+"");//excel专用key
+						hoursMap.put("project"+projectId+"sumUPOverHours",entity.getSumUPOverHours()+"");//excel专用key
 						totalTaskHours+=entity.getSumUPTaskHours();
 						totalOverHours+=entity.getSumUPOverHours();
 					}
@@ -302,7 +315,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 				 if (dto!=null) {
 						hoursMap.put("project"+dto.getProjectId(), "sumUPTaskHours:"+dto.getSumUPTaskHours()+",sumUPOverHours:"+dto.getSumUPOverHours());
 						hoursMap.put("project"+dto.getProjectId()+"sumUPTaskHours",dto.getSumUPTaskHours()+"");
-						hoursMap.put("project"+dto.getProjectId()+"sumUPOverHours",dto.getSumUPTaskHours()+"");
+						hoursMap.put("project"+dto.getProjectId()+"sumUPOverHours",dto.getSumUPOverHours()+"");
 						totalTaskHours+=dto.getSumUPTaskHours();
 						totalAllHours +=dto.getSumUPOverHours();
 					}
@@ -322,13 +335,8 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	 */
 	@Override
 	public HSSFWorkbook downloadProjectHours(OutputStream os,String startTime,String endTime, List<Long> projectIds) throws Exception {
-		List<Long> projectIds2=new ArrayList<Long>();
-		projectIds2.add((long) 15);
-		projectIds2.add((long) 23);
-		startTime="2018-03-14";
-		endTime="2018-04-11";
-		List<SelectTaskHoursByUserDto>  objs= listUserHours(startTime,endTime,projectIds2);
-		List<TaskHoursByProjectDto> projects = listProjectHours(startTime,endTime,projectIds2);
+		List<SelectTaskHoursByUserDto>  objs= listUserHours(startTime,endTime,projectIds);
+		List<TaskHoursByProjectDto> projects = listProjectHours(startTime,endTime,projectIds);
         List<Map<String, Object>> list=new ArrayList<Map<String,Object>>();
 
 		//标题  
@@ -336,31 +344,33 @@ public class StatistaicalServiceImpl implements StatisticalService {
         //内容  
         List<Map<String,Object>> dataResult = new ArrayList<Map<String,Object>>();  
         entityList.add(new ExcelExportEntity("员工&项目", "name", 25)); 
-        int t = 1;
-        for (TaskHoursByProjectDto dto:projects) {
-        	t=t+1;
-        	entityList.add(new ExcelExportEntity(dto.getProjectName()+"（"+dto.getSumHour()+"）-常规工时", "table"+t, 25));t=t+1; 
-        	entityList.add(new ExcelExportEntity(dto.getProjectName()+"（"+dto.getSumHour()+"）-加班工时", "table"+t, 25)); 
-		}
-        entityList.add(new ExcelExportEntity("合计-常规工时", "table"+(t+1), 25));t=t+1;
-        entityList.add(new ExcelExportEntity("合计-加班工时", "table"+(t+1), 25));t=t+1;
-        entityList.add(new ExcelExportEntity("合计-总工时", "table"+(t+1), 25));
-        for (SelectTaskHoursByUserDto dto2:objs) {  
-            Map<String, Object> map = new HashMap<String, Object>();  
-            map.put("name", dto2.getUserName()); 
-            map.put("table"+t, dto2.getTotalHours());t=t-1; 
-            map.put("table"+t, dto2.getSumOverHours());t=t-1;
-            int i=1;
+        if (projects!=null||projects.size()>0) {
             for (TaskHoursByProjectDto dto:projects) {
-            	 i=i+1;
-            	 map.put("table"+i, dto2.getProjectHours().get("project"+dto.getProjectId()+"sumUPTaskHours"));i=i+1; 
-            	 map.put("table"+i, dto2.getProjectHours().get("project"+dto.getProjectId()+"sumUPTaskHours")); 
+            	entityList.add(new ExcelExportEntity(dto.getProjectName()+ "-常规工时","project_to_"+dto.getProjectId(), 25)); 
+            	entityList.add(new ExcelExportEntity(dto.getProjectName() +"-加班工时","project_oo_"+dto.getProjectId(), 25)); 
+    		}
+		}
+
+        entityList.add(new ExcelExportEntity("合计-常规工时", "sumhours" , 25)); 
+        entityList.add(new ExcelExportEntity("合计-加班工时", "overhours", 25)); 
+        entityList.add(new ExcelExportEntity("合计-总工时", "sohours", 25));
+        if (objs!=null||objs.size()>0) {
+            for (SelectTaskHoursByUserDto dto2:objs) {  
+                Map<String, Object> map = new HashMap<String, Object>();  
+                map.put("name", dto2.getUserName()); 
+
+                for (TaskHoursByProjectDto dto:projects) {
+                	 map.put("project_to_"+dto.getProjectId(), dto2.getProjectHours().get("project"+dto.getProjectId()+"sumUPTaskHours")); 
+                	 map.put("project_oo_"+dto.getProjectId(), dto2.getProjectHours().get("project"+dto.getProjectId()+"sumUPOverHours")); 
+                }
+                
+                map.put("sumhours", dto2.getSumTaskHours());
+                map.put("overhours", dto2.getSumOverHours());
+                map.put("sohours", dto2.getTotalHours());
+                dataResult.add(map);  
             }
-            entityList.add(new ExcelExportEntity("合计-常规工时", "table"+(i+1), 25));i=i+1;
-            entityList.add(new ExcelExportEntity("合计-加班工时", "table"+(i+1), 25));i=i+1;
-            entityList.add(new ExcelExportEntity("合计-总工时", "table"+(i+1), 25));
-            dataResult.add(map);  
-        }  
+		}
+  
         HSSFWorkbook excel = (HSSFWorkbook) ExcelExportUtil.exportExcel(new ExportParams(
     			"项目工时总览", "项目工时总览"+DateUtil.getDate(new Date())), entityList, dataResult);
        

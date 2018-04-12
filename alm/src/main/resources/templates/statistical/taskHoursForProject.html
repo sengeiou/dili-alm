@@ -54,7 +54,7 @@
                    style="width: 40px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="print()">
                     打印
                 </a>
-                <a href="#" class="easyui-linkbutton"
+                <a href="javascript:exportExcel()" class="easyui-linkbutton"
                    style="width: 80px;height: 24px; margin-right:3px;text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="doExport('grid')" plain="true" >
                     导出EXCEL
                 </a>
@@ -80,6 +80,19 @@
 <!-- ====================================================================================================================== -->
 <script src="${contextPath}/resources/echarts/echarts.common.min.js"></script>
 <script type="text/javascript">
+
+function exportExcel(){
+		$('#form').form('submit', {
+			url : '${contextPath}/statistical/export',
+			success : function(data) {
+				var obj = $.parseJSON(data);
+				if (obj.code != 200) {
+					$.messager.alert('错误', obj.result);
+				}  
+			}
+		});
+		
+	}
 //清空表单
 function clearForm() {
     $('#form').form('clear');
@@ -189,8 +202,8 @@ function clearForm() {
     		
     	$.each(returnValue, function (i, item) {
     		 columns1.push({"field":"userNo", "title": item.projectName+"<br/>("+item.sumHour+"H)", "width":160 , "align": "center","colspan":2});
-      	     columns2.push({"field":"projectHours.project"+item.projectId+"sumUPOverHours", "title": "常规工时", "width": 80 , align: "center","rowspan":1,"formatter":projectTaskHour});//实际工时	
-    	     columns2.push({"field":"poHours"+item.projectId, "title": "加班工时", "width": 80, align: "center","rowspan":1,"formatter":projectOverHour});//加班工时
+      	     columns2.push({"field":"toHours"+item.projectId, "title": "常规工时", "width": 80 , align: "center","rowspan":1,"formatter":projectTaskHour});//实际工时	
+    	     columns2.push({"field":"ooHours"+item.projectId, "title": "加班工时", "width": 80, align: "center","rowspan":1,"formatter":projectOverHour});//加班工时
     	     projectIds.push(item.projectId);
     	});
     	     
@@ -238,7 +251,7 @@ function clearForm() {
  		}
  		function projectOverHour(value,row,index){
  			var projectHoursObj = row.projectHours;
- 			var str="project"+this.field.slice(7); 
+ 			var str="project"+this.field.slice(7);//截取得到id 
  			var aahours=0;
  			for (var i in projectHoursObj) { 
  				if(i==str){

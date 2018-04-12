@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.DataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.dto.ProjectTaskHourCountDto;
 import com.dili.alm.domain.dto.ProjectTypeCountDto;
 import com.dili.alm.domain.dto.ProjectYearCoverDto;
 import com.dili.alm.domain.dto.ProjectYearCoverForAllDto;
@@ -38,6 +40,7 @@ import com.dili.alm.domain.dto.SelectTaskHoursByUserDto;
 import com.dili.alm.domain.dto.TaskByUsersDto;
 import com.dili.alm.domain.dto.TaskHoursByProjectDto;
 import com.dili.alm.domain.dto.TaskStateCountDto;
+import com.dili.alm.domain.dto.UserProjectTaskHourCountDto;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.StatisticalService;
 import com.dili.alm.utils.DateUtil;
@@ -185,10 +188,6 @@ public class StatisticalController {
 				projectIds.add(Long.parseLong(long1));
 			}
 		}
-		projectIds.add((long) 15);
-		projectIds.add((long) 23);
-		startDate = "2018-03-14";
-		endDate = "2018-04-11";
 		return statisticalService.listProjectHours(startDate, endDate, projectIds);
 
 	}
@@ -210,12 +209,44 @@ public class StatisticalController {
 
 	@ResponseBody
 	@RequestMapping(value = "/test", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public List<Map<Object,Object>> test() throws ParseException {
+	public List<UserProjectTaskHourCountDto> test() throws ParseException {
 		List<Long> projectIds = new ArrayList<>();
 		List<Project> projects = this.projectService.list(DTOUtils.newDTO(Project.class));
 		projects.forEach(p -> projectIds.add(p.getId()));
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		return this.taskMapper.sumUserProjectTaskHour(projectIds, df.parse("2018-02-01"), df.parse("2018-05-01"));
+		List<Map<Object, Object>> listMap = this.taskMapper.sumUserProjectTaskHour(projectIds, df.parse("2018-02-01"),
+				df.parse("2018-05-01"));
+		return this.buildUserProjectTaskHourCountDto(listMap);
+	}
+
+	private List<UserProjectTaskHourCountDto> buildUserProjectTaskHourCountDto(List<Map<Object, Object>> listMap) {
+		List<UserProjectTaskHourCountDto> target = new ArrayList<>(listMap.size());
+		listMap.forEach(lm -> {
+			UserProjectTaskHourCountDto dto = new UserProjectTaskHourCountDto();
+			dto.setUserId(Long.valueOf(lm.get("user_id").toString()));
+			dto.setRealName(lm.get("real_name").toString());
+			dto.setTotalHour(Long.valueOf(lm.get("project_user_total_hour").toString()));
+			dto.setTotalTaskHour(Long.valueOf(lm.get("project_user_total_task_hour").toString()));
+			dto.setTotalOverHour(Long.valueOf(lm.get("project_user_total_over_hour").toString()));
+			lm.entrySet().forEach(e -> {
+				int index = e.getKey().toString().indexOf("_");
+				String key = e.getKey().toString().substring(0, index);
+				if (!StringUtils.isNumeric(key)) {
+					return;
+				}
+				Long projectId = Long.valueOf(key);
+				ProjectTaskHourCountDto pthcDto = new ProjectTaskHourCountDto();
+				pthcDto.setProjectId(projectId);
+				if (dto.getProjectTaskHours().contains(pthcDto)) {
+					return;
+				}
+				pthcDto.setTotalTaskHour(Long.valueOf(lm.get(projectId + "_total_task_hour").toString()));
+				pthcDto.setTotalOverHour(Long.valueOf(lm.get(projectId + "_total_over_hour").toString()));
+				dto.getProjectTaskHours().add(pthcDto);
+			});
+			target.add(dto);
+		});
+		return target;
 	}
 
 	@ApiOperation(value = "项目总工时查询", notes = "查询返回easyui信息")
@@ -230,23 +261,27 @@ public class StatisticalController {
 				projectIds.add(Long.parseLong(long1));
 			}
 		}
-		projectIds.add((long) 15);
-		projectIds.add((long) 23);
-		startDate = "2018-03-14";
-		endDate = "2018-04-11";
 		return statisticalService.listUserHours(startDate, endDate, projectIds);
 
 	}
 
 	@RequestMapping(value = "/export", method = { RequestMethod.POST, RequestMethod.GET })
-	public void export(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) throws IOException {
+	public void export(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap,String startDate, String endDate,
+			String[] project) throws IOException {
 		try {
 			String rtn = getRtn("aa.xls", request);
 			response.setContentType("text/html");
 			response.setHeader("Content-Disposition", "attachment;" + rtn);
 			OutputStream os = response.getOutputStream();
+			List<Long> projectIds = null;
 
-			HSSFWorkbook excel = statisticalService.downloadProjectHours(os, null, null, null);
+			if (project != null) {
+				projectIds = new ArrayList<Long>(project.length);
+				for (String long1 : project) {
+					projectIds.add(Long.parseLong(long1));
+				}
+			}
+			HSSFWorkbook excel = statisticalService.downloadProjectHours(os, startDate, endDate, projectIds);
 			excel.write(os);
 			os.flush();
 			os.close();
