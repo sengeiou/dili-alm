@@ -593,7 +593,9 @@
 
 	<select id="sumUserProjectTaskHour" resultType="java.util.HashMap">
 		<!-- {call sumUserProjectTaskHours(#{param})} -->
-		SELECT u.real_name,
+		SELECT
+		u.id AS user_id,
+		u.real_name,
 		<foreach collection="projectIds" index="index" item="projectId">
 			IFNULL( t#{index}.total_task_hour, 0 ) AS #{projectId}_total_task_hour,
 			IFNULL( t#{index}.total_over_hour, 0 ) AS #{projectId}_total_over_hour,
