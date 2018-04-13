@@ -1,16 +1,12 @@
 package com.dili.alm.controller;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,10 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.DataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -37,6 +31,7 @@ import com.dili.alm.domain.dto.ProjectTypeCountDto;
 import com.dili.alm.domain.dto.ProjectYearCoverDto;
 import com.dili.alm.domain.dto.ProjectYearCoverForAllDto;
 import com.dili.alm.domain.dto.SelectTaskHoursByUserDto;
+import com.dili.alm.domain.dto.SelectTaskHoursByUserProjectDto;
 import com.dili.alm.domain.dto.TaskByUsersDto;
 import com.dili.alm.domain.dto.TaskHoursByProjectDto;
 import com.dili.alm.domain.dto.TaskStateCountDto;
@@ -194,7 +189,7 @@ public class StatisticalController {
 
 	@ApiOperation(value = "项目工时图表查询", notes = "查询返回easyui信息")
 	@RequestMapping(value = "/listProjectForEchar", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody SelectTaskHoursByUserDto listProjectForEchar(String[] projectIds, Long userId)
+	public @ResponseBody List<SelectTaskHoursByUserProjectDto> listProjectForEchar(String[] projectIds, Long userId)
 			throws Exception {
 		List<Long> projectIdList = null;
 		if (projectIds != null) {
@@ -203,10 +198,12 @@ public class StatisticalController {
 				projectIdList.add(Long.parseLong(long1));
 			}
 		}
-		return statisticalService.selectTotalTaskAndOverHours(projectIdList);
+		return statisticalService.selectTotalTaskAndOverHoursForEchars(projectIdList);
 
 	}
-
+	/*
+	 * 项目工时部分优化测试，转为list bean传递页面保存
+	 */
 	@ResponseBody
 	@RequestMapping(value = "/test", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public List<UserProjectTaskHourCountDto> test() throws ParseException {
@@ -219,6 +216,9 @@ public class StatisticalController {
 		return this.buildUserProjectTaskHourCountDto(listMap);
 	}
 
+	/*
+	 * 项目工时部分待优化部分，转为list bean传递页面保存
+	 */
 	private List<UserProjectTaskHourCountDto> buildUserProjectTaskHourCountDto(List<Map<Object, Object>> listMap) {
 		List<UserProjectTaskHourCountDto> target = new ArrayList<>(listMap.size());
 		listMap.forEach(lm -> {
@@ -265,11 +265,11 @@ public class StatisticalController {
 
 	}
 
-	@RequestMapping(value = "/export", method = { RequestMethod.POST, RequestMethod.GET })
+	@RequestMapping(value = "/exportPorjectHours", method = { RequestMethod.POST, RequestMethod.GET })
 	public void export(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap,String startDate, String endDate,
 			String[] project) throws IOException {
 		try {
-			String rtn = getRtn("aa.xls", request);
+			String rtn = getRtn("项目工时统计.xls", request);
 			response.setContentType("text/html");
 			response.setHeader("Content-Disposition", "attachment;" + rtn);
 			OutputStream os = response.getOutputStream();
@@ -290,26 +290,6 @@ public class StatisticalController {
 		}
 	}
 
-	/**
-	 * 调用ExcelUtil方法
-	 * 
-	 * @param os
-	 * @param list
-	 * @throws Exception
-	 */
-	@SuppressWarnings("unused")
-	private void exportExcel(OutputStream os, List<Map<String, Object>> list) throws Exception {
-
-		InputStream stream = getClass().getClassLoader().getResourceAsStream("excel/aa.xls");
-		File targetFile = new File("aa.xls");
-		if (!targetFile.exists()) {
-			FileUtils.copyInputStreamToFile(stream, targetFile);
-		}
-		HSSFWorkbook excel = (HSSFWorkbook) ExcelExportUtil.exportExcel(list, ExcelType.HSSF);
-		excel.write(os);
-		os.flush();
-		os.close();
-	}
 
 	/*** 查询工时相关services****by******JING***END ****/
 

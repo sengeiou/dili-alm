@@ -13,9 +13,8 @@
     <!-- 上方布局 -->
     <!-- ====================================================================================================================== -->
     <div region="north" height="auto" align="center">
-    <a href="${contextPath}/statistical/export">rrrr</a>
         <!-- =========================================================表单========================================================= -->
-        <div class="easyui-panel" style="width:100%;" align="left"  height="auto">
+        <div class="easyui-panel" style="width:100%;" align="left" >
             <form id="form" class="easyui-form" method="post" fit="true">
                 <table style="padding:10px;">
                     <tr>
@@ -46,7 +45,7 @@
     <!-- 中央布局 -->
     <!-- ====================================================================================================================== -->
     <!-- 表格 -->
-    <div region="center" style="width:100%;" height="auto">
+    <div region="center" style="width:100%;">
             <div id="toolbar" style="float: right">
             	 <table style="padding:10px;">
             	 <tr><td>
@@ -55,7 +54,7 @@
                     打印
                 </a>
                 <a href="javascript:exportExcel()" class="easyui-linkbutton"
-                   style="width: 80px;height: 24px; margin-right:3px;text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="doExport('grid')" plain="true" >
+                   style="width: 80px;height: 24px; margin-right:3px;text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef"  plain="true" >
                     导出EXCEL
                 </a>
               
@@ -64,12 +63,14 @@
                  </table>
             </div>
         <!-- =========================================================表格========================================================= -->
-        <table id="grid" title="数据列表" pagination="false" data-options="rownumbers: true,singleSelect: true, fit:false"  style="width:98%;height:auto"> 
+        <table id="grid" title="数据列表" pagination="false" data-options="rownumbers: true,singleSelect: true, fit:false"  style="width:98%;"> 
         </table> 
+        <!-- 图表 -->
+	     <div style="width:100%;height:800px;margin-top: 20px">
+	        <!-- =========================================================图表========================================================= -->
+	        <div id="bar2"  style="width:100%;height:300px" ><!-- 图表展示区域 --></div>
+	      </div>
     </div>
-    <!-- 图表 -->
-        <!-- =========================================================图表========================================================= -->
-        <div id="bar2"  style="width:100%;height:300px" ></div>
     
     
 </div>
@@ -82,8 +83,10 @@
 <script type="text/javascript">
 
 function exportExcel(){
+     var rowobj = $('#grid').datagrid('getRows'); 
+      if(rowobj.length<1){     $.messager.alert('错误',"还没有数据可以导出！");return;}
 		$('#form').form('submit', {
-			url : '${contextPath}/statistical/export',
+			url : '${contextPath}/statistical/exportPorjectHours',
 			success : function(data) {
 				var obj = $.parseJSON(data);
 				if (obj.code != 200) {
@@ -229,36 +232,31 @@ function clearForm() {
  		            opts.url = "${contextPath}/statistical/listUserHours";
  		        }
  		       $("#grid").datagrid("load", param);
- 		      var rowobj = $('#grid').datagrid('getRows'); 
- 		      if(rowobj.length<1){     return "";}
- 		      loadInitEchartForProject(projectIds);
+ 		     $('#grid').datagrid({
+ 		    	onLoadSuccess: function(index,field,value){
+ 		    		loadInitEchartForProject(projectIds);
+ 		    	}
+ 		    });
  		}
-   
  		function projectTaskHour(value,row,index){
  			var projectHoursObj = row.projectHours;
- 			console.log(row.projectHours);
- 			var str="project"+this.field.slice(7); 
+ 			var str="project"+this.field.slice(7)+"sumUPTaskHours"; 
+ 			
  			var aahours=0;
  			for (var i in projectHoursObj) { 
  				if(i==str){
- 				 var hoursStr = projectHoursObj[i];
- 				 var aa = hoursStr.split(",");
- 				 var ab = aa[0].split(":");
- 				 aahours=ab[1];
+ 					aahours = projectHoursObj[i];
  				}
  			}
  			 return aahours;
  		}
  		function projectOverHour(value,row,index){
  			var projectHoursObj = row.projectHours;
- 			var str="project"+this.field.slice(7);//截取得到id 
+ 			var str="project"+this.field.slice(7)+"sumUPOverHours";//截取得到id 
  			var aahours=0;
  			for (var i in projectHoursObj) { 
  				if(i==str){
- 				 var hoursStr = projectHoursObj[i];
- 				 var aa = hoursStr.split(",");
- 				 var ab = aa[1].split(":");
- 				 aahours=ab[1];
+ 					aahours = projectHoursObj[i];
  				}
  			}
  			 return aahours;
@@ -298,6 +296,8 @@ function bindDateForEchats(result){
 	
 	var totalHours= new Array();
 	
+	
+	
 /*  	var resultMapList= result.projectHours;
 	
  	for (var i in resultMapList) { 
@@ -332,13 +332,11 @@ function bindDateForEchats(result){
         yAxis: {
             type: 'category',
             data: (function(){
-            	var resultMapList= result.projectHours;
+            	var resultMapList= result;
             	var res = [];
-            	
-             	 for (var i in resultMapList) { 
-             		res.unshift(i);  
-            	 }
-             	 console.log(res);
+            	result.forEach(function(value, index, array) {
+            		   res.unshift(value.projectName); 
+            		});
              	return res;
             })()
         },
@@ -354,15 +352,11 @@ function bindDateForEchats(result){
                     }
                 },
                 data: (function(){
-                	var resultMapList= result.projectHours;
+                	var resultMapList= result;
                 	var res = [];
-                	
-                 	 for (var i in resultMapList) { 
-                 		var hoursStr = resultMapList[i];
-           			    var aa = hoursStr.split(",");
-           			    var overHoursValue = aa[1].split(":")[1];
-                 		res.unshift(overHoursValue);  
-                	 }
+                	result.forEach(function(value, index, array) {
+                		   res.unshift(value.sumUPOverHours); 
+                		});
                  	return res;
                 })()
             },
@@ -377,15 +371,11 @@ function bindDateForEchats(result){
                     }
                 },
                 data: (function(){
-                	var resultMapList= result.projectHours;
+                	var resultMapList= result;
                 	var res = [];
-                	
-                 	 for (var i in resultMapList) { 
-                 		var hoursStr = resultMapList[i];
-           			    var aa = hoursStr.split(",");
-           			    var taskHoursValue = aa[0].split(":")[1];
-                 		res.unshift(taskHoursValue);  
-                	 }
+                	result.forEach(function(value, index, array) {
+                		   res.unshift(value.sumUPTaskHours); 
+                		});
                  	return res;
                 })()
             },
@@ -413,17 +403,15 @@ function bindDateForEchats(result){
                 	
                  	 for (var i in resultMapList) { 
                  		var hoursStr = resultMapList[i];
-           			    var aa = hoursStr.split(",");
-           			    var overHoursValue = aa[1].split(":")[1];
-           			    var taskHoursValue = aa[0].split(":")[1];
-           			    var totalHours = parseInt(overHoursValue)+parseInt(taskHoursValue);
-                 		res.unshift(totalHours);  
+           			  //  var totalHours = parseInt(overHoursValue)+parseInt(taskHoursValue);
+                 		res.unshift(100);  
                 	 }
                  	return res;
                 })()//总和数据
             }
         ]
     };
+	$("#bar2").height(result.length*50 +"px");	
     echarts.init(document.getElementById('bar2')).setOption(option3);
 }
     </script>
