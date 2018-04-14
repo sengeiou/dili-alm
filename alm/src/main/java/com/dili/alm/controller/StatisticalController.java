@@ -181,7 +181,7 @@ public class StatisticalController {
 	public @ResponseBody int getWeekNum(String year,String month) throws Exception {
 		int yearIntager = Integer.parseInt(year);
 		int monthIntager = Integer.parseInt(month);
-		int size = DateUtil.getWeeks(yearIntager, monthIntager).size() ;
+		int size = DateUtil.getWeeks(yearIntager, monthIntager).size() ;//得到开始结束时间所有key值总数
 		 size= size/2;
 		return size;
 
@@ -214,12 +214,14 @@ public class StatisticalController {
 	@RequestMapping(value = "/listProjectForEchar", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<SelectTaskHoursByUserProjectDto> listProjectForEchar(String[] projectIds, Long userId)
 			throws Exception {
-		List<Long> projectIdList = null;
-		if (projectIds != null) {
+		List<Long> projectIdList = new ArrayList<Long>();
+		if (projectIds != null&&projectIds.length>0) {
 			projectIdList = new ArrayList<Long>(projectIds.length);
 			for (String long1 : projectIds) {
 				projectIdList.add(Long.parseLong(long1));
 			}
+		}else{
+			projectIdList.add(Long.getLong(String.valueOf(-1)));
 		}
 		return statisticalService.selectTotalTaskAndOverHoursForEchars(projectIdList);
 
@@ -284,7 +286,9 @@ public class StatisticalController {
 				projectIds.add(Long.parseLong(long1));
 			}
 		}
-		return statisticalService.listUserHours(startDate, endDate, projectIds);
+		
+		 List<SelectTaskHoursByUserDto> aa = statisticalService.listUserHours(startDate, endDate, projectIds);
+		return aa;
 
 	}
 

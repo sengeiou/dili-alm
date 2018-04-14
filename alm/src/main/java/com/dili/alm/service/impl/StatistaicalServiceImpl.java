@@ -202,11 +202,17 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		// 查出项目列表，既表头
 		List<TaskHoursByProjectDto> taskHoursForPoject = taskMapper.selectProjectHours(startTime, endTime, projectIds);
 
+
 		// projectId 转为查询条件传递
 		List<Long> selectProjectIds = new ArrayList<Long>(taskHoursForPoject.size());
-		taskHoursForPoject.forEach(p -> {
-			selectProjectIds.add(p.getProjectId());
-		});
+		if (taskHoursForPoject==null ||taskHoursForPoject.size()==0) {
+			selectProjectIds.add((long) 0);
+		}else{
+			taskHoursForPoject.forEach(p -> {
+				selectProjectIds.add(p.getProjectId());
+			});
+		}
+
 
 		List<Map<Object, Object>> listMap = taskMapper.sumUserProjectTaskHour(selectProjectIds, df.parse(startTime),
 				df.parse(endTime));
@@ -281,11 +287,13 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		});
 		// 处理项目合计正常工时，加班工时
 		List<Long> projectTotalHoursSelectList = new ArrayList<Long>();
-
-		for (int i = 0; i < taskHoursForPoject.size(); i++) {
-			projectTotalHoursSelectList.add(taskHoursForPoject.get(i).getProjectId());
+		if (taskHoursForPoject==null ||taskHoursForPoject.size()==0) {
+			projectTotalHoursSelectList.add((long) 0);
+		}else{
+			taskHoursForPoject.forEach(p -> {
+				projectTotalHoursSelectList.add(p.getProjectId());
+			});
 		}
-
 		SelectTaskHoursByUserDto totalTaskandOverHour = this.selectTotalTaskAndOverHours(projectTotalHoursSelectList);
 		list.add(totalTaskandOverHour);
 
@@ -812,46 +820,6 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	}
 	
 	
-//	public static void main(String[] args) throws ParseException {
-//        int year = 2018;
-//        int month =1;
-//        int weekNum =0;
-//		Date da=DateUtil.getFirstDayOfWeekOrder(year, month, weekNum);
-//		Date lastDa=DateUtil.getLastDayOfWeekOrder(year, month, weekNum);
-//		
-//		for (int i = 0; i < 5; i++) {//6*7=42  一个月最大覆盖6周，即每月1号是周日，每月最后一天是周一
-//			Date da2=DateUtil.getFirstDayOfWeekOrder(year, month,i+1 );
-//			
-//			
-//			Date lastDa2=DateUtil.getLastDayOfWeekOrder(year, month, i+1);
-//	        //获取默认选中的日期的年月日星期的值，并赋值
-//	        Calendar start = Calendar.getInstance();//日历对象
-//	        start.setTime(da2);//设置当前日期
-//	        
-//	        
-//	        Calendar end = Calendar.getInstance();//日历对象
-//	        end.setTime(lastDa2);//设置当前日期
-//			if (start.get(Calendar.MONTH)+1!=month&&end.get(Calendar.MONTH)+1==month) {//本周开始日期不本月的
-//				String beiginDate = year+"-0"+month+"-01 00:00:00";
-//				da2=DateUtil.getStrDate(beiginDate);
-//				
-//			}
-//			
-//			if (start.get(Calendar.MONTH)+1==month&&end.get(Calendar.MONTH)+1!=month) {
-//				String beiginDate = year+"-0"+month+"-01 00:00:00";
-//				Date past=DateUtil.getStrDate(beiginDate);
-//				lastDa2 =DateUtil.lastDayOfMonth(past);
-//			}
-//			System.out.println("-----------------第"+(i+1)+"周-------------------------");
-//			System.out.println("开始日期:"+new SimpleDateFormat("yyyy-MM-dd").format(da2)+";");
-//			System.out.println("结束日期:"+new SimpleDateFormat("yyyy-MM-dd").format(lastDa2)+"。");
-//			
-//		}
-//		
-//
-//		//System.out.println(new SimpleDateFormat("yyyy-MM-dd").format(da)+":"+year+"年"+month+"月,第"+weekNum+"周开始时间");
-//		//System.out.println(new SimpleDateFormat("yyyy-MM-dd").format(lastDa)+":"+year+"年"+month+"月,第"+weekNum+"周结束时间");
-//	}
 	
 
 	

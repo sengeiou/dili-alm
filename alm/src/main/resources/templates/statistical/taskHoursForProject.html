@@ -71,7 +71,7 @@
         </table> 
         </div> 
         <!-- 图表 -->
-	     <div style="width:100%;height:800px;margin-top: 20px">
+	     <div style="width:100%;height:50px;margin-top: 20px">
 	        <!-- =========================================================图表========================================================= -->
 	        <div id="bar2"  style="width:100%;height:300px" ><!-- 图表展示区域 --></div>
 	      </div>
@@ -129,6 +129,7 @@ function clearForm() {
         var formData = $("#form").serializeObject();
         formData.project=$("#projectA").val();
         $.extend(param, formData);
+
 
         easyUIDataGrid(param);
 /*         var opts = $("#grid").datagrid("options");
@@ -203,7 +204,7 @@ function clearForm() {
     	dataType: "json",
     	async: false,
     	success: function (returnValue) {
-    		
+
     		var projectIds = new Array();
     		columns1.push({"field": "u&p","title": "人员&项目","width": 80 , align: "center"});	
     		columns2.push({"field":"userName", "title": "人员", "width": 80 , align: "center"});
@@ -225,7 +226,7 @@ function clearForm() {
     	     columns.push(columns2);
     	     
     	$datagrid.columns=  columns;
-    	
+
     	$('#grid').datagrid($datagrid);
     	 bindDate(param,projectIds);
     	}
@@ -236,7 +237,7 @@ function clearForm() {
  		        if (null == opts.url || "" == opts.url) {
  		            opts.url = "${contextPath}/statistical/listUserHours";
  		        }
- 		       $("#grid").datagrid("load", param);
+ 		     $("#grid").datagrid("load", param);
  		     $('#grid').datagrid({
  		    	onLoadSuccess: function(index,field,value){
  		    		loadInitEchartForProject(projectIds);
@@ -364,6 +365,8 @@ function bindDateForEchats(result){
             		});
              	return res;
             })()
+        },dataRange: {
+        	
         },
         series: [
             {
@@ -423,20 +426,19 @@ function bindDateForEchats(result){
                     }
                 },
                 data:  (function(){
-                	var resultMapList= result.projectHours;
+                	var resultMapList= result;
                 	var res = [];
                 	
                  	 for (var i in resultMapList) { 
                  		var hoursStr = resultMapList[i];
-           			  //  var totalHours = parseInt(overHoursValue)+parseInt(taskHoursValue);
-                 		res.unshift(100);  
+                 		res.unshift(hoursStr.sumUPTaskHours+hoursStr.sumUPOverHours);  
                 	 }
                  	return res;
                 })()//总和数据
             }
         ]
     };
-	$("#bar2").height(result.length*50 +"px");	
+	//$("#bar2").height(result.length*50 +"px");	
     echarts.init(document.getElementById('bar2')).setOption(option3);
 }
     </script>
