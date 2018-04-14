@@ -305,7 +305,7 @@ body {
 	          success: function (data1) {  
         		 $("#user-workday-outer").empty();
         	  	 $("#user-workday").empty();
-	        	 if (data1 != ""&&data1!=null) {
+	        	 if (data1.id != ""&&data1.id!=null) {
 	        	  		$("#user-workday-outer").append("<p>"+UnixToDate(data1.workStartTime)+"</p><p>"+UnixToDate(data1.workEndTime)+"</p>");
 	        	  		if(data1.isRole==1){
 	        				$("#user-workday").append("<span>"+data1.workDayYear+"年 第"+data1.wordDayWeek+"周  "+UnixToDate(data1.workStartTime)+" -- "+UnixToDate(data1.workEndTime)+"</span><a href='javascript:;' onclick='workDayOpen()'>设置</a>");
@@ -314,7 +314,11 @@ body {
 	        	  		}
 	        	  }else{
 		        	  	$("#user-workday-outer").append("<p>非工作日</p><p>"+UnixToDate(0)+"</p>");
-		        		$("#user-workday").append("<span>非工作日："+UnixToYear()+"年 "+UnixToDate(0)+"</span>");
+		        	  	if(data1.isRole==1){
+	        				$("#user-workday").append("<span>非工作日："+UnixToYear()+"年 "+UnixToDate(0)+"</span><a href='javascript:;' onclick='workDayOpen()'>设置</a>");
+	        	  		}else{
+	        	  			$("#user-workday").append("<span>非工作日："+UnixToYear()+"年 "+UnixToDate(0)+"</span>");
+	        	  		}
 	        	  }
 	          },  
 	          error: function (data1) {  

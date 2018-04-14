@@ -325,10 +325,15 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 			
 			
 			WorkDay workDayNowDate = this.getActualDao().getWorkDayNowDate(DateUtil.getDate(new Date()));
-			
-		
+			WorkDayRoleDto workDayRoleDto=new WorkDayRoleDto();
+			List<String> data = resourceRpc.listResourceCodeByUserId(userId).getData();
+			if(data.contains(SET_WORK_DAY)){
+				workDayRoleDto.setIsRole(1);
+			}else{
+				workDayRoleDto.setIsRole(0);
+			}
 			if(workDayNowDate==null){
-				return null;
+				return workDayRoleDto;
 			}
 			WorkDay maxWeekWorkDay = this.getActualDao().getMaxOrMinWeekWorkDay(1, workDayNowDate.getWorkDayYear());
 			if(maxWeekWorkDay.getId()==workDayNowDate.getId()){
@@ -343,17 +348,13 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 				}
 				
 			}
-			WorkDayRoleDto workDayRoleDto=new WorkDayRoleDto();
+			
 			workDayRoleDto.setId(workDayNowDate.getId());
 			workDayRoleDto.setWorkDayYear(workDayNowDate.getWorkDayYear());
 			workDayRoleDto.setWordDayWeek(workDayNowDate.getWordDayWeek());
 			workDayRoleDto.setWorkStartTime(workDayNowDate.getWorkStartTime());
 			workDayRoleDto.setWorkEndTime(workDayNowDate.getWorkEndTime());
-			workDayRoleDto.setIsRole(0);
-			List<String> data = resourceRpc.listResourceCodeByUserId(userId).getData();
-			if(data.contains(SET_WORK_DAY)){
-				workDayRoleDto.setIsRole(1);
-			}
+			
 			return workDayRoleDto;
 		}
 		public static  boolean isExcelDateType(Cell cell,String year) {
