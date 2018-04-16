@@ -119,6 +119,14 @@ public class HardwareResourceController {
   	public List<Project> listProjectList() {
   		return hardwareResourceService.projectList();
   	}
+  	
+  	// 查询项目列表
+   	@ResponseBody
+   	@RequestMapping(value = "/prjectNum.json", method = { RequestMethod.GET, RequestMethod.POST })
+   	public Project prjectNum(String id) {
+   		return hardwareResourceService.projectNumById(id);
+   	}
+   	
   	//判断是否提交
   	@ResponseBody
 	@RequestMapping(value = "/isOperation.json", method = { RequestMethod.GET, RequestMethod.POST })

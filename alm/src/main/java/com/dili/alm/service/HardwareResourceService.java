@@ -39,4 +39,6 @@ public interface HardwareResourceService extends BaseService<HardwareResource, L
 
 	List<DataDictionaryValueDto> getRegionals();
 
+	Project projectNumById(String id);
+
 }

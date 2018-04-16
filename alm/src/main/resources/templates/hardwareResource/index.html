@@ -643,9 +643,8 @@
  				textField:'name',
  				editable:false,
                 onChange: function (o,n) {
-                 	// 获取到的项目ID_projectIdText_projectId
-                 	var projectId = $('#_projectId').combobox('getValue');
-                 	$("#_projectNum").textbox('setValue',projectId);
+                	var projectNumStr = projectNum(o).serialNumber;
+                 	$("#_projectNum").textbox('setValue',projectNumStr);
                  	hardwareResourceShow();
                  }
              });
@@ -660,8 +659,8 @@
 				editable:false,
                onChange: function (o,n) {
                 	// 获取到的项目ID_projectIdText_projectId
-                	var projectId = $('#_updateprojectId').combobox('getValue');
-                	$("#_updateprojectNum").textbox('setValue',projectId);
+                	var projectNumStr = projectNum(o).serialNumber;
+                	$("#_updateprojectNum").textbox('setValue',projectNumStr);
                 	$("#_updateprojectId").val(projectId);
                 	
                 }
@@ -672,12 +671,15 @@
 				url:"${contextPath!}/hardwareResource/listTreeMember.json",
 				valueField:'id',
 				textField:'realName',
-				editable:false,
-				onChange: function (o,n) {
-
-				}
+				editable:false
 			});
-    }
+    	}
+        function projectNum(id){
+	          var  htmlobj=$.ajax({url:"${contextPath!}/hardwareResource/prjectNum.json?id="+id,async:false});
+	          var str=htmlobj.responseText;
+	          var obj = $.parseJSON(str);
+	          return obj;
+  		 } 
         function formatOptions(val,row,index){  
         	var out;
         	if(row.isSubmit==0){

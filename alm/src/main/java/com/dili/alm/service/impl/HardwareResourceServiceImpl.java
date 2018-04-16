@@ -217,5 +217,10 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 		return dto.getValues();
 	}
 
+	@Override
+	public Project projectNumById(String id) {
+		return projectMapper.selectByPrimaryKey(Long.parseLong(id));
+	}
+
 
 }
