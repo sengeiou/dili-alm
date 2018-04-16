@@ -131,7 +131,7 @@
                     />
                 </td>
                 <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_updatemachineName" id="_updatemachineName" style="width:100%" data-options="label:'机器名称:', validType:'length[0,255]'"
+                    <input class="easyui-textbox" name="_updatemachineName" id="_updatemachineName" style="width:100%" data-options="label:'机器名称:', validType:'length[0,50]'"
                            required="true" />
                 </td>
             </tr>
@@ -147,11 +147,11 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-numberspinner" name="_updatedisk" id="_updatedisk" style="width:100%" data-options="label:'磁盘(GB):',min:1,editable:false"
-                           required="true" />
+                    <input class="easyui-numberbox" name="_updatedisk" id="_updatedisk" style="width:100%" data-options="label:'磁盘(GB):', validType:'length[0,4]'"
+		                    required="true" />
                 </td>
                 <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_updateip" id="_updateip" style="width:100%" data-options="label:'ip地址:', validType:'length[0,15]'"
+                    <input class="easyui-textbox" name="_updateip" id="_updateip" style="width:100%" data-options="label:'ip地址:', validType:'checkIPValidate'"
                            required="true" />
                 </td>
             </tr>
@@ -168,7 +168,7 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_updatecost" id="_updatecost" style="width:100%" data-options="label:'成本:', validType:'length[0,10]'" required="true"/>
+                    <input class="easyui-textbox" name="_updatecost" id="_updatecost" style="width:100%" data-options="label:'成本:', validType:'amountValidate'" required="true"/>
                 </td>
 
             </tr>
@@ -178,7 +178,7 @@
 
     </div>
     <!-- 添加隐藏编辑框 -->
-    <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="HardwareResource信息" style="padding:20px" modal="true" border="thin" closed="true"
+    <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="资源维护申请信息" style="padding:20px" modal="true" border="thin" closed="true"
          data-options="
 				iconCls: 'icon-save',
 				width:900,
@@ -235,7 +235,7 @@
 		                    />
 		                </td>
 		                <td style="padding:5px;;width: 50%">
-		                    <input class="easyui-textbox" name="_addmachineName" id="_addmachineName" style="width:100%" data-options="label:'机器名称:', validType:'length[0,255]'"
+		                    <input class="easyui-textbox" name="_addmachineName" id="_addmachineName" style="width:100%" data-options="label:'机器名称:', validType:'length[0,50]'"
 		                           required="true" />
 		                </td>
 		            </tr>
@@ -251,11 +251,11 @@
 		            </tr>
 		            <tr>
 		                <td style="padding:5px;">
-		                    <input class="easyui-numberspinner" name="_adddisk" id="_adddisk" style="width:100%" data-options="label:'磁盘(GB):',min:1,editable:false"
+		                    <input class="easyui-numberbox" name="_adddisk" id="_adddisk" style="width:100%" data-options="label:'磁盘(GB):', validType:'length[0,4]'"
 		                           required="true" />
 		                </td>
 		                <td style="padding:5px;">
-		                    <input class="easyui-textbox" name="_addip" id="_addip" style="width:100%" data-options="label:'ip地址:', validType:'length[0,15]'"
+		                    <input class="easyui-textbox" name="_addip" id="_addip" style="width:100%" data-options="label:'ip地址:', validType:'checkIPValidate'"
 		                           required="true" />
 		                </td>
 		            </tr>
@@ -272,7 +272,7 @@
 		            </tr>
 		            <tr>
 		                <td style="padding:5px;">
-		                    <input class="easyui-textbox" name="_addcost" id="_addcost" style="width:100%" data-options="label:'成本:', validType:'length[0,10]'" required="true"/>
+		                    <input class="easyui-textbox" name="_addcost" id="_addcost" style="width:100%" data-options="label:'成本:', validType:'amountValidate'" required="true"/>
 		                </td>
 		 				<td style="padding:5px;">
 		                     <a href="javascript:;" class="easyui-linkbutton" data-options="iconCls:'icon-save'" id="queryBtn" onclick="save()">保存</a>
@@ -533,7 +533,6 @@
                 $.messager.alert('警告','请选中一条数据');
                 return;
             }
-            console.log()
             $.messager.confirm('确认','您确认想要删除记录吗？',function(r){
                 if (r){
                     $.ajax({
@@ -644,9 +643,8 @@
  				textField:'name',
  				editable:false,
                 onChange: function (o,n) {
-                 	// 获取到的项目ID_projectIdText_projectId
-                 	var projectId = $('#_projectId').combobox('getValue');
-                 	$("#_projectNum").textbox('setValue',projectId);
+                	var projectNumStr = projectNum(o).serialNumber;
+                 	$("#_projectNum").textbox('setValue',projectNumStr);
                  	hardwareResourceShow();
                  }
              });
@@ -661,8 +659,8 @@
 				editable:false,
                onChange: function (o,n) {
                 	// 获取到的项目ID_projectIdText_projectId
-                	var projectId = $('#_updateprojectId').combobox('getValue');
-                	$("#_updateprojectNum").textbox('setValue',projectId);
+                	var projectNumStr = projectNum(o).serialNumber;
+                	$("#_updateprojectNum").textbox('setValue',projectNumStr);
                 	$("#_updateprojectId").val(projectId);
                 	
                 }
@@ -673,26 +671,25 @@
 				url:"${contextPath!}/hardwareResource/listTreeMember.json",
 				valueField:'id',
 				textField:'realName',
-				editable:false,
-				onChange: function (o,n) {
-
-				}
+				editable:false
 			});
-    }
+    	}
+        function projectNum(id){
+	          var  htmlobj=$.ajax({url:"${contextPath!}/hardwareResource/prjectNum.json?id="+id,async:false});
+	          var str=htmlobj.responseText;
+	          var obj = $.parseJSON(str);
+	          return obj;
+  		 } 
         function formatOptions(val,row,index){  
-        	
-        	var selected=$("#grid").datagrid('getData').rows[index];
         	var out;
-        	
-        	if(selected.isSubmit==0){
-        		if(isOperation(selected.id)){
+        	if(row.isSubmit==0){
+        		if(isOperation(row.id)){
             		out="<a href='javascript:void(0)' onclick='openUpdate(" + index + ")'>编辑  </a>"+ 
             		"<a href='javascript:void(0)' onclick='del(" + index + ")'> 删除</a>";
             	}else{
             		out="<span style='padding:5px;color:#8B8B7A;text-decoration:underline;'>编辑</span>"+
             		"<span style='padding:5px;color:#8B8B7A;text-decoration:underline;'>删除</span>";
             	}
-        		
         	}else{
         		out="<span style='padding:5px;color:#8B8B7A;text-decoration:underline;'>编辑</span>"+
         		"<span style='padding:5px;color:#8B8B7A;text-decoration:underline;'>删除</span>";
@@ -711,7 +708,7 @@
             return out;  
         }
          function isOperation(id){
-	          var  htmlobj=$.ajax({url:"${contextPath}/hardwareResource//isOperation.json?id="+id,async:false});
+	          var  htmlobj=$.ajax({url:"${contextPath}/hardwareResource/isOperation.json?id="+id,async:false});
 	          var str=htmlobj.responseText;
 	          var obj = $.parseJSON(str);
 	          return obj;
@@ -724,7 +721,31 @@
         		var min = date.getMinutes()>9 ? date.getMinutes() : "0"+date.getMinutes();
         		var sec = date.getSeconds()>9 ? date.getSeconds() : "0"+date.getSeconds();
         		return date.getFullYear() + '-' + month + '-' + day+" "+hor+":"+min+":"+sec;
-        		};
+      };
+	  $.extend($.fn.validatebox.defaults.rules, {
+		  amountValidate: {
+	            validator: function(value) {
+	            	var temp = /^\d+\.?\d{0,2}$/;
+					return temp.test(value);
+	            },
+	            message: '必须为金额格式最小至小数点后2位!'
+	        }
+	    });
+	  $.extend($.fn.validatebox.defaults.rules, {
+		  checkIPValidate: {
+	            validator: function(value) {
+	    		    var exp=/^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/;
+	    		    var reg = value.match(exp);
+	    		    if(reg==null)
+	    		    {
+	    		   		return false;
+	    		    }else{
+						return true;
+	    		    }
+	            },
+	            message: 'IP地址不合法！'
+	        }
+	    });
     </script>
 
 </#body>

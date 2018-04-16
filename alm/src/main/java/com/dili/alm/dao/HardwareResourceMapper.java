@@ -9,9 +9,9 @@ import com.dili.ss.base.MyMapper;
 
 public interface HardwareResourceMapper extends MyMapper<HardwareResource> {
 
-	List<HardwareResource> selectByIds(@Param("hardwareResource")HardwareResource hardwareResource, @Param("list")List<Long> list);
+	List<HardwareResource> selectByIds(@Param("hardwareResource")HardwareResource hardwareResource,@Param("owner")Long owner, @Param("list")List<Long> list);
 
-	int selectByIdsCounts(@Param("hardwareResource")HardwareResource hardwareResource, @Param("list")List<Long> list);
+	int selectByIdsCounts(@Param("hardwareResource")HardwareResource hardwareResource,@Param("owner")Long owner, @Param("list")List<Long> list);
 
 	int updateByProjectId(HardwareResource hardwareResource);
 }
