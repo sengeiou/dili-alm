@@ -283,7 +283,7 @@ public class ProjectOnlineApplyController {
 		} else {
 			List<Long> projectIds = new ArrayList<>();
 			dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
-			Example example = new Example(ProjectOnlineApply.class);
+			Example example = new Example(Project.class);
 			Example.Criteria criteria = example.createCriteria();
 			criteria.andIn("id", projectIds).andNotEqualTo("projectState", ProjectState.CLOSED.getValue());
 			List<Project> projects = this.projectService.selectByExample(example);
@@ -307,9 +307,9 @@ public class ProjectOnlineApplyController {
 		}
 		List<Long> projectIds = new ArrayList<>();
 		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
-		Example example = new Example(ProjectOnlineApply.class);
+		Example example = new Example(Project.class);
 		Example.Criteria criteria = example.createCriteria();
-		criteria.andIn("id", projectIds);
+		criteria.andIn("id", projectIds).andNotEqualTo("projectState", ProjectState.CLOSED.getValue());
 		List<Project> projects = this.projectService.selectByExample(example);
 		modelMap.addAttribute("projects", projects);
 		List<Project> plist = this.projectService.list(null);

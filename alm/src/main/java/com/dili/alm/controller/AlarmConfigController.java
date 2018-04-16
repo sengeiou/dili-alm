@@ -45,7 +45,7 @@ public class AlarmConfigController {
 		return this.alarmConfigService.saveOrUpdateWithOutput(alarmConfig);
 	}
 
-	@RequestMapping(value = "/config", method = RequestMethod.GET)
+	@RequestMapping(value = "/config.html", method = RequestMethod.GET)
 	public String config(@RequestParam Long projectId, ModelMap map) {
 		Project project = this.projectService.get(projectId);
 		try {
