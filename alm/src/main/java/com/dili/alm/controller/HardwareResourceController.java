@@ -66,13 +66,6 @@ public class HardwareResourceController {
     	@SuppressWarnings({ "rawtypes" })
 		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
     	List<Long> projectIds = new ArrayList<>();
-		UserTicket user = SessionContext.getSessionContext().getUserTicket();
-		if (user == null) {
-			throw new RuntimeException("未登录");
-		}
-		if (CollectionUtils.isEmpty(dataAuths)) {
-			hardwareResource.setMaintenanceOwner(user.getId());
-		}
 		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
         return hardwareResourceService.listEasyuiPageByExample(hardwareResource, projectIds, true).toString();
     }
