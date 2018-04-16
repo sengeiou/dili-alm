@@ -136,8 +136,14 @@
 					<tr>
 						<td class="table-title" colspan="2">描述</td>
 						<td colspan="4">
-                            <input style="width: 94%" class="easyui-textbox" name="description" data-options="validType:['length[0,20]']">
+                            <input style="width: 94%" class="easyui-textbox" name="description" data-options="validType:['length[0,500]']">
                         </td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="2">申请人</td>
+						<td>${apply.applicantId!}</td>
+						<td class="table-title">创建时间</td>
+						<td class="table-title" colspan="2">${apply.created!}</td>
 					</tr>
 				</table>
 			</div>

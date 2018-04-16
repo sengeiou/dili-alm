@@ -19,9 +19,12 @@ function confirmMembersBtn(id) {
 		$('#' + id).textbox('initValue', selected.id);
 		$('#' + id).textbox('setText', selected.realName);
 	}
+	var icon = $('#' + id).textbox('getIcon',0);
+	icon.css('visibility','visible');
 	$('#smDialog').dialog('close');
 }
 // 根据id打开用户选择
+
 function showMembersDlg(id, dep) {
 	$('#smDialog').dialog({
 				title : '用户选择',
@@ -31,7 +34,7 @@ function showMembersDlg(id, dep) {
 					textboxId : id,
 					dep : dep
 				},
-				href : '${contextPath!}/member/members.html',
+				href : '${contextPath!}/member/members.html?dep=maintenance',
 				modal : true,
 				buttons : [{
 							text : '确定',

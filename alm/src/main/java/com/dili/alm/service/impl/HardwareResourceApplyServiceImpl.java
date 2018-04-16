@@ -522,6 +522,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		if (project == null) {
 			throw new HardwareResourceApplyException("项目不存在");
 		}
+		dto.setSerialNumber(this.numberGenerator.get());
 		dto.setProjectName(project.getName());
 		dto.setProjectManagerId(project.getProjectManager());
 		dto.setProjectSerialNumber(project.getSerialNumber());
