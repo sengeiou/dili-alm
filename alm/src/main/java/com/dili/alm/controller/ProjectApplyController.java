@@ -66,7 +66,7 @@ public class ProjectApplyController {
         return "projectApply/index";
     }
 
-    @RequestMapping(value = "/add.html", method = RequestMethod.GET)
+    @RequestMapping(value = "/add", method = RequestMethod.GET)
     public String add() {
         return "projectApply/add";
     }
