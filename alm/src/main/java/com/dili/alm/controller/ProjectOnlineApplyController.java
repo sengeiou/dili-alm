@@ -410,12 +410,21 @@ public class ProjectOnlineApplyController {
 			return "请先登录";
 		}
 		apply.setApplicantId(user.getId());
-		if (apply.getSqlFile() == null && StringUtils.isBlank(apply.getSqlScript())) {
+		if (apply.getSqlFileId() == null && apply.getSqlFile() == null && StringUtils.isBlank(apply.getSqlScript())) {
 			return "sql脚本不能为空";
 		}
-		if (apply.getStartupScriptFile() == null && StringUtils.isBlank(apply.getStartupScript())) {
+		if (apply.getStartupScriptFileId() == null && apply.getStartupScriptFile() == null
+				&& StringUtils.isBlank(apply.getStartupScript())) {
 			return "启动脚本不能为空";
 		}
+		if (apply.getDependencySystemFileId() == null && apply.getDependencySystemFile() == null
+				&& StringUtils.isBlank(apply.getDependencySystem())) {
+			return "启动脚本不能为空";
+		}
+		// 清除文件id，不然后台逻辑会有问题
+		apply.setSqlFileId(null);
+		apply.setStartupScriptFileId(null);
+		apply.setDependencySystemFileId(null);
 		Pattern pattern = Pattern.compile(EMAIL_REGEX);
 		String[] emails = apply.getEmailAddress().split(";");
 		for (String str : emails) {

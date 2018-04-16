@@ -139,20 +139,23 @@
 						<td class="table-title" colspan="2">SQL脚本</td>
 						<td class="table-combo" colspan="4" style="padding: 0"><input class="easyui-textbox" name="sqlScript" value="${apply.sqlScript!}"
 							data-options="validType:['length[0,50]']" style="width: 44%"> <input class="easyui-filebox" name="sqlFile"
-							value="${apply.sqlFileId!}" data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 44%"></td>
+							value="${apply.sqlFileId!}" data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 44%"> <input type="hidden"
+							name="sqlFileId" value="${apply.$_sqlFileId!}"></td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="2">系统启动脚本</td>
 						<td class="table-combo" colspan="4" style="padding: 0"><input class="easyui-textbox" name="startupScript"
 							value="${apply.startupScript!}" data-options="validType:['length[0,50]']" style="width: 44%"> <input class="easyui-filebox"
-							name="startupScriptFile" value="${apply.startupScriptFileId!}" data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 44%"></td>
+							name="startupScriptFile" value="${apply.startupScriptFileId!}" data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 44%">
+							<input type="hidden" name="startupScriptFileId" value="${apply.$_startupScriptFileId!}"></td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="2">依赖系统</td>
 						<td class="table-combo" colspan="4" style="padding: 0"><input class="easyui-textbox" name="dependencySystem"
 							value="${apply.dependencySystem!}" data-options="validType:['length[0,50]']" style="width: 44%"> <input
 							class="easyui-filebox" name="dependencySystemFile" value="${apply.dependencySystemFileId!}"
-							data-options="prompt:'添加附件...',	buttonText:'选择'" style="width: 44%"></td>
+							data-options="prompt:'添加附件...',	buttonText:'选择'" style="width: 44%"> <input type="hidden" name="dependencySystemFileId"
+							value="${apply.$_dependencySystemFileId!}"></td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="2">其他说明</td>
