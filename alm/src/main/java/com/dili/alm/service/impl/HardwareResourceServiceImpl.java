@@ -120,7 +120,7 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 		if(domain.getMaintenanceOwner()==null){
 			domain.setMaintenanceOwner(user.getId());
 		}else{
-			if(domain.getMaintenanceOwner()!=user.getId()){
+			if(domain.getMaintenanceOwner().longValue()!=user.getId().longValue()){
 				owner=user.getId();
 			}
 		}
@@ -148,6 +148,8 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 			domain.setSort("project_id");
 		}else if(sort.equals("maintenanceDate")){
 			domain.setSort("maintenance_date");
+		}else if(sort.equals("lastModifyDate")){
+			domain.setSort("last_modify_date");
 		}
 		List<HardwareResource> list = this.hardwareResourceMapper.selectByIds(domain,owner,projectIds);
 		int total = this.hardwareResourceMapper.selectByIdsCounts(domain,owner,projectIds);
@@ -166,7 +168,7 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 			throw new RuntimeException("未登录");
 		}
 		HardwareResource selectByPrimaryKey = this.hardwareResourceMapper.selectByPrimaryKey(id);
-		if(selectByPrimaryKey.getMaintenanceOwner()==user.getId()){
+		if(selectByPrimaryKey.getMaintenanceOwner().longValue()==user.getId().longValue()){
 			return true;
 			
 		}
