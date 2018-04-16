@@ -151,4 +151,6 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 
 	ProjectOnlineApply getProjectManagerConfirmViewModel(Long id) throws ProjectOnlineApplyException;
 
+	ProjectOnlineApply getDetailViewData(Long id) throws ProjectOnlineApplyException;
+
 }

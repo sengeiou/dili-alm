@@ -465,10 +465,9 @@
 	<!--每个人单独项目下的总工时 -->
 	<select id="selectUsersProjectHours"
 		resultType="com.dili.alm.domain.dto.SelectTaskHoursByUserProjectDto">
-		select SUM(tt.task_hour) as sumUPTaskHours,sum(tt.over_hour) as
-		sumUPOverHours,t.`owner` as ownerId,t.project_id as projectId from
-		alm.task_details as tt LEFT JOIN alm.task as t ON tt.task_id = t.id
-		where 1=1
+			select SUM(tt.task_hour) as sumUPTaskHours,sum(tt.over_hour) as
+		sumUPOverHours,t.`owner` as ownerId,t.project_id as projectId,p.`name` as projectName  from
+		alm.task_details as tt LEFT JOIN alm.task as t ON tt.task_id = t.id LEFT JOIN project as p on p.id =  t.project_id where 1=1
 		<if test="projectIds != null and projectIds.size>0">
 			and t.project_id in
 			<foreach item="item" index="index" collection="projectIds"

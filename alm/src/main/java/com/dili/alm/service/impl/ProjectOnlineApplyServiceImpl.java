@@ -147,11 +147,15 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		metadata.put("developmentManagerId", memberProvider);
 		metadata.put("applicantId", memberProvider);
 
+		JSONObject dateProvider = new JSONObject();
+		dateProvider.put("provider", "almDateProvider");
+		metadata.put("onlineDate", dateProvider);
+		metadata.put("actualOnlineDate", dateProvider);
+		metadata.put("submitTime", dateProvider);
+
 		JSONObject datetimeProvider = new JSONObject();
-		datetimeProvider.put("provider", "almDateProvider");
-		metadata.put("onlineDate", datetimeProvider);
-		metadata.put("actualOnlineDate", datetimeProvider);
-		metadata.put("submitTime", datetimeProvider);
+		datetimeProvider.put("provider", "datetimeProvider");
+		metadata.put("created", datetimeProvider);
 
 		JSONObject applyStateProvider = new JSONObject();
 		applyStateProvider.put("provider", "projectOnlineApplyStateProvider");
@@ -1027,5 +1031,10 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		// 判断当前登录用户是否是当前项目的产品经理
 		verifiable = !verifiable ? verifiable : apply.getProductManagerId().equals(user.getId());
 		apply.aset("verifiable", verifiable);
+	}
+
+	@Override
+	public ProjectOnlineApply getDetailViewData(Long id) throws ProjectOnlineApplyException {
+		return this.getFlowViewData(id);
 	}
 }

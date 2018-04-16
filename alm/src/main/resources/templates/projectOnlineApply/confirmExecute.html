@@ -1,34 +1,31 @@
 <style>
+.table-box {
+	width: 100%;
+	text-align: center;
+	margin-bottom: 10px;
+}
 
-    .table-box {
-        width: 100%;
-        text-align: center;
-        margin-bottom: 10px;
-    }
+.table-box, .table-box tr td {
+	border: 1px solid #ddd;
+	border-collapse: collapse;
+}
 
-    .table-box,
-    .table-box tr td {
-        border: 1px solid #ddd;
-        border-collapse: collapse;
-    }
+.table-box tr td {
+	/*display: block;*/
+	box-sizing: border-box;
+	/*width: 16.6% !important;*/
+	padding: 5px;
+}
 
-    .table-box tr td {
-        /*display: block;*/
-        box-sizing: border-box;
-        /*width: 16.6% !important;*/
-        padding: 5px;
-    }
+.table-box .table-title {
+	background-color: #f5f5f5;
+	font-weight: bold;
+}
 
-    .table-box .table-title {
-        background-color: #f5f5f5;
-        font-weight: bold;
-    }
-
-    .table-combo .textbox,
-    .table-combo .filebox {
-        border: none;
-        border-radius: 0;
-    }
+.table-combo .textbox, .table-combo .filebox {
+	border: none;
+	border-radius: 0;
+}
 </style>
 <div class="easyui-panel" style="width: 100%;" title="确认执行">
 	<form id="editForm" action="" method="post" enctype="multipart/form-data">
@@ -40,7 +37,7 @@
 						<td style="width: 16.6%;" class="table-title">项目名称</td>
 						<td style="width: 16.6%;" class="table-combo" style="padding: 0">${apply.projectName!}</td>
 						<td style="width: 16.6%;" class="table-title">项目编号</td>
-						<td style="width: 16.6%;" >${apply.projectSerialNumber!}</td>
+						<td style="width: 16.6%;">${apply.projectSerialNumber!}</td>
 						<td style="width: 16.6%;" class="table-title">版本</td>
 						<td style="width: 16.6%;" class="table-combo" style="padding: 0">${apply.version!}</td>
 					</tr>
@@ -82,7 +79,7 @@
 						<td class="table-title" colspan="2">系统名称</td>
 						<td class="table-combo" style="padding: 0" colspan="2">${item.projectName!}</td>
 						<td class="table-title">负责人</td>
-						<td class="table-combo"  style="padding: 0">${item.managerName!}</td>
+						<td class="table-combo" style="padding: 0">${item.managerName!}</td>
 					</tr>
 					<%}%>
 					<tr>
@@ -127,9 +124,14 @@
 					<%}%>
 					<tr>
 						<td class="table-title" colspan="2">描述</td>
-						<td colspan="4">
-                            <input style="width: 97%;height: 60px" class="easyui-textbox" name="description" data-options="validType:['length[0,20]']">
-                        </td>
+						<td colspan="4"><input style="width: 97%; height: 60px" class="easyui-textbox" name="description"
+							data-options="validType:['length[0,500]']"></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="2">申请人</td>
+						<td>${apply.applicantId!}</td>
+						<td class="table-title">创建时间</td>
+						<td class="table-title" colspan="2">${apply.created!}</td>
 					</tr>
 				</table>
 			</div>

@@ -72,6 +72,18 @@ public class ProjectOnlineApplyController {
 	private DataDictionaryService ddService;
 	private static final String EMAIL_REGEX = "^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$";
 
+	@RequestMapping(value = "/detail", method = RequestMethod.GET)
+	public String detail(@RequestParam Long id, ModelMap modelMap) {
+		try {
+			ProjectOnlineApply vm = this.projectOnlineApplyService.getDetailViewData(id);
+			modelMap.addAttribute("apply", ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
+			return "projectOnlineApply/detail";
+		} catch (ProjectOnlineApplyException e) {
+			LOGGER.error(e.getMessage(), e);
+			return null;
+		}
+	}
+
 	@RequestMapping(value = "/projectManagerConfirm", method = RequestMethod.GET)
 	public String projectManagerConfirmView(@RequestParam Long id, ModelMap modelMap) {
 		try {
@@ -280,6 +292,8 @@ public class ProjectOnlineApplyController {
 		if (dd != null) {
 			modelMap.addAttribute("markets", dd.getValues());
 		}
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		modelMap.addAttribute("applicant", user);
 		return "projectOnlineApply/add";
 	}
 
@@ -303,6 +317,8 @@ public class ProjectOnlineApplyController {
 		if (dd != null) {
 			modelMap.addAttribute("markets", dd.getValues());
 		}
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		modelMap.addAttribute("applicant", user);
 		try {
 			ProjectOnlineApply dto = this.projectOnlineApplyService.getEditViewDataById(id);
 			Map<Object, Object> model = ProjectOnlineApplyServiceImpl.buildApplyViewModel(dto);

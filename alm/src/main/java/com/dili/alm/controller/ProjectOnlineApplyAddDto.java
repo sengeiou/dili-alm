@@ -3,9 +3,10 @@ package com.dili.alm.controller;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
-import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dili.alm.domain.ProjectOnlineApply;
@@ -33,9 +34,9 @@ public class ProjectOnlineApplyAddDto extends BaseDomain implements ProjectOnlin
 
 	@NotNull(message = "申请上线日期不能为空")
 	private Date onlineDate;
-
+	@Size(max = 500)
 	private String dependencyDescription;
-
+	@Size(max = 500)
 	private String scopeDescription;
 
 	private Long applicantId;
@@ -51,16 +52,19 @@ public class ProjectOnlineApplyAddDto extends BaseDomain implements ProjectOnlin
 	private String serialNumber;
 
 	private Long businessOwnerId;
-	@NotBlank(message = "邮件通知列表不能为空")
 	private String emailAddress;
 
 	private String executorId;
+	@Size(max = 50, message = "git地址最大长度50个字符")
 	private String git;
+	@Size(max = 50, message = "分支最大长度不能超过50个字符")
 	private String branch;
 	private MultipartFile sqlFile;
 	private MultipartFile startupScriptFile;
+	@Size(max = 50, message = "依赖系统最大长度不能超过50个字符")
 	private String dependencySystem;
 	private MultipartFile dependencySystemFile;
+	@Size(max = 50, message = "其他说明最大长度不能超过50个字符")
 	private String otherDescription;
 	private List<String> managerId;
 	private List<String> subProjectName;
@@ -72,7 +76,7 @@ public class ProjectOnlineApplyAddDto extends BaseDomain implements ProjectOnlin
 	private String startupScript;
 
 	private Long sqlFileId;
-
+	@Size(max = 50, message = "sql脚本最大长度不能超过50个字符")
 	private String sqlScript;
 	@NotNull(message = "请选择是否针对市场上线")
 	private Boolean marketVersion;
