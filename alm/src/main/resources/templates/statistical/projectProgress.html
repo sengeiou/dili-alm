@@ -73,19 +73,19 @@
                  </table>
                 </form>
             </div>
-            <div data-options="region:'center',collapsible:false,split:true,tools:'#infoToolbar'" style="height:100%" title="数据列表">
-                <table class="easyui-datagrid" style="width: 100%" id="grid"
-                       data-options="singleSelect:true,collapsible:true"
+            <div  style="height:100%">
+                <table class="easyui-datagrid" style="width: 100%" id="grid" title="项目进展汇总"
+                       data-options="singleSelect:true,collapsible:true,tools:'#infoToolbar'," 
                        pagination="true" pageSize="30" pageNumber="1" >
                     <thead>
                     <tr>
                        	<th data-options="field:'name',width:'17%',align:'center'">项目名称</th>
-                        <th data-options="field:'type', _provider:'projectTypeProvider',width:'14%',align:'center'">项目类型</th>
-                        <th data-options="field:'projectManager',_provider:'memberProvider',width:'10%',align:'center'">项目责任人</th>
-                        <th data-options="field:'projectState',_provider:'projectStateProvider',width:'12%',align:'center'">项目状态</th>
+                        <th data-options="field:'type', _provider:'projectTypeProvider',width:'12%',align:'center'">项目类型</th>
+                        <th data-options="field:'projectManager',_provider:'memberProvider',width:'12%',align:'center'">项目责任人</th>
+                        <th data-options="field:'projectState',_provider:'projectStateProvider',width:'11%',align:'center'">项目状态</th>
                         <th data-options="field:'completedProgress',formatter:progressFormatter,width:'15%',align:'center'">项目总体进度</th>
                         <th data-options="field:'dateProgress',formatter:progressFormatter,width:'15%',align:'center'">时间进度</th>
-                        <th data-options="field:'estimateLaunchDate',_provider:'datetimeProvider',width:'15%',align:'center'">计划上线日期</th>
+                        <th data-options="field:'estimateLaunchDate',_provider:'datetimeProvider',width:'20%',align:'center'">计划上线日期</th>
                     </tr>
                     </thead>
                 </table>
