@@ -31,6 +31,7 @@ import com.dili.alm.domain.Files;
 import com.dili.alm.domain.OperationResult;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectOnlineApply;
+import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.ProjectOnlineApplyUpdateDto;
 import com.dili.alm.domain.dto.ProjectOnlineSubsystemDto;
@@ -282,9 +283,9 @@ public class ProjectOnlineApplyController {
 		} else {
 			List<Long> projectIds = new ArrayList<>();
 			dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
-			Example example = new Example(ProjectOnlineApply.class);
+			Example example = new Example(Project.class);
 			Example.Criteria criteria = example.createCriteria();
-			criteria.andIn("id", projectIds);
+			criteria.andIn("id", projectIds).andNotEqualTo("projectState", ProjectState.CLOSED.getValue());
 			List<Project> projects = this.projectService.selectByExample(example);
 			modelMap.addAttribute("projects", projects);
 		}
@@ -306,9 +307,9 @@ public class ProjectOnlineApplyController {
 		}
 		List<Long> projectIds = new ArrayList<>();
 		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
-		Example example = new Example(ProjectOnlineApply.class);
+		Example example = new Example(Project.class);
 		Example.Criteria criteria = example.createCriteria();
-		criteria.andIn("id", projectIds);
+		criteria.andIn("id", projectIds).andNotEqualTo("projectState", ProjectState.CLOSED.getValue());
 		List<Project> projects = this.projectService.selectByExample(example);
 		modelMap.addAttribute("projects", projects);
 		List<Project> plist = this.projectService.list(null);

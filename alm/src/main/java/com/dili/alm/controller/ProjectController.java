@@ -81,7 +81,7 @@ public class ProjectController {
 	}
 
 	@ApiOperation("跳转到Project页面")
-	@RequestMapping(value = "/index", method = RequestMethod.GET)
+	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
 		return "project/index";
 	}
@@ -211,7 +211,7 @@ public class ProjectController {
 		return this.projectService.getProjectStates();
 	}
 
-	@RequestMapping(value = "/detail", method = RequestMethod.GET)
+	@RequestMapping(value = "/detail.html", method = RequestMethod.GET)
 	public String detail(@RequestParam Long id, @RequestParam(defaultValue = "false") Boolean editable,
 			@RequestParam(required = false) String backUrl, ModelMap map) {
 		try {
