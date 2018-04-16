@@ -72,6 +72,18 @@ public class ProjectOnlineApplyController {
 	private DataDictionaryService ddService;
 	private static final String EMAIL_REGEX = "^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$";
 
+	@RequestMapping(value = "/detail", method = RequestMethod.GET)
+	public String detail(@RequestParam Long id, ModelMap modelMap) {
+		try {
+			ProjectOnlineApply vm = this.projectOnlineApplyService.getDetailViewData(id);
+			modelMap.addAttribute("apply", ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
+			return "projectOnlineApply/detail";
+		} catch (ProjectOnlineApplyException e) {
+			LOGGER.error(e.getMessage(), e);
+			return null;
+		}
+	}
+
 	@RequestMapping(value = "/projectManagerConfirm", method = RequestMethod.GET)
 	public String projectManagerConfirmView(@RequestParam Long id, ModelMap modelMap) {
 		try {
@@ -280,6 +292,8 @@ public class ProjectOnlineApplyController {
 		if (dd != null) {
 			modelMap.addAttribute("markets", dd.getValues());
 		}
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		modelMap.addAttribute("applicant", user);
 		return "projectOnlineApply/add";
 	}
 
@@ -303,6 +317,8 @@ public class ProjectOnlineApplyController {
 		if (dd != null) {
 			modelMap.addAttribute("markets", dd.getValues());
 		}
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		modelMap.addAttribute("applicant", user);
 		try {
 			ProjectOnlineApply dto = this.projectOnlineApplyService.getEditViewDataById(id);
 			Map<Object, Object> model = ProjectOnlineApplyServiceImpl.buildApplyViewModel(dto);
@@ -394,12 +410,21 @@ public class ProjectOnlineApplyController {
 			return "请先登录";
 		}
 		apply.setApplicantId(user.getId());
-		if (apply.getSqlFile() == null && StringUtils.isBlank(apply.getSqlScript())) {
+		if (apply.getSqlFileId() == null && apply.getSqlFile() == null && StringUtils.isBlank(apply.getSqlScript())) {
 			return "sql脚本不能为空";
 		}
-		if (apply.getStartupScriptFile() == null && StringUtils.isBlank(apply.getStartupScript())) {
+		if (apply.getStartupScriptFileId() == null && apply.getStartupScriptFile() == null
+				&& StringUtils.isBlank(apply.getStartupScript())) {
 			return "启动脚本不能为空";
 		}
+		if (apply.getDependencySystemFileId() == null && apply.getDependencySystemFile() == null
+				&& StringUtils.isBlank(apply.getDependencySystem())) {
+			return "启动脚本不能为空";
+		}
+		// 清除文件id，不然后台逻辑会有问题
+		apply.setSqlFileId(null);
+		apply.setStartupScriptFileId(null);
+		apply.setDependencySystemFileId(null);
 		Pattern pattern = Pattern.compile(EMAIL_REGEX);
 		String[] emails = apply.getEmailAddress().split(";");
 		for (String str : emails) {

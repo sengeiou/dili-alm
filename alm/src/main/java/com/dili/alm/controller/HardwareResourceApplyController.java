@@ -1,9 +1,10 @@
 package com.dili.alm.controller;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.DataDictionaryValue;
@@ -25,7 +25,9 @@ import com.dili.alm.domain.HardwareResourceApplyState;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectOnlineApply;
 import com.dili.alm.domain.User;
-import com.dili.alm.domain.dto.HardwareConfigurationDto;
+import com.dili.alm.domain.dto.HardwareResourceApplyUpdateDto;
+import com.dili.alm.domain.dto.HardwareResourceRequirementDto;
+import com.dili.alm.exceptions.HardwareResourceApplyException;
 import com.dili.alm.rpc.DepartmentRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
@@ -189,19 +191,19 @@ public class HardwareResourceApplyController {
 		@ApiImplicitParam(name="HardwareResourceApply", paramType="form", value = "HardwareResourceApply的form信息", required = true, dataType = "string")
 	})
     @RequestMapping(value="/save", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput insert(HardwareResourceApply hardwareResourceApply,String[] serviceEnvironmentChk,String configurationRequirementJsonStr) {
-    	
-    	String serviceEnvironmentStr ="";
+    public @ResponseBody BaseOutput insert(HardwareResourceApplyUpdateDto hardwareResourceApply,String[] serviceEnvironmentChk,String configurationRequirementJsonStr) {
+    	Set<Long> serviceEnvironments = new HashSet<Long>();
     	for (int i = 0; i < serviceEnvironmentChk.length; i++) {
-    		serviceEnvironmentStr += serviceEnvironmentChk[i]+";";
+    		serviceEnvironments.add(Long.parseLong(serviceEnvironmentChk[i]));
 		}
-    	
-    	hardwareResourceApply.setServiceEnvironment(serviceEnvironmentStr);
-    	hardwareResourceApply.setCreated(new Date());
-    	hardwareResourceApply.setApplyState(HardwareResourceApplyState.APPLING.getValue());
-    	//hardwareResourceApply.setConfigurationRequirement(configurationRequirementJsonStr);
-        hardwareResourceApplyService.insertSelective(hardwareResourceApply);
-        
+    	hardwareResourceApply.setServiceEnvironments(serviceEnvironments);
+    	List<HardwareResourceRequirementDto> parseArray = JSONArray.parseArray(configurationRequirementJsonStr,HardwareResourceRequirementDto.class);
+    	hardwareResourceApply.setConfigurationRequirement(parseArray);
+     	try {
+			hardwareResourceApplyService.saveOrUpdate(hardwareResourceApply);
+		} catch (HardwareResourceApplyException e) {
+			return BaseOutput.failure("新增失败");
+		}
         return BaseOutput.success("新增成功");
     }
 
@@ -210,37 +212,22 @@ public class HardwareResourceApplyController {
 		@ApiImplicitParam(name="HardwareResourceApply", paramType="form", value = "HardwareResourceApply的form信息", required = true, dataType = "string")
 	})
     @RequestMapping(value="/update", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput update(HardwareResourceApply hardwareResourceApply,String[] serviceEnvironmentChk,List<HardwareConfigurationDto> configurationRequirementJsonStr) {
-        hardwareResourceApplyService.updateSelective(hardwareResourceApply);
-    	String serviceEnvironmentStr ="";
+    public @ResponseBody BaseOutput update(HardwareResourceApplyUpdateDto hardwareResourceApply,String[] serviceEnvironmentChk,String configurationRequirementJsonStr) {
+    	Set<Long> serviceEnvironments = new HashSet<Long>();
     	for (int i = 0; i < serviceEnvironmentChk.length; i++) {
-    		serviceEnvironmentStr += serviceEnvironmentChk[i]+";";
+    		serviceEnvironments.add(Long.parseLong(serviceEnvironmentChk[i]));
 		}
-    	hardwareResourceApply.setServiceEnvironment(serviceEnvironmentStr);
-    	//hardwareResourceApply.setConfigurationRequirement("123125465");
+    	hardwareResourceApply.setServiceEnvironments(serviceEnvironments);
+    	List<HardwareResourceRequirementDto> parseArray = JSONArray.parseArray(configurationRequirementJsonStr,HardwareResourceRequirementDto.class);
+    	hardwareResourceApply.setConfigurationRequirement(parseArray);
+   	    try {
+			hardwareResourceApplyService.saveOrUpdate(hardwareResourceApply);
+		} catch (HardwareResourceApplyException e) {
+			return BaseOutput.failure("修改失败");
+		}
         return BaseOutput.success("修改成功");
     }
-    @ApiOperation("删除HardwareResourceApply")
-    @ApiImplicitParams({
-		@ApiImplicitParam(name="id", paramType="form", value = "HardwareResourceApply的主键", required = true, dataType = "long")
-	})
-    @RequestMapping(value="/updateeeee", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput updateeeee(Long id) {
-        hardwareResourceApplyService.delete(id);
-        return BaseOutput.success("删除成功");
-    }
     
-    public static JSONArray ProLogList2Json(List<HardwareConfigurationDto> list){
-        JSONArray json = new JSONArray();
-        for(HardwareConfigurationDto pLog : list){
-            JSONObject jo = new JSONObject();
-            jo.put("CPU", pLog.getCPU());
-            jo.put("DDR", pLog.getDDR());
-             
-            json.add(jo);
-        }
-        return json;
-   }
     @ApiOperation("删除HardwareResourceApply")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="id", paramType="form", value = "HardwareResourceApply的主键", required = true, dataType = "long")

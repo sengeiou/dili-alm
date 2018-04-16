@@ -84,26 +84,23 @@
 					</tr>
 					<tr>
 					 <td class="table-combo" colspan="6">
-					    <table   class="easyui-datagrid" id="configGrid" >
+					     <table   class="easyui-datagrid" id="configGrid" >
 					    <thead>
 					  		<tr>
-								<th data-options="field:'CPU',width:'20%', align:'center'">
+								<th data-options="field:'cpuAmount',width:'20%', align:'center'">
 									CPU</th>
-								<th data-options="field:'DDR',width:'20%', align:'center'">内存</th>
+								<th data-options="field:'memoryAmount',width:'20%', align:'center'">内存(GB)</th>
 								<th
-									data-options="field:'disk',width:'13%', align:'center'">
-									磁盘</th>
+									data-options="field:'diskAmount',width:'13%', align:'center'">
+									磁盘(GB)</th>
 								<th
-									data-options="field:'IP',width:'10%', align:'center'">
-									IP地址</th>
-								<th
-									data-options="field:'mark',width:'15%', align:'center'">
+									data-options="field:'notes',width:'25%', align:'center'">
 									备注</th>
 								<th
 									data-options="field:'options',width:'15%', align:'center',formatter:optionFormatter">
 									操作</th>	
 				          </tr>
-					    </thead>
+					     </thead>
 					    </table>  
 						<a href="#" class="easyui-linkbutton" style="border:1px solid #ccc;"  onclick="javascript:$('#addConfig').dialog('open');">+</a>
                      </td>
@@ -119,7 +116,7 @@
 				</table>
 			</div>
 		</div>
-
+			<input type="hidden" value="${apply.applyState!}" id="applyState"/>
 	</form>
 	<div id="addConfig"    class="easyui-dialog" title="添加配置要求" style="padding:13px" closed="true"   data-options="
 				iconCls: 'icon-save',
@@ -138,12 +135,14 @@
 			">
 	<form name="configForm" id="configForm" method="post">
 	<table class="table-box table-box-mini" >
-	<tr><td class="table-title">CPU内核数</td><td><input class="easyui-textbox" name="CPU" id="CPU" /></td><td class="table-title">内存（GB）</td><td><input id="DDR" name="DDR" class="easyui-numberspinner" style="width:100%"
+	<tr><td class="table-title">CPU内核数</td><td><input id="cpuAmount" name="cpuAmount" required="required" class="easyui-numberspinner" style="width:100%"
+    required="required" data-options="min:1,editable:false"></td>
+    <td class="table-title">内存（GB）</td><td><input id="memoryAmount" name="memoryAmount" required="required" class="easyui-numberspinner" style="width:100%"
     required="required" data-options="min:1,editable:false"></td></tr>
-	<tr><td class="table-title">磁盘（GB）</td><td><input id="disk" name="disk" class="easyui-numberspinner" style="width:100%"
-    required="required" data-options="min:1,editable:false"></td><td class="table-title">IP地址</td><td><input class="easyui-textbox" name="IP"/></td></tr>
-	<tr><td class="table-title">备注</td><td><input class="easyui-textbox" name="mark" /></td><td><input type="hidden" name="updateSige" id="updateSige"/></td><td>&nbsp;</td></tr>
+	<tr><td class="table-title">磁盘（GB）</td><td><input id="diskAmount" name="diskAmount" class="easyui-numberspinner" style="width:100%"
+    required="required" data-options="min:1,editable:false"></td><td class="table-title">备注</td><td><input class="easyui-textbox" name="notes" required="required" /></td></tr>
 	</table>
+	<input type="hidden" name="updateSige" id="updateSige"/>
 	</form>
 	</div>
 </div>
@@ -159,24 +158,20 @@ function add(){
 
 	 var map = new Array();
 	$.each(formData, function (i, item) {
-		if(item.name=='CPU'){
-			var key='CPU';
+		if(item.name=='cpuAmount'){
+			var key='cpuAmount';
 			map[key]=item.value;
 		}
-		if(item.name=='IP'){
-			var key='IP';
+		if(item.name=='diskAmount'){
+			var key='diskAmount';
 			map[key]=item.value;
 		}
-		if(item.name=='disk'){
-			var key='disk';
+		if(item.name=='memoryAmount'){
+			var key='memoryAmount';
 			map[key]=item.value;
 		}
-		if(item.name=='DDR'){
-			var key='DDR';
-			map[key]=item.value;
-		}
-		if(item.name=='mark'){
-			var key='mark';
+		if(item.name=='notes'){
+			var key='notes';
 			map[key]=item.value;
 		}
  	});

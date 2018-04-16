@@ -1,21 +1,14 @@
 package com.dili.sysadmin.sdk.config;
 
-import com.dili.ss.util.SpringUtil;
+import java.io.IOException;
+import java.util.Properties;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
-import org.springframework.core.io.support.ResourcePropertySource;
 import org.springframework.web.context.support.StandardServletEnvironment;
-
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.util.Properties;
 
 /**
  * Created by asiamaster on 2017/7/4 0004.

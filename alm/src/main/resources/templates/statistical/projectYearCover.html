@@ -69,7 +69,14 @@
     <div region="center" style="width:100%;" height="auto">
         <!-- datagrid工具栏 -->
         <div id="toolbar" style="padding:2px 5px;">
-                <a href="#" class="easyui-linkbutton" iconCls="icon-export" onclick="doExport('grid')" plain="true"></a>
+                               <a href="#" class="easyui-linkbutton"
+                   style="width: 40px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="print()">
+                    打印
+                </a>
+                <a href="#" class="easyui-linkbutton"
+                   style="width: 80px;height: 24px; margin-right:3px;text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="doExport('grid')" plain="true" >
+                    导出EXCEL
+                </a>
                 <div class="show">查询时间：<span id="search_date">2018年01月01日 - 2018年3月21日</span></div>
         </div>
         <!-- =========================================================表格========================================================= -->

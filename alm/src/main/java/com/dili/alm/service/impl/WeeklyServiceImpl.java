@@ -298,7 +298,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		}
 		
 		weeklyPara.setId(Long.parseLong(pd.getProjectId()));
-		WorkDay nextWeeklyWorkDays = workDayService.getNextWeeklyWorkDays();
+		WorkDay nextWeeklyWorkDays = workDayService.getNextWorkDay(wkly.getStartDate());
 		weeklyPara.setStartDate(DateUtil.getDate(nextWeeklyWorkDays.getWorkStartTime())+" 00:00:00");
 		weeklyPara.setEndDate(DateUtil.getDate(nextWeeklyWorkDays.getWorkStartTime())+" 23:59:59");
 		
@@ -888,19 +888,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		// 项目周报
 		ProjectWeeklyDto pd = getProjectWeeklyDtoById(Long.parseLong(id));
 		pd.setId(id);
-		WeeklyPara weeklyPara = new WeeklyPara();
-		weeklyPara.setId(Long.parseLong(pd.getProjectId()));
-		
-		//weeklyPara.setStartDate(DateUtil.getFirstAndFive().get("one")+" 00:00:00");
-		
-		
-		WorkDay workDay = workDayService.getNowWeeklyWorkDay();
-		weeklyPara.setStartDate(DateUtil.getDate(workDay.getWorkStartTime())+" 00:00:00");
-		weeklyPara.setEndDate(DateUtil.getDate(workDay.getWorkEndTime())+" 23:59:59");
-		
-		
-		
-		
+		WeeklyPara weeklyPara = new WeeklyPara();	
 		Weekly wkly=weeklyMapper.selectByPrimaryKey(Long.parseLong(id));
 		weeklyPara.setId(Long.parseLong(pd.getProjectId()));
 		weeklyPara.setStartDate(DateUtil.getDateStr(wkly.getStartDate()));
@@ -950,7 +938,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		// 下周项目阶段
 		//weeklyPara.setStartDate(DateUtil.getNextMonday(new Date())+" 00:00:00");
 		//weeklyPara.setEndDate(DateUtil.getNextFive(new Date())+" 23:59:59");
-		WorkDay nextWeeklyWorkDays = workDayService.getNextWeeklyWorkDays();
+		WorkDay nextWeeklyWorkDays = workDayService.getNextWorkDay(wkly.getStartDate());
 		weeklyPara.setStartDate(DateUtil.getDate(nextWeeklyWorkDays.getWorkStartTime())+" 00:00:00");
 		weeklyPara.setEndDate(DateUtil.getDate(nextWeeklyWorkDays.getWorkEndTime())+" 23:59:59");
 		

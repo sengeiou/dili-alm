@@ -9,7 +9,6 @@ import com.dili.sysadmin.dao.UserRoleMapper;
 import com.dili.sysadmin.domain.DepartmentRole;
 import com.dili.sysadmin.domain.UserRole;
 import com.dili.sysadmin.service.DepartmentRoleService;
-import com.netflix.discovery.converters.Auto;
 
 import java.util.Arrays;
 import java.util.HashMap;

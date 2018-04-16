@@ -1,17 +1,13 @@
 package com.dili.alm.service;
 
 import java.io.OutputStream;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
-import javax.mail.MessagingException;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.domain.Project;
-import com.dili.alm.domain.dto.DataDictionaryValueDto;
-import com.dili.alm.domain.dto.ProjectProgressDto;
 import com.dili.alm.domain.dto.ProjectTypeCountDto;
 import com.dili.alm.domain.dto.ProjectYearCoverDto;
 import com.dili.alm.domain.dto.ProjectYearCoverForAllDto;
@@ -20,10 +16,6 @@ import com.dili.alm.domain.dto.SelectTaskHoursByUserProjectDto;
 import com.dili.alm.domain.dto.TaskByUsersDto;
 import com.dili.alm.domain.dto.TaskHoursByProjectDto;
 import com.dili.alm.domain.dto.TaskStateCountDto;
-import com.dili.alm.domain.dto.UploadProjectFileDto;
-import com.dili.alm.exceptions.ProjectException;
-import com.dili.ss.base.BaseService;
-import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 
 public interface StatisticalService {
@@ -39,7 +31,7 @@ public interface StatisticalService {
 	
 	List<TaskHoursByProjectDto> listProjectHours(String startTime,String endTime,List<Long> projectId);
 	 
-	List<SelectTaskHoursByUserDto> listUserHours(String startTime,String endTime, List<Long> projectIds);
+	List<SelectTaskHoursByUserDto> listUserHours(String startTime,String endTime, List<Long> projectIds) throws ParseException;
 	
 	List<ProjectYearCoverDto> listProjectYearCover(String startTime,String endTime);
 	
@@ -47,7 +39,11 @@ public interface StatisticalService {
 	
 	SelectTaskHoursByUserDto selectTotalTaskAndOverHours(List<Long> projectIds);
 	
+	List<SelectTaskHoursByUserProjectDto>  selectTotalTaskAndOverHoursForEchars(List<Long> projectIds);
+	
 	ProjectYearCoverForAllDto getProjectYearsCoverForAll(String year,String month);
+	
+	HSSFWorkbook downloadProjectHours(OutputStream os, String startTime,String endTime, List<Long> projectIds) throws Exception;
 	/***查询工时相关services****by******JING***END****/
 
 	List<TaskStateCountDto> getProjectToTaskCount(String startTime,
@@ -75,5 +71,5 @@ public interface StatisticalService {
 	List<Map<String, Object>> getHomeProjectTask(Long userId,
 			List<Long> projectId);
 
-
+	
 }

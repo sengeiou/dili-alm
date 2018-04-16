@@ -92,11 +92,7 @@ import tk.mybatis.mapper.entity.Example;
 public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnlineApply, Long>
 		implements ProjectOnlineApplyService {
 
-	private static final String DEPARTMENT_MANAGER_ROLE_CONFIG_CODE = "department_manager_role_config";
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProjectOnlineApplyServiceImpl.class);
-	private static final String OPERATION_MANAGER_CODE = "operation_manager";
-	private static final String TEST_MANAGER_CODE = "test_manager";
 
 	@Autowired
 	private ProjectOnlineApplyMarketMapper applyMarketMapper;
@@ -151,11 +147,15 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		metadata.put("developmentManagerId", memberProvider);
 		metadata.put("applicantId", memberProvider);
 
+		JSONObject dateProvider = new JSONObject();
+		dateProvider.put("provider", "almDateProvider");
+		metadata.put("onlineDate", dateProvider);
+		metadata.put("actualOnlineDate", dateProvider);
+		metadata.put("submitTime", dateProvider);
+
 		JSONObject datetimeProvider = new JSONObject();
-		datetimeProvider.put("provider", "almDateProvider");
-		metadata.put("onlineDate", datetimeProvider);
-		metadata.put("actualOnlineDate", datetimeProvider);
-		metadata.put("submitTime", datetimeProvider);
+		datetimeProvider.put("provider", "datetimeProvider");
+		metadata.put("created", datetimeProvider);
 
 		JSONObject applyStateProvider = new JSONObject();
 		applyStateProvider.put("provider", "projectOnlineApplyStateProvider");
@@ -966,7 +966,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		if (user == null) {
 			throw new IllegalArgumentException("用户未登录");
 		}
-		DataDictionaryDto ddDto = this.ddService.findByCode(DEPARTMENT_MANAGER_ROLE_CONFIG_CODE);
+		DataDictionaryDto ddDto = this.ddService.findByCode(AlmConstants.DEPARTMENT_MANAGER_ROLE_CONFIG_CODE);
 		// 判断界面上用户是否可以编辑申请记录
 		// 判断当前申请状态是否是申请中状态
 		boolean editable = apply.getApplyState().equals(ProjectOnlineApplyState.APPLING.getValue());
@@ -988,7 +988,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		boolean testConfirmable = apply.getApplyState().equals(ProjectOnlineApplyState.TESTER_CONFIRMING.getValue());
 		// 判断当前登录用户是否是测试负责人
 		DataDictionaryValueDto ddValueDto = ddDto.getValues().stream()
-				.filter(v -> v.getCode().equals(TEST_MANAGER_CODE)).findFirst().orElse(null);
+				.filter(v -> v.getCode().equals(AlmConstants.TEST_MANAGER_CODE)).findFirst().orElse(null);
 		testConfirmable = !testConfirmable ? testConfirmable
 				: ddValueDto != null && user.getUserName().equals(ddValueDto.getValue());
 		apply.aset("testConfirmable", testConfirmable);
@@ -1001,8 +1001,8 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			startExecutable = false;
 		}
 		// 判断当前登录用户是否是运维负责人
-		ddValueDto = ddDto.getValues().stream().filter(v -> v.getCode().equals(OPERATION_MANAGER_CODE)).findFirst()
-				.orElse(null);
+		ddValueDto = ddDto.getValues().stream().filter(v -> v.getCode().equals(AlmConstants.OPERATION_MANAGER_CODE))
+				.findFirst().orElse(null);
 		startExecutable = !startExecutable ? startExecutable
 				: ddValueDto != null && user.getUserName().equals(ddValueDto.getValue());
 		apply.aset("startExecutable", startExecutable);
@@ -1031,5 +1031,10 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		// 判断当前登录用户是否是当前项目的产品经理
 		verifiable = !verifiable ? verifiable : apply.getProductManagerId().equals(user.getId());
 		apply.aset("verifiable", verifiable);
+	}
+
+	@Override
+	public ProjectOnlineApply getDetailViewData(Long id) throws ProjectOnlineApplyException {
+		return this.getFlowViewData(id);
 	}
 }

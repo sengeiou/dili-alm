@@ -37,6 +37,8 @@ import cn.afterturn.easypoi.util.PoiPublicUtil;
 import com.dili.alm.dao.WorkDayMapper;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.WorkDay;
+import com.dili.alm.domain.dto.WorkDayRoleDto;
+import com.dili.alm.rpc.ResourceRpc;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.WorkDayService;
 import com.dili.alm.utils.DateUtil;
@@ -51,7 +53,9 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
         return (WorkDayMapper)getDao();
     }
 	static final String MILESTONES_PATH_PREFIX = "fileupload";
-	
+	@Autowired
+	private ResourceRpc resourceRpc;
+	private static final String SET_WORK_DAY="setWorkDay";
 		/**
 		 * 得到下周工作时间
 		 */
@@ -86,6 +90,9 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 		@Override
 		public WorkDay getNowWeeklyWorkDay() {
 			WorkDay workDayNowDate = this.getActualDao().getWorkDayNowDate(DateUtil.getDate(new Date()));	
+			if(workDayNowDate==null){
+				return null;
+			}
 			WorkDay maxWeekWorkDay = this.getActualDao().getMaxOrMinWeekWorkDay(1, workDayNowDate.getWorkDayYear());
 			if(maxWeekWorkDay.getId()==workDayNowDate.getId()){
 				String workDayYear = workDayNowDate.getWorkDayYear();
@@ -258,5 +265,41 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 			}
 			return nextWork;	
 			
+		}
+		@Override
+		public WorkDayRoleDto showWorkDay(Long userId) {
+			
+			
+			WorkDay workDayNowDate = this.getActualDao().getWorkDayNowDate(DateUtil.getDate(new Date()));
+			
+		
+			if(workDayNowDate==null){
+				return null;
+			}
+			WorkDay maxWeekWorkDay = this.getActualDao().getMaxOrMinWeekWorkDay(1, workDayNowDate.getWorkDayYear());
+			if(maxWeekWorkDay.getId()==workDayNowDate.getId()){
+				String workDayYear = workDayNowDate.getWorkDayYear();
+				int newYear = Integer.parseInt(workDayYear)+1;
+				WorkDay minWeekWorkDay = this.getActualDao().getMaxOrMinWeekWorkDay(0,String.valueOf(newYear));
+				int oldWorkDaysByMillisecond = DateUtil.differentDaysByMillisecond(workDayNowDate.getWorkStartTime(),workDayNowDate.getWorkEndTime());
+				int newWorkDaysByMillisecond = DateUtil.differentDaysByMillisecond( minWeekWorkDay.getWorkStartTime(),minWeekWorkDay.getWorkEndTime());
+				if(oldWorkDaysByMillisecond<=2&&newWorkDaysByMillisecond<=2){
+					workDayNowDate.setWorkStartTime(workDayNowDate.getWorkStartTime());
+					workDayNowDate.setWorkEndTime(minWeekWorkDay.getWorkEndTime());
+				}
+				
+			}
+			WorkDayRoleDto workDayRoleDto=new WorkDayRoleDto();
+			workDayRoleDto.setId(workDayNowDate.getId());
+			workDayRoleDto.setWorkDayYear(workDayNowDate.getWorkDayYear());
+			workDayRoleDto.setWordDayWeek(workDayNowDate.getWordDayWeek());
+			workDayRoleDto.setWorkStartTime(workDayNowDate.getWorkStartTime());
+			workDayRoleDto.setWorkEndTime(workDayNowDate.getWorkEndTime());
+			workDayRoleDto.setIsRole(0);
+			List<String> data = resourceRpc.listResourceCodeByUserId(userId).getData();
+			if(data.contains(SET_WORK_DAY)){
+				workDayRoleDto.setIsRole(1);
+			}
+			return workDayRoleDto;
 		}
 }

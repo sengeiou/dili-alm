@@ -95,7 +95,7 @@
                             <td>
                                 <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
                                    onclick="queryGrid()">查询</a>
-                                <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload" onclick="clearForm()">重置</a>
+                                <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload" onclick="clearadd()">重置</a>
                                   
                             </td>
                         </tr>
@@ -342,11 +342,11 @@
         
         function formatOper(val,row,index){  
         	//alert(row.serialNumber);
-        	var out='<a href="${contextPath}/weekly/getDescById?id='+row.id+'">周报预览</a>  ';
+        	var out;
         	if(isWeekSubmit(row.id)){
-        		out=out+'<a href="${contextPath}/weekly/download?id='+row.id+'">下载</a>';
+        		out='<a href="${contextPath}/weekly/getDescById?id='+row.id+'">周报预览 </a><a href="${contextPath}/weekly/download?id='+row.id+'">下载</a>';
         	}else{
-        		out=out+'<span style="padding:5px;color:#8B8B7A;text-decoration:underline;">下载</span>'
+        		out='<span style="padding:5px;color:#8B8B7A;text-decoration:underline;">周报预览 </span><span style="padding:5px;color:#8B8B7A;text-decoration:underline;">下载</span>'
         	}
             return out;  
         }

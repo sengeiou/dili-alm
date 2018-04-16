@@ -1,11 +1,31 @@
 var paramCount = '${subsystemCount!0}';
 paramCount = parseInt(paramCount);
 
+function serialNumberFormatter(value, row, index) {
+	return '<a href="javascript:void(0);" onclick="detail(' + row.id + ');">' + value + "</a>";
+}
+
+function detail(id) {
+	$('#win').dialog({
+				title : '上线申请详情',
+				width : 800,
+				height : 600,
+				href : '${contextPath!}/projectOnlineApply/detail?id=' + id,
+				modal : true,
+				buttons : [{
+							text : '返回',
+							handler : function() {
+								$('#win').dialog('close');
+							}
+						}]
+			});
+}
+
 function optFormatter(value, row, index) {
 	var content = '';
 	if (row.editable) {
-		content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="openUpdate(' + row.id + ');">编辑</a>';
-		content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="del(' + row.id + ');">删除</a>';
+		content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="openUpdate(' + index + ',' + row.id + ');">编辑</a>';
+		content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="del(' + row.id + ',' + index + ');">删除</a>';
 	} else if (row.$_applyState == 1) {
 		content += '<span style="padding:0px 2px;">编辑</span>';
 		content += '<span style="padding:0px 2px;">删除</span>';
@@ -601,8 +621,8 @@ function openInsert() {
 }
 
 // 打开修改窗口
-function openUpdate(id) {
-	var selected = $('#grid').datagrid('getSelected');
+function openUpdate(index, id) {
+	var selected = $('#grid').datagrid('getRows')[index];
 	if (!selected) {
 		$.messager.alert('提示', '请选择一条记录');
 		return;
@@ -627,15 +647,15 @@ function openUpdate(id) {
 												if (!$(this).form('validate')) {
 													return false;
 												}
-												if (!$('input[name=sqlScript]').val() && !$('input[name=sqlFile]').val()) {
+												if (!$('input[name=sqlFileId]').val() && !$('input[name=sqlScript]').val() && !$('input[name=sqlFile]').val()) {
 													$.messager.alert('错误', 'sql脚本不能为空');
 													return false;
 												}
-												if (!$('input[name=startupScript]').val() && !$('input[name=startupScriptFile]').val()) {
+												if (!$('input[name=startupScriptFileId]').val() && !$('input[name=startupScript]').val() && !$('input[name=startupScriptFile]').val()) {
 													$.messager.alert('错误', '启动脚本不能为空');
 													return false;
 												}
-												if (!$('input[name=dependencySystem]').val() && !$('input[name=dependencySystemFile]').val()) {
+												if (!$('input[name=dependencySystemFileId]').val() && !$('input[name=dependencySystem]').val() && !$('input[name=dependencySystemFile]').val()) {
 													$.messager.alert('错误', '依赖系统不能为空');
 													return false;
 												}
@@ -654,7 +674,7 @@ function openUpdate(id) {
 													// e);
 													// }
 													$('#grid').datagrid('updateRow', {
-																index : $('#grid').datagrid('getRowIndex', selected),
+																index : index,
 																row : obj.data
 															});
 													$('#grid').datagrid('acceptChanges');
@@ -756,7 +776,10 @@ function saveOrUpdate() {
 }
 
 // 根据主键删除
-function del(id) {
+function del(id, index) {
+	if (index != undefined) {
+		$('#grid').datagrid('selectRow', index);
+	}
 	var selected = $("#grid").datagrid("getSelected");
 	if (null == selected) {
 		$.messager.alert('警告', '请选中一条数据');
@@ -807,6 +830,7 @@ function queryGrid() {
 // 清空表单
 function clearForm() {
 	$('#form').form('clear');
+	$('#applicantId').textbox('initValue', '');
 }
 
 // 表格表头右键菜单
@@ -851,11 +875,7 @@ function getKey(e) {
  * @submitFun 表单提交需执行的任务
  */
 $(function() {
-			// $('#applicantId').textbox('addClearBtn', 'icon-clear');
-			bindFormEvent("form", "projectName", queryGrid);
-			bindFormEvent("_form", "_projectName", saveOrUpdate, function() {
-						$('#dlg').dialog('close');
-					});
+			$('#applicantId').textbox('addClearBtn', 'icon-clear');
 			if (document.addEventListener) {
 				document.addEventListener("keyup", getKey, false);
 			} else if (document.attachEvent) {

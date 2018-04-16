@@ -1,7 +1,17 @@
 
 <#body>
 <div id="win" style="display: none;"></div>
+<div id="win-button" style="display: none;"> 
+    <a href="#" class="easyui-linkbutton" onclick="updateForms()">保存</a>
+	<a href="#" class="easyui-linkbutton" onclick="javascript:$('#win').dialog('close');">关闭</a>
+	<a href="#" class="easyui-linkbutton" onclick="submitApply()">提交</a>
+</div>
+<div id="win-button2" style="display: none;"> 
+    <a href="#" class="easyui-linkbutton" onclick="apply()">审批通过</a>
+	<a href="#" class="easyui-linkbutton" onclick="javascript:$('#win').dialog('close');">关闭</a>
+</div>
 <div id="smDialog" style="display: none;height:auto;"></div>
+
 <div class="easyui-layout" fit="true">
 
 	<!-- ====================================================================================================================== -->

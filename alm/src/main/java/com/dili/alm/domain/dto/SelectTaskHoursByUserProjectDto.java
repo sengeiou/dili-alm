@@ -12,8 +12,16 @@ public class SelectTaskHoursByUserProjectDto {
     int sumUPTaskHours;
     int sumUPOverHours;
     
+    String projectName;
+    
     
 
+	public String getProjectName() {
+		return projectName;
+	}
+	public void setProjectName(String projectName) {
+		this.projectName = projectName;
+	}
 	public Long getOwnerId() {
 		return ownerId;
 	}

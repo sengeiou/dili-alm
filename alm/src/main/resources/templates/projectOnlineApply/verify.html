@@ -1,33 +1,31 @@
 <style>
-    .table-box {
-        width: 100%;
-        text-align: center;
-        margin-bottom: 10px;
-    }
+.table-box {
+	width: 100%;
+	text-align: center;
+	margin-bottom: 10px;
+}
 
-    .table-box,
-    .table-box tr td {
-        border: 1px solid #ddd;
-        border-collapse: collapse;
-    }
+.table-box, .table-box tr td {
+	border: 1px solid #ddd;
+	border-collapse: collapse;
+}
 
-    .table-box tr td {
-        /*display: block;*/
-        box-sizing: border-box;
-        /*width: 16.6% !important;*/
-        padding: 5px;
-    }
+.table-box tr td {
+	/*display: block;*/
+	box-sizing: border-box;
+	/*width: 16.6% !important;*/
+	padding: 5px;
+}
 
-    .table-box .table-title {
-        background-color: #f5f5f5;
-        font-weight: bold;
-    }
+.table-box .table-title {
+	background-color: #f5f5f5;
+	font-weight: bold;
+}
 
-    .table-combo .textbox,
-    .table-combo .filebox {
-        border: none;
-        border-radius: 0;
-    }
+.table-combo .textbox, .table-combo .filebox {
+	border: none;
+	border-radius: 0;
+}
 </style>
 <div class="easyui-panel" style="width: 100%;" title="验证">
 	<form id="editForm" action="" method="post" enctype="multipart/form-data">
@@ -39,7 +37,7 @@
 						<td style="width: 16.6%;" class="table-title">项目名称</td>
 						<td style="width: 16.6%;" class="table-combo" style="padding: 0">${apply.projectName!}</td>
 						<td style="width: 16.6%;" class="table-title">项目编号</td>
-						<td style="width: 16.6%;" >${apply.projectSerialNumber!}</td>
+						<td style="width: 16.6%;">${apply.projectSerialNumber!}</td>
 						<td style="width: 16.6%;" class="table-title">版本</td>
 						<td style="width: 16.6%;" class="table-combo" style="padding: 0">${apply.version!}</td>
 					</tr>
@@ -61,7 +59,8 @@
 					</tr>
 					<tr>
 						<td class="table-title">上线市场</td>
-						<td colspan="5"><%if(apply.marketVersion){%><%for(item in markets){if(itemLP.last){%>${item.code!}<%}else{%>${item.code!}<%}}}%></td>
+						<td colspan="5"><%if(apply.marketVersion){%><%for(item in
+							apply.markets){if(itemLP.last){%>${item.code!}<%}else{%>${item.code!}<%}}}%></td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="6">上线系统及依赖关系描述</td>
@@ -82,7 +81,7 @@
 					</tr>
 					<%for(item in apply.subsystems){%>
 					<tr class="subsystem">
-						<td class="table-title" colspan="2" >系统名称</td>
+						<td class="table-title" colspan="2">系统名称</td>
 						<td class="table-combo" colspan="2" style="padding: 0">${item.projectName!}</td>
 						<td class="table-title">负责人</td>
 						<td class="table-combo" style="padding: 0">${item.managerName!}</td>
@@ -130,9 +129,14 @@
 					<%}%>
 					<tr>
 						<td class="table-title" colspan="2">描述</td>
-						<td colspan="4">
-                            <input style="width: 96%;"class="easyui-textbox" name="description" data-options="validType:['length[0,20]']">
-                        </td>
+						<td colspan="4"><input style="width: 96%;" class="easyui-textbox" name="description" data-options="validType:['length[0,500]']">
+						</td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="2">申请人</td>
+						<td>${apply.applicantId!}</td>
+						<td class="table-title">创建时间</td>
+						<td class="table-title" colspan="2">${apply.created!}</td>
 					</tr>
 				</table>
 			</div>

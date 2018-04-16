@@ -17,6 +17,15 @@ public class AlmConstants {
 	public static final String ENVIRONMENT_CODE = "environment";
 	public static final String REGIONAL_CODE = "regional";
 
+	// 部门经理数据字典配置编码
+	public static final String DEPARTMENT_MANAGER_ROLE_CONFIG_CODE = "department_manager_role_config";
+	// 研发中心总经理数据字典编码
+	public static final String GENERAL_LEADER_CODE = "general_leader";
+	// 运维部部门经理数据字典编码
+	public static final String OPERATION_MANAGER_CODE = "operation_manager";
+	// 测试部部门经理数据字典编码
+	public static final String TEST_MANAGER_CODE = "test_manager";
+
 	// 团队成员状态: 加入/离开
 	public enum MemberState {
 		LEAVE(0), JOIN(1);

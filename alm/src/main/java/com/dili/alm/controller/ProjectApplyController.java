@@ -60,13 +60,13 @@ public class ProjectApplyController {
 
 
     @ApiOperation("跳转到ProjectApply页面")
-    @RequestMapping(value = "/index", method = RequestMethod.GET)
+    @RequestMapping(value = "/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
         modelMap.put("sessionID", SessionContext.getSessionContext().getUserTicket().getId());
         return "projectApply/index";
     }
 
-    @RequestMapping(value = "/add", method = RequestMethod.GET)
+    @RequestMapping(value = "/add.html", method = RequestMethod.GET)
     public String add() {
         return "projectApply/add";
     }
