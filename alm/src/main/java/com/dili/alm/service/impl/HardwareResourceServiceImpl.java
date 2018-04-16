@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.ibatis.javassist.expr.NewArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -109,6 +110,34 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 	
 	@Override
 	public EasyuiPageOutput listEasyuiPageByExample(HardwareResource domain,List<Long> projectIds, boolean useProvider) throws Exception {
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		Long owner=null;
+	
+		if (user == null) {
+			throw new RuntimeException("未登录");
+		}
+		//获取维护人
+		if(domain.getMaintenanceOwner()==null){
+			domain.setMaintenanceOwner(user.getId());
+		}else{
+			if(domain.getMaintenanceOwner().longValue()!=user.getId().longValue()){
+				owner=user.getId();
+			}
+		}
+		//判断项目权限
+		if(domain.getProjectId()!=null){	
+			if(owner!=null){
+				if(!projectIds.contains(domain.getProjectId())){
+					List<HardwareResource> nullList= new ArrayList<HardwareResource>();
+					return new EasyuiPageOutput(0, nullList);
+				}	
+			}else{
+				if(projectIds.contains(domain.getProjectId())){
+					domain.setMaintenanceOwner(null);
+				}	
+			}
+			
+		}
 		
 		String sort = domain.getSort();
 		if(WebUtil.strIsEmpty(sort)){
@@ -119,11 +148,16 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 			domain.setSort("project_id");
 		}else if(sort.equals("maintenanceDate")){
 			domain.setSort("maintenance_date");
+		}else if(sort.equals("lastModifyDate")){
+			domain.setSort("last_modify_date");
 		}
-		List<HardwareResource> list = this.hardwareResourceMapper.selectByIds(domain,projectIds);
-		int total = this.hardwareResourceMapper.selectByIdsCounts(domain,projectIds);
+		List<HardwareResource> list = this.hardwareResourceMapper.selectByIds(domain,owner,projectIds);
+		int total = this.hardwareResourceMapper.selectByIdsCounts(domain,owner,projectIds);
 		List results = null;
 		results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, list) : list;
+		
+		
+		
 		return new EasyuiPageOutput(Integer.parseInt(String.valueOf(total)), results);
 	}
 
@@ -134,7 +168,7 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 			throw new RuntimeException("未登录");
 		}
 		HardwareResource selectByPrimaryKey = this.hardwareResourceMapper.selectByPrimaryKey(id);
-		if(selectByPrimaryKey.getMaintenanceOwner()==user.getId()){
+		if(selectByPrimaryKey.getMaintenanceOwner().longValue()==user.getId().longValue()){
 			return true;
 			
 		}
@@ -181,6 +215,11 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 			return null;
 		}
 		return dto.getValues();
+	}
+
+	@Override
+	public Project projectNumById(String id) {
+		return projectMapper.selectByPrimaryKey(Long.parseLong(id));
 	}
 
 
