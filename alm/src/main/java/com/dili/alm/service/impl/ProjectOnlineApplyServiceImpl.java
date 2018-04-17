@@ -2,6 +2,7 @@ package com.dili.alm.service.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -85,6 +86,7 @@ import tk.mybatis.mapper.entity.Example;
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2018-03-13 15:31:10.
  */
+@Transactional(rollbackFor = ApplicationException.class, propagation = Propagation.REQUIRED)
 @Service
 public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnlineApply, Long>
 		implements ProjectOnlineApplyService {
@@ -183,7 +185,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		try {
 			Resource res = new ClassPathResource("conf/projectOlineApplyMailContentTemplate.html");
 			in = res.getInputStream();
-			this.contentTemplate = IOUtils.toString(in);
+			this.contentTemplate = IOUtils.toString(in, "UTF-8");
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} finally {
@@ -705,6 +707,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 
 		// 查询出项目信息
 		Project project = this.projectMapper.selectByPrimaryKey(apply.getProjectId());
+		apply.setSerialNumber(old.getSerialNumber());
 		apply.setProjectName(project.getName());
 		apply.setBusinessOwnerId(project.getBusinessOwner());
 		apply.setProjectManagerId(project.getProjectManager());
@@ -816,7 +819,6 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		});
 	}
 
-	@Transactional(propagation = Propagation.REQUIRED)
 	@Override
 	public void verify(Long applyId, Long verifierId, OperationResult result, String description)
 			throws ProjectOnlineApplyException {

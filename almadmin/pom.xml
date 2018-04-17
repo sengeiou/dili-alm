@@ -40,37 +40,22 @@
 	</build>
 
 	<dependencies>
-	
-		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-collections4</artifactId>
-			<version>4.1</version>
-		</dependency>
+
 		<!-- 内部包 -->
 		<dependency>
 			<groupId>com.dili</groupId>
 			<artifactId>almadmin-sdk</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
 		<!-- 利刃框架引入 -->
 		<dependency>
 			<groupId>com.dili</groupId>
 			<artifactId>sharp-sword</artifactId>
 			<version>${sharp-sword.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.6</version>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/commons-lang/commons-lang -->
-		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>2.6</version>
 		</dependency>
 
 		<dependency>
@@ -95,7 +80,7 @@
 			<artifactId>swagger-annotations</artifactId>
 			<version>1.5.3</version>
 		</dependency>
-	
+
 		<!-- mariadb -->
 		<!--<dependency> -->
 		<!--<groupId>org.mariadb.jdbc</groupId> -->
@@ -103,12 +88,6 @@
 		<!--<version>1.1.7</version> -->
 		<!--</dependency> -->
 
-		<!-- druid -->
-		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>druid</artifactId>
-			<version>1.0.27</version>
-		</dependency>
 		<!-- jedis -->
 		<dependency>
 			<groupId>redis.clients</groupId>
@@ -125,7 +104,6 @@
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
 			<artifactId>quartz</artifactId>
-			<version>2.2.1</version>
 		</dependency>
 
 
@@ -148,21 +126,12 @@
 			<artifactId>spring-boot-starter-redis</artifactId>
 			<version>1.4.7.RELEASE</version>
 		</dependency>
-		<!-- actuator -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
 		<!-- starter-web -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-freemarker</artifactId>
-		</dependency>
 
 		<!-- starter-security -->
 		<!--<dependency> -->
