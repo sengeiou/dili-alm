@@ -33,6 +33,7 @@ import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectOnlineApply;
 import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.dto.DataDictionaryDto;
+import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectOnlineApplyUpdateDto;
 import com.dili.alm.domain.dto.ProjectOnlineSubsystemDto;
 import com.dili.alm.exceptions.ProjectOnlineApplyException;
@@ -250,6 +251,8 @@ public class ProjectOnlineApplyController {
 	@ApiOperation("跳转到ProjectOnlineApply页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		modelMap.addAttribute("user", user);
 		return "projectOnlineApply/index";
 	}
 
