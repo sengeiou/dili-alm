@@ -238,10 +238,10 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		map.put("pd", pd);
 		
 		Weekly wkly=weeklyMapper.selectByPrimaryKey(Long.parseLong(id));
-		WeeklyPara weeklyPara=  new WeeklyPara();
+/*		WeeklyPara weeklyPara=  new WeeklyPara();
 		weeklyPara.setId(Long.parseLong(pd.getProjectId()));
 		weeklyPara.setStartDate(DateUtil.getDateStr(wkly.getStartDate()));
-		weeklyPara.setEndDate(DateUtil.getDateStr(wkly.getEndDate()));
+		weeklyPara.setEndDate(DateUtil.getDateStr(wkly.getEndDate()));*/
 		if(wkly.getProgress()!=null){
 			pd.setCompletedProgressInt(Integer.parseInt(wkly.getProgress()));
 		}else{
@@ -279,7 +279,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		map.put("pp", StringUtils.join(listPhase.toArray(),","));
 				
 		map.put("td", td);	
-		weeklyPara.setId(Long.parseLong(id));
+
 		//当前重要风险
 		String weeklyRist=wkly.getRisk();
 		if(weeklyRist!=null){
@@ -297,11 +297,11 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			 map.put("wq", null);
 		}
 		
-		weeklyPara.setId(Long.parseLong(pd.getProjectId()));
+/*		weeklyPara.setId(Long.parseLong(pd.getProjectId()));
 		WorkDay nextWeeklyWorkDays = workDayService.getNextWorkDay(wkly.getStartDate());
 		weeklyPara.setStartDate(DateUtil.getDate(nextWeeklyWorkDays.getWorkStartTime())+" 00:00:00");
 		weeklyPara.setEndDate(DateUtil.getDate(nextWeeklyWorkDays.getWorkStartTime())+" 23:59:59");
-		
+		*/
 		//下周工作计划
 		JSONArray  wkJson=JSON.parseArray(wkly.getNextWeek());
 		List<NextWeeklyDto> wk=new ArrayList<NextWeeklyDto>();
@@ -888,11 +888,11 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		// 项目周报
 		ProjectWeeklyDto pd = getProjectWeeklyDtoById(Long.parseLong(id));
 		pd.setId(id);
-		WeeklyPara weeklyPara = new WeeklyPara();	
+	/*	WeeklyPara weeklyPara = new WeeklyPara();	*/
 		Weekly wkly=weeklyMapper.selectByPrimaryKey(Long.parseLong(id));
-		weeklyPara.setId(Long.parseLong(pd.getProjectId()));
+/*		weeklyPara.setId(Long.parseLong(pd.getProjectId()));
 		weeklyPara.setStartDate(DateUtil.getDateStr(wkly.getStartDate()));
-		weeklyPara.setEndDate(DateUtil.getDateStr(wkly.getEndDate()));
+		weeklyPara.setEndDate(DateUtil.getDateStr(wkly.getEndDate()));*/
 		
 		pd.setCompletedProgress(wkly.getProgress());
 		// 本周进展情况
@@ -934,13 +934,13 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		String   weeklyQuestion=wkly.getQuestion();
 		JSONArray weeklyQuestionJson = JSON.parseArray(weeklyQuestion);
 	
-		weeklyPara.setId(Long.parseLong(pd.getProjectId()));
+//		weeklyPara.setId(Long.parseLong(pd.getProjectId()));
 		// 下周项目阶段
 		//weeklyPara.setStartDate(DateUtil.getNextMonday(new Date())+" 00:00:00");
 		//weeklyPara.setEndDate(DateUtil.getNextFive(new Date())+" 23:59:59");
-		WorkDay nextWeeklyWorkDays = workDayService.getNextWorkDay(wkly.getStartDate());
+/*		WorkDay nextWeeklyWorkDays = workDayService.getNextWorkDay(wkly.getStartDate());
 		weeklyPara.setStartDate(DateUtil.getDate(nextWeeklyWorkDays.getWorkStartTime())+" 00:00:00");
-		weeklyPara.setEndDate(DateUtil.getDate(nextWeeklyWorkDays.getWorkEndTime())+" 23:59:59");
+		weeklyPara.setEndDate(DateUtil.getDate(nextWeeklyWorkDays.getWorkEndTime())+" 23:59:59");*/
 		
 		// 下周工作计划
 		JSONArray  wkJson=JSON.parseArray(wkly.getNextWeek());
