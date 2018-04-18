@@ -4,18 +4,33 @@ function deptMemberFormatter(value, row, index) {
 
 function opptFormatter(value, row, index) {
     var returnStr = "";
-    if(row.applyState=="申请中"){
-      returnStr = "<span><a href='javascr:void(0)' onclick='openUpdate("+row.id+")'>编辑</a>&nbsp;<a href='javascr:void(0)' onclick='del("+row.id+")'>删除</a></span>"
-    }else{
-        returnStr = "<span><a href='javascr:void(0)' onclick='openUpdate("+row.id+")'>审批</a></span>"
-    }
+    if(row.approving){                       returnStr = "<span><a href='javascr:void(0)' onclick='openUpdate("+row.id+")'>编辑</a>&nbsp;<a href='javascr:void(0)' onclick='del("+row.id+")'>删除</a></span>";}
+    else if(row.$_applyState=="1"){      returnStr = "<span> 编辑 &nbsp; 删除 </span>";}
+    
+    
+    if(row.projectManagerApprov){      returnStr = "<span><a href='javascr:void(0)' onclick='openApove("+row.id+")'>审批</a></span>";}
+    else if(row.$_applyState=="2"){      returnStr = "<span> 审批  </span>";}
+    
+    if(row.generalManagerAppov){      returnStr = "<span><a href='javascr:void(0)' onclick='openApove("+row.id+")'>审批</a></span>";}
+    else if(row.$_applyState=="3"){      returnStr = "<span> 审批  </span>";}
+    
+    if(row.operactionManagerAppov){      returnStr = "<span><a href='javascr:void(0)' onclick='openApove("+row.id+")'>分配实施</a></span>";}
+    else if(row.$_applyState=="4"){      returnStr = "<span> 分配实施  </span>";}
+    
+    if(row.implementing){      returnStr = "<span><a href='javascr:void(0)' onclick='implement("+row.id+")'>实施</a></span>";}
+    else if(row.$_applyState=="5"){      returnStr = "<span> 实施  </span>";}
+    
+    if(row.readOnly){      returnStr = "<span><a href='javascr:void(0)' onclick='readApply("+row.id+")'>查看</a></span>";}
+    else if(row.$_applyState=="6"){      returnStr = "<span> 查看  </span>";}
+    else if(row.$_applyState=="-1"){     returnStr = "<span> 查看  </span>";}
+ 
 	return returnStr;
 }
 
 function envFormatter(v, r, i) {
 	var content = '';
 	$(v).each(function(index, item) {
-				content += item.environment + ',';
+				content += item + ',';
 			});
 	content = content ? content.substring(0, content.length - 1) : '';
 	return content;
@@ -132,26 +147,94 @@ function openUpdate(id) {
                 break;    
           } 
     }
-   
-	$('#win').dialog({
-				title : '资源申请详情',
-				width : 830,
-				height : 500,
-				href : '${contextPath!}/hardwareResourceApply/toUpdate?id='+id,
-				modal : true  
-			});
-			loadButtons(selected);
-			
+
+
+ 						 $('#win').dialog({
+								title : '资源申请详情',
+								width : 830,
+								height : 500,
+								href : '${contextPath!}/hardwareResourceApply/toUpdate?id='+selected.id,
+								modal : true,
+								buttons :'#win-button1'  
+							});
+          
 }
 
-function loadButtons(obj){
+// 打开修改窗口
+function openApove(id) {
+    var selected = $("#grid").datagrid("getSelected");
+    if(id==null){
+		if (null == selected) {
+			$.messager.alert('警告', '请选中一条数据');
+			return;
+		}else{
+		  id = selected.id;
+   
+         }
+		}
+		var rows = $("#grid").datagrid('getRows');  
+		            
+		        
+        var length = rows.length;   
+        var rowindex;    
+        for (var i = 0; i < length; i++) { 
+           if (rows[i]['id'] == id) {    
+                rowindex = i;   
+                selected = rows[rowindex];//根据index获得其中一行。
+                break;    
+          } 
+    }
 
-				   if(obj.applyState=='申请中'){
-				    $("#win").dialog({buttons :'#win-button'});
-				   }else{
-				     $("#win").dialog({buttons :'#win-button2'});
-				   }
-				   }
+
+ 						 $('#win').dialog({
+								title : '资源申请详情',
+								width : 830,
+								height : 500,
+								href : '${contextPath!}/hardwareResourceApply/goApprove?id='+selected.id,
+								modal : true,
+								buttons :'#win-button2'  
+							});
+          
+}
+
+
+// 实施窗口
+function implement(id) {
+    var selected = $("#grid").datagrid("getSelected");
+    if(id==null){
+		if (null == selected) {
+			$.messager.alert('警告', '请选中一条数据');
+			return;
+		}else{
+		  id = selected.id;
+   
+         }
+		}
+		var rows = $("#grid").datagrid('getRows');  
+		            
+		        
+        var length = rows.length;   
+        var rowindex;    
+        for (var i = 0; i < length; i++) { 
+           if (rows[i]['id'] == id) {    
+                rowindex = i;   
+                selected = rows[rowindex];//根据index获得其中一行。
+                break;    
+          } 
+    }
+
+
+ 						 $('#win').dialog({
+								title : '资源申请详情',
+								width : 830,
+								height : 500,
+								href : '${contextPath!}/hardwareResourceApply/goApprove?id='+selected.id,
+								modal : true,
+								buttons :'#win-button3'  
+							});
+          
+}
+				   
 function updateForms(){
 		 var data = $("#editForm2").serializeArray();
 		 var data2= createConfigurationRequirementJson();
@@ -443,6 +526,19 @@ function createConfigurationRequirementJson(){
 	return _formData;
 }
 
-function submitApply(){
 
-}
+$.extend($.fn.dialog.methods, {  
+	addButtonsAItem: function(jq, items){  
+		return jq.each(function(){  
+                 $('win-button').html();
+		});  
+	},
+	addButtonsBItem: function(jq, param){  
+		return jq.each(function(){  
+		   $('win-button2').html();
+		});  
+	} 				
+});
+
+
+

@@ -1,4 +1,7 @@
 <#body>
+<style>
+    .window-shadow{display: none}
+</style>
  <%if(project!null!=null){%>
 <div id="cusTools" >
 	<a onclick="<%if(backUrl!'' == ''){%>window.history.go(-1);<%}else{%>window.location.href='${backUrl!}';<%}%>" class="easyui-linkbutton"
@@ -115,12 +118,12 @@
 </div>
 </div>
 <!-- 隐藏编辑框 -->
-<div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="任务信息" style="padding:0px 20px 20px;" modal="true" border="thin" closed="true" data-options="
+<div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="false" draggable="false" title="任务信息" style="padding:0px 20px 10px;" modal="true" border="thin" closed="true" data-options="
                 iconCls: 'icon-save',
-                height:'auto'">
+                ">
     <form id="_form" class="easyui-form" method="post" fit="true">
         <input name="_id" id="_id" type="hidden">
-        <table width="560px">
+        <table width="560px" height="auto">
             <tr>
                 <td style="padding:5px;width:50%;">
                     <input class="easyui-textbox" name="_name" id="_name" style="width:100%" data-options="label:'任务名称:', required:true,validType:'length[0,255]',prompt:'请填写任务名称'" />
@@ -227,7 +230,7 @@
     <div id="task_detail_list" style="display:none;width:550px;padding:5px 5px 10px 5px;">
         <hr>
          <h3>工时任务信息</h3>
- 		 <table class="easyui-datagrid" style="height:120px" id="detail_grid" loadMsg="数据加载中..."  idField="id"
+ 		 <table class="easyui-datagrid" style="height:160px" id="detail_grid" loadMsg="数据加载中..."  idField="id"
              >
             <thead>
                 <tr>
@@ -257,7 +260,7 @@
         <a href="#" id="saveTask" class="easyui-linkbutton"  data-options="iconCls:'icon-edit',plain:true" onclick="saveOrUpdate()" style="border:1px solid #ccc;">保存</a>
         <a href="#" class="easyui-linkbutton" data-options="plain:true" onclick="$('#dlg').dialog('close');" style="border:1px solid #ccc;">取消</a>
     </div>
-    <div id="dialog_toolbar_detail" style="display:none;position: absolute;bottom:0;background-color:#fff;width: 100%;padding: 4px 4px 10px;">
+    <div id="dialog_toolbar_detail" style="display:none;background-color:#fff;width: 100%;">
         <a href="#" id="doTask" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" style="border:1px solid #ccc;" onclick="startTask()">开始执行任务</a>
         <a href="#" id="pauseTask" class="easyui-linkbutton" data-options="plain:true" style="border:1px solid #ccc;" onclick="pauseTaskStatus()"> 暂停任务</a>
         <a href="#" id="complate" class="easyui-linkbutton" data-options="plain:true" style="border:1px solid #ccc;" onclick="complate()">完成任务</a>

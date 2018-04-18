@@ -38,7 +38,7 @@
 						<td style="padding: 0">
 						<select class="easyui-combobox" id="projectId" name="projectId"
 							style="width: 95%; text-align: center;"data-options="editable:false,onLoadSuccess:loadProject
-							,onChange:changeProject">
+							,onChange:changeProject,disabled:true">
 								<%for(item in projects){%>
 								<option value="${item.id!}"   <%if(apply.projectId == item.id){%>selected="selected"<%}%> >${item.name!}</option> <%}%>
 						</select><input type="hidden" id="projectName-a" name="projectName"/></td>
@@ -51,7 +51,7 @@
 						<td class="table-title">申请部门</td>
 						<td>
                            <select class="easyui-combobox" id="applicationDepartmentId" name="applicationDepartmentId"
-							style="width: 95%; text-align: center;"data-options="editable:false">
+							style="width: 95%; text-align: center;"data-options="editable:false,disabled:true">
 								<%for(item in departments){%>
 								<option value="${item.id!}" <%if(apply.applicationDepartmentId == item.id){%>selected="selected"<%}%>>${item.name!}</option> <%}%>
 						</select>
@@ -62,11 +62,11 @@
 							 
 						</td>
 						<td class="table-title">申请时间</td>
-						<td><input class="easyui-datebox" style="width: 90%; text-align: center;" id="applyDate" name="applyDate" data-options="editable:false" value="${submit}"></td>
+						<td><input class="easyui-datebox" style="width: 100%; text-align: center;" id="applyDate" name="applyDate" data-options="editable:false,disabled:true" value="${submit}"></td>
 					</tr>
 					<tr>
 						<td class="table-title">使用环境</td>
-						<td colspan="5"><%for(item in ddValue){%><input type="checkbox" name="serviceEnvironmentChk" value="${item.value!}" <%for(v in se2){if(v==item.value){%>checked="checked" <%}}%>
+						<td colspan="5"><%for(item in ddValue){%><input type="checkbox" name="serviceEnvironmentChk" disabled="disabled" value="${item.value!}" <%for(v in se2){if(v==item.value){%>checked="checked" <%}}%>
 						
 						/> ${item.code!} <%}%>  
 						</td>
@@ -76,7 +76,7 @@
 					</tr>
 					<tr>
 					<td class="table-combo" colspan="6">             
-                    <input class="easyui-textbox" name="applyReason" id="applyReason" value="${apply.applyReason!}"style="width:100%;height:50px;" data-options="label:'', validType:'length[0,255]'"  />
+                    <input class="easyui-textbox" name="applyReason" id="applyReason" value="${apply.applyReason!}"style="width:100%;height:50px;" data-options="label:'', validType:'length[0,255]',disabled:true"  />
                  </td>
 					</tr>
 					<tr>
@@ -102,7 +102,8 @@
 				          </tr>
 					     </thead>
 					    </table>  
-						<a href="#" class="easyui-linkbutton" style="border:1px solid #ccc;"  onclick="javascript:$('#addConfig').dialog('open');">+</a>
+						<a href="#" class="easyui-linkbutton" style="border:1px solid #ccc;"  onclick="javascript:$('#addConfig').dialog('open');"
+						    data-options="disabled:true">+</a>
                      </td>
 					</tr>
 					<tr>        
@@ -110,7 +111,7 @@
 					</tr>
 					<tr>
 						<td class="table-combo" colspan="6">           
-                    <input class="easyui-textbox" name="otherDescription" id="otherDescription" value="${apply.otherDescription!}"style="width:100%;height:50px;" data-options="label:'', validType:'length[0,255]'" />
+                    <input class="easyui-textbox" name="otherDescription" id="otherDescription" value="${apply.otherDescription!}"style="width:100%;height:50px;" data-options="label:'', validType:'length[0,255]',disabled:true" />
                 </td>
 					</tr>
 					<tr>
@@ -130,8 +131,16 @@
 				</table>
 			</div>
 		</div>
-			<input type="hidden" value="${apply.applyState!}" id="applyState"/>
+			<input type="hidden" value="${apply.applyState!}" id="applyAppovState"/>
 	</form>
+	<%if(apply.applyState == 4){%>
+	<div >  <input class="easyui-combobox"  id="operDepartmentUsers" name="operDepartmentUsers" data-options="editable:false,label:'实施人员分配:',valueField: 'id',
+    textField: 'realName',url: '${contextPath}/hardwareResourceApply/operMemers.json',required:true,
+    multiple:true" style="width:100%" /></div>
+	<%}%>
+		<%if(apply.applyState!= 5){%>
+	<div> <input class="easyui-textbox" name="appovDescription" id="appovDescription" style="width:100%;height:50px;" data-options="label:'审批意见', validType:'length[0,255]'" /></div>
+	<%}%>
 	<div id="addConfig"    class="easyui-dialog" title="添加配置要求" style="padding:13px" closed="true"   data-options="
 				iconCls: 'icon-save',
 				height: 260,
@@ -221,33 +230,86 @@ function update(rowId){
     $('#updateSige').val(rowId);
 }
 function optionFormatter(value, row, index){
-	return "<a href='JavaScript:del("+index+")'>删除</a>&nbsp;&nbsp;<a href='JavaScript:update("+index+")'>修改</a>";
+	return "<a href='JavaScript:void()'>删除</a>&nbsp;&nbsp;<a href='JavaScript:void()'>修改</a>";
 }
 
 
 
-function submitApply(){
+	
+function appov(){
 	 var id = $("#edit_applyId").val();
-	$.ajax({
-									type : "POST",
-									url : "${contextPath}/hardwareResourceApply/submit",
-									data : {
-										id :id
-									},
-									processData : true,
-									dataType : "json",
-									async : true,
-									success : function(data) {
-										if (data.code == "200") {
-											$("#grid").datagrid("reload");
-											$('#win').dialog('close');
-										} else {
-											$.messager.alert('错误', data.result);
+	 <%if(apply.applyState == 4){%> var operDepartmentUsers = $("#operDepartmentUsers").combobox('getValue');<%}%>
+	 <%if(apply.applyState == 5){%>var appovDescription = $("#appovDescription").val();<%}%>
+		$.ajax({
+										type : "POST",
+										url : submitUrl(),
+										data : {
+											id :id,
+											isApproved:true
+											<%if(apply.applyState == 5){%>,description:appovDescription<%}%>
+											<%if(apply.applyState == 4){%>,executorsChk:operDepartmentUsers<%}%>
+										},
+										processData : true,
+										dataType : "json",
+										async : true,
+										success : function(data) {
+											if (data.code == "200") {
+												$("#grid").datagrid("reload");
+												$('#win').dialog('close');
+											} else {
+												$.messager.alert('错误', data.result);
+											}
+										},
+										error : function() {
+											$.messager.alert('错误', '远程访问失败');
 										}
-									},
-									error : function() {
-										$.messager.alert('错误', '远程访问失败');
-									}
-								});
+									});
+
+}
+
+
+function noAppov(){
+
+	 var id = $("#edit_applyId").val();
+	 var appovDescription = $("#appovDescription").val();
+		$.ajax({
+										type : "POST",
+										url : submitUrl(),
+										data : {
+											id :id,
+											isApproved:false,
+											description:appovDescription
+										},
+										processData : true,
+										dataType : "json",
+										async : true,
+										success : function(data) {
+											if (data.code == "200") {
+												$("#grid").datagrid("reload");
+												$('#win').dialog('close');
+											} else {
+												$.messager.alert('错误', data.result);
+											}
+										},
+										error : function() {
+											$.messager.alert('错误', '远程访问失败');
+										}
+									});
+}
+
+function submitUrl(){
+	var state = $("#applyAppovState").val();
+	console.log(state);	
+	var url = "";
+	if(state==2){
+		url = "${contextPath}/hardwareResourceApply/managerApprove";
+	}else if(state==3){
+		url = "${contextPath}/hardwareResourceApply/generalManagerApprove";
+	}else if(state==4){
+		url = "${contextPath}/hardwareResourceApply/operManagerApprove";
+	}else if(state==5){
+		url = "${contextPath}/hardwareResourceApply/implementing";
 	}
+	return url;
+}
 </script>

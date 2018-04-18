@@ -1,15 +1,21 @@
 
 <#body>
 <div id="win" style="display: none;"></div>
-<div id="win-button" style="display: none;"> 
+<div id="win-button1" style="display: none;"> 
     <a href="#" class="easyui-linkbutton" onclick="updateForms()">保存</a>
 	<a href="#" class="easyui-linkbutton" onclick="javascript:$('#win').dialog('close');">关闭</a>
 	<a href="#" class="easyui-linkbutton" onclick="submitApply()">提交</a>
 </div>
 <div id="win-button2" style="display: none;"> 
-    <a href="#" class="easyui-linkbutton" onclick="apply()">审批通过</a>
+    <a href="#" class="easyui-linkbutton" onclick="appov()">审批通过</a>
+    <a href="#" class="easyui-linkbutton" onclick="noAppov">不通过</a>
 	<a href="#" class="easyui-linkbutton" onclick="javascript:$('#win').dialog('close');">关闭</a>
 </div>
+<div id="win-button3" style="display: none;"> 
+    <a href="#" class="easyui-linkbutton" onclick="appov()">实施</a>
+	<a href="#" class="easyui-linkbutton" onclick="javascript:$('#win').dialog('close');">关闭</a>
+</div>
+
 <div id="smDialog" style="display: none;height:auto;"></div>
 
 <div class="easyui-layout" fit="true">
@@ -70,7 +76,7 @@
 						data-options="field:'envList',width:'20%', order:'asc',align:'center', resizable:'true', fixed:'false',formatter:envFormatter">
 						使用环境</th>
 					<th
-						data-options="field:'submitTime',width:'20%',  _provider:'datetimeProvider',  order:'asc', align:'center', resizable:'true', fixed:'false'">
+						data-options="field:'applyDate',width:'20%',  _provider:'datetimeProvider',  order:'asc', align:'center', resizable:'true', fixed:'false'">
 						申请时间</th>
 					<th
 						data-options="field:'applyState',width:'10%', _provider:'hardwareResourceApplyStateProvider',   order:'asc', align:'center', resizable:'true', fixed:'false'">状态</th>

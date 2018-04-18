@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
+import com.dili.alm.domain.HardwareApplyState;
 import com.dili.alm.domain.HardwareResourceApplyState;
 import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
@@ -17,8 +18,8 @@ public class HardwareResourceApplyStateProvider implements ValueProvider {
 
 	@Override
 	public List<ValuePair<?>> getLookupList(Object val, Map metaMap, FieldMeta fieldMeta) {
-		List<ValuePair<?>> list = new ArrayList<>(HardwareResourceApplyState.values().length);
-		for (HardwareResourceApplyState state : HardwareResourceApplyState.values()) {
+		List<ValuePair<?>> list = new ArrayList<>(HardwareApplyState.values().length);
+		for (HardwareApplyState state : HardwareApplyState.values()) {
 			list.add(new ValuePairImpl<Integer>(state.getName(), state.getValue()));
 		}
 		return list;
@@ -29,7 +30,7 @@ public class HardwareResourceApplyStateProvider implements ValueProvider {
 		if (val == null) {
 			return null;
 		}
-		return HardwareResourceApplyState.valueOf((Integer) val).getName();
+		return HardwareApplyState.valueOf((Integer) val).getName();
 	}
 
 }

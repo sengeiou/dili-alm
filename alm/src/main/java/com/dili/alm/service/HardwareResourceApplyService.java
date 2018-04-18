@@ -1,9 +1,11 @@
 package com.dili.alm.service;
 
+import java.util.List;
 import java.util.Set;
 
 import com.dili.alm.domain.ApproveResult;
 import com.dili.alm.domain.HardwareResourceApply;
+import com.dili.alm.domain.HardwareResourceRequirement;
 import com.dili.alm.domain.dto.HardwareResourceApplyUpdateDto;
 import com.dili.alm.exceptions.HardwareResourceApplyException;
 import com.dili.ss.base.BaseService;
@@ -93,6 +95,17 @@ public interface HardwareResourceApplyService extends BaseService<HardwareResour
 	 *            描述
 	 */
 	void operatorExecute(Long applyId, Long executorId, String description)
+			throws HardwareResourceApplyException;
+	/**
+	 * 执行人实施
+	 * 
+	 * @param applyId
+	 *            申请id
+	 * @param description
+	 * 			查询需求列表前台页面显示
+	 * @return 
+	 * */     
+	List<HardwareResourceRequirement> listRequirement(Long applyId)
 			throws HardwareResourceApplyException;
 
 }

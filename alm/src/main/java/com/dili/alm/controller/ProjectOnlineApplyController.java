@@ -429,12 +429,14 @@ public class ProjectOnlineApplyController {
 		apply.setSqlFileId(null);
 		apply.setStartupScriptFileId(null);
 		apply.setDependencySystemFileId(null);
-		Pattern pattern = Pattern.compile(EMAIL_REGEX);
-		String[] emails = apply.getEmailAddress().split(";");
-		for (String str : emails) {
-			Matcher matcher = pattern.matcher(str.trim());
-			if (!matcher.matches()) {
-				return "邮箱格式不正确";
+		if (StringUtils.isNotBlank(apply.getEmailAddress())) {
+			Pattern pattern = Pattern.compile(EMAIL_REGEX);
+			String[] emails = apply.getEmailAddress().split(";");
+			for (String str : emails) {
+				Matcher matcher = pattern.matcher(str.trim());
+				if (!matcher.matches()) {
+					return "邮箱格式不正确";
+				}
 			}
 		}
 		return null;
