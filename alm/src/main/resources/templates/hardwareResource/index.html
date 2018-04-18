@@ -17,9 +17,6 @@
                             <td style="padding:5px;">
                                 <input class="easyui-textbox" name="ip" id="ip" style="width:100%" data-options="label:'ip地址:', validType:'length[0,15]'" />
                             </td>
-                            
-                        </tr>
-                        <tr>
                             <td style="padding:5px;">
                                 <input class="easyui-combobox" name="maintenanceOwner" id="maintenanceOwner" style="width:100%" data-options="label:'维护人员:'" />
 
@@ -48,22 +45,22 @@
                    align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
                 <thead>
                     <tr>
-                        <th data-options="field:'id',width:'10%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'id',width:'13%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                             编号
                         </th>
-                        <th data-options="field:'projectId',width:'20%',_provider:'projectProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'projectId',width:'25%',_provider:'projectProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                             项目名称
                         </th>
                         <th data-options="field:'ip',width:'15%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
          ip地址
                         </th>
-                               <th data-options="field:'maintenanceOwner',width:'10%',  _provider:'memberProvider',align:'center',editor:{type:'numberbox',options:{precision:1}}, resizable:'true', fixed:'false'">
+                               <th data-options="field:'maintenanceOwner',width:'15%',  _provider:'memberProvider',align:'center',editor:{type:'numberbox',options:{precision:1}}, resizable:'true', fixed:'false'">
                             维护人员
                         </th>
-                        <th data-options="field:'lastModifyDate',width:'15%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'lastModifyDate',width:'18%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                             最后修改时间
                         </th>
-                        <th data-options="field:'options', width:'15%',formatter:formatOptions, align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'options', width:'14%',formatter:formatOptions, align:'center', resizable:'true', fixed:'false'">
                            操作
                     	</th>
                     </tr>
