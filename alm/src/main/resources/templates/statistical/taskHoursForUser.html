@@ -6,6 +6,7 @@
     .datagrid-cell-c1-opt span a{
         color:#999;
     }
+    .pdiv div{font-size: 15px;height:28px;line-height: 28px;}
 </style>
 <div class="easyui-layout" fit="true">
     <!-- ====================================================================================================================== -->
@@ -55,29 +56,32 @@
     <div region="center" style="width:100%;" height="auto" id="dy">
         <!-- =========================================================表格========================================================= -->
                 <!-- datagrid工具栏 -->
-        <div id="toolbar" style="float: right">
-            	 <table style="padding:10px;">
+   <div id="infoToolbar" style="float: left;line-height: 28px;height:28px;"  >
+            	 <table  class="easyui-form" method="post" fit="true">
             	 <tr><td>
                 <a href="#" class="easyui-linkbutton"
                    style="width: 40px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="print()">
                     打印
                 </a>
-                <a href="#" class="easyui-linkbutton"
-                   style="width: 80px;height: 24px; margin-right:3px;text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="doExport('grid')" plain="true" >
+                <a href="javascript:doExport('grid',true)" class="easyui-linkbutton"
+                   style="width: 80px;height: 24px; margin-right:3px;text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef"  plain="true" >
                     导出EXCEL
                 </a>
               
 	              </td>
                  </tr>
                  </table>
-            </div>
-        <table id="grid" class="easyui-datagrid" title="数据列表" style="width:100%;height:'auto'" toolbar='#toolbar'
+               </div> 
+          <div >
+        <table id="grid" class="easyui-treegrid" style="width:100%;height:'auto'" title="数据列表" 
                data-options="
                 rownumbers: true,
                 singleSelect: true,
                 url: '${contextPath}/statistical/taskHoursByUser',
                 method: 'get',
-                onLoadSuccess: onLoadSuccess">
+                onLoadSuccess: onLoadSuccess,
+                tools:'#infoToolbar',idField:'userNo',
+						loadFilter:treegridLoadFilter,headerCls:'pdiv'">
             <thead>
             <tr>
                 <th data-options="field:'selectDate',width:'26%',align:'center'">统计日期</th>
@@ -89,6 +93,7 @@
             </tr>
             </thead>
         </table>
+        </div>
     </div>
 </div>
 <div id="smDialog" style="display: none;"></div>
@@ -104,7 +109,7 @@
             rowspan: 5
         },];
         for(var i=0; i<merges.length; i++){
-            $(this).datagrid('mergeCells',{
+            $(this).treegrid('mergeCells',{
                 index: merges[i].index,
                 field: 'attr1',
                 rowspan: merges[i].rowspan
@@ -118,7 +123,7 @@
     }
     //表格查询
     function queryGrid() {
-        var opts = $("#grid").datagrid("options");
+        var opts = $("#grid").treegrid("options");
         if (null == opts.url || "" == opts.url) {
             opts.url = '${contextPath}/statistical/taskHoursByUser';
         }
@@ -129,7 +134,7 @@
         var formData = $("#form").serializeObject();
         formData.departmentId=$("#departmentId").val();
         formData.userId=$("#userId").val();
-        $("#grid").datagrid("load", formData);
+        $("#grid").treegrid("load", formData);
     }
     $(function(){
 

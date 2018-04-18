@@ -6,6 +6,7 @@
     .datagrid-cell-c1-opt span a{
         color:#999;
     }
+    .pdiv div{font-size: 15px;height:28px;line-height: 28px;}
 </style>
 <div class="easyui-layout" fit="true">
  
@@ -45,9 +46,9 @@
     <!-- 中央布局 -->
     <!-- ====================================================================================================================== -->
     <!-- 表格 -->
-    <div region="center" style="width:100%;">
-            <div id="toolbar" style="float: right">
-            	 <table style="padding:10px;">
+    <div region="center" style="width:100%;"  class="easyui-panel">
+   <div id="infoToolbar" style="float: left;line-height: 28px;height:28px;"  >
+            	 <table  class="easyui-form" method="post" fit="true">
             	 <tr><td>
                 <a href="#" class="easyui-linkbutton"
                    style="width: 40px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="print()">
@@ -61,10 +62,14 @@
 	              </td>
                  </tr>
                  </table>
-            </div>
+               </div> 
+             
+               
         <!-- =========================================================表格========================================================= -->
-        <table id="grid" title="数据列表" pagination="false" data-options="rownumbers: true,singleSelect: true, fit:false"  style="width:98%;"> 
+          <div class="easyui-panel" title="数据列表"   collapsible="true" style="padding:0px;" data-options="headerCls:'pdiv',tools:'#infoToolbar'">
+        <table id="grid" pagination="false"  data-options="rownumbers: true,singleSelect: true, fit:false,headerCls:'aaaaa'"  style="width:98%;"> 
         </table> 
+        </div> 
         <!-- 图表 -->
 	     <div style="width:100%;height:800px;margin-top: 20px">
 	        <!-- =========================================================图表========================================================= -->
@@ -361,7 +366,7 @@ function bindDateForEchats(result){
                 })()
             },
             {
-                name: '正常工时',
+                name: '常规工时',
                 type: 'bar',
                 stack: '总量',
                 label: {
