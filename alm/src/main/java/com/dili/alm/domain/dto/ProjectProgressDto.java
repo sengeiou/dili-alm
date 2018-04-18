@@ -14,6 +14,9 @@ public class ProjectProgressDto  extends ProjectEntity{
 	private Date endDate;
 	
 	private Integer dateProgress;
+	
+	private String launchTime;
+
 
 	public Date getEstimateLaunchDate() {
 		return estimateLaunchDate;
@@ -45,6 +48,14 @@ public class ProjectProgressDto  extends ProjectEntity{
 
 	public void setDateProgress(Integer dateProgress) {
 		this.dateProgress = dateProgress;
+	}
+
+	public String getLaunchTime() {
+		return launchTime;
+	}
+
+	public void setLaunchTime(String launchTime) {
+		this.launchTime = launchTime;
 	}
 
 	
