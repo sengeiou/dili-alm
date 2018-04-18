@@ -282,6 +282,12 @@
         var param = bindMetadata("grid", true);
         
         $("#detail_grid").datagrid("reload");
+        var htmlobj = $.ajax({ url: "${contextPath}/task/listTaskDetail.json?id=" + id, async: false });
+        var str = htmlobj.responseText;
+        var obj = $.parseJSON(str);    
+        console.log(obj);
+		$('#showTaskFont').html(obj.taskHour);
+		$('#showOverFont').html(obj.overHour);
     
     }
     
