@@ -557,14 +557,25 @@
 	<!-- 数据统计相关 end -->
 
 	<select id="selectTaskStateCount" resultType="com.dili.alm.domain.dto.TaskStateCountDto">
-		select d.`code` as taskState,count(*) as stateCount from alm.task as t
-		LEFT JOIN alm.data_dictionary_value as d ON t.`status` = d.`value`
-		where d.dd_id =16 and t.project_id in
-		<foreach item="item" index="index" collection="list" open="("
-			separator="," close=")">
-			#{item}
-		</foreach>
-		GROUP BY t.`status`
+		SELECT d.code  as taskState,
+  		IFNULL(t1.totalCount, 0) as stateCount 
+		FROM
+ 		alm.data_dictionary_value AS d 
+  		LEFT JOIN 
+    	(SELECT 
+      		t.status AS task_state,
+      		COUNT(*) AS totalCount 
+    		FROM
+      		alm.task AS t 
+    		WHERE  t.project_id IN 
+		    <foreach item="item" index="index" collection="list" open="("
+					separator="," close=")">
+					#{item}
+			</foreach>
+    		GROUP BY t.status
+    	) t1 
+    ON d.value = t1.task_state 
+    WHERE d.dd_id =16
 	</select>
 
 	<select id="getStateByTaskCount" resultType="com.dili.alm.domain.dto.TaskStateCountDto">
