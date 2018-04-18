@@ -368,7 +368,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		}
 		// 发邮件给申请人
 		// 查询数据字典配置
-		User user = AlmCache.USER_MAP.get(apply.getId());
+		User user = AlmCache.USER_MAP.get(apply.getApplicantId());
 		if (user == null) {
 			throw new HardwareResourceApplyException("申请人不存在");
 		}
