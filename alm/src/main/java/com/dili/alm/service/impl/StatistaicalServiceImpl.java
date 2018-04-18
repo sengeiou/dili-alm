@@ -523,6 +523,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		List<ProjectProgressDto> projectProgressList = projectMapper.getProjectProgressList(project,startTime, endTime, ids);
 		int projectProgressListCount = projectMapper.getProjectProgressListCount(startTime, endTime, ids);
 		for (ProjectProgressDto projectProgressDto : projectProgressList) {
+			projectProgressDto.setLaunchTime(DateUtil.getDate(projectProgressDto.getEstimateLaunchDate()));
 			switch (projectProgressDto.getProjectState()) {
 			case 0:
 				projectProgressDto.setDateProgress(0);
