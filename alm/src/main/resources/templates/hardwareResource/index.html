@@ -45,7 +45,7 @@
                    align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
                 <thead>
                     <tr>
-                        <th data-options="field:'id',width:'13%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'id',width:'13%',  formatter:hardwareResourceNameFormatter, sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                             编号
                         </th>
                         <th data-options="field:'projectId',width:'25%',_provider:'projectProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -72,8 +72,95 @@
             </div>
         </div>
     </div>
+    <!-- 显示隐藏编辑框 -->
+    <div id="showdlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="显示资源维护信息" style="padding:20px" modal="true" border="thin" closed="true"
+    data-options="
+				iconCls: 'icon-save',
+				height: 480,
+				buttons: [
+				{
+					text:'关闭',
+					handler:function(){
+						$('#showdlg').dialog('close');
+					}
+				}]
+			">
+    <form id="_showform" class="easyui-form" method="post" fit="true">
+        <table width="560px">
+             <tr>
+                <td style="padding:5px;width: 50%">
+                    <input class="easyui-combobox" name="_showprojectId" id="_showprojectId" style="width:100%" editable="false" data-options="label:'项目名称:',disabled:true" 
+                        required="true" />
+                </td>
+                <td style="padding:5px;">
+                    <input class="easyui-textbox" name="_showprojectNum" id="_showprojectNum" style="width:100%"  data-options="label:'项目编号:',disabled:true" 
+                         />
+                </td>
+            </tr>
+            
+            <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-numberbox" name="_showprojectCost" id="_showprojectCost" style="width:100%" data-options="label:'项目成本:',disabled:true" 
+                       />
+                </td>
+                
+            </tr>
+            <tr>
+            	<td colspan="2"><hr>
+            	</td>
+            </tr>
+        </table>
+        <table  width="560px">
+            <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-textbox" name="_showmaintenanceDate" id="_showmaintenanceDate"   style="width:100%" data-options="label:'维护日期:',disabled:true"
+                    />
+                </td>
+                <td style="padding:5px;">
+                    <input class="easyui-textbox" name="_showmachineName" id="_showmachineName" style="width:100%" data-options="label:'机器名称:',disabled:true" />
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-numberspinner" name="_showcpuCoreAmount" id="_showcpuCoreAmount" style="width:100%" data-options="label:'cpu内核数:',disabled:true"
+                           required="true" />
+                </td>
+                <td style="padding:5px;">
+                    <input class="easyui-numberspinner" name="_showmemory" id="_showmemory" style="width:100%" data-options="label:'内存(GB):',disabled:true"
+                           required="true" />
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-numberbox" name="_showdisk" id="_showdisk" style="width:100%" data-options="label:'磁盘(GB):',disabled:true" />
+                </td>
+                <td style="padding:5px;">
+                    <input class="easyui-textbox" name="_showip" id="_showip" style="width:100%" data-options="label:'ip地址:',disabled:true" />
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-combobox" name="_showserviceEnvironment" id="_showserviceEnvironment" style="width:100%" editable="false" data-options="label:'使用环境（数据字典）:',disabled:true"/>
+                    <#comboProvider _id="_showserviceEnvironment" _table="data_dictionary_value" _valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":23}' />
+                </td>
+                <td style="padding:5px;">
+                    <input class="easyui-combobox" name="_showregional" id="_showregional" style="width:100%" editable="false" data-options="label:'地域:',disabled:true" />
+                    <#comboProvider _id="_showregional" _table="data_dictionary_value" _valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":24}' />
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-textbox" name="_showcost" id="_showcost" style="width:100%" data-options="label:'成本:',disabled:true"/>
+                </td>
+
+            </tr>
+
+        </table>
+    </form>
+
+    </div>
        <!-- 修改隐藏编辑框 -->
-    <div id="updatedlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="HardwareResource信息" style="padding:20px" modal="true" border="thin" closed="true"
+    <div id="updatedlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="修改资源维护信息" style="padding:20px" modal="true" border="thin" closed="true"
          data-options="
 				iconCls: 'icon-save',
 				height: 480,
@@ -121,7 +208,7 @@
             	</td>
             </tr>
         </table>
-        <table>
+        <table  width="560px">
             <tr>
                 <td style="padding:5px;">
                     <input class="easyui-textbox" name="_updatemaintenanceDate" id="_updatemaintenanceDate" editable="false"  style="width:100%" data-options="label:'维护日期:'"
@@ -357,7 +444,7 @@
            
         }
         
-      //打开列表修改窗口
+      //打开列表添加窗口
         function openAddUpdate(row){
         	var selected=$("#dg").datagrid('getData').rows[row];
             if (null == selected) {
@@ -663,6 +750,22 @@
                 }
             });
        }
+        function loadShowProject(){
+          	 
+          	 $('#_showprojectId').combobox({
+               	url:"${contextPath!}/hardwareResource/listProjectList.json",
+   				valueField:'id',
+   				textField:'name',
+   				editable:false,
+                  onChange: function (o,n) {
+                   	// 获取到的项目ID_projectIdText_projectId
+                   	var projectNumStr = projectNum(o).serialNumber;
+                   	$("#_showprojectNum").textbox('setValue',projectNumStr);
+                   	$("#_showprojectId").val(projectId);
+                   	
+                   }
+               });
+          }
        function loadMemberCondition(){
     	$('#maintenanceOwner').combobox({
 				url:"${contextPath!}/hardwareResource/listTreeMember.json",
@@ -743,6 +846,22 @@
 	            message: 'IP地址不合法！'
 	        }
 	    });
+	  function hardwareResourceNameFormatter(value, row,index){
+			return "<a href='javascript:void(0)' onclick='openShow("+index+")'>" + value + "</a>";
+		}
+	  function openShow(row){
+		  
+		  	var selected=$("#grid").datagrid('getData').rows[row];
+		  	loadShowProject()
+	        $('#showdlg').dialog('open');
+            $('#showdlg').dialog('center');
+            var formData = $.extend({},selected);
+            formData = addKeyStartWith(getOriginalData(formData),"_show");
+            $('#_showform').form('load', formData);
+            console.log(formData._showmaintenanceDate);
+            var showDate= dateFormat_1(new Date(formData._showmaintenanceDate));
+            $('#_showmaintenanceDate').textbox('setValue',showDate);
+	  }
     </script>
 
 </#body>
