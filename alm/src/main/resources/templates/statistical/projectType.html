@@ -38,7 +38,7 @@
                     打印
                 </a>
                 <a href="#" class="easyui-linkbutton"
-                   style="width: 80px;height: 24px; margin-right:3px;text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="doExport('grid')" plain="true"">
+                   style="width: 80px;height: 24px; margin-right:3px;text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="doExport('grid',true)" plain="true"">
                     导出EXCEL
                 </a>
                 <a href="#" class="easyui-linkbutton"
@@ -64,8 +64,12 @@
             </div>
             <!--任务数据列表-->
             <div style="height: 530px">
-                <table  class="easyui-datagrid" style="width: 100%" id="grid"
-                       data-options="singleSelect:true,collapsible:true,tools:'#infoToolbar',"  title="类型列表"
+                <table  class="easyui-treegrid" style="width: 100%" id="grid"
+                       data-options="singleSelect:true,collapsible:true,tools:'#infoToolbar',
+                        idField:'type',
+						treeField:'type',
+						loadFilter:treegridLoadFilter"  
+						title="类型列表"
                        >
                     <thead>
                     <tr>
