@@ -47,12 +47,18 @@ public interface TaskMapper extends MyMapper<Task> {
 	/*** 数据统计相关 begin ***/
 	List<TaskByUsersDto> selectTaskHourByUser(@Param("beginTime") String beginTime, @Param("endTime") String endTime,
 			@Param("departmentIds") List<Long> dids, @Param("uIds") List<Long> uids);
-
+	
+	TaskByUsersDto selectTotalTaskHourByUser(@Param("beginTime") String beginTime, @Param("endTime") String endTime,
+			@Param("departmentIds") List<Long> dids, @Param("uIds") List<Long> uids);
+	
 	List<TaskHoursByProjectDto> selectProjectHours(@Param("beginTime") String beginTime,
 			@Param("endTime") String endTime, @Param("pids") List<Long> projectId);
 
+
+	
 	List<SelectTaskHoursByUserDto> selectUsersHours(@Param("beginTime") String beginTime,
 			@Param("endTime") String endTime, @Param("pids") List<Long> projectId);
+
 
 	List<SelectTaskHoursByUserProjectDto> selectUsersProjectHours(@Param("userIds") List<Long> userId,
 			@Param("projectIds") List<Long> projectId);

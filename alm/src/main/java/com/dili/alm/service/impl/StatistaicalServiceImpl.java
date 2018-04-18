@@ -149,7 +149,14 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		}
 
 		List<TaskByUsersDto> list = taskMapper.selectTaskHourByUser(startTime, endTime, dids,uids);
+		list.add(this.getTotal(startTime, endTime, uids, dids));
 		return list;
+	}
+	
+	
+	private TaskByUsersDto getTotal(String startTime,
+			String endTime, List<Long> uids, List<Long> dids){
+		return taskMapper.selectTotalTaskHourByUser(startTime, endTime, dids,uids);
 	}
 	
 	/***
