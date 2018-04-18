@@ -97,22 +97,32 @@
     <include refid="Base_Column_List" />
     from hardware_resource
     where 1=1
+    <if test="hardwareResource.maintenanceOwner != null">
+    	AND maintenance_owner = #{hardwareResource.maintenanceOwner,jdbcType=BIGINT}
+    </if>
     <if test="hardwareResource.projectId != null">
    		AND project_id = #{hardwareResource.projectId,jdbcType=BIGINT}
     </if>
-    <if test="hardwareResource.maintenanceOwner != null">
-   		AND maintenance_owner = #{hardwareResource.maintenanceOwner,jdbcType=BIGINT}
-    </if>
     <if test="hardwareResource.ip != null">
-   		AND ip like '%${hardwareResource.ip,jdbcType=VARCHAR}%'
+   		AND ip = #{hardwareResource.ip,jdbcType=VARCHAR}
     </if>
-    <if test="hardwareResource.projectId == null and list != null and list.size>0">
-		AND project_id IN 
-		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
-  			#{item}  
- 		</foreach> 
- 	</if>
- 	<if test="hardwareResource.sort != null">
+    <if test="owner != null">
+	    <if test="hardwareResource.projectId == null  and list != null and list.size>0">
+			AND project_id IN 
+			<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+	  			#{item}  
+	 		</foreach> 
+	 	</if>	
+   	</if>
+   	<if test="owner == null">
+	    <if test="hardwareResource.projectId == null  and list != null and list.size>0">
+			OR project_id IN 
+			<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+	  			#{item}  
+	 		</foreach> 
+	 	</if>	
+   	</if>
+   	<if test="hardwareResource.sort != null">
     	ORDER BY ${hardwareResource.sort} ${hardwareResource.order}
     </if>
  	<if test="hardwareResource.page != null and hardwareResource.rows != null">
@@ -127,21 +137,31 @@
     count(1)
     from hardware_resource
     where 1=1
+    <if test="hardwareResource.maintenanceOwner != null">
+    	AND maintenance_owner = #{hardwareResource.maintenanceOwner,jdbcType=BIGINT}
+    </if>
     <if test="hardwareResource.projectId != null">
    		AND project_id = #{hardwareResource.projectId,jdbcType=BIGINT}
     </if>
-    <if test="hardwareResource.maintenanceOwner != null">
-   		AND maintenance_owner = #{hardwareResource.maintenanceOwner,jdbcType=BIGINT}
-    </if>
     <if test="hardwareResource.ip != null">
-   		AND ip like '%${hardwareResource.ip,jdbcType=VARCHAR}%'
+   		AND ip = #{hardwareResource.ip,jdbcType=VARCHAR}
     </if>
-    <if test="hardwareResource.projectId == null and list != null and list.size>0">
-		AND project_id IN 
-		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
-  			#{item}  
- 		</foreach> 
- 	</if>
+    <if test="owner != null">
+	    <if test="hardwareResource.projectId == null  and list != null and list.size>0">
+			AND project_id IN 
+			<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+	  			#{item}  
+	 		</foreach> 
+	 	</if>	
+   	</if>
+   	<if test="owner == null">
+	    <if test="hardwareResource.projectId == null  and list != null and list.size>0">
+			OR project_id IN 
+			<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+	  			#{item}  
+	 		</foreach> 
+	 	</if>	
+   	</if>
   </select>
   
   

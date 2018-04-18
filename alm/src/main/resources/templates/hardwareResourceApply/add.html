@@ -27,22 +27,27 @@
 <div class="easyui-panel" >
 	<form id="editForm" action="" method="post" enctype="multipart/form-data">
 		<div style="box-sizing: border-box; padding: 10px;">
-			<div class="easyui-layout" style="box-sizing: border-box; width: 100%; height: 100%;">
+			<div class="easyui-layout" style="box-sizing: border-box; width: 100%;">
 				<table class="table-box">
 					<tr>
-					    <td class="table-title">项目编号</td>
-						<td><input class="easyui-textbox" style="width: 100%; text-align: center;" id="projectSerialNumber" name="projectSerialNumber"
-							data-options="editable:false"></td>
-						<td class="table-title">项目名称</td>
-						<td style="padding: 0">
-						<select class="easyui-combobox" id="projectId" name="projectId"
-							style="width: 95%; text-align: center;"data-options="editable:false,onLoadSuccess:loadProject
-							,onChange:changeProject">
-								<%for(item in projects){%>
-								<option value="${item.id!}">${item.name!}</option> <%}%>
-						</select><input type="hidden" id="projectName-a" name="projectName"/></td>
-						<td class="table-title">项目经理</td>
-						<td><input class="easyui-textbox" style="width: 100%; text-align: center;" id="projectManager" data-options="editable:false">
+						<td class="table-title" width="16.6%">项目名称</td>
+						<td width="16.6%">
+							<select class="easyui-combobox" id="projectId" name="projectId"
+								style="width: 90%; text-align: center;"data-options="editable:false,onLoadSuccess:loadProject
+								,onChange:changeProject">
+									<%for(item in projects){%>
+									<option value="${item.id!}">${item.name!}</option> <%}%>
+							</select>
+							<input type="hidden" id="projectName-a" name="projectName"/>
+						</td>
+						<td width="16.6%" class="table-title">项目编号</td>
+						<td width="16.6%">
+							<input class="easyui-textbox" style="width: 90%; text-align: center;" id="projectSerialNumber" name="projectSerialNumber"
+								   data-options="editable:false">
+						</td>
+						<td class="table-title" width="16.6%">项目经理</td>
+						<td width="16.6%">
+							<input class="easyui-textbox" style="width: 90%; text-align: center;" id="projectManager" data-options="editable:false">
 						    <input type="hidden" id="projectManagerId" name="projectManagerId"/>
 						</td>
 					</tr>
@@ -50,37 +55,41 @@
 						<td class="table-title">申请部门</td>
 						<td>
                            <select class="easyui-combobox" id="applicationDepartmentId" name="applicationDepartmentId"
-							style="width: 95%; text-align: center;"data-options="editable:false">
+							style="width: 90%; text-align: center;"data-options="editable:false">
 								<%for(item in departments){%>
 								<option value="${item.id!}">${item.name!}</option> <%}%>
 						</select>
                         </td>
 						<td class="table-title">申请人</td>
-						<td><input class="easyui-textbox" style="width: 100%; text-align: center;" id="applyOwner" data-options="editable:false" value="${userInfo.realName}">
+						<td>
+							<input class="easyui-textbox" style="width: 90%; text-align: center;" id="applyOwner" data-options="editable:false" value="${userInfo.realName}">
 							 <input type="hidden" id="applicantId" name="applicantId" value="${userInfo.id}"/>
-							 
+
 						</td>
 						<td class="table-title">申请时间</td>
-						<td><input class="easyui-datebox" required="required"  style="width: 100%; text-align: center;" id="applyDate" name="applyDate" data-options="editable:false"></td>
+						<td>
+							<input class="easyui-datebox" required="required"  style="width: 90%; text-align: center;" id="applyDate" name="applyDate" data-options="editable:false"></td>
 					</tr>
 					<tr>
 						<td class="table-title">使用环境</td>
-						<td colspan="5"><%for(item in ddValue){%><input type="checkbox" name="serviceEnvironmentChk" value="${item.value!}"/> ${item.code!} <%}%> </td>
+						<td colspan="5">
+							<%for(item in ddValue){%><input type="checkbox" style="margin-left: 10px" name="serviceEnvironmentChk" value="${item.value!}"/> ${item.code!} <%}%>
+						</td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="6">申请原因</td>
 					</tr>
 					<tr>
-					<td class="table-combo" colspan="6">             
-                    <input class="easyui-textbox" name="applyReason" required="required"  id="applyReason" style="width:100%;height:50px;" data-options="label:'', validType:'length[0,255]'" />
-                 </td>
+						<td class="table-combo" colspan="6">
+							<input class="easyui-textbox" name="applyReason" required="required"  id="applyReason" style="width:98%;height:50px;" data-options="label:'', validType:'length[0,255]'" />
+						 </td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="6">配置要求</td>
 					</tr>
 					<tr>
 					 <td class="table-combo" colspan="6">
-					    <table   class="easyui-datagrid" id="configGrid" >
+					    <table  class="easyui-datagrid" id="configGrid" >
 					    <thead>
 					  		<tr>
 								<th data-options="field:'cpuAmount',width:'20%', align:'center'">
@@ -94,19 +103,19 @@
 									备注</th>
 								<th
 									data-options="field:'options',width:'15%', align:'center',formatter:optionFormatter">
-									操作</th>	
+									操作</th>
 				          </tr>
 					    </thead>
-					    </table>  
+					    </table>
 						<a href="#" class="easyui-linkbutton" style="border:1px solid #ccc;"  onclick="javascript:$('#addConfig').dialog('open');">+</a>
                      </td>
 					</tr>
-					<tr>        
+					<tr>
 						<td class="table-title" colspan="6">其他说明</td>
 					</tr>
 					<tr>
-						<td class="table-combo" colspan="6">           
-                    <input class="easyui-textbox" name="otherDescription"required="required"  id="otherDescription" style="width:100%;height:50px;" data-options="label:'', validType:'length[0,255]'" />
+						<td class="table-combo" colspan="6">
+                    <input class="easyui-textbox" name="otherDescription"required="required"  id="otherDescription" style="width:98%;height:50px;" data-options="label:'', validType:'length[0,255]'" />
                 </td>
 					</tr>
 				</table>

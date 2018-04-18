@@ -66,13 +66,6 @@ public class HardwareResourceController {
     	@SuppressWarnings({ "rawtypes" })
 		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
     	List<Long> projectIds = new ArrayList<>();
-		UserTicket user = SessionContext.getSessionContext().getUserTicket();
-		if (user == null) {
-			throw new RuntimeException("未登录");
-		}
-		if (CollectionUtils.isEmpty(dataAuths)) {
-			hardwareResource.setMaintenanceOwner(user.getId());
-		}
 		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
         return hardwareResourceService.listEasyuiPageByExample(hardwareResource, projectIds, true).toString();
     }
@@ -126,6 +119,14 @@ public class HardwareResourceController {
   	public List<Project> listProjectList() {
   		return hardwareResourceService.projectList();
   	}
+  	
+  	// 查询项目列表
+   	@ResponseBody
+   	@RequestMapping(value = "/prjectNum.json", method = { RequestMethod.GET, RequestMethod.POST })
+   	public Project prjectNum(String id) {
+   		return hardwareResourceService.projectNumById(id);
+   	}
+   	
   	//判断是否提交
   	@ResponseBody
 	@RequestMapping(value = "/isOperation.json", method = { RequestMethod.GET, RequestMethod.POST })

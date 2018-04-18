@@ -87,7 +87,7 @@ public class TeamController {
 	}
 
 	@ApiOperation("跳转到Team页面")
-	@RequestMapping(value = "/index", method = RequestMethod.GET)
+	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(@RequestParam Long projectId, @RequestParam(defaultValue = "false") Boolean editable,
 			@RequestParam(required = false) String backUrl, ModelMap modelMap) throws UnsupportedEncodingException {
 		refreshProject();

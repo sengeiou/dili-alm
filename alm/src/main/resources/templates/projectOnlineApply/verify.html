@@ -59,8 +59,7 @@
 					</tr>
 					<tr>
 						<td class="table-title">上线市场</td>
-						<td colspan="5"><%if(apply.marketVersion){%><%for(item in
-							apply.markets){if(itemLP.last){%>${item.code!}<%}else{%>${item.code!}<%}}}%></td>
+						<td colspan="5"><%if(apply.marketVersion){%>${apply.markets!}<%}%>></td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="6">上线系统及依赖关系描述</td>

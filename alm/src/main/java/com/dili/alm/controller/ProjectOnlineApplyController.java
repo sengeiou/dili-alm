@@ -31,7 +31,9 @@ import com.dili.alm.domain.Files;
 import com.dili.alm.domain.OperationResult;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectOnlineApply;
+import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.dto.DataDictionaryDto;
+import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectOnlineApplyUpdateDto;
 import com.dili.alm.domain.dto.ProjectOnlineSubsystemDto;
 import com.dili.alm.exceptions.ProjectOnlineApplyException;
@@ -249,6 +251,8 @@ public class ProjectOnlineApplyController {
 	@ApiOperation("跳转到ProjectOnlineApply页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		modelMap.addAttribute("user", user);
 		return "projectOnlineApply/index";
 	}
 
@@ -282,9 +286,9 @@ public class ProjectOnlineApplyController {
 		} else {
 			List<Long> projectIds = new ArrayList<>();
 			dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
-			Example example = new Example(ProjectOnlineApply.class);
+			Example example = new Example(Project.class);
 			Example.Criteria criteria = example.createCriteria();
-			criteria.andIn("id", projectIds);
+			criteria.andIn("id", projectIds).andNotEqualTo("projectState", ProjectState.CLOSED.getValue());
 			List<Project> projects = this.projectService.selectByExample(example);
 			modelMap.addAttribute("projects", projects);
 		}
@@ -306,9 +310,9 @@ public class ProjectOnlineApplyController {
 		}
 		List<Long> projectIds = new ArrayList<>();
 		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
-		Example example = new Example(ProjectOnlineApply.class);
+		Example example = new Example(Project.class);
 		Example.Criteria criteria = example.createCriteria();
-		criteria.andIn("id", projectIds);
+		criteria.andIn("id", projectIds).andNotEqualTo("projectState", ProjectState.CLOSED.getValue());
 		List<Project> projects = this.projectService.selectByExample(example);
 		modelMap.addAttribute("projects", projects);
 		List<Project> plist = this.projectService.list(null);
@@ -410,18 +414,29 @@ public class ProjectOnlineApplyController {
 			return "请先登录";
 		}
 		apply.setApplicantId(user.getId());
-		if (apply.getSqlFile() == null && StringUtils.isBlank(apply.getSqlScript())) {
+		if (apply.getSqlFileId() == null && apply.getSqlFile() == null && StringUtils.isBlank(apply.getSqlScript())) {
 			return "sql脚本不能为空";
 		}
-		if (apply.getStartupScriptFile() == null && StringUtils.isBlank(apply.getStartupScript())) {
+		if (apply.getStartupScriptFileId() == null && apply.getStartupScriptFile() == null
+				&& StringUtils.isBlank(apply.getStartupScript())) {
 			return "启动脚本不能为空";
 		}
-		Pattern pattern = Pattern.compile(EMAIL_REGEX);
-		String[] emails = apply.getEmailAddress().split(";");
-		for (String str : emails) {
-			Matcher matcher = pattern.matcher(str.trim());
-			if (!matcher.matches()) {
-				return "邮箱格式不正确";
+		if (apply.getDependencySystemFileId() == null && apply.getDependencySystemFile() == null
+				&& StringUtils.isBlank(apply.getDependencySystem())) {
+			return "启动脚本不能为空";
+		}
+		// 清除文件id，不然后台逻辑会有问题
+		apply.setSqlFileId(null);
+		apply.setStartupScriptFileId(null);
+		apply.setDependencySystemFileId(null);
+		if (StringUtils.isNotBlank(apply.getEmailAddress())) {
+			Pattern pattern = Pattern.compile(EMAIL_REGEX);
+			String[] emails = apply.getEmailAddress().split(";");
+			for (String str : emails) {
+				Matcher matcher = pattern.matcher(str.trim());
+				if (!matcher.matches()) {
+					return "邮箱格式不正确";
+				}
 			}
 		}
 		return null;
