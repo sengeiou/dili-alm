@@ -27,7 +27,8 @@ public class HardwareResourceRequirementDto extends BaseDomain implements Hardwa
 
 	@Override
 	public void setCpuAmount(Integer cpuAmount) {
-		this.cpuAmount = cpuAmount;
+	  this.cpuAmount = cpuAmount;
+		
 	}
 
 	@Override
@@ -37,7 +38,7 @@ public class HardwareResourceRequirementDto extends BaseDomain implements Hardwa
 
 	@Override
 	public void setMemoryAmount(Integer memoryAmount) {
-		this.memoryAmount = memoryAmount;
+		 this.memoryAmount = memoryAmount;
 	}
 
 	@Override
@@ -48,6 +49,7 @@ public class HardwareResourceRequirementDto extends BaseDomain implements Hardwa
 	@Override
 	public void setDiskAmount(Integer diskAmount) {
 		this.diskAmount = diskAmount;
+		
 	}
 
 	@Override
@@ -58,6 +60,7 @@ public class HardwareResourceRequirementDto extends BaseDomain implements Hardwa
 	@Override
 	public void setNotes(String notes) {
 		this.notes = notes;
+		
 	}
 
 	@Override
@@ -68,6 +71,7 @@ public class HardwareResourceRequirementDto extends BaseDomain implements Hardwa
 	@Override
 	public void setApplyId(Long applyId) {
 		this.applyId = applyId;
+		
 	}
 
 }

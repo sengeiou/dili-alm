@@ -28,7 +28,7 @@
 	<form id="editForm2" action="" method="post" enctype="multipart/form-data">
 		<div style="box-sizing: border-box; padding: 10px;">
 			<div class="easyui-layout" style="box-sizing: border-box; width: 100%; height: 100%;">
-			   <input type="hidden" value="${apply.id!}" name="id"/> 
+			   <input type="hidden" value="${apply.id!}" name="id" id="edit_applyId"/> 
 				<table class="table-box">
 					<tr>
 					    <td class="table-title">项目编号</td>
@@ -62,13 +62,13 @@
 							 
 						</td>
 						<td class="table-title">申请时间</td>
-						<td><input class="easyui-datebox" style="width: 100%; text-align: center;" id="submitTime" name="submitTime" data-options="editable:false" value="${submit}"></td>
+						<td><input class="easyui-datebox" style="width: 100%; text-align: center;" id="applyDate" name="applyDate" data-options="editable:false" value="${submit}"></td>
 					</tr>
 					<tr>
 						<td class="table-title">使用环境</td>
-						<td colspan="5"><%for(item in ddValue){%><input type="checkbox" name="serviceEnvironmentChk" value="${item.value!}" <%for(v in se){if(v==item.value){%>checked="checked" <%}}%>
+						<td colspan="5"><%for(item in ddValue){%><input type="checkbox" name="serviceEnvironmentChk" value="${item.value!}" <%for(v in se2){if(v==item.value){%>checked="checked" <%}}%>
 						
-						/> ${item.code!} <%}%>
+						/> ${item.code!} <%}%>  
 						</td>
 					</tr>
 					<tr>
@@ -84,7 +84,7 @@
 					</tr>
 					<tr>
 					 <td class="table-combo" colspan="6">
-					     <table   class="easyui-datagrid" id="configGrid" >
+					    <table   class="easyui-datagrid" id="configGrid"  >
 					    <thead>
 					  		<tr>
 								<th data-options="field:'cpuAmount',width:'20%', align:'center'">
@@ -112,6 +112,20 @@
 						<td class="table-combo" colspan="6">           
                     <input class="easyui-textbox" name="otherDescription" id="otherDescription" value="${apply.otherDescription!}"style="width:100%;height:50px;" data-options="label:'', validType:'length[0,255]'" />
                 </td>
+					</tr>
+					<tr>
+					<td class="table-combo" > 
+					申请人        
+                    </td>
+                    <td class="table-combo"  colspan="2">  
+                     ${userInfo.realName}           
+                    </td>
+                    <td class="table-combo" > 
+                                                 创建时间               
+                    </td>
+                    <td class="table-combo"  colspan="2"> 
+                          ${cread}                         
+                    </td>
 					</tr>
 				</table>
 			</div>
@@ -147,6 +161,10 @@
 	</div>
 </div>
 <script type="text/javascript">
+
+$('#configGrid').datagrid({
+	data:${requirementList!}
+});
 /* 允许编辑单元格 */  
 function add(){
 	 var rows = $('#configGrid').datagrid('getRows');
@@ -205,4 +223,31 @@ function update(rowId){
 function optionFormatter(value, row, index){
 	return "<a href='JavaScript:del("+index+")'>删除</a>&nbsp;&nbsp;<a href='JavaScript:update("+index+")'>修改</a>";
 }
+
+
+
+function submitApply(){
+	 var id = $("#edit_applyId").val();
+	$.ajax({
+									type : "POST",
+									url : "${contextPath}/hardwareResourceApply/submit",
+									data : {
+										id :id
+									},
+									processData : true,
+									dataType : "json",
+									async : true,
+									success : function(data) {
+										if (data.code == "200") {
+											$("#grid").datagrid("reload");
+											$('#win').dialog('close');
+										} else {
+											$.messager.alert('错误', data.result);
+										}
+									},
+									error : function() {
+										$.messager.alert('错误', '远程访问失败');
+									}
+								});
+	}
 </script>
