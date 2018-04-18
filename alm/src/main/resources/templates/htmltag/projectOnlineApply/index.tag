@@ -1,8 +1,24 @@
+var userId = '${user.id!}';
+userId = parseInt(userId);
+
 var paramCount = '${subsystemCount!0}';
 paramCount = parseInt(paramCount);
 
 function serialNumberFormatter(value, row, index) {
 	return '<a href="javascript:void(0);" onclick="detail(' + row.id + ');">' + value + "</a>";
+}
+
+function marketFormatter(value, row, index) {
+	debugger;
+	var content = '';
+	if (row.marketVersion) {
+		$(row.markets).each(function(index, item) {
+					content += item.code + ',';
+				});
+		return content.substring(0, content.length - 1);
+	} else {
+		return '不针对市场';
+	}
 }
 
 function detail(id) {
@@ -622,20 +638,27 @@ function openInsert() {
 
 // 打开修改窗口
 function openUpdate(index, id) {
-	var selected = $('#grid').datagrid('getRows')[index];
+	var selected = null;
+	if (index >= 0) {
+		selected = $('#grid').datagrid('getRows')[index]
+	} else {
+		selected = $('#grid').datagrid('getSelected');
+	}
 	if (!selected) {
 		$.messager.alert('提示', '请选择一条记录');
 		return;
 	}
 	if (selected.$_applyState != 1) {
-		$.messager.alert('提示', '当前状态不能编辑');
+		return;
+	}
+	if (selected.$_applicantId != userId) {
 		return;
 	}
 	$('#win').dialog({
 				title : '上线申请',
 				width : 800,
 				height : 600,
-				href : '${contextPath!}/projectOnlineApply/update?id=' + id,
+				href : '${contextPath!}/projectOnlineApply/update?id=' + selected.id,
 				modal : true,
 				buttons : [{
 							text : '保存',

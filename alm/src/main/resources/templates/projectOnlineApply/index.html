@@ -1,7 +1,7 @@
 <#body>
 <div id="win" style="display: none;"></div>
 <div class="easyui-layout" fit="true">
-	<div id="smDialog" style="display: none;height:auto;"></div>
+	<div id="smDialog" style="display: none; height: auto;"></div>
 	<!-- ====================================================================================================================== -->
 	<!-- 上方布局 -->
 	<!-- ====================================================================================================================== -->
@@ -47,10 +47,12 @@
 			data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
 			<thead>
 				<tr>
-					<th data-options="field:'serialNumber',width:'12.5%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:serialNumberFormatter">
-						项目编号</th>
+					<th
+						data-options="field:'serialNumber',width:'12.5%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:serialNumberFormatter">
+						申请编号</th>
 					<th data-options="field:'projectName', width:'12.5%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目名称</th>
 					<th data-options="field:'version', width:'12.5%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">版本名称</th>
+					<th data-options="field:'markets', width:'12.5%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">上线市场</th>
 					<th
 						data-options="field:'actualOnlineDate',width:'15%',   _provider:'almDateProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
 						实际上线日期</th>

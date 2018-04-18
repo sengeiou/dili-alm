@@ -76,10 +76,8 @@
 								<option value="0"<%if(!apply.marketVersion){%>selected="selected"<%}%>>否</option>
 						</select></td>
 						<td class="table-title">市场</td>
-						<td colspan="2"><select class="easyui-combobox" id="market" name="market" style="width: 87%; text-align: center;"
-							data-options="multiple:true,editable:false<%if(!apply.marketVersion){%>,disabled:true<%}%>"> <%for(item in markets){%>
-								<option value="${item.value!}">${item.code!}</option> <%}%>
-						</select></td>
+						<td colspan="2"><input class="easyui-combotree" id="market" name="market" style="width: 87%; text-align: center;"
+							data-options="multiple:true,loadFilter:treeLoadFilter, _idField:'value', _textField:'code', _parentIdField:'parentId',editable:false<%if(!apply.marketVersion){%>,disabled:true<%}%>"></td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="6">上线系统及依赖关系描述</td>
@@ -179,18 +177,11 @@
 	</form>
 </div>
 <script type="text/javascript">
-	var selectedMarkets=[		
-		<%
-		if(has(apply.selectedMarkets)){
-		for(smarket in apply.selectedMarkets){%>
-			<%if(smarketLP.last){%>
-				'${smarket.marketCode!}'
-			<%}else{%>
-				'${smarket.marketCode!}',
-			<%}%>
-		<%}
-		}
-		%>
-	];
+	<%if(isNotEmpty(apply.selectedMarkets)){%>
+	var selectedMarkets = '${@com.alibaba.fastjson.JSON.toJSONString(apply.selectedMarkets)}';
+	selectedMarkets = $.parseJSON(selectedMarkets);
+	<%}%>
+	var markets = '${@com.alibaba.fastjson.JSON.toJSONString(markets)}';
+	markets = $.parseJSON(markets);
 	<#projectOnlineApply_update />
 </script>

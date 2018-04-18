@@ -2,6 +2,7 @@ package com.dili.alm.service.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -16,10 +17,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.beetl.core.Configuration;
 import org.beetl.core.GroupTemplate;
 import org.beetl.core.Template;
-import org.beetl.core.resource.StringTemplateResourceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -186,7 +185,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		try {
 			Resource res = new ClassPathResource("conf/projectOlineApplyMailContentTemplate.html");
 			in = res.getInputStream();
-			this.contentTemplate = IOUtils.toString(in);
+			this.contentTemplate = IOUtils.toString(in, "UTF-8");
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} finally {
@@ -321,6 +320,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	@Override
 	public ProjectOnlineApply getEasyUiRowData(Long id) {
 		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(id);
+		this.setMarkets(apply);
 		this.setOperationColumn(apply);
 		return apply;
 	}
@@ -493,6 +493,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	public EasyuiPageOutput listEasyuiPageByExample(ProjectOnlineApply domain, boolean useProvider) throws Exception {
 		List<ProjectOnlineApply> list = listByExample(domain);
 		list.forEach(a -> {
+			this.setMarkets(a);
 			this.setOperationColumn(a);
 		});
 		@SuppressWarnings("rawtypes")
@@ -500,6 +501,27 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		@SuppressWarnings("rawtypes")
 		List results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, list) : list;
 		return new EasyuiPageOutput(Long.valueOf(total).intValue(), results);
+	}
+
+	private void setMarkets(ProjectOnlineApply apply) {
+		DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.MARKET_CODE);
+		ProjectOnlineApplyMarket poamQuery = DTOUtils.newDTO(ProjectOnlineApplyMarket.class);
+		poamQuery.setApplyId(apply.getId());
+		List<ProjectOnlineApplyMarket> poamList = this.applyMarketMapper.select(poamQuery);
+		if (CollectionUtils.isEmpty(poamList)) {
+			throw new IllegalArgumentException("数据异常");
+		}
+		if (poamList.size() == 1 && poamList.get(0).getMarketCode().equals("-1")) {
+			apply.aset("marketVersion", false);
+		} else {
+			apply.aset("marketVersion", true);
+			StringBuilder sb = new StringBuilder();
+			dd.getValues().stream()
+					.filter(v -> poamList.stream().filter(pv -> pv.getMarketCode().equals(v.getValue())).findFirst()
+							.orElse(null) != null)
+					.collect(Collectors.toList()).forEach(v -> sb.append(v.getCode()).append(","));
+			apply.aset("markets", sb.substring(0, sb.length() - 1));
+		}
 	}
 
 	@Override
@@ -685,6 +707,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 
 		// 查询出项目信息
 		Project project = this.projectMapper.selectByPrimaryKey(apply.getProjectId());
+		apply.setSerialNumber(old.getSerialNumber());
 		apply.setProjectName(project.getName());
 		apply.setBusinessOwnerId(project.getBusinessOwner());
 		apply.setProjectManagerId(project.getProjectManager());
@@ -838,12 +861,14 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			poamQuery.setApplyId(apply.getId());
 			List<ProjectOnlineApplyMarket> poamList = this.applyMarketMapper.select(poamQuery);
 			if (CollectionUtils.isNotEmpty(poamList)) {
+				List<VersionMarketOnlineRecord> vmorList = new ArrayList<>(poamList.size());
 				poamList.forEach(a -> {
 					VersionMarketOnlineRecord vmor = DTOUtils.newDTO(VersionMarketOnlineRecord.class);
 					vmor.setMarketCode(a.getMarketCode());
 					vmor.setVersionId(apply.getVersionId());
-					this.versionMaketMapper.insert(vmor);
+					vmorList.add(vmor);
 				});
+				this.versionMaketMapper.insertList(vmorList);
 			}
 		}
 		// 发邮件
@@ -889,23 +914,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		List<ProjectOnlineOperationRecord> poorList = this.poorMapper.select(poorQuery);
 		apply.aset("opRecords", this.buildOperationRecordViewModel(poorList));
 		// 查询上线市场
-		ProjectOnlineApplyMarket poamQuery = DTOUtils.newDTO(ProjectOnlineApplyMarket.class);
-		poamQuery.setApplyId(id);
-		List<ProjectOnlineApplyMarket> poamList = this.applyMarketMapper.select(poamQuery);
-		if (CollectionUtils.isEmpty(poamList)) {
-			throw new IllegalArgumentException("数据异常");
-		}
-		if (poamList.size() == 1 && poamList.get(0).getMarketCode().equals("-1")) {
-			apply.aset("marketVersion", false);
-		} else {
-			apply.aset("marketVersion", true);
-			DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.MARKET_CODE);
-			List<DataDictionaryValueDto> ddValueDtos = dd
-					.getValues().stream().filter(v -> poamList.stream()
-							.filter(pv -> pv.getMarketCode().equals(v.getValue())).findFirst().orElse(null) != null)
-					.collect(Collectors.toList());
-			apply.aset("markets", ddValueDtos);
-		}
+		this.setMarkets(apply);
 		return apply;
 	}
 

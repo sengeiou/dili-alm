@@ -77,10 +77,8 @@
 								<option value="1">是</option>
 						</select></td>
 						<td colspan="1" class="table-title">市场</td>
-						<td colspan="3"><select class="easyui-combobox" id="market" name="market" style="width: 87%; text-align: center;"
-							data-options="multiple:true,editable:false,disabled:true"> <%for(item in markets){%>
-								<option value="${item.value!}">${item.code!}</option> <%}%>
-						</select></td>
+						<td colspan="2"><input class="easyui-combotree" id="market" name="market" style="width: 87%; text-align: center;"
+							data-options="multiple:true,loadFilter:treeLoadFilter, _idField:'value', _textField:'code', _parentIdField:'parentId',editable:false,disabled:true,required:true"></td>
 					</tr>
 
 					<tr>
@@ -163,3 +161,10 @@
 
 	</form>
 </div>
+<script type="text/javascript">
+	$(function() {
+		var markets = '${@com.alibaba.fastjson.JSON.toJSONString(markets)}';
+		markets = $.parseJSON(markets);
+		$('#market').combotree('loadData', markets);
+	})
+</script>
