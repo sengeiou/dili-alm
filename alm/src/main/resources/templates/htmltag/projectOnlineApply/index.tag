@@ -450,16 +450,10 @@ function verify(id) {
 
 function appendSubsystem() {
 	paramCount++;
-	var content = '<tr class="subsystem">'+
-						'<td colspan="2" class="table-title">系统名称</td>'+
-						'<td colspan="2"><input class="easyui-combobox" name="subProjectName['+paramCount+']" style="width: 97%; text-align: center;"'+
-							'data-options="url:\'${contextPath!}/project/list.json\',textField:\'name\',valueField:\'id\',required:true" /></td>'+
-						'<td class="table-title">负责人</td>'+
-						'<td><select class="easyui-combobox" name="managerId['+paramCount+']"'+
-							'data-options="url:\'${contextPath!}/member/members\',textField:\'realName\',valueField:\'id\',required:true"'+
-							'style="width: 60%; text-align: center;">'+
-						'</select></td>'+
-					'</tr>';
+	var content = '<tr class="subsystem">' + '<td colspan="2" class="table-title">系统名称</td>' + '<td colspan="2"><input class="easyui-combobox" name="subProjectName[' + paramCount
+			+ ']" style="width: 97%; text-align: center;"' + 'data-options="url:\'${contextPath!}/project/list.json\',textField:\'name\',valueField:\'id\',required:true" /></td>'
+			+ '<td class="table-title">负责人</td>' + '<td><select class="easyui-combobox" name="managerId[' + paramCount + ']"'
+			+ 'data-options="url:\'${contextPath!}/member/members\',textField:\'realName\',valueField:\'id\',required:true"' + 'style="width: 60%; text-align: center;">' + '</select></td>' + '</tr>';
 	$('.table-box .subsystem:last').after(content);
 	$.parser.parse($('.table-box tr:eq(' + (paramCount + 9) + ')'));
 
@@ -503,7 +497,7 @@ function selectFirst() {
 }
 
 function loadVersion(nval, oval) {
-	$('#versionId').combobox('reload', '${contextPath!}/project/version/list?projectId=' + nval + '&online=0');
+	$('#versionId').combobox('reload', '${contextPath!}/project/version/list?projectId=' + nval);
 	$('#versionId').combobox('enable');
 }
 
