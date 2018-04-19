@@ -38,7 +38,7 @@
                     打印
                 </a>
                 <a href="#" class="easyui-linkbutton"
-                   style="width: 80px;height: 24px; margin-right:3px;text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="doExport('grid')" plain="true" >
+                   style="width: 80px;height: 24px; margin-right:3px;text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="doExport('grid',true)" plain="true" >
                     导出EXCEL
                 </a>
                 <input class="easyui-combobox" id="ids" style="width:130px;height: 24px;color: #999"/>
@@ -74,8 +74,11 @@
                 </form>
             </div>
             <div  style="height:100%">
-                <table class="easyui-datagrid" style="width: 100%" id="grid" title="项目进展汇总"
-                       data-options="singleSelect:true,collapsible:true,tools:'#infoToolbar'," 
+                <table class="easyui-treegrid" style="width: 100%" id="grid" title="项目进展汇总"
+                       data-options="singleSelect:true,collapsible:true,tools:'#infoToolbar',
+						idField:'id',
+						treeField:'name',
+						loadFilter:treegridLoadFilter" 
                        pagination="true" pageSize="30" pageNumber="1" >
                     <thead>
                     <tr>

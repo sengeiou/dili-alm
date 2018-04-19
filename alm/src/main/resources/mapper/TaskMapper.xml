@@ -366,7 +366,7 @@
 
 
 	<!-- 数据统计相关 begin -->
-	<!-- 人员工时查询 -->
+	
 	<select id="selectTaskHourByUser" resultType="com.dili.alm.domain.dto.TaskByUsersDto">
 
 		select
@@ -404,7 +404,46 @@
 				#{item}
 			</foreach>
 		</if>
-		GROUP BY ut.id
+		GROUP BY ut.id ORDER BY  ut.id DESC
+	</select>
+	<!-- 人员总工时查询 -->
+	<select id="selectTotalTaskHourByUser" resultType="com.dili.alm.domain.dto.TaskByUsersDto">
+
+		select
+		CONCAT(#{beginTime,jdbcType=VARCHAR},'至',#{endTime,jdbcType=VARCHAR})
+		as selectDate,'0' as userNo,'总计' as userName,count(distinct(ut.departmentId))
+		as departmentId,count(distinct(ut.departmentName)) as
+		departmentName,(SUM(taskInfo.taskHour)+SUM(taskInfo.overHour)) as
+		totalHour,SUM(taskInfo.taskHour) as taskHours,SUM(taskInfo.overHour)
+		as overHours FROM
+		(select tt.id as detailId,tt.task_hour as
+		taskHour,tt.over_hour as
+		overHour,t.`owner` as ownerId,t.id as taskId
+		from task_details as tt
+		LEFT JOIN task as t ON tt.task_id = t.id
+		where
+		tt.modified BETWEEN CONCAT(#{beginTime,jdbcType=VARCHAR},' 00:00:00')
+		AND CONCAT(#{endTime,jdbcType=VARCHAR},' 23:59:59') ) as taskInfo LEFT
+		JOIN
+		(select utt.id as id,utt.real_name as real_name,dt.`name` as
+		departmentName,utt.department_id as departmentId from `user` as utt
+		LEFT JOIN department as dt on utt.department_id = dt.id) as ut
+		ON
+		taskInfo.ownerId = ut.id where 1=1
+		<if test="uIds != null and uIds.size>0">
+			and ut.id in
+			<foreach item="item" index="index" collection="uIds" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="departmentIds != null and departmentIds.size>0">
+			and ut.departmentId in
+			<foreach item="item" index="index" collection="departmentIds"
+				open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
 	</select>
 	<!-- 项目以及项目所用总工时 -->
 	<select id="selectProjectHours" resultType="com.dili.alm.domain.dto.TaskHoursByProjectDto">
@@ -557,14 +596,25 @@
 	<!-- 数据统计相关 end -->
 
 	<select id="selectTaskStateCount" resultType="com.dili.alm.domain.dto.TaskStateCountDto">
-		select d.`code` as taskState,count(*) as stateCount from alm.task as t
-		LEFT JOIN alm.data_dictionary_value as d ON t.`status` = d.`value`
-		where d.dd_id =16 and t.project_id in
-		<foreach item="item" index="index" collection="list" open="("
-			separator="," close=")">
-			#{item}
-		</foreach>
-		GROUP BY t.`status`
+		SELECT d.code  as taskState,
+  		IFNULL(t1.totalCount, 0) as stateCount 
+		FROM
+ 		alm.data_dictionary_value AS d 
+  		LEFT JOIN 
+    	(SELECT 
+      		t.status AS task_state,
+      		COUNT(*) AS totalCount 
+    		FROM
+      		alm.task AS t 
+    		WHERE  t.project_id IN 
+		    <foreach item="item" index="index" collection="list" open="("
+					separator="," close=")">
+					#{item}
+			</foreach>
+    		GROUP BY t.status
+    	) t1 
+    ON d.value = t1.task_state 
+    WHERE d.dd_id =16
 	</select>
 
 	<select id="getStateByTaskCount" resultType="com.dili.alm.domain.dto.TaskStateCountDto">

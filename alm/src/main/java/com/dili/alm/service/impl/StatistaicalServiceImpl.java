@@ -148,10 +148,17 @@ public class StatistaicalServiceImpl implements StatisticalService {
 			endTime += "";
 		}
 
-		List<TaskByUsersDto> list = taskMapper.selectTaskHourByUser(startTime, endTime, dids, uids);
+		List<TaskByUsersDto> list = taskMapper.selectTaskHourByUser(startTime, endTime, dids,uids);
+		list.add(this.getTotal(startTime, endTime, uids, dids));
 		return list;
 	}
-
+	
+	
+	private TaskByUsersDto getTotal(String startTime,
+			String endTime, List<Long> uids, List<Long> dids){
+		return taskMapper.selectTotalTaskHourByUser(startTime, endTime, dids,uids);
+	}
+	
 	/***
 	 * 查询项目以及项目工时 ，表头
 	 */
