@@ -312,8 +312,8 @@ body {
 	        	  			$("#user-workday").append("<span>"+data1.workDayYear+"年 第"+data1.wordDayWeek+"周  "+UnixToDate(data1.workStartTime)+" -- "+UnixToDate(data1.workEndTime)+"</span>");
 	        	  		}
 	        	  }else{
-		        	  	$("#user-workday-outer").append("<p>不是工作日</p");
-		        		$("#user-workday").append("<span>不是工作日</span>");
+		        	  	$("#user-workday-outer").append("<p>非工作日</p><p>"+UnixToDate(0)+"</p>");
+		        		$("#user-workday").append("<span>非工作日："+UnixToYear()+"年 "+UnixToDate(0)+"</span>");
 	        	  }
 	          },  
 	          error: function (data1) {  
@@ -321,10 +321,18 @@ body {
 	          }  
 	     });  
 	}
-	
+	function UnixToYear(){
+		var yearTime=new Date();
+		return yearTime.getFullYear();
+	}
 	function UnixToDate(unixTime) {
-
-        var time = new Date(unixTime);
+		var time ;
+		if(unixTime==0){
+			time = new Date();
+		}else{
+			time = new Date(unixTime);
+		}
+        
         var ymdhis = "";
         if(time.getUTCMonth()+1<10){
         	ymdhis += "0"+(time.getUTCMonth()+1) + "/";

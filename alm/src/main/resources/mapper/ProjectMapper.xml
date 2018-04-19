@@ -169,33 +169,46 @@
 	</select>
 	
 	<select id="getTpyeByProjectCount" resultType="com.dili.alm.domain.dto.ProjectStatusCountDto">
-		SELECT type as projectType ,project_state as projectState,COUNT(*) as stateCount
-		FROM `project` 
-		WHERE 
+		SELECT p.TYPE AS projectType ,p.project_state AS projectState,COUNT(*) AS stateCount
+		FROM `project` p
+		WHERE p.type=#{type,jdbcType=VARCHAR}  AND
 		(
-			(#{startTime}&lt;=start_date AND start_date&lt;=#{endTime})
-			OR
-			(#{startTime}&lt;=end_date AND end_date&lt;=#{endTime})
-			OR
-			(start_date&lt;=#{startTime} AND #{endTime}&lt;=end_date)
+			(p.project_state&lt;&gt;4 
+			AND p.created&lt;=#{endTime}
+			) 
+			
+			OR 
+			(
+				p.`project_state`=4 
+			 AND
+			 (
+				(#{startTime}&lt;=p.actual_end_date AND p.actual_end_date&lt;=#{endTime})
+				OR
+				(p.created&lt;=#{startTime} AND #{endTime}&lt;=p.actual_end_date )
+			    )
+			 )
 		)
-		AND TYPE=#{type,jdbcType=VARCHAR} 
-		GROUP BY project_state
-
-
+		GROUP BY p.project_state
 	</select>
 	
 	<select id="getProjectIds" resultType="java.lang.Long">
 		SELECT id
 		FROM `project` 
 		WHERE 
+			(project_state&lt;&gt;4 
+			AND created&lt;=#{endTime}
+			) 
+			
+			OR 
 			(
-			(#{startTime}&lt;=start_date AND start_date&lt;=#{endTime})
-			OR
-			(#{startTime}&lt;=end_date AND end_date&lt;=#{endTime})
-			OR
-			(start_date&lt;=#{startTime} AND #{endTime}&lt;=end_date)
-			)
+				project_state=4 
+			 AND
+			 (
+				(#{startTime}&lt;=actual_end_date AND actual_end_date&lt;=#{endTime})
+				OR
+				(created&lt;=#{startTime} AND #{endTime}&lt;=actual_end_date )
+			    )
+			 )
 	</select>
 	
 	
@@ -210,13 +223,23 @@
 		ON p.apply_id=pa.id 
 		WHERE 1=1
 		<if test="list == null or list.size==0">
-		AND (
-			(#{startTime}&lt;=p.start_date AND p.start_date&lt;=#{endTime})
-			OR
-			(#{startTime}&lt;=p.end_date AND p.end_date&lt;=#{endTime})
-			OR
-			(p.start_date&lt;=#{startTime} AND #{endTime}&lt;=p.end_date)
-			)
+		AND 
+			(
+				(p.project_state&lt;&gt;4 
+					AND p.created&lt;=#{endTime}
+				) 
+				
+				OR 
+				(
+					p.project_state=4 
+				 AND
+				 (
+					(#{startTime}&lt;=p.actual_end_date AND p.actual_end_date&lt;=#{endTime})
+					OR
+					(p.created&lt;=#{startTime} AND #{endTime}&lt;=p.actual_end_date )
+				    )
+				 )
+			 )
 		</if>
 		<if test="list != null and list.size>0">
 			AND p.id IN 
@@ -238,12 +261,21 @@
 		WHERE 1=1
 		<if test="list == null or list.size==0">
 		AND (
-			(#{startTime}&lt;=p.start_date AND p.start_date&lt;=#{endTime})
-			OR
-			(#{startTime}&lt;=p.end_date AND p.end_date&lt;=#{endTime})
-			OR
-			(p.start_date&lt;=#{startTime} AND #{endTime}&lt;=p.end_date)
-			)
+				(p.project_state&lt;&gt;4 
+					AND p.created&lt;=#{endTime}
+				) 
+				
+				OR 
+				(
+					p.project_state=4 
+				 AND
+				 (
+					(#{startTime}&lt;=p.actual_end_date AND p.actual_end_date&lt;=#{endTime})
+					OR
+					(p.created&lt;=#{startTime} AND #{endTime}&lt;=p.actual_end_date )
+				    )
+				 )
+			 )
 		</if>
 		<if test="list != null and list.size>0">
 			AND p.id IN 
@@ -259,13 +291,20 @@
 		SELECT COUNT(*)
 		FROM `project` 
 		WHERE 
+			(project_state&lt;&gt;4 
+			AND created&lt;=#{endTime}
+			) 
+			
+			OR 
 			(
-			(#{startTime}&lt;=start_date AND start_date&lt;=#{endTime})
-			OR
-			(#{startTime}&lt;=end_date AND end_date&lt;=#{endTime})
-			OR
-			(start_date&lt;=#{startTime} AND #{endTime}&lt;=end_date)
-			)
+				project_state=4 
+			 AND
+			 (
+				(#{startTime}&lt;=actual_end_date AND actual_end_date&lt;=#{endTime})
+				OR
+				(created&lt;=#{startTime} AND #{endTime}&lt;=actual_end_date )
+			    )
+			 )
 	</select>
 	
 	<select id="getStateByProjectCount" resultType="com.dili.alm.domain.dto.ProjectStatusCountDto">
