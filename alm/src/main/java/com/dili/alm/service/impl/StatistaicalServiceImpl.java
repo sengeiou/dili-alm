@@ -27,6 +27,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.dao.TaskMapper;
+import com.dili.alm.dao.WorkDayMapper;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
@@ -37,6 +38,7 @@ import com.dili.alm.domain.dto.ProjectYearCoverDto;
 import com.dili.alm.domain.dto.ProjectYearCoverForAllDto;
 import com.dili.alm.domain.dto.SelectTaskHoursByUserDto;
 import com.dili.alm.domain.dto.SelectTaskHoursByUserProjectDto;
+import com.dili.alm.domain.dto.SelectYearsDto;
 import com.dili.alm.domain.dto.TaskByUsersDto;
 import com.dili.alm.domain.dto.TaskHoursByProjectDto;
 import com.dili.alm.domain.dto.TaskStateCountDto;
@@ -58,6 +60,9 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	@Autowired
 	DataDictionaryService dataDictionaryService;
 
+	@Autowired
+	WorkDayMapper wdMapper;
+	
 	private static final String PROJECT_TYPE_CODE = "project_type";
 	private static final String TASK_STATE_CODE = "task_status";
 	private static final String SELECT_HOURS_BY_USER_START_DATE = "2018-01-01";// 项目上线日期
@@ -527,8 +532,20 @@ public class StatistaicalServiceImpl implements StatisticalService {
 
 		return listProjectTaskOverHours;
 	}
-
-	/*** 查询工时相关services****by******JING***END ****/
+	
+	@Override
+	public List<SelectYearsDto> SelectYears() {
+		List<String> yearList = wdMapper.getWorkYear();
+		List<SelectYearsDto> dtoList = new ArrayList<SelectYearsDto>(yearList.size());
+		yearList.forEach(c->{
+			SelectYearsDto newDto = new SelectYearsDto();
+			newDto.setText(c+"年");
+			newDto.setValue(c);
+			dtoList.add(newDto);});
+		return dtoList;
+	}
+	
+	/***查询工时相关services****by******JING***END****/
 
 	/**
 	 * 项目进展总汇
