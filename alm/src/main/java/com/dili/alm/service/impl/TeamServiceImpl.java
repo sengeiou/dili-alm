@@ -37,7 +37,6 @@ import com.dili.ss.metadata.ValueProviderUtils;
 @Service
 public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements TeamService {
 
-	private static final String TEAM_ROLE_CODE = "team_role";
 	@Autowired
 	DataAuthRpc dataAuthRpc;
 	@Autowired
@@ -140,7 +139,7 @@ public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements Team
 
 	@Override
 	public List<DataDictionaryValueDto> getTeamRoles() {
-		DataDictionaryDto dto = this.dataDictionaryService.findByCode(TEAM_ROLE_CODE);
+		DataDictionaryDto dto = this.dataDictionaryService.findByCode(AlmConstants.TEAM_ROLE_CODE);
 		if (dto == null) {
 			return null;
 		}

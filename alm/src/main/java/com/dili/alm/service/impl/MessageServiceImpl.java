@@ -39,35 +39,36 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * 由MyBatis Generator工具自动生成
- * This file was generated on 2017-12-05 10:42:19.
+ * 由MyBatis Generator工具自动生成 This file was generated on 2017-12-05 10:42:19.
  */
 @Service
 public class MessageServiceImpl extends BaseServiceImpl<Message, Long> implements MessageService {
 
-    public MessageMapper getActualDao() {
-        return (MessageMapper)getDao();
-    }
-    @Autowired
-    private DataDictionaryValueMapper dataDictionaryValueMapper;
-    @Autowired
-    private DataDictionaryService dataDictionaryService;
-    @Autowired
-    private ApproveService approveService;
-    @Autowired
-    private TaskService taskService;
+	public MessageMapper getActualDao() {
+		return (MessageMapper) getDao();
+	}
 
-    private static final String MESSAGE_TYPE_CODE = "message_type";
+	@Autowired
+	private DataDictionaryValueMapper dataDictionaryValueMapper;
+	@Autowired
+	private DataDictionaryService dataDictionaryService;
+	@Autowired
+	private ApproveService approveService;
+	@Autowired
+	private TaskService taskService;
+
+	private static final String MESSAGE_TYPE_CODE = "message_type";
+
 	@Override
-	public int insertMessage(String messageUrl, Long sender, Long recipient,Integer type) {
+	public int insertMessage(String messageUrl, Long sender, Long recipient, Integer type) {
 		Message message = DTOUtils.newDTO(Message.class);
 		message.setUrl(messageUrl);
 		message.setSender(sender);
 		message.setRecipient(recipient);
 		message.setType(type);
 		message.setCreated(new Date());
-		message.setName(setMessageName(messageUrl,type));
-		return this.getActualDao().insertSelective(message);	
+		message.setName(setMessageName(messageUrl, type));
+		return this.getActualDao().insertSelective(message);
 	}
 
 	@Override
@@ -78,31 +79,33 @@ public class MessageServiceImpl extends BaseServiceImpl<Message, Long> implement
 	}
 
 	@Override
-	public Map<String,Object> mapMessagges(String userId) {
-		Map<String,Object> map=new HashMap<String, Object>();
-		if(WebUtil.strIsEmpty(userId)){
+	public Map<String, Object> mapMessagges(String userId) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		if (WebUtil.strIsEmpty(userId)) {
 			throw new RuntimeException("未登录");
 		}
-		Message message=DTOUtils.newDTO(Message.class);
+		Message message = DTOUtils.newDTO(Message.class);
 		message.setRecipient(Long.parseLong(userId));
 		message.setIsRead(false);
-		List<MessageDto> listDto=new ArrayList<MessageDto>();
-		MessageDto messageDto=null;
-		synchronized (this) {// 这个很重要，必须使用一个锁， 
+		List<MessageDto> listDto = new ArrayList<MessageDto>();
+		MessageDto messageDto = null;
+		synchronized (this) {// 这个很重要，必须使用一个锁，
 			List<Message> list = this.getActualDao().selectMessages(message);
 			for (Message newMessage : list) {
-				 messageDto=new MessageDto();
-				 messageDto.setId(newMessage.getId());
-				 messageDto.setIsRead(newMessage.getIsRead());
-				 messageDto.setUrl(newMessage.getUrl());
-				 messageDto.setMessageName(AlmCache.MESSAGE_TYPE_MAP.get(newMessage.getType().toString())+":"+newMessage.getName());
-				 listDto.add(messageDto);
+				messageDto = new MessageDto();
+				messageDto.setId(newMessage.getId());
+				messageDto.setIsRead(newMessage.getIsRead());
+				messageDto.setUrl(newMessage.getUrl());
+				messageDto
+						.setMessageName(AlmCache.getInstance().getMessageTypeMap().get(newMessage.getType().toString())
+								+ ":" + newMessage.getName());
+				listDto.add(messageDto);
 			}
 			int count = this.getActualDao().selectMessagesCount(message);
 			map.put("messages", listDto);
 			map.put("count", count);
 		}
-		
+
 		return map;
 	}
 
@@ -117,64 +120,64 @@ public class MessageServiceImpl extends BaseServiceImpl<Message, Long> implement
 
 	@Override
 	public int deleteMessage(Long id, Integer type) {
-		String url=null;
-		 switch (type) {
-         case 1:
-             url="apply/"+id;
-             break;
-         case 3:
-        	 url="task/"+id;
-             break;
-         case 4:
-        	 url="complete/"+id;
-             break;
-         case 6:
-        	 url="change/"+id;
-             break;
-		 }
-		 return this.getActualDao().deleteLikeUrl(url);
-		 
+		String url = null;
+		switch (type) {
+		case 1:
+			url = "apply/" + id;
+			break;
+		case 3:
+			url = "task/" + id;
+			break;
+		case 4:
+			url = "complete/" + id;
+			break;
+		case 6:
+			url = "change/" + id;
+			break;
+		}
+		return this.getActualDao().deleteLikeUrl(url);
+
 	}
-	
-	public  String setMessageName(String url,Integer type){
-		 StringBuffer messageName=new StringBuffer();
-		 String[] split=url.split("/");
-		 Long id =Long.parseLong(split[split.length-1]);
-		 switch (type) {
-           case 1:
-        	   Approve projectApply = approveService.get(id);
-               if(projectApply.getName().length()>5){
-               	messageName.append(projectApply.getName().substring(0,5)).append("...");
-               }else{
-               	messageName.append(projectApply.getName());
-               }
-               break;
-           case 3:
-               Task task = taskService.get(id);
-               if(task.getName().length()>5){
-               	messageName.append(task.getName().substring(0,5)).append("...");
-               }else{
-               	messageName.append(task.getName());
-               }
-               break;
-           case 4:
-        	   Approve projectComplete = approveService.get(id);
-           	if(projectComplete.getName().length()>5){
-               	messageName.append(projectComplete.getName().substring(0,5)).append("...");
-               }else{
-               	messageName.append(projectComplete.getName());
-               }
-               break;
-           case 6:
-        	   Approve projectChange = approveService.get(id);
-               if(projectChange.getName().length()>5){
-               	messageName.append(projectChange.getName().substring(0,5)).append("...");
-               }else{
-               	messageName.append(projectChange.getName());
-               }
-               break;
-              
-		 }
+
+	public String setMessageName(String url, Integer type) {
+		StringBuffer messageName = new StringBuffer();
+		String[] split = url.split("/");
+		Long id = Long.parseLong(split[split.length - 1]);
+		switch (type) {
+		case 1:
+			Approve projectApply = approveService.get(id);
+			if (projectApply.getName().length() > 5) {
+				messageName.append(projectApply.getName().substring(0, 5)).append("...");
+			} else {
+				messageName.append(projectApply.getName());
+			}
+			break;
+		case 3:
+			Task task = taskService.get(id);
+			if (task.getName().length() > 5) {
+				messageName.append(task.getName().substring(0, 5)).append("...");
+			} else {
+				messageName.append(task.getName());
+			}
+			break;
+		case 4:
+			Approve projectComplete = approveService.get(id);
+			if (projectComplete.getName().length() > 5) {
+				messageName.append(projectComplete.getName().substring(0, 5)).append("...");
+			} else {
+				messageName.append(projectComplete.getName());
+			}
+			break;
+		case 6:
+			Approve projectChange = approveService.get(id);
+			if (projectChange.getName().length() > 5) {
+				messageName.append(projectChange.getName().substring(0, 5)).append("...");
+			} else {
+				messageName.append(projectChange.getName());
+			}
+			break;
+
+		}
 		return messageName.toString();
 	}
 }

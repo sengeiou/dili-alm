@@ -22,26 +22,10 @@ import java.util.Map;
 @Component
 public class MemberProvider implements ValueProvider {
 
-	@Autowired
-	private UserRpc userRpc;
-
-	@PostConstruct
-	public void init(){
-		//应用启动时初始化userMap
-		if(AlmCache.USER_MAP.isEmpty()){
-			BaseOutput<List<User>> output = userRpc.list(new User());
-			if(output.isSuccess()){
-				output.getData().forEach(user ->{
-					AlmCache.USER_MAP.put(user.getId(), user);
-				});
-			}
-		}
-	}
 	@Override
 	public List<ValuePair<?>> getLookupList(Object o, Map map, FieldMeta fieldMeta) {
-		init();
 		ArrayList buffer = new ArrayList<ValuePair<?>>();
-		AlmCache.USER_MAP.forEach((k, v)->{
+		AlmCache.getInstance().getUserMap().forEach((k, v) -> {
 			buffer.add(new ValuePairImpl(v.getRealName(), k));
 		});
 		return buffer;
@@ -49,9 +33,9 @@ public class MemberProvider implements ValueProvider {
 
 	@Override
 	public String getDisplayText(Object o, Map map, FieldMeta fieldMeta) {
-		if(o == null) return null;
-		init();
-		User user = AlmCache.USER_MAP.get(Long.parseLong(o.toString()));
+		if (o == null)
+			return null;
+		User user = AlmCache.getInstance().getUserMap().get(Long.parseLong(o.toString()));
 		return user == null ? null : user.getRealName();
 	}
 }

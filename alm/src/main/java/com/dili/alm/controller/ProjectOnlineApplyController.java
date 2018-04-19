@@ -316,7 +316,7 @@ public class ProjectOnlineApplyController {
 		List<Project> projects = this.projectService.selectByExample(example);
 		modelMap.addAttribute("projects", projects);
 		List<Project> plist = this.projectService.list(null);
-		modelMap.addAttribute("plist", plist).addAttribute("ulist", AlmCache.USER_MAP.values());
+		modelMap.addAttribute("plist", plist).addAttribute("ulist", AlmCache.getInstance().getUserMap().values());
 		DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.MARKET_CODE);
 		if (dd != null) {
 			modelMap.addAttribute("markets", dd.getValues());

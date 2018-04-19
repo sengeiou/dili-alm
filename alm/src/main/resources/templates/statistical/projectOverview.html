@@ -214,13 +214,13 @@
 
     var labelOption = {
         normal: {
-            show: true,
+            show: false,//柱形图上文字
             position: app.config.position,
             distance: app.config.distance,
             align: app.config.align,
             verticalAlign: app.config.verticalAlign,
             rotate: app.config.rotate,
-            formatter: '{c}  {name|{a}}',
+            formatter: '{c}  {name|{a}}',//柱状图文字格式
             fontSize: 16,
             rich: {
                 name: {

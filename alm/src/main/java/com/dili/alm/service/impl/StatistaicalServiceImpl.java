@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -547,8 +546,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	}
 	
 	/***查询工时相关services****by******JING***END****/
-	
-	
+
 	/**
 	 * 项目进展总汇
 	 */
@@ -754,10 +752,5 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		}
 		return list;
 	}
-
-
-
-
-}
 
 }

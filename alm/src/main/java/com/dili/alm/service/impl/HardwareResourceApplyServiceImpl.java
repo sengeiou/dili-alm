@@ -403,7 +403,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		}
 		// 发邮件给执行人
 		Set<String> emails = new HashSet<>(executors.size());
-		executors.forEach(e -> emails.add(AlmCache.USER_MAP.get(e).getEmail()));
+		executors.forEach(e -> emails.add(AlmCache.getInstance().getUserMap().get(e).getEmail()));
 		this.sendMail(apply, "IT资源申请", emails);
 	}
 
@@ -452,7 +452,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		}
 		// 发邮件给申请人
 		// 查询数据字典配置
-		User user = AlmCache.USER_MAP.get(apply.getApplicantId());
+		User user = AlmCache.getInstance().getUserMap().get(apply.getApplicantId());
 		if (user == null) {
 			throw new HardwareResourceApplyException("申请人不存在");
 		}
@@ -548,7 +548,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		// 发邮件给项目经理,研发部总经理，运维部经理，研发经理，申请人
 		List<String> to = new ArrayList<>(5);
 		// 查询项目经理
-		User projectManager = AlmCache.USER_MAP.get(apply.getProjectManagerId());
+		User projectManager = AlmCache.getInstance().getUserMap().get(apply.getProjectManagerId());
 		if (projectManager == null) {
 			throw new HardwareResourceApplyException("项目经理不存在");
 		}
@@ -560,7 +560,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		// 查询研发经理
 		to.add(this.queryProjectDevelopmentManager(apply).getEmail());
 		// 查询申请人
-		User applicant = AlmCache.USER_MAP.get(apply.getApplicantId());
+		User applicant = AlmCache.getInstance().getUserMap().get(apply.getApplicantId());
 		if (applicant == null) {
 			throw new HardwareResourceApplyException("申请人不存在");
 		}
@@ -654,7 +654,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		if (ddValue == null) {
 			throw new HardwareResourceApplyException("请先配置研发中心总经理数据字典");
 		}
-		Map.Entry<Long, User> entry = AlmCache.USER_MAP.entrySet().stream()
+		Map.Entry<Long, User> entry = AlmCache.getInstance().getUserMap().entrySet().stream()
 				.filter(e -> e.getValue().getUserName().equals(ddValue.getValue())).findFirst().orElse(null);
 		if (entry == null) {
 			throw new HardwareResourceApplyException("研发部总经理账号不存在，请确认数据字典配置正确");
@@ -673,7 +673,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		if (ddValue == null) {
 			throw new HardwareResourceApplyException("请先配置运维部经理数据字典");
 		}
-		Map.Entry<Long, User> entry = AlmCache.USER_MAP.entrySet().stream()
+		Map.Entry<Long, User> entry = AlmCache.getInstance().getUserMap().entrySet().stream()
 				.filter(e -> e.getValue().getUserName().equals(ddValue.getValue())).findFirst().orElse(null);
 		if (entry == null) {
 			throw new HardwareResourceApplyException("运维部经理账号不存在，请确认数据字典配置正确");
@@ -686,7 +686,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		if (project == null) {
 			throw new HardwareResourceApplyException("项目不存在");
 		}
-		User user = AlmCache.USER_MAP.get(project.getDevelopManager());
+		User user = AlmCache.getInstance().getUserMap().get(project.getDevelopManager());
 		if (user == null) {
 			throw new HardwareResourceApplyException("项目研发经理不存在");
 		}
