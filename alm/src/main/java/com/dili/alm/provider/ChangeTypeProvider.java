@@ -21,29 +21,15 @@ import java.util.Map;
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-10-24 14:31:10.
  */
 @Component
-public class ChangeTypeProvider implements ValueProvider, ApplicationListener<ContextRefreshedEvent> {
+public class ChangeTypeProvider implements ValueProvider {
 
 	@Autowired
 	private DataDictionaryService dataDictionaryService;
 
 	@Override
-	public void onApplicationEvent(ContextRefreshedEvent event) {
-		init();
-	}
-
-	public void init() {
-		if (AlmCache.CHANGE_TYPE.isEmpty()) {
-			DataDictionaryDto code = dataDictionaryService.findByCode("change_type");
-			List<DataDictionaryValueDto> list = code != null ? code.getValues() : null;
-			list.forEach(type -> AlmCache.CHANGE_TYPE.put(type.getValue(), type.getCode()));
-		}
-	}
-
-	@Override
 	public List<ValuePair<?>> getLookupList(Object obj, Map metaMap, FieldMeta fieldMeta) {
-		init();
 		List<ValuePair<?>> buffer = new ArrayList<>();
-		AlmCache.CHANGE_TYPE.forEach((k, v) -> buffer.add(new ValuePairImpl<>(v, k)));
+		AlmCache.getInstance().getChangeType().forEach((k, v) -> buffer.add(new ValuePairImpl<>(v, k)));
 		return buffer;
 	}
 
@@ -51,6 +37,6 @@ public class ChangeTypeProvider implements ValueProvider, ApplicationListener<Co
 	public String getDisplayText(Object obj, Map metaMap, FieldMeta fieldMeta) {
 		if (obj == null || "".equals(obj))
 			return null;
-		return AlmCache.CHANGE_TYPE.get(obj.toString());
+		return AlmCache.getInstance().getChangeType().get(obj.toString());
 	}
 }

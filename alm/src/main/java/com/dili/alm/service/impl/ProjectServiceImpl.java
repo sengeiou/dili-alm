@@ -66,9 +66,6 @@ import com.github.pagehelper.Page;
 public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implements ProjectService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProjectServiceImpl.class);
-	private static final String PROJECT_TYPE_CODE = "project_type";
-	private static final String PROJECT_STATE_CODE = "project_state";
-	private static final String PROJECT_FILE_TYPE_CODE = "project_file_type";
 
 	@Autowired
 	DataDictionaryService dataDictionaryService;
@@ -99,7 +96,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	public int update(Project condtion) {
 		// 同步更新缓存
 		if (StringUtils.isNotBlank(condtion.getName())) {
-			AlmCache.PROJECT_MAP.get(condtion.getId()).setName(condtion.getName());
+			AlmCache.getInstance().getProjectMap().get(condtion.getId()).setName(condtion.getName());
 		}
 		BaseOutput<DataDictionaryDto> output = dataAuthRpc.updateDataAuth(condtion.getId().toString(),
 				AlmConstants.DATA_AUTH_TYPE_PROJECT, condtion.getName());
@@ -113,7 +110,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	public int insert(Project project) {
 		int i = super.insert(project);
 		// 同步更新缓存
-		AlmCache.PROJECT_MAP.put(project.getId(), project);
+		AlmCache.getInstance().getProjectMap().put(project.getId(), project);
 		// 向权限系统中添加项目数据权限
 		String parentId = project.getParentId() == null ? null : project.getParentId().toString();
 		BaseOutput<DataDictionaryDto> output = dataAuthRpc.addDataAuth(project.getId().toString(),
@@ -128,7 +125,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	public int insertSelective(Project project) {
 		int i = super.insertSelective(project);
 		// 同步更新缓存
-		AlmCache.PROJECT_MAP.put(project.getId(), project);
+		AlmCache.getInstance().getProjectMap().put(project.getId(), project);
 		// 向权限系统中添加项目数据权限
 		String parentId = project.getParentId() == null ? null : project.getParentId().toString();
 		BaseOutput<DataDictionaryDto> output = dataAuthRpc.addDataAuth(project.getId().toString(),
@@ -141,7 +138,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 
 	@Override
 	public int delete(Long id) {
-		AlmCache.PROJECT_MAP.remove(id);
+		AlmCache.getInstance().getProjectMap().remove(id);
 		BaseOutput<DataDictionaryDto> output = dataAuthRpc.deleteDataAuth(id.toString(),
 				AlmConstants.DATA_AUTH_TYPE_PROJECT);
 		if (!output.isSuccess()) {
@@ -153,7 +150,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	@Override
 	public int delete(List<Long> ids) {
 		ids.forEach(id -> {
-			AlmCache.PROJECT_MAP.remove(id);
+			AlmCache.getInstance().getProjectMap().remove(id);
 			BaseOutput<DataDictionaryDto> output = dataAuthRpc.deleteDataAuth(id.toString(),
 					AlmConstants.DATA_AUTH_TYPE_PROJECT);
 			if (!output.isSuccess()) {
@@ -165,7 +162,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 
 	@Override
 	public List<DataDictionaryValueDto> getPojectTypes() {
-		DataDictionaryDto dto = this.dataDictionaryService.findByCode(PROJECT_TYPE_CODE);
+		DataDictionaryDto dto = this.dataDictionaryService.findByCode(AlmConstants.PROJECT_TYPE_CODE);
 		if (dto == null) {
 			return null;
 		}
@@ -300,7 +297,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 
 		result = this.updateSelective(project);
 		// 刷新projectProvider缓存
-		AlmCache.PROJECT_MAP.put(project.getId(), project);
+		AlmCache.getInstance().getProjectMap().put(project.getId(), project);
 
 		dataAuthRpc.updateDataAuth(project.getId().toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName());
 		if (result > 0) {
@@ -311,7 +308,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 
 	@Override
 	public List<DataDictionaryValueDto> getProjectStates() {
-		DataDictionaryDto dto = this.dataDictionaryService.findByCode(PROJECT_STATE_CODE);
+		DataDictionaryDto dto = this.dataDictionaryService.findByCode(AlmConstants.PROJECT_STATE_CODE);
 		if (dto == null) {
 			return null;
 		}
@@ -388,7 +385,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 
 	@Override
 	public List<DataDictionaryValueDto> getFileTypes() {
-		DataDictionaryDto dto = this.dataDictionaryService.findByCode(PROJECT_FILE_TYPE_CODE);
+		DataDictionaryDto dto = this.dataDictionaryService.findByCode(AlmConstants.PROJECT_FILE_TYPE_CODE);
 		if (dto == null) {
 			return null;
 		}
@@ -453,7 +450,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		ProjectVersion version = this.projectVersionMapper.selectByPrimaryKey(dto.getVersionId());
 		ProjectPhase phase = this.phaseMapper.selectByPrimaryKey(dto.getPhaseId());
 		sb.append("项目名称：").append(project.getName()).append(version.getVersion()).append("\r\n阶段名称：")
-				.append(AlmCache.PHASE_NAME_MAP.get(phase.getName()));
+				.append(AlmCache.getInstance().getPhaseNameMap().get(phase.getName()));
 		String content = sb.toString();
 		for (String str : userIds) {
 			BaseOutput<User> output = this.userRPC.findUserById(Long.valueOf(str));

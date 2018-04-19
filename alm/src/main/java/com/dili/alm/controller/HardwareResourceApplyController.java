@@ -47,15 +47,14 @@ import io.swagger.annotations.ApiOperation;
 import tk.mybatis.mapper.entity.Example;
 
 /**
- * 由MyBatis Generator工具自动生成
- * This file was generated on 2018-03-20 17:22:08.
+ * 由MyBatis Generator工具自动生成 This file was generated on 2018-03-20 17:22:08.
  */
 @Api("/hardwareResourceApply")
 @Controller
 @RequestMapping("/hardwareResourceApply")
 public class HardwareResourceApplyController {
-    @Autowired
-    HardwareResourceApplyService hardwareResourceApplyService;
+	@Autowired
+	HardwareResourceApplyService hardwareResourceApplyService;
 	@Autowired
 	private ProjectService projectService;
 	@Autowired
@@ -64,20 +63,19 @@ public class HardwareResourceApplyController {
 	private DepartmentRpc deptRpc;
 	@Autowired
 	private DataDictionaryValueService ddvService;
-	
+
 	@Autowired
 	private DataDictionaryService ddService;
-	
+
 	private static final String DATA_AUTH_TYPE = "Project";
-	
-    @ApiOperation("跳转到HardwareResourceApply页面")
-    @RequestMapping(value="/index.html", method = RequestMethod.GET)
-    public String index(ModelMap modelMap) {
-        return "hardwareResourceApply/index";
-    }
-    
-    
-    @RequestMapping(value = "/add", method = RequestMethod.GET)
+
+	@ApiOperation("跳转到HardwareResourceApply页面")
+	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
+	public String index(ModelMap modelMap) {
+		return "hardwareResourceApply/index";
+	}
+
+	@RequestMapping(value = "/add", method = RequestMethod.GET)
 	public String addView(ModelMap modelMap) {
 		@SuppressWarnings("rawtypes")
 		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
@@ -91,21 +89,21 @@ public class HardwareResourceApplyController {
 		criteria.andIn("id", projectIds);
 		List<Project> projects = this.projectService.selectByExample(example);
 		modelMap.addAttribute("projects", projects);
-		
-		/**查询 所有部门***/
-		List<Department> departments =  this.deptRpc.list(new Department()).getData();
+
+		/** 查询 所有部门 ***/
+		List<Department> departments = this.deptRpc.list(new Department()).getData();
 		modelMap.addAttribute("departments", departments);
-		
-		/**个人信息**/
+
+		/** 个人信息 **/
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		modelMap.addAttribute("userInfo", userTicket);
-		
-		/***环境**/
+
+		/*** 环境 **/
 		DataDictionaryValue dd = DTOUtils.newDTO(DataDictionaryValue.class);
 		dd.setDdId((long) 23);
 		List<DataDictionaryValue> ddValue = ddvService.list(dd);
 		modelMap.addAttribute("ddValue", ddValue);
-		/***运维部门下的所有人员查询 begin**/
+		/*** 运维部门下的所有人员查询 begin **/
 		Department deptQuery = new Department();
 		deptQuery.setCode(AlmConstants.OPERATION_DEPARTMENT_CODE);
 		BaseOutput<List<Department>> deptOutput = this.deptRpc.list(deptQuery);
@@ -120,12 +118,11 @@ public class HardwareResourceApplyController {
 				modelMap.addAttribute("opUsers", sb.substring(0, sb.length() - 1));
 			}
 		}
-		/***运维部门下的所有人员查询 end**/
+		/*** 运维部门下的所有人员查询 end **/
 		return "hardwareResourceApply/add";
 	}
-    
-    
-    @RequestMapping(value = "/toUpdate", method = RequestMethod.GET)
+
+	@RequestMapping(value = "/toUpdate", method = RequestMethod.GET)
 	public String updateView(@RequestParam Long id, ModelMap modelMap) {
 		@SuppressWarnings("rawtypes")
 		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
@@ -140,115 +137,113 @@ public class HardwareResourceApplyController {
 		List<Project> projects = this.projectService.selectByExample(example);
 		modelMap.addAttribute("projects", projects);
 		List<Project> plist = this.projectService.list(null);
-		modelMap.addAttribute("plist", plist).addAttribute("ulist", AlmCache.USER_MAP.values());
-		
-		/**查询 所有部门***/
-		List<Department> departments =  this.deptRpc.list(new Department()).getData();
+		modelMap.addAttribute("plist", plist).addAttribute("ulist", AlmCache.getInstance().getUserMap().values());
+
+		/** 查询 所有部门 ***/
+		List<Department> departments = this.deptRpc.list(new Department()).getData();
 		modelMap.addAttribute("departments", departments);
-		
-		/**个人信息**/
+
+		/** 个人信息 **/
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		modelMap.addAttribute("userInfo", userTicket);
-		
-		/***环境**/
+
+		/*** 环境 **/
 		DataDictionaryValue dd = DTOUtils.newDTO(DataDictionaryValue.class);
 		dd.setDdId((long) 23);
 		List<DataDictionaryValue> ddValue = ddvService.list(dd);
 		modelMap.addAttribute("ddValue", ddValue);
-		
-		/***运维部门下的所有人员查询 begin**/
+
+		/*** 运维部门下的所有人员查询 begin **/
 		Department deptQuery = new Department();
 		deptQuery.setCode(AlmConstants.OPERATION_DEPARTMENT_CODE);
 		BaseOutput<List<Department>> deptOutput = this.deptRpc.list(deptQuery);
 		HardwareResourceApply dto = this.hardwareResourceApplyService.get(id);
 		modelMap.addAttribute("apply", dto);
-		String[] se=dto.getServiceEnvironment().split(";");
+		String[] se = dto.getServiceEnvironment().split(";");
 		modelMap.addAttribute("se", se);
-		modelMap.addAttribute("submit",DateUtil.getDate(dto.getSubmitTime()));//转化时间
+		modelMap.addAttribute("submit", DateUtil.getDate(dto.getSubmitTime()));// 转化时间
 		return "hardwareResourceApply/edit";
 	}
-    
-    @ApiOperation(value="查询HardwareResourceApply", notes = "查询HardwareResourceApply，返回列表信息")
-    @ApiImplicitParams({
-		@ApiImplicitParam(name="HardwareResourceApply", paramType="form", value = "HardwareResourceApply的form信息", required = false, dataType = "string")
-	})
-    @RequestMapping(value="/list", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody List<HardwareResourceApply> list(HardwareResourceApply hardwareResourceApply) {
-        return hardwareResourceApplyService.list(hardwareResourceApply);
-    }
 
-    @ApiOperation(value="分页查询HardwareResourceApply", notes = "分页查询HardwareResourceApply，返回easyui分页信息")
-    @ApiImplicitParams({
-		@ApiImplicitParam(name="HardwareResourceApply", paramType="form", value = "HardwareResourceApply的form信息", required = false, dataType = "string")
-	})
-    @RequestMapping(value="/listPage", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody String listPage(HardwareResourceApply hardwareResourceApply) throws Exception {
-        return hardwareResourceApplyService.listEasyuiPageByExample(hardwareResourceApply, true).toString();
-    }
+	@ApiOperation(value = "查询HardwareResourceApply", notes = "查询HardwareResourceApply，返回列表信息")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "HardwareResourceApply", paramType = "form", value = "HardwareResourceApply的form信息", required = false, dataType = "string") })
+	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody List<HardwareResourceApply> list(HardwareResourceApply hardwareResourceApply) {
+		return hardwareResourceApplyService.list(hardwareResourceApply);
+	}
 
-    @ApiOperation("新增HardwareResourceApply")
-    @ApiImplicitParams({
-		@ApiImplicitParam(name="HardwareResourceApply", paramType="form", value = "HardwareResourceApply的form信息", required = true, dataType = "string")
-	})
-    @RequestMapping(value="/save", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput insert(HardwareResourceApplyUpdateDto hardwareResourceApply,String[] serviceEnvironmentChk,String configurationRequirementJsonStr) {
-    	Set<Long> serviceEnvironments = new HashSet<Long>();
-    	for (int i = 0; i < serviceEnvironmentChk.length; i++) {
-    		serviceEnvironments.add(Long.parseLong(serviceEnvironmentChk[i]));
+	@ApiOperation(value = "分页查询HardwareResourceApply", notes = "分页查询HardwareResourceApply，返回easyui分页信息")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "HardwareResourceApply", paramType = "form", value = "HardwareResourceApply的form信息", required = false, dataType = "string") })
+	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody String listPage(HardwareResourceApply hardwareResourceApply) throws Exception {
+		return hardwareResourceApplyService.listEasyuiPageByExample(hardwareResourceApply, true).toString();
+	}
+
+	@ApiOperation("新增HardwareResourceApply")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "HardwareResourceApply", paramType = "form", value = "HardwareResourceApply的form信息", required = true, dataType = "string") })
+	@RequestMapping(value = "/save", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody BaseOutput insert(HardwareResourceApplyUpdateDto hardwareResourceApply,
+			String[] serviceEnvironmentChk, String configurationRequirementJsonStr) {
+		Set<Long> serviceEnvironments = new HashSet<Long>();
+		for (int i = 0; i < serviceEnvironmentChk.length; i++) {
+			serviceEnvironments.add(Long.parseLong(serviceEnvironmentChk[i]));
 		}
-    	hardwareResourceApply.setServiceEnvironments(serviceEnvironments);
-    	List<HardwareResourceRequirementDto> parseArray = JSONArray.parseArray(configurationRequirementJsonStr,HardwareResourceRequirementDto.class);
-    	hardwareResourceApply.setConfigurationRequirement(parseArray);
-     	try {
+		hardwareResourceApply.setServiceEnvironments(serviceEnvironments);
+		List<HardwareResourceRequirementDto> parseArray = JSONArray.parseArray(configurationRequirementJsonStr,
+				HardwareResourceRequirementDto.class);
+		hardwareResourceApply.setConfigurationRequirement(parseArray);
+		try {
 			hardwareResourceApplyService.saveOrUpdate(hardwareResourceApply);
 		} catch (HardwareResourceApplyException e) {
 			return BaseOutput.failure("新增失败");
 		}
-        return BaseOutput.success("新增成功");
-    }
+		return BaseOutput.success("新增成功");
+	}
 
-    @ApiOperation("修改HardwareResourceApply")
-    @ApiImplicitParams({
-		@ApiImplicitParam(name="HardwareResourceApply", paramType="form", value = "HardwareResourceApply的form信息", required = true, dataType = "string")
-	})
-    @RequestMapping(value="/update", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput update(HardwareResourceApplyUpdateDto hardwareResourceApply,String[] serviceEnvironmentChk,String configurationRequirementJsonStr) {
-    	Set<Long> serviceEnvironments = new HashSet<Long>();
-    	for (int i = 0; i < serviceEnvironmentChk.length; i++) {
-    		serviceEnvironments.add(Long.parseLong(serviceEnvironmentChk[i]));
+	@ApiOperation("修改HardwareResourceApply")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "HardwareResourceApply", paramType = "form", value = "HardwareResourceApply的form信息", required = true, dataType = "string") })
+	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody BaseOutput update(HardwareResourceApplyUpdateDto hardwareResourceApply,
+			String[] serviceEnvironmentChk, String configurationRequirementJsonStr) {
+		Set<Long> serviceEnvironments = new HashSet<Long>();
+		for (int i = 0; i < serviceEnvironmentChk.length; i++) {
+			serviceEnvironments.add(Long.parseLong(serviceEnvironmentChk[i]));
 		}
-    	hardwareResourceApply.setServiceEnvironments(serviceEnvironments);
-    	List<HardwareResourceRequirementDto> parseArray = JSONArray.parseArray(configurationRequirementJsonStr,HardwareResourceRequirementDto.class);
-    	hardwareResourceApply.setConfigurationRequirement(parseArray);
-   	    try {
+		hardwareResourceApply.setServiceEnvironments(serviceEnvironments);
+		List<HardwareResourceRequirementDto> parseArray = JSONArray.parseArray(configurationRequirementJsonStr,
+				HardwareResourceRequirementDto.class);
+		hardwareResourceApply.setConfigurationRequirement(parseArray);
+		try {
 			hardwareResourceApplyService.saveOrUpdate(hardwareResourceApply);
 		} catch (HardwareResourceApplyException e) {
 			return BaseOutput.failure("修改失败");
 		}
-        return BaseOutput.success("修改成功");
-    }
-    
-    @ApiOperation("删除HardwareResourceApply")
-    @ApiImplicitParams({
-		@ApiImplicitParam(name="id", paramType="form", value = "HardwareResourceApply的主键", required = true, dataType = "long")
-	})
-    @RequestMapping(value="/delete", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput delete(Long id) {
-        hardwareResourceApplyService.delete(id);
-        return BaseOutput.success("删除成功");
-    }
-    
-    @ApiOperation("删除HardwareResourceApply")
-    @ApiImplicitParams({
-		@ApiImplicitParam(name="id", paramType="form", value = "HardwareResourceApply的主键", required = true, dataType = "long")
-	})
-    @RequestMapping(value="/submit", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput submit(Long id) {
-    	HardwareResourceApply dto = DTOUtils.newDTO(HardwareResourceApply.class);
-    	dto.setId(id);
-    	dto=hardwareResourceApplyService.get(id);
-    	dto.setApplyState(HardwareResourceApplyState.APPROVING.getValue());
-    	hardwareResourceApplyService.saveOrUpdate(dto);
-        return BaseOutput.success("提交成功");
-    }
+		return BaseOutput.success("修改成功");
+	}
+
+	@ApiOperation("删除HardwareResourceApply")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "id", paramType = "form", value = "HardwareResourceApply的主键", required = true, dataType = "long") })
+	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody BaseOutput delete(Long id) {
+		hardwareResourceApplyService.delete(id);
+		return BaseOutput.success("删除成功");
+	}
+
+	@ApiOperation("删除HardwareResourceApply")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "id", paramType = "form", value = "HardwareResourceApply的主键", required = true, dataType = "long") })
+	@RequestMapping(value = "/submit", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody BaseOutput submit(Long id) {
+		HardwareResourceApply dto = DTOUtils.newDTO(HardwareResourceApply.class);
+		dto.setId(id);
+		dto = hardwareResourceApplyService.get(id);
+		dto.setApplyState(HardwareResourceApplyState.APPROVING.getValue());
+		hardwareResourceApplyService.saveOrUpdate(dto);
+		return BaseOutput.success("提交成功");
+	}
 }

@@ -65,21 +65,6 @@ public class ProjectController {
 	@Autowired
 	private FilesService filesService;
 
-	private void refreshMember() {
-		AlmCache.USER_MAP.clear();
-		BaseOutput<List<User>> output = this.userRPC.list(new User());
-		if (!output.isSuccess()) {
-			return;
-		}
-		List<User> users = output.getData();
-		if (CollectionUtils.isEmpty(users)) {
-			return;
-		}
-		users.forEach(u -> {
-			AlmCache.USER_MAP.put(u.getId(), u);
-		});
-	}
-
 	@ApiOperation("跳转到Project页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
@@ -92,7 +77,11 @@ public class ProjectController {
 			@ApiImplicitParam(name = "Project", paramType = "form", value = "Project的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<Map> list(ProjectQueryDto project) {
-		refreshMember();
+		try {
+			AlmCache.clearCache();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
 		Map<Object, Object> metadata = new HashMap<>();
 
 		JSONObject projectTypeProvider = new JSONObject();
@@ -133,7 +122,11 @@ public class ProjectController {
 	@RequestMapping(value = "/list.json", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public List<Project> listJson(Project project) {
-		refreshMember();
+		try {
+			AlmCache.clearCache();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
 		return this.projectService.list(project);
 	}
 
@@ -141,7 +134,11 @@ public class ProjectController {
 	@RequestMapping(value = "/listViewData.json", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public List<Map> listViewDataJson(Project project) {
-		refreshMember();
+		try {
+			AlmCache.clearCache();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
 		List<Project> list = this.projectService.list(project);
 		try {
 			return ProjectProvider.parseEasyUiModelList(list);
@@ -156,7 +153,11 @@ public class ProjectController {
 			@ApiImplicitParam(name = "Project", paramType = "form", value = "Project的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(ProjectQueryDto project) throws Exception {
-		refreshMember();
+		try {
+			AlmCache.clearCache();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
 		if (project.getActualStartDate() != null) {
 			project.setActualBeginStartDate(project.getActualStartDate());
 			Calendar calendar = Calendar.getInstance();
