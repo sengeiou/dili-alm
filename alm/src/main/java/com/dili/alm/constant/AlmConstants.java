@@ -26,6 +26,20 @@ public class AlmConstants {
 	// 测试部部门经理数据字典编码
 	public static final String TEST_MANAGER_CODE = "test_manager";
 
+	// 项目类型数据字典编码
+	public static final String PROJECT_TYPE_CODE = "project_type";
+	// 项目状态数据字典编码
+	public static final String PROJECT_STATE_CODE = "project_state";
+	// 项目文件类型数据字典编码
+	public static final String PROJECT_FILE_TYPE_CODE = "project_file_type";
+	// 项目阶段名称数据字典编码
+	public static final String PHASE_NAME_CODE = "phase_name";
+	public static final String APPLY_PLAN_PHASE_CODE = "apply_plan_phase";
+	// 团队角色数据字典编码
+	public static final String TEAM_ROLE_CODE = "team_role";
+	// 资源使用环境数据字典编码
+	public static final String RESOURCE_ENVIRONMENT_CODE = "resource_environment";
+
 	// 团队成员状态: 加入/离开
 	public enum MemberState {
 		LEAVE(0), JOIN(1);

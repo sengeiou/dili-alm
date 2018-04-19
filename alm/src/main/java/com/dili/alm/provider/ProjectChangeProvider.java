@@ -53,24 +53,24 @@ public class ProjectChangeProvider implements ValueProvider {
 		JSONObject json = (JSONObject) metaMap;
 		try {
 			if (Objects.equals(json.getString("field"), "changeType")) {
-				if(json.get("_rowData") instanceof Approve){
+				if (json.get("_rowData") instanceof Approve) {
 					Approve approve = json.getObject("_rowData", Approve.class);
 					obj = approve.getProjectApplyId();
 				}
-				if(json.get("_rowData") instanceof Task){
+				if (json.get("_rowData") instanceof Task) {
 					Task task = json.getObject("_rowData", Task.class);
 					obj = task.getChangeId();
 				}
 				ProjectChange change = changeService.get((Long) obj);
-				return AlmCache.CHANGE_TYPE.get(change.getType());
+				return AlmCache.getInstance().getChangeType().get(change.getType());
 			}
 
 			if (Objects.equals(json.getString("field"), "changeName")) {
-				if(json.get("_rowData") instanceof Approve){
+				if (json.get("_rowData") instanceof Approve) {
 					Approve approve = json.getObject("_rowData", Approve.class);
 					obj = approve.getProjectApplyId();
 				}
-				if(json.get("_rowData") instanceof Task){
+				if (json.get("_rowData") instanceof Task) {
 					Task task = json.getObject("_rowData", Task.class);
 					obj = task.getChangeId();
 				}
@@ -79,11 +79,11 @@ public class ProjectChangeProvider implements ValueProvider {
 			}
 
 			if (Objects.equals(json.getString("field"), "version")) {
-				if(json.get("_rowData") instanceof Approve){
+				if (json.get("_rowData") instanceof Approve) {
 					Approve approve = json.getObject("_rowData", Approve.class);
 					obj = approve.getProjectApplyId();
 				}
-				if(json.get("_rowData") instanceof Task){
+				if (json.get("_rowData") instanceof Task) {
 					Task task = json.getObject("_rowData", Task.class);
 					obj = task.getChangeId();
 				}
@@ -91,7 +91,8 @@ public class ProjectChangeProvider implements ValueProvider {
 				ProjectVersion version = projectVersionService.get(change.getVersionId());
 				return version.getVersion();
 			}
-		}catch (Exception ignored){}
+		} catch (Exception ignored) {
+		}
 
 		if (obj == null || obj.equals(""))
 			return null;

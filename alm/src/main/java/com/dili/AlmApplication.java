@@ -13,6 +13,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import com.dili.alm.cache.AlmCache;
 import com.dili.ss.retrofitful.annotation.RestfulScan;
 
 import tk.mybatis.spring.annotation.MapperScan;
@@ -38,6 +39,11 @@ public class AlmApplication extends SpringBootServletInitializer {
 		Configuration cfg = Configuration.defaultConfiguration();
 		StringTemplateResourceLoader resourceLoader = new StringTemplateResourceLoader();
 		return new GroupTemplate(resourceLoader, cfg);
+	}
+
+	@Bean
+	public AlmCache almCache() {
+		return AlmCache.getInstance();
 	}
 
 	public static void main(String[] args) {

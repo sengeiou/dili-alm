@@ -70,10 +70,14 @@
 	         		
 	    			for(var i=0;i<result.length;i++){
 	         			var enti={"name": result[i].taskState,"value": result[i].stateCount};   
-                       nums1.push(enti);    
+                       nums1.push(enti);  
+                       names1.push(result[i].taskState);    
                      } 
 					echarts.init(document.getElementById('task')).hideLoading();   
                     echarts.init(document.getElementById('task')).setOption({ 
+                    	legend: {
+            				data: names1
+        				},
      					series: [{
                         	data: nums1
                          }]

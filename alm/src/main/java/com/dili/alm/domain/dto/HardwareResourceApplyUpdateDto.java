@@ -5,9 +5,10 @@ import java.util.List;
 import java.util.Set;
 
 import com.dili.alm.domain.HardwareResourceApply;
+import com.dili.alm.domain.HardwareResourceRequirement;
 import com.dili.ss.domain.BaseDomain;
 
-public class HardwareResourceApplyUpdateDto extends BaseDomain implements HardwareResourceApply {
+public class HardwareResourceApplyUpdateDto extends BaseDomain implements HardwareResourceApply  {
 
 	/**
 	 * 

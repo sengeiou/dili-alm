@@ -2,7 +2,6 @@ package com.dili.alm.service.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -27,7 +26,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,10 +41,10 @@ import com.dili.alm.dao.ProjectOnlineApplyMapper;
 import com.dili.alm.dao.ProjectOnlineApplyMarketMapper;
 import com.dili.alm.dao.ProjectOnlineOperationRecordMapper;
 import com.dili.alm.dao.ProjectOnlineSubsystemMapper;
-import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.TeamMapper;
 import com.dili.alm.dao.VersionMarketOnlineRecordMapper;
 import com.dili.alm.domain.ApplyType;
+import com.dili.alm.domain.Department;
 import com.dili.alm.domain.EmailAddress;
 import com.dili.alm.domain.OperationResult;
 import com.dili.alm.domain.Project;
@@ -56,6 +54,7 @@ import com.dili.alm.domain.ProjectOnlineApplyOperationType;
 import com.dili.alm.domain.ProjectOnlineApplyState;
 import com.dili.alm.domain.ProjectOnlineOperationRecord;
 import com.dili.alm.domain.ProjectOnlineSubsystem;
+import com.dili.alm.domain.Team;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.VersionMarketOnlineRecord;
 import com.dili.alm.domain.dto.DataDictionaryDto;
@@ -129,8 +128,6 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	@Autowired
 	private VersionMarketOnlineRecordMapper versionMaketMapper;
 	@Autowired
-	private ProjectVersionMapper versionMapper;
-	@Autowired
 	private ProjectVersionProvider versionProvider;
 
 	@SuppressWarnings("unchecked")
@@ -150,10 +147,10 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		dateProvider.put("provider", "almDateProvider");
 		metadata.put("onlineDate", dateProvider);
 		metadata.put("actualOnlineDate", dateProvider);
-		metadata.put("submitTime", dateProvider);
 
 		JSONObject datetimeProvider = new JSONObject();
 		datetimeProvider.put("provider", "datetimeProvider");
+		metadata.put("submitTime", datetimeProvider);
 		metadata.put("created", datetimeProvider);
 
 		JSONObject applyStateProvider = new JSONObject();
@@ -288,9 +285,15 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		if (rows <= 0) {
 			throw new ProjectOnlineApplyException("生成操作记录失败");
 		}
-		// 发邮件
+		// 发邮件给产品经理
 		if (OperationResult.FAILURE.equals(result)) {
-			this.sendMail(apply, "上线失败");
+			User user = AlmCache.getInstance().getUserMap().get(apply.getProductManagerId());
+			if (user == null) {
+				throw new ProjectOnlineApplyException("产品经理不存在");
+			}
+			Set<String> emails = this.getDefaultEmails(apply);
+			emails.add(user.getEmail());
+			this.sendMail(apply, "上线失败", emails);
 		}
 	}
 
@@ -315,6 +318,11 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		List<ProjectOnlineOperationRecord> poorList = this.poorMapper.select(poorQuery);
 		apply.aset("opRecords", this.buildOperationRecordViewModel(poorList));
 		return apply;
+	}
+
+	@Override
+	public ProjectOnlineApply getDetailViewData(Long id) throws ProjectOnlineApplyException {
+		return this.getFlowViewData(id);
 	}
 
 	@Override
@@ -373,7 +381,6 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		return this.getFlowViewData(id);
 	}
 
-	@Transactional(rollbackFor = ApplicationException.class, propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
 	@Override
 	public ProjectOnlineApplyDetailDto getViewDataById(Long applyId) {
 		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(applyId);
@@ -437,7 +444,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 				s.setApplyId(apply.getId());
 				if (StringUtils.isNumeric(s.getManagerName())) {
 					Long managerId = Long.valueOf(s.getManagerName());
-					User u = AlmCache.USER_MAP.get(managerId);
+					User u = AlmCache.getInstance().getUserMap().get(managerId);
 					if (u != null) {
 						s.setManagerId(managerId);
 						s.setManagerName(u.getRealName());
@@ -503,27 +510,14 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		return new EasyuiPageOutput(Long.valueOf(total).intValue(), results);
 	}
 
-	private void setMarkets(ProjectOnlineApply apply) {
-		DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.MARKET_CODE);
-		ProjectOnlineApplyMarket poamQuery = DTOUtils.newDTO(ProjectOnlineApplyMarket.class);
-		poamQuery.setApplyId(apply.getId());
-		List<ProjectOnlineApplyMarket> poamList = this.applyMarketMapper.select(poamQuery);
-		if (CollectionUtils.isEmpty(poamList)) {
-			throw new IllegalArgumentException("数据异常");
-		}
-		if (poamList.size() == 1 && poamList.get(0).getMarketCode().equals("-1")) {
-			apply.aset("marketVersion", false);
-		} else {
-			apply.aset("marketVersion", true);
-			StringBuilder sb = new StringBuilder();
-			dd.getValues().stream()
-					.filter(v -> poamList.stream().filter(pv -> pv.getMarketCode().equals(v.getValue())).findFirst()
-							.orElse(null) != null)
-					.collect(Collectors.toList()).forEach(v -> sb.append(v.getCode()).append(","));
-			apply.aset("markets", sb.substring(0, sb.length() - 1));
-		}
-	}
-
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.dili.alm.service.ProjectOnlineApplyService#projectManagerConfirm(java.
+	 * lang.Long, java.lang.Long, com.dili.alm.domain.OperationResult,
+	 * java.lang.String)
+	 */
 	@Override
 	public void projectManagerConfirm(Long applyId, Long executorId, OperationResult result, String description)
 			throws ProjectOnlineApplyException {
@@ -562,6 +556,10 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		if (rows <= 0) {
 			throw new ProjectOnlineApplyException("生成操作记录失败");
 		}
+		// 发邮件
+		// 这里面包含了运维不经理，后面就不用在单独发了
+		Set<String> emails = this.getDefaultEmails(apply);
+		this.sendMail(apply, "上线申请审批", emails);
 	}
 
 	@Override
@@ -635,6 +633,10 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		if (rows <= 0) {
 			throw new ProjectOnlineApplyException("生成操作记录失败");
 		}
+		// 发邮件
+		// 给运维部发，这里面包含了运维部执行人，后面就不用在单独发了
+		Set<String> emails = this.getDefaultEmails(apply);
+		this.sendMail(apply, "上线申请执行", emails);
 	}
 
 	@Override
@@ -654,7 +656,8 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			throw new ProjectOnlineApplyException("更新状态失败");
 		}
 		// 发送邮件
-		this.sendMail(apply, "上线申请");
+		Set<String> emailStrs = this.getDefaultEmails(apply);
+		this.sendMail(apply, "上线申请", emailStrs);
 	}
 
 	@Override
@@ -694,6 +697,14 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		if (rows <= 0) {
 			throw new ProjectOnlineApplyException("生成操作记录失败");
 		}
+		// 发邮件
+		Set<String> emails = this.getDefaultEmails(apply);
+		// 给测试部经理发
+		User user = AlmCache.getInstance().getUserMap().get(apply.getTestManagerId());
+		if (user == null) {
+			throw new ProjectOnlineApplyException("测试经理不存在");
+		}
+		emails.add(user.getEmail());
 	}
 
 	@Override
@@ -747,7 +758,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 				s.setApplyId(apply.getId());
 				if (StringUtils.isNumeric(s.getManagerName())) {
 					Long managerId = Long.valueOf(s.getManagerName());
-					User u = AlmCache.USER_MAP.get(managerId);
+					User u = AlmCache.getInstance().getUserMap().get(managerId);
 					if (u != null) {
 						s.setManagerId(managerId);
 						s.setManagerName(u.getRealName());
@@ -872,11 +883,12 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			}
 		}
 		// 发邮件
+		Set<String> emails = this.getDefaultEmails(apply);
 		if (OperationResult.FAILURE.equals(result)) {
-			this.sendMail(apply, "上线失败");
+			this.sendMail(apply, "上线失败", emails);
 		}
 		if (OperationResult.SUCCESS.equals(result)) {
-			this.sendMail(apply, "上线成功");
+			this.sendMail(apply, "上线成功", emails);
 		}
 	}
 
@@ -896,6 +908,29 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			LOGGER.error(e.getMessage(), e);
 			return null;
 		}
+	}
+
+	private Set<String> getApplicantSpecifiedEmails(ProjectOnlineApply apply) {
+		EmailAddress record = DTOUtils.newDTO(EmailAddress.class);
+		record.setApplyId(apply.getId());
+		List<EmailAddress> emails = this.emailAddressMapper.select(record);
+		Set<String> emailStrs = new HashSet<>(emails.size());
+		emails.forEach(e -> emailStrs.add(e.getEmailAddress()));
+		return emailStrs;
+	}
+
+	private Set<String> getDefaultEmails(ProjectOnlineApply apply) {
+		// 给运维部发
+		Set<String> emails = this.getOperationDepartmentUserEmails(apply);
+		// 给申请人指定的人发
+		emails.addAll(this.getApplicantSpecifiedEmails(apply));
+		// 给申请人发
+		User user = AlmCache.getInstance().getUserMap().get(apply.getApplicantId());
+		if (user == null) {
+			throw new NullPointerException("申请人不存在");
+		}
+		emails.add(user.getEmail());
+		return emails;
 	}
 
 	private ProjectOnlineApply getFlowViewData(Long id) throws ProjectOnlineApplyException {
@@ -918,12 +953,36 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		return apply;
 	}
 
-	private void sendMail(ProjectOnlineApply apply, String subject) {
+	private Set<String> getOperationDepartmentUserEmails(ProjectOnlineApply apply) {
 		Set<String> emailStrs = new HashSet<>();
-		EmailAddress record = DTOUtils.newDTO(EmailAddress.class);
-		record.setApplyId(apply.getId());
-		List<EmailAddress> emails = this.emailAddressMapper.select(record);
-		emails.forEach(e -> emailStrs.add(e.getEmailAddress()));
+		// 默认邮件发送列表，运维组和项目组成员
+		// 运维部成员
+		Department deptQuery = new Department();
+		deptQuery.setCode(AlmConstants.OPERATION_DEPARTMENT_CODE);
+		BaseOutput<List<Department>> deptOutput = this.deptRpc.list(deptQuery);
+		if (deptOutput.isSuccess() && CollectionUtils.isNotEmpty(deptOutput.getData())) {
+			Long departmentId = deptOutput.getData().get(0).getId();
+			User userQuery = new User();
+			userQuery.setDepartmentId(departmentId);
+			BaseOutput<List<User>> userOutput = this.userRpc.list(userQuery);
+			if (userOutput.isSuccess() && CollectionUtils.isNotEmpty(userOutput.getData())) {
+				userOutput.getData().forEach(u -> emailStrs.add(u.getEmail()));
+			}
+		}
+		// 项目组成员
+		Team teamQuery = DTOUtils.newDTO(Team.class);
+		teamQuery.setProjectId(apply.getProjectId());
+		List<Team> teams = this.teamMapper.select(teamQuery);
+		teams.forEach(t -> {
+			User u = AlmCache.getInstance().getUserMap().get(t.getMemberId());
+			if (u != null) {
+				emailStrs.add(u.getEmail());
+			}
+		});
+		return emailStrs;
+	}
+
+	private void sendMail(ProjectOnlineApply apply, String subject, Set<String> emails) {
 
 		// 构建邮件内容
 		Template template = this.groupTemplate.getTemplate(this.contentTemplate);
@@ -933,41 +992,35 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		List<ProjectOnlineOperationRecord> list = this.poorMapper.select(poor);
 		template.binding("opRecords", this.buildOperationRecordViewModel(list));
 
-		// 默认邮件发送列表，运维组和项目组成员
-		// 运维部成员
-		// Department deptQuery = new Department();
-		// deptQuery.setCode(AlmConstants.OPERATION_DEPARTMENT_CODE);
-		// BaseOutput<List<Department>> deptOutput = this.deptRpc.list(deptQuery);
-		// if (deptOutput.isSuccess() &&
-		// CollectionUtils.isNotEmpty(deptOutput.getData())) {
-		// Long departmentId = deptOutput.getData().get(0).getId();
-		// User userQuery = new User();
-		// userQuery.setDepartmentId(departmentId);
-		// BaseOutput<List<User>> userOutput = this.userRpc.list(userQuery);
-		// if (userOutput.isSuccess() &&
-		// CollectionUtils.isNotEmpty(userOutput.getData())) {
-		// userOutput.getData().forEach(u -> emailStrs.add(u.getEmail()));
-		// }
-		// }
-		// // 项目组成员
-		// Team teamQuery = DTOUtils.newDTO(Team.class);
-		// teamQuery.setProjectId(apply.getProjectId());
-		// List<Team> teams = this.teamMapper.select(teamQuery);
-		// teams.forEach(t -> {
-		// User u = AlmCache.USER_MAP.get(t.getMemberId());
-		// if (u != null) {
-		// emailStrs.add(u.getEmail());
-		// }
-		// });
-
 		// 发送
-		emailStrs.forEach(s -> {
+		emails.forEach(s -> {
 			try {
 				this.mailManager.sendMail(this.mailFrom, s, template.render(), true, subject, null);
 			} catch (Exception e) {
 				LOGGER.error(e.getMessage(), e);
 			}
 		});
+	}
+
+	private void setMarkets(ProjectOnlineApply apply) {
+		DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.MARKET_CODE);
+		ProjectOnlineApplyMarket poamQuery = DTOUtils.newDTO(ProjectOnlineApplyMarket.class);
+		poamQuery.setApplyId(apply.getId());
+		List<ProjectOnlineApplyMarket> poamList = this.applyMarketMapper.select(poamQuery);
+		if (CollectionUtils.isEmpty(poamList)) {
+			throw new IllegalArgumentException("数据异常");
+		}
+		if (poamList.size() == 1 && poamList.get(0).getMarketCode().equals("-1")) {
+			apply.aset("marketVersion", false);
+		} else {
+			apply.aset("marketVersion", true);
+			StringBuilder sb = new StringBuilder();
+			dd.getValues().stream()
+					.filter(v -> poamList.stream().filter(pv -> pv.getMarketCode().equals(v.getValue())).findFirst()
+							.orElse(null) != null)
+					.collect(Collectors.toList()).forEach(v -> sb.append(v.getCode()).append(","));
+			apply.aset("markets", sb.substring(0, sb.length() - 1));
+		}
 	}
 
 	private void setOperationColumn(ProjectOnlineApply apply) {
@@ -1040,10 +1093,5 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		// 判断当前登录用户是否是当前项目的产品经理
 		verifiable = !verifiable ? verifiable : apply.getProductManagerId().equals(user.getId());
 		apply.aset("verifiable", verifiable);
-	}
-
-	@Override
-	public ProjectOnlineApply getDetailViewData(Long id) throws ProjectOnlineApplyException {
-		return this.getFlowViewData(id);
 	}
 }

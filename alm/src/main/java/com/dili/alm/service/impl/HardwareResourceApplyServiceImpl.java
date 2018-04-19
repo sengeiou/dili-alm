@@ -37,6 +37,7 @@ import com.dili.alm.dao.HardwareResourceApplyMapper;
 import com.dili.alm.dao.HardwareResourceRequirementMapper;
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.domain.ApproveResult;
+import com.dili.alm.domain.Department;
 import com.dili.alm.domain.HardwareApplyOperationRecord;
 import com.dili.alm.domain.HardwareApplyOperationType;
 import com.dili.alm.domain.HardwareApplyState;
@@ -44,10 +45,13 @@ import com.dili.alm.domain.HardwareResourceApply;
 import com.dili.alm.domain.HardwareResourceRequirement;
 import com.dili.alm.domain.OperationResult;
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.ProjectOnlineApply;
+import com.dili.alm.domain.ProjectOnlineApplyState;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.HardwareResourceApplyUpdateDto;
+import com.dili.alm.domain.dto.HardwareResourceRequirementDto;
 import com.dili.alm.domain.dto.UserDepartmentRole;
 import com.dili.alm.domain.dto.UserDepartmentRoleQuery;
 import com.dili.alm.exceptions.ApplicationException;
@@ -61,6 +65,8 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.sysadmin.sdk.domain.UserTicket;
+import com.dili.sysadmin.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
 
 /**
@@ -197,7 +203,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		}
 
 		// 检查是否是研发部总经理
-		if (!this.queryGeneralLeader().equals(generalManagerId)) {
+		if (!this.queryGeneralLeader().getId().equals(generalManagerId)) {
 			throw new HardwareResourceApplyException("当前用户没有权限执行该操作");
 		}
 
@@ -250,12 +256,90 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		List<HardwareResourceApply> list = listByExample(domain);
 		list.forEach(h -> {
 			h.aset("envList", this.parseEnvToString(h.getServiceEnvironment()));
+			this.setOperationColumn(h);
 		});
 		long total = list instanceof Page ? ((Page) list).getTotal() : list.size();
 		List results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, list) : list;
 		return new EasyuiPageOutput(Integer.parseInt(String.valueOf(total)), results);
 	}
 
+	private void setOperationColumn(HardwareResourceApply apply) {
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		if (user == null) {
+			throw new IllegalArgumentException("用户未登录");
+		}
+		
+		// 判断界面上用户是否是提交人
+		boolean approving = apply.getApplyState()
+				.equals(HardwareApplyState.APPLING.getValue());
+		// 判断当前登录用户是否是项目经理
+		approving = !approving ? approving
+				: user.getId().equals(apply.getApplicantId());
+		apply.aset("approving", approving);
+
+		// 判断界面上用户是否可以点击项目经理确认按钮
+		// 判断申请状态是否是项目经理确认状态
+		boolean projectManagerApprov = apply.getApplyState()
+				.equals(HardwareApplyState.PROJECT_MANAGER_APPROVING.getValue());
+		// 判断当前登录用户是否是项目经理
+		projectManagerApprov = !projectManagerApprov ? projectManagerApprov
+				: user.getId().equals(apply.getProjectManagerId());
+		apply.aset("projectManagerApprov", projectManagerApprov);
+
+
+		try {
+			// 判断界面上部总经理审批
+			// 判断申请状态是否是项目经理确认状态
+			boolean generalManagerAppov = apply.getApplyState()
+					.equals(HardwareApplyState.GENERAL_MANAGER_APPROVING.getValue());
+			User generalManagerU =this.queryGeneralLeader();
+			// 判断当前登录用户是否是部总经理
+			generalManagerAppov = !generalManagerAppov ? generalManagerAppov
+					: generalManagerU.getId().equals(user.getId());
+			apply.aset("generalManagerAppov", generalManagerAppov);
+	
+		   // 判断界面上运维部经理审批
+			boolean operactionManagerAppov = apply.getApplyState()
+					.equals(HardwareApplyState.OPERATION_MANAGER_APPROVING.getValue());
+			User operactionManagerU =this.queryOperationManager();
+			// 判断当前登录用户是否是部总经理
+			operactionManagerAppov = !operactionManagerAppov ? operactionManagerAppov
+					: operactionManagerU.getId().equals(user.getId());
+			apply.aset("operactionManagerAppov", operactionManagerAppov);
+			
+			
+		   //实施
+			boolean implementing = apply.getApplyState()
+					.equals(HardwareApplyState.IMPLEMENTING.getValue());
+			
+			if (implementing) {
+				List<Long> executors = JSONObject.parseObject(apply.getExecutors(), new TypeReference<List<Long>>() {});
+				for (int i = 0; i < executors.size(); i++) {
+					if (user.getId().equals(executors.get(i))) {
+						implementing = true;
+					}
+				}
+			}
+
+			apply.aset("implementing", implementing);
+			
+			//完成或者失败
+			boolean onlyRead = apply.getApplyState()
+						.equals(HardwareApplyState.COMPLETED.getValue());
+			onlyRead = !onlyRead?onlyRead:user.getId().equals(apply.getApplicantId());
+			boolean failed = apply.getApplyState()
+					.equals(HardwareApplyState.FAILED.getValue());
+			failed = !failed?failed:user.getId().equals(apply.getApplicantId());
+			
+			if (failed||onlyRead) {
+				apply.aset("readOnly", true);
+			}
+				
+		} catch (HardwareResourceApplyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	@Override
 	public void operationManagerApprove(Long applyId, Long operationManagerId, Set<Long> executors, String description)
 			throws HardwareResourceApplyException {
@@ -297,7 +381,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 				throw new HardwareResourceApplyException("执行人不是运维部员工");
 			}
 		}
-
+		apply.setExecutors(JSONObject.toJSONString(executors));
 		// 更新状态
 		apply.setApplyState(HardwareApplyState.IMPLEMENTING.getValue());
 		int rows = this.getActualDao().updateByPrimaryKeySelective(apply);
@@ -319,7 +403,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		}
 		// 发邮件给执行人
 		Set<String> emails = new HashSet<>(executors.size());
-		executors.forEach(e -> emails.add(AlmCache.USER_MAP.get(e).getEmail()));
+		executors.forEach(e -> emails.add(AlmCache.getInstance().getUserMap().get(e).getEmail()));
 		this.sendMail(apply, "IT资源申请", emails);
 	}
 
@@ -368,7 +452,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		}
 		// 发邮件给申请人
 		// 查询数据字典配置
-		User user = AlmCache.USER_MAP.get(apply.getId());
+		User user = AlmCache.getInstance().getUserMap().get(apply.getApplicantId());
 		if (user == null) {
 			throw new HardwareResourceApplyException("申请人不存在");
 		}
@@ -464,7 +548,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		// 发邮件给项目经理,研发部总经理，运维部经理，研发经理，申请人
 		List<String> to = new ArrayList<>(5);
 		// 查询项目经理
-		User projectManager = AlmCache.USER_MAP.get(apply.getProjectManagerId());
+		User projectManager = AlmCache.getInstance().getUserMap().get(apply.getProjectManagerId());
 		if (projectManager == null) {
 			throw new HardwareResourceApplyException("项目经理不存在");
 		}
@@ -476,7 +560,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		// 查询研发经理
 		to.add(this.queryProjectDevelopmentManager(apply).getEmail());
 		// 查询申请人
-		User applicant = AlmCache.USER_MAP.get(apply.getApplicantId());
+		User applicant = AlmCache.getInstance().getUserMap().get(apply.getApplicantId());
 		if (applicant == null) {
 			throw new HardwareResourceApplyException("申请人不存在");
 		}
@@ -537,8 +621,15 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 			throw new HardwareResourceApplyException("配置要求不能为空");
 		}
 		dto.getConfigurationRequirement().forEach(c -> c.setApplyId(dto.getId()));
+		
+		
+		List<HardwareResourceRequirementDto> list = dto.getConfigurationRequirement();
+		List<HardwareResourceRequirement> as = new ArrayList<HardwareResourceRequirement>(list.size());
+		list.forEach(cc->as.add(DTOUtils.switchEntityToDTO(cc, HardwareResourceRequirement.class)));
+		
+		
 		rows = this.hrrMapper
-				.insertList(DTOUtils.as(dto.getConfigurationRequirement(), HardwareResourceRequirement.class));
+				.insertList(as);
 		if (rows <= 0) {
 			throw new HardwareResourceApplyException("插入配置要求失败");
 		}
@@ -563,7 +654,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		if (ddValue == null) {
 			throw new HardwareResourceApplyException("请先配置研发中心总经理数据字典");
 		}
-		Map.Entry<Long, User> entry = AlmCache.USER_MAP.entrySet().stream()
+		Map.Entry<Long, User> entry = AlmCache.getInstance().getUserMap().entrySet().stream()
 				.filter(e -> e.getValue().getUserName().equals(ddValue.getValue())).findFirst().orElse(null);
 		if (entry == null) {
 			throw new HardwareResourceApplyException("研发部总经理账号不存在，请确认数据字典配置正确");
@@ -582,7 +673,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		if (ddValue == null) {
 			throw new HardwareResourceApplyException("请先配置运维部经理数据字典");
 		}
-		Map.Entry<Long, User> entry = AlmCache.USER_MAP.entrySet().stream()
+		Map.Entry<Long, User> entry = AlmCache.getInstance().getUserMap().entrySet().stream()
 				.filter(e -> e.getValue().getUserName().equals(ddValue.getValue())).findFirst().orElse(null);
 		if (entry == null) {
 			throw new HardwareResourceApplyException("运维部经理账号不存在，请确认数据字典配置正确");
@@ -595,7 +686,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		if (project == null) {
 			throw new HardwareResourceApplyException("项目不存在");
 		}
-		User user = AlmCache.USER_MAP.get(project.getDevelopManager());
+		User user = AlmCache.getInstance().getUserMap().get(project.getDevelopManager());
 		if (user == null) {
 			throw new HardwareResourceApplyException("项目研发经理不存在");
 		}
@@ -673,11 +764,23 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 			throw new HardwareResourceApplyException("配置要求不能为空");
 		}
 		dto.getConfigurationRequirement().forEach(c -> c.setApplyId(dto.getId()));
-		rows = this.hrrMapper
-				.insertList(DTOUtils.as(dto.getConfigurationRequirement(), HardwareResourceRequirement.class));
+		List<HardwareResourceRequirementDto> configurationRequirement = dto.getConfigurationRequirement();
+		List<HardwareResourceRequirement> as = new ArrayList<HardwareResourceRequirement>(configurationRequirement.size());
+		configurationRequirement.forEach(cc->as.add(DTOUtils.switchEntityToDTO(cc, HardwareResourceRequirement.class)));
+
+		rows = this.hrrMapper.insertList(as);
 		if (rows <= 0) {
 			throw new HardwareResourceApplyException("插入配置要求失败");
 		}
+	}
+
+	@Override
+	public List<HardwareResourceRequirement> listRequirement(Long applyId)
+			throws HardwareResourceApplyException {
+		HardwareResourceRequirement dto = DTOUtils.newDTO(HardwareResourceRequirement.class);
+		dto.setApplyId(applyId);
+		return this.hrrMapper.select(dto);
+		
 	}
 
 }

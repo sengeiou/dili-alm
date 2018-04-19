@@ -16,7 +16,7 @@ function print(){
 }
  //表格查询
         function queryGrid(n) {
-            var opts = $("#grid").datagrid("options");
+            var opts = $("#grid").treegrid("options");
            	if(n!=0){
            		$('#form').form('clear');
            		opts.url = "${contextPath}/statistical/ProjectProgressList?flat="+n;
@@ -29,7 +29,7 @@ function print(){
             var param = bindMetadata("grid", true);
             var formData = $("#form").serializeObject();
             $.extend(param, formData);
-            $("#grid").datagrid("load", param);
+            $("#grid").treegrid("load", param);
            
         }
     	
@@ -66,7 +66,7 @@ function print(){
             e = e || window.event;
             var keycode = e.which ? e.which : e.keyCode;
             if(keycode == 46){ //如果按下删除键
-                var selected = $("#grid").datagrid("getSelected");
+                var selected = $("#grid").treegrid("getSelected");
                 if(selected && selected!= null){
                     del();
                 }
