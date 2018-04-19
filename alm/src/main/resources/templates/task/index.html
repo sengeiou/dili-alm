@@ -1,47 +1,53 @@
 <#body>
 <style>
-    .window-shadow{display: none}
+.window-shadow {
+	display: none
+}
 </style>
- <%if(project!null!=null){%>
-<div id="cusTools" >
+<%if(project!null!=null){%>
+<div id="cusTools">
 	<a onclick="<%if(backUrl!'' == ''){%>window.history.go(-1);<%}else{%>window.location.href='${backUrl!}';<%}%>" class="easyui-linkbutton"
-		style="width: 50px; height: 24px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef;padding:5px; float:right;">返回</a>
+		style="width: 50px; height: 24px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef; padding: 5px; float: right;">返回</a>
 </div>
 <%}%>
 <div class="easyui-layout" fit="true" style="">
-    <div id="smDialog" style="display: none;"></div>
-    <!-- ====================================================================================================================== -->
-    <!-- 上方布局 -->
-    <!-- ====================================================================================================================== -->
-    <div region="north" height="auto" align="center">
-        <!-- =========================================================表单========================================================= -->
-        <div class="easyui-panel" style="width:100%;" align="left">
-            <form id="form" class="easyui-form" method="post" fit="true">
-                <table style="padding:10px;">
-                 <%if(taskId!null!=null){%>
-                	<input type="hidden" id="taskId" name="id" value="${taskId}">
-                 <%}%>	
-                    <tr>
-                        <td style="padding:5px;">
-                            <input class="easyui-textbox" name="name" id="name" style="width:100%" data-options="label:'任务名称:', validType:'length[0,255]'" />
-                        </td>
-                        <td style="padding:5px;">
-                            <input class="easyui-textbox" name="projectId" id="projectId" style="width:100%" data-options="label:'所属项目:'" />
-                            <#comboProvider _id="projectId" _table="project" _valueField="id" _textField="name" />
-                        <td style="padding:5px;display:none;">
-                            <input name="versionId" id="versionId" class="easyui-combobox" style="width: 100%;" data-options="label:'所属版本:'" />
+	<div id="smDialog" style="display: none;"></div>
+	<!-- ====================================================================================================================== -->
+	<!-- 上方布局 -->
+	<!-- ====================================================================================================================== -->
+	<div region="north" height="auto" align="center">
+		<!-- =========================================================表单========================================================= -->
+		<div class="easyui-panel" style="width: 100%;" align="left">
+			<form id="form" class="easyui-form" method="post" fit="true">
+				<table style="padding: 10px;">
+					<%if(taskId!null!=null){%>
+					<input type="hidden" id="taskId" name="id" value="${taskId}"> <%}%>
+					<tr>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="name" id="name" style="width: 100%"
+							data-options="label:'任务名称:', validType:'length[0,255]'" /></td>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="projectId" id="projectId" style="width: 100%"
+							data-options="label:'所属项目:'" /> <#comboProvider _id="projectId" _table="project" _valueField="id" _textField="name" />
+							
+				<td style="padding: 5px; display: none;"><input name="versionId" id="versionId" class="easyui-combobox" style="width: 100%;"
+								data-options="label:'所属版本:'" />
                         </td>
                     <tr>
                         <td style="padding:5px; display:none;">
-                            <input name="phaseName" id="phaseName" class="easyui-combobox" style="width: 100%;" panelWidth="auto" panelHeight="auto" editable="false" data-options="label:'所属阶段:'">
-                            <#comboProvider _id="phaseName" _table="data_dictionary_value" _valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":10}' />
+                            <input name="phaseName" id="phaseName" class="easyui-combobox" style="width: 100%;" panelWidth="auto"
+									panelHeight="auto" editable="false" data-options="label:'所属阶段:'">
+                            <#comboProvider _id="phaseName" _table="data_dictionary_value" _valueField="value" _textField="code"
+										_orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":10}' />
                         </td>
                         <td style="padding:5px;">
-                            <input name="owner" id="owner" class="easyui-combobox" style="width:100%;" data-options="label:'责任人:'">
+                            <input name="owner" id="owner" class="easyui-textbox" style="width:100%;"
+									data-options="label:'责任人:',buttonText:'选择',
+									onClickButton:selectMember,onChange:_changeTextboxShowClear">
                         </td>
                         <td style="padding:5px;">
-                            <input name="status" id="status" class="easyui-combobox" style="width: 100%;" panelWidth="auto" panelHeight="auto" editable="false" data-options="label:'状态:'">
-                            <#comboProvider _id="status" _table="data_dictionary_value" _valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":16}' />
+                            <input name="status" id="status" class="easyui-combobox" style="width: 100%;" panelWidth="auto"
+									panelHeight="auto" editable="false" data-options="label:'状态:'">
+                            <#comboProvider _id="status" _table="data_dictionary_value" _valueField="value" _textField="code"
+										_orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":16}' />
                         </td>
                     </tr>
                     <tr>
@@ -50,156 +56,124 @@
                             <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload" onclick="clearForm()">重置</a>
                         </td>
                     </tr>
-                </table>
-            </form>
-        </div>
-    </div>
-    <!-- ====================================================================================================================== -->
-    <!-- 中央布局 -->
-    <!-- ====================================================================================================================== -->
-    <!-- 表格 -->
-    <div region="center" style="width:100%;" height="auto">
-        <!-- =========================================================表格========================================================= -->
-        <table class="easyui-datagrid" title="任务列表" id="grid" fitColumns="true" pagination="true" pageSize="30" pageNumber="1" pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"  align="center" fit="true" striped="true" toolbar="#toolbar" idField="id"
-               data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
-            <thead>
-            <tr>
-                <th data-options="field:'name',width:'12%',formatter:formatNameOptions,fixed:'false'">
-                    任务名称
-                </th>
-                <th data-options="field:'projectId',width:'12%',fixed:'false',_provider:'projectProvider'">
-                    项目名称
-                </th>
-                <th data-options="field:'versionId',width:'10%',fixed:'false',_provider:'projectVersionProvider'">
-                    所属版本
-                </th>
-                <th data-options="field:'phaseId',width:'10%',fixed:'false',_provider:'projectPhaseProvider'">
-                    所属阶段
-                </th>
-                <th data-options="field:'owner',width:'6%',align:'center', fixed:'false',_provider:'memberProvider'">
-                    责任人
-                </th>
-                <th data-options="field:'planDays',width:'16%',align:'center', resizable:'true', fixed:'false'">
-                    计划工时
-                </th>
-                <th data-options="field:'status',width:'5%', align:'center',  fixed:'false',_provider:'taskStateProvider'">
-                    状态
-                </th>
-                <th data-options="field:'progress',formatter:progressFormatter,fixed:'false'">
-                    进度
-                </th>
-                <th data-options="field:'flowStr',width:'6%', align:'center', fixed:'false'">
-                    流程
-                </th>
-                <th data-options="field:'options', width:'13%',formatter:formatOptions, align:'center', resizable:'true', fixed:'false'">
-                    操作</th>
-            </tr>
-            </thead>
-        </table>
-        <!-- datagrid工具栏 -->
-        <div id="toolbar" style="height:20px;padding:2px 5px;">
-                <span id="manager_tools">
-                    <#resource code="addTask"> <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true"></a></#resource>
-                    <#resource code="updateTask"> <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()" plain="true"></a></#resource>
-                    <#resource code="delTask"> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true"></a></#resource>
-                </span>
-    <div style="float:right">
-        边框显示:
-        <select onchange="changeBorder('grid',this.value)">
-            <option value="lines-both">全边框</option>
-            <option value="lines-no">无边框</option>
-            <option value="lines-right">右边框</option>
-            <option value="lines-bottom">下边框</option>
-        </select>
-        行条纹:
-        <input type="checkbox" checked="checked" onclick="$('#grid').datagrid({striped:$(this).is(':checked')})">
-    </div>
-</div>
-</div>
+                
+				</table>
+			</form>
+		</div>
+	</div>
+	<!-- ====================================================================================================================== -->
+	<!-- 中央布局 -->
+	<!-- ====================================================================================================================== -->
+	<!-- 表格 -->
+	<div region="center" style="width: 100%;" height="auto">
+		<!-- =========================================================表格========================================================= -->
+		<table class="easyui-datagrid" title="任务列表" id="grid" fitColumns="true" pagination="true" pageSize="30" pageNumber="1" pagePosition="both"
+			rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" align="center" fit="true"
+			striped="true" toolbar="#toolbar" idField="id" data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
+			<thead>
+				<tr>
+					<th data-options="field:'name',width:'12%',formatter:formatNameOptions,fixed:'false'">任务名称</th>
+					<th data-options="field:'projectId',width:'12%',fixed:'false',_provider:'projectProvider'">项目名称</th>
+					<th data-options="field:'versionId',width:'10%',fixed:'false',_provider:'projectVersionProvider'">所属版本</th>
+					<th data-options="field:'phaseId',width:'10%',fixed:'false',_provider:'projectPhaseProvider'">所属阶段</th>
+					<th data-options="field:'owner',width:'6%',align:'center', fixed:'false',_provider:'memberProvider'">责任人</th>
+					<th data-options="field:'planDays',width:'16%',align:'center', resizable:'true', fixed:'false'">计划工时</th>
+					<th data-options="field:'status',width:'5%', align:'center',  fixed:'false',_provider:'taskStateProvider'">状态</th>
+					<th data-options="field:'progress',formatter:progressFormatter,fixed:'false'">进度</th>
+					<th data-options="field:'flowStr',width:'6%', align:'center', fixed:'false'">流程</th>
+					<th data-options="field:'options', width:'13%',formatter:formatOptions, align:'center', resizable:'true', fixed:'false'">操作</th>
+				</tr>
+			</thead>
+		</table>
+		<!-- datagrid工具栏 -->
+		<div id="toolbar" style="height: 20px; padding: 2px 5px;">
+			<span id="manager_tools"> <#resource code="addTask"> <a href="#" class="easyui-linkbutton" iconCls="icon-add"
+					onclick="openInsert()" plain="true"></a></#resource> <#resource code="updateTask"> <a href="#" class="easyui-linkbutton"
+					iconCls="icon-edit" onclick="openUpdate()" plain="true"></a></#resource> <#resource code="delTask"> <a href="#"
+					class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true"></a></#resource>
+			</span>
+			<div style="float: right">
+				边框显示: <select onchange="changeBorder('grid',this.value)">
+					<option value="lines-both">全边框</option>
+					<option value="lines-no">无边框</option>
+					<option value="lines-right">右边框</option>
+					<option value="lines-bottom">下边框</option>
+				</select> 行条纹: <input type="checkbox" checked="checked" onclick="$('#grid').datagrid({striped:$(this).is(':checked')})">
+			</div>
+		</div>
+	</div>
 </div>
 <!-- 隐藏编辑框 -->
-<div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="false" draggable="false" title="任务信息" style="padding:0px 20px 10px;" modal="true" border="thin" closed="true" data-options="
+<div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="false" draggable="false" title="任务信息"
+	style="padding: 0px 20px 10px;" modal="true" border="thin" closed="true"
+	data-options="
                 iconCls: 'icon-save',
                 ">
-    <form id="_form" class="easyui-form" method="post" fit="true">
-        <input name="_id" id="_id" type="hidden">
-        <table width="560px" height="auto">
-            <tr>
-                <td style="padding:5px;width:50%;">
-                    <input class="easyui-textbox" name="_name" id="_name" style="width:100%" data-options="label:'任务名称:', required:true,validType:'length[0,255]',prompt:'请填写任务名称'" />
-                </td>
-                <td style="padding:5px;width:50%;">
-                    <input name="_projectId" id="_projectId" class="easyui-combobox" style="width: 100%;" editable="false" data-options="label:'所属项目:', required:true,validType:'isIds',prompt:'--选择所属项目--'">
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input name="_versionId" id="_versionId" class="easyui-combobox" style="width: 100%;" editable="false" data-options="label:'所属版本:', required:true,validType:'isIds',prompt:'--选择所属版本--'">
-                </td>
-               <td style="padding:5px;">
-                    <input name="_phaseId" id="_phaseId" class="easyui-combobox" style="width: 100%;" editable="false" data-options="label:'所属阶段:', required:true,validType:'isIds',prompt:'--选择所属阶段--'">
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-datebox" name="startDateShow" id="startDateShow" editable="false" style="width:100%" data-options="label:'开始时间:', required:true,validType:'isIds',prompt:'任务开始时间不能早于项目开始时间'" />
-                </td>
-               <td style="padding:5px;">
-                    <input class="easyui-datebox" name="endDateShow" id="endDateShow" editable="false" style="width:100%" data-options="label:'结束时间:', required:true,validType:'endDateValidate[\'startDateShow\']',prompt:'任务结束时间不能晚于项目结束时间'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input name="_beforeTask" id="_beforeTask" class="easyui-combobox" style="width: 100%;" editable=false data-options="label:'前置任务:',editable:false">
-                </td>
-                <td style="padding:5px;">
-                    <input name="_type" id="_type" class="easyui-combobox" style="width: 100%;" editable=false panelWidth="auto" panelHeight="auto" data-options="label:'任务类型:', required:true,validType:'isIds',prompt:'--任务类型选择--'">
-                    <#comboProvider _id="_type" _table="data_dictionary_value" _valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":17}' />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input name="_owner" id="_owner" class="easyui-combobox" style="width:100%" data-options="label:'责任人:', required:true,validType:'isIds',prompt:'--请先选择项目--'">
-                </td>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="planTimeStr" id="planTimeStr" style="width:100%" min="0"
-                           data-options="label:'计划工时:',validType:['length[0,5]'], required:true,prompt:'填写数字类型'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <select name="flowSt" id="flowSt" class="easyui-combobox" editable=false data-options="label:'流程:', required:true" style="width:100%">
-                        <option value=1>正常流程</option>
-                        <option value=0>变更流程</option>
-                    </select>
-                </td>
-                <td style="padding:5px;">
-                    <div id="changeIdTr"><input name="_changeId" id="_changeId" class="easyui-combobox" style="width:265px"  data-options="label:'变更项目:'"></div>
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;" colspan="2">
-                    <input class="easyui-textbox" name="_describe" id="_describe" style="width:100%;height:50px;" data-options="label:'描述:', validType:'length[0,255]'" />
-                </td>
-            </tr>
-        </table>
-    </form>
-    <!-- 隐藏工时信息 -->
-    <div id="task_detail" style="display:none;">
-        <hr>
-        <h3 style="margin: 15px 0 5px">工时任务信息 </h3>
-        <form name="detail_form" id="detail_form">
-            <input name="taskId" id="taskId" type="hidden">
-            <input name="taskHour" id="taskHour" type="hidden">
-            <table width="550px;" style="border:1px;padding:5px 5px 15px 5px;">
-                <tr>
-                    <td style="padding:5px;width: 50%">
-                        <input class="easyui-datebox"   name="modified" id="modified" editable="false" style="width:100%;height:26px;" editable="false" data-options="label:'任务日期:', required:true,validType:'checkDate'" />
-                    </td>
-                    <td style="padding: 0 5px;width: 50%">
-                        <label  style="float: left;width:30%;">任务进度:</label>
-                        <div id="_progressShow" style="width:170px;"></div>
-                        </td>
+	<form id="_form" class="easyui-form" method="post" fit="true">
+		<input name="_id" id="_id" type="hidden">
+		<table width="560px" height="auto">
+			<tr>
+				<td style="padding: 5px; width: 50%;"><input class="easyui-textbox" name="_name" id="_name" style="width: 100%"
+					data-options="label:'任务名称:', required:true,validType:'length[0,255]',prompt:'请填写任务名称'" /></td>
+				<td style="padding: 5px; width: 50%;"><input name="_projectId" id="_projectId" class="easyui-combobox" style="width: 100%;"
+					editable="false" data-options="label:'所属项目:', required:true,validType:'isIds',prompt:'--选择所属项目--'"></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><input name="_versionId" id="_versionId" class="easyui-combobox" style="width: 100%;" editable="false"
+					data-options="label:'所属版本:', required:true,validType:'isIds',prompt:'--选择所属版本--'"></td>
+				<td style="padding: 5px;"><input name="_phaseId" id="_phaseId" class="easyui-combobox" style="width: 100%;" editable="false"
+					data-options="label:'所属阶段:', required:true,validType:'isIds',prompt:'--选择所属阶段--'"></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><input class="easyui-datebox" name="startDateShow" id="startDateShow" editable="false"
+					style="width: 100%" data-options="label:'开始时间:', required:true,validType:'isIds',prompt:'任务开始时间不能早于项目开始时间'" /></td>
+				<td style="padding: 5px;"><input class="easyui-datebox" name="endDateShow" id="endDateShow" editable="false" style="width: 100%"
+					data-options="label:'结束时间:', required:true,validType:'endDateValidate[\'startDateShow\']',prompt:'任务结束时间不能晚于项目结束时间'" /></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><input name="_beforeTask" id="_beforeTask" class="easyui-combobox" style="width: 100%;" editable=false
+					data-options="label:'前置任务:',editable:false"></td>
+				<td style="padding: 5px;"><input name="_type" id="_type" class="easyui-combobox" style="width: 100%;" editable=false
+					panelWidth="auto" panelHeight="auto" data-options="label:'任务类型:', required:true,validType:'isIds',prompt:'--任务类型选择--'"> <#comboProvider
+						_id="_type" _table="data_dictionary_value" _valueField="value" _textField="code" _orderByClause="order_number asc"
+						_queryParams='{"yn":1,"dd_id":17}' /></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><input name="_owner" id="_owner" class="easyui-combobox" style="width: 100%"
+					data-options="label:'责任人:', required:true,validType:'isIds',prompt:'--请先选择项目--'"></td>
+				<td style="padding: 5px;"><input class="easyui-numberbox" name="planTimeStr" id="planTimeStr" style="width: 100%" min="0"
+					data-options="label:'计划工时:',validType:['length[0,5]'], required:true,prompt:'填写数字类型'" /></td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;"><select name="flowSt" id="flowSt" class="easyui-combobox" editable=false
+					data-options="label:'流程:', required:true" style="width: 100%">
+						<option value=1>正常流程</option>
+						<option value=0>变更流程</option>
+				</select></td>
+				<td style="padding: 5px;">
+					<div id="changeIdTr">
+						<input name="_changeId" id="_changeId" class="easyui-combobox" style="width: 265px" data-options="label:'变更项目:'">
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="padding: 5px;" colspan="2"><input class="easyui-textbox" name="_describe" id="_describe"
+					style="width: 100%; height: 50px;" data-options="label:'描述:', validType:'length[0,255]'" /></td>
+			</tr>
+		</table>
+	</form>
+	<!-- 隐藏工时信息 -->
+	<div id="task_detail" style="display: none;">
+		<hr>
+		<h3 style="margin: 15px 0 5px">工时任务信息</h3>
+		<form name="detail_form" id="detail_form">
+			<input name="taskId" id="taskId" type="hidden"> <input name="taskHour" id="taskHour" type="hidden">
+			<table width="550px;" style="border: 1px; padding: 5px 5px 15px 5px;">
+				<tr>
+					<td style="padding: 5px; width: 50%"><input class="easyui-datebox" name="modified" id="modified" editable="false"
+						style="width: 100%; height: 26px;" editable="false" data-options="label:'任务日期:', required:true,validType:'checkDate'" /></td>
+					<td style="padding: 0 5px; width: 50%"><label style="float: left; width: 30%;">任务进度:</label>
+						<div id="_progressShow" style="width: 170px;"></div></td>
 
                 </tr>
                 <tr>
@@ -268,10 +242,9 @@
         <a href="#" class="easyui-linkbutton" data-options="plain:true" onclick="$('#dlg').dialog('close');" style="border:1px solid #ccc;">取消</a>
     </div>
 </div>
-<!-- ====================================================================================================================== -->
-<!-- style & script 分隔线 -->
-<!-- ====================================================================================================================== -->
-<script type="text/javascript">
+<!-- ====================================================================================================================== --> <!-- style & script 分隔线 -->
+<!-- ====================================================================================================================== --> <script
+	type="text/javascript">
     //打开新增窗口
     function openInsert() {
         canEdit();
@@ -508,7 +481,7 @@
     //清空表单
     function clearForm() {
         $('#form').form('clear');
-        $("input[name='owner']").val('');
+        $("#owner").textbox('initValue','');
         queryGrid();
     }
 
@@ -683,9 +656,7 @@
             message: '此项为必输项'  
         }  
     });  */
-</script>
-<script type="text/javascript">
-    <#task_index />
+</script> <script type="text/javascript">
     <#members_index />
-</script>
-</#body>
+    <#task_index />
+</script> </#body>

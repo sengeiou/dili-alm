@@ -41,6 +41,7 @@ import com.dili.alm.dao.ProjectOnlineApplyMapper;
 import com.dili.alm.dao.ProjectOnlineApplyMarketMapper;
 import com.dili.alm.dao.ProjectOnlineOperationRecordMapper;
 import com.dili.alm.dao.ProjectOnlineSubsystemMapper;
+import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.TeamMapper;
 import com.dili.alm.dao.VersionMarketOnlineRecordMapper;
 import com.dili.alm.domain.ApplyType;
@@ -54,6 +55,7 @@ import com.dili.alm.domain.ProjectOnlineApplyOperationType;
 import com.dili.alm.domain.ProjectOnlineApplyState;
 import com.dili.alm.domain.ProjectOnlineOperationRecord;
 import com.dili.alm.domain.ProjectOnlineSubsystem;
+import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Team;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.VersionMarketOnlineRecord;
@@ -129,6 +131,8 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	private VersionMarketOnlineRecordMapper versionMaketMapper;
 	@Autowired
 	private ProjectVersionProvider versionProvider;
+	@Autowired
+	private ProjectVersionMapper versionMapper;
 
 	@SuppressWarnings("unchecked")
 	public static Map<Object, Object> buildApplyViewModel(ProjectOnlineApply apply) {
@@ -881,6 +885,13 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 				});
 				this.versionMaketMapper.insertList(vmorList);
 			}
+		}
+		// 更新项目版本上线状态
+		ProjectVersion version = this.versionMapper.selectByPrimaryKey(apply.getVersionId());
+		version.setOnline(Boolean.TRUE);
+		rows = this.versionMapper.updateByPrimaryKeySelective(version);
+		if (rows <= 0) {
+			throw new ProjectOnlineApplyException("更新项目版本上线状态失败");
 		}
 		// 发邮件
 		Set<String> emails = this.getDefaultEmails(apply);

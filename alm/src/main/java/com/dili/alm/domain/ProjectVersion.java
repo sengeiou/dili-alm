@@ -14,7 +14,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2017-11-27 10:29:51.
+ * This file was generated on 2018-04-19 14:23:59.
  */
 @Table(name = "`project_version`")
 public interface ProjectVersion extends IBaseDomain {
@@ -99,7 +99,7 @@ public interface ProjectVersion extends IBaseDomain {
 
 	@Column(name = "`release_time`")
 	@FieldDef(label = "上线时间")
-	@EditMode(editor = FieldEditor.Datetime, required = false)
+	@EditMode(editor = FieldEditor.Datetime, required = true)
 	Date getReleaseTime();
 
 	void setReleaseTime(Date releaseTime);
@@ -134,7 +134,7 @@ public interface ProjectVersion extends IBaseDomain {
 
 	@Column(name = "`version_state`")
 	@FieldDef(label = "版本状态")
-	@EditMode(editor = FieldEditor.Number, required = true)
+	@EditMode(editor = FieldEditor.Combo, required = true, params = "{\"provider\":\"projectStateProvider\"}")
 	Integer getVersionState();
 
 	void setVersionState(Integer versionState);
@@ -181,4 +181,10 @@ public interface ProjectVersion extends IBaseDomain {
 
 	void setCompletedProgress(Integer completedProgress);
 
+	@Column(name = "`online`")
+	@FieldDef(label = "是否已上线，0未上线，1已上线")
+	@EditMode(editor = FieldEditor.Text, required = true)
+	Boolean getOnline();
+
+	void setOnline(Boolean online);
 }

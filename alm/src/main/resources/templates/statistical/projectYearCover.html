@@ -36,7 +36,8 @@
     <!-- 时间轴 -->
         <div>
             <div class="years">
-                <select id="year_select" class="easyui-combobox" style="width: 100px">
+                <select id="year_select" class="easyui-combobox" style="width: 100px" data-options="editable:false,label:'',valueField: 'value',
+    textField: 'text',url: '${contextPath}/statistical/getYears.json'">
                     <option value="2017">2017年</option>
                     <option value="2018" selected="selected">2018年</option>
                 </select>

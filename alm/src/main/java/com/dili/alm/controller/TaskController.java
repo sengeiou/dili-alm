@@ -331,13 +331,13 @@ public class TaskController {
 		return taskService.isCreater(task);
 	}
 
-	// 剩余工时
+/*	// 剩余工时
 	@ResponseBody
 	@RequestMapping(value = "/restTaskHour.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public int restTaskHour(Long owerId) {
 		int rest = taskService.restTaskHour(owerId);
 		return rest;
-	}
+	}*/
 
 	// 更新任务信息
 	@ApiOperation("填写任务工时")
@@ -346,6 +346,12 @@ public class TaskController {
 	@RequestMapping(value = "/updateTaskDetails", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput updateTaskDetails(TaskDetails taskDetails, String planTimeStr, String overHourStr,
 			String taskHourStr) {
+		
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+
+		if (userTicket == null) {
+			return BaseOutput.failure("用户登录超时！");
+		}
 		short taskHour = 0;
 		short overHour = 0;
 		/* 2018-1-8 优化:工时，加班工时可任意填写一个 */
@@ -368,14 +374,21 @@ public class TaskController {
 		 */
 
 		Task task = taskService.get(taskDetails.getTaskId());
-		// 未超过8小时或者是项目经理
-		if (taskService.isSetTask(task.getOwner(), taskHour) || taskService.isManager(task.getProjectId())) {
+		
+		boolean isOwner = userTicket.getId().equals(task.getOwner());
+		
+        taskDetails.setModified(isOwner?new Date():taskDetails.getModified());
+		
+		String executeDateStr = new SimpleDateFormat("yyyy-MM-dd").format(taskDetails.getModified());
+		
+		
+		
+		if (!(taskService.isManager(task.getProjectId())||isOwner)) {
+			return BaseOutput.failure("只有本项目的项目经理或者任务所有者才可以填写工时！");
+		}
+		// 未超过8小时判断
+		if (taskService.isSetTask(task.getOwner(), taskHour,executeDateStr)) {
 
-			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-
-			if (userTicket == null) {
-				return BaseOutput.failure("用户登录超时！");
-			}
 			/* 2018-1-8 优化:实际工时可以任意填写 */
 			/*
 			 * int totail = Integer.parseInt(taskHourStr)+taskDetailsSelect.getTaskHour();
@@ -403,12 +416,6 @@ public class TaskController {
 					+ taskDetails.getTaskHour() + ":加班工时" + taskDetails.getOverHour()));
 
 		} else if (taskHour == 0 && overHour != 0) {
-
-			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-
-			if (userTicket == null) {
-				return BaseOutput.failure("用户登录超时！");
-			}
 
 			/* 基础信息设置 */
 			task.setModifyMemberId(userTicket.getId());
