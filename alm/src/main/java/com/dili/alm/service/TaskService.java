@@ -31,14 +31,32 @@ public interface TaskService extends BaseService<Task, Long> {
 
 	List<DataDictionaryValueDto> getTaskTypes();
 	
-	boolean isSetTask(Long id,short taskHour);
+	
+	/**
+	 * 判断是否已经填写超过8小时
+	 * @param id 任务所有人
+	 * @param taskHour 当期填写的工时
+	 * @param modified 任务日
+	 * @return
+	 */
+	boolean isSetTask(Long id,short taskHour,String modified);
 	
 	boolean isManager(Long managerId);
 
 	EasyuiPageOutput listByTeam(Task task, String phaseName);
 
+	/**
+	 * 校验任务开始和结束时间与项目时间
+	 * @param projectId
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
 	boolean validateBeginAndEnd(Long projectId,Date startDate,Date endDate);
-	
+	/**
+	 * 权限，判断是否是项目经理
+	 * @return
+	 */
 	boolean isProjectManager();
 	
 	List<ProjectChange> projectChangeList(Long projectId);
@@ -59,7 +77,13 @@ public interface TaskService extends BaseService<Task, Long> {
 
 	List<TaskDetails> otherProjectTaskHour(String updateDate,Long owerId);
 	
-	int restTaskHour(Long owerId);
+	/**
+	 * 
+	 * @param owerId   传入任务所有人
+	 * @param modified 传入任务填写日期
+	 * @return
+	 */
+	int restTaskHour(Long owerId,String modified);
 	
 	TaskDetails selectDetails(Long taskId);
 	

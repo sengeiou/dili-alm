@@ -631,17 +631,13 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		return dto.getValues();
 	}
 
-	/*
-	 * 字典
-	 */
-
 	/**
 	 * 判断今日所有项目累加总和是否超过8小时
 	 */
 	@Override
-	public boolean isSetTask(Long id, short taskHour) {
+	public boolean isSetTask(Long id, short taskHour,String modified) {
 		// 获取今日填写所有项目的总工时
-		int totalTaskHour = restTaskHour(id);
+		int totalTaskHour = restTaskHour(id,modified);
 
 		if (totalTaskHour != 0) {
 
@@ -937,7 +933,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	}
 
 	/**
-	 * 
+	 * 判断是否是任务创建者
 	 */
 	@Override
 	public boolean isCreater(Task task) {
@@ -968,9 +964,9 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	 * 已经填写的工时
 	 */
 	@Override
-	public int restTaskHour(Long ownerId) {
+	public int restTaskHour(Long ownerId,String updateDate) {
 
-		String updateDate = this.dateToString(new Date());
+		//String updateDate = this.dateToString(new Date());
 
 		int dayTotal = 0;
 

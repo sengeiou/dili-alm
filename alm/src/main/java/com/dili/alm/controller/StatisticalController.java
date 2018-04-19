@@ -32,6 +32,7 @@ import com.dili.alm.domain.dto.ProjectYearCoverDto;
 import com.dili.alm.domain.dto.ProjectYearCoverForAllDto;
 import com.dili.alm.domain.dto.SelectTaskHoursByUserDto;
 import com.dili.alm.domain.dto.SelectTaskHoursByUserProjectDto;
+import com.dili.alm.domain.dto.SelectYearsDto;
 import com.dili.alm.domain.dto.TaskByUsersDto;
 import com.dili.alm.domain.dto.TaskHoursByProjectDto;
 import com.dili.alm.domain.dto.TaskStateCountDto;
@@ -165,6 +166,14 @@ public class StatisticalController {
 	}
 
 	@ApiOperation(value = "返回查询后的日期", notes = "查询返回easyui信息")
+	@RequestMapping(value = "/getYears.json", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody List<SelectYearsDto> getYears() throws Exception {
+
+		return statisticalService.SelectYears();
+
+	}
+
+	@ApiOperation(value = "返回查询年份", notes = "查询返回easyui信息")
 	@RequestMapping(value = "/getSearchDate.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String getSearchDate(String year, String month) throws Exception {
 
