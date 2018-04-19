@@ -331,21 +331,28 @@ body {
 		return yearTime.getFullYear();
 	}
 	function UnixToDate(unixTime) {
+		var ymdhis = "";
 		var time ;
 		if(unixTime==0){
+			ymdhis = "";
 			time = new Date();
+	        if(time.getUTCMonth()+1<10){
+	        	ymdhis += "0"+(time.getUTCMonth()+1) + "/";
+	        }else{
+	        	ymdhis += (time.getUTCMonth()+1) + "/";
+	        }
+	        ymdhis += time.getUTCDate();
 		}else{
+			ymdhis = "";
 			time = new Date(unixTime);
+	        if(time.getUTCMonth()+1<10){
+	        	ymdhis += "0"+(time.getUTCMonth()+1) + "/";
+	        }else{
+	        	ymdhis += (time.getUTCMonth()+1) + "/";
+	        }
+	        
+	        ymdhis += time.getUTCDate()+1;
 		}
-        
-        var ymdhis = "";
-        if(time.getUTCMonth()+1<10){
-        	ymdhis += "0"+(time.getUTCMonth()+1) + "/";
-        }else{
-        	ymdhis += (time.getUTCMonth()+1) + "/";
-        }
-        
-        ymdhis += time.getUTCDate()+1;
         return ymdhis;
     }
 	
