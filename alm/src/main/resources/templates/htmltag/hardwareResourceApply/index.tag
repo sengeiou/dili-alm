@@ -20,7 +20,7 @@ function opptFormatter(value, row, index) {
     if(row.implementing){      returnStr = "<span><a href='javascr:void(0)' onclick='implement("+row.id+")'>实施</a></span>";}
     else if(row.$_applyState=="5"){      returnStr = "<span> 实施  </span>";}
     
-    if(row.readOnly){      returnStr = "<span><a href='javascr:void(0)' onclick='readApply("+row.id+")'>查看</a></span>";}
+    if(row.readOnly){      returnStr = "<span><a href='javascr:void(0)' onclick='show("+row.id+")'>查看</a></span>";}
     else if(row.$_applyState=="6"){      returnStr = "<span> 查看  </span>";}
     else if(row.$_applyState=="-1"){     returnStr = "<span> 查看  </span>";}
  
@@ -160,7 +160,7 @@ function openUpdate(id) {
           
 }
 
-// 打开修改窗口
+// 申请审批窗口
 function openApove(id) {
     var selected = $("#grid").datagrid("getSelected");
     if(id==null){
@@ -231,6 +231,43 @@ function implement(id) {
 								href : '${contextPath!}/hardwareResourceApply/goApprove?id='+selected.id,
 								modal : true,
 								buttons :'#win-button3'  
+							});
+          
+}
+
+// 实施窗口
+function show(id) {
+    var selected = $("#grid").datagrid("getSelected");
+    if(id==null){
+		if (null == selected) {
+			$.messager.alert('警告', '请选中一条数据');
+			return;
+		}else{
+		  id = selected.id;
+   
+         }
+		}
+		var rows = $("#grid").datagrid('getRows');  
+		            
+		        
+        var length = rows.length;   
+        var rowindex;    
+        for (var i = 0; i < length; i++) { 
+           if (rows[i]['id'] == id) {    
+                rowindex = i;   
+                selected = rows[rowindex];//根据index获得其中一行。
+                break;    
+          } 
+    }
+
+
+ 						 $('#win').dialog({
+								title : '资源申请详情',
+								width : 830,
+								height : 500,
+								href : '${contextPath!}/hardwareResourceApply/goApprove?id='+selected.id,
+								modal : true,
+								buttons :'#win-button'  
 							});
           
 }

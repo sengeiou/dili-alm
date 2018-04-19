@@ -23,7 +23,8 @@
     .time li a:hover{color: #2a5d3f;}
     /*.timp_point{list-style: none;display: block;}*/
     /*.timp_point li{float: left;}*/
-    .show{width: 350px;line-height:26px;text-align:right;float: right;}
+    .show{width: 350px;line-height:26px;text-align:right;float: left;}
+       .pdiv div{font-size: 15px;height:28px;line-height: 28px;}
 </style>
 
 <div class="easyui-layout" fit="true">
@@ -42,22 +43,22 @@
             </div>
             <div class="time">
                 <ul class="timp_point">
-                    <li><a href="javascript:void(0);" onclick="queryGrid('1')"  class="on">1月</a></li>
-                    <li><a href="javascript:void(0);" onclick="queryGrid('2')">2月</a></li>
-                    <li><a href="javascript:void(0);" onclick="queryGrid('3')">3月</a></li>
-                    <li><a href="javascript:void(0);" onclick="queryGrid('13')">一季度</a></li>
-                    <li><a href="javascript:void(0);" onclick="queryGrid('4')">4月</a></li>
-                    <li><a href="javascript:void(0);" onclick="queryGrid('5')">5月</a></li>
-                    <li><a href="javascript:void(0);" onclick="queryGrid('6')">6月</a></li>
-                    <li><a href="javascript:void(0);" onclick="queryGrid('14')">二季度</a></li>
-                    <li><a href="javascript:void(0);" onclick="queryGrid('7')">7月</a></li>
-                    <li><a href="javascript:void(0);" onclick="queryGrid('8')">8月</a></li>
-                    <li><a href="javascript:void(0);" onclick="queryGrid('9')">9月</a></li>
-                    <li><a href="javascript:void(0);" onclick="queryGrid('15')">三季度</a></li>
-                    <li><a href="javascript:void(0);" onclick="queryGrid('10')">10月</a></li>
-                    <li><a href="javascript:void(0);" onclick="queryGrid('11')">11月</a></li>
-                    <li><a href="javascript:void(0);" onclick="queryGrid('12')">12月</a></li>
-                    <li><a href="javascript:void(0);" onclick="queryGrid('16')">四季度</a></li>
+                    <li><a href="javascript:void(0);" onclick="queryGrid('1',this)" >1月</a></li>
+                    <li><a href="javascript:void(0);" onclick="queryGrid('2',this)">2月</a></li>
+                    <li><a href="javascript:void(0);" onclick="queryGrid('3',this)">3月</a></li>
+                    <li><a href="javascript:void(0);" onclick="queryGrid('13',this)">一季度</a></li>
+                    <li><a href="javascript:void(0);" onclick="queryGrid('4',this)">4月</a></li>
+                    <li><a href="javascript:void(0);" onclick="queryGrid('5',this)">5月</a></li>
+                    <li><a href="javascript:void(0);" onclick="queryGrid('6',this)">6月</a></li>
+                    <li><a href="javascript:void(0);" onclick="queryGrid('14',this)">二季度</a></li>
+                    <li><a href="javascript:void(0);" onclick="queryGrid('7',this)">7月</a></li>
+                    <li><a href="javascript:void(0);" onclick="queryGrid('8',this)">8月</a></li>
+                    <li><a href="javascript:void(0);" onclick="queryGrid('9',this)">9月</a></li>
+                    <li><a href="javascript:void(0);" onclick="queryGrid('15',this)">三季度</a></li>
+                    <li><a href="javascript:void(0);" onclick="queryGrid('10',this)">10月</a></li>
+                    <li><a href="javascript:void(0);" onclick="queryGrid('11',this)">11月</a></li>
+                    <li><a href="javascript:void(0);" onclick="queryGrid('12',this)">12月</a></li>
+                    <li><a href="javascript:void(0);" onclick="queryGrid('16',this)">四季度</a></li>
                 </ul>
             </div>
         </div>
@@ -68,26 +69,35 @@
     <!-- 表格 -->
     <div region="center" style="width:100%;" height="auto">
         <!-- datagrid工具栏 -->
-        <div id="toolbar" style="padding:2px 5px;">
-                               <a href="#" class="easyui-linkbutton"
+      <div id="infoToolbar" style="float: right;line-height: 28px;height:28px;"  >
+      <div class="show">查询时间：<span id="search_date">2018年01月01日 - 2018年3月21日</span></div>
+            	 <table  class="easyui-form" method="post" fit="true">
+            	 <tr><td>
+                <a href="#" class="easyui-linkbutton"
                    style="width: 40px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="print()">
                     打印
                 </a>
-                <a href="#" class="easyui-linkbutton"
-                   style="width: 80px;height: 24px; margin-right:3px;text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="doExport('grid')" plain="true" >
+                <a href="javascript:doExport('grid',true)" class="easyui-linkbutton"
+                   style="width: 80px;height: 24px; margin-right:3px;text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef"  plain="true" >
                     导出EXCEL
                 </a>
-                <div class="show">查询时间：<span id="search_date">2018年01月01日 - 2018年3月21日</span></div>
-        </div>
+              
+	              </td>
+                 </tr>
+                 </table>
+               </div> 
+        
         <!-- =========================================================表格========================================================= -->
-        <table class="easyui-datagrid" id = "grid"  title="年度数据列表" style="width:100%;height:auto" toolbar='#toolbar'
+         <div class="easyui-panel" title="数据列表"   collapsible="true" style="padding:0px;" data-options="headerCls:'pdiv',tools:'#infoToolbar'">
+        <table class="easyui-treegrid" id = "grid"  title="年度数据列表" style="width:100%;height:auto" toolbar='#toolbar'
                pagination="false"
                data-options="
                 rownumbers: true,
                 singleSelect: true,
                 url: '${contextPath}/statistical/listProjectYearCover',
                 method: 'get',
-                onLoadSuccess: onLoadSuccess">
+                onLoadSuccess: onLoadSuccess,idField:'projectId',
+						loadFilter:treegridLoadFilter">
             <thead>
             <tr>
                 <th data-options="field:'projectName',width:'22%',align:'center'">项目名称</th>
@@ -102,6 +112,7 @@
             </tr>
             </thead>
         </table>
+        </div>
         <div style="box-sizing:border-box;width:100%;height: 500px;padding: 10px" id="div">
         
         </div>
@@ -127,20 +138,25 @@
         }
     }
     
-    function selectOn(obj,month){
+    function selectOn(){
     	//检查一下所有的li下A标签是否选中
       var liA =	$(".timp_point li");
+      $(liA).each(function(e) {
+          $(this).children("a").removeClass("on");
+       })
     }
     //表格查询
-    function queryGrid(month) {
+    function queryGrid(month,obj) {
+    	selectOn();
     	var year=$("#year_select").val();
         var opts = $("#grid").datagrid("options");
         if (null == opts.url || "" == opts.url) {
             opts.url = "${contextPath}/statistical/listProjectYearCover";
         }
         var param = {"year" :year,"month" :month};
-        $("#grid").datagrid("load",param);
+        $("#grid").treegrid("load",param);
         $("#search_date").html(searchDate(year,month));
+        $(obj).attr("class","on");
         loadEchartForProject(year,month);
     }
     
@@ -235,7 +251,8 @@
   
     $(function(){  
     	loadEchartForProject();  
-          
+    	var year=$("#year_select").val();
+    	$("#search_date").html(searchDate(year,null));  
     });
 </script>
 

@@ -166,12 +166,12 @@ public class AlarmConfigServiceImpl extends BaseServiceImpl<AlarmConfig, Long> i
 		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 		String from = SystemConfigUtils.getProperty("spring.mail.username");
 		helper.setFrom(from);
-		User receiver = AlmCache.USER_MAP.get(project.getProjectManager());
+		User receiver = AlmCache.getInstance().getUserMap().get(project.getProjectManager());
 		helper.setTo(receiver.getEmail());
 		helper.setSubject("主题：" + project.getName() + "项目进度告警");
 		StringBuilder sb = new StringBuilder();
 		sb.append("项目名称：").append(project.getName()).append(version.getVersion()).append("\r\n所属阶段：")
-				.append(AlmCache.PHASE_NAME_MAP.get(phase.getName()));
+				.append(AlmCache.getInstance().getPhaseNameMap().get(phase.getName()));
 		if (task != null) {
 			sb.append("\r\n任务名称：").append(task.getName()).append("\r\n计划结束日期：").append(sdf.format(task.getEndDate()));
 		} else {

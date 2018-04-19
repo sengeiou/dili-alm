@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,7 +26,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +41,6 @@ import com.dili.alm.dao.ProjectOnlineApplyMapper;
 import com.dili.alm.dao.ProjectOnlineApplyMarketMapper;
 import com.dili.alm.dao.ProjectOnlineOperationRecordMapper;
 import com.dili.alm.dao.ProjectOnlineSubsystemMapper;
-import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.TeamMapper;
 import com.dili.alm.dao.VersionMarketOnlineRecordMapper;
 import com.dili.alm.domain.ApplyType;
@@ -82,7 +79,6 @@ import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
-import com.google.common.collect.Sets;
 
 import tk.mybatis.mapper.entity.Example;
 
@@ -131,8 +127,6 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	private UserRpc userRpc;
 	@Autowired
 	private VersionMarketOnlineRecordMapper versionMaketMapper;
-	@Autowired
-	private ProjectVersionMapper versionMapper;
 	@Autowired
 	private ProjectVersionProvider versionProvider;
 
@@ -293,7 +287,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		}
 		// 发邮件给产品经理
 		if (OperationResult.FAILURE.equals(result)) {
-			User user = AlmCache.USER_MAP.get(apply.getProductManagerId());
+			User user = AlmCache.getInstance().getUserMap().get(apply.getProductManagerId());
 			if (user == null) {
 				throw new ProjectOnlineApplyException("产品经理不存在");
 			}
@@ -450,7 +444,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 				s.setApplyId(apply.getId());
 				if (StringUtils.isNumeric(s.getManagerName())) {
 					Long managerId = Long.valueOf(s.getManagerName());
-					User u = AlmCache.USER_MAP.get(managerId);
+					User u = AlmCache.getInstance().getUserMap().get(managerId);
 					if (u != null) {
 						s.setManagerId(managerId);
 						s.setManagerName(u.getRealName());
@@ -706,7 +700,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		// 发邮件
 		Set<String> emails = this.getDefaultEmails(apply);
 		// 给测试部经理发
-		User user = AlmCache.USER_MAP.get(apply.getTestManagerId());
+		User user = AlmCache.getInstance().getUserMap().get(apply.getTestManagerId());
 		if (user == null) {
 			throw new ProjectOnlineApplyException("测试经理不存在");
 		}
@@ -764,7 +758,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 				s.setApplyId(apply.getId());
 				if (StringUtils.isNumeric(s.getManagerName())) {
 					Long managerId = Long.valueOf(s.getManagerName());
-					User u = AlmCache.USER_MAP.get(managerId);
+					User u = AlmCache.getInstance().getUserMap().get(managerId);
 					if (u != null) {
 						s.setManagerId(managerId);
 						s.setManagerName(u.getRealName());
@@ -931,7 +925,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		// 给申请人指定的人发
 		emails.addAll(this.getApplicantSpecifiedEmails(apply));
 		// 给申请人发
-		User user = AlmCache.USER_MAP.get(apply.getApplicantId());
+		User user = AlmCache.getInstance().getUserMap().get(apply.getApplicantId());
 		if (user == null) {
 			throw new NullPointerException("申请人不存在");
 		}
@@ -980,7 +974,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		teamQuery.setProjectId(apply.getProjectId());
 		List<Team> teams = this.teamMapper.select(teamQuery);
 		teams.forEach(t -> {
-			User u = AlmCache.USER_MAP.get(t.getMemberId());
+			User u = AlmCache.getInstance().getUserMap().get(t.getMemberId());
 			if (u != null) {
 				emailStrs.add(u.getEmail());
 			}

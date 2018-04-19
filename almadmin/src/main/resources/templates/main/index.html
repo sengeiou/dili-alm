@@ -1,178 +1,180 @@
 <#body>
-    <style>
-    td div div:first-child {
-        border: 0;
-        background-color: #EEEEEE;
-    }
-    body {
-        margin: 0;
-        padding: 0;
-    }
-    #workdayBox .contain-box{
-        box-sizing: border-box;
-        width: 100%;
-        padding:10px 30px;
-        font-size: 14px;
-        color: #666;
-    }
-    #workdayBox .contain-box .label-top{
-        display: inline-block;
-        width: 20%;
-        padding-right: 18px;
-        text-align: right;
-    }
-    #workdayBox .contain-box div.box-item{
-        margin-bottom: 24px;
-        height: 40px;
-        /*line-height: 40px;*/
-    }
-    #workdayBox .contain-box span.span-box{
-        display: inline-block;
-        width: 60px;
-        border-radius: 15px;
-        line-height: 28px;
-        text-align: center;
-        color: #666;
-        background: #eee;
-    }
-    #workdayBox div.box-item .button{
-        width: 80px;
-        height: 36px;
-        border-radius: 5px;
-        text-align: center;
-        font-size: 15px;
-        margin-right: 16px;
-        cursor: pointer;
-    }
-    #workdayBox div.box-item .confirm{
-        background: #2fa060;
-        color: #fff;
-    }
-    #workdayBox div.box-item .confirm:hover{
-        background: #26b564;
-    }
-    #workdayBox div.box-item .cancel{
-        background: #e5e8e9;
-        color: #666;
-    }
-    #workdayBox div.box-item .cancel:hover{
-        background: #d4d9dc;
-    }
-    #workdayBox div.box-item .hint{
-        margin-left: 18px;
-        margin-top: 5px;
-        padding-left: 21%;
-        font-size: 12px;
-        color: #bbb;
-    }
-    </style>
-    <div id="page-layout" class="page-layout index-layout" style="width: 100%;height: 100%;">
-        <!--消息通知、用户信息-->
-        <div class="head" data-options="region:'north'" style="height:72px;border:none;">
-            <div class="info">
-                <!--工作日-->
-                <div class="workday show-list" data-id="user-workday" id="user-workday-outer">
-              
-                </div>
-                <!--用户设置-->
-                <div class="user-info show-list" data-id="user-menu">
-                    <div class="user-menu">
-                        <a class="user-img" href=""><img src="${contextPath}/resources/images/default-user.png" width="40" height="40" alt="头像"></a>
-                        <a class="user-name">${username} </a>
-                    </div>
-                </div>
-                <!--消息列表-->
-                <div class="msg show-list" data-id="news-list">
-                    <span id="messageCount" style="display: none;"></span>
-                </div>
-            </div>
-            <!--LOGO-->
-            <div class="logo">LOGO</div>
-            <!--顶部menu-->
-            <div id="css3menu" class="menu-top">
-                <ul>
-                	<% for(item in menu){ %>
-	                    <li><a id="fMenu${item.id}" href="javascript:void(0)" rel="${item.name}">${item.name}</a></li>
-                    <% } %>
-                </ul>
-            </div>
+<style>
+td div div:first-child {
+	border: 0;
+	background-color: #EEEEEE;
+}
 
-        </div>
-        <!--<div data-options="region:'south'" style="height:50px;"></div>-->
-        <!--左侧菜单栏-->
-         <div  data-options="region:'west'" style="width:251px;height:100%;padding-top:0px;border: none">
-         </div>
-        <!--页面主体内容-->
-        <div data-options="region:'center'" id="center" style="width:100%;height:100%;border: none;" >
-           <iframe id="homeIndex" scrolling="auto" frameborder="0"  style="width:100%; height: 99.6%; display:block;"></iframe>
-           <div id="tabs" style="width:100%; height: 99.6%;display: none;padding:10px 10px 0;box-sizing: border-box;min-width:929px"></div>
-        </div>
-    </div>
-    <!--工作日-->
-    <div class="menu-list workday-list" id="user-workday" data-index="0">
-       
-    </div>
-    <!--用户菜单-->
-    <div class="menu-list" id="user-menu" data-index="1">
-        <ul>
-            <li><a href="javascript:void(0)" onclick="menuClickHandler(this)">用户信息</a></li>
-            <li><a  href="javascript:void(0)" onclick="menuClickHandler(this)">修改密码</a></li>
-            <li><a  href="javascript:void(0)" onclick="logout()">注销</a></li>
-        </ul>
-        <!--<span class="item dot-top"></span>-->
-    </div>
-    <!--消息列表-->
-    <div class="menu-list" id="news-list" data-index="2">
-        <ul id="messageList">
+body {
+	margin: 0;
+	padding: 0;
+}
 
-        </ul>
-        <!--<span class="item dot-top"></span>-->
-    </div>
+#workdayBox .contain-box {
+	box-sizing: border-box;
+	width: 100%;
+	padding: 10px 30px;
+	font-size: 14px;
+	color: #666;
+}
 
-    <!--工作日设置弹窗-->
-    <div id="workdayBox" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="设置" style="padding:20px" modal="true" border="thin" closed="true"
-         data-options="
+#workdayBox .contain-box .label-top {
+	display: inline-block;
+	width: 20%;
+	padding-right: 18px;
+	text-align: right;
+}
+
+#workdayBox .contain-box div.box-item {
+	margin-bottom: 24px;
+	height: 40px;
+	/*line-height: 40px;*/
+}
+
+#workdayBox .contain-box span.span-box {
+	display: inline-block;
+	width: 60px;
+	border-radius: 15px;
+	line-height: 28px;
+	text-align: center;
+	color: #666;
+	background: #eee;
+}
+
+#workdayBox div.box-item .button {
+	width: 80px;
+	height: 36px;
+	border-radius: 5px;
+	text-align: center;
+	font-size: 15px;
+	margin-right: 16px;
+	cursor: pointer;
+}
+
+#workdayBox div.box-item .confirm {
+	background: #2fa060;
+	color: #fff;
+}
+
+#workdayBox div.box-item .confirm:hover {
+	background: #26b564;
+}
+
+#workdayBox div.box-item .cancel {
+	background: #e5e8e9;
+	color: #666;
+}
+
+#workdayBox div.box-item .cancel:hover {
+	background: #d4d9dc;
+}
+
+#workdayBox div.box-item .hint {
+	margin-left: 18px;
+	margin-top: 5px;
+	padding-left: 21%;
+	font-size: 12px;
+	color: #bbb;
+}
+</style>
+<div id="page-layout" class="page-layout index-layout" style="width: 100%; height: 100%;">
+	<!--消息通知、用户信息-->
+	<div class="head" data-options="region:'north'" style="height: 72px; border: none;">
+		<div class="info">
+			<!--工作日-->
+			<div class="workday show-list" data-id="user-workday" id="user-workday-outer"></div>
+			<!--用户设置-->
+			<div class="user-info show-list" data-id="user-menu">
+				<div class="user-menu">
+					<a class="user-img" href=""><img src="${contextPath}/resources/images/default-user.png" width="40" height="40" alt="头像"></a> <a
+						class="user-name">${username} </a>
+				</div>
+			</div>
+			<!--消息列表-->
+			<div class="msg show-list" data-id="news-list">
+				<span id="messageCount" style="display: none;"></span>
+			</div>
+		</div>
+		<!--LOGO-->
+		<div class="logo">LOGO</div>
+		<!--顶部menu-->
+		<div id="css3menu" class="menu-top">
+			<ul>
+				<% for(item in menu){ %>
+				<li><a id="fMenu${item.id}" href="javascript:void(0)" rel="${item.name}">${item.name}</a></li> <% } %>
+			</ul>
+		</div>
+
+	</div>
+	<!--<div data-options="region:'south'" style="height:50px;"></div>-->
+	<!--左侧菜单栏-->
+	<div data-options="region:'west'" style="width: 251px; height: 100%; padding-top: 0px; border: none"></div>
+	<!--页面主体内容-->
+	<div data-options="region:'center'" id="center" style="width: 100%; height: 100%; border: none;">
+		<iframe id="homeIndex" scrolling="auto" frameborder="0" style="width: 100%; height: 99.6%; display: block;"></iframe>
+		<div id="tabs" style="width: 100%; height: 99.6%; display: none; padding: 10px 10px 0; box-sizing: border-box; min-width: 929px"></div>
+	</div>
+</div>
+<!--工作日-->
+<div class="menu-list workday-list" id="user-workday" data-index="0"></div>
+<!--用户菜单-->
+<div class="menu-list" id="user-menu" data-index="1">
+	<ul>
+		<li><a href="javascript:void(0)" onclick="menuClickHandler(this)">用户信息</a></li>
+		<li><a href="javascript:void(0)" onclick="menuClickHandler(this)">修改密码</a></li>
+		<#resource code="clearCache">
+		<li><a href="javascript:void(0)" onclick="clearCache();">清空缓存</a></li>
+		</#resource>
+		<li><a href="javascript:void(0)" onclick="logout()">注销</a></li>
+	</ul>
+	<!--<span class="item dot-top"></span>-->
+</div>
+<!--消息列表-->
+<div class="menu-list" id="news-list" data-index="2">
+	<ul id="messageList">
+
+	</ul>
+	<!--<span class="item dot-top"></span>-->
+</div>
+
+<!--工作日设置弹窗-->
+<div id="workdayBox" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="设置"
+	style="padding: 20px" modal="true" border="thin" closed="true" data-options="
 				width:480,
 				height: 350,">
-        <div class="contain-box">
-            <form id="uploadForm" >
-            
-                <div id="hasYear" class="box-item">
-                   
-                    
-                </div>
-                <div class="box-item">
-                    <label  class="label-top">年度:</label>
-                    <select class="easyui-combobox" id="cbYearContrast" name="year"  style="width:60%;">
-                        <option value="0">请选择年份</option>
-                    </select>
-                </div>
-                <div class="box-item">
-                    <label  class="label-top">数据内容:</label>
-                    <input class="easyui-filebox" buttonText="选择上传文件"  id="fileuploader" name="file" data-options="prompt:'文件', accept:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel'" style="width:60%;color: #666">
-                    <p class="hint">仅支持excel文件，文件不超过1M</p>
-                </div>
-                <div class="box-item">
-                    <label  class="label-top"></label>
-                    <input type="button" class="button confirm" value="确认" onclick="doUpload()"  >
-                    <input type="button" class="button cancel" value="取消" onclick="$('#workdayBox').dialog('close');">
-                </div>
-            </form>
-        </div>
+	<div class="contain-box">
+		<form id="uploadForm">
 
-    </div>
+			<div id="hasYear" class="box-item"></div>
+			<div class="box-item">
+				<label class="label-top">年度:</label> <select class="easyui-combobox" id="cbYearContrast" name="year" style="width: 60%;">
+					<option value="0">请选择年份</option>
+				</select>
+			</div>
+			<div class="box-item">
+				<label class="label-top">数据内容:</label> <input class="easyui-filebox" buttonText="选择上传文件" id="fileuploader" name="file"
+					data-options="prompt:'文件', accept:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel'"
+					style="width: 60%; color: #666">
+				<p class="hint">仅支持excel文件，文件不超过1M</p>
+			</div>
+			<div class="box-item">
+				<label class="label-top"></label> <input type="button" class="button confirm" value="确认" onclick="doUpload()"> <input
+					type="button" class="button cancel" value="取消" onclick="$('#workdayBox').dialog('close');">
+			</div>
+		</form>
+	</div>
 
-    <script type="text/javascript">
+</div>
+
+<script type="text/javascript">
 
     $(function() {
         $('#page-layout').layout();
     });
 
-    </script>
-    <!-- ====================================================================================================================== -->
-    <!-- style & script 分隔线 -->
-    <!-- ====================================================================================================================== -->
-    <script type="text/javascript">
+    </script> <!-- ====================================================================================================================== --> <!-- style & script 分隔线 -->
+<!-- ====================================================================================================================== --> <script
+	type="text/javascript">
     var currentYear = new Date().getFullYear();
 	var select = document.getElementById("cbYearContrast");
 	for (var i = 8; i >= -2; i--) {
@@ -347,6 +349,20 @@
         addOneTab(title, url);   
     }
     
+    function clearCache(){
+    	$.messager.confirm('提示','确定要清除系统缓存数据？',function(flag){
+    		if(flag){
+    			$.post('${contextPath!}/cache/clear',{},function(res){
+    				if(res.code==200){
+    					$.message.alert('提示','操作成功');
+    				}else{
+    					$.message.alert('提示','操作失败');
+    				}
+    			});
+    		}
+    	});
+    }
+    
     function addOneTab(title, url) {
     	$("#homeIndex").css('display','none');
 		$("#tabs").css('display','block');
@@ -507,8 +523,7 @@
         $(obj).hasClass('close') ? $(obj).removeClass('close').next('ul').show() : $(obj).addClass('close').next('ul').hide()
     }
 
-    </script>
-    <script type="text/template" id="menuTem">
+    </script> <script type="text/template" id="menuTem">
         <div id="menuList" class="menu-left">
             <% for(item in menu){ %>
             <div id="${item.id}" class="menu-left-list">
@@ -525,5 +540,4 @@
             </div>
             <% } %>
         </div>
-    </script>
-</#body>
+    </script> </#body>
