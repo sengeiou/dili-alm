@@ -47,6 +47,7 @@ import com.dili.alm.service.StatisticalService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
+import com.mysql.fabric.xmlrpc.base.Data;
 
 @Service
 public class StatistaicalServiceImpl implements StatisticalService {
@@ -377,10 +378,30 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	}
 
 	@Override
-	public List<ProjectYearCoverDto> listProjectYearCover(String year, String month) {
+	public List<ProjectYearCoverDto> listProjectYearCover(String year, String month,String weekNum) {
+		String start = null ;
+		String end = null ;
+		if (weekNum==""||weekNum==null) {
+			start =getAppedDate(year, month, true); 
+			end =getAppedDate(year, month, false);
+		}else{
 
-		return taskMapper.selectProjectYearsCover(getAppedDate(year, month, true), getAppedDate(year, month, false));
+			int yeanIntager = Integer.parseInt(year);
+			
+			int monthIntager = Integer.parseInt(month);
+			
+			int weekNumIntager = Integer.parseInt(weekNum);
+			
+			Map<String, String> dateUtilMap = DateUtil.getWeeks(yeanIntager, monthIntager);//获取当月所有周的开始结束时间
+			
+			start = dateUtilMap.get("start"+weekNumIntager);
+			
+			end= dateUtilMap.get("end"+weekNumIntager);
+		}
+		
+		return taskMapper.selectProjectYearsCover(start,end );
 	}
+	
 
 	private static String getAppedDate(String year, String month, Boolean isBegin) {
 		Calendar now = Calendar.getInstance();
@@ -392,8 +413,12 @@ public class StatistaicalServiceImpl implements StatisticalService {
 			retrunDate += now.get(Calendar.YEAR);
 		}
 
-		if (month == null) {
-			month = now.get(Calendar.MONTH) + "";
+		if (month == null||month=="") {
+			if (isBegin) {
+				month="1";
+			}else{
+				month="12";
+			}
 		}
 		if (isBegin) {
 			switch (month) {
@@ -508,18 +533,57 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	}
 
 	@Override
-	public String getSearchDate(String year, String month) {
-		String begin = getAppedDate(year, month, true);
-		String end = getAppedDate(year, month, false);
-		String returnStr = begin + "至" + end;
+	public String getSearchDate(String year, String month ,String weekNum) {
+		String start = null ;
+		String end = null ;
+	   if(weekNum==null||weekNum==""){
+			start =getAppedDate(year, month, true); 
+			end =getAppedDate(year, month, false); 
+
+		}else{
+			int yeanIntager = Integer.parseInt(year);
+			
+			int monthIntager = Integer.parseInt(month);
+			
+			int weekNumIntager = Integer.parseInt(weekNum);
+			
+			Map<String, String> dateUtilMap = DateUtil.getWeeks(yeanIntager, monthIntager);//获取当月所有周的开始结束时间
+			
+			start = dateUtilMap.get("start"+weekNumIntager);
+			
+			end = dateUtilMap.get("end"+weekNumIntager);
+		}
+		
+		String returnStr = start + "至" + end;
 		return returnStr;
 	}
 
 	@Override
-	public ProjectYearCoverForAllDto getProjectYearsCoverForAll(String year, String month) {
-		String startDate = getAppedDate(year, month, true);
-		String endDate = getAppedDate(year, month, false);
-		return taskMapper.selectProjectYearsCoverForAll(startDate, endDate);
+	public ProjectYearCoverForAllDto getProjectYearsCoverForAll(String year, String month,boolean isFullYear,String weekNum) {
+		String start = null ;
+		String end = null ;
+		if (isFullYear) {
+			start =getAppedDate(year, null, true); 
+			end =getAppedDate(year, null, false); 
+			
+		}else if(weekNum==null||weekNum==""){
+			start =getAppedDate(year, month, true); 
+			end =getAppedDate(year, month, false); 
+
+		}else{
+			int yeanIntager = Integer.parseInt(year);
+			
+			int monthIntager = Integer.parseInt(month);
+			
+			int weekNumIntager = Integer.parseInt(weekNum);
+			
+			Map<String, String> dateUtilMap = DateUtil.getWeeks(yeanIntager, monthIntager);//获取当月所有周的开始结束时间
+			
+			start = dateUtilMap.get("start"+weekNumIntager);
+			
+			end = dateUtilMap.get("end"+weekNumIntager);
+		}
+		return taskMapper.selectProjectYearsCoverForAll(start, end);
 	}
 
 	/*****
@@ -752,5 +816,54 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		}
 		return list;
 	}
+	
+	
+	public static void main(String[] args) throws ParseException {
+        int year = 2018;
+        int month =1;
+        int weekNum =0;
+		Date da=DateUtil.getFirstDayOfWeekOrder(year, month, weekNum);
+		Date lastDa=DateUtil.getLastDayOfWeekOrder(year, month, weekNum);
+		
+		for (int i = 0; i < 5; i++) {//6*7=42  一个月最大覆盖6周，即每月1号是周日，每月最后一天是周一
+			Date da2=DateUtil.getFirstDayOfWeekOrder(year, month,i+1 );
+			
+			
+			Date lastDa2=DateUtil.getLastDayOfWeekOrder(year, month, i+1);
+	        //获取默认选中的日期的年月日星期的值，并赋值
+	        Calendar start = Calendar.getInstance();//日历对象
+	        start.setTime(da2);//设置当前日期
+	        
+	        
+	        Calendar end = Calendar.getInstance();//日历对象
+	        end.setTime(lastDa2);//设置当前日期
+			if (start.get(Calendar.MONTH)+1!=month&&end.get(Calendar.MONTH)+1==month) {//本周开始日期不本月的
+				String beiginDate = year+"-0"+month+"-01 00:00:00";
+				da2=DateUtil.getStrDate(beiginDate);
+				
+			}
+			
+			if (start.get(Calendar.MONTH)+1==month&&end.get(Calendar.MONTH)+1!=month) {
+				String beiginDate = year+"-0"+month+"-01 00:00:00";
+				Date past=DateUtil.getStrDate(beiginDate);
+				lastDa2 =DateUtil.lastDayOfMonth(past);
+			}
+			System.out.println("-----------------第"+(i+1)+"周-------------------------");
+			System.out.println("开始日期:"+new SimpleDateFormat("yyyy-MM-dd").format(da2)+";");
+			System.out.println("结束日期:"+new SimpleDateFormat("yyyy-MM-dd").format(lastDa2)+"。");
+			
+		}
+		
+
+		//System.out.println(new SimpleDateFormat("yyyy-MM-dd").format(da)+":"+year+"年"+month+"月,第"+weekNum+"周开始时间");
+		//System.out.println(new SimpleDateFormat("yyyy-MM-dd").format(lastDa)+":"+year+"年"+month+"月,第"+weekNum+"周结束时间");
+	}
+	
+
+	
+	
+
+
+
 
 }
