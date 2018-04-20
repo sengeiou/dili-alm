@@ -385,7 +385,7 @@
         function projectDesc(id){  
         	
 
-      	  var url='${contextPath}/project/detail?id='+id;        //转向网页的地址;
+      	  var url='${contextPath}/project/detail.html?id='+id;        //转向网页的地址;
       	   //alert(url);
       	  var name='项目详情';                           //网页名称，可为空;
       	  var iWidth=1000;                          //弹出窗口的宽度;
@@ -395,7 +395,7 @@
         //  	return	window.open(url,name,'height='+iHeight+',innerHeight='+iHeight+',width='+iWidth+',innerWidth='+iWidth+',top='+iTop+',left='+iLeft+',toolbar=no,menubar=no,scrollbars=yes,resizeable=no,location=no,status=no');
     	 
           	
-        	 return   window.location.href="${contextPath}/project/detail?id="+id+"&backUrl=${contextPath!}/weekly/index.html";
+        	 return   window.location.href="${contextPath}/project/detail.html?id="+id+"&backUrl=${contextPath!}/weekly/index.html";
         	
          }
         

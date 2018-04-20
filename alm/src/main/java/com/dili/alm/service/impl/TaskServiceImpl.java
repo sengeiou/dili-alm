@@ -15,7 +15,6 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,10 +62,10 @@ import com.dili.alm.service.TeamService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.alm.utils.WebUtil;
 import com.dili.ss.base.BaseServiceImpl;
-import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.ss.quartz.domain.ScheduleMessage;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
@@ -373,53 +372,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 	}
 
-	/**
-	 * 读取填入的工时记录
-	 * 
-	 * @param jsonMapStr
-	 * @param taskHour
-	 * @return
-	 */
-	private String taskHoursMapAdd(String jsonMapStr, int taskHour) {
-		try {
-			// StringParseMap
-			Map<String, Integer> jsonMap = (Map<String, Integer>) JSON.parse(jsonMapStr);
-			if (jsonMap.size() > 0 && jsonMap.get(this.dateToString(new Date()) + 1) == null) {
-				// 已经存有值，但没有今日的值
-				jsonMap.put(this.dateToString(new Date()) + 1, taskHour);
-
-			} else if (jsonMap.size() == 0) {// 没有开始填写值
-
-				jsonMap.put(this.dateToString(new Date()) + 1, taskHour);
-
-			} else if (jsonMap.size() > 0 && jsonMap.get(this.dateToString(new Date()) + 1) != null) {// 已经存有值，且已存入今日值
-
-				for (int i = 0; i < 8; i++) {
-					int keyId = i + 1;
-					if (jsonMap.get(this.dateToString(new Date()) + keyId) == null) {// 找到没有存值的key里
-
-						jsonMap.put(this.dateToString(new Date()) + keyId, taskHour);
-
-						break;
-
-					}
-				}
-
-			}
-			ObjectMapper mapper = new ObjectMapper();
-			return mapper.writeValueAsString(jsonMap);
-
-		} catch (JsonGenerationException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return "";
-	}
-
 	// 计算阶段进度
 	private void saveProjectPhase(Task task) {
 		// 获取阶段信息 已执行的工时/计划工时累加
@@ -607,23 +559,26 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	/**
 	 * 定时刷过期任务
 	 */
-	@Scheduled(cron = "0 0 0 * * ? ")
 	@Override
-	public void notComplateTask() {
-		Task taskSelect = DTOUtils.newDTO(Task.class);
+	public void notComplateTask(ScheduleMessage msg) {
+		// Task taskSelect = DTOUtils.newDTO(Task.class);
 		// 查询任务表里 项目下的所有任务
-		List<Task> taskList = this.list(taskSelect);
+		// List<Task> taskList = this.list(taskSelect);
+		Example example = new Example(Task.class);
+		example.createCriteria().andEqualTo("status", TaskStatus.NOTSTART.getCode()).orEqualTo("status",
+				TaskStatus.START.getCode());
+		List<Task> taskList = this.getActualDao().selectByExample(example);
+		long now = System.currentTimeMillis();
 		for (Task taskDome : taskList) {
 			// 只判断未开始，已开始状态的任务
-			if (taskDome.getStatus() == TaskStatus.START.code || taskDome.getStatus() == TaskStatus.NOTSTART.code) {
-				// dateUtil 计算相差天数大于0，更新状态为未完成
-				int days = Integer.parseInt(DateUtil.getDatePoor(new Date(), taskDome.getEndDate()).trim());
-				if (days > 0) {
-					taskDome.setStatus(TaskStatus.NOTCOMPLETE.code);// 更新状态为未完成
-					taskDome.setModified(new Date());
-					this.update(taskDome);
-					this.startTask(taskDome);
-				}
+			// dateUtil 计算相差天数大于0，更新状态为未完成
+			// long days = Integer.parseInt(DateUtil.getDatePoor(new Date(),
+			// taskDome.getEndDate()).trim());
+			if (now - taskDome.getEndDate().getTime() >= 0) {
+				taskDome.setStatus(TaskStatus.NOTCOMPLETE.code);// 更新状态为未完成
+				taskDome.setModified(new Date());
+				this.getActualDao().updateByPrimaryKeySelective(taskDome);
+				// this.startTask(taskDome);
 			}
 		}
 	}
@@ -666,29 +621,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			}
 		}
 		return true;
-	}
-
-	/*
-	 * 
-	 * 已经填写的工时
-	 *
-	 */
-	private int taskHoursPlus(TaskDetails taskDetails) {
-
-		int dayTotal = 0;
-
-		Map<String, Integer> taskHourMap = new HashMap<String, Integer>();
-
-		String taskUpdateDate = this.dateToString(taskDetails.getModified());
-
-		taskHourMap = (Map<String, Integer>) JSON.parse(taskDetails.getTaskTime());
-		// 获取最后跟新的日期，用日期在map里取值，一天最多能存8次值
-		for (int i = 0; i < 8; i++) {
-			if (taskHourMap.get(taskUpdateDate + (i + 1)) == null)
-				break;
-			dayTotal += taskHourMap.get(taskUpdateDate + (i + 1));
-		}
-		return dayTotal;
 	}
 
 	@Override
@@ -1128,21 +1060,21 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	@Override
 	public void deleteTask(Long id) throws TaskException {
 		Task task = this.getActualDao().selectByPrimaryKey(id);
-		
+
 		this.checkProjectState(task);
-		
+
 		Project project = this.projectMapper.selectByPrimaryKey(task.getProjectId());
 		if (project == null) {
 			throw new RuntimeException("项目不存在");
 		}
-		
+
 		if (!this.isCreater(task)) {
 			throw new TaskException("不是本项目的创建者，不能进行删除");
 		}
 		int rows = this.getActualDao().deleteByPrimaryKey(id);
 
 		project.setTaskCount(project.getTaskCount() - 1);
-		
+
 		this.projectMapper.updateByPrimaryKey(project);
 		if (rows <= 0) {
 			throw new TaskException("更新任务失败");

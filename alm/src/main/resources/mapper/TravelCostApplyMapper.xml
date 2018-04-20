@@ -6,6 +6,7 @@
       WARNING - @mbg.generated
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="serial_number" jdbcType="VARCHAR" property="serialNumber" />
     <result column="project_id" jdbcType="BIGINT" property="projectId" />
     <result column="applicant_id" jdbcType="BIGINT" property="applicantId" />
     <result column="root_departemnt_id" jdbcType="BIGINT" property="rootDepartemntId" />
@@ -19,8 +20,8 @@
     <!--
       WARNING - @mbg.generated
     -->
-    id, project_id, applicant_id, root_departemnt_id, department_id, apply_state, total_amount, 
-    travel_day_amount, submit_date
+    id, serial_number, project_id, applicant_id, root_departemnt_id, department_id, apply_state, 
+    total_amount, travel_day_amount, submit_date
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -37,6 +38,9 @@
     -->
     update travel_cost_apply
     <set>
+      <if test="serialNumber != null">
+        serial_number = #{serialNumber,jdbcType=VARCHAR},
+      </if>
       <if test="projectId != null">
         project_id = #{projectId,jdbcType=BIGINT},
       </if>

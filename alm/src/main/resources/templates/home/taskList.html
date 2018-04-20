@@ -157,7 +157,7 @@
 	// 打开执行任务窗口
 	function openUpdateDetail(row) {
 		var selected = $("#grid").datagrid('getData').rows[row];
-		if (!row.canOperation) {
+		if (!selected.canOperation) {
 			$.messager.alert('提示', '项目或版本暂停中，不能编辑');
 			return;
 		}

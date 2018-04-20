@@ -7,6 +7,6 @@ import com.dili.alm.domain.TravelCostApply;
 public interface TravelCostApplyUpdateDto extends TravelCostApply {
 
 	List<TravelCostDto> getTravelCost();
-	
-	void setTravelCost(TravelCostDto travelCost);
+
+	void setTravelCost(List<TravelCostDto> travelCost);
 }

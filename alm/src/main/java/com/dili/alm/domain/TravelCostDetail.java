@@ -17,40 +17,34 @@ import javax.persistence.Id;
  */
 @Table(name = "`travel_cost_detail`")
 public interface TravelCostDetail extends IBaseDomain {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "`id`")
-    @FieldDef(label="id")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getId();
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "`id`")
+	@FieldDef(label = "id")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Long getId();
 
-    void setId(Long id);
+	void setId(Long id);
 
-    @Column(name = "`cost_id`")
-    @FieldDef(label="差旅成本id")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getCostId();
+	@Column(name = "`cost_id`")
+	@FieldDef(label = "差旅成本id")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Long getCostId();
 
-    void setCostId(Long costId);
+	void setCostId(Long costId);
 
-    @Column(name = "`cost_name`")
-    @FieldDef(label="费用名称", maxLength = 255)
-    @EditMode(editor = FieldEditor.Text, required = true)
-    String getCostName();
+	@Column(name = "`cost_name`")
+	@FieldDef(label = "费用名称", maxLength = 255)
+	@EditMode(editor = FieldEditor.Text, required = true)
+	String getCostName();
 
-    void setCostName(String costName);
+	void setCostName(String costName);
 
-    @Column(name = "`cost_amount`")
-    @FieldDef(label="费用")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getCostAmount();
+	@Column(name = "`cost_amount`")
+	@FieldDef(label = "费用")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Long getCostAmount();
 
-    void setCostAmount(Long costAmount);
+	void setCostAmount(Long costAmount);
 
-    @Column(name = "`total_amount`")
-    @FieldDef(label="合计")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getTotalAmount();
-
-    void setTotalAmount(Long totalAmount);
 }

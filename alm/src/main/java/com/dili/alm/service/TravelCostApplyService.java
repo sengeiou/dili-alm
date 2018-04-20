@@ -18,4 +18,15 @@ public interface TravelCostApplyService extends BaseService<TravelCostApply, Lon
 	void review(Long applyId, TravelCostApplyResult result) throws TravelCostApplyException;
 
 	void deleteTravelCostApply(Long applyId) throws TravelCostApplyException;
+
+	TravelCostApply getUpdateViewData(Long id) throws Exception;
+
+	/**
+	 * 保存并提交申请
+	 * 
+	 * @param apply
+	 *            数据模型
+	 * @throws TravelCostApplyException 
+	 */
+	void saveAndSubmit(TravelCostApplyUpdateDto apply) throws TravelCostApplyException;
 }

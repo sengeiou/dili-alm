@@ -272,6 +272,10 @@ function noEditForTaskdetail() {
 
 // 显示详情页面
 function openDetail(selected) {
+	if (typeof selected == 'number') {
+		$("#grid").datagrid("selectRow", selected);
+		selected = $("#grid").datagrid("getSelected");
+	}
 	noEdit();
 
 	$("#task_detail_list").show();// 填写工时列表
@@ -498,7 +502,11 @@ function startTask() {
 				async : true,
 				success : function(data) {
 					if (data.code == "200") {
-						window.frames[0].reloadGrid();
+						if (window.frames[0]) {
+							window.frames[0].reloadGrid();
+						} else {
+							$('#grid').datagrid('reload');
+						}
 						$('#dlg').dialog('close');
 					} else {
 						$.messager.alert('错误', data.result);
@@ -534,7 +542,11 @@ function saveTaskDetail() {
 				async : true,
 				success : function(data) {
 					if (data.code == "200") {
-						window.frames[0].reloadGrid();
+						if (window.frames[0]) {
+							window.frames[0].reloadGrid();
+						} else {
+							$('#grid').datagrid('reload');
+						}
 						LogUtils.saveLog(LOG_MODULE_OPS.PERFORM_PROJECT_VERSION_PHASE_TASK, "执行任务:" + data.data + ":成功", function() {
 								});
 					} else {
@@ -679,7 +691,11 @@ function pauseTaskStatus() {
 				async : true,
 				success : function(data) {
 					if (data.code == "200") {
-						window.frames[0].reloadGrid();
+						if (window.frames[0]) {
+							window.frames[0].reloadGrid();
+						} else {
+							$('#grid').datagrid('reload');
+						}
 						$('#dlg').dialog('close');
 					} else {
 						$.messager.alert('错误', data.result);
@@ -703,7 +719,11 @@ function complate() {
 					async : true,
 					success : function(data) {
 						if (data.code == "200") {
-							window.frames[0].reloadGrid();
+							if (window.frames[0]) {
+								window.frames[0].reloadGrid();
+							} else {
+								$('#grid').datagrid('reload');
+							}
 							$('#dlg').dialog('close');
 							LogUtils.saveLog(LOG_MODULE_OPS.COMPLETE_PROJECT_VERSION_PHASE_TASK, "完成任务：" + data.data + ":成功", function() {
 									});

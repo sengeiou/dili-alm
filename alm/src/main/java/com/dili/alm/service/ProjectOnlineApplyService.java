@@ -36,7 +36,7 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 
 	ProjectOnlineApply getConfirmExecuteViewModel(Long id) throws ProjectOnlineApplyException;
 
-	ProjectOnlineApply getEasyUiRowData(Long id);
+	ProjectOnlineApply getEasyUiRowData(Long id) throws ProjectOnlineApplyException;
 
 	ProjectOnlineApply getEditViewDataById(Long id) throws ProjectOnlineApplyException;
 
