@@ -354,13 +354,13 @@
 		=#{selectOwner,jdbcType=BIGINT})) ORDER BY version.created DESC
 	</select>
 
-
+    <!-- 任务工时查询一天是否填写8小时  modified为工时执行日期，  cread为工时填写日期 -->
 	<select id="selectOtherTaskDetail" resultType="com.dili.alm.domain.TaskDetails">
 		select * from
 		alm.task_details as td where td.task_id in
 		(select tt.id from task as
 		tt where tt.owner =
-		#{selectOwner,jdbcType=BIGINT}) and td.created like
+		#{selectOwner,jdbcType=BIGINT}) and td.modified like
 		CONCAT("%",#{selectDate,jdbcType=VARCHAR},"%")
 	</select>
 

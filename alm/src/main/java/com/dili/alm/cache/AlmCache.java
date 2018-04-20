@@ -110,7 +110,10 @@ public class AlmCache {
 	}
 
 	public static void clearCache() throws IllegalArgumentException, IllegalAccessException {
-		for (Field field : AlmCache.class.getFields()) {
+		for (Field field : AlmCache.class.getDeclaredFields()) {
+			if (!field.isAccessible()) {
+				field.setAccessible(true);
+			}
 			if (!Modifier.isFinal(field.getModifiers())) {
 				continue;
 			}

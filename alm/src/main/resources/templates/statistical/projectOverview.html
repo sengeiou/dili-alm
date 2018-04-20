@@ -106,7 +106,6 @@
                         <th data-options="field:'typeCount',width:'14%',align:'center'">项目数</th>
                         <th data-options="field:'notStartCount',width:'14%',align:'center'">未开始</th>
                         <th data-options="field:'ongoingConut',width:'14%',align:'center'">进行中</th>
-                        <th data-options="field:'completeCount',width:'14%',align:'center'">已完成</th>
                         <th data-options="field:'suspendedCount',width:'14%',align:'center'">暂停中</th>
                         <th data-options="field:'shutCount',width:'14%',align:'center'">已关闭</th>
                     </tr>
@@ -214,13 +213,13 @@
 
     var labelOption = {
         normal: {
-            show: true,
+            show: false,//柱形图上文字
             position: app.config.position,
             distance: app.config.distance,
             align: app.config.align,
             verticalAlign: app.config.verticalAlign,
             rotate: app.config.rotate,
-            formatter: '{c}  {name|{a}}',
+            formatter: '{c}  {name|{a}}',//柱状图文字格式
             fontSize: 16,
             rich: {
                 name: {
@@ -259,7 +258,7 @@
             {
                 type: 'category',
                 axisTick: {show: false},
-                data: ['未开始', '进行中', '已完成', '暂停中', '已关闭']
+                data: ['未开始', '进行中', '暂停中', '已关闭']
             }
         ],
         yAxis: [

@@ -14,8 +14,6 @@ public class ProjectTypeCountDto {
 	private int notStartCount;
 	@Excel(name="进行中",orderNum="4")
 	private int ongoingConut;
-	@Excel(name="已完成",orderNum="5")
-	private int completeCount;
 	@Excel(name="暂停中",orderNum="6")
 	private int suspendedCount;
 	@Excel(name="已关闭",orderNum="7")
@@ -53,14 +51,6 @@ public class ProjectTypeCountDto {
 
 	public void setOngoingConut(int ongoingConut) {
 		this.ongoingConut = ongoingConut;
-	}
-
-	public int getCompleteCount() {
-		return completeCount;
-	}
-
-	public void setCompleteCount(int completeCount) {
-		this.completeCount = completeCount;
 	}
 
 	public int getSuspendedCount() {

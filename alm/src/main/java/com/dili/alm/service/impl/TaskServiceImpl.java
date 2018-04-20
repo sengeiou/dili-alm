@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -66,6 +67,8 @@ import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
+
+import tk.mybatis.mapper.entity.Example;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-11-23 10:23:05.
@@ -631,17 +634,13 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		return dto.getValues();
 	}
 
-	/*
-	 * 字典
-	 */
-
 	/**
 	 * 判断今日所有项目累加总和是否超过8小时
 	 */
 	@Override
-	public boolean isSetTask(Long id, short taskHour) {
+	public boolean isSetTask(Long id, short taskHour,String modified) {
 		// 获取今日填写所有项目的总工时
-		int totalTaskHour = restTaskHour(id);
+		int totalTaskHour = restTaskHour(id,modified);
 
 		if (totalTaskHour != 0) {
 
@@ -807,12 +806,16 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		if (userTicket == null) {
 			throw new RuntimeException("未登录");
 		}
-		List<Project> listProject = new ArrayList<Project>();
-		/* if (isNoTeam()||isCommittee()) { */
-		listProject = projectMapper.selectAll();
-		/*
-		 * }else{ listProject = taskMapper.selectProjectByTeam(userTicket.getId()); }
-		 */
+		@SuppressWarnings("rawtypes")
+		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(AlmConstants.DATA_AUTH_TYPE_PROJECT);
+		if (CollectionUtils.isEmpty(dataAuths)) {
+			return null;
+		}
+		List<Long> projectIds = new ArrayList<>(dataAuths.size());
+		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
+		Example example = new Example(Project.class);
+		example.createCriteria().andIn("id", projectIds);
+		List<Project> listProject = projectMapper.selectByExample(example);
 		return listProject;
 	}
 
@@ -937,7 +940,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	}
 
 	/**
-	 * 
+	 * 判断是否是任务创建者
 	 */
 	@Override
 	public boolean isCreater(Task task) {
@@ -968,9 +971,9 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	 * 已经填写的工时
 	 */
 	@Override
-	public int restTaskHour(Long ownerId) {
+	public int restTaskHour(Long ownerId,String updateDate) {
 
-		String updateDate = this.dateToString(new Date());
+		//String updateDate = this.dateToString(new Date());
 
 		int dayTotal = 0;
 
