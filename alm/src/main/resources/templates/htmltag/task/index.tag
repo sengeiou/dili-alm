@@ -106,7 +106,7 @@
 				url:"${contextPath!}/task/listTreeMember.json",
 				valueField:'id',
 				textField:'realName',
-				editable:false,
+//				editable:false,
 				onChange: function (o,n) {
 
 				}
