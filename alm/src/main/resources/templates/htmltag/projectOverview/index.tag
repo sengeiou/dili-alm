@@ -46,7 +46,7 @@
 	         success : function(result) {  
 	         		var res=result.rows;
 	         		for(var i=0;i<res.length;i++){
-	         			var enti={"name": res[i].type,"type":'bar',"label": labelOption,"data": [res[i].notStartCount,res[i].ongoingConut,res[i].completeCount,res[i].suspendedCount,res[i].shutCount]};   
+	         			var enti={"name": res[i].type,"type":'bar',"label": labelOption,"data": [res[i].notStartCount,res[i].ongoingConut,res[i].suspendedCount,res[i].shutCount]};   
                        nums.push(enti);  
                        names.push(res[i].type);  
                      }    

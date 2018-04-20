@@ -94,9 +94,6 @@ public class StatistaicalServiceImpl implements StatisticalService {
 					case 1:
 						ptc.setOngoingConut(projectStatusCountDto.getStateCount());
 						break;
-					case 2:
-						ptc.setCompleteCount(projectStatusCountDto.getStateCount());
-						break;
 					case 3:
 						ptc.setSuspendedCount(projectStatusCountDto.getStateCount());
 						break;
@@ -670,9 +667,6 @@ public class StatistaicalServiceImpl implements StatisticalService {
 						break;
 					case 1:
 						ptc.setOngoingConut(projectStatusCountDto.getStateCount());
-						break;
-					case 2:
-						ptc.setCompleteCount(projectStatusCountDto.getStateCount());
 						break;
 					case 3:
 						ptc.setSuspendedCount(projectStatusCountDto.getStateCount());
