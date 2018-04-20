@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -537,6 +538,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		// 项目经理回退
 		if (OperationResult.FAILURE.equals(result)) {
 			apply.setApplyState(ProjectOnlineApplyState.APPLING.getValue());
+			apply.setSubmitTime(null);
 		}
 		// 项目经理确认
 		if (OperationResult.SUCCESS.equals(result)) {
@@ -679,6 +681,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		// 测试回退
 		if (OperationResult.FAILURE.equals(result)) {
 			apply.setApplyState(ProjectOnlineApplyState.APPLING.getValue());
+			apply.setSubmitTime(null);
 		}
 		// 测试确认
 		if (OperationResult.SUCCESS.equals(result)) {
@@ -883,7 +886,11 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 					vmor.setVersionId(apply.getVersionId());
 					vmorList.add(vmor);
 				});
-				this.versionMaketMapper.insertList(vmorList);
+				try {
+					this.versionMaketMapper.insertList(vmorList);
+				} catch (BadSqlGrammarException e) {
+					throw new ProjectOnlineApplyException("改版本已在相同市场上线，不能重复上线");
+				}
 			}
 		}
 		// 更新项目版本上线状态
