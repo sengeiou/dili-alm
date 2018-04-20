@@ -708,15 +708,15 @@ function openUpdate(index, id) {
 												if (!$(this).form('validate')) {
 													return false;
 												}
-												if (!$('input[name=sqlScript]').val() && !$('input[name=sqlFile]').val()) {
+												if (!$('input[name=sqlFileId]').val() && !$('input[name=sqlScript]').val() && !$('input[name=sqlFile]').val()) {
 													$.messager.alert('错误', 'sql脚本不能为空');
 													return false;
 												}
-												if (!$('input[name=startupScript]').val() && !$('input[name=startupScriptFile]').val()) {
+												if (!$('input[name=startupScriptFileId]').val() && !$('input[name=startupScript]').val() && !$('input[name=startupScriptFile]').val()) {
 													$.messager.alert('错误', '启动脚本不能为空');
 													return false;
 												}
-												if (!$('input[name=dependencySystem]').val() && !$('input[name=dependencySystemFile]').val()) {
+												if (!$('input[name=dependencySystemFileId]').val() && !$('input[name=dependencySystem]').val() && !$('input[name=dependencySystemFile]').val()) {
 													$.messager.alert('错误', '依赖系统不能为空');
 													return false;
 												}
