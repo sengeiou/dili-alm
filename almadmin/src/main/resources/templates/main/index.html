@@ -301,7 +301,6 @@ body {
 	          data: {'userId':userIdVal},  
 	          async: false,   
 	          success: function (data1) {  
-	        	 console.log(data1)
         		 $("#user-workday-outer").empty();
         	  	 $("#user-workday").empty();
 	        	 if (data1 != ""&&data1!=null) {
@@ -312,8 +311,8 @@ body {
 	        	  			$("#user-workday").append("<span>"+data1.workDayYear+"年 第"+data1.wordDayWeek+"周  "+UnixToDate(data1.workStartTime)+" -- "+UnixToDate(data1.workEndTime)+"</span>");
 	        	  		}
 	        	  }else{
-		        	  	$("#user-workday-outer").append("<p>不是工作日</p");
-		        		$("#user-workday").append("<span>不是工作日</span>");
+		        	  	$("#user-workday-outer").append("<p>非工作日</p><p>"+UnixToDate(0)+"</p>");
+		        		$("#user-workday").append("<span>非工作日："+UnixToYear()+"年 "+UnixToDate(0)+"</span>");
 	        	  }
 	          },  
 	          error: function (data1) {  
@@ -321,10 +320,18 @@ body {
 	          }  
 	     });  
 	}
-	
+	function UnixToYear(){
+		var yearTime=new Date();
+		return yearTime.getFullYear();
+	}
 	function UnixToDate(unixTime) {
-
-        var time = new Date(unixTime);
+		var time ;
+		if(unixTime==0){
+			time = new Date();
+		}else{
+			time = new Date(unixTime);
+		}
+        
         var ymdhis = "";
         if(time.getUTCMonth()+1<10){
         	ymdhis += "0"+(time.getUTCMonth()+1) + "/";
@@ -352,11 +359,16 @@ body {
     function clearCache(){
     	$.messager.confirm('提示','确定要清除系统缓存数据？',function(flag){
     		if(flag){
-    			$.post('${contextPath!}/cache/clear',{},function(res){
-    				if(res.code==200){
-    					$.message.alert('提示','操作成功');
-    				}else{
-    					$.message.alert('提示','操作失败');
+    			$.ajax({
+    				type:'POST',
+    				url:'http://alm.diligrp.com:8083/alm/cache/clear',
+    				dataType:'jsonp',
+    				success:function(data){
+    					if(data.code==200){
+    						$.messager.alert('提示','操作成功');
+    					}else{
+    						$.messager.alert('提示','操作成功');
+    					}
     				}
     			});
     		}

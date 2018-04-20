@@ -12,6 +12,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.dili.alm.cache.AlmCache;
 import com.dili.ss.retrofitful.annotation.RestfulScan;
@@ -34,6 +37,23 @@ import tk.mybatis.spring.annotation.MapperScan;
  */
 public class AlmApplication extends SpringBootServletInitializer {
 
+	
+	private String[] alloweredOrigins = {"http://almadmin.diligrp.com"};
+
+	@Bean
+	public WebMvcConfigurer corsConfigurer() {
+	    return new WebMvcConfigurerAdapter() {
+	        @Override
+	        public void addCorsMappings(CorsRegistry registry) {
+	            registry.addMapping("/**")
+	                    .allowedOrigins(alloweredOrigins)
+	                    .allowCredentials(true)
+	                    .maxAge(3600)
+	                    .allowedHeaders("Origin", "X-Requested-With", "Content-Type", "Accept");
+	        }
+	    };
+	}
+	
 	@Bean
 	public GroupTemplate mailContentTemplate() throws IOException {
 		Configuration cfg = Configuration.defaultConfiguration();

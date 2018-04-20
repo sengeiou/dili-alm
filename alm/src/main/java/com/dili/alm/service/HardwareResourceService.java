@@ -1,6 +1,7 @@
 package com.dili.alm.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.dili.alm.domain.HardwareResource;
 import com.dili.alm.domain.HardwareResourceApply;
@@ -39,6 +40,6 @@ public interface HardwareResourceService extends BaseService<HardwareResource, L
 
 	List<DataDictionaryValueDto> getRegionals();
 
-	Project projectNumById(String id);
+	Map<String,String> projectNumById(String id);
 
 }

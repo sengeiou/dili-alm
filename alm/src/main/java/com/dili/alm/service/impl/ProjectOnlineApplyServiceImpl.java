@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +42,7 @@ import com.dili.alm.dao.ProjectOnlineApplyMapper;
 import com.dili.alm.dao.ProjectOnlineApplyMarketMapper;
 import com.dili.alm.dao.ProjectOnlineOperationRecordMapper;
 import com.dili.alm.dao.ProjectOnlineSubsystemMapper;
+import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.TeamMapper;
 import com.dili.alm.dao.VersionMarketOnlineRecordMapper;
 import com.dili.alm.domain.ApplyType;
@@ -54,6 +56,7 @@ import com.dili.alm.domain.ProjectOnlineApplyOperationType;
 import com.dili.alm.domain.ProjectOnlineApplyState;
 import com.dili.alm.domain.ProjectOnlineOperationRecord;
 import com.dili.alm.domain.ProjectOnlineSubsystem;
+import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Team;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.VersionMarketOnlineRecord;
@@ -129,6 +132,8 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	private VersionMarketOnlineRecordMapper versionMaketMapper;
 	@Autowired
 	private ProjectVersionProvider versionProvider;
+	@Autowired
+	private ProjectVersionMapper versionMapper;
 
 	@SuppressWarnings("unchecked")
 	public static Map<Object, Object> buildApplyViewModel(ProjectOnlineApply apply) {
@@ -533,6 +538,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		// 项目经理回退
 		if (OperationResult.FAILURE.equals(result)) {
 			apply.setApplyState(ProjectOnlineApplyState.APPLING.getValue());
+			apply.setSubmitTime(null);
 		}
 		// 项目经理确认
 		if (OperationResult.SUCCESS.equals(result)) {
@@ -675,6 +681,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		// 测试回退
 		if (OperationResult.FAILURE.equals(result)) {
 			apply.setApplyState(ProjectOnlineApplyState.APPLING.getValue());
+			apply.setSubmitTime(null);
 		}
 		// 测试确认
 		if (OperationResult.SUCCESS.equals(result)) {
@@ -879,8 +886,19 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 					vmor.setVersionId(apply.getVersionId());
 					vmorList.add(vmor);
 				});
-				this.versionMaketMapper.insertList(vmorList);
+				try {
+					this.versionMaketMapper.insertList(vmorList);
+				} catch (BadSqlGrammarException e) {
+					throw new ProjectOnlineApplyException("改版本已在相同市场上线，不能重复上线");
+				}
 			}
+		}
+		// 更新项目版本上线状态
+		ProjectVersion version = this.versionMapper.selectByPrimaryKey(apply.getVersionId());
+		version.setOnline(Boolean.TRUE);
+		rows = this.versionMapper.updateByPrimaryKeySelective(version);
+		if (rows <= 0) {
+			throw new ProjectOnlineApplyException("更新项目版本上线状态失败");
 		}
 		// 发邮件
 		Set<String> emails = this.getDefaultEmails(apply);

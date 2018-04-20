@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="mapper.ProjectVersionMapper">
+<mapper namespace="com.dili.alm.dao.ProjectVersionMapper">
   <resultMap id="BaseResultMap" type="com.dili.alm.domain.ProjectVersion">
     <!--
       WARNING - @mbg.generated
@@ -28,6 +28,7 @@
     <result column="actual_start_date" jdbcType="TIMESTAMP" property="actualStartDate" />
     <result column="actual_end_date" jdbcType="TIMESTAMP" property="actualEndDate" />
     <result column="completed_progress" jdbcType="INTEGER" property="completedProgress" />
+    <result column="online" jdbcType="TINYINT" property="online" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
@@ -36,7 +37,7 @@
     id, code, project_id, git, redmine_url, version, notes, creator_id, modifier_id, 
     created, modified, release_time, email_notice, host, port, visit_url, version_state, 
     planned_start_date, planned_end_date, planned_online_date, actual_start_date, actual_end_date, 
-    completed_progress
+    completed_progress, online
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -118,6 +119,9 @@
       </if>
       <if test="completedProgress != null">
         completed_progress = #{completedProgress,jdbcType=INTEGER},
+      </if>
+      <if test="online != null">
+        online = #{online,jdbcType=TINYINT},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

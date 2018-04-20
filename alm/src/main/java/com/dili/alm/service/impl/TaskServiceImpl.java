@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -66,6 +67,8 @@ import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
+
+import tk.mybatis.mapper.entity.Example;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-11-23 10:23:05.
@@ -803,12 +806,16 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		if (userTicket == null) {
 			throw new RuntimeException("未登录");
 		}
-		List<Project> listProject = new ArrayList<Project>();
-		/* if (isNoTeam()||isCommittee()) { */
-		listProject = projectMapper.selectAll();
-		/*
-		 * }else{ listProject = taskMapper.selectProjectByTeam(userTicket.getId()); }
-		 */
+		@SuppressWarnings("rawtypes")
+		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(AlmConstants.DATA_AUTH_TYPE_PROJECT);
+		if (CollectionUtils.isEmpty(dataAuths)) {
+			return null;
+		}
+		List<Long> projectIds = new ArrayList<>(dataAuths.size());
+		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
+		Example example = new Example(Project.class);
+		example.createCriteria().andIn("id", projectIds);
+		List<Project> listProject = projectMapper.selectByExample(example);
 		return listProject;
 	}
 

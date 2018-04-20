@@ -2,17 +2,24 @@ package com.dili.alm.service.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.ibatis.javassist.expr.NewArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.dao.HardwareResourceMapper;
+import com.dili.alm.dao.ProjectApplyMapper;
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.domain.Department;
 import com.dili.alm.domain.HardwareResource;
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
@@ -41,6 +48,8 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 	DepartmentRpc departmentRpc;
 	@Autowired
 	private ProjectMapper projectMapper;
+	@Autowired
+	private ProjectApplyMapper projectApplyMapper;
 	@Autowired
 	private HardwareResourceMapper hardwareResourceMapper;
 	@Autowired
@@ -218,8 +227,20 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 	}
 
 	@Override
-	public Project projectNumById(String id) {
-		return projectMapper.selectByPrimaryKey(Long.parseLong(id));
+	public Map<String,String> projectNumById(String id) {
+		Map<String ,String> map=new HashMap<String,String>();
+		Project project = projectMapper.selectByPrimaryKey(Long.parseLong(id));
+		ProjectApply projectApply = projectApplyMapper.selectByPrimaryKey(project.getApplyId());
+		map.put("projectNum", project.getSerialNumber());
+		Map parseObject = JSON.parseObject(projectApply.getRoi(), Map.class);
+		String total =null;
+		if(parseObject.get("val99")==null){
+			total="0元";
+		}else{
+		    total = parseObject.get("val99").toString();
+		}
+		map.put("projectTotal",total );
+		return map;
 	}
 
 

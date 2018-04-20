@@ -450,16 +450,10 @@ function verify(id) {
 
 function appendSubsystem() {
 	paramCount++;
-	var content = '<tr class="subsystem">'+
-						'<td colspan="2" class="table-title">系统名称</td>'+
-						'<td colspan="2"><input class="easyui-combobox" name="subProjectName['+paramCount+']" style="width: 97%; text-align: center;"'+
-							'data-options="url:\'${contextPath!}/project/list.json\',textField:\'name\',valueField:\'id\',required:true" /></td>'+
-						'<td class="table-title">负责人</td>'+
-						'<td><select class="easyui-combobox" name="managerId['+paramCount+']"'+
-							'data-options="url:\'${contextPath!}/member/members\',textField:\'realName\',valueField:\'id\',required:true"'+
-							'style="width: 60%; text-align: center;">'+
-						'</select></td>'+
-					'</tr>';
+	var content = '<tr class="subsystem">' + '<td colspan="2" class="table-title">系统名称</td>' + '<td colspan="2"><input class="easyui-combobox" name="subProjectName[' + paramCount
+			+ ']" style="width: 97%; text-align: center;"' + 'data-options="url:\'${contextPath!}/project/list.json\',textField:\'name\',valueField:\'id\',required:true" /></td>'
+			+ '<td class="table-title">负责人</td>' + '<td><select class="easyui-combobox" name="managerId[' + paramCount + ']"'
+			+ 'data-options="url:\'${contextPath!}/member/members\',textField:\'realName\',valueField:\'id\',required:true"' + 'style="width: 60%; text-align: center;">' + '</select></td>' + '</tr>';
 	$('.table-box .subsystem:last').after(content);
 	$.parser.parse($('.table-box tr:eq(' + (paramCount + 9) + ')'));
 
@@ -503,7 +497,7 @@ function selectFirst() {
 }
 
 function loadVersion(nval, oval) {
-	$('#versionId').combobox('reload', '${contextPath!}/project/version/list?projectId=' + nval + '&online=0');
+	$('#versionId').combobox('reload', '${contextPath!}/project/version/list?projectId=' + nval);
 	$('#versionId').combobox('enable');
 }
 
@@ -714,15 +708,15 @@ function openUpdate(index, id) {
 												if (!$(this).form('validate')) {
 													return false;
 												}
-												if (!$('input[name=sqlScript]').val() && !$('input[name=sqlFile]').val()) {
+												if (!$('input[name=sqlFileId]').val() && !$('input[name=sqlScript]').val() && !$('input[name=sqlFile]').val()) {
 													$.messager.alert('错误', 'sql脚本不能为空');
 													return false;
 												}
-												if (!$('input[name=startupScript]').val() && !$('input[name=startupScriptFile]').val()) {
+												if (!$('input[name=startupScriptFileId]').val() && !$('input[name=startupScript]').val() && !$('input[name=startupScriptFile]').val()) {
 													$.messager.alert('错误', '启动脚本不能为空');
 													return false;
 												}
-												if (!$('input[name=dependencySystem]').val() && !$('input[name=dependencySystemFile]').val()) {
+												if (!$('input[name=dependencySystemFileId]').val() && !$('input[name=dependencySystem]').val() && !$('input[name=dependencySystemFile]').val()) {
 													$.messager.alert('错误', '依赖系统不能为空');
 													return false;
 												}
