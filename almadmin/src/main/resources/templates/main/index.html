@@ -352,11 +352,16 @@ body {
     function clearCache(){
     	$.messager.confirm('提示','确定要清除系统缓存数据？',function(flag){
     		if(flag){
-    			$.post('${contextPath!}/cache/clear',{},function(res){
-    				if(res.code==200){
-    					$.message.alert('提示','操作成功');
-    				}else{
-    					$.message.alert('提示','操作失败');
+    			$.ajax({
+    				type:'POST',
+    				url:'http://alm.diligrp.com:8083/alm/cache/clear',
+    				dataType:'jsonp',
+    				success:function(data){
+    					if(data.code==200){
+    						$.messager.alert('提示','操作成功');
+    					}else{
+    						$.messager.alert('提示','操作成功');
+    					}
     				}
     			});
     		}
