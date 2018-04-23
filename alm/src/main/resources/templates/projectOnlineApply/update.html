@@ -177,8 +177,9 @@
 	</form>
 </div>
 <script type="text/javascript">
+	var selectedMarkets=undefined;
 	<%if(isNotEmpty(apply.selectedMarkets)){%>
-	var selectedMarkets = '${@com.alibaba.fastjson.JSON.toJSONString(apply.selectedMarkets)}';
+	selectedMarkets = '${@com.alibaba.fastjson.JSON.toJSONString(apply.selectedMarkets)}';
 	selectedMarkets = $.parseJSON(selectedMarkets);
 	<%}%>
 	var markets = '${@com.alibaba.fastjson.JSON.toJSONString(markets)}';

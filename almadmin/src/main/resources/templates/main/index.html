@@ -223,6 +223,7 @@ body {
 					          processData: false,  
 					          success: function (data) {  
 					        	   if (data.code == "200") {
+					        		   $.messager.alert('成功', data.result);
 					        		   $('#workdayBox').dialog('close');
 					                } else {
 					                    $.messager.alert('错误', data.result);
@@ -245,6 +246,7 @@ body {
 			          processData: false,  
 			          success: function (data) {  
 			        	  if (data.code == "200") {
+			        		   $.messager.alert('成功', data.result);
 			        		   $('#workdayBox').dialog('close');
 			                } else {
 			                    $.messager.alert('错误', data.result);
@@ -301,7 +303,6 @@ body {
 	          data: {'userId':userIdVal},  
 	          async: false,   
 	          success: function (data1) {  
-	        	 console.log(data1)
         		 $("#user-workday-outer").empty();
         	  	 $("#user-workday").empty();
 	        	 if (data1 != ""&&data1!=null) {

@@ -18,12 +18,15 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.beetl.ext.fn.Json;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -34,6 +37,7 @@ import cn.afterturn.easypoi.excel.ExcelImportUtil;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
 import cn.afterturn.easypoi.util.PoiPublicUtil;
 
+import com.alibaba.fastjson.JSONArray;
 import com.dili.alm.dao.WorkDayMapper;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.WorkDay;
@@ -56,6 +60,9 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 	@Autowired
 	private ResourceRpc resourceRpc;
 	private static final String SET_WORK_DAY="setWorkDay";
+	private static final String WEEK_NUM="周数";
+	private static final String START_WORK_DAY="工作日开始日期";
+	private static final String END_WORK_DAY="工作日结束日期";
 		/**
 		 * 得到下周工作时间
 		 */
@@ -119,7 +126,7 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 		
 		@Override
 		@Transactional
-		public boolean upload(MultipartFile myfile,String year) {
+		public BaseOutput upload(MultipartFile myfile,String year) {
 			
 			boolean flat=false;
 			//先删除
@@ -158,14 +165,20 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 					}
 				}
 			}
-			List<WorkDay> dataFromExcel = getDataFromExcel(path + fileName,year);
-
-			int batchInsert = this.getActualDao().insertList(dataFromExcel);
-
-			if(batchInsert==dataFromExcel.size()){
-				flat= true;
+			BaseOutput dataFromExcel = getDataFromExcel(path + fileName,year);
+			List<WorkDay> workDayList=new ArrayList<WorkDay>();
+			if(dataFromExcel.getCode().equals("true")){
+				workDayList=JSONArray.parseArray(dataFromExcel.getResult(), WorkDay.class);
 			}
-			return flat;
+			if(workDayList!=null&&workDayList.size()>0){
+				 int batchInsert = this.getActualDao().insertList(workDayList);
+				 if(batchInsert==workDayList.size()){
+						return BaseOutput.success("导入成功");
+				 }    
+			}
+
+				
+	        return BaseOutput.failure(dataFromExcel.getResult());
 
 		}
 		
@@ -175,11 +188,11 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 		 * 
 		 */
 		 
-		public static List<WorkDay> getDataFromExcel(String filePath,String year){
+		public static BaseOutput getDataFromExcel(String filePath,String year){
 		  //String filePath = "E:\\123.xlsx";
 		   
 		   List<WorkDay> list=new ArrayList<WorkDay>();
-		  
+		  Map<String,Object> map=new HashMap<String, Object>();
 		   
 		  FileInputStream fis =null;
 		  Workbook wookbook = null;
@@ -221,25 +234,66 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 		   
 		  //获得数据的总行数
 		  int totalRowNum = sheet.getLastRowNum();
-		   
+		  Row title = sheet.getRow(0);
+		  String WeekName;
+		  String startWorkName;
+		  String endWorkName;
+		  try {
+				  WeekName = title.getCell((short)0).getStringCellValue();
+				  startWorkName = title.getCell((short)1).getStringCellValue();
+				  endWorkName = title.getCell((short)2).getStringCellValue();
+		  } catch (Exception e1) {
+				return new BaseOutput("false", "第1行标头信息错误，必须以：周报，工作日开始日期，工作日结束日期");
+		  }
+		  if((!WEEK_NUM.equals(WeekName))||(!START_WORK_DAY.equals(startWorkName))||(!END_WORK_DAY.equals(endWorkName))){
+			  return new BaseOutput("false", "第1行标头信息错误，必须以：周报，工作日开始日期，工作日结束日期");
+		  }
 		  //获得所有数据
 		  for(int i = 1 ; i <= totalRowNum ; i++)
 		  {
 			WorkDay workDay =DTOUtils.newDTO(WorkDay.class);
 		    //获得第i行对象
 		    Row row = sheet.getRow(i);     
-		    //获得获得第i行第0列的 String类型对象
-//		    workDay.setId(new Long((long)i));
-		    Cell cell = row.getCell((short)0);
-		    workDay.setWordDayWeek((int)cell.getNumericCellValue());
-		    workDay.setWorkDayYear(year);
-		    cell = row.getCell((short)1);
-		    workDay.setWorkStartTime(cell.getDateCellValue());
-		    cell = row.getCell((short)2);
-		    workDay.setWorkEndTime(cell.getDateCellValue());
-		    list.add(workDay);
+		    try {
+				//获得获得第i行第0列的 String类型对象
+				//		    workDay.setId(new Long((long)i));
+				Cell cell = row.getCell((short) 0);
+				Integer weekNum=(int) cell.getNumericCellValue();
+				if(weekNum!=i){
+					return new BaseOutput("false", "第"+(i+1)+"行的周数错误");
+				}
+				workDay.setWordDayWeek(weekNum);
+				workDay.setWorkDayYear(year);
+				cell = row.getCell((short) 1);
+				if(!isExcelDateType(cell,year)){
+					return new BaseOutput("false", "第"+(i+1)+"行的工作日开始日期格式错误或为空");
+				}
+				if(list!=null&&list.size()>0){
+					WorkDay workDay2 = list.get(i-2);
+					if(workDay2.getWorkEndTime().compareTo(cell.getDateCellValue())>=0){
+						return new BaseOutput("false", "第"+(i+1)+"行的工作日开始日期小于等于第"+i+"行工作日结束日期");
+					}
+				}
+				workDay.setWorkStartTime(cell.getDateCellValue());
+				cell = row.getCell((short) 2);
+				if(!isExcelDateType(cell,year)){
+					return new BaseOutput("false", "第"+(i+1)+"行的工作日结束日期格式错误或为空");
+				}
+				if(workDay.getWorkStartTime().compareTo(cell.getDateCellValue())>=0){
+					return new BaseOutput("false", "第"+(i+1)+"行的工作日开始日期大于等于工作日结束日期");
+				}
+				workDay.setWorkEndTime(cell.getDateCellValue());
+			} catch (Exception e) {
+				// TODO: handle exception
+			    return new BaseOutput("false", "第"+(i+1)+"行信息类型错误");
+			}
+			list.add(workDay);
 		  }
-		return list;
+		  if(list!=null&&list.size()>0){
+			  return new BaseOutput("true", JSONArray.toJSONString(list));
+		  }else{
+			  return new BaseOutput("false", "导入excel数据为空");
+		  }
 		}
 		@Override
 		public WorkDay getNextWorkDay(Date date) {
@@ -301,5 +355,17 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 				workDayRoleDto.setIsRole(1);
 			}
 			return workDayRoleDto;
+		}
+		public static  boolean isExcelDateType(Cell cell,String year) {
+			if(cell.getCellTypeEnum()==CellType.BLANK){
+				return false;
+			}
+			if(HSSFDateUtil.isCellDateFormatted(cell)){
+				if(DateUtil.getStrYear(cell.getDateCellValue()).equals(year)){
+					return true;
+				}
+			}
+			return false;
+			 
 		}
 }

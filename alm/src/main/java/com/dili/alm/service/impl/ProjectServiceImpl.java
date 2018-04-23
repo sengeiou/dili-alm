@@ -33,6 +33,7 @@ import com.dili.alm.domain.Files;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectEntity;
 import com.dili.alm.domain.ProjectPhase;
+import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.Team;
@@ -494,5 +495,41 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		datetimeProvider.put("provider", "datetimeProvider");
 		metadata.put("created", datetimeProvider);
 		return ValueProviderUtils.buildDataByProvider(metadata, list);
+	}
+
+	@Override
+	public void pause(Long id) throws ProjectException {
+		// 检查项目是否存在
+		Project project = this.getActualDao().selectByPrimaryKey(id);
+		if (project == null) {
+			throw new ProjectException("项目不存在");
+		}
+		// 判断状态是否为进行中
+		if (!project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
+			throw new ProjectException("当前状态不能执行该操作");
+		}
+		project.setProjectState(ProjectState.PAUSED.getValue());
+		int rows = this.getActualDao().updateByPrimaryKey(project);
+		if (rows <= 0) {
+			throw new ProjectException("更新项目状态失败");
+		}
+	}
+
+	@Override
+	public void resume(Long id) throws ProjectException {
+		// 检查项目是否存在
+		Project project = this.getActualDao().selectByPrimaryKey(id);
+		if (project == null) {
+			throw new ProjectException("项目不存在");
+		}
+		// 判断状态是否为进行中
+		if (!project.getProjectState().equals(ProjectState.PAUSED.getValue())) {
+			throw new ProjectException("当前状态不能执行该操作");
+		}
+		project.setProjectState(ProjectState.IN_PROGRESS.getValue());
+		int rows = this.getActualDao().updateByPrimaryKey(project);
+		if (rows <= 0) {
+			throw new ProjectException("更新项目状态失败");
+		}
 	}
 }

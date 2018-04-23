@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.dto.ProjectTaskHourCountDto;
@@ -152,32 +153,45 @@ public class StatisticalController {
 
 	@ApiOperation(value = "查询年度报表", notes = "查询返回easyui信息")
 	@RequestMapping(value = "/listProjectYearCover", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody List<ProjectYearCoverDto> listProjectYearCover(String year, String month) throws Exception {
-
-		return statisticalService.listProjectYearCover(year, month);
+	public @ResponseBody List<ProjectYearCoverDto> listProjectYearCover(String year, String month,String aaa,String weekNum) throws Exception {
+          String aa = "";
+		return statisticalService.listProjectYearCover(year, month,weekNum);
 
 	}
+	
+
 
 	@ApiOperation(value = "报表图显示", notes = "查询返回easyui信息")
 	@RequestMapping(value = "/projectYearCoverForAll", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody ProjectYearCoverForAllDto projectYearCoverForAll(String year, String month) throws Exception {
-		ProjectYearCoverForAllDto qq = statisticalService.getProjectYearsCoverForAll(year, month);
-		return qq;
+	public @ResponseBody ProjectYearCoverForAllDto projectYearCoverForAll(String year, String month,boolean isFullYear,String weekNum) throws Exception {
+		ProjectYearCoverForAllDto all = statisticalService.getProjectYearsCoverForAll(year, month,isFullYear,weekNum);
+		return all;
 	}
 
 	@ApiOperation(value = "返回查询后的日期", notes = "查询返回easyui信息")
 	@RequestMapping(value = "/getYears.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<SelectYearsDto> getYears() throws Exception {
-
+		
 		return statisticalService.SelectYears();
+
+	}
+	
+	@ApiOperation(value = "获取当月星期数", notes = "查询返回easyui信息")
+	@RequestMapping(value = "/getWeekNum.json", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody int getWeekNum(String year,String month) throws Exception {
+		int yearIntager = Integer.parseInt(year);
+		int monthIntager = Integer.parseInt(month);
+		int size = DateUtil.getWeeks(yearIntager, monthIntager).size() ;
+		 size= size/2;
+		return size;
 
 	}
 
 	@ApiOperation(value = "返回查询年份", notes = "查询返回easyui信息")
 	@RequestMapping(value = "/getSearchDate.json", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String getSearchDate(String year, String month) throws Exception {
-
-		return statisticalService.getSearchDate(year, month);
+	public @ResponseBody String getSearchDate(String year, String month,String weekNum) throws Exception {
+		String returnStr = JSONObject.toJSONString(statisticalService.getSearchDate(year,month,weekNum));
+		return returnStr;
 
 	}
 

@@ -123,7 +123,7 @@ public class HardwareResourceController {
   	// 查询项目列表
    	@ResponseBody
    	@RequestMapping(value = "/prjectNum.json", method = { RequestMethod.GET, RequestMethod.POST })
-   	public Project prjectNum(String id) {
+   	public Map<String,String> prjectNum(String id) {
    		return hardwareResourceService.projectNumById(id);
    	}
    	

@@ -1,6 +1,9 @@
 // 编辑行索引
 var editId = undefined;
 
+var userId = '${user.id!}';
+userId = parseInt(userId);
+
 function addClearIcon() {
 	$(this).combobox({
 				icons : [{
@@ -36,10 +39,73 @@ function memberFormatter(value, row, index) {
 }
 
 function optFormatter(value, row) {
-	if (row.$_projectState == 4) {
-		return '管理';
+	var content = '';
+	if (row.$_projectState == 1) {
+		if (row.projectManager == userId) {
+			content += '<a style="padding:0px 5px;"  href="javascript:void(0);" onclick="pause(' + row.id + ');">暂停</a>';
+		} else {
+			content += '<span style="padding:0px 5px;">暂停</span>';
+		}
 	}
-	return '<a href="${contextPath!}/project/detail.html?id=' + row.id + '&editable=true&backUrl=' + encodeURIComponent('${contextPath!}/project/index.html') + '">管理</a>';
+	if (row.$_projectState == 3) {
+		if (row.projectManager == userId) {
+			content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="resume(' + row.id + ');">重启</a>';
+		} else {
+			content += '<span style="padding:0px 5px;">重启</span>';
+		}
+	}
+	if (row.$_projectState == 4) {
+		content += '<span style="padding:0px 5px;">管理</span>';
+	} else {
+		content += '<a href="${contextPath!}/project/detail.html?id=' + row.id + '&editable=true&backUrl=' + encodeURIComponent('${contextPath!}/project/index.html') + '">管理</a>'
+	}
+	return content;
+}
+
+function pause(id) {
+	$.messager.confirm('提示', '确定要暂停该项目吗？', function(f) {
+				if (f) {
+					$.post('${contextPath!}/project/pause', {
+								id : id
+							}, function(res) {
+								if (res.success) {
+									var row = $('#grid').treegrid('find', id);
+									row.projectState = '暂停中';
+									row.$_projectState = 3;
+									$('#grid').treegrid('update', {
+												id : id,
+												row : row
+											});
+									$.messager.alert('提示', '操作成功');
+								} else {
+									$.messager.alert('提示', res.result);
+								}
+							});
+				}
+			});
+}
+
+function resume(id) {
+	$.messager.confirm('提示', '确定要重启该项目吗？', function(f) {
+				if (f) {
+					$.post('${contextPath!}/project/resume', {
+								id : id
+							}, function(res) {
+								if (res.success) {
+									var row = $('#grid').treegrid('find', id);
+									row.projectState = '进行中';
+									row.$_projectState = 1;
+									$('#grid').treegrid('update', {
+												id : id,
+												row : row
+											});
+									$.messager.alert('提示', '操作成功');
+								} else {
+									$.messager.alert('提示', res.result);
+								}
+							});
+				}
+			});
 }
 
 function isEditing() {

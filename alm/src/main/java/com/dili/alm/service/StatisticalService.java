@@ -56,18 +56,19 @@ public interface StatisticalService {
 	List<SelectTaskHoursByUserDto> listUserHours(String startTime,String endTime, List<Long> projectIds) throws ParseException;
 	/**
 	 * 年度报表-项目数据展示
-	 * @param startTime
-	 * @param endTime
-	 * @return
+	 * @param 年份
+	 * @param 月份
+	 * @return 
 	 */
-	List<ProjectYearCoverDto> listProjectYearCover(String startTime,String endTime);
+	List<ProjectYearCoverDto> listProjectYearCover(String year,String month,String week);
+	
 	/**
 	 * 年度报表-查询时间
 	 * @param year
 	 * @param month
 	 * @return
 	 */
-	String getSearchDate(String year,String month);
+	String getSearchDate(String year,String month,String weekNum);
 	/**
 	 * 项目工时-查询总计 
 	 * @param projectIds
@@ -86,7 +87,7 @@ public interface StatisticalService {
 	 * @param month
 	 * @return
 	 */
-	ProjectYearCoverForAllDto getProjectYearsCoverForAll(String year,String month);
+	ProjectYearCoverForAllDto getProjectYearsCoverForAll(String year,String month,boolean isFullYear,String weekNum);
 	/**
 	 * 项目工时-导出excel方法
 	 * @param os

@@ -1,5 +1,6 @@
 package com.dili.alm.domain;
 
+import com.dili.ss.domain.annotation.Like;
 import com.dili.ss.domain.annotation.Operator;
 import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.FieldEditor;
@@ -46,6 +47,7 @@ public interface Project extends IBaseDomain {
 
 	void setParentId(Long parentId);
 
+	@Like(Like.BOTH)
 	@Column(name = "`name`")
 	@FieldDef(label = "项目名称", maxLength = 20)
 	@EditMode(editor = FieldEditor.Text, required = false)
@@ -124,7 +126,7 @@ public interface Project extends IBaseDomain {
 	Date getActualStartDate();
 
 	void setActualStartDate(Date actualStartDate);
-	
+
 	@Column(name = "`actual_end_date`")
 	@FieldDef(label = "实际结束时间")
 	@EditMode(editor = FieldEditor.Datetime, required = false)
