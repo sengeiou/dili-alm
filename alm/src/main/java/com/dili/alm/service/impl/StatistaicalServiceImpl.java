@@ -202,11 +202,17 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		// 查出项目列表，既表头
 		List<TaskHoursByProjectDto> taskHoursForPoject = taskMapper.selectProjectHours(startTime, endTime, projectIds);
 
+
 		// projectId 转为查询条件传递
 		List<Long> selectProjectIds = new ArrayList<Long>(taskHoursForPoject.size());
-		taskHoursForPoject.forEach(p -> {
-			selectProjectIds.add(p.getProjectId());
-		});
+		if (taskHoursForPoject==null ||taskHoursForPoject.size()==0) {
+			selectProjectIds.add((long) 0);
+		}else{
+			taskHoursForPoject.forEach(p -> {
+				selectProjectIds.add(p.getProjectId());
+			});
+		}
+
 
 		List<Map<Object, Object>> listMap = taskMapper.sumUserProjectTaskHour(selectProjectIds, df.parse(startTime),
 				df.parse(endTime));
@@ -281,11 +287,13 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		});
 		// 处理项目合计正常工时，加班工时
 		List<Long> projectTotalHoursSelectList = new ArrayList<Long>();
-
-		for (int i = 0; i < taskHoursForPoject.size(); i++) {
-			projectTotalHoursSelectList.add(taskHoursForPoject.get(i).getProjectId());
+		if (taskHoursForPoject==null ||taskHoursForPoject.size()==0) {
+			projectTotalHoursSelectList.add((long) 0);
+		}else{
+			taskHoursForPoject.forEach(p -> {
+				projectTotalHoursSelectList.add(p.getProjectId());
+			});
 		}
-
 		SelectTaskHoursByUserDto totalTaskandOverHour = this.selectTotalTaskAndOverHours(projectTotalHoursSelectList);
 		list.add(totalTaskandOverHour);
 
@@ -812,7 +820,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	}
 	
 	
-	public static void main(String[] args) throws ParseException {
+/*	public static void main(String[] args) throws ParseException {
         int year = 2018;
         int month =1;
         int weekNum =0;
@@ -851,7 +859,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 
 		//System.out.println(new SimpleDateFormat("yyyy-MM-dd").format(da)+":"+year+"年"+month+"月,第"+weekNum+"周开始时间");
 		//System.out.println(new SimpleDateFormat("yyyy-MM-dd").format(lastDa)+":"+year+"年"+month+"月,第"+weekNum+"周结束时间");
-	}
+	}*/
 	
 
 	
