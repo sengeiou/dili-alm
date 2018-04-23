@@ -223,6 +223,7 @@ body {
 					          processData: false,  
 					          success: function (data) {  
 					        	   if (data.code == "200") {
+					        		   $.messager.alert('成功', data.result);
 					        		   $('#workdayBox').dialog('close');
 					                } else {
 					                    $.messager.alert('错误', data.result);
@@ -245,6 +246,7 @@ body {
 			          processData: false,  
 			          success: function (data) {  
 			        	  if (data.code == "200") {
+			        		   $.messager.alert('成功', data.result);
 			        		   $('#workdayBox').dialog('close');
 			                } else {
 			                    $.messager.alert('错误', data.result);
