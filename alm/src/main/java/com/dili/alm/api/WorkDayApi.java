@@ -46,12 +46,7 @@ public class WorkDayApi {
 	@CrossOrigin(origins = {"http://almadmin.diligrp.com", "null"})
     @RequestMapping(value="/uploadWordDayDate", method = {RequestMethod.GET, RequestMethod.POST})
     public  @ResponseBody BaseOutput  uploadWordDayDate(@RequestParam("file") MultipartFile file,String year) {
-    	boolean upload = workDayService.upload(file,year);
-    	if(upload){
-    		return BaseOutput.success("导入成功");
-    	}
-        return BaseOutput.failure("导入失败");
-    	
+		return workDayService.upload(file,year);
     }
 	 /**
 	  * 查询导入的所有年份

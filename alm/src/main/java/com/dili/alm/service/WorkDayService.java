@@ -16,7 +16,7 @@ import com.dili.ss.domain.BaseOutput;
 
 public interface WorkDayService extends BaseService<WorkDay, Long> {
 
-	boolean upload(MultipartFile myfile,String year);
+	BaseOutput upload(MultipartFile myfile,String year);
 
 	WorkDay getNextWeeklyWorkDays();
 

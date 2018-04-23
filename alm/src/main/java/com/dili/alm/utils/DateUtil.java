@@ -9,6 +9,8 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
+
 public class DateUtil {
 	public static String getWeekFristDay() {
 
@@ -416,5 +418,24 @@ public class DateUtil {
 				return as1;
 
 			}*/  
+	 public static int getCompareDate(Date s1,Date s2){
+		 java.util.Calendar c1=java.util.Calendar.getInstance();
+		 java.util.Calendar c2=java.util.Calendar.getInstance();
+		 c1.setTime(s1);
+		 c2.setTime(s2);
+		 return c1.compareTo(c2);
+		/* if(result==0)
+		 　　System.out.println("c1相等c2");
+		 else if(result<0)
+		 　　System.out.println("c1小于c2");
+		 else
+		 　　System.out.println("c1大于c2");*/
+	 }
+	public static String getStrYear(Date dateCellValue) {
+		Calendar c = Calendar.getInstance();
+		c.setTime(dateCellValue);
+		int i = c.get(Calendar.YEAR);
+		return String.valueOf(i);
+	}
 			
 }
