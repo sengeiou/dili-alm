@@ -23,12 +23,12 @@
                             <input class="easyui-datebox" name="startDate" id="startDate" style="width:100%" data-options="editable:false,label:'起止日期:'" />
                         </td>
                         <td style="padding:5px;">
-                            <input class="easyui-datebox" name="endDate" id="endDate" style="width:100%" data-options="editable:false,label:'至:'" />
+                            <input class="easyui-datebox" name="endDate" id="endDate" style="width:100%" data-options="editable:false,label:'至:',prompt:'今日'" />
 
                         </td>
                         <td style="padding:5px;">
                             <input class="easyui-textbox"  name="project" id="projectA" style="width:100%"
-                                   data-options="editable:false,label:'项目:'"/>
+                                   data-options="editable:false,label:'项目:',prompt:'--全部--'"/>
                         </td>
                     </tr>
                     <tr>
@@ -187,7 +187,7 @@ function clearForm() {
    	            });  
    	        } 
     
-    $(function () {easyUIDataGrid(null);});        
+    $(function () {easyUIDataGrid(null);$('#startDate').textbox({prompt:dateFormat_1()});  });        
 
     function easyUIDataGrid(param) {
     	var $datagrid = {};
@@ -266,6 +266,26 @@ function clearForm() {
  			}
  			 return aahours;
 	 	}
+ 		function dateFormat_1(){
+ 		    var dateType = "";  
+ 		    var date = new Date();
+ 		    
+ 		    date.setDate(date.getDate() - 7);//当前日期减7天
+ 		    
+ 		    
+ 		    var month = date.getMonth()+1;
+ 		    var year = date.getFullYear(); 
+ 		    var day = date.getDate(date);
+ 		    
+ 		    
+ 		    if(month<10){month = "0"+month;}
+ 		    
+ 		    if(day<10){day = "0"+day;}
+ 		    
+ 		    dateType = year+"-"+month+"-"+day;
+ 		    
+ 		    return dateType;
+ 		} 
 </script>
 
 <script type="text/javascript">

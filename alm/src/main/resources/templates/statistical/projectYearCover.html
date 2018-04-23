@@ -11,6 +11,7 @@
         /*background: #2a5d3f;*/
         }
     .time ul{list-style: none;display: block;width: 100%;padding: 0 20px;box-sizing: border-box}
+        
     .time ul li{
         display: block;
         float: left;
@@ -21,10 +22,14 @@
     .time li a.on { color: #2a5d3f;font-weight: bold}
     .time li a{ text-decoration: none; height:20px; display: block; text-align: center;color: #ccc;}
     .time li a:hover{color: #2a5d3f;}
+    .timp_point_week li span{font-size: 14px;font-weight: bold;}
     /*.timp_point{list-style: none;display: block;}*/
     /*.timp_point li{float: left;}*/
+
     .show{width: 350px;line-height:26px;text-align:right;float: left;}
-       .pdiv div{font-size: 15px;height:28px;line-height: 28px;}
+    .pdiv div{font-size: 15px;height:28px;line-height: 28px;}
+    .week{padding-left:60px}
+    .week li a.weekOn { color: #548B54;font-weight: bold}
 </style>
 
 <div class="easyui-layout" fit="true">
@@ -37,13 +42,13 @@
         <div>
             <div class="years">
                 <select id="year_select" class="easyui-combobox" style="width: 100px" data-options="editable:false,label:'',valueField: 'value',
-    textField: 'text',url: '${contextPath}/statistical/getYears.json'">
-                    <option value="2017">2017年</option>
+    textField: 'text'">
                     <option value="2018" selected="selected">2018年</option>
+                    <option value="2017"  >2017年</option>
                 </select>
             </div>
             <div class="time">
-                <ul class="timp_point">
+                <ul class="timp_point timp_point_month">
                     <li><a href="javascript:void(0);" onclick="queryGrid('1',this)" >1月</a></li>
                     <li><a href="javascript:void(0);" onclick="queryGrid('2',this)">2月</a></li>
                     <li><a href="javascript:void(0);" onclick="queryGrid('3',this)">3月</a></li>
@@ -60,6 +65,18 @@
                     <li><a href="javascript:void(0);" onclick="queryGrid('11',this)">11月</a></li>
                     <li><a href="javascript:void(0);" onclick="queryGrid('12',this)">12月</a></li>
                     <li><a href="javascript:void(0);" onclick="queryGrid('16',this)">四季度</a></li>
+                </ul>
+       
+            </div>
+            <div class="week time" style="">
+                 <ul class="timp_point_week timp_point ">
+                    <li><span><span id="monthForWeek">1</span>月份</span></li>
+                    <li><a href="javascript:void(0);" onclick="queryGridForWeek('0',this)" >第1周</a></li>
+                    <li><a href="javascript:void(0);" onclick="queryGridForWeek('1',this)" >第2周</a></li>
+                    <li><a href="javascript:void(0);" onclick="queryGridForWeek('2',this)">第3周</a></li>
+                    <li><a href="javascript:void(0);" onclick="queryGridForWeek('3',this)">第4周</a></li>
+                    <li><a href="javascript:void(0);" onclick="queryGridForWeek('4',this)">第5周</a></li>
+                    <li><a href="javascript:void(0);" onclick="queryGridForWeek('5',this)">第6周</a></li>
                 </ul>
             </div>
         </div>
@@ -141,14 +158,26 @@
     
     function selectOn(){
     	//检查一下所有的li下A标签是否选中
-      var liA =	$(".timp_point li");
+      var liA =	$(".timp_point_month li");
       $(liA).each(function(e) {
           $(this).children("a").removeClass("on");
        })
     }
+    
+    function changeWeekMonth(month){
+    	
+    	$("#monthForWeek").html(month);
+    	if(month>12){
+    		$(".week").hide();
+    	}else{
+    		$(".week").show();
+    	}
+    }
     //表格查询
     function queryGrid(month,obj) {
     	selectOn();
+    	selectOnWeek();
+    	changeWeekMonth(month);
     	var year=$("#year_select").val();
         var opts = $("#grid").datagrid("options");
         if (null == opts.url || "" == opts.url) {
@@ -156,19 +185,78 @@
         }
         var param = {"year" :year,"month" :month};
         $("#grid").treegrid("load",param);
-        $("#search_date").html(searchDate(year,month));
         $(obj).attr("class","on");
+        if(month!=""){searchDate(year,month,null)}
         loadEchartForProject(year,month);
+        //showWeek(year,month);
+        
     }
     
+    
+    function selectOnWeek(){
+    	//检查一下所有的li下A标签是否选中
+      var liA =	$(".timp_point_week li");
+      $(liA).each(function(e) {
+          $(this).children("a").removeClass("weekOn");
+       })
+    }
+    //表格查询，时间段为周
+    function queryGridForWeek(weekNum,obj) {
+    	selectOnWeek();
+    	
+     	var year=$("#year_select").val();//年份
+      	var month=$("#monthForWeek").html();//月份'
+      	var opts = $("#grid").datagrid("options");
+      	   if (null == opts.url || "" == opts.url) {
+            opts.url = "${contextPath}/statistical/listProjectYearCover";
+        }
+        var param = {"year" :year,"month" :month,"weekNum" :weekNum};
+        $("#grid").treegrid("load",param); 
+        searchDate(year,month,weekNum)
+        loadEchartForProject(year,month); 
+        
+        $(obj).attr("class","weekOn");
+    }
+
+    
+    function showWeek(year,month){
+    	var  htmlobj=$.ajax({url:"${contextPath}/statistical/getWeekNum.json?year="+year+"&month="+month});
+    	         var str=htmlobj.responseText;
+    	         /* var obj = $.parseJSON(str);*/
+        var liA =	$(".timp_point_week li");
+        
+        $(liA).each(function(e) {
+            $(this).hide();
+         })
+        $(liA).each(function(e) {
+            $(this).show();
+            alert(e==str);
+            /* if(e==str){break;} */
+         })
+    	
+    }
     //返回查询日期
     
-    function searchDate(year,month){
-        var  htmlobj=$.ajax({url:"${contextPath}/statistical/getSearchDate.json?year="+year+"&month="+month,async:false});
-        var str=htmlobj.responseText;
-        return str;
+    function searchDate(year,month,weekNum){
+    	
+      	 $.ajax({
+    	        type : 'post',
+    	        async : false, //同步执行
+    	            url :"${contextPath}/statistical/getSearchDate.json", //web.xml中注册的Servlet的url-pattern
+    	            data : {month:month,year:year,weekNum:weekNum}, //无参数
+    	            dataType : 'json', //返回数据形式为json
+    	            success : function(result) {
+    	                if (result) {
+    	                	$("#search_date").html(result);
+    	                }
+    	            },
+    	            error : function(errorMsg) {
+    	                alert("查询日期获取失败");
+    	            }
+    	        }); //ajax
     }
     function loadEchartForProject(thisYear,thisMonth){
+    	
    	 $.ajax({
    	        type : 'post',
    	        async : false, //同步执行
@@ -249,11 +337,22 @@
 	    echartsPie = echarts.init(document.getElementById('div')); 
 	    echartsPie.setOption(option);
    }
-  
+   function loadYeas(){
+   	$('#year_select').combobox({
+				onChange: function (o,n) {
+					queryGrid(null,null);
+					searchDate(o,null,null); 
+					$(".week").hide();
+				}
+			});
+			
+   }
     $(function(){  
     	loadEchartForProject();  
+    	loadYeas();
     	var year=$("#year_select").val();
-    	$("#search_date").html(searchDate(year,null));  
+    	$(".week").hide();
+    	searchDate(year,null,null); 
     });
 </script>
 

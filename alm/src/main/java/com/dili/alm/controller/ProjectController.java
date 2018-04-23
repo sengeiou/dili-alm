@@ -65,9 +65,33 @@ public class ProjectController {
 	@Autowired
 	private FilesService filesService;
 
+	@ResponseBody
+	@RequestMapping(value = "/pause", method = RequestMethod.POST)
+	public BaseOutput<Object> pause(@RequestParam Long id) {
+		try {
+			this.projectService.pause(id);
+			return BaseOutput.success();
+		} catch (ProjectException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/resume", method = RequestMethod.POST)
+	public BaseOutput<Object> resume(@RequestParam Long id) {
+		try {
+			this.projectService.resume(id);
+			return BaseOutput.success();
+		} catch (ProjectException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+
 	@ApiOperation("跳转到Project页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		modelMap.addAttribute("user", user);
 		return "project/index";
 	}
 
@@ -220,7 +244,7 @@ public class ProjectController {
 			UserTicket user = SessionContext.getSessionContext().getUserTicket();
 			Boolean projectManager = this.teamService.teamMemberIsProjectManager(user.getId(), id);
 			Boolean projectMember = this.teamService.currentUserIsTeamMember(user.getId(), id);
-			if (model.get("projectState").equals(ProjectState.CLOSED.getValue())) {
+			if (!model.get("projectState").equals(ProjectState.IN_PROGRESS.getValue())) {
 				editable = false;
 			}
 			map.addAttribute("model", model).addAttribute("editable", editable)
