@@ -15,13 +15,16 @@ import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.FilesMapper;
 import com.dili.alm.dao.ProjectChangeMapper;
+import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.dao.ProjectPhaseMapper;
 import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.domain.FileType;
 import com.dili.alm.domain.Files;
+import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectChange;
 import com.dili.alm.domain.ProjectPhase;
+import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.ProjectVersionFormDto;
 import com.dili.alm.domain.Task;
@@ -64,6 +67,8 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 	private TaskMapper taskMapper;
 	@Autowired
 	private ProjectChangeMapper projectChangeMapper;
+	@Autowired
+	private ProjectMapper projectMapper;
 
 	public ProjectVersionMapper getActualDao() {
 		return (ProjectVersionMapper) getDao();
@@ -72,6 +77,11 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 	@Transactional
 	@Override
 	public BaseOutput<Object> insertSelectiveWithOutput(ProjectVersionFormDto dto) {
+		// 检查项目状态是否为进行中
+		Project project = this.projectMapper.selectByPrimaryKey(dto.getProjectId());
+		if (!project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
+			return BaseOutput.failure("项目不在进行中，不能编辑");
+		}
 		ProjectVersion query = DTOUtils.newDTO(ProjectVersion.class);
 		query.setProjectId(dto.getProjectId());
 		query.setVersion(dto.getVersion());
@@ -104,6 +114,11 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 	@Transactional
 	@Override
 	public BaseOutput<Object> updateSelectiveWithOutput(ProjectVersionFormDto dto) {
+		// 检查项目状态是否为进行中
+		Project project = this.projectMapper.selectByPrimaryKey(dto.getProjectId());
+		if (!project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
+			return BaseOutput.failure("项目不在进行中，不能编辑");
+		}
 		ProjectVersion query = DTOUtils.newDTO(ProjectVersion.class);
 		query.setProjectId(dto.getProjectId());
 		query.setVersion(dto.getVersion());
@@ -146,6 +161,12 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 
 	@Override
 	public BaseOutput deleteWithOutput(Long id) {
+		// 检查项目状态是否为进行中
+		ProjectVersion version = this.getActualDao().selectByPrimaryKey(id);
+		Project project = this.projectMapper.selectByPrimaryKey(version.getProjectId());
+		if (!project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
+			return BaseOutput.failure("项目不在进行中，不能删除");
+		}
 		ProjectPhase phaseQuery = DTOUtils.newDTO(ProjectPhase.class);
 		phaseQuery.setVersionId(id);
 		int count = this.phaseMapper.selectCount(phaseQuery);
@@ -171,10 +192,11 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 			this.filesMapper.delete(f);
 		});
 		ProjectVersion projectVersion = super.get(id);
-		if(projectVersion!=null){
+		if (projectVersion != null) {
 			super.delete(id);
 		}
-		return BaseOutput.success("删除成功").setData(String.valueOf(projectVersion.getId()+":"+projectVersion.getVersion()));
+		return BaseOutput.success("删除成功")
+				.setData(String.valueOf(projectVersion.getId() + ":" + projectVersion.getVersion()));
 	}
 
 	@Override

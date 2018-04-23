@@ -44,4 +44,22 @@ public interface ProjectService extends BaseService<Project, Long> {
 
 	BaseOutput<Object> uploadFileAndSendMail(UploadProjectFileDto dto) throws MessagingException, InterruptedException;
 
+	/**
+	 * 暂停项目
+	 * 
+	 * @param id
+	 *            项目id
+	 * @throws ProjectException
+	 */
+	void pause(Long id) throws ProjectException;
+
+	/**
+	 * 重启项目
+	 * 
+	 * @param id
+	 *            项目id
+	 * @throws ProjectException
+	 */
+	void resume(Long id) throws ProjectException;
+
 }

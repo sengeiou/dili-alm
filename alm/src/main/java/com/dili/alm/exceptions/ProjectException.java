@@ -1,6 +1,6 @@
 package com.dili.alm.exceptions;
 
-public class ProjectException extends Exception {
+public class ProjectException extends ApplicationException {
 
 	/**
 	 * 
@@ -25,11 +25,6 @@ public class ProjectException extends Exception {
 
 	public ProjectException(Throwable cause) {
 		super(cause);
-	}
-
-	@Override
-	public Throwable fillInStackTrace() {
-		return super.fillInStackTrace();
 	}
 
 }
