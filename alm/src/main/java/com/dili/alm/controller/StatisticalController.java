@@ -42,12 +42,11 @@ import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.StatisticalService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.alm.utils.WebUtil;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
 
-import cn.afterturn.easypoi.excel.ExcelExportUtil;
-import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -154,7 +153,6 @@ public class StatisticalController {
 	@ApiOperation(value = "查询年度报表", notes = "查询返回easyui信息")
 	@RequestMapping(value = "/listProjectYearCover", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<ProjectYearCoverDto> listProjectYearCover(String year, String month,String aaa,String weekNum) throws Exception {
-          String aa = "";
 		return statisticalService.listProjectYearCover(year, month,weekNum);
 
 	}
@@ -293,7 +291,7 @@ public class StatisticalController {
 	}
 
 	@RequestMapping(value = "/exportPorjectHours", method = { RequestMethod.POST, RequestMethod.GET })
-	public void export(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap,String startDate, String endDate,
+	public @ResponseBody BaseOutput export(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap,String startDate, String endDate,
 			String[] project) throws IOException {
 		try {
 			String rtn = getRtn("项目工时统计.xls", request);
@@ -314,7 +312,9 @@ public class StatisticalController {
 			os.close();
 		} catch (Exception e) {
 			e.printStackTrace();
+			return BaseOutput.failure("导出失败");
 		}
+		return BaseOutput.success("导出成功");
 	}
 
 

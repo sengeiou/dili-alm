@@ -167,7 +167,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	 */
 	@Override
 	public List<TaskHoursByProjectDto> listProjectHours(String startTime, String endTime, List<Long> projectIds) {
-		if (startTime == null) {
+		if (startTime == null||startTime.equals("")) {
 			startTime = DateUtil.getPastDate(7);
 		} else {
 			startTime += "";
@@ -186,9 +186,8 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	@Override
 	public List<SelectTaskHoursByUserDto> listUserHours(String startTime, String endTime, List<Long> projectIds)
 			throws ParseException {
-		if (startTime == null) {
+		if (startTime == null||startTime.equals("")) {
 			startTime = DateUtil.getPastDate(7);
-			;
 		} else {
 			startTime += "";
 		}
@@ -337,6 +336,11 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	@Override
 	public HSSFWorkbook downloadProjectHours(OutputStream os, String startTime, String endTime, List<Long> projectIds)
 			throws Exception {
+		if (projectIds==null||projectIds.size()==0) {
+			projectIds = new ArrayList<Long>();
+			projectIds.add((long) 0);
+			
+		}
 		List<TaskHoursByProjectDto> projects = listProjectHours(startTime, endTime, projectIds);
 		List<SelectTaskHoursByUserDto> objs = listUserHours(startTime, endTime, projectIds);
 
