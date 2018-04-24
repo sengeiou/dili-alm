@@ -268,13 +268,11 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		if (user == null) {
 			throw new IllegalArgumentException("用户未登录");
 		}
-		
+
 		// 判断界面上用户是否是提交人
-		boolean approving = apply.getApplyState()
-				.equals(HardwareApplyState.APPLING.getValue());
+		boolean approving = apply.getApplyState().equals(HardwareApplyState.APPLING.getValue());
 		// 判断当前登录用户是否是项目经理
-		approving = !approving ? approving
-				: user.getId().equals(apply.getApplicantId());
+		approving = !approving ? approving : user.getId().equals(apply.getApplicantId());
 		apply.aset("approving", approving);
 
 		// 判断界面上用户是否可以点击项目经理确认按钮
@@ -286,34 +284,32 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 				: user.getId().equals(apply.getProjectManagerId());
 		apply.aset("projectManagerApprov", projectManagerApprov);
 
-
 		try {
 			// 判断界面上部总经理审批
 			// 判断申请状态是否是项目经理确认状态
 			boolean generalManagerAppov = apply.getApplyState()
 					.equals(HardwareApplyState.GENERAL_MANAGER_APPROVING.getValue());
-			User generalManagerU =this.queryGeneralLeader();
+			User generalManagerU = this.queryGeneralLeader();
 			// 判断当前登录用户是否是部总经理
 			generalManagerAppov = !generalManagerAppov ? generalManagerAppov
 					: generalManagerU.getId().equals(user.getId());
 			apply.aset("generalManagerAppov", generalManagerAppov);
-	
-		   // 判断界面上运维部经理审批
+
+			// 判断界面上运维部经理审批
 			boolean operactionManagerAppov = apply.getApplyState()
 					.equals(HardwareApplyState.OPERATION_MANAGER_APPROVING.getValue());
-			User operactionManagerU =this.queryOperationManager();
+			User operactionManagerU = this.queryOperationManager();
 			// 判断当前登录用户是否是部总经理
 			operactionManagerAppov = !operactionManagerAppov ? operactionManagerAppov
 					: operactionManagerU.getId().equals(user.getId());
 			apply.aset("operactionManagerAppov", operactionManagerAppov);
-			
-			
-		   //实施
-			boolean implementing = apply.getApplyState()
-					.equals(HardwareApplyState.IMPLEMENTING.getValue());
-			
+
+			// 实施
+			boolean implementing = apply.getApplyState().equals(HardwareApplyState.IMPLEMENTING.getValue());
+
 			if (implementing) {
-				List<Long> executors = JSONObject.parseObject(apply.getExecutors(), new TypeReference<List<Long>>() {});
+				List<Long> executors = JSONObject.parseObject(apply.getExecutors(), new TypeReference<List<Long>>() {
+				});
 				for (int i = 0; i < executors.size(); i++) {
 					if (user.getId().equals(executors.get(i))) {
 						implementing = true;
@@ -322,24 +318,23 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 			}
 
 			apply.aset("implementing", implementing);
-			
-			//完成或者失败
-			boolean onlyRead = apply.getApplyState()
-						.equals(HardwareApplyState.COMPLETED.getValue());
-			onlyRead = !onlyRead?onlyRead:user.getId().equals(apply.getApplicantId());
-			boolean failed = apply.getApplyState()
-					.equals(HardwareApplyState.FAILED.getValue());
-			failed = !failed?failed:user.getId().equals(apply.getApplicantId());
-			
-			if (failed||onlyRead) {
+
+			// 完成或者失败
+			boolean onlyRead = apply.getApplyState().equals(HardwareApplyState.COMPLETED.getValue());
+			onlyRead = !onlyRead ? onlyRead : user.getId().equals(apply.getApplicantId());
+			boolean failed = apply.getApplyState().equals(HardwareApplyState.FAILED.getValue());
+			failed = !failed ? failed : user.getId().equals(apply.getApplicantId());
+
+			if (failed || onlyRead) {
 				apply.aset("readOnly", true);
 			}
-				
+
 		} catch (HardwareResourceApplyException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+
 	@Override
 	public void operationManagerApprove(Long applyId, Long operationManagerId, Set<Long> executors, String description)
 			throws HardwareResourceApplyException {
@@ -621,15 +616,12 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 			throw new HardwareResourceApplyException("配置要求不能为空");
 		}
 		dto.getConfigurationRequirement().forEach(c -> c.setApplyId(dto.getId()));
-		
-		
+
 		List<HardwareResourceRequirementDto> list = dto.getConfigurationRequirement();
 		List<HardwareResourceRequirement> as = new ArrayList<HardwareResourceRequirement>(list.size());
-		list.forEach(cc->as.add(DTOUtils.switchEntityToDTO(cc, HardwareResourceRequirement.class)));
-		
-		
-		rows = this.hrrMapper
-				.insertList(as);
+		list.forEach(cc -> as.add(DTOUtils.switchEntityToDTO(cc, HardwareResourceRequirement.class)));
+
+		rows = this.hrrMapper.insertList(as);
 		if (rows <= 0) {
 			throw new HardwareResourceApplyException("插入配置要求失败");
 		}
@@ -701,12 +693,17 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		HardwareApplyOperationRecord poor = DTOUtils.newDTO(HardwareApplyOperationRecord.class);
 		poor.setApplyId(apply.getId());
 		List<HardwareApplyOperationRecord> list = this.haorMapper.select(poor);
-		template.binding("opRecords", this.buildOperationRecordViewModel(list));
+		HardwareResourceRequirement hrrQuery = DTOUtils.newDTO(HardwareResourceRequirement.class);
+		hrrQuery.setApplyId(apply.getId());
+		List<HardwareResourceRequirement> hrrList = this.hrrMapper.select(hrrQuery);
+		apply.aset("hrrList", hrrList);
+		apply.aset("envList", this.parseEnvToString(apply.getServiceEnvironment()));
+		String content = template.render();
 
 		to.forEach(t -> {
 			// 发送
 			try {
-				this.mailManager.sendMail(this.mailFrom, t, template.render(), true, subject, null);
+				this.mailManager.sendMail(this.mailFrom, t, content, true, subject, null);
 			} catch (Exception e) {
 				LOGGER.error(e.getMessage(), e);
 			}
@@ -765,8 +762,10 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		}
 		dto.getConfigurationRequirement().forEach(c -> c.setApplyId(dto.getId()));
 		List<HardwareResourceRequirementDto> configurationRequirement = dto.getConfigurationRequirement();
-		List<HardwareResourceRequirement> as = new ArrayList<HardwareResourceRequirement>(configurationRequirement.size());
-		configurationRequirement.forEach(cc->as.add(DTOUtils.switchEntityToDTO(cc, HardwareResourceRequirement.class)));
+		List<HardwareResourceRequirement> as = new ArrayList<HardwareResourceRequirement>(
+				configurationRequirement.size());
+		configurationRequirement
+				.forEach(cc -> as.add(DTOUtils.switchEntityToDTO(cc, HardwareResourceRequirement.class)));
 
 		rows = this.hrrMapper.insertList(as);
 		if (rows <= 0) {
@@ -775,12 +774,11 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 	}
 
 	@Override
-	public List<HardwareResourceRequirement> listRequirement(Long applyId)
-			throws HardwareResourceApplyException {
+	public List<HardwareResourceRequirement> listRequirement(Long applyId) throws HardwareResourceApplyException {
 		HardwareResourceRequirement dto = DTOUtils.newDTO(HardwareResourceRequirement.class);
 		dto.setApplyId(applyId);
 		return this.hrrMapper.select(dto);
-		
+
 	}
 
 }

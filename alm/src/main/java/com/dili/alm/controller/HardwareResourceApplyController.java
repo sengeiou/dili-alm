@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -214,6 +215,12 @@ public class HardwareResourceApplyController {
 	public @ResponseBody BaseOutput insert(HardwareResourceApplyUpdateDto hardwareResourceApply,
 			String[] serviceEnvironmentChk, String configurationRequirementJsonStr) {
 		Set<Long> serviceEnvironments = new HashSet<Long>();
+		if (serviceEnvironmentChk == null || serviceEnvironmentChk.length <= 0) {
+			return BaseOutput.failure("请选择使用环境");
+		}
+		if (StringUtils.isBlank(configurationRequirementJsonStr)) {
+			return BaseOutput.failure("请添加配置要求");
+		}
 		for (int i = 0; i < serviceEnvironmentChk.length; i++) {
 			serviceEnvironments.add(Long.parseLong(serviceEnvironmentChk[i]));
 		}

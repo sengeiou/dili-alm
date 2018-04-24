@@ -42,12 +42,11 @@ import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.StatisticalService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.alm.utils.WebUtil;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
 
-import cn.afterturn.easypoi.excel.ExcelExportUtil;
-import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -154,7 +153,6 @@ public class StatisticalController {
 	@ApiOperation(value = "查询年度报表", notes = "查询返回easyui信息")
 	@RequestMapping(value = "/listProjectYearCover", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<ProjectYearCoverDto> listProjectYearCover(String year, String month,String aaa,String weekNum) throws Exception {
-          String aa = "";
 		return statisticalService.listProjectYearCover(year, month,weekNum);
 
 	}
@@ -181,7 +179,7 @@ public class StatisticalController {
 	public @ResponseBody int getWeekNum(String year,String month) throws Exception {
 		int yearIntager = Integer.parseInt(year);
 		int monthIntager = Integer.parseInt(month);
-		int size = DateUtil.getWeeks(yearIntager, monthIntager).size() ;
+		int size = DateUtil.getWeeks(yearIntager, monthIntager).size() ;//得到开始结束时间所有key值总数
 		 size= size/2;
 		return size;
 
@@ -214,12 +212,14 @@ public class StatisticalController {
 	@RequestMapping(value = "/listProjectForEchar", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<SelectTaskHoursByUserProjectDto> listProjectForEchar(String[] projectIds, Long userId)
 			throws Exception {
-		List<Long> projectIdList = null;
-		if (projectIds != null) {
+		List<Long> projectIdList = new ArrayList<Long>();
+		if (projectIds != null&&projectIds.length>0) {
 			projectIdList = new ArrayList<Long>(projectIds.length);
 			for (String long1 : projectIds) {
 				projectIdList.add(Long.parseLong(long1));
 			}
+		}else{
+			projectIdList.add(Long.getLong(String.valueOf(-1)));
 		}
 		return statisticalService.selectTotalTaskAndOverHoursForEchars(projectIdList);
 
@@ -284,12 +284,14 @@ public class StatisticalController {
 				projectIds.add(Long.parseLong(long1));
 			}
 		}
-		return statisticalService.listUserHours(startDate, endDate, projectIds);
+		
+		 List<SelectTaskHoursByUserDto> aa = statisticalService.listUserHours(startDate, endDate, projectIds);
+		return aa;
 
 	}
 
 	@RequestMapping(value = "/exportPorjectHours", method = { RequestMethod.POST, RequestMethod.GET })
-	public void export(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap,String startDate, String endDate,
+	public @ResponseBody BaseOutput export(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap,String startDate, String endDate,
 			String[] project) throws IOException {
 		try {
 			String rtn = getRtn("项目工时统计.xls", request);
@@ -310,7 +312,9 @@ public class StatisticalController {
 			os.close();
 		} catch (Exception e) {
 			e.printStackTrace();
+			return BaseOutput.failure("导出失败");
 		}
+		return BaseOutput.success("导出成功");
 	}
 
 

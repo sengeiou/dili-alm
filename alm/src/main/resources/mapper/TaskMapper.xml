@@ -677,12 +677,12 @@
 			</if>
 			WHERE
 			t.project_id = #{projectId}
-			<if test="startTime !=null">
+			<!-- <if test="startTime !=null">
 				<![CDATA[AND p.actual_start_date >= #{startTime}]]>
 			</if>
 			<if test="endTime != null">
 				<![CDATA[AND p.actual_start_date <= #{endTime}]]>
-			</if>
+			</if> -->
 			GROUP BY
 			t.`owner`
 			) t#{index} ON u.id = t#{index}.user_id
