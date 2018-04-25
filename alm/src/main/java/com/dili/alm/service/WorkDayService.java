@@ -26,5 +26,5 @@ public interface WorkDayService extends BaseService<WorkDay, Long> {
 
 	WorkDay getNextWorkDay(Date date);
 
-	WorkDayRoleDto showWorkDay(Long userId);
+	BaseOutput showWorkDay(Long userId);
 }

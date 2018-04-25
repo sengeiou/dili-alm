@@ -305,21 +305,31 @@ body {
 	          success: function (data1) {  
         		 $("#user-workday-outer").empty();
         	  	 $("#user-workday").empty();
-	        	 if (data1.id != ""&&data1.id!=null) {
-	        	  		$("#user-workday-outer").append("<p>"+UnixToDate(data1.workStartTime)+"</p><p>"+UnixToDate(data1.workEndTime)+"</p>");
-	        	  		if(data1.isRole==1){
-	        				$("#user-workday").append("<span>"+data1.workDayYear+"年 第"+data1.wordDayWeek+"周  "+UnixToDate(data1.workStartTime)+" -- "+UnixToDate(data1.workEndTime)+"</span><a href='javascript:;' onclick='workDayOpen()'>设置</a>");
-	        	  		}else{
-	        	  			$("#user-workday").append("<span>"+data1.workDayYear+"年 第"+data1.wordDayWeek+"周  "+UnixToDate(data1.workStartTime)+" -- "+UnixToDate(data1.workEndTime)+"</span>");
-	        	  		}
-	        	  }else{
-		        	  	$("#user-workday-outer").append("<p>非工作日</p><p>"+UnixToDate(0)+"</p>");
-		        	  	if(data1.isRole==1){
-	        				$("#user-workday").append("<span>非工作日："+UnixToYear()+"年 "+UnixToDate(0)+"</span><a href='javascript:;' onclick='workDayOpen()'>设置</a>");
-	        	  		}else{
-	        	  			$("#user-workday").append("<span>非工作日："+UnixToYear()+"年 "+UnixToDate(0)+"</span>");
-	        	  		}
-	        	  }
+        	  	 console.log(data1);
+        	  	 if(data1.code==200){
+		        	 if (data1.data.id != ""&&data1.data.id!=null) {
+		        	  		$("#user-workday-outer").append("<p>"+UnixToDate(data1.data.workStartTime)+"</p><p>"+UnixToDate(data1.data.workEndTime)+"</p>");
+		        	  		if(data1.data.isRole==1){
+		        				$("#user-workday").append("<span>"+data1.data.workDayYear+"年 第"+data1.data.wordDayWeek+"周  "+UnixToDate(data1.data.workStartTime)+" -- "+UnixToDate(data1.data.workEndTime)+"</span><a href='javascript:;' onclick='workDayOpen()'>设置</a>");
+		        	  		}else{
+		        	  			$("#user-workday").append("<span>"+data1.data.workDayYear+"年 第"+data1.data.wordDayWeek+"周  "+UnixToDate(data1.data.workStartTime)+" -- "+UnixToDate(data1.data.workEndTime)+"</span>");
+		        	  		}
+		        	  }else{
+			        	  	$("#user-workday-outer").append("<p>非工作日</p><p>"+UnixToDate(0)+"</p>");
+			        	  	if(data1.data.isRole==1){
+		        				$("#user-workday").append("<span>非工作日："+UnixToYear()+"年 "+UnixToDate(0)+"</span><a href='javascript:;' onclick='workDayOpen()'>设置</a>");
+		        	  		}else{
+		        	  			$("#user-workday").append("<span>非工作日："+UnixToYear()+"年 "+UnixToDate(0)+"</span>");
+		        	  		}
+		        	  }
+        	  	 }else{
+        	  		$("#user-workday-outer").append("<p>请导入新的工作日</p>");
+	        	  	if(data1.data.isRole==1){
+        				$("#user-workday").append("<span>请管理员导入新一年的工作日</span><a href='javascript:;' onclick='workDayOpen()'>设置</a>");
+        	  		}else{
+        	  			$("#user-workday").append("<span>请管理员导入新一年的工作日</span>");
+        	  		}
+        	  	 }
 	          },  
 	          error: function (data1) {  
 	        	  $.messager.alert('错误', '远程访问失败');
