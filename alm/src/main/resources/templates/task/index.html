@@ -10,6 +10,7 @@
 		style="width: 50px; height: 24px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef; padding: 5px; float: right;">返回</a>
 </div>
 <%}%>
+<%var canExecuteTask=project.projectState==1;%>
 <div class="easyui-layout" fit="true" style="">
 	<div id="smDialog" style="display: none;"></div>
 	<!-- ====================================================================================================================== -->
@@ -87,10 +88,18 @@
 		</table>
 		<!-- datagrid工具栏 -->
 		<div id="toolbar" style="height: 20px; padding: 2px 5px;">
-			<span id="manager_tools"> <#resource code="addTask"> <a href="#" class="easyui-linkbutton" iconCls="icon-add"
-					onclick="openInsert()" plain="true"></a></#resource> <#resource code="updateTask"> <a href="#" class="easyui-linkbutton"
-					iconCls="icon-edit" onclick="openUpdate()" plain="true"></a></#resource> <#resource code="delTask"> <a href="#"
-					class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true"></a></#resource>
+			<span id="manager_tools">
+			<%if(project.projectState == 1){%>
+			<#resource code="addTask"> 
+				<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true"></a>
+			</#resource>
+			<#resource code="updateTask"> 
+				<a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()" plain="true"></a>
+			</#resource> 
+			<#resource code="delTask"> 
+				<a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true"></a>
+			</#resource>
+			<%}%>
 			</span>
 			<div style="float: right">
 				边框显示: <select onchange="changeBorder('grid',this.value)">
@@ -548,13 +557,16 @@
         }
     })
 
+    var canExecuteTask= ${canExecuteTask!};
+    
+    
     function formatOptions(value, row, index) {
-    	if(row.updateDetail){
+    	if(row.updateDetail&&canExecuteTask){
     		var content = '<span style="padding:5px;"><a href="javascript:void(0)" onclick="openUpdateDetail(' + index + ')">执行任务</a></span>';
     	}else{
     		var content = '<span style="padding:5px;color:#8B8B7A;text-decoration:underline;">执行任务</span>';
     	}
-    	if (row.copyButton) {
+    	if (row.copyButton&&canExecuteTask) {
     		content += '<span style="padding:5px;"><a href="javascript:void(0)" onclick="copyTask(' + index + ')">复制</a></span>';
         }
         return content;
