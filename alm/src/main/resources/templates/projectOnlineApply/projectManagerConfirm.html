@@ -30,7 +30,7 @@
         border-radius: 0;
     }
 </style>
-<div class="easyui-panel" style="width: 100%;" title="测试确认">
+<div class="easyui-panel" style="width: 100%;" title="项目经理确认">
 	<form id="editForm" action="" method="post" enctype="multipart/form-data">
 		<input type="hidden" name="id" value="${apply.id!}">
 		<div style="box-sizing: border-box; width: 100%; padding: 10px;">
@@ -62,7 +62,7 @@
 					</tr>
 					<tr>
 						<td class="table-title">上线市场</td>
-						<td colspan="5"><%if(apply.marketVersion){%>${apply.markets!}<%}%>></td>
+						<td colspan="5"><%if(apply.marketVersion){%>${apply.markets!}<%}%></td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="6">上线系统及依赖关系描述</td>

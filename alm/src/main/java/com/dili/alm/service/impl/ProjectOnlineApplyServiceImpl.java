@@ -435,7 +435,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		example.createCriteria().andEqualTo("versionId", apply.getVersionId()).andIn("marketCode", apply.getMarkets());
 		int count = this.versionMaketMapper.selectCountByExample(example);
 		if (count > 0) {
-			throw new ProjectOnlineApplyException("改版本已在指定市场上线，不能重复上线");
+			throw new ProjectOnlineApplyException("该版本已在指定市场上线，不能重复上线");
 		}
 
 		int result = this.getActualDao().insertSelective(apply);
@@ -750,7 +750,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		example.createCriteria().andEqualTo("versionId", apply.getVersionId()).andIn("marketCode", apply.getMarkets());
 		int count = this.versionMaketMapper.selectCountByExample(example);
 		if (count > 0) {
-			throw new ProjectOnlineApplyException("改版本已在指定市场上线，不能重复上线");
+			throw new ProjectOnlineApplyException("该版本已在指定市场上线，不能重复上线");
 		}
 
 		// 更新子系统，先删除后插入
@@ -879,17 +879,15 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			poamQuery.setApplyId(apply.getId());
 			List<ProjectOnlineApplyMarket> poamList = this.applyMarketMapper.select(poamQuery);
 			if (CollectionUtils.isNotEmpty(poamList)) {
-				List<VersionMarketOnlineRecord> vmorList = new ArrayList<>(poamList.size());
-				poamList.forEach(a -> {
+				for (ProjectOnlineApplyMarket a : poamList) {
 					VersionMarketOnlineRecord vmor = DTOUtils.newDTO(VersionMarketOnlineRecord.class);
 					vmor.setMarketCode(a.getMarketCode());
 					vmor.setVersionId(apply.getVersionId());
-					vmorList.add(vmor);
-				});
-				try {
-					this.versionMaketMapper.insertList(vmorList);
-				} catch (BadSqlGrammarException e) {
-					throw new ProjectOnlineApplyException("改版本已在相同市场上线，不能重复上线");
+					try {
+						this.versionMaketMapper.insertSelective(vmor);
+					} catch (BadSqlGrammarException e) {
+						throw new ProjectOnlineApplyException("该版本已在相同市场上线，不能重复上线");
+					}
 				}
 			}
 		}

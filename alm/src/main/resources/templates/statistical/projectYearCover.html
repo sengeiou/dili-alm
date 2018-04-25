@@ -36,15 +36,14 @@
     <!-- ====================================================================================================================== -->
     <!-- 上方布局 -->
     <!-- ====================================================================================================================== -->
- 
+
     <div region="north" height="auto" >
     <!-- 时间轴 -->
         <div>
             <div class="years">
                 <select id="year_select" class="easyui-combobox" style="width: 100px" data-options="editable:false,label:'',valueField: 'value',
-    textField: 'text'">
-                    <option value="2018" selected="selected">2018年</option>
-                    <option value="2017"  >2017年</option>
+    textField: 'text',url:'${contextPath}/statistical/getYears.json',prompt:'--全部--'">
+                    <option value="2018" >2018年</option>
                 </select>
             </div>
             <div class="time">
@@ -186,9 +185,9 @@
         var param = {"year" :year,"month" :month};
         $("#grid").treegrid("load",param);
         $(obj).attr("class","on");
-        if(month!=""){searchDate(year,month,null)}
+        if(month!=""){alert();searchDate(year,month,null); showWeek(year,month); }
         loadEchartForProject(year,month);
-        //showWeek(year,month);
+       
         
     }
     
@@ -219,20 +218,19 @@
     }
 
     
-    function showWeek(year,month){
-    	var  htmlobj=$.ajax({url:"${contextPath}/statistical/getWeekNum.json?year="+year+"&month="+month});
-    	         var str=htmlobj.responseText;
-    	         /* var obj = $.parseJSON(str);*/
+    function showWeek(month,year){
+    	var  htmlobj=$.ajax({url:"${contextPath}/statistical/getWeekNum.json?year="+year+"&month="+month,async:false});
+    	var str=htmlobj.responseText;
+    	var obj = $.parseJSON(str);
         var liA =	$(".timp_point_week li");
-        
         $(liA).each(function(e) {
             $(this).hide();
          })
-        $(liA).each(function(e) {
-            $(this).show();
-            alert(e==str);
-            /* if(e==str){break;} */
-         })
+         $(liA).each(function(e) {
+            
+             if(e>str){return;} 
+             $(this).show();
+         }) 
     	
     }
     //返回查询日期
@@ -340,7 +338,7 @@
    function loadYeas(){
    	$('#year_select').combobox({
 				onChange: function (o,n) {
-					queryGrid(null,null);
+					queryGrid("","");
 					searchDate(o,null,null); 
 					$(".week").hide();
 				}
@@ -353,6 +351,7 @@
     	var year=$("#year_select").val();
     	$(".week").hide();
     	searchDate(year,null,null); 
+    	 $('#year_select').textbox({prompt:new Date().getFullYear()}); 
     });
 </script>
 

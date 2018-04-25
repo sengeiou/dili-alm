@@ -39,6 +39,8 @@ public class AlmConstants {
 	public static final String TEAM_ROLE_CODE = "team_role";
 	// 资源使用环境数据字典编码
 	public static final String RESOURCE_ENVIRONMENT_CODE = "resource_environment";
+	// 差旅费明细费用配置
+	public static final String TRAVEL_COST_DETAIL_CONFIG_CODE = "travel_cost_detail_config";
 
 	// 团队成员状态: 加入/离开
 	public enum MemberState {
