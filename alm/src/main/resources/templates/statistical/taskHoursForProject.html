@@ -426,13 +426,11 @@ function bindDateForEchats(result){
                     }
                 },
                 data:  (function(){
-                	var resultMapList= result;
                 	var res = [];
-                	
-                 	 for (var i in resultMapList) { 
-                 		var hoursStr = resultMapList[i];
-                 		res.unshift(hoursStr.sumUPTaskHours+hoursStr.sumUPOverHours);  
-                	 }
+                	result.forEach(function(value, index, array) {
+                		var total = parseInt(value.sumUPTaskHours)+parseInt(value.sumUPOverHours);
+             		   res.unshift(total); 
+             		});
                  	return res;
                 })()//总和数据
             }
