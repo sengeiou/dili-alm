@@ -144,6 +144,11 @@ function loadChangePorjectSelect(id) {
 			});
 }
 
+function ownerFormatter(value, row, index) {
+	var content = $("#_owner").combobox('getText');
+	return content;
+}
+
 function noEdit() {
 	$('#_name').textbox('textbox').attr('readonly', true);
 	$('#_describe').textbox('textbox').attr('readonly', true);
@@ -266,7 +271,7 @@ function noEditForTaskdetail() {
 }
 
 // 显示详情页面
-function openDetail(row) {
+function openDetail(selected) {
 	noEdit();
 
 	$("#task_detail_list").show();// 填写工时列表
@@ -275,8 +280,6 @@ function openDetail(row) {
 	$("#saveTask").hide();
 	$("#task_detail").hide();
 	$("#dialog_toolbar_detail").hide();
-
-	var selected = $("#grid").datagrid('getData').rows[row];
 
 	/** *****加载显示数据 begin********* */
 	$('#_form').form({
@@ -331,8 +334,6 @@ function queryDetail(id, owner) {
 
 	opts.url = "${contextPath}/task/listTaskDetails?taskId=" + id;
 
-	var param = bindMetadata("grid", true);
-
 	$("#detail_grid").datagrid("reload");
 	var htmlobj = $.ajax({
 				url : "${contextPath}/task/listTaskDetail.json?id=" + id,
@@ -340,14 +341,28 @@ function queryDetail(id, owner) {
 			});
 	var str = htmlobj.responseText;
 	var obj = $.parseJSON(str);
-	console.log(obj);
 	$('#showTaskFont').html(obj.taskHour);
 	$('#showOverFont').html(obj.overHour);
 
 }
 
+function getDetailInfo(taskID) {
+	var htmlobj = $.ajax({
+				url : "${contextPath}/task/listTaskDetail.json?id=" + taskID,
+				async : false
+			});
+	var str = htmlobj.responseText;
+	var obj = $.parseJSON(str);
+
+	$('#detail_form').form('load', obj);
+	$('#detail_form').form('load', {
+				_taskHour : obj.taskHour,
+				_overHour : obj.overHour
+			});
+}
+
 // 打开执行任务窗口
-function openUpdateDetail(row) {
+function openUpdateDetail(selected) {
 	noEdit();
 	noEditForTaskdetail();
 	$('#modified').datebox({
@@ -358,7 +373,6 @@ function openUpdateDetail(row) {
 	$("#dialog_toolbar_detail").show();
 	$("#task_detail_list").hide();
 
-	var selected = $("#grid").datagrid('getData').rows[row];
 	$("#task_detail").show();
 
 	if (isOwenr(selected.id)) {
@@ -470,8 +484,30 @@ function isOwenr(id) {
 	var obj = $.parseJSON(str);
 	return obj;
 }
+function startTask() {
+	var id = $("#_id").val();
+	$.ajax({
+				type : "POST",
+				url : "${contextPath}/task/updateTaskStatus?id=" + id,
+				processData : true,
+				dataType : "json",
+				async : true,
+				success : function(data) {
+					if (data.code == "200") {
+						window.frames[0].reloadGrid();
+						$('#dlg').dialog('close');
+					} else {
+						$.messager.alert('错误', data.result);
+					}
+				},
+				error : function() {
+					$.messager.alert('错误', '远程访问失败');
+				}
+			});
+}
 
 function saveTaskDetail() {
+	debugger;
 	var planTimeStr = $("#planTimeStr").val();
 	var formDate = $("#detail_form").serialize();
 	if ($('#overHourStr').textbox('getValue') == "") {
@@ -494,7 +530,7 @@ function saveTaskDetail() {
 				async : true,
 				success : function(data) {
 					if (data.code == "200") {
-						$("#grid").datagrid("reload");
+						window.frames[0].reloadGrid();
 						LogUtils.saveLog(LOG_MODULE_OPS.PERFORM_PROJECT_VERSION_PHASE_TASK, "执行任务:" + data.data + ":成功", function() {
 								});
 					} else {
@@ -629,6 +665,29 @@ function isTask(id) {
 	return obj;
 }
 
+function pauseTaskStatus() {
+	var id = $("#_id").val();
+	$.ajax({
+				type : "POST",
+				url : "${contextPath}/task/pauseTaskStatus?id=" + id,
+				processData : true,
+				dataType : "json",
+				async : true,
+				success : function(data) {
+					if (data.code == "200") {
+						window.frames[0].reloadGrid();
+						$('#dlg').dialog('close');
+					} else {
+						$.messager.alert('错误', data.result);
+					}
+				},
+				error : function() {
+					$.messager.alert('错误', '远程访问失败');
+				}
+			});
+
+}
+
 function complate() {
 	var id = $("#_id").val();
 	if (isTask(id)) {
@@ -640,7 +699,7 @@ function complate() {
 					async : true,
 					success : function(data) {
 						if (data.code == "200") {
-							$("#grid").datagrid("reload");
+							window.frames[0].reloadGrid();
 							$('#dlg').dialog('close');
 							LogUtils.saveLog(LOG_MODULE_OPS.COMPLETE_PROJECT_VERSION_PHASE_TASK, "完成任务：" + data.data + ":成功", function() {
 									});

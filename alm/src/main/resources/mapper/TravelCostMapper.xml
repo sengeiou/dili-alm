@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.alm.dao.TravelCostMapper">
+  <resultMap id="BaseResultMap" type="com.dili.alm.domain.TravelCost">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="apply_id" jdbcType="BIGINT" property="applyId" />
+    <result column="travel_day_amount" jdbcType="INTEGER" property="travelDayAmount" />
+    <result column="set_out_place" jdbcType="BIGINT" property="setOutPlace" />
+    <result column="destination_place" jdbcType="BIGINT" property="destinationPlace" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, apply_id, travel_day_amount, set_out_place, destination_place
+  </sql>
+  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from travel_cost
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <update id="updateBy" parameterType="com.dili.alm.domain.TravelCost">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update travel_cost
+    <set>
+      <if test="applyId != null">
+        apply_id = #{applyId,jdbcType=BIGINT},
+      </if>
+      <if test="travelDayAmount != null">
+        travel_day_amount = #{travelDayAmount,jdbcType=INTEGER},
+      </if>
+      <if test="setOutPlace != null">
+        set_out_place = #{setOutPlace,jdbcType=BIGINT},
+      </if>
+      <if test="destinationPlace != null">
+        destination_place = #{destinationPlace,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
