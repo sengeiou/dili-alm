@@ -6,6 +6,8 @@ import cn.afterturn.easypoi.excel.annotation.Excel;
 import cn.afterturn.easypoi.excel.annotation.ExcelTarget;
 @ExcelTarget("ProjectTypeCountDto")
 public class ProjectTypeCountDto {
+	private String id;
+	
 	@Excel(name="项目类型",orderNum="1",width=20)
 	private String type;
 	@Excel(name="项目数量",orderNum="2")
@@ -20,6 +22,17 @@ public class ProjectTypeCountDto {
 	private int shutCount;
 	
 	private int projectTypeProgress;
+
+	
+	
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public String getType() {
 		return type;
