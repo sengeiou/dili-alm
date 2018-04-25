@@ -105,13 +105,14 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 				String workDayYear = workDayNowDate.getWorkDayYear();
 				int newYear = Integer.parseInt(workDayYear)+1;
 				WorkDay minWeekWorkDay = this.getActualDao().getMaxOrMinWeekWorkDay(0,String.valueOf(newYear));
-				int oldWorkDaysByMillisecond = DateUtil.differentDaysByMillisecond(workDayNowDate.getWorkStartTime(),workDayNowDate.getWorkEndTime());
-				int newWorkDaysByMillisecond = DateUtil.differentDaysByMillisecond( minWeekWorkDay.getWorkStartTime(),minWeekWorkDay.getWorkEndTime());
-				if(oldWorkDaysByMillisecond<=2&&newWorkDaysByMillisecond<=2){
-					workDayNowDate.setWorkStartTime(workDayNowDate.getWorkStartTime());
-					workDayNowDate.setWorkEndTime(minWeekWorkDay.getWorkEndTime());
+				if(minWeekWorkDay!=null){
+					int oldWorkDaysByMillisecond = DateUtil.differentDaysByMillisecond(workDayNowDate.getWorkStartTime(),workDayNowDate.getWorkEndTime());
+					int newWorkDaysByMillisecond = DateUtil.differentDaysByMillisecond( minWeekWorkDay.getWorkStartTime(),minWeekWorkDay.getWorkEndTime());
+					if(oldWorkDaysByMillisecond<=2&&newWorkDaysByMillisecond<=2){
+						workDayNowDate.setWorkStartTime(workDayNowDate.getWorkStartTime());
+						workDayNowDate.setWorkEndTime(minWeekWorkDay.getWorkEndTime());
+					}
 				}
-				
 			}
 			
 			return workDayNowDate;
@@ -309,11 +310,13 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 				String workDayYear = nextWork.getWorkDayYear();
 				int newYear = Integer.parseInt(workDayYear)+1;
 				WorkDay minWeekWorkDay = this.getActualDao().getMaxOrMinWeekWorkDay(0,String.valueOf(newYear));
-				int oldWorkDaysByMillisecond = DateUtil.differentDaysByMillisecond(nextWork.getWorkStartTime(),nextWork.getWorkEndTime());
-				int newWorkDaysByMillisecond = DateUtil.differentDaysByMillisecond( minWeekWorkDay.getWorkStartTime(),minWeekWorkDay.getWorkEndTime());
-				if(oldWorkDaysByMillisecond<=2&&newWorkDaysByMillisecond<=2){
-					nextWork.setWorkStartTime(nextWork.getWorkStartTime());
-					nextWork.setWorkEndTime(minWeekWorkDay.getWorkEndTime());
+				if(minWeekWorkDay!=null){
+					int oldWorkDaysByMillisecond = DateUtil.differentDaysByMillisecond(nextWork.getWorkStartTime(),nextWork.getWorkEndTime());
+					int newWorkDaysByMillisecond = DateUtil.differentDaysByMillisecond( minWeekWorkDay.getWorkStartTime(),minWeekWorkDay.getWorkEndTime());
+					if(oldWorkDaysByMillisecond<=2&&newWorkDaysByMillisecond<=2){
+						nextWork.setWorkStartTime(nextWork.getWorkStartTime());
+						nextWork.setWorkEndTime(minWeekWorkDay.getWorkEndTime());
+					}
 				}
 				
 			}
@@ -340,13 +343,14 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 				String workDayYear = workDayNowDate.getWorkDayYear();
 				int newYear = Integer.parseInt(workDayYear)+1;
 				WorkDay minWeekWorkDay = this.getActualDao().getMaxOrMinWeekWorkDay(0,String.valueOf(newYear));
-				int oldWorkDaysByMillisecond = DateUtil.differentDaysByMillisecond(workDayNowDate.getWorkStartTime(),workDayNowDate.getWorkEndTime());
-				int newWorkDaysByMillisecond = DateUtil.differentDaysByMillisecond( minWeekWorkDay.getWorkStartTime(),minWeekWorkDay.getWorkEndTime());
-				if(oldWorkDaysByMillisecond<=2&&newWorkDaysByMillisecond<=2){
-					workDayNowDate.setWorkStartTime(workDayNowDate.getWorkStartTime());
-					workDayNowDate.setWorkEndTime(minWeekWorkDay.getWorkEndTime());
+				if(minWeekWorkDay!=null){
+					int oldWorkDaysByMillisecond = DateUtil.differentDaysByMillisecond(workDayNowDate.getWorkStartTime(),workDayNowDate.getWorkEndTime());
+					int newWorkDaysByMillisecond = DateUtil.differentDaysByMillisecond( minWeekWorkDay.getWorkStartTime(),minWeekWorkDay.getWorkEndTime());
+					if(oldWorkDaysByMillisecond<=2&&newWorkDaysByMillisecond<=2){
+						workDayNowDate.setWorkStartTime(workDayNowDate.getWorkStartTime());
+						workDayNowDate.setWorkEndTime(minWeekWorkDay.getWorkEndTime());
+					}
 				}
-				
 			}
 			
 			workDayRoleDto.setId(workDayNowDate.getId());
