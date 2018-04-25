@@ -223,7 +223,7 @@
                 <th data-options="field:'modified',width:'20%', _provider:'datetimeProvider',nowarp:false">
                    任务日
                 </th>
-                <th data-options="field:'describe',width:'30%',fixed:'true'">
+                <th data-options="field:'describe',width:'30%',fixed:'true',formatter:describeFormatter">
                    工作内容描述
                 </th>
             </tr>
@@ -586,6 +586,16 @@
     
     function ownerFormatter(value, row, index) {
         var content = $("#_owner").combobox('getText');
+        return content;
+    }
+    
+    function describeFormatter(value, row, index) {
+    	 var content;
+    	if(value==undefined){
+    		content = "";
+    	}else{
+    		content = "<a title='"+value+"' >"+value+"</a>";
+    	}
         return content;
     }
     

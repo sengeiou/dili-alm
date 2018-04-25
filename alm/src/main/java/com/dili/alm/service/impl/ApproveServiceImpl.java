@@ -567,6 +567,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	private void closeProject(ProjectComplete complete) {
 		Long projectId = complete.getProjectId();
 		Project project = projectService.get(projectId);
+		project.setActualEndDate(new Date());
 		project.setProjectState(ProjectState.CLOSED.getValue());
 		project.setActualEndDate(new Date());
 		projectService.updateSelective(project);

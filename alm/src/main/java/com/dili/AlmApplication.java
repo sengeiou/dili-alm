@@ -14,7 +14,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.dili.alm.cache.AlmCache;
 import com.dili.ss.retrofitful.annotation.RestfulScan;
@@ -35,25 +34,14 @@ import tk.mybatis.spring.annotation.MapperScan;
  * 以Maven为例，首先需要将<packaging>从jar改成war，然后取消spring-boot-maven-plugin，然后修改Application.java
  * 继承SpringBootServletInitializer
  */
-public class AlmApplication extends SpringBootServletInitializer {
+public class AlmApplication extends SpringBootServletInitializer implements WebMvcConfigurer {
 
-	
-	private String[] alloweredOrigins = {"http://almadmin.diligrp.com"};
-
-	@Bean
-	public WebMvcConfigurer corsConfigurer() {
-	    return new WebMvcConfigurerAdapter() {
-	        @Override
-	        public void addCorsMappings(CorsRegistry registry) {
-	            registry.addMapping("/**")
-	                    .allowedOrigins(alloweredOrigins)
-	                    .allowCredentials(true)
-	                    .maxAge(3600)
-	                    .allowedHeaders("Origin", "X-Requested-With", "Content-Type", "Accept");
-	        }
-	    };
+	@Override
+	public void addCorsMappings(CorsRegistry registry) {
+		registry.addMapping("/**").allowedOrigins("http://almadmin.diligrp.com").allowCredentials(true)
+				.allowedHeaders("Origin", "X-Requested-With", "Content-Type", "Accept");
 	}
-	
+
 	@Bean
 	public GroupTemplate mailContentTemplate() throws IOException {
 		Configuration cfg = Configuration.defaultConfiguration();
