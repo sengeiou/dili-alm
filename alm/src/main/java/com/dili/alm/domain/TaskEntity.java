@@ -10,69 +10,65 @@ import com.dili.ss.domain.BaseDomain;
  */
 public class TaskEntity extends BaseDomain implements Task {
 
-	long id;//ID
+	long id;// ID
 
-	String name;//任务名称
-	
-	String projectName;//所属项目名称
-	
-	String versionStr;//版本名称
-	
-	String phaseStr;//项目阶段
+	String name;// 任务名称
 
-	String flowStr="正常流程";//流程
-	
-	
+	String projectName;// 所属项目名称
+
+	String versionStr;// 版本名称
+
+	String phaseStr;// 项目阶段
+
+	String flowStr = "正常流程";// 流程
+
 	Integer status;
-	
-	
-	String planDays;//计划周期
-	
-	int progress=0;//进度
-	
-	
+
+	String planDays;// 计划周期
+
+	int progress = 0;// 进度
+
 	long projectId;
-	
+
 	long versionId;
 
 	Long phaseId;
-	
+
 	Date startDate;
-	
+
 	Date endDate;
-	
+
 	Long beforeTask;
-	
+
 	Integer type;
-	
+
 	Long owner;
-	
+
 	Boolean flow;
-	
+
 	String describe;
-	
+
 	Short planTime;
-	
+
 	Long changeId;
-	
+
 	Date created;
-	
+
 	Date modified;
 
 	Long createMemberId;
-	
+
 	Long modifyMemberId;
-	
+
 	Date factBeginDate;
-	
+
 	Date factEndDate;
-	
+
 	Boolean updateDetail;
-	
+
 	Boolean copyButton;
-	
-	
-	
+
+	Boolean canOperation;
 
 	public Boolean getCopyButton() {
 		return copyButton;
@@ -92,7 +88,7 @@ public class TaskEntity extends BaseDomain implements Task {
 
 	public TaskEntity(Task task) {
 		this.id = task.getId();
-		this.beforeTask =task.getBeforeTask();
+		this.beforeTask = task.getBeforeTask();
 		this.changeId = task.getChangeId();
 		this.created = task.getCreated();
 		this.modifyMemberId = task.getModifyMemberId();
@@ -110,8 +106,8 @@ public class TaskEntity extends BaseDomain implements Task {
 		this.startDate = task.getStartDate();
 		this.endDate = task.getEndDate();
 		this.projectId = task.getProjectId();
-		this.factBeginDate=task.getFactBeginDate();
-		this.factEndDate=task.getFactBeginDate();
+		this.factBeginDate = task.getFactBeginDate();
+		this.factEndDate = task.getFactBeginDate();
 	}
 
 	public Long getId() {
@@ -159,10 +155,9 @@ public class TaskEntity extends BaseDomain implements Task {
 	}
 
 	public void setFlowStr(Boolean flow) {
-		
-		this.flowStr = flow?"变更流程":"正常流程";
+
+		this.flowStr = flow ? "变更流程" : "正常流程";
 	}
-		
 
 	public Integer getStatus() {
 		return status;
@@ -195,7 +190,6 @@ public class TaskEntity extends BaseDomain implements Task {
 	public void setOwner(Long owner) {
 		this.owner = owner;
 	}
-
 
 	public Long getProjectId() {
 		return projectId;
@@ -281,11 +275,9 @@ public class TaskEntity extends BaseDomain implements Task {
 		this.flowStr = flowStr;
 	}
 
- 
-
 	@Override
 	public Long getChangeId() {
-		 
+
 		return changeId;
 	}
 
@@ -334,7 +326,6 @@ public class TaskEntity extends BaseDomain implements Task {
 		this.modifyMemberId = modifyMemberId;
 	}
 
-
 	@Override
 	public Date getFactEndDate() {
 		return factEndDate;
@@ -352,9 +343,23 @@ public class TaskEntity extends BaseDomain implements Task {
 
 	@Override
 	public void setFactBeginDate(Date factBeginDate) {
-		this.factBeginDate=factBeginDate;
+		this.factBeginDate = factBeginDate;
 	}
 
+	public Boolean getCanOperation() {
+		return canOperation;
+	}
 
-	
+	public void setCanOperation(Boolean canOperation) {
+		this.canOperation = canOperation;
+	}
+
+	public void setProjectId(long projectId) {
+		this.projectId = projectId;
+	}
+
+	public void setVersionId(long versionId) {
+		this.versionId = versionId;
+	}
+
 }

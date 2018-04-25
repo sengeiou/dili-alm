@@ -9,8 +9,7 @@
 	<a onclick="<%if(backUrl!'' == ''){%>window.history.go(-1);<%}else{%>window.location.href='${backUrl!}';<%}%>" class="easyui-linkbutton"
 		style="width: 50px; height: 24px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef; padding: 5px; float: right;">返回</a>
 </div>
-<%}%>
-<%var canExecuteTask=project.projectState==1;%>
+<%}%> <%var canExecuteTask = project.projectState==0 || project.projectState==1;%>
 <div class="easyui-layout" fit="true" style="">
 	<div id="smDialog" style="display: none;"></div>
 	<!-- ====================================================================================================================== -->
@@ -28,6 +27,8 @@
 							data-options="label:'任务名称:', validType:'length[0,255]'" /></td>
 						<td style="padding: 5px;"><input class="easyui-textbox" name="projectId" id="projectId" style="width: 100%"
 							data-options="label:'所属项目:'" /> <#comboProvider _id="projectId" _table="project" _valueField="id" _textField="name" />
+							
+				
 							
 				<td style="padding: 5px; display: none;"><input name="versionId" id="versionId" class="easyui-combobox" style="width: 100%;"
 								data-options="label:'所属版本:'" />
@@ -89,7 +90,7 @@
 		<!-- datagrid工具栏 -->
 		<div id="toolbar" style="height: 20px; padding: 2px 5px;">
 			<span id="manager_tools">
-			<%if(project.projectState == 1){%>
+			<%if(project.projectState==0 || project.projectState == 1){%>
 			<#resource code="addTask"> 
 				<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true"></a>
 			</#resource>
@@ -187,23 +188,28 @@
                 </tr>
                 <tr>
                     <td style="padding:5px;">
-                        <input class="easyui-numberbox" name="taskHourStr" id="taskHourStr" style="width:100%;height:26px;" data-options="label:'任务工时:',validType:'taskHours[\'overHourStr\']'" />
+                        <input class="easyui-numberbox" name="taskHourStr" id="taskHourStr" style="width:100%;height:26px;"
+						data-options="label:'任务工时:',validType:'taskHours[\'overHourStr\']'" />
                     </td>
                     <td style="padding:5px;">
-                        <input class="easyui-numberbox" name="_taskHour" id="_taskHour" style="width:100%;height:26px;" data-options="label:'已填工时:',disabled:true" />
+                        <input class="easyui-numberbox" name="_taskHour" id="_taskHour" style="width:100%;height:26px;"
+						data-options="label:'已填工时:',disabled:true" />
                     </td>
                 </tr>
                 <tr>
                     <td style="padding:5px;">
-                        <input class="easyui-numberbox" name="overHourStr" id="overHourStr" style="width:100%;height:26px;" data-options="label:'加班工时:',validType:'overHours[\'taskHourStr\']'" />
+                        <input class="easyui-numberbox" name="overHourStr" id="overHourStr" style="width:100%;height:26px;"
+						data-options="label:'加班工时:',validType:'overHours[\'taskHourStr\']'" />
                     </td>
                     <td style="padding:5px;">
-                        <input class="easyui-numberbox" name="_overHour" id="_overHour" style="width:100%;height:26px;" data-options="label:'已填加班:',disabled:true" />
+                        <input class="easyui-numberbox" name="_overHour" id="_overHour" style="width:100%;height:26px;"
+						data-options="label:'已填加班:',disabled:true" />
                     </td>
                 </tr>
                 <tr>
                     <td style="padding:5px;" colspan="2">
-                        <input class="easyui-textbox"  name="describe" id="describe" style="width:100%;" data-options="label:'工作内容描述:', validType:'length[0,255]',multiline:true, required:true" />
+                        <input class="easyui-textbox" name="describe" id="describe" style="width:100%;"
+						data-options="label:'工作内容描述:', validType:'length[0,255]',multiline:true, required:true" />
                     </td>
                 </tr>
             </table>
@@ -212,9 +218,10 @@
         <!-- 隐藏工时信息详情 -->
     <div id="task_detail_list" style="display:none;width:550px;padding:5px 5px 10px 5px;">
         <hr>
-         <h3>工时任务信息 &nbsp;&nbsp;&nbsp; <span style="font-weight: lighter;font-size: 12px" >已填写 : &nbsp;加班工时&nbsp;<a style="font-weight: bold;" id="showOverFont">6</a>&nbsp;H,常规工时&nbsp;<a style="font-weight: bold" id="showTaskFont">6</a>&nbsp;H。</span></h3>
- 		 <table class="easyui-datagrid" style="height:160px" id="detail_grid" loadMsg="数据加载中..."  idField="id"
-             >
+         <h3>工时任务信息 &nbsp;&nbsp;&nbsp; <span style="font-weight: lighter;font-size: 12px">已填写 : &nbsp;加班工时&nbsp;<a
+				style="font-weight: bold;" id="showOverFont">6</a>&nbsp;H,常规工时&nbsp;<a style="font-weight: bold" id="showTaskFont">6</a>&nbsp;H。</span>
+		</h3>
+ 		 <table class="easyui-datagrid" style="height:160px" id="detail_grid" loadMsg="数据加载中..." idField="id">
             <thead>
                 <tr>
                 <th data-options="field:'taskHour',width:'10%',fixed:'false'">
@@ -239,15 +246,19 @@
             </thead>
         </table>
     </div>
-    <div id="dialog_toolbar"  style="display:show;background-color:#fff;width: 100%;">
-        <a href="#" id="saveTask" class="easyui-linkbutton"  data-options="iconCls:'icon-edit',plain:true" onclick="saveOrUpdate()" style="border:1px solid #ccc;">保存</a>
+    <div id="dialog_toolbar" style="display:show;background-color:#fff;width: 100%;">
+        <a href="#" id="saveTask" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="saveOrUpdate()"
+			style="border:1px solid #ccc;">保存</a>
         <a href="#" class="easyui-linkbutton" data-options="plain:true" onclick="$('#dlg').dialog('close');" style="border:1px solid #ccc;">取消</a>
     </div>
     <div id="dialog_toolbar_detail" style="display:none;background-color:#fff;width: 100%;">
-        <a href="#" id="doTask" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" style="border:1px solid #ccc;" onclick="startTask()">开始执行任务</a>
-        <a href="#" id="pauseTask" class="easyui-linkbutton" data-options="plain:true" style="border:1px solid #ccc;" onclick="pauseTaskStatus()"> 暂停任务</a>
+        <a href="#" id="doTask" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" style="border:1px solid #ccc;"
+			onclick="startTask()">开始执行任务</a>
+        <a href="#" id="pauseTask" class="easyui-linkbutton" data-options="plain:true" style="border:1px solid #ccc;"
+			onclick="pauseTaskStatus()"> 暂停任务</a>
         <a href="#" id="complate" class="easyui-linkbutton" data-options="plain:true" style="border:1px solid #ccc;" onclick="complate()">完成任务</a>
-        <a href="#" id="updateDetail" class="easyui-linkbutton" data-options="plain:true" style="border:1px solid #ccc;" onclick="saveTaskDetail()">提交工时</a>
+        <a href="#" id="updateDetail" class="easyui-linkbutton" data-options="plain:true" style="border:1px solid #ccc;"
+			onclick="saveTaskDetail()">提交工时</a>
         <a href="#" class="easyui-linkbutton" data-options="plain:true" onclick="$('#dlg').dialog('close');" style="border:1px solid #ccc;">取消</a>
     </div>
 </div>
@@ -561,12 +572,12 @@
     
     
     function formatOptions(value, row, index) {
-    	if(row.updateDetail&&canExecuteTask){
+    	if(row.updateDetail&&row.canOperation){
     		var content = '<span style="padding:5px;"><a href="javascript:void(0)" onclick="openUpdateDetail(' + index + ')">执行任务</a></span>';
     	}else{
     		var content = '<span style="padding:5px;color:#8B8B7A;text-decoration:underline;">执行任务</span>';
     	}
-    	if (row.copyButton&&canExecuteTask) {
+    	if (row.copyButton&&row.canOperation) {
     		content += '<span style="padding:5px;"><a href="javascript:void(0)" onclick="copyTask(' + index + ')">复制</a></span>';
         }
         return content;

@@ -211,6 +211,15 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		List<TaskEntity> target = new ArrayList<>(results.size());
 		for (Task task : results) {
 			TaskEntity dto = new TaskEntity(task);
+			// 项目和版本是否在进行中
+			Project project = this.projectMapper.selectByPrimaryKey(task.getProjectId());
+			boolean inProgress = project.getProjectState().equals(ProjectState.NOT_START.getValue());
+			inProgress = inProgress ? true : project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue());
+			ProjectVersion version = this.versionMapper.selectByPrimaryKey(task.getVersionId());
+			inProgress = inProgress ? version.getVersionState().equals(ProjectState.NOT_START.getValue()) : false;
+			inProgress = inProgress ? true : version.getVersionState().equals(ProjectState.IN_PROGRESS.getValue());
+			dto.setCanOperation(inProgress);
+
 			// 流程
 			dto.setFlowStr(task.getFlow() ? "变更流程" : "正常流程");
 			// 计划周期
@@ -1078,14 +1087,16 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		if (project == null) {
 			throw new TaskException("项目不存在");
 		}
-		if (!project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
+		if (!project.getProjectState().equals(ProjectState.NOT_START.getValue())
+				&& !project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
 			throw new TaskException("项目不在进行中，不能创建任务");
 		}
 		ProjectVersion version = this.versionMapper.selectByPrimaryKey(task.getVersionId());
 		if (version == null) {
 			throw new TaskException("版本不存在");
 		}
-		if (!version.getVersionState().equals(ProjectState.IN_PROGRESS.getValue())) {
+		if (!version.getVersionState().equals(ProjectState.NOT_START.getValue())
+				&& !version.getVersionState().equals(ProjectState.IN_PROGRESS.getValue())) {
 			throw new TaskException("版本不在进行中，不能创建任务");
 		}
 	}
