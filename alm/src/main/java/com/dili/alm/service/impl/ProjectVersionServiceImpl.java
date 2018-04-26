@@ -79,7 +79,8 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 	public BaseOutput<Object> insertSelectiveWithOutput(ProjectVersionFormDto dto) {
 		// 检查项目状态是否为进行中
 		Project project = this.projectMapper.selectByPrimaryKey(dto.getProjectId());
-		if (!project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
+		if (!project.getProjectState().equals(ProjectState.NOT_START.getValue())
+				&& !project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
 			return BaseOutput.failure("项目不在进行中，不能编辑");
 		}
 		ProjectVersion query = DTOUtils.newDTO(ProjectVersion.class);
@@ -116,7 +117,8 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 	public BaseOutput<Object> updateSelectiveWithOutput(ProjectVersionFormDto dto) {
 		// 检查项目状态是否为进行中
 		Project project = this.projectMapper.selectByPrimaryKey(dto.getProjectId());
-		if (!project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
+		if (!project.getProjectState().equals(ProjectState.NOT_START.getValue())
+				&& !project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
 			return BaseOutput.failure("项目不在进行中，不能编辑");
 		}
 		ProjectVersion query = DTOUtils.newDTO(ProjectVersion.class);
@@ -164,7 +166,8 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		// 检查项目状态是否为进行中
 		ProjectVersion version = this.getActualDao().selectByPrimaryKey(id);
 		Project project = this.projectMapper.selectByPrimaryKey(version.getProjectId());
-		if (!project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
+		if (!project.getProjectState().equals(ProjectState.NOT_START.getValue())
+				&& !project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
 			return BaseOutput.failure("项目不在进行中，不能删除");
 		}
 		ProjectPhase phaseQuery = DTOUtils.newDTO(ProjectPhase.class);

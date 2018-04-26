@@ -199,7 +199,7 @@
 		ON p.apply_id=pa.id 
 		WHERE 1=1
 		<if test="list == null or list.size==0">
-			p.project_state &lt;&gt; 4 
+			AND p.project_state &lt;&gt; 4 
 			OR ( p.project_state = 4 AND p.actual_end_date BETWEEN #{startTime} AND #{endTime} ) 
 		</if>
 		<if test="list != null and list.size>0">
@@ -221,7 +221,7 @@
 		ON p.apply_id=pa.id 
 		WHERE 1=1
 		<if test="list == null or list.size==0">
-			p.project_state &lt;&gt; 4 
+			AND p.project_state &lt;&gt; 4 
 			OR ( p.project_state = 4 AND p.actual_end_date BETWEEN #{startTime} AND #{endTime} ) 
 		</if>
 		<if test="list != null and list.size>0">

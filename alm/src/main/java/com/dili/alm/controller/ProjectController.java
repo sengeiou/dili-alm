@@ -244,7 +244,8 @@ public class ProjectController {
 			UserTicket user = SessionContext.getSessionContext().getUserTicket();
 			Boolean projectManager = this.teamService.teamMemberIsProjectManager(user.getId(), id);
 			Boolean projectMember = this.teamService.currentUserIsTeamMember(user.getId(), id);
-			if (!model.get("projectState").equals(ProjectState.IN_PROGRESS.getValue())) {
+			if (!model.get("projectState").equals(ProjectState.NOT_START.getValue())
+					&& !model.get("projectState").equals(ProjectState.IN_PROGRESS.getValue())) {
 				editable = false;
 			}
 			map.addAttribute("model", model).addAttribute("editable", editable)

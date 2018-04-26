@@ -1,37 +1,5 @@
 package com.dili.alm.controller;
 
-import com.alibaba.fastjson.JSONObject;
-import com.dili.alm.constant.AlmConstants;
-import com.dili.alm.constant.AlmConstants.TaskStatus;
-import com.dili.alm.domain.Project;
-import com.dili.alm.domain.ProjectChange;
-import com.dili.alm.domain.ProjectPhase;
-import com.dili.alm.domain.ProjectVersion;
-import com.dili.alm.domain.Task;
-import com.dili.alm.domain.TaskDetails;
-import com.dili.alm.domain.TaskQueryInProjectId;
-import com.dili.alm.domain.User;
-import com.dili.alm.service.MessageService;
-import com.dili.alm.service.ProjectApplyService;
-import com.dili.alm.service.ProjectService;
-import com.dili.alm.service.ProjectVersionService;
-import com.dili.alm.service.TaskDetailsService;
-import com.dili.alm.service.TaskService;
-import com.dili.alm.service.ProjectPhaseService;
-import com.dili.alm.utils.DateUtil;
-import com.dili.alm.utils.WebUtil;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.metadata.ValueProviderUtils;
-import com.dili.sysadmin.sdk.domain.UserTicket;
-import com.dili.sysadmin.sdk.session.SessionContext;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.DateFormat;
@@ -53,6 +21,38 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSONObject;
+import com.dili.alm.constant.AlmConstants;
+import com.dili.alm.constant.AlmConstants.TaskStatus;
+import com.dili.alm.domain.Project;
+import com.dili.alm.domain.ProjectChange;
+import com.dili.alm.domain.ProjectPhase;
+import com.dili.alm.domain.ProjectVersion;
+import com.dili.alm.domain.Task;
+import com.dili.alm.domain.TaskDetails;
+import com.dili.alm.domain.TaskQueryInProjectId;
+import com.dili.alm.domain.User;
+import com.dili.alm.exceptions.TaskException;
+import com.dili.alm.service.MessageService;
+import com.dili.alm.service.ProjectApplyService;
+import com.dili.alm.service.ProjectPhaseService;
+import com.dili.alm.service.ProjectService;
+import com.dili.alm.service.ProjectVersionService;
+import com.dili.alm.service.TaskDetailsService;
+import com.dili.alm.service.TaskService;
+import com.dili.alm.utils.WebUtil;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.sysadmin.sdk.domain.UserTicket;
+import com.dili.sysadmin.sdk.session.SessionContext;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-11-23 10:23:05.
@@ -146,29 +146,18 @@ public class TaskController {
 	public @ResponseBody BaseOutput insert(Task task, String planTimeStr, String startDateShow, String endDateShow,
 			String flowSt) throws ParseException {
 
-		// 判断是否是本项目的项目经理
-		if (!taskService.isThisProjectManger(task.getProjectId())) {
-			return BaseOutput.failure("只有本项目的项目经理可以添加项目！");
-		}
+		Short planTime = Short.parseShort(planTimeStr.trim());
 		DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
-		try {
-			Short planTime = Short.parseShort(planTimeStr.trim());
-			task.setPlanTime(planTime);
-			task.setStartDate(fmt.parse(startDateShow));
-			task.setEndDate(fmt.parse(endDateShow));
-			task.setFlow(flowSt.equals("0") ? true : false);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return BaseOutput.failure("请正确填写工时");
-		}
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		if (userTicket == null) {
 			return BaseOutput.failure("用户登录超时！");
 		}
-		task.setCreateMemberId(userTicket.getId());
-		task.setCreated(new Date());
-		task.setStatus(TaskStatus.NOTSTART.code);// 新增的初始化状态为0未开始状态
-		taskService.insertSelective(task);
+		try {
+			this.taskService.addTask(task, planTime, fmt.parse(startDateShow), fmt.parse(endDateShow),
+					flowSt.equals("0") ? true : false, userTicket.getId());
+		} catch (TaskException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
 
 		messageService.insertMessage("http://alm.diligrp.com:8083/alm/task/task/" + task.getId(), userTicket.getId(),
 				task.getOwner(), AlmConstants.MessageType.TASK.getCode());
@@ -182,29 +171,21 @@ public class TaskController {
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput update(Task task, String planTimeStr, String startDateShow, String endDateShow,
 			String flowSt) {
-
-		if (!taskService.isCreater(task)) {
-			return BaseOutput.failure("不是本项目的创建者，不能进行编辑");
-		}
 		DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
-		try {
-			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-			if (userTicket == null) {
-				return BaseOutput.failure("用户登录超时！");
-			}
-			// 设置任务修改人为当前登录用户
-			task.setModified(new Date());
-			task.setModifyMemberId(userTicket.getId());
-			Short planTime = Short.parseShort(planTimeStr.trim());
-			task.setPlanTime(planTime);
-			task.setStartDate(fmt.parse(startDateShow));
-			task.setEndDate(fmt.parse(endDateShow));
-			task.setFlow(flowSt.equals("0") ? true : false);
-
-		} catch (Exception e) {
-			return BaseOutput.failure("请正确填写工时");
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		if (userTicket == null) {
+			return BaseOutput.failure("用户登录超时！");
 		}
-		taskService.updateSelective(task);
+		Short planTime = Short.parseShort(planTimeStr.trim());
+		try {
+			this.taskService.updateTask(task, userTicket.getId(), planTime, fmt.parse(startDateShow),
+					fmt.parse(endDateShow), flowSt.equals("0") ? true : false);
+		} catch (ParseException e) {
+			return BaseOutput.failure("日期格式不正确");
+		} catch (TaskException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+
 		return BaseOutput.success("修改成功").setData(String.valueOf(task.getId() + ":" + task.getName()));
 	}
 
@@ -213,14 +194,13 @@ public class TaskController {
 			@ApiImplicitParam(name = "id", paramType = "form", value = "Task的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput delete(Long id) {
-
-		Task task = taskService.get(id);
-
-		if (!taskService.isCreater(task)) {
-			return BaseOutput.failure("不是本项目的创建者，不能进行删除");
+		Task task = this.taskService.get(id);
+		try {
+			this.taskService.deleteTask(id);
+		} catch (TaskException e) {
+			return BaseOutput.failure(e.getMessage());
 		}
 		messageService.deleteMessage(id, AlmConstants.MessageType.TASK.code);
-		taskService.delete(id);
 		return BaseOutput.success("删除成功").setData(String.valueOf(task.getId() + ":" + task.getName()));
 	}
 
@@ -331,13 +311,15 @@ public class TaskController {
 		return taskService.isCreater(task);
 	}
 
-/*	// 剩余工时
-	@ResponseBody
-	@RequestMapping(value = "/restTaskHour.json", method = { RequestMethod.GET, RequestMethod.POST })
-	public int restTaskHour(Long owerId) {
-		int rest = taskService.restTaskHour(owerId);
-		return rest;
-	}*/
+	/*
+	 * // 剩余工时
+	 * 
+	 * @ResponseBody
+	 * 
+	 * @RequestMapping(value = "/restTaskHour.json", method = { RequestMethod.GET,
+	 * RequestMethod.POST }) public int restTaskHour(Long owerId) { int rest =
+	 * taskService.restTaskHour(owerId); return rest; }
+	 */
 
 	// 更新任务信息
 	@ApiOperation("填写任务工时")
@@ -346,7 +328,7 @@ public class TaskController {
 	@RequestMapping(value = "/updateTaskDetails", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput updateTaskDetails(TaskDetails taskDetails, String planTimeStr, String overHourStr,
 			String taskHourStr) {
-		
+
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 
 		if (userTicket == null) {
@@ -374,20 +356,18 @@ public class TaskController {
 		 */
 
 		Task task = taskService.get(taskDetails.getTaskId());
-		
+
 		boolean isOwner = userTicket.getId().equals(task.getOwner());
-		
-        taskDetails.setModified(isOwner?new Date():taskDetails.getModified());
-		
+
+		taskDetails.setModified(isOwner ? new Date() : taskDetails.getModified());
+
 		String executeDateStr = new SimpleDateFormat("yyyy-MM-dd").format(taskDetails.getModified());
-		
-		
-		
-		if (!(taskService.isManager(task.getProjectId())||isOwner)) {
+
+		if (!(taskService.isManager(task.getProjectId()) || isOwner)) {
 			return BaseOutput.failure("只有本项目的项目经理或者任务所有者才可以填写工时！");
 		}
 		// 未超过8小时判断
-		if (taskService.isSetTask(task.getOwner(), taskHour,executeDateStr)) {
+		if (taskService.isSetTask(task.getOwner(), taskHour, executeDateStr)) {
 
 			/* 2018-1-8 优化:实际工时可以任意填写 */
 			/*

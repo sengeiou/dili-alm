@@ -111,7 +111,6 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 					workDayNowDate.setWorkStartTime(workDayNowDate.getWorkStartTime());
 					workDayNowDate.setWorkEndTime(minWeekWorkDay.getWorkEndTime());
 				}
-				
 			}
 			
 			return workDayNowDate;
@@ -306,22 +305,21 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 			WorkDay nextWork=DTOUtils.newDTO(WorkDay.class); 
 			nextWork = this.getActualDao().selectOne(workDay);
 			if(maxWeekWorkDay.getId()==nextWork.getId()){
-				String workDayYear = nextWork.getWorkDayYear();
-				int newYear = Integer.parseInt(workDayYear)+1;
-				WorkDay minWeekWorkDay = this.getActualDao().getMaxOrMinWeekWorkDay(0,String.valueOf(newYear));
+			String workDayYear = nextWork.getWorkDayYear();
+			int newYear = Integer.parseInt(workDayYear)+1;
+			WorkDay minWeekWorkDay = this.getActualDao().getMaxOrMinWeekWorkDay(0,String.valueOf(newYear));
 				int oldWorkDaysByMillisecond = DateUtil.differentDaysByMillisecond(nextWork.getWorkStartTime(),nextWork.getWorkEndTime());
 				int newWorkDaysByMillisecond = DateUtil.differentDaysByMillisecond( minWeekWorkDay.getWorkStartTime(),minWeekWorkDay.getWorkEndTime());
 				if(oldWorkDaysByMillisecond<=2&&newWorkDaysByMillisecond<=2){
 					nextWork.setWorkStartTime(nextWork.getWorkStartTime());
 					nextWork.setWorkEndTime(minWeekWorkDay.getWorkEndTime());
-				}
-				
+				}	
 			}
 			return nextWork;	
 			
 		}
 		@Override
-		public WorkDayRoleDto showWorkDay(Long userId) {
+		public BaseOutput showWorkDay(Long userId) {
 			
 			
 			WorkDay workDayNowDate = this.getActualDao().getWorkDayNowDate(DateUtil.getDate(new Date()));
@@ -333,20 +331,23 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 				workDayRoleDto.setIsRole(0);
 			}
 			if(workDayNowDate==null){
-				return workDayRoleDto;
+				return new BaseOutput<WorkDayRoleDto>().setData(workDayRoleDto) ;
 			}
 			WorkDay maxWeekWorkDay = this.getActualDao().getMaxOrMinWeekWorkDay(1, workDayNowDate.getWorkDayYear());
 			if(maxWeekWorkDay.getId()==workDayNowDate.getId()){
 				String workDayYear = workDayNowDate.getWorkDayYear();
 				int newYear = Integer.parseInt(workDayYear)+1;
 				WorkDay minWeekWorkDay = this.getActualDao().getMaxOrMinWeekWorkDay(0,String.valueOf(newYear));
+				if(minWeekWorkDay==null){
+					return new BaseOutput<WorkDayRoleDto>("false","需要导入下一年的工作日").setData(workDayRoleDto) ;
+				}
 				int oldWorkDaysByMillisecond = DateUtil.differentDaysByMillisecond(workDayNowDate.getWorkStartTime(),workDayNowDate.getWorkEndTime());
 				int newWorkDaysByMillisecond = DateUtil.differentDaysByMillisecond( minWeekWorkDay.getWorkStartTime(),minWeekWorkDay.getWorkEndTime());
 				if(oldWorkDaysByMillisecond<=2&&newWorkDaysByMillisecond<=2){
 					workDayNowDate.setWorkStartTime(workDayNowDate.getWorkStartTime());
 					workDayNowDate.setWorkEndTime(minWeekWorkDay.getWorkEndTime());
 				}
-				
+
 			}
 			
 			workDayRoleDto.setId(workDayNowDate.getId());
@@ -355,7 +356,7 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 			workDayRoleDto.setWorkStartTime(workDayNowDate.getWorkStartTime());
 			workDayRoleDto.setWorkEndTime(workDayNowDate.getWorkEndTime());
 			
-			return workDayRoleDto;
+			return  new BaseOutput<WorkDayRoleDto>().setData(workDayRoleDto) ;
 		}
 		public static  boolean isExcelDateType(Cell cell,String year) {
 			if(cell.getCellTypeEnum()==CellType.BLANK){

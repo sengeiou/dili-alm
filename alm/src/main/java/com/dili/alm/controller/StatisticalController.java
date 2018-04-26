@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.domain.Project;
@@ -176,12 +177,21 @@ public class StatisticalController {
 	
 	@ApiOperation(value = "获取当月星期数", notes = "查询返回easyui信息")
 	@RequestMapping(value = "/getWeekNum.json", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody int getWeekNum(String year,String month) throws Exception {
-		int yearIntager = Integer.parseInt(year);
-		int monthIntager = Integer.parseInt(month);
-		int size = DateUtil.getWeeks(yearIntager, monthIntager).size() ;//得到开始结束时间所有key值总数
-		 size= size/2;
-		return size;
+	public @ResponseBody String getWeekNum(String year,String month) throws Exception {
+		if(year==null||month==null){
+			return String.valueOf(5);
+		}
+		int yearIntager = 0;
+		int monthIntager = 0;
+		try {
+			yearIntager = Integer.parseInt(year);
+			monthIntager = Integer.parseInt(month);
+		} catch (Exception e) {
+			return String.valueOf(5);
+		}
+
+		int size = DateUtil.getWeeks(yearIntager, monthIntager).size()/2 ;//得到开始结束时间所有key值总数
+		return String.valueOf(size);
 
 	}
 
@@ -347,7 +357,7 @@ public class StatisticalController {
 
 	}
 
-	@ApiOperation(value = "查询项目类型统计", notes = "查询返回List信息")
+	@ApiOperation(value = "查询项目集合", notes = "查询返回List信息")
 	@RequestMapping(value = "/projectList", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<Project> projectList(Project project) throws Exception {
 		return projectService.list(project);

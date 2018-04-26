@@ -47,6 +47,8 @@ import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.apply.ApplyMajorResource;
 import com.dili.alm.domain.dto.apply.ApplyRelatedResource;
+import com.dili.alm.exceptions.ApplicationException;
+import com.dili.alm.exceptions.TaskException;
 import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
@@ -61,6 +63,7 @@ import com.dili.alm.service.TeamService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.alm.utils.WebUtil;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
@@ -73,6 +76,7 @@ import tk.mybatis.mapper.entity.Example;
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-11-23 10:23:05.
  */
+@Transactional(rollbackFor = ApplicationException.class)
 @Service
 public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements TaskService {
 	@Autowired
@@ -207,6 +211,15 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		List<TaskEntity> target = new ArrayList<>(results.size());
 		for (Task task : results) {
 			TaskEntity dto = new TaskEntity(task);
+			// 项目和版本是否在进行中
+			Project project = this.projectMapper.selectByPrimaryKey(task.getProjectId());
+			boolean inProgress = project.getProjectState().equals(ProjectState.NOT_START.getValue());
+			inProgress = inProgress ? true : project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue());
+			ProjectVersion version = this.versionMapper.selectByPrimaryKey(task.getVersionId());
+			inProgress = inProgress ? version.getVersionState().equals(ProjectState.NOT_START.getValue()) : false;
+			inProgress = inProgress ? true : version.getVersionState().equals(ProjectState.IN_PROGRESS.getValue());
+			dto.setCanOperation(inProgress);
+
 			// 流程
 			dto.setFlowStr(task.getFlow() ? "变更流程" : "正常流程");
 			// 计划周期
@@ -638,9 +651,9 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	 * 判断今日所有项目累加总和是否超过8小时
 	 */
 	@Override
-	public boolean isSetTask(Long id, short taskHour,String modified) {
+	public boolean isSetTask(Long id, short taskHour, String modified) {
 		// 获取今日填写所有项目的总工时
-		int totalTaskHour = restTaskHour(id,modified);
+		int totalTaskHour = restTaskHour(id, modified);
 
 		if (totalTaskHour != 0) {
 
@@ -971,9 +984,9 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	 * 已经填写的工时
 	 */
 	@Override
-	public int restTaskHour(Long ownerId,String updateDate) {
+	public int restTaskHour(Long ownerId, String updateDate) {
 
-		//String updateDate = this.dateToString(new Date());
+		// String updateDate = this.dateToString(new Date());
 
 		int dayTotal = 0;
 
@@ -1045,6 +1058,82 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public void addTask(Task task, Short planTime, Date startDateShow, Date endDateShow, Boolean flow, Long creatorId)
+			throws TaskException {
+		// 判断项目和阶段是否在进行中
+		this.checkProjectState(task);
+		// 判断是否是本项目的项目经理
+		if (!this.isThisProjectManger(task.getProjectId())) {
+			throw new TaskException("只有本项目的项目经理可以添加项目！");
+		}
+		task.setPlanTime(planTime);
+		task.setStartDate(startDateShow);
+		task.setEndDate(endDateShow);
+		task.setFlow(flow);
+		task.setCreateMemberId(creatorId);
+		task.setCreated(new Date());
+		task.setStatus(TaskStatus.NOTSTART.code);// 新增的初始化状态为0未开始状态
+		int rows = this.insertSelective(task);
+		if (rows <= 0) {
+			throw new TaskException("新增任务失败");
+		}
+	}
+
+	private void checkProjectState(Task task) throws TaskException {
+		Project project = this.projectMapper.selectByPrimaryKey(task.getProjectId());
+		if (project == null) {
+			throw new TaskException("项目不存在");
+		}
+		if (!project.getProjectState().equals(ProjectState.NOT_START.getValue())
+				&& !project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
+			throw new TaskException("项目不在进行中，不能创建任务");
+		}
+		ProjectVersion version = this.versionMapper.selectByPrimaryKey(task.getVersionId());
+		if (version == null) {
+			throw new TaskException("版本不存在");
+		}
+		if (!version.getVersionState().equals(ProjectState.NOT_START.getValue())
+				&& !version.getVersionState().equals(ProjectState.IN_PROGRESS.getValue())) {
+			throw new TaskException("版本不在进行中，不能创建任务");
+		}
+	}
+
+	@Override
+	public void updateTask(Task task, Long modifyMemberId, Short planTime, Date startDate, Date endDate, Boolean flow)
+			throws TaskException {
+		// 判断项目和阶段是否在进行中
+		this.checkProjectState(task);
+		if (!this.isCreater(task)) {
+			throw new TaskException("不是本项目的创建者，不能进行编辑");
+		}
+		// 设置任务修改人为当前登录用户
+		task.setModified(new Date());
+		task.setModifyMemberId(modifyMemberId);
+		task.setPlanTime(planTime);
+		task.setStartDate(startDate);
+		task.setEndDate(endDate);
+		task.setFlow(flow);
+
+		int rows = this.getActualDao().updateByPrimaryKeySelective(task);
+		if (rows <= 0) {
+			throw new TaskException("更新任务失败");
+		}
+	}
+
+	@Override
+	public void deleteTask(Long id) throws TaskException {
+		Task task = this.getActualDao().selectByPrimaryKey(id);
+		this.checkProjectState(task);
+		if (!this.isCreater(task)) {
+			throw new TaskException("不是本项目的创建者，不能进行删除");
+		}
+		int rows = this.getActualDao().deleteByPrimaryKey(id);
+		if (rows <= 0) {
+			throw new TaskException("更新任务失败");
+		}
 	}
 
 }

@@ -70,11 +70,17 @@ public class WorkDayApi {
 		})
 	 @CrossOrigin(origins = {"http://almadmin.diligrp.com", "null"})
 	 @RequestMapping(value="/getWorkDay", method = {RequestMethod.GET, RequestMethod.POST})
-	 public  @ResponseBody WorkDayRoleDto  getWorkDay(String userId) {
+	 public  @ResponseBody BaseOutput<WorkDayRoleDto>  getWorkDay(String userId) {
 		 if (WebUtil.strIsEmpty(userId)) {
 				throw new RuntimeException("未登录");
 			}
-	 	return workDayService.showWorkDay(Long.parseLong(userId));	
+		 BaseOutput<WorkDayRoleDto>  showWorkDay = workDayService.showWorkDay(Long.parseLong(userId));	
+		 if("false".equals(showWorkDay.getCode())){
+			 return new BaseOutput<WorkDayRoleDto>().failure("需要导入新的工作日").setData(showWorkDay.getData());
+		 }else{
+			 return new BaseOutput<WorkDayRoleDto>().success().setData(showWorkDay.getData());
+		 }
+	 	 
 	 }
 	 
 	 /**

@@ -6,7 +6,8 @@
 <generatorConfiguration>
 	<properties resource="generator/generator-config.properties" />
 
-	<context id="Mysql" targetRuntime="MyBatis3" defaultModelType="flat">
+	<context id="Mysql" targetRuntime="MyBatis3"
+		defaultModelType="flat">
 
 
 		<!-- Mapper插件 -->
@@ -31,11 +32,14 @@
 		<!-- targetProject和targetPackage必填 -->
 		<!-- <plugin type="${myService.Plugin}">
 			<property name="targetProject" value="${targetJavaProject}"></property>
-			<property name="targetPackage" value="${targetServicePackage}"></property>
+			<property name="targetPackage"
+				value="${targetServicePackage}"></property>
 			如果不配置，则不会在类上继承
-			<property name="serviceSuperClass" value="com.dili.ss.base.BaseServiceImpl"></property>
+			<property name="serviceSuperClass"
+				value="com.dili.ss.base.BaseServiceImpl"></property>
 			如果不配置，则不会在接口上继承
-			<property name="serviceSuperInterface" value="com.dili.ss.base.BaseService"></property>
+			<property name="serviceSuperInterface"
+				value="com.dili.ss.base.BaseService"></property>
 		</plugin> -->
 
 		<!-- provider生成插件 -->
@@ -48,11 +52,14 @@
 		<!-- targetProject和targetPackage必填 -->
 		<!-- <plugin type="${myController.Plugin}">
 			<property name="targetProject" value="${targetJavaProject}"></property>
-			<property name="targetPackage" value="${targetControllerPackage}"></property>
+			<property name="targetPackage"
+				value="${targetControllerPackage}"></property>
 			如果不配置，则不会在类上继承
-			<property name="controllerSuperClass" value="com.dili.ss.base.BaseControllerImpl"></property>
+			<property name="controllerSuperClass"
+				value="com.dili.ss.base.BaseControllerImpl"></property>
 			如果不配置，则不会在接口上继承
-			<property name="controllerSuperInterface" value="com.dili.ss.base.BaseController"></property>
+			<property name="controllerSuperInterface"
+				value="com.dili.ss.base.BaseController"></property>
 		</plugin> -->
 
 		<!-- beetl模板文件生成插件 -->
@@ -72,21 +79,25 @@
 		</commentGenerator>
 
 		<jdbcConnection driverClass="${jdbc.driverClass}"
-			connectionURL="${jdbc.url}" userId="${jdbc.user}" password="${jdbc.password}">
+			connectionURL="${jdbc.url}" userId="${jdbc.user}"
+			password="${jdbc.password}">
 		</jdbcConnection>
 
-		<javaModelGenerator targetPackage="${targetModelPackage}"
+		<javaModelGenerator
+			targetPackage="${targetModelPackage}"
 			targetProject="${targetJavaProject}" />
 
 		<sqlMapGenerator targetPackage="${targetXMLPackage}"
 			targetProject="${targetResourcesProject}" />
 
-		<javaClientGenerator targetPackage="${targetMapperPackage}"
+		<javaClientGenerator
+			targetPackage="${targetMapperPackage}"
 			targetProject="${targetJavaProject}" type="XMLMAPPER" />
 
 		<!-- 生成所有表模型 -->
-		<table tableName="project_version">
-			<generatedKey column="id" sqlStatement="Mysql" identity="true" />
+		<table tableName="travel_cost_detail">
+			<generatedKey column="id" sqlStatement="Mysql"
+				identity="true" />
 		</table>
 		<!-- 生成指定表模型 -->
 		<!--<table domainObjectName="Person" tableName="person"> -->

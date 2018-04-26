@@ -348,7 +348,7 @@ public class DateUtil {
 		
 		public static Map<String,String> getWeeks(int year,int month){
 			Map<String,String> weekDateMap = new HashMap<String, String>();
-			for (int i = 0; i < 5; i++) {//6*7=42  一个月最大覆盖6周，即每月1号是周日，每月最后一天是周一
+			for (int i = 0; i < 6; i++) {//6*7=42  一个月最大覆盖6周，即每月1号是周日，每月最后一天是周一
 				Date da2=DateUtil.getFirstDayOfWeekOrder(year, month,i+1 );
 				
 				
@@ -377,8 +377,7 @@ public class DateUtil {
 				
 				weekDateMap.put("start"+i, new SimpleDateFormat("yyyy-MM-dd").format(da2));
 				weekDateMap.put("end"+i, new SimpleDateFormat("yyyy-MM-dd").format(lastDa2));
-				
-				if (start.get(Calendar.MONTH)+1>month||end.get(Calendar.MONTH)+1>month) {
+				if (start.get(Calendar.MONTH)+1==month&&end.get(Calendar.MONTH)+1>month) {
 					break;
 				}
 			}
