@@ -11,8 +11,8 @@ function serialNumberFormatter(value, row, index) {
 function detail(id) {
 	$('#win').dialog({
 				title : '上线申请详情',
-				width : 600,
-				height : 600,
+				width : 800,
+				height : 540,
 				href : '${contextPath!}/projectOnlineApply/detail?id=' + id,
 				modal : true,
 				buttons : [{
@@ -87,8 +87,8 @@ function downloadFile(id) {
 function projectManagerConfirm(id) {
 	$('#win').dialog({
 				title : '项目经理确认',
-				width : 600,
-				height : 600,
+				width : 800,
+				height : 540,
 				href : '${contextPath!}/projectOnlineApply/projectManagerConfirm?id=' + id,
 				modal : true,
 				buttons : [{
@@ -166,8 +166,8 @@ function projectManagerConfirm(id) {
 function testConfirm(id) {
 	$('#win').dialog({
 				title : '测试确认',
-				width : 600,
-				height : 600,
+				width : 800,
+				height : 540,
 				href : '${contextPath!}/projectOnlineApply/testConfirm?id=' + id,
 				modal : true,
 				buttons : [{
@@ -245,8 +245,8 @@ function testConfirm(id) {
 function startExecute(id) {
 	$('#win').dialog({
 				title : '测试确认',
-				width : 600,
-				height : 600,
+				width : 800,
+				height : 540,
 				href : '${contextPath!}/projectOnlineApply/startExecute?id=' + id,
 				modal : true,
 				buttons : [{
@@ -295,8 +295,8 @@ function startExecute(id) {
 function confirmExecute(id) {
 	$('#win').dialog({
 				title : '测试确认',
-				width : 600,
-				height : 600,
+				width : 800,
+				height : 540,
 				href : '${contextPath!}/projectOnlineApply/confirmExecute?id=' + id,
 				modal : true,
 				buttons : [{
@@ -373,8 +373,8 @@ function confirmExecute(id) {
 function verify(id) {
 	$('#win').dialog({
 				title : '测试确认',
-				width : 600,
-				height : 600,
+				width : 800,
+				height : 540,
 				href : '${contextPath!}/projectOnlineApply/verify?id=' + id,
 				modal : true,
 				buttons : [{
@@ -509,8 +509,8 @@ function updateExecutor(args) {
 function openInsert() {
 	$('#win').dialog({
 				title : '上线申请',
-				width : 600,
-				height : 600,
+				width : 800,
+				height : 540,
 				href : '${contextPath!}/projectOnlineApply/add',
 				modal : true,
 				buttons : [{
@@ -641,8 +641,8 @@ function openUpdate(index, id) {
 	}
 	$('#win').dialog({
 				title : '上线申请',
-				width : 600,
-				height : 600,
+				width : 800,
+				height : 540,
 				href : '${contextPath!}/projectOnlineApply/update?id=' + selected.id,
 				modal : true,
 				buttons : [{
