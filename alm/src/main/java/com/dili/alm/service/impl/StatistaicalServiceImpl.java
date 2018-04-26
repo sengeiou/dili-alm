@@ -627,21 +627,19 @@ public class StatistaicalServiceImpl implements StatisticalService {
 				stateIds,f);
 		int projectProgressListCount = projectMapper.getProjectProgressListCount(startTime, endTime, stateIds,f);
 		for (ProjectProgressDto projectProgressDto : projectProgressList) {
+			projectProgressDto.setProjectProgress(projectProgressDto.getCompletedProgress()+"%");
 			projectProgressDto.setLaunchTime(DateUtil.getDate(projectProgressDto.getEstimateLaunchDate()));
 			switch (projectProgressDto.getProjectState()) {
 			case 0:
-				projectProgressDto.setDateProgress(0);
+				projectProgressDto.setDateProgress(0+"%");
 				break;
 			case 1:
 				projectProgressDto.setDateProgress(
-						getDateProgress(projectProgressDto.getStartDate(), projectProgressDto.getEndDate()));
-				break;
-			case 2:
-				projectProgressDto.setDateProgress(null);
+						getDateProgress(projectProgressDto.getStartDate(), projectProgressDto.getEndDate())+"%");
 				break;
 			case 3:
 				projectProgressDto.setDateProgress(
-						getDateProgress(projectProgressDto.getStartDate(), projectProgressDto.getEndDate()));
+						getDateProgress(projectProgressDto.getStartDate(), projectProgressDto.getEndDate())+"%");
 				break;
 			case 4:
 				projectProgressDto.setCompletedProgress(null);
@@ -710,7 +708,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 				pts.setTypeCount(typeTotal);
 				if (projectTotal != 0) {
 
-					pts.setProjectTypeProgress((int) (((double) typeTotal / (double) projectTotal) * 100));
+					pts.setProjectTypeProgress(((int) (((double) typeTotal / (double) projectTotal) * 100))+"%");
 				}
 				list.add(pts);
 			}

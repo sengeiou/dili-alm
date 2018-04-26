@@ -79,14 +79,14 @@
 						idField:'id',
 						treeField:'name',
 						loadFilter:treegridLoadFilter" 
-                       pagination="true" pageSize="30" pageNumber="1" >
+                       pagination="true" pageSize="10" pageNumber="1" >
                     <thead>
                     <tr>
                        	<th data-options="field:'name',width:'17%',align:'center'">项目名称</th>
                         <th data-options="field:'type', _provider:'projectTypeProvider',width:'12%',align:'center'">项目类型</th>
                         <th data-options="field:'projectManager',_provider:'memberProvider',width:'12%',align:'center'">项目责任人</th>
                         <th data-options="field:'projectState',_provider:'projectStateProvider',width:'11%',align:'center'">项目状态</th>
-                        <th data-options="field:'completedProgress',formatter:progressFormatter,width:'15%',align:'center'">项目总体进度</th>
+                        <th data-options="field:'projectProgress',formatter:progressFormatter,width:'15%',align:'center'">项目总体进度</th>
                         <th data-options="field:'dateProgress',formatter:progressFormatter,width:'15%',align:'center'">时间进度</th>
                         <th data-options="field:'launchTime',width:'20%',align:'center'">计划上线日期</th>
                     </tr>
