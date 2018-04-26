@@ -215,9 +215,11 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			Project project = this.projectMapper.selectByPrimaryKey(task.getProjectId());
 			boolean inProgress = project.getProjectState().equals(ProjectState.NOT_START.getValue());
 			inProgress = inProgress ? true : project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue());
-			ProjectVersion version = this.versionMapper.selectByPrimaryKey(task.getVersionId());
-			inProgress = inProgress ? version.getVersionState().equals(ProjectState.NOT_START.getValue()) : false;
-			inProgress = inProgress ? true : version.getVersionState().equals(ProjectState.IN_PROGRESS.getValue());
+			if (inProgress) {
+				ProjectVersion version = this.versionMapper.selectByPrimaryKey(task.getVersionId());
+				inProgress = version.getVersionState().equals(ProjectState.NOT_START.getValue());
+				inProgress = inProgress ? true : version.getVersionState().equals(ProjectState.IN_PROGRESS.getValue());
+			}
 			dto.setCanOperation(inProgress);
 
 			// 流程
