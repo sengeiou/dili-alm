@@ -7,6 +7,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -170,8 +172,18 @@ public class StatisticalController {
 	@ApiOperation(value = "返回查询后的日期", notes = "查询返回easyui信息")
 	@RequestMapping(value = "/getYears.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<SelectYearsDto> getYears() throws Exception {
-		
-		return statisticalService.SelectYears();
+		List<SelectYearsDto> selectYears = new ArrayList<SelectYearsDto>();
+		 Calendar c = Calendar.getInstance();
+	      int year = c.get(Calendar.YEAR);
+	      int beginYear = year-5;
+	      int endYear = year + 5;
+	      for (int i = beginYear; i <= endYear; i++) {
+	    	  SelectYearsDto dto = new SelectYearsDto();
+	    	  dto.setText(i+"");
+	    	  dto.setValue(i+"");
+	    	  selectYears.add(dto);
+		}
+		return selectYears;
 
 	}
 	
