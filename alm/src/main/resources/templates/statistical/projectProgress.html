@@ -41,7 +41,7 @@
                    style="width: 80px;height: 24px; margin-right:3px;text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef" onclick="doExport('grid',true)" plain="true" >
                     导出EXCEL
                 </a>
-                <input class="easyui-combobox" id="ids" style="width:130px;height: 24px;color: #999"/>
+                <input class="easyui-combobox" id="ids" style="width:130px;height: 24px;color: #999" data-options="prompt:'全部'"/>
                <!--  <select class="easyui-combobox" name="ids" id="ids" style="width:100px;height: 24px;color: #999" multiple="true">
                     <option value="26">项目</option>
                     <option value="28">Alaska</option>
@@ -115,7 +115,7 @@ $(function(){
 	            var value = "";  
 	            //加载下拉框复选框  
 	            $('#'+id).combobox({  
-	            	url:'${contextPath}/statistical/projectList',
+	            	url:'${contextPath}/statistical/projectStateList',
 					panelHeight:'200px',
 	                method:'post',
 	                valueField:'id',

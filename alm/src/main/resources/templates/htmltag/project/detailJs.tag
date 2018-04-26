@@ -516,7 +516,6 @@ function deletePhase(id) {
 							},
 							success : function(data) {
 								if (data.code == 200) {
-								console.log(data.data);
 									try {
 										LogUtils.saveLog(LOG_MODULE_OPS.DELETE_PROJECT_VERSION_PHASE, "删除项目版本版本阶段:" +data.data.id+":"+data.data.name+":成功", function() {
 												});
@@ -659,7 +658,6 @@ function getMyDay() {
 }
 
 function generateWeekly() {
-	console.log(getMyDay());
 	if (getMyDay()==0) {
 		$.messager.alert('不能提交周报', ' 不是工作日最后一天 不可提交周报');
 		return false;
