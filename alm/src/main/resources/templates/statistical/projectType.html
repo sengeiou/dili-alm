@@ -65,9 +65,8 @@
             <!--任务数据列表-->
             <div style="height: 530px">
                 <table  class="easyui-treegrid" style="width: 100%" id="grid"
-                       data-options="singleSelect:true,collapsible:true,tools:'#infoToolbar',
-                        idField:'type',
-						treeField:'type',
+                       data-options="singleSelect:false,collapsible:true,tools:'#infoToolbar',
+                        idField:'id',
 						loadFilter:treegridLoadFilter"  
 						title="类型列表"
                        >
@@ -131,10 +130,10 @@
         series: [{
             name: '任务状况',
             type: 'pie',
-            // radius: '75%',//显示为普通饼图
+            radius: '65%',//显示为普通饼图
             //radius: [20, 110],//显示为环状图
             //roseType: 'radius',//去除此项为普通饼图
-            center: ['50%', '43%'],
+            center: ['50%', '50%'],
             label: {
                 show: false,
                 normal: {

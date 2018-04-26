@@ -699,6 +699,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 			List<DataDictionaryValueDto> ddvdList = dto.getValues();
 			for (DataDictionaryValueDto dataDictionaryValueDto : ddvdList) {
 				ProjectTypeCountDto pts = new ProjectTypeCountDto();
+				pts.setId(dataDictionaryValueDto.getValue());
 				pts.setType(dataDictionaryValueDto.getCode());
 				List<ProjectStatusCountDto> statusCount = projectMapper
 						.getTpyeByProjectCount(dataDictionaryValueDto.getValue(), startTime, endTime);

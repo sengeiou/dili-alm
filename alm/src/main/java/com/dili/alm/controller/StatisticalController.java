@@ -357,7 +357,7 @@ public class StatisticalController {
 
 	}
 
-	@ApiOperation(value = "查询项目类型统计", notes = "查询返回List信息")
+	@ApiOperation(value = "查询项目集合", notes = "查询返回List信息")
 	@RequestMapping(value = "/projectList", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<Project> projectList(Project project) throws Exception {
 		return projectService.list(project);
