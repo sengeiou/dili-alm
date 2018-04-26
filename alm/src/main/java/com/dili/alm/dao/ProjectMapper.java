@@ -30,9 +30,9 @@ public interface ProjectMapper extends MyMapper<Project> {
 	
 	List<Long> getProjectIds(@Param("startTime")String startTime,@Param("endTime")String endTime);
 	
-	List<ProjectProgressDto> getProjectProgressList(@Param("project")Project project,@Param("startTime")String startTime,@Param("endTime")String endTime,@Param("list")List<Long> list);
+	List<ProjectProgressDto> getProjectProgressList(@Param("project")Project project,@Param("startTime")String startTime,@Param("endTime")String endTime,@Param("list")List<Integer> list,@Param("flat")Integer flat);
 
-	int getProjectProgressListCount(@Param("startTime")String startTime,@Param("endTime")String endTime,@Param("list")List<Long> list);
+	int getProjectProgressListCount(@Param("startTime")String startTime,@Param("endTime")String endTime,@Param("list")List<Integer> list,@Param("flat")Integer flat);
  
 	int getProjectTypeAllCount(@Param("startTime")String startTime,@Param("endTime")String endTime);
 	

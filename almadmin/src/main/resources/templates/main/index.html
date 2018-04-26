@@ -305,7 +305,6 @@ body {
 	          success: function (data1) {  
         		 $("#user-workday-outer").empty();
         	  	 $("#user-workday").empty();
-        	  	 console.log(data1);
         	  	 if(data1.code==200){
 		        	 if (data1.data.id != ""&&data1.data.id!=null) {
 		        	  		$("#user-workday-outer").append("<p>"+UnixToDate(data1.data.workStartTime)+"</p><p>"+UnixToDate(data1.data.workEndTime)+"</p>");

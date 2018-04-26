@@ -110,7 +110,7 @@ public interface StatisticalService {
 
 
 	EasyuiPageOutput getProjectProgresstDTO(Project project,
-			String startTime, String endTime, List<Long> ids);
+			String startTime, String endTime, List<Integer> stateIds,Integer f);
 
 
 	List<ProjectTypeCountDto> getProjectToTypeSummary(String startTime,
@@ -135,6 +135,7 @@ public interface StatisticalService {
 	 */
 	List<Map<String, Object>> getHomeProjectTask(Long userId,
 			List<Long> projectId);
+
 
 	
 }

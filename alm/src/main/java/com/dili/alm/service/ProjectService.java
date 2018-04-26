@@ -62,4 +62,6 @@ public interface ProjectService extends BaseService<Project, Long> {
 	 */
 	void resume(Long id) throws ProjectException;
 
+	List<Map<String, String>> projectStateList();
+
 }
