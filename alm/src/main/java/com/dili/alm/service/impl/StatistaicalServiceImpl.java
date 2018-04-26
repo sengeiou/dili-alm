@@ -336,11 +336,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	@Override
 	public HSSFWorkbook downloadProjectHours(OutputStream os, String startTime, String endTime, List<Long> projectIds)
 			throws Exception {
-		if (projectIds==null||projectIds.size()==0) {
-			projectIds = new ArrayList<Long>();
-			projectIds.add((long) 0);
-			
-		}
+
 		List<TaskHoursByProjectDto> projects = listProjectHours(startTime, endTime, projectIds);
 		List<SelectTaskHoursByUserDto> objs = listUserHours(startTime, endTime, projectIds);
 

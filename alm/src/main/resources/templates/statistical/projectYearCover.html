@@ -185,7 +185,7 @@
         var param = {"year" :year,"month" :month};
         $("#grid").treegrid("load",param);
         $(obj).attr("class","on");
-        if(month!=""){alert();searchDate(year,month,null); showWeek(year,month); }
+        if(month!=""){searchDate(year,month,null); showWeek(year,month); }
         loadEchartForProject(year,month);
        
         
@@ -295,7 +295,7 @@
 	                	 formatter: "{a}{b} : {c} ({d}%)"
 	            },  
 	            legend: {  
-	                orient : 'vertical',  
+	              //  orient : 'vertical',  
 	                x : 'left',  
 	                data:["正常完成","进行中","逾期未完成","暂停","未开始"]  
 	            },
@@ -326,7 +326,7 @@
 	                {  
 	                    name:'项目完成率',  
 	                    type:'pie',
-                        radius: ['30%', '70%'],//饼图的半径大小
+	                    radius : '65%',//饼图的半径大小
 	                    center: ['50%', '60%'],//饼图的位置  
 	                    data:json  
 	                }  
