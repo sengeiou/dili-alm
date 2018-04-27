@@ -1128,11 +1128,22 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	@Override
 	public void deleteTask(Long id) throws TaskException {
 		Task task = this.getActualDao().selectByPrimaryKey(id);
+		
 		this.checkProjectState(task);
+		
+		Project project = this.projectMapper.selectByPrimaryKey(task.getProjectId());
+		if (project == null) {
+			throw new RuntimeException("项目不存在");
+		}
+		
 		if (!this.isCreater(task)) {
 			throw new TaskException("不是本项目的创建者，不能进行删除");
 		}
 		int rows = this.getActualDao().deleteByPrimaryKey(id);
+
+		project.setTaskCount(project.getTaskCount() - 1);
+		
+		this.projectMapper.updateByPrimaryKey(project);
 		if (rows <= 0) {
 			throw new TaskException("更新任务失败");
 		}

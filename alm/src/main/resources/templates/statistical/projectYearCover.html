@@ -42,8 +42,7 @@
         <div>
             <div class="years">
                 <select id="year_select" class="easyui-combobox" style="width: 100px" data-options="editable:false,label:'',valueField: 'value',
-    textField: 'text',url:'${contextPath}/statistical/getYears.json',prompt:'--全部--'">
-                    <option value="2018" >2018年</option>
+    textField: 'text',url:'${contextPath}/statistical/getYears.json'">
                 </select>
             </div>
             <div class="time">
@@ -177,18 +176,16 @@
     	selectOn();
     	selectOnWeek();
     	changeWeekMonth(month);
-    	var year=$("#year_select").val();
+    	var year=$("#year_select").combobox('getValue');
         var opts = $("#grid").datagrid("options");
         if (null == opts.url || "" == opts.url) {
             opts.url = "${contextPath}/statistical/listProjectYearCover";
         }
         var param = {"year" :year,"month" :month};
         $("#grid").treegrid("load",param);
-        $(obj).attr("class","on");
-        if(month!=""){searchDate(year,month,null); showWeek(year,month); }
-        loadEchartForProject(year,month);
-       
-        
+
+        loadEchartForProject(year,month); 
+        searchDate(year,month,"")
     }
     
     
@@ -203,7 +200,7 @@
     function queryGridForWeek(weekNum,obj) {
     	selectOnWeek();
     	
-     	var year=$("#year_select").val();//年份
+     	var year=$("#year_select").combobox('getValue');//年份
       	var month=$("#monthForWeek").html();//月份'
       	var opts = $("#grid").datagrid("options");
       	   if (null == opts.url || "" == opts.url) {
@@ -317,7 +314,6 @@
 	                            }  
 	                        }  
 	                    },  
-	                    restore : {show: true},  
 	                    saveAsImage : {show: true}  
 	                }  
 	            },  
@@ -346,12 +342,13 @@
 			
    }
     $(function(){  
-    	loadEchartForProject();  
+    	 
     	loadYeas();
-    	var year=$("#year_select").val();
+    	var  currentDate = new Date();
+    	$("#year_select").combobox("setValue",currentDate.getFullYear());
+    	var year=$("#year_select").combobox('getValue');
     	$(".week").hide();
     	searchDate(year,null,null); 
-    	 $('#year_select').textbox({prompt:new Date().getFullYear()}); 
     });
 </script>
 

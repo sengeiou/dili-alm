@@ -535,8 +535,8 @@
 		(select ps.pid as pid ,ps.pname as pname,dd2.`code` as ptype
 		,ps.pstate from
 		(select p.id as pid,p.`name` as pname ,p.type as ptype
-		,p.actual_start_date
-		as pstart,p.actual_end_date as pend,dd.`code` as
+		,p.start_date
+		as pstart,p.end_date as pend,dd.`code` as
 		pstate from
 		alm.project as p LEFT JOIN alm.data_dictionary_value dd ON
 		p.project_state=dd.`value` where dd.dd_id=6)

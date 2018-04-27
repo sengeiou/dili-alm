@@ -12,12 +12,15 @@
     <result column="department_id" jdbcType="BIGINT" property="departmentId" />
     <result column="apply_state" jdbcType="INTEGER" property="applyState" />
     <result column="total_amount" jdbcType="BIGINT" property="totalAmount" />
+    <result column="travel_day_amount" jdbcType="INTEGER" property="travelDayAmount" />
+    <result column="submit_date" jdbcType="TIMESTAMP" property="submitDate" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
       WARNING - @mbg.generated
     -->
-    id, project_id, applicant_id, root_departemnt_id, department_id, apply_state, total_amount
+    id, project_id, applicant_id, root_departemnt_id, department_id, apply_state, total_amount, 
+    travel_day_amount, submit_date
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -51,6 +54,12 @@
       </if>
       <if test="totalAmount != null">
         total_amount = #{totalAmount,jdbcType=BIGINT},
+      </if>
+      <if test="travelDayAmount != null">
+        travel_day_amount = #{travelDayAmount,jdbcType=INTEGER},
+      </if>
+      <if test="submitDate != null">
+        submit_date = #{submitDate,jdbcType=TIMESTAMP},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
