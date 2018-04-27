@@ -13,7 +13,9 @@ public class ProjectProgressDto  extends ProjectEntity{
 	
 	private Date endDate;
 	
-	private Integer dateProgress;
+	private String dateProgress;
+	
+	private String projectProgress;
 	
 	private String launchTime;
 
@@ -42,11 +44,13 @@ public class ProjectProgressDto  extends ProjectEntity{
 		this.endDate = endDate;
 	}
 
-	public Integer getDateProgress() {
+
+
+	public String getDateProgress() {
 		return dateProgress;
 	}
 
-	public void setDateProgress(Integer dateProgress) {
+	public void setDateProgress(String dateProgress) {
 		this.dateProgress = dateProgress;
 	}
 
@@ -56,6 +60,14 @@ public class ProjectProgressDto  extends ProjectEntity{
 
 	public void setLaunchTime(String launchTime) {
 		this.launchTime = launchTime;
+	}
+
+	public String getProjectProgress() {
+		return projectProgress;
+	}
+
+	public void setProjectProgress(String projectProgress) {
+		this.projectProgress = projectProgress;
 	}
 
 	

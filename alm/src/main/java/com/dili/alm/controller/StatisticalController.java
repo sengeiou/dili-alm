@@ -7,6 +7,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -170,8 +172,18 @@ public class StatisticalController {
 	@ApiOperation(value = "返回查询后的日期", notes = "查询返回easyui信息")
 	@RequestMapping(value = "/getYears.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<SelectYearsDto> getYears() throws Exception {
-		
-		return statisticalService.SelectYears();
+		List<SelectYearsDto> selectYears = new ArrayList<SelectYearsDto>();
+		 Calendar c = Calendar.getInstance();
+	      int year = c.get(Calendar.YEAR);
+	      int beginYear = year-5;
+	      int endYear = year + 5;
+	      for (int i = beginYear; i <= endYear; i++) {
+	    	  SelectYearsDto dto = new SelectYearsDto();
+	    	  dto.setText(i+"");
+	    	  dto.setValue(i+"");
+	    	  selectYears.add(dto);
+		}
+		return selectYears;
 
 	}
 	
@@ -336,18 +348,22 @@ public class StatisticalController {
 			String ids) throws Exception {
 		String startTime2 = getStartTime(startTime, endTime, flat);
 		String endTime2 = getEndTime(startTime, endTime, flat);
-		List<Long> list = new ArrayList<Long>();
+		Integer f=1;
+		if(WebUtil.strIsEmpty(startTime)&&WebUtil.strIsEmpty(startTime)){
+			f=0;
+		}
+		List<Integer> list = new ArrayList<Integer>();
 		if (!WebUtil.strIsEmpty(ids)) {
 			String[] split = ids.split(",");
 			for (String string : split) {
-				list.add(Long.parseLong(string));
+				list.add(Integer.parseInt(string));
 			}
 		}
-		return statisticalService.getProjectProgresstDTO(project, startTime2, endTime2, list).toString();
+		return statisticalService.getProjectProgresstDTO(project, startTime2, endTime2, list,f).toString();
 
 	}
 
-	@ApiOperation(value = "查询所有", notes = "查询返回List信息")
+	@ApiOperation(value = "查询所有类型汇总", notes = "查询返回List信息")
 	@RequestMapping(value = "/projecTypetList", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<ProjectTypeCountDto> projecTypetList(String startTime, String endTime, Integer flat)
 			throws Exception {
@@ -363,6 +379,13 @@ public class StatisticalController {
 		return projectService.list(project);
 
 	}
+	@ApiOperation(value = "查询项目状态集合", notes = "查询返回List信息")
+	@RequestMapping(value = "/projectStateList", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody List<Map<String,String>> projectStateList() throws Exception {
+		return projectService.projectStateList();
+
+	}
+	
 
 	@RequestMapping(value = "/projecOverViewDownload", method = { RequestMethod.GET, RequestMethod.POST })
 	public void projecOverViewDownload(String startTime, String endTime, HttpServletRequest request,

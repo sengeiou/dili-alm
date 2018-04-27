@@ -32,11 +32,13 @@
 						</select></td>
 					</tr>
 					<tr>
-						<td style="padding: 5px;"><input class="easyui-textbox" name="originator" id="originator" style="width: 100%;" panelWidth="auto"
+						<td style="padding: 5px;">
+							<input class="easyui-textbox" name="originator" id="originator" style="width: 100%;" panelWidth="auto"
 							panelHeight="auto" label="项目发起人:"
 							data-options="editable:false,
 									buttonText:'选择',
-									onClickButton:selectMember,onChange:_changeTextboxShowClear" /></td>
+									onClickButton:selectMember,onChange:_changeTextboxShowClear" />
+						</td>
 						<td style="padding: 5px;"><select id="projectState" class="easyui-combobox" name="projectState" style="width: 100%"
 							data-options="url:'${contextPath!}/project/state.json',textField:'code',valueField:'value',label:'项目状态:',editable:false,
 							icons : [{
@@ -49,8 +51,10 @@
 							panelWidth="auto" panelHeight="auto" label="项目实际开始日期:" data-options="editable:false" /></td>
 					</tr>
 					<tr>
-						<td style="padding: 5px;"><input class="easyui-datebox" name="startDate" id="startDate" style="width: 100%;" panelWidth="auto"
-							panelHeight="auto" label="项目起止日期:" data-options="editable:false" /></td>
+						<td style="padding: 5px;">
+							<input class="easyui-datebox" name="startDate" id="startDate" style="width: 100%;" panelWidth="auto"
+							panelHeight="auto" label="项目起止日期:" data-options="editable:false" />
+						</td>
 						<td><input class="easyui-datebox" labelWidth="20" name="endDate" id="endDate" style="width: 170px;" panelWidth="auto"
 							panelHeight="auto" label="至" data-options="editable:false" /></td>
 					</tr>

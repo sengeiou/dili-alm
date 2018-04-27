@@ -21,7 +21,7 @@ public class ProjectTypeCountDto {
 	@Excel(name="已关闭",orderNum="7")
 	private int shutCount;
 	
-	private int projectTypeProgress;
+	private String projectTypeProgress;
 
 	
 	
@@ -82,13 +82,15 @@ public class ProjectTypeCountDto {
 		this.shutCount = shutCount;
 	}
 
-	public int getProjectTypeProgress() {
+	public String getProjectTypeProgress() {
 		return projectTypeProgress;
 	}
 
-	public void setProjectTypeProgress(int projectTypeProgress) {
+	public void setProjectTypeProgress(String projectTypeProgress) {
 		this.projectTypeProgress = projectTypeProgress;
 	}
+
+
 
 	
 }

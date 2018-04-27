@@ -66,7 +66,7 @@ public class ProjectYearCoverDto  {
 		return completionRate;
 	}
 	public void setCompletionRate(double completionRate) {
-		this.completionRate = (int)completionRate*100;
+		this.completionRate = completionRate*100;
 	}
 	public int getNoFinish() {
 		return noFinish;
@@ -79,7 +79,7 @@ public class ProjectYearCoverDto  {
 	}
 	public void setOverdueRate(double overdueRate) {
 		
-		this.overdueRate = (int)overdueRate*100;
+		this.overdueRate = overdueRate*100;
 	}
   
 }

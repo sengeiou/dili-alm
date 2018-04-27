@@ -532,4 +532,18 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 			throw new ProjectException("更新项目状态失败");
 		}
 	}
+
+	@Override
+	public List<Map<String, String>> projectStateList() {
+		List<Map<String,String>> list=new ArrayList<Map<String,String>>();
+		List<DataDictionaryValueDto> projectStates = getProjectStates();
+		
+		for (DataDictionaryValueDto dataDictionaryValueDto : projectStates) {
+			Map<String,String> map=new HashMap<String, String>();
+			map.put("name", dataDictionaryValueDto.getCode());
+			map.put("id", dataDictionaryValueDto.getValue());
+			list.add(map);
+		}
+		return list;
+	}
 }

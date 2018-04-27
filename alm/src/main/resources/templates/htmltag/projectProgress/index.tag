@@ -5,12 +5,14 @@ function print(){
  function progressFormatter(value, rowData, rowIndex) {
 	var progress = value;
 	var htmlstr;
+	
 	if(value!=null){
-		if (value > 100) {
+		var values = parseInt(value);
+		if (values > 100) {
 			progress = 100;
 		}
-		 htmlstr= '<div style="width: 100%; height:20px;border: 1px solid #299a58;"><div style="width:' + progress + '%; height:20px; background-color: #299a58;"><span>' + value
-				+ '%</span></div></div>';
+		 htmlstr= '<div style="width: 100%; height:20px;border: 1px solid #299a58;"><div style="width:' + progress + '; height:20px; background-color: #299a58;"><span>' + value
+				+ '</span></div></div>';
 	}
 	return htmlstr;
 }

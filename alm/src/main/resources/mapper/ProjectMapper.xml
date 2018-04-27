@@ -198,12 +198,12 @@
 		`project_apply` pa 
 		ON p.apply_id=pa.id 
 		WHERE 1=1
-		<if test="list == null or list.size==0">
-			AND p.project_state &lt;&gt; 4 
-			OR ( p.project_state = 4 AND p.actual_end_date BETWEEN #{startTime} AND #{endTime} ) 
+		<if test="list == null or list.size==0 or flat==1">
+			AND (p.project_state &lt;&gt; 4 
+			OR ( p.project_state = 4 AND p.actual_end_date BETWEEN #{startTime} AND #{endTime} )) 
 		</if>
 		<if test="list != null and list.size>0">
-			AND p.id IN 
+			AND p.project_state IN 
 			<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
 	  			#{item}  
 	 		</foreach> 
@@ -220,12 +220,14 @@
 		`project_apply` pa 
 		ON p.apply_id=pa.id 
 		WHERE 1=1
-		<if test="list == null or list.size==0">
-			AND p.project_state &lt;&gt; 4 
-			OR ( p.project_state = 4 AND p.actual_end_date BETWEEN #{startTime} AND #{endTime} ) 
+		<if test="list == null or list.size==0 or flat==1">
+			AND (
+				p.project_state &lt;&gt; 4 
+				OR ( p.project_state = 4 AND p.actual_end_date BETWEEN #{startTime} AND #{endTime} ) 
+			)
 		</if>
 		<if test="list != null and list.size>0">
-			AND p.id IN 
+			AND p.project_state IN 
 			<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
 	  			#{item}  
 	 		</foreach> 
@@ -238,8 +240,8 @@
 		SELECT COUNT(*)
 		FROM `project` 
 		WHERE
-				project_state &lt;&gt; 4 
-				OR ( project_state = 4 AND actual_end_date BETWEEN #{startTime} AND #{endTime} )
+				(project_state &lt;&gt; 4 
+				OR ( project_state = 4 AND actual_end_date BETWEEN #{startTime} AND #{endTime} ))
 	</select>
 	
 	<select id="getStateByProjectCount" resultType="com.dili.alm.domain.dto.ProjectStatusCountDto">
