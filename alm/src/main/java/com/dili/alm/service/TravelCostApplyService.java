@@ -13,9 +13,9 @@ public interface TravelCostApplyService extends BaseService<TravelCostApply, Lon
 
 	void saveOrUpdate(TravelCostApplyUpdateDto dto) throws TravelCostApplyException;
 
-	void submit(Long applyId);
+	void submit(Long applyId) throws TravelCostApplyException;
 
-	void review(Long applyId, TravelCostApplyResult result);
+	void review(Long applyId, TravelCostApplyResult result) throws TravelCostApplyException;
 
-	void deleteTravelCostApply(Long applyId);
+	void deleteTravelCostApply(Long applyId) throws TravelCostApplyException;
 }

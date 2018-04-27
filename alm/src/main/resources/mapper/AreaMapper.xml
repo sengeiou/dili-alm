@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.alm.dao.AreaMapper">
+  <resultMap id="BaseResultMap" type="com.dili.alm.domain.Area">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="area_name" jdbcType="VARCHAR" property="areaName" />
+    <result column="area_code" jdbcType="VARCHAR" property="areaCode" />
+    <result column="area_short" jdbcType="VARCHAR" property="areaShort" />
+    <result column="area_is_hot" jdbcType="VARCHAR" property="areaIsHot" />
+    <result column="area_sequence" jdbcType="INTEGER" property="areaSequence" />
+    <result column="area_parent_id" jdbcType="INTEGER" property="areaParentId" />
+    <result column="init_date" jdbcType="TIMESTAMP" property="initDate" />
+    <result column="init_addr" jdbcType="VARCHAR" property="initAddr" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, area_name, area_code, area_short, area_is_hot, area_sequence, area_parent_id, 
+    init_date, init_addr
+  </sql>
+  <select id="selectBy" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from area
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <update id="updateBy" parameterType="com.dili.alm.domain.Area">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update area
+    <set>
+      <if test="areaName != null">
+        area_name = #{areaName,jdbcType=VARCHAR},
+      </if>
+      <if test="areaCode != null">
+        area_code = #{areaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="areaShort != null">
+        area_short = #{areaShort,jdbcType=VARCHAR},
+      </if>
+      <if test="areaIsHot != null">
+        area_is_hot = #{areaIsHot,jdbcType=VARCHAR},
+      </if>
+      <if test="areaSequence != null">
+        area_sequence = #{areaSequence,jdbcType=INTEGER},
+      </if>
+      <if test="areaParentId != null">
+        area_parent_id = #{areaParentId,jdbcType=INTEGER},
+      </if>
+      <if test="initDate != null">
+        init_date = #{initDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="initAddr != null">
+        init_addr = #{initAddr,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

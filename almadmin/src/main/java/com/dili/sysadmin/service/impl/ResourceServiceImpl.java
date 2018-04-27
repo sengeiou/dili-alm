@@ -103,10 +103,13 @@ public class ResourceServiceImpl extends BaseServiceImpl<Resource, Long> impleme
 	@Transactional
 	@Override
 	public BaseOutput<Object> deleteWithOutput(Long id) {
-		this.getActualDao().deleteByPrimaryKey(id);
 		RoleResource record = new RoleResource();
 		record.setResourceId(id);
 		this.roleResourceMapper.delete(record);
-		return null;
+		int rows = this.getActualDao().deleteByPrimaryKey(id);
+		if (rows <= 0) {
+			return BaseOutput.failure();
+		}
+		return BaseOutput.success();
 	}
 }

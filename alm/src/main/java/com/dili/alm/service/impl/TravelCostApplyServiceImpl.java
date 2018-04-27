@@ -9,6 +9,7 @@ import com.dili.alm.domain.Department;
 import com.dili.alm.domain.TravelCost;
 import com.dili.alm.domain.TravelCostApply;
 import com.dili.alm.domain.TravelCostApplyResult;
+import com.dili.alm.domain.TravelCostApplyState;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.TravelCostApplyUpdateDto;
@@ -58,12 +59,13 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 	}
 
 	private void updateTravelCostApply(TravelCostApplyUpdateDto dto) throws TravelCostApplyException {
-		TravelCostApply apply = this.getActualDao().selectByPrimaryKey(dto.getId());
 		// 更新差旅费明细，先删除后插入
 		TravelCost tcQuery = DTOUtils.newDTO(TravelCost.class);
 		tcQuery.setApplyId(dto.getId());
 		this.travelCostMapper.delete(tcQuery);
+		int travelDayAmount = 0;
 		for (TravelCostDto t : dto.getTravelCost()) {
+			travelDayAmount += t.getTravelDayAmount();
 			// 插入费用明细
 			int rows = this.travelCostDetailMapper.insertList(t.getTravelCostDetail());
 			if (rows <= 0) {
@@ -74,6 +76,7 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 				throw new TravelCostApplyException("插入差旅费明细失败");
 			}
 		}
+		dto.setTravelDayAmount(travelDayAmount);
 		this.getActualDao().insert(dto);
 	}
 
@@ -92,8 +95,10 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 			dept = AlmCache.getInstance().getDepMap().get(dept.getParentId());
 		}
 		dto.setRootDepartemntId(dept.getId());
+		int travelDayAmount = 0;
 		// 插入差旅费明细
 		for (TravelCostDto t : dto.getTravelCost()) {
+			travelDayAmount += t.getTravelDayAmount();
 			// 插入费用明细
 			int rows = this.travelCostDetailMapper.insertList(t.getTravelCostDetail());
 			if (rows <= 0) {
@@ -104,24 +109,60 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 				throw new TravelCostApplyException("插入差旅费明细失败");
 			}
 		}
+		dto.setTravelDayAmount(travelDayAmount);
 		this.getActualDao().insert(dto);
 	}
 
 	@Override
-	public void submit(Long applyId) {
-		// TODO Auto-generated method stub
+	public void submit(Long applyId) throws TravelCostApplyException {
+		TravelCostApply apply = this.getActualDao().selectByPrimaryKey(applyId);
+		if (apply == null) {
+			throw new TravelCostApplyException("差旅成本不存在");
+		}
+		if (!apply.getApplyState().equals(TravelCostApplyState.APPLING.getValue())) {
+			throw new TravelCostApplyException("当前状态不能提交");
+		}
+		apply.setApplyState(TravelCostApplyState.REVIEWING.getValue());
+		int rows = this.getActualDao().updateByPrimaryKeySelective(apply);
+		if (rows <= 0) {
+			throw new TravelCostApplyException("更新状态失败");
+		}
 
 	}
 
 	@Override
-	public void review(Long applyId, TravelCostApplyResult result) {
-		// TODO Auto-generated method stub
-
+	public void review(Long applyId, TravelCostApplyResult result) throws TravelCostApplyException {
+		TravelCostApply apply = this.getActualDao().selectByPrimaryKey(applyId);
+		if (apply == null) {
+			throw new TravelCostApplyException("差旅成本不存在");
+		}
+		if (!apply.getApplyState().equals(TravelCostApplyState.REVIEWING.getValue())) {
+			throw new TravelCostApplyException("当前状态不能进行复核操作");
+		}
+		if (TravelCostApplyResult.REJECT.equals(result)) {
+			apply.setApplyState(TravelCostApplyState.APPLING.getValue());
+		}
+		if (TravelCostApplyResult.PASS.equals(result)) {
+			apply.setApplyState(TravelCostApplyState.COMPLETED.getValue());
+		}
+		int rows = this.getActualDao().updateByPrimaryKeySelective(apply);
+		if (rows <= 0) {
+			throw new TravelCostApplyException("更新状态失败");
+		}
 	}
 
 	@Override
-	public void deleteTravelCostApply(Long applyId) {
-		// TODO Auto-generated method stub
-
+	public void deleteTravelCostApply(Long applyId) throws TravelCostApplyException {
+		TravelCostApply apply = this.getActualDao().selectByPrimaryKey(applyId);
+		if (apply == null) {
+			throw new TravelCostApplyException("差旅成本不存在");
+		}
+		if (!apply.getApplyState().equals(TravelCostApplyState.APPLING.getValue())) {
+			throw new TravelCostApplyException("当前状态不能进行删除操作");
+		}
+		int rows = this.getActualDao().deleteByPrimaryKey(applyId);
+		if (rows <= 0) {
+			throw new TravelCostApplyException("删除失败");
+		}
 	}
 }

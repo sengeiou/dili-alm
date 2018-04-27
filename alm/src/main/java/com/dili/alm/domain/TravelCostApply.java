@@ -4,6 +4,7 @@ import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
 import com.dili.ss.metadata.annotation.FieldDef;
+import java.util.Date;
 import javax.persistence.*;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -13,7 +14,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2018-04-24 16:43:13.
+ * This file was generated on 2018-04-26 15:05:49.
  */
 @Table(name = "`travel_cost_apply`")
 public interface TravelCostApply extends IBaseDomain {
@@ -67,4 +68,18 @@ public interface TravelCostApply extends IBaseDomain {
     Long getTotalAmount();
 
     void setTotalAmount(Long totalAmount);
+
+    @Column(name = "`travel_day_amount`")
+    @FieldDef(label="出差天数")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Integer getTravelDayAmount();
+
+    void setTravelDayAmount(Integer travelDayAmount);
+
+    @Column(name = "`submit_date`")
+    @FieldDef(label="申请提交时间")
+    @EditMode(editor = FieldEditor.Datetime, required = false)
+    Date getSubmitDate();
+
+    void setSubmitDate(Date submitDate);
 }
