@@ -244,7 +244,7 @@ function testConfirm(id) {
 
 function startExecute(id) {
 	$('#win').dialog({
-				title : '测试确认',
+				title : '确认执行',
 				width : 800,
 				height : 540,
 				href : '${contextPath!}/projectOnlineApply/startExecute?id=' + id,
