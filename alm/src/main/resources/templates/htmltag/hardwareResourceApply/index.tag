@@ -235,7 +235,7 @@ function implement(id) {
           
 }
 
-// 实施窗口
+// 查看窗口
 function show(id) {
     var selected = $("#grid").datagrid("getSelected");
     if(id==null){
