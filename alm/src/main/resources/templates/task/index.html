@@ -9,7 +9,7 @@
 	<a onclick="<%if(backUrl!'' == ''){%>window.history.go(-1);<%}else{%>window.location.href='${backUrl!}';<%}%>" class="easyui-linkbutton"
 		style="width: 50px; height: 24px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef; padding: 5px; float: right;">返回</a>
 </div>
-<%}%> <%var canExecuteTask = project.projectState==0 || project.projectState==1;%>
+<%}%>
 <div class="easyui-layout" fit="true" style="">
 	<div id="smDialog" style="display: none;"></div>
 	<!-- ====================================================================================================================== -->
@@ -89,10 +89,10 @@
 		</table>
 		<!-- datagrid工具栏 -->
 		<div id="toolbar" style="height: 20px; padding: 2px 5px;">
-			<span id="manager_tools"> <%if(project.projectState==0 || project.projectState == 1){%> <#resource code="addTask"> <a
+			<span id="manager_tools"> <#resource code="addTask"> <a
 					href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true"></a> </#resource> <#resource code="updateTask">
 				<a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()" plain="true"></a> </#resource> <#resource code="delTask">
-				<a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true"></a> </#resource> <%}%>
+				<a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true"></a> </#resource>
 			</span>
 			<div style="float: right">
 				边框显示: <select onchange="changeBorder('grid',this.value)">
@@ -546,8 +546,6 @@
         }
     })
 
-    var canExecuteTask= ${canExecuteTask!};
-    
     
     function formatOptions(value, row, index) {
     	if(row.updateDetail&&row.canOperation){
