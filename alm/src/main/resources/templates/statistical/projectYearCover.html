@@ -184,7 +184,7 @@
         var param = {"year" :year,"month" :month};
         $("#grid").treegrid("load",param);
 
-        loadEchartForProject(year,month); 
+        loadEchartForProject(year,month,""); 
         searchDate(year,month,"")
     }
     
@@ -209,7 +209,7 @@
         var param = {"year" :year,"month" :month,"weekNum" :weekNum};
         $("#grid").treegrid("load",param); 
         searchDate(year,month,weekNum)
-        loadEchartForProject(year,month); 
+        loadEchartForProject(year,month,weekNum); 
         
         $(obj).attr("class","weekOn");
     }
@@ -250,13 +250,13 @@
     	            }
     	        }); //ajax
     }
-    function loadEchartForProject(thisYear,thisMonth){
+    function loadEchartForProject(thisYear,thisMonth,weekNum){
     	
    	 $.ajax({
    	        type : 'post',
    	        async : false, //同步执行
    	            url :'${contextPath}/statistical/projectYearCoverForAll', //web.xml中注册的Servlet的url-pattern
-   	            data : {month:thisMonth,year:thisYear}, //无参数
+   	            data : {month:thisMonth,year:thisYear,weekNum:weekNum}, //无参数
    	            dataType : 'json', //返回数据形式为json
    	            success : function(result) {
    	                if (result) {

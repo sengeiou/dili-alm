@@ -363,6 +363,10 @@ function getDetailInfo(taskID) {
 
 // 打开执行任务窗口
 function openUpdateDetail(selected) {
+	if (typeof selected == 'number') {
+		$("#grid").datagrid("selectRow", selected);
+		selected = $("#grid").datagrid("getSelected");
+	}
 	noEdit();
 	noEditForTaskdetail();
 	$('#modified').datebox({
