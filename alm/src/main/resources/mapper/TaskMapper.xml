@@ -571,12 +571,12 @@
 		pauseTotal,IFNULL(sum(t.begining),0) as
 		beginingTotal,IFNULL(t.noBegin,0) as noBeginTotal from
 		(select p.id as
-		pid,actual_start_date as startDate,actual_end_date as endDate
+		pid,start_date as startDate,end_date as endDate
 		from
-		alm.project as p WHERE actual_start_date BETWEEN
-		#{beginTime,jdbcType=TIMESTAMP} AND #{endTime,jdbcType=TIMESTAMP} or
-		actual_end_date BETWEEN #{beginTime,jdbcType=TIMESTAMP} AND
-		#{endTime,jdbcType=TIMESTAMP}) as pp
+		alm.project as p WHERE (start_date BETWEEN #{beginTime,jdbcType=TIMESTAMP} AND
+		#{endTime,jdbcType=TIMESTAMP}) or
+		(end_date BETWEEN #{beginTime,jdbcType=TIMESTAMP} AND
+		#{endTime,jdbcType=TIMESTAMP})) as pp
 		LEFT JOIN
 		( select task.project_id
 		as tpid,count(*) as total,count(case when

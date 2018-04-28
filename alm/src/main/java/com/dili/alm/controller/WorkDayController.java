@@ -21,9 +21,12 @@ import org.springframework.web.multipart.MultipartFile;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.domain.Weekly;
 import com.dili.alm.domain.WorkDay;
+import com.dili.alm.domain.dto.WorkDayRoleDto;
 import com.dili.alm.service.WorkDayService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.sysadmin.sdk.domain.UserTicket;
+import com.dili.sysadmin.sdk.session.SessionContext;
 
 @Api("/workDay")
 @Controller
@@ -39,13 +42,22 @@ public class WorkDayController {
     @ResponseBody
     @RequestMapping(value="/isWorkEndDayDate", method = {RequestMethod.GET, RequestMethod.POST})
     public int isWorkEndDayDate() {
-		WorkDay workDay = workDayService.getNowWeeklyWorkDay();
-		if(workDay==null){
+    	UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+
+		if (userTicket == null) {
+			return 2;
+		}
+		BaseOutput<WorkDayRoleDto> showWorkDay = workDayService.showWorkDay(userTicket.getId());
+		if("false".equals(showWorkDay.getCode())){
+			return 3;
+		}
+		WorkDayRoleDto workDayRoleDto = showWorkDay.getData();
+		if(workDayRoleDto.getId()==null){
 			return 1;
 		}
-        int differentDaysByMillisecond = DateUtil.differentDaysByMillisecond(new Date(), workDay.getWorkEndTime());
+        int differentDaysByMillisecond = DateUtil.differentDaysByMillisecond(new Date(), workDayRoleDto.getWorkEndTime());
         if(differentDaysByMillisecond==0){
-        	return 2;
+        	return 4;
         }
        return 0;
     }

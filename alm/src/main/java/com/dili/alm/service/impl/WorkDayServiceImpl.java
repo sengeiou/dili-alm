@@ -333,14 +333,15 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 			if(workDayNowDate==null){
 				return new BaseOutput<WorkDayRoleDto>().setData(workDayRoleDto) ;
 			}
+			WorkDay selectOne = this.getActualDao().selectByPrimaryKey(workDayNowDate.getId()+1L);
 			WorkDay maxWeekWorkDay = this.getActualDao().getMaxOrMinWeekWorkDay(1, workDayNowDate.getWorkDayYear());
-			if(maxWeekWorkDay.getId()==workDayNowDate.getId()){
-				String workDayYear = workDayNowDate.getWorkDayYear();
-				int newYear = Integer.parseInt(workDayYear)+1;
-				WorkDay minWeekWorkDay = this.getActualDao().getMaxOrMinWeekWorkDay(0,String.valueOf(newYear));
-				if(minWeekWorkDay==null){
-					return new BaseOutput<WorkDayRoleDto>("false","需要导入下一年的工作日").setData(workDayRoleDto) ;
-				}
+			String workDayYear = workDayNowDate.getWorkDayYear();
+			int newYear = Integer.parseInt(workDayYear)+1;
+			WorkDay minWeekWorkDay = this.getActualDao().getMaxOrMinWeekWorkDay(0,String.valueOf(newYear));
+			if(maxWeekWorkDay.getId().longValue()==selectOne.getId().longValue()&&minWeekWorkDay==null){
+				return new BaseOutput<WorkDayRoleDto>("false","需要导入下一年的工作日").setData(workDayRoleDto) ;
+			}
+			if(maxWeekWorkDay.getId().longValue()==workDayNowDate.getId().longValue()){
 				int oldWorkDaysByMillisecond = DateUtil.differentDaysByMillisecond(workDayNowDate.getWorkStartTime(),workDayNowDate.getWorkEndTime());
 				int newWorkDaysByMillisecond = DateUtil.differentDaysByMillisecond( minWeekWorkDay.getWorkStartTime(),minWeekWorkDay.getWorkEndTime());
 				if(oldWorkDaysByMillisecond<=2&&newWorkDaysByMillisecond<=2){
