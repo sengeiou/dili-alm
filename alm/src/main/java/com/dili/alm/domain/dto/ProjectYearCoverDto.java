@@ -1,5 +1,7 @@
 package com.dili.alm.domain.dto;
 
+import java.text.DecimalFormat;
+
 
 
 /****
@@ -66,7 +68,8 @@ public class ProjectYearCoverDto  {
 		return completionRate;
 	}
 	public void setCompletionRate(double completionRate) {
-		this.completionRate = completionRate*100;
+		DecimalFormat    df   = new DecimalFormat("#######.00");
+		this.completionRate =Double.parseDouble(df.format( completionRate*100));
 	}
 	public int getNoFinish() {
 		return noFinish;
@@ -78,8 +81,8 @@ public class ProjectYearCoverDto  {
 		return overdueRate;
 	}
 	public void setOverdueRate(double overdueRate) {
-		
-		this.overdueRate = overdueRate*100;
+		DecimalFormat    df   = new DecimalFormat("#######.00");
+		this.overdueRate = Double.parseDouble(df.format(overdueRate*100));
 	}
   
 }
