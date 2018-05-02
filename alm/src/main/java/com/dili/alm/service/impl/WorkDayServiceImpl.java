@@ -338,6 +338,9 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 			String workDayYear = workDayNowDate.getWorkDayYear();
 			int newYear = Integer.parseInt(workDayYear)+1;
 			WorkDay minWeekWorkDay = this.getActualDao().getMaxOrMinWeekWorkDay(0,String.valueOf(newYear));
+			if(selectOne==null||selectOne.getId()==null){
+				return new BaseOutput<WorkDayRoleDto>("false","需要导入工作日").setData(workDayRoleDto) ;
+			}
 			if(maxWeekWorkDay.getId().longValue()==selectOne.getId().longValue()&&minWeekWorkDay==null){
 				return new BaseOutput<WorkDayRoleDto>("false","需要导入下一年的工作日").setData(workDayRoleDto) ;
 			}
