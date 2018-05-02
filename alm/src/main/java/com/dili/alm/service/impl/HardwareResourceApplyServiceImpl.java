@@ -253,9 +253,12 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 	@Override
 	public EasyuiPageOutput listEasyuiPageByExample(HardwareResourceApply domain, boolean useProvider)
 			throws Exception {
+		
+		HardwareResourceApply aa = DTOUtils.newDTO(HardwareResourceApply.class);
 		List<HardwareResourceApply> list = listByExample(domain);
 		list.forEach(h -> {
 			h.aset("envList", this.parseEnvToString(h.getServiceEnvironment()));
+			Object dd = h.getMetadata("submitTime");
 			this.setOperationColumn(h);
 		});
 		long total = list instanceof Page ? ((Page) list).getTotal() : list.size();
@@ -313,6 +316,8 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 				for (int i = 0; i < executors.size(); i++) {
 					if (user.getId().equals(executors.get(i))) {
 						implementing = true;
+					}else{
+						implementing = false;
 					}
 				}
 			}
@@ -715,7 +720,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		if (dto.getApplyDate() == null) {
 			throw new HardwareResourceApplyException("申请日期不能为空");
 		}
-		Calendar calendar = Calendar.getInstance();
+/*		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(new Date());
 		calendar.set(Calendar.HOUR_OF_DAY, 0);
 		calendar.set(Calendar.MINUTE, 0);
@@ -723,7 +728,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		calendar.set(Calendar.MILLISECOND, 0);
 		if (dto.getApplyDate().getTime() < calendar.getTimeInMillis()) {
 			throw new HardwareResourceApplyException("申请上线日期不能小于当前日期");
-		}
+		}*/
 
 		// 判断记录是否存在
 		HardwareResourceApply old = this.getActualDao().selectByPrimaryKey(dto.getId());

@@ -37,8 +37,8 @@
 						<td class="table-title">项目名称</td>
 						<td style="padding: 0">
 						<select class="easyui-combobox" id="projectId" name="projectId"
-							style="width: 95%; text-align: center;"data-options="editable:false,onLoadSuccess:loadProject
-							,onChange:changeProject,disabled:true">
+							style="width: 95%; text-align: center;"data-options="editable:false,onLoadSuccess:function(){changeProjectSetValue(${apply.projectId!});}
+	,disabled:true">
 								<%for(item in projects){%>
 								<option value="${item.id!}"   <%if(apply.projectId == item.id){%>selected="selected"<%}%> >${item.name!}</option> <%}%>
 						</select><input type="hidden" id="projectName-a" name="projectName"/></td>
@@ -133,14 +133,15 @@
 		</div>
 			<input type="hidden" value="${apply.applyState!}" id="applyAppovState"/>
 	</form>
-	<%if(apply.applyState == 4){%>
-	<div >  <input class="easyui-combobox"  id="operDepartmentUsers" name="operDepartmentUsers" data-options="editable:false,label:'实施人员分配:',valueField: 'id',
+	<form id="appov" action="" method="post" enctype="multipart/form-data">
+	<table class="table-box">
+	<tr><th class="table-title">审&nbsp;批</th></tr>
+	<%if(apply.applyState == 4){%><tr><td><input class="easyui-combobox"  id="operDepartmentUsers" name="operDepartmentUsers" data-options="editable:false,label:'实施人员分配:',valueField: 'id',
     textField: 'realName',url: '${contextPath}/hardwareResourceApply/operMemers.json',required:true,
-    multiple:true" style="width:100%" /></div>
-	<%}%>
-	<%if(apply.applyState== 2||apply.applyState== 3||apply.applyState== 4){%>
-	<div> <input class="easyui-textbox" name="appovDescription" id="appovDescription" style="width:100%;height:50px;" data-options="label:'审批意见', validType:'length[0,255]'" /></div>
-	<%}%>
+    multiple:true" style="width:100%" /></td></tr><%}%>
+	<%if(apply.applyState== 2||apply.applyState== 3||apply.applyState== 4){%><tr><td><input class="easyui-textbox" name="appovDescription" id="appovDescription" style="width:100%;height:50px;" data-options="label:'审批意见', validType:'length[0,255]'" /></td></tr><%}%>
+	</table>
+	</form>
 	<div id="addConfig"    class="easyui-dialog" title="添加配置要求" style="padding:13px" closed="true"   data-options="
 				iconCls: 'icon-save',
 				height: 260,
@@ -239,14 +240,14 @@ function optionFormatter(value, row, index){
 function appov(){
 	 var id = $("#edit_applyId").val();
 	 <%if(apply.applyState == 4){%> var operDepartmentUsers = $("#operDepartmentUsers").combobox('getValue');<%}%>
-	 <%if(apply.applyState == 5){%>var appovDescription = $("#appovDescription").val();<%}%>
+	 <%if(apply.applyState== 2||apply.applyState== 3||apply.applyState== 4){%>var appovDescription = $("#appovDescription").textbox('getValue');<%}%>
 		$.ajax({
 										type : "POST",
 										url : submitUrl(),
 										data : {
 											id :id,
 											isApproved:true
-											<%if(apply.applyState == 5){%>,description:appovDescription<%}%>
+											<%if(apply.applyState== 2||apply.applyState== 3||apply.applyState== 4){%>,description:appovDescription<%}%>
 											<%if(apply.applyState == 4){%>,executorsChk:operDepartmentUsers<%}%>
 										},
 										processData : true,
@@ -269,16 +270,17 @@ function appov(){
 
 
 function noAppov(){
-
 	 var id = $("#edit_applyId").val();
-	 var appovDescription = $("#appovDescription").val();
+	 <%if(apply.applyState == 4){%> var operDepartmentUsers = $("#operDepartmentUsers").combobox('getValue');<%}%>
+	 <%if(apply.applyState== 2||apply.applyState== 3||apply.applyState== 4){%>var appovDescription = $("#appovDescription").textbox('getValue');<%}%>
 		$.ajax({
 										type : "POST",
 										url : submitUrl(),
 										data : {
 											id :id,
-											isApproved:false,
-											description:appovDescription
+											isApproved:false
+											<%if(apply.applyState== 2||apply.applyState== 3||apply.applyState== 4){%>,description:appovDescription<%}%>
+											<%if(apply.applyState == 4){%>,executorsChk:operDepartmentUsers<%}%>
 										},
 										processData : true,
 										dataType : "json",

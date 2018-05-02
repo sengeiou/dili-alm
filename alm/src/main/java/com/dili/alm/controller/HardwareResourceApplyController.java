@@ -253,7 +253,7 @@ public class HardwareResourceApplyController {
 		try {
 			hardwareResourceApplyService.saveOrUpdate(hardwareResourceApply);
 		} catch (HardwareResourceApplyException e) {
-			return BaseOutput.failure("修改失败");
+			return BaseOutput.failure(e.getMessage());
 		}
 		return BaseOutput.success("修改成功");
 	}
@@ -285,15 +285,6 @@ public class HardwareResourceApplyController {
 			@ApiImplicitParam(name = "id", paramType = "form", value = "HardwareResourceApply的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/goApprove", method = { RequestMethod.GET, RequestMethod.POST })
 	public String goApprove(@RequestParam Long id, ModelMap modelMap) throws HardwareResourceApplyException {
-		/*
-		 * @SuppressWarnings("rawtypes") List<Map> dataAuths =
-		 * SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE); if
-		 * (CollectionUtils.isEmpty(dataAuths)) { return null; } List<Long> projectIds =
-		 * new ArrayList<>(); dataAuths.forEach(m ->
-		 * projectIds.add(Long.valueOf(m.get("dataId").toString()))); Example example =
-		 * new Example(HardwareResourceApply.class); Example.Criteria criteria =
-		 * example.createCriteria(); criteria.andIn("id", projectIds);
-		 */
 
 		List<Project> projects = this.projectService.list(null);
 		modelMap.addAttribute("projects", projects);
@@ -304,9 +295,7 @@ public class HardwareResourceApplyController {
 		List<Department> departments = this.deptRpc.list(new Department()).getData();
 		modelMap.addAttribute("departments", departments);
 
-		/** 个人信息 **/
-		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		modelMap.addAttribute("userInfo", userTicket);
+
 
 		/*** 环境 **/
 		DataDictionaryValue dd = DTOUtils.newDTO(DataDictionaryValue.class);
@@ -326,6 +315,11 @@ public class HardwareResourceApplyController {
 		modelMap.addAttribute("se2", envList);
 		modelMap.addAttribute("submit", DateUtil.getDate(dto.getApplyDate()));// 转化时间
 		modelMap.addAttribute("cread", DateUtil.getDate(dto.getCreated()));// 转化时间
+		
+		/** 个人信息 **/
+/*		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();*/
+		User u = userRpc.findUserById(dto.getApplicantId()).getData();
+		modelMap.addAttribute("userInfo", u);
 
 		/** 配置需求列表 ***/
 		List<HardwareResourceRequirement> requirementList = hardwareResourceApplyService.listRequirement(dto.getId());
@@ -379,6 +373,9 @@ public class HardwareResourceApplyController {
 	public @ResponseBody BaseOutput operManagerApprove(Long id, boolean isApproved, String description,
 			String[] executorsChk) throws HardwareResourceApplyException {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		if (executorsChk==null) {
+			return BaseOutput.failure("还未分配");
+		}
 		Set<Long> executors = new HashSet<Long>();
 		for (int i = 0; i < executorsChk.length; i++) {
 			executors.add(Long.parseLong(executorsChk[i]));
@@ -387,13 +384,20 @@ public class HardwareResourceApplyController {
 		return BaseOutput.success("提交成功");
 	}
 
+
 	@ApiOperation("运维实施")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "id", paramType = "form", value = "HardwareResourceApply的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/implementing", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput implementing(Long id, String description) throws HardwareResourceApplyException {
+	public @ResponseBody BaseOutput implementing(Long id, String description){
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
-		hardwareResourceApplyService.operatorExecute(id, user.getId(), description);
+		
+		try {
+			hardwareResourceApplyService.operatorExecute(id, user.getId(), description);
+		} catch (Exception e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+		
 		return BaseOutput.success("提交成功");
 	}
 
