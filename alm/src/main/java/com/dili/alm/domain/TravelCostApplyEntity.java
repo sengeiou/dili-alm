@@ -20,6 +20,8 @@ public class TravelCostApplyEntity extends BaseDomain implements TravelCostApply
 	private Integer travelDayAmount;
 	private Date submitDate;
 
+	private String serialNumber;
+
 	@Override
 	public Long getProjectId() {
 		return projectId;
@@ -98,6 +100,16 @@ public class TravelCostApplyEntity extends BaseDomain implements TravelCostApply
 	@Override
 	public void setSubmitDate(Date submitDate) {
 		this.submitDate = submitDate;
+	}
+
+	@Override
+	public String getSerialNumber() {
+		return serialNumber;
+	}
+
+	@Override
+	public void setSerialNumber(String serialNumber) {
+		this.serialNumber = serialNumber;
 	}
 
 }

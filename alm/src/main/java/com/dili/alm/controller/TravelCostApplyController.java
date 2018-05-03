@@ -1,11 +1,8 @@
 package com.dili.alm.controller;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,19 +14,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.domain.Department;
-import com.dili.alm.domain.TravelCost;
 import com.dili.alm.domain.TravelCostApply;
+import com.dili.alm.domain.TravelCostApplyResult;
 import com.dili.alm.domain.dto.TravelCostApplyUpdateDto;
 import com.dili.alm.exceptions.TravelCostApplyException;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.TravelCostApplyService;
-import com.dili.alm.service.impl.TravelCostApplyServiceImpl;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
 
@@ -50,6 +43,45 @@ public class TravelCostApplyController {
 	TravelCostApplyService travelCostApplyService;
 	@Autowired
 	private DataDictionaryService ddService;
+
+	@RequestMapping(value = "/detail", method = RequestMethod.GET)
+	public String detail(@RequestParam Long id, ModelMap modelMap) {
+		try {
+			TravelCostApply apply = this.travelCostApplyService.getUpdateViewData(id);
+			modelMap.addAttribute("apply", apply);
+			// 查询费用项
+			modelMap.addAttribute("costItems", AlmCache.getInstance().getTravelCostItemMap());
+			return "travelCostApply/detail";
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			return null;
+		}
+	}
+
+	@RequestMapping(value = "/review", method = RequestMethod.GET)
+	public String reviewView(@RequestParam Long id, ModelMap modelMap) {
+		try {
+			TravelCostApply apply = this.travelCostApplyService.getUpdateViewData(id);
+			modelMap.addAttribute("apply", apply);
+			// 查询费用项
+			modelMap.addAttribute("costItems", AlmCache.getInstance().getTravelCostItemMap());
+			return "travelCostApply/review";
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			return null;
+		}
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/review", method = RequestMethod.POST)
+	public BaseOutput<Object> review(@RequestParam Long id, @RequestParam Integer result) {
+		try {
+			this.travelCostApplyService.review(id, TravelCostApplyResult.valueOf(result));
+			return BaseOutput.success();
+		} catch (TravelCostApplyException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
 
 	@ApiOperation("跳转到TravelCostApply页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)

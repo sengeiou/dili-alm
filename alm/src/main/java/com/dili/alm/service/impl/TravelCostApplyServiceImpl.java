@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.component.MailManager;
+import com.dili.alm.component.NumberGenerator;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.TravelCostApplyMapper;
 import com.dili.alm.dao.TravelCostDetailMapper;
@@ -67,95 +68,32 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 		implements TravelCostApplyService {
 
 	@Autowired
-	private TravelCostDetailMapper travelCostDetailMapper;
-	@Autowired
-	private TravelCostMapper travelCostMapper;
-	@Autowired
 	private AreaProvider areaProvider;
+	private String contentTemplate;
 	@Autowired
-	private MemberProvider memberProvider;
+	private DataDictionaryService ddService;
 	@Autowired
 	private DepProvider deptProvider;
-	@Autowired
-	private ProjectProvider projectProvider;
-	private String contentTemplate;
 	@Qualifier("mailContentTemplate")
 	@Autowired
 	private GroupTemplate groupTemplate;
-	@Autowired
-	private TravelCostApplyStateProvider stateProvider;
 	@Value("${spring.mail.username:}")
 	private String mailFrom;
 	@Autowired
 	private MailManager mailManager;
 	@Autowired
-	private DataDictionaryService ddService;
-
-	public TravelCostApplyServiceImpl() {
-		super();
-		InputStream in = null;
-		try {
-			Resource res = new ClassPathResource("conf/travelCostApplyMailTemplate.html");
-			in = res.getInputStream();
-			this.contentTemplate = IOUtils.toString(in, "UTF-8");
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} finally {
-			if (in != null) {
-				try {
-					in.close();
-				} catch (IOException e) {
-					LOGGER.error(e.getMessage(), e);
-				}
-			}
-		}
-	}
-
-	private void sendMail(TravelCostApply apply, String subject, Set<String> emails) {
-
-		// 构建邮件内容
-		Template template = this.groupTemplate.getTemplate(this.contentTemplate);
-		template.binding("apply", buildApplyViewModel(apply));
-		template.binding("costItems", AlmCache.getInstance().getTravelCostItemMap());
-
-		// 发送
-		emails.forEach(s -> {
-			try {
-				this.mailManager.sendMail(this.mailFrom, s, template.render(), true, subject, null);
-			} catch (Exception e) {
-				LOGGER.error(e.getMessage(), e);
-			}
-		});
-	}
-
-	private TravelCostApplyMailDto buildApplyViewModel(TravelCostApply apply) {
-		TravelCostApplyMailDto dto = DTOUtils.toEntity(apply, TravelCostApplyMailDto.class, false);
-		dto.setApplicantName(this.memberProvider.getDisplayText(dto.getApplicantId(), null, null));
-		dto.setDepartmentName(this.deptProvider.getDisplayText(dto.getDepartmentId(), null, null));
-		dto.setProjectName(this.projectProvider.getDisplayText(dto.getProjectId(), null, null));
-		dto.setRootDepartmentName(this.deptProvider.getDisplayText(dto.getRootDepartemntId(), null, null));
-		dto.setApplyStateName(this.stateProvider.getDisplayText(dto.getApplyState(), null, null));
-		TravelCost tcQuery = DTOUtils.newDTO(TravelCost.class);
-		tcQuery.setApplyId(apply.getId());
-		List<TravelCost> costs = this.travelCostMapper.select(tcQuery);
-		if (CollectionUtils.isNotEmpty(costs)) {
-			List<TravelCostDtoBean> tcBeanList = new ArrayList<>(costs.size());
-			costs.forEach(c -> {
-				TravelCostDtoBean cBean = DTOUtils.toEntity(c, TravelCostDtoBean.class, false);
-				tcBeanList.add(cBean);
-				cBean.setSetOutPlaceText(this.areaProvider.getDisplayText(c.getSetOutPlace(), null, null));
-				cBean.setDestinationPlaceText(this.areaProvider.getDisplayText(c.getDestinationPlace(), null, null));
-				TravelCostDetail tcdQuery = DTOUtils.newDTO(TravelCostDetail.class);
-				tcdQuery.setCostId(c.getId());
-				List<TravelCostDetail> details = this.travelCostDetailMapper.select(tcdQuery);
-				List<TravelCostDetailEntity> tcdBeanList = new ArrayList<>(details.size());
-				details.forEach(td -> tcdBeanList.add(DTOUtils.toEntity(td, TravelCostDetailEntity.class, false)));
-				cBean.setTravelCostDetail(tcdBeanList);
-			});
-			dto.setTravelCost(tcBeanList);
-		}
-		return dto;
-	}
+	private MemberProvider memberProvider;
+	@Qualifier("travelCostApplyNumberGenerator")
+	@Autowired
+	private NumberGenerator numberGenerator;
+	@Autowired
+	private ProjectProvider projectProvider;
+	@Autowired
+	private TravelCostApplyStateProvider stateProvider;
+	@Autowired
+	private TravelCostDetailMapper travelCostDetailMapper;
+	@Autowired
+	private TravelCostMapper travelCostMapper;
 
 	@SuppressWarnings("rawtypes")
 	public static List<Map> getTraveCostApplyViewModel(List<TravelCostApply> list) throws Exception {
@@ -191,6 +129,26 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 		return ValueProviderUtils.buildDataByProvider(metadata, costs);
 	}
 
+	public TravelCostApplyServiceImpl() {
+		super();
+		InputStream in = null;
+		try {
+			Resource res = new ClassPathResource("conf/travelCostApplyMailTemplate.html");
+			in = res.getInputStream();
+			this.contentTemplate = IOUtils.toString(in, "UTF-8");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					LOGGER.error(e.getMessage(), e);
+				}
+			}
+		}
+	}
+
 	@Override
 	public void deleteTravelCostApply(Long applyId) throws TravelCostApplyException {
 		TravelCostApply apply = this.getActualDao().selectByPrimaryKey(applyId);
@@ -199,6 +157,21 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 		}
 		if (!apply.getApplyState().equals(TravelCostApplyState.APPLING.getValue())) {
 			throw new TravelCostApplyException("当前状态不能进行删除操作");
+		}
+		// 删除费用明细
+		TravelCost tcQuery = DTOUtils.newDTO(TravelCost.class);
+		tcQuery.setApplyId(applyId);
+		List<TravelCost> costs = this.travelCostMapper.select(tcQuery);
+		if (CollectionUtils.isNotEmpty(costs)) {
+			costs.forEach(c -> {
+				TravelCostDetail tcdQuery = DTOUtils.newDTO(TravelCostDetail.class);
+				tcdQuery.setCostId(c.getId());
+				this.travelCostDetailMapper.delete(tcdQuery);
+			});
+			int rows = this.travelCostMapper.delete(tcQuery);
+			if (rows <= 0) {
+				throw new TravelCostApplyException("删除费用明细失败");
+			}
 		}
 		int rows = this.getActualDao().deleteByPrimaryKey(applyId);
 		if (rows <= 0) {
@@ -269,6 +242,17 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 		if (rows <= 0) {
 			throw new TravelCostApplyException("更新状态失败");
 		}
+		User user = AlmCache.getInstance().getUserMap().get(apply.getApplicantId());
+		if (user == null) {
+			throw new TravelCostApplyException("申请人不存在");
+		}
+		this.sendMail(apply, "差旅成本申请", Sets.newHashSet(user.getEmail()));
+	}
+
+	@Override
+	public void saveAndSubmit(TravelCostApplyUpdateDto apply) throws TravelCostApplyException {
+		this.saveOrUpdate(apply);
+		this.submit(apply.getId());
 	}
 
 	@Override
@@ -298,22 +282,33 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 		this.sendMail(apply, "差旅成本申请", Sets.newHashSet(user.getEmail()));
 	}
 
-	private User queryGeneralAssistant() throws TravelCostApplyException {
-		DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.DEPARTMENT_MANAGER_ROLE_CONFIG_CODE);
-		if (dd == null) {
-			throw new TravelCostApplyException("请先配置总经理助理用户数据字典配置");
+	private TravelCostApplyMailDto buildApplyViewModel(TravelCostApply apply) {
+		TravelCostApplyMailDto dto = DTOUtils.toEntity(apply, TravelCostApplyMailDto.class, false);
+		dto.setApplicantName(this.memberProvider.getDisplayText(dto.getApplicantId(), null, null));
+		dto.setDepartmentName(this.deptProvider.getDisplayText(dto.getDepartmentId(), null, null));
+		dto.setProjectName(this.projectProvider.getDisplayText(dto.getProjectId(), null, null));
+		dto.setRootDepartmentName(this.deptProvider.getDisplayText(dto.getRootDepartemntId(), null, null));
+		dto.setApplyStateName(this.stateProvider.getDisplayText(dto.getApplyState(), null, null));
+		TravelCost tcQuery = DTOUtils.newDTO(TravelCost.class);
+		tcQuery.setApplyId(apply.getId());
+		List<TravelCost> costs = this.travelCostMapper.select(tcQuery);
+		if (CollectionUtils.isNotEmpty(costs)) {
+			List<TravelCostDtoBean> tcBeanList = new ArrayList<>(costs.size());
+			costs.forEach(c -> {
+				TravelCostDtoBean cBean = DTOUtils.toEntity(c, TravelCostDtoBean.class, false);
+				tcBeanList.add(cBean);
+				cBean.setSetOutPlaceText(this.areaProvider.getDisplayText(c.getSetOutPlace(), null, null));
+				cBean.setDestinationPlaceText(this.areaProvider.getDisplayText(c.getDestinationPlace(), null, null));
+				TravelCostDetail tcdQuery = DTOUtils.newDTO(TravelCostDetail.class);
+				tcdQuery.setCostId(c.getId());
+				List<TravelCostDetail> details = this.travelCostDetailMapper.select(tcdQuery);
+				List<TravelCostDetailEntity> tcdBeanList = new ArrayList<>(details.size());
+				details.forEach(td -> tcdBeanList.add(DTOUtils.toEntity(td, TravelCostDetailEntity.class, false)));
+				cBean.setTravelCostDetail(tcdBeanList);
+			});
+			dto.setTravelCost(tcBeanList);
 		}
-		DataDictionaryValue ddValue = dd.getValues().stream()
-				.filter(v -> v.getCode().equals(AlmConstants.GENERAL_MANAGER_ASSISTANT_CODE)).findFirst().orElse(null);
-		if (ddValue == null) {
-			throw new TravelCostApplyException("请先配置总经理助理用户数据字典配置");
-		}
-		Map.Entry<Long, User> entry = AlmCache.getInstance().getUserMap().entrySet().stream()
-				.filter(e -> e.getValue().getUserName().equals(ddValue.getValue())).findFirst().orElse(null);
-		if (entry == null) {
-			throw new TravelCostApplyException("用户不存在，请检查配置是否正确");
-		}
-		return entry.getValue();
+		return dto;
 	}
 
 	private void insertTravelCostApply(TravelCostApplyUpdateDto dto) throws TravelCostApplyException {
@@ -333,6 +328,7 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 			travelDayAmount += tc.getTravelDayAmount();
 		}
 		dto.setTravelDayAmount(travelDayAmount);
+		dto.setSerialNumber(this.numberGenerator.get());
 		int rows = this.getActualDao().insertSelective(dto);
 		if (rows <= 0) {
 			throw new TravelCostApplyException("新增差旅成本失败");
@@ -353,6 +349,41 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 				}
 			}
 		}
+	}
+
+	private User queryGeneralAssistant() throws TravelCostApplyException {
+		DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.DEPARTMENT_MANAGER_ROLE_CONFIG_CODE);
+		if (dd == null) {
+			throw new TravelCostApplyException("请先配置总经理助理用户数据字典配置");
+		}
+		DataDictionaryValue ddValue = dd.getValues().stream()
+				.filter(v -> v.getCode().equals(AlmConstants.GENERAL_MANAGER_ASSISTANT_CODE)).findFirst().orElse(null);
+		if (ddValue == null) {
+			throw new TravelCostApplyException("请先配置总经理助理用户数据字典配置");
+		}
+		Map.Entry<Long, User> entry = AlmCache.getInstance().getUserMap().entrySet().stream()
+				.filter(e -> e.getValue().getUserName().equals(ddValue.getValue())).findFirst().orElse(null);
+		if (entry == null) {
+			throw new TravelCostApplyException("用户不存在，请检查配置是否正确");
+		}
+		return entry.getValue();
+	}
+
+	private void sendMail(TravelCostApply apply, String subject, Set<String> emails) {
+
+		// 构建邮件内容
+		Template template = this.groupTemplate.getTemplate(this.contentTemplate);
+		template.binding("apply", buildApplyViewModel(apply));
+		template.binding("costItems", AlmCache.getInstance().getTravelCostItemMap());
+
+		// 发送
+		emails.forEach(s -> {
+			try {
+				this.mailManager.sendMail(this.mailFrom, s, template.render(), true, subject, null);
+			} catch (Exception e) {
+				LOGGER.error(e.getMessage(), e);
+			}
+		});
 	}
 
 	private void updateTravelCostApply(TravelCostApplyUpdateDto dto) throws TravelCostApplyException {
@@ -394,11 +425,5 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 		}
 		apply.setProjectId(dto.getProjectId());
 		this.getActualDao().updateByPrimaryKeySelective(apply);
-	}
-
-	@Override
-	public void saveAndSubmit(TravelCostApplyUpdateDto apply) throws TravelCostApplyException {
-		this.saveOrUpdate(apply);
-		this.submit(apply.getId());
 	}
 }

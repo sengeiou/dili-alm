@@ -1,6 +1,20 @@
 var userId = '${user.id!}';
 userId = parseInt(userId);
 
+function serialNumberFormatter(index, row, value) {
+	return '<a href="javascript:void(0);" onclick="detail(' + row.id + ');">' + value + '</a>';
+}
+
+function detail(id) {
+	$('#dlg').dialog({
+				href : '${contextPath!}/travelCostApply/detail?id=' + id,
+				height : 600,
+				width : 800
+			});
+	$('#dlg').dialog('open');
+	$('#dlg').dialog('center');
+}
+
 function addCostItem() {
 	$('#travelCostGrid').datagrid('appendRow', {});
 	var index = $('#travelCostGrid').datagrid('getRows').length - 1;
@@ -11,7 +25,7 @@ function addCostItem() {
 function optFormatter(index, row, value) {
 	var content = '';
 	if (row.$_applyState == 1) {
-		if (row.$_applicantId == userId) {
+		if (row.$_applicantId == userId && userId != 1) {
 			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="openUpdate(' + row.id + ');">编辑</a>';
 			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="del(' + row.id + ');">删除</a>';
 		} else {
@@ -20,13 +34,55 @@ function optFormatter(index, row, value) {
 		}
 	}
 	if (row.$_applyState == 2) {
-		if (dataAuth.reviewTravelCostApply) {
-			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="review(' + index + ');">审核</a>';
+		if (dataAuth.reviewTravelCostApply && userId != 1) {
+			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="review(' + row.id + ');">审核</a>';
 		} else {
 			content += '<span style="padding:0px 2px;">编辑</span>';
 		}
 	}
 	return content;
+}
+
+function review(id) {
+	$('#dlg').dialog({
+				iconCls : 'icon-save',
+				href : '${contextPath!}/travelCostApply/review?id=' + id,
+				height : 600,
+				width : 800,
+				buttons : [{
+							text : '通过',
+							iconCls : 'icon-ok',
+							handler : function() {
+								$.post('${contextPath!}/travelCostApply/review', {
+											id : id,
+											result : 1
+										}, function(res) {
+											if (res.code == 200) {
+												$.messager.alert('提示', '操作成功');
+												$("#grid").datagrid("reload");
+												$('#dlg').dialog('close');
+											}
+										}, 'json');
+							}
+						}, {
+							text : '拒绝',
+							handler : function() {
+								$.post('${contextPath!}/travelCostApply/review', {
+											id : id,
+											result : 0
+										}, function(res) {
+											if (res.code == 200) {
+												$.messager.alert('提示', '操作成功');
+												$("#grid").datagrid("reload");
+												$('#dlg').dialog('close');
+											}
+										}, 'json');
+							}
+						}]
+
+			});
+	$('#dlg').dialog('open');
+	$('#dlg').dialog('center');
 }
 
 function removeCostItem() {

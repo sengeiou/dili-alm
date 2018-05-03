@@ -36,11 +36,13 @@
 	<div region="center" style="width: 100%;" height="auto">
 		<!-- =========================================================表格========================================================= -->
 		<table class="easyui-datagrid" title="TravelCostApply列表" id="grid" fitColumns="true" pagination="true" pageSize="30" pageNumber="1"
-			pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
-			sortName="projectId" align="center" fit="true" striped="true" toolbar="#toolbar" idField="id"
+			pagePosition="both" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="projectId"
+			align="center" fit="true" striped="true" toolbar="#toolbar" idField="id"
 			data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
 			<thead>
 				<tr>
+					<th
+						data-options="field:'serialNumber',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:serialNumberFormatter">编号</th>
 					<th data-options="field:'projectId',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目</th>
 					<th data-options="field:'applyState',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">申请状态</th>
 					<th
@@ -70,10 +72,7 @@
 </div>
 <!-- 隐藏编辑框 -->
 <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="TravelCostApply信息"
-	style="padding: 20px" modal="true" border="thin" closed="true"
-	data-options="">
-
-</div>
+	style="padding: 20px" modal="true" border="thin" closed="true" data-options=""></div>
 
 <div id="areaDlg" style="padding: 20px; display: none;"></div>
 <!-- ====================================================================================================================== --> <!-- style & script 分隔线 -->
