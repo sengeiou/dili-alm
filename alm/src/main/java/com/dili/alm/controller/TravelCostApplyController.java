@@ -18,6 +18,7 @@ import com.dili.alm.cache.AlmCache;
 import com.dili.alm.domain.Department;
 import com.dili.alm.domain.TravelCostApply;
 import com.dili.alm.domain.TravelCostApplyResult;
+import com.dili.alm.domain.TravelCostApplyState;
 import com.dili.alm.domain.dto.TravelCostApplyUpdateDto;
 import com.dili.alm.exceptions.TravelCostApplyException;
 import com.dili.alm.service.DataDictionaryService;
@@ -87,7 +88,7 @@ public class TravelCostApplyController {
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
-		modelMap.addAttribute("user", user);
+		modelMap.addAttribute("user", user).addAttribute("states", TravelCostApplyState.values());
 		return "travelCostApply/index";
 	}
 

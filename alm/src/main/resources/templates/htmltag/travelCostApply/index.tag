@@ -1,7 +1,7 @@
 var userId = '${user.id!}';
 userId = parseInt(userId);
 
-function serialNumberFormatter(index, row, value) {
+function serialNumberFormatter(value, row, index) {
 	return '<a href="javascript:void(0);" onclick="detail(' + row.id + ');">' + value + '</a>';
 }
 
@@ -22,7 +22,7 @@ function addCostItem() {
 	$('#travelCostGrid').datagrid('beginEdit', index);
 }
 
-function optFormatter(index, row, value) {
+function optFormatter(value, row, index) {
 	var content = '';
 	if (row.$_applyState == 1) {
 		if (row.$_applicantId == userId && userId != 1) {
@@ -591,5 +591,6 @@ $.extend($.fn.datagrid.methods, {
 		});
 
 $(function() {
+			$('#applicantId').textbox('addClearBtn', 'icon-clear');
 			queryGrid();
 		});

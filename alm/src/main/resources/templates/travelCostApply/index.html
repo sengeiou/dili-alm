@@ -1,5 +1,6 @@
 
 <#body>
+<div id="smDialog" style="display: none;"></div>
 <div class="easyui-layout" fit="true">
 	<!-- ====================================================================================================================== -->
 	<!-- 上方布局 -->
@@ -11,15 +12,17 @@
 				<table style="padding: 10px;">
 					<tr>
 						<td style="padding: 5px;"><input class="easyui-textbox" name="projectId" id="projectId" style="width: 100%"
-							data-options="label:'项目名称:'" /> <#comboProvider _id="projectId" _table="project" _valueField="id" _textField="name" /></td>
-						<td style="padding: 5px;"><input class="easyui-numberbox" name="applicantId" id="applicantId" style="width: 100%"
-							data-options="label:'申请人id:', validType:'length[0,19]'" /></td>
-						<td style="padding: 5px;"><input class="easyui-numberbox" name="rootDepartemntId" id="rootDepartemntId" style="width: 100%"
-							data-options="label:'所属中心id，根部门id:', validType:'length[0,19]'" /></td>
-						<td style="padding: 5px;"><input class="easyui-numberbox" name="departmentId" id="departmentId" style="width: 100%"
-							data-options="label:'申请部门id:', validType:'length[0,19]'" /></td>
-						<td style="padding: 5px;"><input class="easyui-numberbox" name="applyState" id="applyState" style="width: 100%"
-							data-options="label:'申请状态:', validType:'length[0,10]'" /></td>
+							data-options="label:'项目:'" /> <#comboProvider _id="projectId" _table="project" _valueField="id" _textField="name" /></td>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="applicantId" id="applicantId" style="width: 100%"
+							data-options="label:'申请人:', editable:false,
+									buttonText:'选择',
+									onClickButton:selectMember,onChange:_changeTextboxShowClear" /></td>
+						<td style="padding: 5px;"><select class="easyui-combobox" name="applyState" id="applyState" style="width: 100%"
+							data-options="label:'状态:'">
+							<%for(item in states){%>
+							<option value="${item.value!}">${item.name!}</option>
+							<%}%>
+							</select></td>
 					</tr>
 					<tr>
 						<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid()">查询</a> <a
@@ -46,7 +49,7 @@
 					<th data-options="field:'projectId',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目</th>
 					<th data-options="field:'applyState',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">申请状态</th>
 					<th
-						data-options="field:'totalAmount',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:function(index,row,value){return value/100;}">差旅成本</th>
+						data-options="field:'totalAmount',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:function(value,row,index){return value/100;}">差旅成本</th>
 					<th data-options="field:'travelDayAmount',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">出差天数</th>
 					<th data-options="field:'applicantId',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">申请人</th>
 					<th data-options="field:'submitDate', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">申请日期</th>
@@ -81,5 +84,6 @@
 	var dataAuth = {
 		reviewTravelCostApply : <%if(hasResource('reviewTravelCostApply')){%>true<%}else{%>false<%}%>
 	};
+	<#members_index/>
 	<#travelCostApply_index />
 </script> </#body>

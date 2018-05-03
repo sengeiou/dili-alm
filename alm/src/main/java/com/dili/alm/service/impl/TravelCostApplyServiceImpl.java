@@ -3,6 +3,7 @@ package com.dili.alm.service.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -274,6 +275,7 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 			throw new TravelCostApplyException("当前状态不能提交");
 		}
 		apply.setApplyState(TravelCostApplyState.REVIEWING.getValue());
+		apply.setSubmitDate(new Date());
 		int rows = this.getActualDao().updateByPrimaryKeySelective(apply);
 		if (rows <= 0) {
 			throw new TravelCostApplyException("更新状态失败");
