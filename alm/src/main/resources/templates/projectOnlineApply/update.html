@@ -27,7 +27,7 @@
 	border-radius: 0;
 }
 </style>
-<div class="easyui-panel" style="width: 100%;" title="编辑">
+<div class="easyui-panel" style="width: 100%;">
 	<form id="editForm" action="" method="post" enctype="multipart/form-data">
 		<input type="hidden" name="id" value="${apply.id!}">
 		<div style="box-sizing: border-box; width: 100%; padding: 10px 0px 10px 10px;">
@@ -177,7 +177,7 @@
 	</form>
 </div>
 <script type="text/javascript">
-	var selectedMarkets=undefined;
+	var selectedMarkets = undefined;
 	<%if(isNotEmpty(apply.selectedMarkets)){%>
 	selectedMarkets = '${@com.alibaba.fastjson.JSON.toJSONString(apply.selectedMarkets)}';
 	selectedMarkets = $.parseJSON(selectedMarkets);

@@ -331,7 +331,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	}
 
 	@Override
-	public ProjectOnlineApply getEasyUiRowData(Long id) {
+	public ProjectOnlineApply getEasyUiRowData(Long id) throws ProjectOnlineApplyException {
 		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(id);
 		this.setMarkets(apply);
 		this.setOperationColumn(apply);
@@ -504,10 +504,10 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	@Override
 	public EasyuiPageOutput listEasyuiPageByExample(ProjectOnlineApply domain, boolean useProvider) throws Exception {
 		List<ProjectOnlineApply> list = listByExample(domain);
-		list.forEach(a -> {
+		for (ProjectOnlineApply a : list) {
 			this.setMarkets(a);
 			this.setOperationColumn(a);
-		});
+		}
 		@SuppressWarnings("rawtypes")
 		long total = list instanceof Page ? ((Page) list).getTotal() : list.size();
 		@SuppressWarnings("rawtypes")
@@ -1039,12 +1039,15 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		}
 	}
 
-	private void setOperationColumn(ProjectOnlineApply apply) {
+	private void setOperationColumn(ProjectOnlineApply apply) throws ProjectOnlineApplyException {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		if (user == null) {
 			throw new IllegalArgumentException("用户未登录");
 		}
 		DataDictionaryDto ddDto = this.ddService.findByCode(AlmConstants.DEPARTMENT_MANAGER_ROLE_CONFIG_CODE);
+		if (ddDto == null) {
+			throw new ProjectOnlineApplyException("请设置部门经理数据字典配置");
+		}
 		// 判断界面上用户是否可以编辑申请记录
 		// 判断当前申请状态是否是申请中状态
 		boolean editable = apply.getApplyState().equals(ProjectOnlineApplyState.APPLING.getValue());

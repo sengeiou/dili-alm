@@ -294,7 +294,7 @@ function startExecute(id) {
 
 function confirmExecute(id) {
 	$('#win').dialog({
-				title : '测试确认',
+				title : '确认执行',
 				width : 800,
 				height : 540,
 				href : '${contextPath!}/projectOnlineApply/confirmExecute?id=' + id,
@@ -372,7 +372,7 @@ function confirmExecute(id) {
 
 function verify(id) {
 	$('#win').dialog({
-				title : '测试确认',
+				title : '产品验证',
 				width : 800,
 				height : 540,
 				href : '${contextPath!}/projectOnlineApply/verify?id=' + id,
