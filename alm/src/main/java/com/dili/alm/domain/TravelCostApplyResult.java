@@ -19,4 +19,13 @@ public enum TravelCostApplyResult {
 	public Integer getValue() {
 		return value;
 	}
+
+	public static TravelCostApplyResult valueOf(Integer value) {
+		for (TravelCostApplyResult result : TravelCostApplyResult.values()) {
+			if (result.getValue().equals(value)) {
+				return result;
+			}
+		}
+		throw new IllegalArgumentException("未知的审核结果");
+	}
 }

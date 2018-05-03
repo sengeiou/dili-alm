@@ -34,7 +34,7 @@ function showMembersDlg(id, dep) {
 					textboxId : id,
 					dep : dep
 				},
-				href : '${contextPath!}/member/members.html?dep=maintenance',
+				href : '${contextPath!}/member/members?dep=maintenance',
 				modal : true,
 				buttons : [{
 							text : '确定',

@@ -373,7 +373,7 @@ function selectFormMember(id) {
 				title : '用户选择',
 				width : 800,
 				height : 400,
-				href : '${contextPath!}/member/members.html',
+				href : '${contextPath!}/member/members',
 				modal : true,
 				buttons : [{
 							text : '确定',

@@ -1,0 +1,49 @@
+<table>
+	<tr>
+		<td style="padding: 5px;"><input class="easyui-textbox" name="projectId" value="${apply.projectName!}" id="projectId"
+			style="width: 100%" data-options="label:'项目:',readonly:true"></td>
+		<td style="padding: 5px;"><input class="easyui-textbox" style="width: 100%" value="${apply.applicantName!}"
+			data-options="label:'申请人:',readonly:true" /></td>
+	</tr>
+	<tr>
+		<td style="padding: 5px;"><input class="easyui-textbox" value="${apply.departmentName!}" style="width: 100%"
+			data-options="label:'申请部门:',readonly:true" /></td>
+		<td style="padding: 5px;"><input class="easyui-textbox" value="${apply.rootDepartmentName!}" style="width: 100%"
+			data-options="label:'所属中心:',readonly:true" /></td>
+	</tr>
+</table>
+<table class="easyui-datagrid" title="费用明细" height="50%" id="travelCostGrid" fitColumns="true" rownumbers="true" remoteSort="false"
+	loadMsg="数据加载中..." singleSelect="true" align="center" fit="true" striped="true" toolbar="#travelCostGridToolbar" idField="id"
+	data-options="">
+	<thead>
+		<tr>
+			<th data-options="field:'travelDayAmount',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">出差天数</th>
+			<th data-options="field:'setOutPlace', width:100,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">出发地</th>
+			<th data-options="field:'destinationPlace', width:100,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">到达地</th>
+			<%for(item in costItems){%>
+			<th data-options="field:'${item.key!}',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">${item.value!}</th>
+			<%}%>
+			<th data-options="field:'totalAmount',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">合计</th>
+		</tr>
+	</thead>
+	<tbody>
+		<%for(cost in apply.travelCost){%>
+		<tr>
+			<td>${cost.travelDayAmount!}</td>
+			<td>${cost.setOutPlaceText!}</td>
+			<td>${cost.destinationPlaceText!}</td> <%for(item in costItems){%> <%for(detail in cost.travelCostDetail){%> <%if(item.key ==
+			detail.costName){%>
+			<td>${detail.costAmount!/100}</td> <%}%> <%}%> <%}%>
+			<td>${cost.totalAmount!/100}</td>
+		</tr>
+		<%}%>
+
+	</tbody>
+</table>
+<input class="easyui-numberbox" type="text" id="totalAmount" name="totalAmount" value="${apply.totalAmount!/100}"
+	data-options="
+	label:'总计：',
+	required:true,
+	precision:2,
+	readonly:true,
+	missingMessage : '请输入金额'">元
