@@ -448,6 +448,7 @@ function queryGrid() {
 // 清空表单
 function clearForm() {
 	$('#form').form('clear');
+	$('#applicantId').textbox('initValue', '');
 }
 
 // 表格表头右键菜单

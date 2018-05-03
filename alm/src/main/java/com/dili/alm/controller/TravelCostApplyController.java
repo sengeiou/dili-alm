@@ -19,6 +19,7 @@ import com.dili.alm.domain.Department;
 import com.dili.alm.domain.TravelCostApply;
 import com.dili.alm.domain.TravelCostApplyResult;
 import com.dili.alm.domain.TravelCostApplyState;
+import com.dili.alm.domain.dto.TravelCostApplyQueryDto;
 import com.dili.alm.domain.dto.TravelCostApplyUpdateDto;
 import com.dili.alm.exceptions.TravelCostApplyException;
 import com.dili.alm.service.DataDictionaryService;
@@ -104,7 +105,7 @@ public class TravelCostApplyController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "TravelCostApply", paramType = "form", value = "TravelCostApply的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String listPage(TravelCostApply apply) throws Exception {
+	public @ResponseBody String listPage(TravelCostApplyQueryDto apply) throws Exception {
 		return travelCostApplyService.listEasyuiPageByExample(apply, true).toString();
 	}
 
