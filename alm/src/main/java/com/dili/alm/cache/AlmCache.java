@@ -11,7 +11,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dili.alm.constant.AlmConstants;
+import com.dili.alm.dao.AreaMapper;
 import com.dili.alm.dao.ProjectMapper;
+import com.dili.alm.domain.Area;
 import com.dili.alm.domain.Department;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.User;
@@ -76,6 +78,11 @@ public class AlmCache {
 	// 资源环境
 	private static final Map<Integer, String> RESOURCE_ENVIRONMENT_MAP = new ConcurrentHashMap<>();
 
+	private static final Map<String, String> TRAVEL_COST_ITEM_MAP = new ConcurrentHashMap<>();
+
+	// 城市缓存
+	private static final Map<Long, Area> AREA_MAP = new ConcurrentHashMap<>();
+
 	private static final AlmCache INSTANCE = new AlmCache();
 	@Autowired
 	private ProjectPhaseService phaseService;
@@ -101,6 +108,8 @@ public class AlmCache {
 	private TaskService taskService;
 	@Autowired
 	private MessageService messageService;
+	@Autowired
+	private AreaMapper areaMapper;
 
 	public static AlmCache getInstance() {
 		return INSTANCE;
@@ -143,6 +152,16 @@ public class AlmCache {
 			}
 		}
 		return USER_MAP;
+	}
+
+	public Map<String, String> getTravelCostItemMap() {
+		if (TRAVEL_COST_ITEM_MAP.isEmpty()) {
+			DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.TRAVEL_COST_DETAIL_CONFIG_CODE);
+			dd.getValues().forEach(v -> {
+				TRAVEL_COST_ITEM_MAP.put(v.getValue(), v.getCode());
+			});
+		}
+		return TRAVEL_COST_ITEM_MAP;
 	}
 
 	public Map<Long, Project> getProjectMap() {
@@ -331,6 +350,17 @@ public class AlmCache {
 					.forEach(v -> AlmCache.RESOURCE_ENVIRONMENT_MAP.put(Integer.valueOf(v.getValue()), v.getCode()));
 		}
 		return RESOURCE_ENVIRONMENT_MAP;
+	}
+
+	public Map<Long, Area> getAreaMap() {
+		if (AlmCache.AREA_MAP.isEmpty()) {
+			List<Area> list = this.areaMapper.select(DTOUtils.newDTO(Area.class));
+			if (CollectionUtils.isEmpty(list)) {
+				return AREA_MAP;
+			}
+			list.forEach(v -> AlmCache.AREA_MAP.put(v.getId(), v));
+		}
+		return AREA_MAP;
 	}
 
 }

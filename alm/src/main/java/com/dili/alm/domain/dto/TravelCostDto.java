@@ -9,5 +9,5 @@ public interface TravelCostDto extends TravelCost {
 
 	List<TravelCostDetail> getTravelCostDetail();
 
-	void setTravelCostDetail(TravelCostDetail travelCostDetail);
+	void setTravelCostDetail(List<TravelCostDetail> travelCostDetail);
 }

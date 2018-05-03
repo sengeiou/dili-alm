@@ -10,8 +10,8 @@
 			<form id="form" class="easyui-form" method="post" fit="true">
 				<table style="padding: 10px;">
 					<tr>
-						<td style="padding: 5px;"><input class="easyui-numberbox" name="projectId" id="projectId" style="width: 100%"
-							data-options="label:'项目id:', validType:'length[0,19]'" /></td>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="projectId" id="projectId" style="width: 100%"
+							data-options="label:'项目名称:'" /> <#comboProvider _id="projectId" _table="project" _valueField="id" _textField="name" /></td>
 						<td style="padding: 5px;"><input class="easyui-numberbox" name="applicantId" id="applicantId" style="width: 100%"
 							data-options="label:'申请人id:', validType:'length[0,19]'" /></td>
 						<td style="padding: 5px;"><input class="easyui-numberbox" name="rootDepartemntId" id="rootDepartemntId" style="width: 100%"
@@ -20,10 +20,6 @@
 							data-options="label:'申请部门id:', validType:'length[0,19]'" /></td>
 						<td style="padding: 5px;"><input class="easyui-numberbox" name="applyState" id="applyState" style="width: 100%"
 							data-options="label:'申请状态:', validType:'length[0,10]'" /></td>
-					</tr>
-					<tr>
-						<td style="padding: 5px;"><input class="easyui-numberbox" name="totalAmount" id="totalAmount" style="width: 100%"
-							data-options="label:'总计:', validType:'length[0,19]'" /></td>
 					</tr>
 					<tr>
 						<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid()">查询</a> <a
@@ -45,13 +41,14 @@
 			data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
 			<thead>
 				<tr>
-					<th data-options="field:'projectId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目id</th>
-					<th data-options="field:'applicantId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">申请人id</th>
-					<th data-options="field:'rootDepartemntId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-						所属中心id，根部门id</th>
-					<th data-options="field:'departmentId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">申请部门id</th>
-					<th data-options="field:'applyState',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">申请状态</th>
-					<th data-options="field:'totalAmount',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">总计</th>
+					<th data-options="field:'projectId',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目</th>
+					<th data-options="field:'applyState',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">申请状态</th>
+					<th
+						data-options="field:'totalAmount',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:function(index,row,value){return value/100;}">差旅成本</th>
+					<th data-options="field:'travelDayAmount',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">出差天数</th>
+					<th data-options="field:'applicantId',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">申请人</th>
+					<th data-options="field:'submitDate', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">申请日期</th>
+					<th data-options="field:'opt',align:'center',formatter:optFormatter">操作</th>
 				</tr>
 			</thead>
 		</table>
@@ -74,24 +71,16 @@
 <!-- 隐藏编辑框 -->
 <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="TravelCostApply信息"
 	style="padding: 20px" modal="true" border="thin" closed="true"
-	data-options="iconCls: 'icon-save',href:'${contextPath!}/travelCostApply/add',
-				height: 600,
-				width:800,
-				buttons: [{
-					text:'保存',
-					iconCls:'icon-ok',
-					handler:saveOrUpdate
-				},{
-					text:'取消',
-					handler:function(){
-						$('#dlg').dialog('close');
-					}
-				}]
-			">
+	data-options="">
 
 </div>
+
+<div id="areaDlg" style="padding: 20px; display: none;"></div>
 <!-- ====================================================================================================================== --> <!-- style & script 分隔线 -->
 <!-- ====================================================================================================================== --> <script
 	type="text/javascript">
+	var dataAuth = {
+		reviewTravelCostApply : <%if(hasResource('reviewTravelCostApply')){%>true<%}else{%>false<%}%>
+	};
 	<#travelCostApply_index />
 </script> </#body>

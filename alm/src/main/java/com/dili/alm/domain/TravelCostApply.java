@@ -18,68 +18,68 @@ import javax.persistence.Id;
  */
 @Table(name = "`travel_cost_apply`")
 public interface TravelCostApply extends IBaseDomain {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "`id`")
-    @FieldDef(label="id")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getId();
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "`id`")
+	@FieldDef(label = "id")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Long getId();
 
-    void setId(Long id);
+	void setId(Long id);
 
-    @Column(name = "`project_id`")
-    @FieldDef(label="项目id")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getProjectId();
+	@Column(name = "`project_id`")
+	@FieldDef(label = "项目id")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Long getProjectId();
 
-    void setProjectId(Long projectId);
+	void setProjectId(Long projectId);
 
-    @Column(name = "`applicant_id`")
-    @FieldDef(label="申请人id")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getApplicantId();
+	@Column(name = "`applicant_id`")
+	@FieldDef(label = "申请人id")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Long getApplicantId();
 
-    void setApplicantId(Long applicantId);
+	void setApplicantId(Long applicantId);
 
-    @Column(name = "`root_departemnt_id`")
-    @FieldDef(label="所属中心id，根部门id")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getRootDepartemntId();
+	@Column(name = "`root_departemnt_id`")
+	@FieldDef(label = "所属中心id，根部门id")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Long getRootDepartemntId();
 
-    void setRootDepartemntId(Long rootDepartemntId);
+	void setRootDepartemntId(Long rootDepartemntId);
 
-    @Column(name = "`department_id`")
-    @FieldDef(label="申请部门id")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getDepartmentId();
+	@Column(name = "`department_id`")
+	@FieldDef(label = "申请部门id")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Long getDepartmentId();
 
-    void setDepartmentId(Long departmentId);
+	void setDepartmentId(Long departmentId);
 
-    @Column(name = "`apply_state`")
-    @FieldDef(label="申请状态")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Integer getApplyState();
+	@Column(name = "`apply_state`")
+	@FieldDef(label = "申请状态")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Integer getApplyState();
 
-    void setApplyState(Integer applyState);
+	void setApplyState(Integer applyState);
 
-    @Column(name = "`total_amount`")
-    @FieldDef(label="总计")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getTotalAmount();
+	@Column(name = "`total_amount`")
+	@FieldDef(label = "总计")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Long getTotalAmount();
 
-    void setTotalAmount(Long totalAmount);
+	void setTotalAmount(Long totalAmount);
 
-    @Column(name = "`travel_day_amount`")
-    @FieldDef(label="出差天数")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Integer getTravelDayAmount();
+	@Column(name = "`travel_day_amount`")
+	@FieldDef(label = "出差天数")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Integer getTravelDayAmount();
 
-    void setTravelDayAmount(Integer travelDayAmount);
+	void setTravelDayAmount(Integer travelDayAmount);
 
-    @Column(name = "`submit_date`")
-    @FieldDef(label="申请提交时间")
-    @EditMode(editor = FieldEditor.Datetime, required = false)
-    Date getSubmitDate();
+	@Column(name = "`submit_date`")
+	@FieldDef(label = "申请提交时间")
+	@EditMode(editor = FieldEditor.Datetime, required = false)
+	Date getSubmitDate();
 
-    void setSubmitDate(Date submitDate);
+	void setSubmitDate(Date submitDate);
 }

@@ -1,0 +1,24 @@
+<input class="easyui-combobox" type="text" id="province" name="province"
+	data-options="
+	label:'省：',
+	labelWidth:40,
+	url:'${contextPath!}/area/list?parentId=0',
+	textField:'areaName',
+	valueField:'id',
+	editable:false,
+	onLoadSuccess:onProvinceLoadSuccess,
+	onChange:onProvinceChange">
+
+<input class="easyui-combobox" type="text" id="city" name="city"
+	data-options="
+	label:'市：',
+	labelWidth:40,
+	textField:'areaName',
+	valueField:'id',
+	editable:false,
+	disabled:true,
+	onLoadSuccess:onCityLoadSuccess">
+
+<script type="text/javascript">
+	<#area_select />
+</script>

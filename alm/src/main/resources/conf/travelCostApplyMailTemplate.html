@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<title>差旅成本申请</title>
+<style>
+html, body {
+	height: 100%;
+	padding: 0;
+	margin: 0
+}
+
+.table-box {
+	width: 100%;
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+.table-box, .table-box tr td {
+	border: 1px solid #ddd;
+	border-collapse: collapse;
+}
+
+.table-box tr td {
+	width: calc(100%/ 6);
+	padding: 5px;
+}
+
+.table-box .table-title {
+	background-color: #f5f5f5;
+	font-weight: bold;
+}
+
+.table-combo .textbox {
+	border: none;
+	border-radius: 0;
+}
+</style>
+</head>
+<body>
+	<table width="360px">
+		<tr>
+			<td style="padding: 5px;">项目</td>
+			<td style="padding: 5px;">${apply.projectName!}</td>
+			<td style="padding: 5px;">申请人</td>
+			<td style="padding: 5px;">${apply.applicantName!}</td>
+		</tr>
+		<tr>
+			<td style="padding: 5px;">申请部门</td>
+			<td style="padding: 5px;">${apply.departmentName!}</td>
+			<td style="padding: 5px;">所属中心</td>
+			<td style="padding: 5px;">${apply.rootDepartmentName!}</td>
+		</tr>
+	</table>
+	<table>
+		<thead>
+			<tr>
+				<th>出差天数</th>
+				<th>出发地</th>
+				<th>到达地</th> <%for(item in costItems){%>
+				<th>${item.value!}</th> <%}%>
+				<th>合计</th>
+			</tr>
+		</thead>
+		<tbody>
+			<%for(cost in apply.travelCost){%>
+			<tr>
+				<td>${cost.travelDayAmount!}</td>
+				<td>${cost.setOutPlaceText!}</td>
+				<td>${cost.destinationPlaceText!}</td> <%for(item in costItems){%> <%for(detail in cost.travelCostDetail){%> <%if(item.key ==
+				detail.costName){%>
+				<td>${detail.costAmount!/100}</td> <%}%> <%}%> <%}%>
+				<td>${cost.totalAmount!/100}</td>
+			</tr>
+			<%}%>
+
+		</tbody>
+	</table>
+	总计：${apply.totalAmount!/100}元 状态：${apply.applyStateName!}
+	<br> 链接地址：<a href="http://almadmin.diligrp.com/almadmin/main/index.html">http://almadmin.diligrp.com/almadmin/main/index.html</a>
+</body>
+</html>

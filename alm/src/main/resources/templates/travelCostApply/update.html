@@ -1,19 +1,18 @@
 <form id="_form" class="easyui-form" method="post" fit="true">
-	<input name="_id" id="_id" type="hidden">
+	<input name="_id" id="_id" type="hidden" value="${apply.id!}">
 	<table width="360px">
 		<tr>
 			<td style="padding: 5px;"><select class="easyui-combobox" name="projectId" id="projectId" style="width: 100%"
 				data-options="label:'项目:'" required="true"> <%for(item in projects){%>
-					<option value="${item.id!}">${item.name!}</option> <%}%>
+					<option value="${item.id!}"<%if(apply.projectId == item.id)%>selected="selected"<%%>>${item.name!}</option> <%}%>
 			</select></td>
-			<td style="padding: 5px;"><input class="easyui-textbox" style="width: 100%" value="${user.realName!}"
+			<td style="padding: 5px;"><input class="easyui-textbox" style="width: 100%" value="${apply.applicantName!}"
 				data-options="label:'申请人:',readonly:true" /></td>
 		</tr>
-		</tr>
 		<tr>
-			<td style="padding: 5px;"><input class="easyui-textbox" value="${department.name!}" style="width: 100%"
+			<td style="padding: 5px;"><input class="easyui-textbox" value="${apply.departmentName!}" style="width: 100%"
 				data-options="label:'申请部门:',readonly:true" /></td>
-			<td style="padding: 5px;"><input class="easyui-textbox" value="${rootDepartment.name}" style="width: 100%"
+			<td style="padding: 5px;"><input class="easyui-textbox" value="${apply.rootDepartmentName!}" style="width: 100%"
 				data-options="label:'所属中心:',readonly:true" /></td>
 		</tr>
 	</table>
@@ -49,8 +48,11 @@
 									}
 								}">出发地</th>
 				<th
+					data-options="field:'setOutPlaceText', hidden:true"></th>
+				<th
 					data-options="field:'destinationPlace', width:100,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',
 								formatter:function(index,row,value){
+								console.log(row);
 									return row.destinationPlaceText;
 								},
 								editor : {
@@ -65,13 +67,14 @@
 										}
 									}
 								}">到达地</th>
+								<th
+					data-options="field:'destinationPlaceText', hidden:true"></th>
 				<%for(item in costItems){%>
 				<th
 					data-options="field:'${item.key!}',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',
 								editor : {
 									type : 'numberbox',
 									options : {
-										required : true,
 										precision:2,
 										missingMessage : '请输入金额'
 									}
@@ -80,8 +83,23 @@
 				<th data-options="field:'totalAmount',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">合计</th>
 			</tr>
 		</thead>
+		<tbody>
+			<%for(cost in apply.travelCost){%>
+			<tr>
+				<td>${cost.travelDayAmount!}</td>
+				<td>${cost.setOutPlace!}</td>
+				<td>${cost.setOutPlaceText!}</td>
+				<td>${cost.destinationPlace!}</td> 
+				<td>${cost.destinationPlaceText!}</td>
+				<%for(item in costItems){%> <%for(detail in cost.travelCostDetail){%> <%if(item.key == detail.costName){%>
+				<td>${detail.costAmount!/100}</td> <%}%> <%}%> <%}%>
+				<td>${cost.totalAmount!/100}</td>
+			</tr>
+			<%}%>
+
+		</tbody>
 	</table>
-	<input class="easyui-numberbox" type="text" id="totalAmount" name="totalAmount"
+	<input class="easyui-numberbox" type="text" id="totalAmount" name="totalAmount" value="${apply.totalAmount!/100}"
 		data-options="
 	label:'总计：',
 	required:true,
