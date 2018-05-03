@@ -21,7 +21,7 @@ function optFormatter(index, row, value) {
 	}
 	if (row.$_applyState == 2) {
 		if (dataAuth.reviewTravelCostApply) {
-			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="review(' + index + ');">编辑</a>';
+			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="review(' + index + ');">审核</a>';
 		} else {
 			content += '<span style="padding:0px 2px;">编辑</span>';
 		}
@@ -274,6 +274,64 @@ function openUpdate(id) {
 							text : '取消',
 							handler : function() {
 								$('#dlg').dialog('close');
+							}
+						}, {
+							text : '提交',
+							handler : function() {
+
+								var _formData = $("#_form").serializeObject();
+								var _url = "${contextPath}/travelCostApply/saveAndSubmit";
+								var data = $('#travelCostGrid').datagrid('getData');
+								var travelCosts = [];
+								$(data.rows).each(function(index, item) {
+											endPositionEditing($('#travelCostGrid'));
+											var travelCost = {};
+											var travelCostDetails = [];
+											for (prop in item) {
+												if (prop == 'travelDayAmount') {
+													travelCost.travelDayAmount = item[prop];
+												} else if (prop == 'totalAmount') {
+													travelCost.totalAmount = item[prop] * 100;
+												} else if (prop == 'setOutPlace') {
+													travelCost.setOutPlace = item[prop];
+												} else if (prop == 'destinationPlace') {
+													travelCost.destinationPlace = item[prop];
+												} else if (prop == 'setOutPlaceText') {
+													continue;
+												} else if (prop == 'destinationPlaceText') {
+													continue;
+												} else {
+													travelCostDetails.push({
+																costName : prop,
+																costAmount : item[prop] * 100
+															});
+												}
+											}
+											travelCost.travelCostDetail = travelCostDetails;
+											travelCosts.push(travelCost);
+										});
+								_formData.totalAmount *= 100;
+								_formData.travelCost = travelCosts;
+								$.ajax({
+											type : "POST",
+											url : _url,
+											contentType : "application/json; charset=utf-8",
+											data : JSON.stringify(_formData),
+											processData : true,
+											dataType : "json",
+											async : true,
+											success : function(data) {
+												if (data.code == "200") {
+													$("#grid").datagrid("reload");
+													$('#dlg').dialog('close');
+												} else {
+													$.messager.alert('错误', data.result);
+												}
+											},
+											error : function() {
+												$.messager.alert('错误', '远程访问失败');
+											}
+										});
 							}
 						}]
 

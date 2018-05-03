@@ -25,6 +25,8 @@ public class AlmConstants {
 	public static final String OPERATION_MANAGER_CODE = "operation_manager";
 	// 测试部部门经理数据字典编码
 	public static final String TEST_MANAGER_CODE = "test_manager";
+	// 总经理助理数据字典编码
+	public static final String GENERAL_MANAGER_ASSISTANT_CODE = "general_manager_assistant";
 
 	// 项目类型数据字典编码
 	public static final String PROJECT_TYPE_CODE = "project_type";
