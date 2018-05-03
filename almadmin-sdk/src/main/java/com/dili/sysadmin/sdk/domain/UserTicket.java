@@ -78,6 +78,8 @@ public class UserTicket {
 	@Column(name = "`valid_time_end`")
 	private Date validTimeEnd;
 
+	private Long departmentId;
+
 	public Long getId() {
 		return id;
 	}
@@ -204,6 +206,14 @@ public class UserTicket {
 
 	public void setValidTimeEnd(Date validTimeEnd) {
 		this.validTimeEnd = validTimeEnd;
+	}
+
+	public Long getDepartmentId() {
+		return departmentId;
+	}
+
+	public void setDepartmentId(Long departmentId) {
+		this.departmentId = departmentId;
 	}
 
 	@Override

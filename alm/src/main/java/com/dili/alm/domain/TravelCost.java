@@ -13,7 +13,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2018-04-24 16:44:07.
+ * This file was generated on 2018-04-28 14:47:00.
  */
 @Table(name = "`travel_cost`")
 public interface TravelCost extends IBaseDomain {
@@ -53,4 +53,11 @@ public interface TravelCost extends IBaseDomain {
     Long getDestinationPlace();
 
     void setDestinationPlace(Long destinationPlace);
+
+    @Column(name = "`total_amount`")
+    @FieldDef(label="总费用")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Long getTotalAmount();
+
+    void setTotalAmount(Long totalAmount);
 }
