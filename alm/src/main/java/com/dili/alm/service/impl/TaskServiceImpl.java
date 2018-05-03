@@ -607,7 +607,8 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	/**
 	 * 定时刷过期任务
 	 */
-	@Scheduled(cron = "0 0 0 * * ? ")
+	//TODO:修改为cron = "0 0 0 * * ? "
+	@Scheduled(cron = "0 0 13 * * ? ")
 	@Override
 	public void notComplateTask() {
 		Task taskSelect = DTOUtils.newDTO(Task.class);
@@ -622,7 +623,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 					taskDome.setStatus(TaskStatus.NOTCOMPLETE.code);// 更新状态为未完成
 					taskDome.setModified(new Date());
 					this.update(taskDome);
-					this.startTask(taskDome);
+					//this.startTask(taskDome);
 				}
 			}
 		}
