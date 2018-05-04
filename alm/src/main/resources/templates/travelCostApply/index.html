@@ -10,14 +10,14 @@
 			<form id="form" class="easyui-form" method="post" fit="true">
 				<table style="width:950px;padding: 10px;">
 					<tr>
-						<td style="padding: 5px;"><input class="easyui-textbox" name="projectId" id="projectId" style="width: 100%"
+						<td style="padding: 5px;"><input class="easyui-textbox" name="projectId" id="projectId" style="width: 300px"
 							data-options="label:'项目:'" /> <#comboProvider _id="projectId" _table="project" _valueField="id" _textField="name" /></td>
-						<td style="padding: 5px;"><input class="easyui-textbox" name="applicantId" id="applicantId" style="width: 100%"
+						<td style="padding: 5px;"><input class="easyui-textbox" name="applicantId" id="applicantId" style="width: 300px"
 							data-options="label:'申请人:', editable:false,
 									buttonText:'选择',
 									onClickButton:selectMember,onChange:_changeTextboxShowClear" /></td>
 						<td style="padding: 5px;">
-							<select class="easyui-combobox" name="applyState" id="applyState" style="width: 100%"
+							<select class="easyui-combobox" name="applyState" id="applyState" style="width: 300px"
 							data-options="label:'状态:',editable:false">
 								<option value=""></option> <%for(item in states){%>
 								<option value="${item.value!}">${item.name!}</option> <%}%>
@@ -25,9 +25,9 @@
 						</td>
 					</tr>
 					<tr>
-						<td style="padding: 5px;"><input class="easyui-datebox" name="submitStartDate" id="submitStartDate" style="width: 100%;" panelWidth="auto"
+						<td style="padding: 5px;"><input class="easyui-datebox" name="submitStartDate" id="submitStartDate" style="width: 300px;" panelWidth="auto"
 							panelHeight="auto" label="申请日期:" data-options="editable:false" /></td>
-						<td><input class="easyui-datebox" labelWidth="20" name="submitEndDate" id="submitEndDate" style="width: 170px;" panelWidth="auto"
+						<td><input class="easyui-datebox" labelWidth="20" name="submitEndDate" id="submitEndDate" style="width: 300px;" panelWidth="auto"
 							panelHeight="auto" label="至" data-options="editable:false" /></td>
 					</tr>
 					<tr>
