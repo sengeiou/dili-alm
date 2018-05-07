@@ -1,23 +1,23 @@
 <form id="_form" class="easyui-form" method="post" fit="true">
 	<input name="_id" id="_id" type="hidden" value="${apply.id!}">
-	<table width="360px">
+	<table width="700px">
 		<tr>
-			<td style="padding: 5px;"><select class="easyui-combobox" name="projectId" id="projectId" style="width: 100%"
+			<td style="padding: 5px;"><select class="easyui-combobox" name="projectId" id="projectId" style="width: 300px"
 				data-options="label:'项目:'" required="true"> <%for(item in projects){%>
 					<option value="${item.id!}"<%if(apply.projectId == item.id)%>selected="selected"<%%>>${item.name!}</option> <%}%>
 			</select></td>
-			<td style="padding: 5px;"><input class="easyui-textbox" style="width: 100%" value="${apply.applicantName!}"
+			<td style="padding: 5px;"><input class="easyui-textbox" style="width: 300px" value="${apply.applicantName!}"
 				data-options="label:'申请人:',readonly:true" /></td>
 		</tr>
 		<tr>
-			<td style="padding: 5px;"><input class="easyui-textbox" value="${apply.departmentName!}" style="width: 100%"
+			<td style="padding: 5px;"><input class="easyui-textbox" value="${apply.departmentName!}" style="width: 300px"
 				data-options="label:'申请部门:',readonly:true" /></td>
-			<td style="padding: 5px;"><input class="easyui-textbox" value="${apply.rootDepartmentName!}" style="width: 100%"
+			<td style="padding: 5px;"><input class="easyui-textbox" value="${apply.rootDepartmentName!}" style="width: 300px"
 				data-options="label:'所属中心:',readonly:true" /></td>
 		</tr>
 	</table>
-	<table class="easyui-datagrid" title="TravelCostApply列表" id="travelCostGrid" fitColumns="true" rownumbers="true" remoteSort="false"
-		loadMsg="数据加载中..." singleSelect="true" align="center" fit="true" striped="true" toolbar="#travelCostGridToolbar" idField="id"
+	<table class="easyui-datagrid" title="TravelCostApply列表" style="height: 300px" id="travelCostGrid" fitColumns="true" rownumbers="true" remoteSort="false"
+		loadMsg="数据加载中..." singleSelect="true" align="center" fit="false" striped="true" toolbar="#travelCostGridToolbar" idField="id"
 		data-options="onEndEdit:onTravelCostGridEndEdit">
 		<thead>
 			<tr>
@@ -31,7 +31,7 @@
 									}
 								}">出差天数</th>
 				<th
-					data-options="field:'setOutPlace', width:100,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',
+					data-options="field:'setOutPlace', width:95,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',
 								formatter:function(index,row,value){
 									return row.setOutPlaceText;
 								},
@@ -50,7 +50,7 @@
 				<th
 					data-options="field:'setOutPlaceText', hidden:true"></th>
 				<th
-					data-options="field:'destinationPlace', width:100,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',
+					data-options="field:'destinationPlace', width:95,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',
 								formatter:function(index,row,value){
 								console.log(row);
 									return row.destinationPlaceText;
@@ -99,12 +99,16 @@
 
 		</tbody>
 	</table>
-	<input class="easyui-numberbox" type="text" id="totalAmount" name="totalAmount" value="${apply.totalAmount!/100}"
-		data-options="
-	label:'总计：',
-	required:true,
-	precision:2,
-	missingMessage : '请输入金额'">元
+	<div style="padding-top:10px;text-align: right">
+		<input class="easyui-numberbox" type="text" id="totalAmount" name="totalAmount" value="${apply.totalAmount!/100}"
+			   data-options="
+				label:'总计：',
+				required:true,
+				precision:2,
+				width:200,
+				missingMessage : '请输入金额'"> 元
+	</div>
+
 </form>
 <div id="travelCostGridToolbar" style="padding: 2px 5px;">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="addCostItem()" plain="true"></a> <a href="#" class="easyui-linkbutton"

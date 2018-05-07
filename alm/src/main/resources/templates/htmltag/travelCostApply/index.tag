@@ -8,7 +8,7 @@ function serialNumberFormatter(value, row, index) {
 function detail(id) {
 	$('#dlg').dialog({
 				href : '${contextPath!}/travelCostApply/detail?id=' + id,
-				height : 600,
+				height : 520,
 				width : 800
 			});
 	$('#dlg').dialog('open');
@@ -47,7 +47,7 @@ function review(id) {
 	$('#dlg').dialog({
 				iconCls : 'icon-save',
 				href : '${contextPath!}/travelCostApply/review?id=' + id,
-				height : 600,
+				height : 520,
 				width : 800,
 				buttons : [{
 							text : '通过',
@@ -122,7 +122,7 @@ function openInsert() {
 	$('#dlg').dialog({
 				iconCls : 'icon-save',
 				href : '${contextPath!}/travelCostApply/add',
-				height : 600,
+				height : 520,
 				width : 800,
 				buttons : [{
 							text : '保存',
@@ -266,7 +266,7 @@ function openUpdate(id) {
 	$('#dlg').dialog({
 				iconCls : 'icon-save',
 				href : '${contextPath!}/travelCostApply/update?id=' + id,
-				height : 600,
+				height : 520,
 				width : 800,
 				buttons : [{
 							text : '保存',

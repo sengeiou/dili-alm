@@ -12,14 +12,14 @@
 			data-options="label:'所属中心:',readonly:true" /></td>
 	</tr>
 </table>
-<table class="easyui-datagrid" title="费用明细" height="50%" id="travelCostGrid" fitColumns="true" rownumbers="true" remoteSort="false"
-	loadMsg="数据加载中..." singleSelect="true" align="center" fit="true" striped="true" toolbar="#travelCostGridToolbar" idField="id"
+<table class="easyui-datagrid" title="费用明细" style="height: 300px" id="travelCostGrid" fitColumns="true" rownumbers="true" remoteSort="false"
+	loadMsg="数据加载中..." singleSelect="true" align="center" fit="false" striped="true" toolbar="#travelCostGridToolbar" idField="id"
 	data-options="">
 	<thead>
 		<tr>
 			<th data-options="field:'travelDayAmount',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">出差天数</th>
-			<th data-options="field:'setOutPlace', width:100,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">出发地</th>
-			<th data-options="field:'destinationPlace', width:100,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">到达地</th>
+			<th data-options="field:'setOutPlace', width:95,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">出发地</th>
+			<th data-options="field:'destinationPlace', width:95,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">到达地</th>
 			<%for(item in costItems){%>
 			<th data-options="field:'${item.key!}',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">${item.value!}</th>
 			<%}%>
@@ -40,10 +40,19 @@
 
 	</tbody>
 </table>
-<input class="easyui-numberbox" type="text" id="totalAmount" name="totalAmount" value="${apply.totalAmount!/100}"
-	data-options="
-	label:'总计：',
-	required:true,
-	precision:2,
-	readonly:true,
-	missingMessage : '请输入金额'">元
+<div style="padding-top:10px;text-align: right">
+	<input class="easyui-numberbox" type="text" id="totalAmount" name="totalAmount" value="${apply.totalAmount!/100}"
+		   data-options="
+				label:'总计：',
+				width:200,
+				required:true,
+				precision:2,
+				missingMessage : '请输入金额'"> 元
+</div>
+<!--<input class="easyui-numberbox" type="text" id="totalAmount" name="totalAmount" value="${apply.totalAmount!/100}"-->
+	<!--data-options="-->
+	<!--label:'总计：',-->
+	<!--required:true,-->
+	<!--precision:2,-->
+	<!--readonly:true,-->
+	<!--missingMessage : '请输入金额'">元-->

@@ -607,8 +607,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	/**
 	 * 定时刷过期任务
 	 */
-	//TODO:修改为cron = "0 0 0 * * ? "
-	@Scheduled(cron = "0 0 13 * * ? ")
+	@Scheduled(cron = "0 0 0 * * ? ")
 	@Override
 	public void notComplateTask() {
 		Task taskSelect = DTOUtils.newDTO(Task.class);
