@@ -2,30 +2,23 @@
 	<input name="_id" id="_id" type="hidden">
 	<table width="700px">
 		<tr>
-			<td style="padding: 5px;">
-				<select class="easyui-combobox" name="projectId" id="projectId" style="width: 300px"
-					data-options="label:'项目:'" required="true"> <%for(item in projects){%>
-						<option value="${item.id!}">${item.name!}</option> <%}%>
-				</select>
-			</td>
-			<td style="padding: 5px;">
-				<input class="easyui-textbox" style="width: 300px" value="${user.realName!}"
-				data-options="label:'申请人:',readonly:true" />
-			</td>
+			<td style="padding: 5px;"><select class="easyui-combobox" name="projectId" id="projectId" style="width: 300px"
+				data-options="label:'项目:'" required="true"> <%for(item in projects){%>
+					<option value="${item.id!}">${item.name!}</option> <%}%>
+			</select></td>
+			<td style="padding: 5px;"><input class="easyui-textbox" style="width: 300px" value="${user.realName!}"
+				data-options="label:'申请人:',readonly:true" /></td>
 		</tr>
 		</tr>
 		<tr>
-			<td style="padding: 5px;">
-				<input class="easyui-textbox" value="${department.name!}" style="width: 300px"
+			<td style="padding: 5px;"><input class="easyui-textbox" value="${department.name!}" style="width: 300px"
 				data-options="label:'申请部门:',readonly:true" /></td>
-			<td style="padding: 5px;">
-				<input class="easyui-textbox" value="${rootDepartment.name}" style="width: 300px"
+			<td style="padding: 5px;"><input class="easyui-textbox" value="${rootDepartment.name}" style="width: 300px"
 				data-options="label:'所属中心:',readonly:true" /></td>
 		</tr>
 	</table>
-	<table class="easyui-datagrid" style="width:100%;height: 300px"  title="出差人员列表" id="travelCostGrid"
-		   fitColumns="true" rownumbers="true" remoteSort="false"
-		loadMsg="数据加载中..." singleSelect="true" align="center"  toolbar="#travelCostGridToolbar" idField="id"
+	<table class="easyui-datagrid" style="width: 100%; height: 300px" title="出差人员列表" id="travelCostGrid" fitColumns="true" rownumbers="true"
+		remoteSort="false" loadMsg="数据加载中..." singleSelect="true" align="center" toolbar="#travelCostGridToolbar" idField="id"
 		data-options="onEndEdit:onTravelCostGridEndEdit">
 		<thead>
 			<tr>
@@ -79,6 +72,7 @@
 									type : 'numberbox',
 									options : {
 										precision:2,
+										max:9999999,
 										missingMessage : '请输入金额'
 									}
 								}">${item.value!}</th>
@@ -87,14 +81,16 @@
 			</tr>
 		</thead>
 	</table>
-	<div style="padding-top:10px;text-align: right">
+	<div style="padding-top: 10px; text-align: right">
 		<input class="easyui-numberbox" type="text" id="totalAmount" name="totalAmount"
-			   data-options="
+			data-options="
 				label:'总计：',
 				width:200,
 				required:true,
 				precision:2,
-				missingMessage : '请输入金额'"> 元
+				max:9999999, 	
+				missingMessage : '请输入金额'">
+		元
 	</div>
 
 </form>
