@@ -506,7 +506,7 @@ public class TaskController {
 			@ApiImplicitParam(name = "notComplate", paramType = "form", value = "TaskDetails的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/notComplate", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput notComplate() {
-		taskService.notComplateTask();
+		taskService.notComplateTask(null);
 		return BaseOutput.success("测试未完成任务");
 	}
 

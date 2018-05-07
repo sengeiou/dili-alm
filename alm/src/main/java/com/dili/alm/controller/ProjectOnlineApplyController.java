@@ -346,6 +346,8 @@ public class ProjectOnlineApplyController {
 			@ApiImplicitParam(name = "ProjectOnlineApply", paramType = "form", value = "ProjectOnlineApply的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(ProjectOnlineApplyListQueryDto projectOnlineApply) throws Exception {
+		projectOnlineApply.setSort("serialNumber");
+		projectOnlineApply.setOrder("desc");
 		return projectOnlineApplyService.listEasyuiPageByExample(projectOnlineApply, true).toString();
 	}
 
