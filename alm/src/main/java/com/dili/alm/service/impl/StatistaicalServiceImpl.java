@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,7 +64,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 
 	@Autowired
 	WorkDayMapper wdMapper;
-	
+
 	private static final String PROJECT_TYPE_CODE = "project_type";
 	private static final String TASK_STATE_CODE = "task_status";
 	private static final String SELECT_HOURS_BY_USER_START_DATE = "2018-01-01";// 项目上线日期
@@ -151,28 +152,26 @@ public class StatistaicalServiceImpl implements StatisticalService {
 			endTime += "";
 		}
 
-		List<TaskByUsersDto> list = taskMapper.selectTaskHourByUser(startTime, endTime, dids,uids);
+		List<TaskByUsersDto> list = taskMapper.selectTaskHourByUser(startTime, endTime, dids, uids);
 		list.add(this.getTotal(startTime, endTime, uids, dids));
 		return list;
 	}
-	
-	
-	private TaskByUsersDto getTotal(String startTime,
-			String endTime, List<Long> uids, List<Long> dids){
-		return taskMapper.selectTotalTaskHourByUser(startTime, endTime, dids,uids);
+
+	private TaskByUsersDto getTotal(String startTime, String endTime, List<Long> uids, List<Long> dids) {
+		return taskMapper.selectTotalTaskHourByUser(startTime, endTime, dids, uids);
 	}
-	
+
 	/***
 	 * 查询项目以及项目工时 ，表头
 	 */
 	@Override
 	public List<TaskHoursByProjectDto> listProjectHours(String startTime, String endTime, List<Long> projectIds) {
-		if (startTime == null||startTime.equals("")) {
+		if (startTime == null || startTime.equals("")) {
 			startTime = DateUtil.getPastDate(7);
 		} else {
 			startTime += "";
 		}
-		if (endTime == null||endTime.equals("")) {// 没有默认为至今
+		if (endTime == null || endTime.equals("")) {// 没有默认为至今
 			endTime = DateUtil.getDate(new Date()) + "";
 		} else {
 			endTime += "";
@@ -186,12 +185,12 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	@Override
 	public List<SelectTaskHoursByUserDto> listUserHours(String startTime, String endTime, List<Long> projectIds)
 			throws ParseException {
-		if (startTime == null||startTime.equals("")) {
+		if (startTime == null || startTime.equals("")) {
 			startTime = DateUtil.getPastDate(7);
 		} else {
 			startTime += "";
 		}
-		if (endTime == null||endTime.equals("")) {// 没有默认为至今
+		if (endTime == null || endTime.equals("")) {// 没有默认为至今
 			endTime = DateUtil.getDate(new Date()) + "";
 		} else {
 			endTime += "";
@@ -201,17 +200,15 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		// 查出项目列表，既表头
 		List<TaskHoursByProjectDto> taskHoursForPoject = taskMapper.selectProjectHours(startTime, endTime, projectIds);
 
-
 		// projectId 转为查询条件传递
 		List<Long> selectProjectIds = new ArrayList<Long>(taskHoursForPoject.size());
-		if (taskHoursForPoject==null ||taskHoursForPoject.size()==0) {
+		if (taskHoursForPoject == null || taskHoursForPoject.size() == 0) {
 			selectProjectIds.add((long) 0);
-		}else{
+		} else {
 			taskHoursForPoject.forEach(p -> {
 				selectProjectIds.add(p.getProjectId());
 			});
 		}
-
 
 		List<Map<Object, Object>> listMap = taskMapper.sumUserProjectTaskHour(selectProjectIds, df.parse(startTime),
 				df.parse(endTime));
@@ -286,9 +283,9 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		});
 		// 处理项目合计正常工时，加班工时
 		List<Long> projectTotalHoursSelectList = new ArrayList<Long>();
-		if (taskHoursForPoject==null ||taskHoursForPoject.size()==0) {
+		if (taskHoursForPoject == null || taskHoursForPoject.size() == 0) {
 			projectTotalHoursSelectList.add((long) 0);
-		}else{
+		} else {
 			taskHoursForPoject.forEach(p -> {
 				projectTotalHoursSelectList.add(p.getProjectId());
 			});
@@ -357,7 +354,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		entityList.add(new ExcelExportEntity("合计-常规工时", "sumhours", 25));
 		entityList.add(new ExcelExportEntity("合计-加班工时", "overhours", 25));
 		entityList.add(new ExcelExportEntity("合计-总工时", "sohours", 25));
-		//内容
+		// 内容
 		if (objs != null || objs.size() > 0) {
 			for (SelectTaskHoursByUserDto dto2 : objs) {
 				Map<String, Object> map = new HashMap<String, Object>();
@@ -385,30 +382,29 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	}
 
 	@Override
-	public List<ProjectYearCoverDto> listProjectYearCover(String year, String month,String weekNum) {
-		String start = null ;
-		String end = null ;
-		if (weekNum==""||weekNum==null) {
-			start =getAppedDate(year, month, true); 
-			end =getAppedDate(year, month, false);
-		}else{
+	public List<ProjectYearCoverDto> listProjectYearCover(String year, String month, String weekNum) {
+		String start = null;
+		String end = null;
+		if (weekNum == "" || weekNum == null) {
+			start = getAppedDate(year, month, true);
+			end = getAppedDate(year, month, false);
+		} else {
 
 			int yeanIntager = Integer.parseInt(year);
-			
+
 			int monthIntager = Integer.parseInt(month);
-			
+
 			int weekNumIntager = Integer.parseInt(weekNum);
-			
-			Map<String, String> dateUtilMap = DateUtil.getWeeks(yeanIntager, monthIntager);//获取当月所有周的开始结束时间
-			
-			start = dateUtilMap.get("start"+weekNumIntager);
-			
-			end= dateUtilMap.get("end"+weekNumIntager);
+
+			Map<String, String> dateUtilMap = DateUtil.getWeeks(yeanIntager, monthIntager);// 获取当月所有周的开始结束时间
+
+			start = dateUtilMap.get("start" + weekNumIntager);
+
+			end = dateUtilMap.get("end" + weekNumIntager);
 		}
-		
-		return taskMapper.selectProjectYearsCover(start,end );
+
+		return taskMapper.selectProjectYearsCover(start, end);
 	}
-	
 
 	private static String getAppedDate(String year, String month, Boolean isBegin) {
 		Calendar now = Calendar.getInstance();
@@ -420,11 +416,11 @@ public class StatistaicalServiceImpl implements StatisticalService {
 			retrunDate += now.get(Calendar.YEAR);
 		}
 
-		if (month == null||month=="") {
+		if (month == null || month == "") {
 			if (isBegin) {
-				month="1";
-			}else{
-				month="12";
+				month = "1";
+			} else {
+				month = "12";
 			}
 		}
 		if (isBegin) {
@@ -540,55 +536,61 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	}
 
 	@Override
-	public String getSearchDate(String year, String month ,String weekNum) {
-		String start = null ;
-		String end = null ;
-	   if(weekNum==null||weekNum==""){
-			start =getAppedDate(year, month, true); 
-			end =getAppedDate(year, month, false); 
+	public String getSearchDate(String year, String month, String weekNum) {
+		String start = null;
+		String end = null;
+		if (weekNum == null || weekNum == "") {
+			start = getAppedDate(year, month, true);
+			end = getAppedDate(year, month, false);
 
-		}else{
+		} else {
 			int yeanIntager = Integer.parseInt(year);
-			
+
 			int monthIntager = Integer.parseInt(month);
-			
+
 			int weekNumIntager = Integer.parseInt(weekNum);
-			
-			Map<String, String> dateUtilMap = DateUtil.getWeeks(yeanIntager, monthIntager);//获取当月所有周的开始结束时间
-			
-			start = dateUtilMap.get("start"+weekNumIntager);
-			
-			end = dateUtilMap.get("end"+weekNumIntager);
+
+			Map<String, String> dateUtilMap = DateUtil.getWeeks(yeanIntager, monthIntager);// 获取当月所有周的开始结束时间
+
+			start = dateUtilMap.get("start" + weekNumIntager);
+
+			end = dateUtilMap.get("end" + weekNumIntager);
 		}
-		
+		if (StringUtils.isBlank(start)) {
+			start = "-";
+		}
+		if (StringUtils.isBlank(end)) {
+			end = "-";
+		}
 		String returnStr = start + "至" + end;
 		return returnStr;
 	}
 
 	@Override
-	public ProjectYearCoverForAllDto getProjectYearsCoverForAll(String year, String month,boolean isFullYear,String weekNum) {
-		String start = null ;
-		String end = null ;
+	public ProjectYearCoverForAllDto getProjectYearsCoverForAll(String year, String month, boolean isFullYear,
+			String weekNum) {
+		String start = null;
+		String end = null;
 		if (isFullYear) {
-			start =getAppedDate(year, null, true); 
-			end =getAppedDate(year, null, false); 
-			
-		}else if(weekNum==null||weekNum==""){
-			start =getAppedDate(year, month, true); 
-			end =getAppedDate(year, month, false); 
+			start = getAppedDate(year, null, true);
+			end = getAppedDate(year, null, false);
 
-		}else{
+		} else if (weekNum == null || weekNum == "") {
+			start = getAppedDate(year, month, true);
+			end = getAppedDate(year, month, false);
+
+		} else {
 			int yeanIntager = Integer.parseInt(year);
-			
+
 			int monthIntager = Integer.parseInt(month);
-			
+
 			int weekNumIntager = Integer.parseInt(weekNum);
-			
-			Map<String, String> dateUtilMap = DateUtil.getWeeks(yeanIntager, monthIntager);//获取当月所有周的开始结束时间
-			
-			start = dateUtilMap.get("start"+weekNumIntager);
-			
-			end = dateUtilMap.get("end"+weekNumIntager);
+
+			Map<String, String> dateUtilMap = DateUtil.getWeeks(yeanIntager, monthIntager);// 获取当月所有周的开始结束时间
+
+			start = dateUtilMap.get("start" + weekNumIntager);
+
+			end = dateUtilMap.get("end" + weekNumIntager);
 		}
 		return taskMapper.selectProjectYearsCoverForAll(start, end);
 	}
@@ -603,43 +605,45 @@ public class StatistaicalServiceImpl implements StatisticalService {
 
 		return listProjectTaskOverHours;
 	}
-	
+
 	@Override
 	public List<SelectYearsDto> SelectYears() {
 		List<String> yearList = wdMapper.getWorkYear();
 		List<SelectYearsDto> dtoList = new ArrayList<SelectYearsDto>(yearList.size());
-		yearList.forEach(c->{
+		yearList.forEach(c -> {
 			SelectYearsDto newDto = new SelectYearsDto();
-			newDto.setText(c+"年");
+			newDto.setText(c + "年");
 			newDto.setValue(c);
-			dtoList.add(newDto);});
+			dtoList.add(newDto);
+		});
 		return dtoList;
 	}
-	
-	/***查询工时相关services****by******JING***END****/
+
+	/*** 查询工时相关services****by******JING***END ****/
 
 	/**
 	 * 项目进展总汇
 	 */
 	@Override
-	public EasyuiPageOutput getProjectProgresstDTO(Project project, String startTime, String endTime, List<Integer> stateIds,Integer f) {
+	public EasyuiPageOutput getProjectProgresstDTO(Project project, String startTime, String endTime,
+			List<Integer> stateIds, Integer f) {
 		List<ProjectProgressDto> projectProgressList = projectMapper.getProjectProgressList(project, startTime, endTime,
-				stateIds,f);
-		int projectProgressListCount = projectMapper.getProjectProgressListCount(startTime, endTime, stateIds,f);
+				stateIds, f);
+		int projectProgressListCount = projectMapper.getProjectProgressListCount(startTime, endTime, stateIds, f);
 		for (ProjectProgressDto projectProgressDto : projectProgressList) {
-			projectProgressDto.setProjectProgress(projectProgressDto.getCompletedProgress()+"%");
+			projectProgressDto.setProjectProgress(projectProgressDto.getCompletedProgress() + "%");
 			projectProgressDto.setLaunchTime(DateUtil.getDate(projectProgressDto.getEstimateLaunchDate()));
 			switch (projectProgressDto.getProjectState()) {
 			case 0:
-				projectProgressDto.setDateProgress(0+"%");
+				projectProgressDto.setDateProgress(0 + "%");
 				break;
 			case 1:
 				projectProgressDto.setDateProgress(
-						getDateProgress(projectProgressDto.getStartDate(), projectProgressDto.getEndDate())+"%");
+						getDateProgress(projectProgressDto.getStartDate(), projectProgressDto.getEndDate()) + "%");
 				break;
 			case 3:
 				projectProgressDto.setDateProgress(
-						getDateProgress(projectProgressDto.getStartDate(), projectProgressDto.getEndDate())+"%");
+						getDateProgress(projectProgressDto.getStartDate(), projectProgressDto.getEndDate()) + "%");
 				break;
 			case 4:
 				projectProgressDto.setCompletedProgress(null);
@@ -708,7 +712,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 				pts.setTypeCount(typeTotal);
 				if (projectTotal != 0) {
 
-					pts.setProjectTypeProgress(((int) (((double) typeTotal / (double) projectTotal) * 100))+"%");
+					pts.setProjectTypeProgress(((int) (((double) typeTotal / (double) projectTotal) * 100)) + "%");
 				}
 				list.add(pts);
 			}
@@ -819,14 +823,5 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		}
 		return list;
 	}
-	
-	
-	
-
-	
-	
-
-
-
 
 }

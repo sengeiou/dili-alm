@@ -13,6 +13,7 @@ import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.exceptions.TaskException;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.quartz.domain.ScheduleMessage;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-11-23 10:23:05.
@@ -25,7 +26,7 @@ public interface TaskService extends BaseService<Task, Long> {
 
 	int startTask(Task task);
 
-	void notComplateTask();
+	void notComplateTask(ScheduleMessage msg);
 
 	List<DataDictionaryValueDto> getTaskStates();
 

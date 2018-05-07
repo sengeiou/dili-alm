@@ -682,7 +682,7 @@ function openUpdate(index, id) {
 													// e);
 													// }
 													$('#grid').datagrid('updateRow', {
-																index : index,
+																index : $('#grid').datagrid('getRowIndex', $('#grid').datagrid('getSelected')),
 																row : obj.data
 															});
 													$('#grid').datagrid('acceptChanges');
