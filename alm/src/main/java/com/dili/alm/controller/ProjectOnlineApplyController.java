@@ -33,7 +33,6 @@ import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectOnlineApply;
 import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.dto.DataDictionaryDto;
-import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectOnlineApplyUpdateDto;
 import com.dili.alm.domain.dto.ProjectOnlineSubsystemDto;
 import com.dili.alm.exceptions.ProjectOnlineApplyException;
@@ -346,7 +345,7 @@ public class ProjectOnlineApplyController {
 			@ApiImplicitParam(name = "ProjectOnlineApply", paramType = "form", value = "ProjectOnlineApply的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(ProjectOnlineApplyListQueryDto projectOnlineApply) throws Exception {
-		projectOnlineApply.setSort("serialNumber");
+		projectOnlineApply.setSort("created");
 		projectOnlineApply.setOrder("desc");
 		return projectOnlineApplyService.listEasyuiPageByExample(projectOnlineApply, true).toString();
 	}
