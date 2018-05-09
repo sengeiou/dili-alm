@@ -308,21 +308,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 
 	@Override
 	public ProjectOnlineApply getConfirmExecuteViewModel(Long id) throws ProjectOnlineApplyException {
-		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(id);
-		if (apply == null) {
-			throw new ProjectOnlineApplyException("申请记录不存在");
-		}
-		// 上线子系统
-		ProjectOnlineSubsystem subsysQuery = DTOUtils.newDTO(ProjectOnlineSubsystem.class);
-		subsysQuery.setApplyId(id);
-		List<ProjectOnlineSubsystem> subsystems = this.posMapper.select(subsysQuery);
-		apply.aset("subsystems", subsystems);
-		// 操作记录
-		ProjectOnlineOperationRecord poorQuery = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
-		poorQuery.setApplyId(id);
-		List<ProjectOnlineOperationRecord> poorList = this.poorMapper.select(poorQuery);
-		apply.aset("opRecords", this.buildOperationRecordViewModel(poorList));
-		return apply;
+		return this.getFlowViewData(id);
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 package com.dili;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.beetl.core.Configuration;
@@ -11,12 +10,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -58,15 +53,6 @@ public class AlmApplication extends SpringBootServletInitializer implements WebM
 	public AlmCache almCache() {
 		return AlmCache.getInstance();
 	}
-
-//	@Bean
-//	public CommonsMultipartResolver commonsMultipartResolver() throws IOException {
-//		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-//		String tmpdir = System.getProperty("java.io.tmpdir");
-//		File file = new File(tmpdir);
-//		resolver.setUploadTempDir(new FileSystemResource(file));
-//		return resolver;
-//	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(AlmApplication.class, args);
