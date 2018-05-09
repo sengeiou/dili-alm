@@ -23,9 +23,9 @@ $(function() {
 							// 上传成功后的回调方法。本例中是将返回的文件名保到一个hidden类开的input中，以便后期数据处理
 							$('#phaseForm').append('<input type="hidden" name="fileIds" value="' + data.data[0].id + '">');
 							var row = data.data[0];
-							var date = new Date();
-							date.setTime(row.created);
-							row.created = date.Format('yyyy-MM-dd HH:mm:ss');
+//							var date = new Date();
+//							date.setTime(row.created);
+//							row.created = date.Format('yyyy-MM-dd HH:mm:ss');
 							$('#phaseFileGrid').datagrid('appendRow', row);
 						},
 						onSelect : function(files) {
