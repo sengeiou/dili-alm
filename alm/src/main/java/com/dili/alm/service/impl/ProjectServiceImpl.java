@@ -33,6 +33,7 @@ import com.dili.alm.domain.Files;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectEntity;
 import com.dili.alm.domain.ProjectPhase;
+import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.Team;
@@ -66,9 +67,6 @@ import com.github.pagehelper.Page;
 public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implements ProjectService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProjectServiceImpl.class);
-	private static final String PROJECT_TYPE_CODE = "project_type";
-	private static final String PROJECT_STATE_CODE = "project_state";
-	private static final String PROJECT_FILE_TYPE_CODE = "project_file_type";
 
 	@Autowired
 	DataDictionaryService dataDictionaryService;
@@ -99,10 +97,13 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	public int update(Project condtion) {
 		// 同步更新缓存
 		if (StringUtils.isNotBlank(condtion.getName())) {
-			AlmCache.PROJECT_MAP.get(condtion.getId()).setName(condtion.getName());
+			AlmCache.getInstance().getProjectMap().get(condtion.getId()).setName(condtion.getName());
 		}
-		dataAuthRpc.updateDataAuth(condtion.getId().toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT,
-				condtion.getName());
+		BaseOutput<DataDictionaryDto> output = dataAuthRpc.updateDataAuth(condtion.getId().toString(),
+				AlmConstants.DATA_AUTH_TYPE_PROJECT, condtion.getName());
+		if (!output.isSuccess()) {
+			throw new RuntimeException(output.getResult());
+		}
 		return super.update(condtion);
 	}
 
@@ -110,11 +111,14 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	public int insert(Project project) {
 		int i = super.insert(project);
 		// 同步更新缓存
-		AlmCache.PROJECT_MAP.put(project.getId(), project);
+		AlmCache.getInstance().getProjectMap().put(project.getId(), project);
 		// 向权限系统中添加项目数据权限
 		String parentId = project.getParentId() == null ? null : project.getParentId().toString();
-		dataAuthRpc.addDataAuth(project.getId().toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName(),
-				parentId);
+		BaseOutput<DataDictionaryDto> output = dataAuthRpc.addDataAuth(project.getId().toString(),
+				AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName(), parentId);
+		if (!output.isSuccess()) {
+			throw new RuntimeException(output.getResult());
+		}
 		return i;
 	}
 
@@ -122,33 +126,44 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	public int insertSelective(Project project) {
 		int i = super.insertSelective(project);
 		// 同步更新缓存
-		AlmCache.PROJECT_MAP.put(project.getId(), project);
+		AlmCache.getInstance().getProjectMap().put(project.getId(), project);
 		// 向权限系统中添加项目数据权限
 		String parentId = project.getParentId() == null ? null : project.getParentId().toString();
-		dataAuthRpc.addDataAuth(project.getId().toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName(),
-				parentId);
+		BaseOutput<DataDictionaryDto> output = dataAuthRpc.addDataAuth(project.getId().toString(),
+				AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName(), parentId);
+		if (!output.isSuccess()) {
+			throw new RuntimeException(output.getResult());
+		}
 		return i;
 	}
 
 	@Override
 	public int delete(Long id) {
-		AlmCache.PROJECT_MAP.remove(id);
-		dataAuthRpc.deleteDataAuth(id.toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT);
+		AlmCache.getInstance().getProjectMap().remove(id);
+		BaseOutput<DataDictionaryDto> output = dataAuthRpc.deleteDataAuth(id.toString(),
+				AlmConstants.DATA_AUTH_TYPE_PROJECT);
+		if (!output.isSuccess()) {
+			throw new RuntimeException(output.getResult());
+		}
 		return super.delete(id);
 	}
 
 	@Override
 	public int delete(List<Long> ids) {
 		ids.forEach(id -> {
-			AlmCache.PROJECT_MAP.remove(id);
-			dataAuthRpc.deleteDataAuth(id.toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT);
+			AlmCache.getInstance().getProjectMap().remove(id);
+			BaseOutput<DataDictionaryDto> output = dataAuthRpc.deleteDataAuth(id.toString(),
+					AlmConstants.DATA_AUTH_TYPE_PROJECT);
+			if (!output.isSuccess()) {
+				throw new RuntimeException(output.getResult());
+			}
 		});
 		return super.delete(ids);
 	}
 
 	@Override
 	public List<DataDictionaryValueDto> getPojectTypes() {
-		DataDictionaryDto dto = this.dataDictionaryService.findByCode(PROJECT_TYPE_CODE);
+		DataDictionaryDto dto = this.dataDictionaryService.findByCode(AlmConstants.PROJECT_TYPE_CODE);
 		if (dto == null) {
 			return null;
 		}
@@ -283,7 +298,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 
 		result = this.updateSelective(project);
 		// 刷新projectProvider缓存
-		AlmCache.PROJECT_MAP.put(project.getId(), project);
+		AlmCache.getInstance().getProjectMap().put(project.getId(), project);
 
 		dataAuthRpc.updateDataAuth(project.getId().toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName());
 		if (result > 0) {
@@ -294,7 +309,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 
 	@Override
 	public List<DataDictionaryValueDto> getProjectStates() {
-		DataDictionaryDto dto = this.dataDictionaryService.findByCode(PROJECT_STATE_CODE);
+		DataDictionaryDto dto = this.dataDictionaryService.findByCode(AlmConstants.PROJECT_STATE_CODE);
 		if (dto == null) {
 			return null;
 		}
@@ -371,7 +386,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 
 	@Override
 	public List<DataDictionaryValueDto> getFileTypes() {
-		DataDictionaryDto dto = this.dataDictionaryService.findByCode(PROJECT_FILE_TYPE_CODE);
+		DataDictionaryDto dto = this.dataDictionaryService.findByCode(AlmConstants.PROJECT_FILE_TYPE_CODE);
 		if (dto == null) {
 			return null;
 		}
@@ -436,7 +451,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		ProjectVersion version = this.projectVersionMapper.selectByPrimaryKey(dto.getVersionId());
 		ProjectPhase phase = this.phaseMapper.selectByPrimaryKey(dto.getPhaseId());
 		sb.append("项目名称：").append(project.getName()).append(version.getVersion()).append("\r\n阶段名称：")
-				.append(AlmCache.PHASE_NAME_MAP.get(phase.getName()));
+				.append(AlmCache.getInstance().getPhaseNameMap().get(phase.getName()));
 		String content = sb.toString();
 		for (String str : userIds) {
 			BaseOutput<User> output = this.userRPC.findUserById(Long.valueOf(str));
@@ -480,5 +495,55 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		datetimeProvider.put("provider", "datetimeProvider");
 		metadata.put("created", datetimeProvider);
 		return ValueProviderUtils.buildDataByProvider(metadata, list);
+	}
+
+	@Override
+	public void pause(Long id) throws ProjectException {
+		// 检查项目是否存在
+		Project project = this.getActualDao().selectByPrimaryKey(id);
+		if (project == null) {
+			throw new ProjectException("项目不存在");
+		}
+		// 判断状态是否为进行中
+		if (!project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
+			throw new ProjectException("当前状态不能执行该操作");
+		}
+		project.setProjectState(ProjectState.PAUSED.getValue());
+		int rows = this.getActualDao().updateByPrimaryKey(project);
+		if (rows <= 0) {
+			throw new ProjectException("更新项目状态失败");
+		}
+	}
+
+	@Override
+	public void resume(Long id) throws ProjectException {
+		// 检查项目是否存在
+		Project project = this.getActualDao().selectByPrimaryKey(id);
+		if (project == null) {
+			throw new ProjectException("项目不存在");
+		}
+		// 判断状态是否为进行中
+		if (!project.getProjectState().equals(ProjectState.PAUSED.getValue())) {
+			throw new ProjectException("当前状态不能执行该操作");
+		}
+		project.setProjectState(ProjectState.IN_PROGRESS.getValue());
+		int rows = this.getActualDao().updateByPrimaryKey(project);
+		if (rows <= 0) {
+			throw new ProjectException("更新项目状态失败");
+		}
+	}
+
+	@Override
+	public List<Map<String, String>> projectStateList() {
+		List<Map<String,String>> list=new ArrayList<Map<String,String>>();
+		List<DataDictionaryValueDto> projectStates = getProjectStates();
+		
+		for (DataDictionaryValueDto dataDictionaryValueDto : projectStates) {
+			Map<String,String> map=new HashMap<String, String>();
+			map.put("name", dataDictionaryValueDto.getCode());
+			map.put("id", dataDictionaryValueDto.getValue());
+			list.add(map);
+		}
+		return list;
 	}
 }

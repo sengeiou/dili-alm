@@ -27,36 +27,15 @@ import java.util.Map;
  * Created by asiamaster on 2017/10/19 0019.
  */
 @Component
-public class ProjectProvider implements ValueProvider, ApplicationListener<ContextRefreshedEvent> {
+public class ProjectProvider implements ValueProvider {
 
 	@Autowired
 	ProjectService projectService;
 
 	@Override
-	public void onApplicationEvent(ContextRefreshedEvent event) {
-		init();
-	}
-
-	public void init() {
-		if (AlmCache.PROJECT_MAP.isEmpty()) {
-			List<Project> list = projectService.list(DTOUtils.newDTO(Project.class));
-			list.forEach(project -> {
-				AlmCache.PROJECT_MAP.put(project.getId(), project);
-			});
-		}
-	}
-
-	@Override
 	public List<ValuePair<?>> getLookupList(Object o, Map map, FieldMeta fieldMeta) {
-		init();
 		ArrayList buffer = new ArrayList<ValuePair<?>>();
-		List<Map> dataauth = SessionContext.getSessionContext().dataAuth(AlmConstants.DATA_AUTH_TYPE_PROJECT);
-		dataauth.forEach(da -> {
-			Long key = Long.parseLong(da.get("dataId").toString());
-			if (AlmCache.PROJECT_MAP.containsKey(key)) {
-				buffer.add(new ValuePairImpl(AlmCache.PROJECT_MAP.get(key).getName(), key));
-			}
-		});
+		AlmCache.getInstance().getProjectMap().forEach((k, v) -> buffer.add(new ValuePairImpl<Long>(v.getName(), k)));
 		return buffer;
 	}
 
@@ -64,8 +43,7 @@ public class ProjectProvider implements ValueProvider, ApplicationListener<Conte
 	public String getDisplayText(Object o, Map map, FieldMeta fieldMeta) {
 		if (o == null)
 			return null;
-		init();
-		Project project = AlmCache.PROJECT_MAP.get(o);
+		Project project = AlmCache.getInstance().getProjectMap().get(o);
 		return project == null ? null : project.getName();
 	}
 
@@ -96,6 +74,7 @@ public class ProjectProvider implements ValueProvider, ApplicationListener<Conte
 		metadata.put("testManager", memberProvider);
 		metadata.put("productManager", memberProvider);
 		metadata.put("developManager", memberProvider);
+		metadata.put("businessOwner", memberProvider);
 		metadata.put("originator", memberProvider);
 		return ValueProviderUtils.buildDataByProvider(metadata, list);
 	}

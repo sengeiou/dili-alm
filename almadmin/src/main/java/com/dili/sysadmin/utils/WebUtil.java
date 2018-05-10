@@ -6,7 +6,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -21,7 +21,7 @@ public class WebUtil {
 	 * @createTime 2014年6月10日 上午11:24:36
 	 * @author Wang22
 	 */
-	public boolean strIsEmpty(String str) {
+	public static boolean strIsEmpty(String str) {
 		return StringUtils.isEmpty(str);
 	}
 

@@ -2,6 +2,7 @@ package com.dili.alm.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
+import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.FilesMapper;
 import com.dili.alm.dao.ProjectChangeMapper;
 import com.dili.alm.dao.ProjectPhaseMapper;
@@ -33,7 +34,6 @@ public class ProjectPhaseServiceImpl extends BaseServiceImpl<ProjectPhase, Long>
 
 	private static final Logger LOG = LoggerFactory.getLogger(ProjectPhaseServiceImpl.class);
 
-	private static final String PHASE_NAME_CODE = "phase_name";
 	@Autowired
 	private DataDictionaryService dataDictionaryService;
 	@Autowired
@@ -55,7 +55,7 @@ public class ProjectPhaseServiceImpl extends BaseServiceImpl<ProjectPhase, Long>
 
 	@Override
 	public List<DataDictionaryValueDto> getPhaseNames() {
-		DataDictionaryDto dataDictionary = this.dataDictionaryService.findByCode(PHASE_NAME_CODE);
+		DataDictionaryDto dataDictionary = this.dataDictionaryService.findByCode(AlmConstants.PHASE_NAME_CODE);
 		if (dataDictionary == null) {
 			return null;
 		}

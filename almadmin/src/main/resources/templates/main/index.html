@@ -1,84 +1,372 @@
 <#body>
-    <style>
-    td div div:first-child {
-        border: 0;
-        background-color: #EEEEEE;
-    }
-    body {
-        margin: 0;
-        padding: 0;
-    }
-    </style>
-    <div id="page-layout" class="page-layout index-layout" style="width: 100%;height: 100%;">
-        <!--消息通知、用户信息-->
-        <div class="head" data-options="region:'north'" style="height:72px;border:none;">
-            <div class="info">
-                <!--用户设置-->
-                <div class="user-info show-list" data-id="user-menu">
-                    <div class="user-menu">
-                        <a class="user-img" href=""><img src="${contextPath}/resources/images/default-user.png" width="40" height="40" alt="头像"></a>
-                        <a class="user-name">${username} </a>
-                    </div>
-                </div>
-                <!--消息列表-->
-                <div class="msg show-list" data-id="news-list">
-                    <span id="messageCount" style="display: none;"></span>
-                </div>
-            </div>
-            <!--LOGO-->
-            <div class="logo">LOGO</div>
-            <!--顶部menu-->
-            <div id="css3menu" class="menu-top">
-                <ul>
-                	<% for(item in menu){ %>
-	                    <li><a id="fMenu${item.id}" href="javascript:void(0)" rel="${item.name}">${item.name}</a></li>
-                    <% } %>
-                </ul>
-            </div>
+<style>
+td div div:first-child {
+	border: 0;
+	background-color: #EEEEEE;
+}
 
-        </div>
-        <!--<div data-options="region:'south'" style="height:50px;"></div>-->
-        <!--左侧菜单栏-->
-         <div  data-options="region:'west'" style="width:251px;height:100%;padding-top:0px;border: none">
+body {
+	margin: 0;
+	padding: 0;
+}
 
-        </div>
-        <!--页面主体内容-->
-        <div data-options="region:'center'" id="center" style="width:100%;height:100%;border: none;" >
-           <iframe id="homeIndex" scrolling="auto" frameborder="0"  style="width:100%; height: 99.6%; display:block;"></iframe>
-           <div id="tabs" style="width:100%; height: 99.6%;display: none;padding:10px 10px 0;box-sizing: border-box;min-width:929px"></div>
-        </div>
-    </div>
-    <!--用户菜单-->
-    <div class="menu-list" id="user-menu" data-index="0">
-        <ul>
-            <li><a href="javascript:void(0)" onclick="menuClickHandler(this)">用户信息</a></li>
-            <li><a  href="javascript:void(0)" onclick="menuClickHandler(this)">修改密码</a></li>
-            <li><a  href="javascript:void(0)" onclick="logout()">注销</a></li>
-        </ul>
-        <!--<span class="item dot-top"></span>-->
-    </div>
-    <!--消息列表-->
-    <div class="menu-list" id="news-list" data-index="1">
-        <ul id="messageList">
+#workdayBox .contain-box {
+	box-sizing: border-box;
+	width: 100%;
+	padding: 10px 30px;
+	font-size: 14px;
+	color: #666;
+}
 
-        </ul>
-        <!--<span class="item dot-top"></span>-->
-    </div>
+#workdayBox .contain-box .label-top {
+	display: inline-block;
+	width: 20%;
+	padding-right: 18px;
+	text-align: right;
+}
 
+#workdayBox .contain-box div.box-item {
+	margin-bottom: 24px;
+	height: 40px;
+	/*line-height: 40px;*/
+}
 
+#workdayBox .contain-box span.span-box {
+	display: inline-block;
+	width: 60px;
+	border-radius: 15px;
+	line-height: 28px;
+	text-align: center;
+	color: #666;
+	background: #eee;
+}
 
-    <script type="text/javascript">
+#workdayBox div.box-item .button {
+	width: 80px;
+	height: 36px;
+	border-radius: 5px;
+	text-align: center;
+	font-size: 15px;
+	margin-right: 16px;
+	cursor: pointer;
+}
+
+#workdayBox div.box-item .confirm {
+	background: #2fa060;
+	color: #fff;
+}
+
+#workdayBox div.box-item .confirm:hover {
+	background: #26b564;
+}
+
+#workdayBox div.box-item .cancel {
+	background: #e5e8e9;
+	color: #666;
+}
+
+#workdayBox div.box-item .cancel:hover {
+	background: #d4d9dc;
+}
+
+#workdayBox div.box-item .hint {
+	margin-left: 18px;
+	margin-top: 5px;
+	padding-left: 21%;
+	font-size: 12px;
+	color: #bbb;
+}
+</style>
+<div id="page-layout" class="page-layout index-layout" style="width: 100%; height: 100%;">
+	<!--消息通知、用户信息-->
+	<div class="head" data-options="region:'north'" style="height: 72px; border: none;">
+		<div class="info">
+			<!--工作日-->
+			<div class="workday show-list" data-id="user-workday" id="user-workday-outer"></div>
+			<!--用户设置-->
+			<div class="user-info show-list" data-id="user-menu">
+				<div class="user-menu">
+					<a class="user-img" href=""><img src="${contextPath}/resources/images/default-user.png" width="40" height="40" alt="头像"></a> <a
+						class="user-name">${username} </a>
+				</div>
+			</div>
+			<!--消息列表-->
+			<div class="msg show-list" data-id="news-list">
+				<span id="messageCount" style="display: none;"></span>
+			</div>
+		</div>
+		<!--LOGO-->
+		<div class="logo">LOGO</div>
+		<!--顶部menu-->
+		<div id="css3menu" class="menu-top">
+			<ul>
+				<% for(item in menu){ %>
+				<li><a id="fMenu${item.id}" href="javascript:void(0)" rel="${item.name}">${item.name}</a></li> <% } %>
+			</ul>
+		</div>
+
+	</div>
+	<!--<div data-options="region:'south'" style="height:50px;"></div>-->
+	<!--左侧菜单栏-->
+	<div data-options="region:'west'" style="width: 251px; height: 100%; padding-top: 0px; border: none"></div>
+	<!--页面主体内容-->
+	<div data-options="region:'center'" id="center" style="width: 100%; height: 100%; border: none;">
+		<iframe id="homeIndex" scrolling="auto" frameborder="0" style="width: 100%; height: 99.6%; display: block;"></iframe>
+		<div id="tabs" style="width: 100%; height: 99.6%; display: none; padding: 10px 10px 0; box-sizing: border-box; min-width: 929px"></div>
+	</div>
+</div>
+<!--工作日-->
+<div class="menu-list workday-list" id="user-workday" data-index="0"></div>
+<!--用户菜单-->
+<div class="menu-list" id="user-menu" data-index="1">
+	<ul>
+		<li><a href="javascript:void(0)" onclick="menuClickHandler(this)">用户信息</a></li>
+		<li><a href="javascript:void(0)" onclick="menuClickHandler(this)">修改密码</a></li>
+		<#resource code="clearCache">
+		<li><a href="javascript:void(0)" onclick="clearCache();">清空缓存</a></li>
+		</#resource>
+		<li><a href="javascript:void(0)" onclick="logout()">注销</a></li>
+	</ul>
+	<!--<span class="item dot-top"></span>-->
+</div>
+<!--消息列表-->
+<div class="menu-list" id="news-list" data-index="2">
+	<ul id="messageList">
+
+	</ul>
+	<!--<span class="item dot-top"></span>-->
+</div>
+
+<!--工作日设置弹窗-->
+<div id="workdayBox" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="设置"
+	style="padding: 20px" modal="true" border="thin" closed="true" data-options="
+				width:480,
+				height: 350,">
+	<div class="contain-box">
+		<form id="uploadForm">
+
+			<div id="hasYear" class="box-item"></div>
+			<div class="box-item">
+				<label class="label-top">年度:</label> <select class="easyui-combobox" id="cbYearContrast" name="year" style="width: 60%;">
+					<option value="0">请选择年份</option>
+				</select>
+			</div>
+			<div class="box-item">
+				<label class="label-top">数据内容:</label> <input class="easyui-filebox" buttonText="选择上传文件" id="fileuploader" name="file"
+					data-options="prompt:'文件', accept:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel'"
+					style="width: 60%; color: #666">
+				<p class="hint">仅支持excel文件，文件不超过1M</p>
+			</div>
+			<div class="box-item">
+				<label class="label-top"></label> <input type="button" class="button confirm" value="确认" onclick="doUpload()"> <input
+					type="button" class="button cancel" value="取消" onclick="$('#workdayBox').dialog('close');">
+			</div>
+		</form>
+	</div>
+
+</div>
+
+<script type="text/javascript">
 
     $(function() {
         $('#page-layout').layout();
     });
 
-    </script>
-    <!-- ====================================================================================================================== -->
-    <!-- style & script 分隔线 -->
-    <!-- ====================================================================================================================== -->
-    <script type="text/javascript">
-    
+    </script> <!-- ====================================================================================================================== --> <!-- style & script 分隔线 -->
+<!-- ====================================================================================================================== --> <script
+	type="text/javascript">
+    var currentYear = new Date().getFullYear();
+	var select = document.getElementById("cbYearContrast");
+	for (var i = 8; i >= -2; i--) {
+	    var theOption = document.createElement("option");
+	    theOption.innerHTML = currentYear+i + "年";
+	    theOption.value = currentYear+i;
+	    select.appendChild(theOption);
+	
+	}
+	
+	
+	function validate(){
+		
+        if($("input[name=year]").val()==null||$("input[name=year]").val()=="0"){
+        	$.messager.alert('警告', '必须选择对应年份');
+        	return false;
+        }
+        if($("input[name=file]").get(0).files[0]==null){
+        	$.messager.alert('警告', '上传的文件为空！');
+            return false;
+        }
+        var file_size = $("input[name=file]").get(0).files[0].size;
+        var  size= file_size / 1024;
+        if (size > 1024) {
+           $.messager.alert('警告', '上传的文件大小不能超过1M！');
+           return false;
+        }  
+        return true;
+
+	}
+	
+	
+	function doUpload(){
+		 var formData = new FormData($( "#uploadForm" )[0]);
+		 if(validate()){
+			 if(isHaveYear()){
+				 $.messager.confirm('确认', '是否替换对应年份数据？', function(r) {
+					 if (r) {
+					     $.ajax({  
+					          url: 'http://alm.diligrp.com:8083/alm/workDayApi/uploadWordDayDate' ,  
+					          type: 'POST',  
+					          data: formData,  
+					          async: false,  
+					          cache: false,  
+					          contentType: false,  
+					          processData: false,  
+					          success: function (data) {  
+					        	   if (data.code == "200") {
+					        		   $.messager.alert('成功', data.result);
+					        		   $('#workdayBox').dialog('close');
+					                } else {
+					                    $.messager.alert('错误', data.result);
+					                }
+					          },  
+					          error: function (data) {  
+					        	  $.messager.alert('错误', '远程访问失败');
+					          }  
+					     });  
+					 }
+				});
+			 }else{
+				 $.ajax({  
+			          url: 'http://alm.diligrp.com:8083/alm/workDayApi/uploadWordDayDate' ,  
+			          type: 'POST',  
+			          data: formData,  
+			          async: false,  
+			          cache: false,  
+			          contentType: false,  
+			          processData: false,  
+			          success: function (data) {  
+			        	  if (data.code == "200") {
+			        		   $.messager.alert('成功', data.result);
+			        		   $('#workdayBox').dialog('close');
+			                } else {
+			                    $.messager.alert('错误', data.result);
+			                }
+			          },  
+			          error: function (data) {  
+			        	  $.messager.alert('错误', '远程访问失败');
+			          }  
+			     });  
+			 }
+		 }
+	}
+	function isHaveYear(){
+       var  htmlobj=$.ajax({url:"http://alm.diligrp.com:8083/alm/workDayApi/isHasWorkDayYear?year="+$("input[name=year]").val(),async:false});
+       var str=htmlobj.responseText;
+       var obj = $.parseJSON(str);
+       return obj;   
+	}
+	function workDayOpen(){
+		$("#uploadForm").form('clear');
+		var data = $('#cbYearContrast').combobox('getData');
+		$("#cbYearContrast").combobox('select',data[0].value);
+		$('#workdayBox').dialog('open');
+		workDayYear();
+	}
+	function workDayYear(){
+		$.ajax({  
+	          url: 'http://alm.diligrp.com:8083/alm/workDayApi/selectWorkDayYear' ,  
+	          type: 'POST',  
+	          data: {},  
+	          async: false,  
+	          cache: false,  
+	          contentType: false,  
+	          processData: false,  
+	          success: function (data) { 
+	        	  if (data != ""&&data!=null) {
+		        	  $("#hasYear").empty();
+		        	  $("#hasYear").append("<label  class='label-top'>已设定年份:</label>");
+		        	  for(var i=0;i<data.length;i++){
+		        		  $("#hasYear").append("<span class='span-box'>"+data[i]+"</span>"); 
+		        	  }
+	        	  }
+	          },  
+	          error: function (data) {  
+	        	  $.messager.alert('错误', '远程访问失败');
+	          }  
+	     });  
+	}
+	
+	function getWorkDay(){
+		$.ajax({  
+	          url: 'http://alm.diligrp.com:8083/alm/workDayApi/getWorkDay' ,  
+	          type: 'POST',  
+	          data: {'userId':userIdVal},  
+	          async: false,   
+	          success: function (data1) {  
+        		 $("#user-workday-outer").empty();
+        	  	 $("#user-workday").empty();
+        	  	 if(data1.code==200){
+		        	 if (data1.data.id != ""&&data1.data.id!=null) {
+		        	  		$("#user-workday-outer").append("<p>"+UnixToDate(data1.data.workStartTime)+"</p><p>"+UnixToDate(data1.data.workEndTime)+"</p>");
+		        	  		if(data1.data.isRole==1){
+		        				$("#user-workday").append("<span>"+data1.data.workDayYear+"年 第"+data1.data.wordDayWeek+"周  "+UnixToDate(data1.data.workStartTime)+" -- "+UnixToDate(data1.data.workEndTime)+"</span><a href='javascript:;' onclick='workDayOpen()'>设置</a>");
+		        	  		}else{
+		        	  			$("#user-workday").append("<span>"+data1.data.workDayYear+"年 第"+data1.data.wordDayWeek+"周  "+UnixToDate(data1.data.workStartTime)+" -- "+UnixToDate(data1.data.workEndTime)+"</span>");
+		        	  		}
+		        	  }else{
+			        	  	$("#user-workday-outer").append("<p>非工作日</p><p>"+UnixToDate(0)+"</p>");
+			        	  	if(data1.data.isRole==1){
+		        				$("#user-workday").append("<span>非工作日："+UnixToYear()+"年 "+UnixToDate(0)+"</span><a href='javascript:;' onclick='workDayOpen()'>设置</a>");
+		        	  		}else{
+		        	  			$("#user-workday").append("<span>非工作日："+UnixToYear()+"年 "+UnixToDate(0)+"</span>");
+		        	  		}
+		        	  }
+        	  	 }else{
+        	  		$("#user-workday-outer").append("<p>请导入新一年的工作日</p>");
+	        	  	if(data1.data.isRole==1){
+        				$("#user-workday").append("<span>请管理员导入新一年的工作日</span><a href='javascript:;' onclick='workDayOpen()'>设置</a>");
+        	  		}else{
+        	  			$("#user-workday").append("<span>请管理员导入新一年的工作日</span>");
+        	  		}
+        	  	 }
+	          },  
+	          error: function (data1) {  
+	        	  $.messager.alert('错误', '远程访问失败');
+	          }  
+	     });  
+	}
+	function UnixToYear(){
+		var yearTime=new Date();
+		return yearTime.getFullYear();
+	}
+	function UnixToDate(unixTime) {
+		var ymdhis = "";
+		var time ;
+		if(unixTime==0){
+			ymdhis = "";
+			time = new Date();
+	        if(time.getUTCMonth()+1<10){
+	        	ymdhis += "0"+(time.getUTCMonth()+1) + "/";
+	        }else{
+	        	ymdhis += (time.getUTCMonth()+1) + "/";
+	        }
+	        ymdhis += time.getUTCDate();
+		}else{
+			ymdhis = "";
+			time = new Date(unixTime);
+	        if(time.getUTCMonth()+1<10){
+	        	ymdhis += "0"+(time.getUTCMonth()+1) + "/";
+	        }else{
+	        	ymdhis += (time.getUTCMonth()+1) + "/";
+	        }
+	        
+	        ymdhis += time.getUTCDate()+1;
+		}
+        return ymdhis;
+    }
+	
+	
+	
     function menuClickHandler(obj) {
         var title = obj.text;
         var url = obj.rel;
@@ -88,6 +376,25 @@
 			$("#"+id+"").parent().addClass("on");
 		}
         addOneTab(title, url);   
+    }
+    
+    function clearCache(){
+    	$.messager.confirm('提示','确定要清除系统缓存数据？',function(flag){
+    		if(flag){
+    			$.ajax({
+    				type:'POST',
+    				url:'http://alm.diligrp.com:8083/alm/cache/clear',
+    				dataType:'jsonp',
+    				success:function(data){
+    					if(data.code==200){
+    						$.messager.alert('提示','操作成功');
+    					}else{
+    						$.messager.alert('提示','操作成功');
+    					}
+    				}
+    			});
+    		}
+    	});
     }
     
     function addOneTab(title, url) {
@@ -120,7 +427,7 @@
 
     /**顶部header滑动下拉**/
     $(function () {
-        let timer=[];
+        var timer=[];
         $('.show-list').on('mouseover',function(){
             $('#'+$(this).data('id')).show();
             if($(this).data('id')=='user-menu'){
@@ -129,7 +436,7 @@
             clearTimeout(timer[$(this).index()]);
         }).on('mouseout',function(){
             var buttonObj=$(this);
-            var obj=$('#'+$(this).data('id'));
+   		    var obj=$('#'+$(this).data('id'));
             timer[$(this).index()]=setTimeout(function(){
                 obj.hide();
                 if(buttonObj.data('id')=='user-menu'){
@@ -139,7 +446,7 @@
         });
 
         $('.menu-list').on('mouseover',function(){
-//            console.log(1,$(this).data('index'));
+           //console.log(1,$(this).data('index'));
             clearTimeout(timer[$(this).data('index')]);
             $(this).show();
         }).on('mouseout',function(){
@@ -156,11 +463,11 @@
 
     });
     /** 得到消息通知信息  **/
-    var userId =${userid}
+    var userIdVal =${userid}
     var getMessages = {
     		type: "POST",
             url:'http://alm.diligrp.com:8083/alm/messageApi/list',
-            data:{userId,userId},
+            data:{'userId':userIdVal},
             dataType:'json',
             success:function(data) {
             	if(data.count==0){
@@ -218,7 +525,7 @@
     	$('#css3menu ul li').on('click',function(){
             let index= $(this).index();
             if(index<1){
-                $('#page-layout').layout('remove','west')
+                $('#page-layout').layout('remove','west');
                 $("#homeIndex").css('display','block');
                 $('#homeIndex').attr("src","http://alm.diligrp.com:8083/alm/home/index");
                 $("#tabs").empty().hide();
@@ -238,29 +545,33 @@
             };
             $('.menu-left-list').eq(index).show().siblings().hide();
             $(this).addClass('on').siblings().removeClass('on');
+        });
 
-        })
+    	// console.log($('#menuList').html())
+    	getWorkDay();
+
     });
+    //左侧菜单折叠展开
+    function showHide(obj){
+        //console.log($(obj))
+        $(obj).hasClass('close') ? $(obj).removeClass('close').next('ul').show() : $(obj).addClass('close').next('ul').hide()
+    }
 
-
-    </script>
-<script type="text/template" id="menuTem">
-    <div id="menuList" class="menu-left">
-        <% for(item in menu){ %>
-        <div id="${item.id}" class="menu-left-list">
-            <% for(item1 in item.children){ %>
-            <div class="title-name">${item1.name}</div>
-            <ul>
-                <% for(item2 in item1.children){ %>
-                <li>
-                    <a href="javascript:void(0)" id="${item2.id }" rel="${item2.menuUrl}" onclick="menuClickHandler(this)">${item2.name}</a>
-                </li>
+    </script> <script type="text/template" id="menuTem">
+        <div id="menuList" class="menu-left">
+            <% for(item in menu){ %>
+            <div id="${item.id}" class="menu-left-list">
+                <% for(item1 in item.children){ %>
+                <div class="title-name" onclick="showHide(this)">${item1.name}</div>
+                <ul>
+                    <% for(item2 in item1.children){ %>
+                    <li>
+                        <a href="javascript:void(0)" id="${item2.id }" rel="${item2.menuUrl}" onclick="menuClickHandler(this)">${item2.name}</a>
+                    </li>
+                    <% } %>
+                </ul>
                 <% } %>
-            </ul>
+            </div>
             <% } %>
         </div>
-        <% } %>
-    </div>
-
-</script>
-</#body>
+    </script> </#body>

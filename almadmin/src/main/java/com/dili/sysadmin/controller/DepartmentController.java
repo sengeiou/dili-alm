@@ -34,7 +34,7 @@ public class DepartmentController {
 	DepartmentService departmentService;
 
 	@ApiOperation("跳转到Department页面")
-	@RequestMapping(value = "/index", method = RequestMethod.GET)
+	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
 		return "department/index";
 	}
@@ -104,7 +104,7 @@ public class DepartmentController {
 		return "department/updateDepartment";
 	}
 
-	@RequestMapping(value = "/orgStructure", method = RequestMethod.GET)
+	@RequestMapping(value = "/orgStructure.html", method = RequestMethod.GET)
 	public String orgStructure(ModelMap map) {
 		List<DepartmentTree> depts = this.departmentService.listTree();
 		map.addAttribute("depts", depts);

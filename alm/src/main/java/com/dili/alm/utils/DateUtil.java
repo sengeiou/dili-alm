@@ -7,6 +7,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Map;
+
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 public class DateUtil {
 	public static String getWeekFristDay() {
@@ -86,26 +89,7 @@ public class DateUtil {
             return day2-day1+"";
         }
     }
-	/**
-	 * 当前日期添加一天
-	 * @param dateStr
-	 * @return
-	 */
-	public static String getAddDay(String dateStr,int n){
-		
-		SimpleDateFormat sdf= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date date = null;
-		 try {
-			date = sdf.parse(dateStr);
-		 } catch (ParseException e) {
-			e.printStackTrace();
-		 }
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(date);  
-		calendar.add(Calendar.DATE, n);//增加一天   
-	      
-		return    sdf.format(calendar.getTime());  
-	}
+	
     public static String getCurenntDay(){
 		
 		SimpleDateFormat sdf= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -114,55 +98,12 @@ public class DateUtil {
 	}
 
 	
-	public static String getWeekOfDate(Date dt) { 
-        String[] weekDays = {"星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"}; 
-        Calendar cal = Calendar.getInstance(); 
-        cal.setTime(dt); 
-
-        int w = cal.get(Calendar.DAY_OF_WEEK) - 1; 
-        if (w < 0) 
-            w = 0; 
-
-        return weekDays[w]; 
-    } 
 	
-	public static HashMap<String,String>  getFirstAndFive() {
-		
-		
-		HashMap<String,String> map=new HashMap<String,String>();
-		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//小写的mm表示的是分钟  
-		java.util.Date date=new Date();
-		if(getWeekOfDate(date).endsWith("星期日")){
-			String strend=getAddDay(sdf.format(date),-2);//周五
-			String  strbegin=getAddDay(sdf.format(date),-6);//周一
-			map.put("one", strbegin);
-			map.put("five", strend);
-		}else{
-		    map.put("one", getWeekFristDay());
-		    map.put("five", getWeekFriday());
-		}
-		
-		return map;
-	}
-public static HashMap<String,String>  getFirstAndFive(Date date) {
-		
-		
-		HashMap<String,String> map=new HashMap<String,String>();
-		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//小写的mm表示的是分钟  
-		if(getWeekOfDate(date).endsWith("星期日")){
-			String strend=getAddDay(sdf.format(date),-2);//周五
-			String  strbegin=getAddDay(sdf.format(date),-6);//周一
-			map.put("one", strbegin);
-			map.put("five", strend);
-		}else{
-		    map.put("one", getWeekFristDay());
-		    map.put("five", getWeekFriday());
-		}
-		
-		return map;
-	}
+	
+	
 
-	// 获得当前日期与本周日相差的天数  
+
+	// 获得当前日期与本周一相差的天数  
 	private static int getMondayPlus(Date gmtCreate) {  
 	    Calendar cd = Calendar.getInstance();  
 	    cd.setTime(gmtCreate);  
@@ -175,43 +116,6 @@ public static HashMap<String,String>  getFirstAndFive(Date date) {
 	    }  
 	}  
 	  
-	// 获得下周星期一的日期  
-	public static String getNextMondayAdd(Date gmtCreate) {  
-		SimpleDateFormat sdf=new SimpleDateFormat("YYYY-MM-dd");
-	    GregorianCalendar currentDate = new GregorianCalendar();  
-	    currentDate.add(GregorianCalendar.DATE,   7);  
-	    Date monday = currentDate.getTime();  
-	   
-	    return sdf.format(monday);  
-	}  
-	// 获得下周星期一的日期  
-		public static String getNextMonday(Date gmtCreate) {  
-			SimpleDateFormat sdf=new SimpleDateFormat("YYYY-MM-dd");
-		    int mondayPlus = getMondayPlus(gmtCreate);  
-		    GregorianCalendar currentDate = new GregorianCalendar();  
-		    currentDate.add(GregorianCalendar.DATE, mondayPlus + 7);  
-		    Date monday = currentDate.getTime();  
-		    return sdf.format(monday);  
-		}  
-	// 获得下周星期五的日期  
-	 public static String getNextFiveAdd(Date gmtCreate) {  
-		SimpleDateFormat sdf=new SimpleDateFormat("YYYY-MM-dd");
-	  
-	    GregorianCalendar currentDate = new GregorianCalendar();  
-	    currentDate.add(GregorianCalendar.DATE,  13);  
-	    Date nextFive = currentDate.getTime();  
-	    return  sdf.format(nextFive);  
-	 }  
-	// 获得下周星期五的日期  
-		public static String getNextFive(Date gmtCreate) {  
-			SimpleDateFormat sdf=new SimpleDateFormat("YYYY-MM-dd");
-		    int mondayPlus = getMondayPlus(gmtCreate);  
-		    GregorianCalendar currentDate = new GregorianCalendar();  
-		    currentDate.add(GregorianCalendar.DATE, mondayPlus + 13);  
-		    Date nextFive = currentDate.getTime();  
-		    return  sdf.format(nextFive);  
-		}  
-
 	
     public static Date getStrDate(String date){
 		
@@ -227,7 +131,7 @@ public static HashMap<String,String>  getFirstAndFive(Date date) {
 	}
  public static Date getStrDateyyyyMMdd(String date){
 		
-		SimpleDateFormat sdf= new SimpleDateFormat("YYYY-MM-dd");
+		SimpleDateFormat sdf= new SimpleDateFormat("yyyy-MM-dd");
 		Date mydate=null;
 		try {
 			mydate  = sdf.parse(date);
@@ -310,5 +214,227 @@ public static HashMap<String,String>  getFirstAndFive(Date date) {
 	            w = 0;
 	        return weekDays[w];
 	 }
-	
+	 /**
+	  * 获取当前时间前第past天的时间
+	  * @param past
+	  * @return
+	  */
+	 public static String getPastDate(int past) {
+	       Calendar calendar = Calendar.getInstance();
+	       calendar.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) - past);
+	       Date today = calendar.getTime();
+	       SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+	       String result = format.format(today);
+	       return result;
+	 }
+	 /**
+	  * 获取当前时间后第past天的时间
+	  * @param past
+	  * @return
+	  */
+	 public static String getFutureDate(int past) {
+	       Calendar calendar = Calendar.getInstance();
+	       calendar.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) + past);
+	       Date today = calendar.getTime();
+	       SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+	       String result = format.format(today);
+	       return result;
+	 }
+	 /**
+	  * 相差多少天
+	  * @param date1起始时间
+	  * @param date2结束时间
+	  * @return
+	 * @throws ParseException 
+	  */
+	 public static int differentDaysByMillisecond(Date date1,Date date2)
+	    { 
+	        Date time1 = DateUtil.getStrDateyyyyMMdd(DateUtil.getDate(date1));                     
+	        Date time2 = DateUtil.getStrDateyyyyMMdd(DateUtil.getDate(date2));          
+	        int days = (int) ((time2.getTime() - time1.getTime()) / (1000*3600*24));
+	        return days;
+	    }
+	 
+		/** 
+		 * <pre> 
+		 * 获取某月份第N周开始日期(即星期一) 
+		 * </pre> 
+		 *  
+		 * @param year 年 
+		 * @param month 月 
+		 * @param weekOrder 周次 
+		 * @return Date 某月份第N周开始日期,即周一(包含跨月),比如2014年1月的第一周的第一天为2013-12-30,也就是说,2014 
+		 *         年1月的第一周也就是2013年12月的最后一周 
+		 */  
+		public static Date getFirstDayOfWeekOrder(int year, int month, int weekOrder)  
+		{  
+		  
+		    final Calendar c = Calendar.getInstance();  
+		    c.set(Calendar.YEAR, year);  
+		    c.set(Calendar.MONTH, month - 1);  
+		    c.set(Calendar.DAY_OF_MONTH, 1); // 设为每个月的第一天(1号)  
+		  
+		    int dayOfWeek = c.get(Calendar.DAY_OF_WEEK); // 每个月的第一天为星期几  
+		  
+		    /* 
+		     * 星期日:1,星期一:2,星期二:3,星期三:4,星期四:5,星期五:6,星期六:7 
+		     * 转化为我们的使用习惯:星期一:1,星期二:2,星期三:3,星期四:4,星期五:5,星期六:6,星期日:7 
+		     */  
+		    if (dayOfWeek != Calendar.SUNDAY)  
+		    {  
+		        dayOfWeek = dayOfWeek - 1;  
+		    }  
+		    else  
+		    {  
+		        dayOfWeek = 7;  
+		    }  
+		    c.add(Calendar.DAY_OF_MONTH, 1 - dayOfWeek); // 使其为每个月第一天所在周的星期一  
+		    c.add(Calendar.DAY_OF_MONTH, (weekOrder - 1) * 7);  
+		  
+		    return c.getTime();  
+		}  
+		
+		/** 
+		 * <pre> 
+		 * 获取某月份第N周结束日期(即星期日) 
+		 * </pre> 
+		 *  
+		 * @param year 年 
+		 * @param month 月 
+		 * @param weekOrder 周次 
+		 * @return Date 
+		 *         某月份第N周结束日期,即周日(包含跨月),比如2013年11月的第五周的最后一天为2013-12-01,也就是说,2013 
+		 *         年11月第五周也就是2013年12月的第一周 
+		 */  
+		public static Date getLastDayOfWeekOrder(int year, int month, int weekOrder)  
+		{  
+		    final Calendar c = Calendar.getInstance();  
+		    c.set(Calendar.YEAR, year);  
+		    c.set(Calendar.MONTH, month - 1);  
+		    c.set(Calendar.DAY_OF_MONTH, 1); // 设为每个月的第一天(1号)  
+		  
+		    int dayOfWeek = c.get(Calendar.DAY_OF_WEEK); // 每个月的第一天为星期几  
+		  
+		    /* 
+		     * 星期日:1,星期一:2,星期二:3,星期三:4,星期四:5,星期五:6,星期六:7 
+		     * 转化为我们的使用习惯:星期一:1,星期二:2,星期三:3,星期四:4,星期五:5,星期六:6,星期日:7 
+		     */  
+		    if (dayOfWeek != Calendar.SUNDAY)  
+		    {  
+		        dayOfWeek = dayOfWeek - 1;  
+		    }  
+		    else  
+		    {  
+		        dayOfWeek = 7;  
+		    }  
+		    c.add(Calendar.DAY_OF_MONTH, 1 - dayOfWeek); // 使其为每个月第一天所在周的星期一  
+		    c.add(Calendar.DAY_OF_MONTH, (weekOrder - 1) * 7 + 6);  
+		  
+		    return c.getTime();  
+		} 
+		/**
+		 * 每个月最后一天
+		 * @param date
+		 * @return
+		 */
+		public static Date lastDayOfMonth(Date date) {
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(date);
+			calendar.set(Calendar.DAY_OF_MONTH, 1);// 设定当前时间为每月一号
+			// 当前日历的天数上-1变成最大值 , 此方法不会改变指定字段之外的字段
+			calendar.roll(Calendar.DAY_OF_MONTH, -1);
+			return calendar.getTime();
+			}
+		
+		public static Map<String,String> getWeeks(int year,int month){
+			Map<String,String> weekDateMap = new HashMap<String, String>();
+			for (int i = 0; i < 6; i++) {//6*7=42  一个月最大覆盖6周，即每月1号是周日，每月最后一天是周一
+				Date da2=DateUtil.getFirstDayOfWeekOrder(year, month,i+1 );
+				
+				
+				Date lastDa2=DateUtil.getLastDayOfWeekOrder(year, month, i+1);
+		        //获取默认选中的日期的年月日星期的值，并赋值
+		        Calendar start = Calendar.getInstance();//日历对象
+		        start.setTime(da2);//设置当前日期
+		        
+		        
+		        Calendar end = Calendar.getInstance();//日历对象
+		        end.setTime(lastDa2);//设置当前日期
+				if (start.get(Calendar.MONTH)+1!=month&&end.get(Calendar.MONTH)+1==month) {//本周开始日期不本月的
+					String beiginDate = year+"-0"+month+"-01 00:00:00";
+					da2=DateUtil.getStrDate(beiginDate);
+					
+				}
+				
+				if (start.get(Calendar.MONTH)+1==month&&end.get(Calendar.MONTH)+1!=month) {
+					String beiginDate = year+"-0"+month+"-01 00:00:00";
+					Date past=DateUtil.getStrDate(beiginDate);
+					lastDa2 =DateUtil.lastDayOfMonth(past);
+				}
+/*				System.out.println("-----------------第"+(i+1)+"周-------------------------");
+				System.out.println("开始日期:"+new SimpleDateFormat("yyyy-MM-dd").format(da2)+";");
+				System.out.println("结束日期:"+new SimpleDateFormat("yyyy-MM-dd").format(lastDa2)+"。");*/
+				
+				weekDateMap.put("start"+i, new SimpleDateFormat("yyyy-MM-dd").format(da2));
+				weekDateMap.put("end"+i, new SimpleDateFormat("yyyy-MM-dd").format(lastDa2));
+				if (start.get(Calendar.MONTH)+1==month&&end.get(Calendar.MONTH)+1>month) {
+					break;
+				}
+			}
+			
+			return weekDateMap;
+		}
+	 
+	/* 
+	// 获得本周星期五的日期  
+		public static Date getThisFriDay() {
+			int mondayPlus = DateUtil.getMondayPlus(new Date());
+			Date as = new Date(new Date().getTime()-24*60*60*1000*Math.abs(mondayPlus));
+			Date as1 = new Date(as.getTime()+24*60*60*1000*4);
+			return as1;  
+
+		}  
+	// 获得本周星期一的日期  
+		public static Date getThisMonDay() {
+			int mondayPlus = DateUtil.getMondayPlus(new Date());
+			Date as = new Date(new Date().getTime()-24*60*60*1000*Math.abs(mondayPlus));
+			return as;
+
+		}  
+		// 获得下周星期五的日期  
+				public static Date getNextFriDay() {
+					int mondayPlus = DateUtil.getMondayPlus(new Date());
+					Date as = new Date(new Date().getTime()-24*60*60*1000*Math.abs(mondayPlus));
+					Date as1 = new Date(as.getTime()+24*60*60*1000*11);
+					return as1;  
+
+				}  
+		// 获得下周星期一的日期  
+			public static Date getNextMonDay() {
+				int mondayPlus = DateUtil.getMondayPlus(new Date());
+				Date as = new Date(new Date().getTime()-24*60*60*1000*Math.abs(mondayPlus));
+				Date as1 = new Date(as.getTime()+24*60*60*1000*7);
+				return as1;
+
+			}*/  
+	 public static int getCompareDate(Date s1,Date s2){
+		 java.util.Calendar c1=java.util.Calendar.getInstance();
+		 java.util.Calendar c2=java.util.Calendar.getInstance();
+		 c1.setTime(s1);
+		 c2.setTime(s2);
+		 return c1.compareTo(c2);
+		/* if(result==0)
+		 　　System.out.println("c1相等c2");
+		 else if(result<0)
+		 　　System.out.println("c1小于c2");
+		 else
+		 　　System.out.println("c1大于c2");*/
+	 }
+	public static String getStrYear(Date dateCellValue) {
+		Calendar c = Calendar.getInstance();
+		c.setTime(dateCellValue);
+		int i = c.get(Calendar.YEAR);
+		return String.valueOf(i);
+	}
+			
 }

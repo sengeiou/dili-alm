@@ -1,13 +1,15 @@
 package com.dili.sysadmin.sdk.session;
 
-import com.dili.sysadmin.sdk.util.ManageRedisUtil;
-import com.dili.sysadmin.sdk.util.WebContent;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.regex.Pattern;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
+
+import com.dili.sysadmin.sdk.util.ManageRedisUtil;
+import com.dili.sysadmin.sdk.util.WebContent;
 
 /**
  * 权限配置信息<BR>
@@ -16,24 +18,25 @@ import java.util.regex.Pattern;
  * Created by asiamaster on 2017/7/4 0004.
  */
 @Component
-@ConfigurationProperties(prefix = "manage",locations = {"classpath:conf/manage-${spring.profiles.active}.properties"})
+@ConfigurationProperties(prefix = "manage")
+@PropertySource({ "classpath:conf/manage-${spring.profiles.active}.properties" })
 public class ManageConfig {
 
-//	@Value("${manage.domain}")
+	// @Value("${manage.domain}")
 	private String domain;
-	//是否开启过滤
-//	@Value("${manage.enable}")
+	// 是否开启过滤
+	// @Value("${manage.enable}")
 	private Boolean enable = true;
 
-	//包含列表
-//	@Value("#{'${manage.includes}'.split(',')}")
+	// 包含列表
+	// @Value("#{'${manage.includes}'.split(',')}")
 	private List<String> includes;
 
-	//排除列表
-//	@Value("#{'${manage.excludes}'.split(',')}")
+	// 排除列表
+	// @Value("#{'${manage.excludes}'.split(',')}")
 	private List<String> excludes;
-	//是否必须在框架内
-//	@Value("${manage.mustIframe}")
+	// 是否必须在框架内
+	// @Value("${manage.mustIframe}")
 	private Boolean mustIframe = true;
 
 	private Boolean userLimitOne = false;
@@ -43,29 +46,32 @@ public class ManageConfig {
 
 	/**
 	 * 是否包含
+	 * 
 	 * @return
 	 */
-	private boolean isInclude(){
-		if(WebContent.getRequest() == null){
+	private boolean isInclude() {
+		if (WebContent.getRequest() == null) {
 			return true;
 		}
 		return urlFilter(includes);
 	}
+
 	/**
 	 * 是否排除
+	 * 
 	 * @return
 	 */
-	private boolean isExclude(){
-		if(WebContent.getRequest() == null){
+	private boolean isExclude() {
+		if (WebContent.getRequest() == null) {
 			return false;
 		}
 		return urlFilter(excludes);
 	}
 
-	private Boolean urlFilter(List<String> patternStrs){
+	private Boolean urlFilter(List<String> patternStrs) {
 		String uri = WebContent.getRequest().getRequestURI();
-		for(String str : patternStrs){
-			if(Pattern.compile(str).matcher(uri).find()){
+		for (String str : patternStrs) {
+			if (Pattern.compile(str).matcher(uri).find()) {
 				return true;
 			}
 		}
@@ -74,10 +80,11 @@ public class ManageConfig {
 
 	/**
 	 * 验证权限是否通过
+	 * 
 	 * @return
 	 */
 	public boolean hasChecked() {
-		if(!enable){
+		if (!enable) {
 			return false;
 		}
 		if (isExclude()) {

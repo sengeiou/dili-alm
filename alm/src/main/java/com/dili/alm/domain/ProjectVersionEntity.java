@@ -33,7 +33,8 @@ public class ProjectVersionEntity extends BaseDomain implements ProjectVersion {
 	private Date actualStartDate;
 	private Date actualEndDate;
 	private Integer completedProgress = 0;
-	private Integer online;
+
+	private Boolean online;
 
 	@Override
 	public String getCode() {
@@ -256,12 +257,12 @@ public class ProjectVersionEntity extends BaseDomain implements ProjectVersion {
 	}
 
 	@Override
-	public Integer getOnline() {
+	public Boolean getOnline() {
 		return online;
 	}
 
 	@Override
-	public void setOnline(Integer online) {
+	public void setOnline(Boolean online) {
 		this.online = online;
 	}
 

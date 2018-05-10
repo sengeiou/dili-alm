@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.alm.dao.HardwareResourceApplyMapper">
+  <resultMap id="BaseResultMap" type="com.dili.alm.domain.HardwareResourceApply">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="serial_number" jdbcType="VARCHAR" property="serialNumber" />
+    <result column="project_id" jdbcType="BIGINT" property="projectId" />
+    <result column="project_name" jdbcType="VARCHAR" property="projectName" />
+    <result column="project_serial_number" jdbcType="VARCHAR" property="projectSerialNumber" />
+    <result column="project_manager_id" jdbcType="BIGINT" property="projectManagerId" />
+    <result column="application_department_id" jdbcType="BIGINT" property="applicationDepartmentId" />
+    <result column="applicant_id" jdbcType="BIGINT" property="applicantId" />
+    <result column="submit_time" jdbcType="TIMESTAMP" property="submitTime" />
+    <result column="service_environment" jdbcType="VARCHAR" property="serviceEnvironment" />
+    <result column="apply_reason" jdbcType="VARCHAR" property="applyReason" />
+    <result column="other_description" jdbcType="VARCHAR" property="otherDescription" />
+    <result column="created" jdbcType="TIMESTAMP" property="created" />
+    <result column="apply_state" jdbcType="INTEGER" property="applyState" />
+    <result column="apply_date" jdbcType="TIMESTAMP" property="applyDate" />
+    <result column="executors" jdbcType="VARCHAR" property="executors" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, serial_number, project_id, project_name, project_serial_number, project_manager_id, 
+    application_department_id, applicant_id, submit_time, service_environment, apply_reason, 
+    other_description, created, apply_state, apply_date, executors
+  </sql>
+  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from hardware_resource_apply
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <update id="updateBy" parameterType="com.dili.alm.domain.HardwareResourceApply">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update hardware_resource_apply
+    <set>
+      <if test="serialNumber != null">
+        serial_number = #{serialNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="projectId != null">
+        project_id = #{projectId,jdbcType=BIGINT},
+      </if>
+      <if test="projectName != null">
+        project_name = #{projectName,jdbcType=VARCHAR},
+      </if>
+      <if test="projectSerialNumber != null">
+        project_serial_number = #{projectSerialNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="projectManagerId != null">
+        project_manager_id = #{projectManagerId,jdbcType=BIGINT},
+      </if>
+      <if test="applicationDepartmentId != null">
+        application_department_id = #{applicationDepartmentId,jdbcType=BIGINT},
+      </if>
+      <if test="applicantId != null">
+        applicant_id = #{applicantId,jdbcType=BIGINT},
+      </if>
+      <if test="submitTime != null">
+        submit_time = #{submitTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="serviceEnvironment != null">
+        service_environment = #{serviceEnvironment,jdbcType=VARCHAR},
+      </if>
+      <if test="applyReason != null">
+        apply_reason = #{applyReason,jdbcType=VARCHAR},
+      </if>
+      <if test="otherDescription != null">
+        other_description = #{otherDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="created != null">
+        created = #{created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="applyState != null">
+        apply_state = #{applyState,jdbcType=INTEGER},
+      </if>
+      <if test="applyDate != null">
+        apply_date = #{applyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="executors != null">
+        executors = #{executors,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

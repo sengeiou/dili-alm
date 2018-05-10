@@ -371,7 +371,8 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 				metadata.put("startDate", JSON.parse("{provider:'dateProvider'}"));
 				metadata.put("endDate", JSON.parse("{provider:'dateProvider'}"));
 				metadata.put("type", JSON.parse("{provider:'projectTypeProvider'}"));
-				List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, Arrays.asList(apply));
+				List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata,
+						projectApplyService.listByExample(apply));
 				Map applyDTO = maps.get(0);
 				map.put("apply", applyDTO);
 
@@ -399,9 +400,10 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 				map.put("number", change.getNumber());
 				map.put("projectName", change.getProjectName());
 				map.put("version", projectVersionService.get(change.getVersionId()).getVersion());
-				map.put("projectType", AlmCache.PROJECT_TYPE_MAP.get(project.getType()));
-				map.put("phase", AlmCache.PHASE_NAME_MAP.get(projectPhaseService.get(change.getPhaseId()).getName()));
-				map.put("type", AlmCache.CHANGE_TYPE.get(change.getType()));
+				map.put("projectType", AlmCache.getInstance().getProjectTypeMap().get(project.getType()));
+				map.put("phase", AlmCache.getInstance().getPhaseNameMap()
+						.get(projectPhaseService.get(change.getPhaseId()).getName()));
+				map.put("type", AlmCache.getInstance().getChangeType().get(change.getType()));
 				map.put("workingHours", change.getWorkingHours());
 				map.put("affectsOnline", change.getAffectsOnline() == 1 ? "是" : "否");
 				map.put("estimateLaunchDate", DateUtil.getDate(change.getEstimateLaunchDate()));
@@ -565,7 +567,9 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	private void closeProject(ProjectComplete complete) {
 		Long projectId = complete.getProjectId();
 		Project project = projectService.get(projectId);
+		project.setActualEndDate(new Date());
 		project.setProjectState(ProjectState.CLOSED.getValue());
+		project.setActualEndDate(new Date());
 		projectService.updateSelective(project);
 	}
 

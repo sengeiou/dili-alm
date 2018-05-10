@@ -1,0 +1,495 @@
+<#body>
+<style>
+    html,body{
+        height: 100%;
+    }
+    body{
+        box-sizing: border-box;
+        /*background: #fcf8e3;*/
+        padding: 10px 10px 0;
+    }
+    .main-left{
+        margin-right: 310px;
+        height: 100%;
+        /*background-color: #ffe6b8*/
+    }
+    .main-right{
+        float: right;
+        width: 300px;
+        height: 100%;
+        /*background-color: #ffe6b8*/
+    }
+    .tabs-panels{
+        height: calc(100% - 30px);
+    }
+    .tabs-header{
+        border: none;
+    }
+    #scheduleList li{
+        margin-bottom: 10px;
+        font-weight:400;
+        color: #333;
+
+    }
+    #scheduleList li a{
+        float: right;
+        text-decoration: none;
+        color: #A52A2A;
+    }
+    .panel-tool{
+        top:9px;
+        height: 24px;
+    }
+
+
+</style>
+
+<div id="main" style="box-sizing:border-box;width:100%;height:100%;">
+    <div class="main-right">
+        <div id='calendar' style="width:300px;"></div>
+        <div style="width:300px;float:right;padding-top:20px;font-weight: bold">
+            日程安排
+            <hr/>
+            <ol id="scheduleList">
+            </ol>
+        </div>
+    </div>
+    <div class="main-left">
+        <div id="toolbar" style="margin-top: -3px">
+            <select id="flat" onchange="gradeChange()" style="width: 100px;height: 22px">
+                <option value="0">个人数据</option>
+                <option value="1">公司数据</option>
+            </select>
+        </div>
+        <div class="easyui-panel" style="width: 100%;height: 302px;margin-bottom: 10px" title="数据看台" data-options="tools:'#toolbar'">
+
+            <div style="height: 250px;width: 100%">
+                <div class="charts-box" id="project-box">
+
+                </div>
+                <div class="charts-box" id="task-box">
+
+                </div>
+            </div>
+
+        </div>
+        <div class="easyui-tabs" style="width: 100%;height: 80%">
+            <div title="待办任务" style="width: 100%">
+                <iframe scrolling="auto" frameborder="0"  src="/alm/home/taskList" style="width:100%;height:calc(100% - 5px);"></iframe>
+            </div>
+            <div title="我的项目">
+                <iframe scrolling="auto" frameborder="0"  id="myProject" src="/alm/home/myProjectIndex" style="width:100%;height:calc(100% - 5px);"></iframe>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- 隐藏编辑框 -->
+    <div id="dlg" class="easyui-dialog" shadow="false" resizable="false" constrain="true" shadow="true" draggable="false" title="日程详情"style="width:400px;height:200px;padding:10px" modal="true" border="thin" closed="true"
+         data-options="
+                    iconCls: 'icon-save',
+                    height: 200,
+                    buttons: [{
+                        text:'保存',
+                        iconCls:'icon-ok',
+                        handler:saveOrUpdate
+                    },{
+                        text:'取消',
+                        handler:function(){
+                            $('#dlg').dialog('close');
+                        }
+                    }]
+                ">
+        <form id="_form" class="easyui-form" method="post" fit="true">
+            <input name="_id" id="_id" type="hidden">
+            <table width="360px">
+                <tr>
+                    <td style="padding:5px;">
+                        <input class="easyui-textbox" name="scheduleDate" id="scheduleDate" style="width:100%"  editable="false" data-options="label:'编辑时间:'"
+                               required="true" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:5px;">
+                        <input class="easyui-textbox" name="scheduleText" id="scheduleText" style="width:100%" data-options="label:'编辑内容:', validType:'length[0,255]'" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function() {
+        init();
+        taskCount();
+        projectCount();
+    });
+    function gradeChange(){
+        var d=$("#flat").val();
+        taskCount(d);
+        projectCount(d);
+    }
+
+    function showNewDate(){
+        var newDate = new Date();
+        var str = "" + newDate.getFullYear() + "/";
+        str += (newDate.getMonth()+1) + "/";
+        str += newDate.getDate() ;
+        return str;
+    }
+    function init(selectTime){
+        $('#calendar').empty();
+        $("#scheduleList").empty();
+
+        var date = new Date();
+        var d = date.getDate();
+        var m = date.getMonth();
+        var y = date.getFullYear();
+        var events ;
+        var selDate1 = $.fullCalendar.formatDate(date,'yyyy-MM-dd');
+        if(selectTime!=null){
+            selDate1 =selectTime;
+        }
+        listEvents(selDate1);
+        $('#calendar').fullCalendar({
+            header: {},
+            firstDay:1,
+            editable: false,
+            timeFormat: 'H:mm',
+            axisFormat: 'H:mm',
+            events:function (start,end,callback){
+                //得到日期就显示样式
+                var  htmlobj=$.ajax({url:"${contextPath}/workSchedule/getWorkScheduleDate.json",async:false});
+                var str=htmlobj.responseText;
+                var obj = $.parseJSON(str);
+                events=[];
+                $(obj).each(function(){
+                    events.push({
+                        title: "*",
+                        start: this.scheduleDate, // will be parsed
+                        color: '#A52A2A'
+                    });
+                });
+
+                callback(events);
+            } ,dayClick: function(date, allDay, jsEvent, view) {
+                //弹出框
+                clickEvent(date);
+            },eventMouseover:function(calEvent, jsEvent, view){
+                var selDate =$.fullCalendar.formatDate(calEvent.start,'yyyy-MM-dd');//格式化日期
+                listEvents(selDate);
+            },eventClick:function( event, jsEvent, view ) {
+                //弹出框
+                clickEvent(event.start);
+            }
+        });
+
+    }
+    //根据主键删除
+    function del(id) {
+        $.messager.confirm('确认','您确认想要删除记录吗？',function(r){
+            if (r){
+                $.ajax({
+                    type: "POST",
+                    url: "${contextPath}/workSchedule/delete",
+                    data: {id:id},
+                    processData:true,
+                    dataType: "json",
+                    async : true,
+                    success: function (data) {
+                        if(data.code=="200"){
+                            init();
+                        }else{
+                            $.messager.alert('错误',data.result);
+                        }
+                    },
+                    error: function(){
+                        $.messager.alert('错误','远程访问失败');
+                    }
+                });
+            }
+        });
+
+    }
+    function update(id) {
+        var  htmlobj=$.ajax({url:"${contextPath}/workSchedule/getWorkScheduleById?id="+id,async:false});
+        var str=htmlobj.responseText;
+        var obj = $.parseJSON(str);
+        var date1 = new Date(obj.scheduleDate);
+        var selDate =$.fullCalendar.formatDate(date1,'yyyy-MM-dd');//格式化日期
+        $('#dlg').dialog("open");
+        $('#_form').form("clear");
+        $('#_form').form("load",{_id:obj.id,scheduleDate:selDate,scheduleText:obj.scheduleText});
+        $('#dlg').panel('move',{top:$(document).scrollTop() + ($(window).height()-100) * 0.5});
+        $('#dlg').panel('move',{left:$(document).scrollTop() + ($(window).height()+50) * 0.5});
+
+
+    }
+    //保存日程
+    function saveOrUpdate(){
+
+        if(!$('#_form').form("validate")){
+            return;
+        }
+        var _formData = $("#_form").serializeObject();
+        var _url = null;
+        //没有id就新增
+        if(_formData._id == null || _formData._id==""){
+            _url = "${contextPath}/workSchedule/insert";
+        }else{//有id就修改
+            _formData.id=_formData._id
+            _url = "${contextPath}/workSchedule/update";
+        }
+        $.ajax({
+            type: "POST",
+            url: _url,
+            data: _formData,
+            processData:true,
+            dataType: "json",
+            async : true,
+            success: function (data) {
+                if(data.code=="200"){
+                    $('#dlg').dialog('close');
+                    init(_formData.scheduleDate);
+                }else{
+                    $.messager.alert('错误',data.result);
+                }
+            },
+            error: function(){
+                $.messager.alert('错误','远程访问失败');
+            }
+        });
+    }
+
+    //获取数据方法
+    function listEvents(selDate){
+        //得到日期就显示样式
+        var  htmlobj=$.ajax({url:"${contextPath}/workSchedule/getWorkSchedule.json?scheduleDate="+selDate,async:false});
+        var str=htmlobj.responseText;
+        var htmlStr="";
+        var obj = $.parseJSON(str);
+        if(obj.length>0){
+            $("#scheduleList").empty();
+            var oldDate = new Date(obj[0].scheduleDateStr.replace("-", "/").replace("-", "/"));
+            var newDate = new Date(showNewDate());
+
+            if(oldDate<newDate){
+                $(obj).each(function(){
+                    htmlStr+="<li>"+this.scheduleText +"&nbsp;&nbsp;</li>";
+                });
+            }else{
+                $(obj).each(function(){
+                    htmlStr+="<li>"+this.scheduleText +"<a href='javascript:void(0)' onclick='update("+this.id+")'>修改</a><a href='javascript:void(0)' onclick='del("+this.id+")'>删除&nbsp;&nbsp;</a></li>";
+                });
+            }
+        }
+        $("#scheduleList").html(htmlStr);
+
+    }
+    function clickEvent(date) {
+        //弹出框
+        var selDate =$.fullCalendar.formatDate(date,'yyyy-MM-dd');//格式化日期
+        var oldDate = new Date(selDate.replace("-", "/").replace("-", "/"));
+        var newDate = new Date(showNewDate());
+        if(oldDate<newDate){
+            $.messager.alert('警告','不可添加日程');
+        }else{
+            $('#dlg').dialog("open");
+            $('#_form').form("clear");
+            $('#_form').form("load",{scheduleDate:selDate});
+            $('#dlg').panel('move',{top:$(document).scrollTop() + ($(window).height()-100) * 0.5});
+            $('#dlg').panel('move',{left:$(document).scrollTop() + ($(window).height()+50) * 0.5});
+        }
+    }
+    function taskCount(d){
+        var formData;
+        if(d!=null){
+            formData={flat:d};
+        }
+        var nums=[];
+        var names=[];
+        $.ajax({
+            type: "POST",
+            url: "${contextPath}/statistical/homeTaskCount",
+            data: formData,
+            processData:true,
+            async : true,
+            success: function (data) {
+                for(var i=0;i<data.length;i++){
+                    nums.push(data[i]);
+                    names.push(data[i].name);
+                }
+                echarts.init(document.getElementById('task-box')).hideLoading();
+                echarts.init(document.getElementById('task-box')).setOption({
+                    series: [{
+                        data: nums,
+                    }],
+                    legend: {
+                        data:names
+                    },
+                });
+            },
+            error: function(){
+                $.messager.alert('错误','远程访问失败');
+            }
+        });
+    }
+    function projectCount(d){
+        var formData;
+        if(d!=null){
+            formData={flat:d};
+        }
+        var nums=[];
+        var names=[];
+        $.ajax({
+            type: "POST",
+            url: "${contextPath}/statistical/homeProjectCount",
+            data: formData,
+            processData:true,
+            async : true,
+            success: function (data) {
+
+                for(var i=0;i<data.length;i++){
+                    nums.push(data[i]);
+                    names.push(data[i].name);
+                }
+                echarts.init(document.getElementById('project-box')).hideLoading();
+                echarts.init(document.getElementById('project-box')).setOption({
+                    series: [{
+                        data: nums,
+                    }],
+                    legend: {
+                        data:names
+                    },
+                });
+            },
+            error: function(){
+                $.messager.alert('错误','远程访问失败');
+            }
+        });
+    }
+</script>
+<script src='${contextPath}/resources/js/jquery-ui-1.10.2.custom.min.js'></script>
+<script src='${contextPath}/resources/js/fullcalendar.min.js'></script>
+<script src="${contextPath}/resources/echarts/echarts.common.min.js"></script>
+<link rel="stylesheet" type="text/css" href="${contextPath}/resources/css/fullcalendar.css">
+<script>
+    /* 项目图表 option */
+    var option1 = {
+        title: {
+            text: '项目状态概况',
+            x: 'left',
+            textStyle:{
+                fontSize:14
+            }
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+        legend: {
+            orient: 'vertical',
+            left: 20,
+            top: 'center',
+            data: [] //项目图例
+        },
+        series: [{
+            name: '项目状况',
+            type: 'pie',
+            radius: '75%',//显示为普通饼图
+            // radius: [20, 110],//显示为环状图
+            roseType: 'radius',//去除此项为普通饼图
+            center: ['57%', '50%'],
+            label: {
+                show: false,
+                // normal: {
+                //     // formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
+                //     formatter: ' {b|{b}：}{c}  {per|{d}%}  ',
+                //     backgroundColor: '#eee',
+                //     borderColor: '#aaa',
+                //     borderWidth: 1,
+                //     borderRadius: 4,
+                //     rich: {
+                //         a: {
+                //             color: '#999',
+                //             lineHeight: 22,
+                //             align: 'center'
+                //         },
+                //         hr: {
+                //             borderColor: '#aaa',
+                //             width: '100%',
+                //             borderWidth: 0.5,
+                //             height: 0
+                //         },
+                //         b: {
+                //             // fontSize: 16,
+                //             lineHeight: 33
+                //         },
+                //         per: {
+                //             color: '#eee',
+                //             backgroundColor: '#334455',
+                //             padding: [2, 4],
+                //             borderRadius: 2
+                //         }
+                //     }
+                // }
+            },
+            data: [],//项目图表数据
+            itemStyle: {
+                emphasis: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+            }
+        }]
+    };
+
+    var option2 = {
+        title: {
+            text: '任务状态概况',
+            x: 'left',
+            textStyle:{
+                fontSize:14
+            }
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+        legend: {
+            orient: 'vertical',
+            left: 20,
+            top: 'center',
+            data: [],//任务图例
+        },
+        series: [{
+            name: '任务状况',
+            type: 'pie',
+            // radius: '55%',
+            radius: [20, 110],
+            roseType: 'radius',
+            center: ['57%', '50%'],
+            label: {
+                show: false
+            },
+            data: [],//任务图表数据
+            itemStyle: {
+                emphasis: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+            }
+        }]
+    };
+    //初始化图表
+    echarts.init(document.getElementById('project-box')).setOption(option1);
+    echarts.init(document.getElementById('task-box')).setOption(option2);
+</script>
+<script>
+
+</script>
+</#body>

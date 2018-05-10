@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.alm.dao.WorkDayMapper">
+  <resultMap id="BaseResultMap" type="com.dili.alm.domain.WorkDay">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="word_day_week" jdbcType="INTEGER" property="wordDayWeek" />
+    <result column="work_day_year" jdbcType="VARCHAR" property="workDayYear" />
+    <result column="work_start_time" jdbcType="DATE" property="workStartTime" />
+    <result column="work_end_time" jdbcType="DATE" property="workEndTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, word_day_week, work_day_year, work_start_time, work_end_time
+  </sql>
+  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from work_day
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <update id="updateBy" parameterType="com.dili.alm.domain.WorkDay">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update work_day
+    <set>
+      <if test="wordDayWeek != null">
+        word_day_week = #{wordDayWeek,jdbcType=INTEGER},
+      </if>
+      <if test="workDayYear != null">
+        work_day_year = #{workDayYear,jdbcType=VARCHAR},
+      </if>
+      <if test="workStartTime != null">
+        work_start_time = #{workStartTime,jdbcType=DATE},
+      </if>
+      <if test="workEndTime != null">
+        work_end_time = #{workEndTime,jdbcType=DATE},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="getWorkDayNowDate"  resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM
+		work_day 
+		WHERE work_end_time &gt;= #{nowDate} and work_start_time &lt;= #{nowDate}
+	</select>
+	<select id="getWorkYear"  resultType="java.lang.String">
+		SELECT work_day_year
+		FROM
+		work_day GROUP BY work_day_year	
+	</select>
+	 <select id="getMaxOrMinWeekWorkDay"  resultType="com.dili.alm.domain.WorkDay">
+		SELECT a.id as id,a.word_day_week as wordDayWeek,a.work_day_year as workDayYear,
+		a.work_start_time as workStartTime,a.work_end_time as workEndTime
+		FROM
+	    work_day a
+	    JOIN 
+	    (
+		    SELECT work_day_year,
+		    <if test="falt == 1">
+		    MAX(word_day_week) word_day_week
+		    </if>
+		    <if test="falt == 0">
+		    MIN(word_day_week) word_day_week
+		    </if>
+		    FROM 
+		    work_day  WHERE work_day_year=#{year}
+	    ) b 
+	    ON 
+	    a.work_day_year=b.work_day_year 
+	    AND 
+	    a.word_day_week=b.word_day_week;
+	</select>
+	  <delete id="deteleWorkDaysByYear" >
+  		DELETE FROM work_day WHERE work_day_year = #{year}
+  	</delete>
+	
+
+</mapper>

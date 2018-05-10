@@ -463,27 +463,21 @@
              }
 
              
-              function getMyDay(date){
-            	  var week;
-            	  if(date.getDay()==0) week="周日"
-            	  if(date.getDay()==1) week="周一"
-            	  if(date.getDay()==2) week="周二"
-            	  if(date.getDay()==3) week="周三"
-            	  if(date.getDay()==4) week="周四"
-            	  if(date.getDay()==5) week="周五"
-            	  if(date.getDay()==6) week="周六"
-            	  return week;
+              function getMyDay() {
+            		 var  htmlobj=$.ajax({url:"${contextPath!}/workDay/isWorkEndDayDate",async:false});
+            	     var str=htmlobj.responseText;
+            	     var obj = $.parseJSON(str);
+            	     return obj;
             	}
-            	
             	  
 		    function save(isSubmit){  
-		    	
-		    	 var w1 = getMyDay(new Date()); 
-            	 if(w1!='周五'){
-            	
-            		 $.messager.alert('不能保存',' 不是周五  不可保存和提交周报');
-            		 return false;
-            	 }
+            	 if (getMyDay()==0) {
+           			$.messager.alert('不能提交周报', ' 不是工作日最后一天 不可提交周报');
+           			return false;
+           		}else if(getMyDay()==1){
+           			$.messager.alert('不能提交周报', ' 今天不是工作日');
+           			return false;
+           		}
             	  
             	  
 		    	 var  tempid=$("#pdprojectId").val();

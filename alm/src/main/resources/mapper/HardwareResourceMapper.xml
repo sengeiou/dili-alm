@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.alm.dao.HardwareResourceMapper">
+  <resultMap id="BaseResultMap" type="com.dili.alm.domain.HardwareResource">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="project_id" jdbcType="BIGINT" property="projectId" />
+    <result column="maintenance_date" jdbcType="TIMESTAMP" property="maintenanceDate" />
+    <result column="machine_name" jdbcType="VARCHAR" property="machineName" />
+    <result column="cpu_core_amount" jdbcType="INTEGER" property="cpuCoreAmount" />
+    <result column="memory" jdbcType="INTEGER" property="memory" />
+    <result column="disk" jdbcType="INTEGER" property="disk" />
+    <result column="ip" jdbcType="VARCHAR" property="ip" />
+    <result column="regional" jdbcType="INTEGER" property="regional" />
+    <result column="note" jdbcType="VARCHAR" property="note" />
+    <result column="is_submit" jdbcType="INTEGER" property="isSubmit" />
+    <result column="maintenance_owner" jdbcType="BIGINT" property="maintenanceOwner" />
+    <result column="last_modify_date" jdbcType="TIMESTAMP" property="lastModifyDate" />
+    <result column="service_environment" jdbcType="BIGINT" property="serviceEnvironment" />
+    <result column="cost" jdbcType="DECIMAL" property="cost" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, project_id, maintenance_date, machine_name, cpu_core_amount, memory, disk, ip, 
+    regional, note, is_submit, maintenance_owner, last_modify_date, service_environment, 
+    cost
+  </sql>
+  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from hardware_resource
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <update id="updateBy" parameterType="com.dili.alm.domain.HardwareResource">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update hardware_resource
+    <set>
+      <if test="projectId != null">
+        project_id = #{projectId,jdbcType=BIGINT},
+      </if>
+      <if test="maintenanceDate != null">
+        maintenance_date = #{maintenanceDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="machineName != null">
+        machine_name = #{machineName,jdbcType=VARCHAR},
+      </if>
+      <if test="cpuCoreAmount != null">
+        cpu_core_amount = #{cpuCoreAmount,jdbcType=INTEGER},
+      </if>
+      <if test="memory != null">
+        memory = #{memory,jdbcType=INTEGER},
+      </if>
+      <if test="disk != null">
+        disk = #{disk,jdbcType=INTEGER},
+      </if>
+      <if test="ip != null">
+        ip = #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="regional != null">
+        regional = #{regional,jdbcType=INTEGER},
+      </if>
+      <if test="note != null">
+        note = #{note,jdbcType=VARCHAR},
+      </if>
+      <if test="isSubmit != null">
+        is_submit = #{isSubmit,jdbcType=INTEGER},
+      </if>
+      <if test="maintenanceOwner != null">
+        maintenance_owner = #{maintenanceOwner,jdbcType=BIGINT},
+      </if>
+      <if test="lastModifyDate != null">
+        last_modify_date = #{lastModifyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="serviceEnvironment != null">
+        service_environment = #{serviceEnvironment,jdbcType=BIGINT},
+      </if>
+      <if test="cost != null">
+        cost = #{cost,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByIds" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from hardware_resource
+    where 1=1
+    <if test="hardwareResource.maintenanceOwner != null">
+    	AND maintenance_owner = #{hardwareResource.maintenanceOwner,jdbcType=BIGINT}
+    </if>
+    <if test="hardwareResource.projectId != null">
+   		AND project_id = #{hardwareResource.projectId,jdbcType=BIGINT}
+    </if>
+    <if test="hardwareResource.ip != null">
+   		AND ip = #{hardwareResource.ip,jdbcType=VARCHAR}
+    </if>
+    <if test="owner != null">
+	    <if test="hardwareResource.projectId == null  and list != null and list.size>0">
+			AND project_id IN 
+			<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+	  			#{item}  
+	 		</foreach> 
+	 	</if>	
+   	</if>
+   	<if test="owner == null">
+	    <if test="hardwareResource.projectId == null  and list != null and list.size>0">
+			OR project_id IN 
+			<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+	  			#{item}  
+	 		</foreach> 
+	 	</if>	
+   	</if>
+   	<if test="hardwareResource.sort != null">
+    	ORDER BY ${hardwareResource.sort} ${hardwareResource.order}
+    </if>
+ 	<if test="hardwareResource.page != null and hardwareResource.rows != null">
+   		limit ${(hardwareResource.page-1)*hardwareResource.rows},${hardwareResource.rows}
+   	</if>
+  </select>
+  <select id="selectByIdsCounts" resultType="int">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    count(1)
+    from hardware_resource
+    where 1=1
+    <if test="hardwareResource.maintenanceOwner != null">
+    	AND maintenance_owner = #{hardwareResource.maintenanceOwner,jdbcType=BIGINT}
+    </if>
+    <if test="hardwareResource.projectId != null">
+   		AND project_id = #{hardwareResource.projectId,jdbcType=BIGINT}
+    </if>
+    <if test="hardwareResource.ip != null">
+   		AND ip = #{hardwareResource.ip,jdbcType=VARCHAR}
+    </if>
+    <if test="owner != null">
+	    <if test="hardwareResource.projectId == null  and list != null and list.size>0">
+			AND project_id IN 
+			<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+	  			#{item}  
+	 		</foreach> 
+	 	</if>	
+   	</if>
+   	<if test="owner == null">
+	    <if test="hardwareResource.projectId == null  and list != null and list.size>0">
+			OR project_id IN 
+			<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+	  			#{item}  
+	 		</foreach> 
+	 	</if>	
+   	</if>
+  </select>
+  
+  
+  <update id="updateByProjectId" parameterType="com.dili.alm.domain.HardwareResource">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update hardware_resource
+    set
+        maintenance_owner = #{maintenanceOwner,jdbcType=BIGINT},
+        last_modify_date = #{lastModifyDate,jdbcType=TIMESTAMP},
+		is_submit = 1
+    where  project_id = #{projectId,jdbcType=BIGINT} AND is_submit = 0
+  </update>
+  
+</mapper>

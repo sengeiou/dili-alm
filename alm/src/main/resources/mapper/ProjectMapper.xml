@@ -30,6 +30,9 @@
         <result column="business_owner" jdbcType="BIGINT" property="businessOwner" />
         <result column="estimate_launch_date" jdbcType="TIMESTAMP" property="estimateLaunchDate" />
     </resultMap>
+   
+
+	   
     <sql id="Base_Column_List">
         <!--
           WARNING - @mbg.generated
@@ -163,5 +166,116 @@
 		ON p.id = t.`project_id` 
 		WHERE t.member_id = #{owner} ) AS c
 		
+	</select>
+	
+	<select id="getTpyeByProjectCount" resultType="com.dili.alm.domain.dto.ProjectStatusCountDto">
+		SELECT p.TYPE AS projectType ,p.project_state AS projectState,COUNT(*) AS stateCount
+		FROM `project` p
+		WHERE p.type=#{type,jdbcType=VARCHAR} 
+		AND (
+				p.project_state &lt;&gt; 4 
+				OR ( p.project_state = 4 AND p.actual_end_date BETWEEN #{startTime} AND #{endTime} ) 
+			 )
+		GROUP BY p.project_state
+	</select>
+	
+	<select id="getProjectIds" resultType="java.lang.Long">
+		SELECT id
+		FROM `project` 
+		WHERE 
+		project_state &lt;&gt; 4 
+		OR ( project_state = 4 AND actual_end_date BETWEEN #{startTime} AND #{endTime} ) 
+	</select>
+	
+	
+	<select id="getProjectProgressList" resultType="com.dili.alm.domain.dto.ProjectProgressDto">
+		SELECT 
+		p.id as id,p.name as name ,p.type as type,p.project_manager as projectManager,p.project_state as projectState,
+		p.completed_progress as completedProgress,pa.estimate_launch_date as estimateLaunchDate,
+		pa.`start_date` as startDate,pa.`end_date` as endDate 
+		FROM `project` p 
+		LEFT JOIN 
+		`project_apply` pa 
+		ON p.apply_id=pa.id 
+		WHERE 1=1
+		<if test="list == null or list.size==0 or flat==1">
+			AND (p.project_state &lt;&gt; 4 
+			OR ( p.project_state = 4 AND p.actual_end_date BETWEEN #{startTime} AND #{endTime} )) 
+		</if>
+		<if test="list != null and list.size>0">
+			AND p.project_state IN 
+			<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+	  			#{item}  
+	 		</foreach> 
+	 	</if>
+	 	<if test="project.page != null and project.rows != null">
+    		limit ${(project.page-1)*project.rows},${project.rows}
+    	</if>
+	</select>
+	<select id="getProjectProgressListCount" resultType="int">
+		SELECT 
+		count(*)
+		FROM `project` p 
+		LEFT JOIN 
+		`project_apply` pa 
+		ON p.apply_id=pa.id 
+		WHERE 1=1
+		<if test="list == null or list.size==0 or flat==1">
+			AND (
+				p.project_state &lt;&gt; 4 
+				OR ( p.project_state = 4 AND p.actual_end_date BETWEEN #{startTime} AND #{endTime} ) 
+			)
+		</if>
+		<if test="list != null and list.size>0">
+			AND p.project_state IN 
+			<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+	  			#{item}  
+	 		</foreach> 
+	 	</if>
+	 	
+	</select>
+	
+	
+	<select id="getProjectTypeAllCount" resultType="int">
+		SELECT COUNT(*)
+		FROM `project` 
+		WHERE
+				(project_state &lt;&gt; 4 
+				OR ( project_state = 4 AND actual_end_date BETWEEN #{startTime} AND #{endTime} ))
+	</select>
+	
+	<select id="getStateByProjectCount" resultType="com.dili.alm.domain.dto.ProjectStatusCountDto">
+		SELECT s.projectState AS projectState,COUNT(*) as stateCount
+		FROM
+		(SELECT DISTINCT p.id,p.project_state AS projectState
+		FROM `project` p 
+		LEFT JOIN 
+		`team` t 
+		ON p.id = t.`project_id` 
+		WHERE 1=1 
+		<if test="list != null and list.size>0">
+			AND p.id IN 
+			<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+	  			#{item}  
+	 		</foreach> 
+	 	</if>
+		<if test="owner != null">
+			AND t.member_id = #{owner} 
+	 	</if>
+		) s
+		GROUP BY s.projectState
+
+
+	</select>
+	<select id="selectNotSubmitWeekly" resultType="java.lang.Long">
+	SELECT 
+	id
+	FROM `project` 
+	WHERE 
+	project_state=1 
+	OR 
+	( #{startTime}&lt;=end_date AND end_date&lt;=#{endTime}
+		AND project_state = 2
+	)
 	</select>
 </mapper>

@@ -158,7 +158,7 @@ input {
 }
 .head .menu-top ul li{
     display: inline-block;
-    width: 120px;
+    width: 110px;
     height: 40px;
     margin: 0 15px;
     border-radius: 4px;
@@ -201,11 +201,21 @@ input {
     color: #fff;
     font-size: 12px;
 }
+
 .info .user-info{
     position: relative;
     /*width:150px;*/
     cursor: pointer;
     /*text-align: right;*/
+}
+.info .workday{
+    width: 72px;
+    height: 40px;
+    /*margin-top: -2px;*/
+    color: #fff;
+    font-size: 14px;
+    text-align: right;
+    line-height: 20px;
 }
 .user-info .user-menu{
     height: 40px;
@@ -264,6 +274,23 @@ input {
 }
 .menu-list ul li:hover a{
     color: #299a58;
+}
+.workday-list{
+    width: 296px;
+    margin-top: 5px;
+    font-size: 14px;
+    line-height:45px;
+    color: #fff;
+    border-radius: 5px;
+    background: url("../images/workday-bg.png") no-repeat left center;
+}
+.workday-list a{
+    display: block;
+    width: 38px;
+    margin-right: -10px;
+    text-indent: -9999px;
+    background: url("../images/gear.png") no-repeat left center;
+    float: right;
 }
 #news-list{
     right: 50px;
@@ -336,10 +363,11 @@ input {
     text-indent: 90px;
     background: #ededed;
     font-weight: bold;
-    /*background: #f0f0f0 url(../images/file-open.png) no-repeat 67px center;*/
+    background: #f0f0f0 url(../images/file-open.png) no-repeat 67px center;
+    cursor: pointer;
 }
 .menu-left .close{
-    /*background: #f0f0f0 url(../images/file-close.png) no-repeat 67px center;*/
+    background: #f0f0f0 url(../images/file-close.png) no-repeat 67px center;
 }
 .menu-left ul li{
     text-indent: 105px;
@@ -417,3 +445,21 @@ input {
 }
 
 /* datagrid row border end */
+/*图表*/
+.echarts-index{
+    width: 100%;
+    height: 300px;
+    /*background: #2a5d3f;*/
+}
+.charts-box{
+    box-sizing: border-box;
+    width: 50%;
+    height: 272px;
+    padding: 10px;
+}
+.charts-box:first-child{
+    /*background: #2a5d3f;*/
+}
+.charts-box:last-child{
+    background: #6b9cde;
+}

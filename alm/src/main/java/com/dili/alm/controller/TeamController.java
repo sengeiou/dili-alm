@@ -11,6 +11,8 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.alm.cache.AlmCache;
+import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.Department;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.Team;
@@ -52,6 +55,9 @@ import io.swagger.annotations.ApiOperation;
 @Controller
 @RequestMapping("/team")
 public class TeamController {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(TeamController.class);
+
 	@Autowired
 	TeamService teamService;
 	@Autowired
@@ -61,36 +67,15 @@ public class TeamController {
 	@Autowired
 	private DepartmentRpc deptRPC;
 
-	/**
-	 * 刷新项目缓存
-	 */
-	private void refreshProject() {
-		List<Project> list = projectService.list(DTOUtils.newDTO(Project.class));
-		list.forEach(project -> {
-			AlmCache.PROJECT_MAP.put(project.getId(), project);
-		});
-	}
-
-	private void refreshMember() {
-		AlmCache.USER_MAP.clear();
-		BaseOutput<List<User>> output = this.userRPC.list(new User());
-		if (!output.isSuccess()) {
-			return;
-		}
-		List<User> users = output.getData();
-		if (CollectionUtils.isEmpty(users)) {
-			return;
-		}
-		users.forEach(u -> {
-			AlmCache.USER_MAP.put(u.getId(), u);
-		});
-	}
-
 	@ApiOperation("跳转到Team页面")
-	@RequestMapping(value = "/index", method = RequestMethod.GET)
+	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(@RequestParam Long projectId, @RequestParam(defaultValue = "false") Boolean editable,
 			@RequestParam(required = false) String backUrl, ModelMap modelMap) throws UnsupportedEncodingException {
-		refreshProject();
+		try {
+			AlmCache.clearCache();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		Boolean projectManager = this.teamService.teamMemberIsProjectManager(user.getId(), projectId);
 		modelMap.addAttribute("projectId", projectId).addAttribute("editable", editable).addAttribute("projectManager",
@@ -106,7 +91,11 @@ public class TeamController {
 			@ApiImplicitParam(name = "Team", paramType = "form", value = "Team的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String list(TeamDepartmentRoleQuery dto) {
-		refreshMember();
+		try {
+			AlmCache.clearCache();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
 		try {
 			List<Map<Object, Object>> list = this.teamService.listContainUserInfo(dto);
 			EasyuiPageOutput e = new EasyuiPageOutput();
@@ -172,7 +161,7 @@ public class TeamController {
 		modelMap.put("textboxId", textboxId);
 		modelMap.put("dep", dep);
 		if (StringUtils.isNotBlank(dep)) {
-			AlmCache.DEP_MAP.forEach((Long k, Department v) -> {
+			AlmCache.getInstance().getDepMap().forEach((Long k, Department v) -> {
 				if (Objects.equals(v.getCode(), dep)) {
 					modelMap.put("dep", k);
 				}

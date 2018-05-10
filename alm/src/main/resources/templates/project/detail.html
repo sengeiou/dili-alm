@@ -54,9 +54,11 @@ span.require{
 		data-options="onClick:generateWeekly">周报生成</a> <%}%> <%if(editable == true && projectManager == true){%> <a href="#"
 		class="easyui-linkbutton"
 		style="width: 80px; height: 30px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef"
-		data-options="onClick:alarmConfig">告警设置</a> <%}%> <a href="#" class="easyui-linkbutton"
+		data-options="onClick:alarmConfig">告警设置</a> <%}%>
+		<a href="#" class="easyui-linkbutton"
 		style="width: 100px; height: 30px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef"
-		data-options="onClick:showMembers">团队成员：${model.memberCount!}</a> <a href="#" class="easyui-linkbutton"
+		data-options="onClick:showMembers">团队成员：${model.memberCount!}</a>
+		<a href="#" class="easyui-linkbutton"
 		style="width: 50px; height: 30px; margin-left: 10px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef"
 		data-options="onClick:function(){
 			window.location.href='${backUrl!}';

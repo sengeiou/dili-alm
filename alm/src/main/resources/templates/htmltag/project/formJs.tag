@@ -16,6 +16,7 @@ $(function() {
 							$.messager.alert('错误', '上传失败！');
 						},
 						onSuccess : function(files, data, xhr, pd) {
+							debugger;
 							if (data.code != 200) {
 								$.messager.alert('错误', data.result);
 								return;

@@ -93,10 +93,10 @@
         	return  '<span class="opt" style="padding:5px;"><a href="javascript:void(0)" onclick="projectNameSrc('+ row.id + ')" target="_blank">'+val+'</a></span>';        
         }
  		function projectNameSrc(rid){
- 			$("#myProject", parent.document).attr("src","${contextPath!}/project/detail?id="+ rid+"&backUrl=${contextPath!}/home/myProjectIndex");
+ 			$("#myProject", parent.document).attr("src","${contextPath!}/project/detail.html?id="+ rid+"&backUrl=${contextPath!}/home/myProjectIndex");
  		}
  		function formatOperSrc(rid){
- 			$("#myProject", parent.document).attr("src","${contextPath!}/project/detail?id="+ rid+"&editable=true&backUrl=${contextPath!}/home/myProjectIndex");
+ 			$("#myProject", parent.document).attr("src","${contextPath!}/project/detail.html?id="+ rid+"&editable=true&backUrl=${contextPath!}/home/myProjectIndex");
  		}
         /**
          * 绑定页面回车事件，以及初始化页面时的光标定位

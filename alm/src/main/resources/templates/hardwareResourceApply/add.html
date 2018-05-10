@@ -1,0 +1,157 @@
+<style>
+.table-box {
+	width: 100%;
+	text-align: center;
+	margin-bottom: 20px;
+}
+.table-box-mini{width:400px;}
+.table-box, .table-box tr td {
+	border: 1px solid #ddd;
+	border-collapse: collapse;
+}
+
+.table-box tr td {
+	padding: 5px;
+}
+
+.table-box .table-title {
+	background-color: #f5f5f5;
+	font-weight: bold;
+}
+
+.table-combo .textbox {
+	border: none;
+	border-radius: 0;
+}
+</style>
+<div class="easyui-panel" >
+	<form id="editForm" action="" method="post" enctype="multipart/form-data">
+		<div style="box-sizing: border-box; padding: 10px;">
+			<div class="easyui-layout" style="box-sizing: border-box; width: 100%;">
+				<table class="table-box">
+					<tr>
+						<td class="table-title"  >项目名称</td>
+						<td>
+							<select class="easyui-combobox" id="projectId" name="projectId"
+								style="width: 90%; text-align: center;"data-options="editable:false,onLoadSuccess:loadProject
+								,onChange:changeProject">
+									<%for(item in projects){%>
+									<option value="${item.id!}">${item.name!}</option> <%}%>
+							</select>
+							<input type="hidden" id="projectName-a" name="projectName"/>
+						</td>
+						<td class="table-title">项目编号</td>
+						<td >
+							<input class="easyui-textbox" style="width: 90%; text-align: center;" id="projectSerialNumber" name="projectSerialNumber"
+								   data-options="editable:false">
+						</td>
+						<td class="table-title" >项目经理</td>
+						<td>
+							<input class="easyui-textbox" style="width: 90%; text-align: center;" id="projectManager" data-options="editable:false">
+						    <input type="hidden" id="projectManagerId" name="projectManagerId"/>
+						</td>
+					</tr>
+					<tr>
+						<td class="table-title">申请部门</td>
+						<td>
+                           <select class="easyui-combobox" id="applicationDepartmentId" name="applicationDepartmentId"
+							style="width: 90%; text-align: center;"data-options="editable:false">
+								<%for(item in departments){%>
+								<option value="${item.id!}">${item.name!}</option> <%}%>
+						</select>
+                        </td>
+						<td class="table-title">申请人</td>
+						<td>
+							<input class="easyui-textbox" style="width: 90%; text-align: center;" id="applyOwner" data-options="editable:false" value="${userInfo.realName}">
+							 <input type="hidden" id="applicantId" name="applicantId" value="${userInfo.id}"/>
+
+						</td>
+						<td class="table-title">申请时间</td>
+						<td>
+							<input class="easyui-datebox" required="required"  style="width: 90%; text-align: center;" id="applyDate" name="applyDate" data-options="editable:false"></td>
+					</tr>
+					<tr>
+						<td class="table-title">使用环境</td>
+						<td colspan="5">
+							<%for(item in ddValue){%><input type="checkbox" style="margin-left: 10px" name="serviceEnvironmentChk" value="${item.value!}"/> ${item.code!} <%}%>
+						</td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6">申请原因</td>
+					</tr>
+					<tr>
+						<td class="table-combo" colspan="6">
+							<input class="easyui-textbox" name="applyReason" required="required"  id="applyReason" style="width:98%;height:50px;" data-options="label:'', validType:'length[0,255]'" />
+						 </td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6">配置要求</td>
+					</tr>
+					<tr>
+					 <td class="table-combo" colspan="6">
+					    <table  class="easyui-datagrid" id="configGrid" >
+					    <thead>
+					  		<tr>
+								<th data-options="field:'cpuAmount',width:'20%', align:'center'">
+									CPU(GB)</th>
+								<th data-options="field:'memoryAmount',width:'20%', align:'center'">内存</th>
+								<th
+									data-options="field:'diskAmount',width:'13%', align:'center'">
+									磁盘(GB)</th>
+								<th
+									data-options="field:'notes',width:'25%', align:'center'">
+									备注</th>
+								<th
+									data-options="field:'options',width:'15%', align:'center',formatter:optionFormatter">
+									操作</th>
+				          </tr>
+					    </thead>
+					    </table>
+						<a href="#" class="easyui-linkbutton" style="border:1px solid #ccc;"  onclick="javascript:$('#addConfig').dialog('open');">+</a>
+                     </td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6">其他说明</td>
+					</tr>
+					<tr>
+						<td class="table-combo" colspan="6">
+                    <input class="easyui-textbox" name="otherDescription"required="required"  id="otherDescription" style="width:98%;height:50px;" data-options="label:'', validType:'length[0,255]'" />
+                </td>
+					</tr>
+				</table>
+			</div>
+		</div>
+
+	</form>
+	<div id="addConfig"    class="easyui-dialog" title="添加配置要求" style="padding:13px" closed="true"   data-options="
+				iconCls: 'icon-save',
+				height: 260,
+				width:550,
+				buttons: [{
+					text:'保存',
+					iconCls:'icon-ok',
+					handler:add
+				},{
+					text:'取消',
+					handler:function(){
+						$('#addConfig').dialog('close');
+					}
+				}]
+			">
+	<form name="configForm" id="configForm" method="post">
+	<table class="table-box table-box-mini" >
+	<tr><td class="table-title">CPU内核数</td><td><input id="cpuAmount" name="cpuAmount" required="required" class="easyui-numberspinner" style="width:100%"
+    required="required" data-options="min:1,editable:false"></td>
+    <td class="table-title">内存（GB）</td><td><input id="memoryAmount" name="memoryAmount" required="required" class="easyui-numberspinner" style="width:100%"
+    required="required" data-options="min:1,editable:false"></td></tr>
+	<tr><td class="table-title">磁盘（GB）</td><td><input id="diskAmount" name="diskAmount" class="easyui-numberspinner" style="width:100%"
+    required="required" data-options="min:1,editable:false"></td><td class="table-title">备注</td><td><input class="easyui-textbox" name="notes" required="required" /></td></tr>
+	</table>
+	<input type="hidden" name="updateSige" id="updateSige"/>
+	</form>
+	</div>
+</div>
+<script type="text/javascript">
+
+
+</script>
