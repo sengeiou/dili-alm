@@ -161,27 +161,12 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 			List<ApplyApprove> approveList = JSON.parseArray(approveDescription, ApplyApprove.class);
 
 			/*
-			 * 能够操作的情况: 当前操作用户在审批组中 且没有审批过意见 且不是组长
+			 * 能够操作的情况: 当前操作用户在审批组中包括项目委员会组长
 			 */
 			canOpt = approveList.stream()
 					.anyMatch(applyApprove -> Objects.equals(applyApprove.getUserId(),
 							SessionContext.getSessionContext().getUserTicket().getId())
-							&& applyApprove.getResult() == null
-							&& !Objects.equals(applyApprove.getUserId(), getApproveLeader()));
-
-			/*
-			 * 如果都不能处理，检查是否扭转到组长
-			 */
-			if (!canOpt) {
-				/*
-				 * 处理条件如下: 当前操作用户属于组长 且审批组中其他成员都全部审批完毕 (审批完毕成员数等于总成员数减1) 注：目前只支持一位组长
-				 */
-				canOpt = Objects.equals(SessionContext.getSessionContext().getUserTicket().getId(), getApproveLeader())
-						&& approveList.stream()
-								.filter(applyApprove -> !Objects.equals(applyApprove.getUserId(), getApproveLeader())
-										&& applyApprove.getResult() != null)
-								.count() == approveList.size() - 1;
-			}
+							&& applyApprove.getResult() == null);			
 
 		}
 		return canOpt;
