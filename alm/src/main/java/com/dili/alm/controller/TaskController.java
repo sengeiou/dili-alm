@@ -359,7 +359,11 @@ public class TaskController {
 
 		boolean isOwner = userTicket.getId().equals(task.getOwner());
 
-		taskDetails.setModified(isOwner ? new Date() : taskDetails.getModified());
+		// taskDetails.setModified(isOwner ? new Date() : taskDetails.getModified());
+
+		if (taskDetails.getModified() == null) {
+			taskDetails.setModified(new Date());
+		}
 
 		String executeDateStr = new SimpleDateFormat("yyyy-MM-dd").format(taskDetails.getModified());
 
