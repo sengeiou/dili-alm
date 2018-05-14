@@ -26,9 +26,7 @@
 						<td style="padding: 5px;"><input class="easyui-textbox" name="name" id="name" style="width: 100%"
 							data-options="label:'任务名称:', validType:'length[0,255]'" /></td>
 						<td style="padding: 5px;"><input class="easyui-textbox" name="projectId" id="projectId" style="width: 100%"
-							data-options="label:'所属项目:'" /> <#comboProvider _id="projectId" _table="project" _valueField="id" _textField="name" />
-							
-				<td style="padding: 5px; display: none;"><input name="versionId" id="versionId" class="easyui-combobox" style="width: 100%;"
+							data-options="label:'所属项目:'" /> <#comboProvider _id="projectId" _table="project" _valueField="id" _textField="name" /><td style="padding: 5px; display: none;"><input name="versionId" id="versionId" class="easyui-combobox" style="width: 100%;"
 								data-options="label:'所属版本:'" /></td>
 							<tr>
 								<td style="padding:5px; display:none;">
@@ -56,6 +54,7 @@
                         </td>
                     </tr>
                 
+				
 				
 				
 				
@@ -89,10 +88,10 @@
 		</table>
 		<!-- datagrid工具栏 -->
 		<div id="toolbar" style="height: 20px; padding: 2px 5px;">
-			<span id="manager_tools"> <#resource code="addTask"> <a
-					href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true"></a> </#resource> <#resource code="updateTask">
-				<a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()" plain="true"></a> </#resource> <#resource code="delTask">
-				<a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true"></a> </#resource>
+			<span id="manager_tools"> <#resource code="addTask"> <a href="#" class="easyui-linkbutton" iconCls="icon-add"
+					onclick="openInsert()" plain="true"></a> </#resource> <#resource code="updateTask"> <a href="#" class="easyui-linkbutton"
+					iconCls="icon-edit" onclick="openUpdate()" plain="true"></a> </#resource> <#resource code="delTask"> <a href="#"
+					class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true"></a> </#resource>
 			</span>
 			<div style="float: right">
 				边框显示: <select onchange="changeBorder('grid',this.value)">
@@ -241,6 +240,7 @@
         //defaultValue();
         $("#task_detail").hide();
         $("#dialog_toolbar").show();
+        $("#saveTask").show();
         $("#dialog_toolbar_detail").hide();
         $("#task_detail_list").hide();
         $('#dlg').dialog('open');

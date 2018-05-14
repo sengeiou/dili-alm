@@ -166,7 +166,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 			canOpt = approveList.stream()
 					.anyMatch(applyApprove -> Objects.equals(applyApprove.getUserId(),
 							SessionContext.getSessionContext().getUserTicket().getId())
-							&& applyApprove.getResult() == null);			
+							&& applyApprove.getResult() == null);
 
 		}
 		return canOpt;
@@ -552,9 +552,11 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	private void closeProject(ProjectComplete complete) {
 		Long projectId = complete.getProjectId();
 		Project project = projectService.get(projectId);
-		project.setActualEndDate(new Date());
+		Date now = new Date();
+		project.setActualEndDate(now);
 		project.setProjectState(ProjectState.CLOSED.getValue());
-		project.setActualEndDate(new Date());
+		project.setActualEndDate(now);
+		project.setCloseTime(now);
 		projectService.updateSelective(project);
 	}
 

@@ -1,8 +1,8 @@
 package com.dili.alm.domain;
 
-import com.dili.ss.domain.BaseDomain;
-
 import java.util.Date;
+
+import com.dili.ss.domain.BaseDomain;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -46,6 +46,10 @@ public class ProjectEntity extends BaseDomain implements Project {
 	private Long parentId;
 
 	private Long applyId;
+
+	private Date closeTime;
+
+	private Long dep;
 
 	public Long getId() {
 		return id;
@@ -141,16 +145,6 @@ public class ProjectEntity extends BaseDomain implements Project {
 
 	public void setOriginator(Long originator) {
 		this.originator = originator;
-	}
-
-	@Override
-	public Long getDep() {
-		return null;
-	}
-
-	@Override
-	public void setDep(Long dep) {
-
 	}
 
 	@Override
@@ -261,5 +255,24 @@ public class ProjectEntity extends BaseDomain implements Project {
 		this.actualEndDate = actualEndDate;
 	}
 
+	@Override
+	public Date getCloseTime() {
+		return closeTime;
+	}
+
+	@Override
+	public void setCloseTime(Date closeTime) {
+		this.closeTime = closeTime;
+	}
+
+	@Override
+	public Long getDep() {
+		return dep;
+	}
+
+	@Override
+	public void setDep(Long dep) {
+		this.dep = dep;
+	}
 
 }
