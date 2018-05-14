@@ -63,33 +63,32 @@ public class ProjectPhaseServiceImpl extends BaseServiceImpl<ProjectPhase, Long>
 	}
 
 	@Override
-	public ProjectPhaseAddViewDto getAddViewData(Long projectId) {
-		ProjectPhaseAddViewDto dto = new ProjectPhaseAddViewDto();
+	public ProjectPhase getAddViewData(Long projectId) {
+		ProjectPhase dto = DTOUtils.newDTO(ProjectPhase.class);
 		Project project = this.projectService.get(projectId);
-		dto.setProject(project);
+		dto.aset("project1", project);
 		ProjectVersion query = DTOUtils.newDTO(ProjectVersion.class);
 		query.setProjectId(projectId);
 		List<ProjectVersion> allVersions = this.projectVersionService.list(query);
-		dto.setAllVersions(allVersions);
-		dto.setPhaseNames(this.getPhaseNames());
+		dto.aset("allVersions", allVersions);
+		dto.aset("phaseNames", this.getPhaseNames());
 		return dto;
 	}
 
 	@Override
-	public ProjectPhaseEditViewDto getEditViewData(Long id) {
-		ProjectPhase po = this.getActualDao().selectByPrimaryKey(id);
-		ProjectPhaseEditViewDto dto = DTOUtils.toEntity(po, ProjectPhaseEditViewDto.class, false);
+	public ProjectPhase getEditViewData(Long id) {
+		ProjectPhase dto = this.getActualDao().selectByPrimaryKey(id);
 		Project project = this.projectService.get(dto.getProjectId());
-		dto.setProject(project);
+		dto.aset("project1", project);
 		ProjectVersion version = DTOUtils.newDTO(ProjectVersion.class);
 		version.setProjectId(dto.getProjectId());
 		List<ProjectVersion> versions = this.projectVersionService.list(version);
-		dto.setAllVersions(versions);
-		dto.setPhaseNames(this.getPhaseNames());
+		dto.aset("allVersions", versions);
+		dto.aset("phaseNames", this.getPhaseNames());
 		Files query = DTOUtils.newDTO(Files.class);
 		query.setPhaseId(id);
 		List<Files> files = this.filesService.list(query);
-		dto.setFiles(files);
+		dto.aset("files", files);
 		return dto;
 	}
 

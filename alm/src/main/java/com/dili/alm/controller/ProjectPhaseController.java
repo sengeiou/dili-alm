@@ -13,12 +13,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectPhase;
 import com.dili.alm.domain.dto.ProjectPhaseAddViewDto;
 import com.dili.alm.domain.dto.ProjectPhaseEditViewDto;
 import com.dili.alm.domain.dto.ProjectPhaseFormDto;
 import com.dili.alm.service.ProjectPhaseService;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 
 import io.swagger.annotations.Api;
@@ -76,8 +78,8 @@ public class ProjectPhaseController {
 
 	@RequestMapping(value = "/edit", method = RequestMethod.GET)
 	public String editView(@RequestParam Long id, ModelMap map) {
-		ProjectPhaseEditViewDto dto = this.projectPhaseService.getEditViewData(id);
-		map.addAttribute("model", dto);
+		ProjectPhase dto = this.projectPhaseService.getEditViewData(id);
+		map.addAttribute("model", DTOUtils.go(dto));
 		return "project/phase/form";
 	}
 
@@ -99,8 +101,8 @@ public class ProjectPhaseController {
 
 	@RequestMapping(value = "/add", method = RequestMethod.GET)
 	public String addView(@RequestParam Long projectId, ModelMap map) {
-		ProjectPhaseAddViewDto dto = this.projectPhaseService.getAddViewData(projectId);
-		map.addAttribute("model", dto);
+		ProjectPhase dto = this.projectPhaseService.getAddViewData(projectId);
+		map.addAttribute("model", DTOUtils.go(dto));
 		return "project/phase/form";
 	}
 }
