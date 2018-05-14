@@ -197,10 +197,10 @@
 		FROM `project` p
 		WHERE
 		p.type=#{type,jdbcType=VARCHAR}
-		AND ( created >= #{startTime} AND created <= #{endTime} )
-		OR ( ( close_time IS NULL AND NOW( ) >= '2018-08-01' AND NOW( ) <=
-		'2019-01-01' ) OR ( NOW( ) >= '2019-01-01' ) )
-		OR ( close_time >= #{startTime} AND close_time <= #{endTime} )
+		AND ( created <![CDATA[>=]]> #{startTime} AND created <![CDATA[<=]]> #{endTime} )
+		OR ( ( close_time IS NULL AND NOW( ) <![CDATA[>=]]> #{startTime} AND NOW( ) <![CDATA[<=]]>
+		#{endTime} ) OR ( NOW( ) <![CDATA[>=]]> #{endTime} ) )
+		OR ( close_time <![CDATA[>=]]> #{startTime} AND close_time <![CDATA[<=]]> #{endTime} )
 		GROUP BY
 		p.project_state
 	</select>
