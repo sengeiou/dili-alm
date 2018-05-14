@@ -1137,7 +1137,6 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	/**
 	 * 定时刷过期任务
 	 */
-	@Scheduled(cron = "0 0 0 * * ? ")
 	@Override
 	@Transactional
 	public void submitWeekly() {
