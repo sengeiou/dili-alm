@@ -1099,8 +1099,8 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		}
 		WeeklyPara weeklyParaWeek=  new WeeklyPara();
 		weeklyParaWeek.setId(Long.parseLong(projectId));
-		weeklyParaWeek.setStartDate(workDay.getWorkStartTime()+" 00:00:00");
-		weeklyParaWeek.setEndDate(workDay.getWorkStartTime()+" 23:59:59");
+		weeklyParaWeek.setStartDate(DateUtil.getDate(workDay.getWorkStartTime())+" 00:00:00");
+		weeklyParaWeek.setEndDate(DateUtil.getDate(workDay.getWorkEndTime())+" 23:59:59");
 		//本周进展情况 
 		List<TaskDto> td=selectWeeklyProgress(weeklyParaWeek);
 		WorkDay nextWeeklyWorkDays = workDayService.getNextWeeklyWorkDays();
