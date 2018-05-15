@@ -46,6 +46,7 @@ import com.dili.alm.service.StatisticalService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.alm.utils.WebUtil;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
@@ -129,7 +130,7 @@ public class StatisticalController {
 
 	@ApiOperation(value = "查询时间段内员工工时", notes = "查询返回easyui信息")
 	@RequestMapping(value = "/taskHoursByUser", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody List<TaskByUsersDto> taskHoursByUser(String startTime, String endTime, String[] userId,
+	public @ResponseBody String taskHoursByUser(String startTime, String endTime, String[] userId,
 			String[] departmentId) throws Exception {
 
 		List<Long> userIds = null;
@@ -149,23 +150,23 @@ public class StatisticalController {
 		}
 		List<TaskByUsersDto> taskByUserDtoList = statisticalService.listTaskHoursByUser(startTime, endTime, userIds,
 				departmentIds);
-		return taskByUserDtoList;
+		return new EasyuiPageOutput(taskByUserDtoList.size(), taskByUserDtoList).toString();
 
 	}
 
 	@ApiOperation(value = "查询年度报表", notes = "查询返回easyui信息")
 	@RequestMapping(value = "/listProjectYearCover", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody List<ProjectYearCoverDto> listProjectYearCover(String year, String month,String aaa,String weekNum) throws Exception {
-		return statisticalService.listProjectYearCover(year, month,weekNum);
+	public @ResponseBody List<ProjectYearCoverDto> listProjectYearCover(String year, String month, String aaa,
+			String weekNum) throws Exception {
+		return statisticalService.listProjectYearCover(year, month, weekNum);
 
 	}
-	
-
 
 	@ApiOperation(value = "报表图显示", notes = "查询返回easyui信息")
 	@RequestMapping(value = "/projectYearCoverForAll", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody ProjectYearCoverForAllDto projectYearCoverForAll(String year, String month,boolean isFullYear,String weekNum) throws Exception {
-		ProjectYearCoverForAllDto all = statisticalService.getProjectYearsCoverForAll(year, month,isFullYear,weekNum);
+	public @ResponseBody ProjectYearCoverForAllDto projectYearCoverForAll(String year, String month, boolean isFullYear,
+			String weekNum) throws Exception {
+		ProjectYearCoverForAllDto all = statisticalService.getProjectYearsCoverForAll(year, month, isFullYear, weekNum);
 		return all;
 	}
 
@@ -173,24 +174,24 @@ public class StatisticalController {
 	@RequestMapping(value = "/getYears.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<SelectYearsDto> getYears() throws Exception {
 		List<SelectYearsDto> selectYears = new ArrayList<SelectYearsDto>();
-		 Calendar c = Calendar.getInstance();
-	      int year = c.get(Calendar.YEAR);
-	      int beginYear = year-5;
-	      int endYear = year + 5;
-	      for (int i = beginYear; i <= endYear; i++) {
-	    	  SelectYearsDto dto = new SelectYearsDto();
-	    	  dto.setText(i+"");
-	    	  dto.setValue(i+"");
-	    	  selectYears.add(dto);
+		Calendar c = Calendar.getInstance();
+		int year = c.get(Calendar.YEAR);
+		int beginYear = year - 5;
+		int endYear = year + 5;
+		for (int i = beginYear; i <= endYear; i++) {
+			SelectYearsDto dto = new SelectYearsDto();
+			dto.setText(i + "");
+			dto.setValue(i + "");
+			selectYears.add(dto);
 		}
 		return selectYears;
 
 	}
-	
+
 	@ApiOperation(value = "获取当月星期数", notes = "查询返回easyui信息")
 	@RequestMapping(value = "/getWeekNum.json", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String getWeekNum(String year,String month) throws Exception {
-		if(year==null||month==null){
+	public @ResponseBody String getWeekNum(String year, String month) throws Exception {
+		if (year == null || month == null) {
 			return String.valueOf(5);
 		}
 		int yearIntager = 0;
@@ -202,15 +203,15 @@ public class StatisticalController {
 			return String.valueOf(5);
 		}
 
-		int size = DateUtil.getWeeks(yearIntager, monthIntager).size()/2 ;//得到开始结束时间所有key值总数
+		int size = DateUtil.getWeeks(yearIntager, monthIntager).size() / 2;// 得到开始结束时间所有key值总数
 		return String.valueOf(size);
 
 	}
 
 	@ApiOperation(value = "返回查询年份", notes = "查询返回easyui信息")
 	@RequestMapping(value = "/getSearchDate.json", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String getSearchDate(String year, String month,String weekNum) throws Exception {
-		String returnStr = JSONObject.toJSONString(statisticalService.getSearchDate(year,month,weekNum));
+	public @ResponseBody String getSearchDate(String year, String month, String weekNum) throws Exception {
+		String returnStr = JSONObject.toJSONString(statisticalService.getSearchDate(year, month, weekNum));
 		return returnStr;
 
 	}
@@ -235,17 +236,18 @@ public class StatisticalController {
 	public @ResponseBody List<SelectTaskHoursByUserProjectDto> listProjectForEchar(String[] projectIds, Long userId)
 			throws Exception {
 		List<Long> projectIdList = new ArrayList<Long>();
-		if (projectIds != null&&projectIds.length>0) {
+		if (projectIds != null && projectIds.length > 0) {
 			projectIdList = new ArrayList<Long>(projectIds.length);
 			for (String long1 : projectIds) {
 				projectIdList.add(Long.parseLong(long1));
 			}
-		}else{
+		} else {
 			projectIdList.add(Long.getLong(String.valueOf(-1)));
 		}
 		return statisticalService.selectTotalTaskAndOverHoursForEchars(projectIdList);
 
 	}
+
 	/*
 	 * 项目工时部分优化测试，转为list bean传递页面保存
 	 */
@@ -306,15 +308,15 @@ public class StatisticalController {
 				projectIds.add(Long.parseLong(long1));
 			}
 		}
-		
-		 List<SelectTaskHoursByUserDto> aa = statisticalService.listUserHours(startDate, endDate, projectIds);
+
+		List<SelectTaskHoursByUserDto> aa = statisticalService.listUserHours(startDate, endDate, projectIds);
 		return aa;
 
 	}
 
 	@RequestMapping(value = "/exportPorjectHours", method = { RequestMethod.POST, RequestMethod.GET })
-	public @ResponseBody BaseOutput export(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap,String startDate, String endDate,
-			String[] project) throws IOException {
+	public @ResponseBody BaseOutput export(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap,
+			String startDate, String endDate, String[] project) throws IOException {
 		try {
 			String rtn = getRtn("项目工时统计.xls", request);
 			response.setContentType("text/html");
@@ -339,7 +341,6 @@ public class StatisticalController {
 		return BaseOutput.success("导出成功");
 	}
 
-
 	/*** 查询工时相关services****by******JING***END ****/
 
 	@ApiOperation(value = "查询项目进展总汇", notes = "查询返回easyui信息")
@@ -348,9 +349,9 @@ public class StatisticalController {
 			String ids) throws Exception {
 		String startTime2 = getStartTime(startTime, endTime, flat);
 		String endTime2 = getEndTime(startTime, endTime, flat);
-		Integer f=1;
-		if(WebUtil.strIsEmpty(startTime)&&WebUtil.strIsEmpty(startTime)){
-			f=0;
+		Integer f = 1;
+		if (WebUtil.strIsEmpty(startTime) && WebUtil.strIsEmpty(startTime)) {
+			f = 0;
 		}
 		List<Integer> list = new ArrayList<Integer>();
 		if (!WebUtil.strIsEmpty(ids)) {
@@ -359,7 +360,7 @@ public class StatisticalController {
 				list.add(Integer.parseInt(string));
 			}
 		}
-		return statisticalService.getProjectProgresstDTO(project, startTime2, endTime2, list,f).toString();
+		return statisticalService.getProjectProgresstDTO(project, startTime2, endTime2, list, f).toString();
 
 	}
 
@@ -379,13 +380,13 @@ public class StatisticalController {
 		return projectService.list(project);
 
 	}
+
 	@ApiOperation(value = "查询项目状态集合", notes = "查询返回List信息")
 	@RequestMapping(value = "/projectStateList", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody List<Map<String,String>> projectStateList() throws Exception {
+	public @ResponseBody List<Map<String, String>> projectStateList() throws Exception {
 		return projectService.projectStateList();
 
 	}
-	
 
 	@RequestMapping(value = "/projecOverViewDownload", method = { RequestMethod.GET, RequestMethod.POST })
 	public void projecOverViewDownload(String startTime, String endTime, HttpServletRequest request,
