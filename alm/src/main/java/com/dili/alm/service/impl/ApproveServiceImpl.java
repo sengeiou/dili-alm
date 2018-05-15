@@ -5,10 +5,13 @@ import com.alibaba.fastjson.JSON;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.ApproveMapper;
+import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.domain.*;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.apply.ApplyApprove;
+import com.dili.alm.exceptions.ApplicationException;
+import com.dili.alm.exceptions.ApproveException;
 import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.*;
@@ -28,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.InputStream;
@@ -83,6 +87,8 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
 	@Autowired
 	private FilesService filesService;
+	@Autowired
+	private ProjectMapper projectMapper;
 
 	public ApproveMapper getActualDao() {
 		return (ApproveMapper) getDao();
@@ -197,11 +203,12 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		modelMap.put("complete", complete);
 	}
 
+	@Transactional(rollbackFor = ApplicationException.class)
 	@Override
-	public synchronized BaseOutput applyApprove(Long id, String opt, String notes) {
+	public synchronized void applyApprove(Long id, String opt, String notes) throws ApproveException {
 		Approve approve = this.get(id);
 		if (approve.getStatus() != AlmConstants.ApplyState.APPROVE.getCode()) {
-			return BaseOutput.success();
+			throw new ApproveException("当前状态不能进行审批操作");
 		}
 		String approveDescription = approve.getDescription();
 		if (StringUtils.isNotBlank(approveDescription)) {
@@ -256,6 +263,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 						ProjectChange change = projectChangeService.get(approve.getProjectApplyId());
 						change.setStatus(AlmConstants.ApplyState.PASS.getCode());
 						projectChangeService.updateSelective(change);
+						updateProjectEndDate(change);
 						sendMail(change, true);
 					} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.COMPLETE.getCode())) {
 						ProjectComplete complete = projectCompleteService.get(approve.getProjectApplyId());
@@ -274,7 +282,16 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 					approve.getCreateMemberId());
 			sendLeaderApproveMessage(id, approve.getType(), approveList);
 		}
-		return BaseOutput.success();
+	}
+
+	private void updateProjectEndDate(ProjectChange change) throws ApproveException {
+		Project project = this.projectMapper.selectByPrimaryKey(change.getProjectId());
+		project.setEstimateLaunchDate(change.getEstimateLaunchDate());
+		project.setEndDate(change.getEndDate());
+		int rows = this.projectMapper.updateByPrimaryKeySelective(project);
+		if (rows <= 0) {
+			throw new ApproveException("更新项目信息失败");
+		}
 	}
 
 	private void sendLeaderApproveMessage(Long id, String type, List<ApplyApprove> approveList) {

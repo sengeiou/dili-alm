@@ -2,6 +2,7 @@ package com.dili.alm.service;
 
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.Approve;
+import com.dili.alm.exceptions.ApproveException;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
 
@@ -21,7 +22,7 @@ public interface ApproveService extends BaseService<Approve, Long> {
 
     void buildCompleteApprove(Map map, Long id);
 
-    BaseOutput applyApprove(Long id, String opt, String notes);
+    void applyApprove(Long id, String opt, String notes) throws ApproveException;
 
     BaseOutput verity(Long id, String opt, String notes);
 
