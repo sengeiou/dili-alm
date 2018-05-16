@@ -3,6 +3,7 @@ package com.dili.alm.dao;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -47,18 +48,15 @@ public interface TaskMapper extends MyMapper<Task> {
 	/*** 数据统计相关 begin ***/
 	List<TaskByUsersDto> selectTaskHourByUser(@Param("beginTime") String beginTime, @Param("endTime") String endTime,
 			@Param("departmentIds") List<Long> dids, @Param("uIds") List<Long> uids);
-	
+
 	TaskByUsersDto selectTotalTaskHourByUser(@Param("beginTime") String beginTime, @Param("endTime") String endTime,
 			@Param("departmentIds") List<Long> dids, @Param("uIds") List<Long> uids);
-	
+
 	List<TaskHoursByProjectDto> selectProjectHours(@Param("beginTime") String beginTime,
 			@Param("endTime") String endTime, @Param("pids") List<Long> projectId);
 
-
-	
 	List<SelectTaskHoursByUserDto> selectUsersHours(@Param("beginTime") String beginTime,
 			@Param("endTime") String endTime, @Param("pids") List<Long> projectId);
-
 
 	List<SelectTaskHoursByUserProjectDto> selectUsersProjectHours(@Param("userIds") List<Long> userId,
 			@Param("projectIds") List<Long> projectId);
@@ -76,6 +74,6 @@ public interface TaskMapper extends MyMapper<Task> {
 	List<TaskStateCountDto> getStateByTaskCount(@Param("owner") Long owner, @Param("list") List<Long> list);
 
 	List<Map<Object, Object>> sumUserProjectTaskHour(@Param("projectIds") List<Long> projectIds,
-			@Param("startTime") Date startTime, @Param("endTime") Date endDate);
+			@Param("userIds") Set<Long> userIds, @Param("startTime") Date startTime, @Param("endTime") Date endDate);
 
 }

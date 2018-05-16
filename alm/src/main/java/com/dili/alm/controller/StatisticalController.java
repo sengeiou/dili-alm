@@ -258,8 +258,8 @@ public class StatisticalController {
 		List<Project> projects = this.projectService.list(DTOUtils.newDTO(Project.class));
 		projects.forEach(p -> projectIds.add(p.getId()));
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		List<Map<Object, Object>> listMap = this.taskMapper.sumUserProjectTaskHour(projectIds, df.parse("2018-02-01"),
-				df.parse("2018-05-01"));
+		List<Map<Object, Object>> listMap = this.taskMapper.sumUserProjectTaskHour(projectIds, null,
+				df.parse("2018-02-01"), df.parse("2018-05-01"));
 		return this.buildUserProjectTaskHourCountDto(listMap);
 	}
 

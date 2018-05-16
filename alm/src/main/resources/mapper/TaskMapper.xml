@@ -740,12 +740,16 @@
 			</if>
 			WHERE
 			t.project_id = #{projectId}
-			<!-- <if test="startTime !=null"> <![CDATA[AND p.actual_start_date >= 
-				#{startTime}]]> </if> <if test="endTime != null"> <![CDATA[AND p.actual_start_date 
-				<= #{endTime}]]> </if> -->
 			GROUP BY
 			t.`owner`
-			) t#{index} ON u.id = t#{index}.user_id
+			) t#{index} ON u.id
+			= t#{index}.user_id
 		</foreach>
+		WHERE u.id IN
+		<foreach collection="userIds" open="(" separator="," close=")"
+			item="userId">
+			#{userId}
+		</foreach>
+		AND u.id != 1
 	</select>
 </mapper>

@@ -10,26 +10,26 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import cn.afterturn.easypoi.excel.ExcelExportUtil;
-import cn.afterturn.easypoi.excel.entity.ExportParams;
-import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
-import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
-
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.dao.TaskMapper;
+import com.dili.alm.dao.TeamMapper;
 import com.dili.alm.dao.WorkDayMapper;
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.Team;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectProgressDto;
@@ -48,7 +48,12 @@ import com.dili.alm.service.StatisticalService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
-import com.mysql.fabric.xmlrpc.base.Data;
+
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
+import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
+import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
+import tk.mybatis.mapper.entity.Example;
 
 @Service
 public class StatistaicalServiceImpl implements StatisticalService {
@@ -64,6 +69,8 @@ public class StatistaicalServiceImpl implements StatisticalService {
 
 	@Autowired
 	WorkDayMapper wdMapper;
+	@Autowired
+	private TeamMapper teamMapper;
 
 	private static final String PROJECT_TYPE_CODE = "project_type";
 	private static final String TASK_STATE_CODE = "task_status";
@@ -210,56 +217,15 @@ public class StatistaicalServiceImpl implements StatisticalService {
 			});
 		}
 
-		List<Map<Object, Object>> listMap = taskMapper.sumUserProjectTaskHour(selectProjectIds, df.parse(startTime),
-				df.parse(endTime));
+		// 查询项目组成员
+		Example example = new Example(Team.class);
+		example.createCriteria().andIn("projectId", selectProjectIds);
+		List<Team> teams = this.teamMapper.selectByExample(example);
+		Set<Long> userIds = new HashSet<>();
+		teams.forEach(t -> userIds.add(t.getMemberId()));
 
-		// 查出人员信息，既数据，缺少项目的加班工时和正常工时
-		// List<SelectTaskHoursByUserDto> list = taskMapper.selectUsersHours(startTime,
-		// endTime, projectIds);
-
-		/*
-		 * if (list==null||list.size()==0) { return null; }
-		 */
-
-		/*
-		 * for (SelectTaskHoursByUserDto userHoursEntity : list) {//根据人员信息去查找相应的项目工时 int
-		 * totalTaskHours = 0; int totalOverHours = 0; int totalAllHours = 0;
-		 */
-
-		// 设置人员ID信息，查询出每个人员的所有项目 加班工时和正常工时
-		/*
-		 * List<Long> userLongIds= new ArrayList<Long>();
-		 * userLongIds.add(userHoursEntity.getUserNo());
-		 */
-		// List<SelectTaskHoursByUserProjectDto>
-		// result=taskMapper.selectUsersProjectHours(userLongIds,null);
-
-		// 循环读取项目，将项目的工时，以key-value的形式和人员信息保存在一起
-		/* for (TaskHoursByProjectDto projectHours : taskHoursForPoject) { */
-
-		/*
-		 * Long projectId =projectHours.getProjectId();//key值 project+projectId
-		 * 
-		 * //excel，预设，为0 ，防止出现空 hoursMap.put("project"+projectId+"sumUPOverHours",0+"");
-		 * hoursMap.put("project"+projectId+"sumUPTaskHours",0+"");
-		 */
-
-		/*
-		 * //循环项目工时 for (SelectTaskHoursByUserProjectDto entity: result) { if
-		 * (projectId.equals(entity.getProjectId())) { hoursMap.put("project"+projectId,
-		 * "sumUPTaskHours:"+entity.getSumUPTaskHours()+",sumUPOverHours:"+entity.
-		 * getSumUPOverHours());
-		 * hoursMap.put("project"+projectId+"sumUPTaskHours",entity.getSumUPTaskHours()+
-		 * "");//excel专用key
-		 * hoursMap.put("project"+projectId+"sumUPOverHours",entity.getSumUPOverHours()+
-		 * "");//excel专用key totalTaskHours+=entity.getSumUPTaskHours();
-		 * totalOverHours+=entity.getSumUPOverHours(); } }
-		 */
-
-		/*
-		 * }
-		 */
-		/* } */
+		List<Map<Object, Object>> listMap = taskMapper.sumUserProjectTaskHour(selectProjectIds, userIds,
+				df.parse(startTime), df.parse(endTime));
 
 		List<SelectTaskHoursByUserDto> list = new ArrayList<SelectTaskHoursByUserDto>(listMap.size());
 		listMap.forEach(lm -> {

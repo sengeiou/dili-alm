@@ -111,11 +111,11 @@
             <!-- =========================================================表格========================================================= -->
             <table class="easyui-datagrid" title="周报列表" id="grid" fitColumns="true"
                    pagination="true" pageSize="30" pageNumber="1" pagePosition="both" rownumbers="true" remoteSort="false"
-                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="serialNumber"
+                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="created" sortOrder="desc"
                    align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
                 <thead>
                     <tr>
-                        <th data-options="field:'date',width:'20%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">本周起止时间 </th>
+                        <th data-options="field:'date',width:'20%',  _provider:'datetimeProvider', order:'asc', align:'center', resizable:'true', fixed:'false'">本周起止时间 </th>
                         <th data-options="field:'serialNumber',width:'10%', formatter:formatserialNumber,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目编号   </th>
                         <th data-options="field:'projectName',width:'10%',  formatter: formatprojectName, sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目名称 </th>
                         <th data-options="field:'projectType',width:'10%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目类型</th>
