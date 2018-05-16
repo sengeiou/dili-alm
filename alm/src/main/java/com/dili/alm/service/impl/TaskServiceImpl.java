@@ -1,6 +1,8 @@
 package com.dili.alm.service.impl;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -67,6 +69,7 @@ import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.quartz.domain.ScheduleMessage;
+import com.dili.ss.util.DateUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
@@ -756,17 +759,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		List<Team> teamList = teamService.list(team);
 
 		for (Team team2 : teamList) {
-
 			if (team2.getRole().equalsIgnoreCase(TeamRole.PROJECT_MANAGER.getValue())) {
-				return true;
-			}
-			if (team2.getRole().equalsIgnoreCase(TeamRole.PRODUCT_MANAGER.getValue())) {
-				return true;
-			}
-			if (team2.getRole().equalsIgnoreCase(TeamRole.TEST_MANAGER.getValue())) {
-				return true;
-			}
-			if (team2.getRole().equalsIgnoreCase(TeamRole.DEVELOP_MANAGER.getValue())) {
 				return true;
 			}
 		}
@@ -1067,9 +1060,15 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		}
 
 		// 判断日期是否小于当天
+		DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
 		Date now = new Date();
-		if (taskDate.getTime() / 1000 < now.getTime() / 1000) {
-			throw new TaskException("不能填写大于当天的任务");
+		try {
+			if (sdf.parse(sdf.format(taskDate)).getTime() > sdf.parse(sdf.format(taskDate)).getTime()) {
+				throw new TaskException("不能填写大于当天的任务");
+			}
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
 		}
 
 		Task task = this.getActualDao().selectByPrimaryKey(taskId);
@@ -1080,27 +1079,33 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		boolean isManager = this.isManager(task.getProjectId());
 
 		// 判断是否有权限填写工时
-		if (!isManager || !isOwner) {
+		if (!isManager && !isOwner) {
 			throw new TaskException("只有本项目的项目经理或者任务所有者才可以填写工时！");
 		}
 
 		// 如果是任务责任人但不是项目经理，那么只能填写当天的工时
-		if (!isManager && taskDate.getTime() / 1000 < now.getTime() / 1000) {
-			throw new TaskException("只有项目经理才能补填工时");
+		try {
+			if (!isManager && sdf.parse(sdf.format(taskDate)).getTime() < sdf.parse(sdf.format(now)).getTime()) {
+				throw new TaskException("只有项目经理才能补填工时");
+			}
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
 		}
 
-		String executeDateStr = new SimpleDateFormat("yyyy-MM-dd").format(taskDate);
+		String executeDateStr = sdf.format(taskDate);
 
 		// 未超过8小时判断
 		if (taskHour > 0 && !this.isSetTask(task.getOwner(), taskHour, executeDateStr)) {
 			throw new TaskException("今日工时已填写超过8小时！");
 		}
 		TaskDetails taskDetails = DTOUtils.newDTO(TaskDetails.class);
+		taskDetails.setTaskId(taskId);
 		taskDetails.setTaskHour(taskHour);
 		taskDetails.setOverHour(overHour);
 		taskDetails.setDescribe(content);
 		taskDetails.setCreateMemberId(operator);// 填写人
-		taskDetails.setCreated(new Date());// 实际修改填写日期
+		taskDetails.setCreated(now);// 实际修改填写日期
+		taskDetails.setModified(taskDate);// 任务日
 		taskDetails.setModifyMemberId(task.getOwner());// 责任人
 		this.updateTaskDetail(taskDetails, task);// 保存任务
 		return taskDetails.getId();

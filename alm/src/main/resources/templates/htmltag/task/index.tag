@@ -3,16 +3,7 @@ $(document).ready(function() {
 			$('#modified').datebox('calendar').calendar({
 						validator : function(date) {
 							var now = new Date();
-							if (now.getFullYear() < date.getFullYear()) {
-								return false;
-							}
-							if (now.getMonth() < date.getMonth()) {
-								return false;
-							}
-							if (now.getDate() < date.getDate()) {
-								return false;
-							}
-							return true;
+							return now.getTime() / 1000 >= date.getTime() / 1000;
 						}
 					});
 
