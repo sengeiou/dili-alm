@@ -126,12 +126,6 @@
 			$.extend(param, formData);
 
 			easyUIDataGrid(param);
-			/*         var opts = $("#grid").datagrid("options");
-			 if (null == opts.url || "" == opts.url) {
-			 opts.url = "${contextPath}/statistical/listPage";
-			 }
-
-			 $("#grid").datagrid("load", param); */
 		}
 
 		$(function() {
@@ -208,100 +202,107 @@
 			var columns2 = new Array();
 
 			//var param = { "medid": medid };
-			$.ajax({
-				url : '${contextPath}/statistical/listProjectHours',
-				type : 'post',
-				data : param,
-				dataType : "json",
-				async : false,
-				success : function(returnValue) {
+			$
+					.ajax({
+						url : '${contextPath}/statistical/listProjectHours',
+						type : 'post',
+						data : param,
+						dataType : "json",
+						async : false,
+						success : function(returnValue) {
 
-					var projectIds = new Array();
-					columns1.push({
-						"field" : "u&p",
-						"title" : "人员&项目",
-						"width" : 80,
-						align : "center"
-					});
-					columns2.push({
-						"field" : "userName",
-						"title" : "人员",
-						"width" : 80,
-						align : "center"
-					});
+							var projectIds = new Array();
+							columns1.push({
+								"field" : "u&p",
+								"title" : "人员&项目",
+								"width" : 80,
+								align : "center"
+							});
+							columns2.push({
+								"field" : "userName",
+								"title" : "人员",
+								"width" : 80,
+								align : "center"
+							});
 
-					$.each(returnValue, function(i, item) {
-						columns1.push({
-							"field" : "userNo",
-							"title" : item.projectName + "<br/>("
-									+ item.sumHour + "H)",
-							"width" : 160,
-							"align" : "center",
-							"colspan" : 2
-						});
-						columns2.push({
-							"field" : "toHours" + item.projectId,
-							"title" : "常规工时",
-							"width" : 80,
-							align : "center",
-							"rowspan" : 1,
-							"formatter" : projectTaskHour
-						});//实际工时	
-						columns2.push({
-							"field" : "ooHours" + item.projectId,
-							"title" : "加班工时",
-							"width" : 80,
-							align : "center",
-							"rowspan" : 1,
-							"formatter" : projectOverHour
-						});//加班工时
-						projectIds.push(item.projectId);
-					});
+							$.each(returnValue, function(i, item) {
+								columns1.push({
+									"field" : "userNo",
+									"title" : item.projectName + "<br/>("
+											+ item.sumHour + "H)",
+									"width" : 160,
+									"align" : "center",
+									"colspan" : 2
+								});
+								columns2.push({
+									"field" : "toHours" + item.projectId,
+									"title" : "常规工时",
+									"width" : 80,
+									align : "center",
+									"rowspan" : 1,
+									"formatter" : projectTaskHour
+								});//实际工时	
+								columns2.push({
+									"field" : "ooHours" + item.projectId,
+									"title" : "加班工时",
+									"width" : 80,
+									align : "center",
+									"rowspan" : 1,
+									"formatter" : projectOverHour
+								});//加班工时
+								projectIds.push(item.projectId);
+							});
 
-					columns1.push({
-						"field" : "heji",
-						"title" : "合计",
-						"width" : 240,
-						align : "center",
-						"colspan" : 3
-					});
+							columns1.push({
+								"field" : "heji",
+								"title" : "合计",
+								"width" : 240,
+								align : "center",
+								"colspan" : 3
+							});
 
-					columns2.push({
-						"field" : "sumTaskHours",
-						"title" : "常规工时",
-						"width" : 80,
-						align : "center",
-						"rowspan" : 1
-					});
-					columns2.push({
-						"field" : "sumOverHours",
-						"title" : "加班工时",
-						"width" : 80,
-						align : "center",
-						"rowspan" : 1
-					});
-					columns2.push({
-						"field" : "totalHours",
-						"title" : "总工时",
-						"width" : 80,
-						align : "center",
-						"rowspan" : 1
-					});
+							columns2.push({
+								"field" : "sumTaskHours",
+								"title" : "常规工时",
+								"width" : 80,
+								align : "center",
+								"rowspan" : 1
+							});
+							columns2.push({
+								"field" : "sumOverHours",
+								"title" : "加班工时",
+								"width" : 80,
+								align : "center",
+								"rowspan" : 1
+							});
+							columns2.push({
+								"field" : "totalHours",
+								"title" : "总工时",
+								"width" : 80,
+								align : "center",
+								"rowspan" : 1
+							});
 
-					columns.push(columns1);
-					columns.push(columns2);
-					$datagrid.columns = columns;
+							columns.push(columns1);
+							columns.push(columns2);
+							$datagrid.columns = columns;
 
-					$datagrid.url = '${contextPath}/statistical/listUserHours';
-					$datagrid.onLoadSuccess = function(index, field, value) {
-						loadInitEchartForProject(projectIds);
-					};
-					$datagrid.queryParams = param;
+							$datagrid.url = '${contextPath}/statistical/listUserHours';
+							$datagrid.onLoadSuccess = function(index, field,
+									value) {
+								loadInitEchartForProject(projectIds);
+							};
+							$datagrid.queryParams = param;
 
-					$('#grid').datagrid($datagrid);
-					//bindDate(param, projectIds);
-				}
-			});
+							$datagrid.rowStyler = function(index, row) {
+								if (index == $('#grid').datagrid('getRows').length - 1) {
+									return 'background-color: #d3ecde;';
+								}
+							}
+
+							$('#grid').datagrid($datagrid);
+						}
+					});
 		}
 		function bindDate(param, projectIds) {
 			var opts = $("#grid").datagrid("options");

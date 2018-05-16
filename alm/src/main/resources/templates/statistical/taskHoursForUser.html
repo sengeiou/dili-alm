@@ -15,6 +15,12 @@
 }
 </style>
 <script type="text/javascript">
+	function renderRowStyle(index, row) {
+		if (index == $('#grid').datagrid('getRows').length - 1) {
+			return 'background-color: #d3ecde;';
+		}
+	}
+
 	function removeAdminUser() {
 		var cmp = $(this);
 		var data = cmp.combobox('getData');
@@ -86,7 +92,10 @@
                 url: '${contextPath}/statistical/taskHoursByUser',
                 method: 'get',
                 onLoadSuccess: onLoadSuccess,
-                tools:'#infoToolbar',idField:'userNo',headerCls:'pdiv'">
+                tools:'#infoToolbar',
+                idField:'userNo',
+                headerCls:'pdiv',
+                rowStyler:renderRowStyle">
 				<thead>
 					<tr>
 						<th data-options="field:'selectDate',width:'26%',align:'center'">统计日期</th>
