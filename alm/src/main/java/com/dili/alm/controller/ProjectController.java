@@ -1,6 +1,7 @@
 package com.dili.alm.controller;
 
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +39,7 @@ import com.dili.alm.service.TeamService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
+import com.dili.sysadmin.sdk.redis.DataAuthRedis;
 import com.dili.sysadmin.sdk.session.SessionContext;
 
 import io.swagger.annotations.Api;
@@ -55,6 +57,8 @@ import tk.mybatis.mapper.entity.Example;
 public class ProjectController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProjectController.class);
+
+	private static final String DATA_AUTH_TYPE = "Project";
 
 	@Autowired
 	ProjectService projectService;
@@ -106,6 +110,13 @@ public class ProjectController {
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 		}
+		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
+		if (CollectionUtils.isEmpty(dataAuths)) {
+			return new ArrayList<>(0);
+		}
+		List<Long> projectIds = new ArrayList<>(dataAuths.size());
+		dataAuths.forEach(dataAuth -> projectIds.add(Long.valueOf(dataAuth.get("dataId").toString())));
+		project.setProjectIds(projectIds);
 		Map<Object, Object> metadata = new HashMap<>();
 
 		JSONObject projectTypeProvider = new JSONObject();
@@ -182,6 +193,14 @@ public class ProjectController {
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 		}
+		@SuppressWarnings("rawtypes")
+		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
+		if (CollectionUtils.isEmpty(dataAuths)) {
+			return null;
+		}
+		List<Long> projectIds = new ArrayList<>(dataAuths.size());
+		dataAuths.forEach(dataAuth -> projectIds.add(Long.valueOf(dataAuth.get("dataId").toString())));
+		project.setProjectIds(projectIds);
 		if (project.getActualStartDate() != null) {
 			project.setActualBeginStartDate(project.getActualStartDate());
 			Calendar calendar = Calendar.getInstance();

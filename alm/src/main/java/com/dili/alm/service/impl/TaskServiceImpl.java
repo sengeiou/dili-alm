@@ -62,6 +62,7 @@ import com.dili.alm.service.TeamService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.alm.utils.WebUtil;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
@@ -288,44 +289,10 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	}
 
 	@Override
-	public int updateTaskDetail(TaskDetails taskDetails, Task task) {
+	public void updateTaskDetail(TaskDetails taskDetails, Task task) throws TaskException {
 		// 标识任务已完成，需要写入项目中实际完成时间
 		boolean isComplete = false;
 		// 查询当前要修改的任务工时信息
-		/*
-		 * TaskDetails taskDetailsFromDatabase =
-		 * taskDetailsService.get(taskDetails.getId()); // 校验前台工时 int taskHour
-		 * =(int)Optional.ofNullable(taskDetails.getTaskHour()).orElse((short) 0); //
-		 * 校验前台加班工时 int overHour
-		 * =(int)Optional.ofNullable(taskDetails.getOverHour()).orElse((short) 0);
-		 * 
-		 * int saveHour = taskHour;//用作保存每次存储的工时值 task表基础数据更新
-		 * 
-		 * int baseTaskHour =(int)taskDetailsFromDatabase.getTaskHour();
-		 * baseTaskHour+=taskHour;
-		 * taskDetailsFromDatabase.setTaskHour((short)baseTaskHour);
-		 * 
-		 * 
-		 * int baseOverHour =(int)taskDetailsFromDatabase.getOverHour();
-		 * baseOverHour+=overHour;
-		 * taskDetailsFromDatabase.setOverHour((short)baseOverHour);
-		 * 
-		 * // 工时信息填写 taskDetailsFromDatabase.setTaskTime(this.taskHoursMapAdd(
-		 * taskDetailsFromDatabase.getTaskTime(), saveHour));
-		 * 
-		 * taskDetailsFromDatabase.setModified(new Date());
-		 * 
-		 * 
-		 * if (taskDetailsFromDatabase.getTaskHour() >= task.getPlanTime()) {
-		 */
-		// 更新状态为完成
-		/*
-		 * task.setStatus(TaskStatus.COMPLETE.code); task.setFactEndDate(new Date());
-		 * isComplete = true; }
-		 * 
-		 * 
-		 * this.taskDetailsService.insert(taskDetailsFromDatabase);
-		 */
 
 		TaskDetails condtion = DTOUtils.newDTO(TaskDetails.class);
 
@@ -348,32 +315,32 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		}
 
 		if (taskDetails.getTaskHour() == 0 && taskDetails.getOverHour() == 0) {// 判断如果加班工时和任务工时同时都没有填写
-			return 0;
+			throw new TaskException("请填写工时");
 		}
 
-		int insert = taskDetailsService.insert(taskDetails);
-
-		try {
-			// 进度总量写入project表中
-			saveProjectProgress(task, isComplete);
-
-			// 更新版本表中的进度
-			saveProjectVersion(task);
-
-			// 更新阶段表中的进度
-			saveProjectPhase(task);
-
-			this.saveOrUpdate(task);
-
-		} catch (Exception e) {// 有异常返回不成功
-			return 0;
+		int rows = taskDetailsService.insert(taskDetails);
+		if (rows <= 0) {
+			throw new TaskException("插入任务详情失败");
 		}
-		return insert;
+
+		// 进度总量写入project表中
+		saveProjectProgress(task, isComplete);
+
+		// 更新版本表中的进度
+		saveProjectVersion(task);
+
+		// 更新阶段表中的进度
+		saveProjectPhase(task);
+
+		rows = this.saveOrUpdate(task);
+		if (rows <= 0) {
+			throw new TaskException("更新任务信息失败");
+		}
 
 	}
 
 	// 计算阶段进度
-	private void saveProjectPhase(Task task) {
+	private void saveProjectPhase(Task task) throws TaskException {
 		// 获取阶段信息 已执行的工时/计划工时累加
 		ProjectPhase projectPhase = projectPhaseService.get(task.getPhaseId());
 		int progress = 0;
@@ -395,11 +362,14 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 		progress = (int) ((totalTaskTime / totalPlanTime) * 100);
 		projectPhase.setCompletedProgress(progress);
-		projectPhaseService.saveOrUpdate(projectPhase);
+		int rows = projectPhaseService.saveOrUpdate(projectPhase);
+		if (rows <= 0) {
+			throw new TaskException("更新阶段进度失败");
+		}
 	}
 
 	// 计算版本进度
-	private void saveProjectVersion(Task task) {
+	private void saveProjectVersion(Task task) throws TaskException {
 		// 获取阶段信息 已执行的工时/计划工时累加
 		ProjectVersion projectVersion = projectVersionService.get(task.getVersionId());
 
@@ -425,12 +395,15 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 		progress = (int) ((totalTaskTime / totalPlanTime) * 100);
 		projectVersion.setCompletedProgress(progress);
-		projectVersionService.saveOrUpdate(projectVersion);
+		int rows = projectVersionService.saveOrUpdate(projectVersion);
+		if (rows <= 0) {
+			throw new TaskException("更新项目版本进度失败");
+		}
 
 	}
 
 	// 计算项目总进度
-	private void saveProjectProgress(Task task, boolean signComplate) {
+	private void saveProjectProgress(Task task, boolean signComplate) throws TaskException {
 
 		int progress = 0;
 
@@ -488,7 +461,10 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		if (signComplate) {
 			project.setActualEndDate(new Date());
 		}
-		projectService.saveOrUpdate(project);
+		int rows = projectService.saveOrUpdate(project);
+		if (rows <= 0) {
+			throw new TaskException("更新项目进度失败");
+		}
 	}
 
 	@Transactional
@@ -1079,6 +1055,55 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		if (rows <= 0) {
 			throw new TaskException("更新任务失败");
 		}
+	}
+
+	@Override
+	public Long submitWorkingHours(Long taskId, Long operator, Date taskDate, Short taskHour, Short overHour,
+			String content) throws TaskException {
+
+		// 判断是否填写了工时
+		if (taskHour <= 0 && overHour <= 0) {
+			throw new TaskException("请填写工时");
+		}
+
+		// 判断日期是否小于当天
+		Date now = new Date();
+		if (taskDate.getTime() / 1000 < now.getTime() / 1000) {
+			throw new TaskException("不能填写大于当天的任务");
+		}
+
+		Task task = this.getActualDao().selectByPrimaryKey(taskId);
+
+		// 是否是任务责任人
+		boolean isOwner = operator.equals(task.getOwner());
+		// 是否是项目经理
+		boolean isManager = this.isManager(task.getProjectId());
+
+		// 判断是否有权限填写工时
+		if (!isManager || !isOwner) {
+			throw new TaskException("只有本项目的项目经理或者任务所有者才可以填写工时！");
+		}
+
+		// 如果是任务责任人但不是项目经理，那么只能填写当天的工时
+		if (!isManager && taskDate.getTime() / 1000 < now.getTime() / 1000) {
+			throw new TaskException("只有项目经理才能补填工时");
+		}
+
+		String executeDateStr = new SimpleDateFormat("yyyy-MM-dd").format(taskDate);
+
+		// 未超过8小时判断
+		if (taskHour > 0 && !this.isSetTask(task.getOwner(), taskHour, executeDateStr)) {
+			throw new TaskException("今日工时已填写超过8小时！");
+		}
+		TaskDetails taskDetails = DTOUtils.newDTO(TaskDetails.class);
+		taskDetails.setTaskHour(taskHour);
+		taskDetails.setOverHour(overHour);
+		taskDetails.setDescribe(content);
+		taskDetails.setCreateMemberId(operator);// 填写人
+		taskDetails.setCreated(new Date());// 实际修改填写日期
+		taskDetails.setModifyMemberId(task.getOwner());// 责任人
+		this.updateTaskDetail(taskDetails, task);// 保存任务
+		return taskDetails.getId();
 	}
 
 }

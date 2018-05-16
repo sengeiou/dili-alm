@@ -22,7 +22,7 @@ public interface TaskService extends BaseService<Task, Long> {
 
 	EasyuiPageOutput listPageSelectTaskDto(Task task) throws Exception;
 
-	int updateTaskDetail(TaskDetails taskDetails, Task task);
+	void updateTaskDetail(TaskDetails taskDetails, Task task) throws TaskException;
 
 	int startTask(Task task);
 
@@ -107,4 +107,23 @@ public interface TaskService extends BaseService<Task, Long> {
 			throws TaskException;
 
 	void deleteTask(Long id) throws TaskException;
+
+	/**
+	 * 提交工时
+	 * 
+	 * @param taskId
+	 *            任务id
+	 * @param operator TODO
+	 * @param taskDate
+	 *            任务日
+	 * @param taskHour
+	 *            正常工时
+	 * @param overHour
+	 *            加班工时
+	 * @param content
+	 *            工作内容
+	 * @return TODO
+	 * @throws TaskException 
+	 */
+	Long submitWorkingHours(Long taskId, Long operator, Date taskDate, Short taskHour, Short overHour, String content) throws TaskException;
 }

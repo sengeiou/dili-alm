@@ -1,5 +1,21 @@
 $(document).ready(function() {
 
+			$('#modified').datebox('calendar').calendar({
+						validator : function(date) {
+							var now = new Date();
+							if (now.getFullYear() < date.getFullYear()) {
+								return false;
+							}
+							if (now.getMonth() < date.getMonth()) {
+								return false;
+							}
+							if (now.getDate() < date.getDate()) {
+								return false;
+							}
+							return true;
+						}
+					});
+
 			$('#owner').textbox('addClearBtn', 'icon-clear');
 
 			loadProjectSelect();
@@ -519,7 +535,6 @@ function startTask() {
 }
 
 function saveTaskDetail() {
-	debugger;
 	var planTimeStr = $("#planTimeStr").val();
 	var formDate = $("#detail_form").serialize();
 	if ($('#overHourStr').textbox('getValue') == "") {

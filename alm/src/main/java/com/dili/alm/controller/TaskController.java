@@ -350,75 +350,15 @@ public class TaskController {
 		if (taskHour == 0 && overHour == 0) {
 			return BaseOutput.failure("任务工时或者加班工时填必须填写其中一个！");
 		}
-
-		/*
-		 * if (taskHour <= 0) { return BaseOutput.failure("工时必须大于0"); }
-		 */
-
-		Task task = taskService.get(taskDetails.getTaskId());
-
-		boolean isOwner = userTicket.getId().equals(task.getOwner());
-
-		// taskDetails.setModified(isOwner ? new Date() : taskDetails.getModified());
-
-		if (taskDetails.getModified() == null) {
-			taskDetails.setModified(new Date());
+		Date taskDate = taskDetails.getModified() == null ? new Date() : taskDetails.getModified();
+		try {
+			this.taskService.submitWorkingHours(taskDetails.getTaskId(), userTicket.getId(), taskDate, taskHour,
+					overHour, taskDetails.getDescribe());
+			Task task = this.taskService.get(taskDetails.getTaskId());
+			return BaseOutput.success().setData(task.getName());
+		} catch (TaskException e) {
+			return BaseOutput.failure(e.getMessage());
 		}
-
-		String executeDateStr = new SimpleDateFormat("yyyy-MM-dd").format(taskDetails.getModified());
-
-		if (!(taskService.isManager(task.getProjectId()) || isOwner)) {
-			return BaseOutput.failure("只有本项目的项目经理或者任务所有者才可以填写工时！");
-		}
-		// 未超过8小时判断
-		if (taskService.isSetTask(task.getOwner(), taskHour, executeDateStr)) {
-
-			/* 2018-1-8 优化:实际工时可以任意填写 */
-			/*
-			 * int totail = Integer.parseInt(taskHourStr)+taskDetailsSelect.getTaskHour();
-			 * if (task.getPlanTime()<totail) {
-			 * 
-			 * return BaseOutput.failure("已经超过计划工时！"); }
-			 */
-			/* 基础信息设置 */
-			/* task.setModifyMemberId(userTicket.getId()); */
-			taskDetails.setTaskHour(taskHour);
-			taskDetails.setOverHour(overHour);
-			taskDetails.setCreateMemberId(userTicket.getId());// 填写人
-			taskDetails.setCreated(new Date());// 实际修改填写日期
-			if (taskDetails.getModified() == null || taskDetails.getModified().equals("")) {
-				taskDetails.setModified(new Date());
-			} else {
-				taskDetails.setModified(taskDetails.getModified());// 任务应该填写日期
-			}
-
-			taskDetails.setModifyMemberId(task.getOwner());// 责任人
-			/* 基础信息设置 */
-			taskService.updateTaskDetail(taskDetails, task);// 保存任务
-
-			return BaseOutput.success("执行任务成功").setData(String.valueOf(task.getId() + ":" + task.getName() + ":执行工时"
-					+ taskDetails.getTaskHour() + ":加班工时" + taskDetails.getOverHour()));
-
-		} else if (taskHour == 0 && overHour != 0) {
-
-			/* 基础信息设置 */
-			task.setModifyMemberId(userTicket.getId());
-			taskDetails.setTaskHour(taskHour);
-			taskDetails.setOverHour(overHour);// 只写入加班工时
-			taskDetails.setCreateMemberId(userTicket.getId());// 填写人
-			taskDetails.setCreated(new Date());// 实际修改填写日期
-			taskDetails.setModified(taskDetails.getModified());// 任务应该填写日期
-			taskDetails.setModifyMemberId(task.getOwner());// 责任人
-			/* 基础信息设置 */
-			int i = taskService.updateTaskDetail(taskDetails, task);// 保存任务
-			if (i != 0) {
-				return BaseOutput.success("执行任务成功").setData(String.valueOf(task.getId() + ":" + task.getName() + ":执行工时"
-						+ taskDetails.getTaskHour() + ":加班工时" + taskDetails.getOverHour()));
-			}
-
-		}
-
-		return BaseOutput.failure("今日工时已填写超过8小时！");
 
 	}
 
