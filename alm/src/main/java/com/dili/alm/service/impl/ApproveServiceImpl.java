@@ -3,6 +3,7 @@ package com.dili.alm.service.impl;
 import cn.afterturn.easypoi.word.WordExportUtil;
 import com.alibaba.fastjson.JSON;
 import com.dili.alm.cache.AlmCache;
+import com.dili.alm.component.MailManager;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.ApproveMapper;
 import com.dili.alm.dao.ProjectMapper;
@@ -25,15 +26,23 @@ import com.dili.sysadmin.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.beetl.core.GroupTemplate;
+import org.beetl.core.Template;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.*;
@@ -50,10 +59,10 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	private DataDictionaryService dataDictionaryService;
 
 	@Autowired
-	private ProjectApplyService projectApplyService;
+	private FilesService filesService;
 
 	@Autowired
-	private ProjectService projectService;
+	private MailManager mailManager;
 
 	@Autowired
 	private JavaMailSender mailSender;
@@ -62,145 +71,63 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	private MessageService messageService;
 
 	@Autowired
+	private ProjectApplyService projectApplyService;
+
+	@Autowired
 	private ProjectChangeService projectChangeService;
 
 	@Autowired
 	private ProjectCompleteService projectCompleteService;
 
 	@Autowired
-	private VerifyApprovalService verifyApprovalService;
-
-	@Autowired
-	private ProjectVersionService projectVersionService;
+	private ProjectMapper projectMapper;
 
 	@Autowired
 	private ProjectPhaseService projectPhaseService;
 
 	@Autowired
-	private UserRpc userRpc;
+	private ProjectService projectService;
+
+	@Autowired
+	private ProjectVersionService projectVersionService;
 
 	@Autowired
 	private RoleRpc roleRpc;
 
 	@Autowired
 	private TeamService teamService;
-
 	@Autowired
-	private FilesService filesService;
+	private UserRpc userRpc;
 	@Autowired
-	private ProjectMapper projectMapper;
+	private VerifyApprovalService verifyApprovalService;
 
-	public ApproveMapper getActualDao() {
-		return (ApproveMapper) getDao();
-	}
+	private String projectChangeMailTemplate;
 
-	@Override
-	public void buildApplyApprove(Map modelMap, Long id) {
-		Approve approve = this.get(id);
+	@Qualifier("mailContentTemplate")
+	@Autowired
+	private GroupTemplate groupTemplate;
 
-		String approveDescription = approve.getDescription();
-		modelMap.put("canOpt", checkApprove(approveDescription, approve.getStatus()));
+	@Value("${spring.mail.username:}")
+	private String mailFrom;
 
-		// 构建Provider
-		Map<Object, Object> metadata = new HashMap<>();
-		metadata.put("projectLeader", JSON.parse("{provider:'memberProvider'}"));
-		metadata.put("businessOwner", JSON.parse("{provider:'memberProvider'}"));
-		metadata.put("projectType", JSON.parse("{provider:'projectTypeProvider'}"));
-		metadata.put("dep", JSON.parse("{provider:'depProvider'}"));
-		metadata.put("createMemberId", JSON.parse("{provider:'memberProvider'}"));
-		metadata.put("created", JSON.parse("{provider:'dateProvider'}"));
-		metadata.put("expectedLaunchDate", JSON.parse("{provider:'dateProvider'}"));
-		metadata.put("estimateLaunchDate", JSON.parse("{provider:'dateProvider'}"));
-		metadata.put("startDate", JSON.parse("{provider:'dateProvider'}"));
-		metadata.put("endDate", JSON.parse("{provider:'dateProvider'}"));
-		metadata.put("status", JSON.parse("{provider:'approveStateProvider'}"));
-
-		Map dto = null;
+	public ApproveServiceImpl() {
+		super();
+		InputStream in = null;
 		try {
-			dto = ValueProviderUtils.buildDataByProvider(metadata, Lists.newArrayList(approve)).get(0);
-		} catch (Exception e) {
-			e.printStackTrace();
+			Resource res = new ClassPathResource("conf/projectChangeMailTemplate.html");
+			in = res.getInputStream();
+			this.projectChangeMailTemplate = IOUtils.toString(in, "UTF-8");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					LOGGER.error(e.getMessage(), e);
+				}
+			}
 		}
-		Objects.requireNonNull(dto).remove("description");
-
-		modelMap.put("apply", dto);
-		modelMap.put("extend", dto.remove("extend"));
-		modelMap.put("json", JSON.toJSON(dto));
-
-	}
-
-	@Override
-	public void buildChangeApprove(Map modelMap, Long id) {
-		Approve approve = this.get(id);
-
-		String approveDescription = approve.getDescription();
-		modelMap.put("canOpt", checkApprove(approveDescription, approve.getStatus()));
-
-		// 构建Provider
-		Map<Object, Object> metadata = new HashMap<>();
-		metadata.put("createMemberId", JSON.parse("{provider:'memberProvider'}"));
-		metadata.put("created", JSON.parse("{provider:'dateProvider'}"));
-		metadata.put("status", JSON.parse("{provider:'changeStateProvider'}"));
-
-		Map dto = null;
-		try {
-			dto = ValueProviderUtils.buildDataByProvider(metadata, Lists.newArrayList(approve)).get(0);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		modelMap.put("approve", dto);
-
-		ProjectChange change = projectChangeService.get(approve.getProjectApplyId());
-		modelMap.put("change", change);
-
-	}
-
-	/**
-	 * 检查是否有审批权限
-	 */
-	private boolean checkApprove(String approveDescription, Integer status) {
-		// 能否审批
-		boolean canOpt = false;
-
-		// 只有审批中的才能操作
-		if (StringUtils.isNotBlank(approveDescription) && status == AlmConstants.ApplyState.APPROVE.getCode()) {
-			List<ApplyApprove> approveList = JSON.parseArray(approveDescription, ApplyApprove.class);
-
-			/*
-			 * 能够操作的情况: 当前操作用户在审批组中包括项目委员会组长
-			 */
-			canOpt = approveList.stream()
-					.anyMatch(applyApprove -> Objects.equals(applyApprove.getUserId(),
-							SessionContext.getSessionContext().getUserTicket().getId())
-							&& applyApprove.getResult() == null);
-
-		}
-		return canOpt;
-	}
-
-	@Override
-	public void buildCompleteApprove(Map modelMap, Long id) {
-		Approve approve = this.get(id);
-
-		String approveDescription = approve.getDescription();
-		modelMap.put("canOpt", checkApprove(approveDescription, approve.getStatus()));
-
-		// 构建Provider
-		Map<Object, Object> metadata = new HashMap<>();
-		metadata.put("createMemberId", JSON.parse("{provider:'memberProvider'}"));
-		metadata.put("created", JSON.parse("{provider:'dateProvider'}"));
-		metadata.put("status", JSON.parse("{provider:'approveStateProvider'}"));
-
-		Map dto = null;
-		try {
-			dto = ValueProviderUtils.buildDataByProvider(metadata, Lists.newArrayList(approve)).get(0);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		modelMap.put("approve", dto);
-
-		ProjectComplete complete = projectCompleteService.get(approve.getProjectApplyId());
-		modelMap.put("complete", complete);
 	}
 
 	@Transactional(rollbackFor = ApplicationException.class)
@@ -284,74 +211,90 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		}
 	}
 
-	private void updateProjectEndDate(ProjectChange change) throws ApproveException {
-		Project project = this.projectMapper.selectByPrimaryKey(change.getProjectId());
-		project.setEstimateLaunchDate(change.getEstimateLaunchDate());
-		project.setEndDate(change.getEndDate());
-		int rows = this.projectMapper.updateByPrimaryKeySelective(project);
-		if (rows <= 0) {
-			throw new ApproveException("更新项目信息失败");
-		}
-	}
+	@Override
+	public void buildApplyApprove(Map modelMap, Long id) {
+		Approve approve = this.get(id);
 
-	private void sendLeaderApproveMessage(Long id, String type, List<ApplyApprove> approveList) {
+		String approveDescription = approve.getDescription();
+		modelMap.put("canOpt", checkApprove(approveDescription, approve.getStatus()));
+
+		// 构建Provider
+		Map<Object, Object> metadata = new HashMap<>();
+		metadata.put("projectLeader", JSON.parse("{provider:'memberProvider'}"));
+		metadata.put("businessOwner", JSON.parse("{provider:'memberProvider'}"));
+		metadata.put("projectType", JSON.parse("{provider:'projectTypeProvider'}"));
+		metadata.put("dep", JSON.parse("{provider:'depProvider'}"));
+		metadata.put("createMemberId", JSON.parse("{provider:'memberProvider'}"));
+		metadata.put("created", JSON.parse("{provider:'dateProvider'}"));
+		metadata.put("expectedLaunchDate", JSON.parse("{provider:'dateProvider'}"));
+		metadata.put("estimateLaunchDate", JSON.parse("{provider:'dateProvider'}"));
+		metadata.put("startDate", JSON.parse("{provider:'dateProvider'}"));
+		metadata.put("endDate", JSON.parse("{provider:'dateProvider'}"));
+		metadata.put("status", JSON.parse("{provider:'approveStateProvider'}"));
+
+		Map dto = null;
 		try {
-			if (CollectionUtils.isNotEmpty(approveList)) {
-				boolean canSend = approveList.stream()
-						.filter(applyApprove -> !Objects.equals(applyApprove.getUserId(), getApproveLeader())
-								&& applyApprove.getResult() != null)
-						.count() == approveList.size() - 1;
-				if (canSend) {
-					sendMessage(id, type, SessionContext.getSessionContext().getUserTicket().getId(),
-							getApproveLeader());
-				}
-			}
+			dto = ValueProviderUtils.buildDataByProvider(metadata, Lists.newArrayList(approve)).get(0);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
+		Objects.requireNonNull(dto).remove("description");
 
-	private void sendMail(ProjectApply projectApply, boolean accept) {
-		sendMail(projectApply.getEmail().split(","), "立项申请",
-				projectApply.getName() + "的立项申请" + (accept ? "已经审批通过" : "审批未通过"));
-	}
+		modelMap.put("apply", dto);
+		modelMap.put("extend", dto.remove("extend"));
+		modelMap.put("json", JSON.toJSON(dto));
 
-	private void sendMail(ProjectChange change, boolean accept) {
-		sendMail(change.getEmail().split(","), "变更申请",
-				change.getProjectName() + "的变更申请[" + change.getName() + "]" + (accept ? "已经审批通过" : "审批未通过"));
-	}
-
-	private void sendMail(ProjectComplete complete, boolean accept) {
-		sendMail(complete.getEmail().split(","), "结项申请", complete.getName() + "的结项申请" + (accept ? "已经审批通过" : "审批未通过"));
-	}
-
-	private void sendMail(String[] sendTo, String title, String text) {
-		try {
-			SimpleMailMessage message = new SimpleMailMessage();
-			message.setTo(sendTo);
-			message.setFrom(SystemConfigUtils.getProperty("spring.mail.username"));
-			message.setSubject(title);
-			message.setText(text);
-			mailSender.send(message);
-		} catch (Exception e) {
-			LOGGER.error("邮件发送出错:", e);
-		}
 	}
 
 	@Override
-	public BaseOutput verity(Long id, String opt, String notes) {
-		VerifyApproval verifyApproval = DTOUtils.newDTO(VerifyApproval.class);
-		verifyApproval.setApproveId(id);
-		verifyApproval.setApprover(SessionContext.getSessionContext().getUserTicket().getId());
-		verifyApproval.setCreated(new Date());
-		verifyApproval.setResult(opt);
-		verifyApproval.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
-		verifyApprovalService.insert(verifyApproval);
-		Approve approve = get(id);
-		approve.setStatus(
-				Objects.equals(opt, "accept") ? AlmConstants.ChangeState.VRIFY.getCode() : approve.getStatus());
-		updateSelective(approve);
-		return BaseOutput.success();
+	public void buildChangeApprove(Map modelMap, Long id) {
+		Approve approve = this.get(id);
+
+		String approveDescription = approve.getDescription();
+		modelMap.put("canOpt", checkApprove(approveDescription, approve.getStatus()));
+
+		// 构建Provider
+		Map<Object, Object> metadata = new HashMap<>();
+		metadata.put("createMemberId", JSON.parse("{provider:'memberProvider'}"));
+		metadata.put("created", JSON.parse("{provider:'dateProvider'}"));
+		metadata.put("status", JSON.parse("{provider:'changeStateProvider'}"));
+
+		Map dto = null;
+		try {
+			dto = ValueProviderUtils.buildDataByProvider(metadata, Lists.newArrayList(approve)).get(0);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		modelMap.put("approve", dto);
+
+		ProjectChange change = projectChangeService.get(approve.getProjectApplyId());
+		modelMap.put("change", change);
+
+	}
+
+	@Override
+	public void buildCompleteApprove(Map modelMap, Long id) {
+		Approve approve = this.get(id);
+
+		String approveDescription = approve.getDescription();
+		modelMap.put("canOpt", checkApprove(approveDescription, approve.getStatus()));
+
+		// 构建Provider
+		Map<Object, Object> metadata = new HashMap<>();
+		metadata.put("createMemberId", JSON.parse("{provider:'memberProvider'}"));
+		metadata.put("created", JSON.parse("{provider:'dateProvider'}"));
+		metadata.put("status", JSON.parse("{provider:'approveStateProvider'}"));
+
+		Map dto = null;
+		try {
+			dto = ValueProviderUtils.buildDataByProvider(metadata, Lists.newArrayList(approve)).get(0);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		modelMap.put("approve", dto);
+
+		ProjectComplete complete = projectCompleteService.get(approve.getProjectApplyId());
+		modelMap.put("complete", complete);
 	}
 
 	@Override
@@ -452,38 +395,8 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		}
 	}
 
-	private void exportWord(String name, OutputStream os, Map map) throws Exception {
-		InputStream stream = getClass().getClassLoader().getResourceAsStream("word/" + name + ".docx");
-		File targetFile = new File(name + ".docx");
-		if (!targetFile.exists()) {
-			FileUtils.copyInputStreamToFile(stream, targetFile);
-		}
-		XWPFDocument doc = WordExportUtil.exportWord07(targetFile.getPath(), map);
-		doc.write(os);
-		os.close();
-	}
-
-	private String formatInfo(String info) {
-		switch (info) {
-		case "0":
-			return "项目结项总结报告";
-		case "1":
-			return "结项资料清单（清单与交付物完备并一致）";
-		default:
-			return "";
-		}
-	}
-
-	private String formatReason(String reason) {
-
-		switch (reason) {
-		case "0":
-			return "正常结项";
-		case "1":
-			return "项目取消";
-		default:
-			return "其他原因：" + reason;
-		}
+	public ApproveMapper getActualDao() {
+		return (ApproveMapper) getDao();
 	}
 
 	@Override
@@ -520,25 +433,32 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
 	}
 
-	private void sendMessage(Long id, String type, Long sender, Long recipient) {
-		try {
-			switch (type) {
-			case "apply":
-				messageService.insertMessage("http://alm.diligrp.com:8083/alm/approve/apply/" + id, sender, recipient,
-						AlmConstants.MessageType.APPLY.getCode());
-				break;
-			case "change":
-				messageService.insertMessage("http://alm.diligrp.com:8083/alm/approve/change/" + id, sender, recipient,
-						AlmConstants.MessageType.CHANGE.getCode());
-				break;
-			case "complete":
-				messageService.insertMessage("http://alm.diligrp.com:8083/alm/approve/complete/" + id, sender,
-						recipient, AlmConstants.MessageType.COMPLETE.getCode());
-				break;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	@Override
+	public BaseOutput verity(Long id, String opt, String notes) {
+		VerifyApproval verifyApproval = DTOUtils.newDTO(VerifyApproval.class);
+		verifyApproval.setApproveId(id);
+		verifyApproval.setApprover(SessionContext.getSessionContext().getUserTicket().getId());
+		verifyApproval.setCreated(new Date());
+		verifyApproval.setResult(opt);
+		verifyApproval.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
+		verifyApprovalService.insert(verifyApproval);
+		Approve approve = get(id);
+		approve.setStatus(
+				Objects.equals(opt, "accept") ? AlmConstants.ChangeState.VRIFY.getCode() : approve.getStatus());
+		updateSelective(approve);
+		return BaseOutput.success();
+	}
+
+	/**
+	 * @param applyId
+	 * @param projectId
+	 */
+	private void buildFile(Long applyId, Long projectId) {
+		List<Files> files = projectApplyService.listFiles(applyId);
+		files.forEach(f -> {
+			f.setProjectId(projectId);
+			filesService.updateSelective(f);
+		});
 	}
 
 	/**
@@ -564,29 +484,6 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		projectService.insertSelective(build);
 		buildTeam(build);
 		// buildFile(apply.getId(), build.getId());
-	}
-
-	private void closeProject(ProjectComplete complete) {
-		Long projectId = complete.getProjectId();
-		Project project = projectService.get(projectId);
-		Date now = new Date();
-		project.setActualEndDate(now);
-		project.setProjectState(ProjectState.CLOSED.getValue());
-		project.setActualEndDate(now);
-		project.setCloseTime(now);
-		projectService.updateSelective(project);
-	}
-
-	/**
-	 * @param applyId
-	 * @param projectId
-	 */
-	private void buildFile(Long applyId, Long projectId) {
-		List<Files> files = projectApplyService.listFiles(applyId);
-		files.forEach(f -> {
-			f.setProjectId(projectId);
-			filesService.updateSelective(f);
-		});
 	}
 
 	private void buildTeam(Project project) {
@@ -624,6 +521,74 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	}
 
 	/**
+	 * 检查是否有审批权限
+	 */
+	private boolean checkApprove(String approveDescription, Integer status) {
+		// 能否审批
+		boolean canOpt = false;
+
+		// 只有审批中的才能操作
+		if (StringUtils.isNotBlank(approveDescription) && status == AlmConstants.ApplyState.APPROVE.getCode()) {
+			List<ApplyApprove> approveList = JSON.parseArray(approveDescription, ApplyApprove.class);
+
+			/*
+			 * 能够操作的情况: 当前操作用户在审批组中包括项目委员会组长
+			 */
+			canOpt = approveList.stream()
+					.anyMatch(applyApprove -> Objects.equals(applyApprove.getUserId(),
+							SessionContext.getSessionContext().getUserTicket().getId())
+							&& applyApprove.getResult() == null);
+
+		}
+		return canOpt;
+	}
+
+	private void closeProject(ProjectComplete complete) {
+		Long projectId = complete.getProjectId();
+		Project project = projectService.get(projectId);
+		Date now = new Date();
+		project.setActualEndDate(now);
+		project.setProjectState(ProjectState.CLOSED.getValue());
+		project.setActualEndDate(now);
+		project.setCloseTime(now);
+		projectService.updateSelective(project);
+	}
+
+	private void exportWord(String name, OutputStream os, Map map) throws Exception {
+		InputStream stream = getClass().getClassLoader().getResourceAsStream("word/" + name + ".docx");
+		File targetFile = new File(name + ".docx");
+		if (!targetFile.exists()) {
+			FileUtils.copyInputStreamToFile(stream, targetFile);
+		}
+		XWPFDocument doc = WordExportUtil.exportWord07(targetFile.getPath(), map);
+		doc.write(os);
+		os.close();
+	}
+
+	private String formatInfo(String info) {
+		switch (info) {
+		case "0":
+			return "项目结项总结报告";
+		case "1":
+			return "结项资料清单（清单与交付物完备并一致）";
+		default:
+			return "";
+		}
+	}
+
+	private String formatReason(String reason) {
+
+		switch (reason) {
+		case "0":
+			return "正常结项";
+		case "1":
+			return "项目取消";
+		default:
+			return "其他原因：" + reason;
+		}
+	}
+
+	/**
 	 * 获取系统中项目委员会组长用户主键
 	 *
 	 * @return userId
@@ -640,5 +605,94 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		}
 
 		return null;
+	}
+
+	private void sendLeaderApproveMessage(Long id, String type, List<ApplyApprove> approveList) {
+		try {
+			if (CollectionUtils.isNotEmpty(approveList)) {
+				boolean canSend = approveList.stream()
+						.filter(applyApprove -> !Objects.equals(applyApprove.getUserId(), getApproveLeader())
+								&& applyApprove.getResult() != null)
+						.count() == approveList.size() - 1;
+				if (canSend) {
+					sendMessage(id, type, SessionContext.getSessionContext().getUserTicket().getId(),
+							getApproveLeader());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void sendMail(ProjectApply projectApply, boolean accept) {
+		sendMail(projectApply.getEmail().split(","), "立项申请",
+				projectApply.getName() + "的立项申请" + (accept ? "已经审批通过" : "审批未通过"));
+	}
+
+	private void sendMail(ProjectChange change, boolean accept) {
+		// 构建邮件内容
+		Project project = this.projectMapper.selectByPrimaryKey(change.getProjectId());
+		Template template = this.groupTemplate.getTemplate(this.projectChangeMailTemplate);
+		template.binding("model", change);
+		template.binding("project1", project);
+
+		// 发送
+		for (String addr : change.getEmail().split(",")) {
+			try {
+				this.mailManager.sendMail(this.mailFrom, addr, template.render(), true,
+						accept ? "变更申请已经审批通过" : "变更申请审批未通过", null);
+			} catch (Exception e) {
+				LOGGER.error(e.getMessage(), e);
+			}
+		}
+
+	}
+
+	private void sendMail(ProjectComplete complete, boolean accept) {
+		sendMail(complete.getEmail().split(","), "结项申请", complete.getName() + "的结项申请" + (accept ? "已经审批通过" : "审批未通过"));
+	}
+
+	private void sendMail(String[] sendTo, String title, String text) {
+		try {
+			SimpleMailMessage message = new SimpleMailMessage();
+			message.setTo(sendTo);
+			message.setFrom(SystemConfigUtils.getProperty("spring.mail.username"));
+			message.setSubject(title);
+			message.setText(text);
+			mailSender.send(message);
+		} catch (Exception e) {
+			LOGGER.error("邮件发送出错:", e);
+		}
+	}
+
+	private void sendMessage(Long id, String type, Long sender, Long recipient) {
+		try {
+			switch (type) {
+			case "apply":
+				messageService.insertMessage("http://alm.diligrp.com:8083/alm/approve/apply/" + id, sender, recipient,
+						AlmConstants.MessageType.APPLY.getCode());
+				break;
+			case "change":
+				messageService.insertMessage("http://alm.diligrp.com:8083/alm/approve/change/" + id, sender, recipient,
+						AlmConstants.MessageType.CHANGE.getCode());
+				break;
+			case "complete":
+				messageService.insertMessage("http://alm.diligrp.com:8083/alm/approve/complete/" + id, sender,
+						recipient, AlmConstants.MessageType.COMPLETE.getCode());
+				break;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void updateProjectEndDate(ProjectChange change) throws ApproveException {
+		Project project = this.projectMapper.selectByPrimaryKey(change.getProjectId());
+		project.setEstimateLaunchDate(change.getEstimateLaunchDate());
+		project.setEndDate(change.getEndDate());
+		int rows = this.projectMapper.updateByPrimaryKeySelective(project);
+		if (rows <= 0) {
+			throw new ApproveException("更新项目信息失败");
+		}
 	}
 }

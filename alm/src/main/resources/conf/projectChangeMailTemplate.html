@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<title>变更申请</title>
+<style type="text/css">
+body, ol, ul, h1, h2, h3, h4, h5, h6, p, th, td, dl, dd, form, fieldset,
+	legend, input, textarea, select {
+	margin: 0;
+	padding: 0
+}
+
+body {
+	padding: 10px;
+	font: 13px "微软雅黑";
+	background: #fff;
+	-webkit-text-size-adjust: 100%;
+}
+
+a { //
+	color: #2d374b;
+	text-decoration: none;
+}
+
+a:hover { //
+	color: #cd0200; //
+	text-decoration: underline
+}
+
+em {
+	font-style: normal
+}
+
+li {
+	list-style: none
+}
+
+img {
+	border: 0;
+	vertical-align: middle
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0
+}
+
+p {
+	word-wrap: break-word
+}
+
+.panel {
+	box-sizing: border-box;
+	width: 100%;
+	min-width: 900px;
+	border: 1px solid #f0f0f0;
+}
+
+.panel .panel-title, .item .item-title {
+	padding: 0 5px;
+	font-weight: bold;
+	font-size: 14px;
+	line-height: 28px;
+	background: #f5f5f5;
+}
+
+.panel .panel-body {
+	padding: 10px 60px 20px
+}
+
+.panel-body .item {
+	overflow: hidden;
+	/* width: 100%; */
+}
+
+.item .item-title {
+	font-size: 13px;
+	font-weight: normal;
+	color: #333;
+}
+
+.item-body ul {
+	padding: 0 60px;
+}
+
+.item-body ul li {
+	float: left;
+	width: 50%;
+	padding: 5px 0;
+	overflow: hidden;
+}
+
+.item-body label {
+	display: inline-block;
+	width: 80px;
+}
+
+.item-body p {
+	text-indent: 20px;
+	line-height: 50px;
+}
+
+.item .item-title-next {
+	padding: 0 30px;
+}
+
+.item .item-body-next {
+	padding: 10px 60px;
+}
+
+.item .item-body-next p {
+	line-height: 28px;
+	text-indent: 00px;
+}
+
+.item .item-btn {
+	padding: 20px;
+	text-align: center;
+}
+
+.item .item-btn a {
+	display: inline-block;
+	width: 80px;
+	height: 26px;
+	margin: 0 5px;
+	border: 1px solid #f5f5f5;
+	border-radius: 5px;
+	line-height: 26px;
+	color: #666;
+}
+
+.item .item-btn a:hover {
+	background: #ecf2ef;
+}
+</style>
+</head>
+
+<body>
+	<div class="panel">
+		<div class="panel-title">变更申请</div>
+		<div class="panel-body">
+			<div class="item">
+				<div class="item-title">1. 基本信息</div>
+				<div class="item-body">
+					<ul>
+						<li><label>变更名称：</label> <span>${model.name!}</span></li>
+						<li><label>变更编号：</label> <span>${model.number!}</span></li>
+						<li><label>项目名称：</label> <span>${model.projectName!}</span></li>
+						<li><label>项目版本：</label> <span>${model.versionId!}</span></li>
+						<li><label>项目类型：</label> <span>${project1.type!}</span></li>
+						<li><label>提交阶段：</label> <span>${model.phaseId!}</span></li>
+						<li><label>变更类型：</label> <span>${model.type!}</span></li>
+						<li><label>变更工作量预估：</label> <span>${model.workingHours!}</span></li>
+						<li><label>是否影响上线：</label> <span>${model.affectsOnline!}</span></li>
+						<li><label>变更后上线日期：</label> <span>${model.estimateLaunchDate!,dateFormat ="yyyy-MM-dd"}</span></li>
+						<li><label>变更后结束日期：</label> <span>${model.endDate!,dateFormat ="yyyy-MM-dd"}</span></li>
+					</ul>
+				</div>
+			</div>
+			<div class="item">
+				<div class="item-title">2. 变更描述</div>
+				<div class="item-body">
+					<p>简述项目目的、范围、方法概要</p>
+				</div>
+				<div class="item">
+					<div class="item-title item-title-next">变更内容及原因</div>
+					<div class="item-body item-body-next">
+						<p>${model.content!}</p>
+					</div>
+				</div>
+				<div class="item">
+					<div class="item-title item-title-next">变更方案及影响风险</div>
+					<div class="item-body item-body-next">
+						<p>${model.effects!}</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>
