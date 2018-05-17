@@ -15,25 +15,26 @@
 }
 </style>
 <script type="text/javascript">
+	function loadUsers(nval, oval) {
+		var url = '${contextPath!}/member/loadUsersByDepartment';
+		if (nval) {
+			$(nval).each(function(index, item) {
+				if (index == 0) {
+					url += '?' + 'departmentId=' + item;
+				} else {
+					url += '&' + 'departmentId=' + item;
+				}
+			});
+		}
+		$.post(url, {}, function(res) {
+			$('#userId').combobox('loadData', res);
+		});
+	}
+
 	function renderRowStyle(index, row) {
 		if (index == $('#grid').datagrid('getRows').length - 1) {
 			return 'background-color: #d3ecde;';
 		}
-	}
-
-	function removeAdminUser() {
-		var cmp = $(this);
-		var data = cmp.combobox('getData');
-		if (!data.length) {
-			return;
-		}
-		$(data).each(function(index, item) {
-			if (item.value == 1) {
-				data.splice(index, 1);
-				cmp.combobox('loadData', data);
-				return false;
-			}
-		});
 	}
 </script>
 <div class="easyui-layout" fit="true">
@@ -50,13 +51,30 @@
 							data-options="editable:false,label:'起止日期:',prompt:'2018-01-01'" /></td>
 						<td style="padding: 5px;"><input class="easyui-datebox" name="endTime" id="endDate" style="width: 100%"
 							data-options="editable:false,label:'至:',prompt:'今日'" /></td>
-						<td style="padding: 5px;"><input class="combobox-checkbox" name="userId" id="userId" style="width: 100%"
-							data-options="editable:false,label:'人员:',multiple:true,prompt:'--全部--',onLoadSuccess:removeAdminUser" /> <#comboProvider
-								_id="userId" _title="人员" _nameField="real_name" _valueField="id" _provider='memberProvider'></#comboProvider></td>
+						<td style="padding: 5px;"><input class="easyui-combotree" name="userId" id="userId" style="width: 100%"
+							data-options="
+								loadFilter:treeLoadFilter, 
+								editable:false,
+								label:'人员:',
+								multiple:true,
+								prompt:'--全部--',
+								_textField:'realName',
+								_valueField:'id',
+								url:'${contextPath!}/member/loadUsersByDepartment'" /></td>
 					</tr>
 					<tr>
-						<td style="padding: 5px;"><input class="combobox-checkbox" id="departmentId" name="departmentId"
-							data-options="editable:false,label:'部门:',prompt:'-所有部门-'" style="width: 100%" /></td>
+						<td style="padding: 5px;"><input class="easyui-combotree" style="width: 100%" id="departmentId" name="departmentId"
+							data-options="
+							loadFilter:treeLoadFilter, 
+							_idField:'id', 
+							_textField:'name', 
+							_parentIdField:'parentId',
+							multiple:true,
+							url:'${contextPath!}/department/departments',
+							editable:false,
+							label:'部门:',
+							prompt:'-所有部门-',
+							onChange:loadUsers" /></td>
 					</tr>
 					<tr>
 						<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid()">查询</a> <a
