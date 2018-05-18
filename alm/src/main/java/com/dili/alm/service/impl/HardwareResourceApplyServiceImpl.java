@@ -37,16 +37,12 @@ import com.dili.alm.dao.HardwareResourceApplyMapper;
 import com.dili.alm.dao.HardwareResourceRequirementMapper;
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.domain.ApproveResult;
-import com.dili.alm.domain.Department;
 import com.dili.alm.domain.HardwareApplyOperationRecord;
 import com.dili.alm.domain.HardwareApplyOperationType;
 import com.dili.alm.domain.HardwareApplyState;
 import com.dili.alm.domain.HardwareResourceApply;
 import com.dili.alm.domain.HardwareResourceRequirement;
-import com.dili.alm.domain.OperationResult;
 import com.dili.alm.domain.Project;
-import com.dili.alm.domain.ProjectOnlineApply;
-import com.dili.alm.domain.ProjectOnlineApplyState;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
@@ -253,7 +249,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 	@Override
 	public EasyuiPageOutput listEasyuiPageByExample(HardwareResourceApply domain, boolean useProvider)
 			throws Exception {
-		
+
 		HardwareResourceApply aa = DTOUtils.newDTO(HardwareResourceApply.class);
 		List<HardwareResourceApply> list = listByExample(domain);
 		list.forEach(h -> {
@@ -316,7 +312,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 				for (int i = 0; i < executors.size(); i++) {
 					if (user.getId().equals(executors.get(i))) {
 						implementing = true;
-					}else{
+					} else {
 						implementing = false;
 					}
 				}
@@ -720,15 +716,13 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		if (dto.getApplyDate() == null) {
 			throw new HardwareResourceApplyException("申请日期不能为空");
 		}
-/*		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(new Date());
-		calendar.set(Calendar.HOUR_OF_DAY, 0);
-		calendar.set(Calendar.MINUTE, 0);
-		calendar.set(Calendar.SECOND, 0);
-		calendar.set(Calendar.MILLISECOND, 0);
-		if (dto.getApplyDate().getTime() < calendar.getTimeInMillis()) {
-			throw new HardwareResourceApplyException("申请上线日期不能小于当前日期");
-		}*/
+		/*
+		 * Calendar calendar = Calendar.getInstance(); calendar.setTime(new Date());
+		 * calendar.set(Calendar.HOUR_OF_DAY, 0); calendar.set(Calendar.MINUTE, 0);
+		 * calendar.set(Calendar.SECOND, 0); calendar.set(Calendar.MILLISECOND, 0); if
+		 * (dto.getApplyDate().getTime() < calendar.getTimeInMillis()) { throw new
+		 * HardwareResourceApplyException("申请上线日期不能小于当前日期"); }
+		 */
 
 		// 判断记录是否存在
 		HardwareResourceApply old = this.getActualDao().selectByPrimaryKey(dto.getId());
@@ -784,6 +778,13 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		dto.setApplyId(applyId);
 		return this.hrrMapper.select(dto);
 
+	}
+
+	@Override
+	public void saveAndSubmit(HardwareResourceApplyUpdateDto hardwareResourceApply)
+			throws HardwareResourceApplyException {
+		this.saveOrUpdate(hardwareResourceApply);
+		this.submit(hardwareResourceApply.getId());
 	}
 
 }

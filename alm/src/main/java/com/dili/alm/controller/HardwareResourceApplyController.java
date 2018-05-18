@@ -1,8 +1,6 @@
 package com.dili.alm.controller;
 
-import java.nio.channels.SeekableByteChannel;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
@@ -28,14 +25,12 @@ import com.dili.alm.domain.ApproveResult;
 import com.dili.alm.domain.DataDictionaryValue;
 import com.dili.alm.domain.Department;
 import com.dili.alm.domain.HardwareResourceApply;
-import com.dili.alm.domain.HardwareResourceApplyState;
 import com.dili.alm.domain.HardwareResourceRequirement;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectOnlineApply;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.HardwareResourceApplyUpdateDto;
 import com.dili.alm.domain.dto.HardwareResourceRequirementDto;
-import com.dili.alm.domain.dto.UserDepartmentRoleQuery;
 import com.dili.alm.exceptions.HardwareResourceApplyException;
 import com.dili.alm.rpc.DepartmentRpc;
 import com.dili.alm.rpc.UserRpc;
@@ -280,6 +275,31 @@ public class HardwareResourceApplyController {
 		return BaseOutput.success("提交成功");
 	}
 
+	@RequestMapping(value = "/saveAndSubmit", method = { RequestMethod.POST })
+	public @ResponseBody BaseOutput saveAndSubmit(HardwareResourceApplyUpdateDto hardwareResourceApply,
+			String[] serviceEnvironmentChk, String configurationRequirementJsonStr) {
+		Set<Long> serviceEnvironments = new HashSet<Long>();
+		if (serviceEnvironmentChk == null || serviceEnvironmentChk.length <= 0) {
+			return BaseOutput.failure("请选择使用环境");
+		}
+		if (StringUtils.isBlank(configurationRequirementJsonStr)) {
+			return BaseOutput.failure("请添加配置要求");
+		}
+		for (int i = 0; i < serviceEnvironmentChk.length; i++) {
+			serviceEnvironments.add(Long.parseLong(serviceEnvironmentChk[i]));
+		}
+		hardwareResourceApply.setServiceEnvironments(serviceEnvironments);
+		List<HardwareResourceRequirementDto> parseArray = JSONArray.parseArray(configurationRequirementJsonStr,
+				HardwareResourceRequirementDto.class);
+		hardwareResourceApply.setConfigurationRequirement(parseArray);
+		try {
+			this.hardwareResourceApplyService.saveAndSubmit(hardwareResourceApply);
+			return BaseOutput.success();
+		} catch (HardwareResourceApplyException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+
 	@ApiOperation("进入审批申请")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "id", paramType = "form", value = "HardwareResourceApply的主键", required = true, dataType = "long") })
@@ -294,8 +314,6 @@ public class HardwareResourceApplyController {
 		/** 查询 所有部门 ***/
 		List<Department> departments = this.deptRpc.list(new Department()).getData();
 		modelMap.addAttribute("departments", departments);
-
-
 
 		/*** 环境 **/
 		DataDictionaryValue dd = DTOUtils.newDTO(DataDictionaryValue.class);
@@ -315,9 +333,11 @@ public class HardwareResourceApplyController {
 		modelMap.addAttribute("se2", envList);
 		modelMap.addAttribute("submit", DateUtil.getDate(dto.getApplyDate()));// 转化时间
 		modelMap.addAttribute("cread", DateUtil.getDate(dto.getCreated()));// 转化时间
-		
+
 		/** 个人信息 **/
-/*		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();*/
+		/*
+		 * UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		 */
 		User u = userRpc.findUserById(dto.getApplicantId()).getData();
 		modelMap.addAttribute("userInfo", u);
 
@@ -337,7 +357,7 @@ public class HardwareResourceApplyController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "id", paramType = "form", value = "HardwareResourceApply的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/managerApprove", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput managerApprove(Long id, boolean isApproved, String description)
+	public @ResponseBody BaseOutput managerApprove(Long id, Boolean isApproved, String description)
 			throws HardwareResourceApplyException {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		if (isApproved) {
@@ -373,7 +393,7 @@ public class HardwareResourceApplyController {
 	public @ResponseBody BaseOutput operManagerApprove(Long id, boolean isApproved, String description,
 			String[] executorsChk) throws HardwareResourceApplyException {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
-		if (executorsChk==null) {
+		if (executorsChk == null) {
 			return BaseOutput.failure("还未分配");
 		}
 		Set<Long> executors = new HashSet<Long>();
@@ -384,20 +404,19 @@ public class HardwareResourceApplyController {
 		return BaseOutput.success("提交成功");
 	}
 
-
 	@ApiOperation("运维实施")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "id", paramType = "form", value = "HardwareResourceApply的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/implementing", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput implementing(Long id, String description){
+	public @ResponseBody BaseOutput implementing(Long id, String description) {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
-		
+
 		try {
 			hardwareResourceApplyService.operatorExecute(id, user.getId(), description);
 		} catch (Exception e) {
 			return BaseOutput.failure(e.getMessage());
 		}
-		
+
 		return BaseOutput.success("提交成功");
 	}
 

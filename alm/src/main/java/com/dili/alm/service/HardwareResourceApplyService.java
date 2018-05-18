@@ -108,4 +108,6 @@ public interface HardwareResourceApplyService extends BaseService<HardwareResour
 	List<HardwareResourceRequirement> listRequirement(Long applyId)
 			throws HardwareResourceApplyException;
 
+	void saveAndSubmit(HardwareResourceApplyUpdateDto hardwareResourceApply) throws HardwareResourceApplyException;
+
 }

@@ -1,25 +1,15 @@
 
 <#body>
 <div id="win" style="display: none;"></div>
-<div id="win-button" style="display: none;"> 
+<div id="win-button" style="display: none;">
 	<a href="#" class="easyui-linkbutton" onclick="javascript:$('#win').dialog('close');">关闭</a>
 </div>
-<div id="win-button1" style="display: none;"> 
-    <a href="#" class="easyui-linkbutton" onclick="updateForms()">保存</a>
-	<a href="#" class="easyui-linkbutton" onclick="javascript:$('#win').dialog('close');">关闭</a>
-	<a href="#" class="easyui-linkbutton" onclick="submitApply()">提交</a>
-</div>
-<div id="win-button2" style="display: none;"> 
-    <a href="#" class="easyui-linkbutton" onclick="appov()">审批通过</a>
-    <a href="#" class="easyui-linkbutton" onclick="noAppov()">不通过</a>
-	<a href="#" class="easyui-linkbutton" onclick="javascript:$('#win').dialog('close');">关闭</a>
-</div>
-<div id="win-button3" style="display: none;"> 
-    <a href="#" class="easyui-linkbutton" onclick="appov()">实施</a>
-	<a href="#" class="easyui-linkbutton" onclick="javascript:$('#win').dialog('close');">关闭</a>
+<div id="win-button3" style="display: none;">
+	<a href="#" class="easyui-linkbutton" onclick="appov()">实施</a> <a href="#" class="easyui-linkbutton"
+		onclick="javascript:$('#win').dialog('close');">关闭</a>
 </div>
 
-<div id="smDialog" style="display: none;height:auto;"></div>
+<div id="smDialog" style="display: none; height: auto;"></div>
 
 <div class="easyui-layout" fit="true">
 
@@ -64,27 +54,27 @@
 	<div region="center" style="width: 100%;" height="auto">
 		<!-- =========================================================表格========================================================= -->
 		<table class="easyui-datagrid" title="资源申请列表" id="grid" fitColumns="true" pagination="true" pageSize="30" pageNumber="1"
-			pagePosition="both" rownumbers="true"   loadMsg="数据加载中..." singleSelect="true" method="post" 
-			sortName="projectId" align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" >
+			pagePosition="both" rownumbers="true" loadMsg="数据加载中..." singleSelect="true" method="post" sortName="projectId" align="center" fit="true"
+			striped="true" toolbar="#toolbar" idField="id">
 			<thead>
 				<tr>
-					<th data-options="field:'projectSerialNumber',width:'15%',order:'asc', align:'center', resizable:'true', fixed:'false'">
-						项目编号</th>
+					<th data-options="field:'projectSerialNumber',width:'15%',order:'asc', align:'center', resizable:'true', fixed:'false'">项目编号</th>
+					<th data-options="field:'applicationDepartmentId',_provider:'depProvider',hidden:true"></th>
+					<th data-options="field:'applicantId',_provider:'memberProvider',hidden:true"></th>
 					<th data-options="field:'projectName',width:'15%', order:'asc', align:'center', resizable:'true', fixed:'false'">项目名称</th>
 					<th
 						data-options="field:'deptMember',width:'10%',order:'asc', align:'center', resizable:'true', fixed:'false',formatter:deptMemberFormatter">
 						申请部门/人</th>
-					<th
-						data-options="field:'envList',width:'20%', order:'asc',align:'center', resizable:'true', fixed:'false',formatter:envFormatter">
+					<th data-options="field:'envList',width:'20%', order:'asc',align:'center', resizable:'true', fixed:'false',formatter:envFormatter">
 						使用环境</th>
 					<th
-						data-options="field:'applyDate',width:'20%',  _provider:'datetimeProvider',  order:'asc', align:'center', resizable:'true', fixed:'false'">
+						data-options="field:'submitTime',width:'20%',  _provider:'datetimeProvider',  order:'asc', align:'center', resizable:'true', fixed:'false'">
 						申请时间</th>
 					<th
 						data-options="field:'applyState',width:'10%', _provider:'hardwareResourceApplyStateProvider',   order:'asc', align:'center', resizable:'true', fixed:'false'">状态</th>
 					<th
 						data-options="field:'options', width:'10%',order:'asc', align:'center',  resizable:'true', fixed:'false',width:'9%',formatter:opptFormatter">
-						操作</th>	
+						操作</th>
 				</tr>
 			</thead>
 		</table>
@@ -92,7 +82,7 @@
 		<div id="toolbar" style="padding: 2px 5px;">
 			<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true"></a> <a href="#" class="easyui-linkbutton"
 				iconCls="icon-edit" onclick="openUpdate()" plain="true"></a> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()"
-				plain="true"></a> <a href="#" class="easyui-linkbutton" iconCls="icon-export" onclick="doExport('grid')" plain="true"></a>
+				plain="true"></a>
 			<div style="float: right">
 				边框显示:<select onchange="changeBorder('grid',this.value)">
 					<option value="lines-both">全边框</option>

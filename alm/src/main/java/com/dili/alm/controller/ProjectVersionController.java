@@ -1,6 +1,5 @@
 package com.dili.alm.controller;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectVersion;
@@ -23,12 +21,10 @@ import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectVersionChangeStateViewDto;
 import com.dili.alm.provider.ProjectVersionProvider;
 import com.dili.alm.service.FilesService;
-import com.dili.alm.service.ProjectPhaseService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.ProjectVersionService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.metadata.ValueProviderUtils;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -48,8 +44,6 @@ public class ProjectVersionController {
 	private ProjectService projectService;
 	@Autowired
 	private FilesService filesService;
-	@Autowired
-	private ProjectPhaseService phaseService;
 
 	@ApiOperation("跳转到Milestones页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)

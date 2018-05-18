@@ -57,7 +57,7 @@ public class ProjectVersionProvider implements ValueProvider {
 	public static List<Map> parseEasyUiModelList(List<ProjectVersion> list) throws Exception {
 		Map<Object, Object> metadata = new HashMap<>();
 		JSONObject versionStateProvider = new JSONObject();
-		versionStateProvider.put("provider", "projectStateProvider");
+		versionStateProvider.put("provider", "projectVersionStateProvider");
 		metadata.put("versionState", versionStateProvider);
 
 		JSONObject almDateProvider = new JSONObject();
