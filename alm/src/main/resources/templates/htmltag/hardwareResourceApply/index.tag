@@ -235,32 +235,12 @@ function openApove(id) {
 				buttons : [{
 							text : '审批通过',
 							handler : function() {
-								$.post('${contextPath!}//hardwareResourceApply/managerApprove', {
-											id : id,
-											isApproved : true
-										}, function(res) {
-											if (res.success) {
-												$('#grid').datagrid('reload');
-												$('#win').dialog('close');
-											} else {
-												$.messager.alert('错误', res.result);
-											}
-										});
+								managerApprove(true);
 							}
 						}, {
 							text : '不通过',
 							handler : function() {
-								$.post('${contextPath!}//hardwareResourceApply/managerApprove', {
-											id : id,
-											isApproved : false
-										}, function(res) {
-											if (res.success) {
-												$('#grid').datagrid('reload');
-												$('#win').dialog('close');
-											} else {
-												$.messager.alert('错误', res.result);
-											}
-										});
+								managerApprove(false);
 							}
 						}, {
 							text : '关闭',
@@ -270,6 +250,20 @@ function openApove(id) {
 						}]
 			});
 
+}
+
+function managerApprove(result) {
+	$.post('${contextPath!}/hardwareResourceApply/managerApprove', {
+				id : id,
+				isApproved : result
+			}, function(res) {
+				if (res.success) {
+					$('#grid').datagrid('reload');
+					$('#win').dialog('close');
+				} else {
+					$.messager.alert('错误', res.result);
+				}
+			});
 }
 
 // 实施窗口
