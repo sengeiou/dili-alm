@@ -235,12 +235,12 @@ function openApove(id) {
 				buttons : [{
 							text : '审批通过',
 							handler : function() {
-								managerApprove(true);
+								managerApprove(id, true);
 							}
 						}, {
 							text : '不通过',
 							handler : function() {
-								managerApprove(false);
+								managerApprove(id, false);
 							}
 						}, {
 							text : '关闭',
@@ -252,7 +252,7 @@ function openApove(id) {
 
 }
 
-function managerApprove(result) {
+function managerApprove(id, result) {
 	$.post('${contextPath!}/hardwareResourceApply/managerApprove', {
 				id : id,
 				isApproved : result

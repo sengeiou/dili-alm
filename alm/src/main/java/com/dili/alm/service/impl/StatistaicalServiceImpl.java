@@ -84,6 +84,15 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	 */
 	@Override
 	public EasyuiPageOutput getProjectTypeCountDTO(String startTime, String endTime) {
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Date startDate;
+		Date endDate;
+		try {
+			startDate = df.parse(startTime);
+			endDate = df.parse(endTime);
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
 		List<ProjectTypeCountDto> list = new ArrayList<ProjectTypeCountDto>();
 		DataDictionaryDto dto = this.dataDictionaryService.findByCode(PROJECT_TYPE_CODE);
 		if (dto != null) {
@@ -91,8 +100,13 @@ public class StatistaicalServiceImpl implements StatisticalService {
 			for (DataDictionaryValueDto dataDictionaryValueDto : ddvdList) {
 				ProjectTypeCountDto ptc = new ProjectTypeCountDto();
 				ptc.setType(dataDictionaryValueDto.getCode());
-				List<ProjectStatusCountDto> statusCount = projectMapper
-						.getTpyeByProjectCount(dataDictionaryValueDto.getValue(), startTime, endTime);
+				List<ProjectStatusCountDto> statusCount;
+				try {
+					statusCount = projectMapper.getTpyeByProjectCount(dataDictionaryValueDto.getValue(), startDate,
+							endDate, df.parse(df.format(new Date())));
+				} catch (ParseException e) {
+					throw new RuntimeException(e);
+				}
 				int total = 0;
 				for (ProjectStatusCountDto projectStatusCountDto : statusCount) {
 					total = total + projectStatusCountDto.getStateCount();
@@ -125,7 +139,17 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	 */
 	@Override
 	public List<TaskStateCountDto> getProjectToTaskCount(String startTime, String endTime) {
-		List<Long> projectIds = projectMapper.getProjectIds(startTime, endTime);
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Date startDate;
+		Date endDate;
+		List<Long> projectIds;
+		try {
+			startDate = df.parse(startTime);
+			endDate = df.parse(endTime);
+			projectIds = projectMapper.getProjectIds(startDate, endDate, df.parse(df.format(new Date())));
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
 		List<TaskStateCountDto> list = new ArrayList<TaskStateCountDto>();
 		if (projectIds != null && projectIds.size() > 0) {
 			return taskMapper.selectTaskStateCount(projectIds);
@@ -662,15 +686,30 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	public List<ProjectTypeCountDto> getProjectToTypeSummary(String startTime, String endTime) {
 		List<ProjectTypeCountDto> list = new ArrayList<ProjectTypeCountDto>();
 		DataDictionaryDto dto = this.dataDictionaryService.findByCode(PROJECT_TYPE_CODE);
-		int projectTotal = projectMapper.getProjectTypeAllCount(startTime, endTime);
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Date startDate;
+		Date endDate;
+		try {
+			startDate = df.parse(startTime);
+			endDate = df.parse(endTime);
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
+		Date now = new Date();
+		int projectTotal = projectMapper.getProjectTypeAllCount(startDate, endDate, now);
 		if (dto != null) {
 			List<DataDictionaryValueDto> ddvdList = dto.getValues();
 			for (DataDictionaryValueDto dataDictionaryValueDto : ddvdList) {
 				ProjectTypeCountDto pts = new ProjectTypeCountDto();
 				pts.setId(dataDictionaryValueDto.getValue());
 				pts.setType(dataDictionaryValueDto.getCode());
-				List<ProjectStatusCountDto> statusCount = projectMapper
-						.getTpyeByProjectCount(dataDictionaryValueDto.getValue(), startTime, endTime);
+				List<ProjectStatusCountDto> statusCount;
+				try {
+					statusCount = projectMapper.getTpyeByProjectCount(dataDictionaryValueDto.getValue(), startDate,
+							endDate, df.parse(df.format(now)));
+				} catch (ParseException e) {
+					throw new RuntimeException(e);
+				}
 				int typeTotal = 0;
 				for (ProjectStatusCountDto projectStatusCountDto : statusCount) {
 					typeTotal = typeTotal + projectStatusCountDto.getStateCount();
@@ -692,6 +731,15 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	 */
 	@Override
 	public void downloadProjectType(OutputStream os, String startTime, String endTime) throws Exception {
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Date startDate;
+		Date endDate;
+		try {
+			startDate = df.parse(startTime);
+			endDate = df.parse(endTime);
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
 		List<ProjectTypeCountDto> ptcList = new ArrayList<ProjectTypeCountDto>();
 		DataDictionaryDto dto = this.dataDictionaryService.findByCode(PROJECT_TYPE_CODE);
 		if (dto != null) {
@@ -699,8 +747,8 @@ public class StatistaicalServiceImpl implements StatisticalService {
 			for (DataDictionaryValueDto dataDictionaryValueDto : ddvdList) {
 				ProjectTypeCountDto ptc = new ProjectTypeCountDto();
 				ptc.setType(dataDictionaryValueDto.getCode());
-				List<ProjectStatusCountDto> statusCount = projectMapper
-						.getTpyeByProjectCount(dataDictionaryValueDto.getValue(), startTime, endTime);
+				List<ProjectStatusCountDto> statusCount = projectMapper.getTpyeByProjectCount(
+						dataDictionaryValueDto.getValue(), startDate, endDate, df.parse(df.format(new Date())));
 				int total = 0;
 				for (ProjectStatusCountDto projectStatusCountDto : statusCount) {
 					total = total + projectStatusCountDto.getStateCount();
