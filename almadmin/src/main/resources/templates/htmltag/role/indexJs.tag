@@ -438,7 +438,7 @@ function queryGrid() {
 	if (!$('#form').form("validate")) {
 		return;
 	}
-	var param = bindMetadata("roleGrid");
+	var param = bindMetadata("roleGrid", true);
 	var formData = $("#form").serializeObject();
 	$.extend(formData, param);
 	roleGrid.datagrid("load", formData);

@@ -204,39 +204,123 @@
 		SELECT p.TYPE AS projectType ,p.project_state AS
 		projectState,COUNT(*)
 		AS stateCount
-		FROM `project` p
+		FROM (
+		SELECT
+		id,
+		apply_id,
+		serial_number,
+		parent_id,
+		`name`,
+		type,
+		project_manager,
+		develop_manager,
+		test_manager,
+		product_manager,
+		created,
+		modified,
+		start_date,
+		end_date,
+		actual_start_date,
+		actual_end_date,
+		project_state,
+		task_count,
+		member_count,
+		completed_progress,
+		originator,
+		dep,
+		business_owner,
+		estimate_launch_date,
+		IFNULL( close_time, #{currentTime} ) AS close_time
+		FROM
+		`project`
+		) p
 		WHERE
 		p.type=#{type,jdbcType=VARCHAR}
 		AND
-		((
-		created <![CDATA[>=]]>
-		#{startTime} AND created <![CDATA[<=]]>
+		(
+		(
+		p.created <![CDATA[>=]]>
+		#{startTime} AND p.created <![CDATA[<=]]>
 		#{endTime} )
-		OR ( ( close_time IS NULL AND NOW( ) <![CDATA[>=]]>
-		#{startTime} AND NOW( ) <![CDATA[<=]]>
-		#{endTime} ) OR ( NOW( ) <![CDATA[>=]]>
-		#{endTime} ) )
-		OR ( close_time <![CDATA[>=]]>
-		#{startTime} AND close_time <![CDATA[<=]]>
-		#{endTime} ))
+		OR (
+		p.project_state = 4
+		AND p.close_time <![CDATA[>=]]>
+		#{startTime}
+		AND p.close_time <![CDATA[<=]]>
+		#{endTime}
+		)
+		OR (
+		p.project_state != 4
+		<if test="currentTime.time &lt;= endTime.time">
+			AND p.close_time <![CDATA[>=]]>
+			#{endTime}
+		</if>
+		<if test="currentTime.time &gt; endTime.time">
+			AND p.close_time <![CDATA[<=]]>
+			#{endTime}
+		</if>
+		)
+		)
 		GROUP BY
 		p.project_state
 	</select>
 
 	<select id="getProjectIds" resultType="java.lang.Long">
 		SELECT id
-		FROM `project`
+		FROM (
+		SELECT
+		id,
+		apply_id,
+		serial_number,
+		parent_id,
+		`name`,
+		type,
+		project_manager,
+		develop_manager,
+		test_manager,
+		product_manager,
+		created,
+		modified,
+		start_date,
+		end_date,
+		actual_start_date,
+		actual_end_date,
+		project_state,
+		task_count,
+		member_count,
+		completed_progress,
+		originator,
+		dep,
+		business_owner,
+		estimate_launch_date,
+		IFNULL( close_time, #{currentTime})
+		AS close_time
+		FROM
+		`project`
+		) p
 		WHERE
-		( created <![CDATA[>=]]>
-		#{startTime} AND created <![CDATA[<=]]>
+		(
+		p.created <![CDATA[>=]]>
+		#{startTime} AND p.created <![CDATA[<=]]>
 		#{endTime} )
-		OR ( ( close_time IS NULL AND NOW( ) <![CDATA[>=]]>
-		#{startTime} AND NOW( ) <![CDATA[<=]]>
-		#{endTime} ) OR ( NOW( ) <![CDATA[>=]]>
-		#{endTime} ) )
-		OR ( close_time <![CDATA[>=]]>
-		#{startTime} AND close_time <![CDATA[<=]]>
-		#{endTime} )
+		OR (
+		p.project_state = 4
+		AND p.close_time <![CDATA[>=]]>
+		#{startTime}
+		AND p.close_time <![CDATA[<=]]>
+		#{endTime}
+		)
+		OR (
+		p.project_state != 4
+		<if test="currentTime.time &lt;= endTime.time">
+			AND p.close_time <![CDATA[>=]]>
+			#{endTime}
+		</if>
+		<if test="currentTime.time &gt; endTime.time">
+			AND p.close_time <![CDATA[<=]]>
+			#{endTime}
+		</if>
+		)
 	</select>
 
 
@@ -300,24 +384,58 @@
 
 	<select id="getProjectTypeAllCount" resultType="int">
 		SELECT COUNT(*)
-		FROM `project`
+		FROM (
+		SELECT
+		id,
+		apply_id,
+		serial_number,
+		parent_id,
+		`name`,
+		type,
+		project_manager,
+		develop_manager,
+		test_manager,
+		product_manager,
+		created,
+		modified,
+		start_date,
+		end_date,
+		actual_start_date,
+		actual_end_date,
+		project_state,
+		task_count,
+		member_count,
+		completed_progress,
+		originator,
+		dep,
+		business_owner,
+		estimate_launch_date,
+		IFNULL( close_time, #{currentTime} ) AS close_time
+		FROM
+		`project`
+		) p
 		WHERE
 		(
-			created <![CDATA[>=]]>
-			#{startTime} AND created <![CDATA[<=]]>#{endTime} 
+		p.created <![CDATA[>=]]>
+		#{startTime} AND p.created <![CDATA[<=]]>
+		#{endTime} )
+		OR (
+		p.project_state = 4
+		AND p.close_time <![CDATA[>=]]>
+		#{startTime}
+		AND p.close_time <![CDATA[<=]]>
+		#{endTime}
 		)
-		OR ( 
-			( 
-				close_time IS NULL 
-				AND NOW( ) <![CDATA[>=]]> #{startTime} 
-				AND NOW( ) <![CDATA[<=]]> #{endTime} 
-			) OR ( 
-				NOW( ) <![CDATA[>=]]> #{endTime} 
-			) 
-		)
-		OR ( 
-			close_time <![CDATA[>=]]> #{startTime} 
-			AND close_time <![CDATA[<=]]> #{endTime} 
+		OR (
+		p.project_state != 4
+		<if test="currentTime.time &lt;= endTime.time">
+			AND p.close_time <![CDATA[>=]]>
+			#{endTime}
+		</if>
+		<if test="currentTime.time &gt; endTime.time">
+			AND p.close_time <![CDATA[<=]]>
+			#{endTime}
+		</if>
 		)
 	</select>
 

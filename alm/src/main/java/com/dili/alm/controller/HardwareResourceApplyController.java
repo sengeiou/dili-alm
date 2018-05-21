@@ -303,7 +303,7 @@ public class HardwareResourceApplyController {
 	@ApiOperation("进入审批申请")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "id", paramType = "form", value = "HardwareResourceApply的主键", required = true, dataType = "long") })
-	@RequestMapping(value = "/goApprove", method = { RequestMethod.GET, RequestMethod.POST })
+	@RequestMapping(value = "/goApprove", method = { RequestMethod.GET })
 	public String goApprove(@RequestParam Long id, ModelMap modelMap) throws HardwareResourceApplyException {
 
 		List<Project> projects = this.projectService.list(null);
@@ -325,8 +325,9 @@ public class HardwareResourceApplyController {
 		Department deptQuery = new Department();
 		deptQuery.setCode(AlmConstants.OPERATION_DEPARTMENT_CODE);
 		BaseOutput<List<Department>> deptOutput = this.deptRpc.list(deptQuery);
-		HardwareResourceApply dto = this.hardwareResourceApplyService.get(id);
+		HardwareResourceApply dto = this.hardwareResourceApplyService.getDetailViewModel(id);
 		modelMap.addAttribute("apply", dto);
+		modelMap.addAttribute("opRecords", dto.aget("opRecords"));
 		List<String> envList = (List<String>) JSONObject.parseObject(dto.getServiceEnvironment(),
 				new TypeReference<List<String>>() {
 				});
@@ -353,9 +354,6 @@ public class HardwareResourceApplyController {
 		return "hardwareResourceApply/agreePage";
 	}
 
-	@ApiOperation("研发经理审批")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "id", paramType = "form", value = "HardwareResourceApply的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/managerApprove", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput managerApprove(Long id, Boolean isApproved, String description)
 			throws HardwareResourceApplyException {
@@ -370,9 +368,6 @@ public class HardwareResourceApplyController {
 		return BaseOutput.success("提交成功");
 	}
 
-	@ApiOperation("部门经理审批")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "id", paramType = "form", value = "HardwareResourceApply的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/generalManagerApprove", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput generalManagerApprove(Long id, boolean isApproved, String description)
 			throws HardwareResourceApplyException {

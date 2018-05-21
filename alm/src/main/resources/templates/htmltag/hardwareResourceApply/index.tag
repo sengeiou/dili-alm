@@ -1,3 +1,9 @@
+var approveType = {
+	projectManagerApprove : 'managerApprove',
+	generalManagerApprove : 'generalManagerApprove',
+	operationManagerApprove : 'operationManagerApprove'
+};
+
 function deptMemberFormatter(value, row, index) {
 	return row.applicationDepartmentId + '/' + row.applicantId;
 }
@@ -11,19 +17,19 @@ function opptFormatter(value, row, index) {
 	}
 
 	if (row.projectManagerApprov) {
-		returnStr = "<span><a href='javascr:void(0)' onclick='openApove(" + row.id + ")'>审批</a></span>";
+		returnStr = '<span><a href="javascr:void(0);" onclick="openApove(' + row.id + ',\'' + approveType.projectManagerApprove + '\');">审批</a></span>';
 	} else if (row.$_applyState == "2") {
 		returnStr = "<span> 审批  </span>";
 	}
 
 	if (row.generalManagerAppov) {
-		returnStr = "<span><a href='javascr:void(0)' onclick='openApove(" + row.id + ")'>审批</a></span>";
+		returnStr = '<span><a href="javascr:void(0);" onclick="openApove(' + row.id + ',\'' + approveType.generalManagerApprove + '\');">审批</a></span>';
 	} else if (row.$_applyState == "3") {
 		returnStr = "<span> 审批  </span>";
 	}
 
 	if (row.operactionManagerAppov) {
-		returnStr = "<span><a href='javascr:void(0)' onclick='openApove(" + row.id + ")'>分配实施</a></span>";
+		returnStr = '<span><a href="javascr:void(0);" onclick="openApove(' + row.id + ',\'' + approveType.operationManagerApprove + '\');">审批</a></span>';
 	} else if (row.$_applyState == "4") {
 		returnStr = "<span> 分配实施  </span>";
 	}
@@ -203,7 +209,7 @@ function openUpdate(id) {
 }
 
 // 申请审批窗口
-function openApove(id) {
+function openApove(id, type) {
 	var selected = $("#grid").datagrid("getSelected");
 	if (id == null) {
 		if (null == selected) {
@@ -235,32 +241,12 @@ function openApove(id) {
 				buttons : [{
 							text : '审批通过',
 							handler : function() {
-								$.post('${contextPath!}//hardwareResourceApply/managerApprove', {
-											id : id,
-											isApproved : true
-										}, function(res) {
-											if (res.success) {
-												$('#grid').datagrid('reload');
-												$('#win').dialog('close');
-											} else {
-												$.messager.alert('错误', res.result);
-											}
-										});
+								approve();
 							}
 						}, {
 							text : '不通过',
 							handler : function() {
-								$.post('${contextPath!}//hardwareResourceApply/managerApprove', {
-											id : id,
-											isApproved : false
-										}, function(res) {
-											if (res.success) {
-												$('#grid').datagrid('reload');
-												$('#win').dialog('close');
-											} else {
-												$.messager.alert('错误', res.result);
-											}
-										});
+								noAppov();
 							}
 						}, {
 							text : '关闭',

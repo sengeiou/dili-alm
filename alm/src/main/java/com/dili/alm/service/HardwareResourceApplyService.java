@@ -94,20 +94,12 @@ public interface HardwareResourceApplyService extends BaseService<HardwareResour
 	 * @param description
 	 *            描述
 	 */
-	void operatorExecute(Long applyId, Long executorId, String description)
-			throws HardwareResourceApplyException;
-	/**
-	 * 执行人实施
-	 * 
-	 * @param applyId
-	 *            申请id
-	 * @param description
-	 * 			查询需求列表前台页面显示
-	 * @return 
-	 * */     
-	List<HardwareResourceRequirement> listRequirement(Long applyId)
-			throws HardwareResourceApplyException;
+	void operatorExecute(Long applyId, Long executorId, String description) throws HardwareResourceApplyException;
+
+	List<HardwareResourceRequirement> listRequirement(Long applyId) throws HardwareResourceApplyException;
 
 	void saveAndSubmit(HardwareResourceApplyUpdateDto hardwareResourceApply) throws HardwareResourceApplyException;
+
+	HardwareResourceApply getDetailViewModel(Long id);
 
 }

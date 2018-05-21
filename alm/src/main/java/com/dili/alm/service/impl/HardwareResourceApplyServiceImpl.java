@@ -60,6 +60,7 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
@@ -785,6 +786,30 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 			throws HardwareResourceApplyException {
 		this.saveOrUpdate(hardwareResourceApply);
 		this.submit(hardwareResourceApply.getId());
+	}
+
+	@Override
+	public HardwareResourceApply getDetailViewModel(Long id) {
+		HardwareResourceApply apply = this.getActualDao().selectByPrimaryKey(id);
+		HardwareApplyOperationRecord hraQuery = DTOUtils.newDTO(HardwareApplyOperationRecord.class);
+		hraQuery.setApplyId(id);
+		List<HardwareApplyOperationRecord> opRecords = this.haorMapper.select(hraQuery);
+		Map<Object, Object> metadata = new HashMap<>();
+
+		JSONObject memberProvider = new JSONObject();
+		memberProvider.put("provider", "memberProvider");
+		metadata.put("operatorId", memberProvider);
+
+		JSONObject datetimeProvider = new JSONObject();
+		datetimeProvider.put("provider", "datetimeProvider");
+		metadata.put("operateTime", datetimeProvider);
+
+		try {
+			apply.aset("opRecords", ValueProviderUtils.buildDataByProvider(metadata, opRecords));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return apply;
 	}
 
 }

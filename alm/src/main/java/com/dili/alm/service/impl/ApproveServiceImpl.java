@@ -6,6 +6,7 @@ import com.dili.alm.cache.AlmCache;
 import com.dili.alm.component.MailManager;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.ApproveMapper;
+import com.dili.alm.dao.ProjectChangeMapper;
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.domain.*;
 import com.dili.alm.domain.dto.DataDictionaryDto;
@@ -109,6 +110,8 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
 	@Value("${spring.mail.username:}")
 	private String mailFrom;
+	@Autowired
+	private ProjectChangeMapper projectChangeMapper;
 
 	public ApproveServiceImpl() {
 		super();
@@ -248,7 +251,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
 	@Override
 	public void buildChangeApprove(Map modelMap, Long id) {
-		Approve approve = this.get(id);
+		Approve approve = this.getActualDao().selectByPrimaryKey(id);
 
 		String approveDescription = approve.getDescription();
 		modelMap.put("canOpt", checkApprove(approveDescription, approve.getStatus()));

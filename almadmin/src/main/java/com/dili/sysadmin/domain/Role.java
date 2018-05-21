@@ -1,8 +1,16 @@
 package com.dili.sysadmin.domain;
 
-import com.dili.ss.domain.BaseDomain;
 import java.util.Date;
-import javax.persistence.*;
+
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import com.dili.ss.domain.BaseDomain;
+import com.dili.ss.domain.annotation.Like;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -11,6 +19,12 @@ import javax.persistence.*;
  */
 @Table(name = "`role`")
 public class Role extends BaseDomain {
+	/**
+	 * 
+	 */
+	@Transient
+	private static final long serialVersionUID = 6784663384096954308L;
+
 	/**
 	 * 主键
 	 */
@@ -22,6 +36,7 @@ public class Role extends BaseDomain {
 	/**
 	 * 角色名
 	 */
+	@Like(Like.BOTH)
 	@Column(name = "`role_name`")
 	private String roleName;
 
