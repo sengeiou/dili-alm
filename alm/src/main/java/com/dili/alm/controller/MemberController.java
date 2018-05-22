@@ -38,7 +38,7 @@ public class MemberController {
 		modelMap.put("textboxId", textboxId);
 		modelMap.put("dep", dep);
 		if (StringUtils.isNotBlank(dep)) {
-			AlmCache.getInstance().getDepMap().forEach((Long k, Department v) -> {
+			AlmCache.getInstance().getDepMap().forEach((k, v) -> {
 				if (Objects.equals(v.getCode(), dep)) {
 					modelMap.put("dep", k);
 				}

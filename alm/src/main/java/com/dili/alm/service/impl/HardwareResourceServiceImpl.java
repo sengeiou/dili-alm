@@ -117,58 +117,58 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 		return false;
 	}
 	
-	@Override
-	public EasyuiPageOutput listEasyuiPageByExample(HardwareResource domain,List<Long> projectIds, boolean useProvider) throws Exception {
-		UserTicket user = SessionContext.getSessionContext().getUserTicket();
-		Long owner=null;
-	
-		if (user == null) {
-			throw new RuntimeException("未登录");
-		}
-		//获取维护人
-		if(domain.getMaintenanceOwner()==null){
-			domain.setMaintenanceOwner(user.getId());
-		}else{
-			if(domain.getMaintenanceOwner().longValue()!=user.getId().longValue()){
-				owner=user.getId();
-			}
-		}
-		//判断项目权限
-		if(domain.getProjectId()!=null){	
-			if(owner!=null){
-				if(!projectIds.contains(domain.getProjectId())){
-					List<HardwareResource> nullList= new ArrayList<HardwareResource>();
-					return new EasyuiPageOutput(0, nullList);
-				}	
-			}else{
-				if(projectIds.contains(domain.getProjectId())){
-					domain.setMaintenanceOwner(null);
-				}	
-			}
-			
-		}
-		
-		String sort = domain.getSort();
-		if(WebUtil.strIsEmpty(sort)){
-			domain.setSort("id");
-			domain.setOrder("ASC");
-			
-		}else if(sort.equals("projectId")){
-			domain.setSort("project_id");
-		}else if(sort.equals("maintenanceDate")){
-			domain.setSort("maintenance_date");
-		}else if(sort.equals("lastModifyDate")){
-			domain.setSort("last_modify_date");
-		}
-		List<HardwareResource> list = this.hardwareResourceMapper.selectByIds(domain,owner,projectIds);
-		int total = this.hardwareResourceMapper.selectByIdsCounts(domain,owner,projectIds);
-		List results = null;
-		results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, list) : list;
-		
-		
-		
-		return new EasyuiPageOutput(Integer.parseInt(String.valueOf(total)), results);
-	}
+//	@Override
+//	public EasyuiPageOutput listEasyuiPageByExample(HardwareResource domain,List<Long> projectIds, boolean useProvider) throws Exception {
+//		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+//		Long owner=null;
+//	
+//		if (user == null) {
+//			throw new RuntimeException("未登录");
+//		}
+//		//获取维护人
+//		if(domain.getMaintenanceOwner()==null){
+//			domain.setMaintenanceOwner(user.getId());
+//		}else{
+//			if(domain.getMaintenanceOwner().longValue()!=user.getId().longValue()){
+//				owner=user.getId();
+//			}
+//		}
+//		//判断项目权限
+//		if(domain.getProjectId()!=null){	
+//			if(owner!=null){
+//				if(!projectIds.contains(domain.getProjectId())){
+//					List<HardwareResource> nullList= new ArrayList<HardwareResource>();
+//					return new EasyuiPageOutput(0, nullList);
+//				}	
+//			}else{
+//				if(projectIds.contains(domain.getProjectId())){
+//					domain.setMaintenanceOwner(null);
+//				}	
+//			}
+//			
+//		}
+//		
+//		String sort = domain.getSort();
+//		if(WebUtil.strIsEmpty(sort)){
+//			domain.setSort("id");
+//			domain.setOrder("ASC");
+//			
+//		}else if(sort.equals("projectId")){
+//			domain.setSort("project_id");
+//		}else if(sort.equals("maintenanceDate")){
+//			domain.setSort("maintenance_date");
+//		}else if(sort.equals("lastModifyDate")){
+//			domain.setSort("last_modify_date");
+//		}
+//		List<HardwareResource> list = this.hardwareResourceMapper.selectByIds(domain,owner,projectIds);
+//		int total = this.hardwareResourceMapper.selectByIdsCounts(domain,owner,projectIds);
+//		List results = null;
+//		results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, list) : list;
+//		
+//		
+//		
+//		return new EasyuiPageOutput(Integer.parseInt(String.valueOf(total)), results);
+//	}
 
 	@Override
 	public boolean isOperation(Long id) {

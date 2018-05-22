@@ -745,11 +745,14 @@
 			) t#{index} ON u.id
 			= t#{index}.user_id
 		</foreach>
-		WHERE u.id IN
-		<foreach collection="userIds" open="(" separator="," close=")"
-			item="userId">
-			#{userId}
-		</foreach>
+		WHERE 1 =1 
+		<if test="userIds != null and userIds.size > 0">
+			AND u.id IN
+			<foreach collection="userIds" open="(" separator=","
+				close=")" item="userId">
+				#{userId}
+			</foreach>
+		</if>
 		AND u.id != 1
 	</select>
 </mapper>
