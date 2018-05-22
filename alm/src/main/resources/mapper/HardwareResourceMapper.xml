@@ -144,7 +144,7 @@
    		AND project_id = #{hardwareResource.projectId,jdbcType=BIGINT}
     </if>
     <if test="hardwareResource.ip != null">
-   		AND ip = #{hardwareResource.ip,jdbcType=VARCHAR}
+   		AND ip like CONCAT('%','#{hardwareResource.ip,jdbcType=VARCHAR}','%')
     </if>
     <if test="owner != null">
 	    <if test="hardwareResource.projectId == null  and list != null and list.size>0">

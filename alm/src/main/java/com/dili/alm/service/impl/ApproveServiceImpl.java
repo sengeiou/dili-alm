@@ -406,7 +406,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	public void insertBefore(Approve as) {
 		DataDictionaryDto code = dataDictionaryService.findByCode(AlmConstants.ROLE_CODE);
 		List<DataDictionaryValueDto> values = code.getValues();
-		String roleId = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH)).findFirst()
+		String roleId = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH_LEADER)).findFirst()
 				.map(DataDictionaryValue::getValue).orElse(null);
 
 		insertSelective(as);

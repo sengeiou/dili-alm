@@ -233,8 +233,8 @@ public class StatistaicalServiceImpl implements StatisticalService {
 
 		// projectId 转为查询条件传递
 		List<Long> selectProjectIds = new ArrayList<Long>(taskHoursForPoject.size());
-		if (taskHoursForPoject == null || taskHoursForPoject.size() == 0) {
-			selectProjectIds.add((long) 0);
+		if (CollectionUtils.isEmpty(taskHoursForPoject)) {
+			return new ArrayList<>(0);
 		} else {
 			taskHoursForPoject.forEach(p -> {
 				selectProjectIds.add(p.getProjectId());
@@ -243,7 +243,8 @@ public class StatistaicalServiceImpl implements StatisticalService {
 
 		// 查询项目组成员
 		Example example = new Example(Team.class);
-		example.createCriteria().andIn("projectId", selectProjectIds);
+		example.createCriteria().andIn("projectId",
+				CollectionUtils.isEmpty(projectIds) ? selectProjectIds : projectIds);
 		List<Team> teams = this.teamMapper.selectByExample(example);
 		Set<Long> userIds = new HashSet<>();
 		teams.forEach(t -> userIds.add(t.getMemberId()));

@@ -27,8 +27,8 @@ public interface HardwareResourceService extends BaseService<HardwareResource, L
 
 	boolean isSubmit(Long id);
 
-	EasyuiPageOutput listEasyuiPageByExample(HardwareResource domain,
-			List<Long> projectIds, boolean useProvider) throws Exception;
+//	EasyuiPageOutput listEasyuiPageByExample(HardwareResource domain,
+//			List<Long> projectIds, boolean useProvider) throws Exception;
 
 	boolean isOperation(Long id);
 

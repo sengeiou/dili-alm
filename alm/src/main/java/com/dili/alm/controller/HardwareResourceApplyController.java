@@ -1,6 +1,9 @@
 package com.dili.alm.controller;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +32,7 @@ import com.dili.alm.domain.HardwareResourceRequirement;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectOnlineApply;
 import com.dili.alm.domain.User;
+import com.dili.alm.domain.dto.HardwareResourceApplyListPageQueryDto;
 import com.dili.alm.domain.dto.HardwareResourceApplyUpdateDto;
 import com.dili.alm.domain.dto.HardwareResourceRequirementDto;
 import com.dili.alm.exceptions.HardwareResourceApplyException;
@@ -199,8 +203,20 @@ public class HardwareResourceApplyController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "HardwareResourceApply", paramType = "form", value = "HardwareResourceApply的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String listPage(HardwareResourceApply hardwareResourceApply) throws Exception {
-		return hardwareResourceApplyService.listEasyuiPageByExample(hardwareResourceApply, true).toString();
+	public @ResponseBody String listPage(HardwareResourceApplyListPageQueryDto query) throws Exception {
+		if (query.getSubmitBeginTime() != null) {
+			Calendar c = Calendar.getInstance();
+			c.setTime(query.getSubmitBeginTime());
+			c.add(Calendar.DAY_OF_MONTH, -1);
+			query.setSubmitBeginTime(c.getTime());
+		}
+		if (query.getSubmitEndTime() != null) {
+			Calendar c = Calendar.getInstance();
+			c.setTime(query.getSubmitEndTime());
+			c.add(Calendar.DAY_OF_MONTH, 1);
+			query.setSubmitEndTime(c.getTime());
+		}
+		return hardwareResourceApplyService.listEasyuiPageByExample(query, true).toString();
 	}
 
 	@ApiOperation("新增HardwareResourceApply")

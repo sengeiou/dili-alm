@@ -1,6 +1,7 @@
 package com.dili.alm.service;
 
 import com.dili.alm.domain.ProjectComplete;
+import com.dili.alm.exceptions.ProjectCompleteException;
 import com.dili.ss.base.BaseService;
 
 /**
@@ -14,4 +15,6 @@ public interface ProjectCompleteService extends BaseService<ProjectComplete, Lon
     Long reComplete(Long id);
 
     Object loadMembers(Long id) throws Exception;
+
+	void insertWithCheck(ProjectComplete projectComplete) throws ProjectCompleteException;
 }
