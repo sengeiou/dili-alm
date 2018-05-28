@@ -1,5 +1,6 @@
 package com.dili.alm.controller;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -106,6 +107,12 @@ public class TravelCostApplyController {
 			@ApiImplicitParam(name = "TravelCostApply", paramType = "form", value = "TravelCostApply的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(TravelCostApplyQueryDto apply) throws Exception {
+		if (apply.getSubmitEndDate() != null) {
+			Calendar c = Calendar.getInstance();
+			c.setTime(apply.getSubmitEndDate());
+			c.add(Calendar.DAY_OF_MONTH, 1);
+			apply.setSubmitEndDate(c.getTime());
+		}
 		return travelCostApplyService.listEasyuiPageByExample(apply, true).toString();
 	}
 

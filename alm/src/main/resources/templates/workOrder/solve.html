@@ -1,0 +1,129 @@
+<style>
+.table-box {
+	width: 100%;
+	text-align: center;
+	margin-bottom: 10px;
+}
+
+.table-box, .table-box tr td {
+	border: 1px solid #ddd;
+	border-collapse: collapse;
+}
+
+.table-box tr td {
+	/*display: block;*/
+	box-sizing: border-box;
+	/*width: 16.6% !important;*/
+	padding: 5px;
+}
+
+.table-box .table-title {
+	background-color: #f5f5f5;
+	font-weight: bold;
+}
+
+.table-combo .textbox, .table-combo .filebox {
+	border: none;
+	border-radius: 0;
+}
+</style>
+<div class="easyui-panel" style="box-sizing: border-box; width: 100%;">
+	<form id="editForm" action="" method="post" enctype="multipart/form-data" style="box-sizing: border-box; display: block; width: 100%">
+		<input type="hidden" name="id" value="${model.id!}">
+		<div style="box-sizing: border-box;; width: 100%; padding: 10px 0px 10px 10px;">
+			<div class="easyui-layout" style="box-sizing: border-box; width: 100%;">
+				<table class="table-box" width="100%">
+					<tr>
+						<td class="table-title" width="16.6%">工单编号</td>
+						<td class="" width="16.6%">${model.serialNumber!}</td>
+						<td class="table-title" width="16.6%">工单名称</td>
+						<td width="16.6%">${model.workOrderName!}</td>
+						<td width="16.6%" class="table-title">工单类型</td>
+						<td width="16.6%">${model.workOrderType!}</td>
+					</tr>
+					<tr>
+						<td class="table-title">工单优先级</td>
+						<td>${model.priority!}</td>
+						<td class="table-title">工单来源</td>
+						<td>${model.workOrderSource!}</td>
+						<td class="table-title">受理人</td>
+						<td>${model.acceptorId!}</td>
+					</tr>
+					<tr>
+						<td class="table-title">抄送</td>
+						<td>${model.copyUsers!}</td>
+					</tr>
+					<tr>
+						<td class="table-title">执行人</td>
+						<td><input class="easyui-combobox" style="width: 92%; text-align: center;" id="executorId" name="executorId"
+							data-options="editable:true,
+							valueField:'id', 
+							textField:'realName',
+							loadFilter:removeAdminUserFilter,
+							required:true,
+							url:'${contextPath!}/member/members'"></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6">描述</td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6">${model.description!}</td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="2">附件</td>
+						<td class="table-combo" colspan="4" style="padding: 0"><a href="${contextPath!}/files/download?id=${model.$_attachmentFileId!}"
+							target="_blank">${model.attachmentFileId!}</a></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6">执行操作记录</td>
+					</tr>
+					<%for(item in opRecords){%>
+					<tr>
+						<td class="table-title">${item.operationName!}</td>
+						<td class="table-combo" style="padding: 0">${item.operatorId!}</td>
+						<td class="table-title">描述</td>
+						<td class="table-combo" style="padding: 0">${item.description!}</td>
+						<td class="table-title">时间</td>
+						<td class="table-combo" style="padding: 0">${item.operationTime!}</td>
+					</tr>
+					<%}%>
+					<tr>
+						<td class="table-title" colspan="1">任务工时</td>
+						<td class="table-combo" colspan="2" style="padding: 0"><input class="easyui-numberbox" name="taskHours" value=""
+							data-options="validType:['length[0,50]']" style="width: 100%"></td>
+						<td class="table-title" colspan="1">加班工时</td>
+						<td class="table-combo" colspan="2" style="padding: 0"><input class="easyui-numberbox" name="overtimeHours" value=""
+							data-options="validType:['length[0,50]']" style="width: 100%"></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="2">描述</td>
+						<td colspan="4"><input class="easyui-textbox" name="description" data-options="validType:['length[0,50]']" style="width: 92%"></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+
+	</form>
+</div>
+<script type="text/javascript">
+	<#members_index/>
+	$(function() {
+		$('#workOrderType').combobox('initValue',${model.$_workOrderType!});
+		$('#workOrderType').combobox('setText','${model.workOrderType!}');
+		
+		$('#priority').combobox('initValue',${model.$_priority!});
+		$('#priority').combobox('setText','${model.priority!}');
+		
+		$('#workOrderSource').combobox('initValue','${model.$_workOrderSource!}');
+		$('#workOrderSource').combobox('setText','${model.workOrderSource!}');
+		
+		$('#acceptorId').combobox('initValue',${model.$_acceptorId!});
+		$('#acceptorId').combobox('setText','${model.acceptorId!}');
+		
+		var copyUserIds=${model.copyUserId!};
+		$(copyUserIds).each(function(index,item){
+			var node = $('#copyUserIds').combotree('tree').tree('find',item);
+			$('#copyUserIds').combotree('tree').tree('check', node.target);
+		});
+	});
+</script>

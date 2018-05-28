@@ -1,0 +1,122 @@
+<style>
+.table-box {
+	width: 100%;
+	text-align: center;
+	margin-bottom: 10px;
+}
+
+.table-box, .table-box tr td {
+	border: 1px solid #ddd;
+	border-collapse: collapse;
+}
+
+.table-box tr td {
+	/*display: block;*/
+	box-sizing: border-box;
+	/*width: 16.6% !important;*/
+	padding: 5px;
+}
+
+.table-box .table-title {
+	background-color: #f5f5f5;
+	font-weight: bold;
+}
+
+.table-combo .textbox, .table-combo .filebox {
+	border: none;
+	border-radius: 0;
+}
+</style>
+<div class="easyui-panel" style="box-sizing: border-box; width: 100%;">
+	<form id="editForm" action="" method="post" enctype="multipart/form-data" style="box-sizing: border-box; display: block; width: 100%">
+		<input type="hidden" name="id" value="${model.id!}">
+		<div style="box-sizing: border-box;; width: 100%; padding: 10px 0px 10px 10px;">
+			<div class="easyui-layout" style="box-sizing: border-box; width: 100%;">
+				<table class="table-box" width="100%">
+					<tr>
+						<td class="table-title" width="16.6%">工单编号</td>
+						<td class="" width="16.6%"><input class="easyui-textbox" id="serialNumber" name="serialNumber" value="${model.serialNumber!}"
+							style="width: 87%; text-align: center;" data-options="editable:false"></td>
+						<td class="table-title" width="16.6%">工单名称</td>
+						<td width="16.6%"><input class="easyui-textbox" style="width: 87%; text-align: center;" id="workOrderName" name="workOrderName"
+							value="${model.workOrderName!}" data-options="validType:['length[0,50]'],required:true"></td>
+						<td width="16.6%" class="table-title">工单类型</td>
+						<td width="16.6%"><input class="easyui-textbox" name="workOrderType" id="workOrderType" style="width: 87%; text-align: center;"
+							data-options="editable:false,required:true" /> <#comboProvider _id="workOrderType" _provider='workOrderTypeProvider' /></td>
+					</tr>
+					<tr>
+						<td class="table-title">工单优先级</td>
+						<td><input class="easyui-textbox" name="priority" id="priority" style="width: 87%; text-align: center;"
+							data-options="editable:false,required:true" /> <#comboProvider _id="priority" _provider='workOrderPriorityProvider' /></td>
+						<td class="table-title">工单来源</td>
+						<td><input class="easyui-textbox" name="workOrderSource" id="workOrderSource" style="width: 87%; text-align: center;"
+							data-options="editable:false,required:true" /> <#comboProvider _id="workOrderSource" _provider='workOrderSourceProvider' /></td>
+						<td class="table-title">受理人</td>
+						<td><input class="easyui-combobox" style="width: 92%; text-align: center;" id="acceptorId" name="acceptorId"
+							data-options="editable:true,
+							valueField:'id', 
+							textField:'realName',
+							loadFilter:removeAdminUserFilter,
+							required:true,
+							url:'${contextPath!}/member/members'"></td>
+					</tr>
+					<tr>
+						<td class="table-title">抄送</td>
+						<td><input class="easyui-combotree" style="width: 93%; text-align: center;" id="copyUserIds" name="copyUserIds"
+							data-options="
+							editable:true,
+							multiple:true,
+							loadFilter:treeLoadFilter, 
+							_idField:'id', 
+							_textField:'realName',
+							url:'${contextPath!}/member/members',
+							onLoadSuccess:removeTreeAdminUser,
+							required:true">
+						</td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6">描述</td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6"><input class="easyui-textbox" name="description"
+							data-options="multiline:true,validType:['length[0,500]']" style="width: 92%; height: 60px" value="${model.description!}"></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="2">附件</td>
+						<td class="table-combo" colspan="4" style="padding: 0"><input class="easyui-filebox" name="attachment" value="${model.attachmentFileId!}"
+							data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 87%"><input type="hidden" name="attachmentFileId"
+							value="${model.$_attachmentFileId!}"></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="2">申请人</td>
+						<td colspan="4">${model.applicantId!}</td>
+					</tr>
+
+				</table>
+			</div>
+		</div>
+
+	</form>
+</div>
+<script type="text/javascript">
+	<#members_index/>
+	$(function() {
+		$('#workOrderType').combobox('initValue',${model.$_workOrderType!});
+		$('#workOrderType').combobox('setText','${model.workOrderType!}');
+		
+		$('#priority').combobox('initValue',${model.$_priority!});
+		$('#priority').combobox('setText','${model.priority!}');
+		
+		$('#workOrderSource').combobox('initValue','${model.$_workOrderSource!}');
+		$('#workOrderSource').combobox('setText','${model.workOrderSource!}');
+		
+		$('#acceptorId').combobox('initValue',${model.$_acceptorId!});
+		$('#acceptorId').combobox('setText','${model.acceptorId!}');
+		
+		var copyUserIds=${model.copyUserId!};
+		$(copyUserIds).each(function(index,item){
+			var node = $('#copyUserIds').combotree('tree').tree('find',item);
+			$('#copyUserIds').combotree('tree').tree('check', node.target);
+		});
+	});
+</script>

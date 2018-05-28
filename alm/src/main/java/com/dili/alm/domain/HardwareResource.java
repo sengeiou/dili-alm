@@ -1,6 +1,5 @@
 package com.dili.alm.domain;
 
-import com.dili.ss.domain.annotation.Like;
 import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
@@ -16,115 +15,121 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2018-04-03 12:02:09.
+ * This file was generated on 2018-05-28 11:30:29.
  */
 @Table(name = "`hardware_resource`")
 public interface HardwareResource extends IBaseDomain {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "`id`")
-	@FieldDef(label = "id")
-	@EditMode(editor = FieldEditor.Number, required = true)
-	Long getId();
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "`id`")
+    @FieldDef(label="id")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Long getId();
 
-	void setId(Long id);
+    void setId(Long id);
 
-	@Column(name = "`project_id`")
-	@FieldDef(label = "项目id")
-	@EditMode(editor = FieldEditor.Number, required = true)
-	Long getProjectId();
+    @Column(name = "`project_id`")
+    @FieldDef(label="项目id")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Long getProjectId();
 
-	void setProjectId(Long projectId);
+    void setProjectId(Long projectId);
 
-	@Column(name = "`maintenance_date`")
-	@FieldDef(label = "维护日期")
-	@EditMode(editor = FieldEditor.Datetime, required = true)
-	Date getMaintenanceDate();
+    @Column(name = "`project_serial_number`")
+    @FieldDef(label="projectSerialNumber", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = true)
+    String getProjectSerialNumber();
 
-	void setMaintenanceDate(Date maintenanceDate);
+    void setProjectSerialNumber(String projectSerialNumber);
 
-	@Column(name = "`machine_name`")
-	@FieldDef(label = "机器名称", maxLength = 255)
-	@EditMode(editor = FieldEditor.Text, required = true)
-	String getMachineName();
+    @Column(name = "`maintenance_date`")
+    @FieldDef(label="维护日期")
+    @EditMode(editor = FieldEditor.Datetime, required = true)
+    Date getMaintenanceDate();
 
-	void setMachineName(String machineName);
+    void setMaintenanceDate(Date maintenanceDate);
 
-	@Column(name = "`cpu_core_amount`")
-	@FieldDef(label = "cpu内核数")
-	@EditMode(editor = FieldEditor.Number, required = true)
-	Integer getCpuCoreAmount();
+    @Column(name = "`machine_name`")
+    @FieldDef(label="机器名称", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getMachineName();
 
-	void setCpuCoreAmount(Integer cpuCoreAmount);
+    void setMachineName(String machineName);
 
-	@Column(name = "`memory`")
-	@FieldDef(label = "内存")
-	@EditMode(editor = FieldEditor.Number, required = true)
-	Integer getMemory();
+    @Column(name = "`cpu_core_amount`")
+    @FieldDef(label="cpu内核数")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Integer getCpuCoreAmount();
 
-	void setMemory(Integer memory);
+    void setCpuCoreAmount(Integer cpuCoreAmount);
 
-	@Column(name = "`disk`")
-	@FieldDef(label = "磁盘")
-	@EditMode(editor = FieldEditor.Number, required = true)
-	Integer getDisk();
+    @Column(name = "`memory`")
+    @FieldDef(label="内存")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Integer getMemory();
 
-	void setDisk(Integer disk);
+    void setMemory(Integer memory);
 
-	@Like(Like.BOTH)
-	@Column(name = "`ip`")
-	@FieldDef(label = "ip地址", maxLength = 255)
-	@EditMode(editor = FieldEditor.Text, required = true)
-	String getIp();
+    @Column(name = "`disk`")
+    @FieldDef(label="磁盘")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Integer getDisk();
 
-	void setIp(String ip);
+    void setDisk(Integer disk);
 
-	@Column(name = "`regional`")
-	@FieldDef(label = "地域")
-	@EditMode(editor = FieldEditor.Number, required = true)
-	Integer getRegional();
+    @Column(name = "`ip`")
+    @FieldDef(label="ip地址", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getIp();
 
-	void setRegional(Integer regional);
+    void setIp(String ip);
 
-	@Column(name = "`note`")
-	@FieldDef(label = "备注", maxLength = 255)
-	@EditMode(editor = FieldEditor.Text, required = false)
-	String getNote();
+    @Column(name = "`regional`")
+    @FieldDef(label="地域")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Integer getRegional();
 
-	void setNote(String note);
+    void setRegional(Integer regional);
 
-	@Column(name = "`is_submit`")
-	@FieldDef(label = "是否已提交")
-	@EditMode(editor = FieldEditor.Number, required = false)
-	Integer getIsSubmit();
+    @Column(name = "`note`")
+    @FieldDef(label="备注", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getNote();
 
-	void setIsSubmit(Integer isSubmit);
+    void setNote(String note);
 
-	@Column(name = "`maintenance_owner`")
-	@FieldDef(label = "维护人员")
-	@EditMode(editor = FieldEditor.Number, required = false)
-	Long getMaintenanceOwner();
+    @Column(name = "`is_submit`")
+    @FieldDef(label="是否已提交")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Integer getIsSubmit();
 
-	void setMaintenanceOwner(Long maintenanceOwner);
+    void setIsSubmit(Integer isSubmit);
 
-	@Column(name = "`last_modify_date`")
-	@FieldDef(label = "最后修改时间")
-	@EditMode(editor = FieldEditor.Datetime, required = false)
-	Date getLastModifyDate();
+    @Column(name = "`maintenance_owner`")
+    @FieldDef(label="维护人员")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Long getMaintenanceOwner();
 
-	void setLastModifyDate(Date lastModifyDate);
+    void setMaintenanceOwner(Long maintenanceOwner);
 
-	@Column(name = "`service_environment`")
-	@FieldDef(label = "使用环境（数据字典）")
-	@EditMode(editor = FieldEditor.Number, required = false)
-	Long getServiceEnvironment();
+    @Column(name = "`last_modify_date`")
+    @FieldDef(label="最后修改时间")
+    @EditMode(editor = FieldEditor.Datetime, required = false)
+    Date getLastModifyDate();
 
-	void setServiceEnvironment(Long serviceEnvironment);
+    void setLastModifyDate(Date lastModifyDate);
 
-	@Column(name = "`cost`")
-	@FieldDef(label = "成本")
-	@EditMode(editor = FieldEditor.Text, required = false)
-	BigDecimal getCost();
+    @Column(name = "`service_environment`")
+    @FieldDef(label="使用环境（数据字典）")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Long getServiceEnvironment();
 
-	void setCost(BigDecimal cost);
+    void setServiceEnvironment(Long serviceEnvironment);
+
+    @Column(name = "`cost`")
+    @FieldDef(label="成本")
+    @EditMode(editor = FieldEditor.Text, required = false)
+    BigDecimal getCost();
+
+    void setCost(BigDecimal cost);
 }

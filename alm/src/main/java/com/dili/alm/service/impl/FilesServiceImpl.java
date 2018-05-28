@@ -126,4 +126,9 @@ public class FilesServiceImpl extends BaseServiceImpl<Files, Long> implements Fi
 		return returnFiles;
 	}
 
+	@Override
+	public List<Files> uploadFile(MultipartFile[] files) {
+		return this.uploadFile(files, null);
+	}
+
 }

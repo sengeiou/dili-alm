@@ -1,10 +1,8 @@
 package com.dili.alm.controller;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.alm.cache.AlmCache;
-import com.dili.alm.domain.Department;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.UserDepartmentRole;
 import com.dili.alm.domain.dto.UserDepartmentRoleQuery;
@@ -48,7 +45,7 @@ public class MemberController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "/members", method = {
+	@RequestMapping(value = "/members", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public List<UserDepartmentRole> membersJson(UserDepartmentRoleQuery user) {
 		BaseOutput<List<UserDepartmentRole>> output = this.userRPC.findUserContainDepartmentAndRole(user);

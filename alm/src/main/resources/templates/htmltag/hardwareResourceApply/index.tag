@@ -8,6 +8,26 @@ function deptMemberFormatter(value, row, index) {
 	return row.applicationDepartmentId + '/' + row.applicantId;
 }
 
+function serialNumberFormatter(value, row, index) {
+	return '<a href="javascript:void(0);" onclick="showDetail(' + row.id + ');">' + value + '</a>';
+}
+
+function showDetail(id) {
+	$('#win').dialog({
+				title : '资源申请详情',
+				width : 830,
+				height : 500,
+				href : '${contextPath!}/hardwareResourceApply/detail?id=' + id,
+				modal : true,
+				buttons : [{
+							text : '返回',
+							handler : function() {
+								$('#win').dialog('close');
+							}
+						}]
+			});
+}
+
 function opptFormatter(value, row, index) {
 	var returnStr = "";
 	if (row.approving) {
@@ -258,6 +278,13 @@ function openApove(id, type) {
 
 }
 
+function checkExecutorAmount(nval, oval) {
+	var me = $(this);
+	if (nval.length > 2) {
+		me.combobox('unselect', nval[nval.length - 1]);
+	}
+}
+
 // 实施窗口
 function implement(id) {
 	var selected = $("#grid").datagrid("getSelected");
@@ -444,6 +471,7 @@ function clearForm() {
 	$('#form').form('clear');
 	$('#applicantId').textbox('initValue', '');
 	$('#applicantId').textbox('setText', '');
+	queryGrid();
 }
 
 // 表格表头右键菜单

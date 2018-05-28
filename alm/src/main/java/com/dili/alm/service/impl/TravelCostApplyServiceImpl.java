@@ -235,11 +235,12 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 		}
 		if (TravelCostApplyResult.REJECT.equals(result)) {
 			apply.setApplyState(TravelCostApplyState.APPLING.getValue());
+			apply.setSubmitDate(null);
 		}
 		if (TravelCostApplyResult.PASS.equals(result)) {
 			apply.setApplyState(TravelCostApplyState.COMPLETED.getValue());
 		}
-		int rows = this.getActualDao().updateByPrimaryKeySelective(apply);
+		int rows = this.getActualDao().updateByPrimaryKey(apply);
 		if (rows <= 0) {
 			throw new TravelCostApplyException("更新状态失败");
 		}

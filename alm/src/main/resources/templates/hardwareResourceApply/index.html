@@ -58,7 +58,7 @@
 			striped="true" toolbar="#toolbar" idField="id">
 			<thead>
 				<tr>
-					<th data-options="field:'projectSerialNumber',width:'15%',order:'asc', align:'center', resizable:'true', fixed:'false'">项目编号</th>
+					<th data-options="field:'serialNumber',width:'15%',order:'asc', align:'center', resizable:'true', fixed:'false',formatter:serialNumberFormatter">编号</th>
 					<th data-options="field:'applicationDepartmentId',_provider:'depProvider',hidden:true"></th>
 					<th data-options="field:'applicantId',_provider:'memberProvider',hidden:true"></th>
 					<th data-options="field:'projectName',width:'15%', order:'asc', align:'center', resizable:'true', fixed:'false'">项目名称</th>

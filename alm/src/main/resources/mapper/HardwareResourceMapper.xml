@@ -7,6 +7,7 @@
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="project_id" jdbcType="BIGINT" property="projectId" />
+    <result column="project_serial_number" jdbcType="VARCHAR" property="projectSerialNumber" />
     <result column="maintenance_date" jdbcType="TIMESTAMP" property="maintenanceDate" />
     <result column="machine_name" jdbcType="VARCHAR" property="machineName" />
     <result column="cpu_core_amount" jdbcType="INTEGER" property="cpuCoreAmount" />
@@ -25,7 +26,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    id, project_id, maintenance_date, machine_name, cpu_core_amount, memory, disk, ip, 
+    id, project_id,project_serial_number, maintenance_date, machine_name, cpu_core_amount, memory, disk, ip, 
     regional, note, is_submit, maintenance_owner, last_modify_date, service_environment, 
     cost
   </sql>

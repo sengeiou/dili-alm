@@ -16,6 +16,9 @@ function detail(id) {
 }
 
 function addCostItem() {
+	if (!endPositionEditing($('#travelCostGrid'))) {
+		return false;
+	}
 	$('#travelCostGrid').datagrid('appendRow', {});
 	var index = $('#travelCostGrid').datagrid('getRows').length - 1;
 	$('#travelCostGrid').datagrid('selectRow', index);
@@ -27,7 +30,7 @@ function optFormatter(value, row, index) {
 	if (row.$_applyState == 1) {
 		if (row.$_applicantId == userId && userId != 1) {
 			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="openUpdate(' + row.id + ');">编辑</a>';
-			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="del(' + row.id + ');">删除</a>';
+			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="del(' + index + ');">删除</a>';
 		} else {
 			content += '<span style="padding:0px 2px;">编辑</span>';
 			content += '<span style="padding:0px 2px;">删除</span>';
@@ -128,60 +131,7 @@ function openInsert() {
 							text : '保存',
 							iconCls : 'icon-ok',
 							handler : function() {
-
-								var _formData = $("#_form").serializeObject();
-								var _url = "${contextPath}/travelCostApply/insert";
-								var data = $('#travelCostGrid').datagrid('getData');
-								var travelCosts = [];
-								$(data.rows).each(function(index, item) {
-											endPositionEditing($('#travelCostGrid'));
-											var travelCost = {};
-											var travelCostDetails = [];
-											for (prop in item) {
-												if (prop == 'travelDayAmount') {
-													travelCost.travelDayAmount = item[prop];
-												} else if (prop == 'totalAmount') {
-													travelCost.totalAmount = item[prop] * 100;
-												} else if (prop == 'setOutPlace') {
-													travelCost.setOutPlace = item[prop];
-												} else if (prop == 'destinationPlace') {
-													travelCost.destinationPlace = item[prop];
-												} else if (prop == 'setOutPlaceText') {
-													continue;
-												} else if (prop == 'destinationPlaceText') {
-													continue;
-												} else {
-													travelCostDetails.push({
-																costName : prop,
-																costAmount : item[prop] * 100
-															});
-												}
-											}
-											travelCost.travelCostDetail = travelCostDetails;
-											travelCosts.push(travelCost);
-										});
-								_formData.totalAmount *= 100;
-								_formData.travelCost = travelCosts;
-								$.ajax({
-											type : "POST",
-											url : _url,
-											contentType : "application/json; charset=utf-8",
-											data : JSON.stringify(_formData),
-											processData : true,
-											dataType : "json",
-											async : true,
-											success : function(data) {
-												if (data.code == "200") {
-													$("#grid").datagrid("reload");
-													$('#dlg').dialog('close');
-												} else {
-													$.messager.alert('错误', data.result);
-												}
-											},
-											error : function() {
-												$.messager.alert('错误', '远程访问失败');
-											}
-										});
+								postData("${contextPath}/travelCostApply/insert");
 							}
 						}, {
 							text : '取消',
@@ -191,66 +141,74 @@ function openInsert() {
 						}, {
 							text : '提交',
 							handler : function() {
-
-								var _formData = $("#_form").serializeObject();
-								var _url = "${contextPath}/travelCostApply/saveAndSubmit";
-								var data = $('#travelCostGrid').datagrid('getData');
-								var travelCosts = [];
-								$(data.rows).each(function(index, item) {
-											endPositionEditing($('#travelCostGrid'));
-											var travelCost = {};
-											var travelCostDetails = [];
-											for (prop in item) {
-												if (prop == 'travelDayAmount') {
-													travelCost.travelDayAmount = item[prop];
-												} else if (prop == 'totalAmount') {
-													travelCost.totalAmount = item[prop] * 100;
-												} else if (prop == 'setOutPlace') {
-													travelCost.setOutPlace = item[prop];
-												} else if (prop == 'destinationPlace') {
-													travelCost.destinationPlace = item[prop];
-												} else if (prop == 'setOutPlaceText') {
-													continue;
-												} else if (prop == 'destinationPlaceText') {
-													continue;
-												} else {
-													travelCostDetails.push({
-																costName : prop,
-																costAmount : item[prop] * 100
-															});
-												}
-											}
-											travelCost.travelCostDetail = travelCostDetails;
-											travelCosts.push(travelCost);
-										});
-								_formData.totalAmount *= 100;
-								_formData.travelCost = travelCosts;
-								$.ajax({
-											type : "POST",
-											url : _url,
-											contentType : "application/json; charset=utf-8",
-											data : JSON.stringify(_formData),
-											processData : true,
-											dataType : "json",
-											async : true,
-											success : function(data) {
-												if (data.code == "200") {
-													$("#grid").datagrid("reload");
-													$('#dlg').dialog('close');
-												} else {
-													$.messager.alert('错误', data.result);
-												}
-											},
-											error : function() {
-												$.messager.alert('错误', '远程访问失败');
-											}
-										});
+								postData("${contextPath}/travelCostApply/saveAndSubmit");
 							}
 						}]
 
 			});
 	$('#dlg').dialog('open');
 	$('#dlg').dialog('center');
+}
+
+function postData(_url) {
+	if (!$("#_form").form('validate')) {
+		return false;
+	}
+	if (!endPositionEditing($('#travelCostGrid'))) {
+		return false;
+	}
+	var _formData = $("#_form").serializeObject();
+	var data = $('#travelCostGrid').datagrid('getData');
+	var travelCosts = [];
+	$(data.rows).each(function(index, item) {
+				endPositionEditing($('#travelCostGrid'));
+				var travelCost = {};
+				var travelCostDetails = [];
+				for (prop in item) {
+					if (prop == 'travelDayAmount') {
+						travelCost.travelDayAmount = item[prop];
+					} else if (prop == 'totalAmount') {
+						travelCost.totalAmount = item[prop] * 100;
+					} else if (prop == 'setOutPlace') {
+						travelCost.setOutPlace = item[prop];
+					} else if (prop == 'destinationPlace') {
+						travelCost.destinationPlace = item[prop];
+					} else if (prop == 'setOutPlaceText') {
+						continue;
+					} else if (prop == 'destinationPlaceText') {
+						continue;
+					} else {
+						travelCostDetails.push({
+									costName : prop,
+									costAmount : item[prop] * 100
+								});
+					}
+				}
+				travelCost.travelCostDetail = travelCostDetails;
+				travelCosts.push(travelCost);
+			});
+	_formData.totalAmount = math.chain(_formData.totalAmount).multiply(100);
+	_formData.travelCost = travelCosts;
+	$.ajax({
+				type : "POST",
+				url : _url,
+				contentType : "application/json; charset=utf-8",
+				data : JSON.stringify(_formData),
+				processData : true,
+				dataType : "json",
+				async : true,
+				success : function(data) {
+					if (data.code == "200") {
+						$("#grid").datagrid("reload");
+						$('#dlg').dialog('close');
+					} else {
+						$.messager.alert('错误', data.result);
+					}
+				},
+				error : function() {
+					$.messager.alert('错误', '远程访问失败');
+				}
+			});
 }
 
 // 打开修改窗口
@@ -272,59 +230,7 @@ function openUpdate(id) {
 							text : '保存',
 							iconCls : 'icon-ok',
 							handler : function() {
-								var _formData = $("#_form").serializeObject();
-								var _url = "${contextPath}/travelCostApply/update?id=" + id;
-								var data = $('#travelCostGrid').datagrid('getData');
-								var travelCosts = [];
-								$(data.rows).each(function(index, item) {
-											endPositionEditing($('#travelCostGrid'));
-											var travelCost = {};
-											var travelCostDetails = [];
-											for (prop in item) {
-												if (prop == 'travelDayAmount') {
-													travelCost.travelDayAmount = item[prop];
-												} else if (prop == 'totalAmount') {
-													travelCost.totalAmount = item[prop] * 100;
-												} else if (prop == 'setOutPlace') {
-													travelCost.setOutPlace = item[prop];
-												} else if (prop == 'destinationPlace') {
-													travelCost.destinationPlace = item[prop];
-												} else if (prop == 'setOutPlaceText') {
-													continue;
-												} else if (prop == 'destinationPlaceText') {
-													continue;
-												} else {
-													travelCostDetails.push({
-																costName : prop,
-																costAmount : item[prop] * 100
-															});
-												}
-											}
-											travelCost.travelCostDetail = travelCostDetails;
-											travelCosts.push(travelCost);
-										});
-								_formData.totalAmount *= 100;
-								_formData.travelCost = travelCosts;
-								$.ajax({
-											type : "POST",
-											url : _url,
-											contentType : "application/json; charset=utf-8",
-											data : JSON.stringify(_formData),
-											processData : true,
-											dataType : "json",
-											async : true,
-											success : function(data) {
-												if (data.code == "200") {
-													$("#grid").datagrid("reload");
-													$('#dlg').dialog('close');
-												} else {
-													$.messager.alert('错误', data.result);
-												}
-											},
-											error : function() {
-												$.messager.alert('错误', '远程访问失败');
-											}
-										});
+								postData("${contextPath}/travelCostApply/update?id=" + id);
 							}
 						}, {
 							text : '取消',
@@ -334,60 +240,7 @@ function openUpdate(id) {
 						}, {
 							text : '提交',
 							handler : function() {
-
-								var _formData = $("#_form").serializeObject();
-								var _url = "${contextPath}/travelCostApply/saveAndSubmit";
-								var data = $('#travelCostGrid').datagrid('getData');
-								var travelCosts = [];
-								$(data.rows).each(function(index, item) {
-											endPositionEditing($('#travelCostGrid'));
-											var travelCost = {};
-											var travelCostDetails = [];
-											for (prop in item) {
-												if (prop == 'travelDayAmount') {
-													travelCost.travelDayAmount = item[prop];
-												} else if (prop == 'totalAmount') {
-													travelCost.totalAmount = item[prop] * 100;
-												} else if (prop == 'setOutPlace') {
-													travelCost.setOutPlace = item[prop];
-												} else if (prop == 'destinationPlace') {
-													travelCost.destinationPlace = item[prop];
-												} else if (prop == 'setOutPlaceText') {
-													continue;
-												} else if (prop == 'destinationPlaceText') {
-													continue;
-												} else {
-													travelCostDetails.push({
-																costName : prop,
-																costAmount : item[prop] * 100
-															});
-												}
-											}
-											travelCost.travelCostDetail = travelCostDetails;
-											travelCosts.push(travelCost);
-										});
-								_formData.totalAmount *= 100;
-								_formData.travelCost = travelCosts;
-								$.ajax({
-											type : "POST",
-											url : _url,
-											contentType : "application/json; charset=utf-8",
-											data : JSON.stringify(_formData),
-											processData : true,
-											dataType : "json",
-											async : true,
-											success : function(data) {
-												if (data.code == "200") {
-													$("#grid").datagrid("reload");
-													$('#dlg').dialog('close');
-												} else {
-													$.messager.alert('错误', data.result);
-												}
-											},
-											error : function() {
-												$.messager.alert('错误', '远程访问失败');
-											}
-										});
+								postData("${contextPath}/travelCostApply/saveAndSubmit");
 							}
 						}]
 
@@ -397,9 +250,14 @@ function openUpdate(id) {
 }
 
 // 根据主键删除
-function del() {
-	var selected = $("#grid").datagrid("getSelected");
-	if (null == selected) {
+function del(index) {
+	var selected = null;
+	if (index != undefined) {
+		selected = $("#grid").datagrid("getRows")[index];
+	} else {
+		selected = $("#grid").datagrid("getSelected");
+	}
+	if (!selected) {
 		$.messager.alert('警告', '请选中一条数据');
 		return;
 	}
@@ -511,14 +369,13 @@ function onTravelCostGridEndEdit(index, row, changes) {
 			continue;
 		}
 		if (row[prop]) {
-			row.totalAmount += parseFloat(row[prop]);
+			row.totalAmount = math.chain(row.totalAmount).add(parseFloat(row[prop]));
 		}
 	}
-	row.totalAmount *= row.travelDayAmount;
 	var rows = $('#travelCostGrid').datagrid('getData').rows;
 	var totalAmount = 0;
 	$(rows).each(function(index, item) {
-				totalAmount += parseFloat(item.totalAmount);
+				totalAmount = math.chain(totalAmount).add(parseFloat(item.totalAmount));
 			});
 	$('#totalAmount').numberbox('setValue', totalAmount);
 }
@@ -532,7 +389,6 @@ $.extend($.fn.datagrid.methods, {
 							grid.datagrid('getPanel').panel('panel').attr('tabindex', 1).bind('keydown', function(e) {
 										switch (e.keyCode) {
 											case 46 :
-												debugger;
 												if (positionEditIndex) {
 													return;
 												}
@@ -545,11 +401,9 @@ $.extend($.fn.datagrid.methods, {
 												endPositionEditing(grid);
 												break;
 											case 27 :
-												debugger;
 												cancelPositionEdit(grid);
 												break;
 											case 38 :
-												debugger;
 												if (!endPositionEditing(grid)) {
 													return;
 												}
@@ -565,7 +419,6 @@ $.extend($.fn.datagrid.methods, {
 												grid.datagrid('selectRow', --selectedIndex);
 												break;
 											case 40 :
-												debugger;
 												if (!endPositionEditing()) {
 													return;
 												}

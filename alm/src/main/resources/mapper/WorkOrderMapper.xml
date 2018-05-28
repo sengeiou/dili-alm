@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.alm.dao.WorkOrderMapper">
+  <resultMap id="BaseResultMap" type="com.dili.alm.domain.WorkOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="serial_number" jdbcType="VARCHAR" property="serialNumber" />
+    <result column="work_order_name" jdbcType="VARCHAR" property="workOrderName" />
+    <result column="work_order_type" jdbcType="INTEGER" property="workOrderType" />
+    <result column="priority" jdbcType="INTEGER" property="priority" />
+    <result column="work_order_source" jdbcType="VARCHAR" property="workOrderSource" />
+    <result column="acceptor_id" jdbcType="BIGINT" property="acceptorId" />
+    <result column="copy_user_id" jdbcType="VARCHAR" property="copyUserId" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="attachment_file_id" jdbcType="BIGINT" property="attachmentFileId" />
+    <result column="work_order_state" jdbcType="INTEGER" property="workOrderState" />
+    <result column="submit_time" jdbcType="TIMESTAMP" property="submitTime" />
+    <result column="close_time" jdbcType="TIMESTAMP" property="closeTime" />
+    <result column="creation_time" jdbcType="TIMESTAMP" property="creationTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="applicant_id" jdbcType="BIGINT" property="applicantId" />
+    <result column="executor_id" jdbcType="BIGINT" property="executorId" />
+    <result column="task_hours" jdbcType="INTEGER" property="taskHours" />
+    <result column="overtime_hours" jdbcType="INTEGER" property="overtimeHours" />
+    <result column="work_content" jdbcType="VARCHAR" property="workContent" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, serial_number, work_order_name, work_order_type, priority, work_order_source, 
+    acceptor_id, copy_user_id, description, attachment_file_id, work_order_state, submit_time, 
+    close_time, creation_time, modify_time, applicant_id, executor_id, task_hours, overtime_hours, 
+    work_content
+  </sql>
+  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from work_order
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <update id="updateBy" parameterType="com.dili.alm.domain.WorkOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update work_order
+    <set>
+      <if test="serialNumber != null">
+        serial_number = #{serialNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="workOrderName != null">
+        work_order_name = #{workOrderName,jdbcType=VARCHAR},
+      </if>
+      <if test="workOrderType != null">
+        work_order_type = #{workOrderType,jdbcType=INTEGER},
+      </if>
+      <if test="priority != null">
+        priority = #{priority,jdbcType=INTEGER},
+      </if>
+      <if test="workOrderSource != null">
+        work_order_source = #{workOrderSource,jdbcType=VARCHAR},
+      </if>
+      <if test="acceptorId != null">
+        acceptor_id = #{acceptorId,jdbcType=BIGINT},
+      </if>
+      <if test="copyUserId != null">
+        copy_user_id = #{copyUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="attachmentFileId != null">
+        attachment_file_id = #{attachmentFileId,jdbcType=BIGINT},
+      </if>
+      <if test="workOrderState != null">
+        work_order_state = #{workOrderState,jdbcType=INTEGER},
+      </if>
+      <if test="submitTime != null">
+        submit_time = #{submitTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="closeTime != null">
+        close_time = #{closeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="creationTime != null">
+        creation_time = #{creationTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyTime != null">
+        modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="applicantId != null">
+        applicant_id = #{applicantId,jdbcType=BIGINT},
+      </if>
+      <if test="executorId != null">
+        executor_id = #{executorId,jdbcType=BIGINT},
+      </if>
+      <if test="taskHours != null">
+        task_hours = #{taskHours,jdbcType=INTEGER},
+      </if>
+      <if test="overtimeHours != null">
+        overtime_hours = #{overtimeHours,jdbcType=INTEGER},
+      </if>
+      <if test="workContent != null">
+        work_content = #{workContent,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

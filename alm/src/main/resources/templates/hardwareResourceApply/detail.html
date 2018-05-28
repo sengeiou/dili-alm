@@ -1,0 +1,119 @@
+<style>
+.table-box {
+	width: 100%;
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+.table-box-mini {
+	width: 400px;
+}
+
+.table-box, .table-box tr td {
+	border: 1px solid #ddd;
+	border-collapse: collapse;
+}
+
+.table-box tr td {
+	padding: 5px;
+}
+
+.table-box .table-title {
+	background-color: #f5f5f5;
+	font-weight: bold;
+}
+
+.table-combo .textbox {
+	border: none;
+	border-radius: 0;
+}
+</style>
+<div class="easyui-panel">
+	<form id="editForm2" action="" method="post" enctype="multipart/form-data">
+		<div style="box-sizing: border-box; padding: 10px;">
+			<div class="easyui-layout" style="box-sizing: border-box; width: 100%; height: 100%;">
+				<table class="table-box">
+					<tr>
+						<td class="table-title">项目编号</td>
+						<td>${model.projectSerialNumber!}</td>
+						<td class="table-title">项目名称</td>
+						<td style="padding: 0">${model.projectName!}</td>
+						<td class="table-title">项目经理</td>
+						<td>${model.projectManagerId!}</td>
+					</tr>
+					<tr>
+						<td class="table-title">申请部门</td>
+						<td>${model.applicationDepartmentId!}</td>
+						<td class="table-title">申请人</td>
+						<td>${model.applicantId!}</td>
+						<td class="table-title">状态</td>
+						<td>${model.applyState!}</td>
+					</tr>
+					<tr>
+						<td class="table-title">使用环境</td>
+						<td colspan="5">${model.serviceEnvironmentText!}</td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6">申请原因</td>
+					</tr>
+					<tr>
+						<td class="table-combo" colspan="6">${model.applyReason!}</td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6">配置要求</td>
+					</tr>
+					<tr>
+						<td class="table-combo" colspan="6">
+							<table class="easyui-datagrid" id="configGrid">
+								<thead>
+									<tr>
+										<th data-options="field:'cpuAmount',width:'20%', align:'center'">CPU</th>
+										<th data-options="field:'memoryAmount',width:'20%', align:'center'">内存(GB)</th>
+										<th data-options="field:'diskAmount',width:'20%', align:'center'">磁盘(GB)</th>
+										<th data-options="field:'notes',width:'36%', align:'center'">备注</th>
+									</tr>
+								</thead>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6">其他说明</td>
+					</tr>
+					<tr>
+						<td class="table-combo" colspan="6">${model.otherDescription!}</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</form>
+	<table class="table-box">
+		<tr>
+			<th class="table-title" colspan="6">操作记录</th>
+		</tr>
+		<%for(item in opRecords){%>
+		<tr>
+			<td class="table-title" style="width: 15%;">${item.operationName!}</td>
+			<td class="table-combo" style="padding: 0; width: 20%;">${item.operatorId!}</td>
+			<td class="table-title" style="width: 10%;">描述</td>
+			<td class="table-combo" style="padding: 0; width: 25%;">${item.description!}</td>
+			<td class="table-title" style="width: 10%;">时间</td>
+			<td class="table-combo" style="padding: 0; width: 20%;">${item.operateTime!}</td>
+		</tr>
+		<%}%>
+	</table>
+	<table class="table-box">
+		<tr>
+			<td class="table-title">申请人</td>
+			<td class="table-combo" colspan="2">${model.applicantId}</td>
+			<td class="table-title">创建时间</td>
+			<td class="table-combo" colspan="2">${model.created!}</td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript">
+
+$('#configGrid').datagrid({
+	data:${requirementList!}
+});
+
+</script>
