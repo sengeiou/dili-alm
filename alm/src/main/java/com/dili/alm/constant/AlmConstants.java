@@ -43,6 +43,12 @@ public class AlmConstants {
 	public static final String RESOURCE_ENVIRONMENT_CODE = "resource_environment";
 	// 差旅费明细费用配置
 	public static final String TRAVEL_COST_DETAIL_CONFIG_CODE = "travel_cost_item";
+	// 工单类型数据字典配置
+	public static final String WORK_ORDER_TYPE_CODE = "work_order_type";
+	// 工单优先级数据字典配置
+	public static final String WORK_ORDER_PRIORITY_CODE = "work_order_priority";
+	// 工单来源数据字典配置
+	public static final String WORK_ORDER_SOURCE_CODE = "work_order_source";
 
 	// 团队成员状态: 加入/离开
 	public enum MemberState {

@@ -7,8 +7,10 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.alm.domain.HardwareResource;
@@ -33,7 +35,8 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/hardwareResource")
 public class HardwareResourceController {
 	@Autowired
-	HardwareResourceService hardwareResourceService;
+	private HardwareResourceService hardwareResourceService;
+
 	private static final String DATA_AUTH_TYPE = "Project";
 
 	@ApiOperation("跳转到HardwareResource页面")
@@ -113,13 +116,6 @@ public class HardwareResourceController {
 	@RequestMapping(value = "/prjectNum.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public Map<String, String> prjectNum(String id) {
 		return hardwareResourceService.projectNumById(id);
-	}
-
-	// 判断是否提交
-	@ResponseBody
-	@RequestMapping(value = "/isOperation.json", method = { RequestMethod.GET, RequestMethod.POST })
-	public boolean isOperation(Long id) {
-		return hardwareResourceService.isOperation(id);
 	}
 
 	@ApiOperation(value = "查询HardwareResource", notes = "查询HardwareResource，返回列表信息")

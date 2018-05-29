@@ -1,7 +1,5 @@
 package com.dili.alm.controller;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
@@ -14,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,10 +37,10 @@ import com.dili.alm.domain.dto.HardwareResourceRequirementDto;
 import com.dili.alm.exceptions.HardwareResourceApplyException;
 import com.dili.alm.rpc.DepartmentRpc;
 import com.dili.alm.rpc.UserRpc;
-import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.DataDictionaryValueService;
 import com.dili.alm.service.HardwareResourceApplyService;
 import com.dili.alm.service.ProjectService;
+import com.dili.alm.service.impl.HardwareResourceApplyServiceImpl;
 import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -72,14 +71,23 @@ public class HardwareResourceApplyController {
 	@Autowired
 	private DataDictionaryValueService ddvService;
 
-	@Autowired
-	private DataDictionaryService ddService;
 	private static final String DATA_AUTH_TYPE = "Project";
 
 	@ApiOperation("跳转到HardwareResourceApply页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
 		return "hardwareResourceApply/index";
+	}
+
+	@GetMapping("/detail")
+	public String detail(@RequestParam Long id, ModelMap modelMap) {
+		HardwareResourceApply apply = this.hardwareResourceApplyService.getDetailViewModel(id);
+		modelMap.addAttribute("serviceEnvironmentText", apply.aget("serviceEnvironmentText"))
+				.addAttribute("requirementList", apply.aget("requirementList"))
+				.addAttribute("opRecords", apply.aget("opRecords"));
+		Map<Object, Object> viewModel = HardwareResourceApplyServiceImpl.buildApplyViewModel(apply);
+		modelMap.addAttribute("model", viewModel);
+		return "hardwareResourceApply/detail";
 	}
 
 	@RequestMapping(value = "/add", method = RequestMethod.GET)

@@ -714,36 +714,40 @@ function pauseTaskStatus() {
 
 }
 
-function complate() {
-	var id = $("#_id").val();
-	if (isTask(id)) {
-		$.ajax({
-					type : "POST",
-					url : "${contextPath}/task/complateTask?id=" + id,
-					processData : true,
-					dataType : "json",
-					async : true,
-					success : function(data) {
-						if (data.code == "200") {
-							if (window.frames[0]) {
-								window.frames[0].reloadGrid();
-							} else {
-								$('#grid').datagrid('reload');
-							}
-							$('#dlg').dialog('close');
-							LogUtils.saveLog(LOG_MODULE_OPS.COMPLETE_PROJECT_VERSION_PHASE_TASK, "完成任务：" + data.data + ":成功", function() {
-									});
-						} else {
-							$.messager.alert('错误', data.result);
-						}
-					},
-					error : function() {
-						$.messager.alert('错误', '远程访问失败');
-					}
-				});
-	} else {
-		$.messager.alert('错误', '任务工时加班工时其中一项不能为0');
-	}
+function complate(id) {
+	$.messager.confirm('提示', '提前完成任务，该任务将不能填写工时，确定要执行该操作？', function(f) {
+				if (!f) {
+					return false;
+				}
+				if (isTask(id)) {
+					$.ajax({
+								type : "POST",
+								url : "${contextPath}/task/complateTask?id=" + id,
+								processData : true,
+								dataType : "json",
+								async : true,
+								success : function(data) {
+									if (data.code == "200") {
+										if (window.frames[0]) {
+											window.frames[0].reloadGrid();
+										} else {
+											$('#grid').datagrid('reload');
+										}
+										$('#dlg').dialog('close');
+										LogUtils.saveLog(LOG_MODULE_OPS.COMPLETE_PROJECT_VERSION_PHASE_TASK, "完成任务：" + data.data + ":成功", function() {
+												});
+									} else {
+										$.messager.alert('错误', data.result);
+									}
+								},
+								error : function() {
+									$.messager.alert('错误', '远程访问失败');
+								}
+							});
+				} else {
+					$.messager.alert('错误', '任务工时加班工时其中一项不能为0');
+				}
+			});
 }
 
 $.extend($.fn.validatebox.defaults.rules, {

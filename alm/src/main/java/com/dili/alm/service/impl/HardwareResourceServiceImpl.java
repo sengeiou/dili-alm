@@ -40,7 +40,8 @@ import com.dili.sysadmin.sdk.session.SessionContext;
  * 由MyBatis Generator工具自动生成 This file was generated on 2018-03-20 17:22:08.
  */
 @Service
-public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResource, Long> implements HardwareResourceService{
+public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResource, Long>
+		implements HardwareResourceService {
 	private static final String DEPARTMENTNAME = "运维部";
 	@Autowired
 	UserRpc userRpc;
@@ -54,11 +55,10 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 	private HardwareResourceMapper hardwareResourceMapper;
 	@Autowired
 	private DataDictionaryService dataDictionaryService;
-	
+
 	private static final String REGIONAL_CODE = "regional";
 	private static final String ENVIRONMENT_CODE = "environment";
-	
-	
+
 	@Override
 	public List<User> listUserByDepartment() {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
@@ -66,12 +66,12 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 			throw new RuntimeException("未登录");
 		}
 		BaseOutput<Department> findByDepartmentName = departmentRpc.findByDepartmentName(DEPARTMENTNAME);
-		Department department =findByDepartmentName.getData();
+		Department department = findByDepartmentName.getData();
 		User user = new User();
 		user.setDepartmentId(department.getId());
 		return userRpc.list(user).getData();
 	}
-	
+
 	@Override
 	public List<Project> projectList() {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
@@ -79,109 +79,28 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 			throw new RuntimeException("未登录");
 		}
 		List<Project> listProject = new ArrayList<Project>();
-		/* if (isNoTeam()||isCommittee()) { */
 		listProject = projectMapper.selectAll();
-		/*
-		 * }else{ listProject = taskMapper.selectProjectByTeam(userTicket.getId()); }
-		 */
 		return listProject;
 	}
 
 	@Override
-	public BaseOutput insertHardwareResourceSelective(
-			List<HardwareResource> hardwareResourceList) {
+	public BaseOutput insertHardwareResourceSelective(List<HardwareResource> hardwareResourceList) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		if (userTicket == null) {
 			throw new RuntimeException("未登录");
 		}
-		List<HardwareResource> list=new ArrayList<HardwareResource>();
+		List<HardwareResource> list = new ArrayList<HardwareResource>();
 		for (HardwareResource hardwareResource : hardwareResourceList) {
 			hardwareResource.setMaintenanceOwner(userTicket.getId());
 			hardwareResource.setLastModifyDate(new Date());
 			list.add(hardwareResource);
 		}
-		
+
 		int insertList = this.hardwareResourceMapper.insertList(list);
-		if(list.size()==insertList){
-			return  BaseOutput.success("新增成功");
+		if (list.size() == insertList) {
+			return BaseOutput.success("新增成功");
 		}
-		return  BaseOutput.failure("新增失败");
-	}
-
-	@Override
-	public boolean isSubmit(Long id) {
-		HardwareResource selectByPrimaryKey = this.hardwareResourceMapper.selectByPrimaryKey(id);
-		if(selectByPrimaryKey.getIsSubmit()==1){
-			return true;
-		}
-		return false;
-	}
-	
-//	@Override
-//	public EasyuiPageOutput listEasyuiPageByExample(HardwareResource domain,List<Long> projectIds, boolean useProvider) throws Exception {
-//		UserTicket user = SessionContext.getSessionContext().getUserTicket();
-//		Long owner=null;
-//	
-//		if (user == null) {
-//			throw new RuntimeException("未登录");
-//		}
-//		//获取维护人
-//		if(domain.getMaintenanceOwner()==null){
-//			domain.setMaintenanceOwner(user.getId());
-//		}else{
-//			if(domain.getMaintenanceOwner().longValue()!=user.getId().longValue()){
-//				owner=user.getId();
-//			}
-//		}
-//		//判断项目权限
-//		if(domain.getProjectId()!=null){	
-//			if(owner!=null){
-//				if(!projectIds.contains(domain.getProjectId())){
-//					List<HardwareResource> nullList= new ArrayList<HardwareResource>();
-//					return new EasyuiPageOutput(0, nullList);
-//				}	
-//			}else{
-//				if(projectIds.contains(domain.getProjectId())){
-//					domain.setMaintenanceOwner(null);
-//				}	
-//			}
-//			
-//		}
-//		
-//		String sort = domain.getSort();
-//		if(WebUtil.strIsEmpty(sort)){
-//			domain.setSort("id");
-//			domain.setOrder("ASC");
-//			
-//		}else if(sort.equals("projectId")){
-//			domain.setSort("project_id");
-//		}else if(sort.equals("maintenanceDate")){
-//			domain.setSort("maintenance_date");
-//		}else if(sort.equals("lastModifyDate")){
-//			domain.setSort("last_modify_date");
-//		}
-//		List<HardwareResource> list = this.hardwareResourceMapper.selectByIds(domain,owner,projectIds);
-//		int total = this.hardwareResourceMapper.selectByIdsCounts(domain,owner,projectIds);
-//		List results = null;
-//		results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, list) : list;
-//		
-//		
-//		
-//		return new EasyuiPageOutput(Integer.parseInt(String.valueOf(total)), results);
-//	}
-
-	@Override
-	public boolean isOperation(Long id) {
-		UserTicket user = SessionContext.getSessionContext().getUserTicket();
-		if (user == null) {
-			throw new RuntimeException("未登录");
-		}
-		HardwareResource selectByPrimaryKey = this.hardwareResourceMapper.selectByPrimaryKey(id);
-		if(selectByPrimaryKey.getMaintenanceOwner().longValue()==user.getId().longValue()){
-			return true;
-			
-		}
-		return false;
+		return BaseOutput.failure("新增失败");
 	}
 
 	@Override
@@ -193,19 +112,29 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 		hardwareResource.setMaintenanceOwner(userTicket.getId());
 		hardwareResource.setLastModifyDate(new Date());
 		int insertList = this.hardwareResourceMapper.insert(hardwareResource);
-		if(insertList==1){
-			return  BaseOutput.success("新增成功");
+		if (insertList == 1) {
+			return BaseOutput.success("新增成功");
 		}
-		return  BaseOutput.failure("新增失败");
+		return BaseOutput.failure("新增失败");
 	}
 
 	@Override
 	public void submit(Long projectId, Long userId) {
-		HardwareResource hardwareResource=DTOUtils.newDTO(HardwareResource.class);
-  		hardwareResource.setProjectId(projectId);
-  		hardwareResource.setLastModifyDate(new Date());
-  		hardwareResource.setMaintenanceOwner(userId);
-  		hardwareResourceMapper.updateByProjectId(hardwareResource);
+		HardwareResource hardwareResource = DTOUtils.newDTO(HardwareResource.class);
+		hardwareResource.setProjectId(projectId);
+		hardwareResource.setMaintenanceOwner(userId);
+		HardwareResource po = DTOUtils.newDTO(HardwareResource.class);
+		po.setProjectId(projectId);
+		int count = this.hardwareResourceMapper.selectCount(po);
+		if (count <= 0) {
+			// 产品要求提交it资源为空要插入一条空数据并且可以编辑
+			Project project = this.projectMapper.selectByPrimaryKey(projectId);
+			po.setProjectSerialNumber(project.getSerialNumber());
+			po.setMaintenanceOwner(userId);
+			this.hardwareResourceMapper.insertSelective(po);
+		} else {
+			hardwareResourceMapper.updateByProjectId(hardwareResource);
+		}
 	}
 
 	@Override
@@ -227,21 +156,20 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 	}
 
 	@Override
-	public Map<String,String> projectNumById(String id) {
-		Map<String ,String> map=new HashMap<String,String>();
+	public Map<String, String> projectNumById(String id) {
+		Map<String, String> map = new HashMap<String, String>();
 		Project project = projectMapper.selectByPrimaryKey(Long.parseLong(id));
 		ProjectApply projectApply = projectApplyMapper.selectByPrimaryKey(project.getApplyId());
 		map.put("projectNum", project.getSerialNumber());
 		Map parseObject = JSON.parseObject(projectApply.getRoi(), Map.class);
-		String total =null;
-		if(parseObject.get("val99")==null){
-			total="0元";
-		}else{
-		    total = parseObject.get("val99").toString();
+		String total = null;
+		if (parseObject.get("val99") == null) {
+			total = "0元";
+		} else {
+			total = parseObject.get("val99").toString();
 		}
-		map.put("projectTotal",total );
+		map.put("projectTotal", total);
 		return map;
 	}
-
 
 }

@@ -1,0 +1,188 @@
+package com.dili.alm.controller;
+
+import com.dili.alm.component.NumberGenerator;
+import com.dili.alm.domain.Files;
+import com.dili.alm.domain.OperationResult;
+import com.dili.alm.domain.WorkOrder;
+import com.dili.alm.domain.dto.WorkOrderUpdateDto;
+import com.dili.alm.exceptions.WorkOrderException;
+import com.dili.alm.service.FilesService;
+import com.dili.alm.service.WorkOrderService;
+import com.dili.alm.service.impl.WorkOrderServiceImpl;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.sysadmin.sdk.domain.UserTicket;
+import com.dili.sysadmin.sdk.session.SessionContext;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
+/**
+ * 由MyBatis Generator工具自动生成 This file was generated on 2018-05-23 11:51:37.
+ */
+@Api("/workOrder")
+@Controller
+@RequestMapping("/workOrder")
+public class WorkOrderController {
+	private static final Logger LOGGER = LoggerFactory.getLogger(WorkOrderController.class);
+	@Autowired
+	private WorkOrderService workOrderService;
+	@Qualifier("workOrderNumberGenerator")
+	@Autowired
+	private NumberGenerator numberGenerator;
+	@Autowired
+	private FilesService filesService;
+
+	@ApiOperation("跳转到WorkOrder页面")
+	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
+	public String index(ModelMap modelMap) {
+		modelMap.addAttribute("user", SessionContext.getSessionContext().getUserTicket());
+		return "workOrder/index";
+	}
+
+	@GetMapping("/add")
+	public String addView(ModelMap modelMap) {
+		modelMap.addAttribute("serialNumber", this.numberGenerator.get()).addAttribute("applicant",
+				SessionContext.getSessionContext().getUserTicket());
+		return "workOrder/add";
+	}
+
+	@GetMapping("/update")
+	public String updateView(@RequestParam Long id, ModelMap modelMap) {
+		Map<Object, Object> model = this.workOrderService.getViewModel(id);
+		modelMap.addAttribute("model", model);
+		return "workOrder/update";
+	}
+
+	@ResponseBody
+	@PostMapping("/saveOrUpdate")
+	public BaseOutput<Object> saveOrUpdate(WorkOrderUpdateDto dto, Long[] copyUserIds, MultipartFile attachment) {
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		if (user == null) {
+			return BaseOutput.failure("请先登录");
+		}
+		dto.setApplicantId(user.getId());
+		if (copyUserIds.length > 0) {
+			dto.setCopyUserIds(Arrays.asList(copyUserIds));
+		}
+		if (!attachment.isEmpty()) {
+			this.filesService.delete(dto.getAttachmentFileId());
+			List<Files> files = this.filesService.uploadFile(new MultipartFile[] { attachment });
+			dto.setAttachmentFileId(files.get(0).getId());
+		}
+		try {
+			this.workOrderService.saveOrUpdate(dto);
+			Map<Object, Object> viewModel = this.workOrderService.getViewModel(dto.getId());
+			return BaseOutput.success().setData(viewModel);
+		} catch (WorkOrderException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+
+	@ResponseBody
+	@PostMapping("/saveAndSubmit")
+	public BaseOutput<Object> saveAndSubmit(WorkOrderUpdateDto dto, Long[] copyUserIds, MultipartFile attachment) {
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		if (user == null) {
+			return BaseOutput.failure("请先登录");
+		}
+		dto.setApplicantId(user.getId());
+		if (copyUserIds.length > 0) {
+			dto.setCopyUserIds(Arrays.asList(copyUserIds));
+		}
+		if (!attachment.isEmpty()) {
+			this.filesService.delete(dto.getAttachmentFileId());
+			List<Files> files = this.filesService.uploadFile(new MultipartFile[] { attachment });
+			dto.setAttachmentFileId(files.get(0).getId());
+		}
+		try {
+			this.workOrderService.saveAndSubmit(dto);
+			Map<Object, Object> viewModel = this.workOrderService.getViewModel(dto.getId());
+			return BaseOutput.success().setData(viewModel);
+		} catch (WorkOrderException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+
+	@GetMapping("/allocate")
+	public String allocateView(@RequestParam Long id, ModelMap modelMap) {
+		WorkOrder workOrder = this.workOrderService.getOperatinoRecordsViewModel(id);
+		try {
+			modelMap.addAttribute("opRecords", workOrder.aget("opRecords")).addAttribute("model",
+					WorkOrderServiceImpl.parseViewModel(workOrder));
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			return null;
+		}
+		return "workOrder/allocate";
+	}
+
+	@ResponseBody
+	@PostMapping("/allocate")
+	public BaseOutput<Object> allocate(@RequestParam Long id, @RequestParam Long executorId,
+			@RequestParam Integer result, @RequestParam String description) {
+		try {
+			this.workOrderService.allocate(id, executorId, OperationResult.valueOf(result), description);
+			return BaseOutput.success().setData(this.workOrderService.getViewModel(id));
+		} catch (WorkOrderException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+
+	@GetMapping("/solve")
+	public String solveView(@RequestParam Long id, ModelMap modelMap) {
+		WorkOrder workOrder = this.workOrderService.getOperatinoRecordsViewModel(id);
+		try {
+			modelMap.addAttribute("opRecords", workOrder.aget("opRecords")).addAttribute("model",
+					WorkOrderServiceImpl.parseViewModel(workOrder));
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			return null;
+		}
+		return "workOrder/solve";
+	}
+
+	@ApiOperation(value = "查询WorkOrder", notes = "查询WorkOrder，返回列表信息")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "WorkOrder", paramType = "form", value = "WorkOrder的form信息", required = false, dataType = "string") })
+	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody List<WorkOrder> list(WorkOrder workOrder) {
+		return workOrderService.list(workOrder);
+	}
+
+	@ApiOperation(value = "分页查询WorkOrder", notes = "分页查询WorkOrder，返回easyui分页信息")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "WorkOrder", paramType = "form", value = "WorkOrder的form信息", required = false, dataType = "string") })
+	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody String listPage(WorkOrder workOrder) throws Exception {
+		return workOrderService.listEasyuiPageByExample(workOrder, true).toString();
+	}
+
+	@ApiOperation("删除WorkOrder")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "id", paramType = "form", value = "WorkOrder的主键", required = true, dataType = "long") })
+	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody BaseOutput delete(Long id) {
+		workOrderService.delete(id);
+		return BaseOutput.success("删除成功");
+	}
+}

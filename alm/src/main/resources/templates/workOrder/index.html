@@ -1,0 +1,111 @@
+
+<#body>
+<div id="win" style="display: none;"></div>
+<div id="smDialog" style="display: none;"></div>
+<div class="easyui-layout" fit="true">
+	<!-- ====================================================================================================================== -->
+	<!-- 上方布局 -->
+	<!-- ====================================================================================================================== -->
+	<div region="north" height="auto" align="center">
+		<!-- =========================================================表单========================================================= -->
+		<div class="easyui-panel" style="width: 100%;" align="left">
+			<form id="form" class="easyui-form" method="post" fit="true">
+				<table style="padding: 10px;">
+					<!-- <tr>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="serialNumber" id="serialNumber" style="width: 100%"
+							data-options="label:'工单编号:', validType:'length[0,0]'" /></td>
+						<td style="padding: 5px;"><input class="easyui-numberbox" name="workOrderType" id="workOrderType" style="width: 100%"
+							data-options="label:'工单类型:', validType:'length[0,10]'" /></td>
+						<td style="padding: 5px;"><input class="easyui-numberbox" name="priority" id="priority" style="width: 100%"
+							data-options="label:'工单优先级:', validType:'length[0,10]'" /></td>
+						<td style="padding: 5px;"><input class="easyui-numberbox" name="acceptorId" id="acceptorId" style="width: 100%"
+							data-options="label:'受理人:', validType:'length[0,19]'" /></td>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="copyUserId" id="copyUserId" style="width: 100%"
+							data-options="label:'抄送人id,jsonarray存储:', validType:'length[0,255]'" /></td>
+					</tr>
+					<tr>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="description" id="description" style="width: 100%"
+							data-options="label:'描述:', validType:'length[0,255]'" /></td>
+						<td style="padding: 5px;"><input class="easyui-numberbox" name="attachmentFileId" id="attachmentFileId" style="width: 100%"
+							data-options="label:'附件id:', validType:'length[0,19]'" /></td>
+						<td style="padding: 5px;"><input class="easyui-numberbox" name="workOrderState" id="workOrderState" style="width: 100%"
+							data-options="label:'工单申请状态:', validType:'length[0,10]'" /></td>
+						<td style="padding: 5px;"><input class="easyui-datetimebox" name="submitTime" id="submitTime" style="width: 100%"
+							data-options="label:'申请提交时间:'" /></td>
+						<td style="padding: 5px;"><input class="easyui-datetimebox" name="closeTime" id="closeTime" style="width: 100%"
+							data-options="label:'关闭时间:'" /></td>
+					</tr>
+					<tr>
+						<td style="padding: 5px;"><input class="easyui-datetimebox" name="creationTime" id="creationTime" style="width: 100%"
+							data-options="label:'创建时间:'" /></td>
+						<td style="padding: 5px;"><input class="easyui-datetimebox" name="modifyTime" id="modifyTime" style="width: 100%"
+							data-options="label:'修改时间:'" /></td>
+					</tr> -->
+					<tr>
+						<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid()">查询</a> <a
+							href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">清除</a></td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>
+	<!-- ====================================================================================================================== -->
+	<!-- 中央布局 -->
+	<!-- ====================================================================================================================== -->
+	<!-- 表格 -->
+	<div region="center" style="width: 100%;" height="auto">
+		<!-- =========================================================表格========================================================= -->
+		<table class="easyui-datagrid" title="WorkOrder列表" id="grid" fitColumns="true" pagination="true" pageSize="30" pageNumber="1"
+			pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
+			sortName="serialNumber" align="center" fit="true" striped="true" toolbar="#toolbar" idField="id"
+			data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
+			<thead>
+				<tr>
+					<th data-options="field:'serialNumber',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">工单编号</th>
+					<th data-options="field:'workOrderName', align:'center', resizable:'true', fixed:'false'">工单名称</th>
+					<th data-options="field:'priority', _provider:'workOrderPriorityProvider', align:'center', resizable:'true', fixed:'false'">优先级</th>
+					<th data-options="field:'workOrderType', _provider:'workOrderTypeProvider', align:'center', resizable:'true', fixed:'false'">工单类型</th>
+					<th data-options="field:'workOrderSource', _provider:'workOrderSourceProvider', align:'center', resizable:'true', fixed:'false'">工单来源</th>
+					<th
+						data-options="field:'workOrderState', _provider:'workOrderStateProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">状态
+
+
+					
+					<th
+						data-options="field:'applicantId',  _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">提单人</th>
+					<th data-options="field:'acceptorId', _provider:'memberProvider', align:'center', resizable:'true', fixed:'false'">受理人</th>
+					<th
+						data-options="field:'executorId', _provider:'memberProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">执行人</th>
+					<th data-options="field:'description',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">描述</th>
+					<th
+						data-options="field:'submitTime',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						申请时间</th>
+					<th
+						data-options="field:'closeTime',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						关闭时间</th>
+					<th data-options="field:'operation', align:'center', resizable:'true', fixed:'false',formatter:operationFormatter">操作</th>
+				</tr>
+			</thead>
+		</table>
+		<!-- datagrid工具栏 -->
+		<div id="toolbar" style="padding: 2px 5px;">
+			<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true"></a> <a href="#" class="easyui-linkbutton"
+				iconCls="icon-edit" onclick="openUpdate()" plain="true"></a> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()"
+				plain="true"></a> <a href="#" class="easyui-linkbutton" iconCls="icon-export" onclick="doExport('grid')" plain="true"></a>
+			<div style="float: right">
+				边框显示:<select onchange="changeBorder('grid',this.value)">
+					<option value="lines-both">全边框</option>
+					<option value="lines-no">无边框</option>
+					<option value="lines-right">右边框</option>
+					<option value="lines-bottom">下边框</option>
+				</select> 行条纹:<input type="checkbox" checked="checked" onclick="$('#grid').datagrid({striped:$(this).is(':checked')})">
+			</div>
+		</div>
+	</div>
+</div>
+<!-- ====================================================================================================================== --> <!-- style & script 分隔线 -->
+<!-- ====================================================================================================================== --> <script
+	type="text/javascript">
+	<#members_index/>
+	<#workOrder_index />
+</script> </#body>

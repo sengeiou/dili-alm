@@ -22,6 +22,10 @@ public class TravelCostApplyEntity extends BaseDomain implements TravelCostApply
 
 	private String serialNumber;
 
+	private Date modificationTime;
+
+	private Date creationTime;
+
 	@Override
 	public Long getProjectId() {
 		return projectId;
@@ -110,6 +114,26 @@ public class TravelCostApplyEntity extends BaseDomain implements TravelCostApply
 	@Override
 	public void setSerialNumber(String serialNumber) {
 		this.serialNumber = serialNumber;
+	}
+
+	@Override
+	public Date getCreationTime() {
+		return creationTime;
+	}
+
+	@Override
+	public void setCreationTime(Date creationTime) {
+		this.creationTime = creationTime;
+	}
+
+	@Override
+	public Date getModificationTime() {
+		return modificationTime;
+	}
+
+	@Override
+	public void setModificationTime(Date modificationTime) {
+		this.modificationTime = modificationTime;
 	}
 
 }

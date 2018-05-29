@@ -83,7 +83,16 @@ public class AlmCache {
 	// 城市缓存
 	private static final Map<Long, Area> AREA_MAP = new ConcurrentHashMap<>();
 
+	// 工单类型缓存
+	private static final Map<String, String> WORK_ORDER_TYPE_MAP = new ConcurrentHashMap<>();
+
+	// 工单优先级缓存
+	private static final Map<String, String> WORK_ORDER_PRIORITY_MAP = new ConcurrentHashMap<>();
+
 	private static final AlmCache INSTANCE = new AlmCache();
+	// 市场缓存
+	private static final Map<String, String> MARKET_MAP = new ConcurrentHashMap<>();
+
 	@Autowired
 	private ProjectPhaseService phaseService;
 	@Autowired
@@ -131,10 +140,12 @@ public class AlmCache {
 			}
 			Object obj = field.get(null);
 			if (obj instanceof Map) {
+				@SuppressWarnings("unchecked")
 				Map<Object, Object> map = (Map<Object, Object>) obj;
 				map.clear();
 			}
 			if (obj instanceof Collection) {
+				@SuppressWarnings("unchecked")
 				Collection<Object> coll = (Collection<Object>) obj;
 				coll.clear();
 			}
@@ -361,6 +372,39 @@ public class AlmCache {
 			list.forEach(v -> AlmCache.AREA_MAP.put(v.getId(), v));
 		}
 		return AREA_MAP;
+	}
+
+	public Map<String, String> getWorkOrderTypeMap() {
+		if (AlmCache.WORK_ORDER_TYPE_MAP.isEmpty()) {
+			DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.WORK_ORDER_TYPE_CODE);
+			if (CollectionUtils.isEmpty(dd.getValues())) {
+				return WORK_ORDER_TYPE_MAP;
+			}
+			dd.getValues().forEach(v -> WORK_ORDER_TYPE_MAP.put(v.getValue(), v.getCode()));
+		}
+		return WORK_ORDER_TYPE_MAP;
+	}
+
+	public Map<String, String> getWorkOrderPriorityMap() {
+		if (AlmCache.WORK_ORDER_PRIORITY_MAP.isEmpty()) {
+			DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.WORK_ORDER_PRIORITY_CODE);
+			if (CollectionUtils.isEmpty(dd.getValues())) {
+				return WORK_ORDER_PRIORITY_MAP;
+			}
+			dd.getValues().forEach(v -> WORK_ORDER_PRIORITY_MAP.put(v.getValue(), v.getCode()));
+		}
+		return WORK_ORDER_PRIORITY_MAP;
+	}
+
+	public Map<String, String> getMarketMap() {
+		if (AlmCache.MARKET_MAP.isEmpty()) {
+			DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.MARKET_CODE);
+			if (CollectionUtils.isEmpty(dd.getValues())) {
+				return MARKET_MAP;
+			}
+			dd.getValues().forEach(v -> MARKET_MAP.put(v.getValue(), v.getCode()));
+		}
+		return MARKET_MAP;
 	}
 
 }

@@ -55,18 +55,18 @@
 			<property name="targetPackage"
 				value="${targetControllerPackage}"></property>
 			如果不配置，则不会在类上继承
-			<property name="controllerSuperClass"
-				value="com.dili.ss.base.BaseControllerImpl"></property>
+			<property name="controllerSuperClass" value="com.dili.ss.base.BaseControllerImpl"></property>
 			如果不配置，则不会在接口上继承
-			<property name="controllerSuperInterface"
-				value="com.dili.ss.base.BaseController"></property>
+			<property name="controllerSuperInterface" value="com.dili.ss.base.BaseController"></property>
 		</plugin> -->
 
 		<!-- beetl模板文件生成插件 -->
-		<!-- <plugin type="com.dili.ss.mbg.beetl.BeetlTemplatesPlugin"> <property 
-			name="targetDir" value="${targetResourcesProject}"></property> <property 
-			name="templateRootDir" value="${templateRootDir}"></property> <property name="projectName" 
-			value="alm" /> <property name="overwrite" value="true" /> </plugin> -->
+		<!-- <plugin type="com.dili.ss.mbg.beetl.BeetlTemplatesPlugin">
+			<property name="targetDir" value="${targetResourcesProject}"></property>
+			<property name="templateRootDir" value="${templateRootDir}"></property>
+			<property name="projectName" value="alm" />
+			<property name="overwrite" value="true" />
+		</plugin> -->
 
 		<commentGenerator
 			type="org.mybatis.generator.internal.DefaultCommentGenerator">
@@ -93,7 +93,7 @@
 			targetProject="${targetJavaProject}" type="XMLMAPPER" />
 
 		<!-- 生成所有表模型 -->
-		<table tableName="project_change">
+		<table tableName="travel_cost_apply">
 			<generatedKey column="id" sqlStatement="Mysql"
 				identity="true" />
 		</table>

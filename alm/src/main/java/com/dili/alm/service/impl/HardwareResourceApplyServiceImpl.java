@@ -26,6 +26,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.dili.alm.cache.AlmCache;
@@ -111,11 +112,19 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		metadata.put("developmentManagerId", memberProvider);
 		metadata.put("applicantId", memberProvider);
 
+		JSONObject depProvider = new JSONObject();
+		depProvider.put("provider", "depProvider");
+		metadata.put("applicationDepartmentId", depProvider);
+
+		JSONObject almDateProvider = new JSONObject();
+		almDateProvider.put("provider", "almDateProvider");
+		metadata.put("onlineDate", almDateProvider);
+		metadata.put("actualOnlineDate", almDateProvider);
+		metadata.put("submitTime", almDateProvider);
+
 		JSONObject datetimeProvider = new JSONObject();
-		datetimeProvider.put("provider", "almDateProvider");
-		metadata.put("onlineDate", datetimeProvider);
-		metadata.put("actualOnlineDate", datetimeProvider);
-		metadata.put("submitTime", datetimeProvider);
+		datetimeProvider.put("provider", "datetimeProvider");
+		metadata.put("created", datetimeProvider);
 
 		JSONObject applyStateProvider = new JSONObject();
 		applyStateProvider.put("provider", "projectOnlineApplyStateProvider");
@@ -246,6 +255,38 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		return (HardwareResourceApplyMapper) getDao();
 	}
 
+	@Override
+	public HardwareResourceApply getDetailViewModel(Long id) {
+		HardwareResourceApply apply = this.getActualDao().selectByPrimaryKey(id);
+		List<Integer> envList = JSON.parseArray(apply.getServiceEnvironment(), Integer.class);
+		StringBuilder sb = new StringBuilder();
+		envList.forEach(v -> sb.append(this.envProvider.getDisplayText(v, null, null)).append(","));
+		apply.aset("serviceEnvironmentText", sb.substring(0, sb.length() - 1));
+		HardwareResourceRequirement dto = DTOUtils.newDTO(HardwareResourceRequirement.class);
+		dto.setApplyId(id);
+		List<HardwareResourceRequirement> requirementList = this.hrrMapper.select(dto);
+		apply.aset("requirementList", requirementList);
+		HardwareApplyOperationRecord hraQuery = DTOUtils.newDTO(HardwareApplyOperationRecord.class);
+		hraQuery.setApplyId(id);
+		List<HardwareApplyOperationRecord> opRecords = this.haorMapper.select(hraQuery);
+		Map<Object, Object> metadata = new HashMap<>();
+
+		JSONObject memberProvider = new JSONObject();
+		memberProvider.put("provider", "memberProvider");
+		metadata.put("operatorId", memberProvider);
+
+		JSONObject datetimeProvider = new JSONObject();
+		datetimeProvider.put("provider", "datetimeProvider");
+		metadata.put("operateTime", datetimeProvider);
+
+		try {
+			apply.aset("opRecords", ValueProviderUtils.buildDataByProvider(metadata, opRecords));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return apply;
+	}
+
 	@Transactional(readOnly = true)
 	@Override
 	public EasyuiPageOutput listEasyuiPageByExample(HardwareResourceApply domain, boolean useProvider)
@@ -263,78 +304,12 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		return new EasyuiPageOutput(Integer.parseInt(String.valueOf(total)), results);
 	}
 
-	private void setOperationColumn(HardwareResourceApply apply) {
-		UserTicket user = SessionContext.getSessionContext().getUserTicket();
-		if (user == null) {
-			throw new IllegalArgumentException("用户未登录");
-		}
+	@Override
+	public List<HardwareResourceRequirement> listRequirement(Long applyId) throws HardwareResourceApplyException {
+		HardwareResourceRequirement dto = DTOUtils.newDTO(HardwareResourceRequirement.class);
+		dto.setApplyId(applyId);
+		return this.hrrMapper.select(dto);
 
-		// 判断界面上用户是否是提交人
-		boolean approving = apply.getApplyState().equals(HardwareApplyState.APPLING.getValue());
-		// 判断当前登录用户是否是项目经理
-		approving = !approving ? approving : user.getId().equals(apply.getApplicantId());
-		apply.aset("approving", approving);
-
-		// 判断界面上用户是否可以点击项目经理确认按钮
-		// 判断申请状态是否是项目经理确认状态
-		boolean projectManagerApprov = apply.getApplyState()
-				.equals(HardwareApplyState.PROJECT_MANAGER_APPROVING.getValue());
-		// 判断当前登录用户是否是项目经理
-		projectManagerApprov = !projectManagerApprov ? projectManagerApprov
-				: user.getId().equals(apply.getProjectManagerId());
-		apply.aset("projectManagerApprov", projectManagerApprov);
-
-		try {
-			// 判断界面上部总经理审批
-			// 判断申请状态是否是项目经理确认状态
-			boolean generalManagerAppov = apply.getApplyState()
-					.equals(HardwareApplyState.GENERAL_MANAGER_APPROVING.getValue());
-			User generalManagerU = this.queryGeneralLeader();
-			// 判断当前登录用户是否是部总经理
-			generalManagerAppov = !generalManagerAppov ? generalManagerAppov
-					: generalManagerU.getId().equals(user.getId());
-			apply.aset("generalManagerAppov", generalManagerAppov);
-
-			// 判断界面上运维部经理审批
-			boolean operactionManagerAppov = apply.getApplyState()
-					.equals(HardwareApplyState.OPERATION_MANAGER_APPROVING.getValue());
-			User operactionManagerU = this.queryOperationManager();
-			// 判断当前登录用户是否是部总经理
-			operactionManagerAppov = !operactionManagerAppov ? operactionManagerAppov
-					: operactionManagerU.getId().equals(user.getId());
-			apply.aset("operactionManagerAppov", operactionManagerAppov);
-
-			// 实施
-			boolean implementing = apply.getApplyState().equals(HardwareApplyState.IMPLEMENTING.getValue());
-
-			if (implementing) {
-				List<Long> executors = JSONObject.parseObject(apply.getExecutors(), new TypeReference<List<Long>>() {
-				});
-				for (int i = 0; i < executors.size(); i++) {
-					if (user.getId().equals(executors.get(i))) {
-						implementing = true;
-					} else {
-						implementing = false;
-					}
-				}
-			}
-
-			apply.aset("implementing", implementing);
-
-			// 完成或者失败
-			boolean onlyRead = apply.getApplyState().equals(HardwareApplyState.COMPLETED.getValue());
-			onlyRead = !onlyRead ? onlyRead : user.getId().equals(apply.getApplicantId());
-			boolean failed = apply.getApplyState().equals(HardwareApplyState.FAILED.getValue());
-			failed = !failed ? failed : user.getId().equals(apply.getApplicantId());
-
-			if (failed || onlyRead) {
-				apply.aset("readOnly", true);
-			}
-
-		} catch (HardwareResourceApplyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	@Override
@@ -511,6 +486,13 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 			User user = this.queryGeneralLeader();
 			this.sendMail(apply, "IT资源申请", Arrays.asList(user.getEmail()));
 		}
+	}
+
+	@Override
+	public void saveAndSubmit(HardwareResourceApplyUpdateDto hardwareResourceApply)
+			throws HardwareResourceApplyException {
+		this.saveOrUpdate(hardwareResourceApply);
+		this.submit(hardwareResourceApply.getId());
 	}
 
 	@Override
@@ -712,6 +694,80 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		});
 	}
 
+	private void setOperationColumn(HardwareResourceApply apply) {
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		if (user == null) {
+			throw new IllegalArgumentException("用户未登录");
+		}
+
+		// 判断界面上用户是否是提交人
+		boolean approving = apply.getApplyState().equals(HardwareApplyState.APPLING.getValue());
+		// 判断当前登录用户是否是项目经理
+		approving = !approving ? approving : user.getId().equals(apply.getApplicantId());
+		apply.aset("approving", approving);
+
+		// 判断界面上用户是否可以点击项目经理确认按钮
+		// 判断申请状态是否是项目经理确认状态
+		boolean projectManagerApprov = apply.getApplyState()
+				.equals(HardwareApplyState.PROJECT_MANAGER_APPROVING.getValue());
+		// 判断当前登录用户是否是项目经理
+		projectManagerApprov = !projectManagerApprov ? projectManagerApprov
+				: user.getId().equals(apply.getProjectManagerId());
+		apply.aset("projectManagerApprov", projectManagerApprov);
+
+		try {
+			// 判断界面上部总经理审批
+			// 判断申请状态是否是项目经理确认状态
+			boolean generalManagerAppov = apply.getApplyState()
+					.equals(HardwareApplyState.GENERAL_MANAGER_APPROVING.getValue());
+			User generalManagerU = this.queryGeneralLeader();
+			// 判断当前登录用户是否是部总经理
+			generalManagerAppov = !generalManagerAppov ? generalManagerAppov
+					: generalManagerU.getId().equals(user.getId());
+			apply.aset("generalManagerAppov", generalManagerAppov);
+
+			// 判断界面上运维部经理审批
+			boolean operactionManagerAppov = apply.getApplyState()
+					.equals(HardwareApplyState.OPERATION_MANAGER_APPROVING.getValue());
+			User operactionManagerU = this.queryOperationManager();
+			// 判断当前登录用户是否是部总经理
+			operactionManagerAppov = !operactionManagerAppov ? operactionManagerAppov
+					: operactionManagerU.getId().equals(user.getId());
+			apply.aset("operactionManagerAppov", operactionManagerAppov);
+
+			// 实施
+			boolean implementing = apply.getApplyState().equals(HardwareApplyState.IMPLEMENTING.getValue());
+
+			if (implementing) {
+				List<Long> executors = JSONObject.parseObject(apply.getExecutors(), new TypeReference<List<Long>>() {
+				});
+				for (int i = 0; i < executors.size(); i++) {
+					if (user.getId().equals(executors.get(i))) {
+						implementing = true;
+					} else {
+						implementing = false;
+					}
+				}
+			}
+
+			apply.aset("implementing", implementing);
+
+			// 完成或者失败
+			boolean onlyRead = apply.getApplyState().equals(HardwareApplyState.COMPLETED.getValue());
+			onlyRead = !onlyRead ? onlyRead : user.getId().equals(apply.getApplicantId());
+			boolean failed = apply.getApplyState().equals(HardwareApplyState.FAILED.getValue());
+			failed = !failed ? failed : user.getId().equals(apply.getApplicantId());
+
+			if (failed || onlyRead) {
+				apply.aset("readOnly", true);
+			}
+
+		} catch (HardwareResourceApplyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	private void updateHardwareApply(HardwareResourceApplyUpdateDto dto) throws HardwareResourceApplyException {
 		// 判断申请日期
 		if (dto.getApplyDate() == null) {
@@ -771,45 +827,6 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		if (rows <= 0) {
 			throw new HardwareResourceApplyException("插入配置要求失败");
 		}
-	}
-
-	@Override
-	public List<HardwareResourceRequirement> listRequirement(Long applyId) throws HardwareResourceApplyException {
-		HardwareResourceRequirement dto = DTOUtils.newDTO(HardwareResourceRequirement.class);
-		dto.setApplyId(applyId);
-		return this.hrrMapper.select(dto);
-
-	}
-
-	@Override
-	public void saveAndSubmit(HardwareResourceApplyUpdateDto hardwareResourceApply)
-			throws HardwareResourceApplyException {
-		this.saveOrUpdate(hardwareResourceApply);
-		this.submit(hardwareResourceApply.getId());
-	}
-
-	@Override
-	public HardwareResourceApply getDetailViewModel(Long id) {
-		HardwareResourceApply apply = this.getActualDao().selectByPrimaryKey(id);
-		HardwareApplyOperationRecord hraQuery = DTOUtils.newDTO(HardwareApplyOperationRecord.class);
-		hraQuery.setApplyId(id);
-		List<HardwareApplyOperationRecord> opRecords = this.haorMapper.select(hraQuery);
-		Map<Object, Object> metadata = new HashMap<>();
-
-		JSONObject memberProvider = new JSONObject();
-		memberProvider.put("provider", "memberProvider");
-		metadata.put("operatorId", memberProvider);
-
-		JSONObject datetimeProvider = new JSONObject();
-		datetimeProvider.put("provider", "datetimeProvider");
-		metadata.put("operateTime", datetimeProvider);
-
-		try {
-			apply.aset("opRecords", ValueProviderUtils.buildDataByProvider(metadata, opRecords));
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		return apply;
 	}
 
 }
