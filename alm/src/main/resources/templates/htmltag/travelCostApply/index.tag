@@ -151,17 +151,16 @@ function openInsert() {
 }
 
 function postData(_url) {
-	if (!$("#_form").form('validate')) {
+	if (!endPositionEditing($('#travelCostGrid'))) {
 		return false;
 	}
-	if (!endPositionEditing($('#travelCostGrid'))) {
+	if (!$("#_form").form('validate')) {
 		return false;
 	}
 	var _formData = $("#_form").serializeObject();
 	var data = $('#travelCostGrid').datagrid('getData');
 	var travelCosts = [];
 	$(data.rows).each(function(index, item) {
-				endPositionEditing($('#travelCostGrid'));
 				var travelCost = {};
 				var travelCostDetails = [];
 				for (prop in item) {
@@ -187,7 +186,7 @@ function postData(_url) {
 				travelCost.travelCostDetail = travelCostDetails;
 				travelCosts.push(travelCost);
 			});
-	_formData.totalAmount = math.chain(_formData.totalAmount).multiply(100);
+	_formData.totalAmount = math.chain(_formData.totalAmount).multiply(100).done();
 	_formData.travelCost = travelCosts;
 	$.ajax({
 				type : "POST",

@@ -1,9 +1,16 @@
+<script type="text/javascript">
+	function clearDefaultValue() {
+		$(this).combobox('initValue', '');
+		$(this).combobox('setText', '');
+	}
+</script>
 <form id="_form" class="easyui-form" method="post" fit="true">
 	<input name="_id" id="_id" type="hidden">
 	<table width="700px">
 		<tr>
 			<td style="padding: 5px;"><select class="easyui-combobox" name="projectId" id="projectId" style="width: 300px"
-				data-options="label:'项目:'" required="true"> <%for(item in projects){%>
+				data-options="label:'项目:',editable:false,prompt:'--请选择--',onLoadSuccess:clearDefaultValue" required="true"> <%for(item in
+					projects){%>
 					<option value="${item.id!}">${item.name!}</option> <%}%>
 			</select></td>
 			<td style="padding: 5px;"><input class="easyui-textbox" style="width: 300px" value="${user.realName!}"
@@ -30,7 +37,7 @@
 										required : true,
 										missingMessage : '请输入天数'
 									}
-								}">出差天数2</th>
+								}">出差天数</th>
 				<th
 					data-options="field:'setOutPlace', width:90,   align:'center', resizable:'true', fixed:'false',
 								formatter:function(index,row,value){

@@ -7,6 +7,7 @@ import com.dili.alm.domain.HardwareResource;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
+import com.dili.alm.exceptions.HardwareResourceException;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
 
@@ -21,7 +22,7 @@ public interface HardwareResourceService extends BaseService<HardwareResource, L
 
 	BaseOutput insertHardwareResourceSelective(List<HardwareResource> hardwareResourceList);
 
-	BaseOutput insertOneSelective(HardwareResource hardwareResource);
+	void insertHardwareResource(HardwareResource hardwareResource) throws HardwareResourceException;
 
 	void submit(Long projectId, Long userId);
 
@@ -30,5 +31,7 @@ public interface HardwareResourceService extends BaseService<HardwareResource, L
 	List<DataDictionaryValueDto> getRegionals();
 
 	Map<String, String> projectNumById(String id);
+
+	void updateHardwareResource(HardwareResource hardwareResource) throws HardwareResourceException;
 
 }
