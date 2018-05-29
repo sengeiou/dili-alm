@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.dili.alm.domain.HardwareResource;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.User;
+import com.dili.alm.exceptions.HardwareResourceException;
 import com.dili.alm.service.HardwareResourceService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -67,10 +68,17 @@ public class HardwareResourceController {
 			@ApiImplicitParam(name = "HardwareResource", paramType = "form", value = "HardwareResource的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput insert(HardwareResource hardwareResource) {
-		// List<HardwareResource> parseArray =
-		// JSONArray.parseArray(hardwareResources,HardwareResource.class);
-
-		return hardwareResourceService.insertOneSelective(hardwareResource);
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		if (userTicket == null) {
+			throw new RuntimeException("未登录");
+		}
+		hardwareResource.setMaintenanceOwner(userTicket.getId());
+		try {
+			hardwareResourceService.insertHardwareResource(hardwareResource);
+			return BaseOutput.success();
+		} catch (HardwareResourceException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
 	}
 
 	@ApiOperation("修改HardwareResource")
@@ -83,9 +91,12 @@ public class HardwareResourceController {
 			throw new RuntimeException("未登录");
 		}
 		hardwareResource.setMaintenanceOwner(userTicket.getId());
-		hardwareResource.setLastModifyDate(new Date());
-		hardwareResourceService.updateSelective(hardwareResource);
-		return BaseOutput.success("修改成功");
+		try {
+			hardwareResourceService.updateHardwareResource(hardwareResource);
+			return BaseOutput.success();
+		} catch (HardwareResourceException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
 	}
 
 	@ApiOperation("删除HardwareResource")

@@ -23,6 +23,7 @@ import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
+import com.dili.alm.exceptions.HardwareResourceException;
 import com.dili.alm.rpc.DepartmentRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
@@ -104,18 +105,17 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 	}
 
 	@Override
-	public BaseOutput insertOneSelective(HardwareResource hardwareResource) {
-		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		if (userTicket == null) {
-			throw new RuntimeException("未登录");
+	public void insertHardwareResource(HardwareResource hardwareResource) throws HardwareResourceException {
+		Project project = this.projectMapper.selectByPrimaryKey(hardwareResource.getProjectId());
+		if (project == null) {
+			throw new HardwareResourceException("项目不存在");
 		}
-		hardwareResource.setMaintenanceOwner(userTicket.getId());
+		hardwareResource.setProjectSerialNumber(project.getSerialNumber());
 		hardwareResource.setLastModifyDate(new Date());
-		int insertList = this.hardwareResourceMapper.insert(hardwareResource);
-		if (insertList == 1) {
-			return BaseOutput.success("新增成功");
+		int rows = this.hardwareResourceMapper.insertSelective(hardwareResource);
+		if (rows <= 0) {
+			throw new HardwareResourceException("修改IT资源失败");
 		}
-		return BaseOutput.failure("新增失败");
 	}
 
 	@Override
@@ -170,6 +170,20 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 		}
 		map.put("projectTotal", total);
 		return map;
+	}
+
+	@Override
+	public void updateHardwareResource(HardwareResource hardwareResource) throws HardwareResourceException {
+		Project project = this.projectMapper.selectByPrimaryKey(hardwareResource.getProjectId());
+		if (project == null) {
+			throw new HardwareResourceException("项目不存在");
+		}
+		hardwareResource.setProjectSerialNumber(project.getSerialNumber());
+		hardwareResource.setLastModifyDate(new Date());
+		int rows = this.hardwareResourceMapper.updateByPrimaryKeySelective(hardwareResource);
+		if (rows <= 0) {
+			throw new HardwareResourceException("修改IT资源失败");
+		}
 	}
 
 }

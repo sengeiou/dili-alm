@@ -24,13 +24,18 @@
 					<tr>
 						<td style="padding: 5px;"><input class="easyui-textbox" name="projectName" id="projectName" style="width: 100%"
 							data-options="label:'项目名称:', validType:'length[0,255]'" /></td>
-						<td style="padding: 5px;"><input class="easyui-combobox" name="applyState" id="applyState" style="width: 100%"
-							data-options="label:'状态:', validType:'length[0,10]',editable:false" /> <#comboProvider _id="applyState"
-								_provider='hardwareResourceApplyStateProvider' /></td>
+						<td style="padding: 5px;"><select class="easyui-combobox" name="applyStateShow" id="applyStateShow" style="width: 100%"
+							data-options="label:'状态:', validType:'length[0,10]',editable:false">
+								<option value=""></option>
+								<option value="[1]">申请中</option>
+								<option value="[2,3,4]">审批中</option>
+								<option value="[5]">实施中</option>
+								<option value="[6]">完成</option>
+						</select></td>
 					</tr>
 					<tr>
-						<td style="padding: 5px;"><input class="easyui-textbox" name="applicantId" id="applicantId" style="width: 100%;" panelWidth="auto"
-							panelHeight="auto" label="申请人:"
+						<td style="padding: 5px;"><input class="easyui-textbox" name="applicantId" id="applicantId" style="width: 100%;"
+							panelWidth="auto" panelHeight="auto" label="申请人:"
 							data-options="editable:false,
 									buttonText:'选择',
 									onClickButton:selectMember,onChange:_changeTextboxShowClear" /></td>
@@ -58,7 +63,8 @@
 			striped="true" toolbar="#toolbar" idField="id">
 			<thead>
 				<tr>
-					<th data-options="field:'serialNumber',width:'15%',order:'asc', align:'center', resizable:'true', fixed:'false',formatter:serialNumberFormatter">编号</th>
+					<th
+						data-options="field:'serialNumber',width:'15%',order:'asc', align:'center', resizable:'true', fixed:'false',formatter:serialNumberFormatter">编号</th>
 					<th data-options="field:'applicationDepartmentId',_provider:'depProvider',hidden:true"></th>
 					<th data-options="field:'applicantId',_provider:'memberProvider',hidden:true"></th>
 					<th data-options="field:'projectName',width:'15%', order:'asc', align:'center', resizable:'true', fixed:'false'">项目名称</th>

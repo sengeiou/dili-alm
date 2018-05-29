@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
@@ -211,7 +212,12 @@ public class HardwareResourceApplyController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "HardwareResourceApply", paramType = "form", value = "HardwareResourceApply的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String listPage(HardwareResourceApplyListPageQueryDto query) throws Exception {
+	public @ResponseBody String listPage(HardwareResourceApplyListPageQueryDto query,
+			@RequestParam(required = false) String applyStateShow) throws Exception {
+		if (StringUtils.isNotBlank(applyStateShow)) {
+			List<Integer> stateList = JSON.parseArray(applyStateShow, Integer.class);
+			query.setApplyStateList(stateList);
+		}
 		if (query.getSubmitBeginTime() != null) {
 			Calendar c = Calendar.getInstance();
 			c.setTime(query.getSubmitBeginTime());
