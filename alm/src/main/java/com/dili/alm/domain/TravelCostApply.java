@@ -14,7 +14,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2018-05-03 11:39:35.
+ * This file was generated on 2018-05-29 09:24:09.
  */
 @Table(name = "`travel_cost_apply`")
 public interface TravelCostApply extends IBaseDomain {
@@ -89,4 +89,18 @@ public interface TravelCostApply extends IBaseDomain {
     Date getSubmitDate();
 
     void setSubmitDate(Date submitDate);
+
+    @Column(name = "`creation_time`")
+    @FieldDef(label="创建时间")
+    @EditMode(editor = FieldEditor.Datetime, required = true)
+    Date getCreationTime();
+
+    void setCreationTime(Date creationTime);
+
+    @Column(name = "`modification_time`")
+    @FieldDef(label="修改时间")
+    @EditMode(editor = FieldEditor.Datetime, required = false)
+    Date getModificationTime();
+
+    void setModificationTime(Date modificationTime);
 }

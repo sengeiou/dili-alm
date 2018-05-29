@@ -107,6 +107,8 @@ public class TravelCostApplyController {
 			@ApiImplicitParam(name = "TravelCostApply", paramType = "form", value = "TravelCostApply的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(TravelCostApplyQueryDto apply) throws Exception {
+		apply.setSort("creationTime");
+		apply.setOrder("desc");
 		if (apply.getSubmitEndDate() != null) {
 			Calendar c = Calendar.getInstance();
 			c.setTime(apply.getSubmitEndDate());

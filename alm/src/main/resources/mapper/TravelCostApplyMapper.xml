@@ -15,13 +15,15 @@
     <result column="total_amount" jdbcType="BIGINT" property="totalAmount" />
     <result column="travel_day_amount" jdbcType="INTEGER" property="travelDayAmount" />
     <result column="submit_date" jdbcType="TIMESTAMP" property="submitDate" />
+    <result column="creation_time" jdbcType="TIMESTAMP" property="creationTime" />
+    <result column="modification_time" jdbcType="TIMESTAMP" property="modificationTime" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
       WARNING - @mbg.generated
     -->
     id, serial_number, project_id, applicant_id, root_departemnt_id, department_id, apply_state, 
-    total_amount, travel_day_amount, submit_date
+    total_amount, travel_day_amount, submit_date, creation_time, modification_time
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -64,6 +66,12 @@
       </if>
       <if test="submitDate != null">
         submit_date = #{submitDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="creationTime != null">
+        creation_time = #{creationTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modificationTime != null">
+        modification_time = #{modificationTime,jdbcType=TIMESTAMP},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
