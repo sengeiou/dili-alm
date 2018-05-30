@@ -13,14 +13,30 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2017-11-23 15:32:18.
+ * This file was generated on 2018-05-30 17:12:10.
  */
 @Table(name = "`sequence`")
 public interface Sequence extends IBaseDomain {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "`id`")
+    @FieldDef(label="id")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Long getId();
+
+    void setId(Long id);
+
     @Column(name = "`number`")
     @FieldDef(label="number")
-    @EditMode(editor = FieldEditor.Number, required = false)
+    @EditMode(editor = FieldEditor.Number, required = true)
     Integer getNumber();
 
     void setNumber(Integer number);
+
+    @Column(name = "`type`")
+    @FieldDef(label="type", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = true)
+    String getType();
+
+    void setType(String type);
 }
