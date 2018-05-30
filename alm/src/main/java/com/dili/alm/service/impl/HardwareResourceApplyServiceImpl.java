@@ -61,7 +61,6 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
@@ -218,11 +217,12 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 			apply.setApplyState(HardwareApplyState.OPERATION_MANAGER_APPROVING.getValue());
 		} else if (ApproveResult.FAILED.equals(result)) {
 			// 未通过审批退回到编辑状态让用户重新编辑
+			apply.setSubmitTime(null);
 			apply.setApplyState(HardwareApplyState.APPLING.getValue());
 		} else {
 			throw new IllegalArgumentException("未知的审批结果");
 		}
-		int rows = this.getActualDao().updateByPrimaryKeySelective(apply);
+		int rows = this.getActualDao().updateByPrimaryKey(apply);
 		if (rows <= 0) {
 			throw new HardwareResourceApplyException("更新申请状态失败");
 		}
@@ -323,7 +323,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 
 		// 判断状态
 		if (!apply.getApplyState().equals(HardwareApplyState.OPERATION_MANAGER_APPROVING.getValue())) {
-			throw new HardwareResourceApplyException("当前状态研发中心总经理不能审批");
+			throw new HardwareResourceApplyException("当前状态运维部经理不能审批");
 		}
 
 		// 检查是否是运维部经理
@@ -455,11 +455,12 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 			apply.setApplyState(HardwareApplyState.GENERAL_MANAGER_APPROVING.getValue());
 		} else if (ApproveResult.FAILED.equals(result)) {
 			// 未通过审批退回到编辑状态让用户重新编辑
+			apply.setSubmitTime(null);
 			apply.setApplyState(HardwareApplyState.APPLING.getValue());
 		} else {
 			throw new IllegalArgumentException("未知的审批结果");
 		}
-		int rows = this.getActualDao().updateByPrimaryKeySelective(apply);
+		int rows = this.getActualDao().updateByPrimaryKey(apply);
 		if (rows <= 0) {
 			throw new HardwareResourceApplyException("更新申请状态失败");
 		}
@@ -741,26 +742,10 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 			if (implementing) {
 				List<Long> executors = JSONObject.parseObject(apply.getExecutors(), new TypeReference<List<Long>>() {
 				});
-				for (int i = 0; i < executors.size(); i++) {
-					if (user.getId().equals(executors.get(i))) {
-						implementing = true;
-					} else {
-						implementing = false;
-					}
-				}
+				implementing = executors.contains(user.getId());
 			}
 
 			apply.aset("implementing", implementing);
-
-			// 完成或者失败
-			boolean onlyRead = apply.getApplyState().equals(HardwareApplyState.COMPLETED.getValue());
-			onlyRead = !onlyRead ? onlyRead : user.getId().equals(apply.getApplicantId());
-			boolean failed = apply.getApplyState().equals(HardwareApplyState.FAILED.getValue());
-			failed = !failed ? failed : user.getId().equals(apply.getApplicantId());
-
-			if (failed || onlyRead) {
-				apply.aset("readOnly", true);
-			}
 
 		} catch (HardwareResourceApplyException e) {
 			// TODO Auto-generated catch block

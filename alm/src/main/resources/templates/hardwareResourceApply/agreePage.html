@@ -127,14 +127,16 @@
 			<td class="table-title" style="width: 10%;">时间</td>
 			<td class="table-combo" style="padding: 0; width: 20%;">${item.operateTime!}</td>
 		</tr>
+		<%}%>
 	</table>
 	<form id="appov" action="" method="post" enctype="multipart/form-data">
+		<input type="hidden" value="${apply.id!}" name="id" />
 		<table class="table-box">
-			<%}%>
+			<%if(apply.applyState!=5){%>
 			<tr>
 				<th class="table-title">审&nbsp;批</th>
 			</tr>
-			<%if(apply.applyState == 4){%>
+			<%}%> <%if(apply.applyState == 4){%>
 			<tr>
 				<td><input class="easyui-combobox" style="width: 100%" id="operDepartmentUsers" name="operDepartmentUsers"
 					data-options="editable:false,label:'实施人员分配:',valueField: 'id',
@@ -144,12 +146,11 @@
 					multiple:true,
 					onChange:checkExecutorAmount" /></td>
 			</tr>
-			<%}%> <%if(apply.applyState== 2||apply.applyState== 3||apply.applyState== 4){%>
-			<tr>
-				<td><input class="easyui-textbox" name="appovDescription" id="appovDescription" style="width: 100%; height: 50px;"
-					data-options="label:'审批意见', validType:'length[0,255]',multiline:true" /></td>
-			</tr>
 			<%}%>
+			<tr>
+				<td><input class="easyui-textbox" name="description" id="description" style="width: 100%; height: 50px;"
+					data-options="label:'描述', validType:'length[0,255]',multiline:true" /></td>
+			</tr>
 		</table>
 	</form>
 	<div id="addConfig" class="easyui-dialog" title="添加配置要求" style="padding: 13px" closed="true"
@@ -256,22 +257,20 @@ function optionFormatter(value, row, index){
 
 function approve(){
 	 var id = $("#edit_applyId").val();
-	 <%if(apply.applyState == 4){%> var operDepartmentUsers = $("#operDepartmentUsers").combobox('getValue');<%}%>
-	 <%if(apply.applyState== 2||apply.applyState== 3||apply.applyState== 4){%>var appovDescription = $("#appovDescription").textbox('getValue');<%}%>
-		$.ajax({
+		$('#appov').form('submit',{
 										type : "POST",
 										url : submitUrl(),
-										data : {
-											id :id,
+										queryParams : {
 											isApproved:true
-											<%if(apply.applyState== 2||apply.applyState== 3||apply.applyState== 4){%>,description:appovDescription<%}%>
-											<%if(apply.applyState == 4){%>,executorsChk:operDepartmentUsers<%}%>
 										},
-										processData : true,
-										dataType : "json",
-										async : true,
+										onSubmit:function(){
+											if(!$('#appov').form('validate')){
+												return false;
+											}
+										},
 										success : function(data) {
-											if (data.code == "200") {
+											var data = $.parseJSON(data);
+											if (data.code == 200) {
 												$("#grid").datagrid("reload");
 												$('#win').dialog('close');
 											} else {
@@ -287,33 +286,31 @@ function approve(){
 
 
 function noAppov(){
-	 var id = $("#edit_applyId").val();
-	 <%if(apply.applyState == 4){%> var operDepartmentUsers = $("#operDepartmentUsers").combobox('getValue');<%}%>
-	 <%if(apply.applyState== 2||apply.applyState== 3||apply.applyState== 4){%>var appovDescription = $("#appovDescription").textbox('getValue');<%}%>
-		$.ajax({
-										type : "POST",
-										url : submitUrl(),
-										data : {
-											id :id,
-											isApproved:false
-											<%if(apply.applyState== 2||apply.applyState== 3||apply.applyState== 4){%>,description:appovDescription<%}%>
-											<%if(apply.applyState == 4){%>,executorsChk:operDepartmentUsers<%}%>
-										},
-										processData : true,
-										dataType : "json",
-										async : true,
-										success : function(data) {
-											if (data.code == "200") {
-												$("#grid").datagrid("reload");
-												$('#win').dialog('close');
-											} else {
-												$.messager.alert('错误', data.result);
-											}
-										},
-										error : function() {
-											$.messager.alert('错误', '远程访问失败');
+	var id = $("#edit_applyId").val();
+	$('#appov').form('submit',{
+									type : "POST",
+									url : submitUrl(),
+									queryParams : {
+										isApproved:false
+									},
+									onSubmit:function(){
+										if(!$('#appov').form('validate')){
+											return false;
 										}
-									});
+									},
+									success : function(data) {
+										var data = $.parseJSON(data);
+										if (data.code == 200) {
+											$("#grid").datagrid("reload");
+											$('#win').dialog('close');
+										} else {
+											$.messager.alert('错误', data.result);
+										}
+									},
+									error : function() {
+										$.messager.alert('错误', '远程访问失败');
+									}
+								});
 }
 
 function submitUrl(){

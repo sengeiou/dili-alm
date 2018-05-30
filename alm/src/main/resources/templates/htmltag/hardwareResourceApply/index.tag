@@ -60,14 +60,9 @@ function opptFormatter(value, row, index) {
 		returnStr = "<span> 实施  </span>";
 	}
 
-	if (row.readOnly) {
-		returnStr = "<span><a href='javascr:void(0)' onclick='show(" + row.id + ")'>查看</a></span>";
-	} else if (row.$_applyState == "6") {
-		returnStr = "<span> 查看  </span>";
-	} else if (row.$_applyState == "-1") {
-		returnStr = "<span> 查看  </span>";
+	if (row.$_applyState == 6 || row.$_applyState == -1) {
+		returnStr = "<span><a href='javascr:void(0)' onclick='showDetail(" + row.id + ")'>查看</a></span>";
 	}
-
 	return returnStr;
 }
 
@@ -287,70 +282,23 @@ function checkExecutorAmount(nval, oval) {
 
 // 实施窗口
 function implement(id) {
-	var selected = $("#grid").datagrid("getSelected");
-	if (id == null) {
-		if (null == selected) {
-			$.messager.alert('警告', '请选中一条数据');
-			return;
-		} else {
-			id = selected.id;
-
-		}
-	}
-	var rows = $("#grid").datagrid('getRows');
-
-	var length = rows.length;
-	var rowindex;
-	for (var i = 0; i < length; i++) {
-		if (rows[i]['id'] == id) {
-			rowindex = i;
-			selected = rows[rowindex];// 根据index获得其中一行。
-			break;
-		}
-	}
-
 	$('#win').dialog({
 				title : '资源申请详情',
 				width : 830,
 				height : 500,
-				href : '${contextPath!}/hardwareResourceApply/goApprove?id=' + selected.id,
+				href : '${contextPath!}/hardwareResourceApply/goApprove?id=' + id,
 				modal : true,
-				buttons : '#win-button3'
-			});
-
-}
-
-// 查看窗口
-function show(id) {
-	var selected = $("#grid").datagrid("getSelected");
-	if (id == null) {
-		if (null == selected) {
-			$.messager.alert('警告', '请选中一条数据');
-			return;
-		} else {
-			id = selected.id;
-
-		}
-	}
-	var rows = $("#grid").datagrid('getRows');
-
-	var length = rows.length;
-	var rowindex;
-	for (var i = 0; i < length; i++) {
-		if (rows[i]['id'] == id) {
-			rowindex = i;
-			selected = rows[rowindex];// 根据index获得其中一行。
-			break;
-		}
-	}
-
-	$('#win').dialog({
-				title : '资源申请详情',
-				width : 830,
-				height : 500,
-				href : '${contextPath!}/hardwareResourceApply/goApprove?id=' + selected.id,
-				modal : true,
-				buttons : '#win-button'
+				buttons : [{
+							text : '完成',
+							handler : function() {
+								approve();
+							}
+						}, {
+							text : '关闭',
+							handler : function() {
+								$('#win').dialog('close');
+							}
+						}]
 			});
 
 }

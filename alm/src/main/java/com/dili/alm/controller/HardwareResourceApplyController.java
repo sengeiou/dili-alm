@@ -95,16 +95,15 @@ public class HardwareResourceApplyController {
 	public String addView(ModelMap modelMap) {
 		@SuppressWarnings("rawtypes")
 		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
-		if (CollectionUtils.isEmpty(dataAuths)) {
-			return null;
+		if (!CollectionUtils.isEmpty(dataAuths)) {
+			List<Long> projectIds = new ArrayList<>();
+			dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
+			Example example = new Example(ProjectOnlineApply.class);
+			Example.Criteria criteria = example.createCriteria();
+			criteria.andIn("id", projectIds);
+			List<Project> projects = this.projectService.selectByExample(example);
+			modelMap.addAttribute("projects", projects);
 		}
-		List<Long> projectIds = new ArrayList<>();
-		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
-		Example example = new Example(ProjectOnlineApply.class);
-		Example.Criteria criteria = example.createCriteria();
-		criteria.andIn("id", projectIds);
-		List<Project> projects = this.projectService.selectByExample(example);
-		modelMap.addAttribute("projects", projects);
 
 		/** 查询 所有部门 ***/
 		List<Department> departments = this.deptRpc.list(new Department()).getData();
@@ -416,14 +415,14 @@ public class HardwareResourceApplyController {
 			@ApiImplicitParam(name = "id", paramType = "form", value = "HardwareResourceApply的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/operManagerApprove", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput operManagerApprove(Long id, boolean isApproved, String description,
-			String[] executorsChk) throws HardwareResourceApplyException {
+			String[] operDepartmentUsers) throws HardwareResourceApplyException {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
-		if (executorsChk == null) {
+		if (operDepartmentUsers == null) {
 			return BaseOutput.failure("还未分配");
 		}
 		Set<Long> executors = new HashSet<Long>();
-		for (int i = 0; i < executorsChk.length; i++) {
-			executors.add(Long.parseLong(executorsChk[i]));
+		for (int i = 0; i < operDepartmentUsers.length; i++) {
+			executors.add(Long.parseLong(operDepartmentUsers[i]));
 		}
 		hardwareResourceApplyService.operationManagerApprove(id, user.getId(), executors, description);
 		return BaseOutput.success("提交成功");
