@@ -36,9 +36,9 @@
 					<tr>
 						<td class="table-title">项目名称</td>
 						<td><select class="easyui-combobox" id="projectId" name="projectId" style="width: 90%; text-align: center;"
-							data-options="editable:false,onLoadSuccess:loadProject
-								,onChange:changeProject"> <%for(item in projects){%>
-								<option value="${item.id!}">${item.name!}</option> <%}%>
+							data-options="editable:false,onLoadSuccess:loadProject,required:true,onChange:changeProject,prompt:'--请选择--'">
+								<%if(projects!null != null){ for(item in projects){%>
+								<option value="${item.id!}">${item.name!}</option> <%} }%>
 						</select> <input type="hidden" id="projectName-a" name="projectName" /></td>
 						<td class="table-title">项目编号</td>
 						<td><input class="easyui-textbox" style="width: 90%; text-align: center;" id="projectSerialNumber" name="projectSerialNumber"
@@ -50,7 +50,7 @@
 					<tr>
 						<td class="table-title">申请部门</td>
 						<td><select class="easyui-combobox" id="applicationDepartmentId" name="applicationDepartmentId"
-							style="width: 90%; text-align: center;" data-options="editable:false"> <%for(item in departments){%>
+							style="width: 90%; text-align: center;" data-options="editable:false,prompt:'--请选择--'"> <%for(item in departments){%>
 								<option value="${item.id!}">${item.name!}</option> <%}%>
 						</select></td>
 						<td class="table-title">申请人</td>
@@ -142,5 +142,8 @@
 	</div>
 </div>
 <script type="text/javascript">
-	
+	$(function() {
+		$('.easyui-combobox').combobox('initValue', '');
+		$('.easyui-combobox').combobox('setText', '');
+	})
 </script>

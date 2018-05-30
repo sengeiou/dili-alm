@@ -174,6 +174,7 @@ function save() {
 					if (data.code == "200") {
 						cancel();
 						hardwareResourceShow();
+						$('#grid').datagrid('reload');
 					} else {
 						$.messager.alert('错误', data.result);
 					}

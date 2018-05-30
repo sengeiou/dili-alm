@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -84,7 +85,7 @@ public class HardwareResourceController {
 	@ApiOperation("修改HardwareResource")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "HardwareResource", paramType = "form", value = "HardwareResource的form信息", required = true, dataType = "string") })
-	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
+	@PostMapping("/update")
 	public @ResponseBody BaseOutput update(HardwareResource hardwareResource) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		if (userTicket == null) {

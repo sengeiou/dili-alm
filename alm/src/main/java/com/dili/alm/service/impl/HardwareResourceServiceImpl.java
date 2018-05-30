@@ -174,12 +174,6 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 
 	@Override
 	public void updateHardwareResource(HardwareResource hardwareResource) throws HardwareResourceException {
-		Project project = this.projectMapper.selectByPrimaryKey(hardwareResource.getProjectId());
-		if (project == null) {
-			throw new HardwareResourceException("项目不存在");
-		}
-		hardwareResource.setProjectSerialNumber(project.getSerialNumber());
-		hardwareResource.setLastModifyDate(new Date());
 		int rows = this.hardwareResourceMapper.updateByPrimaryKeySelective(hardwareResource);
 		if (rows <= 0) {
 			throw new HardwareResourceException("修改IT资源失败");
