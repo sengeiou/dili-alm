@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 
 import com.dili.alm.dao.SequenceMapper;
 import com.dili.alm.dao.SequenceMapper.SequenceUpdateDto;
+import com.dili.alm.domain.Sequence;
+import com.dili.ss.dto.DTOUtils;
 
 @Component
 public class HardwareApplyNumberGenerator implements NumberGenerator {
@@ -23,7 +25,15 @@ public class HardwareApplyNumberGenerator implements NumberGenerator {
 
 	@PostConstruct
 	private void init() {
-		number.set(sequenceMapper.getByType(HARDWARE_APPLY_NUMBER_GENERATOR_TYPE));
+		Integer serialNumber = sequenceMapper.getByType(HARDWARE_APPLY_NUMBER_GENERATOR_TYPE);
+		if (serialNumber == null) {
+			Sequence sequence = DTOUtils.newDTO(Sequence.class);
+			sequence.setType(HARDWARE_APPLY_NUMBER_GENERATOR_TYPE);
+			sequence.setNumber(0);
+			this.sequenceMapper.insertSelective(sequence);
+			serialNumber = 0;
+		}
+		number.set(serialNumber);
 	}
 
 	@PreDestroy
