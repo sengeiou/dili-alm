@@ -416,14 +416,6 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			throw new ProjectOnlineApplyException("申请上线日期不能小于当前日期");
 		}
 
-		// 判断市场在当前版本是否上过线
-		Example example = new Example(VersionMarketOnlineRecord.class);
-		example.createCriteria().andEqualTo("versionId", apply.getVersionId()).andIn("marketCode", apply.getMarkets());
-		int count = this.versionMaketMapper.selectCountByExample(example);
-		if (count > 0) {
-			throw new ProjectOnlineApplyException("该版本已在指定市场上线，不能重复上线");
-		}
-
 		int result = this.getActualDao().insertSelective(apply);
 		if (result <= 0) {
 			throw new ProjectOnlineApplyException("插入失败");
@@ -858,24 +850,6 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		rows = this.poorMapper.insertSelective(record);
 		if (rows <= 0) {
 			throw new ProjectOnlineApplyException("新增操作记录失败");
-		}
-		if (OperationResult.SUCCESS.equals(result)) {
-			// 插入上线记录表
-			ProjectOnlineApplyMarket poamQuery = DTOUtils.newDTO(ProjectOnlineApplyMarket.class);
-			poamQuery.setApplyId(apply.getId());
-			List<ProjectOnlineApplyMarket> poamList = this.applyMarketMapper.select(poamQuery);
-			if (CollectionUtils.isNotEmpty(poamList)) {
-				for (ProjectOnlineApplyMarket a : poamList) {
-					VersionMarketOnlineRecord vmor = DTOUtils.newDTO(VersionMarketOnlineRecord.class);
-					vmor.setMarketCode(a.getMarketCode());
-					vmor.setVersionId(apply.getVersionId());
-					try {
-						this.versionMaketMapper.insertSelective(vmor);
-					} catch (BadSqlGrammarException e) {
-						throw new ProjectOnlineApplyException("该版本已在相同市场上线，不能重复上线");
-					}
-				}
-			}
 		}
 		// 更新项目版本上线状态
 		ProjectVersion version = this.versionMapper.selectByPrimaryKey(apply.getVersionId());
