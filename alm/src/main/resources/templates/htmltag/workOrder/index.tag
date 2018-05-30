@@ -1,6 +1,26 @@
 var userId = '${user.id!}';
 userId = parseInt(userId);
 
+function serialNumberFormatter(value, row, index) {
+	return '<a href="javascript:void(0);" onclick="detail(' + row.id + ');">' + value + '</a>';
+}
+
+function detail(id) {
+	$('#win').dialog({
+				title : '工单详情',
+				width : 800,
+				height : 540,
+				href : '${contextPath!}/workOrder/detail?id=' + id,
+				modal : true,
+				buttons : [{
+							text : '返回',
+							handler : function() {
+								$('#win').dialog('close');
+							}
+						}]
+			});
+}
+
 function removeTreeAdminUser(node, data) {
 	var me = $(this);
 	$(data).each(function(index, item) {
@@ -46,12 +66,29 @@ function operationFormatter(value, row, index) {
 		}
 	} else if (row.$_workOrderState == 4) {
 		if (row.$_executorId == userId) {
-			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="close(' + row.id + ');">关闭</a>';
+			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="closeWorkOrder(' + row.id + ');">关闭</a>';
 		} else {
 			content += '<span style="padding:0px 2px;">关闭</a>';
 		}
 	}
 	return content;
+}
+
+function closeWorkOrder(id) {
+	$.messager.confirm('提示', '工单关闭表示你确认该工单已经关闭，确认关闭吗？', function(f) {
+				if (!f) {
+					return false;
+				}
+				$.post('${contextPath!}/workOrder/close', {
+							id : id
+						}, function(res) {
+							if (res.success) {
+								updateGridRow(res.data);
+							} else {
+								$.messager.alert('提示', res.result);
+							}
+						});
+			});
 }
 
 function validateForm() {
@@ -83,7 +120,7 @@ function updateGridRow(row) {
 					row : row
 				});
 	} else {
-		$('#grid').datagrid('appendRow', obj.data);
+		$('#grid').datagrid('appendRow', row);
 	}
 	$('#grid').datagrid('acceptChanges');
 }
@@ -103,7 +140,7 @@ function openInsert() {
 								$('#editForm').form('submit', {
 											url : '${contextPath!}/workOrder/saveOrUpdate',
 											onSubmit : function() {
-												validateForm();
+												return validateForm();
 											},
 											success : function(data) {
 												var obj = $.parseJSON(data);
@@ -129,7 +166,7 @@ function openInsert() {
 								$('#editForm').form('submit', {
 											url : '${contextPath!}/workOrder/saveAndSubmit',
 											onSubmit : function() {
-												validateForm();
+												return validateForm();
 											},
 											success : function(data) {
 												var obj = $.parseJSON(data);
@@ -282,18 +319,9 @@ function solve(id) {
 								var data = $("#editForm").serializeArray();
 								$('#editForm').form('submit', {
 											url : '${contextPath!}/workOrder/solve',
-											queryParams : {
-												result : result
-											},
 											onSubmit : function() {
-												if (result == 1 && !$(this).form('validate')) {
+												if (!$(this).form('validate')) {
 													return false;
-												}
-												var executorId = $('#executorId').combobox('getValue');
-												if (isNaN(executorId)) {
-													$.messager.alert('提示', '执行人不存在，请重新选择！', null, function() {
-																$('#executorId').combobox('clear');
-															});
 												}
 											},
 											success : function(data) {

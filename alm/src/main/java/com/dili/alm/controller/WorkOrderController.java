@@ -1,23 +1,5 @@
 package com.dili.alm.controller;
 
-import com.dili.alm.component.NumberGenerator;
-import com.dili.alm.domain.Files;
-import com.dili.alm.domain.OperationResult;
-import com.dili.alm.domain.WorkOrder;
-import com.dili.alm.domain.dto.WorkOrderUpdateDto;
-import com.dili.alm.exceptions.WorkOrderException;
-import com.dili.alm.service.FilesService;
-import com.dili.alm.service.WorkOrderService;
-import com.dili.alm.service.impl.WorkOrderServiceImpl;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.sysadmin.sdk.domain.UserTicket;
-import com.dili.sysadmin.sdk.session.SessionContext;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +18,24 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.dili.alm.component.NumberGenerator;
+import com.dili.alm.domain.Files;
+import com.dili.alm.domain.OperationResult;
+import com.dili.alm.domain.WorkOrder;
+import com.dili.alm.domain.dto.WorkOrderUpdateDto;
+import com.dili.alm.exceptions.WorkOrderException;
+import com.dili.alm.service.FilesService;
+import com.dili.alm.service.WorkOrderService;
+import com.dili.alm.service.impl.WorkOrderServiceImpl;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.sysadmin.sdk.domain.UserTicket;
+import com.dili.sysadmin.sdk.session.SessionContext;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2018-05-23 11:51:37.
  */
@@ -51,6 +51,19 @@ public class WorkOrderController {
 	private NumberGenerator numberGenerator;
 	@Autowired
 	private FilesService filesService;
+
+	@GetMapping("/detail")
+	public String deital(@RequestParam Long id, ModelMap modelMap) {
+		WorkOrder workOrder = this.workOrderService.getOperatinoRecordsViewModel(id);
+		try {
+			modelMap.addAttribute("opRecords", workOrder.aget("opRecords")).addAttribute("model",
+					WorkOrderServiceImpl.parseViewModel(workOrder));
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			return null;
+		}
+		return "workOrder/detail";
+	}
 
 	@ApiOperation("跳转到WorkOrder页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
@@ -159,6 +172,32 @@ public class WorkOrderController {
 			return null;
 		}
 		return "workOrder/solve";
+	}
+
+	@ResponseBody
+	@PostMapping("/solve")
+	public BaseOutput<Object> solve(@RequestParam Long id, @RequestParam Integer taskHours,
+			@RequestParam(required = false, defaultValue = "0") Integer overtimeHours,
+			@RequestParam String workContent) {
+		try {
+			this.workOrderService.solve(id, taskHours, overtimeHours, workContent);
+			Map<Object, Object> viewModel = this.workOrderService.getViewModel(id);
+			return BaseOutput.success().setData(viewModel);
+		} catch (WorkOrderException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+
+	@ResponseBody
+	@PostMapping("/close")
+	public BaseOutput<Object> close(@RequestParam Long id) {
+		try {
+			this.workOrderService.close(id);
+			Map<Object, Object> viewModel = this.workOrderService.getViewModel(id);
+			return BaseOutput.success().setData(viewModel);
+		} catch (WorkOrderException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
 	}
 
 	@ApiOperation(value = "查询WorkOrder", notes = "查询WorkOrder，返回列表信息")
