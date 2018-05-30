@@ -117,7 +117,7 @@ public class FilesController {
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput delete(Long id) {
 		Files files = this.filesService.get(id);
-		if(files!=null){
+		if (files != null) {
 			filesService.delete(id);
 		}
 		return BaseOutput.success("删除成功").setData(files.getName());
@@ -141,7 +141,7 @@ public class FilesController {
 	}
 
 	@RequestMapping("/download")
-	public String downLoad(@RequestParam Long id, HttpServletRequest request, HttpServletResponse response) {
+	public void downLoad(@RequestParam Long id, HttpServletRequest request, HttpServletResponse response) {
 		String filePath = FilesService.MILESTONES_PATH_PREFIX + "/";
 		Files files = this.filesService.get(id);
 		File file = new File(filePath + files.getName());
@@ -182,6 +182,5 @@ public class FilesController {
 				}
 			}
 		}
-		return null;
 	}
 }

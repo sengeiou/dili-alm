@@ -61,7 +61,7 @@
 			data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
 			<thead>
 				<tr>
-					<th data-options="field:'serialNumber',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">工单编号</th>
+					<th data-options="field:'serialNumber',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:serialNumberFormatter">工单编号</th>
 					<th data-options="field:'workOrderName', align:'center', resizable:'true', fixed:'false'">工单名称</th>
 					<th data-options="field:'priority', _provider:'workOrderPriorityProvider', align:'center', resizable:'true', fixed:'false'">优先级</th>
 					<th data-options="field:'workOrderType', _provider:'workOrderTypeProvider', align:'center', resizable:'true', fixed:'false'">工单类型</th>
