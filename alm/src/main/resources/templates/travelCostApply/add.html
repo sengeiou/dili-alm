@@ -24,9 +24,9 @@
 				data-options="label:'所属中心:',readonly:true" /></td>
 		</tr>
 	</table>
-	<table class="easyui-datagrid" style="width: 100%; height: 300px" title="出差人员列表" id="travelCostGrid" fitColumns="true" rownumbers="true"
+	<table class="easyui-datagrid" style="width: 100%; height: 300px" title="差旅成本明细列表" id="travelCostGrid" fitColumns="true" rownumbers="true"
 		remoteSort="false" loadMsg="数据加载中..." singleSelect="true" align="center" toolbar="#travelCostGridToolbar" idField="id"
-		data-options="onEndEdit:onTravelCostGridEndEdit">
+		data-options="onBeginEdit:onCostItemGridBeginEdit,onDblClickRow:editCostItem,onEndEdit:onTravelCostGridEndEdit">
 		<thead>
 			<tr>
 				<th
@@ -85,6 +85,7 @@
 								}">${item.value!}</th>
 				<%}%>
 				<th data-options="field:'totalAmount',    align:'center', resizable:'true', fixed:'false'">合计</th>
+				<th data-options="field:'op', hidden:true, width:100, formatter:opFormatter, align:'center', resizable:'true', fixed:'false'">操作</th>
 			</tr>
 		</thead>
 	</table>

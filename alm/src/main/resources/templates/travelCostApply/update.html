@@ -16,9 +16,9 @@
 				data-options="label:'所属中心:',readonly:true" /></td>
 		</tr>
 	</table>
-	<table class="easyui-datagrid" title="TravelCostApply列表" style="height: 300px" id="travelCostGrid" fitColumns="true" rownumbers="true" remoteSort="false"
-		loadMsg="数据加载中..." singleSelect="true" align="center" fit="false" striped="true" toolbar="#travelCostGridToolbar" idField="id"
-		data-options="onEndEdit:onTravelCostGridEndEdit">
+	<table class="easyui-datagrid" title="差旅成本明细列表" style="height: 300px" id="travelCostGrid" fitColumns="true" rownumbers="true"
+		remoteSort="false" loadMsg="数据加载中..." singleSelect="true" align="center" fit="false" striped="true" toolbar="#travelCostGridToolbar"
+		idField="id" data-options="onBeginEdit:onCostItemGridBeginEdit,onDblClickRow:editCostItem,onEndEdit:onTravelCostGridEndEdit">
 		<thead>
 			<tr>
 				<th
@@ -47,8 +47,7 @@
 										}
 									}
 								}">出发地</th>
-				<th
-					data-options="field:'setOutPlaceText', hidden:true"></th>
+				<th data-options="field:'setOutPlaceText', hidden:true"></th>
 				<th
 					data-options="field:'destinationPlace', width:95,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',
 								formatter:function(index,row,value){
@@ -67,9 +66,7 @@
 										}
 									}
 								}">到达地</th>
-								<th
-					data-options="field:'destinationPlaceText', hidden:true"></th>
-				<%for(item in costItems){%>
+				<th data-options="field:'destinationPlaceText', hidden:true"></th> <%for(item in costItems){%>
 				<th
 					data-options="field:'${item.key!}',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',
 								editor : {
@@ -81,6 +78,7 @@
 								}">${item.value!}</th>
 				<%}%>
 				<th data-options="field:'totalAmount',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">合计</th>
+				<th data-options="field:'op', hidden:true, width:100, formatter:opFormatter, align:'center', resizable:'true', fixed:'false'">操作</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -89,9 +87,9 @@
 				<td>${cost.travelDayAmount!}</td>
 				<td>${cost.setOutPlace!}</td>
 				<td>${cost.setOutPlaceText!}</td>
-				<td>${cost.destinationPlace!}</td> 
-				<td>${cost.destinationPlaceText!}</td>
-				<%for(item in costItems){%> <%for(detail in cost.travelCostDetail){%> <%if(item.key == detail.costName){%>
+				<td>${cost.destinationPlace!}</td>
+				<td>${cost.destinationPlaceText!}</td> <%for(item in costItems){%> <%for(detail in cost.travelCostDetail){%> <%if(item.key ==
+				detail.costName){%>
 				<td>${detail.costAmount!/100}</td> <%}%> <%}%> <%}%>
 				<td>${cost.totalAmount!/100}</td>
 			</tr>
@@ -99,9 +97,9 @@
 
 		</tbody>
 	</table>
-	<div style="padding-top:10px;text-align: right">
+	<div style="padding-top: 10px; text-align: right">
 		<input class="easyui-numberbox" type="text" id="totalAmount" name="totalAmount" value="${apply.totalAmount!/100}"
-			   data-options="
+			data-options="
 				label:'总计：',
 				required:true,
 				precision:2,

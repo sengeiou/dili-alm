@@ -1,5 +1,6 @@
 var userId = '${user.id!}';
 userId = parseInt(userId);
+var costItemGridEditIndex = undefined;
 
 function serialNumberFormatter(value, row, index) {
 	return '<a href="javascript:void(0);" onclick="detail(' + row.id + ');">' + value + '</a>';
@@ -22,6 +23,25 @@ function addCostItem() {
 	$('#travelCostGrid').datagrid('appendRow', {});
 	var index = $('#travelCostGrid').datagrid('getRows').length - 1;
 	$('#travelCostGrid').datagrid('selectRow', index);
+	$('#travelCostGrid').datagrid('beginEdit', index);
+	$('#travelCostGrid').datagrid('showColumn', 'op');
+	$('#saveBtn' + index).show();
+	$('#cancelBtn' + index).show();
+}
+
+function editCostItem(index, row) {
+	if (!endPositionEditing($('#travelCostGrid'))) {
+		return false;
+	}
+	if (!index) {
+		var selected = $('#travelCostGrid').datagrid('getSelected');
+		if (!selected) {
+			$.messager.alert('提示', '请选择一条数据');
+			return false;
+		}
+		var index = $('#travelCostGrid').datagrid('getRowIndex');
+	}
+	$('#travelCostGrid').datagrid('showColumn', 'op');
 	$('#travelCostGrid').datagrid('beginEdit', index);
 }
 
@@ -88,8 +108,20 @@ function review(id) {
 	$('#dlg').dialog('center');
 }
 
+function onCostItemGridBeginEdit(index, row) {
+	costItemGridEditIndex = index;
+}
+
 function removeCostItem() {
-	$('#travelCostGrid').datagrid('deleteRow', $('#travelCostGrid').datagrid('getRows').length - 1);
+	var index = getSelectedRowIndex($('#travelCostGrid'));
+	if (index < 0) {
+		return;
+	}
+	if (index == costItemGridEditIndex) {
+		costItemGridEditIndex = undefined;
+	}
+	$('#travelCostGrid').datagrid('deleteRow', index);
+	$('#travelCostGrid').datagrid('acceptChanges');
 }
 
 function selectArea(field) {
@@ -332,10 +364,16 @@ $.parser.onComplete = function() {
 }
 
 function endPositionEditing(grid) {
-	var selected = grid.datagrid('getSelected');
-	var selectedIndex = grid.datagrid('getRowIndex', selected);
-	if (grid.datagrid('validateRow', selectedIndex)) {
-		grid.datagrid('endEdit', selectedIndex);
+	if (costItemGridEditIndex == undefined) {
+		return true;
+	}
+	if (grid.datagrid('validateRow', costItemGridEditIndex)) {
+		grid.datagrid('endEdit', costItemGridEditIndex);
+		grid.datagrid('acceptChanges');
+		costItemGridEditIndex = undefined;
+		grid.datagrid('hideColumn', 'op');
+		$('#saveBtn' + costItemGridEditIndex).hide();
+		$('#cancelBtn' + costItemGridEditIndex).hide();
 		return true;
 	} else {
 		return false;
@@ -343,7 +381,7 @@ function endPositionEditing(grid) {
 }
 
 function onTravelCostGridEndEdit(index, row, changes) {
-	var editor = $('#travelCostGrid').datagrid('getEditor', {
+	var editor = $(this).datagrid('getEditor', {
 				index : index,
 				field : 'setOutPlace'
 			}).target;
@@ -379,6 +417,33 @@ function onTravelCostGridEndEdit(index, row, changes) {
 	$('#totalAmount').numberbox('setValue', totalAmount);
 }
 
+function opFormatter(value, row, index) {
+	var content = '<input id="saveBtn' + index + '" style="display:none;margin:0px 3px;" type="button" value="保存" onclick="saveButtonClick();"/>';
+	content += '<input id="cancelBtn' + index + '" style="display:none;margin:0px 3px;" type="button" value="取消" onclick="cancelButtonClick();"/>';
+	return content;
+}
+
+function saveButtonClick() {
+	endPositionEditing($('#travelCostGrid'));
+}
+
+function cancelButtonClick() {
+	cancelPositionEdit($('#travelCostGrid'));
+}
+
+function getSelectedRowIndex(grid) {
+	return grid.datagrid('getRowIndex', grid.datagrid('getSelected'));
+}
+
+function cancelPositionEdit(grid) {
+	grid.datagrid('cancelEdit', costItemGridEditIndex);
+	grid.datagrid('rejectChanges');
+	grid.datagrid('hideColumn', 'op');
+	$('#saveBtn' + costItemGridEditIndex).show();
+	$('#cancelBtn' + costItemGridEditIndex).show();
+	costItemGridEditIndex = undefined;
+}
+
 // 全局按键事件
 $.extend($.fn.datagrid.methods, {
 			keyCtr : function(jq) {
@@ -387,55 +452,8 @@ $.extend($.fn.datagrid.methods, {
 							var gridId = this.id;
 							grid.datagrid('getPanel').panel('panel').attr('tabindex', 1).bind('keydown', function(e) {
 										switch (e.keyCode) {
-											case 46 :
-												if (positionEditIndex) {
-													return;
-												}
-												var selected = grid.datagrid("getSelected");
-												if (selected && selected != null) {
-													deletePosition();
-												}
-												break;
 											case 13 :
 												endPositionEditing(grid);
-												break;
-											case 27 :
-												cancelPositionEdit(grid);
-												break;
-											case 38 :
-												if (!endPositionEditing(grid)) {
-													return;
-												}
-												var selected = grid.datagrid("getSelected");
-												if (!selected) {
-													return;
-												}
-												var selectedIndex = grid.datagrid('getRowIndex', selected);
-												if (selectedIndex <= 0) {
-													return;
-												}
-												endEditing(grid);
-												grid.datagrid('selectRow', --selectedIndex);
-												break;
-											case 40 :
-												if (!endPositionEditing()) {
-													return;
-												}
-												if (grid.datagrid('getRows').length <= 0) {
-													openInsertPosition();
-													return;
-												}
-												var selected = grid.datagrid("getSelected");
-												if (!selected) {
-													grid.datagrid('selectRow', 0);
-													return;
-												}
-												var selectedIndex = grid.datagrid('getRowIndex', selected);
-												if (selectedIndex == grid.datagrid('getRows').length - 1) {
-													openInsertPosition();
-												} else {
-													grid.datagrid('selectRow', ++selectedIndex);
-												}
 												break;
 										}
 									});

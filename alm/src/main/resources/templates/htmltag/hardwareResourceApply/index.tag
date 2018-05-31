@@ -78,9 +78,6 @@ function envFormatter(v, r, i) {
 // 初始化
 function loadProject() {
 	var data = $('#projectId').combobox('getValue');
-	if (data) {
-		changeProjectSetValue(data);
-	}
 }
 // 项目框有变
 function changeProject() {
