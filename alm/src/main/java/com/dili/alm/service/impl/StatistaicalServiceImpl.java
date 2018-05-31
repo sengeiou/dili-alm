@@ -170,8 +170,8 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	/*** 查询工时相关services****by******JING***BEGIN ****/
 
 	@Override
-	public List<TaskByUsersDto> listTaskHoursByUser(String startTime, String endTime, List<Long> uids,
-			List<Long> dids) {
+	public List<TaskByUsersDto> listTaskHoursByUser(String startTime, String endTime, List<Long> uids, List<Long> dids,
+			String order, String sort) {
 		if (startTime == null) {
 			startTime = SELECT_HOURS_BY_USER_START_DATE;
 		} else {
@@ -183,7 +183,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 			endTime += "";
 		}
 
-		List<TaskByUsersDto> list = taskMapper.selectTaskHourByUser(startTime, endTime, dids, uids);
+		List<TaskByUsersDto> list = taskMapper.selectTaskHourByUser(startTime, endTime, dids, uids, order, sort);
 		list.add(this.getTotal(startTime, endTime, uids, dids));
 		return list;
 	}

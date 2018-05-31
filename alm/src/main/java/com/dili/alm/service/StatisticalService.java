@@ -34,9 +34,11 @@ public interface StatisticalService {
 	 * @param endTime
 	 * @param userId
 	 * @param departmentId
+	 * @param order TODO
+	 * @param sort TODO
 	 * @return
 	 */
-	List<TaskByUsersDto> listTaskHoursByUser(String startTime,String endTime,List<Long> userId,List<Long> departmentId);
+	List<TaskByUsersDto> listTaskHoursByUser(String startTime,String endTime,List<Long> userId,List<Long> departmentId, String order, String sort);
 	/**
 	 * 项目工时-查询项目以及总工时，既项目工时表头
 	 * @param startTime

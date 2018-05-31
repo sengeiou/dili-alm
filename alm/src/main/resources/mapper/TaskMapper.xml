@@ -434,7 +434,19 @@
 			</foreach>
 		</if>
 		and ut.id != 1
-		GROUP BY ut.id ORDER BY ut.id DESC
+		GROUP BY ut.id ORDER BY
+		<choose>
+			<when test="sort != null and sort != ''">
+				${sort}
+				<choose>
+					<when test="order != null and order != ''">
+						${order}
+					</when>
+					<otherwise>DESC</otherwise>
+				</choose>
+			</when>
+			<otherwise>ut.id DESC</otherwise>
+		</choose>
 	</select>
 	<!-- 人员总工时查询 -->
 	<select id="selectTotalTaskHourByUser"
@@ -745,7 +757,7 @@
 			) t#{index} ON u.id
 			= t#{index}.user_id
 		</foreach>
-		WHERE 1 =1 
+		WHERE 1 =1
 		<if test="userIds != null and userIds.size > 0">
 			AND u.id IN
 			<foreach collection="userIds" open="(" separator=","

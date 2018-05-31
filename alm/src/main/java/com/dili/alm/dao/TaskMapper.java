@@ -45,9 +45,17 @@ public interface TaskMapper extends MyMapper<Task> {
 	List<TaskDetails> selectOtherTaskDetail(@Param("selectOwner") Long selectOwner,
 			@Param("selectDate") String selectDate);
 
-	/*** 数据统计相关 begin ***/
+	/***
+	 * 数据统计相关 begin
+	 * 
+	 * @param order
+	 *            TODO
+	 * @param srot
+	 *            TODO
+	 ***/
 	List<TaskByUsersDto> selectTaskHourByUser(@Param("beginTime") String beginTime, @Param("endTime") String endTime,
-			@Param("departmentIds") List<Long> dids, @Param("uIds") List<Long> uids);
+			@Param("departmentIds") List<Long> dids, @Param("uIds") List<Long> uids, @Param("order") String order,
+			@Param("sort") String sort);
 
 	TaskByUsersDto selectTotalTaskHourByUser(@Param("beginTime") String beginTime, @Param("endTime") String endTime,
 			@Param("departmentIds") List<Long> dids, @Param("uIds") List<Long> uids);

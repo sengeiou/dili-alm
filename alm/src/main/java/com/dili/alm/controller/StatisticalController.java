@@ -24,6 +24,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONArray;
@@ -126,12 +127,18 @@ public class StatisticalController {
 
 	}
 
-	/*** 查询工时相关services****by******JING***BEGIN ****/
+	/***
+	 * 查询工时相关services****by******JING***BEGIN
+	 * 
+	 * @param order
+	 * @param sort
+	 ****/
 
 	@ApiOperation(value = "查询时间段内员工工时", notes = "查询返回easyui信息")
 	@RequestMapping(value = "/taskHoursByUser", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String taskHoursByUser(String startTime, String endTime, String[] userId,
-			String[] departmentId) throws Exception {
+	public @ResponseBody List<TaskByUsersDto> taskHoursByUser(String startTime, String endTime, String[] userId,
+			String[] departmentId, @RequestParam(required = false) String order,
+			@RequestParam(required = false) String sort) throws Exception {
 
 		List<Long> userIds = null;
 		List<Long> departmentIds = null;
@@ -149,8 +156,10 @@ public class StatisticalController {
 			}
 		}
 		List<TaskByUsersDto> taskByUserDtoList = statisticalService.listTaskHoursByUser(startTime, endTime, userIds,
-				departmentIds);
-		return new EasyuiPageOutput(taskByUserDtoList.size(), taskByUserDtoList).toString();
+				departmentIds, order, sort);
+		// return new EasyuiPageOutput(taskByUserDtoList.size(),
+		// taskByUserDtoList).toString();
+		return taskByUserDtoList;
 
 	}
 
