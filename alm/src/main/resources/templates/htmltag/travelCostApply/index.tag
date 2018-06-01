@@ -208,6 +208,8 @@ function postData(_url) {
 						continue;
 					} else if (prop == 'destinationPlaceText') {
 						continue;
+					} else if (prop == 'op') {
+						continue;
 					} else {
 						travelCostDetails.push({
 									costName : prop,
