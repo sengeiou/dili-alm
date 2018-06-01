@@ -7,6 +7,7 @@ import org.beetl.core.GroupTemplate;
 import org.beetl.core.resource.StringTemplateResourceLoader;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -23,6 +24,7 @@ import tk.mybatis.spring.annotation.MapperScan;
 /**
  * 由MyBatis Generator工具自动生成
  */
+@ServletComponentScan
 @SpringBootApplication
 @EnableTransactionManagement
 @MapperScan(basePackages = { "com.dili.alm.dao", "com.dili.ss.dao", "com.dili.ss.quartz.dao" })

@@ -6,16 +6,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.dili.alm.dao.SequenceMapper;
-import com.dili.alm.dao.SequenceMapper.SequenceUpdateDto;
 import com.dili.alm.domain.Sequence;
 import com.dili.ss.dto.DTOUtils;
+
+import tk.mybatis.mapper.entity.Example;
 
 @Component
 public class WorkOrderNumberGenerator implements NumberGenerator {
@@ -26,22 +24,26 @@ public class WorkOrderNumberGenerator implements NumberGenerator {
 	private SequenceMapper sequenceMapper;
 	private AtomicInteger number = new AtomicInteger(0);
 
-	@PostConstruct
-	private void init() {
-		Integer serialNumber = sequenceMapper.getByType(WORK_ORDER_NUMBER_GENERATOR_TYPE);
-		if (serialNumber == null) {
-			Sequence sequence = DTOUtils.newDTO(Sequence.class);
-			sequence.setType(WORK_ORDER_NUMBER_GENERATOR_TYPE);
-			sequence.setNumber(0);
-			this.sequenceMapper.insertSelective(sequence);
-			serialNumber = 0;
+	@Override
+	public void init() {
+		Sequence sequenceQuery = DTOUtils.newDTO(Sequence.class);
+		sequenceQuery.setType(WORK_ORDER_NUMBER_GENERATOR_TYPE);
+		Sequence sequence = sequenceMapper.selectOne(sequenceQuery);
+		if (sequence == null) {
+			this.sequenceMapper.insertSelective(sequenceQuery);
+			number.set(1);
+			return;
 		}
-		number.set(serialNumber);
+		number.set(sequence.getNumber());
 	}
 
-	@PreDestroy
-	private void destory() {
-		sequenceMapper.updateByType(new SequenceUpdateDto(this.number.get(), WORK_ORDER_NUMBER_GENERATOR_TYPE));
+	@Override
+	public void persist() {
+		Sequence record = DTOUtils.newDTO(Sequence.class);
+		record.setNumber(this.number.get());
+		Example example = new Example(Sequence.class);
+		example.createCriteria().andEqualTo("type", WORK_ORDER_NUMBER_GENERATOR_TYPE);
+		sequenceMapper.updateByExampleSelective(record, example);
 	}
 
 	@Override
