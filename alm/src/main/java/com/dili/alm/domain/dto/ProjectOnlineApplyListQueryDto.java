@@ -1,4 +1,4 @@
-package com.dili.alm.controller;
+package com.dili.alm.domain.dto;
 
 import java.util.Date;
 

@@ -50,7 +50,8 @@
 					<tr>
 						<td class="table-title">申请部门</td>
 						<td><select class="easyui-combobox" id="applicationDepartmentId" name="applicationDepartmentId"
-							style="width: 90%; text-align: center;" data-options="required:true,editable:false,prompt:'--请选择--'"> <%for(item in departments){%>
+							style="width: 90%; text-align: center;" data-options="required:true,editable:false,prompt:'--请选择--'"> <%for(item in
+								departments){%>
 								<option value="${item.id!}">${item.name!}</option> <%}%>
 						</select></td>
 						<td class="table-title">申请人</td>
@@ -96,7 +97,7 @@
 					</tr>
 					<tr>
 						<td class="table-combo" colspan="6"><input class="easyui-textbox" name="otherDescription" required="required"
-							id="otherDescription" style="width: 98%; height: 50px;" data-options="label:'', validType:'length[0,255]'" /></td>
+							id="otherDescription" style="width: 98%; height: 50px;" data-options="multiline:true, validType:'length[0,255]'" /></td>
 					</tr>
 				</table>
 			</div>

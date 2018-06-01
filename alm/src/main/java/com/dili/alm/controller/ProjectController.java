@@ -26,20 +26,17 @@ import com.dili.alm.cache.AlmCache;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectState;
-import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectQueryDto;
 import com.dili.alm.domain.dto.UploadProjectFileDto;
 import com.dili.alm.exceptions.ProjectException;
 import com.dili.alm.provider.ProjectProvider;
-import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.TeamService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
-import com.dili.sysadmin.sdk.redis.DataAuthRedis;
 import com.dili.sysadmin.sdk.session.SessionContext;
 
 import io.swagger.annotations.Api;
@@ -62,8 +59,6 @@ public class ProjectController {
 
 	@Autowired
 	ProjectService projectService;
-	@Autowired
-	private UserRpc userRPC;
 	@Autowired
 	private TeamService teamService;
 	@Autowired
