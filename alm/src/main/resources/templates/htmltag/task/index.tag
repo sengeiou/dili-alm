@@ -293,6 +293,7 @@ function openDetail(selected) {
 	$("#dialog_toolbar_detail").hide();
 
 	/** *****加载显示数据 begin********* */
+	$('#_form').form('clear');
 	$('#_form').form({
 				editable : true
 			});
