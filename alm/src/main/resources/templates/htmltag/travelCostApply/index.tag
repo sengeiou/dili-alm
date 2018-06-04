@@ -10,7 +10,14 @@ function detail(id) {
 	$('#dlg').dialog({
 				href : '${contextPath!}/travelCostApply/detail?id=' + id,
 				height : 520,
-				width : 800
+				width : 800,
+				buttons : [{
+							text : '返回',
+							handler : function() {
+								$('#dlg').dialog('close');
+							}
+						}]
+
 			});
 	$('#dlg').dialog('open');
 	$('#dlg').dialog('center');
@@ -220,7 +227,7 @@ function postData(_url) {
 				travelCost.travelCostDetail = travelCostDetails;
 				travelCosts.push(travelCost);
 			});
-	_formData.totalAmount = math.chain(_formData.totalAmount).multiply(100).done();
+	_formData.totalAmount = Decimal.mul(_formData.totalAmount, 100);
 	_formData.travelCost = travelCosts;
 	$.ajax({
 				type : "POST",
@@ -407,14 +414,17 @@ function onTravelCostGridEndEdit(index, row, changes) {
 		if (prop.indexOf('destinationPlace') >= 0) {
 			continue;
 		}
+		if (prop == 'op') {
+			continue;
+		}
 		if (row[prop]) {
-			row.totalAmount = math.chain(row.totalAmount).add(parseFloat(row[prop]));
+			row.totalAmount = Decimal.add(row.totalAmount, row[prop]);
 		}
 	}
 	var rows = $('#travelCostGrid').datagrid('getData').rows;
 	var totalAmount = 0;
 	$(rows).each(function(index, item) {
-				totalAmount = math.chain(totalAmount).add(parseFloat(item.totalAmount));
+				totalAmount = Decimal.add(totalAmount, item.totalAmount);
 			});
 	$('#totalAmount').numberbox('setValue', totalAmount);
 }
