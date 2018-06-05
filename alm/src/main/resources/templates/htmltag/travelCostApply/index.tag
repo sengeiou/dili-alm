@@ -67,7 +67,7 @@ function optFormatter(value, row, index) {
 		if (dataAuth.reviewTravelCostApply && userId != 1) {
 			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="review(' + row.id + ');">审核</a>';
 		} else {
-			content += '<span style="padding:0px 2px;">编辑</span>';
+			content += '<span style="padding:0px 2px;">审核</span>';
 		}
 	}
 	return content;
