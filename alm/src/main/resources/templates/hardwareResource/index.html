@@ -59,9 +59,9 @@
 			<#resource code="addHardwareResource"><%if(user.id != 1){%> <a href="#" class="easyui-linkbutton" iconCls="icon-add"
 				onclick="openInsert()" plain="true"></a><%}%></#resource>
 			<#resource code="updateHardwareResource"><%if(user.id != 1){%> <a href="#" class="easyui-linkbutton" iconCls="icon-edit"
-				onclick="openInsert()" plain="true"></a><%}%></#resource>
+				onclick="openUpdate()" plain="true"></a><%}%></#resource>
 			<#resource code="deleteHardwareResource"><%if(user.id != 1){%> <a href="#" class="easyui-linkbutton" iconCls="icon-remove"
-				onclick="openInsert()" plain="true"></a><%}%></#resource>
+				onclick="del()" plain="true"></a><%}%></#resource>
 		</div>
 	</div>
 </div>
