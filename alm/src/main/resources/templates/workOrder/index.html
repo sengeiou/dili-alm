@@ -11,36 +11,38 @@
 		<div class="easyui-panel" style="width: 100%;" align="left">
 			<form id="form" class="easyui-form" method="post" fit="true">
 				<table style="padding: 10px;">
-					<!-- <tr>
-						<td style="padding: 5px;"><input class="easyui-textbox" name="serialNumber" id="serialNumber" style="width: 100%"
-							data-options="label:'工单编号:', validType:'length[0,0]'" /></td>
-						<td style="padding: 5px;"><input class="easyui-numberbox" name="workOrderType" id="workOrderType" style="width: 100%"
-							data-options="label:'工单类型:', validType:'length[0,10]'" /></td>
-						<td style="padding: 5px;"><input class="easyui-numberbox" name="priority" id="priority" style="width: 100%"
-							data-options="label:'工单优先级:', validType:'length[0,10]'" /></td>
-						<td style="padding: 5px;"><input class="easyui-numberbox" name="acceptorId" id="acceptorId" style="width: 100%"
-							data-options="label:'受理人:', validType:'length[0,19]'" /></td>
-						<td style="padding: 5px;"><input class="easyui-textbox" name="copyUserId" id="copyUserId" style="width: 100%"
-							data-options="label:'抄送人id,jsonarray存储:', validType:'length[0,255]'" /></td>
-					</tr>
 					<tr>
-						<td style="padding: 5px;"><input class="easyui-textbox" name="description" id="description" style="width: 100%"
-							data-options="label:'描述:', validType:'length[0,255]'" /></td>
-						<td style="padding: 5px;"><input class="easyui-numberbox" name="attachmentFileId" id="attachmentFileId" style="width: 100%"
-							data-options="label:'附件id:', validType:'length[0,19]'" /></td>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="workOrderName" id="workOrderName" style="width: 100%"
+							data-options="label:'工单名称:'" /></td>
 						<td style="padding: 5px;"><input class="easyui-numberbox" name="workOrderState" id="workOrderState" style="width: 100%"
-							data-options="label:'工单申请状态:', validType:'length[0,10]'" /></td>
-						<td style="padding: 5px;"><input class="easyui-datetimebox" name="submitTime" id="submitTime" style="width: 100%"
-							data-options="label:'申请提交时间:'" /></td>
-						<td style="padding: 5px;"><input class="easyui-datetimebox" name="closeTime" id="closeTime" style="width: 100%"
-							data-options="label:'关闭时间:'" /></td>
+							data-options="label:'状态:'" /></td>
+						<td style="padding: 5px;"><input class="easyui-numberbox" name="priority" id="priority" style="width: 100%"
+							data-options="label:'优先级:'" /></td>
 					</tr>
 					<tr>
-						<td style="padding: 5px;"><input class="easyui-datetimebox" name="creationTime" id="creationTime" style="width: 100%"
-							data-options="label:'创建时间:'" /></td>
-						<td style="padding: 5px;"><input class="easyui-datetimebox" name="modifyTime" id="modifyTime" style="width: 100%"
-							data-options="label:'修改时间:'" /></td>
-					</tr> -->
+						<td style="padding: 5px;"><input class="easyui-textbox" name="serialNumber" id="serialNumber" style="width: 100%"
+							data-options="label:'工单编号:'" /></td>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="workOrderType" id="workOrderType1" style="width: 100%"
+							data-options="label:'工单类型:',editable:false" /> <#comboProvider _id="workOrderType1" _provider='workOrderTypeProvider' /></td>
+						<td style="padding: 5px;"><input class="easyui-datebox" name="submitStartDate" id="submitStartDate" style="width: 100%"
+							data-options="label:'申请日期:'" /></td>
+						<td style="padding: 5px;"><input class="easyui-datebox" name="submitEndDate" id="submitEndDate" style="width: 190px;"
+							data-options="label:'至:',labelWidth:30" /></td>
+					</tr>
+					<tr>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="workOrderSource" id="workOrderSource" style="width: 100%"
+							data-options="label:'工单来源:',editable:false" /> <#comboProvider _id="workOrderSource" _provider='workOrderSourceProvider' /></td>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="applicantId" id="applicantId" style="width: 100%"
+							data-options="label:'申请人:',
+							editable:false,
+									buttonText:'选择',
+									onClickButton:selectMember,onChange:_changeTextboxShowClear" /></td>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="acceptorId" id="acceptorId1" style="width: 100%"
+							data-options="label:'受理人:',
+							editable:false,
+									buttonText:'选择',
+									onClickButton:selectMember,onChange:_changeTextboxShowClear" /></td>
+					</tr>
 					<tr>
 						<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid()">查询</a> <a
 							href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">清除</a></td>
@@ -61,16 +63,14 @@
 			data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
 			<thead>
 				<tr>
-					<th data-options="field:'serialNumber',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:serialNumberFormatter">工单编号</th>
+					<th
+						data-options="field:'serialNumber',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:serialNumberFormatter">工单编号</th>
 					<th data-options="field:'workOrderName', align:'center', resizable:'true', fixed:'false'">工单名称</th>
 					<th data-options="field:'priority', _provider:'workOrderPriorityProvider', align:'center', resizable:'true', fixed:'false'">优先级</th>
 					<th data-options="field:'workOrderType', _provider:'workOrderTypeProvider', align:'center', resizable:'true', fixed:'false'">工单类型</th>
 					<th data-options="field:'workOrderSource', _provider:'workOrderSourceProvider', align:'center', resizable:'true', fixed:'false'">工单来源</th>
 					<th
-						data-options="field:'workOrderState', _provider:'workOrderStateProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">状态
-
-
-					
+						data-options="field:'workOrderState', _provider:'workOrderStateProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">状态</th>
 					<th
 						data-options="field:'applicantId',  _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">提单人</th>
 					<th data-options="field:'acceptorId', _provider:'memberProvider', align:'center', resizable:'true', fixed:'false'">受理人</th>

@@ -1,6 +1,7 @@
 package com.dili.alm.controller;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ import com.dili.alm.component.NumberGenerator;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.OperationResult;
 import com.dili.alm.domain.WorkOrder;
+import com.dili.alm.domain.dto.WorkOrderQueryDto;
 import com.dili.alm.domain.dto.WorkOrderUpdateDto;
 import com.dili.alm.exceptions.WorkOrderException;
 import com.dili.alm.service.FilesService;
@@ -212,8 +214,14 @@ public class WorkOrderController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "WorkOrder", paramType = "form", value = "WorkOrder的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String listPage(WorkOrder workOrder) throws Exception {
-		return workOrderService.listEasyuiPageByExample(workOrder, true).toString();
+	public @ResponseBody String listPage(WorkOrderQueryDto query) throws Exception {
+		if (query.getSubmitEndDate() != null) {
+			Calendar c = Calendar.getInstance();
+			c.setTime(query.getSubmitEndDate());
+			c.add(Calendar.DAY_OF_MONTH, 1);
+			query.setSubmitEndDate(c.getTime());
+		}
+		return workOrderService.listEasyuiPageByExample(query, true).toString();
 	}
 
 	@ApiOperation("删除WorkOrder")

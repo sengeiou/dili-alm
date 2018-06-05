@@ -395,7 +395,12 @@ function queryGrid() {
 
 // 清空表单
 function clearForm() {
+	$('#applicantId').textbox('initValue', '');
+	$('#applicantId').textbox('setText', '');
+	$('#acceptorId1').textbox('initValue', '');
+	$('#acceptorId1').textbox('setText', '');
 	$('#form').form('clear');
+	queryGrid();
 }
 
 // 表格表头右键菜单
@@ -440,5 +445,7 @@ function getKey(e) {
  * @submitFun 表单提交需执行的任务
  */
 $(function() {
+			$('#applicantId').textbox('addClearBtn', 'icon-clear');
+			$('#acceptorId1').textbox('addClearBtn', 'icon-clear');
 			queryGrid();
 		})
