@@ -56,7 +56,7 @@ function optFormatter(value, row, index) {
 	var content = '';
 	if (row.$_applyState == 1) {
 		if (row.$_applicantId == userId && userId != 1) {
-			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="openUpdate(' + row.id + ');">编辑</a>';
+			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="openUpdate(' + index + ');">编辑</a>';
 			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="del(' + index + ');">删除</a>';
 		} else {
 			content += '<span style="padding:0px 2px;">编辑</span>';
@@ -252,15 +252,24 @@ function postData(_url) {
 }
 
 // 打开修改窗口
-function openUpdate(id) {
-	if (!id) {
-		var selected = $('#travelCostGrid').datagrid('getSelected');
-		if (!selected) {
-			$.messager.alert('提示', '请选择一条记录');
-			return;
-		}
-		id = selected.id;
+function openUpdate(index) {
+	var selected = null;
+	if (!index) {
+		selected = $('#grid').datagrid('getSelected');
+	} else {
+		selected = $("#grid").datagrid("getRows")[index];
 	}
+	if (!selected) {
+		$.messager.alert('提示', '请选择一条记录');
+		return;
+	}
+	if (selected.$_applyState != 1) {
+		return;
+	}
+	if (selected.$_applicantId != userId) {
+		return;
+	}
+	id = selected.id;
 	$('#dlg').dialog({
 				iconCls : 'icon-save',
 				href : '${contextPath!}/travelCostApply/update?id=' + id,
@@ -299,6 +308,12 @@ function del(index) {
 	}
 	if (!selected) {
 		$.messager.alert('警告', '请选中一条数据');
+		return;
+	}
+	if (selected.$_applyState != 1) {
+		return;
+	}
+	if (selected.$_applicantId != userId) {
 		return;
 	}
 	$.messager.confirm('确认', '您确认想要删除记录吗？', function(r) {
