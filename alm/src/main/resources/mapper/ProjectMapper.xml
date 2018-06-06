@@ -327,23 +327,21 @@
 	<select id="getProjectProgressList"
 		resultType="com.dili.alm.domain.dto.ProjectProgressDto">
 		SELECT
-		p.id as id,p.name as name ,p.type as type,p.project_manager as
-		projectManager,p.project_state as projectState,
-		p.completed_progress as
-		completedProgress,pa.estimate_launch_date as estimateLaunchDate,
-		pa.`start_date` as startDate,pa.`end_date` as endDate
+		p.id as id,
+		p.name as name,
+		p.type as type,
+		p.project_manager as projectManager,
+		p.project_state as projectState,
+		p.completed_progress as completedProgress,
+		pa.estimate_launch_date as estimateLaunchDate,
+		pa.`start_date` as startDate,
+		pa.`end_date` as endDate
 		FROM `project` p
 		LEFT JOIN
 		`project_apply` pa
 		ON p.apply_id=pa.id
 		WHERE 1=1
-		<if test="list == null or list.size==0 or flat==1">
-			AND (p.project_state &lt;&gt; 4
-			OR ( p.project_state = 4
-			AND p.actual_end_date BETWEEN #{startTime} AND
-			#{endTime} ))
-		</if>
-		<if test="list != null and list.size&gt;0">
+		<if test="list != null and list.size != 0">
 			AND p.project_state IN
 			<foreach close=")" collection="list" index="index"
 				item="item" open="(" separator=",">
@@ -363,14 +361,6 @@
 		ON
 		p.apply_id=pa.id
 		WHERE 1=1
-		<if test="list == null or list.size==0 or flat==1">
-			AND (
-			p.project_state &lt;&gt; 4
-			OR ( p.project_state = 4
-			AND p.actual_end_date BETWEEN #{startTime} AND
-			#{endTime} )
-			)
-		</if>
 		<if test="list != null and list.size&gt;0">
 			AND p.project_state IN
 			<foreach close=")" collection="list" index="index"

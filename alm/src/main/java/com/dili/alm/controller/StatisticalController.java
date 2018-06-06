@@ -354,14 +354,8 @@ public class StatisticalController {
 
 	@ApiOperation(value = "查询项目进展总汇", notes = "查询返回easyui信息")
 	@RequestMapping(value = "/ProjectProgressList", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String ProjectProgressList(Project project, String startTime, String endTime, Integer flat,
-			String ids) throws Exception {
-		String startTime2 = getStartTime(startTime, endTime, flat);
-		String endTime2 = getEndTime(startTime, endTime, flat);
-		Integer f = 1;
-		if (WebUtil.strIsEmpty(startTime) && WebUtil.strIsEmpty(startTime)) {
-			f = 0;
-		}
+	public @ResponseBody String ProjectProgressList(Project project, Integer flat, String ids) throws Exception {
+		Integer f = 0;
 		List<Integer> list = new ArrayList<Integer>();
 		if (!WebUtil.strIsEmpty(ids)) {
 			String[] split = ids.split(",");
@@ -369,7 +363,7 @@ public class StatisticalController {
 				list.add(Integer.parseInt(string));
 			}
 		}
-		return statisticalService.getProjectProgresstDTO(project, startTime2, endTime2, list, f).toString();
+		return statisticalService.getProjectProgresstDTO(project, list, f).toString();
 
 	}
 

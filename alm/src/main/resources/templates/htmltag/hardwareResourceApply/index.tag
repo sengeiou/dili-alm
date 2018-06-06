@@ -1,3 +1,6 @@
+var userId = '${user.id!}';
+userId = parseInt(userId);
+
 var approveType = {
 	projectManagerApprove : 'managerApprove',
 	generalManagerApprove : 'generalManagerApprove',
@@ -31,7 +34,7 @@ function showDetail(id) {
 function opptFormatter(value, row, index) {
 	var returnStr = "";
 	if (row.approving) {
-		returnStr = "<a href='javascr:void(0)' onclick='openUpdate(" + row.id + ")'>编辑</a>&nbsp<a href='javascr:void(0)' onclick='del(" + row.id + ");'>删除</a>";
+		returnStr = "<a href='javascr:void(0)' onclick='openUpdate(" + index + ")'>编辑</a>&nbsp<a href='javascr:void(0)' onclick='del(" + index + ");'>删除</a>";
 	} else if (row.$_applyState == "1") {
 		returnStr = "<span> 编辑 &nbsp; 删除 </span>";
 	}
@@ -100,6 +103,9 @@ function changeProjectSetValue(id) {
 }
 // 打开新增窗口
 function openInsert() {
+	if (!dataAuth.addHardwareResourceApply && userid == 1) {
+		return false;
+	}
 
 	$('#win').dialog({
 				title : '申请资源',
@@ -164,27 +170,22 @@ function openInsert() {
 }
 
 // 打开修改窗口
-function openUpdate(id) {
-	var selected = $("#grid").datagrid("getSelected");
-	if (id == null) {
-		if (null == selected) {
-			$.messager.alert('警告', '请选中一条数据');
-			return;
-		} else {
-			id = selected.id;
-
-		}
+function openUpdate(index) {
+	if (!dataAuth.addHardwareResourceApply || userId == 1) {
+		return false;
 	}
-	var rows = $("#grid").datagrid('getRows');
-
-	var length = rows.length;
-	var rowindex;
-	for (var i = 0; i < length; i++) {
-		if (rows[i]['id'] == id) {
-			rowindex = i;
-			selected = rows[rowindex];// 根据index获得其中一行。
-			break;
-		}
+	var selected = null;
+	if (!index) {
+		selected = $("#grid").datagrid("getSelected");
+	} else {
+		selected = $('#grid').datagrid('getRows')[index];
+	}
+	if (!selected) {
+		$.messager.alert('警告', '请选中一条数据');
+		return;
+	}
+	if (selected.$_applyState != 1) {
+		return false;
 	}
 
 	$('#win').dialog({
@@ -205,7 +206,7 @@ function openUpdate(id) {
 							text : '提交',
 							handler : function() {
 								$.post('${contextPath!}/hardwareResourceApply/submit', {
-											id : id
+											id : selected.id
 										}, function(res) {
 											if (res.success) {
 												$('#grid').datagrid('reload');
@@ -361,21 +362,30 @@ function saveOrUpdate() {
 }
 
 // 根据主键删除
-function del(id) {
-	var selected = $("#grid").datagrid("getSelected");
-
-	if (!selected && !id) {
+function del(index) {
+	if (!dataAuth.deleteHardwareResourceApply || userId == 1) {
+		return false;
+	}
+	var selected = null;
+	if (!index) {
+		selected = $("#grid").datagrid("getSelected");
+	} else {
+		selected = $('#grid').datagrid('getRows')[index];
+	}
+	if (!selected) {
 		$.messager.alert('警告', '请选中一条数据');
 		return;
 	}
-	id = id ? id : selected.id;
+	if (selected.$_applyState != 1) {
+		return false;
+	}
 	$.messager.confirm('确认', '您确认想要删除记录吗？', function(r) {
 				if (r) {
 					$.ajax({
 								type : "POST",
 								url : "${contextPath}/hardwareResourceApply/delete",
 								data : {
-									id : id
+									id : selected.id
 								},
 								processData : true,
 								dataType : "json",

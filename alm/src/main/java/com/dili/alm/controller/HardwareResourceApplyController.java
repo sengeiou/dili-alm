@@ -77,6 +77,7 @@ public class HardwareResourceApplyController {
 	@ApiOperation("跳转到HardwareResourceApply页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
+		modelMap.addAttribute("user", SessionContext.getSessionContext().getUserTicket());
 		return "hardwareResourceApply/index";
 	}
 
@@ -394,19 +395,6 @@ public class HardwareResourceApplyController {
 			hardwareResourceApplyService.projectManagerApprove(id, user.getId(), ApproveResult.FAILED, description);
 		}
 
-		return BaseOutput.success("提交成功");
-	}
-
-	@RequestMapping(value = "/generalManagerApprove", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput generalManagerApprove(Long id, boolean isApproved, String description)
-			throws HardwareResourceApplyException {
-		UserTicket user = SessionContext.getSessionContext().getUserTicket();
-		if (isApproved) {
-
-			hardwareResourceApplyService.generalManagerApprove(id, user.getId(), ApproveResult.APPROVED, description);
-		} else {
-			hardwareResourceApplyService.generalManagerApprove(id, user.getId(), ApproveResult.FAILED, description);
-		}
 		return BaseOutput.success("提交成功");
 	}
 

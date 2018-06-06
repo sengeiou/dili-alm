@@ -19,9 +19,9 @@
 		</tr>
 		<tr>
 			<td style="padding: 5px;"><input class="easyui-textbox" value="${department.name!}" style="width: 300px"
-				data-options="label:'申请部门:',readonly:true" /></td>
-			<td style="padding: 5px;"><input class="easyui-textbox" value="${rootDepartment.name}" style="width: 300px"
-				data-options="label:'所属中心:',readonly:true" /></td>
+				data-options="label:'申请部门:',readonly:true,required:true" /></td>
+			<td style="padding: 5px;"><input class="easyui-textbox" value="${rootDepartment.name!}" style="width: 300px"
+				data-options="label:'所属中心:',readonly:true,required:true" /></td>
 		</tr>
 	</table>
 	<table class="easyui-datagrid" style="width: 100%; height: 300px" title="差旅成本明细列表" id="travelCostGrid" fitColumns="true" rownumbers="true"

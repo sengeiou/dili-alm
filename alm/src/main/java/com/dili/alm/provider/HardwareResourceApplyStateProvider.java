@@ -7,7 +7,6 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 import com.dili.alm.domain.HardwareApplyState;
-import com.dili.alm.domain.HardwareResourceApplyState;
 import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValuePairImpl;

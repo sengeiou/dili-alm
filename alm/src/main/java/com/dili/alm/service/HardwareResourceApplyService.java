@@ -55,21 +55,6 @@ public interface HardwareResourceApplyService extends BaseService<HardwareResour
 			throws HardwareResourceApplyException;
 
 	/**
-	 * 研发中心总经理审批
-	 * 
-	 * @param applyId
-	 *            申请id
-	 * @param generalManagerId
-	 *            研发中心总经理id
-	 * @param result
-	 *            审批意见
-	 * @param description
-	 *            描述
-	 */
-	void generalManagerApprove(Long applyId, Long generalManagerId, ApproveResult result, String description)
-			throws HardwareResourceApplyException;
-
-	/**
 	 * 运维经理审批
 	 * 
 	 * @param applyId

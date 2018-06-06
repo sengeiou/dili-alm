@@ -417,12 +417,12 @@ function projectNum(id) {
 }
 function formatOptions(val, row, index) {
 	var out = '';
-	if (dataAuth.updateHardwareResource) {
+	if (dataAuth.updateHardwareResource && userId != 1) {
 		out = "<a href='javascript:void(0)' onclick='openUpdate(" + index + ")'>编辑  </a>";
 	} else {
 		out = "<span style='padding:5px;color:#8B8B7A;text-decoration:underline;'>编辑</span>";
 	}
-	if (dataAuth.deleteHardwareResource && row.isSubmit == 0) {
+	if (dataAuth.deleteHardwareResource && userId != 1 && row.isSubmit == 0) {
 		out += "<a href='javascript:void(0)' onclick='del(" + index + ")'> 删除</a>"
 	} else {
 		out += "<span style='padding:5px;color:#8B8B7A;text-decoration:underline;'>删除</span>"
@@ -435,7 +435,7 @@ function addOptions(val, row, index) {
 
 	var selected = $("#dg").datagrid('getData').rows[index];
 	var out;
-	if (selected.isSubmit == 0) {
+	if (userId != 1 && selected.isSubmit == 0) {
 		out = "<a href='javascript:void(0)' onclick='openAddUpdate(" + index + ")'>编辑  </a><a href='javascript:void(0)' onclick='AddListDel(" + index + ")'> 删除</a>";
 	}
 	return out;

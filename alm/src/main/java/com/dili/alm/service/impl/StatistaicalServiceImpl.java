@@ -616,11 +616,9 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	 * 项目进展总汇
 	 */
 	@Override
-	public EasyuiPageOutput getProjectProgresstDTO(Project project, String startTime, String endTime,
-			List<Integer> stateIds, Integer f) {
-		List<ProjectProgressDto> projectProgressList = projectMapper.getProjectProgressList(project, startTime, endTime,
-				stateIds, f);
-		int projectProgressListCount = projectMapper.getProjectProgressListCount(startTime, endTime, stateIds, f);
+	public EasyuiPageOutput getProjectProgresstDTO(Project project, List<Integer> stateIds, Integer f) {
+		List<ProjectProgressDto> projectProgressList = projectMapper.getProjectProgressList(project, stateIds, f);
+		int projectProgressListCount = projectMapper.getProjectProgressListCount(stateIds, f);
 		for (ProjectProgressDto projectProgressDto : projectProgressList) {
 			projectProgressDto.setProjectProgress(projectProgressDto.getCompletedProgress() + "%");
 			projectProgressDto.setLaunchTime(DateUtil.getDate(projectProgressDto.getEstimateLaunchDate()));

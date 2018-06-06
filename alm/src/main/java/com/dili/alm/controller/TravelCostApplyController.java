@@ -124,15 +124,17 @@ public class TravelCostApplyController {
 		modelMap.addAttribute("user", user);
 		Map.Entry<Long, Department> entry = AlmCache.getInstance().getDepMap().entrySet().stream()
 				.filter(e -> e.getKey().equals(user.getDepartmentId())).findFirst().orElse(null);
-		Department department = entry.getValue();
-		modelMap.addAttribute("department", department);
-		if (department.getParentId() == null) {
-			modelMap.addAttribute("rootDepartment", department);
-		} else {
-			do {
-				department = AlmCache.getInstance().getDepMap().get(department.getParentId());
-			} while (department.getParentId() != null);
-			modelMap.addAttribute("rootDepartment", department);
+		if (entry != null) {
+			Department department = entry.getValue();
+			modelMap.addAttribute("department", department);
+			if (department.getParentId() == null) {
+				modelMap.addAttribute("rootDepartment", department);
+			} else {
+				do {
+					department = AlmCache.getInstance().getDepMap().get(department.getParentId());
+				} while (department.getParentId() != null);
+				modelMap.addAttribute("rootDepartment", department);
+			}
 		}
 		modelMap.addAttribute("projects", AlmCache.getInstance().getProjectMap().values());
 		// 查询费用项

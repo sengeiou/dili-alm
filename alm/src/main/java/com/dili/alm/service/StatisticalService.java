@@ -112,7 +112,7 @@ public interface StatisticalService {
 
 
 	EasyuiPageOutput getProjectProgresstDTO(Project project,
-			String startTime, String endTime, List<Integer> stateIds,Integer f);
+			List<Integer> stateIds, Integer f);
 
 
 	List<ProjectTypeCountDto> getProjectToTypeSummary(String startTime,

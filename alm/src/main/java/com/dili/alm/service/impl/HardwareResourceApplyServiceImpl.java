@@ -2,6 +2,7 @@ package com.dili.alm.service.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -12,6 +13,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.mail.MessagingException;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
@@ -74,6 +77,8 @@ import com.github.pagehelper.Page;
 public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareResourceApply, Long>
 		implements HardwareResourceApplyService {
 
+	private final String OP_DEPT_MAIL_GROUP = "yunwei@diligrp.com";
+
 	private String contentTemplate;
 	@Autowired
 	private DataDictionaryService ddService;
@@ -126,7 +131,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		metadata.put("created", datetimeProvider);
 
 		JSONObject applyStateProvider = new JSONObject();
-		applyStateProvider.put("provider", "projectOnlineApplyStateProvider");
+		applyStateProvider.put("provider", "hardwareResourceApplyStateProvider");
 		metadata.put("applyState", applyStateProvider);
 
 		JSONObject filesProvider = new JSONObject();
@@ -154,7 +159,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		try {
 			Resource res = new ClassPathResource("conf/hardwareApplyMailContentTemplate.html");
 			in = res.getInputStream();
-			this.contentTemplate = IOUtils.toString(in);
+			this.contentTemplate = IOUtils.toString(in,Charset.defaultCharset());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} finally {
@@ -191,64 +196,6 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		HardwareResourceRequirement hrrQuery = DTOUtils.newDTO(HardwareResourceRequirement.class);
 		hrrQuery.setApplyId(applyId);
 		this.hrrMapper.delete(hrrQuery);
-	}
-
-	@Override
-	public void generalManagerApprove(Long applyId, Long generalManagerId, ApproveResult result, String description)
-			throws HardwareResourceApplyException {
-		// 判断记录是否存在
-		HardwareResourceApply apply = this.getActualDao().selectByPrimaryKey(applyId);
-		if (apply == null) {
-			throw new HardwareResourceApplyException("记录不存在");
-		}
-
-		// 判断状态
-		if (!apply.getApplyState().equals(HardwareApplyState.GENERAL_MANAGER_APPROVING.getValue())) {
-			throw new HardwareResourceApplyException("当前状态研发部总经理不能审批");
-		}
-
-		// 检查是否是研发部总经理
-		if (!this.queryGeneralLeader().getId().equals(generalManagerId)) {
-			throw new HardwareResourceApplyException("当前用户没有权限执行该操作");
-		}
-
-		if (ApproveResult.APPROVED.equals(result)) {
-			// 审批通过流转到运维部经理审批
-			apply.setApplyState(HardwareApplyState.OPERATION_MANAGER_APPROVING.getValue());
-		} else if (ApproveResult.FAILED.equals(result)) {
-			// 未通过审批退回到编辑状态让用户重新编辑
-			apply.setSubmitTime(null);
-			apply.setApplyState(HardwareApplyState.APPLING.getValue());
-		} else {
-			throw new IllegalArgumentException("未知的审批结果");
-		}
-		int rows = this.getActualDao().updateByPrimaryKey(apply);
-		if (rows <= 0) {
-			throw new HardwareResourceApplyException("更新申请状态失败");
-		}
-
-		// 插入申请操作记录
-		HardwareApplyOperationRecord record = DTOUtils.newDTO(HardwareApplyOperationRecord.class);
-		record.setApplyId(applyId);
-		record.setDescription(description);
-		record.setOperationName(HardwareApplyOperationType.GENERAL_MANAGER.getName());
-		record.setOperationType(HardwareApplyOperationType.GENERAL_MANAGER.getValue());
-		record.setOperatorId(generalManagerId);
-		record.setOpertateResult(result.getValue());
-		rows = this.haorMapper.insertSelective(record);
-		if (rows <= 0) {
-			throw new HardwareResourceApplyException("插入操作记录失败");
-		}
-		if (ApproveResult.APPROVED.equals(result)) {
-			// 发邮件给研发中心总经理
-			// 查询数据字典配置
-			DataDictionaryDto ddDto = this.ddService.findByCode(AlmConstants.DEPARTMENT_MANAGER_ROLE_CONFIG_CODE);
-			if (ddDto == null) {
-				throw new HardwareResourceApplyException("请先配置部门经理数据字典");
-			}
-			User user = this.queryGeneralLeader();
-			this.sendMail(apply, "IT资源申请", Arrays.asList(user.getEmail()));
-		}
 	}
 
 	public HardwareResourceApplyMapper getActualDao() {
@@ -451,8 +398,8 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		}
 
 		if (ApproveResult.APPROVED.equals(result)) {
-			// 审批通过流转到研发部总经理审批
-			apply.setApplyState(HardwareApplyState.GENERAL_MANAGER_APPROVING.getValue());
+			// 审批通过流转到运维部经理审批
+			apply.setApplyState(HardwareApplyState.OPERATION_MANAGER_APPROVING.getValue());
 		} else if (ApproveResult.FAILED.equals(result)) {
 			// 未通过审批退回到编辑状态让用户重新编辑
 			apply.setSubmitTime(null);
@@ -484,7 +431,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 			if (ddDto == null) {
 				throw new HardwareResourceApplyException("请先配置部门经理数据字典");
 			}
-			User user = this.queryGeneralLeader();
+			User user = this.queryOperationManager();
 			this.sendMail(apply, "IT资源申请", Arrays.asList(user.getEmail()));
 		}
 	}
@@ -533,8 +480,6 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 			throw new HardwareResourceApplyException("项目经理不存在");
 		}
 		to.add(projectManager.getEmail());
-		// 查询研发部总经理
-		to.add(this.queryGeneralLeader().getEmail());
 		// 查询运维部经理
 		to.add(this.queryOperationManager().getEmail());
 		// 查询研发经理
@@ -620,25 +565,6 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		return target;
 	}
 
-	private User queryGeneralLeader() throws HardwareResourceApplyException {
-		// 查询数据字典配置
-		DataDictionaryDto ddDto = this.ddService.findByCode(AlmConstants.DEPARTMENT_MANAGER_ROLE_CONFIG_CODE);
-		if (ddDto == null) {
-			throw new HardwareResourceApplyException("请先配置部门经理数据字典");
-		}
-		DataDictionaryValueDto ddValue = ddDto.getValues().stream()
-				.filter(v -> v.getCode().equals(AlmConstants.GENERAL_LEADER_CODE)).findFirst().orElse(null);
-		if (ddValue == null) {
-			throw new HardwareResourceApplyException("请先配置研发中心总经理数据字典");
-		}
-		Map.Entry<Long, User> entry = AlmCache.getInstance().getUserMap().entrySet().stream()
-				.filter(e -> e.getValue().getUserName().equals(ddValue.getValue())).findFirst().orElse(null);
-		if (entry == null) {
-			throw new HardwareResourceApplyException("研发部总经理账号不存在，请确认数据字典配置正确");
-		}
-		return entry.getValue();
-	}
-
 	private User queryOperationManager() throws HardwareResourceApplyException {
 		// 查询数据字典配置
 		DataDictionaryDto ddDto = this.ddService.findByCode(AlmConstants.DEPARTMENT_MANAGER_ROLE_CONFIG_CODE);
@@ -685,6 +611,12 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		apply.aset("envList", this.parseEnvToString(apply.getServiceEnvironment()));
 		String content = template.render();
 
+		try {
+			this.mailManager.sendMail(this.mailFrom, OP_DEPT_MAIL_GROUP, content, true, subject, null);
+		} catch (MessagingException e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+
 		to.forEach(t -> {
 			// 发送
 			try {
@@ -717,15 +649,6 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		apply.aset("projectManagerApprov", projectManagerApprov);
 
 		try {
-			// 判断界面上部总经理审批
-			// 判断申请状态是否是项目经理确认状态
-			boolean generalManagerAppov = apply.getApplyState()
-					.equals(HardwareApplyState.GENERAL_MANAGER_APPROVING.getValue());
-			User generalManagerU = this.queryGeneralLeader();
-			// 判断当前登录用户是否是部总经理
-			generalManagerAppov = !generalManagerAppov ? generalManagerAppov
-					: generalManagerU.getId().equals(user.getId());
-			apply.aset("generalManagerAppov", generalManagerAppov);
 
 			// 判断界面上运维部经理审批
 			boolean operactionManagerAppov = apply.getApplyState()

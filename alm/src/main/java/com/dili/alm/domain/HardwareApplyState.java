@@ -2,9 +2,8 @@ package com.dili.alm.domain;
 
 public enum HardwareApplyState {
 
-	APPLING(1, "申请中"), PROJECT_MANAGER_APPROVING(2, "项目经理审批中"), GENERAL_MANAGER_APPROVING(3,
-			"技术部总经理审批中"), OPERATION_MANAGER_APPROVING(4,
-					"运维部经理审批中"), IMPLEMENTING(5, "实施中"), COMPLETED(6, "完成"), FAILED(-1, "失败");
+	APPLING(1, "申请中"), PROJECT_MANAGER_APPROVING(2, "项目经理审批中"), OPERATION_MANAGER_APPROVING(4,
+			"运维部经理审批中"), IMPLEMENTING(5, "实施中"), COMPLETED(6, "完成"), FAILED(-1, "失败");
 
 	private Integer value;
 	private String name;
