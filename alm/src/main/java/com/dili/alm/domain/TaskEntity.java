@@ -10,81 +10,72 @@ import com.dili.ss.domain.BaseDomain;
  */
 public class TaskEntity extends BaseDomain implements Task {
 
-	long id;// ID
-
-	String name;// 任务名称
-
-	String projectName;// 所属项目名称
-
-	String versionStr;// 版本名称
-
-	String phaseStr;// 项目阶段
-
-	String flowStr = "正常流程";// 流程
-
-	Integer status;
-
-	String planDays;// 计划周期
-
-	int progress = 0;// 进度
-
-	long projectId;
-
-	long versionId;
-
-	Long phaseId;
-
-	Date startDate;
-
-	Date endDate;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6406830521013428608L;
 
 	Long beforeTask;
 
-	Integer type;
-
-	Long owner;
-
-	Boolean flow;
-
-	String describe;
-
-	Short planTime;
+	Boolean canOperation;
 
 	Long changeId;
 
-	Date created;
+	Boolean copyButton;
 
-	Date modified;
+	Date created;
 
 	Long createMemberId;
 
-	Long modifyMemberId;
+	String describe;
+
+	Date endDate;
 
 	Date factBeginDate;
 
 	Date factEndDate;
 
+	Boolean flow;
+
+	String flowStr = "正常流程";// 流程
+
+	long id;// ID
+
+	Date modified;
+
+	Long modifyMemberId;
+
+	String name;// 任务名称
+
+	Long owner;
+
+	Long phaseId;
+
+	String phaseStr;// 项目阶段
+
+	String planDays;// 计划周期
+
+	Short planTime;
+
+	int progress = 0;// 进度
+
+	long projectId;
+
+	String projectName;// 所属项目名称
+
+	Date startDate;
+
+	Integer status;
+
+	Integer type;
+
 	Boolean updateDetail;
 
-	Boolean copyButton;
+	long versionId;
 
-	Boolean canOperation;
+	String versionStr;// 版本名称
 
-	public Boolean getCopyButton() {
-		return copyButton;
-	}
-
-	public void setCopyButton(Boolean copyButton) {
-		this.copyButton = copyButton;
-	}
-
-	public Boolean getUpdateDetail() {
-		return updateDetail;
-	}
-
-	public void setUpdateDetail(Boolean updateDetail) {
-		this.updateDetail = updateDetail;
-	}
+	private Long projectManagerId;
 
 	public TaskEntity(Task task) {
 		this.id = task.getId();
@@ -110,169 +101,12 @@ public class TaskEntity extends BaseDomain implements Task {
 		this.factEndDate = task.getFactBeginDate();
 	}
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getProjectName() {
-		return projectName;
-	}
-
-	public void setProjectName(String projectName) {
-		this.projectName = projectName;
-	}
-
-	public String getVersionStr() {
-		return versionStr;
-	}
-
-	public void setVersionStr(String versionStr) {
-		this.versionStr = versionStr;
-	}
-
-	public String getPhaseStr() {
-		return phaseStr;
-	}
-
-	public void setPhaseStr(String phaseStr) {
-		this.phaseStr = phaseStr;
-	}
-
-	public String getFlowStr() {
-		return flowStr;
-	}
-
-	public void setFlowStr(Boolean flow) {
-
-		this.flowStr = flow ? "变更流程" : "正常流程";
-	}
-
-	public Integer getStatus() {
-		return status;
-	}
-
-	public void setStatus(Integer status) {
-		this.status = status;
-	}
-
-	public String getPlanDays() {
-		return planDays;
-	}
-
-	public void setPlanDays(String planDays) {
-		this.planDays = planDays;
-	}
-
-	public int getProgress() {
-		return progress;
-	}
-
-	public void setProgress(int progress) {
-		this.progress = progress;
-	}
-
-	public Long getOwner() {
-		return owner;
-	}
-
-	public void setOwner(Long owner) {
-		this.owner = owner;
-	}
-
-	public Long getProjectId() {
-		return projectId;
-	}
-
-	public void setProjectId(Long projectId) {
-		this.projectId = projectId;
-	}
-
-	public Long getVersionId() {
-		return versionId;
-	}
-
-	public void setVersionId(Long versionId) {
-		this.versionId = versionId;
-	}
-
-	public Long getPhaseId() {
-		return phaseId;
-	}
-
-	public void setPhaseId(Long phaseId) {
-		this.phaseId = phaseId;
-	}
-
-	public Date getStartDate() {
-		return startDate;
-	}
-
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
-	}
-
-	public Date getEndDate() {
-		return endDate;
-	}
-
-	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
-	}
-
 	public Long getBeforeTask() {
 		return beforeTask;
 	}
 
-	public void setBeforeTask(Long beforeTask) {
-		this.beforeTask = beforeTask;
-	}
-
-	public Integer getType() {
-		return type;
-	}
-
-	public void setType(Integer type) {
-		this.type = type;
-	}
-
-	public Boolean getFlow() {
-		return flow;
-	}
-
-	public void setFlow(Boolean flow) {
-		this.flow = flow;
-	}
-
-	public String getDescribe() {
-		return describe;
-	}
-
-	public void setDescribe(String describe) {
-		this.describe = describe;
-	}
-
-	public Short getPlanTime() {
-		return planTime;
-	}
-
-	public void setPlanTime(Short planTime) {
-		this.planTime = planTime;
-	}
-
-	public void setFlowStr(String flowStr) {
-		this.flowStr = flowStr;
+	public Boolean getCanOperation() {
+		return canOperation;
 	}
 
 	@Override
@@ -281,9 +115,8 @@ public class TaskEntity extends BaseDomain implements Task {
 		return changeId;
 	}
 
-	@Override
-	public void setChangeId(Long changeId) {
-		this.changeId = changeId;
+	public Boolean getCopyButton() {
+		return copyButton;
 	}
 
 	@Override
@@ -292,48 +125,16 @@ public class TaskEntity extends BaseDomain implements Task {
 	}
 
 	@Override
-	public void setCreated(Date created) {
-		this.created = created;
-	}
-
-	@Override
-	public Date getModified() {
-		return modified;
-	}
-
-	@Override
-	public void setModified(Date modified) {
-		this.modified = modified;
-	}
-
-	@Override
 	public Long getCreateMemberId() {
 		return createMemberId;
 	}
 
-	@Override
-	public void setCreateMemberId(Long createMemberId) {
-		this.createMemberId = createMemberId;
+	public String getDescribe() {
+		return describe;
 	}
 
-	@Override
-	public Long getModifyMemberId() {
-		return modifyMemberId;
-	}
-
-	@Override
-	public void setModifyMemberId(Long modifyMemberId) {
-		this.modifyMemberId = modifyMemberId;
-	}
-
-	@Override
-	public Date getFactEndDate() {
-		return factEndDate;
-	}
-
-	@Override
-	public void setFactEndDate(Date factEndDate) {
-		this.factEndDate = factEndDate;
+	public Date getEndDate() {
+		return endDate;
 	}
 
 	@Override
@@ -342,24 +143,238 @@ public class TaskEntity extends BaseDomain implements Task {
 	}
 
 	@Override
-	public void setFactBeginDate(Date factBeginDate) {
-		this.factBeginDate = factBeginDate;
+	public Date getFactEndDate() {
+		return factEndDate;
 	}
 
-	public Boolean getCanOperation() {
-		return canOperation;
+	public Boolean getFlow() {
+		return flow;
+	}
+
+	public String getFlowStr() {
+		return flowStr;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	@Override
+	public Date getModified() {
+		return modified;
+	}
+
+	@Override
+	public Long getModifyMemberId() {
+		return modifyMemberId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public Long getOwner() {
+		return owner;
+	}
+
+	public Long getPhaseId() {
+		return phaseId;
+	}
+
+	public String getPhaseStr() {
+		return phaseStr;
+	}
+
+	public String getPlanDays() {
+		return planDays;
+	}
+
+	public Short getPlanTime() {
+		return planTime;
+	}
+
+	public int getProgress() {
+		return progress;
+	}
+
+	public Long getProjectId() {
+		return projectId;
+	}
+
+	public String getProjectName() {
+		return projectName;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public Boolean getUpdateDetail() {
+		return updateDetail;
+	}
+
+	public Long getVersionId() {
+		return versionId;
+	}
+
+	public String getVersionStr() {
+		return versionStr;
+	}
+
+	public void setBeforeTask(Long beforeTask) {
+		this.beforeTask = beforeTask;
 	}
 
 	public void setCanOperation(Boolean canOperation) {
 		this.canOperation = canOperation;
 	}
 
+	@Override
+	public void setChangeId(Long changeId) {
+		this.changeId = changeId;
+	}
+
+	public void setCopyButton(Boolean copyButton) {
+		this.copyButton = copyButton;
+	}
+
+	@Override
+	public void setCreated(Date created) {
+		this.created = created;
+	}
+
+	@Override
+	public void setCreateMemberId(Long createMemberId) {
+		this.createMemberId = createMemberId;
+	}
+
+	public void setDescribe(String describe) {
+		this.describe = describe;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+	@Override
+	public void setFactBeginDate(Date factBeginDate) {
+		this.factBeginDate = factBeginDate;
+	}
+
+	@Override
+	public void setFactEndDate(Date factEndDate) {
+		this.factEndDate = factEndDate;
+	}
+
+	public void setFlow(Boolean flow) {
+		this.flow = flow;
+	}
+
+	public void setFlowStr(Boolean flow) {
+
+		this.flowStr = flow ? "变更流程" : "正常流程";
+	}
+
+	public void setFlowStr(String flowStr) {
+		this.flowStr = flowStr;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	@Override
+	public void setModified(Date modified) {
+		this.modified = modified;
+	}
+
+	@Override
+	public void setModifyMemberId(Long modifyMemberId) {
+		this.modifyMemberId = modifyMemberId;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setOwner(Long owner) {
+		this.owner = owner;
+	}
+
+	public void setPhaseId(Long phaseId) {
+		this.phaseId = phaseId;
+	}
+
+	public void setPhaseStr(String phaseStr) {
+		this.phaseStr = phaseStr;
+	}
+
+	public void setPlanDays(String planDays) {
+		this.planDays = planDays;
+	}
+
+	public void setPlanTime(Short planTime) {
+		this.planTime = planTime;
+	}
+
+	public void setProgress(int progress) {
+		this.progress = progress;
+	}
+
 	public void setProjectId(long projectId) {
 		this.projectId = projectId;
 	}
 
+	public void setProjectId(Long projectId) {
+		this.projectId = projectId;
+	}
+
+	public void setProjectName(String projectName) {
+		this.projectName = projectName;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
+	public void setUpdateDetail(Boolean updateDetail) {
+		this.updateDetail = updateDetail;
+	}
+
 	public void setVersionId(long versionId) {
 		this.versionId = versionId;
+	}
+
+	public void setVersionId(Long versionId) {
+		this.versionId = versionId;
+	}
+
+	public void setVersionStr(String versionStr) {
+		this.versionStr = versionStr;
+	}
+
+	public Long getProjectManagerId() {
+		return projectManagerId;
+	}
+
+	public void setProjectManagerId(Long projectManagerId) {
+		this.projectManagerId = projectManagerId;
 	}
 
 }
