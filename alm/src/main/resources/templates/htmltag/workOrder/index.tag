@@ -46,8 +46,8 @@ function operationFormatter(value, row, index) {
 	var content = '';
 	if (row.$_workOrderState == 1) {
 		if (row.$_applicantId == userId) {
-			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="openUpdate(' + row.id + ',' + index + ');">编辑</a>';
-			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="del(' + row.id + ');">删除</a>';
+			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="openUpdate(' + index + ');">编辑</a>';
+			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="del(' + index + ');">删除</a>';
 		} else {
 			content += '<span style="padding:0px 2px;">编辑</a>';
 			content += '<span style="padding:0px 2px;">删除</a>';
@@ -184,16 +184,16 @@ function openInsert() {
 }
 
 // 打开修改窗口
-function openUpdate(id, index) {
+function openUpdate(index) {
 	var selected = null;
-	if (!id) {
+	if (index != undefined) {
+		selected = $("#grid").datagrid("getRows")[index];
+	} else {
 		selected = $("#grid").datagrid("getSelected");
-		if (!selected) {
-			$.messager.alert('警告', '请选中一条数据');
-			return;
-		}
-		id = selected.id;
-		index = $("#grid").datagrid("getRowIndex", selected);
+	}
+	if (!selected) {
+		$.messager.alert('警告', '请选中一条数据');
+		return;
 	}
 	if (selected.$_workOrderState != 1) {
 		return false;
@@ -202,7 +202,7 @@ function openUpdate(id, index) {
 				title : '工单编辑',
 				width : 800,
 				height : 540,
-				href : '${contextPath!}/workOrder/update?id=' + id,
+				href : '${contextPath!}/workOrder/update?id=' + selected.id,
 				modal : true,
 				buttons : [{
 							text : '保存',
@@ -345,11 +345,19 @@ function solve(id) {
 }
 
 // 根据主键删除
-function del() {
-	var selected = $("#grid").datagrid("getSelected");
-	if (null == selected) {
+function del(index) {
+	var selected = null;
+	if (index != undefined) {
+		selected = $("#grid").datagrid("getRows")[index];
+	} else {
+		selected = $("#grid").datagrid("getSelected");
+	}
+	if (!selected) {
 		$.messager.alert('警告', '请选中一条数据');
 		return;
+	}
+	if (selected.$_workOrderState != 1) {
+		return false;
 	}
 	$.messager.confirm('确认', '您确认想要删除记录吗？', function(r) {
 				if (r) {
@@ -447,5 +455,6 @@ function getKey(e) {
 $(function() {
 			$('#applicantId').textbox('addClearBtn', 'icon-clear');
 			$('#acceptorId1').textbox('addClearBtn', 'icon-clear');
+			$('#executorId').textbox('addClearBtn', 'icon-clear');
 			queryGrid();
 		})
