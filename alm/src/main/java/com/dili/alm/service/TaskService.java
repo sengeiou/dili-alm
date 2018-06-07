@@ -113,7 +113,8 @@ public interface TaskService extends BaseService<Task, Long> {
 	 * 
 	 * @param taskId
 	 *            任务id
-	 * @param operator TODO
+	 * @param operator
+	 *            TODO
 	 * @param taskDate
 	 *            任务日
 	 * @param taskHour
@@ -123,7 +124,19 @@ public interface TaskService extends BaseService<Task, Long> {
 	 * @param content
 	 *            工作内容
 	 * @return TODO
-	 * @throws TaskException 
+	 * @throws TaskException
 	 */
-	Long submitWorkingHours(Long taskId, Long operator, Date taskDate, Short taskHour, Short overHour, String content) throws TaskException;
+	Long submitWorkingHours(Long taskId, Long operator, Date taskDate, Short taskHour, Short overHour, String content)
+			throws TaskException;
+
+	/**
+	 * 任务id
+	 * 
+	 * @param taskId
+	 *            任务id
+	 * @param operatorId
+	 *            操作人id，只有任务责任人和项目经理可以提前结束任务
+	 * @throws TaskException
+	 */
+	void completeTask(Long taskId, Long operatorId) throws TaskException;
 }

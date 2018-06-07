@@ -84,7 +84,7 @@ public class TaskController {
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(@RequestParam(required = false) Long projectId, @RequestParam(required = false) String backUrl,
 			ModelMap modelMap) throws UnsupportedEncodingException {
-		modelMap.put("sessionID", SessionContext.getSessionContext().getUserTicket().getId());
+		modelMap.put("user", SessionContext.getSessionContext().getUserTicket());
 		if (projectId != null) {
 			Project project = this.projectService.get(projectId);
 			modelMap.put("project", project);
@@ -404,22 +404,18 @@ public class TaskController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "complateTask", paramType = "form", value = "TaskDetails的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/complateTask", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput complateTask(Long id) {
+	public @ResponseBody BaseOutput<Object> complateTask(Long id) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		if (userTicket == null) {
 			return BaseOutput.failure("用户登录超时！");
 		}
-		Task task = taskService.get(id);
-		task.setStatus(TaskStatus.COMPLETE.code);// 更新状态为完成
-		task.setModified(new Date());
-		task.setModifyMemberId(userTicket.getId());
-		task.setFactEndDate(new Date());
-		taskService.update(task);
-
-		Project project = projectService.get(task.getProjectId());
-		project.setActualEndDate(new Date());
-		projectService.update(project);
-		return BaseOutput.success("更新状态为完成").setData(String.valueOf(task.getId() + ":" + task.getName()));
+		try {
+			this.taskService.completeTask(id, userTicket.getId());
+			Task task = this.taskService.get(id);
+			return BaseOutput.success("更新状态为完成").setData(String.valueOf(task.getId() + ":" + task.getName()));
+		} catch (TaskException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
 	}
 
 	// 是否已经执行过,一次加班工时，或一次任务工时
