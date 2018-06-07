@@ -15,9 +15,10 @@
 						<td style="padding: 5px;"><input class="easyui-textbox" name="workOrderName" id="workOrderName" style="width: 100%"
 							data-options="label:'工单名称:'" /></td>
 						<td style="padding: 5px;"><input class="easyui-numberbox" name="workOrderState" id="workOrderState" style="width: 100%"
-							data-options="label:'状态:'" /></td>
-						<td style="padding: 5px;"><input class="easyui-numberbox" name="priority" id="priority" style="width: 100%"
-							data-options="label:'优先级:'" /></td>
+							data-options="label:'状态:'" />
+						<#comboProvider _id="workOrderState" _provider='workOrderStateProvider' /></td>
+						<td style="padding: 5px;"><input class="easyui-numberbox" name="priority" id="priority1" style="width: 100%"
+							data-options="label:'优先级:'" /> <#comboProvider _id="priority1" _provider='workOrderPriorityProvider' /></td>
 					</tr>
 					<tr>
 						<td style="padding: 5px;"><input class="easyui-textbox" name="serialNumber" id="serialNumber" style="width: 100%"
@@ -30,8 +31,8 @@
 							data-options="label:'至:',labelWidth:30" /></td>
 					</tr>
 					<tr>
-						<td style="padding: 5px;"><input class="easyui-textbox" name="workOrderSource" id="workOrderSource" style="width: 100%"
-							data-options="label:'工单来源:',editable:false" /> <#comboProvider _id="workOrderSource" _provider='workOrderSourceProvider' /></td>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="workOrderSource" id="workOrderSource1" style="width: 100%"
+							data-options="label:'工单来源:',editable:false" /> <#comboProvider _id="workOrderSource1" _provider='workOrderSourceProvider' /></td>
 						<td style="padding: 5px;"><input class="easyui-textbox" name="applicantId" id="applicantId" style="width: 100%"
 							data-options="label:'申请人:',
 							editable:false,
