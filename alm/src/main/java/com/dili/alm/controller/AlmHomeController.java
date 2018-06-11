@@ -36,31 +36,31 @@ import com.github.pagehelper.Page;
 public class AlmHomeController {
 	@Autowired
 	private ProjectService projectService;
-	
+
 	@ApiOperation("跳转到首面")
-    @RequestMapping(value="/index", method = RequestMethod.GET)
-    public String index(ModelMap modelMap) {
-        return "home/index";
-    }
+	@RequestMapping(value = "/index", method = RequestMethod.GET)
+	public String index(ModelMap modelMap) {
+		return "home/index";
+	}
 
-    @ApiOperation("跳转到我的项目页面")
-    @RequestMapping(value="/myProjectIndex", method = RequestMethod.GET)
-    public String myProjectIndex(ModelMap modelMap) {
-        return "home/myProjectIndex";
-    }
-    
-    @ApiOperation("跳转到我的任务")
-    @RequestMapping(value="/taskList", method = RequestMethod.GET)
-    public String taskList(ModelMap modelMap) {
-        return "home/taskList";
-    }
+	@ApiOperation("跳转到我的项目页面")
+	@RequestMapping(value = "/myProjectIndex", method = RequestMethod.GET)
+	public String myProjectIndex(ModelMap modelMap) {
+		return "home/myProjectIndex";
+	}
 
-    @ApiOperation(value="分页查询我的项目", notes = "分页查询我的项目，返回easyui分页信息")
-    @ApiImplicitParams({
-		@ApiImplicitParam(name="project", paramType="form", value = "project的form信息", required = false, dataType = "string")
-	})
-    @RequestMapping(value="/listPage", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody String listPage(Project project) throws Exception {
-    	return this.projectService.listPageMyProject(project).toString();
-    }
+	@ApiOperation("跳转到我的任务")
+	@RequestMapping(value = "/taskList", method = RequestMethod.GET)
+	public String taskList(ModelMap modelMap) {
+		modelMap.addAttribute("user", SessionContext.getSessionContext().getUserTicket());
+		return "home/taskList";
+	}
+
+	@ApiOperation(value = "分页查询我的项目", notes = "分页查询我的项目，返回easyui分页信息")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "project", paramType = "form", value = "project的form信息", required = false, dataType = "string") })
+	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody String listPage(Project project) throws Exception {
+		return this.projectService.listPageMyProject(project).toString();
+	}
 }
