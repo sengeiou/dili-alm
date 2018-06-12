@@ -289,18 +289,22 @@ public class ProjectOnlineApplyAddDto extends BaseDomain implements ProjectOnlin
 		this.emailAddress = emailAddress;
 	}
 
+	@Override
 	public String getGit() {
 		return git;
 	}
 
+	@Override
 	public void setGit(String git) {
 		this.git = git;
 	}
 
+	@Override
 	public String getBranch() {
 		return branch;
 	}
 
+	@Override
 	public void setBranch(String branch) {
 		this.branch = branch;
 	}
@@ -321,10 +325,12 @@ public class ProjectOnlineApplyAddDto extends BaseDomain implements ProjectOnlin
 		this.startupScriptFile = startupScriptFile;
 	}
 
+	@Override
 	public String getDependencySystem() {
 		return dependencySystem;
 	}
 
+	@Override
 	public void setDependencySystem(String dependencySystem) {
 		this.dependencySystem = dependencySystem;
 	}
@@ -337,10 +343,12 @@ public class ProjectOnlineApplyAddDto extends BaseDomain implements ProjectOnlin
 		this.dependencySystemFile = dependencySystemFile;
 	}
 
+	@Override
 	public String getOtherDescription() {
 		return otherDescription;
 	}
 
+	@Override
 	public void setOtherDescription(String otherDescription) {
 		this.otherDescription = otherDescription;
 	}

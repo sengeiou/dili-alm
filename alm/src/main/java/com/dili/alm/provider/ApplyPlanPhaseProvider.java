@@ -29,8 +29,9 @@ public class ApplyPlanPhaseProvider implements ValueProvider {
 
 	@Override
 	public String getDisplayText(Object obj, Map metaMap, FieldMeta fieldMeta) {
-		if (obj == null || obj.equals(""))
+		if (obj == null || obj.equals("")) {
 			return null;
+		}
 		return AlmCache.getInstance().getApplyPlanPhaseMap().get(obj.toString());
 	}
 }

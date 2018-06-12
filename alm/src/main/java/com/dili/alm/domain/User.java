@@ -124,6 +124,7 @@ public class User extends BaseDomain {
 	 *
 	 * @return id - 主键
 	 */
+	@Override
 	public Long getId() {
 		return id;
 	}
@@ -134,6 +135,7 @@ public class User extends BaseDomain {
 	 * @param id
 	 *            主键
 	 */
+	@Override
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -443,18 +445,23 @@ public class User extends BaseDomain {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		User other = (User) obj;
 		if (id == null) {
-			if (other.id != null)
+			if (other.id != null) {
 				return false;
-		} else if (!id.equals(other.id))
+			}
+		} else if (!id.equals(other.id)) {
 			return false;
+		}
 		return true;
 	}
 

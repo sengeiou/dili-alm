@@ -2,49 +2,55 @@ package com.dili.alm.domain.dto;
 
 import java.util.Date;
 
-import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectEntity;
 
+public class ProjectProgressDto extends ProjectEntity {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5169425767099501919L;
 
-public class ProjectProgressDto  extends ProjectEntity{
 	private Date estimateLaunchDate;
-	
+
 	private Date startDate;
-	
+
 	private Date endDate;
-	
+
 	private String dateProgress;
-	
+
 	private String projectProgress;
-	
+
 	private String launchTime;
 
-
+	@Override
 	public Date getEstimateLaunchDate() {
 		return estimateLaunchDate;
 	}
 
+	@Override
 	public void setEstimateLaunchDate(Date estimateLaunchDate) {
 		this.estimateLaunchDate = estimateLaunchDate;
 	}
 
+	@Override
 	public Date getStartDate() {
 		return startDate;
 	}
 
+	@Override
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
 
+	@Override
 	public Date getEndDate() {
 		return endDate;
 	}
 
+	@Override
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
-
-
 
 	public String getDateProgress() {
 		return dateProgress;
@@ -70,5 +76,4 @@ public class ProjectProgressDto  extends ProjectEntity{
 		this.projectProgress = projectProgress;
 	}
 
-	
 }

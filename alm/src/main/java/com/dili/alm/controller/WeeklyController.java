@@ -236,10 +236,11 @@ public class WeeklyController {
 		Map<String, Weekly> wkMap = weeklyService.insertWeeklyByprojectId(projectId);
 		Weekly wk = DTOUtils.newDTO(Weekly.class);
 		Map<Object, Object> map = null;
-		if (wkMap.get("one") == null)
+		if (wkMap.get("one") == null) {
 			map = weeklyService.getDescAddById(wkMap.get("two").getId() + "");
-		else
+		} else {
 			map = weeklyService.getDescAddById(wkMap.get("one").getId() + "");
+		}
 
 		// 项目周报
 		mv.addObject("pd", (ProjectWeeklyDto) map.get("pd"));

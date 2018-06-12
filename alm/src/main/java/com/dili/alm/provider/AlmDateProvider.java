@@ -37,15 +37,17 @@ public class AlmDateProvider implements ValueProvider {
 
 	@Override
 	public String getDisplayText(Object obj, Map metaMap, FieldMeta fieldMeta) {
-		if (obj == null || obj.equals(""))
+		if (obj == null || obj.equals("")) {
 			return "";
+		}
 		if (obj instanceof Instant) {
 			// 输出yyyy-MM-dd HH:mm:ss格式字符串
 			return DateTimeFormatter.ofPattern("yyyy-MM-dd").withZone(ZoneId.systemDefault()).format(((Instant) obj));
 		}
 		if (obj instanceof LocalDateTime) {
 			// 输出yyyy-MM-dd HH:mm:ss格式字符串
-			return ((LocalDateTime) obj).format(DateTimeFormatter.ofPattern("yyyy-MM-dd").withZone(ZoneId.systemDefault()));
+			return ((LocalDateTime) obj)
+					.format(DateTimeFormatter.ofPattern("yyyy-MM-dd").withZone(ZoneId.systemDefault()));
 		}
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		if (obj instanceof Date) {

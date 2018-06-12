@@ -316,6 +316,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		return dto.getValues();
 	}
 
+	@Override
 	public EasyuiPageOutput listPageMyProject(Project project) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		if (userTicket == null) {
@@ -535,11 +536,11 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 
 	@Override
 	public List<Map<String, String>> projectStateList() {
-		List<Map<String,String>> list=new ArrayList<Map<String,String>>();
+		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
 		List<DataDictionaryValueDto> projectStates = getProjectStates();
-		
+
 		for (DataDictionaryValueDto dataDictionaryValueDto : projectStates) {
-			Map<String,String> map=new HashMap<String, String>();
+			Map<String, String> map = new HashMap<String, String>();
 			map.put("name", dataDictionaryValueDto.getCode());
 			map.put("id", dataDictionaryValueDto.getValue());
 			list.add(map);

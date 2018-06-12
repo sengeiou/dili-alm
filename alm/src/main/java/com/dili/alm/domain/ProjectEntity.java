@@ -51,98 +51,122 @@ public class ProjectEntity extends BaseDomain implements Project {
 
 	private Long dep;
 
+	@Override
 	public Long getId() {
 		return id;
 	}
 
+	@Override
 	public void setId(Long id) {
 		this.id = id;
 	}
 
+	@Override
 	public String getSerialNumber() {
 		return serialNumber;
 	}
 
+	@Override
 	public void setSerialNumber(String serialNumber) {
 		this.serialNumber = serialNumber;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public void setName(String name) {
 		this.name = name;
 	}
 
+	@Override
 	public String getType() {
 		return type;
 	}
 
+	@Override
 	public void setType(String type) {
 		this.type = type;
 	}
 
+	@Override
 	public Date getStartDate() {
 		return startDate;
 	}
 
+	@Override
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
 
+	@Override
 	public Date getEndDate() {
 		return endDate;
 	}
 
+	@Override
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
 
+	@Override
 	public Date getActualStartDate() {
 		return actualStartDate;
 	}
 
+	@Override
 	public void setActualStartDate(Date actualStartDate) {
 		this.actualStartDate = actualStartDate;
 	}
 
+	@Override
 	public Integer getProjectState() {
 		return projectState;
 	}
 
+	@Override
 	public void setProjectState(Integer projectState) {
 		this.projectState = projectState;
 	}
 
+	@Override
 	public Integer getTaskCount() {
 		return taskCount;
 	}
 
+	@Override
 	public void setTaskCount(Integer taskCount) {
 		this.taskCount = taskCount;
 	}
 
+	@Override
 	public Integer getMemberCount() {
 		return memberCount;
 	}
 
+	@Override
 	public void setMemberCount(Integer memberCount) {
 		this.memberCount = memberCount;
 	}
 
+	@Override
 	public Integer getCompletedProgress() {
 		return completedProgress;
 	}
 
+	@Override
 	public void setCompletedProgress(Integer completedProgress) {
 		this.completedProgress = completedProgress;
 	}
 
+	@Override
 	public Long getOriginator() {
 		return originator;
 	}
 
+	@Override
 	public void setOriginator(Long originator) {
 		this.originator = originator;
 	}
@@ -247,10 +271,12 @@ public class ProjectEntity extends BaseDomain implements Project {
 		this.applyId = applyId;
 	}
 
+	@Override
 	public Date getActualEndDate() {
 		return actualEndDate;
 	}
 
+	@Override
 	public void setActualEndDate(Date actualEndDate) {
 		this.actualEndDate = actualEndDate;
 	}

@@ -101,6 +101,7 @@ public class TaskEntity extends BaseDomain implements Task {
 		this.factEndDate = task.getFactBeginDate();
 	}
 
+	@Override
 	public Long getBeforeTask() {
 		return beforeTask;
 	}
@@ -129,10 +130,12 @@ public class TaskEntity extends BaseDomain implements Task {
 		return createMemberId;
 	}
 
+	@Override
 	public String getDescribe() {
 		return describe;
 	}
 
+	@Override
 	public Date getEndDate() {
 		return endDate;
 	}
@@ -147,6 +150,7 @@ public class TaskEntity extends BaseDomain implements Task {
 		return factEndDate;
 	}
 
+	@Override
 	public Boolean getFlow() {
 		return flow;
 	}
@@ -155,6 +159,7 @@ public class TaskEntity extends BaseDomain implements Task {
 		return flowStr;
 	}
 
+	@Override
 	public Long getId() {
 		return id;
 	}
@@ -169,14 +174,17 @@ public class TaskEntity extends BaseDomain implements Task {
 		return modifyMemberId;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public Long getOwner() {
 		return owner;
 	}
 
+	@Override
 	public Long getPhaseId() {
 		return phaseId;
 	}
@@ -189,6 +197,7 @@ public class TaskEntity extends BaseDomain implements Task {
 		return planDays;
 	}
 
+	@Override
 	public Short getPlanTime() {
 		return planTime;
 	}
@@ -197,6 +206,7 @@ public class TaskEntity extends BaseDomain implements Task {
 		return progress;
 	}
 
+	@Override
 	public Long getProjectId() {
 		return projectId;
 	}
@@ -205,14 +215,17 @@ public class TaskEntity extends BaseDomain implements Task {
 		return projectName;
 	}
 
+	@Override
 	public Date getStartDate() {
 		return startDate;
 	}
 
+	@Override
 	public Integer getStatus() {
 		return status;
 	}
 
+	@Override
 	public Integer getType() {
 		return type;
 	}
@@ -221,6 +234,7 @@ public class TaskEntity extends BaseDomain implements Task {
 		return updateDetail;
 	}
 
+	@Override
 	public Long getVersionId() {
 		return versionId;
 	}
@@ -229,6 +243,7 @@ public class TaskEntity extends BaseDomain implements Task {
 		return versionStr;
 	}
 
+	@Override
 	public void setBeforeTask(Long beforeTask) {
 		this.beforeTask = beforeTask;
 	}
@@ -256,10 +271,12 @@ public class TaskEntity extends BaseDomain implements Task {
 		this.createMemberId = createMemberId;
 	}
 
+	@Override
 	public void setDescribe(String describe) {
 		this.describe = describe;
 	}
 
+	@Override
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
@@ -274,6 +291,7 @@ public class TaskEntity extends BaseDomain implements Task {
 		this.factEndDate = factEndDate;
 	}
 
+	@Override
 	public void setFlow(Boolean flow) {
 		this.flow = flow;
 	}
@@ -301,14 +319,17 @@ public class TaskEntity extends BaseDomain implements Task {
 		this.modifyMemberId = modifyMemberId;
 	}
 
+	@Override
 	public void setName(String name) {
 		this.name = name;
 	}
 
+	@Override
 	public void setOwner(Long owner) {
 		this.owner = owner;
 	}
 
+	@Override
 	public void setPhaseId(Long phaseId) {
 		this.phaseId = phaseId;
 	}
@@ -321,6 +342,7 @@ public class TaskEntity extends BaseDomain implements Task {
 		this.planDays = planDays;
 	}
 
+	@Override
 	public void setPlanTime(Short planTime) {
 		this.planTime = planTime;
 	}
@@ -333,6 +355,7 @@ public class TaskEntity extends BaseDomain implements Task {
 		this.projectId = projectId;
 	}
 
+	@Override
 	public void setProjectId(Long projectId) {
 		this.projectId = projectId;
 	}
@@ -341,14 +364,17 @@ public class TaskEntity extends BaseDomain implements Task {
 		this.projectName = projectName;
 	}
 
+	@Override
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
 
+	@Override
 	public void setStatus(Integer status) {
 		this.status = status;
 	}
 
+	@Override
 	public void setType(Integer type) {
 		this.type = type;
 	}
@@ -361,6 +387,7 @@ public class TaskEntity extends BaseDomain implements Task {
 		this.versionId = versionId;
 	}
 
+	@Override
 	public void setVersionId(Long versionId) {
 		this.versionId = versionId;
 	}

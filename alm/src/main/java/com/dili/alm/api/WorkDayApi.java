@@ -32,68 +32,69 @@ import com.dili.sysadmin.sdk.session.SessionContext;
 @RequestMapping("/workDayApi")
 public class WorkDayApi {
 	@Autowired
-	private WorkDayService  workDayService;
-		
+	private WorkDayService workDayService;
+
 	/**
 	 * 上传ecxel解析导入mysql
+	 * 
 	 * @param file
 	 * @param year
 	 * @return
 	 */
 	@ApiImplicitParams({
-			@ApiImplicitParam(name="WorkDay", paramType="form", value = "WorkDay的form信息", required = true, dataType = "string")
-		})
-	@CrossOrigin(origins = {"http://almadmin.diligrp.com", "null"})
-    @RequestMapping(value="/uploadWordDayDate", method = {RequestMethod.GET, RequestMethod.POST})
-    public  @ResponseBody BaseOutput  uploadWordDayDate(@RequestParam("file") MultipartFile file,String year) {
-		return workDayService.upload(file,year);
-    }
-	 /**
-	  * 查询导入的所有年份
-	  * @return
-	  */
-	 @ApiImplicitParams({
-			@ApiImplicitParam(name="WorkDay", paramType="form", value = "WorkDay的form信息", required = true, dataType = "string")
-		})
-	 @CrossOrigin(origins = {"http://almadmin.diligrp.com", "null"})
-	 @RequestMapping(value="/selectWorkDayYear", method = {RequestMethod.GET, RequestMethod.POST})
-	 public  @ResponseBody List<String>  selectWorkDayYear() {
-	 	return workDayService.getWorkDayYaers();	
-	 }
-	 
-	 /**
-	  * 查询当前工作时间
-	  * @return
-	  */
-	 @ApiImplicitParams({
-			@ApiImplicitParam(name="WorkDay", paramType="form", value = "WorkDay的form信息", required = true, dataType = "string")
-		})
-	 @CrossOrigin(origins = {"http://almadmin.diligrp.com", "null"})
-	 @RequestMapping(value="/getWorkDay", method = {RequestMethod.GET, RequestMethod.POST})
-	 public  @ResponseBody BaseOutput<WorkDayRoleDto>  getWorkDay(String userId) {
-		 if (WebUtil.strIsEmpty(userId)) {
-				throw new RuntimeException("未登录");
-			}
-		 BaseOutput<WorkDayRoleDto>  showWorkDay = workDayService.showWorkDay(Long.parseLong(userId));	
-		 if("false".equals(showWorkDay.getCode())){
-			 return new BaseOutput<WorkDayRoleDto>().failure("需要导入新的工作日").setData(showWorkDay.getData());
-		 }else{
-			 return new BaseOutput<WorkDayRoleDto>().success().setData(showWorkDay.getData());
-		 }
-	 	 
-	 }
-	 
-	 /**
-	  * 查询当前年份
-	  * @return
-	  */
-	 @ApiImplicitParams({
-			@ApiImplicitParam(name="WorkDay", paramType="form", value = "WorkDay的form信息", required = true, dataType = "string")
-		})
-	 @CrossOrigin(origins = {"http://almadmin.diligrp.com", "null"})
-	 @RequestMapping(value="/isHasWorkDayYear", method = {RequestMethod.GET, RequestMethod.POST})
-	 public @ResponseBody boolean  isHasWorkDayYear(String year) {
-	 	List<String> workDayYaers = workDayService.getWorkDayYaers();	
-	 	return workDayYaers.contains(year);
-	 }
+			@ApiImplicitParam(name = "WorkDay", paramType = "form", value = "WorkDay的form信息", required = true, dataType = "string") })
+	@CrossOrigin(origins = { "http://almadmin.diligrp.com", "null" })
+	@RequestMapping(value = "/uploadWordDayDate", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody BaseOutput uploadWordDayDate(@RequestParam("file") MultipartFile file, String year) {
+		return workDayService.upload(file, year);
+	}
+
+	/**
+	 * 查询导入的所有年份
+	 * 
+	 * @return
+	 */
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "WorkDay", paramType = "form", value = "WorkDay的form信息", required = true, dataType = "string") })
+	@CrossOrigin(origins = { "http://almadmin.diligrp.com", "null" })
+	@RequestMapping(value = "/selectWorkDayYear", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody List<String> selectWorkDayYear() {
+		return workDayService.getWorkDayYaers();
+	}
+
+	/**
+	 * 查询当前工作时间
+	 * 
+	 * @return
+	 */
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "WorkDay", paramType = "form", value = "WorkDay的form信息", required = true, dataType = "string") })
+	@CrossOrigin(origins = { "http://almadmin.diligrp.com", "null" })
+	@RequestMapping(value = "/getWorkDay", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody BaseOutput<WorkDayRoleDto> getWorkDay(String userId) {
+		if (WebUtil.strIsEmpty(userId)) {
+			throw new RuntimeException("未登录");
+		}
+		BaseOutput<WorkDayRoleDto> showWorkDay = workDayService.showWorkDay(Long.parseLong(userId));
+		if ("false".equals(showWorkDay.getCode())) {
+			return BaseOutput.failure("需要导入新的工作日").setData(showWorkDay.getData());
+		} else {
+			return BaseOutput.success().setData(showWorkDay.getData());
+		}
+
+	}
+
+	/**
+	 * 查询当前年份
+	 * 
+	 * @return
+	 */
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "WorkDay", paramType = "form", value = "WorkDay的form信息", required = true, dataType = "string") })
+	@CrossOrigin(origins = { "http://almadmin.diligrp.com", "null" })
+	@RequestMapping(value = "/isHasWorkDayYear", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody boolean isHasWorkDayYear(String year) {
+		List<String> workDayYaers = workDayService.getWorkDayYaers();
+		return workDayYaers.contains(year);
+	}
 }

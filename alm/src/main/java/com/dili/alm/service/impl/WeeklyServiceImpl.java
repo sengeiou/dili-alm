@@ -228,6 +228,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		return map;
 	}
 
+	@Override
 	public Map<Object, Object> getDescByIdWeek(String id) {
 		Map<Object, Object> map = new HashMap<Object, Object>();
 		// 项目周报
@@ -987,6 +988,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	@Override
 	public Map<String, Weekly> insertWeeklyByprojectId(String projectId) {
 
 		Map<String, Weekly> map = new HashMap<String, Weekly>();
@@ -1031,6 +1033,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		return map;
 	}
 
+	@Override
 	public Weekly insertWeekAndWeekDetail(String projectId, UserTicket userTicket, Weekly wkk) {
 		WorkDay workDay = workDayService.getNowWeeklyWorkDay();
 		WorkDay nextWeeklyWorkDays = workDayService.getNextWeeklyWorkDays();
