@@ -1,5 +1,25 @@
 package com.dili.alm.service.impl;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.IOUtils;
+import org.beetl.core.GroupTemplate;
+import org.beetl.core.Template;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Service;
+
+import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.component.MailManager;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.ProjectChangeMapper;
@@ -12,24 +32,8 @@ import com.dili.alm.service.ProjectChangeService;
 import com.dili.alm.service.ProjectService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.util.SystemConfigUtils;
+import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.sdk.session.SessionContext;
-
-import org.apache.commons.io.IOUtils;
-import org.beetl.core.GroupTemplate;
-import org.beetl.core.Template;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Date;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-11-30 17:21:55.
@@ -37,8 +41,6 @@ import java.util.Date;
 @Service
 public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Long> implements ProjectChangeService {
 
-	@Autowired
-	private JavaMailSender mailSender;
 	@Autowired
 	private ApproveService approveService;
 
@@ -110,8 +112,9 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 	public void sendMail(ProjectChange change) {
 		// 构建邮件内容
 		Project project = this.projectMapper.selectByPrimaryKey(change.getProjectId());
+		Map<Object, Object> viewModel = this.buildViewModel(change);
 		Template template = this.groupTemplate.getTemplate(this.projectChangeMailTemplate);
-		template.binding("model", change);
+		template.binding("model", viewModel);
 		template.binding("project1", project);
 
 		// 发送
@@ -121,6 +124,34 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 			} catch (Exception e) {
 				LOGGER.error(e.getMessage(), e);
 			}
+		}
+	}
+
+	private Map<Object, Object> buildViewModel(ProjectChange project) {
+		Map<Object, Object> metadata = new HashMap<>();
+
+		JSONObject projectVersionProvider = new JSONObject();
+		projectVersionProvider.put("provider", "projectVersionProvider");
+		metadata.put("versionId", projectVersionProvider);
+
+		JSONObject projectPhaseProvider = new JSONObject();
+		projectPhaseProvider.put("provider", "projectPhaseProvider");
+		metadata.put("phaseId", projectPhaseProvider);
+
+		JSONObject changeTypeProvider = new JSONObject();
+		changeTypeProvider.put("provider", "changeTypeProvider");
+		metadata.put("type", changeTypeProvider);
+
+		try {
+			@SuppressWarnings("rawtypes")
+			List<Map> viewModelList = ValueProviderUtils.buildDataByProvider(metadata, Arrays.asList(project));
+			if (CollectionUtils.isEmpty(viewModelList)) {
+				return null;
+			}
+			return viewModelList.get(0);
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			return null;
 		}
 	}
 
