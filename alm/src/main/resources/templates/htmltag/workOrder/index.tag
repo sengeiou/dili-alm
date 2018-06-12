@@ -209,7 +209,7 @@ function openUpdate(index) {
 							handler : function() {
 								var data = $("#editForm").serializeArray();
 								$('#editForm').form('submit', {
-											url : '${contextPath!}/workOrder/saveAndSubmit',
+											url : '${contextPath!}/workOrder/saveOrUpdate',
 											onSubmit : function() {
 												validateForm();
 											},

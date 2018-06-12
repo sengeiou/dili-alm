@@ -113,7 +113,7 @@
 		$('#acceptorId').combobox('initValue',${model.$_acceptorId!});
 		$('#acceptorId').combobox('setText','${model.acceptorId!}');
 		
-		var copyUserIds=${model.copyUserId!};
+		var copyUserIds=${model.copyUserId![]};
 		$(copyUserIds).each(function(index,item){
 			var node = $('#copyUserIds').combotree('tree').tree('find',item);
 			$('#copyUserIds').combotree('tree').tree('check', node.target);
