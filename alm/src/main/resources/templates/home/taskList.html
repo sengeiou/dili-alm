@@ -16,7 +16,7 @@
 						data-options="field:'projectId', width:'15%',order:'asc', align:'center', resizable:'true', fixed:'false',_provider:'projectProvider'">
 						所属项目</th>
 					<th
-						data-options="field:'versionId', width:'10%',order:'asc', align:'center', resizable:'true', fixed:'false',_provider:'projectVersionProvider'">
+						data-options="field:'versionId', width:'5%',order:'asc', align:'center', resizable:'true', fixed:'false',_provider:'projectVersionProvider'">
 						所属版本</th>
 					<th
 						data-options="field:'phaseId', width:100, width:'10%', order:'asc', align:'center', resizable:'true', fixed:'false',_provider:'projectPhaseProvider'">
@@ -31,7 +31,7 @@
 						状态</th>
 					<th data-options="field:'progress',formatter:progressFormatter,order:'asc', align:'center', resizable:'true', fixed:'false'">进度</th>
 
-					<th data-options="field:'options',width:'8%',formatter:formatOptions, align:'center', resizable:'true', fixed:'false'">操作</th>
+					<th data-options="field:'options',width:'13%',formatter:formatOptions, align:'center', resizable:'true', fixed:'false'">操作</th>
 				</tr>
 			</thead>
 		</table>
@@ -41,6 +41,71 @@
 <!-- ====================================================================================================================== --> <!-- style & script 分隔线 -->
 <!-- ====================================================================================================================== --> <script
 	type="text/javascript">
+	var userId = '${user.id!}';
+	userId = parseInt(userId);
+
+	// 是否填写过工时
+	function isTask(id) {
+		var htmlobj = $.ajax({
+					url : "${contextPath}/task/isTask.json?id=" + id,
+					async : false
+				});
+		var str = htmlobj.responseText;
+		var obj = $.parseJSON(str);
+		return obj;
+	}
+	
+	function complate(id) {
+		$.messager
+				.confirm(
+						'提示',
+						'提前完成任务，该任务将不能填写工时，确定要执行该操作？',
+						function(f) {
+							if (!f) {
+								return false;
+							}
+							if (isTask(id)) {
+								$.ajax({
+											type : "POST",
+											url : "${contextPath}/task/complateTask?id="
+													+ id,
+											processData : true,
+											dataType : "json",
+											async : true,
+											success : function(data) {
+												if (data.code == "200") {
+													if (window.frames[0]) {
+														window.frames[0]
+																.reloadGrid();
+													} else {
+														$('#grid').datagrid(
+																'reload');
+													}
+													$('#dlg').dialog('close');
+													LogUtils
+															.saveLog(
+																	LOG_MODULE_OPS.COMPLETE_PROJECT_VERSION_PHASE_TASK,
+																	"完成任务："
+																			+ data.data
+																			+ ":成功",
+																	function() {
+																	});
+												} else {
+													$.messager.alert('错误',
+															data.result);
+												}
+											},
+											error : function() {
+												$.messager
+														.alert('错误', '远程访问失败');
+											}
+										});
+							} else {
+								$.messager.alert('错误', '任务工时加班工时其中一项不能为0');
+							}
+						});
+	}
+
 	//表格查询
 	function queryGrid() {
 		var opts = $("#grid").datagrid("options");
@@ -132,24 +197,24 @@
 	 *          表单提交需执行的任务
 	 */
 	$(function() {
-		/*             bindFormEvent("form", "name", queryGrid);
-		            bindFormEvent("_form", "_name", saveOrUpdate, function (){$('#dlg').dialog('close');});
-		            if (document.addEventListener) {
-		                document.addEventListener("keyup",getKey,false);
-		            } else if (document.attachEvent) {
-		                document.attachEvent("onkeyup",getKey);
-		            } else {
-		                document.onkeyup = getKey;
-		            } */
 		queryGrid();
 	})
 
 	function formatOptions(value, row, index) {
+		var content = '';
 		if (row.updateDetail && row.canOperation) {
-			var content = '<span style="padding:5px;"><a href="javascript:void(0)" onclick="openUpdateDetail('
+			content += '<span style="padding:2px;"><a href="javascript:void(0)" onclick="openUpdateDetail('
 					+ index + ')">执行任务</a></span>';
 		} else {
-			var content = '<span style="padding:5px;color:#8B8B7A;text-decoration:underline;">执行任务</span>';
+			content += '<span style="padding:2px;color:#8B8B7A;text-decoration:underline;">执行任务</span>';
+		}
+		if (row.$_status == 1 || row.$_status == 4) {
+			if (row.$_owner == userId || row.projectManagerId == userId) {
+				content += '<span style="padding:2px;"><a href="javascript:void(0)" onclick="complate('
+						+ row.id + ')">完成任务</a></span>';
+			} else {
+				content += '<span style="padding:2px;color:#8B8B7A;text-decoration:underline;">完成任务</span>';
+			}
 		}
 		return content;
 	}

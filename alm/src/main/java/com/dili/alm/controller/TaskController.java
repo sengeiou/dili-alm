@@ -126,6 +126,8 @@ public class TaskController {
 		TaskQueryInProjectId query = DTOUtils.as(task, TaskQueryInProjectId.class);
 		query.setInProjectIds(projectIds);
 		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
+		task.setSort("created");
+		task.setOrder("desc");
 		return taskService.listByTeam(query, phaseName).toString();
 	}
 
@@ -136,6 +138,8 @@ public class TaskController {
 	public @ResponseBody String listTaskPageTab(Task task) throws Exception {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		task.setOwner(userTicket.getId());// 设置登录人员信息
+		task.setSort("created");
+		task.setOrder("desc");
 		return taskService.listByTeam(task, null).toString();
 	}
 

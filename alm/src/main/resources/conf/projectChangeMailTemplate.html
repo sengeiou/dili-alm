@@ -152,7 +152,7 @@ p {
 						<li><label>提交阶段：</label> <span>${model.phaseId!}</span></li>
 						<li><label>变更类型：</label> <span>${model.type!}</span></li>
 						<li><label>变更工作量预估：</label> <span>${model.workingHours!}</span></li>
-						<li><label>是否影响上线：</label> <span>${model.affectsOnline!}</span></li>
+						<li><label>是否影响上线：</label> <span>${decode(model.affectsOnline,1,'是',0,'否',"保密")}</span></li>
 						<li><label>变更后上线日期：</label> <span>${model.estimateLaunchDate!,dateFormat ="yyyy-MM-dd"}</span></li>
 						<li><label>变更后结束日期：</label> <span>${model.endDate!,dateFormat ="yyyy-MM-dd"}</span></li>
 					</ul>

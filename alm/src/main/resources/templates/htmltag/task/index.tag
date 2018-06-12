@@ -395,6 +395,8 @@ function openUpdateDetail(selected) {
 		canEditForTaskdetail();
 	}
 
+	$('#_form').form('clear');
+	
 	$('#dlg').dialog('open');
 	$('#dlg').dialog('center');
 

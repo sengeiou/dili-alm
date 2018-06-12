@@ -1,21 +1,18 @@
 package com.dili.alm.provider;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.dili.alm.cache.AlmCache;
-import com.dili.alm.domain.dto.DataDictionaryDto;
-import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValuePairImpl;
 import com.dili.ss.metadata.ValueProvider;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-10-24 14:31:10.
