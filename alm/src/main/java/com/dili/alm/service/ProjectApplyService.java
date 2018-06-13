@@ -6,8 +6,8 @@ import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.apply.ApplyFiles;
 import com.dili.alm.domain.dto.apply.ApplyImpact;
 import com.dili.alm.domain.dto.apply.ApplyRisk;
+import com.dili.alm.exceptions.ProjectApplyException;
 import com.dili.ss.base.BaseService;
-import com.dili.ss.domain.BaseOutput;
 
 import java.util.List;
 import java.util.Map;
@@ -22,7 +22,7 @@ public interface ProjectApplyService extends BaseService<ProjectApply, Long> {
 
     List<DataDictionaryValueDto> getPlanPhase();
 
-    BaseOutput submit(ProjectApply projectApply, ApplyFiles files);
+    void submit(ProjectApply projectApply, ApplyFiles files) throws ProjectApplyException;
     Long reApply(Long id);
 
     List<Files> listFiles(Long applyId);

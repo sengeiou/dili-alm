@@ -3,6 +3,7 @@ package com.dili.alm.service;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.Approve;
 import com.dili.alm.exceptions.ApproveException;
+import com.dili.alm.exceptions.ProjectApplyException;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
 
@@ -28,7 +29,7 @@ public interface ApproveService extends BaseService<Approve, Long> {
 
     void downloadProjectDoc(AlmConstants.ApproveType approveType, Long id, OutputStream os);
 
-    void insertBefore(Approve approve);
+    void insertBefore(Approve approve) throws ProjectApplyException;
 
 
 }

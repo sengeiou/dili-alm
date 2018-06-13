@@ -21,14 +21,19 @@ import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.constant.AlmConstants.TaskStatus;
+import com.dili.alm.dao.ProjectActionRecordMapper;
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.dao.ProjectPhaseMapper;
 import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.TaskDetailsMapper;
 import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.dao.TeamMapper;
+import com.dili.alm.domain.ActionDateType;
 import com.dili.alm.domain.DataDictionaryValue;
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.ProjectAction;
+import com.dili.alm.domain.ProjectActionRecord;
+import com.dili.alm.domain.ProjectActionType;
 import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.ProjectChange;
 import com.dili.alm.domain.ProjectPhase;
@@ -123,6 +128,8 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	private TeamMapper teamMapper;
 	@Autowired
 	private ProjectVersionMapper versionMapper;
+	@Autowired
+	private ProjectActionRecordMapper parMapper;
 
 	@Override
 	public void addTask(Task task, Short planTime, Date startDateShow, Date endDateShow, Boolean flow, Long creatorId)
@@ -665,7 +672,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		List<TaskDetails> list = taskDetailsService.list(taskDetails);
 		short taskHour = 0;
 		short overHour = 0;
-		if (list != null || list.size() != 0) {
+		if (CollectionUtils.isNotEmpty(list)) {
 			for (TaskDetails entity : list) {
 				taskHour += entity.getTaskHour();// 累加任务工时
 				overHour += entity.getOverHour();// 累加加班工时
@@ -677,54 +684,92 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		return taskDetails;
 	}
 
-	@Transactional
+	@Transactional(rollbackFor = ApplicationException.class)
 	@Override
-	public int startTask(Task task) {
+	public void startTask(Long taskId) throws TaskException {
+
+		// 查询任务
+		Task task = this.getActualDao().selectByPrimaryKey(taskId);
+		if (task == null) {
+			throw new TaskException("任务不存在");
+		}
+
+		// 判断项目是否为空
+		Project project = this.projectMapper.selectByPrimaryKey(task.getProjectId());
+		if (project == null) {
+			throw new TaskException("项目不存在");
+		}
 
 		// 只更新任务状态
 		task.setFactBeginDate(new Date());
 		task.setStatus(TaskStatus.START.code);// 更新状态为开始任务
-		Project project = this.projectMapper.selectByPrimaryKey(task.getProjectId());
-		if (project == null) {
-			throw new RuntimeException("项目不存在");
-		}
 		Date now = new Date();
+
+		// 更新项目状态
 		if (project.getProjectState().equals(ProjectState.NOT_START.getValue())
 				|| project.getActualStartDate() == null) {
 			project.setActualStartDate(now);
 			project.setProjectState(ProjectState.IN_PROGRESS.getValue());
-			this.projectMapper.updateByPrimaryKey(project);
+			int rows = this.projectMapper.updateByPrimaryKey(project);
+			if (rows <= 0) {
+				throw new TaskException("更新项目失败");
+			}
+			// 插入项目进程记录项目开始
+			ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
+			par.setActionCode(ProjectAction.PROJECT_START.getCode());
+			par.setActionDateType(ActionDateType.POINT.getValue());
+			par.setActionDate(now);
+			par.setProjectId(project.getId());
+			par.setActionType(ProjectActionType.PROJECT.getValue());
+			rows = this.parMapper.insertSelective(par);
+			if (rows <= 0) {
+				throw new TaskException("插入项目进程记录失败");
+			}
 		}
 		ProjectVersion version = this.versionMapper.selectByPrimaryKey(task.getVersionId());
 		if (version.getVersionState().equals(ProjectState.NOT_START.getValue()) || version.getActualEndDate() == null) {
 			version.setActualStartDate(now);
 			version.setVersionState(ProjectState.IN_PROGRESS.getValue());
-			this.versionMapper.updateByPrimaryKey(version);
+			int rows = this.versionMapper.updateByPrimaryKey(version);
+			if (rows <= 0) {
+				throw new TaskException("更新版本状态失败");
+			}
+			// 插入项目进程记录版本开始
+			ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
+			par.setActionCode(ProjectAction.VERSION_START.getCode());
+			par.setActionDateType(ActionDateType.POINT.getValue());
+			par.setActionDate(now);
+			par.setProjectId(project.getId());
+			par.setActionType(ProjectActionType.VERSION.getValue());
+			rows = this.parMapper.insertSelective(par);
+			if (rows <= 0) {
+				throw new TaskException("插入项目进程记录失败");
+			}
 		}
 		ProjectPhase phase = this.phaseMapper.selectByPrimaryKey(task.getPhaseId());
 		if (phase.getActualStartDate() == null) {
 			phase.setActualStartDate(now);
-			this.phaseMapper.updateByPrimaryKey(phase);
+			int rows = this.phaseMapper.updateByPrimaryKey(phase);
+			if (rows <= 0) {
+				throw new TaskException("更新阶段信息失败");
+			}
 		}
 
-		try {
+		/*** 初始化相关内容的进度 ***/
+		// 进度总量写入project表中
+		saveProjectProgress(task, false);
 
-			/*** 初始化相关内容的进度 ***/
-			// 进度总量写入project表中
-			saveProjectProgress(task, false);
+		// 更新版本表中的进度
+		saveProjectVersion(task);
 
-			// 更新版本表中的进度
-			saveProjectVersion(task);
+		// 更新阶段表中的进度
+		saveProjectPhase(task);
+		/*** 初始化相关内容的进度 ***/
 
-			// 更新阶段表中的进度
-			saveProjectPhase(task);
-			/*** 初始化相关内容的进度 ***/
-
-		} catch (Exception e) {
-			return 0;
+		int rows = this.update(task);
+		if (rows <= 0) {
+			throw new TaskException("更新任务失败");
 		}
-
-		return this.update(task);
 	}
 
 	@Override

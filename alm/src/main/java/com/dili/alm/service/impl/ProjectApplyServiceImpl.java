@@ -1,5 +1,24 @@
 package com.dili.alm.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.alibaba.fastjson.JSON;
 import com.dili.alm.component.NumberGenerator;
 import com.dili.alm.constant.AlmConstants;
@@ -10,29 +29,25 @@ import com.dili.alm.domain.Files;
 import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
-import com.dili.alm.domain.dto.apply.*;
+import com.dili.alm.domain.dto.apply.ApplyFiles;
+import com.dili.alm.domain.dto.apply.ApplyImpact;
+import com.dili.alm.domain.dto.apply.ApplyMajorResource;
+import com.dili.alm.domain.dto.apply.ApplyPlan;
+import com.dili.alm.domain.dto.apply.ApplyRisk;
+import com.dili.alm.exceptions.ApplicationException;
+import com.dili.alm.exceptions.ProjectApplyException;
 import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.ProjectApplyService;
 import com.dili.ss.base.BaseServiceImpl;
-import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.util.SystemConfigUtils;
 import com.dili.sysadmin.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Service;
-import tk.mybatis.mapper.entity.Example;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
+import tk.mybatis.mapper.entity.Example;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-11-21 16:19:02.
@@ -78,8 +93,9 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 		return dto.getValues();
 	}
 
+	@Transactional(rollbackFor = ApplicationException.class)
 	@Override
-	public BaseOutput submit(ProjectApply projectApply, ApplyFiles files) {
+	public void submit(ProjectApply projectApply, ApplyFiles files) throws ProjectApplyException {
 		if (StringUtils.isNotBlank(files.getDels())) {
 			List<Files> filesFromJson = JSON.parseArray(files.getDels(), Files.class);
 			filesFromJson.forEach(file -> filesService.delete(file.getId()));
@@ -112,10 +128,10 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 			sendMail(this.get(projectApply.getId()));
 		}
 
-		this.updateSelective(projectApply);
-		ProjectApply projectApply2 = this.get(projectApply.getId());
-		return BaseOutput.success(String.valueOf(projectApply2.getId()))
-				.setData(projectApply2.getId() + ":" + projectApply2.getName());
+		int rows = this.updateSelective(projectApply);
+		if (rows <= 0) {
+			throw new ProjectApplyException("提交立项申请失败");
+		}
 	}
 
 	public void sendMail(ProjectApply projectApply) {

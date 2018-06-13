@@ -378,7 +378,7 @@ public class TaskController {
 		}
 		Task task = taskService.get(id);
 		task.setModifyMemberId(userTicket.getId());
-		if (taskService.startTask(task) == 0) {
+		if (taskService.startTask(null) == 0) {
 			BaseOutput.failure("请勿重复添加数据");
 		}
 		taskService.update(task);

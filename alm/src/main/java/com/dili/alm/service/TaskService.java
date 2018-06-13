@@ -24,7 +24,7 @@ public interface TaskService extends BaseService<Task, Long> {
 
 	void updateTaskDetail(TaskDetails taskDetails, Task task) throws TaskException;
 
-	int startTask(Task task);
+	void startTask(Long taskId) throws TaskException;
 
 	void notComplateTask(ScheduleMessage msg);
 

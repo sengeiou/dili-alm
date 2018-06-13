@@ -1,30 +1,17 @@
 package com.dili.alm.service.impl;
 
-import cn.afterturn.easypoi.word.WordExportUtil;
-import com.alibaba.fastjson.JSON;
-import com.dili.alm.cache.AlmCache;
-import com.dili.alm.component.MailManager;
-import com.dili.alm.constant.AlmConstants;
-import com.dili.alm.dao.ApproveMapper;
-import com.dili.alm.dao.ProjectChangeMapper;
-import com.dili.alm.dao.ProjectMapper;
-import com.dili.alm.domain.*;
-import com.dili.alm.domain.dto.DataDictionaryDto;
-import com.dili.alm.domain.dto.DataDictionaryValueDto;
-import com.dili.alm.domain.dto.apply.ApplyApprove;
-import com.dili.alm.exceptions.ApplicationException;
-import com.dili.alm.exceptions.ApproveException;
-import com.dili.alm.rpc.RoleRpc;
-import com.dili.alm.rpc.UserRpc;
-import com.dili.alm.service.*;
-import com.dili.alm.utils.DateUtil;
-import com.dili.ss.base.BaseServiceImpl;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.metadata.ValueProviderUtils;
-import com.dili.ss.util.SystemConfigUtils;
-import com.dili.sysadmin.sdk.session.SessionContext;
-import com.google.common.collect.Lists;
+import static com.dili.alm.domain.ProjectState.NOT_START;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -42,13 +29,59 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.*;
+import com.alibaba.fastjson.JSON;
+import com.dili.alm.cache.AlmCache;
+import com.dili.alm.component.MailManager;
+import com.dili.alm.constant.AlmConstants;
+import com.dili.alm.dao.ApproveMapper;
+import com.dili.alm.dao.ProjectActionRecordMapper;
+import com.dili.alm.dao.ProjectMapper;
+import com.dili.alm.domain.ActionDateType;
+import com.dili.alm.domain.Approve;
+import com.dili.alm.domain.DataDictionaryValue;
+import com.dili.alm.domain.Files;
+import com.dili.alm.domain.Project;
+import com.dili.alm.domain.ProjectAction;
+import com.dili.alm.domain.ProjectActionRecord;
+import com.dili.alm.domain.ProjectActionType;
+import com.dili.alm.domain.ProjectApply;
+import com.dili.alm.domain.ProjectChange;
+import com.dili.alm.domain.ProjectComplete;
+import com.dili.alm.domain.ProjectState;
+import com.dili.alm.domain.Team;
+import com.dili.alm.domain.TeamRole;
+import com.dili.alm.domain.User;
+import com.dili.alm.domain.VerifyApproval;
+import com.dili.alm.domain.dto.DataDictionaryDto;
+import com.dili.alm.domain.dto.DataDictionaryValueDto;
+import com.dili.alm.domain.dto.apply.ApplyApprove;
+import com.dili.alm.exceptions.ApplicationException;
+import com.dili.alm.exceptions.ApproveException;
+import com.dili.alm.exceptions.ProjectApplyException;
+import com.dili.alm.rpc.RoleRpc;
+import com.dili.alm.rpc.UserRpc;
+import com.dili.alm.service.ApproveService;
+import com.dili.alm.service.DataDictionaryService;
+import com.dili.alm.service.FilesService;
+import com.dili.alm.service.MessageService;
+import com.dili.alm.service.ProjectApplyService;
+import com.dili.alm.service.ProjectChangeService;
+import com.dili.alm.service.ProjectCompleteService;
+import com.dili.alm.service.ProjectPhaseService;
+import com.dili.alm.service.ProjectService;
+import com.dili.alm.service.ProjectVersionService;
+import com.dili.alm.service.TeamService;
+import com.dili.alm.service.VerifyApprovalService;
+import com.dili.alm.utils.DateUtil;
+import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.ss.util.SystemConfigUtils;
+import com.dili.sysadmin.sdk.session.SessionContext;
+import com.google.common.collect.Lists;
 
-import static com.dili.alm.domain.ProjectState.NOT_START;
+import cn.afterturn.easypoi.word.WordExportUtil;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-12-04 17:39:37.
@@ -111,7 +144,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	@Value("${spring.mail.username:}")
 	private String mailFrom;
 	@Autowired
-	private ProjectChangeMapper projectChangeMapper;
+	private ProjectActionRecordMapper parMapper;
 
 	public ApproveServiceImpl() {
 		super();
@@ -403,13 +436,16 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	}
 
 	@Override
-	public void insertBefore(Approve as) {
+	public void insertBefore(Approve as) throws ProjectApplyException {
 		DataDictionaryDto code = dataDictionaryService.findByCode(AlmConstants.ROLE_CODE);
 		List<DataDictionaryValueDto> values = code.getValues();
-		String roleId = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH_LEADER)).findFirst()
-				.map(DataDictionaryValue::getValue).orElse(null);
+		String roleId = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH_LEADER))
+				.findFirst().map(DataDictionaryValue::getValue).orElse(null);
 
-		insertSelective(as);
+		int rows = insertSelective(as);
+		if (rows <= 0) {
+			throw new ProjectApplyException("插入审批记录失败");
+		}
 
 		if (roleId != null) {
 			List<ApplyApprove> approveList = Lists.newArrayList();
@@ -431,7 +467,10 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 				approveList.add(leaderApprove[0]);
 			}
 			as.setDescription(JSON.toJSONString(approveList));
-			updateSelective(as);
+			rows = updateSelective(as);
+			if (rows <= 0) {
+				throw new ProjectApplyException("更新审批记录失败");
+			}
 		}
 
 	}
@@ -466,30 +505,74 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
 	/**
 	 * 立项审批通过生成项目信息
+	 * 
+	 * @throws ProjectApplyException
 	 */
-	private void buildProject(ProjectApply apply, Approve approve) {
-		Project build = DTOUtils.newDTO(Project.class);
-		build.setSerialNumber(apply.getNumber());
-		build.setName(apply.getName());
-		build.setType(apply.getType());
-		build.setProjectManager(apply.getProjectLeader());
-		build.setDevelopManager(apply.getDevelopmentManager());
-		build.setTestManager(apply.getTestManager());
-		build.setProductManager(apply.getProductManager());
-		build.setStartDate(apply.getStartDate());
-		build.setEndDate(apply.getEndDate());
-		build.setDep(apply.getDep());
-		build.setApplyId(apply.getId());
-		build.setBusinessOwner(apply.getBusinessOwner());
-		build.setProjectState(NOT_START.getValue());
-		build.setOriginator(apply.getCreateMemberId());
-		build.setEstimateLaunchDate(apply.getEstimateLaunchDate());
-		projectService.insertSelective(build);
-		buildTeam(build);
-		// buildFile(apply.getId(), build.getId());
+	private void buildProject(ProjectApply apply, Approve approve) throws ApproveException {
+		Project project = DTOUtils.newDTO(Project.class);
+		project.setSerialNumber(apply.getNumber());
+		project.setName(apply.getName());
+		project.setType(apply.getType());
+		project.setProjectManager(apply.getProjectLeader());
+		project.setDevelopManager(apply.getDevelopmentManager());
+		project.setTestManager(apply.getTestManager());
+		project.setProductManager(apply.getProductManager());
+		project.setStartDate(apply.getStartDate());
+		project.setEndDate(apply.getEndDate());
+		project.setDep(apply.getDep());
+		project.setApplyId(apply.getId());
+		project.setBusinessOwner(apply.getBusinessOwner());
+		project.setProjectState(NOT_START.getValue());
+		project.setOriginator(apply.getCreateMemberId());
+		project.setEstimateLaunchDate(apply.getEstimateLaunchDate());
+		int rows = projectService.insertSelective(project);
+		if (rows <= 0) {
+			throw new ApproveException("创建项目失败");
+		}
+		buildTeam(project);
+		// 插入立项规划
+		this.addProjectAction(project);
 	}
 
-	private void buildTeam(Project project) {
+	private void addProjectAction(Project project) throws ApproveException {
+		Date now = new Date();
+		// 插入项目进程记录立项计划
+		ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
+		par.setActionCode(ProjectAction.PROJECT_PLAN.getCode());
+		par.setActionDateType(ActionDateType.PERIOD.getValue());
+		par.setActionStartDate(project.getStartDate());
+		par.setActionEndDate(project.getEndDate());
+		par.setProjectId(project.getId());
+		par.setActionType(ProjectActionType.PROJECT.getValue());
+		int rows = this.parMapper.insertSelective(par);
+		if (rows <= 0) {
+			throw new ApproveException("插入项目活动记录失败");
+		}
+		// 插入项目进程记录新增立项记录
+		par = DTOUtils.newDTO(ProjectActionRecord.class);
+		par.setActionCode(ProjectAction.PROJECT_APPLY.getCode());
+		par.setActionDateType(ActionDateType.POINT.getValue());
+		par.setActionDate(now);
+		par.setProjectId(project.getId());
+		par.setActionType(ProjectActionType.PROJECT.getValue());
+		rows = this.parMapper.insertSelective(par);
+		if (rows <= 0) {
+			throw new ApproveException("插入项目活动记录失败");
+		}
+		// 插入项目进程记录新增立项审批记录
+		par = DTOUtils.newDTO(ProjectActionRecord.class);
+		par.setActionCode(ProjectAction.PROJECT_APPLY_APPROVE.getCode());
+		par.setActionDateType(ActionDateType.POINT.getValue());
+		par.setActionDate(now);
+		par.setProjectId(project.getId());
+		par.setActionType(ProjectActionType.PROJECT.getValue());
+		rows = this.parMapper.insertSelective(par);
+		if (rows <= 0) {
+			throw new ApproveException("插入项目活动记录失败");
+		}
+	}
+
+	private void buildTeam(Project project) throws ApproveException {
 		for (TeamRole teamRole : TeamRole.values()) {
 			Team team = DTOUtils.newDTO(Team.class);
 			team.setProjectId(project.getId());
@@ -499,25 +582,25 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 			case PROJECT_MANAGER:
 				team.setMemberId(project.getProjectManager());
 				team.setRole(TeamRole.PROJECT_MANAGER.getValue());
-				teamService.insert(team);
 				break;
 			case PRODUCT_MANAGER:
 				team.setMemberId(project.getProductManager());
 				team.setRole(TeamRole.PRODUCT_MANAGER.getValue());
-				teamService.insert(team);
 				break;
 			case TEST_MANAGER:
 				team.setMemberId(project.getTestManager());
 				team.setRole(TeamRole.TEST_MANAGER.getValue());
-				teamService.insert(team);
 				break;
 			case DEVELOP_MANAGER:
 				team.setMemberId(project.getDevelopManager());
 				team.setRole(TeamRole.DEVELOP_MANAGER.getValue());
-				teamService.insert(team);
 				break;
 			default:
-				break;
+				throw new ApproveException("未知的团队类型");
+			}
+			int rows = teamService.insert(team);
+			if (rows <= 0) {
+				throw new ApproveException("创建团队失败");
 			}
 
 		}
