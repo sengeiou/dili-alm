@@ -14,6 +14,7 @@ import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.apply.ApplyApprove;
 import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.ApproveException;
+import com.dili.alm.provider.ProjectTypeProvider;
 import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.*;
@@ -111,7 +112,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	@Value("${spring.mail.username:}")
 	private String mailFrom;
 	@Autowired
-	private ProjectChangeMapper projectChangeMapper;
+	private ProjectTypeProvider projectTypeProvider;
 
 	public ApproveServiceImpl() {
 		super();
@@ -406,8 +407,8 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	public void insertBefore(Approve as) {
 		DataDictionaryDto code = dataDictionaryService.findByCode(AlmConstants.ROLE_CODE);
 		List<DataDictionaryValueDto> values = code.getValues();
-		String roleId = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH_LEADER)).findFirst()
-				.map(DataDictionaryValue::getValue).orElse(null);
+		String roleId = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH_LEADER))
+				.findFirst().map(DataDictionaryValue::getValue).orElse(null);
 
 		insertSelective(as);
 
@@ -635,20 +636,26 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	private void sendMail(ProjectChange change, boolean accept) {
 		// 构建邮件内容
 		Project project = this.projectMapper.selectByPrimaryKey(change.getProjectId());
+		Map<Object, Object> viewModel = ProjectChangeServiceImpl.buildViewModel(change);
 		Template template = this.groupTemplate.getTemplate(this.projectChangeMailTemplate);
-		template.binding("model", change);
-		template.binding("project1", project);
+		viewModel.put("projectType", this.projectTypeProvider.getDisplayText(project.getType(), null, null));
+		template.binding("model", viewModel);
 
 		// 发送
-		for (String addr : change.getEmail().split(",")) {
-			try {
-				this.mailManager.sendMail(this.mailFrom, addr, template.render(), true,
-						accept ? "变更申请已经审批通过" : "变更申请审批未通过", null);
-			} catch (Exception e) {
-				LOGGER.error(e.getMessage(), e);
-			}
+		try {
+			this.mailManager.sendMail(this.mailFrom, "jianglinhu@diligrp.com", template.render(), true,
+					accept ? "变更申请已经审批通过" : "变更申请审批未通过", null);
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
 		}
-
+//		for (String addr : change.getEmail().split(",")) {
+//			try {
+//				this.mailManager.sendMail(this.mailFrom, addr, template.render(), true,
+//						accept ? "变更申请已经审批通过" : "变更申请审批未通过", null);
+//			} catch (Exception e) {
+//				LOGGER.error(e.getMessage(), e);
+//			}
+//		}
 	}
 
 	private void sendMail(ProjectComplete complete, boolean accept) {
