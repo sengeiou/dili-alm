@@ -1,30 +1,17 @@
 package com.dili.alm.service.impl;
 
-import cn.afterturn.easypoi.word.WordExportUtil;
-import com.alibaba.fastjson.JSON;
-import com.dili.alm.cache.AlmCache;
-import com.dili.alm.component.MailManager;
-import com.dili.alm.constant.AlmConstants;
-import com.dili.alm.dao.ApproveMapper;
-import com.dili.alm.dao.ProjectChangeMapper;
-import com.dili.alm.dao.ProjectMapper;
-import com.dili.alm.domain.*;
-import com.dili.alm.domain.dto.DataDictionaryDto;
-import com.dili.alm.domain.dto.DataDictionaryValueDto;
-import com.dili.alm.domain.dto.apply.ApplyApprove;
-import com.dili.alm.exceptions.ApplicationException;
-import com.dili.alm.exceptions.ApproveException;
-import com.dili.alm.rpc.RoleRpc;
-import com.dili.alm.rpc.UserRpc;
-import com.dili.alm.service.*;
-import com.dili.alm.utils.DateUtil;
-import com.dili.ss.base.BaseServiceImpl;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.metadata.ValueProviderUtils;
-import com.dili.ss.util.SystemConfigUtils;
-import com.dili.sysadmin.sdk.session.SessionContext;
-import com.google.common.collect.Lists;
+import static com.dili.alm.domain.ProjectState.NOT_START;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -42,13 +29,54 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.*;
+import com.alibaba.fastjson.JSON;
+import com.dili.alm.cache.AlmCache;
+import com.dili.alm.component.MailManager;
+import com.dili.alm.constant.AlmConstants;
+import com.dili.alm.dao.ApproveMapper;
+import com.dili.alm.dao.ProjectMapper;
+import com.dili.alm.domain.Approve;
+import com.dili.alm.domain.DataDictionaryValue;
+import com.dili.alm.domain.Files;
+import com.dili.alm.domain.Project;
+import com.dili.alm.domain.ProjectApply;
+import com.dili.alm.domain.ProjectChange;
+import com.dili.alm.domain.ProjectComplete;
+import com.dili.alm.domain.ProjectState;
+import com.dili.alm.domain.Team;
+import com.dili.alm.domain.TeamRole;
+import com.dili.alm.domain.User;
+import com.dili.alm.domain.VerifyApproval;
+import com.dili.alm.domain.dto.DataDictionaryDto;
+import com.dili.alm.domain.dto.DataDictionaryValueDto;
+import com.dili.alm.domain.dto.apply.ApplyApprove;
+import com.dili.alm.exceptions.ApplicationException;
+import com.dili.alm.exceptions.ApproveException;
+import com.dili.alm.provider.ProjectTypeProvider;
+import com.dili.alm.rpc.RoleRpc;
+import com.dili.alm.rpc.UserRpc;
+import com.dili.alm.service.ApproveService;
+import com.dili.alm.service.DataDictionaryService;
+import com.dili.alm.service.FilesService;
+import com.dili.alm.service.MessageService;
+import com.dili.alm.service.ProjectApplyService;
+import com.dili.alm.service.ProjectChangeService;
+import com.dili.alm.service.ProjectCompleteService;
+import com.dili.alm.service.ProjectPhaseService;
+import com.dili.alm.service.ProjectService;
+import com.dili.alm.service.ProjectVersionService;
+import com.dili.alm.service.TeamService;
+import com.dili.alm.service.VerifyApprovalService;
+import com.dili.alm.utils.DateUtil;
+import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.ss.util.SystemConfigUtils;
+import com.dili.sysadmin.sdk.session.SessionContext;
+import com.google.common.collect.Lists;
 
-import static com.dili.alm.domain.ProjectState.NOT_START;
+import cn.afterturn.easypoi.word.WordExportUtil;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-12-04 17:39:37.
@@ -111,7 +139,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	@Value("${spring.mail.username:}")
 	private String mailFrom;
 	@Autowired
-	private ProjectChangeMapper projectChangeMapper;
+	private ProjectTypeProvider projectTypeProvider;
 
 	public ApproveServiceImpl() {
 		super();
@@ -406,8 +434,8 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	public void insertBefore(Approve as) {
 		DataDictionaryDto code = dataDictionaryService.findByCode(AlmConstants.ROLE_CODE);
 		List<DataDictionaryValueDto> values = code.getValues();
-		String roleId = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH_LEADER)).findFirst()
-				.map(DataDictionaryValue::getValue).orElse(null);
+		String roleId = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH_LEADER))
+				.findFirst().map(DataDictionaryValue::getValue).orElse(null);
 
 		insertSelective(as);
 
@@ -635,9 +663,10 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	private void sendMail(ProjectChange change, boolean accept) {
 		// 构建邮件内容
 		Project project = this.projectMapper.selectByPrimaryKey(change.getProjectId());
+		Map<Object, Object> viewModel = ProjectChangeServiceImpl.buildViewModel(change);
 		Template template = this.groupTemplate.getTemplate(this.projectChangeMailTemplate);
-		template.binding("model", change);
-		template.binding("project1", project);
+		viewModel.put("projectType", this.projectTypeProvider.getDisplayText(project.getType(), null, null));
+		template.binding("model", viewModel);
 
 		// 发送
 		for (String addr : change.getEmail().split(",")) {
@@ -648,7 +677,6 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 				LOGGER.error(e.getMessage(), e);
 			}
 		}
-
 	}
 
 	private void sendMail(ProjectComplete complete, boolean accept) {

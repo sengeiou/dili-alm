@@ -27,6 +27,7 @@ import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.domain.Approve;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectChange;
+import com.dili.alm.provider.ProjectTypeProvider;
 import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.ProjectChangeService;
 import com.dili.alm.service.ProjectService;
@@ -56,6 +57,8 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 	@Autowired
 	private ProjectMapper projectMapper;
 	private String projectChangeMailTemplate;
+	@Autowired
+	private ProjectTypeProvider projectTypeProvider;
 
 	public ProjectChangeMapper getActualDao() {
 		return (ProjectChangeMapper) getDao();
@@ -112,10 +115,10 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 	public void sendMail(ProjectChange change) {
 		// 构建邮件内容
 		Project project = this.projectMapper.selectByPrimaryKey(change.getProjectId());
-		Map<Object, Object> viewModel = this.buildViewModel(change);
+		Map<Object, Object> viewModel = buildViewModel(change);
 		Template template = this.groupTemplate.getTemplate(this.projectChangeMailTemplate);
+		viewModel.put("projectType", this.projectTypeProvider.getDisplayText(project.getType(), null, null));
 		template.binding("model", viewModel);
-		template.binding("project1", project);
 
 		// 发送
 		for (String addr : change.getEmail().split(",")) {
@@ -127,7 +130,7 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 		}
 	}
 
-	private Map<Object, Object> buildViewModel(ProjectChange project) {
+	public static Map<Object, Object> buildViewModel(ProjectChange project) {
 		Map<Object, Object> metadata = new HashMap<>();
 
 		JSONObject projectVersionProvider = new JSONObject();
