@@ -1,7 +1,5 @@
 package com.dili.alm.service.impl;
 
-import static com.dili.alm.domain.ProjectState.NOT_START;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,6 +56,7 @@ import com.dili.alm.domain.dto.apply.ApplyApprove;
 import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.ApproveException;
 import com.dili.alm.exceptions.ProjectApplyException;
+import com.dili.alm.provider.ProjectTypeProvider;
 import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.ApproveService;
@@ -145,6 +144,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	private String mailFrom;
 	@Autowired
 	private ProjectActionRecordMapper parMapper;
+	private ProjectTypeProvider projectTypeProvider;
 
 	public ApproveServiceImpl() {
 		super();
@@ -522,7 +522,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		project.setDep(apply.getDep());
 		project.setApplyId(apply.getId());
 		project.setBusinessOwner(apply.getBusinessOwner());
-		project.setProjectState(NOT_START.getValue());
+		project.setProjectState(ProjectState.NOT_START.getValue());
 		project.setOriginator(apply.getCreateMemberId());
 		project.setEstimateLaunchDate(apply.getEstimateLaunchDate());
 		int rows = projectService.insertSelective(project);
@@ -718,9 +718,10 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	private void sendMail(ProjectChange change, boolean accept) {
 		// 构建邮件内容
 		Project project = this.projectMapper.selectByPrimaryKey(change.getProjectId());
+		Map<Object, Object> viewModel = ProjectChangeServiceImpl.buildViewModel(change);
 		Template template = this.groupTemplate.getTemplate(this.projectChangeMailTemplate);
-		template.binding("model", change);
-		template.binding("project1", project);
+		viewModel.put("projectType", this.projectTypeProvider.getDisplayText(project.getType(), null, null));
+		template.binding("model", viewModel);
 
 		// 发送
 		for (String addr : change.getEmail().split(",")) {
@@ -731,7 +732,6 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 				LOGGER.error(e.getMessage(), e);
 			}
 		}
-
 	}
 
 	private void sendMail(ProjectComplete complete, boolean accept) {
