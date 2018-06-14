@@ -1,9 +1,25 @@
 package com.dili.alm.controller;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.ProjectComplete;
+import com.dili.alm.exceptions.ProjectApplyException;
 import com.dili.alm.exceptions.ProjectCompleteException;
 import com.dili.alm.service.MessageService;
 import com.dili.alm.service.ProjectCompleteService;
@@ -17,21 +33,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-12-08 11:29:47.
@@ -162,16 +163,20 @@ public class ProjectCompleteController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "ProjectComplete", paramType = "form", value = "ProjectComplete的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput update(ProjectComplete projectComplete, String reasonText) {
+	public @ResponseBody BaseOutput<Object> update(ProjectComplete projectComplete, String reasonText) {
 		if (StringUtils.isNotEmpty(projectComplete.getReason())) {
 			if (projectComplete.getReason().equalsIgnoreCase("2")) {
 				projectComplete.setReason(reasonText);
 			}
 		}
 		projectCompleteService.updateSelective(projectComplete);
-		projectCompleteService.approve(projectComplete);
-		return BaseOutput.success(String.valueOf(projectComplete.getId()))
-				.setData(projectComplete.getId() + ":" + projectComplete.getName());
+		try {
+			projectCompleteService.approve(projectComplete);
+			return BaseOutput.success(String.valueOf(projectComplete.getId()))
+					.setData(projectComplete.getId() + ":" + projectComplete.getName());
+		} catch (ProjectApplyException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
 	}
 
 	@ApiOperation("删除ProjectComplete")

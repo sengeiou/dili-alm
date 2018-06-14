@@ -193,8 +193,9 @@ public class WorkOrderController {
 	@ResponseBody
 	@PostMapping("/close")
 	public BaseOutput<Object> close(@RequestParam Long id) {
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		try {
-			this.workOrderService.close(id);
+			this.workOrderService.close(id, user.getId());
 			Map<Object, Object> viewModel = this.workOrderService.getViewModel(id);
 			return BaseOutput.success().setData(viewModel);
 		} catch (WorkOrderException e) {

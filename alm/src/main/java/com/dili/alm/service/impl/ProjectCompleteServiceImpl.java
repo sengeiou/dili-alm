@@ -23,6 +23,7 @@ import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectComplete;
 import com.dili.alm.domain.Team;
 import com.dili.alm.exceptions.ApplicationException;
+import com.dili.alm.exceptions.ProjectApplyException;
 import com.dili.alm.exceptions.ProjectCompleteException;
 import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.ProjectCompleteService;
@@ -57,8 +58,9 @@ public class ProjectCompleteServiceImpl extends BaseServiceImpl<ProjectComplete,
 		return (ProjectCompleteMapper) getDao();
 	}
 
+	@Transactional(rollbackFor = ApplicationException.class)
 	@Override
-	public void approve(ProjectComplete complete) {
+	public void approve(ProjectComplete complete) throws ProjectApplyException {
 		if (complete.getStatus() == null) {
 			return;
 		}

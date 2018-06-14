@@ -1,6 +1,7 @@
 package com.dili.alm.service;
 
 import com.dili.alm.domain.ProjectComplete;
+import com.dili.alm.exceptions.ProjectApplyException;
 import com.dili.alm.exceptions.ProjectCompleteException;
 import com.dili.ss.base.BaseService;
 
@@ -10,7 +11,7 @@ import com.dili.ss.base.BaseService;
  */
 public interface ProjectCompleteService extends BaseService<ProjectComplete, Long> {
 
-    void approve(ProjectComplete complete);
+    void approve(ProjectComplete complete) throws ProjectApplyException;
 
     Long reComplete(Long id);
 

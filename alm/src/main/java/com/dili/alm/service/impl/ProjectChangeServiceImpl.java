@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.component.MailManager;
@@ -27,6 +28,8 @@ import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.domain.Approve;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectChange;
+import com.dili.alm.exceptions.ApplicationException;
+import com.dili.alm.exceptions.ProjectApplyException;
 import com.dili.alm.provider.ProjectTypeProvider;
 import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.ProjectChangeService;
@@ -84,8 +87,9 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 		}
 	}
 
+	@Transactional(rollbackFor = ApplicationException.class)
 	@Override
-	public void approve(ProjectChange change) {
+	public void approve(ProjectChange change) throws ProjectApplyException {
 		if (change.getStatus() == null) {
 			return;
 		}

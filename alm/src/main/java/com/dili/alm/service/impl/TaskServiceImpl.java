@@ -586,13 +586,10 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		for (Task taskDome : taskList) {
 			// 只判断未开始，已开始状态的任务
 			// dateUtil 计算相差天数大于0，更新状态为未完成
-			// long days = Integer.parseInt(DateUtil.getDatePoor(new Date(),
-			// taskDome.getEndDate()).trim());
 			if (now - taskDome.getEndDate().getTime() >= 0) {
 				taskDome.setStatus(TaskStatus.NOTCOMPLETE.code);// 更新状态为未完成
 				taskDome.setModified(new Date());
 				this.getActualDao().updateByPrimaryKeySelective(taskDome);
-				// this.startTask(taskDome);
 			}
 		}
 	}
@@ -686,7 +683,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 	@Transactional(rollbackFor = ApplicationException.class)
 	@Override
-	public void startTask(Long taskId) throws TaskException {
+	public void startTask(Long taskId, Long modifierId) throws TaskException {
 
 		// 查询任务
 		Task task = this.getActualDao().selectByPrimaryKey(taskId);

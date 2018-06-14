@@ -1,6 +1,7 @@
 package com.dili.alm.service;
 
 import com.dili.alm.domain.ProjectChange;
+import com.dili.alm.exceptions.ProjectApplyException;
 import com.dili.ss.base.BaseService;
 
 /**
@@ -9,7 +10,7 @@ import com.dili.ss.base.BaseService;
  */
 public interface ProjectChangeService extends BaseService<ProjectChange, Long> {
 
-    void approve(ProjectChange change);
+    void approve(ProjectChange change) throws ProjectApplyException;
 
     Long reChange(Long id);
 }

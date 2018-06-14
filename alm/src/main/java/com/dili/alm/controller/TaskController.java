@@ -371,18 +371,18 @@ public class TaskController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "updateTaskStatus", paramType = "form", value = "TaskDetails的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/updateTaskStatus", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput updateTaskDetails(Long id) {
+	public @ResponseBody BaseOutput<Object> updateTaskDetails(Long id) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		if (userTicket == null) {
 			return BaseOutput.failure("用户登录超时！");
 		}
-		Task task = taskService.get(id);
-		task.setModifyMemberId(userTicket.getId());
-		if (taskService.startTask(null) == 0) {
-			BaseOutput.failure("请勿重复添加数据");
+		try {
+			taskService.startTask(id, userTicket.getId());
+			Task task = taskService.get(id);
+			return BaseOutput.success("执行任务成功").setData(String.valueOf(task.getId() + ":" + task.getName()));
+		} catch (TaskException e) {
+			return BaseOutput.failure(e.getMessage());
 		}
-		taskService.update(task);
-		return BaseOutput.success("执行任务成功").setData(String.valueOf(task.getId() + ":" + task.getName()));
 	}
 
 	// 暂停任务

@@ -5,6 +5,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -19,6 +21,7 @@ import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.ProjectVersionFormDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectVersionChangeStateViewDto;
+import com.dili.alm.exceptions.ProjectVersionException;
 import com.dili.alm.provider.ProjectVersionProvider;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.ProjectService;
@@ -38,6 +41,7 @@ import io.swagger.annotations.ApiOperation;
 @Controller
 @RequestMapping("/project/version")
 public class ProjectVersionController {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ProjectVersionController.class);
 	@Autowired
 	ProjectVersionService projectVersionService;
 	@Autowired
@@ -75,7 +79,7 @@ public class ProjectVersionController {
 		try {
 			return ProjectVersionProvider.parseEasyUiModelList(list);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage(), e);
 			return null;
 		}
 	}
@@ -84,16 +88,36 @@ public class ProjectVersionController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Milestones", paramType = "form", value = "Milestones的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.POST })
-	public @ResponseBody BaseOutput insert(ProjectVersionFormDto dto) {
-		return projectVersionService.insertSelectiveWithOutput(dto);
+	public @ResponseBody BaseOutput<Object> insert(ProjectVersionFormDto dto) {
+		try {
+			projectVersionService.addProjectVersion(dto);
+			Map<Object, Object> target = ProjectVersionProvider.parseEasyUiModel(dto);
+			return BaseOutput.success("新增成功").setData(target);
+		} catch (ProjectVersionException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			return BaseOutput.failure("内部错误");
+		}
 	}
 
 	@ApiOperation("修改Milestones")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Milestones", paramType = "form", value = "Milestones的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput update(ProjectVersionFormDto dto) {
-		return projectVersionService.updateSelectiveWithOutput(dto);
+	public @ResponseBody BaseOutput<Object> update(ProjectVersionFormDto dto) {
+		try {
+			projectVersionService.updateProjectVersion(dto);
+			Map<Object, Object> target;
+			try {
+				target = ProjectVersionProvider.parseEasyUiModel(dto);
+				return BaseOutput.success("修改成功").setData(target);
+			} catch (Exception e) {
+				return BaseOutput.failure(e.getMessage());
+			}
+		} catch (ProjectVersionException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
 	}
 
 	@ApiOperation("删除Milestones")
@@ -101,7 +125,14 @@ public class ProjectVersionController {
 			@ApiImplicitParam(name = "id", paramType = "form", value = "Milestones的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput delete(Long id) {
-		return projectVersionService.deleteWithOutput(id);
+		try {
+			ProjectVersion projectVersion = projectVersionService.get(id);
+			projectVersionService.deleteProjectVersion(id);
+			return BaseOutput.success("删除成功")
+					.setData(String.valueOf(projectVersion.getId() + ":" + projectVersion.getVersion()));
+		} catch (ProjectVersionException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
 	}
 
 	@RequestMapping(value = "/add", method = RequestMethod.GET)
@@ -124,20 +155,37 @@ public class ProjectVersionController {
 		return "project/version/form";
 	}
 
-	@RequestMapping(value = "/changeState", method = RequestMethod.GET)
-	public String changeStateView(@RequestParam Long id, ModelMap map) {
-		ProjectVersionChangeStateViewDto model = this.projectVersionService.getChangeStateViewData(id);
-		Project project = this.projectService.get(model.getVersion().getProjectId());
-		List<DataDictionaryValueDto> states = this.projectService.getProjectStates();
-		map.addAttribute("model", model.getVersion()).addAttribute("changes", model.getChanges())
-				.addAttribute("project", project).addAttribute("states", states);
-		return "project/version/changeState";
+	@ResponseBody
+	@RequestMapping(value = "/pause", method = RequestMethod.POST)
+	public BaseOutput<Object> pause(@RequestParam Long id, @RequestParam Integer versionState) {
+		try {
+			this.projectVersionService.pause(id);
+			return BaseOutput.success();
+		} catch (ProjectVersionException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "/changeState", method = RequestMethod.POST)
-	public BaseOutput<Object> changeState(@RequestParam Long id, @RequestParam Integer versionState) {
-		return this.projectVersionService.changeState(id, versionState);
+	@RequestMapping(value = "/resume", method = RequestMethod.POST)
+	public BaseOutput<Object> resume(@RequestParam Long id, @RequestParam Integer versionState) {
+		try {
+			this.projectVersionService.resume(id);
+			return BaseOutput.success();
+		} catch (ProjectVersionException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/complete", method = RequestMethod.POST)
+	public BaseOutput<Object> complete(@RequestParam Long id, @RequestParam Integer versionState) {
+		try {
+			this.projectVersionService.complete(id);
+			return BaseOutput.success();
+		} catch (ProjectVersionException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
 	}
 
 	@ResponseBody

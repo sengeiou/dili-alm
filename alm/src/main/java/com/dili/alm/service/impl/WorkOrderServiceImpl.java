@@ -178,7 +178,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 	}
 
 	@Override
-	public void close(Long id) throws WorkOrderException {
+	public void close(Long id, Long operatorId) throws WorkOrderException {
 		// 检查工单是否存在
 		WorkOrder workOrder = this.getActualDao().selectByPrimaryKey(id);
 		if (workOrder == null) {
@@ -187,6 +187,10 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 		// 检查状态
 		if (!workOrder.getWorkOrderState().equals(WorkOrderState.SOLVED.getValue())) {
 			throw new WorkOrderException("当前状态不能执行分配操作");
+		}
+		// 验证操作人
+		if (!workOrder.getApplicantId().equals(operatorId)) {
+			throw new WorkOrderException("只有申请人才能关闭工单");
 		}
 		// 生成操作记录
 		WorkOrderOperationRecord woor = DTOUtils.newDTO(WorkOrderOperationRecord.class);
