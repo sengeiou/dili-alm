@@ -154,9 +154,11 @@ public class WorkOrderController {
 	@ResponseBody
 	@PostMapping("/allocate")
 	public BaseOutput<Object> allocate(@RequestParam Long id, @RequestParam Long executorId,
-			@RequestParam Integer result, @RequestParam String description) {
+			@RequestParam Integer workOrderType, @RequestParam Integer priority, @RequestParam Integer result,
+			@RequestParam String description) {
 		try {
-			this.workOrderService.allocate(id, executorId, OperationResult.valueOf(result), description);
+			this.workOrderService.allocate(id, executorId, workOrderType, priority, OperationResult.valueOf(result),
+					description);
 			return BaseOutput.success().setData(this.workOrderService.getViewModel(id));
 		} catch (WorkOrderException e) {
 			return BaseOutput.failure(e.getMessage());

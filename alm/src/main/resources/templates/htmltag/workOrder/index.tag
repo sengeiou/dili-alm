@@ -65,7 +65,7 @@ function operationFormatter(value, row, index) {
 			content += '<span style="padding:0px 2px;">完成</a>';
 		}
 	} else if (row.$_workOrderState == 4) {
-		if (row.$_executorId == userId) {
+		if (row.$_applicantId == userId) {
 			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="closeWorkOrder(' + row.id + ');">关闭</a>';
 		} else {
 			content += '<span style="padding:0px 2px;">关闭</a>';
@@ -127,6 +127,9 @@ function updateGridRow(row) {
 
 // 打开新增窗口
 function openInsert() {
+	if (userId == 1) {
+		return false;
+	}
 	$('#win').dialog({
 				title : '新增工单',
 				width : 800,
@@ -171,7 +174,8 @@ function openInsert() {
 											success : function(data) {
 												var obj = $.parseJSON(data);
 												if (obj.code == 200) {
-													updateGridRow(obj.data);
+													$('#grid').datagrid('appendRow', obj.data);
+													$('#grid').datagrid('acceptChanges');
 													$('#win').dialog('close');
 												} else {
 													$.messager.alert('错误', obj.result);
@@ -185,6 +189,9 @@ function openInsert() {
 
 // 打开修改窗口
 function openUpdate(index) {
+	if (userId == 1) {
+		return false;
+	}
 	var selected = null;
 	if (index != undefined) {
 		selected = $("#grid").datagrid("getRows")[index];
@@ -197,6 +204,10 @@ function openUpdate(index) {
 	}
 	if (selected.$_workOrderState != 1) {
 		return false;
+	}
+	if (selected.$_applicantId != userId) {
+		$.messager.alert('警告', '只有申请人才能修改工单！');
+		return;
 	}
 	$('#win').dialog({
 				title : '工单编辑',
@@ -256,7 +267,6 @@ function openUpdate(index) {
 }
 
 function allocatePost(id, result) {
-	var data = $("#editForm").serializeArray();
 	$('#editForm').form('submit', {
 				url : '${contextPath!}/workOrder/allocate',
 				queryParams : {
@@ -346,6 +356,9 @@ function solve(id) {
 
 // 根据主键删除
 function del(index) {
+	if (userId == 1) {
+		return false;
+	}
 	var selected = null;
 	if (index != undefined) {
 		selected = $("#grid").datagrid("getRows")[index];
@@ -358,6 +371,10 @@ function del(index) {
 	}
 	if (selected.$_workOrderState != 1) {
 		return false;
+	}
+	if (selected.$_applicantId != userId) {
+		$.messager.alert('警告', '只有申请人才能删除工单！');
+		return;
 	}
 	$.messager.confirm('确认', '您确认想要删除记录吗？', function(r) {
 				if (r) {
@@ -403,11 +420,13 @@ function queryGrid() {
 
 // 清空表单
 function clearForm() {
+	$('#form').form('clear');
 	$('#applicantId').textbox('initValue', '');
 	$('#applicantId').textbox('setText', '');
 	$('#acceptorId1').textbox('initValue', '');
 	$('#acceptorId1').textbox('setText', '');
-	$('#form').form('clear');
+	$('#executorId1').textbox('initValue', '');
+	$('#executorId1').textbox('setText', '');
 	queryGrid();
 }
 
