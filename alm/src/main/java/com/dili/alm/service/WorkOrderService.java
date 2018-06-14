@@ -24,13 +24,15 @@ public interface WorkOrderService extends BaseService<WorkOrder, Long> {
 	 *            工单id
 	 * @param executorId
 	 *            执行人id
+	 * @param workType TODO
+	 * @param priority TODO
 	 * @param result
 	 *            分配意见
 	 * @param description
 	 *            TODO
 	 * @throws WorkOrderException
 	 */
-	void allocate(Long id, Long executorId, OperationResult result, String description) throws WorkOrderException;
+	void allocate(Long id, Long executorId, Integer workType, Integer priority, OperationResult result, String description) throws WorkOrderException;
 
 	/**
 	 * 解决工单
@@ -52,9 +54,10 @@ public interface WorkOrderService extends BaseService<WorkOrder, Long> {
 	 * 
 	 * @param id
 	 *            工单id
+	 * @param operatorId TODO
 	 * @throws WorkOrderException
 	 */
-	void close(Long id) throws WorkOrderException;
+	void close(Long id, Long operatorId) throws WorkOrderException;
 
 	Map<Object, Object> getViewModel(Long id);
 

@@ -46,11 +46,6 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.google.common.collect.Sets;
 
-import okhttp3.Call;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2018-05-23 11:51:37.
  */
@@ -108,6 +103,10 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 		workOrderStateProvider.put("provider", "workOrderStateProvider");
 		metadata.put("workOrderState", workOrderStateProvider);
 
+		JSONObject datetimeProvider = new JSONObject();
+		datetimeProvider.put("provider", "datetimeProvider");
+		metadata.put("creationTime", datetimeProvider);
+
 		List<Map> listMap = ValueProviderUtils.buildDataByProvider(metadata, Arrays.asList(workOrder));
 		return listMap.get(0);
 
@@ -134,8 +133,8 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 	}
 
 	@Override
-	public void allocate(Long id, Long executorId, OperationResult result, String description)
-			throws WorkOrderException {
+	public void allocate(Long id, Long executorId, Integer workOrderType, Integer priority, OperationResult result,
+			String description) throws WorkOrderException {
 		// 检查工单是否存在
 		WorkOrder workOrder = this.getActualDao().selectByPrimaryKey(id);
 		if (workOrder == null) {
@@ -163,6 +162,9 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 		} else {
 			workOrder.setWorkOrderState(WorkOrderState.SOLVING.getValue());
 		}
+		// 更新工单类型和优先级
+		workOrder.setWorkOrderType(workOrderType);
+		workOrder.setPriority(priority);
 		// 更新执行人
 		workOrder.setExecutorId(executorId);
 		rows = this.getActualDao().updateByPrimaryKeySelective(workOrder);
@@ -178,7 +180,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 	}
 
 	@Override
-	public void close(Long id) throws WorkOrderException {
+	public void close(Long id, Long operatorId) throws WorkOrderException {
 		// 检查工单是否存在
 		WorkOrder workOrder = this.getActualDao().selectByPrimaryKey(id);
 		if (workOrder == null) {
@@ -187,6 +189,10 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 		// 检查状态
 		if (!workOrder.getWorkOrderState().equals(WorkOrderState.SOLVED.getValue())) {
 			throw new WorkOrderException("当前状态不能执行分配操作");
+		}
+		// 验证操作人
+		if (!workOrder.getApplicantId().equals(operatorId)) {
+			throw new WorkOrderException("只有申请人才能关闭工单");
 		}
 		// 生成操作记录
 		WorkOrderOperationRecord woor = DTOUtils.newDTO(WorkOrderOperationRecord.class);
@@ -274,6 +280,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 		woor.setOperationName(WorkOrderOperationType.EXECUTOR.getName());
 		woor.setOperationType(WorkOrderOperationType.EXECUTOR.getValue());
 		woor.setOperationResult(OperationResult.SUCCESS.getValue());
+		woor.setDescription(workContent);
 		woor.setWorkOrderId(workOrder.getId());
 		int rows = this.woorMapper.insertSelective(woor);
 		if (rows <= 0) {
@@ -282,7 +289,6 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 		// 更新工单
 		workOrder.setTaskHours(taskHours);
 		workOrder.setOvertimeHours(overtimeHours);
-		workOrder.setWorkContent(workContent);
 		workOrder.setWorkOrderState(WorkOrderState.SOLVED.getValue());
 		rows = this.getActualDao().updateByPrimaryKeySelective(workOrder);
 		if (rows <= 0) {
