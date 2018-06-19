@@ -15,11 +15,13 @@ import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.dao.ProjectPhaseMapper;
 import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.TaskMapper;
+import com.dili.alm.domain.ActionDateType;
 import com.dili.alm.domain.FileType;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectAction;
 import com.dili.alm.domain.ProjectActionRecord;
+import com.dili.alm.domain.ProjectActionType;
 import com.dili.alm.domain.ProjectChange;
 import com.dili.alm.domain.ProjectPhase;
 import com.dili.alm.domain.ProjectState;
@@ -30,8 +32,8 @@ import com.dili.alm.domain.Task;
 import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.ProjectVersionException;
 import com.dili.alm.service.FilesService;
-import com.dili.alm.service.ProjectChangeService;
 import com.dili.alm.service.ProjectVersionService;
+import com.dili.alm.service.TeamService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.quartz.service.ScheduleJobService;
@@ -52,8 +54,6 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 	@Autowired
 	ScheduleJobService scheduleJobService;
 	@Autowired
-	private ProjectChangeService projectChangeService;
-	@Autowired
 	private FilesMapper filesMapper;
 	@Autowired
 	private ProjectPhaseMapper phaseMapper;
@@ -65,6 +65,8 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 	private ProjectMapper projectMapper;
 	@Autowired
 	private ProjectActionRecordMapper parMapper;
+	@Autowired
+	private TeamService teamService;
 
 	public ProjectVersionMapper getActualDao() {
 		return (ProjectVersionMapper) getDao();
@@ -120,6 +122,10 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		ProjectVersion version = this.getActualDao().selectOne(query);
 		if (version != null && !version.getId().equals(dto.getId())) {
 			throw new ProjectVersionException("版本已存在");
+		}
+		// 检查状态是否是未开始
+		if (!version.getVersionState().equals(ProjectVersionState.NOT_START.getValue())) {
+			throw new ProjectVersionException("当前状态不能编辑！");
 		}
 		version = this.getActualDao().selectByPrimaryKey(dto.getId());
 		version.setVersion(dto.getVersion());
@@ -221,7 +227,7 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 	}
 
 	@Override
-	public void pause(Long id) throws ProjectVersionException {
+	public void pause(Long id, Long operatorId) throws ProjectVersionException {
 		// 判断版本是否存在
 		ProjectVersion version = this.getActualDao().selectByPrimaryKey(id);
 		if (version == null) {
@@ -233,15 +239,32 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 			throw new ProjectVersionException("当前状态不能执行暂停操作");
 		}
 
+		// 检查权限，只有项目经理可以变更状态
+		if (!this.teamService.teamMemberIsProjectManager(operatorId, version.getProjectId())) {
+			throw new ProjectVersionException("只有项目经理才能变更版本状态");
+		}
+
 		version.setVersionState(ProjectVersionState.PAUSED.getValue());
 		int rows = this.getActualDao().updateByPrimaryKeySelective(version);
 		if (rows <= 0) {
 			throw new ProjectVersionException("更新版本状态失败");
 		}
+
+		// 插入项目进程记录
+		ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
+		par.setActionCode(ProjectAction.VERSION_PAUSE.getCode());
+		par.setActionDate(new Date());
+		par.setActionDateType(ActionDateType.POINT.getValue());
+		par.setActionType(ProjectActionType.VERSION.getValue());
+		par.setVersionId(version.getId());
+		rows = this.parMapper.insertSelective(par);
+		if (rows <= 0) {
+			throw new ProjectVersionException("插入项目进程记录失败");
+		}
 	}
 
 	@Override
-	public void resume(Long id) throws ProjectVersionException {
+	public void resume(Long id, Long operatorId) throws ProjectVersionException {
 		// 判断版本是否存在
 		ProjectVersion version = this.getActualDao().selectByPrimaryKey(id);
 		if (version == null) {
@@ -253,15 +276,31 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 			throw new ProjectVersionException("当前状态不能执行重启操作");
 		}
 
+		// 检查权限，只有项目经理可以变更状态
+		if (!this.teamService.teamMemberIsProjectManager(operatorId, version.getProjectId())) {
+			throw new ProjectVersionException("只有项目经理才能变更版本状态");
+		}
+
 		version.setVersionState(ProjectVersionState.IN_PROGRESS.getValue());
 		int rows = this.getActualDao().updateByPrimaryKeySelective(version);
 		if (rows <= 0) {
 			throw new ProjectVersionException("更新版本状态失败");
 		}
+		// 插入项目进程记录
+		ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
+		par.setActionCode(ProjectAction.VERSION_RESUME.getCode());
+		par.setActionDate(new Date());
+		par.setActionDateType(ActionDateType.POINT.getValue());
+		par.setActionType(ProjectActionType.VERSION.getValue());
+		par.setVersionId(version.getId());
+		rows = this.parMapper.insertSelective(par);
+		if (rows <= 0) {
+			throw new ProjectVersionException("插入项目进程记录失败");
+		}
 	}
 
 	@Override
-	public void complete(Long id) throws ProjectVersionException {
+	public void complete(Long id, Long operatorId) throws ProjectVersionException {
 		// 判断版本是否存在
 		ProjectVersion version = this.getActualDao().selectByPrimaryKey(id);
 		if (version == null) {
@@ -269,16 +308,31 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		}
 
 		// 判断状态
-		boolean flag = version.getVersionState().equals(ProjectVersionState.IN_PROGRESS.getValue());
-		flag = flag ? flag : version.getVersionState().equals(ProjectVersionState.PAUSED.getValue());
-		if (flag) {
+		if (version.getVersionState().equals(ProjectVersionState.NOT_START.getValue())) {
 			throw new ProjectVersionException("当前状态不能执行完成操作");
+		}
+
+		// 检查权限，只有项目经理可以变更状态
+		if (!this.teamService.teamMemberIsProjectManager(operatorId, version.getProjectId())) {
+			throw new ProjectVersionException("只有项目经理才能变更版本状态");
 		}
 
 		version.setVersionState(ProjectVersionState.IN_PROGRESS.getValue());
 		int rows = this.getActualDao().updateByPrimaryKeySelective(version);
 		if (rows <= 0) {
 			throw new ProjectVersionException("更新版本状态失败");
+		}
+
+		// 插入项目进程记录
+		ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
+		par.setActionCode(ProjectAction.VERSION_COMPLETE.getCode());
+		par.setActionDate(new Date());
+		par.setActionDateType(ActionDateType.POINT.getValue());
+		par.setActionType(ProjectActionType.VERSION.getValue());
+		par.setVersionId(version.getId());
+		rows = this.parMapper.insertSelective(par);
+		if (rows <= 0) {
+			throw new ProjectVersionException("插入项目进程记录失败");
 		}
 	}
 

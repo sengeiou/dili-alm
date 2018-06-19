@@ -39,23 +39,26 @@ public interface ProjectVersionService extends BaseService<ProjectVersion, Long>
 	 * 暂停
 	 * 
 	 * @param id
+	 * @param operatorId TODO
 	 * @throws ProjectVersionException
 	 */
-	void pause(Long id) throws ProjectVersionException;
+	void pause(Long id, Long operatorId) throws ProjectVersionException;
 
 	/**
 	 * 重启
 	 * 
 	 * @param id
+	 * @param operatorId TODO
 	 * @throws ProjectVersionException
 	 */
-	void resume(Long id) throws ProjectVersionException;
+	void resume(Long id, Long operatorId) throws ProjectVersionException;
 
 	/**
 	 * 完成
 	 * 
 	 * @param id
+	 * @param operatorId TODO
 	 * @throws ProjectVersionException 
 	 */
-	void complete(Long id) throws ProjectVersionException;
+	void complete(Long id, Long operatorId) throws ProjectVersionException;
 }

@@ -28,6 +28,8 @@ import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.ProjectVersionService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.sysadmin.sdk.domain.UserTicket;
+import com.dili.sysadmin.sdk.session.SessionContext;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -157,9 +159,10 @@ public class ProjectVersionController {
 
 	@ResponseBody
 	@RequestMapping(value = "/pause", method = RequestMethod.POST)
-	public BaseOutput<Object> pause(@RequestParam Long id, @RequestParam Integer versionState) {
+	public BaseOutput<Object> pause(@RequestParam Long id) {
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		try {
-			this.projectVersionService.pause(id);
+			this.projectVersionService.pause(id, user.getId());
 			return BaseOutput.success();
 		} catch (ProjectVersionException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -168,9 +171,10 @@ public class ProjectVersionController {
 
 	@ResponseBody
 	@RequestMapping(value = "/resume", method = RequestMethod.POST)
-	public BaseOutput<Object> resume(@RequestParam Long id, @RequestParam Integer versionState) {
+	public BaseOutput<Object> resume(@RequestParam Long id) {
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		try {
-			this.projectVersionService.resume(id);
+			this.projectVersionService.resume(id, user.getId());
 			return BaseOutput.success();
 		} catch (ProjectVersionException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -179,9 +183,10 @@ public class ProjectVersionController {
 
 	@ResponseBody
 	@RequestMapping(value = "/complete", method = RequestMethod.POST)
-	public BaseOutput<Object> complete(@RequestParam Long id, @RequestParam Integer versionState) {
+	public BaseOutput<Object> complete(@RequestParam Long id) {
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		try {
-			this.projectVersionService.complete(id);
+			this.projectVersionService.complete(id, user.getId());
 			return BaseOutput.success();
 		} catch (ProjectVersionException e) {
 			return BaseOutput.failure(e.getMessage());

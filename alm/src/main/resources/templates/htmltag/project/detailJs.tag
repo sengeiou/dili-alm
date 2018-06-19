@@ -20,7 +20,15 @@ function showTask() {
 }
 
 function versionOptFormatter(value, row, index) {
-	var content = '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="changeVersionState(' + row.id + ');">状态变更</a>';
+	var content = '';
+	if (row.$_versionState == 1) {
+		content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="pause(' + row.id + ');">暂停</a>';
+	} else if (row.$_versionState == 3) {
+		content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="resume(' + row.id + ');">重启</a>';
+	}
+	if (row.$_versionState != 0 && row.$_versionState != 2) {
+		content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="complete(' + row.id + ');">完成</a>';
+	}
 	content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="editVersion(' + row.id + ');">编辑</a>';
 	content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="deleteVersion(' + row.id + ');">删除</a>';
 	return content;
@@ -209,7 +217,7 @@ function openInsertVersion() {
 											success : function(data) {
 												if (data.code == 200) {
 													try {
-														LogUtils.saveLog(LOG_MODULE_OPS.ADD_PROJECT_VERSION, "新增项目版本:" + data.data.id+":"+data.data.version+":成功", function() {
+														LogUtils.saveLog(LOG_MODULE_OPS.ADD_PROJECT_VERSION, "新增项目版本:" + data.data.id + ":" + data.data.version + ":成功", function() {
 																});
 													} catch (e) {
 														$.messager.alert('错误', e);
@@ -261,7 +269,7 @@ function editVersion(id) {
 											success : function(res) {
 												if (res.code == 200) {
 													try {
-														LogUtils.saveLog(LOG_MODULE_OPS.UPDATE_PROJECT_VERSION, "修改项目版本:" + res.data.id+":"+res.data.version+":成功", function() {
+														LogUtils.saveLog(LOG_MODULE_OPS.UPDATE_PROJECT_VERSION, "修改项目版本:" + res.data.id + ":" + res.data.version + ":成功", function() {
 																});
 													} catch (e) {
 														$.messager.alert('错误', e);
@@ -311,7 +319,7 @@ function deleteVersion(id) {
 							success : function(data) {
 								if (data.code == 200) {
 									try {
-										LogUtils.saveLog(LOG_MODULE_OPS.DELETE_PROJECT_VERSION, "删除项目版本:" + data.data+":成功", function() {
+										LogUtils.saveLog(LOG_MODULE_OPS.DELETE_PROJECT_VERSION, "删除项目版本:" + data.data + ":成功", function() {
 												});
 									} catch (e) {
 										$.messager.alert('错误', e);
@@ -340,58 +348,66 @@ function deleteVersion(id) {
 			});
 }
 
-function changeVersionState(id) {
-	$('#win').dialog({
-				title : '状态变更',
-				width : 600,
-				height : 500,
-				href : '${contextPath!}/project/version/changeState?id=' + id,
-				modal : true,
-				buttons : [{
-							text : '保存',
-							handler : function() {
-								var versionState = $("#versionState").combobox('getValue');
-								$.ajax({
-											type : "POST",
-											url : '${contextPath!}/project/version/changeState',
-											data : {
-												id : id,
-												versionState : versionState
-											},
-											success : function(data) {
-												if (data.code == 200) {
-													try {
-														LogUtils.saveLog(LOG_MODULE_OPS.UPDATE_PROJECT_VERSION_STATE, "变更项目版本状态:" + data.data.id+":"+data.data.name+":成功", function() {
-																});
-													} catch (e) {
-														$.messager.alert('错误', e);
-													}
-													var row = $('#versionGrid').datagrid('getSelected');
-													var index = $('#versionGrid').datagrid('getRowIndex', row);
-													row.versionState = data.data.versionState;
-													row.$_versionState = data.data.$_versionState;
-													$('#versionGrid').datagrid('updateRow', {
-																index : index,
-																row : row
-															});
-													$('#versionGrid').datagrid('acceptChanges');
-													$('#versionGrid').datagrid('refreshRow', index);
-													$('#win').dialog('close');
-												} else {
-													$.messager.alert('错误', data.result);
-												}
-											},
-											error : function() {
-												$.messager.alert('错误', '远程访问失败');
-											}
-										});
-							}
-						}, {
-							text : '取消',
-							handler : function() {
-								$('#win').dialog('close');
-							}
-						}]
+function pause(id) {
+	$.messager.confirm('提示', '确定要暂停该版本？', function(f) {
+				if (!f) {
+					return false;
+				}
+				changeVersionState(id, 'pause', 3, '暂停中');
+			});
+}
+
+function resume(id) {
+	$.messager.confirm('提示', '确定要恢复该版本？', function(f) {
+				if (!f) {
+					return false;
+				}
+				changeVersionState(id, 'resume', 1, '进行中');
+			});
+}
+
+function complete(id) {
+	$.messager.confirm('提示', '确定要完成该版本？', function(f) {
+				if (!f) {
+					return false;
+				}
+				changeVersionState(id, 'complete', 2, '已完成');
+			});
+}
+
+function changeVersionState(id, action, versionState, stateName) {
+	$.ajax({
+				type : "POST",
+				url : '${contextPath!}/project/version/' + action,
+				data : {
+					id : id
+				},
+				success : function(data) {
+					if (data.code == 200) {
+						var row = $('#versionGrid').datagrid('getSelected');
+						try {
+							LogUtils.saveLog(LOG_MODULE_OPS.UPDATE_PROJECT_VERSION_STATE, "变更项目版本状态:" + row.id + ":" + row.name + ":成功", function() {
+									});
+						} catch (e) {
+							$.messager.alert('错误', e);
+						}
+						var index = $('#versionGrid').datagrid('getRowIndex', row);
+						row.$_versionState = versionState;
+						row.versionState = stateName;
+						$('#versionGrid').datagrid('updateRow', {
+									index : index,
+									row : row
+								});
+						$('#versionGrid').datagrid('acceptChanges');
+						$('#versionGrid').datagrid('refreshRow', index);
+						$('#win').dialog('close');
+					} else {
+						$.messager.alert('错误', data.result);
+					}
+				},
+				error : function() {
+					$.messager.alert('错误', '远程访问失败');
+				}
 			});
 }
 
@@ -416,7 +432,7 @@ function openInsertPhase() {
 											success : function(data) {
 												if (data.code == 200) {
 													try {
-														LogUtils.saveLog(LOG_MODULE_OPS.ADD_PROJECT_VERSION_PHASE, "新增项目版本阶段:" + data.data.id+":"+data.data.name+":成功", function() {
+														LogUtils.saveLog(LOG_MODULE_OPS.ADD_PROJECT_VERSION_PHASE, "新增项目版本阶段:" + data.data.id + ":" + data.data.name + ":成功", function() {
 																});
 													} catch (e) {
 														$.messager.alert('错误', e);
@@ -468,7 +484,7 @@ function editPhase(id) {
 											success : function(data) {
 												if (data.code == 200) {
 													try {
-														LogUtils.saveLog(LOG_MODULE_OPS.UPDATE_PROJECT_VERSION, "编辑项目版本阶段:" + data.data.id+":"+data.data.name+":成功", function() {
+														LogUtils.saveLog(LOG_MODULE_OPS.UPDATE_PROJECT_VERSION, "编辑项目版本阶段:" + data.data.id + ":" + data.data.name + ":成功", function() {
 																});
 													} catch (e) {
 														$.messager.alert('错误', e);
@@ -517,7 +533,7 @@ function deletePhase(id) {
 							success : function(data) {
 								if (data.code == 200) {
 									try {
-										LogUtils.saveLog(LOG_MODULE_OPS.DELETE_PROJECT_VERSION_PHASE, "删除项目版本版本阶段:" +data.data.id+":"+data.data.name+":成功", function() {
+										LogUtils.saveLog(LOG_MODULE_OPS.DELETE_PROJECT_VERSION_PHASE, "删除项目版本版本阶段:" + data.data.id + ":" + data.data.name + ":成功", function() {
 												});
 									} catch (e) {
 										$.messager.alert('错误', e);
@@ -571,7 +587,7 @@ function uploadFile(projectId) {
 											success : function(data) {
 												if (data.code == 200) {
 													try {
-														LogUtils.saveLog(LOG_MODULE_OPS.UPLOAD_FILE, "上传项目文档:" + data.data.name+":成功", function() {
+														LogUtils.saveLog(LOG_MODULE_OPS.UPLOAD_FILE, "上传项目文档:" + data.data.name + ":成功", function() {
 																});
 													} catch (e) {
 														$.messager.alert('错误', e);
@@ -626,7 +642,7 @@ function alarmConfig() {
 											success : function(data) {
 												if (data.code == 200) {
 													try {
-														LogUtils.saveLog(LOG_MODULE_OPS.PROJECT_ALARM_CONFIG, "设置项目进度告警:" + data.result+":成功", function() {
+														LogUtils.saveLog(LOG_MODULE_OPS.PROJECT_ALARM_CONFIG, "设置项目进度告警:" + data.result + ":成功", function() {
 																});
 													} catch (e) {
 														$.messager.alert('错误', e);
@@ -651,25 +667,28 @@ function alarmConfig() {
 }
 
 function getMyDay() {
-	 var  htmlobj=$.ajax({url:"${contextPath!}/workDay/isWorkEndDayDate",async:false});
-     var str=htmlobj.responseText;
-     var obj = $.parseJSON(str);
-     console.log(str);
-     return obj;
+	var htmlobj = $.ajax({
+				url : "${contextPath!}/workDay/isWorkEndDayDate",
+				async : false
+			});
+	var str = htmlobj.responseText;
+	var obj = $.parseJSON(str);
+	console.log(str);
+	return obj;
 }
 
 function generateWeekly() {
-	
-	if (getMyDay()==0) {
+
+	if (getMyDay() == 0) {
 		$.messager.alert('不能提交周报', ' 不是工作日最后一天 不可提交周报');
 		return false;
-	}else if(getMyDay()==1){
+	} else if (getMyDay() == 1) {
 		$.messager.alert('不能提交周报', ' 今天不是工作日');
 		return false;
-	}else if(getMyDay()==3){
+	} else if (getMyDay() == 3) {
 		$.messager.alert('不能提交周报', '请导入新一年的工作日');
 		return false;
-	}else if(getMyDay()==2){
+	} else if (getMyDay() == 2) {
 		$.messager.alert('不能提交周报', '用户登录已失效');
 		return false;
 	}
