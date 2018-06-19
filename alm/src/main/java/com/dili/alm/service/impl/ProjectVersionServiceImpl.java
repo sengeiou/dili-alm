@@ -1,6 +1,5 @@
 package com.dili.alm.service.impl;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -35,14 +34,11 @@ import com.dili.alm.service.ProjectChangeService;
 import com.dili.alm.service.ProjectVersionService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.quartz.service.ScheduleJobService;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
 
 import tk.mybatis.mapper.entity.Example;
 
