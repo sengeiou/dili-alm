@@ -10,7 +10,7 @@
     <result column="work_order_name" jdbcType="VARCHAR" property="workOrderName" />
     <result column="work_order_type" jdbcType="INTEGER" property="workOrderType" />
     <result column="priority" jdbcType="INTEGER" property="priority" />
-    <result column="work_order_source" jdbcType="VARCHAR" property="workOrderSource" />
+    <result column="channel" jdbcType="VARCHAR" property="channel" />
     <result column="acceptor_id" jdbcType="BIGINT" property="acceptorId" />
     <result column="copy_user_id" jdbcType="VARCHAR" property="copyUserId" />
     <result column="description" jdbcType="VARCHAR" property="description" />
@@ -25,16 +25,16 @@
     <result column="task_hours" jdbcType="INTEGER" property="taskHours" />
     <result column="overtime_hours" jdbcType="INTEGER" property="overtimeHours" />
     <result column="work_content" jdbcType="VARCHAR" property="workContent" />
-    <result column="department_work_order" jdbcType="BIT" property="departmentWorkOrder" />
+    <result column="work_order_source" jdbcType="INTEGER" property="workOrderSource" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
       WARNING - @mbg.generated
     -->
-    id, serial_number, work_order_name, work_order_type, priority, work_order_source, 
-    acceptor_id, copy_user_id, description, attachment_file_id, work_order_state, submit_time, 
-    close_time, creation_time, modify_time, applicant_id, executor_id, task_hours, overtime_hours, 
-    work_content, department_work_order
+    id, serial_number, work_order_name, work_order_type, priority, channel, acceptor_id, 
+    copy_user_id, description, attachment_file_id, work_order_state, submit_time, close_time, 
+    creation_time, modify_time, applicant_id, executor_id, task_hours, overtime_hours, 
+    work_content, work_order_source
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -63,8 +63,8 @@
       <if test="priority != null">
         priority = #{priority,jdbcType=INTEGER},
       </if>
-      <if test="workOrderSource != null">
-        work_order_source = #{workOrderSource,jdbcType=VARCHAR},
+      <if test="channel != null">
+        channel = #{channel,jdbcType=VARCHAR},
       </if>
       <if test="acceptorId != null">
         acceptor_id = #{acceptorId,jdbcType=BIGINT},
@@ -108,8 +108,8 @@
       <if test="workContent != null">
         work_content = #{workContent,jdbcType=VARCHAR},
       </if>
-      <if test="departmentWorkOrder != null">
-        department_work_order = #{departmentWorkOrder,jdbcType=BIT},
+      <if test="workOrderSource != null">
+        work_order_source = #{workOrderSource,jdbcType=INTEGER},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

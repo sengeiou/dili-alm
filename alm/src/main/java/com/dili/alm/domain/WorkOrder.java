@@ -14,7 +14,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2018-06-19 15:45:45.
+ * This file was generated on 2018-06-20 11:22:01.
  */
 @Table(name = "`work_order`")
 public interface WorkOrder extends IBaseDomain {
@@ -55,12 +55,12 @@ public interface WorkOrder extends IBaseDomain {
 
     void setPriority(Integer priority);
 
-    @Column(name = "`work_order_source`")
-    @FieldDef(label="工单来源", maxLength = 255)
+    @Column(name = "`channel`")
+    @FieldDef(label="渠道", maxLength = 255)
     @EditMode(editor = FieldEditor.Text, required = true)
-    String getWorkOrderSource();
+    String getChannel();
 
-    void setWorkOrderSource(String workOrderSource);
+    void setChannel(String channel);
 
     @Column(name = "`acceptor_id`")
     @FieldDef(label="受理人")
@@ -160,10 +160,10 @@ public interface WorkOrder extends IBaseDomain {
 
     void setWorkContent(String workContent);
 
-    @Column(name = "`department_work_order`")
-    @FieldDef(label="是否是部门工单")
+    @Column(name = "`work_order_source`")
+    @FieldDef(label="工单来源")
     @EditMode(editor = FieldEditor.Number, required = false)
-    Boolean getDepartmentWorkOrder();
+    Integer getWorkOrderSource();
 
-    void setDepartmentWorkOrder(Boolean departmentWorkOrder);
+    void setWorkOrderSource(Integer workOrderSource);
 }

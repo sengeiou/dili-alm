@@ -17,7 +17,7 @@ import com.dili.ss.metadata.ValueProvider;
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-10-24 14:31:10.
  */
 @Component
-public class WorkOrderSourceProvider implements ValueProvider {
+public class WorkOrderChannelProvider implements ValueProvider {
 
 	@Override
 	public List<ValuePair<?>> getLookupList(Object obj, Map metaMap, FieldMeta fieldMeta) {
