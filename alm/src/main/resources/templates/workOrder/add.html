@@ -57,7 +57,7 @@
 							textField:'realName',
 							loadFilter:removeAdminUserFilter,
 							required:true,
-							url:'${contextPath!}/member/members'"></td>
+							url:'${contextPath!}/workOrder/receivers'"></td>
 					</tr>
 					<tr>
 						<td class="table-title">抄送</td>
@@ -72,6 +72,20 @@
 							onLoadSuccess:removeTreeAdminUser,
 							required:true">
 						</td>
+						<td class="table-title">部门工单</td>
+						<td><select class="easyui-combobox" style="width: 93%; text-align: center;" id="departmentWorkOrder" name="departmentWorkOrder"
+							data-options="editable:true,
+							required:true,
+ 							onChange:onDeptWorkOrderChange">
+								<option value="0">否</option>
+								<option value="1">是</option>
+						</select></td>
+						<td class="table-title">执行人</td>
+						<td><input class="easyui-combobox" style="width: 92%; text-align: center;" id="executorId" name="executorId"
+							data-options="editable:true,
+							valueField:'id', 
+							textField:'realName',
+							required:true"></td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="6">描述</td>

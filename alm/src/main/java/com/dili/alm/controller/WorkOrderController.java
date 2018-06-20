@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.dili.alm.component.NumberGenerator;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.OperationResult;
+import com.dili.alm.domain.User;
 import com.dili.alm.domain.WorkOrder;
 import com.dili.alm.domain.dto.WorkOrderQueryDto;
 import com.dili.alm.domain.dto.WorkOrderUpdateDto;
@@ -65,6 +67,12 @@ public class WorkOrderController {
 			return null;
 		}
 		return "workOrder/detail";
+	}
+
+	@ResponseBody
+	@GetMapping(value = "/receivers", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public List<User> getReceivers() {
+		return this.workOrderService.getReceivers();
 	}
 
 	@ApiOperation("跳转到WorkOrder页面")

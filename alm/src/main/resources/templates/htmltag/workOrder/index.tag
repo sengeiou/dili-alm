@@ -5,6 +5,13 @@ function serialNumberFormatter(value, row, index) {
 	return '<a href="javascript:void(0);" onclick="detail(' + row.id + ');">' + value + '</a>';
 }
 
+function onDeptWorkOrderChange(n, o) {
+	if (n == 1) {
+		$('#acceptorId').combobox('disable');
+		$('#executorId').combobox('reload','${contextPath!}/workOrder/');
+	}
+}
+
 function detail(id) {
 	$('#win').dialog({
 				title : '工单详情',

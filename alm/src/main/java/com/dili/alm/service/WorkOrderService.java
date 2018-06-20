@@ -1,8 +1,10 @@
 package com.dili.alm.service;
 
+import java.util.List;
 import java.util.Map;
 
 import com.dili.alm.domain.OperationResult;
+import com.dili.alm.domain.User;
 import com.dili.alm.domain.WorkOrder;
 import com.dili.alm.domain.dto.WorkOrderUpdateDto;
 import com.dili.alm.exceptions.WorkOrderException;
@@ -62,4 +64,6 @@ public interface WorkOrderService extends BaseService<WorkOrder, Long> {
 	Map<Object, Object> getViewModel(Long id);
 
 	WorkOrder getOperatinoRecordsViewModel(Long id);
+
+	List<User> getReceivers();
 }
