@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
@@ -27,19 +28,24 @@ import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.component.MailManager;
 import com.dili.alm.component.NumberGenerator;
+import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.FilesMapper;
 import com.dili.alm.dao.WorkOrderMapper;
 import com.dili.alm.dao.WorkOrderOperationRecordMapper;
+import com.dili.alm.domain.Department;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.OperationResult;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.WorkOrder;
 import com.dili.alm.domain.WorkOrderOperationRecord;
 import com.dili.alm.domain.WorkOrderOperationType;
+import com.dili.alm.domain.WorkOrderSource;
 import com.dili.alm.domain.WorkOrderState;
+import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.WorkOrderUpdateDto;
 import com.dili.alm.exceptions.WorkOrderException;
 import com.dili.alm.provider.MemberProvider;
+import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.WorkOrderService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
@@ -73,6 +79,8 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 	private NumberGenerator numberGenerator;
 	@Autowired
 	private WorkOrderOperationRecordMapper woorMapper;
+	@Autowired
+	private DataDictionaryService ddService;
 
 	public static Map<Object, Object> parseViewModel(WorkOrder workOrder) throws Exception {
 		Map<Object, Object> metadata = new HashMap<>();
@@ -84,6 +92,10 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 		JSONObject workOrderPriorityProvider = new JSONObject();
 		workOrderPriorityProvider.put("provider", "workOrderPriorityProvider");
 		metadata.put("priority", workOrderPriorityProvider);
+
+		JSONObject workOrderChannelProvider = new JSONObject();
+		workOrderChannelProvider.put("provider", "workOrderChannelProvider");
+		metadata.put("channel", workOrderChannelProvider);
 
 		JSONObject workOrderSourceProvider = new JSONObject();
 		workOrderSourceProvider.put("provider", "workOrderSourceProvider");
@@ -196,7 +208,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 		}
 		// 生成操作记录
 		WorkOrderOperationRecord woor = DTOUtils.newDTO(WorkOrderOperationRecord.class);
-		woor.setOperatorId(workOrder.getAcceptorId());
+		woor.setOperatorId(workOrder.getApplicantId());
 		woor.setOperationName(WorkOrderOperationType.CONFIRM.getName());
 		woor.setOperationType(WorkOrderOperationType.CONFIRM.getValue());
 		woor.setOperationResult(OperationResult.SUCCESS.getValue());
@@ -276,7 +288,13 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 		}
 		// 生成操作记录
 		WorkOrderOperationRecord woor = DTOUtils.newDTO(WorkOrderOperationRecord.class);
-		woor.setOperatorId(workOrder.getAcceptorId());
+		if (workOrder.getWorkOrderSource().equals(WorkOrderSource.DEPARTMENT.getValue())) {
+			woor.setOperatorId(workOrder.getExecutorId());
+		} else if (workOrder.getWorkOrderSource().equals(WorkOrderSource.OUTSIDE.getValue())) {
+			woor.setOperatorId(workOrder.getAcceptorId());
+		} else {
+			throw new WorkOrderException("未知的工单来源");
+		}
 		woor.setOperationName(WorkOrderOperationType.EXECUTOR.getName());
 		woor.setOperationType(WorkOrderOperationType.EXECUTOR.getValue());
 		woor.setOperationResult(OperationResult.SUCCESS.getValue());
@@ -361,11 +379,8 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 		// 发送
 		for (String to : emails) {
 			try {
-				// this.mailManager.sendRemoteAttachementMail(this.mailFrom, to,
-				// template.render(), true, subject,
-				// attachements);
-				this.mailManager.sendRemoteAttachementMail(this.mailFrom, "jianglinhu@diligrp.com", cc,
-						template.render(), true, subject, attachements);
+				this.mailManager.sendRemoteAttachementMail(this.mailFrom, to, cc, template.render(), true, subject,
+						attachements);
 			} catch (Exception e) {
 				LOGGER.error(e.getMessage(), e);
 			}
@@ -374,17 +389,25 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 
 	private void submit(Long id) throws WorkOrderException {
 		WorkOrder workOrder = this.getActualDao().selectByPrimaryKey(id);
-		workOrder.setWorkOrderState(WorkOrderState.OPENED.getValue());
+		User mailReceiver = null;
+		if (WorkOrderSource.DEPARTMENT.getValue().equals(workOrder.getWorkOrderSource())) {
+			// 部门工单，直接跳转到工单解决
+			workOrder.setWorkOrderState(WorkOrderState.SOLVING.getValue());
+			mailReceiver = AlmCache.getInstance().getUserMap().get(workOrder.getExecutorId());
+		} else if (WorkOrderSource.OUTSIDE.getValue().equals(workOrder.getWorkOrderSource())) {
+			// 外部工单
+			workOrder.setWorkOrderState(WorkOrderState.OPENED.getValue());
+			mailReceiver = AlmCache.getInstance().getUserMap().get(workOrder.getAcceptorId());
+		}
 		workOrder.setSubmitTime(new Date());
 		int rows = this.getActualDao().updateByPrimaryKeySelective(workOrder);
 		if (rows <= 0) {
 			throw new WorkOrderException("提交工单失败");
 		}
-		User acceptor = AlmCache.getInstance().getUserMap().get(workOrder.getAcceptorId());
-		if (acceptor == null) {
+		if (mailReceiver == null) {
 			throw new WorkOrderException("受理人不存在");
 		}
-		this.sendMail(workOrder, "工单审批", Sets.newHashSet(acceptor.getEmail()));
+		this.sendMail(workOrder, "工单申请", Sets.newHashSet(mailReceiver.getEmail()));
 	}
 
 	private void updateWorkOrder(WorkOrderUpdateDto dto) throws WorkOrderException {
@@ -395,5 +418,22 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 		if (rows <= 0) {
 			throw new WorkOrderException("新增工单失败");
 		}
+	}
+
+	@Override
+	public List<User> getReceivers() {
+		DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.WORK_ORDER_RECEIVERS_CODE);
+		if (dd == null || CollectionUtils.isEmpty(dd.getValues())) {
+			return null;
+		}
+		List<User> target = new ArrayList<>(dd.getValues().size());
+		dd.getValues().forEach(v -> {
+			Map.Entry<Long, User> entry = AlmCache.getInstance().getUserMap().entrySet().stream()
+					.filter(e -> e.getValue().getUserName().equals(v.getValue())).findFirst().orElse(null);
+			if (entry != null) {
+				target.add(entry.getValue());
+			}
+		});
+		return target;
 	}
 }

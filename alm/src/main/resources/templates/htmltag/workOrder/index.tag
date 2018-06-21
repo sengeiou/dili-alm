@@ -5,6 +5,16 @@ function serialNumberFormatter(value, row, index) {
 	return '<a href="javascript:void(0);" onclick="detail(' + row.id + ');">' + value + '</a>';
 }
 
+function onWorkOrderSourceChange(n, o) {
+	if (n == 1) {
+		$('#acceptorId').combobox('enable');
+		$('#executorId').combobox('disable');
+	} else {
+		$('#acceptorId').combobox('disable');
+		$('#executorId').combobox('enable');
+	}
+}
+
 function detail(id) {
 	$('#win').dialog({
 				title : '工单详情',
@@ -95,20 +105,26 @@ function validateForm() {
 	if (!$('#editForm').form('validate')) {
 		return false;
 	}
+	var sourceValue = $('#workOrderSource').combobox('getValue');
 	var value = $('#acceptorId').combobox('getValue');
-	if (isNaN(value)) {
-		$.messager.alert('提示', '受理人不存在，请重新选择！', function() {
+	if (sourceValue == 1 && isNaN(value)) {
+		$.messager.alert('提示', '受理人不存在，请重新选择！', null, function() {
 					$('#acceptorId').combobox('initValue', '');
 					$('#acceptorId').combobox('setText', '');
 				});
 		return false;
 	}
-	var value = $('#copyUserIds').combotree('tree').tree('getSelected');
-	if (!value) {
-		$.messager.alert('提示', '请选择抄送人！', null, function() {
-					$('#copyUserIds').combotree('clear');
+	value = $('#executorId').combobox('getValue');
+	if (sourceValue == 2 && isNaN(value)) {
+		$.messager.alert('提示', '执行人不存在，请重新选择！', null, function() {
+					$('#executorId').combobox('initValue', '');
+					$('#executorId').combobox('setText', '');
 				});
 		return false;
+	}
+	value = $('#copyUserIds').combotree('tree').tree('getSelected');
+	if (!value) {
+		$('#copyUserIds').combotree('clear');
 	}
 }
 

@@ -49,6 +49,8 @@ public class AlmConstants {
 	public static final String WORK_ORDER_PRIORITY_CODE = "work_order_priority";
 	// 工单来源数据字典配置
 	public static final String WORK_ORDER_SOURCE_CODE = "work_order_source";
+	// 工单受理人数据字典配置
+	public static final String WORK_ORDER_RECEIVERS_CODE = "work_order_receivers";
 
 	// 团队成员状态: 加入/离开
 	public enum MemberState {

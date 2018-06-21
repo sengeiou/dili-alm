@@ -48,20 +48,27 @@
 						<td><input class="easyui-textbox" name="priority" id="priority" style="width: 87%; text-align: center;"
 							data-options="editable:false,required:true" /> <#comboProvider _id="priority" _provider='workOrderPriorityProvider' /></td>
 						<td class="table-title">工单来源</td>
-						<td><input class="easyui-textbox" name="workOrderSource" id="workOrderSource" style="width: 87%; text-align: center;"
-							data-options="editable:false,required:true" /> <#comboProvider _id="workOrderSource" _provider='workOrderSourceProvider' /></td>
+						<td><select class="easyui-combobox" style="width: 87%; text-align: center;" id="workOrderSource" name="workOrderSource"
+							data-options="editable:false,
+							required:true,
+ 							onChange:onWorkOrderSourceChange">
+								<option value=""></option>
+								<option value="1">外部工单</option>
+								<option value="2">内部工单</option>
+						</select></td>
 						<td class="table-title">受理人</td>
-						<td><input class="easyui-combobox" style="width: 92%; text-align: center;" id="acceptorId" name="acceptorId"
+						<td><input class="easyui-combobox" style="width: 87%; text-align: center;" id="acceptorId" name="acceptorId"
 							data-options="editable:true,
+							disabled:true,
 							valueField:'id', 
 							textField:'realName',
 							loadFilter:removeAdminUserFilter,
 							required:true,
-							url:'${contextPath!}/member/members'"></td>
+							url:'${contextPath!}/workOrder/receivers'"></td>
 					</tr>
 					<tr>
 						<td class="table-title">抄送</td>
-						<td><input class="easyui-combotree" style="width: 93%; text-align: center;" id="copyUserIds" name="copyUserIds"
+						<td><input class="easyui-combotree" style="width: 87%; text-align: center;" id="copyUserIds" name="copyUserIds"
 							data-options="
 							editable:true,
 							multiple:true,
@@ -69,9 +76,19 @@
 							_idField:'id', 
 							_textField:'realName',
 							url:'${contextPath!}/member/members',
-							onLoadSuccess:removeTreeAdminUser,
-							required:true">
+							onLoadSuccess:removeTreeAdminUser">
 						</td>
+						<td class="table-title">渠道</td>
+						<td><input class="easyui-textbox" name="channel" id="channel" style="width: 90%; text-align: center;"
+							data-options="editable:false,required:true" /> <#comboProvider _id="channel" _provider='workOrderChannelProvider' /></td>
+						<td class="table-title">执行人</td>
+						<td><input class="easyui-combobox" style="width: 87%; text-align: center;" id="executorId" name="executorId"
+							data-options="editable:true,
+							disabled:true,
+							url:'${contextPath!}/workOrder/currentUserDepartmentUsers',
+							valueField:'id', 
+							textField:'realName',
+							required:true"></td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="6">描述</td>

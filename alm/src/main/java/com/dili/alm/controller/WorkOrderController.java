@@ -4,11 +4,13 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,13 +21,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.dili.alm.cache.AlmCache;
 import com.dili.alm.component.NumberGenerator;
+import com.dili.alm.domain.Department;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.OperationResult;
+import com.dili.alm.domain.User;
 import com.dili.alm.domain.WorkOrder;
 import com.dili.alm.domain.dto.WorkOrderQueryDto;
 import com.dili.alm.domain.dto.WorkOrderUpdateDto;
 import com.dili.alm.exceptions.WorkOrderException;
+import com.dili.alm.rpc.DepartmentRpc;
+import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.WorkOrderService;
 import com.dili.alm.service.impl.WorkOrderServiceImpl;
@@ -53,6 +60,10 @@ public class WorkOrderController {
 	private NumberGenerator numberGenerator;
 	@Autowired
 	private FilesService filesService;
+	@Autowired
+	private UserRpc userRpc;
+	@Autowired
+	private DepartmentRpc deptRpc;
 
 	@GetMapping("/detail")
 	public String deital(@RequestParam Long id, ModelMap modelMap) {
@@ -65,6 +76,26 @@ public class WorkOrderController {
 			return null;
 		}
 		return "workOrder/detail";
+	}
+
+	@ResponseBody
+	@RequestMapping("/currentUserDepartmentUsers")
+	public List<User> currentUserDepartmentUsers() {
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		BaseOutput<List<Department>> output = this.deptRpc.getChildDepartments(user.getDepartmentId());
+		if (!output.isSuccess()) {
+			return null;
+		}
+		return AlmCache
+				.getInstance().getUserMap().values().stream().filter(u -> output.getData().stream()
+						.filter(d -> d.getId().equals(u.getDepartmentId())).findFirst().orElse(null) != null)
+				.collect(Collectors.toList());
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/receivers")
+	public List<User> getReceivers() {
+		return this.workOrderService.getReceivers();
 	}
 
 	@ApiOperation("跳转到WorkOrder页面")
@@ -96,7 +127,7 @@ public class WorkOrderController {
 			return BaseOutput.failure("请先登录");
 		}
 		dto.setApplicantId(user.getId());
-		if (copyUserIds.length > 0) {
+		if (copyUserIds != null && copyUserIds.length > 0) {
 			dto.setCopyUserIds(Arrays.asList(copyUserIds));
 		}
 		if (!attachment.isEmpty()) {
@@ -121,7 +152,7 @@ public class WorkOrderController {
 			return BaseOutput.failure("请先登录");
 		}
 		dto.setApplicantId(user.getId());
-		if (copyUserIds.length > 0) {
+		if (copyUserIds != null && copyUserIds.length > 0) {
 			dto.setCopyUserIds(Arrays.asList(copyUserIds));
 		}
 		if (!attachment.isEmpty()) {
