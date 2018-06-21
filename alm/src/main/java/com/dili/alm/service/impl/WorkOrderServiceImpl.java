@@ -39,6 +39,7 @@ import com.dili.alm.domain.User;
 import com.dili.alm.domain.WorkOrder;
 import com.dili.alm.domain.WorkOrderOperationRecord;
 import com.dili.alm.domain.WorkOrderOperationType;
+import com.dili.alm.domain.WorkOrderSource;
 import com.dili.alm.domain.WorkOrderState;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.WorkOrderUpdateDto;
@@ -91,6 +92,10 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 		JSONObject workOrderPriorityProvider = new JSONObject();
 		workOrderPriorityProvider.put("provider", "workOrderPriorityProvider");
 		metadata.put("priority", workOrderPriorityProvider);
+
+		JSONObject workOrderChannelProvider = new JSONObject();
+		workOrderChannelProvider.put("provider", "workOrderChannelProvider");
+		metadata.put("channel", workOrderChannelProvider);
 
 		JSONObject workOrderSourceProvider = new JSONObject();
 		workOrderSourceProvider.put("provider", "workOrderSourceProvider");
@@ -203,7 +208,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 		}
 		// 生成操作记录
 		WorkOrderOperationRecord woor = DTOUtils.newDTO(WorkOrderOperationRecord.class);
-		woor.setOperatorId(workOrder.getAcceptorId());
+		woor.setOperatorId(workOrder.getApplicantId());
 		woor.setOperationName(WorkOrderOperationType.CONFIRM.getName());
 		woor.setOperationType(WorkOrderOperationType.CONFIRM.getValue());
 		woor.setOperationResult(OperationResult.SUCCESS.getValue());
@@ -283,7 +288,13 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 		}
 		// 生成操作记录
 		WorkOrderOperationRecord woor = DTOUtils.newDTO(WorkOrderOperationRecord.class);
-		woor.setOperatorId(workOrder.getAcceptorId());
+		if (workOrder.getWorkOrderSource().equals(WorkOrderSource.DEPARTMENT.getValue())) {
+			woor.setOperatorId(workOrder.getExecutorId());
+		} else if (workOrder.getWorkOrderSource().equals(WorkOrderSource.OUTSIDE.getValue())) {
+			woor.setOperatorId(workOrder.getAcceptorId());
+		} else {
+			throw new WorkOrderException("未知的工单来源");
+		}
 		woor.setOperationName(WorkOrderOperationType.EXECUTOR.getName());
 		woor.setOperationType(WorkOrderOperationType.EXECUTOR.getValue());
 		woor.setOperationResult(OperationResult.SUCCESS.getValue());
@@ -379,14 +390,14 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 	private void submit(Long id) throws WorkOrderException {
 		WorkOrder workOrder = this.getActualDao().selectByPrimaryKey(id);
 		User mailReceiver = null;
-		if (workOrder.getDepartmentWorkOrder()) {
+		if (WorkOrderSource.DEPARTMENT.getValue().equals(workOrder.getWorkOrderSource())) {
 			// 部门工单，直接跳转到工单解决
 			workOrder.setWorkOrderState(WorkOrderState.SOLVING.getValue());
-			mailReceiver = AlmCache.getInstance().getUserMap().get(workOrder.getAcceptorId());
-		} else {
+			mailReceiver = AlmCache.getInstance().getUserMap().get(workOrder.getExecutorId());
+		} else if (WorkOrderSource.OUTSIDE.getValue().equals(workOrder.getWorkOrderSource())) {
 			// 外部工单
 			workOrder.setWorkOrderState(WorkOrderState.OPENED.getValue());
-			mailReceiver = AlmCache.getInstance().getUserMap().get(workOrder.getExecutorId());
+			mailReceiver = AlmCache.getInstance().getUserMap().get(workOrder.getAcceptorId());
 		}
 		workOrder.setSubmitTime(new Date());
 		int rows = this.getActualDao().updateByPrimaryKeySelective(workOrder);

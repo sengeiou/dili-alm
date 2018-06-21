@@ -5,7 +5,6 @@ import java.util.List;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.sysadmin.domain.Department;
-import com.dili.sysadmin.domain.dto.UserDepartmentRole;
 import com.dili.sysadmin.domain.dto.DepartmentTree;
 import com.dili.sysadmin.domain.dto.DepartmentUserCountDto;
 
@@ -29,4 +28,6 @@ public interface DepartmentService extends BaseService<Department, Long> {
 	List<DepartmentTree> listTree();
 
 	Department findByDepartmentName(String departmentName);
+
+	List<Department> getChildDepartments(Long departmentId);
 }

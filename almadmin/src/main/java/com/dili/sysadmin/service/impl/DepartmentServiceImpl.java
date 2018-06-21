@@ -173,4 +173,9 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department, Long> imp
 		return this.getActualDao().selectOne(record);
 	}
 
+	@Override
+	public List<Department> getChildDepartments(Long departmentId) {
+		return this.getActualDao().getChildDepartments(departmentId);
+	}
+
 }

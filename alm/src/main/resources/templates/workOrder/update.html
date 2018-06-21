@@ -49,16 +49,22 @@
 						<td><input class="easyui-textbox" name="priority" id="priority" style="width: 87%; text-align: center;"
 							data-options="editable:false,required:true" /> <#comboProvider _id="priority" _provider='workOrderPriorityProvider' /></td>
 						<td class="table-title">工单来源</td>
-						<td><input class="easyui-textbox" name="workOrderSource" id="workOrderSource" style="width: 87%; text-align: center;"
-							data-options="editable:false,required:true" /> <#comboProvider _id="workOrderSource" _provider='workOrderSourceProvider' /></td>
+						<td><input class="easyui-combobox" style="width: 87%; text-align: center;" id="workOrderSource" name="workOrderSource"
+							data-options="editable:false,
+							required:true,
+ 							onChange:onWorkOrderSourceChange" /> <#comboProvider
+								_id="workOrderSource" _provider='workOrderSourceProvider' /></td>
 						<td class="table-title">受理人</td>
-						<td><input class="easyui-combobox" style="width: 92%; text-align: center;" id="acceptorId" name="acceptorId"
+						<td><input class="easyui-combobox" style="width: 87%; text-align: center;" id="acceptorId" name="acceptorId"
 							data-options="editable:true,
+							<%if(model.$_workOrderSource==2){%>
+							disabled:true,
+							<%}%>
 							valueField:'id', 
 							textField:'realName',
 							loadFilter:removeAdminUserFilter,
 							required:true,
-							url:'${contextPath!}/member/members'"></td>
+							url:'${contextPath!}/workOrder/receivers'"></td>
 					</tr>
 					<tr>
 						<td class="table-title">抄送</td>
@@ -70,9 +76,21 @@
 							_idField:'id', 
 							_textField:'realName',
 							url:'${contextPath!}/member/members',
-							onLoadSuccess:removeTreeAdminUser,
-							required:true">
+							onLoadSuccess:checkSelectedUsers">
 						</td>
+						<td class="table-title">渠道</td>
+						<td><input class="easyui-textbox" name="channel" id="channel" style="width: 90%; text-align: center;"
+							data-options="editable:false,required:true" /> <#comboProvider _id="channel" _provider='workOrderChannelProvider' /></td>
+						<td class="table-title">执行人</td>
+						<td><input class="easyui-combobox" style="width: 87%; text-align: center;" id="executorId" name="executorId"
+							data-options="editable:true,
+							<%if(model.$_workOrderSource==1){%>
+							disabled:true,
+							<%}%>
+							url:'${contextPath!}/workOrder/currentUserDepartmentUsers',
+							valueField:'id', 
+							textField:'realName',
+							required:true"></td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="6">描述</td>
@@ -83,9 +101,9 @@
 					</tr>
 					<tr>
 						<td class="table-title" colspan="2">附件</td>
-						<td class="table-combo" colspan="4" style="padding: 0"><input class="easyui-filebox" name="attachment" value="${model.attachmentFileId!}"
-							data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 87%"><input type="hidden" name="attachmentFileId"
-							value="${model.$_attachmentFileId!}"></td>
+						<td class="table-combo" colspan="4" style="padding: 0"><input class="easyui-filebox" name="attachment"
+							value="${model.attachmentFileId!}" data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 87%"><input type="hidden"
+							name="attachmentFileId" value="${model.$_attachmentFileId!}"></td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="2">申请人</td>
@@ -100,6 +118,17 @@
 </div>
 <script type="text/javascript">
 	<#members_index/>
+	
+	var copyUserIds=${model.copyUserId!'[]'};
+	function checkSelectedUsers(node, data){
+		var me = $(this);
+		removeTreeAdminUser.call(me,node,data);
+		$(copyUserIds).each(function(index,item){
+			var node = $('#copyUserIds').combotree('tree').tree('find',item);
+			$('#copyUserIds').combotree('tree').tree('check', node.target);
+		}); 
+	}
+	
 	$(function() {
 		$('#workOrderType').combobox('initValue',${model.$_workOrderType!});
 		$('#workOrderType').combobox('setText','${model.workOrderType!}');
@@ -110,13 +139,13 @@
 		$('#workOrderSource').combobox('initValue','${model.$_workOrderSource!}');
 		$('#workOrderSource').combobox('setText','${model.workOrderSource!}');
 		
+		$('#channel').combobox('initValue','${model.$_channel!}');
+		$('#channel').combobox('setText','${model.channel!}');
+		
 		$('#acceptorId').combobox('initValue',${model.$_acceptorId!});
 		$('#acceptorId').combobox('setText','${model.acceptorId!}');
 		
-		var copyUserIds=${model.copyUserId![]};
-		$(copyUserIds).each(function(index,item){
-			var node = $('#copyUserIds').combotree('tree').tree('find',item);
-			$('#copyUserIds').combotree('tree').tree('check', node.target);
-		});
+		$('#executorId').combobox('initValue',${model.$_executorId!});
+		$('#executorId').combobox('setText','${model.executorId!}');
 	});
 </script>
