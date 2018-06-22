@@ -33,7 +33,8 @@
 		<!-- WARNING - @mbg.generated -->
 		id, project_id, start_date, end_date, risk, question, progress,
 		created, modified, current_week, next_week,
-		create_member_id, modify_member_id
+		create_member_id,
+		modify_member_id
 	</sql>
 	<select id="selectBy" parameterType="java.lang.Long"
 		resultMap="BaseResultMap">
@@ -124,9 +125,11 @@
 
 		select p.serial_number as "serialNumber",p.`name` as "projectName" ,
 		w.id as 'id',p.apply_id as "applyId",
-		p.type as "projectType",p.project_manager as "userName",p.id as
+		p.type as
+		"projectType",p.project_manager as "userName",p.id as
 		"projectId",w.created as 'created',
-		p.completed_progress as "projectStatus",w.end_date as "endDate" ,w.start_date as
+		p.completed_progress as
+		"projectStatus",w.end_date as "endDate" ,w.start_date as
 		"startDate"
 		from project p,weekly w
 		<where>
@@ -142,25 +145,31 @@
 			</if>
 
 			<if test="weeklyPara.userName != null">
-				and p.project_manager= #{weeklyPara.userName,jdbcType=VARCHAR}
+				and p.project_manager=
+				#{weeklyPara.userName,jdbcType=VARCHAR}
 			</if>
 
 			<if test="weeklyPara.projectStatus != null">
-				and p.project_state= #{weeklyPara.projectStatus,jdbcType=INTEGER}
+				and p.project_state=
+				#{weeklyPara.projectStatus,jdbcType=INTEGER}
 			</if>
 
 			<if test="weeklyPara.serialNumber != null">
-				and p.serial_number = #{weeklyPara.serialNumber,jdbcType=VARCHAR}
+				and p.serial_number =
+				#{weeklyPara.serialNumber,jdbcType=VARCHAR}
 			</if>
 			<if test="weeklyPara.startDate!=null and weeklyPara.startDate!=''">
-				and w.start_date &gt;=#{weeklyPara.startDate,jdbcType=VARCHAR}
+				and w.start_date
+				&gt;=#{weeklyPara.startDate,jdbcType=VARCHAR}
 			</if>
 			<if test="weeklyPara.endDate!=null and weeklyPara.endDate!=''">
-				and w.end_date &lt;=#{weeklyPara.endDate,jdbcType=VARCHAR}
+				and w.end_date
+				&lt;=#{weeklyPara.endDate,jdbcType=VARCHAR}
 			</if>
 			order by w.created desc
 			<if test="page.pageIndex!=-1">
-				limit ${(page.pageIndex-1)*page.pageSize},${page.pageSize}
+				limit
+				${(page.pageIndex-1)*page.pageSize},${page.pageSize}
 			</if>
 
 		</where>
@@ -174,8 +183,10 @@
 
 		select count(1) as 'total' from (
 
-		select p.serial_number as "serialNumber",p.`name` as "projectName" , w.id as
-		'id',p.apply_id as "applyId",
+		select p.serial_number as
+		"serialNumber",p.`name` as "projectName" , w.id as
+		'id',p.apply_id as
+		"applyId",
 		p.type as "projectType",p.project_manager as "userName",
 		p.completed_progress as "projectStatus",w.end_date as "endDate"
 		,w.start_date as "startDate"
@@ -228,11 +239,12 @@
 		select p.project_manager as "userName", p.serial_number as
 		"serialNumber", p.`name` as "projectName",w.created,w.start_date as
 		"startDate",w.end_date as "endDate" ,
-
-		p.type as "projectType" ,a.business_owner as
-		"businessParty",a.expected_launch_date as
+		p.type as "projectType"
+		,a.business_owner as
+		"businessParty",p.estimate_launch_date as
 		"planDate",p.completed_progress as "completedProgress",
-		a.dep as "projectInDept",p.id as "projectId",w.modify_member_id as
+		a.dep as
+		"projectInDept",p.id as "projectId",w.modify_member_id as
 		"stageMan"
 		from project p ,project_apply a,weekly w
 
@@ -267,10 +279,12 @@
 
 		select v.name from project_phase v
 		WHERE v.id in
-		( select DISTINCT t.phase_id from task t
+		( select DISTINCT
+		t.phase_id from task t
 		<where>
 			t.start_date &gt;=#{startDate,jdbcType=VARCHAR}
-			and t.end_date &lt;= #{endDate,jdbcType=VARCHAR}
+			and t.end_date &lt;=
+			#{endDate,jdbcType=VARCHAR}
 			and t.start_date &lt;= t.end_date
 
 
@@ -306,7 +320,8 @@
 		from task t
 		<where>
 			t.end_date &gt;= #{startDate,jdbcType=VARCHAR}
-			and t.end_date &lt;= #{endDate,jdbcType=VARCHAR}
+			and t.end_date &lt;=
+			#{endDate,jdbcType=VARCHAR}
 			and t.start_date &lt;= t.end_date
 
 			<if test="id != null">
@@ -317,12 +332,14 @@
 		UNION
 
 		select t.`name` ,t.phase_id ,t.plan_time ,t.id ,t.project_id,
-		t.`owner`, t.version_id , t.status ,t.start_date ,t.end_date,t.fact_end_date as
+		t.`owner`, t.version_id , t.status ,t.start_date
+		,t.end_date,t.fact_end_date as
 		"fackEndDate"
 		from task t
 		<where>
 			t.end_date &gt;=#{endDate,jdbcType=VARCHAR}
-			and t.start_date &lt;= t.end_date
+			and t.start_date &lt;=
+			t.end_date
 			and t.start_date &lt;=#{endDate,jdbcType=VARCHAR}
 
 			<if test="id != null">
@@ -342,8 +359,10 @@
 
 		<where>
 			d.task_id=#{id,jdbcType=BIGINT}
-			and d.modified &gt;=#{startDate,jdbcType=VARCHAR}
-			and d.modified &lt;=#{endDate,jdbcType=VARCHAR}
+			and d.modified
+			&gt;=#{startDate,jdbcType=VARCHAR}
+			and d.modified
+			&lt;=#{endDate,jdbcType=VARCHAR}
 		</where>
 
 	</select>
@@ -373,13 +392,16 @@
 
 
 		select t.`name` ,t.plan_time ,t.phase_id as 'phaseId',t.id,
-		t.`owner`, t.describe ,t.end_date,t.fact_end_date as "endDate"
+		t.`owner`,
+		t.describe ,t.end_date,t.fact_end_date as "endDate"
 		from task t
 		<where>
 			t.end_date &gt;= #{startDate,jdbcType=VARCHAR}
-			and t.end_date &lt;= #{endDate,jdbcType=VARCHAR}
+			and t.end_date &lt;=
+			#{endDate,jdbcType=VARCHAR}
 			and t.start_date &lt;= t.end_date
-			and t.status &lt;&gt; 3
+			and
+			t.status &lt;&gt; 3
 			<if test="id != null">
 				and t.project_id=#{id,jdbcType=BIGINT}
 			</if>
@@ -389,12 +411,15 @@
 
 		select t.`name` ,t.plan_time ,t.phase_id as 'phaseId',t.id,
 		t.`owner`, t.describe ,t.end_date,t.fact_end_date as "endDate"
-		from task t
+		from
+		task t
 		<where>
 			t.end_date &gt;=#{endDate,jdbcType=VARCHAR}
-			and t.start_date &lt;= t.end_date
+			and t.start_date &lt;=
+			t.end_date
 			and t.start_date &lt;=#{endDate,jdbcType=VARCHAR}
-			and t.status &lt;&gt; 3
+			and
+			t.status &lt;&gt; 3
 			<if test="id != null">
 				and t.project_id=#{id,jdbcType=BIGINT}
 			</if>
@@ -415,7 +440,8 @@
 		<where>
 
 			w.start_date &gt;=#{startDate,jdbcType=VARCHAR}
-			and w.end_date &lt;=#{endDate,jdbcType=VARCHAR}
+			and w.end_date
+			&lt;=#{endDate,jdbcType=VARCHAR}
 			and w.start_date &lt;= w.end_date
 			<if test="id != null">
 				and w.id = #{id,jdbcType=VARCHAR}
@@ -435,7 +461,8 @@
 		<where>
 
 			w.start_date &gt;=#{startDate,jdbcType=VARCHAR}
-			and w.end_date &lt;=#{endDate,jdbcType=VARCHAR}
+			and w.end_date
+			&lt;=#{endDate,jdbcType=VARCHAR}
 			and w.start_date &lt;= w.end_date
 			<if test="id != null">
 				and w.id = #{id,jdbcType=VARCHAR}
@@ -464,7 +491,8 @@
 	<select id="getUser"
 		resultType="com.dili.alm.domain.dto.WeeklyPara">
 
-		select DISTINCT p.project_manager as "userName" from project p,weekly w
+		select DISTINCT p.project_manager as "userName" from
+		project p,weekly w
 		where p.id=w.project_id
 
 	</select>
