@@ -227,6 +227,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 						change.setStatus(AlmConstants.ApplyState.PASS.getCode());
 						projectChangeService.updateSelective(change);
 						updateProjectEndDate(change);
+						insertProjectActionRecord(change);
 						sendMail(change, true);
 					} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.COMPLETE.getCode())) {
 						ProjectComplete complete = projectCompleteService.get(approve.getProjectApplyId());
@@ -245,6 +246,10 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 					approve.getCreateMemberId());
 			sendLeaderApproveMessage(id, approve.getType(), approveList);
 		}
+	}
+
+	private void insertProjectActionRecord(ProjectChange change) {
+		ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
 	}
 
 	@Override
