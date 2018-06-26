@@ -309,6 +309,10 @@ function allocatePost(id, result) {
 				success : function(data) {
 					var obj = $.parseJSON(data);
 					if (obj.code == 200) {
+						if (result == 0) {
+							obj.data.submitTime = '';
+							obj.data.$_submitTime = null;
+						}
 						updateGridRow(obj.data);
 						$('#win').dialog('close');
 					} else {

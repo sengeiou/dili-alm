@@ -173,6 +173,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 		// 更新工单状态
 		if (result.equals(OperationResult.FAILURE)) {
 			workOrder.setWorkOrderState(WorkOrderState.APPLING.getValue());
+			workOrder.setSubmitTime(null);
 			mailReceiver = AlmCache.getInstance().getUserMap().get(workOrder.getApplicantId());
 		} else {
 			workOrder.setWorkOrderState(WorkOrderState.SOLVING.getValue());
@@ -183,7 +184,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 			workOrder.setExecutorId(executorId);
 			mailReceiver = AlmCache.getInstance().getUserMap().get(executorId);
 		}
-		rows = this.getActualDao().updateByPrimaryKeySelective(workOrder);
+		rows = this.updateExactSimple(workOrder);
 		if (rows <= 0) {
 			throw new WorkOrderException("更新工单状态失败");
 		}
