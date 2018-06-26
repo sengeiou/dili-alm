@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
@@ -22,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -32,7 +32,6 @@ import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.FilesMapper;
 import com.dili.alm.dao.WorkOrderMapper;
 import com.dili.alm.dao.WorkOrderOperationRecordMapper;
-import com.dili.alm.domain.Department;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.OperationResult;
 import com.dili.alm.domain.User;
@@ -43,6 +42,7 @@ import com.dili.alm.domain.WorkOrderSource;
 import com.dili.alm.domain.WorkOrderState;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.WorkOrderUpdateDto;
+import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.WorkOrderException;
 import com.dili.alm.provider.MemberProvider;
 import com.dili.alm.service.DataDictionaryService;
@@ -55,6 +55,7 @@ import com.google.common.collect.Sets;
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2018-05-23 11:51:37.
  */
+@Transactional(rollbackFor = ApplicationException.class)
 @Service
 public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> implements WorkOrderService {
 
@@ -168,27 +169,29 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 		if (rows <= 0) {
 			throw new WorkOrderException("插入操作记录失败");
 		}
+		User mailReceiver = null;
 		// 更新工单状态
 		if (result.equals(OperationResult.FAILURE)) {
 			workOrder.setWorkOrderState(WorkOrderState.APPLING.getValue());
+			mailReceiver = AlmCache.getInstance().getUserMap().get(workOrder.getApplicantId());
 		} else {
 			workOrder.setWorkOrderState(WorkOrderState.SOLVING.getValue());
+			// 更新工单类型和优先级
+			workOrder.setWorkOrderType(workOrderType);
+			workOrder.setPriority(priority);
+			// 更新执行人
+			workOrder.setExecutorId(executorId);
+			mailReceiver = AlmCache.getInstance().getUserMap().get(executorId);
 		}
-		// 更新工单类型和优先级
-		workOrder.setWorkOrderType(workOrderType);
-		workOrder.setPriority(priority);
-		// 更新执行人
-		workOrder.setExecutorId(executorId);
 		rows = this.getActualDao().updateByPrimaryKeySelective(workOrder);
 		if (rows <= 0) {
 			throw new WorkOrderException("更新工单状态失败");
 		}
 		// 发邮件
-		User executor = AlmCache.getInstance().getUserMap().get(executorId);
-		if (executor == null) {
+		if (mailReceiver == null) {
 			throw new WorkOrderException("执行人不存在");
 		}
-		this.sendMail(workOrder, "工单执行", Sets.newHashSet(executor.getEmail()));
+		this.sendMail(workOrder, "工单执行", Sets.newHashSet(mailReceiver.getEmail()));
 	}
 
 	@Override
@@ -414,7 +417,13 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 		if (CollectionUtils.isNotEmpty(dto.getCopyUserIds())) {
 			dto.setCopyUserId(JSON.toJSONString(dto.getCopyUserIds()));
 		}
-		int rows = this.getActualDao().updateByPrimaryKeySelective(dto);
+
+		if (dto.getWorkOrderSource().equals(WorkOrderSource.DEPARTMENT.getValue())) {
+			dto.setAcceptorId(null);
+		} else if (dto.getWorkOrderSource().equals(WorkOrderSource.OUTSIDE.getValue())) {
+			dto.setExecutorId(null);
+		}
+		int rows = super.updateExactSimple(dto);
 		if (rows <= 0) {
 			throw new WorkOrderException("新增工单失败");
 		}

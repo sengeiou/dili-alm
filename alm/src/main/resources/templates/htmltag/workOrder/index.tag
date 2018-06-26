@@ -243,6 +243,13 @@ function openUpdate(index) {
 											success : function(data) {
 												var obj = $.parseJSON(data);
 												if (obj.code == 200) {
+													if (obj.data.$_workOrderSource == 1) {
+														obj.data.executorId = '';
+														obj.data.$_executorId = null;
+													} else if (obj.data.$_workOrderSource == 2) {
+														obj.data.acceptorId = '';
+														obj.data.$_acceptorId = null;
+													}
 													updateGridRow(obj.data);
 													$('#win').dialog('close');
 												} else {
