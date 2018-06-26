@@ -495,25 +495,31 @@
 		resultType="com.dili.alm.domain.dto.TaskHoursByProjectDto">
 		select p.id as projectId,p.`name` as
 		projectName,ifnull(t2.totalHour,0) as sumHour FROM
-		(select* from
-		project where actual_start_date BETWEEN
-		CONCAT(#{beginTime,jdbcType=VARCHAR},' 00:00:00') AND
-		CONCAT(#{endTime,jdbcType=VARCHAR},' 23:59:59')
-		or actual_end_date
-		BETWEEN CONCAT(#{beginTime,jdbcType=VARCHAR},'
-		00:00:00') AND
-		CONCAT(#{endTime,jdbcType=VARCHAR},' 23:59:59'))
-		as p LEFT JOIN
+		project
+		as p LEFT
+		JOIN
 		(select
-		t1.project_id as pid ,SUM(td1.taskHours+td1.overHours) as totalHour
+		t1.project_id as pid ,SUM(td1.taskHours+td1.overHours) as
+		totalHour
 		from task as t1 LEFT JOIN
 		(SELECT task_id as tid,task_hour as
 		taskHours,over_hour as overHours FROM
-		task_details ) as td1
+		task_details where 1 =1
+		<if test="beginTime != null">
+			AND modified <![CDATA[>=]]>
+			CONCAT(#{beginTime,jdbcType=VARCHAR},'00:00:00')
+		</if>
+		<if test="endTime != null">
+			AND modified <![CDATA[<=]]>
+			CONCAT(#{endTime,jdbcType=VARCHAR},' 23:59:59')
+		</if>
+		) as td1
 		on t1.id =
 		td1.tid GROUP BY t1.project_id)
-		as t2 ON p.id = t2.pid
-		where 1=1
+		as t2 ON p.id =
+		t2.pid
+		where
+		1=1
 		<if test="pids != null and pids.size>0">
 			and p.id in
 			<foreach item="item" index="index" collection="pids" open="("
@@ -557,6 +563,14 @@
 		alm.task_details as tt LEFT JOIN alm.task as t ON
 		tt.task_id = t.id LEFT JOIN project as p on p.id = t.project_id where
 		1=1
+		<if test="startTime != null">
+			AND tt.modified <![CDATA[>=]]>
+			CONCAT(#{startTime,jdbcType=VARCHAR},'00:00:00')
+		</if>
+		<if test="endTime != null">
+			AND tt.modified <![CDATA[<=]]>
+			CONCAT(#{endTime,jdbcType=VARCHAR},' 23:59:59')
+		</if>
 		<if test="projectIds != null and projectIds.size>0">
 			and t.project_id in
 			<foreach item="item" index="index" collection="projectIds"
@@ -742,19 +756,23 @@
 			t.`owner` AS user_id,
 			sum( td.task_hour ) AS
 			total_task_hour,
-			sum( td.over_hour ) AS total_over_hour
+			sum(
+			td.over_hour ) AS total_over_hour
 			FROM
 			task_details td
-			INNER JOIN task t ON td.task_id = t.id
-			<if test="startTime != null or endTime != null">
-				INNER JOIN
-				project p ON t.project_id = p.id
-			</if>
+			INNER JOIN task t
+			ON td.task_id = t.id
+			INNER JOIN
+			project p ON t.project_id = p.id
 			WHERE
-			t.project_id = #{projectId}
+			t.project_id = #{projectId} AND td.modified
+			BETWEEN
+			CONCAT(#{startTime,jdbcType=VARCHAR},'00:00:00') AND
+			CONCAT(#{endTime,jdbcType=VARCHAR},'23:59:59')
 			GROUP BY
 			t.`owner`
-			) t#{index} ON u.id
+			)
+			t#{index} ON u.id
 			= t#{index}.user_id
 		</foreach>
 		WHERE 1 =1

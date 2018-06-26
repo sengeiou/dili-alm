@@ -227,8 +227,7 @@ public class StatisticalController {
 
 	@ApiOperation(value = "项目工时查询", notes = "查询返回easyui信息")
 	@RequestMapping(value = "/listProjectHours", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody List<TaskHoursByProjectDto> getSearchAllDto(String startDate, String endDate, String[] project)
-			throws Exception {
+	public @ResponseBody List<TaskHoursByProjectDto> getSearchAllDto(String[] project) throws Exception {
 		List<Long> projectIds = new ArrayList<Long>();
 		if (project != null) {
 			projectIds = new ArrayList<Long>(project.length);
@@ -236,7 +235,7 @@ public class StatisticalController {
 				projectIds.add(Long.parseLong(long1));
 			}
 		}
-		return statisticalService.listProjectHours(startDate, endDate, projectIds);
+		return statisticalService.listProjectHours(null, null, projectIds);
 
 	}
 
