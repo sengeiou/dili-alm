@@ -80,7 +80,7 @@
 						</td>
 						<td class="table-title">渠道</td>
 						<td><input class="easyui-textbox" name="channel" id="channel" style="width: 90%; text-align: center;"
-							data-options="editable:false,required:true" /> <#comboProvider _id="channel" _provider='workOrderChannelProvider' /></td>
+							data-options="editable:false,onChange:_changeTextboxShowClear" /> <#comboProvider _id="channel" _provider='workOrderChannelProvider' /></td>
 						<td class="table-title">执行人</td>
 						<td><input class="easyui-combobox" style="width: 87%; text-align: center;" id="executorId" name="executorId"
 							data-options="editable:true,
@@ -116,6 +116,7 @@
 <script type="text/javascript">
 	<#members_index/>
 	$(function() {
+		$('#channel').textbox('addClearBtn', 'icon-clear');
 		/* $('#acceptorId').textbox('addClearBtn', 'icon-clear');
 		$('#copyUserIds').textbox('addClearBtn', 'icon-clear'); */
 	})

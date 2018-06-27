@@ -249,6 +249,8 @@ public class WorkOrderController {
 			@ApiImplicitParam(name = "WorkOrder", paramType = "form", value = "WorkOrder的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(WorkOrderQueryDto query) throws Exception {
+		query.setSort("modifyTime");
+		query.setOrder("desc");
 		if (query.getSubmitEndDate() != null) {
 			Calendar c = Calendar.getInstance();
 			c.setTime(query.getSubmitEndDate());
