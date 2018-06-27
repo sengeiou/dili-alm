@@ -219,7 +219,9 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 						ProjectApply apply = projectApplyService.get(approve.getProjectApplyId());
 						apply.setStatus(AlmConstants.ApplyState.PASS.getCode());
 						// 立项审批通过生成项目信息
-						buildProject(apply, approve);
+						Project project = buildProject(apply, approve);
+						// 插入立项规划
+						this.addProjectAction(project);
 						projectApplyService.updateSelective(apply);
 						sendMail(apply, true);
 					} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.CHANGE.getCode())) {
@@ -233,7 +235,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 						ProjectComplete complete = projectCompleteService.get(approve.getProjectApplyId());
 						complete.setStatus(AlmConstants.ApplyState.PASS.getCode());
 						closeProject(complete);
-						insertProjectCloseActionRecord(complete);
+						insertProjectCompleteActionRecord(complete);
 						projectCompleteService.updateSelective(complete);
 						sendMail(complete, true);
 					}
@@ -249,18 +251,69 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		}
 	}
 
-	private void insertProjectCloseActionRecord(ProjectComplete complete) {
+	private void insertProjectCompleteActionRecord(ProjectComplete complete) throws ApproveException {
+		// 结项申请记录
+		ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
+		par.setActionCode(ProjectAction.PROJECT_COMPLETE_APPLY.getCode());
+		par.setActionDate(complete.getCreated());
+		par.setActionDateType(ActionDateType.POINT.getValue());
+		par.setActionType(ProjectActionType.PROJECT.getValue());
+		par.setProjectId(complete.getProjectId());
+		int rows = this.parMapper.insertSelective(par);
+		if (rows <= 0) {
+			throw new ApproveException("插入项目进程记录失败");
+		}
 
+		Date now = new Date();
+
+		// 结项申请审批记录
+		par = DTOUtils.newDTO(ProjectActionRecord.class);
+		par.setActionCode(ProjectAction.PROJECT_COMPLETE_APPROVE.getCode());
+		par.setActionDate(now);
+		par.setActionDateType(ActionDateType.POINT.getValue());
+		par.setActionType(ProjectActionType.PROJECT.getValue());
+		par.setProjectId(complete.getProjectId());
+		rows = this.parMapper.insertSelective(par);
+		if (rows <= 0) {
+			throw new ApproveException("插入项目进程记录失败");
+		}
+
+		// 结项记录
+		par = DTOUtils.newDTO(ProjectActionRecord.class);
+		par.setActionCode(ProjectAction.PROJECT_COMPLETE.getCode());
+		par.setActionDate(now);
+		par.setActionDateType(ActionDateType.POINT.getValue());
+		par.setActionType(ProjectActionType.PROJECT.getValue());
+		par.setProjectId(complete.getProjectId());
+		rows = this.parMapper.insertSelective(par);
+		if (rows <= 0) {
+			throw new ApproveException("插入项目进程记录失败");
+		}
 	}
 
-	private void insertProjectChangeActionRecord(ProjectChange change) {
+	private void insertProjectChangeActionRecord(ProjectChange change) throws ApproveException {
+		// 变更申请提交记录
 		ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
+		par.setActionCode(ProjectAction.PROJECT_CHANGE_APPLY.getCode());
+		par.setActionDate(change.getSubmitDate());
+		par.setActionDateType(ActionDateType.POINT.getValue());
+		par.setActionType(ProjectActionType.PROJECT.getValue());
+		par.setProjectId(change.getProjectId());
+		int rows = this.parMapper.insertSelective(par);
+		if (rows <= 0) {
+			throw new ApproveException("插入项目进程记录失败");
+		}
+		// 变更申请审批记录
+		par = DTOUtils.newDTO(ProjectActionRecord.class);
 		par.setActionCode(ProjectAction.PROJECT_CHANGE_APPROVE.getCode());
 		par.setActionDate(new Date());
 		par.setActionDateType(ActionDateType.POINT.getValue());
 		par.setActionType(ProjectActionType.PROJECT.getValue());
 		par.setProjectId(change.getProjectId());
-
+		rows = this.parMapper.insertSelective(par);
+		if (rows <= 0) {
+			throw new ApproveException("插入项目进程记录失败");
+		}
 	}
 
 	@Override
@@ -524,7 +577,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	 * 
 	 * @throws ProjectApplyException
 	 */
-	private void buildProject(ProjectApply apply, Approve approve) throws ApproveException {
+	private Project buildProject(ProjectApply apply, Approve approve) throws ApproveException {
 		Project project = DTOUtils.newDTO(Project.class);
 		project.setSerialNumber(apply.getNumber());
 		project.setName(apply.getName());
@@ -546,8 +599,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 			throw new ApproveException("创建项目失败");
 		}
 		buildTeam(project);
-		// 插入立项规划
-		this.addProjectAction(project);
+		return project;
 	}
 
 	private void addProjectAction(Project project) throws ApproveException {
