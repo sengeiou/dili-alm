@@ -39,13 +39,13 @@
 						<td class="table-title" width="16.6%">工单名称</td>
 						<td width="16.6%">${model.workOrderName!}</td>
 						<td width="16.6%" class="table-title">工单类型</td>
-						<td width="16.6%"><input class="easyui-textbox" name="workOrderType" id="workOrderType" value="${model.workOrderType!}"
+						<td width="16.6%"><input class="easyui-textbox" name="workOrderType" id="workOrderType" value="${model.$_workOrderType!}"
 							style="width: 87%; text-align: center;" data-options="editable:false,required:true" /> <#comboProvider _id="workOrderType"
 								_provider='workOrderTypeProvider' /></td>
 					</tr>
 					<tr>
 						<td class="table-title">工单优先级</td>
-						<td><input class="easyui-textbox" name="priority" id="priority" value="${model.priority!}"
+						<td><input class="easyui-textbox" name="priority" id="priority" value="${model.$_priority!}"
 							style="width: 87%; text-align: center;" data-options="editable:false,required:true" /> <#comboProvider _id="priority"
 								_provider='workOrderPriorityProvider' /></td>
 						<td class="table-title">工单来源</td>

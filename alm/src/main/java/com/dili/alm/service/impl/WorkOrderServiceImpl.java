@@ -237,10 +237,12 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 	@Override
 	public WorkOrder getOperatinoRecordsViewModel(Long id) {
 		WorkOrder workOrder = this.getActualDao().selectByPrimaryKey(id);
-		List<Long> copyUserIds = JSON.parseArray(workOrder.getCopyUserId(), Long.class);
-		StringBuilder sb = new StringBuilder();
-		copyUserIds.forEach(cid -> sb.append(this.memberProvider.getDisplayText(cid, null, null)).append(","));
-		workOrder.aset("copyUsers", sb.substring(0, sb.length() - 1));
+		if (StringUtils.isNotBlank(workOrder.getCopyUserId())) {
+			List<Long> copyUserIds = JSON.parseArray(workOrder.getCopyUserId(), Long.class);
+			StringBuilder sb = new StringBuilder();
+			copyUserIds.forEach(cid -> sb.append(this.memberProvider.getDisplayText(cid, null, null)).append(","));
+			workOrder.aset("copyUsers", sb.substring(0, sb.length() - 1));
+		}
 		WorkOrderOperationRecord woorQuery = DTOUtils.newDTO(WorkOrderOperationRecord.class);
 		woorQuery.setWorkOrderId(id);
 		List<WorkOrderOperationRecord> opRecords = this.woorMapper.select(woorQuery);
@@ -292,16 +294,10 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 		}
 		// 生成操作记录
 		WorkOrderOperationRecord woor = DTOUtils.newDTO(WorkOrderOperationRecord.class);
-		if (workOrder.getWorkOrderSource().equals(WorkOrderSource.DEPARTMENT.getValue())) {
-			woor.setOperatorId(workOrder.getExecutorId());
-		} else if (workOrder.getWorkOrderSource().equals(WorkOrderSource.OUTSIDE.getValue())) {
-			woor.setOperatorId(workOrder.getAcceptorId());
-		} else {
-			throw new WorkOrderException("未知的工单来源");
-		}
-		woor.setOperationName(WorkOrderOperationType.EXECUTOR.getName());
 		woor.setOperationType(WorkOrderOperationType.EXECUTOR.getValue());
+		woor.setOperationName(WorkOrderOperationType.EXECUTOR.getName());
 		woor.setOperationResult(OperationResult.SUCCESS.getValue());
+		woor.setOperatorId(workOrder.getExecutorId());
 		woor.setDescription(workContent);
 		woor.setWorkOrderId(workOrder.getId());
 		int rows = this.woorMapper.insertSelective(woor);
@@ -319,7 +315,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 		// 发邮件
 		User applicant = AlmCache.getInstance().getUserMap().get(workOrder.getApplicantId());
 		if (applicant == null) {
-			throw new WorkOrderException("执行人不存在");
+			throw new WorkOrderException("申请人不存在");
 		}
 		this.sendMail(workOrder, "工单执行", Sets.newHashSet(applicant.getEmail()));
 	}
