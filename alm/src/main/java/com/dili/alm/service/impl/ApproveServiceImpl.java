@@ -227,12 +227,13 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 						change.setStatus(AlmConstants.ApplyState.PASS.getCode());
 						projectChangeService.updateSelective(change);
 						updateProjectEndDate(change);
-						insertProjectActionRecord(change);
+						insertProjectChangeActionRecord(change);
 						sendMail(change, true);
 					} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.COMPLETE.getCode())) {
 						ProjectComplete complete = projectCompleteService.get(approve.getProjectApplyId());
 						complete.setStatus(AlmConstants.ApplyState.PASS.getCode());
 						closeProject(complete);
+						insertProjectCloseActionRecord(complete);
 						projectCompleteService.updateSelective(complete);
 						sendMail(complete, true);
 					}
@@ -248,8 +249,18 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		}
 	}
 
-	private void insertProjectActionRecord(ProjectChange change) {
+	private void insertProjectCloseActionRecord(ProjectComplete complete) {
+
+	}
+
+	private void insertProjectChangeActionRecord(ProjectChange change) {
 		ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
+		par.setActionCode(ProjectAction.PROJECT_CHANGE_APPROVE.getCode());
+		par.setActionDate(new Date());
+		par.setActionDateType(ActionDateType.POINT.getValue());
+		par.setActionType(ProjectActionType.PROJECT.getValue());
+		par.setProjectId(change.getProjectId());
+
 	}
 
 	@Override
