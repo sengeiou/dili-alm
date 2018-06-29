@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +27,7 @@ import com.dili.alm.domain.Files;
 import com.dili.alm.domain.OperationResult;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.WorkOrder;
+import com.dili.alm.domain.WorkOrderSource;
 import com.dili.alm.domain.dto.WorkOrderQueryDto;
 import com.dili.alm.domain.dto.WorkOrderUpdateDto;
 import com.dili.alm.exceptions.WorkOrderException;
@@ -35,7 +35,6 @@ import com.dili.alm.rpc.DepartmentRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.WorkOrderService;
-import com.dili.alm.service.impl.WorkOrderServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
@@ -67,10 +66,10 @@ public class WorkOrderController {
 
 	@GetMapping("/detail")
 	public String deital(@RequestParam Long id, ModelMap modelMap) {
-		WorkOrder workOrder = this.workOrderService.getOperatinoRecordsViewModel(id);
+		WorkOrder workOrder = this.workOrderService.getOperationRecordsViewModel(id);
 		try {
 			modelMap.addAttribute("opRecords", workOrder.aget("opRecords")).addAttribute("model",
-					WorkOrderServiceImpl.parseViewModel(workOrder));
+					WorkOrderService.parseViewModel(workOrder));
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			return null;
@@ -94,8 +93,8 @@ public class WorkOrderController {
 
 	@ResponseBody
 	@RequestMapping(value = "/receivers")
-	public List<User> getReceivers() {
-		return this.workOrderService.getReceivers();
+	public List<User> getReceivers(@RequestParam Integer type) {
+		return this.workOrderService.getReceivers(WorkOrderSource.intValueOf(type));
 	}
 
 	@ApiOperation("跳转到WorkOrder页面")
@@ -171,10 +170,10 @@ public class WorkOrderController {
 
 	@GetMapping("/allocate")
 	public String allocateView(@RequestParam Long id, ModelMap modelMap) {
-		WorkOrder workOrder = this.workOrderService.getOperatinoRecordsViewModel(id);
+		WorkOrder workOrder = this.workOrderService.getOperationRecordsViewModel(id);
 		try {
 			modelMap.addAttribute("opRecords", workOrder.aget("opRecords")).addAttribute("model",
-					WorkOrderServiceImpl.parseViewModel(workOrder));
+					WorkOrderService.parseViewModel(workOrder));
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			return null;
@@ -198,10 +197,10 @@ public class WorkOrderController {
 
 	@GetMapping("/solve")
 	public String solveView(@RequestParam Long id, ModelMap modelMap) {
-		WorkOrder workOrder = this.workOrderService.getOperatinoRecordsViewModel(id);
+		WorkOrder workOrder = this.workOrderService.getOperationRecordsViewModel(id);
 		try {
 			modelMap.addAttribute("opRecords", workOrder.aget("opRecords")).addAttribute("model",
-					WorkOrderServiceImpl.parseViewModel(workOrder));
+					WorkOrderService.parseViewModel(workOrder));
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			return null;

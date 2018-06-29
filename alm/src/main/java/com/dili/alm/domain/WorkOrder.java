@@ -7,6 +7,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.dto.IMybatisForceParams;
@@ -21,6 +23,17 @@ import com.dili.ss.metadata.annotation.FieldDef;
  */
 @Table(name = "`work_order`")
 public interface WorkOrder extends IBaseDomain, IMybatisForceParams {
+
+	public interface Insert {
+	}
+
+	public interface Update {
+	}
+
+	public interface SourceOutside {
+	}
+
+	@NotNull(groups = { Update.class })
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "`id`")
@@ -30,6 +43,7 @@ public interface WorkOrder extends IBaseDomain, IMybatisForceParams {
 
 	void setId(Long id);
 
+	@NotBlank(message = "工单编号不能为空")
 	@Column(name = "`serial_number`")
 	@FieldDef(label = "工单编号", maxLength = 255)
 	@EditMode(editor = FieldEditor.Text, required = true)
@@ -37,6 +51,7 @@ public interface WorkOrder extends IBaseDomain, IMybatisForceParams {
 
 	void setSerialNumber(String serialNumber);
 
+	@NotBlank(message = "工单名称不能为空")
 	@Column(name = "`work_order_name`")
 	@FieldDef(label = "工单名称", maxLength = 255)
 	@EditMode(editor = FieldEditor.Text, required = false)
@@ -44,6 +59,7 @@ public interface WorkOrder extends IBaseDomain, IMybatisForceParams {
 
 	void setWorkOrderName(String workOrderName);
 
+	@NotNull(message = "工单类型不能为空")
 	@Column(name = "`work_order_type`")
 	@FieldDef(label = "工单类型")
 	@EditMode(editor = FieldEditor.Number, required = true)
@@ -51,6 +67,7 @@ public interface WorkOrder extends IBaseDomain, IMybatisForceParams {
 
 	void setWorkOrderType(Integer workOrderType);
 
+	@NotNull(message = "工单优先级不能为空")
 	@Column(name = "`priority`")
 	@FieldDef(label = "工单优先级")
 	@EditMode(editor = FieldEditor.Number, required = true)
@@ -58,6 +75,7 @@ public interface WorkOrder extends IBaseDomain, IMybatisForceParams {
 
 	void setPriority(Integer priority);
 
+	@NotBlank(groups = { SourceOutside.class }, message = "工单渠道不能为空")
 	@Column(name = "`channel`")
 	@FieldDef(label = "渠道", maxLength = 255)
 	@EditMode(editor = FieldEditor.Text, required = true)
@@ -65,6 +83,7 @@ public interface WorkOrder extends IBaseDomain, IMybatisForceParams {
 
 	void setChannel(String channel);
 
+	@NotNull(groups = SourceOutside.class, message = "收礼人不能为空")
 	@Column(name = "`acceptor_id`")
 	@FieldDef(label = "受理人")
 	@EditMode(editor = FieldEditor.Number, required = true)
@@ -163,6 +182,7 @@ public interface WorkOrder extends IBaseDomain, IMybatisForceParams {
 
 	void setWorkContent(String workContent);
 
+	@NotNull(message = "工单来源不能为空")
 	@Column(name = "`work_order_source`")
 	@FieldDef(label = "工单来源")
 	@EditMode(editor = FieldEditor.Number, required = false)

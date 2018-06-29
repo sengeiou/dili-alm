@@ -52,6 +52,8 @@ public class AlmConstants {
 	// 工单受理人数据字典配置
 	public static final String WORK_ORDER_RECEIVERS_CODE = "work_order_receivers";
 
+	public static final String WORK_ORDER_MEMBER_FILTER_SWITCH = "work_order_member_filter_switch";
+
 	// 团队成员状态: 加入/离开
 	public enum MemberState {
 		LEAVE(0), JOIN(1);

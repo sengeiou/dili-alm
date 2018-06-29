@@ -1,6 +1,9 @@
 package com.dili;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.beetl.core.Configuration;
 import org.beetl.core.GroupTemplate;
@@ -17,6 +20,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.dili.alm.cache.AlmCache;
+import com.dili.alm.manager.WorkOrderManager;
 import com.dili.ss.retrofitful.annotation.RestfulScan;
 
 import tk.mybatis.spring.annotation.MapperScan;
@@ -49,6 +53,13 @@ public class AlmApplication extends SpringBootServletInitializer implements WebM
 		Configuration cfg = Configuration.defaultConfiguration();
 		StringTemplateResourceLoader resourceLoader = new StringTemplateResourceLoader();
 		return new GroupTemplate(resourceLoader, cfg);
+	}
+
+	@Bean
+	public Map<Integer, WorkOrderManager> workOrderManagerMap(List<WorkOrderManager> workOrderManagers) {
+		Map<Integer, WorkOrderManager> map = new HashMap<>(workOrderManagers.size());
+		workOrderManagers.forEach(m -> map.put(m.getType().getValue(), m));
+		return map;
 	}
 
 	@Bean

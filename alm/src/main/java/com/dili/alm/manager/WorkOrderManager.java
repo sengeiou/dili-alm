@@ -1,0 +1,33 @@
+package com.dili.alm.manager;
+
+import java.util.List;
+
+import com.dili.alm.domain.OperationResult;
+import com.dili.alm.domain.User;
+import com.dili.alm.domain.WorkOrder;
+import com.dili.alm.domain.WorkOrderSource;
+import com.dili.alm.exceptions.WorkOrderException;
+
+public interface WorkOrderManager {
+
+	WorkOrderSource getType();
+
+	void add(WorkOrder workOrder) throws WorkOrderException;
+
+	void update(WorkOrder workOrder) throws WorkOrderException;
+
+	void submit(WorkOrder workOrder) throws WorkOrderException;
+
+	void allocate(WorkOrder workOrder, Long executorId, Integer workOrderType, Integer priority, OperationResult result,
+			String description) throws WorkOrderException;
+
+	void close(WorkOrder workOrder, Long operatorId) throws WorkOrderException;
+
+	void solve(WorkOrder workOrder, Integer taskHours, Integer overtimeHours, String workContent)
+			throws WorkOrderException;
+
+	WorkOrder getOperationRecordsViewModel(WorkOrder workOrder);
+
+	List<User> getReceivers();
+
+}

@@ -6,12 +6,34 @@ function serialNumberFormatter(value, row, index) {
 }
 
 function onWorkOrderSourceChange(n, o) {
-	if (n == 1) {
-		$('#acceptorId').combobox('enable');
-		$('#executorId').combobox('disable');
-	} else {
-		$('#acceptorId').combobox('disable');
-		$('#executorId').combobox('enable');
+	switch (n) {
+		case 1 :
+			$('#acceptorId').combobox('reload', '${contextPath!}/workOrder/receivers?type=1');
+			$('#acceptorId').combobox('enable');
+			$('#executorId').combobox('disable');
+			$('#channel').combobox({
+						required : true,
+						width : '100%'
+					});
+			break;
+		case 2 :
+			$('#acceptorId').combobox('reload', '${contextPath!}/workOrder/receivers?type=2');
+			$('#acceptorId').combobox('disable');
+			$('#executorId').combobox('enable');
+			$('#channel').combobox({
+						required : false,
+						width : '100%'
+					});
+			break;
+		case 3 :
+			$('#acceptorId').combobox('reload', '${contextPath!}/workOrder/receivers?type=3');
+			$('#acceptorId').combobox('enable');
+			$('#executorId').combobox('disable');
+			$('#channel').combobox({
+						required : true,
+						width : '100%'
+					});
+			break;
 	}
 }
 
