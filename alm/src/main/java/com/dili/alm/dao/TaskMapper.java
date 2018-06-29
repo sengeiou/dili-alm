@@ -67,7 +67,8 @@ public interface TaskMapper extends MyMapper<Task> {
 			@Param("endTime") String endTime, @Param("pids") List<Long> projectId);
 
 	List<SelectTaskHoursByUserProjectDto> selectUsersProjectHours(@Param("userIds") List<Long> userId,
-			@Param("projectIds") List<Long> projectId);
+			@Param("projectIds") List<Long> projectId, @Param("startTime") Date startTime,
+			@Param("endTime") Date endDate);
 
 	List<ProjectYearCoverDto> selectProjectYearsCover(@Param("beginTime") String beginTime,
 			@Param("endTime") String endTime);
