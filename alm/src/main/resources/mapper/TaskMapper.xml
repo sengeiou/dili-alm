@@ -507,7 +507,7 @@
 		task_details where 1 =1
 		<if test="beginTime != null">
 			AND modified <![CDATA[>=]]>
-			CONCAT(#{beginTime,jdbcType=VARCHAR},'00:00:00')
+			CONCAT(#{beginTime,jdbcType=VARCHAR},' 00:00:00')
 		</if>
 		<if test="endTime != null">
 			AND modified <![CDATA[<=]]>
@@ -565,7 +565,7 @@
 		1=1
 		<if test="startTime != null">
 			AND tt.modified <![CDATA[>=]]>
-			CONCAT(#{startTime,jdbcType=VARCHAR},'00:00:00')
+			CONCAT(#{startTime,jdbcType=VARCHAR},' 00:00:00')
 		</if>
 		<if test="endTime != null">
 			AND tt.modified <![CDATA[<=]]>
@@ -590,89 +590,91 @@
 	<!-- 年度总汇 -->
 	<select id="selectProjectYearsCover"
 		resultType="com.dili.alm.domain.dto.ProjectYearCoverDto">
-		select pp.pid as
-		projectId,pp.pname as projectName,pp.ptype
-		as projectType,pp.pstate as
-		projectstate,t.total as taskCount,t.finish
-		as finishCount,t.begining
-		as ongoing,t.finish/t.total as
-		completionRate,t.noFinish as
-		noFinish,t.noFinish/t.total as overdueRate
-		,t.pause as
-		pauseTotal,t.begining as beginingTotal,t.noBegin as
-		noBeginTotal from
-		(select ps.pid as pid ,ps.pname as pname,dd2.`code`
-		as ptype
-		,ps.pstate from
-		(select p.id as pid,p.`name` as pname ,p.type
-		as ptype
-		,p.start_date
-		as pstart,p.end_date as pend,dd.`code` as
-		pstate
-		from
-		alm.project as p LEFT JOIN alm.data_dictionary_value dd ON
-		p.project_state=dd.`value` where dd.dd_id=6)
-		as ps LEFT JOIN
-		alm.data_dictionary_value as dd2 ON ps.ptype = dd2.`value` where
-		dd2.dd_id= 3 AND ps.pstart BETWEEN #{beginTime,jdbcType=TIMESTAMP} AND
-		#{endTime,jdbcType=TIMESTAMP} or ps.pend BETWEEN
-		#{beginTime,jdbcType=TIMESTAMP} AND #{endTime,jdbcType=TIMESTAMP}) as
-		pp
-		LEFT JOIN
-		(select task.project_id as tpid,count(*) as
-		total,count(case when `status`=0
-		then '0' end)as noBegin,count(case
-		when `status`=1 then 1 end)as
-		begining,count(case when `status`=2 then
-		2 end)as pause,count(case
-		when `status`=3 then 3 end)as
-		finish,count(case when `status`=4 then 4
-		end)as noFinish
-		from task group
-		by project_id order by project_id,
-		`status`) as t on pp.pid =t.tpid
+		SELECT
+		t.project_id AS projectId,
+		p.`name` AS projectName,
+		p.`type` AS
+		projectType,
+		p.project_state AS projectstate,
+		count( * ) AS taskCount,
+		count( CASE WHEN t.`status` = 3 THEN 3 END ) AS finishCount,
+		count(
+		CASE WHEN t.`status` = 1 THEN 1 END ) AS ongoing,
+		count( CASE WHEN
+		t.`status` = 3 THEN 3 END ) / count( * ) AS completionRate,
+		count( CASE
+		WHEN t.`status` = 4 THEN 4 END ) AS noFinish,
+		count( CASE WHEN
+		t.`status` = 4 THEN 4 END ) / count( * ) AS overdueRate,
+		count( CASE
+		WHEN t.`status` = 2 THEN 2 END ) AS pauseTotal,
+		count( CASE WHEN
+		t.`status` = 1 THEN 1 END ) AS beginingTotal,
+		count( CASE WHEN
+		t.`status` = 4 THEN 4 END ) AS noBeginTotal
+		FROM
+		(
+		SELECT DISTINCT
+		t1.*
+		FROM
+		task t1
+		INNER JOIN task_details td1 ON t1.id = td1.task_id
+		WHERE 1 =
+		1
+		<if test="beginTime != null and beginTime != ''">
+			AND td1.modified <![CDATA[>=]]>
+			CONCAT(#{beginTime,jdbcType=VARCHAR},' 00:00:00')
+		</if>
+		<if test="endTime != null and endTime != ''">
+			AND td1.modified <![CDATA[<=]]>
+			CONCAT(#{endTime,jdbcType=VARCHAR},' 23:59:59')
+		</if>
+		) t
+		LEFT JOIN project p
+		ON t.project_id = p.id
+		GROUP BY
+		t.project_id
+		ORDER BY
+		t.project_id,
+		t.`status`
 	</select>
+
 	<!-- 年度总汇.图标 -->
 	<select id="selectProjectYearsCoverForAll"
 		resultType="com.dili.alm.domain.dto.ProjectYearCoverForAllDto">
-		select
-		IFNULL(pp.pid,0) as pid,IFNULL(sum(t.total),0) as
-		taskCount,IFNULL(sum(t.finish),0) as
-		finishCount,IFNULL(sum(t.begining),0) as ongoing
-		,IFNULL(sum(t.noFinish),0) as noFinish
-		,IFNULL(sum(t.pause),0) as
-		pauseTotal,IFNULL(sum(t.begining),0) as
-		beginingTotal,IFNULL(t.noBegin,0) as noBeginTotal from
-		(select p.id as
-		pid,start_date as startDate,end_date as endDate
-		from
-		alm.project as p
-		WHERE (start_date BETWEEN #{beginTime,jdbcType=TIMESTAMP} AND
-		#{endTime,jdbcType=TIMESTAMP}) or
-		(end_date BETWEEN
-		#{beginTime,jdbcType=TIMESTAMP} AND
-		#{endTime,jdbcType=TIMESTAMP})) as
-		pp
-		LEFT JOIN
-		( select task.project_id
-		as tpid,count(*) as
-		total,count(case when
-		`status`=0 then '0' end)as
-		noBegin,count(case when
-		`status`=1 then 1
-		end)as begining,count(case
-		when `status`=2 then 2
-		end)as
-		pause,count(case when `status`=3 then 3
-		end)as finish,count(case
-		when
-		`status`=4 then 4 end)as noFinish
-		from
-		task group by project_id
-		order
-		by project_id, `status`
-		) as t on pp.pid
-		=t.tpid
+		SELECT
+		t.project_id AS pid,
+		count( t.id ) AS taskCount,
+		count( CASE WHEN
+		t.`status` = 3 THEN 3 END ) AS finishCount,
+		count( CASE WHEN t.`status`
+		= 1 THEN 1 END ) AS ongoing,
+		count( CASE WHEN t.`status` = 4 THEN 4 END
+		) AS noFinish,
+		count( CASE WHEN t.`status` = 2 THEN 2 END ) AS
+		pauseTotal,
+		count( CASE WHEN t.`status` = 1 THEN 1 END ) AS
+		beginingTotal,
+		count( CASE WHEN t.`status` = 0 THEN 0 END ) AS
+		noBeginTotal
+		FROM
+		(
+		SELECT DISTINCT
+		t1.*
+		FROM
+		task t1
+		INNER JOIN task_details
+		td1 ON t1.id = td1.task_id
+		WHERE 1 = 1
+		<if test="beginTime != null and beginTime != ''">
+			AND td1.modified <![CDATA[>=]]>
+			CONCAT(#{beginTime,jdbcType=VARCHAR},' 00:00:00')
+		</if>
+		<if test="endTime != null and endTime != ''">
+			AND td1.modified <![CDATA[<=]]>
+			CONCAT(#{endTime,jdbcType=VARCHAR},' 23:59:59')
+		</if>
+		) t
 	</select>
 	<!-- 数据统计相关 end -->
 
@@ -767,8 +769,8 @@
 			WHERE
 			t.project_id = #{projectId} AND td.modified
 			BETWEEN
-			CONCAT(#{startTime,jdbcType=VARCHAR},'00:00:00') AND
-			CONCAT(#{endTime,jdbcType=VARCHAR},'23:59:59')
+			CONCAT(#{startTime,jdbcType=VARCHAR},' 00:00:00') AND
+			CONCAT(#{endTime,jdbcType=VARCHAR},' 23:59:59')
 			GROUP BY
 			t.`owner`
 			)

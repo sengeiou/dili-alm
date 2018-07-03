@@ -574,7 +574,8 @@ public class StatistaicalServiceImpl implements StatisticalService {
 
 			end = dateUtilMap.get("end" + weekNumIntager);
 		}
-		return taskMapper.selectProjectYearsCoverForAll(start, end);
+		ProjectYearCoverForAllDto dto = taskMapper.selectProjectYearsCoverForAll(start, end);
+		return dto == null ? new ProjectYearCoverForAllDto() : dto;
 	}
 
 	/*****
