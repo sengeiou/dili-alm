@@ -37,7 +37,6 @@ import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.domain.ActionDateType;
 import com.dili.alm.domain.Approve;
 import com.dili.alm.domain.DataDictionaryValue;
-import com.dili.alm.domain.Files;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectAction;
 import com.dili.alm.domain.ProjectActionRecord;
@@ -61,7 +60,6 @@ import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.DataDictionaryService;
-import com.dili.alm.service.FilesService;
 import com.dili.alm.service.MessageService;
 import com.dili.alm.service.ProjectApplyService;
 import com.dili.alm.service.ProjectChangeService;
@@ -90,9 +88,6 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
 	@Autowired
 	private DataDictionaryService dataDictionaryService;
-
-	@Autowired
-	private FilesService filesService;
 
 	@Autowired
 	private MailManager mailManager;
@@ -558,18 +553,6 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 				Objects.equals(opt, "accept") ? AlmConstants.ChangeState.VRIFY.getCode() : approve.getStatus());
 		updateSelective(approve);
 		return BaseOutput.success();
-	}
-
-	/**
-	 * @param applyId
-	 * @param projectId
-	 */
-	private void buildFile(Long applyId, Long projectId) {
-		List<Files> files = projectApplyService.listFiles(applyId);
-		files.forEach(f -> {
-			f.setProjectId(projectId);
-			filesService.updateSelective(f);
-		});
 	}
 
 	/**

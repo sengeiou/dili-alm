@@ -68,14 +68,14 @@ public class ProjectActionRecordServiceImpl extends BaseServiceImpl<ProjectActio
 				valueDto.setTo(r.getActionEndDate().getTime());
 				valueDto.setLabel(
 						"开始时间:" + df.format(r.getActionStartDate()) + " 结束时间：" + df.format(r.getActionEndDate()));
-				valueDto.setCustomClass(
+				valueDto.setDesc(
 						"开始时间:" + df.format(r.getActionStartDate()) + " 结束时间：" + df.format(r.getActionEndDate()));
 			} else {
 				valueDto.setFrom(r.getActionDate().getTime());
 				valueDto.setTo(r.getActionDate().getTime());
 				dto.setDesc(dtf.format(r.getActionDate()));
 				valueDto.setLabel(dtf.format(r.getActionDate()));
-				valueDto.setCustomClass(dtf.format(r.getActionDate()));
+				valueDto.setDesc(dtf.format(r.getActionDate()));
 			}
 			valueDto.setDataObj(r);
 			dto.setValues(Arrays.asList(valueDto));

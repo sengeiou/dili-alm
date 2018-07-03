@@ -1,17 +1,23 @@
 package com.dili.alm.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.dili.alm.domain.ProjectAction;
 import com.dili.alm.domain.dto.ProjectActionRecordGanttDto;
 import com.dili.alm.service.ProjectActionRecordService;
+import com.dili.ss.domain.BaseOutput;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,8 +40,21 @@ public class ProjectActionRecordController {
 
 	@ResponseBody
 	@RequestMapping("/gantt.json")
-	public List<ProjectActionRecordGanttDto> gantJson(@RequestParam Long projectId) {
-		return this.projectActionRecordService.getGanntData(projectId);
+	public BaseOutput<Object> gantJson(@RequestParam Long projectId) {
+		return BaseOutput.success().setData(this.projectActionRecordService.getGanntData(projectId));
+	}
+
+	@ResponseBody
+	@RequestMapping("/actions.json")
+	public List<Map<String, String>> actions() {
+		List<Map<String, String>> list = new ArrayList<>(ProjectAction.values().length);
+		for (ProjectAction action : ProjectAction.values()) {
+			Map<String, String> map = new HashMap<>(2);
+			map.put("code", action.getCode());
+			map.put("name", action.getName());
+			list.add(map);
+		}
+		return list;
 	}
 
 }
