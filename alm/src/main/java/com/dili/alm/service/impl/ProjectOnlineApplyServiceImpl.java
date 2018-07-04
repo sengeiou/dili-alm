@@ -868,6 +868,8 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		JSONObject datetimeProvider = new JSONObject();
 		datetimeProvider.put("provider", "datetimeProvider");
 		metadata.put("operateTime", datetimeProvider);
+
+		metadata.put("opertateResult", "operationResultProvider");
 		try {
 			return ValueProviderUtils.buildDataByProvider(metadata, list);
 		} catch (Exception e) {
