@@ -32,7 +32,6 @@ import com.dili.alm.domain.dto.WorkOrderQueryDto;
 import com.dili.alm.domain.dto.WorkOrderUpdateDto;
 import com.dili.alm.exceptions.WorkOrderException;
 import com.dili.alm.rpc.DepartmentRpc;
-import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.WorkOrderService;
 import com.dili.ss.domain.BaseOutput;
@@ -59,8 +58,6 @@ public class WorkOrderController {
 	private NumberGenerator numberGenerator;
 	@Autowired
 	private FilesService filesService;
-	@Autowired
-	private UserRpc userRpc;
 	@Autowired
 	private DepartmentRpc deptRpc;
 
@@ -222,12 +219,25 @@ public class WorkOrderController {
 		}
 	}
 
+	@GetMapping("/close")
+	public String closeView(@RequestParam Long id, ModelMap modelMap) {
+		WorkOrder workOrder = this.workOrderService.getOperationRecordsViewModel(id);
+		try {
+			modelMap.addAttribute("opRecords", workOrder.aget("opRecords")).addAttribute("model",
+					WorkOrderService.parseViewModel(workOrder));
+			return "workOrder/close";
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			return null;
+		}
+	}
+
 	@ResponseBody
 	@PostMapping("/close")
-	public BaseOutput<Object> close(@RequestParam Long id) {
+	public BaseOutput<Object> close(@RequestParam Long id, @RequestParam String description) {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		try {
-			this.workOrderService.close(id, user.getId());
+			this.workOrderService.close(id, user.getId(), description);
 			Map<Object, Object> viewModel = this.workOrderService.getViewModel(id);
 			return BaseOutput.success().setData(viewModel);
 		} catch (WorkOrderException e) {

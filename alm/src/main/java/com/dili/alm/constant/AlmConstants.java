@@ -51,8 +51,10 @@ public class AlmConstants {
 	public static final String WORK_ORDER_SOURCE_CODE = "work_order_source";
 	// 工单受理人数据字典配置
 	public static final String WORK_ORDER_RECEIVERS_CODE = "work_order_receivers";
-
+	// 工单受理人过滤开不安数据字典配置
 	public static final String WORK_ORDER_MEMBER_FILTER_SWITCH = "work_order_member_filter_switch";
+	// 工单超时自动关闭时间
+	public static final long CLOSE_OVER_TIME = 2 * 24 * 60 * 60 * 1000;
 
 	// 团队成员状态: 加入/离开
 	public enum MemberState {

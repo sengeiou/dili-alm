@@ -49,26 +49,19 @@ function editCostItem(index, row) {
 		var index = $('#travelCostGrid').datagrid('getRowIndex');
 	}
 	$('#travelCostGrid').datagrid('showColumn', 'op');
+	$('#saveBtn' + index).show();
+	$('#cancelBtn' + index).show();
 	$('#travelCostGrid').datagrid('beginEdit', index);
 }
 
 function optFormatter(value, row, index) {
 	var content = '';
-	if (row.$_applyState == 1) {
-		if (row.$_applicantId == userId && userId != 1) {
-			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="openUpdate(' + index + ');">编辑</a>';
-			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="del(' + index + ');">删除</a>';
-		} else {
-			content += '<span style="padding:0px 2px;">编辑</span>';
-			content += '<span style="padding:0px 2px;">删除</span>';
-		}
-	}
-	if (row.$_applyState == 2) {
-		if (dataAuth.reviewTravelCostApply && userId != 1) {
-			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="review(' + row.id + ');">审核</a>';
-		} else {
-			content += '<span style="padding:0px 2px;">审核</span>';
-		}
+	if (row.$_applicantId == userId && userId != 1) {
+		content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="openUpdate(' + index + ');">编辑</a>';
+		content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="del(' + index + ');">删除</a>';
+	} else {
+		content += '<span style="padding:0px 2px;">编辑</span>';
+		content += '<span style="padding:0px 2px;">删除</span>';
 	}
 	return content;
 }
@@ -117,6 +110,22 @@ function review(id) {
 
 function onCostItemGridBeginEdit(index, row) {
 	costItemGridEditIndex = index;
+	var editor = $('#travelCostGrid').datagrid('getEditor', {
+				index : index,
+				field : 'destinationPlace'
+			}).target;
+	if (row.destinationPlace) {
+		editor.textbox('setValue', row.destinationPlace);
+		editor.textbox('setText', row.destinationPlaceText);
+	}
+	editor = $('#travelCostGrid').datagrid('getEditor', {
+				index : index,
+				field : 'setOutPlace'
+			}).target;
+	if (row.setOutPlace) {
+		editor.textbox('setValue', row.setOutPlace);
+		editor.textbox('setText', row.setOutPlaceText);
+	}
 }
 
 function removeCostItem() {
@@ -176,11 +185,6 @@ function openInsert() {
 							text : '取消',
 							handler : function() {
 								$('#dlg').dialog('close');
-							}
-						}, {
-							text : '提交',
-							handler : function() {
-								postData("${contextPath}/travelCostApply/saveAndSubmit");
 							}
 						}]
 
@@ -254,7 +258,7 @@ function postData(_url) {
 // 打开修改窗口
 function openUpdate(index) {
 	var selected = null;
-	if (!index) {
+	if (!index == undefined) {
 		selected = $('#grid').datagrid('getSelected');
 	} else {
 		selected = $("#grid").datagrid("getRows")[index];

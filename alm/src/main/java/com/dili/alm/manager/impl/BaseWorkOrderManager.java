@@ -155,7 +155,7 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 	}
 
 	@Override
-	public void close(WorkOrder workOrder, Long operatorId) throws WorkOrderException {
+	public void close(WorkOrder workOrder, Long operatorId, String description) throws WorkOrderException {
 		// 检查状态
 		if (!workOrder.getWorkOrderState().equals(WorkOrderState.SOLVED.getValue())) {
 			throw new WorkOrderException("当前状态不能执行分配操作");
@@ -171,6 +171,7 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 		woor.setOperationType(WorkOrderOperationType.CONFIRM.getValue());
 		woor.setOperationResult(OperationResult.SUCCESS.getValue());
 		woor.setWorkOrderId(workOrder.getId());
+		woor.setDescription(description);
 		int rows = this.woorMapper.insertSelective(woor);
 		if (rows <= 0) {
 			throw new WorkOrderException("插入操作记录失败");
@@ -358,6 +359,8 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 		JSONObject datetimeProvider = new JSONObject();
 		datetimeProvider.put("provider", "datetimeProvider");
 		metadata.put("operationTime", datetimeProvider);
+
+		metadata.put("operationResult", "operationResultProvider");
 
 		return ValueProviderUtils.buildDataByProvider(metadata, opRecords);
 	}

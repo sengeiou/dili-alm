@@ -39,15 +39,11 @@
 						<td class="table-title" width="16.6%">工单名称</td>
 						<td width="16.6%">${model.workOrderName!}</td>
 						<td width="16.6%" class="table-title">工单类型</td>
-						<td width="16.6%"><input class="easyui-textbox" name="workOrderType" id="workOrderType" value="${model.$_workOrderType!}"
-							style="width: 87%; text-align: center;" data-options="editable:false,required:true" /> <#comboProvider _id="workOrderType"
-								_provider='workOrderTypeProvider' /></td>
+						<td width="16.6%">${model.workOrderType!}</td>
 					</tr>
 					<tr>
 						<td class="table-title">工单优先级</td>
-						<td><input class="easyui-textbox" name="priority" id="priority" value="${model.$_priority!}"
-							style="width: 87%; text-align: center;" data-options="editable:false,required:true" /> <#comboProvider _id="priority"
-								_provider='workOrderPriorityProvider' /></td>
+						<td>${model.priority!}</td>
 						<td class="table-title">工单来源</td>
 						<td>${model.workOrderSource!}</td>
 						<td class="table-title">受理人</td>
@@ -56,14 +52,8 @@
 					<tr>
 						<td class="table-title">抄送</td>
 						<td>${model.copyUsers!}</td>
-						<td class="table-title">执行人</td>
-						<td><input class="easyui-combobox" style="width: 92%; text-align: center;" id="executorId" name="executorId"
-							data-options="editable:true,
-							valueField:'id', 
-							textField:'realName',
-							loadFilter:removeAdminUserFilter,
-							required:true,
-							url:'${contextPath!}/member/members'"></td>
+						<td class="table-title">实施人</td>
+						<td>${model.executorId!}</td>
 						<td class="table-title">申请人</td>
 						<td class="table-combo">${model.applicantId!}</td>
 					</tr>
@@ -75,12 +65,7 @@
 						<td class="table-title" colspan="6">描述</td>
 					</tr>
 					<tr>
-						<td class="table-title" colspan="6">${model.description!}</td>
-					</tr>
-					<tr>
-						<td class="table-title" colspan="2">附件</td>
-						<td class="table-combo" colspan="4" style="padding: 0"><a href="${contextPath!}/files/download?id=${model.$_attachmentFileId!}"
-							target="_blank">${model.attachmentFileId!}</a></td>
+						<td class="table-combo" colspan="6">${model.description!}</td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="6">执行操作记录</td>
@@ -104,9 +89,17 @@
 					</tr>
 					<%}%>
 					<tr>
+						<td class="table-title" colspan="6">任务工时</td>
+					</tr>
+					<tr>
+						<td class="table-title">常规工时</td>
+						<td class="table-combo" colspan="2" style="padding: 0">${model.taskHours!}</td>
+						<td class="table-title">加班工时</td>
+						<td class="table-combo" colspan="2" style="padding: 0">${model.overtimeHours!}</td>
+					</tr>
+					<tr>
 						<td class="table-title" colspan="2">描述</td>
-						<td colspan="4"><input class="easyui-textbox" name="description" data-options="validType:['length[0,50]'],required:true"
-							style="width: 92%"></td>
+						<td colspan="4"><input class="easyui-textbox" name="description" data-options="validType:['length[0,50]']" style="width: 92%"></td>
 					</tr>
 				</table>
 			</div>
@@ -114,25 +107,3 @@
 
 	</form>
 </div>
-<script type="text/javascript">
-	<#members_index/>
-	$(function() {
-		$('#workOrderType').combobox('initValue',${model.$_workOrderType!});
-		$('#workOrderType').combobox('setText','${model.workOrderType!}');
-		
-		$('#priority').combobox('initValue',${model.$_priority!});
-		$('#priority').combobox('setText','${model.priority!}');
-		
-		$('#workOrderSource').combobox('initValue','${model.$_workOrderSource!}');
-		$('#workOrderSource').combobox('setText','${model.workOrderSource!}');
-		
-		$('#acceptorId').combobox('initValue',${model.$_acceptorId!});
-		$('#acceptorId').combobox('setText','${model.acceptorId!}');
-		
-		var copyUserIds=${model.copyUserId!};
-		$(copyUserIds).each(function(index,item){
-			var node = $('#copyUserIds').combotree('tree').tree('find',item);
-			$('#copyUserIds').combotree('tree').tree('check', node.target);
-		});
-	});
-</script>

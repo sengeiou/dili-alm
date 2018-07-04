@@ -1,7 +1,10 @@
 package com.dili.alm.service.impl;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.beetl.core.GroupTemplate;
@@ -13,17 +16,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.alm.component.NumberGenerator;
+import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.WorkOrderMapper;
 import com.dili.alm.domain.OperationResult;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.WorkOrder;
 import com.dili.alm.domain.WorkOrderSource;
+import com.dili.alm.domain.WorkOrderState;
 import com.dili.alm.domain.dto.WorkOrderUpdateDto;
 import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.WorkOrderException;
 import com.dili.alm.manager.WorkOrderManager;
 import com.dili.alm.service.WorkOrderService;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.quartz.domain.ScheduleMessage;
+
+import tk.mybatis.mapper.entity.Example;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2018-05-23 11:51:37.
@@ -59,14 +68,29 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 	}
 
 	@Override
-	public void close(Long id, Long operatorId) throws WorkOrderException {
+	public void close(Long id, Long operatorId, String description) throws WorkOrderException {
 		// 检查工单是否存在
 		WorkOrder workOrder = this.getActualDao().selectByPrimaryKey(id);
 		if (workOrder == null) {
 			throw new WorkOrderException("工单不存在");
 		}
 		WorkOrderManager workOrderManager = this.workOrderManagerMap.get(workOrder.getWorkOrderSource());
-		workOrderManager.close(workOrder, operatorId);
+		workOrderManager.close(workOrder, operatorId, description);
+	}
+
+	public void checkTimeToClose(ScheduleMessage msg) {
+		WorkOrder query = DTOUtils.newDTO(WorkOrder.class);
+		query.setWorkOrderState(WorkOrderState.SOLVED.getValue());
+		long overTime = System.currentTimeMillis() + AlmConstants.CLOSE_OVER_TIME;
+		List<WorkOrder> workOrders = this.getActualDao().select(query);
+		if (CollectionUtils.isEmpty(workOrders)) {
+			return;
+		}
+		workOrders.forEach(w -> {
+			if (w.getModifyTime().getTime() <= overTime) {
+				this.getActualDao().updateByPrimaryKeySelective(w);
+			}
+		});
 	}
 
 	public WorkOrderMapper getActualDao() {
