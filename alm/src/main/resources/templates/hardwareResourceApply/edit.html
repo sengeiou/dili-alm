@@ -63,6 +63,10 @@
 							data-options="editable:false" value="${submit}"></td>
 					</tr>
 					<tr>
+						<td class="table-title">创建时间</td>
+						<td class="table-combo">${apply.created!,'yyyy-MM-dd HH:mm:ss'}</td>
+					<tr></tr>
+
 						<td class="table-title">使用环境</td>
 						<td colspan="5"><%for(item in ddValue){%><input type="checkbox" name="serviceEnvironmentChk" value="${item.value!}"<%for(v
 							in se2){if(v==item.value){%>checked="checked" <%}}%> /> ${item.code!} <%}%>
