@@ -64,7 +64,7 @@
 							textField:'realName',
 							loadFilter:removeAdminUserFilter,
 							required:true,
-							url:'${contextPath!}/workOrder/receivers'"></td>
+							url:'${contextPath!}/workOrder/receivers?type=${model.$_workOrderSource!}'"></td>
 					</tr>
 					<tr>
 						<td class="table-title">抄送</td>
