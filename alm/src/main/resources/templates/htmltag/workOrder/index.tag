@@ -6,7 +6,6 @@ function serialNumberFormatter(value, row, index) {
 }
 
 function onWorkOrderSourceChange(n, o) {
-	alert(n);
 	switch (n) {
 		case 1 :
 			$('#acceptorId').combobox('reload', '${contextPath!}/workOrder/receivers?type=1');

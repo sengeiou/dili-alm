@@ -3,6 +3,41 @@ userId = parseInt(userId);
 
 var updateDate = dateFormat_1(new Date());
 
+function idFormatter(value, row, index) {
+	var content = value + '';
+	if (content.length < 6) {
+		while (content.length < 6) {
+			content = '0' + content;
+		}
+	}
+	return '<a href="javascript:void(0);" onclick="detail(' + index + ');">' + content + '</a>';
+}
+
+function detail(index) {
+	var selected = $("#grid").datagrid('getData').rows[index];
+	if (null == selected) {
+		$.messager.alert('警告', '请选中一条数据');
+		return;
+	}
+	var formData = $.extend({}, selected);
+	formData = addKeyStartWith(getOriginalData(formData), "_detail");
+	$('#_detailform').form('load', formData);
+	var updateDate = dateFormat_1(new Date());
+	$('#_updatemaintenanceDate').textbox('setValue', updateDate);
+	loadDetailProject(selected);
+	$('#detailDlg').dialog('open');
+	$('#detailDlg').dialog('center');
+}
+
+function loadDetailProject(row) {
+	var obj = projectNum(row.$_projectId);
+	$('#_detailprojectId').textbox('setValue', row.$_projectId);
+	$('#_detailprojectId').textbox('setText', row.projectId);
+	$("#_detailprojectNum").textbox('setValue', row.projectSerialNumber);
+	$("#_detailprojectCost").textbox('setValue', obj.projectTotal);
+
+}
+
 function hardwareResourceShow() {
 
 	$("#formList").css("display", "block");
