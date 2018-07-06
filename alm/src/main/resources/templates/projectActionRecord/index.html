@@ -31,12 +31,12 @@
 								url:'${contextPath!}/projectActionRecord/actions.json',
 								formatter:multicomboboxFormatter,
 								onSelect:onActionCodeSelected,
-								onUnselect:onActionCodeUnselected"></td>
-						<td style="padding: 5px;"><input class="easyui-datetimebox" name="actionStartDate" id="actionStartDate" style="width: 100%"
-							data-options="label:'事件开始时间:'" /></td>
-						<td style="padding: 5px;"><input class="easyui-datetimebox" name="actionEndDate" id="actionEndDate" style="width: 100%"
-							data-options="label:'事件结束时间:'" /></td>
-
+								onUnselect:onActionCodeUnselected,
+								onLoadSuccess:selectAll"></td>
+						<td style="padding: 5px;"><select class="easyui-combobox" name="projectId" id="projectId" style="width: 100%"
+							data-options="label:'项目:',editable:false,onChange:loadData"> <%for(item in projects){%>
+								<option value="${item.id!}">${item.name!}</option> <%}%>
+						</select></td>
 					</tr>
 				</table>
 			</form>
@@ -47,9 +47,7 @@
 	<!-- ====================================================================================================================== -->
 	<!-- 表格 -->
 	<div region="center" style="width: 100%; height: 500px;">
-		<svg id="aaa">
 		<div id="gantt"></div>
-		</svg>
 	</div>
 	<!-- ====================================================================================================================== -->
 	<!-- style & script 分隔线 -->

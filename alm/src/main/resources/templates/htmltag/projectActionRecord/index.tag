@@ -11,11 +11,12 @@ function onActionCodeUnselected(record) {
 	$('#' + record.code).prop('checked', false);
 }
 
-function loadData(data) {
+function loadData() {
+	var formData = $('#form').serialize();
 	$.ajax({
 				type : "POST",
 				url : "${contextPath!}/projectActionRecord/gantt.json",
-				data : data,
+				data : formData,
 				processData : true,
 				dataType : "json",
 				async : true,
@@ -24,8 +25,7 @@ function loadData(data) {
 						$('#gantt').gantt({
 									source : data.data,
 									months : ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
-									// dow : ["S", "M", "T", "W", "T",
-									// "F", "S"],
+									navigate : 'scroll',
 									waitText : '数据加载中......',
 									scale : "weeks",
 									minScale : "weeks",
@@ -40,6 +40,13 @@ function loadData(data) {
 				error : function() {
 					$.messager.alert('错误', '远程访问失败');
 				}
+			});
+}
+
+function selectAll() {
+	var me = $(this);
+	$(me.combobox('getData')).each(function(index, item) {
+				me.combobox('select', item.code);
 			});
 }
 

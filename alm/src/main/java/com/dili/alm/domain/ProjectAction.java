@@ -15,7 +15,7 @@ public enum ProjectAction {
 																					"结项申请",
 																					"project_complete_apply"), PROJECT_COMPLETE_APPROVE(
 																							"结项审批",
-																							"project_complete_apply"), PROJECT_COMPLETE(
+																							"project_complete_approve"), PROJECT_COMPLETE(
 																									"项目结束",
 																									"project_complete");
 
