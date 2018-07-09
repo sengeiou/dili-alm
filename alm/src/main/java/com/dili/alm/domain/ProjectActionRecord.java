@@ -14,7 +14,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2018-06-21 12:00:46.
+ * This file was generated on 2018-07-06 17:42:33.
  */
 @Table(name = "`project_action_record`")
 public interface ProjectActionRecord extends IBaseDomain {
@@ -47,6 +47,20 @@ public interface ProjectActionRecord extends IBaseDomain {
     Date getActionEndDate();
 
     void setActionEndDate(Date actionEndDate);
+
+    @Column(name = "`actual_start_date`")
+    @FieldDef(label="实际开始时间")
+    @EditMode(editor = FieldEditor.Datetime, required = false)
+    Date getActualStartDate();
+
+    void setActualStartDate(Date actualStartDate);
+
+    @Column(name = "`actual_end_date`")
+    @FieldDef(label="实际结束时间")
+    @EditMode(editor = FieldEditor.Datetime, required = false)
+    Date getActualEndDate();
+
+    void setActualEndDate(Date actualEndDate);
 
     @Column(name = "`action_date`")
     @FieldDef(label="事件发生时间")

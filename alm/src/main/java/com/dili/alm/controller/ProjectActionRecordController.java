@@ -1,14 +1,19 @@
 package com.dili.alm.controller;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +28,7 @@ import com.dili.alm.cache.AlmCache;
 import com.dili.alm.domain.ProjectAction;
 import com.dili.alm.service.ProjectActionRecordService;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.sysadmin.sdk.session.SessionContext;
 
 import gui.ava.html.image.generator.HtmlImageGenerator;
 import io.swagger.annotations.Api;
@@ -36,13 +42,23 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/projectActionRecord")
 public class ProjectActionRecordController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProjectActionRecordController.class);
+
+	private static final String DATA_AUTH_TYPE = "Project";
+
 	@Autowired
 	ProjectActionRecordService projectActionRecordService;
 
 	@ApiOperation("跳转到ProjectActionRecord页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
-		modelMap.addAttribute("projects", AlmCache.getInstance().getProjectMap().values());
+		@SuppressWarnings({ "rawtypes" })
+		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
+		if (!CollectionUtils.isEmpty(dataAuths)) {
+			List<Long> projectIds = new ArrayList<>();
+			dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
+			modelMap.addAttribute("projects", AlmCache.getInstance().getProjectMap().values().stream()
+					.filter(p -> projectIds.contains(p.getId())).collect(Collectors.toList()));
+		}
 		return "projectActionRecord/index";
 	}
 
@@ -67,7 +83,7 @@ public class ProjectActionRecordController {
 
 	@ResponseBody
 	@RequestMapping("/download")
-	public void download(String html, HttpServletResponse response) {
+	public void download(@RequestParam String html, HttpServletResponse response) {
 		HtmlImageGenerator imageGenerator = new HtmlImageGenerator();
 		imageGenerator.loadHtml(html);
 		try {

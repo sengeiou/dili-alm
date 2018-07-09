@@ -28,7 +28,7 @@ function loadData() {
 									navigate : 'scroll',
 									waitText : '数据加载中......',
 									scale : "weeks",
-									minScale : "weeks",
+									minScale : "days",
 									maxScale : "months",
 									onRender : function() {
 									}
@@ -47,6 +47,14 @@ function selectAll() {
 	var me = $(this);
 	$(me.combobox('getData')).each(function(index, item) {
 				me.combobox('select', item.code);
+			});
+}
+
+function exportImage() {
+	// var html = $('#gantt').prop("outerHTML");
+	html2canvas(document.querySelector("#capture")).then(function(canvas) {
+				// document.body.appendChild(canvas)
+				Canvas2Image.saveAsImage(canvas, 500, 500, 'png');
 			});
 }
 

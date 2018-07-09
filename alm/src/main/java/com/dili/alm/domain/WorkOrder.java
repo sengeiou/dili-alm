@@ -14,7 +14,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2018-06-20 11:22:01.
+ * This file was generated on 2018-07-09 09:05:26.
  */
 @Table(name = "`work_order`")
 public interface WorkOrder extends IBaseDomain {
@@ -57,14 +57,14 @@ public interface WorkOrder extends IBaseDomain {
 
     @Column(name = "`channel`")
     @FieldDef(label="渠道", maxLength = 255)
-    @EditMode(editor = FieldEditor.Text, required = true)
+    @EditMode(editor = FieldEditor.Text, required = false)
     String getChannel();
 
     void setChannel(String channel);
 
     @Column(name = "`acceptor_id`")
     @FieldDef(label="受理人")
-    @EditMode(editor = FieldEditor.Number, required = true)
+    @EditMode(editor = FieldEditor.Number, required = false)
     Long getAcceptorId();
 
     void setAcceptorId(Long acceptorId);
@@ -162,8 +162,22 @@ public interface WorkOrder extends IBaseDomain {
 
     @Column(name = "`work_order_source`")
     @FieldDef(label="工单来源")
-    @EditMode(editor = FieldEditor.Number, required = false)
+    @EditMode(editor = FieldEditor.Number, required = true)
     Integer getWorkOrderSource();
 
     void setWorkOrderSource(Integer workOrderSource);
+
+    @Column(name = "`start_date`")
+    @FieldDef(label="工单开始日期")
+    @EditMode(editor = FieldEditor.Datetime, required = false)
+    Date getStartDate();
+
+    void setStartDate(Date startDate);
+
+    @Column(name = "`end_date`")
+    @FieldDef(label="工单结束日期")
+    @EditMode(editor = FieldEditor.Datetime, required = false)
+    Date getEndDate();
+
+    void setEndDate(Date endDate);
 }

@@ -9,6 +9,8 @@
     <result column="action_code" jdbcType="VARCHAR" property="actionCode" />
     <result column="action_start_date" jdbcType="TIMESTAMP" property="actionStartDate" />
     <result column="action_end_date" jdbcType="TIMESTAMP" property="actionEndDate" />
+    <result column="actual_start_date" jdbcType="TIMESTAMP" property="actualStartDate" />
+    <result column="actual_end_date" jdbcType="TIMESTAMP" property="actualEndDate" />
     <result column="action_date" jdbcType="TIMESTAMP" property="actionDate" />
     <result column="action_date_type" jdbcType="INTEGER" property="actionDateType" />
     <result column="project_id" jdbcType="BIGINT" property="projectId" />
@@ -19,8 +21,8 @@
     <!--
       WARNING - @mbg.generated
     -->
-    id, action_code, action_start_date, action_end_date, action_date, action_date_type, 
-    project_id, version_Id, action_type
+    id, action_code, action_start_date, action_end_date, actual_start_date, actual_end_date, 
+    action_date, action_date_type, project_id, version_Id, action_type
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -45,6 +47,12 @@
       </if>
       <if test="actionEndDate != null">
         action_end_date = #{actionEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="actualStartDate != null">
+        actual_start_date = #{actualStartDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="actualEndDate != null">
+        actual_end_date = #{actualEndDate,jdbcType=TIMESTAMP},
       </if>
       <if test="actionDate != null">
         action_date = #{actionDate,jdbcType=TIMESTAMP},
