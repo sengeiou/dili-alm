@@ -15,6 +15,7 @@
     <result column="action_date_type" jdbcType="INTEGER" property="actionDateType" />
     <result column="project_id" jdbcType="BIGINT" property="projectId" />
     <result column="version_Id" jdbcType="BIGINT" property="versionId" />
+    <result column="task_id" jdbcType="BIGINT" property="taskId" />
     <result column="action_type" jdbcType="INTEGER" property="actionType" />
   </resultMap>
   <sql id="Base_Column_List">
@@ -22,7 +23,7 @@
       WARNING - @mbg.generated
     -->
     id, action_code, action_start_date, action_end_date, actual_start_date, actual_end_date, 
-    action_date, action_date_type, project_id, version_Id, action_type
+    action_date, action_date_type, project_id, version_Id, task_id, action_type
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -65,6 +66,9 @@
       </if>
       <if test="versionId != null">
         version_Id = #{versionId,jdbcType=BIGINT},
+      </if>
+      <if test="taskId != null">
+        task_id = #{taskId,jdbcType=BIGINT},
       </if>
       <if test="actionType != null">
         action_type = #{actionType,jdbcType=INTEGER},

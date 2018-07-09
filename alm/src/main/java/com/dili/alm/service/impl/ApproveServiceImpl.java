@@ -247,14 +247,25 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	}
 
 	private void insertProjectCompleteActionRecord(ProjectComplete complete) throws ApproveException {
-		// 结项申请记录
+		// 更新项目规划
 		ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
+		par.setProjectId(complete.getProjectId());
+		par.setActionCode(ProjectAction.PROJECT_PLAN.getCode());
+		ProjectActionRecord target = this.parMapper.selectOne(par);
+		target.setActualEndDate(new Date());
+		int rows = this.parMapper.updateByPrimaryKeySelective(target);
+		if (rows <= 0) {
+			throw new ApproveException("更新项目进程记录失败");
+		}
+
+		// 结项申请记录
+		par = DTOUtils.newDTO(ProjectActionRecord.class);
 		par.setActionCode(ProjectAction.PROJECT_COMPLETE_APPLY.getCode());
 		par.setActionDate(complete.getCreated());
 		par.setActionDateType(ActionDateType.POINT.getValue());
 		par.setActionType(ProjectActionType.PROJECT.getValue());
 		par.setProjectId(complete.getProjectId());
-		int rows = this.parMapper.insertSelective(par);
+		rows = this.parMapper.insertSelective(par);
 		if (rows <= 0) {
 			throw new ApproveException("插入项目进程记录失败");
 		}

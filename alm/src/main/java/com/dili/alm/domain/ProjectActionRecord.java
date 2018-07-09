@@ -14,7 +14,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2018-07-06 17:42:33.
+ * This file was generated on 2018-07-09 14:27:11.
  */
 @Table(name = "`project_action_record`")
 public interface ProjectActionRecord extends IBaseDomain {
@@ -89,6 +89,13 @@ public interface ProjectActionRecord extends IBaseDomain {
     Long getVersionId();
 
     void setVersionId(Long versionId);
+
+    @Column(name = "`task_id`")
+    @FieldDef(label="任务id")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Long getTaskId();
+
+    void setTaskId(Long taskId);
 
     @Column(name = "`action_type`")
     @FieldDef(label="类型，1项目，2版本")

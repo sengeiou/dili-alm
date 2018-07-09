@@ -2,7 +2,7 @@ package com.dili.alm.domain;
 
 public enum ProjectActionType {
 
-	PROJECT(1), VERSION(2);
+	PROJECT(1), VERSION(2), TASK(3);
 
 	private Integer value;
 

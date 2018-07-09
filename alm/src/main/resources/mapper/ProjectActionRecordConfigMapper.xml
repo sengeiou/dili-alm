@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.alm.dao.ProjectActionRecordConfigMapper">
+  <resultMap id="BaseResultMap" type="com.dili.alm.domain.ProjectActionRecordConfig">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="action_code" jdbcType="VARCHAR" property="actionCode" />
+    <result column="action_date_type" jdbcType="TIMESTAMP" property="actionDateType" />
+    <result column="show_date" jdbcType="BIT" property="showDate" />
+    <result column="color" jdbcType="VARCHAR" property="color" />
+    <result column="hint" jdbcType="BIT" property="hint" />
+    <result column="hint_message" jdbcType="VARCHAR" property="hintMessage" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, action_code, action_date_type, show_date, color, hint, hint_message
+  </sql>
+  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from project_action_record_config
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <update id="updateBy" parameterType="com.dili.alm.domain.ProjectActionRecordConfig">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update project_action_record_config
+    <set>
+      <if test="actionCode != null">
+        action_code = #{actionCode,jdbcType=VARCHAR},
+      </if>
+      <if test="actionDateType != null">
+        action_date_type = #{actionDateType,jdbcType=TIMESTAMP},
+      </if>
+      <if test="showDate != null">
+        show_date = #{showDate,jdbcType=BIT},
+      </if>
+      <if test="color != null">
+        color = #{color,jdbcType=VARCHAR},
+      </if>
+      <if test="hint != null">
+        hint = #{hint,jdbcType=BIT},
+      </if>
+      <if test="hintMessage != null">
+        hint_message = #{hintMessage,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

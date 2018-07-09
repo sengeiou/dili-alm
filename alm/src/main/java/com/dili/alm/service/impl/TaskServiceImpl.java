@@ -111,25 +111,25 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	@Autowired
 	UserRpc userRpc;
 	@Autowired
+	private ProjectActionRecordMapper parMapper;
+	@Autowired
 	private ProjectPhaseMapper phaseMapper;
+
 	@Autowired
 	private ProjectChangeService projectChangeService;
-
 	@Autowired
 	private ProjectMapper projectMapper;
 	@Autowired
 	private TaskDetailsService taskDetailsService;
+
 	@Autowired
 	private TaskMapper taskMapper;
-
 	@Autowired
 	private TaskDetailsMapper tdMapper;
 	@Autowired
 	private TeamMapper teamMapper;
 	@Autowired
 	private ProjectVersionMapper versionMapper;
-	@Autowired
-	private ProjectActionRecordMapper parMapper;
 
 	@Override
 	public void addTask(Task task, Short planTime, Date startDateShow, Date endDateShow, Boolean flow, Long creatorId)
@@ -140,6 +140,16 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		if (!this.isThisProjectManger(task.getProjectId())) {
 			throw new TaskException("只有本项目的项目经理可以添加项目！");
 		}
+		Project project = this.projectMapper.selectByPrimaryKey(task.getProjectId());
+		if (project == null) {
+			throw new TaskException("项目不存在");
+		}
+		project.setTaskCount(project.getTaskCount() + 1);
+		int rows = this.projectMapper.updateByPrimaryKey(project);
+		if (rows <= 0) {
+			throw new TaskException("更新项目信息失败");
+		}
+
 		task.setPlanTime(planTime);
 		task.setStartDate(startDateShow);
 		task.setEndDate(endDateShow);
@@ -147,10 +157,20 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		task.setCreateMemberId(creatorId);
 		task.setCreated(new Date());
 		task.setStatus(TaskStatus.NOTSTART.code);// 新增的初始化状态为0未开始状态
-		int rows = this.insertSelective(task);
+		rows = this.insertSelective(task);
 		if (rows <= 0) {
 			throw new TaskException("新增任务失败");
 		}
+
+		// 插入任务规划
+		ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
+		par.setActionCode(ProjectAction.TASK_PLAN.getCode());
+		par.setActionDateType(ActionDateType.PERIOD.getValue());
+		par.setActionEndDate(task.getStartDate());
+		par.setActionEndDate(task.getEndDate());
+		par.setActionType(ProjectActionType.TASK.getValue());
+		par.setTaskId(task.getId());
+		rows = this.parMapper.insertSelective(par);
 	}
 
 	@Override
@@ -196,13 +216,23 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		if (!this.isCreater(task)) {
 			throw new TaskException("不是本项目的创建者，不能进行删除");
 		}
-		int rows = this.getActualDao().deleteByPrimaryKey(id);
 
+		// 更新项目任务数
 		project.setTaskCount(project.getTaskCount() - 1);
 
-		this.projectMapper.updateByPrimaryKey(project);
+		int rows = this.projectMapper.updateByPrimaryKey(project);
 		if (rows <= 0) {
-			throw new TaskException("更新任务失败");
+			throw new TaskException("更新项目信息任务失败");
+		}
+
+		// 删除任务进程记录
+		ProjectActionRecord parQuery = DTOUtils.newDTO(ProjectActionRecord.class);
+		parQuery.setTaskId(task.getId());
+		this.parMapper.delete(parQuery);
+
+		rows = this.getActualDao().deleteByPrimaryKey(id);
+		if (rows <= 0) {
+			throw new TaskException("删除任务失败");
 		}
 	}
 
@@ -229,28 +259,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			return null;
 		}
 		return dto.getValues();
-	}
-
-	@Override
-	public int insert(Task t) {
-		Project project = this.projectMapper.selectByPrimaryKey(t.getProjectId());
-		if (project == null) {
-			throw new RuntimeException("项目不存在");
-		}
-		project.setTaskCount(project.getTaskCount() + 1);
-		this.projectMapper.updateByPrimaryKey(project);
-		return super.insert(t);
-	}
-
-	@Override
-	public int insertSelective(Task t) {
-		Project project = this.projectMapper.selectByPrimaryKey(t.getProjectId());
-		if (project == null) {
-			throw new RuntimeException("项目不存在");
-		}
-		project.setTaskCount(project.getTaskCount() + 1);
-		this.projectMapper.updateByPrimaryKey(project);
-		return super.insertSelective(t);
 	}
 
 	@Override
@@ -306,14 +314,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			if (team2.getRole().equalsIgnoreCase(TeamRole.PROJECT_MANAGER.getValue())) {
 				return true;
 			}
-			/*
-			 * if (team2.getRole().equalsIgnoreCase(TeamRole.PRODUCT_MANAGER.getValue())) {
-			 * return true; } if
-			 * (team2.getRole().equalsIgnoreCase(TeamRole.TEST_MANAGER.getValue())) { return
-			 * true; } if
-			 * (team2.getRole().equalsIgnoreCase(TeamRole.DEVELOP_MANAGER.getValue())) {
-			 * return true; }
-			 */
 		}
 		return false;
 	}
@@ -558,14 +558,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 		List<User> userList = new ArrayList<User>();
 
-		/* if (isNoTeam()||isCommittee()) { */
 		userList = userRpc.list(new User()).getData();
-		/*
-		 * }else{ List<Long> userIdList =
-		 * taskMapper.selectUserByTeam(userTicket.getId()); userList =new
-		 * ArrayList<User>(); for (Long userId : userIdList) { User user =
-		 * userRpc.findUserById(userId).getData(); userList.add(user); } }
-		 */
 
 		return userList;
 	}
@@ -575,9 +568,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	 */
 	@Override
 	public void notComplateTask(ScheduleMessage msg) {
-		// Task taskSelect = DTOUtils.newDTO(Task.class);
 		// 查询任务表里 项目下的所有任务
-		// List<Task> taskList = this.list(taskSelect);
 		Example example = new Example(Task.class);
 		example.createCriteria().andEqualTo("status", TaskStatus.NOTSTART.getCode()).orEqualTo("status",
 				TaskStatus.START.getCode());
@@ -711,8 +702,16 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			if (rows <= 0) {
 				throw new TaskException("更新项目失败");
 			}
-			// 插入项目进程记录项目开始
+			// 更新项目规划
 			ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
+			par.setProjectId(project.getId());
+			par.setActionCode(ProjectAction.PROJECT_PLAN.getCode());
+			ProjectActionRecord target = this.parMapper.selectOne(par);
+			target.setActualStartDate(now);
+			rows = this.parMapper.updateByPrimaryKeySelective(target);
+
+			// 插入项目进程记录项目开始
+			par = DTOUtils.newDTO(ProjectActionRecord.class);
 			par.setActionCode(ProjectAction.PROJECT_START.getCode());
 			par.setActionDateType(ActionDateType.POINT.getValue());
 			par.setActionDate(now);
@@ -731,6 +730,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			if (rows <= 0) {
 				throw new TaskException("更新版本状态失败");
 			}
+
 			// 插入项目进程记录版本开始
 			ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
 			par.setActionCode(ProjectAction.VERSION_START.getCode());
@@ -849,6 +849,19 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		int rows = this.getActualDao().updateByPrimaryKeySelective(task);
 		if (rows <= 0) {
 			throw new TaskException("更新任务失败");
+		}
+
+		// 更新任务规划
+		ProjectActionRecord parQuery = DTOUtils.newDTO(ProjectActionRecord.class);
+		parQuery.setActionCode(ProjectAction.TASK_PLAN.getCode());
+		parQuery.setActionType(ProjectActionType.TASK.getValue());
+		parQuery.setTaskId(task.getId());
+		ProjectActionRecord par = this.parMapper.selectOne(parQuery);
+		par.setActionStartDate(startDate);
+		par.setActionEndDate(endDate);
+		rows = this.getActualDao().updateByPrimaryKeySelective(task);
+		if (rows <= 0) {
+			throw new TaskException("更新项目进程记录失败");
 		}
 	}
 

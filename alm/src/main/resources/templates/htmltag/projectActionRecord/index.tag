@@ -50,14 +50,6 @@ function selectAll() {
 			});
 }
 
-function exportImage() {
-	// var html = $('#gantt').prop("outerHTML");
-	html2canvas(document.querySelector("#capture")).then(function(canvas) {
-				// document.body.appendChild(canvas)
-				Canvas2Image.saveAsImage(canvas, 500, 500, 'png');
-			});
-}
-
 $(function() {
 			loadData();
 		});

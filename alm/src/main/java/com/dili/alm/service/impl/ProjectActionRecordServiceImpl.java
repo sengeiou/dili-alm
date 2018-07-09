@@ -7,13 +7,19 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.beetl.core.GroupTemplate;
+import org.beetl.core.Template;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import com.dili.alm.dao.ProjectActionRecordConfigMapper;
 import com.dili.alm.dao.ProjectActionRecordMapper;
 import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.domain.ActionDateType;
 import com.dili.alm.domain.ProjectActionRecord;
+import com.dili.alm.domain.ProjectActionRecordConfig;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.dto.ProjectActionRecordGanttDto;
 import com.dili.alm.domain.dto.ProjectActionRecordGanttValueDto;
@@ -36,6 +42,11 @@ public class ProjectActionRecordServiceImpl extends BaseServiceImpl<ProjectActio
 	private ProjectVersionMapper versionMapper;
 	@Autowired
 	private ProjectActionProvider actionProvider;
+	@Qualifier("mailContentTemplate")
+	@Autowired
+	private GroupTemplate groupTemplate;
+	@Autowired
+	private ProjectActionRecordConfigMapper parcMapper;
 
 	public ProjectActionRecordMapper getActualDao() {
 		return (ProjectActionRecordMapper) getDao();
@@ -68,14 +79,20 @@ public class ProjectActionRecordServiceImpl extends BaseServiceImpl<ProjectActio
 				valueDto.setTo(r.getActionEndDate().getTime());
 				valueDto.setLabel(
 						"开始时间:" + df.format(r.getActionStartDate()) + " 结束时间：" + df.format(r.getActionEndDate()));
-				valueDto.setDesc(
-						"开始时间:" + df.format(r.getActionStartDate()) + " 结束时间：" + df.format(r.getActionEndDate()));
 			} else {
 				valueDto.setFrom(r.getActionDate().getTime());
 				valueDto.setTo(r.getActionDate().getTime());
 				dto.setDesc(dtf.format(r.getActionDate()));
 				valueDto.setLabel(dtf.format(r.getActionDate()));
-				valueDto.setDesc(dtf.format(r.getActionDate()));
+			}
+			// 获取列表展示配置
+			ProjectActionRecordConfig parcQuery = DTOUtils.newDTO(ProjectActionRecordConfig.class);
+			parcQuery.setActionCode(r.getActionCode());
+			ProjectActionRecordConfig conf = this.parcMapper.selectOne(parcQuery);
+			if (conf != null && StringUtils.isNotBlank(conf.getHintMessage())) {
+				Template tmp = this.groupTemplate.getTemplate(conf.getHintMessage());
+				tmp.binding("data", r);
+				valueDto.setDesc(tmp.render());
 			}
 			valueDto.setDataObj(r);
 			dto.setValues(Arrays.asList(valueDto));
