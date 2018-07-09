@@ -27,6 +27,7 @@
 	border-radius: 0;
 }
 </style>
+<script type="text/javascript" src="${contextPath!}/resources/js/dateFormat.js"></script>
 <div class="easyui-panel" style="box-sizing: border-box; width: 100%;">
 	<form id="editForm" action="" method="post" enctype="multipart/form-data" style="box-sizing: border-box; display: block; width: 100%">
 		<input type="hidden" name="id" value="${model.id!}">
@@ -93,6 +94,12 @@
 						</td>
 					</tr>
 					<%}%>
+					<tr>
+						<td class="table-title">工作时间</td>
+						<td colspan="5" style="padding: 0px 10px; text-align: left;"><input class="easyui-datebox" id="startDate" name="startDate"
+							value="" data-options="min:1,max:9999,required:true" style="width: '20%';"><span style="padding: 0px 10px;">至</span><input
+							class="easyui-datebox" id="endDate" name="endDate" value="" data-options="min:1,max:9999,required:true" style="width: '20%';"></td>
+					</tr>
 					<tr>
 						<td class="table-title" colspan="1">任务工时</td>
 						<td colspan="2" style="padding: 0"><input class="easyui-numberbox" name="taskHours" value=""

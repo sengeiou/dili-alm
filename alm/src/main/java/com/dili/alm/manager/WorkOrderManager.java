@@ -1,5 +1,6 @@
 package com.dili.alm.manager;
 
+import java.util.Date;
 import java.util.List;
 
 import com.dili.alm.domain.OperationResult;
@@ -23,7 +24,7 @@ public interface WorkOrderManager {
 
 	void close(WorkOrder workOrder, Long operatorId, String description) throws WorkOrderException;
 
-	void solve(WorkOrder workOrder, Integer taskHours, Integer overtimeHours, String workContent)
+	void solve(WorkOrder workOrder, Date startDate, Date endDate, Integer taskHours, Integer overtimeHours, String workContent)
 			throws WorkOrderException;
 
 	WorkOrder getOperationRecordsViewModel(WorkOrder workOrder);

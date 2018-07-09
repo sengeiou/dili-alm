@@ -203,8 +203,8 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 	}
 
 	@Override
-	public void solve(WorkOrder workOrder, Integer taskHours, Integer overtimeHours, String workContent)
-			throws WorkOrderException {
+	public void solve(WorkOrder workOrder, Date startDate, Date endDate, Integer taskHours, Integer overtimeHours,
+			String workContent) throws WorkOrderException {
 		// 检查状态
 		if (!workOrder.getWorkOrderState().equals(WorkOrderState.SOLVING.getValue())) {
 			throw new WorkOrderException("当前状态不能执行分配操作");
@@ -222,6 +222,8 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 			throw new WorkOrderException("插入操作记录失败");
 		}
 		// 更新工单
+		workOrder.setStartDate(startDate);
+		workOrder.setEndDate(endDate);
 		workOrder.setTaskHours(taskHours);
 		workOrder.setOvertimeHours(overtimeHours);
 		workOrder.setWorkOrderState(WorkOrderState.SOLVED.getValue());

@@ -2,6 +2,7 @@ package com.dili.alm.controller;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -207,11 +209,16 @@ public class WorkOrderController {
 
 	@ResponseBody
 	@PostMapping("/solve")
-	public BaseOutput<Object> solve(@RequestParam Long id, @RequestParam Integer taskHours,
+	public BaseOutput<Object> solve(@RequestParam Long id,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate, @RequestParam Integer taskHours,
 			@RequestParam(required = false, defaultValue = "0") Integer overtimeHours,
 			@RequestParam String workContent) {
+		if (startDate.compareTo(endDate) > 0) {
+			return BaseOutput.failure("工单开始日期不能大于工单结束日期");
+		}
 		try {
-			this.workOrderService.solve(id, taskHours, overtimeHours, workContent);
+			this.workOrderService.solve(id, startDate, endDate, taskHours, overtimeHours, workContent);
 			Map<Object, Object> viewModel = this.workOrderService.getViewModel(id);
 			return BaseOutput.success().setData(viewModel);
 		} catch (WorkOrderException e) {

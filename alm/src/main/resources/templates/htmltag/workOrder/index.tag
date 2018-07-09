@@ -140,7 +140,6 @@ function closeWorkOrder(id) {
 								$('#editForm').form('submit', {
 											url : '${contextPath!}/workOrder/close',
 											success : function(data) {
-												debugger;
 												var obj = $.parseJSON(data);
 												if (obj.code == 200) {
 													updateGridRow(obj.data);
@@ -415,10 +414,15 @@ function solve(id) {
 				buttons : [{
 							text : '确认',
 							handler : function() {
-								var data = $("#editForm").serializeArray();
 								$('#editForm').form('submit', {
 											url : '${contextPath!}/workOrder/solve',
 											onSubmit : function() {
+												var startDate = $('#startDate').datebox('getValue');
+												var endDate = $('#endDate').datebox('getValue');
+												if (startDate > endDate) {
+													$.messager.alert('提示', '工单开始日期不能大于工单结束日期!');
+													return false;
+												}
 												if (!$(this).form('validate')) {
 													return false;
 												}

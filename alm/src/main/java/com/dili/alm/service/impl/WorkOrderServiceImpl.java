@@ -132,14 +132,15 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 	}
 
 	@Override
-	public void solve(Long id, Integer taskHours, Integer overtimeHours, String workContent) throws WorkOrderException {
+	public void solve(Long id, Date startDate, Date endDate, Integer taskHours, Integer overtimeHours,
+			String workContent) throws WorkOrderException {
 		// 检查工单是否存在
 		WorkOrder workOrder = this.getActualDao().selectByPrimaryKey(id);
 		if (workOrder == null) {
 			throw new WorkOrderException("工单不存在");
 		}
 		WorkOrderManager workOrderManager = this.workOrderManagerMap.get(workOrder.getWorkOrderSource());
-		workOrderManager.solve(workOrder, taskHours, overtimeHours, workContent);
+		workOrderManager.solve(workOrder, startDate, endDate, taskHours, overtimeHours, workContent);
 	}
 
 	private void insertWorkOrder(WorkOrderUpdateDto dto) throws WorkOrderException {

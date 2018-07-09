@@ -1,6 +1,7 @@
 package com.dili.alm.service;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,6 +92,8 @@ public interface WorkOrderService extends BaseService<WorkOrder, Long> {
 	 * 
 	 * @param id
 	 *            工单id
+	 * @param startDate TODO
+	 * @param endDate TODO
 	 * @param taskHours
 	 *            任务工时
 	 * @param overtimeHours
@@ -99,7 +102,7 @@ public interface WorkOrderService extends BaseService<WorkOrder, Long> {
 	 *            工作内容描述
 	 * @throws WorkOrderException
 	 */
-	void solve(Long id, Integer taskHours, Integer overtimeHours, String workContent) throws WorkOrderException;
+	void solve(Long id, Date startDate, Date endDate, Integer taskHours, Integer overtimeHours, String workContent) throws WorkOrderException;
 
 	/**
 	 * 关闭工单

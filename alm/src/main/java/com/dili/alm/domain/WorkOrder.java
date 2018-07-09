@@ -1,192 +1,183 @@
 package com.dili.alm.domain;
 
+import com.dili.ss.dto.IBaseDomain;
+import com.dili.ss.metadata.FieldEditor;
+import com.dili.ss.metadata.annotation.EditMode;
+import com.dili.ss.metadata.annotation.FieldDef;
 import java.util.Date;
-
+import javax.persistence.*;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
-import com.dili.ss.dto.IBaseDomain;
-import com.dili.ss.dto.IMybatisForceParams;
-import com.dili.ss.metadata.FieldEditor;
-import com.dili.ss.metadata.annotation.EditMode;
-import com.dili.ss.metadata.annotation.FieldDef;
 
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2018-06-20 11:22:01.
+ * This file was generated on 2018-07-09 09:08:32.
  */
 @Table(name = "`work_order`")
-public interface WorkOrder extends IBaseDomain, IMybatisForceParams {
+public interface WorkOrder extends IBaseDomain {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "`id`")
+    @FieldDef(label="id")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Long getId();
 
-	public interface Insert {
-	}
+    void setId(Long id);
 
-	public interface Update {
-	}
+    @Column(name = "`serial_number`")
+    @FieldDef(label="工单编号", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = true)
+    String getSerialNumber();
 
-	public interface SourceOutside {
-	}
+    void setSerialNumber(String serialNumber);
 
-	@NotNull(groups = { Update.class })
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "`id`")
-	@FieldDef(label = "id")
-	@EditMode(editor = FieldEditor.Number, required = true)
-	Long getId();
+    @Column(name = "`work_order_name`")
+    @FieldDef(label="工单名称", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getWorkOrderName();
 
-	void setId(Long id);
+    void setWorkOrderName(String workOrderName);
 
-	@NotBlank(message = "工单编号不能为空")
-	@Column(name = "`serial_number`")
-	@FieldDef(label = "工单编号", maxLength = 255)
-	@EditMode(editor = FieldEditor.Text, required = true)
-	String getSerialNumber();
+    @Column(name = "`work_order_type`")
+    @FieldDef(label="工单类型")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Integer getWorkOrderType();
 
-	void setSerialNumber(String serialNumber);
+    void setWorkOrderType(Integer workOrderType);
 
-	@NotBlank(message = "工单名称不能为空")
-	@Column(name = "`work_order_name`")
-	@FieldDef(label = "工单名称", maxLength = 255)
-	@EditMode(editor = FieldEditor.Text, required = false)
-	String getWorkOrderName();
+    @Column(name = "`priority`")
+    @FieldDef(label="工单优先级")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Integer getPriority();
 
-	void setWorkOrderName(String workOrderName);
+    void setPriority(Integer priority);
 
-	@NotNull(message = "工单类型不能为空")
-	@Column(name = "`work_order_type`")
-	@FieldDef(label = "工单类型")
-	@EditMode(editor = FieldEditor.Number, required = true)
-	Integer getWorkOrderType();
+    @Column(name = "`channel`")
+    @FieldDef(label="渠道", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getChannel();
 
-	void setWorkOrderType(Integer workOrderType);
+    void setChannel(String channel);
 
-	@NotNull(message = "工单优先级不能为空")
-	@Column(name = "`priority`")
-	@FieldDef(label = "工单优先级")
-	@EditMode(editor = FieldEditor.Number, required = true)
-	Integer getPriority();
+    @Column(name = "`acceptor_id`")
+    @FieldDef(label="受理人")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Long getAcceptorId();
 
-	void setPriority(Integer priority);
+    void setAcceptorId(Long acceptorId);
 
-	@NotBlank(groups = { SourceOutside.class }, message = "工单渠道不能为空")
-	@Column(name = "`channel`")
-	@FieldDef(label = "渠道", maxLength = 255)
-	@EditMode(editor = FieldEditor.Text, required = true)
-	String getChannel();
+    @Column(name = "`copy_user_id`")
+    @FieldDef(label="抄送人id,jsonarray存储", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getCopyUserId();
 
-	void setChannel(String channel);
+    void setCopyUserId(String copyUserId);
 
-	@NotNull(groups = SourceOutside.class, message = "收礼人不能为空")
-	@Column(name = "`acceptor_id`")
-	@FieldDef(label = "受理人")
-	@EditMode(editor = FieldEditor.Number, required = true)
-	Long getAcceptorId();
+    @Column(name = "`description`")
+    @FieldDef(label="描述", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getDescription();
 
-	void setAcceptorId(Long acceptorId);
+    void setDescription(String description);
 
-	@Column(name = "`copy_user_id`")
-	@FieldDef(label = "抄送人id,jsonarray存储", maxLength = 255)
-	@EditMode(editor = FieldEditor.Text, required = false)
-	String getCopyUserId();
+    @Column(name = "`attachment_file_id`")
+    @FieldDef(label="附件id")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Long getAttachmentFileId();
 
-	void setCopyUserId(String copyUserId);
+    void setAttachmentFileId(Long attachmentFileId);
 
-	@Column(name = "`description`")
-	@FieldDef(label = "描述", maxLength = 255)
-	@EditMode(editor = FieldEditor.Text, required = false)
-	String getDescription();
+    @Column(name = "`work_order_state`")
+    @FieldDef(label="工单申请状态")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Integer getWorkOrderState();
 
-	void setDescription(String description);
+    void setWorkOrderState(Integer workOrderState);
 
-	@Column(name = "`attachment_file_id`")
-	@FieldDef(label = "附件id")
-	@EditMode(editor = FieldEditor.Number, required = false)
-	Long getAttachmentFileId();
+    @Column(name = "`submit_time`")
+    @FieldDef(label="申请提交时间")
+    @EditMode(editor = FieldEditor.Datetime, required = false)
+    Date getSubmitTime();
 
-	void setAttachmentFileId(Long attachmentFileId);
+    void setSubmitTime(Date submitTime);
 
-	@Column(name = "`work_order_state`")
-	@FieldDef(label = "工单申请状态")
-	@EditMode(editor = FieldEditor.Number, required = true)
-	Integer getWorkOrderState();
+    @Column(name = "`close_time`")
+    @FieldDef(label="关闭时间")
+    @EditMode(editor = FieldEditor.Datetime, required = false)
+    Date getCloseTime();
 
-	void setWorkOrderState(Integer workOrderState);
+    void setCloseTime(Date closeTime);
 
-	@Column(name = "`submit_time`")
-	@FieldDef(label = "申请提交时间")
-	@EditMode(editor = FieldEditor.Datetime, required = false)
-	Date getSubmitTime();
+    @Column(name = "`creation_time`")
+    @FieldDef(label="创建时间")
+    @EditMode(editor = FieldEditor.Datetime, required = true)
+    Date getCreationTime();
 
-	void setSubmitTime(Date submitTime);
+    void setCreationTime(Date creationTime);
 
-	@Column(name = "`close_time`")
-	@FieldDef(label = "关闭时间")
-	@EditMode(editor = FieldEditor.Datetime, required = false)
-	Date getCloseTime();
+    @Column(name = "`modify_time`")
+    @FieldDef(label="修改时间")
+    @EditMode(editor = FieldEditor.Datetime, required = false)
+    Date getModifyTime();
 
-	void setCloseTime(Date closeTime);
+    void setModifyTime(Date modifyTime);
 
-	@Column(name = "`creation_time`")
-	@FieldDef(label = "创建时间")
-	@EditMode(editor = FieldEditor.Datetime, required = true)
-	Date getCreationTime();
+    @Column(name = "`applicant_id`")
+    @FieldDef(label="申请人id")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Long getApplicantId();
 
-	void setCreationTime(Date creationTime);
+    void setApplicantId(Long applicantId);
 
-	@Column(name = "`modify_time`")
-	@FieldDef(label = "修改时间")
-	@EditMode(editor = FieldEditor.Datetime, required = false)
-	Date getModifyTime();
+    @Column(name = "`executor_id`")
+    @FieldDef(label="执行人id")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Long getExecutorId();
 
-	void setModifyTime(Date modifyTime);
+    void setExecutorId(Long executorId);
 
-	@Column(name = "`applicant_id`")
-	@FieldDef(label = "申请人id")
-	@EditMode(editor = FieldEditor.Number, required = true)
-	Long getApplicantId();
+    @Column(name = "`task_hours`")
+    @FieldDef(label="任务工时")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Integer getTaskHours();
 
-	void setApplicantId(Long applicantId);
+    void setTaskHours(Integer taskHours);
 
-	@Column(name = "`executor_id`")
-	@FieldDef(label = "执行人id")
-	@EditMode(editor = FieldEditor.Number, required = false)
-	Long getExecutorId();
+    @Column(name = "`overtime_hours`")
+    @FieldDef(label="加班工时")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Integer getOvertimeHours();
 
-	void setExecutorId(Long executorId);
+    void setOvertimeHours(Integer overtimeHours);
 
-	@Column(name = "`task_hours`")
-	@FieldDef(label = "任务工时")
-	@EditMode(editor = FieldEditor.Number, required = false)
-	Integer getTaskHours();
+    @Column(name = "`work_content`")
+    @FieldDef(label="工作内容描述", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getWorkContent();
 
-	void setTaskHours(Integer taskHours);
+    void setWorkContent(String workContent);
 
-	@Column(name = "`overtime_hours`")
-	@FieldDef(label = "加班工时")
-	@EditMode(editor = FieldEditor.Number, required = false)
-	Integer getOvertimeHours();
+    @Column(name = "`work_order_source`")
+    @FieldDef(label="工单来源")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Integer getWorkOrderSource();
 
-	void setOvertimeHours(Integer overtimeHours);
+    void setWorkOrderSource(Integer workOrderSource);
 
-	@Column(name = "`work_content`")
-	@FieldDef(label = "工作内容描述", maxLength = 255)
-	@EditMode(editor = FieldEditor.Text, required = false)
-	String getWorkContent();
+    @Column(name = "`start_date`")
+    @FieldDef(label="工单开始日期")
+    @EditMode(editor = FieldEditor.Datetime, required = false)
+    Date getStartDate();
 
-	void setWorkContent(String workContent);
+    void setStartDate(Date startDate);
 
-	@NotNull(message = "工单来源不能为空")
-	@Column(name = "`work_order_source`")
-	@FieldDef(label = "工单来源")
-	@EditMode(editor = FieldEditor.Number, required = false)
-	Integer getWorkOrderSource();
+    @Column(name = "`end_date`")
+    @FieldDef(label="工单结束日期")
+    @EditMode(editor = FieldEditor.Datetime, required = false)
+    Date getEndDate();
 
-	void setWorkOrderSource(Integer workOrderSource);
+    void setEndDate(Date endDate);
 }
