@@ -56,56 +56,19 @@ function editCostItem(index, row) {
 
 function optFormatter(value, row, index) {
 	var content = '';
-	if (row.$_applicantId == userId && userId != 1) {
-		content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="openUpdate(' + index + ');">编辑</a>';
-		content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="del(' + index + ');">删除</a>';
-	} else {
-		content += '<span style="padding:0px 2px;">编辑</span>';
-		content += '<span style="padding:0px 2px;">删除</span>';
+	if (row.$_applyState == 1) {
+		if (dataAuth.updateTravelCost && userId != 1) {
+			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="openUpdate(' + index + ');">编辑</a>';
+		} else {
+			content += '<span style="padding:0px 2px;">编辑</span>';
+		}
+		if (dataAuth.removeTravelCost && userId != 1) {
+			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="del(' + index + ');">删除</a>';
+		} else {
+			content += '<span style="padding:0px 2px;">删除</span>';
+		}
 	}
 	return content;
-}
-
-function review(id) {
-	$('#dlg').dialog({
-				iconCls : 'icon-save',
-				href : '${contextPath!}/travelCostApply/review?id=' + id,
-				height : 520,
-				width : 800,
-				buttons : [{
-							text : '通过',
-							iconCls : 'icon-ok',
-							handler : function() {
-								$.post('${contextPath!}/travelCostApply/review', {
-											id : id,
-											result : 1
-										}, function(res) {
-											if (res.code == 200) {
-												$.messager.alert('提示', '操作成功');
-												$("#grid").datagrid("reload");
-												$('#dlg').dialog('close');
-											}
-										}, 'json');
-							}
-						}, {
-							text : '拒绝',
-							handler : function() {
-								$.post('${contextPath!}/travelCostApply/review', {
-											id : id,
-											result : 0
-										}, function(res) {
-											if (res.code == 200) {
-												$.messager.alert('提示', '操作成功');
-												$("#grid").datagrid("reload");
-												$('#dlg').dialog('close');
-											}
-										}, 'json');
-							}
-						}]
-
-			});
-	$('#dlg').dialog('open');
-	$('#dlg').dialog('center');
 }
 
 function onCostItemGridBeginEdit(index, row) {
@@ -170,6 +133,9 @@ function selectArea(field) {
 
 // 打开新增窗口
 function openInsert() {
+	if (!dataAuth.addTravelCost) {
+		return false;
+	}
 	$('#dlg').dialog({
 				iconCls : 'icon-save',
 				href : '${contextPath!}/travelCostApply/add',
@@ -185,6 +151,11 @@ function openInsert() {
 							text : '取消',
 							handler : function() {
 								$('#dlg').dialog('close');
+							}
+						}, {
+							text : '提交',
+							handler : function() {
+								postData("${contextPath}/travelCostApply/saveAndSubmit");
 							}
 						}]
 
@@ -257,6 +228,9 @@ function postData(_url) {
 
 // 打开修改窗口
 function openUpdate(index) {
+	if (!dataAuth.updateTravelCost) {
+		return false;
+	}
 	var selected = null;
 	if (!index == undefined) {
 		selected = $('#grid').datagrid('getSelected');
@@ -268,9 +242,6 @@ function openUpdate(index) {
 		return;
 	}
 	if (selected.$_applyState != 1) {
-		return;
-	}
-	if (selected.$_applicantId != userId) {
 		return;
 	}
 	id = selected.id;
@@ -304,6 +275,9 @@ function openUpdate(index) {
 
 // 根据主键删除
 function del(index) {
+	if (!dataAuth.removeTravelCost) {
+		return false;
+	}
 	var selected = null;
 	if (index != undefined) {
 		selected = $("#grid").datagrid("getRows")[index];
@@ -315,9 +289,6 @@ function del(index) {
 		return;
 	}
 	if (selected.$_applyState != 1) {
-		return;
-	}
-	if (selected.$_applicantId != userId) {
 		return;
 	}
 	$.messager.confirm('确认', '您确认想要删除记录吗？', function(r) {

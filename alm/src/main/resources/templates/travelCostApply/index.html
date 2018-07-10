@@ -62,9 +62,18 @@
 		</table>
 		<!-- datagrid工具栏 -->
 		<div id="toolbar" style="padding: 2px 5px;">
-			<%if(user.id != 1){%><a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true"></a> <a href="#"
-				class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()" plain="true"></a> <a href="#" class="easyui-linkbutton"
-				iconCls="icon-remove" onclick="del()" plain="true"></a><%}%> <a href="#" class="easyui-linkbutton" iconCls="icon-export"
+			<%if(user.id != 1){%>
+			<#resource code="addTravelCost">
+			<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true"></a>
+			</#resource>
+			<#resource code="updateTravelCost">
+			<a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()" plain="true"></a>
+			</#resource>
+			<#resource code="removeTravelCost">
+			<a href="#" class="easyui-linkbutton"
+				iconCls="icon-remove" onclick="del()" plain="true"></a>
+			</#resource>	
+			<%}%> <a href="#" class="easyui-linkbutton" iconCls="icon-export"
 				onclick="doExport('grid')" plain="true"></a>
 			<div style="float: right">
 				边框显示:<select onchange="changeBorder('grid',this.value)">
@@ -86,6 +95,9 @@
 <!-- ====================================================================================================================== --> <script
 	type="text/javascript">
 	var dataAuth = {
+		addTravelCost : <%if(hasResource('addTravelCost')){%>true<%}else{%>false<%}%>,
+		updateTravelCost : <%if(hasResource('updateTravelCost')){%>true<%}else{%>false<%}%>,
+		removeTravelCost : <%if(hasResource('removeTravelCost')){%>true<%}else{%>false<%}%>,
 		reviewTravelCostApply : <%if(hasResource('reviewTravelCostApply')){%>true<%}else{%>false<%}%>
 	};
 	<#members_index/>
