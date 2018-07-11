@@ -1,3 +1,5 @@
+var isLoadded = false;
+
 function multicomboboxFormatter(row) {
 	var opts = $(this).combobox('options');
 	return '<input type="checkbox" class="combobox-checkbox" id="' + row[opts.valueField] + '">' + row[opts.textField]
@@ -11,20 +13,23 @@ function onActionCodeUnselected(record) {
 	$('#' + record.code).prop('checked', false);
 }
 
+function onActionCodeChange(nval, oval) {
+	if (isLoadded) {
+		loadData();
+	}
+}
+
 function loadData() {
-	var formData = $('#form').serialize();
-	$.ajax({
-				type : "POST",
+	$('#form').form('submit', {
 				url : "${contextPath!}/projectActionRecord/gantt.json",
-				data : formData,
-				processData : true,
-				dataType : "json",
-				async : true,
-				success : function(data) {
+				success : function(res) {
+					var data = $.parseJSON(res);
 					if (data.code == "200") {
 						$('#gantt').gantt({
 									source : data.data,
+									itemsPerPage : data.data.length,
 									months : ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+									dow : ["S", "M", "T", "W", "T", "F", "S"],
 									navigate : 'scroll',
 									waitText : '数据加载中......',
 									scale : "weeks",
@@ -48,8 +53,10 @@ function selectAll() {
 	$(me.combobox('getData')).each(function(index, item) {
 				me.combobox('select', item.code);
 			});
+	isLoadded = true;
+	loadData();
 }
 
 $(function() {
-			loadData();
+
 		});

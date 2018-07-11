@@ -51,6 +51,8 @@ public class AlmConstants {
 	public static final String WORK_ORDER_SOURCE_CODE = "work_order_source";
 	// 工单受理人数据字典配置
 	public static final String WORK_ORDER_RECEIVERS_CODE = "work_order_receivers";
+	// 项目进程展示背景色数据字典配置
+	public static final String GANTT_COLOR_CODE = "gantt_color";
 
 	// 团队成员状态: 加入/离开
 	public enum MemberState {

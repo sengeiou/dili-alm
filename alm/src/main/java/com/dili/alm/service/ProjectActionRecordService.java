@@ -12,5 +12,5 @@ import com.dili.ss.base.BaseService;
  */
 public interface ProjectActionRecordService extends BaseService<ProjectActionRecord, Long> {
 
-	List<ProjectActionRecordGanttDto> getGanntData(Long projectId);
+	List<ProjectActionRecordGanttDto> getGanntData(Long projectId, List<String> actionCodes);
 }

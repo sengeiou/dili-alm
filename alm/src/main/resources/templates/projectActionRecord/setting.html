@@ -1,0 +1,126 @@
+<#body>
+<style>
+table {
+	width: 100%;
+	/*margin-top: 20px;*/
+	/*line-height: 32px;*/
+	collapse: collapse;
+}
+</style>
+<div class="easyui-panel" id="dy" style="width: 100%; height: auto" title="甘特图设置">
+
+	<div style="box-sizing: border-box; height: 100%; width: 100%; padding: 10px;">
+
+		<!-- CSS goes in the document HEAD or added to your external stylesheet -->
+		<style type="text/css">
+table.gridtable {
+	font-family: verdana, arial, sans-serif;
+	font-size: 11px;
+	color: #333333;
+	border-width: 1px;
+	border-color: #f5f5f5;
+	border-collapse: collapse;
+	text-align: center;
+}
+
+table.gridtable th {
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #666666;
+	background-color: #f5f5f5;
+}
+
+table.gridtable td {
+	border-width: 1px;
+	padding: 3px 8px;
+	border-style: solid;
+	border-color: #666666;
+	background-color: #ffffff;
+}
+
+table.gridtable .title {
+	background: #f5f5f5;
+	width: 15%;
+}
+
+table.gridtable .show {
+	width: 10%;
+}
+
+table.gridtable .type {
+	width: 15%;
+}
+
+table.gridtable .color {
+	width: 15%;
+}
+
+table.gridtable .hint {
+	width: 30%;
+}
+</style>
+		<form id="form" action="" method="post">
+			<!-- Table goes in the document BODY -->
+			<table class="gridtable">
+				<tr>
+					<th class="title">展示名称</th>
+					<th class="show">数据展示</th>
+					<th class="type">格式</th>
+					<th class="color">颜色</th>
+					<th class="hint">提示</th>
+				</tr>
+				<%for(item in configs){%>
+				<tr>
+					<td><input type="hidden" name="id[${itemLP.index-1}]" value="${item.id!}"><input type="hidden"
+						name="actionCode[${itemLP.index-1}]" value="${item.$_actionCode!}">${item.actionCode!}</td>
+					<td><input id="showDate" name="showDate[${itemLP.index-1}]" value="1" class="easyui-switchbutton"<%if(item.showDate){%>checked<%}%>
+						style="width:80px;height:20px"></td>
+					<td><input type="hidden" name="actionDateType[${itemLP.index-1}]" value="${item.$_actionDateType!}">${item.actionDateType!}</td>
+					<td><select class="easyui-combobox" name="color[${itemLP.index-1}]" labelPosition="top" style="width: 80%;"
+						data-options="editable:false"> <%for(color in colors){%>
+							<option value="${color.value!}"<%if(item.color==color.value){%>selected="selected"<%}%>>${color.code!}</option> <%}%>
+					</select></td>
+					<td><input type="radio" name="hint[${itemLP.index-1}]" value="0" index="${itemLP.index}"<%if(!item.hint){%>checked="checked"<%}%>
+						style="float: left; margin-top: 6px"> <span style="float: left; margin-top: 4px; margin-right: 35px">无提示</span> <input type="radio"
+						name="hint[${itemLP.index-1}]" value="1" index="${itemLP.index}"<%if(item.hint){%>checked="checked"<%}%> style="float: left;
+						margin-top: 6px"> <span style="float: left; margin-top: 4px; margin-right: 5px">提示信息</span> <input class="easyui-textbox"
+						id="hintMessage${itemLP.index}" name="hintMessage[${itemLP.index-1}]" value="${item.hintMessage!}" style="float: left"<%if(!item.hint){%>disabled<%}%>
+						data-options="width:'40%',required:true,validType:'length[1,500]'"></td>
+				</tr>
+				<%}%>
+			</table>
+			<a href="#" class="easyui-linkbutton" onclick="submitForm();">提交</a>
+		</form>
+	</div>
+</div>
+<script type="text/javascript">
+	function submitForm() {
+		$('#form').form('submit', {
+			onSubmit : function() {
+				if (!$('#form').form('validate')) {
+					return false;
+				}
+			},
+			success : function(res) {
+				res = $.parseJSON(res);
+				if (res.success) {
+					$.messager.alert('提示', '操作成功！');
+				} else {
+					$.messager.alert('提示', '操作失败！');
+				}
+			}
+
+		});
+	}
+
+	$(function() {
+		$('input[name^=hint]').change(function() {
+			if ($(this).val() == 0) {
+				$('#hintMessage' + $(this).attr('index')).textbox('disable');
+			} else {
+				$('#hintMessage' + $(this).attr('index')).textbox('enable');
+			}
+		});
+	});
+</script> </#body>

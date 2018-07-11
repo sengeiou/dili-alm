@@ -45,6 +45,7 @@ import tk.mybatis.mapper.entity.Example;
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-10-20 11:02:17.
  */
+@Transactional(rollbackFor = ApplicationException.class)
 @Service
 public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, Long> implements ProjectVersionService {
 
@@ -316,13 +317,14 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		if (!this.teamService.teamMemberIsProjectManager(operatorId, version.getProjectId())) {
 			throw new ProjectVersionException("只有项目经理才能变更版本状态");
 		}
+		Date now = new Date();
 
-		version.setVersionState(ProjectVersionState.IN_PROGRESS.getValue());
+		version.setVersionState(ProjectVersionState.COMPLETED.getValue());
+		version.setActualEndDate(now);
 		int rows = this.getActualDao().updateByPrimaryKeySelective(version);
 		if (rows <= 0) {
 			throw new ProjectVersionException("更新版本状态失败");
 		}
-		Date now = new Date();
 
 		// 更新版本规划
 		ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);

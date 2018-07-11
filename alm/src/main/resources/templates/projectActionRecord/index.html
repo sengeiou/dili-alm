@@ -33,6 +33,7 @@
 								formatter:multicomboboxFormatter,
 								onSelect:onActionCodeSelected,
 								onUnselect:onActionCodeUnselected,
+								onChange:onActionCodeChange,
 								onLoadSuccess:selectAll"></td>
 						<td style="padding: 5px;"><select class="easyui-combobox" name="projectId" id="projectId" style="width: 100%"
 							data-options="label:'项目:',editable:false,onChange:loadData"> <%for(item in projects){%>

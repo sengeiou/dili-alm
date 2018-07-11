@@ -1,10 +1,8 @@
 package com.dili.alm.controller;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,15 +17,25 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.alm.cache.AlmCache;
+import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.ProjectAction;
+import com.dili.alm.domain.ProjectActionRecordConfig;
+import com.dili.alm.domain.dto.DataDictionaryDto;
+import com.dili.alm.domain.dto.ProjectActionRecordConfigPostData;
+import com.dili.alm.service.DataDictionaryService;
+import com.dili.alm.service.ProjectActionRecordConfigService;
 import com.dili.alm.service.ProjectActionRecordService;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.sdk.session.SessionContext;
 
 import gui.ava.html.image.generator.HtmlImageGenerator;
@@ -47,6 +55,10 @@ public class ProjectActionRecordController {
 
 	@Autowired
 	ProjectActionRecordService projectActionRecordService;
+	@Autowired
+	private ProjectActionRecordConfigService configService;
+	@Autowired
+	private DataDictionaryService ddService;
 
 	@ApiOperation("跳转到ProjectActionRecord页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
@@ -62,10 +74,48 @@ public class ProjectActionRecordController {
 		return "projectActionRecord/index";
 	}
 
+	@GetMapping("/setting.html")
+	public String setting(ModelMap modelMap) throws Exception {
+		List<ProjectActionRecordConfig> list = this.configService
+				.list(DTOUtils.newDTO(ProjectActionRecordConfig.class));
+		Map<Object, Object> metadata = new HashMap<>();
+		metadata.put("actionCode", "projectActionProvider");
+		metadata.put("actionDateType", "actionDateTypeProvider");
+		modelMap.addAttribute("configs", ValueProviderUtils.buildDataByProvider(metadata, list));
+
+		DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.GANTT_COLOR_CODE);
+		if (dd != null && CollectionUtils.isNotEmpty(dd.getValues())) {
+			modelMap.addAttribute("colors", dd.getValues());
+		}
+		return "projectActionRecord/setting";
+	}
+
+	@ResponseBody
+	@PostMapping("/setting.html")
+	public BaseOutput<Object> updateSetting(ProjectActionRecordConfigPostData data) {
+		List<ProjectActionRecordConfig> configs = new ArrayList<>(data.getId().size());
+		for (int i = 0; i < data.getId().size(); i++) {
+			ProjectActionRecordConfig config = DTOUtils.newDTO(ProjectActionRecordConfig.class);
+			config.setActionCode(data.getActionCode().get(i));
+			config.setActionDateType(data.getActionDateType().get(i));
+			config.setColor(data.getColor().get(i));
+			config.setHint(data.getHint().get(i));
+			if (data.getHint().get(i)) {
+				config.setHintMessage(data.getHintMessage().get(i));
+			}
+			config.setId(data.getId().get(i));
+			config.setShowDate(data.getShowDate().get(i));
+			configs.add(config);
+		}
+		int rows = this.configService.batchUpdateSelective(configs);
+		return rows > 0 ? BaseOutput.success() : BaseOutput.failure();
+	}
+
 	@ResponseBody
 	@RequestMapping("/gantt.json")
-	public BaseOutput<Object> gantJson(@RequestParam Long projectId) {
-		return BaseOutput.success().setData(this.projectActionRecordService.getGanntData(projectId));
+	public BaseOutput<Object> gantJson(@RequestParam Long projectId, String[] actionCode) {
+		return BaseOutput.success().setData(this.projectActionRecordService.getGanntData(projectId,
+				actionCode != null ? Arrays.asList(actionCode) : null));
 	}
 
 	@ResponseBody

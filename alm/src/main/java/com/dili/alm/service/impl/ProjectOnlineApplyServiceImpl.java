@@ -36,6 +36,7 @@ import com.dili.alm.component.NumberGenerator;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.EmailAddressMapper;
 import com.dili.alm.dao.FilesMapper;
+import com.dili.alm.dao.ProjectActionRecordMapper;
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.dao.ProjectOnlineApplyMapper;
 import com.dili.alm.dao.ProjectOnlineApplyMarketMapper;
@@ -49,6 +50,9 @@ import com.dili.alm.domain.Department;
 import com.dili.alm.domain.EmailAddress;
 import com.dili.alm.domain.OperationResult;
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.ProjectAction;
+import com.dili.alm.domain.ProjectActionRecord;
+import com.dili.alm.domain.ProjectActionType;
 import com.dili.alm.domain.ProjectOnlineApply;
 import com.dili.alm.domain.ProjectOnlineApplyMarket;
 import com.dili.alm.domain.ProjectOnlineApplyOperationType;
@@ -133,6 +137,8 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	private ProjectVersionProvider versionProvider;
 	@Autowired
 	private ProjectVersionMapper versionMapper;
+	@Autowired
+	private ProjectActionRecordMapper parMapper;
 
 	@SuppressWarnings("unchecked")
 	public static Map<Object, Object> buildApplyViewModel(ProjectOnlineApply apply) {
@@ -832,6 +838,26 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		if (OperationResult.SUCCESS.equals(result)) {
 			apply.setApplyState(ProjectOnlineApplyState.COMPLETED.getValue());
 			apply.setActualOnlineDate(new Date());
+			// 插入项目版本上线申请记录
+			ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
+			par.setActionCode(ProjectAction.VERSION_ONLINE_APPLY.getCode());
+			par.setActionDate(apply.getSubmitTime());
+			par.setActionType(ProjectActionType.VERSION.getValue());
+			par.setVersionId(apply.getVersionId());
+			int rows = this.parMapper.insertSelective(par);
+			if (rows <= 0) {
+				throw new ProjectOnlineApplyException("插入项目进程记录失败");
+			}
+			// 插入项目版本上线记录
+			par = DTOUtils.newDTO(ProjectActionRecord.class);
+			par.setActionCode(ProjectAction.VERSION_ONLINE.getCode());
+			par.setActionDate(new Date());
+			par.setActionType(ProjectActionType.VERSION.getValue());
+			par.setVersionId(apply.getVersionId());
+			rows = this.parMapper.insertSelective(par);
+			if (rows <= 0) {
+				throw new ProjectOnlineApplyException("插入项目进程记录失败");
+			}
 		}
 		// 更新状态
 		int rows = this.getActualDao().updateByPrimaryKey(apply);

@@ -4,7 +4,6 @@ import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
 import com.dili.ss.metadata.annotation.FieldDef;
-import java.util.Date;
 import javax.persistence.*;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -14,7 +13,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2018-07-09 15:58:15.
+ * This file was generated on 2018-07-10 14:58:02.
  */
 @Table(name = "`project_action_record_config`")
 public interface ProjectActionRecordConfig extends IBaseDomain {
@@ -36,10 +35,10 @@ public interface ProjectActionRecordConfig extends IBaseDomain {
 
     @Column(name = "`action_date_type`")
     @FieldDef(label="日期类型")
-    @EditMode(editor = FieldEditor.Datetime, required = false)
-    Date getActionDateType();
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Integer getActionDateType();
 
-    void setActionDateType(Date actionDateType);
+    void setActionDateType(Integer actionDateType);
 
     @Column(name = "`show_date`")
     @FieldDef(label="是否显示数据")
@@ -50,7 +49,7 @@ public interface ProjectActionRecordConfig extends IBaseDomain {
 
     @Column(name = "`color`")
     @FieldDef(label="颜色", maxLength = 255)
-    @EditMode(editor = FieldEditor.Text, required = false)
+    @EditMode(editor = FieldEditor.Text, required = true)
     String getColor();
 
     void setColor(String color);

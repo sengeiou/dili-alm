@@ -29,8 +29,10 @@ function versionOptFormatter(value, row, index) {
 	if (row.$_versionState != 0 && row.$_versionState != 2) {
 		content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="complete(' + row.id + ');">完成</a>';
 	}
-	content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="editVersion(' + row.id + ');">编辑</a>';
-	content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="deleteVersion(' + row.id + ');">删除</a>';
+	if (row.$_versionState != 2) {
+		content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="editVersion(' + row.id + ');">编辑</a>';
+		content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="deleteVersion(' + row.id + ');">删除</a>';
+	}
 	return content;
 }
 
@@ -383,6 +385,7 @@ function changeVersionState(id, action, versionState, stateName) {
 					id : id
 				},
 				success : function(data) {
+					debugger;
 					if (data.code == 200) {
 						var row = $('#versionGrid').datagrid('getSelected');
 						try {

@@ -7,7 +7,7 @@
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="action_code" jdbcType="VARCHAR" property="actionCode" />
-    <result column="action_date_type" jdbcType="TIMESTAMP" property="actionDateType" />
+    <result column="action_date_type" jdbcType="INTEGER" property="actionDateType" />
     <result column="show_date" jdbcType="BIT" property="showDate" />
     <result column="color" jdbcType="VARCHAR" property="color" />
     <result column="hint" jdbcType="BIT" property="hint" />
@@ -38,7 +38,7 @@
         action_code = #{actionCode,jdbcType=VARCHAR},
       </if>
       <if test="actionDateType != null">
-        action_date_type = #{actionDateType,jdbcType=TIMESTAMP},
+        action_date_type = #{actionDateType,jdbcType=INTEGER},
       </if>
       <if test="showDate != null">
         show_date = #{showDate,jdbcType=BIT},
