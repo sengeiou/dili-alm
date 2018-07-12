@@ -8,6 +8,7 @@ public class ProjectActionRecordExportDto {
 	private String actualStartDate;
 	private String actualEndDate;
 	private String overDays;
+	private String actionDate;
 
 	public String getActionName() {
 		return actionName;
@@ -56,4 +57,13 @@ public class ProjectActionRecordExportDto {
 	public void setOverDays(String overDays) {
 		this.overDays = overDays;
 	}
+
+	public String getActionDate() {
+		return actionDate;
+	}
+
+	public void setActionDate(String actionDate) {
+		this.actionDate = actionDate;
+	}
+
 }

@@ -293,8 +293,8 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		par.setActionCode(ProjectAction.PROJECT_CHANGE_APPLY.getCode());
 		par.setActionDate(change.getSubmitDate());
 		par.setActionDateType(ActionDateType.POINT.getValue());
-		par.setActionType(ProjectActionType.PROJECT.getValue());
-		par.setProjectId(change.getProjectId());
+		par.setActionType(ProjectActionType.VERSION.getValue());
+		par.setProjectId(change.getVersionId());
 		int rows = this.parMapper.insertSelective(par);
 		if (rows <= 0) {
 			throw new ApproveException("插入项目进程记录失败");
@@ -304,8 +304,8 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		par.setActionCode(ProjectAction.PROJECT_CHANGE_APPROVE.getCode());
 		par.setActionDate(new Date());
 		par.setActionDateType(ActionDateType.POINT.getValue());
-		par.setActionType(ProjectActionType.PROJECT.getValue());
-		par.setProjectId(change.getProjectId());
+		par.setActionType(ProjectActionType.VERSION.getValue());
+		par.setProjectId(change.getVersionId());
 		rows = this.parMapper.insertSelective(par);
 		if (rows <= 0) {
 			throw new ApproveException("插入项目进程记录失败");

@@ -1,79 +1,126 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dili.alm.dao.ProjectActionRecordMapper">
-  <resultMap id="BaseResultMap" type="com.dili.alm.domain.ProjectActionRecord">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="action_code" jdbcType="VARCHAR" property="actionCode" />
-    <result column="action_start_date" jdbcType="TIMESTAMP" property="actionStartDate" />
-    <result column="action_end_date" jdbcType="TIMESTAMP" property="actionEndDate" />
-    <result column="actual_start_date" jdbcType="TIMESTAMP" property="actualStartDate" />
-    <result column="actual_end_date" jdbcType="TIMESTAMP" property="actualEndDate" />
-    <result column="action_date" jdbcType="TIMESTAMP" property="actionDate" />
-    <result column="action_date_type" jdbcType="INTEGER" property="actionDateType" />
-    <result column="project_id" jdbcType="BIGINT" property="projectId" />
-    <result column="version_Id" jdbcType="BIGINT" property="versionId" />
-    <result column="task_id" jdbcType="BIGINT" property="taskId" />
-    <result column="action_type" jdbcType="INTEGER" property="actionType" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    id, action_code, action_start_date, action_end_date, actual_start_date, actual_end_date, 
-    action_date, action_date_type, project_id, version_Id, task_id, action_type
-  </sql>
-  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    select 
-    <include refid="Base_Column_List" />
-    from project_action_record
-    where id = #{id,jdbcType=BIGINT}
-  </select>
-  <update id="updateBy" parameterType="com.dili.alm.domain.ProjectActionRecord">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    update project_action_record
-    <set>
-      <if test="actionCode != null">
-        action_code = #{actionCode,jdbcType=VARCHAR},
-      </if>
-      <if test="actionStartDate != null">
-        action_start_date = #{actionStartDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="actionEndDate != null">
-        action_end_date = #{actionEndDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="actualStartDate != null">
-        actual_start_date = #{actualStartDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="actualEndDate != null">
-        actual_end_date = #{actualEndDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="actionDate != null">
-        action_date = #{actionDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="actionDateType != null">
-        action_date_type = #{actionDateType,jdbcType=INTEGER},
-      </if>
-      <if test="projectId != null">
-        project_id = #{projectId,jdbcType=BIGINT},
-      </if>
-      <if test="versionId != null">
-        version_Id = #{versionId,jdbcType=BIGINT},
-      </if>
-      <if test="taskId != null">
-        task_id = #{taskId,jdbcType=BIGINT},
-      </if>
-      <if test="actionType != null">
-        action_type = #{actionType,jdbcType=INTEGER},
-      </if>
-    </set>
-    where id = #{id,jdbcType=BIGINT}
-  </update>
+	<resultMap id="BaseResultMap"
+		type="com.dili.alm.domain.ProjectActionRecord">
+		<!-- WARNING - @mbg.generated -->
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="action_code" jdbcType="VARCHAR"
+			property="actionCode" />
+		<result column="action_start_date" jdbcType="TIMESTAMP"
+			property="actionStartDate" />
+		<result column="action_end_date" jdbcType="TIMESTAMP"
+			property="actionEndDate" />
+		<result column="actual_start_date" jdbcType="TIMESTAMP"
+			property="actualStartDate" />
+		<result column="actual_end_date" jdbcType="TIMESTAMP"
+			property="actualEndDate" />
+		<result column="action_date" jdbcType="TIMESTAMP"
+			property="actionDate" />
+		<result column="action_date_type" jdbcType="INTEGER"
+			property="actionDateType" />
+		<result column="project_id" jdbcType="BIGINT"
+			property="projectId" />
+		<result column="version_Id" jdbcType="BIGINT"
+			property="versionId" />
+		<result column="task_id" jdbcType="BIGINT" property="taskId" />
+		<result column="action_type" jdbcType="INTEGER"
+			property="actionType" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		<!-- WARNING - @mbg.generated -->
+		id, action_code, action_start_date, action_end_date,
+		actual_start_date, actual_end_date,
+		action_date, action_date_type,
+		project_id, version_Id, task_id, action_type
+	</sql>
+	<select id="selectBy" parameterType="java.lang.Long"
+		resultMap="BaseResultMap">
+		<!-- WARNING - @mbg.generated -->
+		select
+		<include refid="Base_Column_List" />
+		from project_action_record
+		where id = #{id,jdbcType=BIGINT}
+	</select>
+	<update id="updateBy"
+		parameterType="com.dili.alm.domain.ProjectActionRecord">
+		<!-- WARNING - @mbg.generated -->
+		update project_action_record
+		<set>
+			<if test="actionCode != null">
+				action_code = #{actionCode,jdbcType=VARCHAR},
+			</if>
+			<if test="actionStartDate != null">
+				action_start_date =
+				#{actionStartDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="actionEndDate != null">
+				action_end_date = #{actionEndDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="actualStartDate != null">
+				actual_start_date =
+				#{actualStartDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="actualEndDate != null">
+				actual_end_date = #{actualEndDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="actionDate != null">
+				action_date = #{actionDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="actionDateType != null">
+				action_date_type = #{actionDateType,jdbcType=INTEGER},
+			</if>
+			<if test="projectId != null">
+				project_id = #{projectId,jdbcType=BIGINT},
+			</if>
+			<if test="versionId != null">
+				version_Id = #{versionId,jdbcType=BIGINT},
+			</if>
+			<if test="taskId != null">
+				task_id = #{taskId,jdbcType=BIGINT},
+			</if>
+			<if test="actionType != null">
+				action_type = #{actionType,jdbcType=INTEGER},
+			</if>
+		</set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+
+	<select id="ganttQuery" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from project_action_record where (project_id = #{projectId} or
+		version_id in
+		<foreach collection="versionIds" open="(" separator=","
+			close=")" item="versionId">
+			#{versionId}
+		</foreach>
+		or task_id in
+		<foreach collection="taskIds" open="(" separator="," close=")"
+			item="taskId">
+			#{taskId}
+		</foreach>
+		)
+		<if test="actionCodes != null and actionCodes.size() != 0">
+			and action_code in (
+			<foreach collection="actionCodes" item="actionCode"
+				separator=",">
+				#{actionCode}
+			</foreach>
+			)
+		</if>
+		order by IF
+		(
+		isnull( action_date ),
+		IF
+		(
+		isnull( actual_end_date ),
+		IF
+		( isnull( actual_start_date ), IF ( isnull( action_end_date ), NULL,
+		actual_start_date ), action_end_date ),
+		actual_end_date
+		),
+		action_date
+		) asc
+	</select>
 </mapper>

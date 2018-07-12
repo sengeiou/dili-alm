@@ -19,6 +19,10 @@ function onActionCodeChange(nval, oval) {
 	}
 }
 
+function print() {
+	$("#gantt").jqprint();
+}
+
 function loadData() {
 	$('#form').form('submit', {
 				url : "${contextPath!}/projectActionRecord/gantt.json",
@@ -55,6 +59,18 @@ function selectAll() {
 			});
 	isLoadded = true;
 	loadData();
+}
+
+function exportExcel() {
+	$('#form').form('submit', {
+				url : '${contextPath}/projectActionRecord/export',
+				success : function(data) {
+					var obj = $.parseJSON(data);
+					if (obj.code != 200) {
+						$.messager.alert('错误', obj.result);
+					}
+				}
+			});
 }
 
 $(function() {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.dili.alm.domain.ProjectAction;
@@ -14,6 +15,11 @@ import com.dili.ss.metadata.ValueProvider;
 
 @Component
 public class ProjectActionProvider implements ValueProvider {
+
+	@Autowired
+	private ProjectVersionProvider versionProvider;
+	@Autowired
+	private TaskProvider taskProvider;
 
 	@Override
 	public List<ValuePair<?>> getLookupList(Object val, Map metaMap, FieldMeta fieldMeta) {

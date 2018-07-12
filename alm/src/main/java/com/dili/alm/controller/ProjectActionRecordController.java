@@ -1,17 +1,23 @@
 package com.dili.alm.controller;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,14 +36,21 @@ import com.dili.alm.domain.ProjectAction;
 import com.dili.alm.domain.ProjectActionRecordConfig;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.ProjectActionRecordConfigPostData;
+import com.dili.alm.domain.dto.ProjectActionRecordExportDto;
+import com.dili.alm.domain.dto.SelectTaskHoursByUserDto;
+import com.dili.alm.domain.dto.TaskHoursByProjectDto;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.ProjectActionRecordConfigService;
 import com.dili.alm.service.ProjectActionRecordService;
+import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.sdk.session.SessionContext;
 
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
+import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import gui.ava.html.image.generator.HtmlImageGenerator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -133,7 +146,78 @@ public class ProjectActionRecordController {
 
 	@ResponseBody
 	@RequestMapping("/export")
-	public void export(@RequestParam Long projectId, String[] actionCode) {
+	public void export(@RequestParam Long projectId, String[] actionCode, HttpServletRequest request,
+			HttpServletResponse response) throws UnsupportedEncodingException {
+		List<ProjectActionRecordExportDto> datas = this.projectActionRecordService.getExportData(projectId,
+				Arrays.asList(actionCode));
+
+		// 标题
+		List<ExcelExportEntity> entityList = new ArrayList<ExcelExportEntity>();
+		// 内容
+		List<Map<String, Object>> dataResult = new ArrayList<Map<String, Object>>();
+		entityList.add(new ExcelExportEntity("活动", "actionName", 25));
+		entityList.add(new ExcelExportEntity("计划开始时间", "startDate", 25));
+		entityList.add(new ExcelExportEntity("计划结束时间", "endDate", 25));
+		entityList.add(new ExcelExportEntity("发生时间", "actionDate", 25));
+
+		entityList.add(new ExcelExportEntity("逾期天数", "overDays", 25));
+		// 内容
+		if (CollectionUtils.isNotEmpty(datas)) {
+			for (ProjectActionRecordExportDto dto : datas) {
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("actionName", dto.getActionName());
+				map.put("startDate", dto.getStartDate());
+				map.put("endDate", dto.getEndDate());
+				map.put("actionDate", dto.getActionDate());
+				map.put("overDays", dto.getOverDays());
+				dataResult.add(map);
+			}
+		}
+
+		HSSFWorkbook excel = (HSSFWorkbook) ExcelExportUtil.exportExcel(new ExportParams("项目进程展示", "项目进程展示"),
+				entityList, dataResult);
+		String rtn = getRtn("项目里程碑数据.xls", request);
+		response.setContentType("text/html");
+		response.setHeader("Content-Disposition", "attachment;" + rtn);
+		OutputStream os = null;
+		try {
+			os = response.getOutputStream();
+			excel.write(os);
+			os.flush();
+		} catch (IOException e) {
+			LOGGER.error(e.getMessage(), e);
+		} finally {
+			if (os != null) {
+				try {
+					os.close();
+				} catch (IOException e) {
+					LOGGER.error(e.getMessage(), e);
+				}
+			}
+		}
+	}
+
+	public static String getRtn(String fileName, HttpServletRequest request) throws UnsupportedEncodingException {
+		String userAgent = request.getHeader("User-Agent");
+		String rtn = "filename=\"" + fileName + "\"";
+		if (userAgent != null) {
+			userAgent = userAgent.toLowerCase();
+			// IE浏览器，只能采用URLEncoder编码
+			if (userAgent.contains("msie")) {
+				rtn = "filename=\"" + fileName + "\"";
+			}
+			// Opera浏览器只能采用filename*
+			else if (userAgent.contains("opera")) {
+				rtn = "filename*=UTF-8''" + fileName;
+			}
+			// Safari浏览器，只能采用ISO编码的中文输出
+			else if (userAgent.contains("safari")) {
+				rtn = "filename=\"" + new String(fileName.getBytes("UTF-8"), "ISO8859-1") + "\"";
+			} else if (userAgent.contains("mozilla")) {
+				rtn = "filename*=UTF-8''" + fileName;
+			}
+		}
+		return rtn;
 	}
 
 }

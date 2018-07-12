@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -25,6 +26,7 @@ import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.domain.ActionDateType;
 import com.dili.alm.domain.Approve;
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.ProjectAction;
 import com.dili.alm.domain.ProjectActionRecord;
 import com.dili.alm.domain.ProjectActionRecordConfig;
 import com.dili.alm.domain.ProjectApply;
@@ -34,9 +36,12 @@ import com.dili.alm.domain.dto.ProjectActionRecordExportDto;
 import com.dili.alm.domain.dto.ProjectActionRecordGanttDto;
 import com.dili.alm.domain.dto.ProjectActionRecordGanttValueDto;
 import com.dili.alm.provider.ProjectActionProvider;
+import com.dili.alm.provider.ProjectVersionProvider;
+import com.dili.alm.provider.TaskProvider;
 import com.dili.alm.service.ProjectActionRecordService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.util.DateUtils;
 
 import tk.mybatis.mapper.entity.Example;
 import tk.mybatis.mapper.entity.Example.Criteria;
@@ -65,6 +70,10 @@ public class ProjectActionRecordServiceImpl extends BaseServiceImpl<ProjectActio
 	private ApproveMapper approveMapper;
 	@Autowired
 	private TaskMapper taskMapper;
+	@Autowired
+	private ProjectVersionProvider versionProvider;
+	@Autowired
+	private TaskProvider taskProvider;
 
 	public ProjectActionRecordMapper getActualDao() {
 		return (ProjectActionRecordMapper) getDao();
@@ -83,27 +92,22 @@ public class ProjectActionRecordServiceImpl extends BaseServiceImpl<ProjectActio
 		Task taskQuery = DTOUtils.newDTO(Task.class);
 		taskQuery.setProjectId(projectId);
 		List<Task> tasks = this.taskMapper.select(taskQuery);
-		Example example = new Example(ProjectActionRecord.class);
-		Criteria criteria = example.createCriteria().andEqualTo("projectId", projectId).andIn("actionCode",
-				actionCodes);
+		List<Long> versionIds = new ArrayList<>(versions.size());
+		List<Long> taskIds = new ArrayList<>(tasks.size());
 		if (CollectionUtils.isNotEmpty(versions)) {
-			List<Long> versionIds = new ArrayList<>(versions.size());
 			versions.forEach(v -> versionIds.add(v.getId()));
-			criteria.orIn("versionId", versionIds);
 		}
 		if (CollectionUtils.isNotEmpty(tasks)) {
-			List<Long> taskIds = new ArrayList<>(tasks.size());
 			tasks.forEach(t -> taskIds.add(t.getId()));
-			criteria.orIn("taskId", taskIds);
 		}
-		example.setOrderByClause("action_date,actual_end_date,actual_start_date asc");
-		List<ProjectActionRecord> recordList = this.getActualDao().selectByExample(example);
+		List<ProjectActionRecord> recordList = this.getActualDao().ganttQuery(projectId, versionIds, taskIds,
+				actionCodes);
 		List<ProjectActionRecordGanttDto> targetList = new ArrayList<>(recordList.size());
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		DateFormat dtf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		recordList.forEach(r -> {
 			ProjectActionRecordGanttDto dto = new ProjectActionRecordGanttDto();
-			dto.setName(this.actionProvider.getDisplayText(r.getActionCode(), null, null));
+			setActionName(r, dto);
 			ProjectActionRecordGanttValueDto valueDto = new ProjectActionRecordGanttValueDto();
 			if (r.getActionDateType().equals(ActionDateType.PERIOD.getValue())) {
 				valueDto.setFrom(r.getActionStartDate().getTime());
@@ -178,30 +182,85 @@ public class ProjectActionRecordServiceImpl extends BaseServiceImpl<ProjectActio
 		Task taskQuery = DTOUtils.newDTO(Task.class);
 		taskQuery.setProjectId(projectId);
 		List<Task> tasks = this.taskMapper.select(taskQuery);
-		Example example = new Example(ProjectActionRecord.class);
-		Criteria criteria = example.createCriteria().andEqualTo("projectId", projectId).andIn("actionCode",
-				actionCodes);
+		List<Long> versionIds = new ArrayList<>(versions.size());
 		if (CollectionUtils.isNotEmpty(versions)) {
-			List<Long> versionIds = new ArrayList<>(versions.size());
 			versions.forEach(v -> versionIds.add(v.getId()));
-			criteria.orIn("versionId", versionIds);
 		}
+		List<Long> taskIds = new ArrayList<>(tasks.size());
 		if (CollectionUtils.isNotEmpty(tasks)) {
-			List<Long> taskIds = new ArrayList<>(tasks.size());
 			tasks.forEach(t -> taskIds.add(t.getId()));
-			criteria.orIn("taskId", taskIds);
 		}
-		example.setOrderByClause("action_date,actual_end_date,actual_start_date asc");
-		List<ProjectActionRecord> recordList = this.getActualDao().selectByExample(example);
-		
+		List<ProjectActionRecord> recordList = this.getActualDao().ganttQuery(projectId, versionIds, taskIds,
+				actionCodes);
 		List<ProjectActionRecordExportDto> targetList = new ArrayList<>(recordList.size());
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		DateFormat dtf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		recordList.forEach(r -> {
 			ProjectActionRecordExportDto dto = new ProjectActionRecordExportDto();
-			dto.setActionName(this.actionProvider.getDisplayText(r.getActionCode(), null, null));
-			dto.setStartDate(df);
+			this.setActionName(r, dto);
+			dto.setStartDate(r.getActionStartDate() != null ? df.format(r.getActionStartDate()) : null);
+			dto.setEndDate(r.getActionEndDate() != null ? df.format(r.getActionEndDate()) : null);
+			dto.setActualStartDate(r.getActualStartDate() != null ? df.format(r.getActualStartDate()) : null);
+			dto.setActualEndDate(r.getActualEndDate() != null ? df.format(r.getActualEndDate()) : null);
+			dto.setActionDate(r.getActionDate() != null ? dtf.format(r.getActionDate()) : null);
+			if (r.getActionCode().equals(ProjectAction.PROJECT_COMPLETE.getCode())) {
+				Project project = this.projectMapper.selectByPrimaryKey(r.getProjectId());
+				Date startDate = project.getStartDate();
+				Date endDate = project.getActualEndDate();
+				dto.setOverDays(DateUtils.differentDays(startDate, endDate) + "");
+			}
+			if (r.getActionCode().equals(ProjectAction.VERSION_COMPLETE.getCode())) {
+				ProjectVersion version = this.versionMapper.selectByPrimaryKey(r.getVersionId());
+				Date startDate = version.getPlannedStartDate();
+				Date endDate = version.getActualEndDate();
+				dto.setOverDays("逾期" + DateUtils.differentDays(startDate, endDate) + "天");
+			}
+			targetList.add(dto);
 		});
 		return targetList;
+	}
+
+	private void setActionName(ProjectActionRecord record, ProjectActionRecordExportDto dto) {
+		if (record.getActionCode().equals(ProjectAction.VERSION_COMPLETE.getCode())) {
+			dto.setActionName("版本" + this.versionProvider.getDisplayText(record.getVersionId(), null, null) + "完成");
+		} else if (record.getActionCode().equals(ProjectAction.VERSION_ONLINE.getCode())) {
+			dto.setActionName("版本" + this.versionProvider.getDisplayText(record.getVersionId(), null, null) + "上线");
+		} else if (record.getActionCode().equals(ProjectAction.VERSION_ONLINE_APPLY.getCode())) {
+			dto.setActionName("版本" + this.versionProvider.getDisplayText(record.getVersionId(), null, null) + "上线申请");
+		} else if (record.getActionCode().equals(ProjectAction.VERSION_PAUSE.getCode())) {
+			dto.setActionName("版本" + this.versionProvider.getDisplayText(record.getVersionId(), null, null) + "暂停");
+		} else if (record.getActionCode().equals(ProjectAction.VERSION_PLAN.getCode())) {
+			dto.setActionName("版本" + this.versionProvider.getDisplayText(record.getVersionId(), null, null) + "规划");
+		} else if (record.getActionCode().equals(ProjectAction.VERSION_RESUME.getCode())) {
+			dto.setActionName("版本" + this.versionProvider.getDisplayText(record.getVersionId(), null, null) + "暂停");
+		} else if (record.getActionCode().equals(ProjectAction.VERSION_START.getCode())) {
+			dto.setActionName("版本" + this.versionProvider.getDisplayText(record.getVersionId(), null, null) + "开始");
+		} else if (record.getActionCode().equals(ProjectAction.TASK_PLAN.getCode())) {
+			dto.setActionName("任务" + this.taskProvider.getDisplayText(record.getTaskId(), null, null) + "规划");
+		} else {
+			dto.setActionName(this.actionProvider.getDisplayText(record.getActionCode(), null, null));
+		}
+	}
+
+	private void setActionName(ProjectActionRecord record, ProjectActionRecordGanttDto dto) {
+		if (record.getActionCode().equals(ProjectAction.VERSION_COMPLETE.getCode())) {
+			dto.setName("版本" + this.versionProvider.getDisplayText(record.getVersionId(), null, null) + "完成");
+		} else if (record.getActionCode().equals(ProjectAction.VERSION_ONLINE.getCode())) {
+			dto.setName("版本" + this.versionProvider.getDisplayText(record.getVersionId(), null, null) + "上线");
+		} else if (record.getActionCode().equals(ProjectAction.VERSION_ONLINE_APPLY.getCode())) {
+			dto.setName("版本" + this.versionProvider.getDisplayText(record.getVersionId(), null, null) + "上线申请");
+		} else if (record.getActionCode().equals(ProjectAction.VERSION_PAUSE.getCode())) {
+			dto.setName("版本" + this.versionProvider.getDisplayText(record.getVersionId(), null, null) + "暂停");
+		} else if (record.getActionCode().equals(ProjectAction.VERSION_PLAN.getCode())) {
+			dto.setName("版本" + this.versionProvider.getDisplayText(record.getVersionId(), null, null) + "规划");
+		} else if (record.getActionCode().equals(ProjectAction.VERSION_RESUME.getCode())) {
+			dto.setName("版本" + this.versionProvider.getDisplayText(record.getVersionId(), null, null) + "暂停");
+		} else if (record.getActionCode().equals(ProjectAction.VERSION_START.getCode())) {
+			dto.setName("版本" + this.versionProvider.getDisplayText(record.getVersionId(), null, null) + "开始");
+		} else if (record.getActionCode().equals(ProjectAction.TASK_PLAN.getCode())) {
+			dto.setName("任务" + this.taskProvider.getDisplayText(record.getTaskId(), null, null) + "规划");
+		} else {
+			dto.setName(this.actionProvider.getDisplayText(record.getActionCode(), null, null));
+		}
 	}
 }
