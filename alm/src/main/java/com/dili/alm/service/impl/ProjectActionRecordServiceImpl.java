@@ -4,8 +4,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -32,13 +30,13 @@ import com.dili.alm.domain.ProjectActionRecordConfig;
 import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
+import com.dili.alm.domain.dto.ProjectActionRecordExportDto;
 import com.dili.alm.domain.dto.ProjectActionRecordGanttDto;
 import com.dili.alm.domain.dto.ProjectActionRecordGanttValueDto;
 import com.dili.alm.provider.ProjectActionProvider;
 import com.dili.alm.service.ProjectActionRecordService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.util.DateUtils;
 
 import tk.mybatis.mapper.entity.Example;
 import tk.mybatis.mapper.entity.Example.Criteria;
@@ -165,5 +163,45 @@ public class ProjectActionRecordServiceImpl extends BaseServiceImpl<ProjectActio
 	private void loadVersion(ProjectActionRecord record, Template template) {
 		ProjectVersion version = this.versionMapper.selectByPrimaryKey(record.getVersionId());
 		template.binding("version", version);
+	}
+
+	@Override
+	public List<ProjectActionRecordExportDto> getExportData(Long projectId, List<String> actionCodes) {
+		if (CollectionUtils.isEmpty(actionCodes)) {
+			return new ArrayList<>(0);
+		}
+		ProjectActionRecord query = DTOUtils.newDTO(ProjectActionRecord.class);
+		query.setProjectId(projectId);
+		ProjectVersion versionQuery = DTOUtils.newDTO(ProjectVersion.class);
+		versionQuery.setProjectId(projectId);
+		List<ProjectVersion> versions = this.versionMapper.select(versionQuery);
+		Task taskQuery = DTOUtils.newDTO(Task.class);
+		taskQuery.setProjectId(projectId);
+		List<Task> tasks = this.taskMapper.select(taskQuery);
+		Example example = new Example(ProjectActionRecord.class);
+		Criteria criteria = example.createCriteria().andEqualTo("projectId", projectId).andIn("actionCode",
+				actionCodes);
+		if (CollectionUtils.isNotEmpty(versions)) {
+			List<Long> versionIds = new ArrayList<>(versions.size());
+			versions.forEach(v -> versionIds.add(v.getId()));
+			criteria.orIn("versionId", versionIds);
+		}
+		if (CollectionUtils.isNotEmpty(tasks)) {
+			List<Long> taskIds = new ArrayList<>(tasks.size());
+			tasks.forEach(t -> taskIds.add(t.getId()));
+			criteria.orIn("taskId", taskIds);
+		}
+		example.setOrderByClause("action_date,actual_end_date,actual_start_date asc");
+		List<ProjectActionRecord> recordList = this.getActualDao().selectByExample(example);
+		
+		List<ProjectActionRecordExportDto> targetList = new ArrayList<>(recordList.size());
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		DateFormat dtf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		recordList.forEach(r -> {
+			ProjectActionRecordExportDto dto = new ProjectActionRecordExportDto();
+			dto.setActionName(this.actionProvider.getDisplayText(r.getActionCode(), null, null));
+			dto.setStartDate(df);
+		});
+		return targetList;
 	}
 }

@@ -132,15 +132,8 @@ public class ProjectActionRecordController {
 	}
 
 	@ResponseBody
-	@RequestMapping("/download")
-	public void download(@RequestParam String html, HttpServletResponse response) {
-		HtmlImageGenerator imageGenerator = new HtmlImageGenerator();
-		imageGenerator.loadHtml(html);
-		try {
-			ImageIO.write(imageGenerator.getBufferedImage(), "png", response.getOutputStream());
-		} catch (IOException e) {
-			LOGGER.error(e.getMessage(), e);
-		}
+	@RequestMapping("/export")
+	public void export(@RequestParam Long projectId, String[] actionCode) {
 	}
 
 }

@@ -3,6 +3,7 @@ package com.dili.alm.service;
 import java.util.List;
 
 import com.dili.alm.domain.ProjectActionRecord;
+import com.dili.alm.domain.dto.ProjectActionRecordExportDto;
 import com.dili.alm.domain.dto.ProjectActionRecordGanttDto;
 import com.dili.ss.base.BaseService;
 
@@ -13,4 +14,6 @@ import com.dili.ss.base.BaseService;
 public interface ProjectActionRecordService extends BaseService<ProjectActionRecord, Long> {
 
 	List<ProjectActionRecordGanttDto> getGanntData(Long projectId, List<String> actionCodes);
+	
+	List<ProjectActionRecordExportDto> getExportData(Long projectId, List<String> actionCodes);
 }
