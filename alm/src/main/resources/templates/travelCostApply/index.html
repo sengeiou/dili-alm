@@ -17,11 +17,6 @@
 							data-options="label:'申请人:', editable:false,
 									buttonText:'选择',
 									onClickButton:selectMember,onChange:_changeTextboxShowClear" /></td>
-						<td style="padding: 5px;"><select class="easyui-combobox" name="applyState" id="applyState" style="width: 280px"
-							data-options="label:'状态:',editable:false">
-								<option value=""></option> <%for(item in states){%>
-								<option value="${item.value!}">${item.name!}</option> <%}%>
-						</select></td>
 					</tr>
 					<tr>
 						<td style="padding: 5px;"><input class="easyui-datebox" name="submitStartDate" id="submitStartDate" style="width: 280px;"
@@ -63,18 +58,13 @@
 		<!-- datagrid工具栏 -->
 		<div id="toolbar" style="padding: 2px 5px;">
 			<%if(user.id != 1){%>
-			<#resource code="addTravelCost">
-			<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true"></a>
+			<#resource code="addTravelCost"> <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true"></a>
 			</#resource>
-			<#resource code="updateTravelCost">
-			<a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()" plain="true"></a>
+			<#resource code="updateTravelCost"> <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()"
+				plain="true"></a> </#resource>
+			<#resource code="removeTravelCost"> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true"></a>
 			</#resource>
-			<#resource code="removeTravelCost">
-			<a href="#" class="easyui-linkbutton"
-				iconCls="icon-remove" onclick="del()" plain="true"></a>
-			</#resource>	
-			<%}%> <a href="#" class="easyui-linkbutton" iconCls="icon-export"
-				onclick="doExport('grid')" plain="true"></a>
+			<%}%> <a href="#" class="easyui-linkbutton" iconCls="icon-export" onclick="doExport('grid')" plain="true"></a>
 			<div style="float: right">
 				边框显示:<select onchange="changeBorder('grid',this.value)">
 					<option value="lines-both">全边框</option>
