@@ -1,11 +1,13 @@
 package com.dili.alm.service.impl;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.ibatis.javassist.expr.NewArray;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -159,16 +161,17 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 	public Map<String, String> projectNumById(String id) {
 		Map<String, String> map = new HashMap<String, String>();
 		Project project = projectMapper.selectByPrimaryKey(Long.parseLong(id));
-		ProjectApply projectApply = projectApplyMapper.selectByPrimaryKey(project.getApplyId());
 		map.put("projectNum", project.getSerialNumber());
-		Map parseObject = JSON.parseObject(projectApply.getRoi(), Map.class);
-		String total = null;
-		if (parseObject.get("val99") == null) {
-			total = "0元";
-		} else {
-			total = parseObject.get("val99").toString();
+		BigDecimal total = new BigDecimal("0");
+		HardwareResource query = DTOUtils.newDTO(HardwareResource.class);
+		query.setProjectId(Long.valueOf(id));
+		List<HardwareResource> list = this.hardwareResourceMapper.select(query);
+		if (CollectionUtils.isNotEmpty(list)) {
+			for (HardwareResource h : list) {
+				total = total.add(h.getCost());
+			}
 		}
-		map.put("projectTotal", total);
+		map.put("projectTotal", total.toString());
 		return map;
 	}
 

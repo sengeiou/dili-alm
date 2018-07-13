@@ -159,7 +159,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		try {
 			Resource res = new ClassPathResource("conf/hardwareApplyMailContentTemplate.html");
 			in = res.getInputStream();
-			this.contentTemplate = IOUtils.toString(in,Charset.defaultCharset());
+			this.contentTemplate = IOUtils.toString(in, Charset.defaultCharset());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} finally {
@@ -225,6 +225,8 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		JSONObject datetimeProvider = new JSONObject();
 		datetimeProvider.put("provider", "datetimeProvider");
 		metadata.put("operateTime", datetimeProvider);
+
+		metadata.put("opertateResult", "operationResultProvider");
 
 		try {
 			apply.aset("opRecords", ValueProviderUtils.buildDataByProvider(metadata, opRecords));

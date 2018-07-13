@@ -43,9 +43,6 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
 
-import tk.mybatis.mapper.entity.Example;
-import tk.mybatis.mapper.entity.Example.Criteria;
-
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2018-06-21 12:00:46.
  */

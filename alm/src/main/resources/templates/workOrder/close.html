@@ -27,7 +27,6 @@
 	border-radius: 0;
 }
 </style>
-<script type="text/javascript" src="${contextPath!}/resources/js/dateFormat.js"></script>
 <div class="easyui-panel" style="box-sizing: border-box; width: 100%;">
 	<form id="editForm" action="" method="post" enctype="multipart/form-data" style="box-sizing: border-box; display: block; width: 100%">
 		<input type="hidden" name="id" value="${model.id!}">
@@ -66,12 +65,7 @@
 						<td class="table-title" colspan="6">描述</td>
 					</tr>
 					<tr>
-						<td class="table-title" colspan="6">${model.description!}</td>
-					</tr>
-					<tr>
-						<td class="table-title" colspan="2">附件</td>
-						<td class="table-combo" colspan="4" style="padding: 0"><a href="${contextPath!}/files/download?id=${model.$_attachmentFileId!}"
-							target="_blank">${model.attachmentFileId!}</a></td>
+						<td class="table-combo" colspan="6">${model.description!}</td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="6">执行操作记录</td>
@@ -95,23 +89,17 @@
 					</tr>
 					<%}%>
 					<tr>
-						<td class="table-title">工作时间</td>
-						<td colspan="5" style="padding: 0px 10px; text-align: left;"><input class="easyui-datebox" id="startDate" name="startDate"
-							value="" data-options="min:1,max:9999,required:true" style="width: '20%';"><span style="padding: 0px 10px;">至</span><input
-							class="easyui-datebox" id="endDate" name="endDate" value="" data-options="min:1,max:9999,required:true" style="width: '20%';"></td>
+						<td class="table-title" colspan="6">任务工时</td>
 					</tr>
 					<tr>
-						<td class="table-title" colspan="1">任务工时</td>
-						<td colspan="2" style="padding: 0"><input class="easyui-numberbox" name="taskHours" value=""
-							data-options="min:1,max:9999,required:true" style="width: '95%';"></td>
-						<td class="table-title" colspan="1">加班工时</td>
-						<td colspan="2" style="padding: 0"><input class="easyui-numberbox" name="overtimeHours" value="" data-options="max:9999"
-							style="width: '95%';"></td>
+						<td class="table-title">常规工时</td>
+						<td class="table-combo" colspan="2" style="padding: 0">${model.taskHours!}</td>
+						<td class="table-title">加班工时</td>
+						<td class="table-combo" colspan="2" style="padding: 0">${model.overtimeHours!}</td>
 					</tr>
 					<tr>
-						<td class="table-title" colspan="2">工作内容描述</td>
-						<td colspan="4"><input class="easyui-textbox" name="workContent"
-							data-options="required:true,multiline:true,validType:['length[0,200]']" style="width: 92%"></td>
+						<td class="table-title" colspan="2">描述</td>
+						<td colspan="4"><input class="easyui-textbox" name="description" data-options="validType:['length[0,50]']" style="width: 92%"></td>
 					</tr>
 				</table>
 			</div>
@@ -119,25 +107,3 @@
 
 	</form>
 </div>
-<script type="text/javascript">
-	<#members_index/>
-	$(function() {
-		$('#workOrderType').combobox('initValue',${model.$_workOrderType!});
-		$('#workOrderType').combobox('setText','${model.workOrderType!}');
-		
-		$('#priority').combobox('initValue',${model.$_priority!});
-		$('#priority').combobox('setText','${model.priority!}');
-		
-		$('#workOrderSource').combobox('initValue','${model.$_workOrderSource!}');
-		$('#workOrderSource').combobox('setText','${model.workOrderSource!}');
-		
-		$('#acceptorId').combobox('initValue',${model.$_acceptorId!});
-		$('#acceptorId').combobox('setText','${model.acceptorId!}');
-		
-		var copyUserIds=${model.copyUserId!};
-		$(copyUserIds).each(function(index,item){
-			var node = $('#copyUserIds').combotree('tree').tree('find',item);
-			$('#copyUserIds').combotree('tree').tree('check', node.target);
-		});
-	});
-</script>

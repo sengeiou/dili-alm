@@ -27,4 +27,10 @@ public interface HardwareResourceApplyListPageQueryDto extends HardwareResourceA
 	List<Integer> getApplyStateList();
 
 	void setApplyStateList(List<Integer> applyStateList);
+
+	@Operator(Operator.IN)
+	@Column(name = "`project_id`")
+	List<Long> getProjectIds();
+
+	void setProjectIds(List<Long> projectIds);
 }

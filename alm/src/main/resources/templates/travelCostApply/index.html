@@ -17,11 +17,6 @@
 							data-options="label:'申请人:', editable:false,
 									buttonText:'选择',
 									onClickButton:selectMember,onChange:_changeTextboxShowClear" /></td>
-						<td style="padding: 5px;"><select class="easyui-combobox" name="applyState" id="applyState" style="width: 280px"
-							data-options="label:'状态:',editable:false">
-								<option value=""></option> <%for(item in states){%>
-								<option value="${item.value!}">${item.name!}</option> <%}%>
-						</select></td>
 					</tr>
 					<tr>
 						<td style="padding: 5px;"><input class="easyui-datebox" name="submitStartDate" id="submitStartDate" style="width: 280px;"
@@ -44,19 +39,17 @@
 	<div region="center" style="width: 100%;" height="auto">
 		<!-- =========================================================表格========================================================= -->
 		<table class="easyui-datagrid" title="差旅成本列表" id="grid" fitColumns="true" pagination="true" pageSize="30" pageNumber="1"
-			pagePosition="both" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="projectId"
-			align="center" fit="true" striped="true" toolbar="#toolbar" idField="id"
-			data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
+			pagePosition="both" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" align="center" fit="true"
+			striped="true" toolbar="#toolbar" idField="id" data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
 			<thead>
 				<tr>
 					<th
 						data-options="field:'serialNumber',width:'5%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:serialNumberFormatter">编号</th>
-					<th data-options="field:'projectId', width:'25%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">项目</th>
-					<th data-options="field:'applyState',width:'10%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">申请状态</th>
+					<th data-options="field:'projectId', width:'30%',  align:'center', resizable:'true', fixed:'false'">项目</th>
 					<th
 						data-options="field:'totalAmount', width:'10%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:function(value,row,index){return value/100;}">差旅成本</th>
 					<th data-options="field:'travelDayAmount', width:'10%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">出差天数</th>
-					<th data-options="field:'applicantId', width:'10%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">申请人</th>
+					<th data-options="field:'applicantId', width:'15%', align:'center', resizable:'true', fixed:'false'">申请人</th>
 					<th data-options="field:'submitDate',width:'20%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">申请日期</th>
 					<th data-options="field:'opt',width:'10%',align:'center',formatter:optFormatter">操作</th>
 				</tr>
@@ -64,10 +57,14 @@
 		</table>
 		<!-- datagrid工具栏 -->
 		<div id="toolbar" style="padding: 2px 5px;">
-			<%if(user.id != 1){%><a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true"></a> <a href="#"
-				class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()" plain="true"></a> <a href="#" class="easyui-linkbutton"
-				iconCls="icon-remove" onclick="del()" plain="true"></a><%}%> <a href="#" class="easyui-linkbutton" iconCls="icon-export"
-				onclick="doExport('grid')" plain="true"></a>
+			<%if(user.id != 1){%>
+			<#resource code="addTravelCost"> <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true"></a>
+			</#resource>
+			<#resource code="updateTravelCost"> <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()"
+				plain="true"></a> </#resource>
+			<#resource code="removeTravelCost"> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true"></a>
+			</#resource>
+			<%}%> <a href="#" class="easyui-linkbutton" iconCls="icon-export" onclick="doExport('grid')" plain="true"></a>
 			<div style="float: right">
 				边框显示:<select onchange="changeBorder('grid',this.value)">
 					<option value="lines-both">全边框</option>
@@ -88,6 +85,9 @@
 <!-- ====================================================================================================================== --> <script
 	type="text/javascript">
 	var dataAuth = {
+		addTravelCost : <%if(hasResource('addTravelCost')){%>true<%}else{%>false<%}%>,
+		updateTravelCost : <%if(hasResource('updateTravelCost')){%>true<%}else{%>false<%}%>,
+		removeTravelCost : <%if(hasResource('removeTravelCost')){%>true<%}else{%>false<%}%>,
 		reviewTravelCostApply : <%if(hasResource('reviewTravelCostApply')){%>true<%}else{%>false<%}%>
 	};
 	<#members_index/>

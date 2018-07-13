@@ -132,8 +132,6 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	@Autowired
 	private UserRpc userRpc;
 	@Autowired
-	private VersionMarketOnlineRecordMapper versionMaketMapper;
-	@Autowired
 	private ProjectVersionProvider versionProvider;
 	@Autowired
 	private ProjectVersionMapper versionMapper;
@@ -728,14 +726,6 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			throw new ProjectOnlineApplyException("申请上线日期不能小于当前日期");
 		}
 
-		// 判断市场在当前版本是否上过线
-		Example example = new Example(VersionMarketOnlineRecord.class);
-		example.createCriteria().andEqualTo("versionId", apply.getVersionId()).andIn("marketCode", apply.getMarkets());
-		int count = this.versionMaketMapper.selectCountByExample(example);
-		if (count > 0) {
-			throw new ProjectOnlineApplyException("该版本已在指定市场上线，不能重复上线");
-		}
-
 		// 更新子系统，先删除后插入
 		if (CollectionUtils.isNotEmpty(apply.getSubsystem())) {
 			// 先删除
@@ -903,6 +893,8 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		JSONObject datetimeProvider = new JSONObject();
 		datetimeProvider.put("provider", "datetimeProvider");
 		metadata.put("operateTime", datetimeProvider);
+
+		metadata.put("opertateResult", "operationResultProvider");
 		try {
 			return ValueProviderUtils.buildDataByProvider(metadata, list);
 		} catch (Exception e) {

@@ -197,16 +197,6 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	 */
 	@Override
 	public List<TaskHoursByProjectDto> listProjectHours(String startTime, String endTime, List<Long> projectIds) {
-		if (startTime == null || startTime.equals("")) {
-			startTime = DateUtil.getPastDate(7);
-		} else {
-			startTime += "";
-		}
-		if (endTime == null || endTime.equals("")) {// 没有默认为至今
-			endTime = DateUtil.getDate(new Date()) + "";
-		} else {
-			endTime += "";
-		}
 		return taskMapper.selectProjectHours(startTime, endTime, projectIds);
 	}
 
@@ -281,17 +271,18 @@ public class StatistaicalServiceImpl implements StatisticalService {
 				projectTotalHoursSelectList.add(p.getProjectId());
 			});
 		}
-		SelectTaskHoursByUserDto totalTaskandOverHour = this.selectTotalTaskAndOverHours(projectTotalHoursSelectList);
+		SelectTaskHoursByUserDto totalTaskandOverHour = this.selectTotalTaskAndOverHours(projectTotalHoursSelectList,
+				df.parse(startTime), df.parse(endTime));
 		list.add(totalTaskandOverHour);
 
 		return list;
 	}
 
 	@Override
-	public SelectTaskHoursByUserDto selectTotalTaskAndOverHours(List<Long> projectIds) {
+	public SelectTaskHoursByUserDto selectTotalTaskAndOverHours(List<Long> projectIds, Date startDate, Date endDate) {
 
 		List<SelectTaskHoursByUserProjectDto> listProjectTaskOverHours = taskMapper.selectUsersProjectHours(null,
-				projectIds);
+				projectIds, startDate, endDate);
 		SelectTaskHoursByUserDto totalTaskandOverHour = new SelectTaskHoursByUserDto();
 		totalTaskandOverHour.setUserName("合计");
 		totalTaskandOverHour.setUserNo((long) 0);
@@ -583,7 +574,8 @@ public class StatistaicalServiceImpl implements StatisticalService {
 
 			end = dateUtilMap.get("end" + weekNumIntager);
 		}
-		return taskMapper.selectProjectYearsCoverForAll(start, end);
+		ProjectYearCoverForAllDto dto = taskMapper.selectProjectYearsCoverForAll(start, end);
+		return dto == null ? new ProjectYearCoverForAllDto() : dto;
 	}
 
 	/*****
@@ -592,7 +584,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	@Override
 	public List<SelectTaskHoursByUserProjectDto> selectTotalTaskAndOverHoursForEchars(List<Long> projectIds) {
 		List<SelectTaskHoursByUserProjectDto> listProjectTaskOverHours = taskMapper.selectUsersProjectHours(null,
-				projectIds);
+				projectIds, null, null);
 
 		return listProjectTaskOverHours;
 	}

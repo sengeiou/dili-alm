@@ -14,7 +14,11 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
+<<<<<<< HEAD
  * This file was generated on 2018-07-09 09:05:26.
+=======
+ * This file was generated on 2018-07-09 09:08:32.
+>>>>>>> refs/heads/v3.0
  */
 @Table(name = "`work_order`")
 public interface WorkOrder extends IBaseDomain {

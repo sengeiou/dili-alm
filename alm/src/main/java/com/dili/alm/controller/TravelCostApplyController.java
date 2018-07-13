@@ -75,17 +75,6 @@ public class TravelCostApplyController {
 		}
 	}
 
-	@ResponseBody
-	@RequestMapping(value = "/review", method = RequestMethod.POST)
-	public BaseOutput<Object> review(@RequestParam Long id, @RequestParam Integer result) {
-		try {
-			this.travelCostApplyService.review(id, TravelCostApplyResult.valueOf(result));
-			return BaseOutput.success();
-		} catch (TravelCostApplyException e) {
-			return BaseOutput.failure(e.getMessage());
-		}
-	}
-
 	@ApiOperation("跳转到TravelCostApply页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {

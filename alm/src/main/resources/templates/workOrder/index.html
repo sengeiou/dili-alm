@@ -49,6 +49,8 @@
 							editable:false,
 									buttonText:'选择',
 									onClickButton:selectMember,onChange:_changeTextboxShowClear" /></td>
+						<td style="padding: 5px;"><input class="easyui-textbox" name="channel" id="channel1" style="width: 100%"
+							data-options="label:'渠道:',editable:false" /> <#comboProvider _id="channel1" _provider='workOrderChannelProvider' /></td>
 					</tr>
 					<tr>
 						<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid()">查询</a> <a
@@ -64,10 +66,9 @@
 	<!-- 表格 -->
 	<div region="center" style="width: 100%;" height="auto">
 		<!-- =========================================================表格========================================================= -->
-		<table class="easyui-datagrid" title="工单列表" id="grid" fitColumns="true" pagination="true" pageSize="30" pageNumber="1"
-			pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
-			sortName="serialNumber" align="center" fit="true" striped="true" toolbar="#toolbar" idField="id"
-			data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
+		<table class="easyui-datagrid" title="工单列表" id="grid" fitColumns="true" pagination="true" pageSize="30" pageNumber="1" pagePosition="both"
+			rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" align="center" fit="true"
+			striped="true" toolbar="#toolbar" idField="id" data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
 			<thead>
 				<tr>
 					<th
@@ -75,14 +76,12 @@
 					<th data-options="field:'workOrderName', align:'center', resizable:'true', fixed:'false'">工单名称</th>
 					<th data-options="field:'priority', _provider:'workOrderPriorityProvider', align:'center', resizable:'true', fixed:'false'">优先级</th>
 					<th data-options="field:'workOrderType', _provider:'workOrderTypeProvider', align:'center', resizable:'true', fixed:'false'">工单类型</th>
-					<th data-options="field:'channel', _provider:'workOrderChannelProvider', align:'center', resizable:'true', fixed:'false'">工单来源</th>
-					<th
-						data-options="field:'workOrderState', _provider:'workOrderStateProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">状态</th>
-					<th
-						data-options="field:'applicantId',  _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">提单人</th>
+					<th data-options="field:'workOrderSource', _provider:'workOrderSourceProvider', align:'center', resizable:'true', fixed:'false'">工单来源</th>
+					<th data-options="field:'channel', _provider:'workOrderChannelProvider', align:'center', resizable:'true', fixed:'false'">渠道</th>
+					<th data-options="field:'workOrderState', _provider:'workOrderStateProvider',  align:'center', resizable:'true', fixed:'false'">状态</th>
+					<th data-options="field:'applicantId',  _provider:'memberProvider',  align:'center', resizable:'true', fixed:'false'">提单人</th>
 					<th data-options="field:'acceptorId', _provider:'memberProvider', align:'center', resizable:'true', fixed:'false'">受理人</th>
-					<th
-						data-options="field:'executorId', _provider:'memberProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">执行人</th>
+					<th data-options="field:'executorId', _provider:'memberProvider',  align:'center', resizable:'true', fixed:'false'">执行人</th>
 					<th
 						data-options="field:'submitTime',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
 						申请时间</th>

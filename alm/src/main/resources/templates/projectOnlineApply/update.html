@@ -76,8 +76,14 @@
 								<option value="0"<%if(!apply.marketVersion){%>selected="selected"<%}%>>否</option>
 						</select></td>
 						<td class="table-title">市场</td>
-						<td colspan="2"><input class="easyui-combotree" id="market" name="market" style="width: 87%; text-align: center;"
+						<td><input class="easyui-combotree" id="market" name="market" style="width: 87%; text-align: center;"
 							data-options="multiple:true,loadFilter:treeLoadFilter, _idField:'value', _textField:'code', _parentIdField:'parentId',editable:false<%if(!apply.marketVersion){%>,disabled:true<%}%>"></td>
+						<td class="table-title">申请人</td>
+						<td>${apply.applicantId!}</td>
+					</tr>
+					<tr>
+						<td class="table-title">创建时间</td>
+						<td>${apply.created!}</td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="6">上线系统及依赖关系描述</td>
@@ -126,7 +132,7 @@
 					<tr>
 						<td class="table-title" colspan="2">git地址</td>
 						<td colspan="4"><input class="easyui-textbox" style="width: 87%;" name="git" value="${apply.git!}"
-							data-options="required:true,validType:['length[0,50]']"></td>
+							data-options="required:true,validType:['length[0,2083]']"></td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="2">分支</td>
@@ -165,10 +171,6 @@
 						<td colspan="4"><input class="easyui-textbox" name="emailAddress"
 							value="<%for(item in apply.emails){if(itemLP.last){%>${item.emailAddress!}<%}else{%>${item.emailAddress!};<%}}%>"
 							data-options="multiline:true" style="width: 92%"></td>
-					</tr>
-					<tr>
-						<td class="table-title" colspan="2">申请人</td>
-						<td colspan="4">${applicant.realName!}</td>
 					</tr>
 				</table>
 			</div>

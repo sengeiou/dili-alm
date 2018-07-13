@@ -6,12 +6,34 @@ function serialNumberFormatter(value, row, index) {
 }
 
 function onWorkOrderSourceChange(n, o) {
-	if (n == 1) {
-		$('#acceptorId').combobox('enable');
-		$('#executorId').combobox('disable');
-	} else {
-		$('#acceptorId').combobox('disable');
-		$('#executorId').combobox('enable');
+	switch (n) {
+		case 1 :
+			$('#acceptorId').combobox('reload', '${contextPath!}/workOrder/receivers?type=1');
+			$('#acceptorId').combobox('enable');
+			$('#executorId').combobox('disable');
+			$('#channel').combobox({
+						required : true,
+						width : '100%'
+					});
+			break;
+		case 2 :
+			$('#acceptorId').combobox('reload', '${contextPath!}/workOrder/receivers?type=2');
+			$('#acceptorId').combobox('disable');
+			$('#executorId').combobox('enable');
+			$('#channel').combobox({
+						required : false,
+						width : '100%'
+					});
+			break;
+		case 3 :
+			$('#acceptorId').combobox('reload', '${contextPath!}/workOrder/receivers?type=3');
+			$('#acceptorId').combobox('enable');
+			$('#executorId').combobox('disable');
+			$('#channel').combobox({
+						required : false,
+						width : '100%'
+					});
+			break;
 	}
 }
 
@@ -85,19 +107,55 @@ function operationFormatter(value, row, index) {
 }
 
 function closeWorkOrder(id) {
-	$.messager.confirm('提示', '工单关闭表示你确认该工单已经关闭，确认关闭吗？', function(f) {
-				if (!f) {
+	if (userId == 1) {
+		return false;
+	}
+	var selected = null;
+	$($('#grid').datagrid('getRows')).each(function(index, row) {
+				if (row.id == id) {
+					selected = row;
 					return false;
 				}
-				$.post('${contextPath!}/workOrder/close', {
-							id : id
-						}, function(res) {
-							if (res.success) {
-								updateGridRow(res.data);
-							} else {
-								$.messager.alert('提示', res.result);
+			});
+	if (!selected) {
+		$.messager.alert('警告', '请选中一条数据');
+		return;
+	}
+	if (selected.$_workOrderState != 4) {
+		return false;
+	}
+	if (selected.$_applicantId != userId) {
+		$.messager.alert('警告', '只有申请人才能删除工单！');
+		return;
+	}
+	$('#win').dialog({
+				title : '工单关闭',
+				width : 800,
+				height : 540,
+				href : '${contextPath!}/workOrder/close?id=' + id,
+				modal : true,
+				buttons : [{
+							text : '关闭',
+							handler : function() {
+								$('#editForm').form('submit', {
+											url : '${contextPath!}/workOrder/close',
+											success : function(data) {
+												var obj = $.parseJSON(data);
+												if (obj.code == 200) {
+													updateGridRow(obj.data);
+													$('#win').dialog('close');
+												} else {
+													$.messager.alert('错误', obj.result);
+												}
+											}
+										});
 							}
-						});
+						}, {
+							text : '返回',
+							handler : function() {
+								$('#win').dialog('close');
+							}
+						}]
 			});
 }
 
@@ -164,7 +222,10 @@ function openInsert() {
 											success : function(data) {
 												var obj = $.parseJSON(data);
 												if (obj.code == 200) {
-													$('#grid').datagrid('appendRow', obj.data);
+													$('#grid').datagrid('insertRow', {
+																index : 0,
+																row : obj.data
+															});
 													$('#grid').datagrid('acceptChanges');
 													$('#win').dialog('close');
 												} else {
@@ -243,6 +304,13 @@ function openUpdate(index) {
 											success : function(data) {
 												var obj = $.parseJSON(data);
 												if (obj.code == 200) {
+													if (obj.data.$_workOrderSource == 1) {
+														obj.data.executorId = '';
+														obj.data.$_executorId = null;
+													} else if (obj.data.$_workOrderSource == 2) {
+														obj.data.acceptorId = '';
+														obj.data.$_acceptorId = null;
+													}
 													updateGridRow(obj.data);
 													$('#win').dialog('close');
 												} else {
@@ -302,6 +370,10 @@ function allocatePost(id, result) {
 				success : function(data) {
 					var obj = $.parseJSON(data);
 					if (obj.code == 200) {
+						if (result == 0) {
+							obj.data.submitTime = '';
+							obj.data.$_submitTime = null;
+						}
 						updateGridRow(obj.data);
 						$('#win').dialog('close');
 					} else {
@@ -342,10 +414,15 @@ function solve(id) {
 				buttons : [{
 							text : '确认',
 							handler : function() {
-								var data = $("#editForm").serializeArray();
 								$('#editForm').form('submit', {
 											url : '${contextPath!}/workOrder/solve',
 											onSubmit : function() {
+												var startDate = $('#startDate').datebox('getValue');
+												var endDate = $('#endDate').datebox('getValue');
+												if (startDate > endDate) {
+													$.messager.alert('提示', '工单开始日期不能大于工单结束日期!');
+													return false;
+												}
 												if (!$(this).form('validate')) {
 													return false;
 												}

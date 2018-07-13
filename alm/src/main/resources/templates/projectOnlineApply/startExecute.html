@@ -59,7 +59,11 @@
 					</tr>
 					<tr>
 						<td class="table-title">上线市场</td>
-						<td colspan="5"><%if(apply.marketVersion){%>${apply.markets!}<%}%></td>
+						<td><%if(apply.marketVersion){%>${apply.markets!}<%}%></td>
+						<td class="table-title">申请人</td>
+						<td>${apply.applicantId!}</td>
+						<td class="table-title">创建时间</td>
+						<td>${apply.created!}</td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="6">上线系统及依赖关系描述</td>
@@ -121,12 +125,20 @@
 					</tr>
 					<%for(item in apply.opRecords){%>
 					<tr>
-						<td class="table-title">${item.operationName!}</td>
-						<td class="table-combo" style="padding: 0">${item.operatorId!}</td>
-						<td class="table-title">描述</td>
-						<td class="table-combo" style="padding: 0">${item.description!}</td>
-						<td class="table-title">时间</td>
-						<td class="table-combo" style="padding: 0">${item.operateTime!}</td>
+						<td colspan="6">
+							<table class="table-box" style="width: 100%; padding: 0; margin: 0;">
+								<tr>
+									<td class="table-title" style="width: 15%;">${item.operationName!}</td>
+									<td class="table-combo" style="padding: 0; width: 10%;">${item.operatorId!}</td>
+									<td class="table-title">操作结果</td>
+									<td class="table-combo" style="padding: 0">${item.opertateResult!}</td>
+									<td class="table-title">描述</td>
+									<td class="table-combo" style="padding: 0; width: 20%">${item.description!}</td>
+									<td class="table-title" style="width: 10%">时间</td>
+									<td class="table-combo" style="padding: 0; width: 20%">${item.operateTime!}</td>
+								</tr>
+							</table>
+						</td>
 					</tr>
 					<%}%>
 					<tr>
@@ -143,12 +155,6 @@
 						<td class="table-title">描述</td>
 						<td class="table-combo" style="padding: 0" colspan="5"><input class="easyui-textbox" name="description"
 							style="width: 96%; text-align: center;" data-options=""></td>
-					</tr>
-					<tr>
-						<td class="table-title" colspan="2">申请人</td>
-						<td>${apply.applicantId!}</td>
-						<td class="table-title">创建时间</td>
-						<td class="table-title" colspan="2">${apply.created!}</td>
 					</tr>
 				</table>
 			</div>

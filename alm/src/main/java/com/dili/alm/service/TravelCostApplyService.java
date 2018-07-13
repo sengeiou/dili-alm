@@ -1,7 +1,6 @@
 package com.dili.alm.service;
 
 import com.dili.alm.domain.TravelCostApply;
-import com.dili.alm.domain.TravelCostApplyResult;
 import com.dili.alm.domain.dto.TravelCostApplyUpdateDto;
 import com.dili.alm.exceptions.TravelCostApplyException;
 import com.dili.ss.base.BaseService;
@@ -15,8 +14,6 @@ public interface TravelCostApplyService extends BaseService<TravelCostApply, Lon
 
 	void submit(Long applyId) throws TravelCostApplyException;
 
-	void review(Long applyId, TravelCostApplyResult result) throws TravelCostApplyException;
-
 	void deleteTravelCostApply(Long applyId) throws TravelCostApplyException;
 
 	TravelCostApply getUpdateViewData(Long id) throws Exception;
@@ -26,7 +23,7 @@ public interface TravelCostApplyService extends BaseService<TravelCostApply, Lon
 	 * 
 	 * @param apply
 	 *            数据模型
-	 * @throws TravelCostApplyException 
+	 * @throws TravelCostApplyException
 	 */
 	void saveAndSubmit(TravelCostApplyUpdateDto apply) throws TravelCostApplyException;
 }

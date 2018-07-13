@@ -1,6 +1,7 @@
 package com.dili.alm.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
@@ -44,6 +45,7 @@ import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.impl.HardwareResourceApplyServiceImpl;
 import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
@@ -214,6 +216,15 @@ public class HardwareResourceApplyController {
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(HardwareResourceApplyListPageQueryDto query,
 			@RequestParam(required = false) String applyStateShow) throws Exception {
+		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
+		if (CollectionUtils.isEmpty(dataAuths)) {
+			return new EasyuiPageOutput(0, new ArrayList<>(0)).toString();
+		}
+		List<Long> projectIds = new ArrayList<>();
+		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
+		query.setProjectIds(projectIds);
+		query.setSort("modified");
+		query.setOrder("desc");
 		if (StringUtils.isNotBlank(applyStateShow)) {
 			List<Integer> stateList = JSON.parseArray(applyStateShow, Integer.class);
 			query.setApplyStateList(stateList);

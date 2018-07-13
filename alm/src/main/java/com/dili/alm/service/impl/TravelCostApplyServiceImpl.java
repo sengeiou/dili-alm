@@ -225,33 +225,6 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 	}
 
 	@Override
-	public void review(Long applyId, TravelCostApplyResult result) throws TravelCostApplyException {
-		TravelCostApply apply = this.getActualDao().selectByPrimaryKey(applyId);
-		if (apply == null) {
-			throw new TravelCostApplyException("差旅成本不存在");
-		}
-		if (!apply.getApplyState().equals(TravelCostApplyState.REVIEWING.getValue())) {
-			throw new TravelCostApplyException("当前状态不能进行复核操作");
-		}
-		if (TravelCostApplyResult.REJECT.equals(result)) {
-			apply.setApplyState(TravelCostApplyState.APPLING.getValue());
-			apply.setSubmitDate(null);
-		}
-		if (TravelCostApplyResult.PASS.equals(result)) {
-			apply.setApplyState(TravelCostApplyState.COMPLETED.getValue());
-		}
-		int rows = this.getActualDao().updateByPrimaryKey(apply);
-		if (rows <= 0) {
-			throw new TravelCostApplyException("更新状态失败");
-		}
-		User user = AlmCache.getInstance().getUserMap().get(apply.getApplicantId());
-		if (user == null) {
-			throw new TravelCostApplyException("申请人不存在");
-		}
-		this.sendMail(apply, "差旅成本申请", Sets.newHashSet(user.getEmail()));
-	}
-
-	@Override
 	public void saveAndSubmit(TravelCostApplyUpdateDto apply) throws TravelCostApplyException {
 		this.saveOrUpdate(apply);
 		this.submit(apply.getId());
@@ -275,7 +248,7 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 		if (!apply.getApplyState().equals(TravelCostApplyState.APPLING.getValue())) {
 			throw new TravelCostApplyException("当前状态不能提交");
 		}
-		apply.setApplyState(TravelCostApplyState.REVIEWING.getValue());
+		apply.setApplyState(TravelCostApplyState.COMPLETED.getValue());
 		apply.setSubmitDate(new Date());
 		int rows = this.getActualDao().updateByPrimaryKeySelective(apply);
 		if (rows <= 0) {

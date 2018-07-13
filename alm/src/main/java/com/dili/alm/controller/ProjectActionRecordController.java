@@ -1,18 +1,15 @@
 package com.dili.alm.controller;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -37,12 +34,9 @@ import com.dili.alm.domain.ProjectActionRecordConfig;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.ProjectActionRecordConfigPostData;
 import com.dili.alm.domain.dto.ProjectActionRecordExportDto;
-import com.dili.alm.domain.dto.SelectTaskHoursByUserDto;
-import com.dili.alm.domain.dto.TaskHoursByProjectDto;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.ProjectActionRecordConfigService;
 import com.dili.alm.service.ProjectActionRecordService;
-import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
@@ -51,7 +45,6 @@ import com.dili.sysadmin.sdk.session.SessionContext;
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
-import gui.ava.html.image.generator.HtmlImageGenerator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 

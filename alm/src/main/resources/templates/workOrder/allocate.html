@@ -39,13 +39,13 @@
 						<td class="table-title" width="16.6%">工单名称</td>
 						<td width="16.6%">${model.workOrderName!}</td>
 						<td width="16.6%" class="table-title">工单类型</td>
-						<td width="16.6%"><input class="easyui-textbox" name="workOrderType" id="workOrderType" value="${model.workOrderType!}"
+						<td width="16.6%"><input class="easyui-textbox" name="workOrderType" id="workOrderType" value="${model.$_workOrderType!}"
 							style="width: 87%; text-align: center;" data-options="editable:false,required:true" /> <#comboProvider _id="workOrderType"
 								_provider='workOrderTypeProvider' /></td>
 					</tr>
 					<tr>
 						<td class="table-title">工单优先级</td>
-						<td><input class="easyui-textbox" name="priority" id="priority" value="${model.priority!}"
+						<td><input class="easyui-textbox" name="priority" id="priority" value="${model.$_priority!}"
 							style="width: 87%; text-align: center;" data-options="editable:false,required:true" /> <#comboProvider _id="priority"
 								_provider='workOrderPriorityProvider' /></td>
 						<td class="table-title">工单来源</td>
@@ -64,6 +64,12 @@
 							loadFilter:removeAdminUserFilter,
 							required:true,
 							url:'${contextPath!}/member/members'"></td>
+						<td class="table-title">申请人</td>
+						<td class="table-combo">${model.applicantId!}</td>
+					</tr>
+					<tr>
+						<td class="table-title">创建时间</td>
+						<td class="table-combo">${model.creationTime!}</td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="6">描述</td>
@@ -81,23 +87,27 @@
 					</tr>
 					<%for(item in opRecords){%>
 					<tr>
-						<td class="table-title">${item.operationName!}</td>
-						<td class="table-combo" style="padding: 0">${item.operatorId!}</td>
-						<td class="table-title">描述</td>
-						<td class="table-combo" style="padding: 0">${item.description!}</td>
-						<td class="table-title">时间</td>
-						<td class="table-combo" style="padding: 0">${item.operationTime!}</td>
+						<td colspan="6">
+							<table class="table-box" style="width: 100%; padding: 0; margin: 0;">
+								<tr>
+									<td class="table-title">${item.operationName!}</td>
+									<td class="table-combo" style="padding: 0">${item.operatorId!}</td>
+									<td class="table-title">操作结果</td>
+									<td class="table-combo" style="padding: 0">${item.operationResult!}</td>
+									<td class="table-title">描述</td>
+									<td class="table-combo" style="padding: 0; width: 20%">${item.description!}</td>
+									<td class="table-title" style="width: 10%">时间</td>
+									<td class="table-combo" style="padding: 0; width: 20%">${item.operationTime!}</td>
+								</tr>
+							</table>
+						</td>
 					</tr>
 					<%}%>
 					<tr>
 						<td class="table-title" colspan="2">描述</td>
-						<td colspan="4"><input class="easyui-textbox" name="description" data-options="validType:['length[0,50]']" style="width: 92%"></td>
+						<td colspan="4"><input class="easyui-textbox" name="description" data-options="validType:['length[0,50]'],required:true"
+							style="width: 92%"></td>
 					</tr>
-					<tr>
-						<td class="table-title" colspan="2">申请人</td>
-						<td colspan="4">${model.applicantId!}</td>
-					</tr>
-
 				</table>
 			</div>
 		</div>

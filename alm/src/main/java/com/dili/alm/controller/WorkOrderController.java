@@ -2,6 +2,7 @@ package com.dili.alm.controller;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -10,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.MediaType;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,14 +29,13 @@ import com.dili.alm.domain.Files;
 import com.dili.alm.domain.OperationResult;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.WorkOrder;
+import com.dili.alm.domain.WorkOrderSource;
 import com.dili.alm.domain.dto.WorkOrderQueryDto;
 import com.dili.alm.domain.dto.WorkOrderUpdateDto;
 import com.dili.alm.exceptions.WorkOrderException;
 import com.dili.alm.rpc.DepartmentRpc;
-import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.WorkOrderService;
-import com.dili.alm.service.impl.WorkOrderServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
@@ -61,16 +61,14 @@ public class WorkOrderController {
 	@Autowired
 	private FilesService filesService;
 	@Autowired
-	private UserRpc userRpc;
-	@Autowired
 	private DepartmentRpc deptRpc;
 
 	@GetMapping("/detail")
 	public String deital(@RequestParam Long id, ModelMap modelMap) {
-		WorkOrder workOrder = this.workOrderService.getOperatinoRecordsViewModel(id);
+		WorkOrder workOrder = this.workOrderService.getOperationRecordsViewModel(id);
 		try {
 			modelMap.addAttribute("opRecords", workOrder.aget("opRecords")).addAttribute("model",
-					WorkOrderServiceImpl.parseViewModel(workOrder));
+					WorkOrderService.parseViewModel(workOrder));
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			return null;
@@ -94,8 +92,8 @@ public class WorkOrderController {
 
 	@ResponseBody
 	@RequestMapping(value = "/receivers")
-	public List<User> getReceivers() {
-		return this.workOrderService.getReceivers();
+	public List<User> getReceivers(@RequestParam Integer type) {
+		return this.workOrderService.getReceivers(WorkOrderSource.intValueOf(type));
 	}
 
 	@ApiOperation("跳转到WorkOrder页面")
@@ -171,10 +169,10 @@ public class WorkOrderController {
 
 	@GetMapping("/allocate")
 	public String allocateView(@RequestParam Long id, ModelMap modelMap) {
-		WorkOrder workOrder = this.workOrderService.getOperatinoRecordsViewModel(id);
+		WorkOrder workOrder = this.workOrderService.getOperationRecordsViewModel(id);
 		try {
 			modelMap.addAttribute("opRecords", workOrder.aget("opRecords")).addAttribute("model",
-					WorkOrderServiceImpl.parseViewModel(workOrder));
+					WorkOrderService.parseViewModel(workOrder));
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			return null;
@@ -198,10 +196,10 @@ public class WorkOrderController {
 
 	@GetMapping("/solve")
 	public String solveView(@RequestParam Long id, ModelMap modelMap) {
-		WorkOrder workOrder = this.workOrderService.getOperatinoRecordsViewModel(id);
+		WorkOrder workOrder = this.workOrderService.getOperationRecordsViewModel(id);
 		try {
 			modelMap.addAttribute("opRecords", workOrder.aget("opRecords")).addAttribute("model",
-					WorkOrderServiceImpl.parseViewModel(workOrder));
+					WorkOrderService.parseViewModel(workOrder));
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			return null;
@@ -211,11 +209,16 @@ public class WorkOrderController {
 
 	@ResponseBody
 	@PostMapping("/solve")
-	public BaseOutput<Object> solve(@RequestParam Long id, @RequestParam Integer taskHours,
+	public BaseOutput<Object> solve(@RequestParam Long id,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate, @RequestParam Integer taskHours,
 			@RequestParam(required = false, defaultValue = "0") Integer overtimeHours,
 			@RequestParam String workContent) {
+		if (startDate.compareTo(endDate) > 0) {
+			return BaseOutput.failure("工单开始日期不能大于工单结束日期");
+		}
 		try {
-			this.workOrderService.solve(id, taskHours, overtimeHours, workContent);
+			this.workOrderService.solve(id, startDate, endDate, taskHours, overtimeHours, workContent);
 			Map<Object, Object> viewModel = this.workOrderService.getViewModel(id);
 			return BaseOutput.success().setData(viewModel);
 		} catch (WorkOrderException e) {
@@ -223,12 +226,25 @@ public class WorkOrderController {
 		}
 	}
 
+	@GetMapping("/close")
+	public String closeView(@RequestParam Long id, ModelMap modelMap) {
+		WorkOrder workOrder = this.workOrderService.getOperationRecordsViewModel(id);
+		try {
+			modelMap.addAttribute("opRecords", workOrder.aget("opRecords")).addAttribute("model",
+					WorkOrderService.parseViewModel(workOrder));
+			return "workOrder/close";
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			return null;
+		}
+	}
+
 	@ResponseBody
 	@PostMapping("/close")
-	public BaseOutput<Object> close(@RequestParam Long id) {
+	public BaseOutput<Object> close(@RequestParam Long id, @RequestParam String description) {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		try {
-			this.workOrderService.close(id, user.getId());
+			this.workOrderService.close(id, user.getId(), description);
 			Map<Object, Object> viewModel = this.workOrderService.getViewModel(id);
 			return BaseOutput.success().setData(viewModel);
 		} catch (WorkOrderException e) {
@@ -249,6 +265,8 @@ public class WorkOrderController {
 			@ApiImplicitParam(name = "WorkOrder", paramType = "form", value = "WorkOrder的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(WorkOrderQueryDto query) throws Exception {
+		query.setSort("modifyTime");
+		query.setOrder("desc");
 		if (query.getSubmitEndDate() != null) {
 			Calendar c = Calendar.getInstance();
 			c.setTime(query.getSubmitEndDate());

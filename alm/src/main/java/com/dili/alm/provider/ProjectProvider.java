@@ -1,27 +1,23 @@
 package com.dili.alm.provider;
 
-import com.alibaba.fastjson.JSONObject;
-import com.dili.alm.cache.AlmCache;
-import com.dili.alm.constant.AlmConstants;
-import com.dili.alm.domain.Project;
-import com.dili.alm.service.ProjectService;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.metadata.FieldMeta;
-import com.dili.ss.metadata.ValuePair;
-import com.dili.ss.metadata.ValuePairImpl;
-import com.dili.ss.metadata.ValueProvider;
-import com.dili.ss.metadata.ValueProviderUtils;
-import com.dili.sysadmin.sdk.session.SessionContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.alibaba.fastjson.JSONObject;
+import com.dili.alm.cache.AlmCache;
+import com.dili.alm.domain.Project;
+import com.dili.alm.service.ProjectService;
+import com.dili.ss.metadata.FieldMeta;
+import com.dili.ss.metadata.ValuePair;
+import com.dili.ss.metadata.ValuePairImpl;
+import com.dili.ss.metadata.ValueProvider;
+import com.dili.ss.metadata.ValueProviderUtils;
 
 /**
  * Created by asiamaster on 2017/10/19 0019.

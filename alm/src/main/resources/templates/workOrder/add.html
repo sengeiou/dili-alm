@@ -48,14 +48,11 @@
 						<td><input class="easyui-textbox" name="priority" id="priority" style="width: 87%; text-align: center;"
 							data-options="editable:false,required:true" /> <#comboProvider _id="priority" _provider='workOrderPriorityProvider' /></td>
 						<td class="table-title">工单来源</td>
-						<td><select class="easyui-combobox" style="width: 87%; text-align: center;" id="workOrderSource" name="workOrderSource"
+						<td><input class="easyui-combobox" style="width: 87%; text-align: center;" id="workOrderSource" name="workOrderSource"
 							data-options="editable:false,
 							required:true,
- 							onChange:onWorkOrderSourceChange">
-								<option value=""></option>
-								<option value="1">外部工单</option>
-								<option value="2">内部工单</option>
-						</select></td>
+ 							onChange:onWorkOrderSourceChange"> <#comboProvider
+								_id="workOrderSource" _provider='workOrderSourceProvider' /></td>
 						<td class="table-title">受理人</td>
 						<td><input class="easyui-combobox" style="width: 87%; text-align: center;" id="acceptorId" name="acceptorId"
 							data-options="editable:true,
@@ -63,8 +60,7 @@
 							valueField:'id', 
 							textField:'realName',
 							loadFilter:removeAdminUserFilter,
-							required:true,
-							url:'${contextPath!}/workOrder/receivers'"></td>
+							required:true"></td>
 					</tr>
 					<tr>
 						<td class="table-title">抄送</td>
@@ -79,8 +75,8 @@
 							onLoadSuccess:removeTreeAdminUser">
 						</td>
 						<td class="table-title">渠道</td>
-						<td><input class="easyui-textbox" name="channel" id="channel" style="width: 90%; text-align: center;"
-							data-options="editable:false,required:true" /> <#comboProvider _id="channel" _provider='workOrderChannelProvider' /></td>
+						<td><input class="easyui-textbox" name="channel" id="channel" style="width: 94%; text-align: center;"
+							data-options="editable:false,onChange:_changeTextboxShowClear" /> <#comboProvider _id="channel" _provider='workOrderChannelProvider' /></td>
 						<td class="table-title">执行人</td>
 						<td><input class="easyui-combobox" style="width: 87%; text-align: center;" id="executorId" name="executorId"
 							data-options="editable:true,
@@ -91,20 +87,20 @@
 							required:true"></td>
 					</tr>
 					<tr>
+						<td class="table-title">申请人</td>
+						<td>${applicant.realName!}</td>
+					</tr>
+					<tr>
 						<td class="table-title" colspan="6">描述</td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="6"><input class="easyui-textbox" name="description"
-							data-options="multiline:true,validType:['length[0,500]']" style="width: 92%; height: 60px"></td>
+							data-options="multiline:true,validType:['length[0,500]'],required:true" style="width: 92%; height: 60px"></td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="2">附件</td>
 						<td class="table-combo" colspan="4" style="padding: 0"><input class="easyui-filebox" name="attachment"
 							data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 87%"></td>
-					</tr>
-					<tr>
-						<td class="table-title" colspan="2">申请人</td>
-						<td colspan="4">${applicant.realName!}</td>
 					</tr>
 
 				</table>
@@ -116,6 +112,7 @@
 <script type="text/javascript">
 	<#members_index/>
 	$(function() {
+		$('#channel').textbox('addClearBtn', 'icon-clear');
 		/* $('#acceptorId').textbox('addClearBtn', 'icon-clear');
 		$('#copyUserIds').textbox('addClearBtn', 'icon-clear'); */
 	})

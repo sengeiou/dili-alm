@@ -54,6 +54,12 @@
 						<td>${model.copyUsers!}</td>
 						<td class="table-title">实施人</td>
 						<td>${model.executorId!}</td>
+						<td class="table-title">申请人</td>
+						<td class="table-combo">${model.applicantId!}</td>
+					</tr>
+					<tr>
+						<td class="table-title">创建时间</td>
+						<td class="table-combo">${model.creationTime!}</td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="6">描述</td>
@@ -66,12 +72,20 @@
 					</tr>
 					<%for(item in opRecords){%>
 					<tr>
-						<td class="table-title">${item.operationName!}</td>
-						<td class="table-combo" style="padding: 0">${item.operatorId!}</td>
-						<td class="table-title">描述</td>
-						<td class="table-combo" style="padding: 0">${item.description!}</td>
-						<td class="table-title">时间</td>
-						<td class="table-combo" style="padding: 0">${item.operationTime!}</td>
+						<td colspan="6">
+							<table class="table-box" style="width: 100%; padding: 0; margin: 0;">
+								<tr>
+									<td class="table-title">${item.operationName!}</td>
+									<td class="table-combo" style="padding: 0">${item.operatorId!}</td>
+									<td class="table-title">操作结果</td>
+									<td class="table-combo" style="padding: 0">${item.operationResult!}</td>
+									<td class="table-title">描述</td>
+									<td class="table-combo" style="padding: 0; width: 20%">${item.description!}</td>
+									<td class="table-title" style="width: 10%">时间</td>
+									<td class="table-combo" style="padding: 0; width: 20%">${item.operationTime!}</td>
+								</tr>
+							</table>
+						</td>
 					</tr>
 					<%}%>
 					<tr>
@@ -82,12 +96,6 @@
 						<td class="table-combo" colspan="2" style="padding: 0">${model.taskHours!}</td>
 						<td class="table-title">加班工时</td>
 						<td class="table-combo" colspan="2" style="padding: 0">${model.overtimeHours!}</td>
-					</tr>
-					<tr>
-						<td class="table-title">申请人</td>
-						<td class="table-combo" colspan="2" style="padding: 0">${model.applicantId!}</td>
-						<td class="table-title">创建时间</td>
-						<td class="table-combo" colspan="2" style="padding: 0">${model.creationTime!}</td>
 					</tr>
 				</table>
 			</div>
