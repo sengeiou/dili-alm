@@ -400,6 +400,7 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 			}
 		}
 		apply.setProjectId(dto.getProjectId());
+		apply.setTotalAmount(dto.getTotalAmount());
 		this.getActualDao().updateByPrimaryKeySelective(apply);
 	}
 }
