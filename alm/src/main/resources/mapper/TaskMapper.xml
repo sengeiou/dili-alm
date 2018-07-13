@@ -591,38 +591,6 @@
 	<select id="selectProjectYearsCover"
 		resultType="com.dili.alm.domain.dto.ProjectYearCoverDto">
 		SELECT
-<<<<<<< HEAD
-		p.id AS projectId,
-		p.`name` AS projectName,
-		p.type AS projectType,
-		p.project_state AS projectstate,
-		count( * ) AS taskCount,
-		count( CASE WHEN tmp.`status` = 0 THEN '0' END ) AS noBeginTotal,
-		count( CASE WHEN tmp.`status` = 1 THEN 1 END ) AS beginingTotal,
-		count( CASE WHEN tmp.`status` = 1 THEN 1 END ) AS ongoing,
-		count( CASE WHEN tmp.`status` = 2 THEN 2 END ) AS pauseTotal,
-		count( CASE WHEN tmp.`status` = 3 THEN 3 END ) AS finishCount,
-		count( CASE WHEN tmp.`status` = 4 THEN 4 END ) AS noFinish,
-		count( CASE WHEN tmp.`status` = 3 THEN 3 END ) / count( * ) AS
-		completionRate,
-		count( CASE WHEN tmp.`status` = 4 THEN 4 END ) / count( * ) AS overdueRate
-		FROM
-		(
-		SELECT
-		t.project_id,
-		t.`status`
-		FROM
-		task t
-		WHERE
-		( ( t.start_date BETWEEN #{beginTime,jdbcType=TIMESTAMP} AND
-		#{endTime,jdbcType=TIMESTAMP} ) OR ( t.end_date BETWEEN
-		#{beginTime,jdbcType=TIMESTAMP} AND #{endTime,jdbcType=TIMESTAMP} ) )
-		OR ( t.STATUS = 4 )
-		) tmp
-		LEFT JOIN project p ON tmp.project_id = p.id
-		GROUP BY
-		tmp.project_id
-=======
 		t.project_id AS projectId,
 		p.`name` AS projectName,
 		p.`type` AS
@@ -666,16 +634,12 @@
 		ON t.project_id = p.id
 		GROUP BY
 		t.project_id
-		ORDER BY
+		ORDER
+		BY
 		t.project_id,
 		t.`status`
->>>>>>> refs/heads/v3.0
 	</select>
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> refs/heads/v3.0
 	<!-- 年度总汇.图标 -->
 	<select id="selectProjectYearsCoverForAll"
 		resultType="com.dili.alm.domain.dto.ProjectYearCoverForAllDto">

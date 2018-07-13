@@ -57,6 +57,9 @@ public interface WorkOrderService extends BaseService<WorkOrder, Long> {
 		JSONObject datetimeProvider = new JSONObject();
 		datetimeProvider.put("provider", "datetimeProvider");
 		metadata.put("creationTime", datetimeProvider);
+		
+		metadata.put("startDate", "almDateProvider");
+		metadata.put("endDate", "almDateProvider");
 
 		List<Map> listMap = ValueProviderUtils.buildDataByProvider(metadata, Arrays.asList(workOrder));
 		return listMap.get(0);
