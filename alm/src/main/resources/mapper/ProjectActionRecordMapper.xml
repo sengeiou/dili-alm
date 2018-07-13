@@ -89,17 +89,21 @@
 	<select id="ganttQuery" resultMap="BaseResultMap">
 		select
 		<include refid="Base_Column_List" />
-		from project_action_record where (project_id = #{projectId} or
-		version_id in
-		<foreach collection="versionIds" open="(" separator=","
-			close=")" item="versionId">
-			#{versionId}
-		</foreach>
-		or task_id in
-		<foreach collection="taskIds" open="(" separator="," close=")"
-			item="taskId">
-			#{taskId}
-		</foreach>
+		from project_action_record where (project_id = #{projectId}
+		<if test="versionIds != null and versionIds.size() > 0">
+			or version_id in
+			<foreach collection="versionIds" open="(" separator=","
+				close=")" item="versionId">
+				#{versionId}
+			</foreach>
+		</if>
+		<if test="taskIds != null and taskIds.size() > 0">
+			or task_id in
+			<foreach collection="taskIds" open="(" separator=","
+				close=")" item="taskId">
+				#{taskId}
+			</foreach>
+		</if>
 		)
 		<if test="actionCodes != null and actionCodes.size() != 0">
 			and action_code in (
@@ -116,11 +120,13 @@
 		(
 		isnull( actual_end_date ),
 		IF
-		( isnull( actual_start_date ), IF ( isnull( action_end_date ), NULL,
+		(
+		isnull( actual_start_date ), IF ( isnull( action_end_date ), NULL,
 		actual_start_date ), action_end_date ),
 		actual_end_date
 		),
 		action_date
-		) asc
+		)
+		asc
 	</select>
 </mapper>

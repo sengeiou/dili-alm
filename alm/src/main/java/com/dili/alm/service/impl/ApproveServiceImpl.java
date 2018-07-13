@@ -648,7 +648,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 				team.setRole(TeamRole.DEVELOP_MANAGER.getValue());
 				break;
 			default:
-				throw new ApproveException("未知的团队类型");
+				return;
 			}
 			int rows = teamService.insert(team);
 			if (rows <= 0) {

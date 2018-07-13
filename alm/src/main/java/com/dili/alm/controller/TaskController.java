@@ -33,6 +33,7 @@ import com.dili.alm.domain.Task;
 import com.dili.alm.domain.TaskDetails;
 import com.dili.alm.domain.TaskQueryInProjectId;
 import com.dili.alm.domain.User;
+import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.TaskException;
 import com.dili.alm.service.MessageService;
 import com.dili.alm.service.ProjectApplyService;
@@ -380,7 +381,7 @@ public class TaskController {
 			taskService.startTask(id, userTicket.getId());
 			Task task = taskService.get(id);
 			return BaseOutput.success("执行任务成功").setData(String.valueOf(task.getId() + ":" + task.getName()));
-		} catch (TaskException e) {
+		} catch (ApplicationException e) {
 			return BaseOutput.failure(e.getMessage());
 		}
 	}

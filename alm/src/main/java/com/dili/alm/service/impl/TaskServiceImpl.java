@@ -51,6 +51,8 @@ import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.apply.ApplyMajorResource;
 import com.dili.alm.domain.dto.apply.ApplyRelatedResource;
 import com.dili.alm.exceptions.ApplicationException;
+import com.dili.alm.exceptions.ProjectException;
+import com.dili.alm.exceptions.ProjectVersionException;
 import com.dili.alm.exceptions.TaskException;
 import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.rpc.UserRpc;
@@ -166,7 +168,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
 		par.setActionCode(ProjectAction.TASK_PLAN.getCode());
 		par.setActionDateType(ActionDateType.PERIOD.getValue());
-		par.setActionEndDate(task.getStartDate());
+		par.setActionStartDate(task.getStartDate());
 		par.setActionEndDate(task.getEndDate());
 		par.setActionType(ProjectActionType.TASK.getValue());
 		par.setTaskId(task.getId());
@@ -674,7 +676,8 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 	@Transactional(rollbackFor = ApplicationException.class)
 	@Override
-	public void startTask(Long taskId, Long modifierId) throws TaskException {
+	public void startTask(Long taskId, Long modifierId)
+			throws TaskException, ProjectVersionException, ProjectException {
 
 		// 查询任务
 		Task task = this.getActualDao().selectByPrimaryKey(taskId);
@@ -682,67 +685,16 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			throw new TaskException("任务不存在");
 		}
 
-		// 判断项目是否为空
-		Project project = this.projectMapper.selectByPrimaryKey(task.getProjectId());
-		if (project == null) {
-			throw new TaskException("项目不存在");
-		}
-
 		// 只更新任务状态
 		task.setFactBeginDate(new Date());
 		task.setStatus(TaskStatus.START.code);// 更新状态为开始任务
 		Date now = new Date();
 
-		// 更新项目状态
-		if (project.getProjectState().equals(ProjectState.NOT_START.getValue())
-				|| project.getActualStartDate() == null) {
-			project.setActualStartDate(now);
-			project.setProjectState(ProjectState.IN_PROGRESS.getValue());
-			int rows = this.projectMapper.updateByPrimaryKey(project);
-			if (rows <= 0) {
-				throw new TaskException("更新项目失败");
-			}
-			// 更新项目规划
-			ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
-			par.setProjectId(project.getId());
-			par.setActionCode(ProjectAction.PROJECT_PLAN.getCode());
-			ProjectActionRecord target = this.parMapper.selectOne(par);
-			target.setActualStartDate(now);
-			rows = this.parMapper.updateByPrimaryKeySelective(target);
+		// 项目开始
+		this.projectService.start(task.getProjectId());
 
-			// 插入项目进程记录项目开始
-			par = DTOUtils.newDTO(ProjectActionRecord.class);
-			par.setActionCode(ProjectAction.PROJECT_START.getCode());
-			par.setActionDateType(ActionDateType.POINT.getValue());
-			par.setActionDate(now);
-			par.setProjectId(project.getId());
-			par.setActionType(ProjectActionType.PROJECT.getValue());
-			rows = this.parMapper.insertSelective(par);
-			if (rows <= 0) {
-				throw new TaskException("插入项目进程记录失败");
-			}
-		}
-		ProjectVersion version = this.versionMapper.selectByPrimaryKey(task.getVersionId());
-		if (version.getVersionState().equals(ProjectState.NOT_START.getValue()) || version.getActualEndDate() == null) {
-			version.setActualStartDate(now);
-			version.setVersionState(ProjectState.IN_PROGRESS.getValue());
-			int rows = this.versionMapper.updateByPrimaryKey(version);
-			if (rows <= 0) {
-				throw new TaskException("更新版本状态失败");
-			}
-
-			// 插入项目进程记录版本开始
-			ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
-			par.setActionCode(ProjectAction.VERSION_START.getCode());
-			par.setActionDateType(ActionDateType.POINT.getValue());
-			par.setActionDate(now);
-			par.setProjectId(project.getId());
-			par.setActionType(ProjectActionType.VERSION.getValue());
-			rows = this.parMapper.insertSelective(par);
-			if (rows <= 0) {
-				throw new TaskException("插入项目进程记录失败");
-			}
-		}
+		// 版本开始
+		this.projectVersionService.start(task.getVersionId());
 		ProjectPhase phase = this.phaseMapper.selectByPrimaryKey(task.getPhaseId());
 		if (phase.getActualStartDate() == null) {
 			phase.setActualStartDate(now);

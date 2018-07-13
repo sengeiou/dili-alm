@@ -24,13 +24,18 @@ import com.dili.alm.cache.AlmCache;
 import com.dili.alm.component.MailManager;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.FilesMapper;
+import com.dili.alm.dao.ProjectActionRecordMapper;
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.dao.ProjectPhaseMapper;
 import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.dao.TeamMapper;
+import com.dili.alm.domain.ActionDateType;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.ProjectAction;
+import com.dili.alm.domain.ProjectActionRecord;
+import com.dili.alm.domain.ProjectActionType;
 import com.dili.alm.domain.ProjectEntity;
 import com.dili.alm.domain.ProjectPhase;
 import com.dili.alm.domain.ProjectState;
@@ -44,6 +49,7 @@ import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectDto;
 import com.dili.alm.domain.dto.UploadProjectFileDto;
 import com.dili.alm.exceptions.ProjectException;
+import com.dili.alm.exceptions.TaskException;
 import com.dili.alm.provider.ProjectProvider;
 import com.dili.alm.rpc.DataAuthRpc;
 import com.dili.alm.rpc.UserRpc;
@@ -88,6 +94,8 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	private MailManager mailManager;
 	@Autowired
 	private UserRpc userRPC;
+	@Autowired
+	private ProjectActionRecordMapper parMapper;
 
 	public ProjectMapper getActualDao() {
 		return (ProjectMapper) getDao();
@@ -546,5 +554,43 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 			list.add(map);
 		}
 		return list;
+	}
+
+	@Override
+	public void start(Long projectId) throws ProjectException {
+		Project project = this.getActualDao().selectByPrimaryKey(projectId);
+		if (project == null) {
+			throw new ProjectException("项目不存在");
+		}
+
+		if (project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
+			return;
+		}
+
+		// 更新项目状态
+		if (project.getProjectState().equals(ProjectState.NOT_START.getValue())) {
+			Date now = new Date();
+
+			project.setActualStartDate(now);
+			project.setProjectState(ProjectState.IN_PROGRESS.getValue());
+			int rows = this.getActualDao().updateByPrimaryKey(project);
+			if (rows <= 0) {
+				throw new ProjectException("更新项目失败");
+			}
+
+			// 插入项目进程记录项目开始
+			ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
+			par.setActionCode(ProjectAction.PROJECT_START.getCode());
+			par.setActionDateType(ActionDateType.POINT.getValue());
+			par.setActionDate(now);
+			par.setProjectId(project.getId());
+			par.setActionType(ProjectActionType.PROJECT.getValue());
+			rows = this.parMapper.insertSelective(par);
+			if (rows <= 0) {
+				throw new ProjectException("插入项目进程记录失败");
+			}
+			return;
+		}
+		throw new ProjectException("项目当前状态不能开始");
 	}
 }

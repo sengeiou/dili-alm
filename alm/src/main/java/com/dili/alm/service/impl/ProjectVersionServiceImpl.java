@@ -350,4 +350,50 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		}
 	}
 
+	@Override
+	public void start(Long id) throws ProjectVersionException {
+		ProjectVersion version = this.getActualDao().selectByPrimaryKey(id);
+		if (version == null) {
+			throw new ProjectVersionException("版本不存在");
+		}
+		if (version.getVersionState().equals(ProjectVersionState.IN_PROGRESS.getValue())) {
+			return;
+		}
+		if (version.getVersionState().equals(ProjectVersionState.NOT_START.getValue())) {
+			version.setVersionState(ProjectVersionState.IN_PROGRESS.getValue());
+			Date now = new Date();
+			version.setActualStartDate(now);
+			int rows = this.getActualDao().updateByPrimaryKeySelective(version);
+			if (rows <= 0) {
+				throw new ProjectVersionException("更新版本状态失败");
+			}
+			// 插入项目版本进程-版本规划
+			ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
+			par.setActionCode(ProjectAction.VERSION_PLAN.getCode());
+			par.setActionDateType(ActionDateType.PERIOD.getValue());
+			par.setActionStartDate(version.getPlannedStartDate());
+			par.setActionEndDate(version.getPlannedEndDate());
+			par.setActionType(ProjectActionType.VERSION.getValue());
+			par.setVersionId(id);
+			rows = this.parMapper.insertSelective(par);
+			if (rows <= 0) {
+				throw new ProjectVersionException("插入项目版本进程记录失败");
+			}
+
+			// 插入项目版本进程-版本开始
+			par = DTOUtils.newDTO(ProjectActionRecord.class);
+			par.setActionCode(ProjectAction.VERSION_START.getCode());
+			par.setActionDateType(ActionDateType.POINT.getValue());
+			par.setActionDate(now);
+			par.setActionType(ProjectActionType.VERSION.getValue());
+			par.setVersionId(id);
+			rows = this.parMapper.insertSelective(par);
+			if (rows <= 0) {
+				throw new ProjectVersionException("插入项目版本进程记录失败");
+			}
+			return;
+		}
+		throw new ProjectVersionException("当前状态不能开始");
+	}
+
 }

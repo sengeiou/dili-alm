@@ -64,4 +64,12 @@ public interface ProjectService extends BaseService<Project, Long> {
 
 	List<Map<String, String>> projectStateList();
 
+	/**
+	 * 项目开始
+	 * 
+	 * @param projectId
+	 * @throws ProjectException
+	 */
+	void start(Long projectId) throws ProjectException;
+
 }

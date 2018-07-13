@@ -10,6 +10,8 @@ import com.dili.alm.domain.Task;
 import com.dili.alm.domain.TaskDetails;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
+import com.dili.alm.exceptions.ProjectException;
+import com.dili.alm.exceptions.ProjectVersionException;
 import com.dili.alm.exceptions.TaskException;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.EasyuiPageOutput;
@@ -24,7 +26,7 @@ public interface TaskService extends BaseService<Task, Long> {
 
 	void updateTaskDetail(TaskDetails taskDetails, Task task) throws TaskException;
 
-	void startTask(Long taskId, Long modifierId) throws TaskException;
+	void startTask(Long taskId, Long modifierId) throws TaskException, ProjectVersionException, ProjectException;
 
 	void notComplateTask(ScheduleMessage msg);
 
