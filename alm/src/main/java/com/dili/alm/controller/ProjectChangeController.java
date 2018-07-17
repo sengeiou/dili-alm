@@ -156,7 +156,6 @@ public class ProjectChangeController {
 			@ApiImplicitParam(name = "ProjectChange", paramType = "form", value = "ProjectChange的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> update(ProjectChange projectChange) {
-		projectChange.setSubmitDate(new Date());
 		projectChangeService.updateSelective(projectChange);
 		try {
 			projectChangeService.approve(projectChange);

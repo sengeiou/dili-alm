@@ -45,6 +45,7 @@ import com.dili.alm.dao.ProjectOnlineSubsystemMapper;
 import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.TeamMapper;
 import com.dili.alm.dao.VersionMarketOnlineRecordMapper;
+import com.dili.alm.domain.ActionDateType;
 import com.dili.alm.domain.ApplyType;
 import com.dili.alm.domain.Department;
 import com.dili.alm.domain.EmailAddress;
@@ -832,6 +833,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
 			par.setActionCode(ProjectAction.VERSION_ONLINE_APPLY.getCode());
 			par.setActionDate(apply.getSubmitTime());
+			par.setActionDateType(ActionDateType.POINT.getValue());
 			par.setActionType(ProjectActionType.VERSION.getValue());
 			par.setVersionId(apply.getVersionId());
 			int rows = this.parMapper.insertSelective(par);
@@ -842,6 +844,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			par = DTOUtils.newDTO(ProjectActionRecord.class);
 			par.setActionCode(ProjectAction.VERSION_ONLINE.getCode());
 			par.setActionDate(new Date());
+			par.setActionDateType(ActionDateType.POINT.getValue());
 			par.setActionType(ProjectActionType.VERSION.getValue());
 			par.setVersionId(apply.getVersionId());
 			rows = this.parMapper.insertSelective(par);

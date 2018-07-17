@@ -114,7 +114,7 @@ public class ProjectActionRecordServiceImpl extends BaseServiceImpl<ProjectActio
 			} else {
 				valueDto.setFrom(r.getActionDate().getTime());
 				valueDto.setTo(r.getActionDate().getTime());
-				dto.setDesc(dtf.format(r.getActionDate()));
+				dto.setDesc(df.format(r.getActionDate()));
 				valueDto.setLabel(dtf.format(r.getActionDate()));
 			}
 			// 获取列表展示配置
@@ -251,7 +251,7 @@ public class ProjectActionRecordServiceImpl extends BaseServiceImpl<ProjectActio
 		} else if (record.getActionCode().equals(ProjectAction.VERSION_PLAN.getCode())) {
 			dto.setName("版本" + this.versionProvider.getDisplayText(record.getVersionId(), null, null) + "规划");
 		} else if (record.getActionCode().equals(ProjectAction.VERSION_RESUME.getCode())) {
-			dto.setName("版本" + this.versionProvider.getDisplayText(record.getVersionId(), null, null) + "暂停");
+			dto.setName("版本" + this.versionProvider.getDisplayText(record.getVersionId(), null, null) + "重启");
 		} else if (record.getActionCode().equals(ProjectAction.VERSION_START.getCode())) {
 			dto.setName("版本" + this.versionProvider.getDisplayText(record.getVersionId(), null, null) + "开始");
 		} else if (record.getActionCode().equals(ProjectAction.TASK_PLAN.getCode())) {

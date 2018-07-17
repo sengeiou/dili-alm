@@ -326,19 +326,8 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 			throw new ProjectVersionException("更新版本状态失败");
 		}
 
-		// 更新版本规划
-		ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
-		par.setVersionId(version.getId());
-		par.setActionCode(ProjectAction.VERSION_PLAN.getCode());
-		ProjectActionRecord target = this.parMapper.selectOne(par);
-		target.setActualEndDate(now);
-		rows = this.parMapper.updateByPrimaryKeySelective(target);
-		if (rows <= 0) {
-			throw new ProjectVersionException("更新项目进程记录失败");
-		}
-
 		// 插入项目进程记录
-		par = DTOUtils.newDTO(ProjectActionRecord.class);
+		ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
 		par.setActionCode(ProjectAction.VERSION_COMPLETE.getCode());
 		par.setActionDate(now);
 		par.setActionDateType(ActionDateType.POINT.getValue());

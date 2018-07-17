@@ -213,7 +213,6 @@ function openInsert() {
 				buttons : [{
 							text : '保存',
 							handler : function() {
-								var data = $("#editForm").serializeArray();
 								$('#editForm').form('submit', {
 											url : '${contextPath!}/workOrder/saveOrUpdate',
 											onSubmit : function() {

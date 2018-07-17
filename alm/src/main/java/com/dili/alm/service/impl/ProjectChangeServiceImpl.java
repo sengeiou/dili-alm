@@ -62,6 +62,8 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 	private String projectChangeMailTemplate;
 	@Autowired
 	private ProjectTypeProvider projectTypeProvider;
+	@Autowired
+	private ProjectChangeMapper changeMapper;
 
 	public ProjectChangeMapper getActualDao() {
 		return (ProjectChangeMapper) getDao();
@@ -87,11 +89,17 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 		}
 	}
 
-	@Transactional(rollbackFor = ApplicationException.class)
 	@Override
 	public void approve(ProjectChange change) throws ProjectApplyException {
 		if (change.getStatus() == null) {
 			return;
+		}
+
+		Date now = new Date();
+		change.setSubmitDate(now);
+		int rows = this.changeMapper.updateByPrimaryKeySelective(change);
+		if (rows <= 0) {
+			throw new ProjectApplyException("更新失败");
 		}
 
 		/*
@@ -102,7 +110,7 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 			change = get(change.getId());
 			as.setId(null);
 			as.setName(change.getProjectName());
-			as.setCreated(new Date());
+			as.setCreated(now);
 			as.setProjectApplyId(change.getId());
 			as.setStatus(AlmConstants.ApplyState.APPROVE.getCode());
 			as.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());

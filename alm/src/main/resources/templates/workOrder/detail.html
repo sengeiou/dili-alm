@@ -90,7 +90,7 @@
 					<%}%>
 					<tr>
 						<td class="table-title">工作时间</td>
-						<td colspan="5" style="padding: 0px 10px; text-align: left;">${model.startDate!}至${model.endDate!}</span></td>
+						<td colspan="5" style="padding: 0px 10px; text-align: left;"><%if(model.startDate!'' != ''){%>${model.startDate!}至${model.endDate!}<%}%></td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="6">任务工时</td>

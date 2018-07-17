@@ -139,6 +139,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	private String mailFrom;
 	@Autowired
 	private ProjectActionRecordMapper parMapper;
+	@Autowired
 	private ProjectTypeProvider projectTypeProvider;
 
 	public ApproveServiceImpl() {
@@ -294,7 +295,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		par.setActionDate(change.getSubmitDate());
 		par.setActionDateType(ActionDateType.POINT.getValue());
 		par.setActionType(ProjectActionType.VERSION.getValue());
-		par.setProjectId(change.getVersionId());
+		par.setVersionId(change.getVersionId());
 		int rows = this.parMapper.insertSelective(par);
 		if (rows <= 0) {
 			throw new ApproveException("插入项目进程记录失败");
@@ -305,7 +306,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		par.setActionDate(new Date());
 		par.setActionDateType(ActionDateType.POINT.getValue());
 		par.setActionType(ProjectActionType.VERSION.getValue());
-		par.setProjectId(change.getVersionId());
+		par.setVersionId(change.getVersionId());
 		rows = this.parMapper.insertSelective(par);
 		if (rows <= 0) {
 			throw new ApproveException("插入项目进程记录失败");
