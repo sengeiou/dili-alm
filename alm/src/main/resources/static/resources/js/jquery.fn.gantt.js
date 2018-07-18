@@ -333,7 +333,7 @@
                             (entry.desc ? '' : (' fn-wide '+dataId)) +
                             '" id="rowheader' + i +
                             '" data-offset="' + i % settings.itemsPerPage * tools.getCellSize() + '">' +
-                            '<span class="fn-label' +
+                            '<span title="' + (entry.name || '') + '" class="fn-label' +
                             (entry.cssClass ? ' ' + entry.cssClass : '') + '">' +
                             (entry.name || '') +
                             '</span>' +
