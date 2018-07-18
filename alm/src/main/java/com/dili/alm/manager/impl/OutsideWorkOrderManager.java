@@ -3,6 +3,7 @@ package com.dili.alm.manager.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +66,19 @@ public class OutsideWorkOrderManager extends BaseWorkOrderManager {
 			return null;
 		}
 		if (Boolean.valueOf(ddValue.getValue())) {
-			return super.getReceivers();
+			dd = this.ddService.findByCode(AlmConstants.OUTSIDE_WORK_ORDER_RECEIVERS_CODE);
+			if (dd == null || CollectionUtils.isEmpty(dd.getValues())) {
+				return null;
+			}
+			List<User> target = new ArrayList<>(dd.getValues().size());
+			dd.getValues().forEach(v -> {
+				Map.Entry<Long, User> entry = AlmCache.getInstance().getUserMap().entrySet().stream()
+						.filter(e -> e.getValue().getUserName().equals(v.getValue())).findFirst().orElse(null);
+				if (entry != null) {
+					target.add(entry.getValue());
+				}
+			});
+			return target;
 		}
 		return new ArrayList<>(AlmCache.getInstance().getUserMap().values());
 	}

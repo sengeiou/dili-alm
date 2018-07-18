@@ -52,6 +52,7 @@ import com.dili.alm.service.WorkOrderService;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IMybatisForceParams;
 import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.ss.util.DateUtils;
 import com.dili.ss.util.POJOUtils;
 import com.google.common.collect.Sets;
 
@@ -187,7 +188,7 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 
 	@Override
 	public List<User> getReceivers() {
-		DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.WORK_ORDER_RECEIVERS_CODE);
+		DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.OUTSIDE_WORK_ORDER_RECEIVERS_CODE);
 		if (dd == null || CollectionUtils.isEmpty(dd.getValues())) {
 			return null;
 		}
@@ -209,6 +210,13 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 		if (!workOrder.getWorkOrderState().equals(WorkOrderState.SOLVING.getValue())) {
 			throw new WorkOrderException("当前状态不能执行分配操作");
 		}
+
+		// 判断工时
+		int days = DateUtils.differentDays(startDate, endDate) + 1;
+		if (taskHours > days * 8) {
+			throw new WorkOrderException("常规工时超过最大值，每日常规工时最多为8小时！");
+		}
+
 		// 生成操作记录
 		WorkOrderOperationRecord woor = DTOUtils.newDTO(WorkOrderOperationRecord.class);
 		woor.setOperationType(WorkOrderOperationType.EXECUTOR.getValue());

@@ -3,6 +3,7 @@ package com.dili.alm.manager.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import com.dili.alm.domain.WorkOrderSource;
 import com.dili.alm.domain.WorkOrderState;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
+import com.dili.alm.exceptions.HardwareResourceApplyException;
 import com.dili.alm.exceptions.WorkOrderException;
 import com.dili.alm.service.DataDictionaryService;
 import com.google.common.collect.Sets;
@@ -75,6 +77,27 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 			return super.getReceivers();
 		}
 		return new ArrayList<>(AlmCache.getInstance().getUserMap().values());
+	}
+
+	@Override
+	public void solve(WorkOrder workOrder, Date startDate, Date endDate, Integer taskHours, Integer overtimeHours,
+			String workContent) throws WorkOrderException {
+		super.solve(workOrder, startDate, endDate, taskHours, overtimeHours, workContent);
+		// 邮件通知部门经理
+		// 查询数据字典配置
+		DataDictionaryDto ddDto = this.ddService.findByCode(AlmConstants.DEPARTMENT_MANAGER_ROLE_CONFIG_CODE);
+		if (ddDto == null || CollectionUtils.isEmpty(ddDto.getValues())) {
+			throw new WorkOrderException("请先配置部门经理数据字典");
+		}
+		Map<Long, User> userMap = AlmCache.getInstance().getUserMap();
+		Long applicantDeptId = userMap.get(workOrder.getApplicantId()).getDepartmentId();
+		User manager = userMap.values().stream()
+				.filter(u -> u.getDepartmentId().equals(applicantDeptId) && ddDto.getValues().stream()
+						.filter(v -> v.getValue().equals(u.getUserName())).findFirst().orElse(null) != null)
+				.findFirst().orElse(null);
+		if (manager != null) {
+			this.sendMail(workOrder, "工单执行", Sets.newHashSet(manager.getEmail()));
+		}
 	}
 
 	@Override

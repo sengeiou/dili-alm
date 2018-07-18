@@ -31,12 +31,12 @@ function loadData() {
 					if (data.code == "200") {
 						$('#gantt').gantt({
 									source : data.data,
-									itemsPerPage : data.data.length,
+									itemsPerPage : 15,
 									months : ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
 									dow : ["S", "M", "T", "W", "T", "F", "S"],
 									navigate : 'scroll',
 									waitText : '数据加载中......',
-									scale : "weeks",
+									scale : "days",
 									minScale : "days",
 									maxScale : "months",
 									onRender : function() {
