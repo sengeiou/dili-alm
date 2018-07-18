@@ -2,7 +2,7 @@ package com.dili.alm.domain;
 
 public enum WorkOrderOperationType {
 
-	ACCEPTOR(1, "受理人"), EXECUTOR(2, "实施人"), CONFIRM(3, "确认人");
+	ACCEPTOR(1, "受理人"), EXECUTOR(2, "实施人"), CONFIRM(3, "确认人"), SYSTEM_CLOSE(-1, "系统关闭");
 
 	private Integer value;
 	private String name;

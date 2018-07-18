@@ -64,7 +64,9 @@ public class MailManager {
 		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 		helper.setFrom(from);
 		helper.setTo(to);
-		helper.setCc(cc);
+		if (cc != null) {
+			helper.setCc(cc);
+		}
 		helper.setSubject(subject);
 		helper.setText(content, html);
 		if (CollectionUtils.isNotEmpty(attachments)) {

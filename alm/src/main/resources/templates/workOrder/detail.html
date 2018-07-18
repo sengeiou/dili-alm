@@ -57,10 +57,7 @@
 						<td class="table-title">申请人</td>
 						<td class="table-combo">${model.applicantId!}</td>
 					</tr>
-					<tr>
-						<td class="table-title">创建时间</td>
-						<td class="table-combo">${model.creationTime!}</td>
-					</tr>
+
 					<tr>
 						<td class="table-title" colspan="6">描述</td>
 					</tr>
@@ -90,7 +87,8 @@
 					<%}%>
 					<tr>
 						<td class="table-title">工作时间</td>
-						<td colspan="5" style="padding: 0px 10px; text-align: left;"><%if(model.startDate!'' != ''){%>${model.startDate!}至${model.endDate!}<%}%></td>
+						<td colspan="5" style="padding: 0px 10px; text-align: left;"><%if(model.startDate!'' !=
+							''){%>${model.startDate!}至${model.endDate!}<%}%></td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="6">任务工时</td>
@@ -100,6 +98,12 @@
 						<td class="table-combo" colspan="2" style="padding: 0">${model.taskHours!}</td>
 						<td class="table-title">加班工时</td>
 						<td class="table-combo" colspan="2" style="padding: 0">${model.overtimeHours!}</td>
+					</tr>
+				</table>
+				<table class="table-box" width="100%">
+					<tr>
+						<td class="table-title" colspan="2">创建时间</td>
+						<td class="table-combo" colspan="4">${model.creationTime!}</td>
 					</tr>
 				</table>
 			</div>

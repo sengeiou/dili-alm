@@ -296,9 +296,9 @@
             var _url = null;
             //没有id就新增
             if (_formData.id == null || _formData.id == "") {
-                _url = "${contextPath}/scheduleJob/insert";
+                _url = "${contextPath}/scheduleJob/insert.action";
             } else {//有id就修改
-                _url = "${contextPath}/scheduleJob/update";
+                _url = "${contextPath}/scheduleJob/update.action";
             }
             $.ajax({
                 type: "POST",
@@ -332,7 +332,7 @@
                 if (r) {
                     $.ajax({
                         type: "POST",
-                        url: "${contextPath}/scheduleJob/delete",
+                        url: "${contextPath}/scheduleJob/delete.action",
                         data: {id: selected.id},
                         processData: true,
                         dataType: "json",
@@ -356,7 +356,7 @@
         function queryGrid() {
             var opts = $("#grid").datagrid("options");
             if (null == opts.url || "" == opts.url) {
-                opts.url = "${contextPath}/scheduleJob/listPage";
+                opts.url = "${contextPath}/scheduleJob/listPage.action";
             }
             if (!$('#form').form("validate")) {
                 return;

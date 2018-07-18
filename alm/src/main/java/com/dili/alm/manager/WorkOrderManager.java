@@ -24,11 +24,13 @@ public interface WorkOrderManager {
 
 	void close(WorkOrder workOrder, Long operatorId, String description) throws WorkOrderException;
 
-	void solve(WorkOrder workOrder, Date startDate, Date endDate, Integer taskHours, Integer overtimeHours, String workContent)
-			throws WorkOrderException;
+	void solve(WorkOrder workOrder, Date startDate, Date endDate, Integer taskHours, Integer overtimeHours,
+			String workContent) throws WorkOrderException;
 
 	WorkOrder getOperationRecordsViewModel(WorkOrder workOrder);
 
 	List<User> getReceivers();
+
+	void systemClose(WorkOrder workOrder) throws WorkOrderException;
 
 }

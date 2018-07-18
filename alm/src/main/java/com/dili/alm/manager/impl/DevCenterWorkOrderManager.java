@@ -46,7 +46,9 @@ public class DevCenterWorkOrderManager extends BaseWorkOrderManager {
 		// 外部工单
 		workOrder.setWorkOrderState(WorkOrderState.OPENED.getValue());
 		User mailReceiver = AlmCache.getInstance().getUserMap().get(workOrder.getAcceptorId());
-		workOrder.setSubmitTime(new Date());
+		Date now = new Date();
+		workOrder.setSubmitTime(now);
+		workOrder.setModifyTime(now);
 		int rows = this.workOrderMapper.updateByPrimaryKeySelective(workOrder);
 		if (rows <= 0) {
 			throw new WorkOrderException("提交工单失败");

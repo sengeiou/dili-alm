@@ -78,19 +78,20 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 		workOrderManager.close(workOrder, operatorId, description);
 	}
 
-	public void checkTimeToClose(ScheduleMessage msg) {
+	public void checkTimeToClose(ScheduleMessage msg) throws WorkOrderException {
 		WorkOrder query = DTOUtils.newDTO(WorkOrder.class);
 		query.setWorkOrderState(WorkOrderState.SOLVED.getValue());
-		long overTime = System.currentTimeMillis() + AlmConstants.CLOSE_OVER_TIME;
 		List<WorkOrder> workOrders = this.getActualDao().select(query);
 		if (CollectionUtils.isEmpty(workOrders)) {
 			return;
 		}
-		workOrders.forEach(w -> {
-			if (w.getModifyTime().getTime() <= overTime) {
-				this.getActualDao().updateByPrimaryKeySelective(w);
+		long overTime = System.currentTimeMillis();
+		for (WorkOrder workOrder : workOrders) {
+			if (overTime - workOrder.getModifyTime().getTime() >= AlmConstants.CLOSE_OVER_TIME) {
+				WorkOrderManager workOrderManager = this.workOrderManagerMap.get(workOrder.getWorkOrderSource());
+				workOrderManager.systemClose(workOrder);
 			}
-		});
+		}
 	}
 
 	public WorkOrderMapper getActualDao() {

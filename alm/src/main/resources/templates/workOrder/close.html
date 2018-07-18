@@ -58,10 +58,6 @@
 						<td class="table-combo">${model.applicantId!}</td>
 					</tr>
 					<tr>
-						<td class="table-title">创建时间</td>
-						<td class="table-combo">${model.creationTime!}</td>
-					</tr>
-					<tr>
 						<td class="table-title" colspan="6">描述</td>
 					</tr>
 					<tr>
@@ -100,6 +96,12 @@
 					<tr>
 						<td class="table-title" colspan="2">描述</td>
 						<td colspan="4"><input class="easyui-textbox" name="description" data-options="validType:['length[0,50]']" style="width: 92%"></td>
+					</tr>
+				</table>
+				<table class="table-box" width="100%">
+					<tr>
+						<td class="table-title" colspan="2">创建时间</td>
+						<td class="table-combo" colspan="4">${model.creationTime!}</td>
 					</tr>
 				</table>
 			</div>

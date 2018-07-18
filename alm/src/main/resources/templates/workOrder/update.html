@@ -96,15 +96,14 @@
 					<tr>
 						<td class="table-title">申请人</td>
 						<td class="table-combo">${model.applicantId!}</td>
-						<td class="table-title">创建时间</td>
-						<td class="table-combo">${model.creationTime!}</td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="6">描述</td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="6"><input class="easyui-textbox" name="description"
-							data-options="multiline:true,validType:['length[0,500]'],required:true" style="width: 92%; height: 60px" value="${model.description!}"></td>
+							data-options="multiline:true,validType:['length[0,500]'],required:true" style="width: 92%; height: 60px"
+							value="${model.description!}"></td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="2">附件</td>
@@ -112,7 +111,12 @@
 							value="${model.attachmentFileId!}" data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 87%"><input type="hidden"
 							name="attachmentFileId" value="${model.$_attachmentFileId!}"></td>
 					</tr>
-
+				</table>
+				<table class="table-box" width="100%">
+					<tr>
+						<td class="table-title" colspan="2">创建时间</td>
+						<td class="table-combo" colspan="4">${model.creationTime!}</td>
+					</tr>
 				</table>
 			</div>
 		</div>

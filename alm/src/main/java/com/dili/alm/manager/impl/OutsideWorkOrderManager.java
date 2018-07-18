@@ -34,7 +34,9 @@ public class OutsideWorkOrderManager extends BaseWorkOrderManager {
 	public void submit(WorkOrder workOrder) throws WorkOrderException {
 		// 外部工单
 		workOrder.setWorkOrderState(WorkOrderState.OPENED.getValue());
-		workOrder.setSubmitTime(new Date());
+		Date now = new Date();
+		workOrder.setSubmitTime(now);
+		workOrder.setModifyTime(now);
 		int rows = this.workOrderMapper.updateByPrimaryKeySelective(workOrder);
 		if (rows <= 0) {
 			throw new WorkOrderException("提交工单失败");

@@ -144,6 +144,7 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 			workOrder.setExecutorId(executorId);
 			mailReceiver = AlmCache.getInstance().getUserMap().get(executorId);
 		}
+		workOrder.setModifyTime(new Date());
 		rows = this.updateExactSimple(workOrder);
 		if (rows <= 0) {
 			throw new WorkOrderException("更新工单状态失败");
@@ -180,6 +181,7 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 		// 更新工单
 		workOrder.setCloseTime(new Date());
 		workOrder.setWorkOrderState(WorkOrderState.CLOSED.getValue());
+		workOrder.setModifyTime(new Date());
 		rows = this.workOrderMapper.updateByPrimaryKeySelective(workOrder);
 		if (rows <= 0) {
 			throw new WorkOrderException("更新工单状态失败");
@@ -235,6 +237,7 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 		workOrder.setTaskHours(taskHours);
 		workOrder.setOvertimeHours(overtimeHours);
 		workOrder.setWorkOrderState(WorkOrderState.SOLVED.getValue());
+		workOrder.setModifyTime(new Date());
 		rows = this.workOrderMapper.updateByPrimaryKeySelective(workOrder);
 		if (rows <= 0) {
 			throw new WorkOrderException("更新工单状态失败");
@@ -352,11 +355,11 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 		List<WorkOrderOperationRecord> opRecords = this.woorMapper.select(woorQuery);
 		try {
 			workOrder.aset("opRecords", parseOperationRecordViewModel(opRecords));
+			return workOrder;
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			return null;
 		}
-		return null;
 	}
 
 	private List<Map> parseOperationRecordViewModel(List<WorkOrderOperationRecord> opRecords) throws Exception {
@@ -373,6 +376,30 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 		metadata.put("operationResult", "operationResultProvider");
 
 		return ValueProviderUtils.buildDataByProvider(metadata, opRecords);
+	}
+
+	@Override
+	public void systemClose(WorkOrder workOrder) throws WorkOrderException {
+		// 生成操作记录
+		WorkOrderOperationRecord woor = DTOUtils.newDTO(WorkOrderOperationRecord.class);
+		woor.setOperatorId(workOrder.getApplicantId());
+		woor.setOperationName(WorkOrderOperationType.SYSTEM_CLOSE.getName());
+		woor.setOperationType(WorkOrderOperationType.SYSTEM_CLOSE.getValue());
+		woor.setOperationResult(OperationResult.SUCCESS.getValue());
+		woor.setWorkOrderId(workOrder.getId());
+		woor.setDescription("系统关闭");
+		int rows = this.woorMapper.insertSelective(woor);
+		if (rows <= 0) {
+			throw new WorkOrderException("插入操作记录失败");
+		}
+		// 更新工单
+		workOrder.setCloseTime(new Date());
+		workOrder.setWorkOrderState(WorkOrderState.CLOSED.getValue());
+		workOrder.setModifyTime(new Date());
+		rows = this.workOrderMapper.updateByPrimaryKeySelective(workOrder);
+		if (rows <= 0) {
+			throw new WorkOrderException("更新工单状态失败");
+		}
 	}
 
 }
