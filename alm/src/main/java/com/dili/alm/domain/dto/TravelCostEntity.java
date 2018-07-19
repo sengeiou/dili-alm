@@ -11,8 +11,8 @@ public class TravelCostEntity extends BaseDomain implements TravelCost {
 	private static final long serialVersionUID = 4798850270023738889L;
 	private Long applyId;
 	private Integer travelDayAmount;
-	private Long setOutPlace;
-	private Long destinationPlace;
+	private String setOutPlace;
+	private String destinationPlace;
 	private Long totalAmount;
 
 	@Override
@@ -36,22 +36,22 @@ public class TravelCostEntity extends BaseDomain implements TravelCost {
 	}
 
 	@Override
-	public Long getSetOutPlace() {
+	public String getSetOutPlace() {
 		return setOutPlace;
 	}
 
 	@Override
-	public void setSetOutPlace(Long setOutPlace) {
+	public void setSetOutPlace(String setOutPlace) {
 		this.setOutPlace = setOutPlace;
 	}
 
 	@Override
-	public Long getDestinationPlace() {
+	public String getDestinationPlace() {
 		return destinationPlace;
 	}
 
 	@Override
-	public void setDestinationPlace(Long destinationPlace) {
+	public void setDestinationPlace(String destinationPlace) {
 		this.destinationPlace = destinationPlace;
 	}
 

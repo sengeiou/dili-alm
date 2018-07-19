@@ -34,8 +34,7 @@
 		<%for(cost in apply.travelCost){%>
 		<tr>
 			<td>${cost.travelDayAmount!}</td>
-			<td>${cost.setOutPlaceText!}</td>
-			<td>${cost.destinationPlaceText!}</td> <%for(item in costItems){%> <%for(detail in cost.travelCostDetail){%> <%if(item.key ==
+			<td>${cost.destinationPlace!}</td> <%for(item in costItems){%> <%for(detail in cost.travelCostDetail){%> <%if(item.key ==
 			detail.costName){%>
 			<td>${detail.costAmount!/100}</td> <%}%> <%}%> <%}%>
 			<td>${cost.totalAmount!/100}</td>

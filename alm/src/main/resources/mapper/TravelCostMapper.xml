@@ -8,8 +8,8 @@
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="apply_id" jdbcType="BIGINT" property="applyId" />
     <result column="travel_day_amount" jdbcType="INTEGER" property="travelDayAmount" />
-    <result column="set_out_place" jdbcType="BIGINT" property="setOutPlace" />
-    <result column="destination_place" jdbcType="BIGINT" property="destinationPlace" />
+    <result column="set_out_place" jdbcType="VARCHAR" property="setOutPlace" />
+    <result column="destination_place" jdbcType="VARCHAR" property="destinationPlace" />
     <result column="total_amount" jdbcType="BIGINT" property="totalAmount" />
   </resultMap>
   <sql id="Base_Column_List">
@@ -40,10 +40,10 @@
         travel_day_amount = #{travelDayAmount,jdbcType=INTEGER},
       </if>
       <if test="setOutPlace != null">
-        set_out_place = #{setOutPlace,jdbcType=BIGINT},
+        set_out_place = #{setOutPlace,jdbcType=VARCHAR},
       </if>
       <if test="destinationPlace != null">
-        destination_place = #{destinationPlace,jdbcType=BIGINT},
+        destination_place = #{destinationPlace,jdbcType=VARCHAR},
       </if>
       <if test="totalAmount != null">
         total_amount = #{totalAmount,jdbcType=BIGINT},

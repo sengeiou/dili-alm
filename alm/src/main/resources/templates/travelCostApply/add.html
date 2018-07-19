@@ -13,14 +13,19 @@
 					projects){%>
 					<option value="${item.id!}">${item.name!}</option> <%}%>
 			</select></td>
-			<td style="padding: 5px;"><input class="easyui-textbox" style="width: 300px" value="${user.realName!}"
-				data-options="label:'申请人:',readonly:true" /></td>
+			<td style="padding: 5px;"><input class="easyui-combobox" style="width: 300px"
+				data-options="label:'申请人:',
+				required:true,
+				url:'${contextPath!}/travelCostApply/users.json',
+				textField:'realName',
+				valueField:'id',
+				onSelect:updateDepartment" /></td>
 		</tr>
 		</tr>
 		<tr>
-			<td style="padding: 5px;"><input class="easyui-textbox" value="${department.name!}" style="width: 300px"
-				data-options="label:'申请部门:',readonly:true,required:true" /></td>
-			<td style="padding: 5px;"><input class="easyui-textbox" value="${rootDepartment.name!}" style="width: 300px"
+			<td style="padding: 5px;"><input class="easyui-textbox" id="department" style="width: 300px"
+				data-options="label:'申请部门:',readonly:true,required:true,onChange:updateCenter" /></td>
+			<td style="padding: 5px;"><input class="easyui-textbox" id="center" style="width: 300px"
 				data-options="label:'所属中心:',readonly:true,required:true" /></td>
 		</tr>
 	</table>
@@ -40,36 +45,22 @@
 								}">出差天数</th>
 				<th
 					data-options="field:'setOutPlace', width:90,   align:'center', resizable:'true', fixed:'false',
-								formatter:function(index,row,value){
-									return row.setOutPlaceText;
-								},
 								editor : {
 									type : 'textbox',
 									options : {
 										required : true,
-										missingMessage : '请选择出发地',
-										buttonText:'选择',
-										editable:false,
-										onClickButton:function(){
-											selectArea('setOutPlace');
-										}
+										missingMessage : '请填写出发地',
+										validType:['length[1,20]']
 									}
 								}">出发地</th>
 				<th
 					data-options="field:'destinationPlace', width:100,   align:'center', resizable:'true', fixed:'false',
-								formatter:function(index,row,value){
-									return row.destinationPlaceText;
-								},
 								editor : {
 									type : 'textbox',
 									options : {
 										required : true,
-										missingMessage : '请选择出发地',
-										buttonText:'选择',
-										editable:false,
-										onClickButton:function(){
-											selectArea('destinationPlace');
-										}
+										missingMessage : '请填写出发地',
+										validType:['length[1,20]']
 									}
 								}">到达地</th>
 				<%for(item in costItems){%>

@@ -93,9 +93,11 @@ public interface StatisticalService {
 	 * 项目工时查询 ，echar数据显示
 	 * 
 	 * @param projectIds
+	 * @param startDate TODO
+	 * @param endDate TODO
 	 * @return
 	 */
-	List<SelectTaskHoursByUserProjectDto> selectTotalTaskAndOverHoursForEchars(List<Long> projectIds);
+	List<SelectTaskHoursByUserProjectDto> selectTotalTaskAndOverHoursForEchars(List<Long> projectIds, Date startDate, Date endDate);
 
 	/**
 	 * 年度报表，echar显示数据

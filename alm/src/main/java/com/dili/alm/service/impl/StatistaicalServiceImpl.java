@@ -585,9 +585,18 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	 * 项目工时显示图表
 	 */
 	@Override
-	public List<SelectTaskHoursByUserProjectDto> selectTotalTaskAndOverHoursForEchars(List<Long> projectIds) {
+	public List<SelectTaskHoursByUserProjectDto> selectTotalTaskAndOverHoursForEchars(List<Long> projectIds,
+			Date startDate, Date endDate) {
+		if (startDate == null) {
+			Calendar calendar = Calendar.getInstance();
+			calendar.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) - 7);
+			startDate = calendar.getTime();
+		}
+		if (endDate == null) {// 没有默认为至今
+			endDate = new Date();
+		}
 		List<SelectTaskHoursByUserProjectDto> listProjectTaskOverHours = taskMapper.selectUsersProjectHours(null,
-				projectIds, null, null);
+				projectIds, startDate, endDate);
 
 		return listProjectTaskOverHours;
 	}

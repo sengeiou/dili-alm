@@ -3,6 +3,7 @@ package com.dili.alm.controller;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ import com.dili.alm.domain.Department;
 import com.dili.alm.domain.TravelCostApply;
 import com.dili.alm.domain.TravelCostApplyResult;
 import com.dili.alm.domain.TravelCostApplyState;
+import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.TravelCostApplyQueryDto;
 import com.dili.alm.domain.dto.TravelCostApplyUpdateDto;
 import com.dili.alm.exceptions.TravelCostApplyException;
@@ -44,8 +46,37 @@ public class TravelCostApplyController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TravelCostApplyController.class);
 	@Autowired
 	TravelCostApplyService travelCostApplyService;
-	@Autowired
-	private DataDictionaryService ddService;
+
+	@ResponseBody
+	@RequestMapping("/users.json")
+	public List<User> getUsers() {
+		return AlmCache.getInstance().getUserMap().values().stream().filter(u -> u.getId() != 1)
+				.collect(Collectors.toList());
+	}
+
+	@ResponseBody
+	@RequestMapping("/getDepartmentByUserId.json")
+	public BaseOutput<Department> getDepartmentByUserId(@RequestParam Long userId) {
+		return BaseOutput.success().setData(AlmCache.getInstance().getDepMap().values().stream()
+				.filter(d -> d.getId().equals(AlmCache.getInstance().getUserMap().get(userId).getDepartmentId()))
+				.findFirst().orElse(null));
+	}
+
+	@ResponseBody
+	@RequestMapping("/getRootDepartment.json")
+	public BaseOutput<Department> getRootDepartment(@RequestParam Long deptId) {
+		Map.Entry<Long, Department> entry = AlmCache.getInstance().getDepMap().entrySet().stream()
+				.filter(e -> e.getKey().equals(deptId)).findFirst().orElse(null);
+		Department department = entry.getValue();
+		if (department.getParentId() == null) {
+			return BaseOutput.success().setData(department);
+		} else {
+			do {
+				department = AlmCache.getInstance().getDepMap().get(department.getParentId());
+			} while (department.getParentId() != null);
+			return BaseOutput.success().setData(department);
+		}
+	}
 
 	@RequestMapping(value = "/detail", method = RequestMethod.GET)
 	public String detail(@RequestParam Long id, ModelMap modelMap) {
@@ -111,20 +142,6 @@ public class TravelCostApplyController {
 	public String addView(ModelMap modelMap) {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		modelMap.addAttribute("user", user);
-		Map.Entry<Long, Department> entry = AlmCache.getInstance().getDepMap().entrySet().stream()
-				.filter(e -> e.getKey().equals(user.getDepartmentId())).findFirst().orElse(null);
-		if (entry != null) {
-			Department department = entry.getValue();
-			modelMap.addAttribute("department", department);
-			if (department.getParentId() == null) {
-				modelMap.addAttribute("rootDepartment", department);
-			} else {
-				do {
-					department = AlmCache.getInstance().getDepMap().get(department.getParentId());
-				} while (department.getParentId() != null);
-				modelMap.addAttribute("rootDepartment", department);
-			}
-		}
 		modelMap.addAttribute("projects", AlmCache.getInstance().getProjectMap().values());
 		// 查询费用项
 		modelMap.addAttribute("costItems", AlmCache.getInstance().getTravelCostItemMap());

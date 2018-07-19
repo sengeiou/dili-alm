@@ -32,41 +32,23 @@
 								}">出差天数</th>
 				<th
 					data-options="field:'setOutPlace', width:95,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',
-								formatter:function(index,row,value){
-									return row.setOutPlaceText;
-								},
 								editor : {
 									type : 'textbox',
 									options : {
 										required : true,
-										missingMessage : '请选择出发地',
-										buttonText:'选择',
-										editable:false,
-										onClickButton:function(){
-											selectArea('setOutPlace');
-										}
+										missingMessage : '请填写出发地',
 									}
 								}">出发地</th>
-				<th data-options="field:'setOutPlaceText', hidden:true"></th>
 				<th
 					data-options="field:'destinationPlace', width:95,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',
-								formatter:function(index,row,value){
-								console.log(row);
-									return row.destinationPlaceText;
-								},
 								editor : {
 									type : 'textbox',
 									options : {
 										required : true,
-										missingMessage : '请选择出发地',
-										buttonText:'选择',
-										editable:false,
-										onClickButton:function(){
-											selectArea('destinationPlace');
-										}
+										missingMessage : '请填写出发地',
 									}
 								}">到达地</th>
-				<th data-options="field:'destinationPlaceText', hidden:true"></th> <%for(item in costItems){%>
+				<%for(item in costItems){%>
 				<th
 					data-options="field:'${item.key!}',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',
 								editor : {
@@ -86,9 +68,7 @@
 			<tr>
 				<td>${cost.travelDayAmount!}</td>
 				<td>${cost.setOutPlace!}</td>
-				<td>${cost.setOutPlaceText!}</td>
-				<td>${cost.destinationPlace!}</td>
-				<td>${cost.destinationPlaceText!}</td> <%for(item in costItems){%> <%for(detail in cost.travelCostDetail){%> <%if(item.key ==
+				<td>${cost.destinationPlace!}</td> <%for(item in costItems){%> <%for(detail in cost.travelCostDetail){%> <%if(item.key ==
 				detail.costName){%>
 				<td>${detail.costAmount!/100}</td> <%}%> <%}%> <%}%>
 				<td>${cost.totalAmount!/100}</td>

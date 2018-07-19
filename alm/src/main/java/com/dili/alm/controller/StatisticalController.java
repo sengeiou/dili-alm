@@ -241,8 +241,8 @@ public class StatisticalController {
 
 	@ApiOperation(value = "项目工时图表查询", notes = "查询返回easyui信息")
 	@RequestMapping(value = "/listProjectForEchar", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody List<SelectTaskHoursByUserProjectDto> listProjectForEchar(String[] projectIds, Long userId)
-			throws Exception {
+	public @ResponseBody List<SelectTaskHoursByUserProjectDto> listProjectForEchar(String[] projectIds, Long userId,
+			Date startDate, Date endDate) throws Exception {
 		List<Long> projectIdList = new ArrayList<Long>();
 		if (projectIds != null && projectIds.length > 0) {
 			projectIdList = new ArrayList<Long>(projectIds.length);
@@ -252,7 +252,7 @@ public class StatisticalController {
 		} else {
 			projectIdList.add(Long.getLong(String.valueOf(-1)));
 		}
-		return statisticalService.selectTotalTaskAndOverHoursForEchars(projectIdList);
+		return statisticalService.selectTotalTaskAndOverHoursForEchars(projectIdList, startDate, endDate);
 
 	}
 

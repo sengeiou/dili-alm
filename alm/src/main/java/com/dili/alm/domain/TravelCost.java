@@ -13,7 +13,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2018-04-28 14:47:00.
+ * This file was generated on 2018-07-18 16:17:50.
  */
 @Table(name = "`travel_cost`")
 public interface TravelCost extends IBaseDomain {
@@ -41,18 +41,18 @@ public interface TravelCost extends IBaseDomain {
     void setTravelDayAmount(Integer travelDayAmount);
 
     @Column(name = "`set_out_place`")
-    @FieldDef(label="出发地id，数据字典")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getSetOutPlace();
+    @FieldDef(label="出发地", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = true)
+    String getSetOutPlace();
 
-    void setSetOutPlace(Long setOutPlace);
+    void setSetOutPlace(String setOutPlace);
 
     @Column(name = "`destination_place`")
-    @FieldDef(label="到达地id，数据字典")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getDestinationPlace();
+    @FieldDef(label="到达地", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = true)
+    String getDestinationPlace();
 
-    void setDestinationPlace(Long destinationPlace);
+    void setDestinationPlace(String destinationPlace);
 
     @Column(name = "`total_amount`")
     @FieldDef(label="总费用")

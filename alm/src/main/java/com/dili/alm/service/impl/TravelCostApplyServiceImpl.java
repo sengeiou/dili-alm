@@ -200,8 +200,6 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 			costs.forEach(c -> {
 				TravelCostDtoBean cBean = DTOUtils.toEntity(c, TravelCostDtoBean.class, false);
 				tcBeanList.add(cBean);
-				cBean.setSetOutPlaceText(this.areaProvider.getDisplayText(c.getSetOutPlace(), null, null));
-				cBean.setDestinationPlaceText(this.areaProvider.getDisplayText(c.getDestinationPlace(), null, null));
 				TravelCostDetail tcdQuery = DTOUtils.newDTO(TravelCostDetail.class);
 				tcdQuery.setCostId(c.getId());
 				List<TravelCostDetail> details = this.travelCostDetailMapper.select(tcdQuery);
@@ -273,8 +271,6 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 			costs.forEach(c -> {
 				TravelCostDtoBean cBean = DTOUtils.toEntity(c, TravelCostDtoBean.class, false);
 				tcBeanList.add(cBean);
-				cBean.setSetOutPlaceText(this.areaProvider.getDisplayText(c.getSetOutPlace(), null, null));
-				cBean.setDestinationPlaceText(this.areaProvider.getDisplayText(c.getDestinationPlace(), null, null));
 				TravelCostDetail tcdQuery = DTOUtils.newDTO(TravelCostDetail.class);
 				tcdQuery.setCostId(c.getId());
 				List<TravelCostDetail> details = this.travelCostDetailMapper.select(tcdQuery);

@@ -73,22 +73,6 @@ function optFormatter(value, row, index) {
 
 function onCostItemGridBeginEdit(index, row) {
 	costItemGridEditIndex = index;
-	var editor = $('#travelCostGrid').datagrid('getEditor', {
-				index : index,
-				field : 'destinationPlace'
-			}).target;
-	if (row.destinationPlace) {
-		editor.textbox('setValue', row.destinationPlace);
-		editor.textbox('setText', row.destinationPlaceText);
-	}
-	editor = $('#travelCostGrid').datagrid('getEditor', {
-				index : index,
-				field : 'setOutPlace'
-			}).target;
-	if (row.setOutPlace) {
-		editor.textbox('setValue', row.setOutPlace);
-		editor.textbox('setText', row.setOutPlaceText);
-	}
 }
 
 function removeCostItem() {
@@ -101,34 +85,6 @@ function removeCostItem() {
 	}
 	$('#travelCostGrid').datagrid('deleteRow', index);
 	$('#travelCostGrid').datagrid('acceptChanges');
-}
-
-function selectArea(field) {
-	$('#areaDlg').dialog({
-				iconCls : 'icon-save',
-				href : '${contextPath!}/area/select',
-				height : 150,
-				width : 500,
-				title : '出发地选择',
-				modal : true,
-				buttons : [{
-							text : '确定',
-							iconCls : 'icon-ok',
-							handler : function() {
-								var node = $('#travelCostGrid').datagrid('getSelected');
-								var index = $('#travelCostGrid').datagrid('getRowIndex', node);
-								var editor = $('#travelCostGrid').datagrid('getEditor', {
-											index : index,
-											field : field
-										}).target;
-								var value = $('#city').combobox('getValue');
-								var text = $('#city').combobox('getText');
-								editor.textbox('setValue', value);
-								editor.textbox('setText', text);
-								$('#areaDlg').dialog('close');
-							}
-						}]
-			});
 }
 
 // 打开新增窗口
@@ -186,10 +142,6 @@ function postData(_url) {
 						travelCost.setOutPlace = item[prop];
 					} else if (prop == 'destinationPlace') {
 						travelCost.destinationPlace = item[prop];
-					} else if (prop == 'setOutPlaceText') {
-						continue;
-					} else if (prop == 'destinationPlaceText') {
-						continue;
 					} else if (prop == 'op') {
 						continue;
 					} else {
@@ -271,6 +223,48 @@ function openUpdate(index) {
 			});
 	$('#dlg').dialog('open');
 	$('#dlg').dialog('center');
+}
+
+function updateDepartment(val) {
+	$.ajax({
+				type : "GET",
+				url : "${contextPath}/travelCostApply/getDepartmentByUserId.json?userId=" + val.id,
+				processData : true,
+				dataType : "json",
+				async : true,
+				success : function(data) {
+					if (data.code == "200") {
+						$('#department').textbox('setValue', data.data.id);
+						$('#department').textbox('setText', data.data.name);
+					} else {
+						$.messager.alert('错误', data.result);
+					}
+				},
+				error : function() {
+					$.messager.alert('错误', '远程访问失败');
+				}
+			});
+}
+
+function updateCenter(nval, oval) {
+	$.ajax({
+				type : "GET",
+				url : "${contextPath}/travelCostApply/getRootDepartment.json?deptId=" + nval,
+				processData : true,
+				dataType : "json",
+				async : true,
+				success : function(data) {
+					if (data.code == "200") {
+						$('#center').textbox('setValue', data.data.id);
+						$('#center').textbox('setText', data.data.name);
+					} else {
+						$.messager.alert('错误', data.result);
+					}
+				},
+				error : function() {
+					$.messager.alert('错误', '远程访问失败');
+				}
+			});
 }
 
 // 根据主键删除
@@ -380,16 +374,6 @@ function endPositionEditing(grid) {
 }
 
 function onTravelCostGridEndEdit(index, row, changes) {
-	var editor = $(this).datagrid('getEditor', {
-				index : index,
-				field : 'setOutPlace'
-			}).target;
-	row.setOutPlaceText = editor.combobox('getText');
-	editor = $('#travelCostGrid').datagrid('getEditor', {
-				index : index,
-				field : 'destinationPlace'
-			}).target;
-	row.destinationPlaceText = editor.combobox('getText');
 	row.totalAmount = 0;
 	for (prop in row) {
 		if (prop == 'travelDayAmount') {

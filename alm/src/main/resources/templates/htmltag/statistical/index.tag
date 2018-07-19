@@ -181,9 +181,6 @@ function easyUIDataGrid(param) {
 					$datagrid.columns = columns;
 
 					$datagrid.url = '${contextPath}/statistical/listUserHours';
-					$datagrid.onLoadSuccess = function(index, field, value) {
-						loadInitEchartForProject(projectIds);
-					};
 					$datagrid.queryParams = param;
 
 					$datagrid.rowStyler = function(index, row) {
@@ -193,21 +190,12 @@ function easyUIDataGrid(param) {
 					}
 
 					$('#grid').datagrid($datagrid);
+
+					loadInitEchartForProject(projectIds, param);
 				}
 			});
 }
-function bindDate(param, projectIds) {
-	var opts = $("#grid").datagrid("options");
-	if (null == opts.url || "" == opts.url) {
-		opts.url = "${contextPath}/statistical/listUserHours";
-	}
-	$("#grid").datagrid("load", param);
-	$('#grid').datagrid({
-				onLoadSuccess : function(index, field, value) {
-					loadInitEchartForProject(projectIds);
-				}
-			});
-}
+
 function projectTaskHour(value, row, index) {
 	var projectHoursObj = row.projectHours;
 	var str = "project" + this.field.slice(7) + "sumUPTaskHours";
@@ -254,13 +242,15 @@ function dateFormat_1() {
 	return dateType;
 }
 
-function loadInitEchartForProject(param) {
+function loadInitEchartForProject(projectIds, param) {
 	$.ajax({
 				type : 'post',
 				async : false, // 同步执行
 				url : '${contextPath}/statistical/listProjectForEchar', // web.xml中注册的Servlet的url-pattern
 				data : {
-					projectIds : param
+					projectIds : projectIds,
+					startDate : param.startDate,
+					endDate : param.endDate
 				}, // 无参数
 				dataType : 'json', // 返回数据形式为json
 				traditional : true,
@@ -394,7 +384,7 @@ function bindDateForEchats(result) {
 $(function() {
 			// 初始化多选复选框
 			initCombobox('projectA');
-			easyUIDataGrid(null);
+			easyUIDataGrid({});
 			$('#startDate').textbox({
 						prompt : dateFormat_1()
 					});
