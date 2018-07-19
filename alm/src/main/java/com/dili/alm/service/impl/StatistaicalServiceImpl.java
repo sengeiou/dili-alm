@@ -3,6 +3,8 @@ package com.dili.alm.service.impl;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -47,6 +49,7 @@ import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.StatisticalService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
@@ -687,7 +690,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 			throw new RuntimeException(e);
 		}
 		Date now = new Date();
-		int projectTotal = projectMapper.getProjectTypeAllCount(startDate, endDate, now);
+		int projectTotal = 0;
 		if (dto != null) {
 			List<DataDictionaryValueDto> ddvdList = dto.getValues();
 			for (DataDictionaryValueDto dataDictionaryValueDto : ddvdList) {
@@ -706,11 +709,14 @@ public class StatistaicalServiceImpl implements StatisticalService {
 					typeTotal = typeTotal + projectStatusCountDto.getStateCount();
 				}
 				pts.setTypeCount(typeTotal);
-				if (projectTotal != 0) {
+				projectTotal += typeTotal;
 
-					pts.setProjectTypeProgress(((int) (((double) typeTotal / (double) projectTotal) * 100)) + "%");
-				}
 				list.add(pts);
+			}
+			BigDecimal ptotal = new BigDecimal(projectTotal);
+			for (ProjectTypeCountDto pts : list) {
+				pts.setProjectTypeProgress(new BigDecimal(pts.getTypeCount()).divide(ptotal, 2, RoundingMode.HALF_UP)
+						.multiply(new BigDecimal("100")).setScale(0) + "%");
 			}
 			return list;
 		}
