@@ -157,7 +157,7 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 		if (manager != null) {
 			mails.add(manager.getEmail());
 		}
-		this.sendMail(workOrder, "工单执行", Sets.newHashSet(applicant.getEmail()));
+		this.sendMail(workOrder, "工单执行", mails);
 	}
 
 	@Override
