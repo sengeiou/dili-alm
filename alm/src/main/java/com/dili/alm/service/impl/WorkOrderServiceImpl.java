@@ -171,4 +171,13 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 		WorkOrderManager workOrderManager = this.workOrderManagerMap.get(type.getValue());
 		return workOrderManager.getReceivers();
 	}
+
+	@Override
+	public void deleteWorkOrder(Long id) throws WorkOrderException {
+		WorkOrder workOrder = this.getActualDao().selectByPrimaryKey(id);
+		if (!workOrder.getWorkOrderState().equals(WorkOrderState.APPLING.getValue())) {
+			throw new WorkOrderException("当前状态不能删除");
+		}
+		this.getActualDao().deleteByPrimaryKey(id);
+	}
 }

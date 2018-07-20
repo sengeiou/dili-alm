@@ -282,7 +282,11 @@ public class WorkOrderController {
 			@ApiImplicitParam(name = "id", paramType = "form", value = "WorkOrder的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput delete(Long id) {
-		workOrderService.delete(id);
-		return BaseOutput.success("删除成功");
+		try {
+			workOrderService.deleteWorkOrder(id);
+			return BaseOutput.success();
+		} catch (WorkOrderException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
 	}
 }

@@ -124,4 +124,6 @@ public interface WorkOrderService extends BaseService<WorkOrder, Long> {
 	WorkOrder getOperationRecordsViewModel(Long id);
 
 	List<User> getReceivers(WorkOrderSource type);
+
+	void deleteWorkOrder(Long id) throws WorkOrderException;
 }
