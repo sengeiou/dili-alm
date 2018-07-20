@@ -29,11 +29,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
-import com.dili.alm.domain.ProjectAction;
 import com.dili.alm.domain.ProjectActionRecordConfig;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.ProjectActionRecordConfigPostData;
 import com.dili.alm.domain.dto.ProjectActionRecordExportDto;
+import com.dili.alm.provider.ProjectActionProvider;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.ProjectActionRecordConfigService;
 import com.dili.alm.service.ProjectActionRecordService;
@@ -65,6 +65,8 @@ public class ProjectActionRecordController {
 	private ProjectActionRecordConfigService configService;
 	@Autowired
 	private DataDictionaryService ddService;
+	@Autowired
+	private ProjectActionProvider actionProvider;
 
 	@ApiOperation("跳转到ProjectActionRecord页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
@@ -110,7 +112,7 @@ public class ProjectActionRecordController {
 				config.setHintMessage(data.getHintMessage().get(i));
 			}
 			config.setId(data.getId().get(i));
-			config.setShowDate(data.getShowDate().get(i));
+			config.setShowDate(data.getShowDate().get(i) != null && data.getShowDate().get(i));
 			configs.add(config);
 		}
 		int rows = this.configService.batchUpdateSelective(configs);
@@ -127,14 +129,23 @@ public class ProjectActionRecordController {
 	@ResponseBody
 	@RequestMapping("/actions.json")
 	public List<Map<String, String>> actions() {
-		List<Map<String, String>> list = new ArrayList<>(ProjectAction.values().length);
-		for (ProjectAction action : ProjectAction.values()) {
-			Map<String, String> map = new HashMap<>(2);
-			map.put("code", action.getCode());
-			map.put("name", action.getName());
-			list.add(map);
-		}
-		return list;
+		ProjectActionRecordConfig query = DTOUtils.newDTO(ProjectActionRecordConfig.class);
+		query.setShowDate(true);
+		List<ProjectActionRecordConfig> configs = this.configService.list(query);
+		List<Map<String, String>> target = new ArrayList<>(configs.size() + 1);
+		target.add(new HashMap<String, String>() {
+			{
+				put("name", "全选");
+				put("code", "-1");
+			}
+		});
+		configs.forEach(c -> target.add(new HashMap<String, String>() {
+			{
+				put("name", actionProvider.getDisplayText(c.getActionCode(), null, null));
+				put("code", c.getActionCode());
+			}
+		}));
+		return target;
 	}
 
 	@ResponseBody

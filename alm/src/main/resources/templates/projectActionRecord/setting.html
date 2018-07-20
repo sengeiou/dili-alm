@@ -58,6 +58,7 @@ table.gridtable .color {
 
 table.gridtable .hint {
 	/*width: 30%;*/
+	
 }
 </style>
 		<form id="form" action="" method="post">
@@ -74,30 +75,24 @@ table.gridtable .hint {
 				<tr>
 					<td><input type="hidden" name="id[${itemLP.index-1}]" value="${item.id!}"><input type="hidden"
 						name="actionCode[${itemLP.index-1}]" value="${item.$_actionCode!}">${item.actionCode!}</td>
-					<td><input id="showDate" name="showDate[${itemLP.index-1}]" value="1" class="easyui-switchbutton"<%if(item.showDate){%>checked<%}%>
-						style="width:50px;height:20px"></td>
+					<td><input class="easyui-switchbutton"<%if(item.showDate){%>checked<%}%>
+						style="width:50px;height:20px" data-options="onChange:updateSwitchVal" index="${itemLP.index-1}" ><input type="hidden"
+						id="showDate${itemLP.index-1}" name="showDate[${itemLP.index-1}]" value="${item.showDate!}"></td>
 					<td><input type="hidden" name="actionDateType[${itemLP.index-1}]" value="${item.$_actionDateType!}">${item.actionDateType!}</td>
-					<td>
-						<select class="easyui-combobox" name="color[${itemLP.index-1}]" labelPosition="top" style="width: 80%;"
+					<td><select class="easyui-combobox" name="color[${itemLP.index-1}]" labelPosition="top" style="width: 80%;"
 						data-options="editable:false"> <%for(color in colors){%>
 							<option value="${color.value!}"<%if(item.color==color.value){%>selected="selected"<%}%>>${color.code!}</option> <%}%>
-					</select>
-					</td>
-					<td>
-						<input type="radio" name="hint[${itemLP.index-1}]" value="0" index="${itemLP.index}"<%if(!item.hint){%>checked="checked"<%}%>
-						style="float: left; margin-top: 6px">
-						<span style="float: left; margin-top: 4px; margin-right: 35px">无提示</span>
-						<input type="radio"
+					</select></td>
+					<td><input type="radio" name="hint[${itemLP.index-1}]" value="0" index="${itemLP.index}"<%if(!item.hint){%>checked="checked"<%}%>
+						style="float: left; margin-top: 6px"> <span style="float: left; margin-top: 4px; margin-right: 35px">无提示</span> <input type="radio"
 						name="hint[${itemLP.index-1}]" value="1" index="${itemLP.index}"<%if(item.hint){%>checked="checked"<%}%> style="float: left;
-						margin-top: 6px">
-						<span style="float: left; margin-top: 4px; margin-right: 5px">提示信息</span>
-						<input class="easyui-textbox"
+						margin-top: 6px"> <span style="float: left; margin-top: 4px; margin-right: 5px">提示信息</span> <input class="easyui-textbox"
 						id="hintMessage${itemLP.index}" name="hintMessage[${itemLP.index-1}]" value="${item.hintMessage!}" style="float: left"<%if(!item.hint){%>disabled<%}%>
 						data-options="width:'60%',required:true,validType:'length[1,500]'"></td>
 				</tr>
 				<%}%>
 			</table>
-			<a href="#" class="easyui-linkbutton" onclick="submitForm();" style="float:right;margin-top: 20px">提交</a>
+			<a href="#" class="easyui-linkbutton" onclick="submitForm();" style="float: right; margin-top: 20px">提交</a>
 		</form>
 	</div>
 </div>
@@ -119,6 +114,10 @@ table.gridtable .hint {
 			}
 
 		});
+	}
+
+	function updateSwitchVal(checked) {
+		$('#showDate'+$(this).attr('index')).val(checked);
 	}
 
 	$(function() {

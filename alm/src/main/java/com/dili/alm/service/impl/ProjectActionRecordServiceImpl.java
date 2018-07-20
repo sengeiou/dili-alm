@@ -109,13 +109,13 @@ public class ProjectActionRecordServiceImpl extends BaseServiceImpl<ProjectActio
 			if (r.getActionDateType().equals(ActionDateType.PERIOD.getValue())) {
 				valueDto.setFrom(r.getActionStartDate().getTime());
 				valueDto.setTo(r.getActionEndDate().getTime());
+				dto.setDesc("");
 				valueDto.setLabel(
 						"开始时间:" + df.format(r.getActionStartDate()) + " 结束时间：" + df.format(r.getActionEndDate()));
 			} else {
 				valueDto.setFrom(r.getActionDate().getTime());
 				valueDto.setTo(r.getActionDate().getTime());
 				dto.setDesc(df.format(r.getActionDate()));
-				valueDto.setLabel(dtf.format(r.getActionDate()));
 			}
 			// 获取列表展示配置
 			ProjectActionRecordConfig parcQuery = DTOUtils.newDTO(ProjectActionRecordConfig.class);
