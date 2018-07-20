@@ -1,10 +1,8 @@
 package com.dili.alm.service.impl;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.beetl.core.GroupTemplate;
@@ -31,8 +29,6 @@ import com.dili.alm.service.WorkOrderService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.quartz.domain.ScheduleMessage;
-
-import tk.mybatis.mapper.entity.Example;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2018-05-23 11:51:37.

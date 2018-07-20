@@ -2,7 +2,7 @@ package com.dili.alm.domain;
 
 public enum WorkOrderSource {
 
-	OUTSIDE("外部工单", 1), DEPARTMENT("部门工单", 2), DEVELOPMENT_CENTER("研发中心工单", 3);
+	OUTSIDE("市场工单", 1), DEPARTMENT("部门工单", 2), DEVELOPMENT_CENTER("研发中心工单", 3);
 
 	private String name;
 	private Integer value;
