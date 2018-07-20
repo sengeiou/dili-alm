@@ -71,6 +71,9 @@ function initActionCode() {
 function unSelectAll() {
 	var me = $(this);
 	$(me.combobox('getData')).each(function(index, item) {
+				if (item.code == -1) {
+					return true;
+				}
 				me.combobox('unselect', item.code);
 			});
 }
@@ -78,6 +81,9 @@ function unSelectAll() {
 function selectAll() {
 	var me = $(this);
 	$(me.combobox('getData')).each(function(index, item) {
+				if (item.code == -1) {
+					return true;
+				}
 				me.combobox('select', item.code);
 			});
 }
