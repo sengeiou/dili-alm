@@ -132,13 +132,7 @@ public class ProjectActionRecordController {
 		ProjectActionRecordConfig query = DTOUtils.newDTO(ProjectActionRecordConfig.class);
 		query.setShowDate(true);
 		List<ProjectActionRecordConfig> configs = this.configService.list(query);
-		List<Map<String, String>> target = new ArrayList<>(configs.size() + 1);
-		target.add(new HashMap<String, String>() {
-			{
-				put("name", "全选");
-				put("code", "-1");
-			}
-		});
+		List<Map<String, String>> target = new ArrayList<>(configs.size());
 		configs.forEach(c -> target.add(new HashMap<String, String>() {
 			{
 				put("name", actionProvider.getDisplayText(c.getActionCode(), null, null));

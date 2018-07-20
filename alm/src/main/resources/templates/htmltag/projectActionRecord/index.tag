@@ -1,3 +1,24 @@
+var isLoadded = false;
+
+function multicomboboxFormatter(row) {
+	var opts = $(this).combobox('options');
+	return '<input type="checkbox" class="combobox-checkbox" id="' + row[opts.valueField] + '">' + row[opts.textField]
+}
+
+function onActionCodeSelected(record) {
+	if (record.code == -1) {
+		selectAll.call($(this));
+	}
+	$('#' + record.code).prop('checked', true);
+}
+
+function onActionCodeUnselected(record) {
+	if (record.code == -1) {
+		unSelectAll().call($(this));
+	}
+	$('#' + record.code).prop('checked', false);
+}
+
 function print() {
 	$("#gantt").jqprint();
 }
@@ -31,6 +52,36 @@ function loadData() {
 			});
 }
 
+function initActionCode() {
+	if (isLoadded) {
+		return;
+	}
+	isLoadded = true;
+	var data = $(this).combobox('getData');
+	data.unshift({
+				name : '全选/全部选',
+				code : -1
+			});
+	$(this).combobox('loadData', data);
+	$(this).combobox('select', -1);
+	selectAll.call($(this));
+//	loadData();
+}
+
+function unSelectAll() {
+	var me = $(this);
+	$(me.combobox('getData')).each(function(index, item) {
+				me.combobox('unselect', item.code);
+			});
+}
+
+function selectAll() {
+	var me = $(this);
+	$(me.combobox('getData')).each(function(index, item) {
+				me.combobox('select', item.code);
+			});
+}
+
 function exportExcel() {
 	$('#form').form('submit', {
 				url : '${contextPath}/projectActionRecord/export',
@@ -43,63 +94,5 @@ function exportExcel() {
 			});
 }
 
-function initCombobox(id) {
-	var value = "";
-	$('#' + id).combobox({
-				url : '${contextPath!}/projectActionRecord/actions.json',
-				method : 'post',
-				panelHeight : 200,
-				valueField : 'code',
-				textField : 'name',
-				multiple : true,
-				formatter : function(row) {
-					var opts = $(this).combobox('options');
-					return '<input type="checkbox" class="combobox-checkbox">' + row[opts.textField]
-				},
-				onLoadSuccess : function() {
-					var opts = $(this).combobox('options');
-					var target = this;
-					var values = $(target).combobox('getValues');// 获取选中的值的values
-					$.map(values, function(value) {
-								var el = opts.finder.getEl(target, value);
-								el.find('input.combobox-checkbox')._propAttr('checked', true);
-							})
-				},
-				onSelect : function(row) { // 选中一个选项时调用
-					var opts = $(this).combobox('options');
-					// 获取选中的值的values
-					var name = $("#" + id).val($(this).combobox('getValues'));
-					// 当点击全选时，则勾中所有的选项
-					if (name = "全选") {
-						var a = $("#" + id).combobox('getData');
-						for (var i = 0; i < a.length; i++) {
-							var el = opts.finder.getEl(this, a[i].text);
-							el.find('input.combobox-checkbox')._propAttr('checked', true);
-						}
-					}
-					// 设置选中值所对应的复选框为选中状态
-					var el = opts.finder.getEl(this, row[opts.valueField]);
-					el.find('input.combobox-checkbox')._propAttr('checked', true);
-				},
-				onUnselect : function(row) {// 不选中一个选项时调用
-					var opts = $(this).combobox('options');
-					// 获取选中的值的values
-					$("#" + id).val($(this).combobox('getValues'));
-					// 当取消全选勾中时，则取消所有的勾选
-					if ($(this).combobox('getValues') == "全选") {
-						var a = $("#" + id).combobox('getData');
-						for (var i = 0; i < a.length; i++) {
-							var el = opts.finder.getEl(this, a[i].text);
-							el.find('input.combobox-checkbox')._propAttr('checked', false);
-						}
-					}
-					var el = opts.finder.getEl(this, row[opts.valueField]);
-					el.find('input.combobox-checkbox')._propAttr('checked', false);
-				}
-			});
-
-}
-
 $(function() {
-			initCombobox('actionCode');
 		});
