@@ -808,15 +808,15 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		try {
 			switch (type) {
 			case "apply":
-				messageService.insertMessage("http://alm.diligrp.com:8083/alm/approve/apply/" + id, sender, recipient,
+				messageService.insertMessage("http://almweb.diligrp.com/approve/apply/" + id, sender, recipient,
 						AlmConstants.MessageType.APPLY.getCode());
 				break;
 			case "change":
-				messageService.insertMessage("http://alm.diligrp.com:8083/alm/approve/change/" + id, sender, recipient,
+				messageService.insertMessage("http://almweb.diligrp.com/approve/change/" + id, sender, recipient,
 						AlmConstants.MessageType.CHANGE.getCode());
 				break;
 			case "complete":
-				messageService.insertMessage("http://alm.diligrp.com:8083/alm/approve/complete/" + id, sender,
+				messageService.insertMessage("http://almweb.diligrp.com/approve/complete/" + id, sender,
 						recipient, AlmConstants.MessageType.COMPLETE.getCode());
 				break;
 			}

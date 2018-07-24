@@ -58,7 +58,7 @@ var LogUtils = {
 	saveLog : function(module, content, callback) {
 		$.ajax({
 			type : "POST",
-			url : "http://alm.diligrp.com:8083/alm/logApi/saveLog",
+			url : "http://almweb.diligrp.com/logApi/saveLog",
 			data : {
 				logModule : module,
 				logText : content

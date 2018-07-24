@@ -6,17 +6,17 @@ function multicomboboxFormatter(row) {
 }
 
 function onActionCodeSelected(record) {
+	$('#' + record.code).prop('checked', true);
 	if (record.code == -1) {
 		selectAll.call($(this));
 	}
-	$('#' + record.code).prop('checked', true);
 }
 
 function onActionCodeUnselected(record) {
-	if (record.code == -1) {
-		unSelectAll().call($(this));
-	}
 	$('#' + record.code).prop('checked', false);
+	if (record.code == -1) {
+		unSelectAll.call($(this));
+	}
 }
 
 function print() {
@@ -65,7 +65,7 @@ function initActionCode() {
 	$(this).combobox('loadData', data);
 	$(this).combobox('select', -1);
 	selectAll.call($(this));
-//	loadData();
+	// loadData();
 }
 
 function unSelectAll() {

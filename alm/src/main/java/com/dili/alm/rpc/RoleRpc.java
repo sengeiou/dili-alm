@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by asiamaster on 2017/10/19 0019.
  */
-@Restful("http://almadmin.diligrp.com/almadmin")
+@Restful("http://alm.diligrp.com/almadmin")
 public interface RoleRpc {
 
 	@POST("/roleApi/listRoleByUserId")

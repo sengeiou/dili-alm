@@ -214,7 +214,7 @@ body {
 				 $.messager.confirm('确认', '是否替换对应年份数据？', function(r) {
 					 if (r) {
 					     $.ajax({  
-					          url: 'http://alm.diligrp.com:8083/alm/workDayApi/uploadWordDayDate' ,  
+					          url: 'http://almweb.diligrp.com/workDayApi/uploadWordDayDate' ,  
 					          type: 'POST',  
 					          data: formData,  
 					          async: false,  
@@ -237,7 +237,7 @@ body {
 				});
 			 }else{
 				 $.ajax({  
-			          url: 'http://alm.diligrp.com:8083/alm/workDayApi/uploadWordDayDate' ,  
+			          url: 'http://almweb.diligrp.com/workDayApi/uploadWordDayDate' ,  
 			          type: 'POST',  
 			          data: formData,  
 			          async: false,  
@@ -260,7 +260,7 @@ body {
 		 }
 	}
 	function isHaveYear(){
-       var  htmlobj=$.ajax({url:"http://alm.diligrp.com:8083/alm/workDayApi/isHasWorkDayYear?year="+$("input[name=year]").val(),async:false});
+       var  htmlobj=$.ajax({url:"http://almweb.diligrp.com/workDayApi/isHasWorkDayYear?year="+$("input[name=year]").val(),async:false});
        var str=htmlobj.responseText;
        var obj = $.parseJSON(str);
        return obj;   
@@ -274,7 +274,7 @@ body {
 	}
 	function workDayYear(){
 		$.ajax({  
-	          url: 'http://alm.diligrp.com:8083/alm/workDayApi/selectWorkDayYear' ,  
+	          url: 'http://almweb.diligrp.com/workDayApi/selectWorkDayYear' ,  
 	          type: 'POST',  
 	          data: {},  
 	          async: false,  
@@ -298,7 +298,7 @@ body {
 	
 	function getWorkDay(){
 		$.ajax({  
-	          url: 'http://alm.diligrp.com:8083/alm/workDayApi/getWorkDay' ,  
+	          url: 'http://almweb.diligrp.com/workDayApi/getWorkDay' ,  
 	          type: 'POST',  
 	          data: {'userId':userIdVal},  
 	          async: false,   
@@ -383,7 +383,7 @@ body {
     		if(flag){
     			$.ajax({
     				type:'POST',
-    				url:'http://alm.diligrp.com:8083/alm/cache/clear',
+    				url:'http://almweb.diligrp.com/cache/clear',
     				dataType:'jsonp',
     				success:function(data){
     					if(data.code==200){
@@ -466,7 +466,7 @@ body {
     var userIdVal =${userid}
     var getMessages = {
     		type: "POST",
-            url:'http://alm.diligrp.com:8083/alm/messageApi/list',
+            url:'http://almweb.diligrp.com/messageApi/list',
             data:{'userId':userIdVal},
             dataType:'json',
             success:function(data) {
@@ -501,7 +501,7 @@ body {
     		$.ajax(
     			{  
     	            type : "post" ,
-    	            url : "http://alm.diligrp.com:8083/alm/messageApi/updateMessageIsRead" ,  
+    	            url : "http://almweb.diligrp.com/messageApi/updateMessageIsRead" ,  
     	            data:{id,id},
     	            datatype : 'json',
     	            success : function (data) {
@@ -520,14 +520,14 @@ body {
     	$('#css3menu ul li').first().addClass("on");
 
     	$('#page-layout').layout('remove','west');
-        $('#homeIndex').attr("src","http://alm.diligrp.com:8083/alm/home/index");
+        $('#homeIndex').attr("src","http://almweb.diligrp.com/home/index");
 
     	$('#css3menu ul li').on('click',function(){
             let index= $(this).index();
             if(index<1){
                 $('#page-layout').layout('remove','west');
                 $("#homeIndex").css('display','block');
-                $('#homeIndex').attr("src","http://alm.diligrp.com:8083/alm/home/index");
+                $('#homeIndex').attr("src","http://almweb.diligrp.com/home/index");
                 $("#tabs").empty().hide();
             }else{
                 // console.log($('#menuTem').html())

@@ -44,7 +44,7 @@ public class AlmApplication extends SpringBootServletInitializer implements WebM
 
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
-		registry.addMapping("/**").allowedOrigins("http://almadmin.diligrp.com").allowCredentials(true)
+		registry.addMapping("/**").allowedOrigins("http://alm.diligrp.com").allowCredentials(true)
 				.allowedHeaders("Origin", "X-Requested-With", "Content-Type", "Accept");
 	}
 

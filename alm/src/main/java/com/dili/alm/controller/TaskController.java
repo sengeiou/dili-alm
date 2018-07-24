@@ -164,7 +164,7 @@ public class TaskController {
 			return BaseOutput.failure(e.getMessage());
 		}
 
-		messageService.insertMessage("http://alm.diligrp.com:8083/alm/task/task/" + task.getId(), userTicket.getId(),
+		messageService.insertMessage("http://alm.diligrp.com/task/task/" + task.getId(), userTicket.getId(),
 				task.getOwner(), AlmConstants.MessageType.TASK.getCode());
 
 		return BaseOutput.success("新增成功").setData(String.valueOf(task.getId() + ":" + task.getName()));

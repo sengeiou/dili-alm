@@ -59,7 +59,7 @@ public class MessageApi {
 	@ApiImplicitParams({
 	@ApiImplicitParam(name="Message", paramType="form", value = "Message的form信息", required = true, dataType = "string")
 	})
-	@CrossOrigin(origins = {"http://almadmin.diligrp.com", "null"})
+	@CrossOrigin(origins = {"http://alm.diligrp.com", "null"})
 	@RequestMapping(value="/updateMessageIsRead", method = {RequestMethod.GET, RequestMethod.POST})
 	public @ResponseBody BaseOutput update(String id) {
 		if(WebUtil.strIsEmpty(id)){
@@ -75,7 +75,7 @@ public class MessageApi {
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Message", paramType="form", value = "Message的form信息", required = false, dataType = "string")
 	})
-	@CrossOrigin(origins = {"http://almadmin.diligrp.com", "null"})
+	@CrossOrigin(origins = {"http://alm.diligrp.com", "null"})
     @RequestMapping(value="/list", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody Map<String, Object> list(String userId) {
         return messageService.mapMessagges(userId);

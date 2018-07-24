@@ -80,7 +80,7 @@ public class MailManager {
 	}
 
 	private byte[] requestAttachement(Long id) {
-		String url = "http://alm.diligrp.com:8083/alm/files/download?id=" + id;
+		String url = "http://alm.diligrp.com/files/download?id=" + id;
 		OkHttpClient okHttpClient = new OkHttpClient();
 		Request request = new Request.Builder().url(url).build();
 		Call call = okHttpClient.newCall(request);
