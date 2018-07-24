@@ -34,4 +34,5 @@ public interface ProjectQueryDto extends Project {
 	List<Long> getProjectIds();
 
 	void setProjectIds(List<Long> ids);
+
 }

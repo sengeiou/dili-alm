@@ -188,6 +188,9 @@ public class ProjectController {
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 		}
+		if (project.getProjectState() == null) {
+			project.setProjectState(ProjectState.IN_PROGRESS.getValue());
+		}
 		@SuppressWarnings("rawtypes")
 		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
 		if (CollectionUtils.isEmpty(dataAuths)) {

@@ -6,7 +6,7 @@ import com.dili.ss.retrofitful.annotation.POST;
 import com.dili.ss.retrofitful.annotation.Restful;
 import com.dili.ss.retrofitful.annotation.VOField;
 
-@Restful("http://alm.diligrp.com/almadmin/dataAuth")
+@Restful("http://alm.diligrp.com/dataAuth")
 public interface DataAuthRpc {
 
 	@POST("/addDataAuth")
