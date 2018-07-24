@@ -12,7 +12,7 @@ public class DefaultView {
 
 	@RequestMapping("/")
 	public ModelAndView defaultView() {
-		ModelAndView mav = new ModelAndView("redirect:http://alm.diligrp.commain/index.html");
+		ModelAndView mav = new ModelAndView("redirect:http://alm.diligrp.com/main/index.html");
 		return mav;
 	}
 }
