@@ -9,7 +9,7 @@ import com.dili.ss.retrofitful.annotation.VOSingleParameter;
 
 import java.util.List;
 
-@Restful("http://alm.diligrp.com/almadmin")
+@Restful("http://alm.diligrp.com")
 public interface DepartmentRpc {
 
 	@POST("/api/department/list")

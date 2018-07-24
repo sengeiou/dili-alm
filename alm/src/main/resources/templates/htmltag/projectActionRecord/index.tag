@@ -70,22 +70,36 @@ function initActionCode() {
 
 function unSelectAll() {
 	var me = $(this);
-	$(me.combobox('getData')).each(function(index, item) {
-				if (item.code == -1) {
-					return true;
-				}
-				me.combobox('unselect', item.code);
-			});
+	var data = me.combobox('getData');
+	for (var i = 0; i < data.length; i++) {
+		if (data[i].code == -1) {
+			continue;
+		}
+		me.combobox('unselect', data[i].code);
+	}
+//	$(me.combobox('getData')).each(function(index, item) {
+//				if (item.code == -1) {
+//					return true;
+//				}
+//				me.combobox('unselect', item.code);
+//			});
 }
 
 function selectAll() {
 	var me = $(this);
-	$(me.combobox('getData')).each(function(index, item) {
-				if (item.code == -1) {
-					return true;
-				}
-				me.combobox('select', item.code);
-			});
+	var data = me.combobox('getData');
+	for (var i = 0; i < data.length; i++) {
+		if (data[i].code == -1) {
+			continue;
+		}
+		me.combobox('select', data[i].code);
+	}
+	// $(me.combobox('getData')).each(function(index, item) {
+	// if (item.code == -1) {
+	// return true;
+	// }
+	// me.combobox('select', item.code);
+	// });
 }
 
 function exportExcel() {
