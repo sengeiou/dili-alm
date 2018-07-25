@@ -166,6 +166,11 @@
 				and w.end_date
 				&lt;=#{weeklyPara.endDate,jdbcType=VARCHAR}
 			</if>
+			and p.id in
+			<foreach collection="weeklyPara.projectIds" item="projectId"
+				open="(" separator="," close=")">
+				#{projectId}
+			</foreach>
 			order by w.created desc
 			<if test="page.pageIndex!=-1">
 				limit

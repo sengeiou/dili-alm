@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,9 @@ import com.dili.alm.service.WeeklyDetailsService;
 import com.dili.alm.service.WeeklyService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.sysadmin.sdk.session.SessionContext;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-11-30 12:37:17.
@@ -53,6 +56,9 @@ import com.dili.ss.dto.DTOUtils;
 @RequestMapping("/weekly")
 public class WeeklyController {
 	private static final String WEEKLY = "weekly";
+
+	private static final String DATA_AUTH_TYPE = "Project";
+
 	@Autowired
 	WeeklyService weeklyService;
 	@Autowired
@@ -77,6 +83,13 @@ public class WeeklyController {
 			@ApiImplicitParam(name = "Weekly", paramType = "form", value = "Weekly的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(WeeklyPara weeklyPara) throws Exception {
+		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
+		if (CollectionUtils.isEmpty(dataAuths)) {
+			return new EasyuiPageOutput(0, new ArrayList<>(0)).toString();
+		}
+		List<Long> projectIds = new ArrayList<>();
+		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
+		weeklyPara.setProjectIds(projectIds);
 		return weeklyService.getListPage(weeklyPara).toString();
 	}
 
