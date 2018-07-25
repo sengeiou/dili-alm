@@ -5,18 +5,16 @@ function multicomboboxFormatter(row) {
 	return '<input type="checkbox" class="combobox-checkbox" id="' + row[opts.valueField] + '">' + row[opts.textField]
 }
 
+function checkActionCode(nval, oval) {
+	nval.minus(oval);
+}
+
 function onActionCodeSelected(record) {
 	$('#' + record.code).prop('checked', true);
-	if (record.code == -1) {
-		selectAll.call($(this));
-	}
 }
 
 function onActionCodeUnselected(record) {
 	$('#' + record.code).prop('checked', false);
-	if (record.code == -1) {
-		unSelectAll.call($(this));
-	}
 }
 
 function print() {
@@ -58,48 +56,23 @@ function initActionCode() {
 	}
 	isLoadded = true;
 	var data = $(this).combobox('getData');
-	data.unshift({
-				name : '全选/全部选',
-				code : -1
-			});
 	$(this).combobox('loadData', data);
-	$(this).combobox('select', -1);
 	selectAll.call($(this));
-	// loadData();
+	loadData();
 }
 
 function unSelectAll() {
 	var me = $(this);
-	var data = me.combobox('getData');
-	for (var i = 0; i < data.length; i++) {
-		if (data[i].code == -1) {
-			continue;
-		}
-		me.combobox('unselect', data[i].code);
-	}
-//	$(me.combobox('getData')).each(function(index, item) {
-//				if (item.code == -1) {
-//					return true;
-//				}
-//				me.combobox('unselect', item.code);
-//			});
+	$(me.combobox('getData')).each(function(index, item) {
+				me.combobox('unselect', item.code);
+			});
 }
 
 function selectAll() {
 	var me = $(this);
-	var data = me.combobox('getData');
-	for (var i = 0; i < data.length; i++) {
-		if (data[i].code == -1) {
-			continue;
-		}
-		me.combobox('select', data[i].code);
-	}
-	// $(me.combobox('getData')).each(function(index, item) {
-	// if (item.code == -1) {
-	// return true;
-	// }
-	// me.combobox('select', item.code);
-	// });
+	$(me.combobox('getData')).each(function(index, item) {
+				me.combobox('select', item.code);
+			});
 }
 
 function exportExcel() {
@@ -112,6 +85,9 @@ function exportExcel() {
 					}
 				}
 			});
+}
+
+function selectOrUnselectAll() {
 }
 
 $(function() {
