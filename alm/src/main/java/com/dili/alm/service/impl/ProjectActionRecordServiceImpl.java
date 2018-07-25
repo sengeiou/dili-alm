@@ -240,7 +240,11 @@ public class ProjectActionRecordServiceImpl extends BaseServiceImpl<ProjectActio
 	}
 
 	private void setActionName(ProjectActionRecord record, ProjectActionRecordGanttDto dto) {
-		if (record.getActionCode().equals(ProjectAction.VERSION_COMPLETE.getCode())) {
+		if (record.getActionCode().equals(ProjectAction.PROJECT_CHANGE_APPLY.getCode())) {
+			dto.setName("版本" + this.versionProvider.getDisplayText(record.getVersionId(), null, null) + "变更申请");
+		} else if (record.getActionCode().equals(ProjectAction.PROJECT_CHANGE_APPROVE.getCode())) {
+			dto.setName("版本" + this.versionProvider.getDisplayText(record.getVersionId(), null, null) + "变更审批");
+		} else if (record.getActionCode().equals(ProjectAction.VERSION_COMPLETE.getCode())) {
 			dto.setName("版本" + this.versionProvider.getDisplayText(record.getVersionId(), null, null) + "完成");
 		} else if (record.getActionCode().equals(ProjectAction.VERSION_ONLINE.getCode())) {
 			dto.setName("版本" + this.versionProvider.getDisplayText(record.getVersionId(), null, null) + "上线");
