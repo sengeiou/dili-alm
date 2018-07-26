@@ -1,21 +1,16 @@
 package com.dili.sysadmin.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.dili.ss.constant.ResultCode;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.sysadmin.domain.User;
-import com.dili.sysadmin.domain.dto.UserLoginDto;
-import com.dili.sysadmin.domain.dto.UserLoginResultDto;
-import com.dili.sysadmin.exception.UserException;
-import com.dili.sysadmin.sdk.util.WebContent;
-import com.dili.sysadmin.service.UserService;
-import com.dili.sysadmin.service.ValidatePwdService;
-import com.dili.sysadmin.utils.SecurityUtil;
-import com.dili.sysadmin.utils.WebUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,15 +25,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import com.alibaba.fastjson.JSON;
+import com.dili.ss.constant.ResultCode;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.sysadmin.domain.User;
+import com.dili.sysadmin.domain.dto.UserLoginDto;
+import com.dili.sysadmin.domain.dto.UserLoginResultDto;
+import com.dili.sysadmin.exception.UserException;
+import com.dili.sysadmin.sdk.session.ManageConfig;
+import com.dili.sysadmin.sdk.util.WebContent;
+import com.dili.sysadmin.service.UserService;
+import com.dili.sysadmin.utils.WebUtil;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 
 /**
  * <B>Description</B>地利后台管理系统登录 <B>Copyright</B> Copyright (c) 2014 www.dili7
@@ -60,20 +62,11 @@ public class LoginController {
 	private UserService userService;
 
 	public static final String INDEX_PATH = "login/index";
-    public static final String REDIRECT_INDEX_PAGE = "redirect:/login/index.html";
+	public static final String REDIRECT_INDEX_PAGE = "redirect:/login/index.html";
 
 	public static final String COOKIE_SESSION_ID = "SessionId";
 
 	private Logger log = LoggerFactory.getLogger(LoginController.class);
-
-	// @Value("${verifyImg}")
-	private Boolean verifyImg = false;
-
-	@Autowired
-	private SecurityUtil securityUtils;
-
-	@Autowired
-	private ValidatePwdService validatePwdService;
 
 	@ApiOperation("跳转到Login页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
@@ -81,43 +74,42 @@ public class LoginController {
 		return INDEX_PATH;
 	}
 
-    @ApiOperation("执行login请求，跳转到Main页面或者返回login页面")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "action", paramType = "form", value = "用户信息", required = false, dataType = "string") })
-    @RequestMapping(value = "/loginAction", method = { RequestMethod.GET, RequestMethod.POST })
-    public String loginAction(HttpServletRequest request, HttpServletResponse response, UserLoginDto dto, ModelMap modelMap) {
-//        String requestPath = WebUtil.fetchReferer(request);
-        try {
-            dto.setRemoteIP(WebUtil.getRemoteIP(request));
-            UserLoginResultDto resultDto = userService.doLogin(dto);
-            if (null != resultDto && ResultCode.OK == resultDto.getStatus()) {
-                makeCookieTag(resultDto.getUserInfo(), resultDto.getSessionId());
-                return MainController.REDIRECT_INDEX_PAGE;
-            }
+	@ApiOperation("执行login请求，跳转到Main页面或者返回login页面")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "action", paramType = "form", value = "用户信息", required = false, dataType = "string") })
+	@RequestMapping(value = "/loginAction", method = { RequestMethod.GET, RequestMethod.POST })
+	public String loginAction(HttpServletRequest request, HttpServletResponse response, UserLoginDto dto,
+			ModelMap modelMap) {
+		// String requestPath = WebUtil.fetchReferer(request);
+		try {
+			dto.setRemoteIP(WebUtil.getRemoteIP(request));
+			UserLoginResultDto resultDto = userService.doLogin(dto);
+			if (null != resultDto && ResultCode.OK == resultDto.getStatus()) {
+				makeCookieTag(resultDto.getUserInfo(), resultDto.getSessionId());
+				return MainController.REDIRECT_INDEX_PAGE;
+			}
 
-            modelMap.put("msg", null==resultDto?"登录失败,未知异常,userService doLogin() 返回 null":resultDto.getMessage());
+			modelMap.put("msg", null == resultDto ? "登录失败,未知异常,userService doLogin() 返回 null" : resultDto.getMessage());
 
-        } catch (UserException e) {
-            modelMap.put("msg", e.getMessage());
-        }
+		} catch (UserException e) {
+			modelMap.put("msg", e.getMessage());
+		}
 
-        return INDEX_PATH;
-    }
+		return INDEX_PATH;
+	}
 
-    @ApiOperation("执行logout请求，跳转login页面或者弹出错误")
-    @RequestMapping(value = "/logoutAction", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public @ResponseBody BaseOutput logoutAction(ModelMap modelMap) {
-        String sessionId = WebContent.getPC().getSessionId();
-        this.userService.logout(sessionId);
-        try {
-            WebContent.setCookie(COOKIE_SESSION_ID, null);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return BaseOutput.success();
-    }
-
-
+	@ApiOperation("执行logout请求，跳转login页面或者弹出错误")
+	@RequestMapping(value = "/logoutAction", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public @ResponseBody BaseOutput logoutAction(ModelMap modelMap) {
+		String sessionId = WebContent.getPC().getSessionId();
+		this.userService.logout(sessionId);
+		try {
+			WebContent.setCookie(COOKIE_SESSION_ID, null);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return BaseOutput.success();
+	}
 
 	@RequestMapping(value = "/login.do")
 	public String login(HttpServletRequest request, HttpServletResponse response, ModelMap model) {
@@ -217,15 +209,15 @@ public class LoginController {
 				return mav;
 			}
 
-            if (ResultCode.OK != result.getStatus()) {
-                mav.addObject("msg", result.getMessage());
-                mav.addObject("success", false);
-                mav.setViewName("login/index");
-                return mav;
-            }
+			if (ResultCode.OK != result.getStatus()) {
+				mav.addObject("msg", result.getMessage());
+				mav.addObject("success", false);
+				mav.setViewName("login/index");
+				return mav;
+			}
 
-            String sessionId = result.getSessionId();
-            makeCookieTag(result.getUserInfo(), sessionId);
+			String sessionId = result.getSessionId();
+			makeCookieTag(result.getUserInfo(), sessionId);
 
 			if (StringUtils.isBlank(returnUrl)) {
 				mav.setViewName(MainController.REDIRECT_INDEX_PAGE);
@@ -309,7 +301,8 @@ public class LoginController {
 
 	@ResponseBody
 	@RequestMapping(value = "/logout.json", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public BaseOutput<Object> dologout(@RequestParam(required = false, defaultValue = "/login/index.html") String returnUrl) {
+	public BaseOutput<Object> dologout(
+			@RequestParam(required = false, defaultValue = "/login/index.html") String returnUrl) {
 		log.debug("--- doLogout Process ---");
 		Map<String, Object> map = new HashMap<>();
 		String loginPath = WebContent.getCookie("loginPath");

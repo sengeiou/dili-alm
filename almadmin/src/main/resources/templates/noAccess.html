@@ -1,0 +1,7 @@
+<#body> <script type="text/javascript">
+	$(function() {
+		$.messager.alert('提示', '由于您长时间未操作导致登录超时或没有权限访问该页面！', null, function() {
+			window.top.location.href = '${domain!}login/index.html';
+		});
+	});
+</script> </#body>
