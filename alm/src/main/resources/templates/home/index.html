@@ -90,7 +90,7 @@ body {
 
 
 	<!-- 隐藏编辑框 -->
-	<!-- <div id="dlg" class="easyui-dialog" shadow="false" resizable="false" constrain="true" shadow="true" draggable="false" title="日程详情"
+	<div id="scheduleDlg" class="easyui-dialog" shadow="false" resizable="false" constrain="true" shadow="true" draggable="false" title="日程详情"
 		style="width: 400px; height: 200px; padding: 10px" modal="true" border="thin" closed="true"
 		data-options="
                     iconCls: 'icon-save',
@@ -102,7 +102,7 @@ body {
                     },{
                         text:'取消',
                         handler:function(){
-                            $('#dlg').dialog('close');
+                            $('#scheduleDlg').dialog('close');
                         }
                     }]
                 ">
@@ -119,7 +119,7 @@ body {
 				</tr>
 			</table>
 		</form>
-	</div> -->
+	</div>
 
 	<!-- 隐藏编辑框 -->
 	<div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="任务信息" style="padding: 20px"
@@ -366,17 +366,17 @@ body {
 		var obj = $.parseJSON(str);
 		var date1 = new Date(obj.scheduleDate);
 		var selDate = $.fullCalendar.formatDate(date1, 'yyyy-MM-dd');//格式化日期
-		$('#dlg').dialog("open");
+		$('#scheduleDlg').dialog("open");
 		$('#_form').form("clear");
 		$('#_form').form("load", {
 			_id : obj.id,
 			scheduleDate : selDate,
 			scheduleText : obj.scheduleText
 		});
-		$('#dlg').panel('move', {
+		$('#scheduleDlg').panel('move', {
 			top : $(document).scrollTop() + ($(window).height() - 100) * 0.5
 		});
-		$('#dlg').panel('move', {
+		$('#scheduleDlg').panel('move', {
 			left : $(document).scrollTop() + ($(window).height() + 50) * 0.5
 		});
 
@@ -405,7 +405,7 @@ body {
 			async : true,
 			success : function(data) {
 				if (data.code == "200") {
-					$('#dlg').dialog('close');
+					$('#scheduleDlg').dialog('close');
 					init(_formData.scheduleDate);
 				} else {
 					$.messager.alert('错误', data.result);
@@ -466,18 +466,18 @@ body {
 		if (oldDate < newDate) {
 			$.messager.alert('警告', '不可添加日程');
 		} else {
-			$('#dlg').dialog("open");
+			$('#scheduleDlg').dialog("open");
 			$('#_form').form("clear");
 			$('#_form').form("load", {
 				scheduleDate : selDate
 			});
-			$('#dlg').panel(
+			$('#scheduleDlg').panel(
 					'move',
 					{
 						top : $(document).scrollTop()
 								+ ($(window).height() - 100) * 0.5
 					});
-			$('#dlg').panel(
+			$('#scheduleDlg').panel(
 					'move',
 					{
 						left : $(document).scrollTop()
