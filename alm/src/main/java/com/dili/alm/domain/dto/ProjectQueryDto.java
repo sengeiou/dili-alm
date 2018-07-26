@@ -35,4 +35,10 @@ public interface ProjectQueryDto extends Project {
 
 	void setProjectIds(List<Long> ids);
 
+	@Column(name = "`project_state`")
+	@Operator(Operator.IN)
+	List<Integer> getProjectStates();
+
+	void setProjectStates(List<Integer> states);
+
 }

@@ -2,6 +2,7 @@ package com.dili.alm.controller;
 
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -189,7 +190,8 @@ public class ProjectController {
 			LOGGER.error(e.getMessage(), e);
 		}
 		if (project.getProjectState() == null) {
-			project.setProjectState(ProjectState.IN_PROGRESS.getValue());
+			project.setProjectStates(
+					Arrays.asList(ProjectState.NOT_START.getValue(), ProjectState.IN_PROGRESS.getValue()));
 		}
 		@SuppressWarnings("rawtypes")
 		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
