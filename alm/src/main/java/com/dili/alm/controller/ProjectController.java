@@ -211,6 +211,8 @@ public class ProjectController {
 			project.setActualEndStartDate(calendar.getTime());
 			project.setActualStartDate(null);
 		}
+		project.setSort("created");
+		project.setOrder("desc");
 		return projectService.listEasyuiPageByExample(project, true).toString();
 	}
 

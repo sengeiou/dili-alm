@@ -363,6 +363,19 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 		if (apply == null) {
 			throw new TravelCostApplyException("记录不存在");
 		}
+		User applicant = AlmCache.getInstance().getUserMap().get(dto.getApplicantId());
+		if (applicant == null) {
+			throw new TravelCostApplyException("申请人不存在");
+		}
+		Department dept = AlmCache.getInstance().getDepMap().get(applicant.getDepartmentId());
+		dto.setDepartmentId(dept.getId());
+		while (dept.getParentId() != null) {
+			dept = AlmCache.getInstance().getDepMap().get(dept.getParentId());
+		}
+		dto.setRootDepartemntId(dept.getId());
+		apply.setApplicantId(dto.getApplicantId());
+		apply.setDepartmentId(dto.getDepartmentId());
+		apply.setRootDepartemntId(dto.getRootDepartemntId());
 		// 计算总出差天数
 		int travelDayAmount = 0;
 		for (TravelCost tc : dto.getTravelCost()) {

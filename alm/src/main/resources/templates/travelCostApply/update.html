@@ -6,13 +6,18 @@
 				data-options="label:'项目:'" required="true"> <%for(item in projects){%>
 					<option value="${item.id!}"<%if(apply.projectId == item.id)%>selected="selected"<%%>>${item.name!}</option> <%}%>
 			</select></td>
-			<td style="padding: 5px;"><input class="easyui-textbox" style="width: 300px" value="${apply.applicantName!}"
-				data-options="label:'申请人:',readonly:true" /></td>
+			<td style="padding: 5px;"><input class="easyui-combobox" style="width: 300px" id="applicantId1" name="applicantId"
+				data-options="label:'申请人:',
+				required:true,
+				url:'${contextPath!}/travelCostApply/users.json',
+				textField:'realName',
+				valueField:'id',
+				onSelect:updateDepartment" /></td>
 		</tr>
 		<tr>
-			<td style="padding: 5px;"><input class="easyui-textbox" value="${apply.departmentName!}" style="width: 300px"
-				data-options="label:'申请部门:',readonly:true,required:true" /></td>
-			<td style="padding: 5px;"><input class="easyui-textbox" value="${apply.rootDepartmentName!}" style="width: 300px"
+				<td style="padding: 5px;"><input class="easyui-textbox" id="department" style="width: 300px"
+				data-options="label:'申请部门:',readonly:true,required:true,onChange:updateCenter" /></td>
+			<td style="padding: 5px;"><input class="easyui-textbox" id="center" style="width: 300px"
 				data-options="label:'所属中心:',readonly:true,required:true" /></td>
 		</tr>
 	</table>
@@ -92,3 +97,9 @@
 	<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="addCostItem()" plain="true"></a> <a href="#" class="easyui-linkbutton"
 		iconCls="icon-remove" onclick="removeCostItem()" plain="true"></a>
 </div>
+<script type="text/javascript">
+	$(function() {
+		var userId = '${apply.applicantId!}';
+		$('#applicantId1').combobox('select', userId);
+	})
+</script>
