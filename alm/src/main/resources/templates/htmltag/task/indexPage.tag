@@ -321,9 +321,6 @@ $(function() {
 				document.onkeyup = getKey;
 			}
 			queryGrid();
-			if (!isProjectManager()) {
-				$("#manager_tools").css("display", "none");
-			}
 		})
 
 function formatOptions(value, row, index) {

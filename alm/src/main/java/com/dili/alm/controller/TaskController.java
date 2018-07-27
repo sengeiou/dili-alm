@@ -316,16 +316,6 @@ public class TaskController {
 		return taskService.isCreater(task);
 	}
 
-	/*
-	 * // 剩余工时
-	 * 
-	 * @ResponseBody
-	 * 
-	 * @RequestMapping(value = "/restTaskHour.json", method = { RequestMethod.GET,
-	 * RequestMethod.POST }) public int restTaskHour(Long owerId) { int rest =
-	 * taskService.restTaskHour(owerId); return rest; }
-	 */
-
 	// 更新任务信息
 	@ApiOperation("填写任务工时")
 	@ApiImplicitParams({
