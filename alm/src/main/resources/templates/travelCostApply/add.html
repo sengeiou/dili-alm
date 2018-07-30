@@ -13,7 +13,7 @@
 					projects){%>
 					<option value="${item.id!}">${item.name!}</option> <%}%>
 			</select></td>
-			<td style="padding: 5px;"><input class="easyui-combobox" style="width: 300px"
+			<td style="padding: 5px;"><input class="easyui-combobox" style="width: 300px" name="applicantId"
 				data-options="label:'申请人:',
 				required:true,
 				url:'${contextPath!}/travelCostApply/users.json',

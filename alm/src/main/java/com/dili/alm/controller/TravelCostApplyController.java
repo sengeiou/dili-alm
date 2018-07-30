@@ -153,8 +153,6 @@ public class TravelCostApplyController {
 			@ApiImplicitParam(name = "TravelCostApply", paramType = "form", value = "TravelCostApply的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput insert(@RequestBody TravelCostApplyUpdateDto apply) {
-		UserTicket user = SessionContext.getSessionContext().getUserTicket();
-		apply.setApplicantId(user.getId());
 		try {
 			this.travelCostApplyService.saveOrUpdate(apply);
 			return BaseOutput.success();
@@ -193,8 +191,6 @@ public class TravelCostApplyController {
 			@ApiImplicitParam(name = "TravelCostApply", paramType = "form", value = "TravelCostApply的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.POST })
 	public @ResponseBody BaseOutput update(@RequestBody TravelCostApplyUpdateDto apply) {
-		UserTicket user = SessionContext.getSessionContext().getUserTicket();
-		apply.setApplicantId(user.getId());
 		try {
 			this.travelCostApplyService.saveOrUpdate(apply);
 			return BaseOutput.success();
