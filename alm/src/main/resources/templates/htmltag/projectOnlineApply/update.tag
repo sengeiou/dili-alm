@@ -1,4 +1,5 @@
 $(function() {
+			loadProject();
 			var versionId = '${apply.versionId!}';
 			versionId = parseInt(versionId);
 			$('#versionId').combobox('initValue', versionId);
