@@ -105,6 +105,19 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 				this.filesService.updateSelective(file);
 			});
 		}
+		// 插入项目进程记录版本计划
+		ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
+		par.setActionCode(ProjectAction.VERSION_PLAN.getCode());
+		par.setActionDateType(ActionDateType.PERIOD.getValue());
+		par.setActionEndDate(dto.getPlannedEndDate());
+		par.setActionStartDate(dto.getPlannedStartDate());
+		par.setActionType(ProjectActionType.VERSION.getValue());
+		par.setVersionId(dto.getId());
+		par.setActionCode(ProjectAction.VERSION_PLAN.getCode());
+		rows = this.parMapper.insertSelective(par);
+		if (rows <= 0) {
+			throw new ProjectVersionException("插入项目进程记录失败");
+		}
 
 	}
 
@@ -356,21 +369,9 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 			if (rows <= 0) {
 				throw new ProjectVersionException("更新版本状态失败");
 			}
-			// 插入项目版本进程-版本规划
-			ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
-			par.setActionCode(ProjectAction.VERSION_PLAN.getCode());
-			par.setActionDateType(ActionDateType.PERIOD.getValue());
-			par.setActionStartDate(version.getPlannedStartDate());
-			par.setActionEndDate(version.getPlannedEndDate());
-			par.setActionType(ProjectActionType.VERSION.getValue());
-			par.setVersionId(id);
-			rows = this.parMapper.insertSelective(par);
-			if (rows <= 0) {
-				throw new ProjectVersionException("插入项目版本进程记录失败");
-			}
 
 			// 插入项目版本进程-版本开始
-			par = DTOUtils.newDTO(ProjectActionRecord.class);
+			ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
 			par.setActionCode(ProjectAction.VERSION_START.getCode());
 			par.setActionDateType(ActionDateType.POINT.getValue());
 			par.setActionDate(now);
