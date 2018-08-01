@@ -94,7 +94,6 @@ function projectManagerConfirm(id) {
 				buttons : [{
 							text : '确认',
 							handler : function() {
-								var data = $("#editForm").serializeArray();
 								$('#editForm').form('submit', {
 											url : '${contextPath!}/projectOnlineApply/projectManagerConfirm',
 											queryParams : {
@@ -397,7 +396,10 @@ function openInsert() {
 								$('#editForm').form('submit', {
 											url : '${contextPath!}/projectOnlineApply/add',
 											onSubmit : function() {
-												return validateForm();
+												if (!validateForm()) {
+													return false;
+												}
+												showProgressbar();
 											},
 											success : function(data) {
 												var obj = $.parseJSON(data);
@@ -407,6 +409,7 @@ function openInsert() {
 												} else {
 													$.messager.alert('错误', obj.result);
 												}
+												closeProgressbar();
 											}
 										});
 							}
@@ -455,6 +458,7 @@ function validateForm() {
 		$.messager.alert('错误', '依赖系统不能为空');
 		return false;
 	}
+	return true;
 }
 
 function updateGrid(row) {
@@ -501,7 +505,10 @@ function openUpdate(index, id) {
 								$('#editForm').form('submit', {
 											url : '${contextPath!}/projectOnlineApply/update',
 											onSubmit : function() {
-												return validateForm();
+												if (!validateForm()) {
+													return false;
+												}
+												showProgressbar();
 											},
 											success : function(data) {
 												var obj = $.parseJSON(data);
@@ -511,6 +518,7 @@ function openUpdate(index, id) {
 												} else {
 													$.messager.alert('错误', obj.result);
 												}
+												closeProgressbar();
 											}
 										});
 							}
@@ -526,7 +534,10 @@ function openUpdate(index, id) {
 								$('#editForm').form('submit', {
 											url : '${contextPath!}/projectOnlineApply/saveAndSubmit',
 											onSubmit : function() {
-												return validateForm();
+												if (!validateForm()) {
+													return false;
+												}
+												showProgressbar();
 											},
 											success : function(data) {
 												var obj = $.parseJSON(data);
@@ -536,11 +547,36 @@ function openUpdate(index, id) {
 												} else {
 													$.messager.alert('错误', obj.result);
 												}
+												closeProgressbar();
 											}
 										});
 							}
 						}]
 			});
+}
+
+function closeProgressbar() {
+	window.clearInterval();
+	var bar = $.messager.progress('bar');
+	bar.progressbar('setValue', 100);
+	bar.progressbar('setText', '100%');
+	$.messager.progress('close');
+}
+
+function showProgressbar() {
+	$.messager.progress({
+				title : "提示",
+				msg : "文件上传中......",
+				interval : 0
+			});
+	var bar = $.messager.progress('bar');
+	window.setInterval(function() {
+				var val = bar.progressbar('getValue');
+				if (val >= 90) {
+					window.clearInterval();
+				}
+				bar.progressbar('setValue', val + 10);
+			}, 1000);
 }
 
 function saveOrUpdate() {
