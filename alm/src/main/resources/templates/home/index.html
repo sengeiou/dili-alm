@@ -106,7 +106,7 @@ body {
                         }
                     }]
                 ">
-		<form id="_form" class="easyui-form" method="post" fit="true">
+		<form id="scheduleForm" class="easyui-form" method="post" fit="true">
 			<input name="_id" id="_id" type="hidden">
 			<table width="360px">
 				<tr>
@@ -367,8 +367,8 @@ body {
 		var date1 = new Date(obj.scheduleDate);
 		var selDate = $.fullCalendar.formatDate(date1, 'yyyy-MM-dd');//格式化日期
 		$('#scheduleDlg').dialog("open");
-		$('#_form').form("clear");
-		$('#_form').form("load", {
+		$('#scheduleForm').form("clear");
+		$('#scheduleForm').form("load", {
 			_id : obj.id,
 			scheduleDate : selDate,
 			scheduleText : obj.scheduleText
@@ -384,10 +384,10 @@ body {
 	//保存日程
 	function saveOrUpdate() {
 
-		if (!$('#_form').form("validate")) {
+		if (!$('#scheduleForm').form("validate")) {
 			return;
 		}
-		var _formData = $("#_form").serializeObject();
+		var _formData = $("#scheduleForm").serializeObject();
 		var _url = null;
 		//没有id就新增
 		if (_formData._id == null || _formData._id == "") {
@@ -467,8 +467,8 @@ body {
 			$.messager.alert('警告', '不可添加日程');
 		} else {
 			$('#scheduleDlg').dialog("open");
-			$('#_form').form("clear");
-			$('#_form').form("load", {
+			$('#scheduleForm').form("clear");
+			$('#scheduleForm').form("load", {
 				scheduleDate : selDate
 			});
 			$('#scheduleDlg').panel(
