@@ -223,7 +223,7 @@ public class HardwareResourceApplyController {
 		List<Long> projectIds = new ArrayList<>();
 		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
 		query.setProjectIds(projectIds);
-		query.setSort("modified");
+		query.setSort("created");
 		query.setOrder("desc");
 		if (StringUtils.isNotBlank(applyStateShow)) {
 			List<Integer> stateList = JSON.parseArray(applyStateShow, Integer.class);
