@@ -33,8 +33,8 @@ import com.dili.alm.domain.DataDictionaryValue;
 import com.dili.alm.domain.Department;
 import com.dili.alm.domain.TravelCost;
 import com.dili.alm.domain.TravelCostApply;
-import com.dili.alm.domain.TravelCostApplyResult;
 import com.dili.alm.domain.TravelCostApplyState;
+import com.dili.alm.domain.TravelCostApplyType;
 import com.dili.alm.domain.TravelCostDetail;
 import com.dili.alm.domain.TravelCostDetailEntity;
 import com.dili.alm.domain.User;
@@ -46,7 +46,6 @@ import com.dili.alm.domain.dto.TravelCostDto;
 import com.dili.alm.domain.dto.TravelCostDtoBean;
 import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.TravelCostApplyException;
-import com.dili.alm.provider.AreaProvider;
 import com.dili.alm.provider.DepProvider;
 import com.dili.alm.provider.MemberProvider;
 import com.dili.alm.provider.ProjectProvider;
@@ -54,6 +53,7 @@ import com.dili.alm.provider.TravelCostApplyStateProvider;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.TravelCostApplyService;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
@@ -68,8 +68,6 @@ import com.google.common.collect.Sets;
 public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply, Long>
 		implements TravelCostApplyService {
 
-	@Autowired
-	private AreaProvider areaProvider;
 	private String contentTemplate;
 	@Autowired
 	private DataDictionaryService ddService;
@@ -190,7 +188,11 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 		TravelCostApplyUpdateDtoBean dto = DTOUtils.toEntity(apply, TravelCostApplyUpdateDtoBean.class, false);
 		dto.setApplicantName(this.memberProvider.getDisplayText(dto.getApplicantId(), null, null));
 		dto.setDepartmentName(this.deptProvider.getDisplayText(dto.getDepartmentId(), null, null));
-		dto.setProjectName(this.projectProvider.getDisplayText(dto.getProjectId(), null, null));
+		// dto.setProjectName(this.projectProvider.getDisplayText(dto.getProjectId(),
+		// null, null));
+		dto.setProjectGridName(apply.getApplyType().equals(TravelCostApplyType.PROJECT.getValue())
+				? this.projectProvider.getDisplayText(apply.getProjectId(), null, null)
+				: apply.getCustomNote());
 		dto.setRootDepartmentName(this.deptProvider.getDisplayText(dto.getRootDepartemntId(), null, null));
 		TravelCost tcQuery = DTOUtils.newDTO(TravelCost.class);
 		tcQuery.setApplyId(id);
@@ -215,6 +217,10 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 	@Override
 	public EasyuiPageOutput listEasyuiPageByExample(TravelCostApply domain, boolean useProvider) throws Exception {
 		List<TravelCostApply> list = listByExample(domain);
+		list.forEach(t -> t.aset("projectGridName",
+				t.getApplyType().equals(TravelCostApplyType.PROJECT.getValue())
+						? this.projectProvider.getDisplayText(t.getProjectId(), null, null)
+						: t.getCustomNote()));
 		@SuppressWarnings("rawtypes")
 		long total = list instanceof Page ? ((Page) list).getTotal() : list.size();
 		@SuppressWarnings("rawtypes")
@@ -230,6 +236,9 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 
 	@Override
 	public void saveOrUpdate(TravelCostApplyUpdateDto dto) throws TravelCostApplyException {
+		if (dto.getApplyType().equals(TravelCostApplyType.CUSTOM.getValue())) {
+			dto.setProjectId(null);
+		}
 		if (dto.getId() == null) {
 			this.insertTravelCostApply(dto);
 		} else {
@@ -373,6 +382,7 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 			dept = AlmCache.getInstance().getDepMap().get(dept.getParentId());
 		}
 		dto.setRootDepartemntId(dept.getId());
+		apply.setCustomNote(dto.getCustomNote());
 		apply.setApplicantId(dto.getApplicantId());
 		apply.setDepartmentId(dto.getDepartmentId());
 		apply.setRootDepartemntId(dto.getRootDepartemntId());

@@ -11,11 +11,20 @@ public class TravelCostApplyUpdateDtoBean extends TravelCostApplyEntity {
 	 */
 	private static final long serialVersionUID = -6871209286642053044L;
 
+	private String projectGridName;
 	private String applicantName;
 	private String projectName;
 	private String departmentName;
 	private String rootDepartmentName;
 	private List<TravelCostDtoBean> travelCost;
+
+	public String getProjectGridName() {
+		return projectGridName;
+	}
+
+	public void setProjectGridName(String projectGridName) {
+		this.projectGridName = projectGridName;
+	}
 
 	public String getApplicantName() {
 		return applicantName;

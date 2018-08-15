@@ -7,7 +7,9 @@
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="serial_number" jdbcType="VARCHAR" property="serialNumber" />
+    <result column="apply_type" jdbcType="INTEGER" property="applyType" />
     <result column="project_id" jdbcType="BIGINT" property="projectId" />
+    <result column="custom_note" jdbcType="VARCHAR" property="customNote" />
     <result column="applicant_id" jdbcType="BIGINT" property="applicantId" />
     <result column="root_departemnt_id" jdbcType="BIGINT" property="rootDepartemntId" />
     <result column="department_id" jdbcType="BIGINT" property="departmentId" />
@@ -22,8 +24,9 @@
     <!--
       WARNING - @mbg.generated
     -->
-    id, serial_number, project_id, applicant_id, root_departemnt_id, department_id, apply_state, 
-    total_amount, travel_day_amount, submit_date, creation_time, modification_time
+    id, serial_number, apply_type, project_id, custom_note, applicant_id, root_departemnt_id, 
+    department_id, apply_state, total_amount, travel_day_amount, submit_date, creation_time, 
+    modification_time
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -43,8 +46,14 @@
       <if test="serialNumber != null">
         serial_number = #{serialNumber,jdbcType=VARCHAR},
       </if>
+      <if test="applyType != null">
+        apply_type = #{applyType,jdbcType=INTEGER},
+      </if>
       <if test="projectId != null">
         project_id = #{projectId,jdbcType=BIGINT},
+      </if>
+      <if test="customNote != null">
+        custom_note = #{customNote,jdbcType=VARCHAR},
       </if>
       <if test="applicantId != null">
         applicant_id = #{applicantId,jdbcType=BIGINT},

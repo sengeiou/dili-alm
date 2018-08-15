@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.domain.Department;
+import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.TravelCostApply;
 import com.dili.alm.domain.TravelCostApplyResult;
 import com.dili.alm.domain.TravelCostApplyState;
@@ -142,7 +143,8 @@ public class TravelCostApplyController {
 	public String addView(ModelMap modelMap) {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		modelMap.addAttribute("user", user);
-		modelMap.addAttribute("projects", AlmCache.getInstance().getProjectMap().values());
+		modelMap.addAttribute("projects", AlmCache.getInstance().getProjectMap().values().stream()
+				.filter(p -> !p.getProjectState().equals(ProjectState.CLOSED.getValue())).collect(Collectors.toList()));
 		// 查询费用项
 		modelMap.addAttribute("costItems", AlmCache.getInstance().getTravelCostItemMap());
 		return "travelCostApply/add";
@@ -180,7 +182,8 @@ public class TravelCostApplyController {
 		TravelCostApply viewModel = this.travelCostApplyService.getUpdateViewData(id);
 		modelMap.addAttribute("apply", viewModel);
 		// 查询项目
-		modelMap.addAttribute("projects", AlmCache.getInstance().getProjectMap().values());
+		modelMap.addAttribute("projects", AlmCache.getInstance().getProjectMap().values().stream()
+				.filter(p -> !p.getProjectState().equals(ProjectState.CLOSED.getValue())).collect(Collectors.toList()));
 		// 查询费用项
 		modelMap.addAttribute("costItems", AlmCache.getInstance().getTravelCostItemMap());
 		return "travelCostApply/update";

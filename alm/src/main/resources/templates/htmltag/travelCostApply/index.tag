@@ -87,6 +87,16 @@ function removeCostItem() {
 	$('#travelCostGrid').datagrid('acceptChanges');
 }
 
+function checkSelect(nval, oval) {
+	if (nval == -1) {
+		$('#applyType').val(2);
+		$('#customNote').textbox('enable');
+	} else {
+		$('#applyType').val(1);
+		$('#customNote').textbox('disable');
+	}
+}
+
 // 打开新增窗口
 function openInsert() {
 	if (!dataAuth.addTravelCost) {

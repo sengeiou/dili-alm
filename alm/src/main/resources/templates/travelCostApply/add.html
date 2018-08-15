@@ -5,14 +5,19 @@
 	}
 </script>
 <form id="_form" class="easyui-form" method="post" fit="true">
-	<input name="_id" id="_id" type="hidden">
+	<input name="_id" id="_id" type="hidden"> <input type="hidden" id="applyType" name="applyType" value="">
 	<table width="700px">
 		<tr>
 			<td style="padding: 5px;"><select class="easyui-combobox" name="projectId" id="projectId" style="width: 300px"
-				data-options="label:'项目:',editable:false,prompt:'--请选择--',onLoadSuccess:clearDefaultValue" required="true"> <%for(item in
-					projects){%>
+				data-options="label:'项目:',editable:false,prompt:'--请选择--',onLoadSuccess:clearDefaultValue,onChange:checkSelect" required="true">
+					<%for(item in projects){%>
 					<option value="${item.id!}">${item.name!}</option> <%}%>
+					<option value="-1">自定义</option>
 			</select></td>
+			<td style="padding: 5px;"><input class="easyui-textbox" style="width: 300px" id="customNote" name="customNote"
+				data-options="label:'自定义:',required:true,disabled:true" /></td>
+		</tr>
+		<tr>
 			<td style="padding: 5px;"><input class="easyui-combobox" style="width: 300px" name="applicantId"
 				data-options="label:'申请人:',
 				required:true,
@@ -20,11 +25,10 @@
 				textField:'realName',
 				valueField:'id',
 				onSelect:updateDepartment" /></td>
-		</tr>
-		</tr>
-		<tr>
 			<td style="padding: 5px;"><input class="easyui-textbox" id="department" style="width: 300px"
 				data-options="label:'申请部门:',readonly:true,required:true,onChange:updateCenter" /></td>
+		</tr>
+		<tr>
 			<td style="padding: 5px;"><input class="easyui-textbox" id="center" style="width: 300px"
 				data-options="label:'所属中心:',readonly:true,required:true" /></td>
 		</tr>

@@ -367,7 +367,7 @@ function del(index) {
 		return false;
 	}
 	var selected = null;
-	if (!index) {
+	if (index == undefined) {
 		selected = $("#grid").datagrid("getSelected");
 	} else {
 		selected = $('#grid').datagrid('getRows')[index];

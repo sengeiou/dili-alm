@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.ProjectState;
 import com.dili.alm.service.ProjectService;
 import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
@@ -30,8 +32,12 @@ public class ProjectProvider implements ValueProvider {
 
 	@Override
 	public List<ValuePair<?>> getLookupList(Object o, Map map, FieldMeta fieldMeta) {
-		ArrayList buffer = new ArrayList<ValuePair<?>>();
-		AlmCache.getInstance().getProjectMap().forEach((k, v) -> buffer.add(new ValuePairImpl<Long>(v.getName(), k)));
+		Map<Long, Project> projectMap = AlmCache.getInstance().getProjectMap();
+		ArrayList<ValuePair<?>> buffer = new ArrayList<>(projectMap.size());
+		// projectMap.forEach((k, v) -> buffer.add(new ValuePairImpl<Long>(v.getName(),
+		// k)));
+		projectMap.values().stream().filter(p -> !p.getProjectState().equals(ProjectState.CLOSED.getValue()))
+				.collect(Collectors.toList()).forEach(p -> buffer.add(new ValuePairImpl<Long>(p.getName(), p.getId())));
 		return buffer;
 	}
 

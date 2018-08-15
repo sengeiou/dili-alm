@@ -14,7 +14,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2018-05-29 09:24:09.
+ * This file was generated on 2018-08-14 16:22:12.
  */
 @Table(name = "`travel_cost_apply`")
 public interface TravelCostApply extends IBaseDomain {
@@ -34,12 +34,26 @@ public interface TravelCostApply extends IBaseDomain {
 
     void setSerialNumber(String serialNumber);
 
+    @Column(name = "`apply_type`")
+    @FieldDef(label="申请类型")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Integer getApplyType();
+
+    void setApplyType(Integer applyType);
+
     @Column(name = "`project_id`")
     @FieldDef(label="项目id")
-    @EditMode(editor = FieldEditor.Number, required = true)
+    @EditMode(editor = FieldEditor.Number, required = false)
     Long getProjectId();
 
     void setProjectId(Long projectId);
+
+    @Column(name = "`custom_note`")
+    @FieldDef(label="申请描述", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getCustomNote();
+
+    void setCustomNote(String customNote);
 
     @Column(name = "`applicant_id`")
     @FieldDef(label="申请人id")
