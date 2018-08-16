@@ -26,6 +26,10 @@ public class TravelCostApplyEntity extends BaseDomain implements TravelCostApply
 
 	private Date creationTime;
 
+	private Integer applyType;
+
+	private String customNote;
+
 	@Override
 	public Long getProjectId() {
 		return projectId;
@@ -134,6 +138,26 @@ public class TravelCostApplyEntity extends BaseDomain implements TravelCostApply
 	@Override
 	public void setModificationTime(Date modificationTime) {
 		this.modificationTime = modificationTime;
+	}
+
+	@Override
+	public Integer getApplyType() {
+		return applyType;
+	}
+
+	@Override
+	public void setApplyType(Integer applyType) {
+		this.applyType = applyType;
+	}
+
+	@Override
+	public String getCustomNote() {
+		return customNote;
+	}
+
+	@Override
+	public void setCustomNote(String customNote) {
+		this.customNote = customNote;
 	}
 
 }
