@@ -137,6 +137,7 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		if (version != null && !version.getId().equals(dto.getId())) {
 			throw new ProjectVersionException("版本已存在");
 		}
+		version = this.getActualDao().selectByPrimaryKey(dto.getId());
 		// 检查状态是否是未开始
 		if (!version.getVersionState().equals(ProjectVersionState.NOT_START.getValue())) {
 			throw new ProjectVersionException("当前状态不能编辑！");

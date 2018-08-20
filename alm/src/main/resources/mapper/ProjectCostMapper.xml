@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.alm.dao.ProjectCostMapper">
+  <resultMap id="BaseResultMap" type="com.dili.alm.domain.ProjectCost">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="apply_id" jdbcType="BIGINT" property="applyId" />
+    <result column="amount" jdbcType="INTEGER" property="amount" />
+    <result column="rate" jdbcType="VARCHAR" property="rate" />
+    <result column="software_cost" jdbcType="BIGINT" property="softwareCost" />
+    <result column="total" jdbcType="BIGINT" property="total" />
+    <result column="note" jdbcType="VARCHAR" property="note" />
+    <result column="cost_type" jdbcType="INTEGER" property="costType" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, apply_id, amount, rate, software_cost, total, note, cost_type
+  </sql>
+  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from project_cost
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <update id="updateBy" parameterType="com.dili.alm.domain.ProjectCost">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update project_cost
+    <set>
+      <if test="applyId != null">
+        apply_id = #{applyId,jdbcType=BIGINT},
+      </if>
+      <if test="amount != null">
+        amount = #{amount,jdbcType=INTEGER},
+      </if>
+      <if test="rate != null">
+        rate = #{rate,jdbcType=VARCHAR},
+      </if>
+      <if test="softwareCost != null">
+        software_cost = #{softwareCost,jdbcType=BIGINT},
+      </if>
+      <if test="total != null">
+        total = #{total,jdbcType=BIGINT},
+      </if>
+      <if test="note != null">
+        note = #{note,jdbcType=VARCHAR},
+      </if>
+      <if test="costType != null">
+        cost_type = #{costType,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

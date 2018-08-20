@@ -33,6 +33,8 @@ import com.dili.alm.component.MailManager;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.ApproveMapper;
 import com.dili.alm.dao.ProjectActionRecordMapper;
+import com.dili.alm.dao.ProjectCostMapper;
+import com.dili.alm.dao.ProjectEarningMapper;
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.domain.ActionDateType;
 import com.dili.alm.domain.Approve;
@@ -44,6 +46,8 @@ import com.dili.alm.domain.ProjectActionType;
 import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.ProjectChange;
 import com.dili.alm.domain.ProjectComplete;
+import com.dili.alm.domain.ProjectCost;
+import com.dili.alm.domain.ProjectEarning;
 import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.Team;
 import com.dili.alm.domain.TeamRole;
@@ -51,6 +55,7 @@ import com.dili.alm.domain.User;
 import com.dili.alm.domain.VerifyApproval;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
+import com.dili.alm.domain.dto.Roi;
 import com.dili.alm.domain.dto.apply.ApplyApprove;
 import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.ApproveException;
@@ -141,6 +146,10 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	private ProjectActionRecordMapper parMapper;
 	@Autowired
 	private ProjectTypeProvider projectTypeProvider;
+	@Autowired
+	private ProjectEarningMapper projectEarningMapper;
+	@Autowired
+	private ProjectCostMapper projectCostMapper;
 
 	public ApproveServiceImpl() {
 		super();
@@ -427,7 +436,18 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
 				map.put("planDto", projectApplyService.loadPlan(id));
 
-				map.put("roi", JSON.parseObject(apply.getRoi(), Map.class));
+				// map.put("roi", JSON.parseObject(apply.getRoi(), Map.class));
+				Roi roi = new Roi();
+				ProjectEarning peQuery = DTOUtils.newDTO(ProjectEarning.class);
+				peQuery.setApplyId(id);
+				List<ProjectEarning> earnings = this.projectEarningMapper.select(peQuery);
+				roi.setEarnings(earnings);
+
+				ProjectCost pcQuery = DTOUtils.newDTO(ProjectCost.class);
+				pcQuery.setApplyId(id);
+				List<ProjectCost> costs = this.projectCostMapper.select(pcQuery);
+				roi.setCosts(costs);
+				map.put("roi", roi);
 
 				map.put("loadImpact", projectApplyService.loadImpact(id));
 				map.put("loadRisk", projectApplyService.loadRisk(id));
@@ -816,8 +836,8 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 						AlmConstants.MessageType.CHANGE.getCode());
 				break;
 			case "complete":
-				messageService.insertMessage("http://almweb.diligrp.com/approve/complete/" + id, sender,
-						recipient, AlmConstants.MessageType.COMPLETE.getCode());
+				messageService.insertMessage("http://almweb.diligrp.com/approve/complete/" + id, sender, recipient,
+						AlmConstants.MessageType.COMPLETE.getCode());
 				break;
 			}
 		} catch (Exception e) {

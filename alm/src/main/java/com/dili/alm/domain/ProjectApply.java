@@ -153,12 +153,12 @@ public interface ProjectApply extends IBaseDomain {
     @EditMode(editor = FieldEditor.Text, required = false)
     String getPlan();
 
-    void setPlan(String plan);
-
-    @Column(name = "`roi`")
-    @FieldDef(label="ROI分析", maxLength = 1000)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getRoi();
+//    void setPlan(String plan);
+//
+//    @Column(name = "`roi`")
+//    @FieldDef(label="ROI分析", maxLength = 1000)
+//    @EditMode(editor = FieldEditor.Text, required = false)
+//    String getRoi();
 
     void setRoi(String roi);
 
