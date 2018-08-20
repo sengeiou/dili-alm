@@ -236,9 +236,6 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 
 	@Override
 	public void saveOrUpdate(TravelCostApplyUpdateDto dto) throws TravelCostApplyException {
-		if (dto.getApplyType().equals(TravelCostApplyType.CUSTOM.getValue())) {
-			dto.setProjectId(null);
-		}
 		if (dto.getId() == null) {
 			this.insertTravelCostApply(dto);
 		} else {
@@ -296,6 +293,9 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 		User applicant = AlmCache.getInstance().getUserMap().get(dto.getApplicantId());
 		if (applicant == null) {
 			throw new TravelCostApplyException("申请人不存在");
+		}
+		if (dto.getApplyType().equals(TravelCostApplyType.CUSTOM.getValue())) {
+			dto.setProjectId(null);
 		}
 		Department dept = AlmCache.getInstance().getDepMap().get(applicant.getDepartmentId());
 		dto.setDepartmentId(dept.getId());
@@ -376,6 +376,9 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 		if (applicant == null) {
 			throw new TravelCostApplyException("申请人不存在");
 		}
+		if (dto.getApplyType().equals(TravelCostApplyType.CUSTOM.getValue())) {
+			dto.setProjectId(null);
+		}
 		Department dept = AlmCache.getInstance().getDepMap().get(applicant.getDepartmentId());
 		dto.setDepartmentId(dept.getId());
 		while (dept.getParentId() != null) {
@@ -386,6 +389,7 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 		apply.setApplicantId(dto.getApplicantId());
 		apply.setDepartmentId(dto.getDepartmentId());
 		apply.setRootDepartemntId(dto.getRootDepartemntId());
+		apply.setApplyType(dto.getApplyType());
 		// 计算总出差天数
 		int travelDayAmount = 0;
 		for (TravelCost tc : dto.getTravelCost()) {
