@@ -18,10 +18,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.ProjectApplyQuery;
+import com.dili.alm.domain.dto.RoiDto;
+import com.dili.alm.domain.dto.RoiUpdateDto;
 import com.dili.alm.domain.dto.apply.ApplyDescription;
 import com.dili.alm.domain.dto.apply.ApplyFiles;
 import com.dili.alm.domain.dto.apply.ApplyGoalsFunctions;
@@ -114,6 +117,10 @@ public class ProjectApplyController {
 		if (step == 1) {
 			projectApplyService.buildStepOne(modelMap, applyDTO);
 		}
+		if (step == 5) {
+			RoiDto roi = AlmCache.getInstance().getProjectApplyRois().get(id);
+			modelMap.addAttribute("roi", roi);
+		}
 		return "projectApply/step" + step;
 	}
 
@@ -142,6 +149,7 @@ public class ProjectApplyController {
 		Map applyDTO = maps.get(0);
 		modelMap.put("apply", applyDTO);
 		projectApplyService.buildStepOne(modelMap, applyDTO);
+		modelMap.addAttribute("roi", AlmCache.getInstance().getProjectApplyRois().get(id));
 		return "projectApply/details";
 	}
 
@@ -205,9 +213,13 @@ public class ProjectApplyController {
 	}
 
 	@RequestMapping(value = "/insertStep", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput insertStep(ProjectApply projectApply) {
-		projectApplyService.updateSelective(projectApply);
-		ProjectApply projectApply2 = projectApplyService.get(projectApply.getId());
+	public @ResponseBody BaseOutput<Object> insertStep(RoiUpdateDto roi) {
+		try {
+			projectApplyService.updateRoi(roi);
+		} catch (ProjectApplyException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+		ProjectApply projectApply2 = projectApplyService.get(roi.getApplyId());
 		return BaseOutput.success(String.valueOf(projectApply2.getId()))
 				.setData(projectApply2.getId() + ":" + projectApply2.getName());
 	}

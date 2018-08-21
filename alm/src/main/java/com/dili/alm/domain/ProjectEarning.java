@@ -14,7 +14,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2018-08-16 15:33:34.
+ * This file was generated on 2018-08-20 14:34:32.
  */
 @Table(name = "`project_earning`")
 public interface ProjectEarning extends IBaseDomain {
@@ -33,6 +33,13 @@ public interface ProjectEarning extends IBaseDomain {
     Long getApplyId();
 
     void setApplyId(Long applyId);
+
+    @Column(name = "`roi_id`")
+    @FieldDef(label="roiId")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Long getRoiId();
+
+    void setRoiId(Long roiId);
 
     @Column(name = "`indicator_name`")
     @FieldDef(label="指标名称", maxLength = 255)

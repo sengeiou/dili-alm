@@ -7,6 +7,7 @@
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="apply_id" jdbcType="BIGINT" property="applyId" />
+    <result column="roi_id" jdbcType="BIGINT" property="roiId" />
     <result column="indicator_name" jdbcType="VARCHAR" property="indicatorName" />
     <result column="indicator_current_status" jdbcType="VARCHAR" property="indicatorCurrentStatus" />
     <result column="project_objective" jdbcType="VARCHAR" property="projectObjective" />
@@ -17,8 +18,8 @@
     <!--
       WARNING - @mbg.generated
     -->
-    id, apply_id, indicator_name, indicator_current_status, project_objective, implemetion_date, 
-    indicator_type
+    id, apply_id, roi_id, indicator_name, indicator_current_status, project_objective, 
+    implemetion_date, indicator_type
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -37,6 +38,9 @@
     <set>
       <if test="applyId != null">
         apply_id = #{applyId,jdbcType=BIGINT},
+      </if>
+      <if test="roiId != null">
+        roi_id = #{roiId,jdbcType=BIGINT},
       </if>
       <if test="indicatorName != null">
         indicator_name = #{indicatorName,jdbcType=VARCHAR},

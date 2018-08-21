@@ -7,9 +7,9 @@
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="apply_id" jdbcType="BIGINT" property="applyId" />
+    <result column="roi_id" jdbcType="BIGINT" property="roiId" />
     <result column="amount" jdbcType="INTEGER" property="amount" />
     <result column="rate" jdbcType="VARCHAR" property="rate" />
-    <result column="software_cost" jdbcType="BIGINT" property="softwareCost" />
     <result column="total" jdbcType="BIGINT" property="total" />
     <result column="note" jdbcType="VARCHAR" property="note" />
     <result column="cost_type" jdbcType="INTEGER" property="costType" />
@@ -18,7 +18,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    id, apply_id, amount, rate, software_cost, total, note, cost_type
+    id, apply_id, roi_id, amount, rate, total, note, cost_type
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -38,14 +38,14 @@
       <if test="applyId != null">
         apply_id = #{applyId,jdbcType=BIGINT},
       </if>
+      <if test="roiId != null">
+        roi_id = #{roiId,jdbcType=BIGINT},
+      </if>
       <if test="amount != null">
         amount = #{amount,jdbcType=INTEGER},
       </if>
       <if test="rate != null">
         rate = #{rate,jdbcType=VARCHAR},
-      </if>
-      <if test="softwareCost != null">
-        software_cost = #{softwareCost,jdbcType=BIGINT},
       </if>
       <if test="total != null">
         total = #{total,jdbcType=BIGINT},

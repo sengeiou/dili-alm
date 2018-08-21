@@ -25,6 +25,7 @@ em {
 <div class="easyui-panel" title="立项申请（第五步）">
 	<div style="padding: 10px 60px 20px 60px">
 		<form id="ff" method="post">
+			<input type="hidden" name="applyId" value="${apply.id!}">
 			<table cellpadding="5" width="100%">
 				<tr>
 					<td>项目编号</td>
@@ -50,9 +51,9 @@ em {
 					<td><input class="easyui-textbox" name="indicatorName[0]" id="" style="width: 100%"
 						data-options="multiline:true,validType:['length[0,50]']" /><input type="hidden" name="indicatorType[0]" value="1"></td>
 					<td><input class="easyui-textbox" name="indicatorName[1]" id="" style="width: 100%"
-						data-options="multiline:true,validType:['length[0,50]']" /><input type="hidden" name="indicatorType[0]" value="1"></td>
+						data-options="multiline:true,validType:['length[0,50]']" /><input type="hidden" name="indicatorType[1]" value="1"></td>
 					<td><input class="easyui-textbox" name="indicatorName[2]" id="" style="width: 100%"
-						data-options="multiline:true,validType:['length[0,50]']" /><input type="hidden" name="indicatorType[0]" value="1"></td>
+						data-options="multiline:true,validType:['length[0,50]']" /><input type="hidden" name="indicatorType[2]" value="1"></td>
 				</tr>
 				<tr>
 					<td style="background-color: #f5f5f5; text-align: center">指标现状</td>
@@ -88,11 +89,11 @@ em {
 				<tr>
 					<td style="background-color: #f5f5f5; text-align: center">指标名称</td>
 					<td><input class="easyui-textbox" name="indicatorName[3]" id="" style="width: 100%"
-						data-options="multiline:true,validType:['length[0,50]']" /><input type="hidden" name="indicatorType[0]" value="2"></td>
+						data-options="multiline:true,validType:['length[0,50]']" /><input type="hidden" name="indicatorType[3]" value="2"></td>
 					<td><input class="easyui-textbox" name="indicatorName[4]" id="" style="width: 100%"
-						data-options="multiline:true,validType:['length[0,50]']" /><input type="hidden" name="indicatorType[0]" value="2"></td>
+						data-options="multiline:true,validType:['length[0,50]']" /><input type="hidden" name="indicatorType[4]" value="2"></td>
 					<td><input class="easyui-textbox" name="indicatorName[5]" id="" style="width: 100%"
-						data-options="multiline:true,validType:['length[0,50]']" /><input type="hidden" name="indicatorType[0]" value="2"></td>
+						data-options="multiline:true,validType:['length[0,50]']" /><input type="hidden" name="indicatorType[5]" value="2"></td>
 				</tr>
 				<tr>
 					<td style="background-color: #f5f5f5; text-align: center">指标现状</td>
@@ -130,65 +131,80 @@ em {
 					<th style="width: 18%; text-align: center">备注</th>
 				</tr>
 				<tr>
-					<td colspan="2" style="background-color: #f5f5f5; text-align: center">人天成本<input type="hidden" name="costType" value="1"></td>
-					<td><input class="easyui-numberbox cal1" type="text" name="val25" data-options="min:0,max:999999"
-						style="width: 100%; height: 100%"></td>
-					<td><input class="easyui-numberbox cal1" type="text" name="val26" value="1000" data-options="min:0,max:999999"
-						style="width: 100%; height: 100%"></td>
-					<td><input class="easyui-numberbox cal" readonly id="cal1" type="text" name="val27" data-options="min:0,max:99999999"
-						style="width: 100%; height: 100%"></td>
-					<td><input class="easyui-textbox" name="val48" id="" data-options="multiline:true,validType:['length[0,50]']" style="width: 100%" /></td>
+					<td colspan="2" style="background-color: #f5f5f5; text-align: center">人天成本<input type="hidden" name="costType[0]" value="1"></td>
+					<td><input class="easyui-numberbox cal1" type="text" name="amount[0]" value="${roi.humanCost.amount!}"
+						data-options="min:0,max:999999" style="width: 100%; height: 100%"></td>
+					<td><input class="easyui-numberbox cal1" type="text" name="rate[0]" value="${roi.humanCost.rate!'1000'}"
+						data-options="min:0,max:999999" style="width: 100%; height: 100%"></td>
+					<td><input class="easyui-numberbox cal" readonly id="cal1" type="text" name="total[0]" value="${roi.humanCost.total!}"
+						data-options="min:0,max:99999999" style="width: 100%; height: 100%"></td>
+					<td><input class="easyui-textbox" name="note[0]" value="${roi.humanCost.note!}"
+						data-options="multiline:true,validType:['length[0,50]']" style="width: 100%" /></td>
 				</tr>
 				<tr>
-					<td colspan="2" style="background-color: #f5f5f5; text-align: center">软件成本<input type="hidden" name="costType" value="2"></td>
-					<td><input class="easyui-numberbox" type="text" name="val28" data-options="min:0,max:999999" style="width: 100%; height: 100%"></td>
-					<td><input class="easyui-textbox" type="text" value="/" name="val29" data-options="" style="width: 100%; height: 100%"></td>
-					<td><input class="easyui-numberbox cal" type="text" name="val30" data-options="min:0,max:99999999"
+					<td colspan="2" style="background-color: #f5f5f5; text-align: center">软件成本<input type="hidden" name="costType[1]" value="2"></td>
+					<td><input class="easyui-numberbox" type="text" name="amount[1]" value="${roi.softwareCost.amount!}"
+						data-options="min:0,max:999999" style="width: 100%; height: 100%"></td>
+					<td><input class="easyui-textbox" type="text" value="${roi.softwareCost.rate!'/'}" name="rate[1]" data-options=""
 						style="width: 100%; height: 100%"></td>
-					<td><input class="easyui-textbox" name="val47" id="" data-options="multiline:true,validType:['length[0,50]']" style="width: 100%" /></td>
+					<td><input class="easyui-numberbox cal" type="text" name="total[1]" value="${roi.softwareCost.total!}"
+						data-options="min:0,max:99999999" style="width: 100%; height: 100%"></td>
+					<td><input class="easyui-textbox" name="note[1]" value="${roi.softwareCost.note!}" id=""
+						data-options="multiline:true,validType:['length[0,50]']" style="width: 100%" /></td>
 				</tr>
 				<tr>
 					<td rowspan="2" style="background-color: #f5f5f5; text-align: center">硬件成本</td>
 					<td style="background-color: #f5f5f5; text-align: center">实体机<input type="hidden" name="costType" value="3"></td>
-					<td><input class="easyui-numberbox" type="text" name="val31" data-options="min:0,max:999999" style="width: 100%; height: 100%"></td>
-					<td><input class="easyui-textbox" type="text" value="实体机 50000元/台VM 1H1G:1200元/年，2H2G：2400元/年，2H4G:4800元/年，4H4G:9600元/年；"
-						name="val32" data-options="" style="width: 100%; height: 100%"></td>
-					<td><input class="easyui-numberbox cal" type="text" name="val33" data-options="min:0,max:99999999"
-						style="width: 100%; height: 100%"></td>
-					<td><input class="easyui-textbox" name="val46" id="" data-options="multiline:true,validType:['length[0,50]']" style="width: 100%"
-						style="width: 100%" /></td>
+					<td><input class="easyui-numberbox" type="text" name="amount[2]" value="${roi.hardwarePhysicalMachineCost.amount!}"
+						data-options="min:0,max:999999" style="width: 100%; height: 100%"></td>
+					<td><input class="easyui-textbox" type="text"
+						value="${roi.hardwarePhysicalMachineCost.rate!'实体机 50000元/台VM 1H1G:1200元/年，2H2G：2400元/年，2H4G:4800元/年，4H4G:9600元/年；'}" name="rate[2]"
+						data-options="" style="width: 100%; height: 100%"></td>
+					<td><input class="easyui-numberbox cal" type="text" name="total[2]" value="${roi.hardwarePhysicalMachineCost.total!}"
+						data-options="min:0,max:99999999" style="width: 100%; height: 100%"></td>
+					<td><input class="easyui-textbox" name="note[2]" value="${roi.hardwarePhysicalMachineCost.note!}"
+						data-options="multiline:true,validType:['length[0,50]']" style="width: 100%" style="width: 100%" /></td>
 				</tr>
 				<tr>
 					<td style="background-color: #f5f5f5; text-align: center">VM<input type="hidden" name="costType" value="4"></td>
-					<td><input class="easyui-numberbox" type="text" name="val34" data-options="min:0,max:999999" style="width: 100%; height: 100%"></td>
-					<td><input class="easyui-textbox" value="实体机 50000元/台VM 1H1G:1200元/年，2H2G：2400元/年，2H4G:4800元/年，4H4G:9600元/年；" type="text"
-						name="val35" data-options="" style="width: 100%; height: 100%"></td>
-					<td><input class="easyui-numberbox cal" type="text" name="val36" data-options="min:0,max:99999999"
-						style="width: 100%; height: 100%"></td>
-					<td><input class="easyui-textbox" name="val37" id="" data-options="multiline:true,validType:['length[0,50]']" style="width: 100%" /></td>
+					<td><input class="easyui-numberbox" type="text" name="amount[3]" value="${roi.hardwareVirtualMachineCost.amount!}"
+						data-options="min:0,max:999999" style="width: 100%; height: 100%"></td>
+					<td><input class="easyui-textbox"
+						value="${roi.hardwareVirtualMachineCost.rate!'实体机 50000元/台VM 1H1G:1200元/年，2H2G：2400元/年，2H4G:4800元/年，4H4G:9600元/年；'}" type="text"
+						name="rate[3]" data-options="" style="width: 100%; height: 100%"></td>
+					<td><input class="easyui-numberbox cal" type="text" name="total[3]" value="${roi.hardwareVirtualMachineCost.total!}"
+						data-options="min:0,max:99999999" style="width: 100%; height: 100%"></td>
+					<td><input class="easyui-textbox" name="note[3]" value="${roi.hardwareVirtualMachineCost.note!}"
+						data-options="multiline:true,validType:['length[0,50]']" style="width: 100%" /></td>
 				</tr>
 				<tr>
 					<td colspan="2" style="background-color: #f5f5f5; text-align: center">差旅会议成本<input type="hidden" name="costType" value="5"></td>
-					<td><input class="easyui-numberbox" type="text" name="val38" data-options="min:0,max:999999" style="width: 100%; height: 100%"></td>
-					<td><input class="easyui-textbox" value="机票：4000元/人，补助：600元/人/天；" type="text" name="val39" data-options=""
-						style="width: 100%; height: 100%"></td>
-					<td><input class="easyui-numberbox cal" type="text" name="val40" data-options="min:0,max:99999999"
-						style="width: 100%; height: 100%"></td>
-					<td><input class="easyui-textbox" name="val45" id="" data-options="multiline:true,validType:['length[0,50]']" style="width: 100%" /></td>
+					<td><input class="easyui-numberbox" type="text" name="amount[4]" value="${roi.travelConferenceCost.amount!}"
+						data-options="min:0,max:999999" style="width: 100%; height: 100%"></td>
+					<td><input class="easyui-textbox" value="${roi.travelConferenceCost.rate!'机票：4000元/人，补助：600元/人/天；'}" type="text" name="rate[4]"
+						data-options="" style="width: 100%; height: 100%"></td>
+					<td><input class="easyui-numberbox cal" type="text" name="total[4]" value="${roi.travelConferenceCost.total!}"
+						data-options="min:0,max:99999999" style="width: 100%; height: 100%"></td>
+					<td><input class="easyui-textbox" name="note[4]" value="${roi.travelConferenceCost.note!}"
+						data-options="multiline:true,validType:['length[0,50]']" style="width: 100%" /></td>
 				</tr>
 				<tr>
 					<td colspan="2" style="background-color: #f5f5f5; text-align: center">其他成本<input type="hidden" name="costType" value="6"></td>
-					<td><input class="easyui-numberbox" type="text" name="val41" data-options="min:0,max:999999" style="width: 100%; height: 100%"></td>
-					<td><input class="easyui-textbox" value="/" type="text" name="val42" data-options="" style="width: 100%; height: 100%"></td>
-					<td><input class="easyui-numberbox cal" type="text" name="val43" data-options="min:0,max:99999999"
+					<td><input class="easyui-numberbox" type="text" name="amount[5]" value="${roi.otherCost.amount!}" data-options="min:0,max:999999"
 						style="width: 100%; height: 100%"></td>
-					<td><input class="easyui-textbox" name="val44" id="" data-options="multiline:true,validType:['length[0,50]']" style="width: 100%" /></td>
+					<td><input class="easyui-textbox" value="/" type="text" name="rate[5]" value="${roi.otherCost.rate!}" data-options=""
+						style="width: 100%; height: 100%"></td>
+					<td><input class="easyui-numberbox cal" type="text" name="total[5]" value="${roi.otherCost.total!}"
+						data-options="min:0,max:99999999" style="width: 100%; height: 100%"></td>
+					<td><input class="easyui-textbox" name="note[5]" value="${roi.otherCost.note!}"
+						data-options="multiline:true,validType:['length[0,50]']" style="width: 100%" /></td>
 				</tr>
 				<tr>
 					<td colspan="2" style="background-color: #f5f5f5; text-align: center">合计</td>
 					<td></td>
 					<td></td>
-					<td><input class="easyui-textbox" readonly id="totalTxt" type="text" value="" name="val99" style="width: 100%" data-options=""></td>
+					<td><input class="easyui-textbox" readonly id="totalTxt" type="text" value="${roi.total!}" name="roiTotal" style="width: 100%"
+						data-options=""></td>
 					<td></td>
 				</tr>
 			</table>
@@ -207,12 +223,13 @@ em {
     }
 
     function submitForm() {
-        var data = $("#ff").serializeObject();
+        /* var data = $("#ff").serializeObject(); */
+        var data = $("#ff").serializeArray();
         if ($("#ff").form('validate')) {
             $.ajax({
                 type: "Post",   //访问WebService使用Post方式请求
                 url: "${contextPath}/projectApply/insertStep", //调用WebService的地址和方法名称组合 ---- WsURL/方法名
-                data: {"id": "${apply.id}", "roi": JSON.stringify(data)},         //这里是要传递的参数，格式为 data: "{paraName:paraValue}",下面将会看到
+                data: data,         //这里是要传递的参数，格式为 data: "{paraName:paraValue}",下面将会看到
                 success: function (data) {     //回调函数，result，返回值
                     if (data.success == true) {
                         if (data.success == true) {

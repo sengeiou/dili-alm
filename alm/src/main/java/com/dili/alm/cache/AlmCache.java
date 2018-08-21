@@ -12,13 +12,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.AreaMapper;
+import com.dili.alm.dao.ProjectApplyMapper;
+import com.dili.alm.dao.ProjectCostMapper;
+import com.dili.alm.dao.ProjectEarningMapper;
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.domain.Area;
 import com.dili.alm.domain.Department;
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.ProjectApply;
+import com.dili.alm.domain.ProjectCost;
+import com.dili.alm.domain.ProjectEarning;
+import com.dili.alm.domain.Roi;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
+import com.dili.alm.domain.dto.RoiDto;
 import com.dili.alm.rpc.DepartmentRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
@@ -92,6 +100,8 @@ public class AlmCache {
 	private static final AlmCache INSTANCE = new AlmCache();
 	// 市场缓存
 	private static final Map<String, String> MARKET_MAP = new ConcurrentHashMap<>();
+	// 立项申请roi缓存
+	private static final Map<Long, RoiDto> ROI_MAP = new ConcurrentHashMap<>();
 
 	@Autowired
 	private ProjectPhaseService phaseService;
@@ -119,6 +129,12 @@ public class AlmCache {
 	private MessageService messageService;
 	@Autowired
 	private AreaMapper areaMapper;
+	@Autowired
+	private ProjectApplyMapper projectApplyMapper;
+	@Autowired
+	private ProjectEarningMapper projectEarningMapper;
+	@Autowired
+	private ProjectCostMapper projectCostMapper;
 
 	public static AlmCache getInstance() {
 		return INSTANCE;
@@ -405,6 +421,28 @@ public class AlmCache {
 			dd.getValues().forEach(v -> MARKET_MAP.put(v.getValue(), v.getCode()));
 		}
 		return MARKET_MAP;
+	}
+
+	public Map<Long, RoiDto> getProjectApplyRois() {
+		if (AlmCache.ROI_MAP.isEmpty()) {
+			List<ProjectApply> applyList = this.projectApplyMapper.select(null);
+			if (CollectionUtils.isEmpty(applyList)) {
+				return null;
+			}
+			applyList.forEach(a -> {
+				RoiDto roi = new RoiDto();
+				ProjectEarning peQuery = DTOUtils.newDTO(ProjectEarning.class);
+				peQuery.setApplyId(a.getId());
+				List<ProjectEarning> earnings = this.projectEarningMapper.select(peQuery);
+				roi.setEarnings(earnings);
+				ProjectCost pcQuery = DTOUtils.newDTO(ProjectCost.class);
+				pcQuery.setApplyId(a.getId());
+				List<ProjectCost> costs = this.projectCostMapper.select(pcQuery);
+				roi.setCosts(costs);
+				AlmCache.ROI_MAP.put(a.getId(), roi);
+			});
+		}
+		return ROI_MAP;
 	}
 
 }

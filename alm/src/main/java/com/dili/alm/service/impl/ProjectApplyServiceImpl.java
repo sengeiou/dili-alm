@@ -20,15 +20,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
+import com.dili.alm.cache.AlmCache;
 import com.dili.alm.component.NumberGenerator;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.ProjectApplyMapper;
+import com.dili.alm.dao.ProjectCostMapper;
+import com.dili.alm.dao.ProjectEarningMapper;
+import com.dili.alm.dao.RoiMapper;
 import com.dili.alm.domain.Approve;
 import com.dili.alm.domain.FileType;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.ProjectApply;
+import com.dili.alm.domain.ProjectCost;
+import com.dili.alm.domain.ProjectEarning;
+import com.dili.alm.domain.Roi;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
+import com.dili.alm.domain.dto.RoiDto;
+import com.dili.alm.domain.dto.RoiUpdateDto;
 import com.dili.alm.domain.dto.apply.ApplyFiles;
 import com.dili.alm.domain.dto.apply.ApplyImpact;
 import com.dili.alm.domain.dto.apply.ApplyMajorResource;
@@ -70,6 +79,12 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 
 	@Autowired
 	private ApproveService approveService;
+	@Autowired
+	private ProjectEarningMapper projectEarningMapper;
+	@Autowired
+	private ProjectCostMapper projectCostMapper;
+	@Autowired
+	private RoiMapper roiMapper;
 
 	public ProjectApplyMapper getActualDao() {
 		return (ProjectApplyMapper) getDao();
@@ -269,5 +284,67 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 		String number = apply.getType() + (apply.getPid() == null ? "1" : "2");
 		String yearLast = new SimpleDateFormat("yy", Locale.CHINESE).format(Calendar.getInstance().getTime());
 		return number + "-" + yearLast + "-" + projectNumberGenerator.get();
+	}
+
+	@Transactional
+	@Override
+	public void updateRoi(RoiUpdateDto dto) throws ProjectApplyException {
+		// 先删除roi
+		Roi roiQuery = DTOUtils.newDTO(Roi.class);
+		roiQuery.setApplyId(dto.getApplyId());
+		this.roiMapper.delete(roiQuery);
+
+		// 删除项目收益
+		ProjectEarning peQuery = DTOUtils.newDTO(ProjectEarning.class);
+		peQuery.setApplyId(dto.getApplyId());
+		this.projectEarningMapper.delete(peQuery);
+
+		// 删除项目成本
+		ProjectCost pcQuery = DTOUtils.newDTO(ProjectCost.class);
+		pcQuery.setApplyId(dto.getApplyId());
+		this.projectCostMapper.delete(pcQuery);
+
+		// 插入roi
+		Roi roi = DTOUtils.newDTO(Roi.class);
+		roi.setApplyId(dto.getApplyId());
+		roi.setTotal(dto.getRoiTotal());
+		int rows = this.roiMapper.insertSelective(roi);
+		if (rows <= 0) {
+			throw new ProjectApplyException("更新roi失败");
+		}
+
+		// 插入项目成本和收益
+		for (int i = 0; i < dto.getIndicatorType().size(); i++) {
+			ProjectEarning pe = DTOUtils.newDTO(ProjectEarning.class);
+			pe.setApplyId(dto.getApplyId());
+			pe.setImplemetionDate(dto.getImplemetionDate().get(i));
+			pe.setIndicatorCurrentStatus(dto.getIndicatorCurrentStatus().get(i));
+			pe.setIndicatorName(dto.getIndicatorName().get(i));
+			pe.setIndicatorType(dto.getIndicatorType().get(i));
+			pe.setProjectObjective(dto.getProjectObjective().get(i));
+			pe.setRoiId(roi.getId());
+			rows = this.projectEarningMapper.insertSelective(pe);
+			if (rows <= 0) {
+				throw new ProjectApplyException("插入项目收益失败");
+			}
+		}
+
+		for (int i = 0; i < dto.getCostType().size(); i++) {
+			ProjectCost pc = DTOUtils.newDTO(ProjectCost.class);
+			pc.setAmount(dto.getAmount().get(i));
+			pc.setApplyId(dto.getApplyId());
+			pc.setCostType(dto.getCostType().get(i));
+			pc.setNote(dto.getNote().get(i));
+			pc.setRate(dto.getRate().get(i));
+			pc.setRoiId(roi.getId());
+			pc.setTotal(dto.getTotal().get(i));
+			rows = this.projectCostMapper.insertSelective(pc);
+			if (rows <= 0) {
+				throw new ProjectApplyException("插入项目成本失败");
+			}
+		}
+
+		// 秦楚缓存
+		AlmCache.getInstance().getProjectApplyRois().clear();
 	}
 }

@@ -55,7 +55,7 @@ import com.dili.alm.domain.User;
 import com.dili.alm.domain.VerifyApproval;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
-import com.dili.alm.domain.dto.Roi;
+import com.dili.alm.domain.dto.RoiDto;
 import com.dili.alm.domain.dto.apply.ApplyApprove;
 import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.ApproveException;
@@ -437,7 +437,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 				map.put("planDto", projectApplyService.loadPlan(id));
 
 				// map.put("roi", JSON.parseObject(apply.getRoi(), Map.class));
-				Roi roi = new Roi();
+				RoiDto roi = new RoiDto();
 				ProjectEarning peQuery = DTOUtils.newDTO(ProjectEarning.class);
 				peQuery.setApplyId(id);
 				List<ProjectEarning> earnings = this.projectEarningMapper.select(peQuery);

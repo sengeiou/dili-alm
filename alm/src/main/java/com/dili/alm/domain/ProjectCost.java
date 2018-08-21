@@ -13,7 +13,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2018-08-17 15:32:05.
+ * This file was generated on 2018-08-20 14:34:08.
  */
 @Table(name = "`project_cost`")
 public interface ProjectCost extends IBaseDomain {
@@ -33,6 +33,13 @@ public interface ProjectCost extends IBaseDomain {
 
     void setApplyId(Long applyId);
 
+    @Column(name = "`roi_id`")
+    @FieldDef(label="roiId")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Long getRoiId();
+
+    void setRoiId(Long roiId);
+
     @Column(name = "`amount`")
     @FieldDef(label="数量")
     @EditMode(editor = FieldEditor.Number, required = false)
@@ -46,13 +53,6 @@ public interface ProjectCost extends IBaseDomain {
     String getRate();
 
     void setRate(String rate);
-
-    @Column(name = "`software_cost`")
-    @FieldDef(label="软件成本")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getSoftwareCost();
-
-    void setSoftwareCost(Long softwareCost);
 
     @Column(name = "`total`")
     @FieldDef(label="合计")
