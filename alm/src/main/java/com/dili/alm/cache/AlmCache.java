@@ -16,6 +16,7 @@ import com.dili.alm.dao.ProjectApplyMapper;
 import com.dili.alm.dao.ProjectCostMapper;
 import com.dili.alm.dao.ProjectEarningMapper;
 import com.dili.alm.dao.ProjectMapper;
+import com.dili.alm.dao.RoiMapper;
 import com.dili.alm.domain.Area;
 import com.dili.alm.domain.Department;
 import com.dili.alm.domain.Project;
@@ -135,6 +136,8 @@ public class AlmCache {
 	private ProjectEarningMapper projectEarningMapper;
 	@Autowired
 	private ProjectCostMapper projectCostMapper;
+	@Autowired
+	private RoiMapper roiMapper;
 
 	public static AlmCache getInstance() {
 		return INSTANCE;
@@ -430,16 +433,19 @@ public class AlmCache {
 				return null;
 			}
 			applyList.forEach(a -> {
-				RoiDto roi = new RoiDto();
+				Roi roiQuery = DTOUtils.newDTO(Roi.class);
+				roiQuery.setApplyId(a.getId());
+				Roi roi = this.roiMapper.selectOne(roiQuery);
+				RoiDto roiDto = DTOUtils.toEntity(roi, RoiDto.class, false);
 				ProjectEarning peQuery = DTOUtils.newDTO(ProjectEarning.class);
 				peQuery.setApplyId(a.getId());
 				List<ProjectEarning> earnings = this.projectEarningMapper.select(peQuery);
-				roi.setEarnings(earnings);
+				roiDto.setEarnings(earnings);
 				ProjectCost pcQuery = DTOUtils.newDTO(ProjectCost.class);
 				pcQuery.setApplyId(a.getId());
 				List<ProjectCost> costs = this.projectCostMapper.select(pcQuery);
-				roi.setCosts(costs);
-				AlmCache.ROI_MAP.put(a.getId(), roi);
+				roiDto.setCosts(costs);
+				AlmCache.ROI_MAP.put(a.getId(), roiDto);
 			});
 		}
 		return ROI_MAP;

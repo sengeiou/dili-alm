@@ -1,5 +1,7 @@
 package com.dili.alm.service.impl;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -313,11 +315,18 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 			throw new ProjectApplyException("更新roi失败");
 		}
 
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		// 插入项目成本和收益
 		for (int i = 0; i < dto.getIndicatorType().size(); i++) {
 			ProjectEarning pe = DTOUtils.newDTO(ProjectEarning.class);
 			pe.setApplyId(dto.getApplyId());
-			pe.setImplemetionDate(dto.getImplemetionDate().get(i));
+			if (StringUtils.isNotBlank(dto.getImplemetionDate().get(i))) {
+				try {
+					pe.setImplemetionDate(df.parse(dto.getImplemetionDate().get(i)));
+				} catch (ParseException e) {
+					LOGGER.error(e.getMessage(), e);
+				}
+			}
 			pe.setIndicatorCurrentStatus(dto.getIndicatorCurrentStatus().get(i));
 			pe.setIndicatorName(dto.getIndicatorName().get(i));
 			pe.setIndicatorType(dto.getIndicatorType().get(i));
@@ -344,7 +353,29 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 			}
 		}
 
-		// 秦楚缓存
+		// 清除缓存
 		AlmCache.getInstance().getProjectApplyRois().clear();
+	}
+
+	@Transactional
+	@Override
+	public void deleteProjectApply(Long id) throws ProjectApplyException {
+		ProjectEarning peQuery = DTOUtils.newDTO(ProjectEarning.class);
+		peQuery.setApplyId(id);
+		this.projectEarningMapper.delete(peQuery);
+
+		ProjectCost pcQuery = DTOUtils.newDTO(ProjectCost.class);
+		pcQuery.setApplyId(id);
+		this.projectCostMapper.delete(pcQuery);
+
+		Roi roiQuery = DTOUtils.newDTO(Roi.class);
+		roiQuery.setApplyId(id);
+		this.roiMapper.delete(roiQuery);
+
+		int rows = this.getActualDao().deleteByPrimaryKey(id);
+		if (rows <= 0) {
+			throw new ProjectApplyException("删除失败");
+		}
+		AlmCache.getInstance().getProjectApplyRois().remove(id);
 	}
 }

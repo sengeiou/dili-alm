@@ -48,36 +48,39 @@ em {
 				</tr>
 				<tr>
 					<td style="background-color: #f5f5f5; text-align: center">指标名称</td>
-					<td><input class="easyui-textbox" name="indicatorName[0]" id="" style="width: 100%"
+					<td><input class="easyui-textbox" name="indicatorName[0]" value="${roi.businessIndicators[0].indicatorName!}" style="width: 100%"
 						data-options="multiline:true,validType:['length[0,50]']" /><input type="hidden" name="indicatorType[0]" value="1"></td>
-					<td><input class="easyui-textbox" name="indicatorName[1]" id="" style="width: 100%"
+					<td><input class="easyui-textbox" name="indicatorName[1]" value="${roi.businessIndicators[1].indicatorName!}" style="width: 100%"
 						data-options="multiline:true,validType:['length[0,50]']" /><input type="hidden" name="indicatorType[1]" value="1"></td>
-					<td><input class="easyui-textbox" name="indicatorName[2]" id="" style="width: 100%"
+					<td><input class="easyui-textbox" name="indicatorName[2]" value="${roi.businessIndicators[2].indicatorName!}" style="width: 100%"
 						data-options="multiline:true,validType:['length[0,50]']" /><input type="hidden" name="indicatorType[2]" value="1"></td>
 				</tr>
 				<tr>
 					<td style="background-color: #f5f5f5; text-align: center">指标现状</td>
-					<td><input class="easyui-textbox" name="indicatorCurrentStatus[0]" id="" style="width: 100%"
-						data-options="multiline:true,validType:['length[0,50]']" /></td>
-					<td><input class="easyui-textbox" name="indicatorCurrentStatus[1]" id="" style="width: 100%"
-						data-options="multiline:true,validType:['length[0,50]']" /></td>
-					<td><input class="easyui-textbox" name="indicatorCurrentStatus[2]" id="" style="width: 100%"
-						data-options="multiline:true,validType:['length[0,50]']" /></td>
+					<td><input class="easyui-textbox" name="indicatorCurrentStatus[0]" value="${roi.businessIndicators[0].indicatorCurrentStatus!}"
+						style="width: 100%" data-options="multiline:true,validType:['length[0,50]']" /></td>
+					<td><input class="easyui-textbox" name="indicatorCurrentStatus[1]" value="${roi.businessIndicators[1].indicatorCurrentStatus!}"
+						style="width: 100%" data-options="multiline:true,validType:['length[0,50]']" /></td>
+					<td><input class="easyui-textbox" name="indicatorCurrentStatus[2]" value="${roi.businessIndicators[2].indicatorCurrentStatus!}"
+						style="width: 100%" data-options="multiline:true,validType:['length[0,50]']" /></td>
 				</tr>
 				<tr>
 					<td style="background-color: #f5f5f5; text-align: center">项目目标</td>
-					<td><input class="easyui-textbox" name="projectObjective[0]" id="" style="width: 100%"
-						data-options="multiline:true,validType:['length[0,50]']" /></td>
-					<td><input class="easyui-textbox" name="projectObjective[1]" id="" style="width: 100%"
-						data-options="multiline:true,validType:['length[0,50]']" /></td>
-					<td><input class="easyui-textbox" name="projectObjective[2]" id="" style="width: 100%"
-						data-options="multiline:true,validType:['length[0,50]']" /></td>
+					<td><input class="easyui-textbox" name="projectObjective[0]" value="${roi.businessIndicators[0].projectObjective!}"
+						style="width: 100%" data-options="multiline:true,validType:['length[0,50]']" /></td>
+					<td><input class="easyui-textbox" name="projectObjective[1]" value="${roi.businessIndicators[1].projectObjective!}"
+						style="width: 100%" data-options="multiline:true,validType:['length[0,50]']" /></td>
+					<td><input class="easyui-textbox" name="projectObjective[2]" value="${roi.businessIndicators[2].projectObjective!}"
+						style="width: 100%" data-options="multiline:true,validType:['length[0,50]']" /></td>
 				</tr>
 				<tr>
 					<td style="background-color: #f5f5f5; text-align: center">实现日期</td>
-					<td><input class="easyui-datebox" name="implemetionDate[0]" id="" data-options="editable:false,required:false" style="width: 100%" /></td>
-					<td><input class="easyui-datebox" name="implemetionDate[1]" id="" data-options="editable:false,required:false" style="width: 100%" /></td>
-					<td><input class="easyui-datebox" name="implemetionDate[2]" id="" data-options="editable:false,required:false" style="width: 100%" /></td>
+					<td><input class="easyui-datebox" name="implemetionDate[0]" value="${roi.businessIndicators[0].implemetionDate!}"
+						data-options="editable:false,required:false" style="width: 100%" /></td>
+					<td><input class="easyui-datebox" name="implemetionDate[1]" value="${roi.businessIndicators[1].implemetionDate!}"
+						data-options="editable:false,required:false" style="width: 100%" /></td>
+					<td><input class="easyui-datebox" name="implemetionDate[2]" value="${roi.businessIndicators[2].implemetionDate!}"
+						data-options="editable:false,required:false" style="width: 100%" /></td>
 				</tr>
 
 				<tr style="background-color: #f5f5f5;">
@@ -88,36 +91,48 @@ em {
 				</tr>
 				<tr>
 					<td style="background-color: #f5f5f5; text-align: center">指标名称</td>
-					<td><input class="easyui-textbox" name="indicatorName[3]" id="" style="width: 100%"
-						data-options="multiline:true,validType:['length[0,50]']" /><input type="hidden" name="indicatorType[3]" value="2"></td>
-					<td><input class="easyui-textbox" name="indicatorName[4]" id="" style="width: 100%"
-						data-options="multiline:true,validType:['length[0,50]']" /><input type="hidden" name="indicatorType[4]" value="2"></td>
-					<td><input class="easyui-textbox" name="indicatorName[5]" id="" style="width: 100%"
-						data-options="multiline:true,validType:['length[0,50]']" /><input type="hidden" name="indicatorType[5]" value="2"></td>
+					<td><input class="easyui-textbox" name="indicatorName[3]" value="${roi.efficiencyAndPerformanceIndicators[0].indicatorName!}"
+						style="width: 100%" data-options="multiline:true,validType:['length[0,50]']" /><input type="hidden" name="indicatorType[3]" value="2"></td>
+					<td><input class="easyui-textbox" name="indicatorName[4]" value="${roi.efficiencyAndPerformanceIndicators[1].indicatorName!}"
+						style="width: 100%" data-options="multiline:true,validType:['length[0,50]']" /><input type="hidden" name="indicatorType[4]" value="2"></td>
+					<td><input class="easyui-textbox" name="indicatorName[5]" value="${roi.efficiencyAndPerformanceIndicators[2].indicatorName!}"
+						style="width: 100%" data-options="multiline:true,validType:['length[0,50]']" /><input type="hidden" name="indicatorType[5]" value="2"></td>
 				</tr>
 				<tr>
 					<td style="background-color: #f5f5f5; text-align: center">指标现状</td>
-					<td><input class="easyui-textbox" name="indicatorCurrentStatus[3]" id="" style="width: 100%"
+					<td><input class="easyui-textbox" name="indicatorCurrentStatus[3]"
+						value="${roi.efficiencyAndPerformanceIndicators[0].indicatorCurrentStatus!}" style="width: 100%"
 						data-options="multiline:true,validType:['length[0,50]']" /></td>
-					<td><input class="easyui-textbox" name="indicatorCurrentStatus[4]" id="" style="width: 100%"
+					<td><input class="easyui-textbox" name="indicatorCurrentStatus[4]"
+						value="${roi.efficiencyAndPerformanceIndicators[1].indicatorCurrentStatus!}" style="width: 100%"
 						data-options="multiline:true,validType:['length[0,50]']" /></td>
-					<td><input class="easyui-textbox" name="indicatorCurrentStatus[5]" id="" style="width: 100%"
+					<td><input class="easyui-textbox" name="indicatorCurrentStatus[5]"
+						value="${roi.efficiencyAndPerformanceIndicators[2].indicatorCurrentStatus!}" style="width: 100%"
 						data-options="multiline:true,validType:['length[0,50]']" /></td>
 				</tr>
 				<tr>
 					<td style="background-color: #f5f5f5; text-align: center">项目目标</td>
-					<td><input class="easyui-textbox" name="projectObjective[3]" id="" style="width: 100%"
+					<td><input class="easyui-textbox" name="projectObjective[3]"
+						value="${roi.efficiencyAndPerformanceIndicators[0].projectObjective!}" style="width: 100%"
 						data-options="multiline:true,validType:['length[0,50]']" /></td>
-					<td><input class="easyui-textbox" name="projectObjective[4]" id="" style="width: 100%"
+					<td><input class="easyui-textbox" name="projectObjective[4]"
+						value="${roi.efficiencyAndPerformanceIndicators[1].projectObjective!}" style="width: 100%"
 						data-options="multiline:true,validType:['length[0,50]']" /></td>
-					<td><input class="easyui-textbox" name="projectObjective[5]" id="" style="width: 100%"
+					<td><input class="easyui-textbox" name="projectObjective[5]"
+						value="${roi.efficiencyAndPerformanceIndicators[2].projectObjective!}" style="width: 100%"
 						data-options="multiline:true,validType:['length[0,50]']" /></td>
 				</tr>
 				<tr>
 					<td style="background-color: #f5f5f5; text-align: center">实现日期</td>
-					<td><input class="easyui-datebox" name="implemetionDate[3]" id="" data-options="editable:false,required:false" style="width: 100%" /></td>
-					<td><input class="easyui-datebox" name="implemetionDate[4]" id="" data-options="editable:false,required:false" style="width: 100%" /></td>
-					<td><input class="easyui-datebox" name="implemetionDate[5]" id="" data-options="editable:false,required:false" style="width: 100%" /></td>
+					<td><input class="easyui-datebox" name="implemetionDate[3]"
+						value="${roi.efficiencyAndPerformanceIndicators[0].implemetionDate!}" data-options="editable:false,required:false"
+						style="width: 100%" /></td>
+					<td><input class="easyui-datebox" name="implemetionDate[4]"
+						value="${roi.efficiencyAndPerformanceIndicators[1].implemetionDate!}" data-options="editable:false,required:false"
+						style="width: 100%" /></td>
+					<td><input class="easyui-datebox" name="implemetionDate[5]"
+						value="${roi.efficiencyAndPerformanceIndicators[2].implemetionDate!}" data-options="editable:false,required:false"
+						style="width: 100%" /></td>
 				</tr>
 			</table>
 			<table class="cus-table" border="1" cellpadding="0" cellspacing="0"
@@ -154,7 +169,7 @@ em {
 				</tr>
 				<tr>
 					<td rowspan="2" style="background-color: #f5f5f5; text-align: center">硬件成本</td>
-					<td style="background-color: #f5f5f5; text-align: center">实体机<input type="hidden" name="costType" value="3"></td>
+					<td style="background-color: #f5f5f5; text-align: center">实体机<input type="hidden" name="costType[2]" value="3"></td>
 					<td><input class="easyui-numberbox" type="text" name="amount[2]" value="${roi.hardwarePhysicalMachineCost.amount!}"
 						data-options="min:0,max:999999" style="width: 100%; height: 100%"></td>
 					<td><input class="easyui-textbox" type="text"
@@ -166,7 +181,7 @@ em {
 						data-options="multiline:true,validType:['length[0,50]']" style="width: 100%" style="width: 100%" /></td>
 				</tr>
 				<tr>
-					<td style="background-color: #f5f5f5; text-align: center">VM<input type="hidden" name="costType" value="4"></td>
+					<td style="background-color: #f5f5f5; text-align: center">VM<input type="hidden" name="costType[3]" value="4"></td>
 					<td><input class="easyui-numberbox" type="text" name="amount[3]" value="${roi.hardwareVirtualMachineCost.amount!}"
 						data-options="min:0,max:999999" style="width: 100%; height: 100%"></td>
 					<td><input class="easyui-textbox"
@@ -178,7 +193,7 @@ em {
 						data-options="multiline:true,validType:['length[0,50]']" style="width: 100%" /></td>
 				</tr>
 				<tr>
-					<td colspan="2" style="background-color: #f5f5f5; text-align: center">差旅会议成本<input type="hidden" name="costType" value="5"></td>
+					<td colspan="2" style="background-color: #f5f5f5; text-align: center">差旅会议成本<input type="hidden" name="costType[4]" value="5"></td>
 					<td><input class="easyui-numberbox" type="text" name="amount[4]" value="${roi.travelConferenceCost.amount!}"
 						data-options="min:0,max:999999" style="width: 100%; height: 100%"></td>
 					<td><input class="easyui-textbox" value="${roi.travelConferenceCost.rate!'机票：4000元/人，补助：600元/人/天；'}" type="text" name="rate[4]"
@@ -189,7 +204,7 @@ em {
 						data-options="multiline:true,validType:['length[0,50]']" style="width: 100%" /></td>
 				</tr>
 				<tr>
-					<td colspan="2" style="background-color: #f5f5f5; text-align: center">其他成本<input type="hidden" name="costType" value="6"></td>
+					<td colspan="2" style="background-color: #f5f5f5; text-align: center">其他成本<input type="hidden" name="costType[5]" value="6"></td>
 					<td><input class="easyui-numberbox" type="text" name="amount[5]" value="${roi.otherCost.amount!}" data-options="min:0,max:999999"
 						style="width: 100%; height: 100%"></td>
 					<td><input class="easyui-textbox" value="/" type="text" name="rate[5]" value="${roi.otherCost.rate!}" data-options=""
@@ -223,12 +238,11 @@ em {
     }
 
     function submitForm() {
-        /* var data = $("#ff").serializeObject(); */
-        var data = $("#ff").serializeArray();
         if ($("#ff").form('validate')) {
+        	var data = $("#ff").serializeArray();
             $.ajax({
                 type: "Post",   //访问WebService使用Post方式请求
-                url: "${contextPath}/projectApply/insertStep", //调用WebService的地址和方法名称组合 ---- WsURL/方法名
+                url: "${contextPath}/projectApply/insertRoi", //调用WebService的地址和方法名称组合 ---- WsURL/方法名
                 data: data,         //这里是要传递的参数，格式为 data: "{paraName:paraValue}",下面将会看到
                 success: function (data) {     //回调函数，result，返回值
                     if (data.success == true) {
@@ -280,8 +294,6 @@ em {
             $('#ff').form('load', ${isEmpty(apply.roi)?b:apply.roi});
         } catch (ex) {
         }
-        // cal();
-        // cal1();
         $(".cal").textbox({
             'onChange': function () {
                 cal();

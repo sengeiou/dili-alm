@@ -167,397 +167,487 @@ body {
 </div>
 
 <script type="text/javascript">
-
-    $(function() {
-        $('#page-layout').layout();
-    });
-
-    </script> <!-- ====================================================================================================================== --> <!-- style & script 分隔线 -->
+	$(function() {
+		$('#page-layout').layout();
+	});
+</script> <!-- ====================================================================================================================== --> <!-- style & script 分隔线 -->
 <!-- ====================================================================================================================== --> <script
 	type="text/javascript">
-    var currentYear = new Date().getFullYear();
+	var currentYear = new Date().getFullYear();
 	var select = document.getElementById("cbYearContrast");
 	for (var i = 8; i >= -2; i--) {
-	    var theOption = document.createElement("option");
-	    theOption.innerHTML = currentYear+i + "年";
-	    theOption.value = currentYear+i;
-	    select.appendChild(theOption);
-	
-	}
-	
-	
-	function validate(){
-		
-        if($("input[name=year]").val()==null||$("input[name=year]").val()=="0"){
-        	$.messager.alert('警告', '必须选择对应年份');
-        	return false;
-        }
-        if($("input[name=file]").get(0).files[0]==null){
-        	$.messager.alert('警告', '上传的文件为空！');
-            return false;
-        }
-        var file_size = $("input[name=file]").get(0).files[0].size;
-        var  size= file_size / 1024;
-        if (size > 1024) {
-           $.messager.alert('警告', '上传的文件大小不能超过1M！');
-           return false;
-        }  
-        return true;
+		var theOption = document.createElement("option");
+		theOption.innerHTML = currentYear + i + "年";
+		theOption.value = currentYear + i;
+		select.appendChild(theOption);
 
 	}
-	
-	
-	function doUpload(){
-		 var formData = new FormData($( "#uploadForm" )[0]);
-		 if(validate()){
-			 if(isHaveYear()){
-				 $.messager.confirm('确认', '是否替换对应年份数据？', function(r) {
-					 if (r) {
-					     $.ajax({  
-					          url: 'http://almweb.diligrp.com/workDayApi/uploadWordDayDate' ,  
-					          type: 'POST',  
-					          data: formData,  
-					          async: false,  
-					          cache: false,  
-					          contentType: false,  
-					          processData: false,  
-					          success: function (data) {  
-					        	   if (data.code == "200") {
-					        		   $.messager.alert('成功', data.result);
-					        		   $('#workdayBox').dialog('close');
-					                } else {
-					                    $.messager.alert('错误', data.result);
-					                }
-					          },  
-					          error: function (data) {  
-					        	  $.messager.alert('错误', '远程访问失败');
-					          }  
-					     });  
-					 }
-				});
-			 }else{
-				 $.ajax({  
-			          url: 'http://almweb.diligrp.com/workDayApi/uploadWordDayDate' ,  
-			          type: 'POST',  
-			          data: formData,  
-			          async: false,  
-			          cache: false,  
-			          contentType: false,  
-			          processData: false,  
-			          success: function (data) {  
-			        	  if (data.code == "200") {
-			        		   $.messager.alert('成功', data.result);
-			        		   $('#workdayBox').dialog('close');
-			                } else {
-			                    $.messager.alert('错误', data.result);
-			                }
-			          },  
-			          error: function (data) {  
-			        	  $.messager.alert('错误', '远程访问失败');
-			          }  
-			     });  
-			 }
-		 }
+
+	function validate() {
+
+		if ($("input[name=year]").val() == null
+				|| $("input[name=year]").val() == "0") {
+			$.messager.alert('警告', '必须选择对应年份');
+			return false;
+		}
+		if ($("input[name=file]").get(0).files[0] == null) {
+			$.messager.alert('警告', '上传的文件为空！');
+			return false;
+		}
+		var file_size = $("input[name=file]").get(0).files[0].size;
+		var size = file_size / 1024;
+		if (size > 1024) {
+			$.messager.alert('警告', '上传的文件大小不能超过1M！');
+			return false;
+		}
+		return true;
+
 	}
-	function isHaveYear(){
-       var  htmlobj=$.ajax({url:"http://almweb.diligrp.com/workDayApi/isHasWorkDayYear?year="+$("input[name=year]").val(),async:false});
-       var str=htmlobj.responseText;
-       var obj = $.parseJSON(str);
-       return obj;   
+
+	function doUpload() {
+		var formData = new FormData($("#uploadForm")[0]);
+		if (validate()) {
+			if (isHaveYear()) {
+				$.messager
+						.confirm(
+								'确认',
+								'是否替换对应年份数据？',
+								function(r) {
+									if (r) {
+										$
+												.ajax({
+													url : 'http://almweb.diligrp.com/workDayApi/uploadWordDayDate',
+													type : 'POST',
+													data : formData,
+													async : false,
+													cache : false,
+													contentType : false,
+													processData : false,
+													success : function(data) {
+														if (data.code == "200") {
+															$.messager
+																	.alert(
+																			'成功',
+																			data.result);
+															$('#workdayBox')
+																	.dialog(
+																			'close');
+														} else {
+															$.messager
+																	.alert(
+																			'错误',
+																			data.result);
+														}
+													},
+													error : function(data) {
+														$.messager.alert('错误',
+																'远程访问失败');
+													}
+												});
+									}
+								});
+			} else {
+				$
+						.ajax({
+							url : 'http://almweb.diligrp.com/workDayApi/uploadWordDayDate',
+							type : 'POST',
+							data : formData,
+							async : false,
+							cache : false,
+							contentType : false,
+							processData : false,
+							success : function(data) {
+								if (data.code == "200") {
+									$.messager.alert('成功', data.result);
+									$('#workdayBox').dialog('close');
+								} else {
+									$.messager.alert('错误', data.result);
+								}
+							},
+							error : function(data) {
+								$.messager.alert('错误', '远程访问失败');
+							}
+						});
+			}
+		}
 	}
-	function workDayOpen(){
+	function isHaveYear() {
+		var htmlobj = $.ajax({
+			url : "http://almweb.diligrp.com/workDayApi/isHasWorkDayYear?year="
+					+ $("input[name=year]").val(),
+			async : false
+		});
+		var str = htmlobj.responseText;
+		var obj = $.parseJSON(str);
+		return obj;
+	}
+	function workDayOpen() {
 		$("#uploadForm").form('clear');
 		var data = $('#cbYearContrast').combobox('getData');
-		$("#cbYearContrast").combobox('select',data[0].value);
+		$("#cbYearContrast").combobox('select', data[0].value);
 		$('#workdayBox').dialog('open');
 		workDayYear();
 	}
-	function workDayYear(){
-		$.ajax({  
-	          url: 'http://almweb.diligrp.com/workDayApi/selectWorkDayYear' ,  
-	          type: 'POST',  
-	          data: {},  
-	          async: false,  
-	          cache: false,  
-	          contentType: false,  
-	          processData: false,  
-	          success: function (data) { 
-	        	  if (data != ""&&data!=null) {
-		        	  $("#hasYear").empty();
-		        	  $("#hasYear").append("<label  class='label-top'>已设定年份:</label>");
-		        	  for(var i=0;i<data.length;i++){
-		        		  $("#hasYear").append("<span class='span-box'>"+data[i]+"</span>"); 
-		        	  }
-	        	  }
-	          },  
-	          error: function (data) {  
-	        	  $.messager.alert('错误', '远程访问失败');
-	          }  
-	     });  
+	function workDayYear() {
+		$.ajax({
+			url : 'http://almweb.diligrp.com/workDayApi/selectWorkDayYear',
+			type : 'POST',
+			data : {},
+			async : false,
+			cache : false,
+			contentType : false,
+			processData : false,
+			success : function(data) {
+				if (data != "" && data != null) {
+					$("#hasYear").empty();
+					$("#hasYear").append(
+							"<label  class='label-top'>已设定年份:</label>");
+					for (var i = 0; i < data.length; i++) {
+						$("#hasYear")
+								.append(
+										"<span class='span-box'>" + data[i]
+												+ "</span>");
+					}
+				}
+			},
+			error : function(data) {
+				$.messager.alert('错误', '远程访问失败');
+			}
+		});
 	}
-	
-	function getWorkDay(){
-		$.ajax({  
-	          url: 'http://almweb.diligrp.com/workDayApi/getWorkDay' ,  
-	          type: 'POST',  
-	          data: {'userId':userIdVal},  
-	          async: false,   
-	          success: function (data1) {  
-        		 $("#user-workday-outer").empty();
-        	  	 $("#user-workday").empty();
-        	  	 if(data1.code==200){
-		        	 if (data1.data.id != ""&&data1.data.id!=null) {
-		        	  		$("#user-workday-outer").append("<p>"+UnixToDate(data1.data.workStartTime)+"</p><p>"+UnixToDate(data1.data.workEndTime)+"</p>");
-		        	  		if(data1.data.isRole==1){
-		        				$("#user-workday").append("<span>"+data1.data.workDayYear+"年 第"+data1.data.wordDayWeek+"周  "+UnixToDate(data1.data.workStartTime)+" -- "+UnixToDate(data1.data.workEndTime)+"</span><a href='javascript:;' onclick='workDayOpen()'>设置</a>");
-		        	  		}else{
-		        	  			$("#user-workday").append("<span>"+data1.data.workDayYear+"年 第"+data1.data.wordDayWeek+"周  "+UnixToDate(data1.data.workStartTime)+" -- "+UnixToDate(data1.data.workEndTime)+"</span>");
-		        	  		}
-		        	  }else{
-			        	  	$("#user-workday-outer").append("<p>非工作日</p><p>"+UnixToDate(0)+"</p>");
-			        	  	if(data1.data.isRole==1){
-		        				$("#user-workday").append("<span>非工作日："+UnixToYear()+"年 "+UnixToDate(0)+"</span><a href='javascript:;' onclick='workDayOpen()'>设置</a>");
-		        	  		}else{
-		        	  			$("#user-workday").append("<span>非工作日："+UnixToYear()+"年 "+UnixToDate(0)+"</span>");
-		        	  		}
-		        	  }
-        	  	 }else{
-        	  		$("#user-workday-outer").append("<p>请导入新一年的工作日</p>");
-	        	  	if(data1.data.isRole==1){
-        				$("#user-workday").append("<span>请管理员导入新一年的工作日</span><a href='javascript:;' onclick='workDayOpen()'>设置</a>");
-        	  		}else{
-        	  			$("#user-workday").append("<span>请管理员导入新一年的工作日</span>");
-        	  		}
-        	  	 }
-	          },  
-	          error: function (data1) {  
-	        	  $.messager.alert('错误', '远程访问失败');
-	          }  
-	     });  
+
+	function getWorkDay() {
+		$
+				.ajax({
+					url : 'http://almweb.diligrp.com/workDayApi/getWorkDay',
+					type : 'POST',
+					data : {
+						'userId' : userIdVal
+					},
+					async : false,
+					success : function(data1) {
+						$("#user-workday-outer").empty();
+						$("#user-workday").empty();
+						if (data1.code == 200) {
+							if (data1.data.id != "" && data1.data.id != null) {
+								$("#user-workday-outer")
+										.append(
+												"<p>"
+														+ UnixToDate(data1.data.workStartTime)
+														+ "</p><p>"
+														+ UnixToDate(data1.data.workEndTime)
+														+ "</p>");
+								if (data1.data.isRole == 1) {
+									$("#user-workday")
+											.append(
+													"<span>"
+															+ data1.data.workDayYear
+															+ "年 第"
+															+ data1.data.wordDayWeek
+															+ "周  "
+															+ UnixToDate(data1.data.workStartTime)
+															+ " -- "
+															+ UnixToDate(data1.data.workEndTime)
+															+ "</span><a href='javascript:;' onclick='workDayOpen()'>设置</a>");
+								} else {
+									$("#user-workday")
+											.append(
+													"<span>"
+															+ data1.data.workDayYear
+															+ "年 第"
+															+ data1.data.wordDayWeek
+															+ "周  "
+															+ UnixToDate(data1.data.workStartTime)
+															+ " -- "
+															+ UnixToDate(data1.data.workEndTime)
+															+ "</span>");
+								}
+							} else {
+								$("#user-workday-outer").append(
+										"<p>非工作日</p><p>" + UnixToDate(0)
+												+ "</p>");
+								if (data1.data.isRole == 1) {
+									$("#user-workday")
+											.append(
+													"<span>非工作日："
+															+ UnixToYear()
+															+ "年 "
+															+ UnixToDate(0)
+															+ "</span><a href='javascript:;' onclick='workDayOpen()'>设置</a>");
+								} else {
+									$("#user-workday")
+											.append(
+													"<span>非工作日："
+															+ UnixToYear()
+															+ "年 "
+															+ UnixToDate(0)
+															+ "</span>");
+								}
+							}
+						} else {
+							$("#user-workday-outer")
+									.append("<p>请导入新一年的工作日</p>");
+							if (data1.data.isRole == 1) {
+								$("#user-workday")
+										.append(
+												"<span>请管理员导入新一年的工作日</span><a href='javascript:;' onclick='workDayOpen()'>设置</a>");
+							} else {
+								$("#user-workday").append(
+										"<span>请管理员导入新一年的工作日</span>");
+							}
+						}
+					},
+					error : function(data1) {
+						$.messager.alert('错误', '远程访问失败');
+					}
+				});
 	}
-	function UnixToYear(){
-		var yearTime=new Date();
+	function UnixToYear() {
+		var yearTime = new Date();
 		return yearTime.getFullYear();
 	}
 	function UnixToDate(unixTime) {
 		var ymdhis = "";
-		var time ;
-		if(unixTime==0){
+		var time;
+		if (unixTime == 0) {
 			ymdhis = "";
 			time = new Date();
-	        if(time.getUTCMonth()+1<10){
-	        	ymdhis += "0"+(time.getUTCMonth()+1) + "/";
-	        }else{
-	        	ymdhis += (time.getUTCMonth()+1) + "/";
-	        }
-	        ymdhis += time.getUTCDate();
-		}else{
+			if (time.getUTCMonth() + 1 < 10) {
+				ymdhis += "0" + (time.getUTCMonth() + 1) + "/";
+			} else {
+				ymdhis += (time.getUTCMonth() + 1) + "/";
+			}
+			ymdhis += time.getUTCDate();
+		} else {
 			ymdhis = "";
 			time = new Date(unixTime);
-	        if(time.getUTCMonth()+1<10){
-	        	ymdhis += "0"+(time.getUTCMonth()+1) + "/";
-	        }else{
-	        	ymdhis += (time.getUTCMonth()+1) + "/";
-	        }
-	        
-	        ymdhis += time.getUTCDate()+1;
+			if (time.getUTCMonth() + 1 < 10) {
+				ymdhis += "0" + (time.getUTCMonth() + 1) + "/";
+			} else {
+				ymdhis += (time.getUTCMonth() + 1) + "/";
+			}
+
+			ymdhis += time.getUTCDate() + 1;
 		}
-        return ymdhis;
-    }
-	
-	
-	
-    function menuClickHandler(obj) {
-        var title = obj.text;
-        var url = obj.rel;
+		return ymdhis;
+	}
+
+	function menuClickHandler(obj) {
+		var title = obj.text;
+		var url = obj.rel;
 		var id = obj.id;
 		$("#menuList").find("ul li").removeClass("on");
-		if(id!=null&&id!=''){
-			$("#"+id+"").parent().addClass("on");
+		if (id != null && id != '') {
+			$("#" + id + "").parent().addClass("on");
 		}
-        addOneTab(title, url);   
-    }
-    
-    function clearCache(){
-    	$.messager.confirm('提示','确定要清除系统缓存数据？',function(flag){
-    		if(flag){
-    			$.ajax({
-    				type:'POST',
-    				url:'http://almweb.diligrp.com/cache/clear',
-    				dataType:'jsonp',
-    				success:function(data){
-    					if(data.code==200){
-    						$.messager.alert('提示','操作成功');
-    					}else{
-    						$.messager.alert('提示','操作成功');
-    					}
-    				}
-    			});
-    		}
-    	});
-    }
-    
-    function addOneTab(title, url) {
-    	$("#homeIndex").css('display','none');
-		$("#tabs").css('display','block');
-        if ("用户信息" == title) {
-            url = "${contextPath}/main/userDetail.html";
+		addOneTab(title, url);
+	}
 
-        } else if ("修改密码" == title) {
-            url = "${contextPath}/main/changePwd.html"
-        }
-        $("#tabs").empty();
-        $("#tabs").append('<iframe scrolling="auto" frameborder="0"  src="' + url + '"  style="width:100%; height: 99.6%;"></iframe>');
-    }
+	function clearCache() {
+		$.messager.confirm('提示', '确定要清除系统缓存数据？', function(flag) {
+			if (flag) {
+				$.ajax({
+					type : 'POST',
+					url : 'http://almweb.diligrp.com/cache/clear',
+					dataType : 'jsonp',
+					success : function(data) {
+						if (data.code == 200) {
+							$.messager.alert('提示', '操作成功');
+						} else {
+							$.messager.alert('提示', '操作成功');
+						}
+					}
+				});
+			}
+		});
+	}
 
-    function backToLogin() {
-        window.location.href = "${contextPath}/login/index.html";
-    }
+	function addOneTab(title, url) {
+		$("#homeIndex").css('display', 'none');
+		$("#tabs").css('display', 'block');
+		if ("用户信息" == title) {
+			url = "${contextPath}/main/userDetail.html";
 
-    function logout() {
-        $.post('${contextPath!}/login/logoutAction', null, function(data) {
-            if ("200" == data.code) {
-                window.location.href = "${contextPath}/login/index.html";
-            } else {
-                $.messager.alert('提示', '注销失败');
-            }
-        });
-    }
+		} else if ("修改密码" == title) {
+			url = "${contextPath}/main/changePwd.html"
+		}
+		$("#tabs").empty();
+		$("#tabs").append(
+				'<iframe scrolling="auto" frameborder="0"  src="' + url
+						+ '"  style="width:100%; height: 99.6%;"></iframe>');
+	}
 
+	function backToLogin() {
+		window.location.href = "${contextPath}/login/index.html";
+	}
 
-    /**顶部header滑动下拉**/
-    $(function () {
-        var timer=[];
-        $('.show-list').on('mouseover',function(){
-            $('#'+$(this).data('id')).show();
-            if($(this).data('id')=='user-menu'){
-                $(this).find('.user-menu').addClass('mouseover');
-            }
-            clearTimeout(timer[$(this).index()]);
-        }).on('mouseout',function(){
-            var buttonObj=$(this);
-   		    var obj=$('#'+$(this).data('id'));
-            timer[$(this).index()]=setTimeout(function(){
-                obj.hide();
-                if(buttonObj.data('id')=='user-menu'){
-                    buttonObj.find('.user-menu').removeClass('mouseover');
-                }
-            }, 300);
-        });
+	function logout() {
+		$.post('${contextPath!}/login/logoutAction', null, function(data) {
+			if ("200" == data.code) {
+				window.location.href = "${contextPath}/login/index.html";
+			} else {
+				$.messager.alert('提示', '注销失败');
+			}
+		});
+	}
 
-        $('.menu-list').on('mouseover',function(){
-           //console.log(1,$(this).data('index'));
-            clearTimeout(timer[$(this).data('index')]);
-            $(this).show();
-        }).on('mouseout',function(){
-            var obj = $(this);
-            // console.log($(this).data('index')===0)
-            timer[$(this).data('index')]=setTimeout(function(){
-                if(obj.data('index')===0){
-                    $('.user-menu').removeClass('mouseover');
-                }
-                obj.hide();
-            }, 300);
-        });
-        messagesListen();
+	/**顶部header滑动下拉**/
+	$(function() {
+		var timer = [];
+		$('.show-list').on('mouseover', function() {
+			$('#' + $(this).data('id')).show();
+			if ($(this).data('id') == 'user-menu') {
+				$(this).find('.user-menu').addClass('mouseover');
+			}
+			clearTimeout(timer[$(this).index()]);
+		}).on('mouseout', function() {
+			var buttonObj = $(this);
+			var obj = $('#' + $(this).data('id'));
+			timer[$(this).index()] = setTimeout(function() {
+				obj.hide();
+				if (buttonObj.data('id') == 'user-menu') {
+					buttonObj.find('.user-menu').removeClass('mouseover');
+				}
+			}, 300);
+		});
 
-    });
-    /** 得到消息通知信息  **/
-    var userIdVal =${userid}
-    var getMessages = {
-    		type: "POST",
-            url:'http://almweb.diligrp.com/messageApi/list',
-            data:{'userId':userIdVal},
-            dataType:'json',
-            success:function(data) {
-            	if(data.count==0){
-            		$("#messageCount").empty();
-	             	$("#messageList").empty();
-            		$("#messageCount").css('display','none');
-            	}else{
-            		$("#messageCount").css('display','block');
-	    			var result = data.messages;
-	    			$("#messageCount").empty();
-	             	$('#messageCount').text(data.count);
-	             	$("#messageList").empty();
-	    			for(var i = 0; i<result.length; i++){
-							$("#messageList").append("<li><a id='"+result[i].id+"'href='javascript:void(0)' onclick='setMessageTags(this)' rel='"+result[i].url+"'>"+result[i].messageName+"未处理</a></li>");
+		$('.menu-list').on('mouseover', function() {
+			//console.log(1,$(this).data('index'));
+			clearTimeout(timer[$(this).data('index')]);
+			$(this).show();
+		}).on('mouseout', function() {
+			var obj = $(this);
+			// console.log($(this).data('index')===0)
+			timer[$(this).data('index')] = setTimeout(function() {
+				if (obj.data('index') === 0) {
+					$('.user-menu').removeClass('mouseover');
+				}
+				obj.hide();
+			}, 300);
+		});
+		messagesListen();
 
-	    			} 
-            	}
-    		}
-    	};
-   		function messagesListen(){$.ajax(getMessages)}	
-    	//关键在这里，Ajax定时访问服务端，不断获取数据 ，这里是30秒请求一次。	
-    	window.setInterval(function(){$.ajax(getMessages)},30000);
-    	
-    	function setMessageTags(obj){
-    		var title ="消息管理";
-    		var url =obj.rel;
-    		var id = obj.id;
-            updateMessageIsRead(id,title,url);
-    	}
-    	function updateMessageIsRead(id,title,url){
-    		$.ajax(
-    			{  
-    	            type : "post" ,
-    	            url : "http://almweb.diligrp.com/messageApi/updateMessageIsRead" ,  
-    	            data:{id,id},
-    	            datatype : 'json',
-    	            success : function (data) {
-    	            	var flag = data.success;
-                        if(flag){
-                        	addOneTab(title, url);
-    	            	}
-                        messagesListen();
-    	            	
-    	            }
-    		});
-    	}
+	});
+	/** 得到消息通知信息  **/
+	var userIdVal = $
+	{
+		userid
+	}
+	var getMessages = {
+		type : "POST",
+		url : 'http://almweb.diligrp.com/messageApi/list',
+		data : {
+			'userId' : userIdVal
+		},
+		dataType : 'json',
+		success : function(data) {
+			if (data.count == 0) {
+				$("#messageCount").empty();
+				$("#messageList").empty();
+				$("#messageCount").css('display', 'none');
+			} else {
+				$("#messageCount").css('display', 'block');
+				var result = data.messages;
+				$("#messageCount").empty();
+				$('#messageCount').text(data.count);
+				$("#messageList").empty();
+				for (var i = 0; i < result.length; i++) {
+					$("#messageList")
+							.append(
+									"<li><a id='"
+											+ result[i].id
+											+ "'href='javascript:void(0)' onclick='setMessageTags(this)' rel='"
+											+ result[i].url + "'>"
+											+ result[i].messageName
+											+ "未处理</a></li>");
 
-    /*菜单切换*/
-    $(function () {
-    	$('#css3menu ul li').first().addClass("on");
+				}
+			}
+		}
+	};
+	function messagesListen() {
+		$.ajax(getMessages)
+	}
+	//关键在这里，Ajax定时访问服务端，不断获取数据 ，这里是30秒请求一次。	
+	window.setInterval(function() {
+		$.ajax(getMessages)
+	}, 30000);
 
-    	$('#page-layout').layout('remove','west');
-        $('#homeIndex').attr("src","http://almweb.diligrp.com/home/index");
+	function setMessageTags(obj) {
+		var title = "消息管理";
+		var url = obj.rel;
+		var id = obj.id;
+		updateMessageIsRead(id, title, url);
+	}
+	function updateMessageIsRead(id, title, url) {
+		$.ajax({
+			type : "post",
+			url : "http://almweb.diligrp.com/messageApi/updateMessageIsRead",
+			data : {
+				id : id
+			},
+			datatype : 'json',
+			success : function(data) {
+				var flag = data.success;
+				if (flag) {
+					addOneTab(title, url);
+				}
+				messagesListen();
 
-    	$('#css3menu ul li').on('click',function(){
-            let index= $(this).index();
-            if(index<1){
-                $('#page-layout').layout('remove','west');
-                $("#homeIndex").css('display','block');
-                $('#homeIndex').attr("src","http://almweb.diligrp.com/home/index");
-                $("#tabs").empty().hide();
-            }else{
-                // console.log($('#menuTem').html())
-                $('#page-layout').layout('add',{
-                    region:'west',
-                    width:251
-                });
+			}
+		});
+	}
 
-                $('.layout-panel-west .panel-body').html('').append($('#menuTem').html());
+	/*菜单切换*/
+	$(function() {
+		$('#css3menu ul li').first().addClass("on");
 
-                var id = $(this).children().get(0).id.replace("fMenu","");
-                $("#"+id+"").find("ul li").first().addClass('on');
-                var menuLi=$("#"+id+"").find("ul li").first().children().get(0);
-                addOneTab(menuLi.text,menuLi.rel);
-            };
-            $('.menu-left-list').eq(index).show().siblings().hide();
-            $(this).addClass('on').siblings().removeClass('on');
-        });
+		$('#page-layout').layout('remove', 'west');
+		$('#homeIndex').attr("src", "http://almweb.diligrp.com/home/index");
 
-    	// console.log($('#menuList').html())
-    	getWorkDay();
+		$('#css3menu ul li').on(
+				'click',
+				function() {
+					let index = $(this).index();
+					if (index < 1) {
+						$('#page-layout').layout('remove', 'west');
+						$("#homeIndex").css('display', 'block');
+						$('#homeIndex').attr("src",
+								"http://almweb.diligrp.com/home/index");
+						$("#tabs").empty().hide();
+					} else {
+						// console.log($('#menuTem').html())
+						$('#page-layout').layout('add', {
+							region : 'west',
+							width : 251
+						});
 
-    });
-    //左侧菜单折叠展开
-    function showHide(obj){
-        //console.log($(obj))
-        $(obj).hasClass('close') ? $(obj).removeClass('close').next('ul').show() : $(obj).addClass('close').next('ul').hide()
-    }
+						$('.layout-panel-west .panel-body').html('').append(
+								$('#menuTem').html());
 
-    </script> <script type="text/template" id="menuTem">
+						var id = $(this).children().get(0).id.replace("fMenu",
+								"");
+						$("#" + id + "").find("ul li").first().addClass('on');
+						var menuLi = $("#" + id + "").find("ul li").first()
+								.children().get(0);
+						addOneTab(menuLi.text, menuLi.rel);
+					}
+					;
+					$('.menu-left-list').eq(index).show().siblings().hide();
+					$(this).addClass('on').siblings().removeClass('on');
+				});
+
+		// console.log($('#menuList').html())
+		getWorkDay();
+
+	});
+	//左侧菜单折叠展开
+	function showHide(obj) {
+		//console.log($(obj))
+		$(obj).hasClass('close') ? $(obj).removeClass('close').next('ul')
+				.show() : $(obj).addClass('close').next('ul').hide()
+	}
+</script> <script type="text/template" id="menuTem">
         <div id="menuList" class="menu-left">
             <% for(item in menu){ %>
             <div id="${item.id}" class="menu-left-list">

@@ -16,7 +16,7 @@ public class RoiUpdateDto implements Serializable {
 	private List<String> indicatorName;
 	private List<String> indicatorCurrentStatus;
 	private List<String> projectObjective;
-	private List<Date> implemetionDate;
+	private List<String> implemetionDate;
 	private List<Integer> indicatorType;
 	private List<Integer> amount;
 	private List<String> rate;
@@ -44,7 +44,7 @@ public class RoiUpdateDto implements Serializable {
 		return projectObjective;
 	}
 
-	public List<Date> getImplemetionDate() {
+	public List<String> getImplemetionDate() {
 		return implemetionDate;
 	}
 
@@ -88,7 +88,7 @@ public class RoiUpdateDto implements Serializable {
 		this.projectObjective = projectObjective;
 	}
 
-	public void setImplemetionDate(List<Date> implemetionDate) {
+	public void setImplemetionDate(List<String> implemetionDate) {
 		this.implemetionDate = implemetionDate;
 	}
 

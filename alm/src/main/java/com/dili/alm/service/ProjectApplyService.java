@@ -44,4 +44,6 @@ public interface ProjectApplyService extends BaseService<ProjectApply, Long> {
 	public List<ApplyRisk> loadRisk(Long id);
 
 	void updateRoi(RoiUpdateDto roi) throws ProjectApplyException;
+
+	void deleteProjectApply(Long id) throws ProjectApplyException;
 }

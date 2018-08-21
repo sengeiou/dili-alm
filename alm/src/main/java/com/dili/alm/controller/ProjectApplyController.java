@@ -213,7 +213,15 @@ public class ProjectApplyController {
 	}
 
 	@RequestMapping(value = "/insertStep", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput<Object> insertStep(RoiUpdateDto roi) {
+	public @ResponseBody BaseOutput insertStep(ProjectApply projectApply) {
+		projectApplyService.updateSelective(projectApply);
+		ProjectApply projectApply2 = projectApplyService.get(projectApply.getId());
+		return BaseOutput.success(String.valueOf(projectApply2.getId()))
+				.setData(projectApply2.getId() + ":" + projectApply2.getName());
+	}
+
+	@RequestMapping(value = "/insertRoi", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody BaseOutput<Object> insertRoi(RoiUpdateDto roi) {
 		try {
 			projectApplyService.updateRoi(roi);
 		} catch (ProjectApplyException e) {
@@ -289,14 +297,21 @@ public class ProjectApplyController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "id", paramType = "form", value = "ProjectApply的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput delete(Long id) {
+	public @ResponseBody BaseOutput<Object> delete(Long id) {
 		ProjectApply apply = projectApplyService.get(id);
-		if (apply != null
-				&& apply.getCreateMemberId().equals(SessionContext.getSessionContext().getUserTicket().getId())) {
-			messageService.deleteMessage(id, AlmConstants.MessageType.APPLY.code);
-			projectApplyService.delete(id);
+		if (apply == null) {
+			return BaseOutput.failure("申请记录不存在");
 		}
-		return BaseOutput.success("删除成功").setData(apply.getId() + ":" + apply.getName());
+		if (!apply.getCreateMemberId().equals(SessionContext.getSessionContext().getUserTicket().getId())) {
+			return BaseOutput.failure("只有申请人才能删除记录");
+		}
+		try {
+			projectApplyService.deleteProjectApply(id);
+			messageService.deleteMessage(id, AlmConstants.MessageType.APPLY.code);
+			return BaseOutput.success("删除成功").setData(apply.getId() + ":" + apply.getName());
+		} catch (ProjectApplyException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
 	}
 
 	@RequestMapping(value = "/checkName")

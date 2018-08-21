@@ -133,64 +133,66 @@
         });
     }
 
-    var dels = [];
-    $("#fileuploader").uploadFile({
-        url: "${contextPath!}/files/filesUpload", // 文件上传url
-        fileName: "file", // 提交到服务器的文件名
-        uploadStr: '上传',
-        maxFileSize: 10485760, // 上传文件个数（多个时修改此处
-        returnType: 'json', // 服务返回数据
-        // allowedTypes : 'jpg,jpeg,png,gif', // 允许上传的文件式
-        showDone: true, // 是否显示"Done"(完成)按钮
-        showDelete: false, // 是否显示"Delete"(删除)
-        sizeErrorStr: '文件过大，允许上传文件最大为',//超过最大文件限制
-        onLoad: function (obj) {
-            // 页面加载时，onLoad回调。如果有需要在页面初始化时显示（比如：件修改时）的文件需要在此方法中处理
-            // obj.createProgress('/tmpImage.jpg'); //
-            // createProgress方法可以创建一个已上传的文件
-        },
-        onSelect: function (files) {
-            // console.log(files[0]);
-            // console.log($('#dg').datagrid('getData'));
-            var old = $('#dg').datagrid('getData').rows;
-            for (var i = 0; i < old.length; i++) {
-                if (files[0].name == old[i].name) {
-                    $('.ajax-upload-dragdrop').next('div').append('<div class="ajax-file-upload-error">请不要重复上传文件!</div>')
-                    return false;
-                }
-            }
-            progress();
-        },
-        deleteCallback: function (data, pd) {
-            // 文件删除时的回调方法。
-            // 如：以下ajax方法为调用服务器端删除方法删除服务器端的文件
-            $.ajax({
-                cache: false,
-                url: "file/upload",
-                type: "DELETE",
-                dataType: "json",
-                data: {
-                    file: data.url
-                },
-                success: function (data) {
-                    if (data.code === 0) {
-                        pd.statusbar.hide(); // 删除成功后隐藏进度条等
-                        $('#image').val('');
-                    } else {
-                        console.log(data.message); // 打印服务器返回的错误信息
+    $(function(){
+    	var dels = [];
+        $("#fileuploader").uploadFile({
+            url: "${contextPath!}/files/filesUpload", // 文件上传url
+            fileName: "file", // 提交到服务器的文件名
+            uploadStr: '上传',
+            maxFileSize: 10485760, // 上传文件个数（多个时修改此处
+            returnType: 'json', // 服务返回数据
+            // allowedTypes : 'jpg,jpeg,png,gif', // 允许上传的文件式
+            showDone: true, // 是否显示"Done"(完成)按钮
+            showDelete: false, // 是否显示"Delete"(删除)
+            sizeErrorStr: '文件过大，允许上传文件最大为',//超过最大文件限制
+            onLoad: function (obj) {
+                // 页面加载时，onLoad回调。如果有需要在页面初始化时显示（比如：件修改时）的文件需要在此方法中处理
+                // obj.createProgress('/tmpImage.jpg'); //
+                // createProgress方法可以创建一个已上传的文件
+            },
+            onSelect: function (files) {
+                // console.log(files[0]);
+                // console.log($('#dg').datagrid('getData'));
+                var old = $('#dg').datagrid('getData').rows;
+                for (var i = 0; i < old.length; i++) {
+                    if (files[0].name == old[i].name) {
+                        $('.ajax-upload-dragdrop').next('div').append('<div class="ajax-file-upload-error">请不要重复上传文件!</div>')
+                        return false;
                     }
                 }
-            });
-        },
-        onSuccess: function (files, data, xhr, pd) {
-            $.messager.progress('close');
-            $('#dg').datagrid('appendRow', {
-                id: data.data[0].id,
-                name: data.data[0].name,
-                length: data.data[0].length,
-                created: new Date(data.data[0].created).format("yyyy-MM-dd hh:mm:ss")
-            });
-        }
+                progress();
+            },
+            deleteCallback: function (data, pd) {
+                // 文件删除时的回调方法。
+                // 如：以下ajax方法为调用服务器端删除方法删除服务器端的文件
+                $.ajax({
+                    cache: false,
+                    url: "file/upload",
+                    type: "DELETE",
+                    dataType: "json",
+                    data: {
+                        file: data.url
+                    },
+                    success: function (data) {
+                        if (data.code === 0) {
+                            pd.statusbar.hide(); // 删除成功后隐藏进度条等
+                            $('#image').val('');
+                        } else {
+                            console.log(data.message); // 打印服务器返回的错误信息
+                        }
+                    }
+                });
+            },
+            onSuccess: function (files, data, xhr, pd) {
+                $.messager.progress('close');
+                $('#dg').datagrid('appendRow', {
+                    id: data.data[0].id,
+                    name: data.data[0].name,
+                    length: data.data[0].length,
+                    created: new Date(data.data[0].created).format("yyyy-MM-dd hh:mm:ss")
+                });
+            }
+        });
     });
 
     function removeit() {
