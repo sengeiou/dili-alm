@@ -32,6 +32,7 @@ import com.dili.alm.domain.HardwareResourceApply;
 import com.dili.alm.domain.HardwareResourceRequirement;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectOnlineApply;
+import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.HardwareResourceApplyListPageQueryDto;
 import com.dili.alm.domain.dto.HardwareResourceApplyUpdateDto;
@@ -101,9 +102,9 @@ public class HardwareResourceApplyController {
 		if (!CollectionUtils.isEmpty(dataAuths)) {
 			List<Long> projectIds = new ArrayList<>();
 			dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
-			Example example = new Example(ProjectOnlineApply.class);
+			Example example = new Example(Project.class);
 			Example.Criteria criteria = example.createCriteria();
-			criteria.andIn("id", projectIds);
+			criteria.andIn("id", projectIds).andNotEqualTo("projectState", ProjectState.CLOSED.getValue());
 			List<Project> projects = this.projectService.selectByExample(example);
 			modelMap.addAttribute("projects", projects);
 		}
@@ -148,9 +149,9 @@ public class HardwareResourceApplyController {
 		}
 		List<Long> projectIds = new ArrayList<>();
 		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
-		Example example = new Example(HardwareResourceApply.class);
+		Example example = new Example(Project.class);
 		Example.Criteria criteria = example.createCriteria();
-		criteria.andIn("id", projectIds);
+		criteria.andIn("id", projectIds).andNotEqualTo("projectState", ProjectState.CLOSED.getValue());
 		List<Project> projects = this.projectService.selectByExample(example);
 		modelMap.addAttribute("projects", projects);
 		List<Project> plist = this.projectService.list(null);
