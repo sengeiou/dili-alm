@@ -157,7 +157,7 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 	}
 
 	@Override
-	public void close(WorkOrder workOrder, Long operatorId, String description) throws WorkOrderException {
+	public void close(WorkOrder workOrder, Long operatorId, OperationResult result) throws WorkOrderException {
 		// 检查状态
 		if (!workOrder.getWorkOrderState().equals(WorkOrderState.SOLVED.getValue())) {
 			throw new WorkOrderException("当前状态不能执行分配操作");
@@ -166,25 +166,29 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 		if (!workOrder.getApplicantId().equals(operatorId)) {
 			throw new WorkOrderException("只有申请人才能关闭工单");
 		}
+		if (OperationResult.SUCCESS.equals(result)) {
+			workOrder.setCloseTime(new Date());
+			workOrder.setWorkOrderState(WorkOrderState.CLOSED.getValue());
+		} else if (OperationResult.FAILURE.equals(result)) {
+			workOrder.setWorkOrderState(WorkOrderState.SOLVING.getValue());
+
+		}
+		// 更新工单
+		workOrder.setModifyTime(new Date());
+		int rows = this.workOrderMapper.updateByPrimaryKeySelective(workOrder);
+		if (rows <= 0) {
+			throw new WorkOrderException("更新工单状态失败");
+		}
 		// 生成操作记录
 		WorkOrderOperationRecord woor = DTOUtils.newDTO(WorkOrderOperationRecord.class);
 		woor.setOperatorId(workOrder.getApplicantId());
 		woor.setOperationName(WorkOrderOperationType.CONFIRM.getName());
 		woor.setOperationType(WorkOrderOperationType.CONFIRM.getValue());
-		woor.setOperationResult(OperationResult.SUCCESS.getValue());
+		woor.setOperationResult(result.getValue());
 		woor.setWorkOrderId(workOrder.getId());
-		woor.setDescription(description);
-		int rows = this.woorMapper.insertSelective(woor);
+		rows = this.woorMapper.insertSelective(woor);
 		if (rows <= 0) {
 			throw new WorkOrderException("插入操作记录失败");
-		}
-		// 更新工单
-		workOrder.setCloseTime(new Date());
-		workOrder.setWorkOrderState(WorkOrderState.CLOSED.getValue());
-		workOrder.setModifyTime(new Date());
-		rows = this.workOrderMapper.updateByPrimaryKeySelective(workOrder);
-		if (rows <= 0) {
-			throw new WorkOrderException("更新工单状态失败");
 		}
 	}
 

@@ -94,8 +94,11 @@
 						<td class="table-combo" colspan="2" style="padding: 0">${model.overtimeHours!}</td>
 					</tr>
 					<tr>
-						<td class="table-title" colspan="2">描述</td>
-						<td colspan="4"><input class="easyui-textbox" name="description" data-options="validType:['length[0,50]']" style="width: 92%"></td>
+						<td class="table-title" colspan="2">是否满意</td>
+						<td colspan="4"><select class="easyui-combobox" name="result" data-options="editable:false,required:true" style="width: 92%">
+								<option value="1">满意</option>
+								<option value="0">不满意</option>
+						</select></td>
 					</tr>
 				</table>
 				<table class="table-box" width="100%">
