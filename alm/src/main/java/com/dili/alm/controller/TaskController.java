@@ -28,6 +28,7 @@ import com.dili.alm.constant.AlmConstants.TaskStatus;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectChange;
 import com.dili.alm.domain.ProjectPhase;
+import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.TaskDetails;
@@ -54,6 +55,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import tk.mybatis.mapper.entity.Example;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-11-23 10:23:05.
@@ -228,7 +230,15 @@ public class TaskController {
 	@ResponseBody
 	@RequestMapping(value = "/listTreeProject.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public List<Project> listProject() {
-		List<Project> list = taskService.projectList();
+		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
+		if (CollectionUtils.isEmpty(dataAuths)) {
+			return new ArrayList<>(0);
+		}
+		List<Long> projectIds = new ArrayList<>(dataAuths.size());
+		dataAuths.forEach(dataAuth -> projectIds.add(Long.valueOf(dataAuth.get("dataId").toString())));
+		Example example = new Example(Project.class);
+		example.createCriteria().andNotEqualTo("projectState", ProjectState.CLOSED.getValue()).andIn("id", projectIds);
+		List<Project> list = this.projectService.selectByExample(example);
 		return list;
 	}
 

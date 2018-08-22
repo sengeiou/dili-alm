@@ -45,6 +45,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import tk.mybatis.mapper.entity.Example;
+import tk.mybatis.mapper.entity.Example.Criteria;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-10-18 17:22:54.
@@ -280,8 +281,20 @@ public class ProjectController {
 	}
 
 	@RequestMapping(value = "/getProjectList")
-	public @ResponseBody Object getProjectList(Project project) throws Exception {
-		List<Project> list = projectService.list(project);
+	public @ResponseBody Object getProjectList(Project project,
+			@RequestParam(defaultValue = "false", required = false) Boolean queryAll) throws Exception {
+		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
+		if (CollectionUtils.isEmpty(dataAuths)) {
+			return new ArrayList<>(0);
+		}
+		List<Long> projectIds = new ArrayList<>(dataAuths.size());
+		dataAuths.forEach(dataAuth -> projectIds.add(Long.valueOf(dataAuth.get("dataId").toString())));
+		Example example = new Example(Project.class);
+		Criteria criteria = example.createCriteria().andIn("id", projectIds);
+		if (!queryAll) {
+			criteria.andNotEqualTo("projectState", ProjectState.CLOSED.getValue());
+		}
+		List<Project> list = this.projectService.selectByExample(example);
 		Map<Object, Object> metadata = new HashMap<>();
 		metadata.put("type", JSON.parse("{provider:'projectTypeProvider'}"));
 		metadata.put("projectManager", JSON.parse("{provider:'memberProvider'}"));
