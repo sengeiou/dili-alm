@@ -328,7 +328,7 @@
     }
 
     $('#projectId').combobox({
-        url: '${contextPath}/project/getProjectList',
+        url: '${contextPath}/project/getProjectList?queryAll=true',
         valueField: 'id',
         textField: 'serialNumber',
         onLoadSuccess:function () {
