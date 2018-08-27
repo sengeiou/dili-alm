@@ -135,7 +135,7 @@ function closeWorkOrder(id) {
 				href : '${contextPath!}/workOrder/close?id=' + id,
 				modal : true,
 				buttons : [{
-							text : '关闭',
+							text : '确定',
 							handler : function() {
 								$('#editForm').form('submit', {
 											url : '${contextPath!}/workOrder/close',
