@@ -66,7 +66,7 @@ public class WorkOrderController {
 
 	@GetMapping("/detail")
 	public String deital(@RequestParam Long id, ModelMap modelMap) {
-		WorkOrder workOrder = this.workOrderService.getOperationRecordsViewModel(id);
+		WorkOrder workOrder = this.workOrderService.getDetailViewModel(id);
 		try {
 			modelMap.addAttribute("opRecords", workOrder.aget("opRecords")).addAttribute("model",
 					WorkOrderService.parseViewModel(workOrder));

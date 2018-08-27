@@ -22,12 +22,7 @@
     <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
     <result column="applicant_id" jdbcType="BIGINT" property="applicantId" />
     <result column="executor_id" jdbcType="BIGINT" property="executorId" />
-    <result column="task_hours" jdbcType="INTEGER" property="taskHours" />
-    <result column="overtime_hours" jdbcType="INTEGER" property="overtimeHours" />
-    <result column="work_content" jdbcType="VARCHAR" property="workContent" />
     <result column="work_order_source" jdbcType="INTEGER" property="workOrderSource" />
-    <result column="start_date" jdbcType="TIMESTAMP" property="startDate" />
-    <result column="end_date" jdbcType="TIMESTAMP" property="endDate" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
@@ -35,8 +30,7 @@
     -->
     id, serial_number, work_order_name, work_order_type, priority, channel, acceptor_id, 
     copy_user_id, description, attachment_file_id, work_order_state, submit_time, close_time, 
-    creation_time, modify_time, applicant_id, executor_id, task_hours, overtime_hours, 
-    work_content, work_order_source, start_date, end_date
+    creation_time, modify_time, applicant_id, executor_id, work_order_source
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -101,23 +95,8 @@
       <if test="executorId != null">
         executor_id = #{executorId,jdbcType=BIGINT},
       </if>
-      <if test="taskHours != null">
-        task_hours = #{taskHours,jdbcType=INTEGER},
-      </if>
-      <if test="overtimeHours != null">
-        overtime_hours = #{overtimeHours,jdbcType=INTEGER},
-      </if>
-      <if test="workContent != null">
-        work_content = #{workContent,jdbcType=VARCHAR},
-      </if>
       <if test="workOrderSource != null">
         work_order_source = #{workOrderSource,jdbcType=INTEGER},
-      </if>
-      <if test="startDate != null">
-        start_date = #{startDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="endDate != null">
-        end_date = #{endDate,jdbcType=TIMESTAMP},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

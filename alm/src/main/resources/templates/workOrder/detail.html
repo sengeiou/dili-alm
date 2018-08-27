@@ -90,15 +90,19 @@
 						<td colspan="5" style="padding: 0px 10px; text-align: left;"><%if(model.startDate!'' !=
 							''){%>${model.startDate!}至${model.endDate!}<%}%></td>
 					</tr>
+				</table>
+				<table class="table-box" width="100%">
 					<tr>
 						<td class="table-title" colspan="6">任务工时</td>
 					</tr>
+					<%for(item in model.executionRecords){%>
 					<tr>
 						<td class="table-title">常规工时</td>
-						<td class="table-combo" colspan="2" style="padding: 0">${model.taskHours!}</td>
+						<td class="table-combo" colspan="2" >${item.taskHours!}</td>
 						<td class="table-title">加班工时</td>
-						<td class="table-combo" colspan="2" style="padding: 0">${model.overtimeHours!}</td>
+						<td class="table-combo" colspan="2">${item.overtimeHours!}</td>
 					</tr>
+					<%}%>
 				</table>
 				<table class="table-box" width="100%">
 					<tr>

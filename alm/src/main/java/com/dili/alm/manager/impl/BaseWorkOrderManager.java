@@ -34,12 +34,14 @@ import com.dili.alm.component.MailManager;
 import com.dili.alm.component.NumberGenerator;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.FilesMapper;
+import com.dili.alm.dao.WorkOrderExecutionRecordMapper;
 import com.dili.alm.dao.WorkOrderMapper;
 import com.dili.alm.dao.WorkOrderOperationRecordMapper;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.OperationResult;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.WorkOrder;
+import com.dili.alm.domain.WorkOrderExecutionRecord;
 import com.dili.alm.domain.WorkOrderOperationRecord;
 import com.dili.alm.domain.WorkOrderOperationType;
 import com.dili.alm.domain.WorkOrderState;
@@ -85,6 +87,9 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 	private WorkOrderOperationRecordMapper woorMapper;
 	@Autowired
 	private DataDictionaryService ddService;
+
+	@Autowired
+	private WorkOrderExecutionRecordMapper woerMapper;
 
 	public BaseWorkOrderManager() {
 		super();
@@ -237,17 +242,28 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 		if (rows <= 0) {
 			throw new WorkOrderException("插入操作记录失败");
 		}
+
+		// 插入工单执行记录
+		WorkOrderExecutionRecord woer = DTOUtils.newDTO(WorkOrderExecutionRecord.class);
+		woer.setWorkOrderId(workOrder.getId());
+		woer.setStartDate(startDate);
+		woer.setEndDate(endDate);
+		woer.setTaskHours(taskHours);
+		woer.setOvertimeHours(overtimeHours);
+		woer.setWorkContent(workContent);
+		rows = this.woerMapper.insertSelective(woer);
+		if (rows <= 0) {
+			throw new WorkOrderException("插入工单执行记录失败");
+		}
+
 		// 更新工单
-		workOrder.setStartDate(startDate);
-		workOrder.setEndDate(endDate);
-		workOrder.setTaskHours(taskHours);
-		workOrder.setOvertimeHours(overtimeHours);
 		workOrder.setWorkOrderState(WorkOrderState.SOLVED.getValue());
 		workOrder.setModifyTime(new Date());
 		rows = this.workOrderMapper.updateByPrimaryKeySelective(workOrder);
 		if (rows <= 0) {
 			throw new WorkOrderException("更新工单状态失败");
-		} // 发邮件
+		}
+		// 发邮件
 		User applicant = AlmCache.getInstance().getUserMap().get(workOrder.getApplicantId());
 		if (applicant == null) {
 			throw new WorkOrderException("申请人不存在");
