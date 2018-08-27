@@ -7,6 +7,7 @@ import javax.mail.MessagingException;
 
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
+import com.dili.alm.domain.dto.ProjectCostStatisticDto;
 import com.dili.alm.domain.dto.UploadProjectFileDto;
 import com.dili.alm.exceptions.ProjectException;
 import com.dili.ss.base.BaseService;
@@ -71,5 +72,14 @@ public interface ProjectService extends BaseService<Project, Long> {
 	 * @throws ProjectException
 	 */
 	void start(Long projectId) throws ProjectException;
+
+	/**
+	 * 项目成本统计
+	 * 
+	 * @param projectId
+	 *            项目id
+	 * @return
+	 */
+	List<ProjectCostStatisticDto> projectCostStatistic(Long projectId);
 
 }

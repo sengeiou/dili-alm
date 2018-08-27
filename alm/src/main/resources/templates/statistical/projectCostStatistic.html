@@ -1,0 +1,75 @@
+<#body>
+<style>
+.window-shadow {
+	display: none
+}
+</style>
+<%if(project!null!=null){%>
+<div id="cusTools">
+	<a onclick="<%if(backUrl!'' == ''){%>window.history.go(-1);<%}else{%>window.location.href='${backUrl!}';<%}%>" class="easyui-linkbutton"
+		style="width: 50px; height: 24px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef; padding: 5px; float: right;">返回</a>
+</div>
+<%}%>
+<div class="easyui-layout" fit="true" style="">
+	<!-- ====================================================================================================================== -->
+	<!-- 上方布局 -->
+	<!-- ====================================================================================================================== -->
+	<div region="north" height="auto" align="center">
+		<!-- =========================================================表单========================================================= -->
+		<div class="easyui-panel" style="width: 100%;" align="left">
+			<form id="form" class="easyui-form" method="post" fit="true">
+				<table style="padding: 10px;">
+					<tr>
+						<td style="padding: 5px;"><select class="easyui-textbox" name="name" id="name" style="width: 100%"
+							data-options="label:'项目:', validType:'length[0,255]'">
+								<option value="-1">全部</option> <%for(item in projects){%>
+								<option value="${item.id!}">item.name</option> <%}%>
+						</select></td>
+						<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid()">查询</a> <a
+							href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload" onclick="printGrid()">打印</a> <a href="javascript:void(0)"
+							class="easyui-linkbutton" iconCls="icon-reload" onclick="doExport('grid', true)">导出EXCEL</a></td>
+				</table>
+			</form>
+		</div>
+	</div>
+	<!-- ====================================================================================================================== -->
+	<!-- 中央布局 -->
+	<!-- ====================================================================================================================== -->
+	<!-- 表格 -->
+	<div region="center" style="width: 100%;" height="auto">
+		<!-- =========================================================表格========================================================= -->
+		<table class="easyui-datagrid" title="任务列表" id="grid" fitColumns="true" pagination="false" rownumbers="false" remoteSort="false"
+			loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" align="center" fit="true" striped="true" idField="projectId"
+			data-options="">
+			<thead>
+				<tr>
+					<th rowspan="2" data-options="field:'projectName',fixed:'false'">项目\成本</th>
+					<th colspan="6">预算成本</th>
+					<th colspan="6">实际成本</th>
+				</tr>
+			</thead>
+			<thead>
+				<tr>
+					<th data-options="field:'planHumanCost',fixed:'false'">人力成本</th>
+					<th data-options="field:'planSoftwareCost',fixed:'false'">软件成本</th>
+					<th data-options="field:'planHardwareCost',fixed:'false'">硬件成本</th>
+					<th data-options="field:'planTravelCost',fixed:'false'">差旅会议成本</th>
+					<th data-options="field:'planOtherCost',fixed:'false'">其他成本</th>
+					<th data-options="field:'planTotalCost',fixed:'false'">总计</th>
+					<th data-options="field:'actualHumanCost',fixed:'false'">人力成本</th>
+					<th data-options="field:'actualSoftwareCost',fixed:'false'">软件成本</th>
+					<th data-options="field:'actualHardwareCost',fixed:'false'">硬件成本</th>
+					<th data-options="field:'actualTravelCost',fixed:'false'">差旅会议成本</th>
+					<th data-options="field:'actualOtherCost',fixed:'false'">其他成本</th>
+					<th data-options="field:'actualTotalCost',fixed:'false'">总计</th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+	<div region="south" style="width: 100%;" height="auto">
+		<div>说明：如果项目未结束，其中项目中类型产生的费用如果为0，用“/”表示未获得数据，如果项目结束类型中产生费用为0，则用“0”表示。 增加说明：“/”表示项目中暂时未获得费用数据，“0”表示项目实际过程中未产生费用</div>
+	</div>
+</div>
+<script type="text/javascript">
+<#statistical_projectCostStatistic />
+</script> </#body>

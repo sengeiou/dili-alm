@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.dto.ProjectCostStatisticDto;
 import com.dili.alm.domain.dto.ProjectProgressDto;
 import com.dili.alm.domain.dto.ProjectStatusCountDto;
 import com.dili.ss.base.MyMapper;
@@ -41,4 +42,13 @@ public interface ProjectMapper extends MyMapper<Project> {
 	List<ProjectStatusCountDto> getStateByProjectCount(@Param("owner") Long owner, @Param("list") List<Long> list);
 
 	List<Long> selectNotSubmitWeekly(@Param("startTime") String startTime, @Param("endTime") String endTime);
+
+	/**
+	 * 项目成本统计
+	 * 
+	 * @param projectId
+	 *            项目id
+	 * @return
+	 */
+	List<ProjectCostStatisticDto> projectCostStatistic(@Param("projectId") Long projectId);
 }

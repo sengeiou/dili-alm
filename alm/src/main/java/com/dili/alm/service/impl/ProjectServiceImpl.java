@@ -46,6 +46,7 @@ import com.dili.alm.domain.TeamRole;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
+import com.dili.alm.domain.dto.ProjectCostStatisticDto;
 import com.dili.alm.domain.dto.ProjectDto;
 import com.dili.alm.domain.dto.UploadProjectFileDto;
 import com.dili.alm.exceptions.ProjectException;
@@ -592,5 +593,10 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 			return;
 		}
 		throw new ProjectException("项目当前状态不能开始");
+	}
+
+	@Override
+	public List<ProjectCostStatisticDto> projectCostStatistic(Long projectId) {
+		return this.getActualDao().projectCostStatistic(projectId);
 	}
 }

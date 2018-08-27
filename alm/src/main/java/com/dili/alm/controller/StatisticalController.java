@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,8 +30,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.dili.alm.cache.AlmCache;
 import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.dto.ProjectCostStatisticDto;
 import com.dili.alm.domain.dto.ProjectTaskHourCountDto;
 import com.dili.alm.domain.dto.ProjectTypeCountDto;
 import com.dili.alm.domain.dto.ProjectYearCoverDto;
@@ -496,5 +499,17 @@ public class StatisticalController {
 			}
 		}
 		return rtn;
+	}
+
+	@GetMapping("/projectCostStatistic.html")
+	public String projectCostStatisticView(ModelMap map) {
+		map.addAttribute("projects", AlmCache.getInstance().getProjectMap().values());
+		return "statistical/projectCostStatistic";
+	}
+
+	@ResponseBody
+	@RequestMapping("/projectCostStatistic")
+	public List<ProjectCostStatisticDto> projectCostStatistic(@RequestParam(required = false) Long projectId) {
+		return this.projectService.projectCostStatistic(projectId);
 	}
 }

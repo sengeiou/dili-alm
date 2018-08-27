@@ -49,6 +49,27 @@
 		<result column="close_time" jdbcType="TIMESTAMP"
 			property="closeTime" />
 	</resultMap>
+
+	<resultMap
+		type="com.dili.alm.domain.dto.ProjectCostStatisticDto"
+		id="projectCostStatisticRM">
+		<id column="project_id" property="projectId" />
+		<result column="project_name" property="projectName" />
+		<result column="plan_human_cost" property="planHumanCost" />
+		<result column="plan_software_cost" property="planSoftwareCost" />
+		<result column="plan_hardware_cost" property="planHardwareCost" />
+		<result column="plan_travel_cost" property="planTravelCost" />
+		<result column="plan_other_cost" property="planOtherCost" />
+		<result column="plan_total_cost" property="planTotalCost" />
+		<result column="actual_human_cost"
+			property="actualSoftwareCost" />
+		<result column="actual_hardware_cost"
+			property="actualHardwareCost" />
+		<result column="actual_travel_cost" property="actualTravelCost" />
+		<result column="actual_other_cost" property="actualOtherCost" />
+		<result column="actual_total_cost" property="actualTotalCost" />
+	</resultMap>
+
 	<sql id="Base_Column_List">
 		<!-- WARNING - @mbg.generated -->
 		id, apply_id, serial_number, parent_id, name, type, project_manager,
@@ -230,7 +251,8 @@
 		dep,
 		business_owner,
 		estimate_launch_date,
-		IFNULL( close_time, #{currentTime} ) AS close_time
+		IFNULL( close_time, #{currentTime} ) AS
+		close_time
 		FROM
 		`project`
 		) p
@@ -293,7 +315,8 @@
 		dep,
 		business_owner,
 		estimate_launch_date,
-		IFNULL( close_time, #{currentTime})
+		IFNULL( close_time,
+		#{currentTime})
 		AS close_time
 		FROM
 		`project`
@@ -330,9 +353,11 @@
 		p.id as id,
 		p.name as name,
 		p.type as type,
-		p.project_manager as projectManager,
+		p.project_manager as
+		projectManager,
 		p.project_state as projectState,
-		p.completed_progress as completedProgress,
+		p.completed_progress as
+		completedProgress,
 		pa.estimate_launch_date as estimateLaunchDate,
 		pa.`start_date` as startDate,
 		pa.`end_date` as endDate
@@ -400,7 +425,8 @@
 		dep,
 		business_owner,
 		estimate_launch_date,
-		IFNULL( close_time, #{currentTime} ) AS close_time
+		IFNULL( close_time, #{currentTime} ) AS
+		close_time
 		FROM
 		`project`
 		) p
@@ -468,4 +494,70 @@
 		project_state = 2
 		)
 	</select>
+
+	<select id="projectCostStatistic"
+		resultMap="projectCostStatisticRM">
+		SELECT
+		p.id AS project_id,
+		p.`name` AS project_name,
+		max( CASE t1.cost_type WHEN 1 THEN total ELSE '/' END ) AS
+		plan_human_cost,
+		max( CASE t1.cost_type WHEN 2 THEN total ELSE '/' END ) AS
+		plan_software_cost,
+		(
+		max( CASE t1.cost_type WHEN 3 THEN total ELSE 0 END ) + max( CASE
+		t1.cost_type WHEN 4 THEN total ELSE 0 END )
+		) AS plan_hardware_cost,
+		max( CASE t1.cost_type WHEN 5 THEN total ELSE '/' END ) AS
+		plan_travel_cost,
+		max( CASE t1.cost_type WHEN 6 THEN total ELSE '/' END ) AS
+		plan_other_cost,
+		IFNULL( sum( t1.total ), '/' ) AS plan_total_cost,
+		IFNULL( t2.human_cost, '/' ) AS actual_human_cost,
+		t3.software_cost AS actual_software_cost,
+		IFNULL( sum( hr.cost ), '/' ) AS actual_hardware_cost,
+		IFNULL( round( sum( tca.total_amount ) / 100, 2 ), '/' ) AS
+		actual_travel_cost,
+		IFNULL( t3.other_cost, '/' ) AS actual_other_cost,
+		(
+		( IFNULL( t2.human_cost, 0 ) ) + IFNULL( sum( hr.cost ), 0 ) + (
+		IFNULL( round(sum( tca.total_amount ) / 100,2), 0 ) )
+		) AS actual_total_cost
+		FROM
+		project p
+		LEFT JOIN (
+		SELECT
+		pc.apply_id,
+		pc.cost_type,
+		sum( pc.total ) AS total
+		FROM
+		project_cost pc
+		INNER JOIN project p ON p.apply_id = pc.id
+		GROUP BY
+		pc.apply_id,
+		pc.cost_type
+		) t1 ON p.apply_id = t1.apply_id
+		LEFT JOIN (
+		SELECT
+		t.project_id,
+		round( sum( td.task_hour / 8 * 1000 ), 0 ) AS human_cost
+		FROM
+		task t
+		INNER JOIN task_details td ON t.id = td.task_id
+		GROUP BY
+		t.project_id
+		) t2 ON p.id = t2.project_id
+		LEFT JOIN hardware_resource hr ON hr.project_id = p.id
+		LEFT JOIN travel_cost_apply tca ON tca.project_id = p.id
+		LEFT JOIN ( SELECT project_id, other_cost, software_cost FROM
+		project_complete WHERE `status` = 3 ) t3 ON t3.project_id = p.id
+		WHERE
+		1 = 1
+		<if test="projectId != null">
+			AND p.id = #{projectId}
+		</if>
+		GROUP BY
+		p.id
+	</select>
+
 </mapper>
