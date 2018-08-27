@@ -157,7 +157,8 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 	}
 
 	@Override
-	public void close(WorkOrder workOrder, Long operatorId, OperationResult result) throws WorkOrderException {
+	public void close(WorkOrder workOrder, Long operatorId, OperationResult result, String description)
+			throws WorkOrderException {
 		// 检查状态
 		if (!workOrder.getWorkOrderState().equals(WorkOrderState.SOLVED.getValue())) {
 			throw new WorkOrderException("当前状态不能执行分配操作");
@@ -185,6 +186,7 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 		woor.setOperationName(WorkOrderOperationType.CONFIRM.getName());
 		woor.setOperationType(WorkOrderOperationType.CONFIRM.getValue());
 		woor.setOperationResult(result.getValue());
+		woor.setDescription(description);
 		woor.setWorkOrderId(workOrder.getId());
 		rows = this.woorMapper.insertSelective(woor);
 		if (rows <= 0) {

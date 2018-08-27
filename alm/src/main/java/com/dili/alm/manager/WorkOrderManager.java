@@ -22,7 +22,7 @@ public interface WorkOrderManager {
 	void allocate(WorkOrder workOrder, Long executorId, Integer workOrderType, Integer priority, OperationResult result,
 			String description) throws WorkOrderException;
 
-	void close(WorkOrder workOrder, Long operatorId, OperationResult result) throws WorkOrderException;
+	void close(WorkOrder workOrder, Long operatorId, OperationResult result, String description) throws WorkOrderException;
 
 	void solve(WorkOrder workOrder, Date startDate, Date endDate, Integer taskHours, Integer overtimeHours,
 			String workContent) throws WorkOrderException;

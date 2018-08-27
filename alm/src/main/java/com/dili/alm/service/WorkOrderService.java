@@ -115,9 +115,10 @@ public interface WorkOrderService extends BaseService<WorkOrder, Long> {
 	 * @param operatorId
 	 *            TODO
 	 * @param result TODO
+	 * @param description TODO
 	 * @throws WorkOrderException
 	 */
-	void close(Long id, Long operatorId, OperationResult result) throws WorkOrderException;
+	void close(Long id, Long operatorId, OperationResult result, String description) throws WorkOrderException;
 
 	Map<Object, Object> getViewModel(Long id);
 

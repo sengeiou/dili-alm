@@ -64,14 +64,14 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 	}
 
 	@Override
-	public void close(Long id, Long operatorId, OperationResult result) throws WorkOrderException {
+	public void close(Long id, Long operatorId, OperationResult result, String description) throws WorkOrderException {
 		// 检查工单是否存在
 		WorkOrder workOrder = this.getActualDao().selectByPrimaryKey(id);
 		if (workOrder == null) {
 			throw new WorkOrderException("工单不存在");
 		}
 		WorkOrderManager workOrderManager = this.workOrderManagerMap.get(workOrder.getWorkOrderSource());
-		workOrderManager.close(workOrder, operatorId, result);
+		workOrderManager.close(workOrder, operatorId, result, description);
 	}
 
 	public void checkTimeToClose(ScheduleMessage msg) throws WorkOrderException {
