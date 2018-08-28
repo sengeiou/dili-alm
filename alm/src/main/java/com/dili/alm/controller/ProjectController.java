@@ -282,15 +282,19 @@ public class ProjectController {
 
 	@RequestMapping(value = "/getProjectList")
 	public @ResponseBody Object getProjectList(Project project,
-			@RequestParam(defaultValue = "false", required = false) Boolean queryAll) throws Exception {
-		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
-		if (CollectionUtils.isEmpty(dataAuths)) {
-			return new ArrayList<>(0);
-		}
-		List<Long> projectIds = new ArrayList<>(dataAuths.size());
-		dataAuths.forEach(dataAuth -> projectIds.add(Long.valueOf(dataAuth.get("dataId").toString())));
+			@RequestParam(defaultValue = "false", required = false) Boolean queryAll,
+			@RequestParam(required = false, defaultValue = "false") Boolean dataAuth) throws Exception {
 		Example example = new Example(Project.class);
-		Criteria criteria = example.createCriteria().andIn("id", projectIds);
+		Criteria criteria = example.createCriteria();
+		if (dataAuth) {
+			List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
+			if (CollectionUtils.isEmpty(dataAuths)) {
+				return new ArrayList<>(0);
+			}
+			List<Long> projectIds = new ArrayList<>(dataAuths.size());
+			dataAuths.forEach(da -> projectIds.add(Long.valueOf(da.get("dataId").toString())));
+			criteria.andIn("id", projectIds);
+		}
 		if (!queryAll) {
 			criteria.andNotEqualTo("projectState", ProjectState.CLOSED.getValue());
 		}

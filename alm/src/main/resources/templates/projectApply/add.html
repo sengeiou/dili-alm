@@ -33,7 +33,7 @@
 </div>
 <script>
     $('#child').combobox({
-        url: '${contextPath}/projectApply/getProjectList',
+        url: '${contextPath}/projectApply/getProjectList?queryAll=false&dataAuth=true',
         valueField: 'value',
         textField: 'text'
     }).combobox('disable');
