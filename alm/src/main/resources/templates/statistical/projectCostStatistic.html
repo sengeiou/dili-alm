@@ -20,10 +20,10 @@
 			<form id="form" class="easyui-form" method="post" fit="true">
 				<table style="padding: 10px;">
 					<tr>
-						<td style="padding: 5px;"><select class="easyui-textbox" name="name" id="name" style="width: 100%"
+						<td style="padding: 5px;"><select class="easyui-combobox" name="name" id="name" style="width: 100%"
 							data-options="label:'项目:', validType:'length[0,255]'">
 								<option value="-1">全部</option> <%for(item in projects){%>
-								<option value="${item.id!}">item.name</option> <%}%>
+								<option value="${item.id!}">${item.name!}</option> <%}%>
 						</select></td>
 						<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid()">查询</a> <a
 							href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload" onclick="printGrid()">打印</a> <a href="javascript:void(0)"
@@ -66,7 +66,7 @@
 			</thead>
 		</table>
 	</div>
-	<div region="south" style="width: 100%;" height="auto">
+	<div region="south" style="width: 100%;color:red;" height="auto">
 		<div>说明：如果项目未结束，其中项目中类型产生的费用如果为0，用“/”表示未获得数据，如果项目结束类型中产生费用为0，则用“0”表示。 增加说明：“/”表示项目中暂时未获得费用数据，“0”表示项目实际过程中未产生费用</div>
 	</div>
 </div>
