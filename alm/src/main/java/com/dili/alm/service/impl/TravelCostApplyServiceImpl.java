@@ -424,6 +424,10 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 		}
 		apply.setProjectId(dto.getProjectId());
 		apply.setTotalAmount(dto.getTotalAmount());
-		this.getActualDao().updateByPrimaryKeySelective(apply);
+		apply.setModificationTime(new Date());
+		int rows = this.getActualDao().updateByPrimaryKey(apply);
+		if (rows <= 0) {
+			throw new TravelCostApplyException("更新差旅申请失败");
+		}
 	}
 }
