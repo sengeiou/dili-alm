@@ -9,7 +9,8 @@
 	<a onclick="<%if(backUrl!'' == ''){%>window.history.go(-1);<%}else{%>window.location.href='${backUrl!}';<%}%>" class="easyui-linkbutton"
 		style="width: 50px; height: 24px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef; padding: 5px; float: right;">返回</a>
 </div>
-<%}%>
+<%}%> <script src="${contextPath}/resources/js/jquery.jqprint-0.3.js"></script> <script
+	src="${contextPath}/resources/js/jquery-migrate-1.1.0.js"></script>
 <div class="easyui-layout" fit="true" style="">
 	<!-- ====================================================================================================================== -->
 	<!-- 上方布局 -->
@@ -36,7 +37,7 @@
 	<!-- 中央布局 -->
 	<!-- ====================================================================================================================== -->
 	<!-- 表格 -->
-	<div region="center" style="width: 100%;" height="auto">
+	<div id="center" region="center" style="width: 100%;" height="auto">
 		<!-- =========================================================表格========================================================= -->
 		<table class="easyui-datagrid" title="项目成本统计" id="grid" fitColumns="true" pagination="false" rownumbers="false" remoteSort="false"
 			loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" align="center" fit="true" striped="true" idField="projectId"

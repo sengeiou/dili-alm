@@ -13,6 +13,10 @@ function queryGrid() {
 	$('#grid').datagrid("load", param);
 }
 
+function printGrid() {
+	$(".datagrid").jqprint();
+}
+
 function exportProjectCost() {
 	var projectId = $('#projectId').combobox('getValue');
 	var url = '${contextPath!}/statistical/exportProjectCost';
