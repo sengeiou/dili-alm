@@ -7,8 +7,10 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +35,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.dto.ProjectActionRecordExportDto;
 import com.dili.alm.domain.dto.ProjectCostStatisticDto;
 import com.dili.alm.domain.dto.ProjectTaskHourCountDto;
 import com.dili.alm.domain.dto.ProjectTypeCountDto;
@@ -55,6 +58,9 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
 
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
+import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -511,5 +517,60 @@ public class StatisticalController {
 	@RequestMapping("/projectCostStatistic")
 	public List<ProjectCostStatisticDto> projectCostStatistic(@RequestParam(required = false) Long projectId) {
 		return this.projectService.projectCostStatistic(projectId);
+	}
+
+	@ResponseBody
+	@RequestMapping("/export")
+	public void exportProjectCost(@RequestParam Long projectId, String[] actionCode, HttpServletRequest request,
+			HttpServletResponse response) throws UnsupportedEncodingException {
+//		List<ProjectCostStatisticDto> datas = this.projectService.projectCostStatistic(projectId);
+//
+//		// 标题
+//		List<ExcelExportEntity> entityList = new ArrayList<ExcelExportEntity>();
+//		// 内容
+//		List<Map<String, Object>> dataResult = new ArrayList<Map<String, Object>>();
+//		ExcelExportEntity projectCol = new ExcelExportEntity("项目成本", "actionName", 25);
+////		projectCol.setMergeRely(2);
+//		projectCol.setNeedMerge(true);
+//		entityList.add(projectCol);
+//		entityList.add(new ExcelExportEntity("计划开始时间", "startDate", 25));
+//		entityList.add(new ExcelExportEntity("计划结束时间", "endDate", 25));
+//		entityList.add(new ExcelExportEntity("发生时间", "actionDate", 25));
+//
+//		entityList.add(new ExcelExportEntity("逾期天数", "overDays", 25));
+//		// 内容
+//		if (CollectionUtils.isNotEmpty(datas)) {
+//			for (ProjectCostStatisticDto dto : datas) {
+//				Map<String, Object> map = new HashMap<String, Object>();
+//				map.put("actionName", dto.getActionName());
+//				map.put("startDate", dto.getStartDate());
+//				map.put("endDate", dto.getEndDate());
+//				map.put("actionDate", dto.getActionDate());
+//				map.put("overDays", dto.getOverDays());
+//				dataResult.add(map);
+//			}
+//		}
+//
+//		HSSFWorkbook excel = (HSSFWorkbook) ExcelExportUtil.exportExcel(new ExportParams("项目进程展示", "项目进程展示"),
+//				entityList, dataResult);
+//		String rtn = getRtn("项目里程碑数据.xls", request);
+//		response.setContentType("text/html");
+//		response.setHeader("Content-Disposition", "attachment;" + rtn);
+//		OutputStream os = null;
+//		try {
+//			os = response.getOutputStream();
+//			excel.write(os);
+//			os.flush();
+//		} catch (IOException e) {
+//			LOGGER.error(e.getMessage(), e);
+//		} finally {
+//			if (os != null) {
+//				try {
+//					os.close();
+//				} catch (IOException e) {
+//					LOGGER.error(e.getMessage(), e);
+//				}
+//			}
+//		}
 	}
 }

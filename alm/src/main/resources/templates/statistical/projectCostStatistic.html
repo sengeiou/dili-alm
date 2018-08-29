@@ -27,7 +27,7 @@
 						</select></td>
 						<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid()">查询</a> <a
 							href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload" onclick="printGrid()">打印</a> <a href="javascript:void(0)"
-							class="easyui-linkbutton" iconCls="icon-reload" onclick="doExport('grid', true)">导出EXCEL</a></td>
+							class="easyui-linkbutton" iconCls="icon-reload" onclick="doExport('grid')">导出EXCEL</a></td>
 				</table>
 			</form>
 		</div>
@@ -38,7 +38,7 @@
 	<!-- 表格 -->
 	<div region="center" style="width: 100%;" height="auto">
 		<!-- =========================================================表格========================================================= -->
-		<table class="easyui-datagrid" title="任务列表" id="grid" fitColumns="true" pagination="false" rownumbers="false" remoteSort="false"
+		<table class="easyui-datagrid" title="项目成本统计" id="grid" fitColumns="true" pagination="false" rownumbers="false" remoteSort="false"
 			loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" align="center" fit="true" striped="true" idField="projectId"
 			data-options="">
 			<thead>
@@ -66,7 +66,7 @@
 			</thead>
 		</table>
 	</div>
-	<div region="south" style="width: 100%;color:red;" height="auto">
+	<div region="south" style="width: 100%; color: red;" height="auto">
 		<div>说明：如果项目未结束，其中项目中类型产生的费用如果为0，用“/”表示未获得数据，如果项目结束类型中产生费用为0，则用“0”表示。 增加说明：“/”表示项目中暂时未获得费用数据，“0”表示项目实际过程中未产生费用</div>
 	</div>
 </div>
