@@ -80,6 +80,7 @@
 					<encoding>UTF-8</encoding>
 					<nonFilteredFileExtensions>
 						<nonFilteredFileExtension>docx</nonFilteredFileExtension>
+						<nonFilteredFileExtension>xlsx</nonFilteredFileExtension>
 					</nonFilteredFileExtensions>
 				</configuration>
 			</plugin>

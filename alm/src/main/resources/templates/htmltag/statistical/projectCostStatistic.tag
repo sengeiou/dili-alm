@@ -13,6 +13,15 @@ function queryGrid() {
 	$('#grid').datagrid("load", param);
 }
 
+function exportProjectCost() {
+	var projectId = $('#projectId').combobox('getValue');
+	var url = '${contextPath!}/statistical/exportProjectCost';
+	if (projectId > 0) {
+		url += '?projectId=' + projectId;
+	}
+	window.open(url);
+}
+
 $(function() {
 
 			queryGrid();

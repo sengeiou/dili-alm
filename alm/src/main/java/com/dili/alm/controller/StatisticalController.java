@@ -3,11 +3,11 @@ package com.dili.alm.controller;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,6 +20,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -30,12 +33,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.domain.Project;
-import com.dili.alm.domain.dto.ProjectActionRecordExportDto;
 import com.dili.alm.domain.dto.ProjectCostStatisticDto;
 import com.dili.alm.domain.dto.ProjectTaskHourCountDto;
 import com.dili.alm.domain.dto.ProjectTypeCountDto;
@@ -53,14 +54,12 @@ import com.dili.alm.service.StatisticalService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.alm.utils.WebUtil;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
 
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
-import cn.afterturn.easypoi.excel.entity.ExportParams;
-import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
+import cn.afterturn.easypoi.excel.entity.TemplateExportParams;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -73,6 +72,7 @@ import io.swagger.annotations.ApiOperation;
 public class StatisticalController {
 
 	private static final String DATA_AUTH_TYPE = "Project";
+	private static final Logger LOGGER = LoggerFactory.getLogger(StatisticalController.class);
 	@Autowired
 	private StatisticalService statisticalService;
 
@@ -516,61 +516,65 @@ public class StatisticalController {
 	@ResponseBody
 	@RequestMapping("/projectCostStatistic")
 	public List<ProjectCostStatisticDto> projectCostStatistic(@RequestParam(required = false) Long projectId) {
+		if (projectId <= 0) {
+			return this.projectService.projectCostStatistic(null);
+		}
 		return this.projectService.projectCostStatistic(projectId);
 	}
 
 	@ResponseBody
-	@RequestMapping("/export")
-	public void exportProjectCost(@RequestParam Long projectId, String[] actionCode, HttpServletRequest request,
+	@RequestMapping(value = "/exportProjectCost")
+	public void exportProjectCost(@RequestParam(required = false) Long projectId, HttpServletRequest request,
 			HttpServletResponse response) throws UnsupportedEncodingException {
-//		List<ProjectCostStatisticDto> datas = this.projectService.projectCostStatistic(projectId);
-//
-//		// 标题
-//		List<ExcelExportEntity> entityList = new ArrayList<ExcelExportEntity>();
-//		// 内容
-//		List<Map<String, Object>> dataResult = new ArrayList<Map<String, Object>>();
-//		ExcelExportEntity projectCol = new ExcelExportEntity("项目成本", "actionName", 25);
-////		projectCol.setMergeRely(2);
-//		projectCol.setNeedMerge(true);
-//		entityList.add(projectCol);
-//		entityList.add(new ExcelExportEntity("计划开始时间", "startDate", 25));
-//		entityList.add(new ExcelExportEntity("计划结束时间", "endDate", 25));
-//		entityList.add(new ExcelExportEntity("发生时间", "actionDate", 25));
-//
-//		entityList.add(new ExcelExportEntity("逾期天数", "overDays", 25));
-//		// 内容
-//		if (CollectionUtils.isNotEmpty(datas)) {
-//			for (ProjectCostStatisticDto dto : datas) {
-//				Map<String, Object> map = new HashMap<String, Object>();
-//				map.put("actionName", dto.getActionName());
-//				map.put("startDate", dto.getStartDate());
-//				map.put("endDate", dto.getEndDate());
-//				map.put("actionDate", dto.getActionDate());
-//				map.put("overDays", dto.getOverDays());
-//				dataResult.add(map);
-//			}
-//		}
-//
-//		HSSFWorkbook excel = (HSSFWorkbook) ExcelExportUtil.exportExcel(new ExportParams("项目进程展示", "项目进程展示"),
-//				entityList, dataResult);
-//		String rtn = getRtn("项目里程碑数据.xls", request);
-//		response.setContentType("text/html");
-//		response.setHeader("Content-Disposition", "attachment;" + rtn);
-//		OutputStream os = null;
-//		try {
-//			os = response.getOutputStream();
-//			excel.write(os);
-//			os.flush();
-//		} catch (IOException e) {
-//			LOGGER.error(e.getMessage(), e);
-//		} finally {
-//			if (os != null) {
-//				try {
-//					os.close();
-//				} catch (IOException e) {
-//					LOGGER.error(e.getMessage(), e);
-//				}
-//			}
-//		}
+		String url = Thread.currentThread().getContextClassLoader()
+				.getResource("excel/projectCostStatisticTemplate.xlsx").getFile();
+		TemplateExportParams params = new TemplateExportParams(url);
+		List<ProjectCostStatisticDto> list = this.projectService.projectCostStatistic(projectId);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("projectCosts", this.buildProjectCostListMap(list));
+
+		Workbook workbook = ExcelExportUtil.exportExcel(params, map);
+		OutputStream os = null;
+		try {
+			response.setHeader("Content-Type", "Content-Type: application/vnd.ms-excel;charset=UTF-8");
+			response.setHeader("Content-disposition",
+					"attachment; filename=" + URLEncoder.encode("项目成本统计", "UTF-8") + ".xlsx");
+			os = response.getOutputStream();
+			workbook.write(os);
+		} catch (IOException e) {
+			LOGGER.error(e.getMessage(), e);
+		} finally {
+			if (os != null) {
+				try {
+					os.close();
+				} catch (IOException e) {
+					LOGGER.error(e.getMessage(), e);
+				}
+			}
+		}
+	}
+
+	private List<Map<String, String>> buildProjectCostListMap(List<ProjectCostStatisticDto> list) {
+		List<Map<String, String>> listMap = new ArrayList<>(list.size());
+		list.forEach(pcsd -> {
+			listMap.add(new HashMap<String, String>() {
+				{
+					put("projectName", pcsd.getProjectName());
+					put("planHumanCost", pcsd.getPlanHumanCost());
+					put("planSoftwareCost", pcsd.getPlanSoftwareCost());
+					put("planHardwareCost", pcsd.getPlanHardwareCost());
+					put("planTravelCost", pcsd.getPlanTravelCost());
+					put("planOtherCost", pcsd.getPlanOtherCost());
+					put("planTotalCost", pcsd.getPlanTotalCost());
+					put("actualHumanCost", pcsd.getActualHumanCost());
+					put("actualSoftwareCost", pcsd.getActualSoftwareCost());
+					put("actualHardwareCost", pcsd.getActualHardwareCost());
+					put("actualTravelCost", pcsd.getActualTravelCost());
+					put("actualOtherCost", pcsd.getActualOtherCost());
+					put("actualTotalCost", pcsd.getActualTotalCost());
+				}
+			});
+		});
+		return listMap;
 	}
 }

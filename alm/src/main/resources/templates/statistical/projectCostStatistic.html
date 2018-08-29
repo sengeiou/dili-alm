@@ -20,14 +20,14 @@
 			<form id="form" class="easyui-form" method="post" fit="true">
 				<table style="padding: 10px;">
 					<tr>
-						<td style="padding: 5px;"><select class="easyui-combobox" name="name" id="name" style="width: 100%"
+						<td style="padding: 5px;"><select class="easyui-combobox" name="projectId" id="projectId" style="width: 100%"
 							data-options="label:'项目:', validType:'length[0,255]'">
 								<option value="-1">全部</option> <%for(item in projects){%>
 								<option value="${item.id!}">${item.name!}</option> <%}%>
 						</select></td>
 						<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid()">查询</a> <a
 							href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload" onclick="printGrid()">打印</a> <a href="javascript:void(0)"
-							class="easyui-linkbutton" iconCls="icon-reload" onclick="doExport('grid')">导出EXCEL</a></td>
+							class="easyui-linkbutton" iconCls="icon-reload" onclick="exportProjectCost();">导出EXCEL</a></td>
 				</table>
 			</form>
 		</div>
