@@ -57,7 +57,6 @@ function isProjectDate() {
 
 }
 function loadProjectSelect(queryAll) {
-	debugger;
 	$('#_projectId').combobox({
 				url : "${contextPath!}/task/listTreeProject.json" + (queryAll ? '?queryAll=true' : ''),
 				valueField : 'id',
@@ -381,7 +380,7 @@ function openUpdateDetail(selected) {
 		$("#grid").datagrid("selectRow", selected);
 		selected = $("#grid").datagrid("getSelected");
 	}
-	loadProjectSelect();
+	loadProjectSelect(true);
 	noEdit();
 	noEditForTaskdetail();
 	$('#modified').datebox({
