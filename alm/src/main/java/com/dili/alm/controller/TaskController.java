@@ -56,6 +56,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import tk.mybatis.mapper.entity.Example;
+import tk.mybatis.mapper.entity.Example.Criteria;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-11-23 10:23:05.
@@ -229,7 +230,7 @@ public class TaskController {
 	// 查询项目
 	@ResponseBody
 	@RequestMapping(value = "/listTreeProject.json", method = { RequestMethod.GET, RequestMethod.POST })
-	public List<Project> listProject() {
+	public List<Project> listProject(@RequestParam(required = false, defaultValue = "false") Boolean queryAll) {
 		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
 		if (CollectionUtils.isEmpty(dataAuths)) {
 			return new ArrayList<>(0);
@@ -237,7 +238,11 @@ public class TaskController {
 		List<Long> projectIds = new ArrayList<>(dataAuths.size());
 		dataAuths.forEach(dataAuth -> projectIds.add(Long.valueOf(dataAuth.get("dataId").toString())));
 		Example example = new Example(Project.class);
-		example.createCriteria().andNotEqualTo("projectState", ProjectState.CLOSED.getValue()).andIn("id", projectIds);
+		Criteria criteria = example.createCriteria();
+		if (!queryAll) {
+			criteria.andNotEqualTo("projectState", ProjectState.CLOSED.getValue());
+		}
+		criteria.andIn("id", projectIds);
 		List<Project> list = this.projectService.selectByExample(example);
 		return list;
 	}
