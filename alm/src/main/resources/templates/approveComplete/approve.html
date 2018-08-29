@@ -215,7 +215,7 @@
 
     $(function () {
         $('#projectId').combobox({
-            url: '${contextPath}/project/getProjectList<%if(viewMode?false==true){%>?queryAll=true&dataAuth=true<%}%>',
+            url: '${contextPath}/project/getProjectList<%if(viewMode==true){%>?queryAll=true&dataAuth=true<%}%>',
             valueField: 'id',
             textField: 'serialNumber',
             onLoadSuccess: function () {
