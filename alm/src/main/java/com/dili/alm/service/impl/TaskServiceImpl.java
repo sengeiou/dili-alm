@@ -754,9 +754,13 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			throw new TaskException("只有本项目的项目经理或者任务所有者才可以填写工时！");
 		}
 
+		// 判断是否是当前周
+		boolean isCurrentWeek = this.isInCurrentWeek(taskId);
+
 		// 如果是任务责任人但不是项目经理，那么只能填写当天的工时
 		try {
-			if (!isManager && sdf.parse(sdf.format(taskDate)).getTime() < sdf.parse(sdf.format(now)).getTime()) {
+			if (!isManager && (sdf.parse(sdf.format(taskDate)).getTime() < sdf.parse(sdf.format(now)).getTime()
+					|| isCurrentWeek)) {
 				throw new TaskException("只有项目经理才能补填工时");
 			}
 		} catch (ParseException e) {
@@ -817,8 +821,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		}
 	}
 
-	@Override
-	public void updateTaskDetail(TaskDetails taskDetails, Task task) throws TaskException {
+	protected void updateTaskDetail(TaskDetails taskDetails, Task task) throws TaskException {
 		// 标识任务已完成，需要写入项目中实际完成时间
 		boolean isComplete = false;
 		// 查询当前要修改的任务工时信息
@@ -1123,6 +1126,13 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			target.add(dto);
 		}
 		return target;
+	}
+
+	@Override
+	public boolean isInCurrentWeek(Long taskId) {
+		Task task = this.getActualDao().selectByPrimaryKey(taskId);
+		long current = System.currentTimeMillis();
+		return task.getStartDate().getTime() <= current && task.getEndDate().getTime() >= current;
 	}
 
 }

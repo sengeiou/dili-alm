@@ -308,6 +308,13 @@ public class TaskController {
 		return taskService.isProjectManager();
 	}
 
+	@ResponseBody
+	@RequestMapping("/isCurrentWeek.json")
+	public boolean isCurrentWeek(@RequestParam Long taskId) {
+		return taskService.isInCurrentWeek(taskId);
+
+	}
+
 	// 判断是否是创建人，用户
 	@ResponseBody
 	@RequestMapping(value = "/isCreater.json", method = { RequestMethod.GET, RequestMethod.POST })

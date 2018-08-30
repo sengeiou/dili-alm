@@ -24,8 +24,6 @@ public interface TaskService extends BaseService<Task, Long> {
 
 	EasyuiPageOutput listPageSelectTaskDto(Task task) throws Exception;
 
-	void updateTaskDetail(TaskDetails taskDetails, Task task) throws TaskException;
-
 	void startTask(Long taskId, Long modifierId) throws TaskException, ProjectVersionException, ProjectException;
 
 	void notComplateTask(ScheduleMessage msg);
@@ -141,4 +139,13 @@ public interface TaskService extends BaseService<Task, Long> {
 	 * @throws TaskException
 	 */
 	void completeTask(Long taskId, Long operatorId) throws TaskException;
+
+	/**
+	 * 判断任务日期是否在当前周内，任务责任人可以补填当前一周的工时
+	 * 
+	 * @param taskId
+	 *            任务id
+	 * @return
+	 */
+	boolean isInCurrentWeek(Long taskId);
 }

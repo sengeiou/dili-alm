@@ -396,7 +396,7 @@ function openUpdateDetail(selected) {
 	}
 
 	$('#_form').form('clear');
-	
+
 	$('#dlg').dialog('open');
 	$('#dlg').dialog('center');
 
@@ -482,7 +482,7 @@ function openUpdateDetail(selected) {
 		$('#detail_form').form('clear');
 		getDetailInfo(formData._id);
 	}
-	if (isProjectManager()) {
+	if (isProjectManager() || isCurrentWeek(selected.id)) {
 		$("#modified").datebox({
 					disabled : false
 				});
@@ -491,6 +491,16 @@ function openUpdateDetail(selected) {
 				modified : dateFormat_1(new Date())
 			});
 
+}
+
+function isCurrentWeek(taskId) {
+	var htmlobj = $.ajax({
+				url : "${contextPath}/task/isCurrentWeek.json?taskId=" + taskId,
+				async : false
+			});
+	var str = htmlobj.responseText;
+	var obj = $.parseJSON(str);
+	return obj;
 }
 
 function isOwenr(id) {
