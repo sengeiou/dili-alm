@@ -164,9 +164,7 @@ public class TravelCostApplyController {
 	}
 
 	@RequestMapping(value = "/saveAndSubmit", method = { RequestMethod.POST })
-	public @ResponseBody BaseOutput saveAndSubmit(@RequestBody TravelCostApplyUpdateDto apply) {
-		UserTicket user = SessionContext.getSessionContext().getUserTicket();
-		apply.setApplicantId(user.getId());
+	public @ResponseBody BaseOutput<Object> saveAndSubmit(@RequestBody TravelCostApplyUpdateDto apply) {
 		try {
 			this.travelCostApplyService.saveAndSubmit(apply);
 			return BaseOutput.success();

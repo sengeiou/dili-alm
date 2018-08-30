@@ -1,55 +1,66 @@
 <#body>
 <style>
-    .title-first,
-    .title-second {
-        margin-top: 20px;
-        background: #f7f7f7;
-    }
+.title-first, .title-second {
+	margin-top: 20px;
+	background: #f7f7f7;
+}
 
-    .title-first {
-        padding-left: 0;
-    }
-
+.title-first {
+	padding-left: 0;
+}
 </style>
 <div class="easyui-panel" title="立项申请(第六步)">
-    <div id="smDialog" style="display: none;"></div>
-    <div style="padding:10px 60px 20px 60px">
-        <form id="ff" method="post">
-            <input type="hidden" name="id" value="${apply.id}"/>
-            <input type="hidden" id="impact" name="impact"/>
-            <input type="hidden" id="riskValue" name="risk"/>
-            <table cellpadding="5" width="100%">
-                <tr>
-                    <td>项目编号</td>
-                    <td>${apply.number}</td>
-                    <td>项目类别</td>
-                    <td>${apply.type}</td>
-                </tr>
-                <tr>
-                    <td class="title-first" colspan="4">6.项目影响</td>
-                </tr>
-            </table>
-            <table id="dg" class="easyui-datagrid"
-                   data-options="
+	<div id="smDialog" style="display: none;"></div>
+	<div style="padding: 10px 60px 20px 60px">
+		<form id="ff" method="post">
+			<input type="hidden" name="id" value="${apply.id}" /> <input type="hidden" id="impact" name="impact" /> <input type="hidden"
+				id="riskValue" name="risk" />
+			<table cellpadding="5" width="100%">
+				<tr>
+					<td>项目编号</td>
+					<td>${apply.number}</td>
+					<td>项目类别</td>
+					<td>${apply.type}</td>
+				</tr>
+				<tr>
+					<td class="title-first" colspan="4">6.项目影响</td>
+				</tr>
+			</table>
+			<table id="dg" class="easyui-datagrid"
+				data-options="
                 url: '${contextPath}/projectApply/loadImpact?id=${apply.id}',
                 singleSelect: true,
                 method: 'get',
                 toolbar: '#tb',
                 rownumbers:true,
                 onClickCell: impact.onClickCell">
-                <thead>
-                <tr>
-                    <th style="text-align:center" data-options="field:'system',width:'20%',align:'center',editor:{type:'combobox',options:{required:true,url:'${contextPath}/project/getProjectList',method:'get',valueField:'name',textField:'name',onSelect:function(newValue){
-        projectSelect(newValue);
-        },onChange:function(newValue){
-        projectChange(newValue);
-        }}}">受影响系统
-                    </th>
-                    <th style="text-align:center"
-                        data-options="field:'dep',width:'20%',align:'center',editor:{type:'combobox',options:{editable:false,required:true,url:'${contextPath}/department/departments',method:'get',valueField:'name',textField:'name'}}">
-                        归属部门
-                    </th>
-                    <th style="text-align:center" data-options="width:'20%',field:'memberId',  _provider:'memberProvider', align:'center', resizable:'true', fixed:'false',editor : {
+				<thead>
+					<tr>
+						<th style="text-align: center"
+							data-options="field:'system',
+							width:'20%',align:'center',
+							editor:{
+								type:'combobox',
+								options:{
+									required:true,
+									url:'${contextPath}/project/getProjectList?queryAll=true&dataAuth=false',
+									method:'get',
+									valueField:'name',
+									textField:'name',
+									onSelect:function(newValue){
+							        	projectSelect(newValue);
+							        },
+							        onChange:function(newValue){
+							        	projectChange(newValue);
+							        }
+						        }
+					        }">受影响系统
+						</th>
+						<th style="text-align: center"
+							data-options="field:'dep',width:'20%',align:'center',editor:{type:'combobox',options:{editable:false,required:true,url:'${contextPath}/department/departments',method:'get',valueField:'name',textField:'name'}}">
+							归属部门</th>
+						<th style="text-align: center"
+							data-options="width:'20%',field:'memberId',  _provider:'memberProvider', align:'center', resizable:'true', fixed:'false',editor : {
 								type : 'textbox',
 								options : {
 									required : true,
@@ -60,47 +71,43 @@
 									}
 								}
 							},onChange:_changeTextboxShowClear">负责人
-                    </th>
-                    <th style="text-align:center"
-                        data-options="field:'content',align:'center',width:'20%',editor:{type:'textbox',options:{multiline:true,validType:['length[0,50]']}}">
-                        影响内容
-                    </th>
-                    <th style="text-align:center"
-                        data-options="field:'level',width:'20%',align:'center',editor:{type:'combobox',options:{editable:false,required:true,url:'${contextPath}/dataDictionaryValue/listByCode.json?code=project_ importance',method:'get',valueField:'code',textField:'code'}}">
-                        项目重要性
-                    </th>
-                </tr>
-                </thead>
-            </table>
+						</th>
+						<th style="text-align: center"
+							data-options="field:'content',align:'center',width:'20%',editor:{type:'textbox',options:{multiline:true,validType:['length[0,50]']}}">
+							影响内容</th>
+						<th style="text-align: center"
+							data-options="field:'level',width:'20%',align:'center',editor:{type:'combobox',options:{editable:false,required:true,url:'${contextPath}/dataDictionaryValue/listByCode.json?code=project_ importance',method:'get',valueField:'code',textField:'code'}}">
+							项目重要性</th>
+					</tr>
+				</thead>
+			</table>
 
-            <div id="tb" style="height:auto">
-                <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true"
-                   onclick="append()">新增</a>
-                <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true"
-                   onclick="removeit()">删除</a>
-            </div>
+			<div id="tb" style="height: auto">
+				<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="append()">新增</a> <a
+					href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="removeit()">删除</a>
+			</div>
 
 
-            <table cellpadding="5" width="100%" style="margin-top: 20px;">
-                <tr>
-                    <td class="title-first" colspan="4">7.项目风险问题描述</td>
-                </tr>
-            </table>
-            <table id="risk" class="easyui-datagrid" style="height:auto"
-                   data-options="
+			<table cellpadding="5" width="100%" style="margin-top: 20px;">
+				<tr>
+					<td class="title-first" colspan="4">7.项目风险问题描述</td>
+				</tr>
+			</table>
+			<table id="risk" class="easyui-datagrid" style="height: auto"
+				data-options="
                 singleSelect: true,
                 url: '${contextPath}/projectApply/loadRisk?id=${apply.id}',
                 method: 'get',
                 onClickCell: risk.onClickCell
             ">
-                <thead>
-                <tr>
-                    <th data-options="field:'type',align:'center'" width="10%">类别</th>
-                    <th data-options="field:'notes',align:'center',editor:{type:'textbox',options:{required:false,multiline:true,validType:['length[0,50]']}}"
-                        width="35%">
-                        描述
-                    </th>
-                    <th data-options="field:'level',align:'center',editor:{type:'combobox',options : {
+				<thead>
+					<tr>
+						<th data-options="field:'type',align:'center'" width="10%">类别</th>
+						<th
+							data-options="field:'notes',align:'center',editor:{type:'textbox',options:{required:false,multiline:true,validType:['length[0,50]']}}"
+							width="35%">描述</th>
+						<th
+							data-options="field:'level',align:'center',editor:{type:'combobox',options : {
 									required : false,
 									textField:'text',
 									valueField:'text',
@@ -112,24 +119,21 @@
 									},{
 										text: '低'
 									}]
-								}}" width="20%">
-                        等级（高、中、低）
-                    </th>
-                    <th data-options="field:'measure',width:250,align:'center',editor:{type:'textbox',options:{multiline:true,validType:['length[0,50]']}}"
-                        width="35%">
-                        应对措施
-                    </th>
-                </tr>
-                </thead>
-            </table>
-        </form>
-        <div style="text-align:center;padding:5px;margin-top:50px;">
-            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
-               onclick="backForm()">上一步</a>
-            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'" onclick="submitForm()">下一步</a>
-            <a href="${contextPath}/projectApply/index.html" class="easyui-linkbutton" style="width:80px">取消</a>
-        </div>
-    </div>
+								}}"
+							width="20%">等级（高、中、低）</th>
+						<th
+							data-options="field:'measure',width:250,align:'center',editor:{type:'textbox',options:{multiline:true,validType:['length[0,50]']}}"
+							width="35%">应对措施</th>
+					</tr>
+				</thead>
+			</table>
+		</form>
+		<div style="text-align: center; padding: 5px; margin-top: 50px;">
+			<a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'" onclick="backForm()">上一步</a> <a
+				href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'" onclick="submitForm()">下一步</a> <a
+				href="${contextPath}/projectApply/index.html" class="easyui-linkbutton" style="width: 80px">取消</a>
+		</div>
+	</div>
 </div>
 <script type="text/javascript">
     function backForm() {
@@ -289,8 +293,7 @@
         });
     }
 
-</script>
-<script type="text/javascript">
+</script> <script type="text/javascript">
     // 打开选择用户弹出框
     function selectMember(callback, args) {
         if (callback) {
@@ -332,6 +335,4 @@
             }]
         });
     }
-</script>
-
-</#body>
+</script> </#body>

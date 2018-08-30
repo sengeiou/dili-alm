@@ -139,7 +139,7 @@ input[class^="easyui-"] {
 	$('#projectId')
 			.combobox(
 					{
-						url : '${contextPath}/project/getProjectList',
+						url : '${contextPath}/project/getProjectList?dataAuth=true',
 						valueField : 'id',
 						textField : 'serialNumber',
 						formatter : function(row) {

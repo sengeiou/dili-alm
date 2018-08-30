@@ -34,12 +34,14 @@ import com.dili.alm.component.MailManager;
 import com.dili.alm.component.NumberGenerator;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.FilesMapper;
+import com.dili.alm.dao.WorkOrderExecutionRecordMapper;
 import com.dili.alm.dao.WorkOrderMapper;
 import com.dili.alm.dao.WorkOrderOperationRecordMapper;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.OperationResult;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.WorkOrder;
+import com.dili.alm.domain.WorkOrderExecutionRecord;
 import com.dili.alm.domain.WorkOrderOperationRecord;
 import com.dili.alm.domain.WorkOrderOperationType;
 import com.dili.alm.domain.WorkOrderState;
@@ -85,6 +87,9 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 	private WorkOrderOperationRecordMapper woorMapper;
 	@Autowired
 	private DataDictionaryService ddService;
+
+	@Autowired
+	private WorkOrderExecutionRecordMapper woerMapper;
 
 	public BaseWorkOrderManager() {
 		super();
@@ -157,7 +162,8 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 	}
 
 	@Override
-	public void close(WorkOrder workOrder, Long operatorId, String description) throws WorkOrderException {
+	public void close(WorkOrder workOrder, Long operatorId, OperationResult result, String description)
+			throws WorkOrderException {
 		// 检查状态
 		if (!workOrder.getWorkOrderState().equals(WorkOrderState.SOLVED.getValue())) {
 			throw new WorkOrderException("当前状态不能执行分配操作");
@@ -166,25 +172,30 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 		if (!workOrder.getApplicantId().equals(operatorId)) {
 			throw new WorkOrderException("只有申请人才能关闭工单");
 		}
+		if (OperationResult.SUCCESS.equals(result)) {
+			workOrder.setCloseTime(new Date());
+			workOrder.setWorkOrderState(WorkOrderState.CLOSED.getValue());
+		} else if (OperationResult.FAILURE.equals(result)) {
+			workOrder.setWorkOrderState(WorkOrderState.SOLVING.getValue());
+
+		}
+		// 更新工单
+		workOrder.setModifyTime(new Date());
+		int rows = this.workOrderMapper.updateByPrimaryKeySelective(workOrder);
+		if (rows <= 0) {
+			throw new WorkOrderException("更新工单状态失败");
+		}
 		// 生成操作记录
 		WorkOrderOperationRecord woor = DTOUtils.newDTO(WorkOrderOperationRecord.class);
 		woor.setOperatorId(workOrder.getApplicantId());
 		woor.setOperationName(WorkOrderOperationType.CONFIRM.getName());
 		woor.setOperationType(WorkOrderOperationType.CONFIRM.getValue());
-		woor.setOperationResult(OperationResult.SUCCESS.getValue());
-		woor.setWorkOrderId(workOrder.getId());
+		woor.setOperationResult(result.getValue());
 		woor.setDescription(description);
-		int rows = this.woorMapper.insertSelective(woor);
+		woor.setWorkOrderId(workOrder.getId());
+		rows = this.woorMapper.insertSelective(woor);
 		if (rows <= 0) {
 			throw new WorkOrderException("插入操作记录失败");
-		}
-		// 更新工单
-		workOrder.setCloseTime(new Date());
-		workOrder.setWorkOrderState(WorkOrderState.CLOSED.getValue());
-		workOrder.setModifyTime(new Date());
-		rows = this.workOrderMapper.updateByPrimaryKeySelective(workOrder);
-		if (rows <= 0) {
-			throw new WorkOrderException("更新工单状态失败");
 		}
 	}
 
@@ -231,17 +242,28 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 		if (rows <= 0) {
 			throw new WorkOrderException("插入操作记录失败");
 		}
+
+		// 插入工单执行记录
+		WorkOrderExecutionRecord woer = DTOUtils.newDTO(WorkOrderExecutionRecord.class);
+		woer.setWorkOrderId(workOrder.getId());
+		woer.setStartDate(startDate);
+		woer.setEndDate(endDate);
+		woer.setTaskHours(taskHours);
+		woer.setOvertimeHours(overtimeHours);
+		woer.setWorkContent(workContent);
+		rows = this.woerMapper.insertSelective(woer);
+		if (rows <= 0) {
+			throw new WorkOrderException("插入工单执行记录失败");
+		}
+
 		// 更新工单
-		workOrder.setStartDate(startDate);
-		workOrder.setEndDate(endDate);
-		workOrder.setTaskHours(taskHours);
-		workOrder.setOvertimeHours(overtimeHours);
 		workOrder.setWorkOrderState(WorkOrderState.SOLVED.getValue());
 		workOrder.setModifyTime(new Date());
 		rows = this.workOrderMapper.updateByPrimaryKeySelective(workOrder);
 		if (rows <= 0) {
 			throw new WorkOrderException("更新工单状态失败");
-		} // 发邮件
+		}
+		// 发邮件
 		User applicant = AlmCache.getInstance().getUserMap().get(workOrder.getApplicantId());
 		if (applicant == null) {
 			throw new WorkOrderException("申请人不存在");

@@ -14,11 +14,7 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
-<<<<<<< HEAD
- * This file was generated on 2018-07-09 09:05:26.
-=======
- * This file was generated on 2018-07-09 09:08:32.
->>>>>>> refs/heads/v3.0
+ * This file was generated on 2018-08-27 15:34:56.
  */
 @Table(name = "`work_order`")
 public interface WorkOrder extends IBaseDomain {
@@ -143,45 +139,10 @@ public interface WorkOrder extends IBaseDomain {
 
     void setExecutorId(Long executorId);
 
-    @Column(name = "`task_hours`")
-    @FieldDef(label="任务工时")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Integer getTaskHours();
-
-    void setTaskHours(Integer taskHours);
-
-    @Column(name = "`overtime_hours`")
-    @FieldDef(label="加班工时")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Integer getOvertimeHours();
-
-    void setOvertimeHours(Integer overtimeHours);
-
-    @Column(name = "`work_content`")
-    @FieldDef(label="工作内容描述", maxLength = 255)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getWorkContent();
-
-    void setWorkContent(String workContent);
-
     @Column(name = "`work_order_source`")
     @FieldDef(label="工单来源")
     @EditMode(editor = FieldEditor.Number, required = true)
     Integer getWorkOrderSource();
 
     void setWorkOrderSource(Integer workOrderSource);
-
-    @Column(name = "`start_date`")
-    @FieldDef(label="工单开始日期")
-    @EditMode(editor = FieldEditor.Datetime, required = false)
-    Date getStartDate();
-
-    void setStartDate(Date startDate);
-
-    @Column(name = "`end_date`")
-    @FieldDef(label="工单结束日期")
-    @EditMode(editor = FieldEditor.Datetime, required = false)
-    Date getEndDate();
-
-    void setEndDate(Date endDate);
 }

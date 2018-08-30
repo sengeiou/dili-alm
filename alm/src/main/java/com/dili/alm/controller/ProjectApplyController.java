@@ -50,6 +50,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import tk.mybatis.mapper.entity.Example;
+import tk.mybatis.mapper.entity.Example.Criteria;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-11-21 16:19:02.
@@ -58,6 +60,9 @@ import io.swagger.annotations.ApiOperation;
 @Controller
 @RequestMapping("/projectApply")
 public class ProjectApplyController {
+
+	private static final String DATA_AUTH_TYPE = "Project";
+
 	@Autowired
 	ProjectApplyService projectApplyService;
 
@@ -170,8 +175,16 @@ public class ProjectApplyController {
 	public @ResponseBody Object getProjectList(ProjectApply projectApply) {
 		List<ValuePair<?>> buffer = new ArrayList<>();
 		buffer.add(new ValuePairImpl("请选择", ""));
-		projectApplyService.list(projectApply)
-				.forEach(apply -> buffer.add(new ValuePairImpl<>(apply.getName(), apply.getId())));
+		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
+		if (CollectionUtils.isEmpty(dataAuths)) {
+			return new ArrayList<>(0);
+		}
+		List<Long> projectIds = new ArrayList<>(dataAuths.size());
+		dataAuths.forEach(dataAuth -> projectIds.add(Long.valueOf(dataAuth.get("dataId").toString())));
+		Example example = new Example(Project.class);
+		Criteria criteria = example.createCriteria().andIn("id", projectIds);
+		List<Project> list = this.projectService.selectByExample(example);
+		list.forEach(apply -> buffer.add(new ValuePairImpl<>(apply.getName(), apply.getId())));
 		return buffer;
 	}
 

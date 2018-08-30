@@ -1,5 +1,6 @@
 package com.dili.alm.controller;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -100,8 +101,7 @@ public class ProjectCompleteController {
 
 	@RequestMapping(value = "/toDetails/{id}", method = RequestMethod.GET)
 	public String toDetails(ModelMap modelMap, @PathVariable("id") Long id) throws Exception {
-		ProjectComplete projectComplete = DTOUtils.newDTO(ProjectComplete.class);
-		projectComplete.setId(id);
+		ProjectComplete projectComplete = this.projectCompleteService.get(id);
 
 		Map<Object, Object> metadata = new HashMap<>(2);
 
@@ -109,8 +109,7 @@ public class ProjectCompleteController {
 		projectTypeProvider.put("provider", "projectTypeProvider");
 		metadata.put("type", projectTypeProvider);
 
-		List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata,
-				projectCompleteService.listByExample(projectComplete));
+		List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, Arrays.asList(projectComplete));
 		if (CollectionUtils.isEmpty(maps)) {
 			return "redirect:/projectComplete/index.html";
 		}

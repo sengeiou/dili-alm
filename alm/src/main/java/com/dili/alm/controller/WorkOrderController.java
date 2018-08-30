@@ -66,7 +66,7 @@ public class WorkOrderController {
 
 	@GetMapping("/detail")
 	public String deital(@RequestParam Long id, ModelMap modelMap) {
-		WorkOrder workOrder = this.workOrderService.getOperationRecordsViewModel(id);
+		WorkOrder workOrder = this.workOrderService.getDetailViewModel(id);
 		try {
 			modelMap.addAttribute("opRecords", workOrder.aget("opRecords")).addAttribute("model",
 					WorkOrderService.parseViewModel(workOrder));
@@ -242,10 +242,11 @@ public class WorkOrderController {
 
 	@ResponseBody
 	@PostMapping("/close")
-	public BaseOutput<Object> close(@RequestParam Long id, @RequestParam String description) {
+	public BaseOutput<Object> close(@RequestParam Long id, @RequestParam Integer result,
+			@RequestParam(required = false) String description) {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		try {
-			this.workOrderService.close(id, user.getId(), description);
+			this.workOrderService.close(id, user.getId(), OperationResult.valueOf(result), description);
 			Map<Object, Object> viewModel = this.workOrderService.getViewModel(id);
 			return BaseOutput.success().setData(viewModel);
 		} catch (WorkOrderException e) {

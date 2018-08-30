@@ -56,9 +56,9 @@ function isProjectDate() {
 	return obj;
 
 }
-function loadProjectSelect() {
+function loadProjectSelect(queryAll) {
 	$('#_projectId').combobox({
-				url : "${contextPath!}/task/listTreeProject.json",
+				url : "${contextPath!}/task/listTreeProject.json" + (queryAll ? '?queryAll=true' : ''),
 				valueField : 'id',
 				textField : 'name',
 				editable : false,
@@ -283,6 +283,7 @@ function openDetail(selected) {
 		$("#grid").datagrid("selectRow", selected);
 		selected = $("#grid").datagrid("getSelected");
 	}
+	loadProjectSelect(true);
 	noEdit();
 
 	$("#task_detail_list").show();// 填写工时列表
@@ -379,6 +380,7 @@ function openUpdateDetail(selected) {
 		$("#grid").datagrid("selectRow", selected);
 		selected = $("#grid").datagrid("getSelected");
 	}
+	loadProjectSelect(true);
 	noEdit();
 	noEditForTaskdetail();
 	$('#modified').datebox({

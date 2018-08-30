@@ -297,6 +297,9 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 		if (applicant == null) {
 			throw new TravelCostApplyException("申请人不存在");
 		}
+		if (dto.getApplyType().equals(TravelCostApplyType.CUSTOM.getValue())) {
+			dto.setProjectId(null);
+		}
 		Department dept = AlmCache.getInstance().getDepMap().get(applicant.getDepartmentId());
 		dto.setDepartmentId(dept.getId());
 		while (dept.getParentId() != null) {
@@ -376,6 +379,9 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 		if (applicant == null) {
 			throw new TravelCostApplyException("申请人不存在");
 		}
+		if (dto.getApplyType().equals(TravelCostApplyType.CUSTOM.getValue())) {
+			dto.setProjectId(null);
+		}
 		Department dept = AlmCache.getInstance().getDepMap().get(applicant.getDepartmentId());
 		dto.setDepartmentId(dept.getId());
 		while (dept.getParentId() != null) {
@@ -386,6 +392,7 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 		apply.setApplicantId(dto.getApplicantId());
 		apply.setDepartmentId(dto.getDepartmentId());
 		apply.setRootDepartemntId(dto.getRootDepartemntId());
+		apply.setApplyType(dto.getApplyType());
 		// 计算总出差天数
 		int travelDayAmount = 0;
 		for (TravelCost tc : dto.getTravelCost()) {
@@ -420,6 +427,10 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 		}
 		apply.setProjectId(dto.getProjectId());
 		apply.setTotalAmount(dto.getTotalAmount());
-		this.getActualDao().updateByPrimaryKeySelective(apply);
+		apply.setModificationTime(new Date());
+		int rows = this.getActualDao().updateByPrimaryKey(apply);
+		if (rows <= 0) {
+			throw new TravelCostApplyException("更新差旅申请失败");
+		}
 	}
 }

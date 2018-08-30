@@ -555,8 +555,10 @@ function openUpdate(index, id) {
 			});
 }
 
+var intervalFlag = undefined;
+
 function closeProgressbar() {
-	window.clearInterval();
+	window.clearInterval(intervalFlag);
 	var bar = $.messager.progress('bar');
 	bar.progressbar('setValue', 100);
 	bar.progressbar('setText', '100%');
@@ -570,7 +572,7 @@ function showProgressbar() {
 				interval : 0
 			});
 	var bar = $.messager.progress('bar');
-	window.setInterval(function() {
+	intervalFlag = window.setInterval(function() {
 				var val = bar.progressbar('getValue');
 				if (val >= 90) {
 					window.clearInterval();

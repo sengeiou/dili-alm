@@ -94,6 +94,7 @@
 
 		<!-- 生成所有表模型 -->
 		<table tableName="roi">
+		<table tableName="work_order">
 			<generatedKey column="id" sqlStatement="Mysql"
 				identity="true" />
 		</table>

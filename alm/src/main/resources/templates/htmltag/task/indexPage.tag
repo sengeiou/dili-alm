@@ -83,6 +83,7 @@ function openUpdate() {
 }
 
 function copyTask(row) {
+	loadProjectSelect();
 	$("#task_detail").hide();
 	$("#dialog_toolbar").show();
 	$("#saveTask").show();

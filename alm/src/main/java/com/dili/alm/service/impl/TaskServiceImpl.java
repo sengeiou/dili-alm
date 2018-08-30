@@ -608,25 +608,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		return taskMapper.selectProjectChangeByTeam(userTicket.getId(), projectId);
 	}
 
-	@Override
-	public List<Project> projectList() {
-		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		if (userTicket == null) {
-			throw new RuntimeException("未登录");
-		}
-		@SuppressWarnings("rawtypes")
-		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(AlmConstants.DATA_AUTH_TYPE_PROJECT);
-		if (CollectionUtils.isEmpty(dataAuths)) {
-			return null;
-		}
-		List<Long> projectIds = new ArrayList<>(dataAuths.size());
-		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
-		Example example = new Example(Project.class);
-		example.createCriteria().andIn("id", projectIds);
-		List<Project> listProject = projectMapper.selectByExample(example);
-		return listProject;
-	}
-
 	/*
 	 * 已经填写的工时
 	 */

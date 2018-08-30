@@ -68,8 +68,6 @@ public interface TaskService extends BaseService<Task, Long> {
 
 	List<ProjectChange> projectChangeList(Long projectId);
 
-	List<Project> projectList();
-
 	List<User> listUserByTeam();
 
 	List<ProjectVersion> listProjectVersionByTeam();

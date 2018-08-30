@@ -15,10 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alibaba.fastjson.JSON;
 import com.dili.alm.component.NumberGenerator;
 import com.dili.alm.constant.AlmConstants;
+import com.dili.alm.dao.WorkOrderExecutionRecordMapper;
 import com.dili.alm.dao.WorkOrderMapper;
 import com.dili.alm.domain.OperationResult;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.WorkOrder;
+import com.dili.alm.domain.WorkOrderExecutionRecord;
 import com.dili.alm.domain.WorkOrderSource;
 import com.dili.alm.domain.WorkOrderState;
 import com.dili.alm.domain.dto.WorkOrderUpdateDto;
@@ -50,6 +52,8 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 	@Qualifier("workOrderManagerMap")
 	@Autowired
 	private Map<Integer, WorkOrderManager> workOrderManagerMap;
+	@Autowired
+	private WorkOrderExecutionRecordMapper woerMapper;
 
 	@Override
 	public void allocate(Long id, Long executorId, Integer workOrderType, Integer priority, OperationResult result,
@@ -64,14 +68,14 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 	}
 
 	@Override
-	public void close(Long id, Long operatorId, String description) throws WorkOrderException {
+	public void close(Long id, Long operatorId, OperationResult result, String description) throws WorkOrderException {
 		// 检查工单是否存在
 		WorkOrder workOrder = this.getActualDao().selectByPrimaryKey(id);
 		if (workOrder == null) {
 			throw new WorkOrderException("工单不存在");
 		}
 		WorkOrderManager workOrderManager = this.workOrderManagerMap.get(workOrder.getWorkOrderSource());
-		workOrderManager.close(workOrder, operatorId, description);
+		workOrderManager.close(workOrder, operatorId, result, description);
 	}
 
 	public void checkTimeToClose(ScheduleMessage msg) throws WorkOrderException {
@@ -175,5 +179,15 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 			throw new WorkOrderException("当前状态不能删除");
 		}
 		this.getActualDao().deleteByPrimaryKey(id);
+	}
+
+	@Override
+	public WorkOrder getDetailViewModel(Long id) {
+		WorkOrder workOrder = this.getOperationRecordsViewModel(id);
+		WorkOrderExecutionRecord woerQuery = DTOUtils.newDTO(WorkOrderExecutionRecord.class);
+		woerQuery.setWorkOrderId(id);
+		List<WorkOrderExecutionRecord> woerList = this.woerMapper.select(woerQuery);
+		workOrder.aset("executionRecords", woerList);
+		return workOrder;
 	}
 }
