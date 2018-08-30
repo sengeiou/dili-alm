@@ -560,6 +560,7 @@ function closeProgressbar() {
 	var bar = $.messager.progress('bar');
 	bar.progressbar('setValue', 100);
 	bar.progressbar('setText', '100%');
+	window.clearInterval(bar.interval);
 	$.messager.progress('close');
 }
 
@@ -570,7 +571,7 @@ function showProgressbar() {
 				interval : 0
 			});
 	var bar = $.messager.progress('bar');
-	window.setInterval(function() {
+	bar.interval = window.setInterval(function() {
 				var val = bar.progressbar('getValue');
 				if (val >= 90) {
 					window.clearInterval();

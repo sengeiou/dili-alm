@@ -1015,7 +1015,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 					.filter(v -> poamList.stream().filter(pv -> pv.getMarketCode().equals(v.getValue())).findFirst()
 							.orElse(null) != null)
 					.collect(Collectors.toList()).forEach(v -> sb.append(v.getCode()).append(","));
-			apply.aset("markets", sb.substring(0, sb.length() - 1));
+			apply.aset("markets", sb.length() > 0 ? sb.substring(0, sb.length() - 1) : "");
 		}
 	}
 
