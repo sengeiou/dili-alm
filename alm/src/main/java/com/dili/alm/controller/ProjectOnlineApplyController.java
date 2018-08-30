@@ -431,6 +431,11 @@ public class ProjectOnlineApplyController {
 		apply.setSqlFileId(null);
 		apply.setStartupScriptFileId(null);
 		apply.setDependencySystemFileId(null);
+
+		if (apply.getMarketVersion() && CollectionUtils.isEmpty(apply.getMarket())) {
+			return "市场不能为空";
+		}
+
 		if (StringUtils.isNotBlank(apply.getEmailAddress())) {
 			Pattern pattern = Pattern.compile(EMAIL_REGEX);
 			String[] emails = apply.getEmailAddress().split(";");
