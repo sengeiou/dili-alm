@@ -57,9 +57,6 @@ public interface TaskMapper extends MyMapper<Task> {
 			@Param("departmentIds") List<Long> dids, @Param("uIds") List<Long> uids, @Param("order") String order,
 			@Param("sort") String sort);
 
-	TaskByUsersDto selectTotalTaskHourByUser(@Param("beginTime") String beginTime, @Param("endTime") String endTime,
-			@Param("departmentIds") List<Long> dids, @Param("uIds") List<Long> uids);
-
 	List<TaskHoursByProjectDto> selectProjectHours(@Param("beginTime") String beginTime,
 			@Param("endTime") String endTime, @Param("pids") List<Long> projectId);
 

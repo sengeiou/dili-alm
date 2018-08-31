@@ -187,12 +187,28 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		}
 
 		List<TaskByUsersDto> list = taskMapper.selectTaskHourByUser(startTime, endTime, dids, uids, order, sort);
-		list.add(this.getTotal(startTime, endTime, uids, dids));
+		list.add(this.getTotal(list));
 		return list;
 	}
 
-	private TaskByUsersDto getTotal(String startTime, String endTime, List<Long> uids, List<Long> dids) {
-		return taskMapper.selectTotalTaskHourByUser(startTime, endTime, dids, uids);
+	private TaskByUsersDto getTotal(List<TaskByUsersDto> list) {
+		Integer totalHour = 0;
+		Integer taskHours = 0;
+		Integer overHours = 0;
+		Integer workOrderTaskHours = 0;
+		for (TaskByUsersDto t : list) {
+			totalHour += t.getTotalHour();
+			taskHours += t.getTaskHours();
+			overHours += t.getOverHours();
+			workOrderTaskHours += t.getWorkOrderTaskHours();
+		}
+		TaskByUsersDto dto = new TaskByUsersDto();
+		dto.setUserName("总计");
+		dto.setTotalHour(totalHour);
+		dto.setTaskHours(taskHours);
+		dto.setOverHours(overHours);
+		dto.setWorkOrderTaskHours(workOrderTaskHours);
+		return dto;
 	}
 
 	/***

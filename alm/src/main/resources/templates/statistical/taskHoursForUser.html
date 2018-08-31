@@ -116,12 +116,13 @@
                 rowStyler:renderRowStyle">
 				<thead>
 					<tr>
-						<th data-options="field:'selectDate',width:'26%',align:'center'">统计日期</th>
-						<th data-options="field:'userName',formatter:userNameFormatter,width:'16%',align:'center'">姓名</th>
-						<th data-options="field:'departmentName',width:'16%',align:'center'">部门</th>
-						<th data-options="field:'totalHour', sortable:true, width:'14%',align:'center'">总工时(H)</th>
-						<th data-options="field:'taskHours', sortable:true, width:'14%',align:'center'">实际工时(H)</th>
-						<th data-options="field:'overHours', sortable:true, width:'14%',align:'center'">加班工时(H)</th>
+						<th data-options="field:'selectDate',width:'24%',align:'center'">统计日期</th>
+						<th data-options="field:'userName',formatter:userNameFormatter,width:'14%',align:'center'">姓名</th>
+						<th data-options="field:'departmentName',width:'14%',align:'center'">部门</th>
+						<th data-options="field:'totalHour', sortable:true, width:'12%',align:'center'">总工时(H)</th>
+						<th data-options="field:'taskHours', sortable:true, width:'12%',align:'center'">实际工时(H)</th>
+						<th data-options="field:'overHours', sortable:true, width:'12%',align:'center'">加班工时(H)</th>
+						<th data-options="field:'workOrderTaskHours', sortable:true, width:'12%',align:'center'">工单工时(H)</th>
 					</tr>
 				</thead>
 			</table>
@@ -259,6 +260,9 @@
 	}
 
 	function userNameFormatter(value, row, index) {
+		if (!row.userNo) {
+			return value;
+		}
 		return '<a href="${contextPath!}/taskDetails/index?userId='
 				+ row.userNo + '">' + value + '</a>';
 	}
