@@ -6,6 +6,7 @@ import java.util.Map;
 import com.dili.alm.domain.ProjectPhase;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectPhaseFormDto;
+import com.dili.alm.service.impl.ProjectPhaseException;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
 
@@ -18,11 +19,11 @@ public interface ProjectPhaseService extends BaseService<ProjectPhase, Long> {
 
 	ProjectPhase getAddViewData(Long projectId);
 
-	BaseOutput<Object> addProjectPhase(ProjectPhaseFormDto projectPhase);
+	void addProjectPhase(ProjectPhaseFormDto projectPhase) throws ProjectPhaseException;
 
 	List<Map> listEasyUiModels(ProjectPhase query);
 
-	BaseOutput<Object> updateProjectPhase(ProjectPhaseFormDto projectPhase);
+	void updateProjectPhase(ProjectPhaseFormDto projectPhase) throws ProjectPhaseException;
 
 	ProjectPhase getEditViewData(Long id);
 

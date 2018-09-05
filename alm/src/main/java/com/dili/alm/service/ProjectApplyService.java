@@ -1,5 +1,6 @@
 package com.dili.alm.service;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -46,4 +47,6 @@ public interface ProjectApplyService extends BaseService<ProjectApply, Long> {
 	void updateRoi(RoiUpdateDto roi) throws ProjectApplyException;
 
 	void deleteProjectApply(Long id) throws ProjectApplyException;
+
+	void migrate() throws ParseException;
 }

@@ -36,6 +36,7 @@ import com.dili.alm.dao.ProjectActionRecordMapper;
 import com.dili.alm.dao.ProjectCostMapper;
 import com.dili.alm.dao.ProjectEarningMapper;
 import com.dili.alm.dao.ProjectMapper;
+import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.domain.ActionDateType;
 import com.dili.alm.domain.Approve;
 import com.dili.alm.domain.DataDictionaryValue;
@@ -49,6 +50,7 @@ import com.dili.alm.domain.ProjectComplete;
 import com.dili.alm.domain.ProjectCost;
 import com.dili.alm.domain.ProjectEarning;
 import com.dili.alm.domain.ProjectState;
+import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Team;
 import com.dili.alm.domain.TeamRole;
 import com.dili.alm.domain.User;
@@ -150,6 +152,8 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	private ProjectEarningMapper projectEarningMapper;
 	@Autowired
 	private ProjectCostMapper projectCostMapper;
+	@Autowired
+	private ProjectVersionMapper projectVersionMapper;
 
 	public ApproveServiceImpl() {
 		super();
@@ -846,12 +850,21 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	}
 
 	private void updateProjectEndDate(ProjectChange change) throws ApproveException {
+		// 更新项目结束日期
 		Project project = this.projectMapper.selectByPrimaryKey(change.getProjectId());
 		project.setEstimateLaunchDate(change.getEstimateLaunchDate());
 		project.setEndDate(change.getEndDate());
 		int rows = this.projectMapper.updateByPrimaryKeySelective(project);
 		if (rows <= 0) {
 			throw new ApproveException("更新项目信息失败");
+		}
+
+		// 更新版本结束日期
+		ProjectVersion version = this.projectVersionMapper.selectByPrimaryKey(change.getVersionId());
+		version.setPlannedEndDate(change.getEndDate());
+		rows = this.projectVersionMapper.updateByPrimaryKeySelective(version);
+		if (rows <= 0) {
+			throw new ApproveException("更新版本信息失败");
 		}
 	}
 }

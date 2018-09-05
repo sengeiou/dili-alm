@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.component.NumberGenerator;
 import com.dili.alm.constant.AlmConstants;
@@ -32,13 +33,14 @@ import com.dili.alm.dao.RoiMapper;
 import com.dili.alm.domain.Approve;
 import com.dili.alm.domain.FileType;
 import com.dili.alm.domain.Files;
+import com.dili.alm.domain.IndicatorType;
 import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.ProjectCost;
+import com.dili.alm.domain.ProjectCostType;
 import com.dili.alm.domain.ProjectEarning;
 import com.dili.alm.domain.Roi;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
-import com.dili.alm.domain.dto.RoiDto;
 import com.dili.alm.domain.dto.RoiUpdateDto;
 import com.dili.alm.domain.dto.apply.ApplyFiles;
 import com.dili.alm.domain.dto.apply.ApplyImpact;
@@ -377,5 +379,154 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 			throw new ProjectApplyException("删除失败");
 		}
 		AlmCache.getInstance().getProjectApplyRois().remove(id);
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@Override
+	public void migrate() throws ParseException {
+		this.roiMapper.delete(null);
+		this.projectCostMapper.delete(null);
+		this.projectEarningMapper.delete(null);
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		List<ProjectApply> list = this.getActualDao().selectAll();
+		for (ProjectApply apply : list) {
+			JSONObject jsonObj = JSON.parseObject(apply.getRoi());
+			Roi roi = DTOUtils.newDTO(Roi.class);
+			roi.setApplyId(apply.getId());
+			roi.setTotal(jsonObj.getString("val99"));
+			this.roiMapper.insertSelective(roi);
+			if (StringUtils.isNotEmpty(jsonObj.getString("val1"))) {
+				ProjectEarning pe = DTOUtils.newDTO(ProjectEarning.class);
+				pe.setApplyId(apply.getId());
+				pe.setRoiId(roi.getId());
+				pe.setIndicatorName(jsonObj.getString("val1"));
+				pe.setIndicatorCurrentStatus(jsonObj.getString("val4"));
+				pe.setProjectObjective(jsonObj.getString("val7"));
+				pe.setImplemetionDate(df.parse(jsonObj.getString("val10")));
+				pe.setIndicatorType(IndicatorType.BUSINESS.getValue());
+				this.projectEarningMapper.insertSelective(pe);
+			}
+			if (StringUtils.isNotEmpty(jsonObj.getString("val2"))) {
+				ProjectEarning pe = DTOUtils.newDTO(ProjectEarning.class);
+				pe.setRoiId(roi.getId());
+				pe.setApplyId(apply.getId());
+				pe.setIndicatorName(jsonObj.getString("val2"));
+				pe.setIndicatorCurrentStatus(jsonObj.getString("val5"));
+				pe.setProjectObjective(jsonObj.getString("val8"));
+				pe.setImplemetionDate(df.parse(jsonObj.getString("val11")));
+				pe.setIndicatorType(IndicatorType.BUSINESS.getValue());
+				this.projectEarningMapper.insertSelective(pe);
+			}
+			if (StringUtils.isNotEmpty(jsonObj.getString("val3"))) {
+				ProjectEarning pe = DTOUtils.newDTO(ProjectEarning.class);
+				pe.setRoiId(roi.getId());
+				pe.setApplyId(apply.getId());
+				pe.setIndicatorName(jsonObj.getString("val3"));
+				pe.setIndicatorCurrentStatus(jsonObj.getString("val6"));
+				pe.setProjectObjective(jsonObj.getString("val9"));
+				pe.setImplemetionDate(df.parse(jsonObj.getString("val12")));
+				pe.setIndicatorType(IndicatorType.BUSINESS.getValue());
+				this.projectEarningMapper.insertSelective(pe);
+			}
+			if (StringUtils.isNotEmpty(jsonObj.getString("val13"))) {
+				ProjectEarning pe = DTOUtils.newDTO(ProjectEarning.class);
+				pe.setRoiId(roi.getId());
+				pe.setApplyId(apply.getId());
+				pe.setIndicatorName(jsonObj.getString("val13"));
+				pe.setIndicatorCurrentStatus(jsonObj.getString("val16"));
+				pe.setProjectObjective(jsonObj.getString("val19"));
+				pe.setImplemetionDate(jsonObj.getString("val22") != null ? df.parse(jsonObj.getString("val22")) : null);
+				pe.setIndicatorType(IndicatorType.EFFICIENCY_AND_PERFORMANCE.getValue());
+				this.projectEarningMapper.insertSelective(pe);
+			}
+			if (StringUtils.isNotEmpty(jsonObj.getString("val14"))) {
+				ProjectEarning pe = DTOUtils.newDTO(ProjectEarning.class);
+				pe.setRoiId(roi.getId());
+				pe.setApplyId(apply.getId());
+				pe.setIndicatorName(jsonObj.getString("val14"));
+				pe.setIndicatorCurrentStatus(jsonObj.getString("val17"));
+				pe.setProjectObjective(jsonObj.getString("val20"));
+				pe.setImplemetionDate(jsonObj.getString("val23") != null ? df.parse(jsonObj.getString("val23")) : null);
+				pe.setIndicatorType(IndicatorType.EFFICIENCY_AND_PERFORMANCE.getValue());
+				this.projectEarningMapper.insertSelective(pe);
+			}
+			if (StringUtils.isNotEmpty(jsonObj.getString("val15"))) {
+				ProjectEarning pe = DTOUtils.newDTO(ProjectEarning.class);
+				pe.setRoiId(roi.getId());
+				pe.setApplyId(apply.getId());
+				pe.setIndicatorName(jsonObj.getString("val15"));
+				pe.setIndicatorCurrentStatus(jsonObj.getString("val18"));
+				pe.setProjectObjective(jsonObj.getString("val21"));
+				pe.setImplemetionDate(jsonObj.getString("val24") != null ? df.parse(jsonObj.getString("val24")) : null);
+				pe.setIndicatorType(IndicatorType.EFFICIENCY_AND_PERFORMANCE.getValue());
+				this.projectEarningMapper.insertSelective(pe);
+			}
+			if (StringUtils.isNotEmpty(jsonObj.getString("val25"))) {
+				ProjectCost pc = DTOUtils.newDTO(ProjectCost.class);
+				pc.setRoiId(roi.getId());
+				pc.setApplyId(apply.getId());
+				pc.setAmount(jsonObj.getInteger("val25"));
+				pc.setRate(jsonObj.getString("val26"));
+				pc.setTotal(jsonObj.getLong("val27"));
+				pc.setNote(jsonObj.getString("val48"));
+				pc.setCostType(ProjectCostType.HUMAN_COST.getValue());
+				this.projectCostMapper.insertSelective(pc);
+			}
+			if (StringUtils.isNotEmpty(jsonObj.getString("val28"))) {
+				ProjectCost pc = DTOUtils.newDTO(ProjectCost.class);
+				pc.setRoiId(roi.getId());
+				pc.setApplyId(apply.getId());
+				pc.setAmount(jsonObj.getInteger("val28"));
+				pc.setRate(jsonObj.getString("val29"));
+				pc.setTotal(jsonObj.getLong("val30"));
+				pc.setNote(jsonObj.getString("val47"));
+				pc.setCostType(ProjectCostType.SOFTWARE_COST.getValue());
+				this.projectCostMapper.insertSelective(pc);
+			}
+			if (StringUtils.isNotEmpty(jsonObj.getString("val31"))) {
+				ProjectCost pc = DTOUtils.newDTO(ProjectCost.class);
+				pc.setRoiId(roi.getId());
+				pc.setApplyId(apply.getId());
+				pc.setAmount(jsonObj.getInteger("val31"));
+				pc.setRate(jsonObj.getString("val32"));
+				pc.setTotal(jsonObj.getLong("val33"));
+				pc.setNote(jsonObj.getString("val46"));
+				pc.setCostType(ProjectCostType.HARDWARE_PHYSICAL_MACHINE_COST.getValue());
+				this.projectCostMapper.insertSelective(pc);
+			}
+			if (StringUtils.isNotEmpty(jsonObj.getString("val34"))) {
+				ProjectCost pc = DTOUtils.newDTO(ProjectCost.class);
+				pc.setRoiId(roi.getId());
+				pc.setApplyId(apply.getId());
+				pc.setAmount(jsonObj.getInteger("val34"));
+				pc.setRate(jsonObj.getString("val35"));
+				pc.setTotal(jsonObj.getLong("val36"));
+				pc.setNote(jsonObj.getString("val37"));
+				pc.setCostType(ProjectCostType.HARDWARE_VIRTUAL_MACHINE_COST.getValue());
+				this.projectCostMapper.insertSelective(pc);
+			}
+			if (StringUtils.isNotEmpty(jsonObj.getString("val38"))) {
+				ProjectCost pc = DTOUtils.newDTO(ProjectCost.class);
+				pc.setRoiId(roi.getId());
+				pc.setApplyId(apply.getId());
+				pc.setAmount(jsonObj.getInteger("val38"));
+				pc.setRate(jsonObj.getString("val39"));
+				pc.setTotal(jsonObj.getLong("val40"));
+				pc.setNote(jsonObj.getString("val45"));
+				pc.setCostType(ProjectCostType.TRAVEL_CONFERENCE_COST.getValue());
+				this.projectCostMapper.insertSelective(pc);
+			}
+			if (StringUtils.isNotEmpty(jsonObj.getString("val41"))) {
+				ProjectCost pc = DTOUtils.newDTO(ProjectCost.class);
+				pc.setRoiId(roi.getId());
+				pc.setApplyId(apply.getId());
+				pc.setAmount(jsonObj.getInteger("val41"));
+				pc.setRate(jsonObj.getString("val42"));
+				pc.setTotal(jsonObj.getLong("val43"));
+				pc.setNote(jsonObj.getString("val44"));
+				pc.setCostType(ProjectCostType.OTHER_COST.getValue());
+				this.projectCostMapper.insertSelective(pc);
+			}
+		}
 	}
 }

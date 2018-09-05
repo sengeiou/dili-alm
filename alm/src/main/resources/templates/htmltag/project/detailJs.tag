@@ -29,7 +29,7 @@ function versionOptFormatter(value, row, index) {
 	if (row.$_versionState != 0 && row.$_versionState != 2) {
 		content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="complete(' + row.id + ');">完成</a>';
 	}
-	if (row.$_versionState != 2) {
+	if (row.$_versionState == 0) {
 		content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="editVersion(' + row.id + ');">编辑</a>';
 		content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="deleteVersion(' + row.id + ');">删除</a>';
 	}
@@ -37,6 +37,9 @@ function versionOptFormatter(value, row, index) {
 }
 
 function phaseOptFormatter(value, row, index) {
+	if (row.versionState != 0) {
+		return '';
+	}
 	var content = '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="editPhase(' + row.id + ');">编辑</a>';
 	content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="deletePhase(' + row.id + ');">删除</a>';
 	return content;
@@ -290,7 +293,7 @@ function editVersion(id) {
 													}
 													$('#win').dialog('close');
 												} else {
-													$.messager.alert('错误', data.result);
+													$.messager.alert('错误', res.result);
 												}
 											},
 											error : function() {

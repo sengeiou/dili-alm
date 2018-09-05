@@ -212,7 +212,7 @@
                     $("#estimateLaunchDate").datebox('setValue', data.estimateLaunchDate);
                     d = data.estimateLaunchDate;
                     $('#versionId').combobox({
-                        url: '${contextPath}/project/version/listPage?projectId=' + projectValue,
+                        url: '${contextPath}/project/version/listPage?projectId=' + projectValue+'&versionState=1',
                         valueField: 'id',
                         textField: 'version',
                         onChange: function (versionValue) {

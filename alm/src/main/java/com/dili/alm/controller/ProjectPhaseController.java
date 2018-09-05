@@ -19,6 +19,8 @@ import com.dili.alm.domain.dto.ProjectPhaseAddViewDto;
 import com.dili.alm.domain.dto.ProjectPhaseEditViewDto;
 import com.dili.alm.domain.dto.ProjectPhaseFormDto;
 import com.dili.alm.service.ProjectPhaseService;
+import com.dili.alm.service.impl.ProjectPhaseException;
+import com.dili.alm.service.impl.ProjectPhaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
@@ -73,7 +75,17 @@ public class ProjectPhaseController {
 			@ApiImplicitParam(name = "ProjectPhase", paramType = "form", value = "ProjectPhase的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> insert(ProjectPhaseFormDto projectPhase) {
-		return projectPhaseService.addProjectPhase(projectPhase);
+		try {
+			projectPhaseService.addProjectPhase(projectPhase);
+			try {
+				Map<Object, Object> model = ProjectPhaseServiceImpl.parseEasyUiModel(projectPhase);
+				return BaseOutput.success().setData(model);
+			} catch (Exception e) {
+				return BaseOutput.failure("新增失败");
+			}
+		} catch (ProjectPhaseException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
 	}
 
 	@RequestMapping(value = "/edit", method = RequestMethod.GET)
@@ -87,8 +99,14 @@ public class ProjectPhaseController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "ProjectPhase", paramType = "form", value = "ProjectPhase的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput update(ProjectPhaseFormDto projectPhase) {
-		return projectPhaseService.updateProjectPhase(projectPhase);
+	public @ResponseBody BaseOutput<Object> update(ProjectPhaseFormDto projectPhase) {
+		try {
+			projectPhaseService.updateProjectPhase(projectPhase);
+			Map<Object, Object> model = ProjectPhaseServiceImpl.parseEasyUiModel(projectPhase);
+			return BaseOutput.success().setData(model);
+		} catch (Exception e) {
+			return BaseOutput.failure(e.getMessage());
+		}
 	}
 
 	@ApiOperation("删除ProjectPhase")
