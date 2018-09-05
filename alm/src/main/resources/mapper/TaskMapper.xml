@@ -479,7 +479,7 @@
 			</foreach>
 		</if>
 		<if test="departmentIds != null and departmentIds.size>0">
-			AND u.departmentId in
+			AND u.department_id in
 			<foreach item="item" index="index" collection="departmentIds"
 				open="(" separator="," close=")">
 				#{item}
