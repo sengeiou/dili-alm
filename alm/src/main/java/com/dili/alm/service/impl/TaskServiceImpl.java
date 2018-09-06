@@ -1,9 +1,12 @@
 package com.dili.alm.service.impl;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -12,13 +15,21 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.IOUtils;
+import org.beetl.core.GroupTemplate;
+import org.beetl.core.Template;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
+import com.dili.alm.component.MailManager;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.constant.AlmConstants.TaskStatus;
 import com.dili.alm.dao.ProjectActionRecordMapper;
@@ -132,6 +143,14 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	private TeamMapper teamMapper;
 	@Autowired
 	private ProjectVersionMapper versionMapper;
+	@Autowired
+	private MailManager mailManager;
+	@Qualifier("mailContentTemplate")
+	@Autowired
+	private GroupTemplate groupTemplate;
+	@Value("${spring.mail.username:}")
+	private String mailFrom;
+	private String contentTemplate;
 
 	@Override
 	public void addTask(Task task, Short planTime, Date startDateShow, Date endDateShow, Boolean flow, Long creatorId)
@@ -464,7 +483,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 					taskList);
 			return taskEasyuiPageOutput;
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage(), e);
 			return null;
 		}
 	}
@@ -512,6 +531,26 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
+		}
+	}
+
+	public TaskServiceImpl() {
+		super();
+		InputStream in = null;
+		try {
+			Resource res = new ClassPathResource("conf/taskTimeoutMailContentTemplate.html");
+			in = res.getInputStream();
+			this.contentTemplate = IOUtils.toString(in, "UTF-8");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					LOGGER.error(e.getMessage(), e);
+				}
+			}
 		}
 	}
 
@@ -572,18 +611,52 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	public void notComplateTask(ScheduleMessage msg) {
 		// 查询任务表里 项目下的所有任务
 		Example example = new Example(Task.class);
-		example.createCriteria().andEqualTo("status", TaskStatus.NOTSTART.getCode()).orEqualTo("status",
-				TaskStatus.START.getCode());
+		example.createCriteria().andEqualTo("status", TaskStatus.START.getCode());
 		List<Task> taskList = this.getActualDao().selectByExample(example);
 		long now = System.currentTimeMillis();
 		for (Task taskDome : taskList) {
 			// 只判断未开始，已开始状态的任务
 			// dateUtil 计算相差天数大于0，更新状态为未完成
-			if (now - taskDome.getEndDate().getTime() >= 0) {
+			if (now - taskDome.getEndDate().getTime() >= 24 * 60 * 60 * 1000) {
 				taskDome.setStatus(TaskStatus.NOTCOMPLETE.code);// 更新状态为未完成
 				taskDome.setModified(new Date());
 				this.getActualDao().updateByPrimaryKeySelective(taskDome);
+				this.sendTimeoutMail(taskDome);
 			}
+		}
+	}
+
+	private void sendTimeoutMail(Task task) {
+		@SuppressWarnings("unchecked")
+		Map<Object, Object> metadata = new HashMap<>();
+
+		metadata.put("projectId", "projectProvider");
+		metadata.put("versionId", "projectVersionProvider");
+		metadata.put("phaseId", "projectPhaseProvider");
+		metadata.put("startDate", "dateProvider");
+		metadata.put("endDate", "dateProvider");
+		metadata.put("owner", "memberProvider");
+		metadata.put("type", "taskTypeProvider");
+		metadata.put("changeId", "projectChangeProvider");
+		metadata.put("beforeTask", "taskProvider");
+		
+		try {
+			Map<Long, User> userMap = AlmCache.getInstance().getUserMap();
+			// 通知任务执行人
+			User taskExecutor = userMap.get(task.getOwner());
+			// 通知项目经理
+			Project project = AlmCache.getInstance().getProjectMap().get(task.getProjectId());
+			User projectManager = userMap.get(project.getProjectManager());
+			Map viewModel = ValueProviderUtils.buildDataByProvider(metadata, Arrays.asList(task)).get(0);
+			// 构建邮件内容
+			Template template = this.groupTemplate.getTemplate(this.contentTemplate);
+			template.binding("task", viewModel);
+			this.mailManager.sendMail(this.mailFrom, taskExecutor.getEmail(), template.render(), true, "任务超时提醒", null);
+			this.mailManager.sendMail(this.mailFrom, projectManager.getEmail(), template.render(), true, "任务超时提醒",
+					null);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

@@ -11,11 +11,11 @@ import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
+import com.dili.alm.dao.ProjectChangeMapper;
 import com.dili.alm.domain.Approve;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectChange;
 import com.dili.alm.domain.Task;
-import com.dili.alm.service.ProjectChangeService;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
@@ -29,13 +29,13 @@ import com.dili.ss.metadata.ValueProvider;
 public class ProjectChangeProvider implements ValueProvider {
 
 	@Autowired
-	private ProjectChangeService changeService;
+	private ProjectChangeMapper changeMapper;
 
 	@Override
 	public List<ValuePair<?>> getLookupList(Object obj, Map metaMap, FieldMeta fieldMeta) {
 		List<ValuePair<?>> buffer = new ArrayList<ValuePair<?>>();
 		ProjectChange query = DTOUtils.newDTO(ProjectChange.class);
-		List<ProjectChange> list = this.changeService.list(query);
+		List<ProjectChange> list = this.changeMapper.select(query);
 		if (CollectionUtils.isNotEmpty(list)) {
 			list.forEach(p -> {
 				ValuePair<?> vp = new ValuePairImpl<>(p.getName(), p.getId());
@@ -47,56 +47,57 @@ public class ProjectChangeProvider implements ValueProvider {
 
 	@Override
 	public String getDisplayText(Object obj, Map metaMap, FieldMeta fieldMeta) {
-		JSONObject json = (JSONObject) metaMap;
-		try {
-			if (Objects.equals(json.getString("field"), "changeType")) {
-				if (json.get("_rowData") instanceof Approve) {
-					Approve approve = json.getObject("_rowData", Approve.class);
-					obj = approve.getProjectApplyId();
+		if (metaMap != null && metaMap instanceof JSONObject) {
+			JSONObject json = (JSONObject) metaMap;
+			try {
+				if (Objects.equals(json.getString("field"), "changeType")) {
+					if (json.get("_rowData") instanceof Approve) {
+						Approve approve = json.getObject("_rowData", Approve.class);
+						obj = approve.getProjectApplyId();
+					}
+					if (json.get("_rowData") instanceof Task) {
+						Task task = json.getObject("_rowData", Task.class);
+						obj = task.getChangeId();
+					}
+					ProjectChange change = this.changeMapper.selectByPrimaryKey(obj);
+					return AlmCache.getInstance().getChangeType().get(change.getType());
 				}
-				if (json.get("_rowData") instanceof Task) {
-					Task task = json.getObject("_rowData", Task.class);
-					obj = task.getChangeId();
-				}
-				ProjectChange change = changeService.get((Long) obj);
-				return AlmCache.getInstance().getChangeType().get(change.getType());
-			}
 
-			if (Objects.equals(json.getString("field"), "changeName")) {
-				if (json.get("_rowData") instanceof Approve) {
-					Approve approve = json.getObject("_rowData", Approve.class);
-					obj = approve.getProjectApplyId();
+				if (Objects.equals(json.getString("field"), "changeName")) {
+					if (json.get("_rowData") instanceof Approve) {
+						Approve approve = json.getObject("_rowData", Approve.class);
+						obj = approve.getProjectApplyId();
+					}
+					if (json.get("_rowData") instanceof Task) {
+						Task task = json.getObject("_rowData", Task.class);
+						obj = task.getChangeId();
+					}
+					ProjectChange change = this.changeMapper.selectByPrimaryKey(obj);
+					return change.getName();
 				}
-				if (json.get("_rowData") instanceof Task) {
-					Task task = json.getObject("_rowData", Task.class);
-					obj = task.getChangeId();
-				}
-				ProjectChange change = changeService.get((Long) obj);
-				return change.getName();
-			}
 
-			if (Objects.equals(json.getString("field"), "project")) {
-				if (json.get("_rowData") instanceof Approve) {
-					Approve approve = json.getObject("_rowData", Approve.class);
-					obj = approve.getProjectApplyId();
+				if (Objects.equals(json.getString("field"), "project")) {
+					if (json.get("_rowData") instanceof Approve) {
+						Approve approve = json.getObject("_rowData", Approve.class);
+						obj = approve.getProjectApplyId();
+					}
+					if (json.get("_rowData") instanceof Task) {
+						Task task = json.getObject("_rowData", Task.class);
+						obj = task.getChangeId();
+					}
+					ProjectChange change = this.changeMapper.selectByPrimaryKey(obj);
+					Project project = AlmCache.getInstance().getProjectMap().get(change.getProjectId());
+					if (project == null) {
+						return "";
+					}
+					return project.getName();
 				}
-				if (json.get("_rowData") instanceof Task) {
-					Task task = json.getObject("_rowData", Task.class);
-					obj = task.getChangeId();
-				}
-				ProjectChange change = changeService.get((Long) obj);
-				Project project = AlmCache.getInstance().getProjectMap().get(change.getProjectId());
-				if (project == null) {
-					return "";
-				}
-				return project.getName();
+			} catch (Exception ignored) {
 			}
-		} catch (Exception ignored) {
 		}
-
 		if (obj == null || obj.equals(""))
 			return null;
-		ProjectChange change = this.changeService.get((Long) obj);
+		ProjectChange change = this.changeMapper.selectByPrimaryKey(obj);
 		return change.getName();
 	}
 }
