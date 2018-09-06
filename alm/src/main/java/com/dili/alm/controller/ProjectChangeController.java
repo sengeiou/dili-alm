@@ -1,16 +1,23 @@
 package com.dili.alm.controller;
 
+import com.alibaba.fastjson.JSONObject;
+import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
+import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectChange;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.VerifyApproval;
+import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.ProjectApplyException;
 import com.dili.alm.service.MessageService;
 import com.dili.alm.service.ProjectChangeService;
+import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.TaskService;
 import com.dili.alm.service.VerifyApprovalService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.sysadmin.sdk.session.SessionContext;
 
 import io.swagger.annotations.Api;
@@ -27,8 +34,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-11-30 17:21:55.
@@ -48,6 +58,8 @@ public class ProjectChangeController {
 
 	@Autowired
 	private MessageService messageService;
+	@Autowired
+	private ProjectService projectService;
 
 	@ApiOperation("跳转到ProjectChange页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
@@ -104,12 +116,39 @@ public class ProjectChangeController {
 	}
 
 	@RequestMapping(value = "/toDetails/{id}", method = RequestMethod.GET)
-	public String toDetails(ModelMap modelMap, @PathVariable("id") Long id) {
+	public String toDetails(ModelMap modelMap, @PathVariable("id") Long id) throws Exception {
 		ProjectChange change = projectChangeService.get(id);
 		if (change == null) {
 			return "redirect:/projectChange/index.html";
 		}
 		modelMap.put("obj", change);
+		Project project = AlmCache.getInstance().getProjectMap().get(change.getProjectId());
+		@SuppressWarnings("unchecked")
+		Map<Object, Object> metadata = null == project.getMetadata() ? new HashMap<>() : project.getMetadata();
+
+		JSONObject projectStatusProvider = new JSONObject();
+		projectStatusProvider.put("provider", "projectStatusProvider");
+		metadata.put("status", projectStatusProvider);
+
+		JSONObject projectTypeProvider = new JSONObject();
+		projectTypeProvider.put("provider", "projectTypeProvider");
+		metadata.put("type", projectTypeProvider);
+
+		JSONObject memberProvider = new JSONObject();
+		memberProvider.put("provider", "memberProvider");
+		metadata.put("originator", memberProvider);
+
+		JSONObject provider = new JSONObject();
+		provider.put("provider", "datetimeProvider");
+		metadata.put("validTimeBegin", provider);
+		metadata.put("validTimeEnd", provider);
+		metadata.put("created", provider);
+		metadata.put("modified", provider);
+		metadata.put("actualStartDate", provider);
+
+		project.setMetadata(metadata);
+		modelMap.addAttribute("project1",
+				ValueProviderUtils.buildDataByProvider(project, Arrays.asList(project)).get(0));
 		return "projectChange/details";
 	}
 
@@ -141,12 +180,11 @@ public class ProjectChangeController {
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput insert(ProjectChange projectChange) {
 		projectChange.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
-		projectChangeService.insertSelective(projectChange);
 		try {
-			projectChangeService.approve(projectChange);
+			this.projectChangeService.addProjectChange(projectChange);
 			return BaseOutput.success("新增成功")
 					.setData(String.valueOf(projectChange.getId() + ":" + projectChange.getName()));
-		} catch (ProjectApplyException e) {
+		} catch (ApplicationException e) {
 			return BaseOutput.failure(e.getMessage());
 		}
 	}
@@ -156,12 +194,11 @@ public class ProjectChangeController {
 			@ApiImplicitParam(name = "ProjectChange", paramType = "form", value = "ProjectChange的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> update(ProjectChange projectChange) {
-		projectChangeService.updateSelective(projectChange);
 		try {
-			projectChangeService.approve(projectChange);
+			this.projectChangeService.updateProjectChange(projectChange);
 			return BaseOutput.success("修改成功")
 					.setData(String.valueOf(projectChange.getId() + ":" + projectChange.getName()));
-		} catch (ProjectApplyException e) {
+		} catch (ApplicationException e) {
 			return BaseOutput.failure(e.getMessage());
 		}
 	}

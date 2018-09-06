@@ -61,14 +61,8 @@ input[class^="easyui-"] {
 				<tr>
 					<td><input class="easyui-textbox" type="text" readonly name="projectName" id="projectName"
 						data-options="editable:false,required:true,validType:'length[1,20]',label:'项目名称:'"></td>
-					<td><input class="easyui-combobox" type="text" name="versionId" id="versionId"
-						data-options="editable:false,required:true,validType:'length[1,20]',label:'项目版本:'"></td>
-				</tr>
-				<tr>
 					<td><input class="easyui-textbox" type="text" readonly name="projectType" id="projectType"
 						data-options="editable:false,required:true,label:'项目类型:'"></td>
-					<td><input class="easyui-combobox" type="text" name="phaseId" id="phaseId"
-						data-options="editable:false,required:true,validType:'length[1,20]',label:'提交阶段:'"></td>
 				</tr>
 				<tr>
 					<td><input class="easyui-combobox" type="text" name="type" id="type"
@@ -85,11 +79,11 @@ input[class^="easyui-"] {
 							<option value="2">否</option>
 					</select>
 					</td>
-					<td><input value='${obj.estimateLaunchDate,dateFormat ="yyyy-MM-dd"}' class="easyui-datebox" type="text" id="estimateLaunchDate"
+					<td><input value="${obj.estimateLaunchDate!,'yyyy-MM-dd'}" class="easyui-datebox" type="text" id="estimateLaunchDate"
 						name="estimateLaunchDate" data-options="editable:false,required:true,label:'变更后上线日期:'"></td>
 				</tr>
 				<tr>
-					<td><input class="easyui-datebox" type="text" id="endDate" name="endDate" value="${obj.endDate,dateFormat ="yyyy-MM-dd"}"
+					<td><input class="easyui-datebox" type="text" id="endDate" name="endDate" value="${obj.endDate!,'yyyy-MM-dd'}"
 						data-options="editable:false,required:true,label:'变更后结束日期:',validType:'md'"></td>
 				</tr>
 				<tr>
@@ -207,38 +201,6 @@ input[class^="easyui-"] {
 													data.estimateLaunchDate);
 										}
 										add = true;
-										$('#versionId')
-												.combobox(
-														{
-															url : '${contextPath}/project/version/listPage?projectId='
-																	+ projectValue,
-															valueField : 'id',
-															textField : 'version',
-															onLoadSuccess : function() {
-																$("#versionId")
-																		.combobox(
-																				"setValue",
-																				'${obj.versionId}');
-															},
-															onChange : function(
-																	versionValue) {
-																$('#phaseId')
-																		.combobox(
-																				{
-																					url : '${contextPath}/project/phase/listPhase?versionId='
-																							+ versionValue,
-																					valueField : 'id',
-																					textField : 'name',
-																					onLoadSuccess : function() {
-																						$(
-																								"#phaseId")
-																								.combobox(
-																										"setValue",
-																										'${obj.phaseId}');
-																					}
-																				});
-															}
-														});
 									}
 								}
 							}

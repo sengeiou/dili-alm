@@ -14,163 +14,149 @@ import javax.persistence.Id;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2018-05-15 10:27:20.
+ * This file was generated on 2018-09-05 15:23:12.
  */
 @Table(name = "`project_change`")
 public interface ProjectChange extends IBaseDomain {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "`id`")
-	@FieldDef(label = "id")
-	@EditMode(editor = FieldEditor.Number, required = true)
-	Long getId();
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "`id`")
+    @FieldDef(label="id")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Long getId();
 
-	void setId(Long id);
+    void setId(Long id);
 
-	@Column(name = "`name`")
-	@FieldDef(label = "变更名称", maxLength = 255)
-	@EditMode(editor = FieldEditor.Text, required = false)
-	String getName();
+    @Column(name = "`name`")
+    @FieldDef(label="变更名称", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getName();
 
-	void setName(String name);
+    void setName(String name);
 
-	@Column(name = "`number`")
-	@FieldDef(label = "变更编号", maxLength = 255)
-	@EditMode(editor = FieldEditor.Text, required = false)
-	String getNumber();
+    @Column(name = "`number`")
+    @FieldDef(label="变更编号", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getNumber();
 
-	void setNumber(String number);
+    void setNumber(String number);
 
-	@Column(name = "`project_name`")
-	@FieldDef(label = "项目名称", maxLength = 255)
-	@EditMode(editor = FieldEditor.Text, required = false)
-	String getProjectName();
+    @Column(name = "`project_name`")
+    @FieldDef(label="项目名称", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getProjectName();
 
-	void setProjectName(String projectName);
+    void setProjectName(String projectName);
 
-	@Column(name = "`project_id`")
-	@FieldDef(label = "变更项目")
-	@EditMode(editor = FieldEditor.Number, required = false)
-	Long getProjectId();
+    @Column(name = "`project_id`")
+    @FieldDef(label="变更项目")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Long getProjectId();
 
-	void setProjectId(Long projectId);
+    void setProjectId(Long projectId);
 
-	@Column(name = "`version_id`")
-	@FieldDef(label = "版本")
-	@EditMode(editor = FieldEditor.Number, required = false)
-	Long getVersionId();
+    @Column(name = "`type`")
+    @FieldDef(label="type", maxLength = 50)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getType();
 
-	void setVersionId(Long versionId);
+    void setType(String type);
 
-	@Column(name = "`phase_id`")
-	@FieldDef(label = "阶段")
-	@EditMode(editor = FieldEditor.Number, required = false)
-	Long getPhaseId();
+    @Column(name = "`working_hours`")
+    @FieldDef(label="预估工时", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getWorkingHours();
 
-	void setPhaseId(Long phaseId);
+    void setWorkingHours(String workingHours);
 
-	@Column(name = "`type`")
-	@FieldDef(label = "type", maxLength = 50)
-	@EditMode(editor = FieldEditor.Text, required = false)
-	String getType();
+    @Column(name = "`affects_online`")
+    @FieldDef(label="是否影响上线")
+    @EditMode(editor = FieldEditor.Text, required = false)
+    Integer getAffectsOnline();
 
-	void setType(String type);
+    void setAffectsOnline(Integer affectsOnline);
 
-	@Column(name = "`working_hours`")
-	@FieldDef(label = "预估工时", maxLength = 255)
-	@EditMode(editor = FieldEditor.Text, required = false)
-	String getWorkingHours();
+    @Column(name = "`submit_date`")
+    @FieldDef(label="提交日期")
+    @EditMode(editor = FieldEditor.Datetime, required = false)
+    Date getSubmitDate();
 
-	void setWorkingHours(String workingHours);
+    void setSubmitDate(Date submitDate);
 
-	@Column(name = "`affects_online`")
-	@FieldDef(label = "是否影响上线")
-	@EditMode(editor = FieldEditor.Text, required = false)
-	Integer getAffectsOnline();
+    @Column(name = "`content`")
+    @FieldDef(label="content", maxLength = 1000)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getContent();
 
-	void setAffectsOnline(Integer affectsOnline);
+    void setContent(String content);
 
-	@Column(name = "`submit_date`")
-	@FieldDef(label = "提交日期")
-	@EditMode(editor = FieldEditor.Datetime, required = false)
-	Date getSubmitDate();
+    @Column(name = "`effects`")
+    @FieldDef(label="影响说明", maxLength = 1000)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getEffects();
 
-	void setSubmitDate(Date submitDate);
+    void setEffects(String effects);
 
-	@Column(name = "`content`")
-	@FieldDef(label = "content", maxLength = 255)
-	@EditMode(editor = FieldEditor.Text, required = false)
-	String getContent();
+    @Column(name = "`email`")
+    @FieldDef(label="email", maxLength = 1000)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getEmail();
 
-	void setContent(String content);
+    void setEmail(String email);
 
-	@Column(name = "`effects`")
-	@FieldDef(label = "影响说明", maxLength = 255)
-	@EditMode(editor = FieldEditor.Text, required = false)
-	String getEffects();
+    @Column(name = "`status`")
+    @FieldDef(label="status")
+    @EditMode(editor = FieldEditor.Text, required = false)
+    Integer getStatus();
 
-	void setEffects(String effects);
+    void setStatus(Integer status);
 
-	@Column(name = "`email`")
-	@FieldDef(label = "email", maxLength = 255)
-	@EditMode(editor = FieldEditor.Text, required = false)
-	String getEmail();
+    @Column(name = "`created`")
+    @FieldDef(label="created")
+    @EditMode(editor = FieldEditor.Datetime, required = true)
+    Date getCreated();
 
-	void setEmail(String email);
+    void setCreated(Date created);
 
-	@Column(name = "`status`")
-	@FieldDef(label = "status")
-	@EditMode(editor = FieldEditor.Text, required = false)
-	Integer getStatus();
+    @Column(name = "`modified`")
+    @FieldDef(label="modified")
+    @EditMode(editor = FieldEditor.Datetime, required = true)
+    Date getModified();
 
-	void setStatus(Integer status);
+    void setModified(Date modified);
 
-	@Column(name = "`created`")
-	@FieldDef(label = "created")
-	@EditMode(editor = FieldEditor.Datetime, required = true)
-	Date getCreated();
+    @Column(name = "`create_member_id`")
+    @FieldDef(label="createMemberId")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Long getCreateMemberId();
 
-	void setCreated(Date created);
+    void setCreateMemberId(Long createMemberId);
 
-	@Column(name = "`modified`")
-	@FieldDef(label = "modified")
-	@EditMode(editor = FieldEditor.Datetime, required = true)
-	Date getModified();
+    @Column(name = "`modify_member_id`")
+    @FieldDef(label="modifyMemberId")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Long getModifyMemberId();
 
-	void setModified(Date modified);
+    void setModifyMemberId(Long modifyMemberId);
 
-	@Column(name = "`create_member_id`")
-	@FieldDef(label = "createMemberId")
-	@EditMode(editor = FieldEditor.Number, required = false)
-	Long getCreateMemberId();
+    @Column(name = "`estimate_launch_date`")
+    @FieldDef(label="estimateLaunchDate")
+    @EditMode(editor = FieldEditor.Datetime, required = false)
+    Date getEstimateLaunchDate();
 
-	void setCreateMemberId(Long createMemberId);
+    void setEstimateLaunchDate(Date estimateLaunchDate);
 
-	@Column(name = "`modify_member_id`")
-	@FieldDef(label = "modifyMemberId")
-	@EditMode(editor = FieldEditor.Number, required = false)
-	Long getModifyMemberId();
+    @Column(name = "`reStatus`")
+    @FieldDef(label="restatus")
+    @EditMode(editor = FieldEditor.Text, required = false)
+    Integer getRestatus();
 
-	void setModifyMemberId(Long modifyMemberId);
+    void setRestatus(Integer restatus);
 
-	@Column(name = "`estimate_launch_date`")
-	@FieldDef(label = "预估上线日期")
-	@EditMode(editor = FieldEditor.Datetime, required = false)
-	Date getEstimateLaunchDate();
+    @Column(name = "`end_date`")
+    @FieldDef(label="endDate")
+    @EditMode(editor = FieldEditor.Datetime, required = false)
+    Date getEndDate();
 
-	void setEstimateLaunchDate(Date estimateLaunchDate);
-
-	@Column(name = "`reStatus`")
-	@FieldDef(label = "restatus")
-	@EditMode(editor = FieldEditor.Text, required = false)
-	Integer getRestatus();
-
-	void setRestatus(Integer restatus);
-
-	@Column(name = "`end_date`")
-	@FieldDef(label = "预估结束日期")
-	@EditMode(editor = FieldEditor.Datetime, required = false)
-	Date getEndDate();
-
-	void setEndDate(Date endDate);
+    void setEndDate(Date endDate);
 }

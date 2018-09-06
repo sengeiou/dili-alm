@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.component.MailManager;
 import com.dili.alm.constant.AlmConstants;
@@ -307,8 +309,8 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		par.setActionCode(ProjectAction.PROJECT_CHANGE_APPLY.getCode());
 		par.setActionDate(change.getSubmitDate());
 		par.setActionDateType(ActionDateType.POINT.getValue());
-		par.setActionType(ProjectActionType.VERSION.getValue());
-		par.setVersionId(change.getVersionId());
+		par.setActionType(ProjectActionType.PROJECT.getValue());
+		par.setProjectId(change.getProjectId());
 		int rows = this.parMapper.insertSelective(par);
 		if (rows <= 0) {
 			throw new ApproveException("插入项目进程记录失败");
@@ -318,8 +320,8 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		par.setActionCode(ProjectAction.PROJECT_CHANGE_APPROVE.getCode());
 		par.setActionDate(new Date());
 		par.setActionDateType(ActionDateType.POINT.getValue());
-		par.setActionType(ProjectActionType.VERSION.getValue());
-		par.setVersionId(change.getVersionId());
+		par.setActionType(ProjectActionType.PROJECT.getValue());
+		par.setProjectId(change.getProjectId());
 		rows = this.parMapper.insertSelective(par);
 		if (rows <= 0) {
 			throw new ApproveException("插入项目进程记录失败");
@@ -384,6 +386,33 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
 		ProjectChange change = projectChangeService.get(approve.getProjectApplyId());
 		modelMap.put("change", change);
+		Project project = this.projectMapper.selectByPrimaryKey(change.getProjectId());
+		@SuppressWarnings("unchecked")
+		Map<Object, Object> metadata1 = new HashMap<>();
+
+		JSONObject projectTypeProvider = new JSONObject();
+		projectTypeProvider.put("provider", "projectTypeProvider");
+		metadata1.put("type", projectTypeProvider);
+
+		JSONObject memberProvider = new JSONObject();
+		memberProvider.put("provider", "memberProvider");
+		metadata1.put("originator", memberProvider);
+
+		JSONObject provider = new JSONObject();
+		provider.put("provider", "datetimeProvider");
+		metadata1.put("validTimeBegin", provider);
+		metadata1.put("validTimeEnd", provider);
+		metadata1.put("created", provider);
+		metadata1.put("modified", provider);
+		metadata1.put("actualStartDate", provider);
+
+		try {
+			Map map = ValueProviderUtils.buildDataByProvider(metadata1, Arrays.asList(project)).get(0);
+			map.put("numberAndName", map.get("serialNumber") + "(" + map.get("name") + ")");
+			modelMap.put("project1", map);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 
 	}
 
@@ -470,10 +499,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 				map.put("name", change.getName());
 				map.put("number", change.getNumber());
 				map.put("projectName", change.getProjectName());
-				map.put("version", projectVersionService.get(change.getVersionId()).getVersion());
 				map.put("projectType", AlmCache.getInstance().getProjectTypeMap().get(project.getType()));
-				map.put("phase", AlmCache.getInstance().getPhaseNameMap()
-						.get(projectPhaseService.get(change.getPhaseId()).getName()));
 				map.put("type", AlmCache.getInstance().getChangeType().get(change.getType()));
 				map.put("workingHours", change.getWorkingHours());
 				map.put("affectsOnline", change.getAffectsOnline() == 1 ? "是" : "否");
@@ -859,12 +885,5 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 			throw new ApproveException("更新项目信息失败");
 		}
 
-		// 更新版本结束日期
-		ProjectVersion version = this.projectVersionMapper.selectByPrimaryKey(change.getVersionId());
-		version.setPlannedEndDate(change.getEndDate());
-		rows = this.projectVersionMapper.updateByPrimaryKeySelective(version);
-		if (rows <= 0) {
-			throw new ApproveException("更新版本信息失败");
-		}
 	}
 }

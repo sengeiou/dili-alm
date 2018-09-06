@@ -93,8 +93,7 @@
 			targetProject="${targetJavaProject}" type="XMLMAPPER" />
 
 		<!-- 生成所有表模型 -->
-		<table tableName="roi">
-		<table tableName="work_order">
+		<table tableName="project_change">
 			<generatedKey column="id" sqlStatement="Mysql"
 				identity="true" />
 		</table>

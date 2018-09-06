@@ -191,4 +191,24 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 		insertSelective(change);
 		return change.getId();
 	}
+
+	@Transactional
+	@Override
+	public void addProjectChange(ProjectChange projectChange) throws ApplicationException {
+		int rows = this.getActualDao().insertSelective(projectChange);
+		if (rows <= 0) {
+			throw new ProjectChangeException("插入项目变更申请失败");
+		}
+		this.approve(projectChange);
+	}
+
+	@Transactional
+	@Override
+	public void updateProjectChange(ProjectChange projectChange) throws ApplicationException {
+		int rows = this.getActualDao().updateByPrimaryKeySelective(projectChange);
+		if (rows <= 0) {
+			throw new ProjectChangeException("插入项目变更申请失败");
+		}
+		this.approve(projectChange);
+	}
 }

@@ -46,8 +46,7 @@ input[class^="easyui-"] {
 <div class="easyui-panel" title="变更申请" style="height: 100%" data-options="tools:'#cusTools'">
 	<div style="padding: 10px 60px 20px 60px">
 		<form id="ff" method="post" action="">
-			<input type="hidden" name="id" value="${obj.id}" /> <input type="hidden" name="status" id="status" /> <input type="hidden" name="email"
-				id="email" /> <input type="hidden" name="number" id="number" />
+			<input type="hidden" name="id" value="${obj.id}" />
 			<table cellpadding="5" id="tb" style="width: 100%">
 				<tr>
 					<td class="title-first" colspan="4">1基本信息</td>
@@ -55,39 +54,28 @@ input[class^="easyui-"] {
 				<tr>
 					<td><input class="easyui-textbox" type="text" name="name" value="${obj.name}"
 						data-options="required:true,validType:'length[1,20]',label:'变更名称:'"></td>
-					<td><input class="easyui-combobox" type="text" name="projectId" id="projectId" data-options="required:true,label:'项目编号:'"></td>
+					<td><input class="easyui-combobox" type="text" value="${obj.name!}" data-options="required:true,label:'项目编号:'"></td>
 				</tr>
 				<tr>
-					<td><input class="easyui-textbox" type="text" readonly name="projectName" id="projectName"
+					<td><input class="easyui-textbox" type="text" readonly name="projectName" id="projectName" value="${obj.projectName!}"
 						data-options="required:true,validType:'length[1,20]',label:'项目名称:'"></td>
-					<td><input class="easyui-combobox" type="text" name="versionId" id="versionId"
-						data-options="required:true,validType:'length[1,20]',label:'项目版本:'"></td>
-				</tr>
-				<tr>
-					<td><input class="easyui-textbox" type="text" readonly name="projectType" id="projectType"
+					<td><input class="easyui-textbox" type="text" readonly name="projectType" id="projectType" value="${project1.type!}"
 						data-options="required:true,label:'项目类型:'"></td>
-					<td><input class="easyui-combobox" type="text" name="phaseId" id="phaseId"
-						data-options="required:true,validType:'length[1,20]',label:'提交阶段:'"></td>
 				</tr>
 				<tr>
-					<td><input class="easyui-combobox" type="text" name="type" id="type"
-						data-options="required:true,validType:'length[1,10]',label:'变更类型:'"> <#comboProvider _id="type" _provider='changeTypeProvider' />
-					</td>
-					<td><input class="easyui-numberbox" type="text" name="workingHours" value="${obj.workingHours}"
+					<td><input class="easyui-textbox" readonly="readonly" type="text" name="type" id="type" value="${obj.type!}"
+						data-options="required:true,validType:'length[1,10]',label:'变更类型:'"></td>
+					<td><input class="easyui-textbox" readonly="readonly" type="text" name="workingHours" value="${obj.workingHours}"
 						data-options="required:true,min:0,max:99999999,label:'变更工作量预估:'"></td>
 				</tr>
 				<tr>
-					<td><select id="affectsOnline" class="easyui-combobox" type="text" name="affectsOnline" style="width: 305px;"
-						data-options="editable:false,label:'是否影响上线:'" required="true">
-							<option value="1">是</option>
-							<option value="2">否</option>
-					</select></td>
-					<td><input class="easyui-datebox" type="text" value='${obj.estimateLaunchDate,dateFormat ="yyyy-MM-dd"}' id="estimateLaunchDate"
+					<td><input id="affectsOnline" class="easyui-textbox" readonly="readonly" type="text" name="affectsOnline" style="width: 305px;"
+						value="<%if(obj.affectsOnline==1){%>是<%}else{%>否<%}%>" data-options="editable:false,label:'是否影响上线:'" required="true"></td>
+					<td><input class="easyui-textbox" readonly="readonly" type="text" value='${obj.estimateLaunchDate!,"yyyy-MM-dd"}' id="estimateLaunchDate"
 						name="estimateLaunchDate" data-options="required:true,label:'变更后上线日期:'"></td>
 				<tr>
-					<td><input class="easyui-datebox" type="text" id="endDate" name="endDate" value="${obj.endDate!,dateFormat ="yyyy-MM-dd"}"
+					<td><input class="easyui-textbox" readonly="readonly" type="text" id="endDate" name="endDate" value="${obj.endDate!,'yyyy-MM-dd'}"
 						data-options="editable:false,required:true,label:'变更后结束日期:',validType:'md'"></td>
-				</tr>
 				</tr>
 				<tr>
 					<td class="title-first" colspan="4">2.变更描述</td>
@@ -99,122 +87,24 @@ input[class^="easyui-"] {
 					<td class="title-second" colspan="4">变更内容及原因</td>
 				</tr>
 				<tr>
-					<td colspan="4"><input class="easyui-textbox" id="content" name="content" value="${obj.content}"
+					<td colspan="4"><input class="easyui-textbox" readonly="readonly" id="content" name="content" value="${obj.content}"
 						data-options="required:true,multiline:true,prompt:'限制输入500个字符串',validType:['length[0,500]']" style="width: 100%; height: 120px" /></td>
 				</tr>
 				<tr>
 					<td class="title-second" colspan="4">变更方案及影响风险</td>
 				</tr>
 				<tr>
-					<td colspan="4"><input class="easyui-textbox" name="effects" id="effects" value="${obj.effects}"
+					<td colspan="4"><input class="easyui-textbox" readonly="readonly" name="effects" id="effects" value="${obj.effects}"
 						data-options="multiline:true,prompt:'限制输入500个字符串',validType:['length[0,500]']" style="width: 100%; height: 120px" /></td>
 				</tr>
 				<tr>
 					<td class="title-first" colspan="4">3.邮件发送列表</td>
 				</tr>
 				<tr>
-					<td colspan="4"><input class="easyui-tagbox" id="tagbx" value="${obj.email}" style="width: 100%"></td>
+					<td colspan="4"><input class="easyui-textbox" readonly="readonly" id="tagbx" value="${obj.email}" style="width: 100%"></td>
 				</tr>
 			</table>
 		</form>
-		<!--<div style="text-align:left;padding:5px;margin-top:10px;">-->
-		<!--<a href="${contextPath}/projectChange/index.html" class="easyui-linkbutton"-->
-		<!--data-options="width:'80px'">返回</a>-->
-		<!--</div>-->
 	</div>
 </div>
-<script>
-	$("#tagbx").tagbox({
-		onBeforeRemoveTag : function(value) {
-			if (value == pmo_email) {
-				return false;
-			}
-		}
-	});
-
-	function submitForm(type) {
-		$('#ff')
-				.form(
-						'submit',
-						{
-							url : "${contextPath}/projectChange/update",
-							onSubmit : function() {
-								$("#status").val(type);
-								var data = $("#tagbx").tagbox("getValues");
-								$("#email").val(data.join());
-								return $("#ff").form('validate');
-							},
-							success : function(data) {
-								var data = eval('(' + data + ')');
-								if (data.success == true) {
-									window.location.href = "${contextPath}/projectChange/index.html";
-								}
-							}
-						});
-	}
-
-	$('#projectId')
-			.combobox(
-					{
-						url : '${contextPath}/project/getProjectList?queryAll=true&dataAuth=false',
-						valueField : 'id',
-						textField : 'serialNumber',
-						onLoadSuccess : function() {
-							$("#projectId").combobox("setValue",
-									'${obj.projectId}');
-						},
-						onChange : function(projectValue) {
-							var datas = $("#projectId").combobox('getData');
-							for (var i = 0; i < datas.length; i++) {
-								var data = datas[i];
-								if (data.id == projectValue) {
-									$("#projectName").textbox("initValue",
-											data.name);
-									$("#projectType").textbox("initValue",
-											data.type);
-									$("#number").val(data.serialNumber);
-									$('#versionId')
-											.combobox(
-													{
-														url : '${contextPath}/project/version/listPage?projectId='
-																+ projectValue,
-														valueField : 'id',
-														textField : 'version',
-														onLoadSuccess : function() {
-															$("#versionId")
-																	.combobox(
-																			"setValue",
-																			'${obj.versionId}');
-														},
-														onChange : function(
-																versionValue) {
-															$('#phaseId')
-																	.combobox(
-																			{
-																				url : '${contextPath}/project/phase/listPhase?versionId='
-																						+ versionValue,
-																				valueField : 'id',
-																				textField : 'name',
-																				onLoadSuccess : function() {
-																					$(
-																							"#phaseId")
-																							.combobox(
-																									"setValue",
-																									'${obj.phaseId}');
-																				}
-																			});
-														}
-													});
-								}
-							}
-						}
-					});
-
-	$(function() {
-		$("#type").combobox("setValue", '${obj.type}');
-		$("#affectsOnline").combobox("setValue", '${obj.affectsOnline}');
-
-		$('input[class^=easyui-]').textbox("disable");
-		$('select[class^=easyui-]').textbox("disable");
-	});
-</script> </#body>
+</#body>

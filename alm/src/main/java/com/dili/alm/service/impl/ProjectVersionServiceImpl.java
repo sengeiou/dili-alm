@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dili.alm.dao.FilesMapper;
 import com.dili.alm.dao.ProjectActionRecordMapper;
-import com.dili.alm.dao.ProjectChangeMapper;
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.dao.ProjectPhaseMapper;
 import com.dili.alm.dao.ProjectVersionMapper;
@@ -22,7 +21,6 @@ import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectAction;
 import com.dili.alm.domain.ProjectActionRecord;
 import com.dili.alm.domain.ProjectActionType;
-import com.dili.alm.domain.ProjectChange;
 import com.dili.alm.domain.ProjectPhase;
 import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.ProjectVersion;
@@ -60,8 +58,6 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 	private ProjectPhaseMapper phaseMapper;
 	@Autowired
 	private TaskMapper taskMapper;
-	@Autowired
-	private ProjectChangeMapper projectChangeMapper;
 	@Autowired
 	private ProjectMapper projectMapper;
 	@Autowired
@@ -206,12 +202,6 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		count = this.taskMapper.selectCount(taskQuery);
 		if (count > 0) {
 			throw new ProjectVersionException("该版本下包含任务不能删除");
-		}
-		ProjectChange changeQuery = DTOUtils.newDTO(ProjectChange.class);
-		changeQuery.setVersionId(id);
-		count = this.projectChangeMapper.selectCount(changeQuery);
-		if (count > 0) {
-			throw new ProjectVersionException("该版本关联了需求变更不能删除");
 		}
 		Files files = DTOUtils.newDTO(Files.class);
 		files.setVersionId(id);
