@@ -529,10 +529,8 @@ body {
 
 	});
 	/** 得到消息通知信息  **/
-	var userIdVal = $
-	{
-		${userid!}
-	}
+	var userIdVal = ${userid!};
+	
 	var getMessages = {
 		type : "POST",
 		url : 'http://almweb.diligrp.com/messageApi/list',

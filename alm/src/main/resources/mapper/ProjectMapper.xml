@@ -544,7 +544,7 @@
 		sum( pc.total ) AS total
 		FROM
 		project_cost pc
-		INNER JOIN project p ON p.apply_id = pc.id
+		INNER JOIN project p ON p.apply_id = pc.apply_id
 		GROUP BY
 		pc.apply_id,
 		pc.cost_type
