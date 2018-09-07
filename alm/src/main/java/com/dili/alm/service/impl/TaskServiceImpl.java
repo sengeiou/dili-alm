@@ -639,7 +639,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		metadata.put("type", "taskTypeProvider");
 		metadata.put("changeId", "projectChangeProvider");
 		metadata.put("beforeTask", "taskProvider");
-		
+
 		try {
 			Map<Long, User> userMap = AlmCache.getInstance().getUserMap();
 			// 通知任务执行人
@@ -1186,7 +1186,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	public boolean isInCurrentWeek(Long taskId) {
 		Task task = this.getActualDao().selectByPrimaryKey(taskId);
 		long current = System.currentTimeMillis();
-		return task.getStartDate().getTime() <= current && task.getEndDate().getTime() >= current;
+		return task.getStartDate().getTime() <= current && task.getEndDate().getTime() + 24 * 60 * 60 * 1000 >= current;
 	}
 
 }
