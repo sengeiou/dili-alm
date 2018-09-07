@@ -125,18 +125,26 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	TeamService teamService;
 	@Autowired
 	UserRpc userRpc;
+	private String contentTemplate;
+	@Qualifier("mailContentTemplate")
+	@Autowired
+	private GroupTemplate groupTemplate;
+
+	@Value("${spring.mail.username:}")
+	private String mailFrom;
+	@Autowired
+	private MailManager mailManager;
 	@Autowired
 	private ProjectActionRecordMapper parMapper;
+
 	@Autowired
 	private ProjectPhaseMapper phaseMapper;
-
 	@Autowired
 	private ProjectChangeService projectChangeService;
 	@Autowired
 	private ProjectMapper projectMapper;
 	@Autowired
 	private TaskDetailsService taskDetailsService;
-
 	@Autowired
 	private TaskMapper taskMapper;
 	@Autowired
@@ -146,15 +154,27 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	@Autowired
 	private ProjectVersionMapper versionMapper;
 	@Autowired
-	private MailManager mailManager;
-	@Qualifier("mailContentTemplate")
-	@Autowired
-	private GroupTemplate groupTemplate;
-	@Value("${spring.mail.username:}")
-	private String mailFrom;
-	private String contentTemplate;
-	@Autowired
 	private WorkDayService workDayService;
+
+	public TaskServiceImpl() {
+		super();
+		InputStream in = null;
+		try {
+			Resource res = new ClassPathResource("conf/taskTimeoutMailContentTemplate.html");
+			in = res.getInputStream();
+			this.contentTemplate = IOUtils.toString(in, "UTF-8");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					LOGGER.error(e.getMessage(), e);
+				}
+			}
+		}
+	}
 
 	@Override
 	public void addTask(Task task, Short planTime, Date startDateShow, Date endDateShow, Boolean flow, Long creatorId)
@@ -317,6 +337,33 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			throw new RuntimeException("未登录");
 		}
 		if (taskSelect.getCreateMemberId().equals(userTicket.getId())) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean isInCurrentWeek(Long taskId) {
+		Task task = this.getActualDao().selectByPrimaryKey(taskId);
+		WorkDay workDay = this.workDayService.getNowWeeklyWorkDay();
+		long wStart = workDay.getWorkStartTime().getTime();
+		long wEnd = workDay.getWorkEndTime().getTime();
+		long tStart = task.getStartDate().getTime();
+		long tEnd = task.getEndDate().getTime();
+		// -------tStart-------wStart-------------tEnd---------------wEnd--------------
+		if (wStart >= tStart && wStart <= tEnd && wEnd > tEnd) {
+			return true;
+		}
+		// ----------wStart----------tStart--------------tEnd------------wEnd----------
+		if (wStart <= tStart && wEnd >= tEnd) {
+			return true;
+		}
+		// ----------wStart-------------tStart-------------wEnd-----------tEnd---------
+		if (wStart <= tStart && wEnd >= tStart && wEnd <= tEnd) {
+			return true;
+		}
+		// -------tStart--------wStart-------------------wEnd----------tend-------------
+		if (tStart <= wStart && tEnd >= wEnd) {
 			return true;
 		}
 		return false;
@@ -538,26 +585,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		}
 	}
 
-	public TaskServiceImpl() {
-		super();
-		InputStream in = null;
-		try {
-			Resource res = new ClassPathResource("conf/taskTimeoutMailContentTemplate.html");
-			in = res.getInputStream();
-			this.contentTemplate = IOUtils.toString(in, "UTF-8");
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} finally {
-			if (in != null) {
-				try {
-					in.close();
-				} catch (IOException e) {
-					LOGGER.error(e.getMessage(), e);
-				}
-			}
-		}
-	}
-
 	@Override
 	public List<ProjectVersion> listProjectVersionByTeam() {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
@@ -627,40 +654,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 				this.getActualDao().updateByPrimaryKeySelective(taskDome);
 				this.sendTimeoutMail(taskDome);
 			}
-		}
-	}
-
-	private void sendTimeoutMail(Task task) {
-		@SuppressWarnings("unchecked")
-		Map<Object, Object> metadata = new HashMap<>();
-
-		metadata.put("projectId", "projectProvider");
-		metadata.put("versionId", "projectVersionProvider");
-		metadata.put("phaseId", "projectPhaseProvider");
-		metadata.put("startDate", "dateProvider");
-		metadata.put("endDate", "dateProvider");
-		metadata.put("owner", "memberProvider");
-		metadata.put("type", "taskTypeProvider");
-		metadata.put("changeId", "projectChangeProvider");
-		metadata.put("beforeTask", "taskProvider");
-
-		try {
-			Map<Long, User> userMap = AlmCache.getInstance().getUserMap();
-			// 通知任务执行人
-			User taskExecutor = userMap.get(task.getOwner());
-			// 通知项目经理
-			Project project = AlmCache.getInstance().getProjectMap().get(task.getProjectId());
-			User projectManager = userMap.get(project.getProjectManager());
-			Map viewModel = ValueProviderUtils.buildDataByProvider(metadata, Arrays.asList(task)).get(0);
-			// 构建邮件内容
-			Template template = this.groupTemplate.getTemplate(this.contentTemplate);
-			template.binding("task", viewModel);
-			this.mailManager.sendMail(this.mailFrom, taskExecutor.getEmail(), template.render(), true, "任务超时提醒", null);
-			this.mailManager.sendMail(this.mailFrom, projectManager.getEmail(), template.render(), true, "任务超时提醒",
-					null);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 
@@ -839,42 +832,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		return taskDetails.getId();
 	}
 
-	private boolean isTaskTimeInCurrentWeek(Long taskId, Date taskDate) {
-		WorkDay workDay = this.workDayService.getNowWeeklyWorkDay();
-		if (workDay == null) {
-			return false;
-		}
-		Task task = this.getActualDao().selectByPrimaryKey(taskId);
-		long wStart = workDay.getWorkStartTime().getTime();
-		long wEnd = workDay.getWorkEndTime().getTime();
-		long tStart = task.getStartDate().getTime();
-		long tEnd = task.getEndDate().getTime();
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		long current = 0;
-		try {
-			current = df.parse(df.format(new Date())).getTime();
-		} catch (ParseException e) {
-			throw new RuntimeException(e);
-		}
-		long taskTime = taskDate.getTime();
-		// -------tStart-------------wStart------------taskTime-------------current-----------tEnd---------------wEnd-----------
-		if (wStart >= tStart && wStart <= tEnd && wEnd >= tEnd && taskTime >= wStart && taskTime <= tEnd
-				&& current >= taskTime && current <= tEnd) {
-			return true;
-		}
-		// ----------wStart----------tStart--------------tEnd------------wEnd----------
-		if (wStart <= tStart && wEnd >= tEnd && taskTime >= tStart && taskTime <= tEnd && current >= taskTime
-				&& current <= tEnd) {
-			return true;
-		}
-		// ----------wStart-------------tStart-------------wEnd-----------tEnd---------
-		if (wStart <= tStart && wEnd >= tStart && wEnd <= tEnd && taskTime >= tStart && taskTime <= wEnd
-				&& current >= taskTime && current <= wEnd) {
-			return true;
-		}
-		return false;
-	}
-
 	@Override
 	public void updateTask(Task task, Long modifyMemberId, Short planTime, Date startDate, Date endDate, Boolean flow)
 			throws TaskException {
@@ -908,6 +865,28 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		if (rows <= 0) {
 			throw new TaskException("更新项目进程记录失败");
 		}
+	}
+
+	@Override
+	public boolean validateBeginAndEnd(Long projectId, Date startDate, Date endDate) {
+		try {
+			Project project = projectService.get(projectId);
+			Date pstDate = project.getStartDate();// 计划开始时间
+			Date penDate = project.getEndDate();// 计划结束时间
+			int startCompareVal = Integer.parseInt(DateUtil.getDatePoor(pstDate, startDate));
+			int endCompareVal = Integer.parseInt(DateUtil.getDatePoor(penDate, endDate));
+
+			// 大于0，后者晚，小于0 后者早
+			if (startCompareVal > 0) {
+				return true;
+			}
+			if (endCompareVal < 0) {
+				return true;
+			}
+		} catch (Exception e) {
+			return false;
+		}
+		return false;
 	}
 
 	protected void updateTaskDetail(TaskDetails taskDetails, Task task) throws TaskException {
@@ -960,28 +939,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 	}
 
-	@Override
-	public boolean validateBeginAndEnd(Long projectId, Date startDate, Date endDate) {
-		try {
-			Project project = projectService.get(projectId);
-			Date pstDate = project.getStartDate();// 计划开始时间
-			Date penDate = project.getEndDate();// 计划结束时间
-			int startCompareVal = Integer.parseInt(DateUtil.getDatePoor(pstDate, startDate));
-			int endCompareVal = Integer.parseInt(DateUtil.getDatePoor(penDate, endDate));
-
-			// 大于0，后者晚，小于0 后者早
-			if (startCompareVal > 0) {
-				return true;
-			}
-			if (endCompareVal < 0) {
-				return true;
-			}
-		} catch (Exception e) {
-			return false;
-		}
-		return false;
-	}
-
 	private void checkProjectState(Task task) throws TaskException {
 		Project project = this.projectMapper.selectByPrimaryKey(task.getProjectId());
 		if (project == null) {
@@ -1016,6 +973,47 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		Project project = projectService.get(id);
 		if (project.getProjectState().equals(PROJECT_STATE_SHUT)
 				|| project.getProjectState().equals(PROJECT_STATE_COMPLATE)) {
+			return true;
+		}
+		return false;
+	}
+
+	private boolean isTaskTimeInCurrentWeek(Long taskId, Date taskDate) {
+		WorkDay workDay = this.workDayService.getNowWeeklyWorkDay();
+		if (workDay == null) {
+			return false;
+		}
+		Task task = this.getActualDao().selectByPrimaryKey(taskId);
+		long wStart = workDay.getWorkStartTime().getTime();
+		long wEnd = workDay.getWorkEndTime().getTime();
+		long tStart = task.getStartDate().getTime();
+		long tEnd = task.getEndDate().getTime();
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		long current = 0;
+		try {
+			current = df.parse(df.format(new Date())).getTime();
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
+		long taskTime = taskDate.getTime();
+		// -------tStart---------wStart-------taskTime---------current---------tEnd----------wEnd-----------
+		if (wStart >= tStart && wStart <= tEnd && wEnd >= tEnd && taskTime >= wStart && taskTime <= tEnd
+				&& current >= taskTime && current <= tEnd) {
+			return true;
+		}
+		// ----------wStart----------tStart--------------tEnd------------wEnd----------
+		if (wStart <= tStart && wEnd >= tEnd && taskTime >= tStart && taskTime <= tEnd && current >= taskTime
+				&& current <= tEnd) {
+			return true;
+		}
+		// ----------wStart-------------tStart-------------wEnd-----------tEnd---------
+		if (wStart <= tStart && wEnd >= tStart && wEnd <= tEnd && taskTime >= tStart && taskTime <= wEnd
+				&& current >= taskTime && current <= wEnd) {
+			return true;
+		}
+		// -------tStart--------wStart---------taskTime--------current----------wEnd----------tend-------------
+		if (tStart <= wStart && tEnd >= wEnd && taskTime >= wStart && taskTime <= wEnd && current >= taskTime
+				&& current <= wEnd) {
 			return true;
 		}
 		return false;
@@ -1149,6 +1147,40 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 	}
 
+	private void sendTimeoutMail(Task task) {
+		@SuppressWarnings("unchecked")
+		Map<Object, Object> metadata = new HashMap<>();
+
+		metadata.put("projectId", "projectProvider");
+		metadata.put("versionId", "projectVersionProvider");
+		metadata.put("phaseId", "projectPhaseProvider");
+		metadata.put("startDate", "dateProvider");
+		metadata.put("endDate", "dateProvider");
+		metadata.put("owner", "memberProvider");
+		metadata.put("type", "taskTypeProvider");
+		metadata.put("changeId", "projectChangeProvider");
+		metadata.put("beforeTask", "taskProvider");
+
+		try {
+			Map<Long, User> userMap = AlmCache.getInstance().getUserMap();
+			// 通知任务执行人
+			User taskExecutor = userMap.get(task.getOwner());
+			// 通知项目经理
+			Project project = AlmCache.getInstance().getProjectMap().get(task.getProjectId());
+			User projectManager = userMap.get(project.getProjectManager());
+			Map viewModel = ValueProviderUtils.buildDataByProvider(metadata, Arrays.asList(task)).get(0);
+			// 构建邮件内容
+			Template template = this.groupTemplate.getTemplate(this.contentTemplate);
+			template.binding("task", viewModel);
+			this.mailManager.sendMail(this.mailFrom, taskExecutor.getEmail(), template.render(), true, "任务超时提醒", null);
+			this.mailManager.sendMail(this.mailFrom, projectManager.getEmail(), template.render(), true, "任务超时提醒",
+					null);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	/**
 	 * DTO转化
 	 * 
@@ -1215,29 +1247,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			target.add(dto);
 		}
 		return target;
-	}
-
-	@Override
-	public boolean isInCurrentWeek(Long taskId) {
-		Task task = this.getActualDao().selectByPrimaryKey(taskId);
-		WorkDay workDay = this.workDayService.getNowWeeklyWorkDay();
-		long wStart = workDay.getWorkStartTime().getTime();
-		long wEnd = workDay.getWorkEndTime().getTime();
-		long tStart = task.getStartDate().getTime();
-		long tEnd = task.getEndDate().getTime();
-		// -------tStart-------wStart-------------tEnd---------------wEnd--------------
-		if (wStart >= tStart && wStart <= tEnd && wEnd > tEnd) {
-			return true;
-		}
-		// ----------wStart----------tStart--------------tEnd------------wEnd----------
-		if (wStart <= tStart && wEnd >= tEnd) {
-			return true;
-		}
-		// ----------wStart-------------tStart-------------wEnd-----------tEnd---------
-		if (wStart <= tStart && wEnd >= tStart && wEnd <= tEnd) {
-			return true;
-		}
-		return false;
 	}
 
 }
