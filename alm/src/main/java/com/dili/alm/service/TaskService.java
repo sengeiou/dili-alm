@@ -3,7 +3,6 @@ package com.dili.alm.service;
 import java.util.Date;
 import java.util.List;
 
-import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectChange;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
