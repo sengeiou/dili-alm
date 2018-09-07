@@ -75,6 +75,16 @@
 										<th data-options="field:'notes',width:'36%', align:'center'">备注</th>
 									</tr>
 								</thead>
+								<tbody>
+								<%for(item in requirementList){%>
+								<tr>
+								<td>${item.cpuAmount!}</td>
+								<td>${item.memoryAmount!}</td>
+								<td>${item.diskAmount!}</td>
+								<td>${item.notes!}</td>
+								</tr>
+								<%}%>
+								</tbody>
 							</table>
 						</td>
 					</tr>
@@ -112,10 +122,3 @@
 		<%}%>
 	</table>
 </div>
-<script type="text/javascript">
-
-$('#configGrid').datagrid({
-	data:${requirementList!}
-});
-
-</script>
