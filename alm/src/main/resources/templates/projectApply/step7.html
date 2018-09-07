@@ -1,100 +1,83 @@
 <#body>
 <style>
-    .title-first,
-    .title-second {
-        margin-top: 20px;
-        background: #f7f7f7;
-    }
+.title-first, .title-second {
+	margin-top: 20px;
+	background: #f7f7f7;
+}
 
-    .title-first {
-        padding-left: 0;
-    }
+.title-first {
+	padding-left: 0;
+}
 
-    .ajax-file-upload {
-        line-height: 28px;
-    }
+.ajax-file-upload {
+	line-height: 28px;
+}
 
-    .ajax-file-upload-statusbar {
-        display: none;
-    }
+.ajax-file-upload-statusbar {
+	display: none;
+}
 </style>
 <link href="${contextPath!}/resources/css/uploadfile.css" rel="stylesheet">
 <script type="text/javascript" src="${contextPath!}/resources/js/jquery.uploadfile.min.js"></script>
 <div class="easyui-panel" title="立项申请(第七步)">
-    <div style="padding:10px 60px 20px 60px">
-        <form id="ff" method="post">
-            <input type="hidden" name="id" value="${apply.id}"/>
-            <input type="hidden" name="files" id="files"/>
-            <input type="hidden" name="dels" id="dels"/>
-            <input type="hidden" name="status" id="status"/>
-            <input type="hidden" name="email" id="email"/>
-            <table cellpadding="5" width="100%">
-                <input type="hidden" name="id" value="${apply.id}"/>
-                <tr>
-                    <td>项目编号</td>
-                    <td>${apply.number}</td>
-                    <td>项目类别</td>
-                    <td>${apply.type}</td>
-                </tr>
-                <tr>
-                    <td class="title-first" colspan="4">8.项目相关材料</td>
-                </tr>
-                <tr>
-                    <td>*立项文件上传</td>
-                    <td colspan="3">
-                        <div id="fileuploader"></div>
-                    </td>
-                </tr>
-            </table>
-            <table id="dg" class="easyui-datagrid" style="height:auto"
-                   data-options="
+	<div style="padding: 10px 60px 20px 60px">
+		<form id="ff" method="post">
+			<input type="hidden" name="id" value="${apply.id}" /> <input type="hidden" name="files" id="files" /> <input type="hidden" name="dels"
+				id="dels" /> <input type="hidden" name="status" id="status" /> <input type="hidden" name="email" id="email" />
+			<table cellpadding="5" width="100%">
+				<input type="hidden" name="id" value="${apply.id}" />
+				<tr>
+					<td>项目编号</td>
+					<td>${apply.number}</td>
+					<td>项目类别</td>
+					<td>${apply.type}</td>
+				</tr>
+				<tr>
+					<td class="title-first" colspan="4">8.项目相关材料</td>
+				</tr>
+				<tr>
+					<td>*立项文件上传</td>
+					<td colspan="3">
+						<div id="fileuploader"></div>
+					</td>
+				</tr>
+			</table>
+			<table id="dg" class="easyui-datagrid" style="height: auto"
+				data-options="
                 singleSelect: true,
                  url: '${contextPath}/projectApply/loadFiles?id=${apply.id}',
                  toolbar: '#tb'
             ">
-                <thead>
-                <tr>
-                    <th data-options="field:'id',width:80,hidden:true">ID</th>
-                    <th data-options="field:'name', width:'45%', align:'center',formatter:formatDown, resizable:'true', fixed:'false'">
-                        文件名
-                    </th>
-                    <th data-options="field:'length', width:'20%', align:'center', resizable:'true', fixed:'false',formatter:renderSize">
-                        大小
-                    </th>
-                    <th data-options="field:'created', width:'35%',  _provider:'dateProvider', align:'center', resizable:'true', fixed:'false'">
-                        上传日期
-                    </th>
-                </tr>
-                </thead>
-            </table>
-            <div id="tb" style="height:auto">
-                <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true"
-                   onclick="removeit()">删除</a>
-            </div>
-            <table cellpadding="5" width="100%" style="margin-top: 20px;">
-                <tr>
-                    <td class="title-first" colspan="4">9.邮件发送列表</td>
-                </tr>
-                <tr>
-                    <td colspan="4">
-                        <input class="easyui-tagbox" id="tagbx"
-                               data-options="prompt: '输完后回车才能生效哦!'" value="${apply.email}"
-                               style="width:100%">
-                    </td>
-                </tr>
-            </table>
-        </form>
-        <div style="text-align:center;padding:5px;margin-top:50px;">
-            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
-               onclick="backForm()">上一步</a>
-            <a href="${contextPath}/projectApply/index.html" class="easyui-linkbutton"
-               data-options="width:'80px'">取消</a>
-            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
-               onclick="submitForm(1,this)">保存</a>
-            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
-               onclick="submitForm(2,this)">提交</a>
-        </div>
-    </div>
+				<thead>
+					<tr>
+						<th data-options="field:'id',width:80,hidden:true">ID</th>
+						<th data-options="field:'name', width:'45%', align:'center',formatter:formatDown, resizable:'true', fixed:'false'">文件名</th>
+						<th data-options="field:'length', width:'20%', align:'center', resizable:'true', fixed:'false',formatter:renderSize">大小</th>
+						<th data-options="field:'created', width:'35%',  _provider:'dateProvider', align:'center', resizable:'true', fixed:'false'">上传日期
+						</th>
+					</tr>
+				</thead>
+			</table>
+			<div id="tb" style="height: auto">
+				<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="removeit()">删除</a>
+			</div>
+			<table cellpadding="5" width="100%" style="margin-top: 20px;">
+				<tr>
+					<td class="title-first" colspan="4">9.邮件发送列表</td>
+				</tr>
+				<tr>
+					<td colspan="4"><input class="easyui-tagbox" id="tagbx" data-options="prompt: '输完后回车才能生效哦!'" value="${apply.email}"
+						style="width: 100%"></td>
+				</tr>
+			</table>
+		</form>
+		<div style="text-align: center; padding: 5px; margin-top: 50px;">
+			<a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'" onclick="backForm()">上一步</a> <a
+				href="${contextPath}/projectApply/index.html" class="easyui-linkbutton" data-options="width:'80px'">取消</a> <a href="javascript:void(0)"
+				class="easyui-linkbutton" data-options="width:'80px'" onclick="submitForm(1,this)">保存</a> <a href="javascript:void(0)"
+				class="easyui-linkbutton" data-options="width:'80px'" onclick="submitForm(2,this)">提交</a>
+		</div>
+	</div>
 </div>
 <script>
     function backForm() {
@@ -133,8 +116,8 @@
         });
     }
 
+    var dels = [];
     $(function(){
-    	var dels = [];
         $("#fileuploader").uploadFile({
             url: "${contextPath!}/files/filesUpload", // 文件上传url
             fileName: "file", // 提交到服务器的文件名
@@ -208,6 +191,7 @@
     }
 
     function submitForm(type, obj) {
+    	debugger;
         $('#ff').form('submit', {
             url: "${contextPath}/projectApply/submit",
             onSubmit: function () {
@@ -264,7 +248,4 @@
         }
     })
 
-</script>
-
-
-</#body>
+</script> </#body>
