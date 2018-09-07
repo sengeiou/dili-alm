@@ -57,6 +57,7 @@ import com.dili.alm.domain.TaskEntity;
 import com.dili.alm.domain.Team;
 import com.dili.alm.domain.TeamRole;
 import com.dili.alm.domain.User;
+import com.dili.alm.domain.WorkDay;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.apply.ApplyMajorResource;
@@ -76,6 +77,7 @@ import com.dili.alm.service.ProjectVersionService;
 import com.dili.alm.service.TaskDetailsService;
 import com.dili.alm.service.TaskService;
 import com.dili.alm.service.TeamService;
+import com.dili.alm.service.WorkDayService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.alm.utils.WebUtil;
 import com.dili.ss.base.BaseServiceImpl;
@@ -151,6 +153,8 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	@Value("${spring.mail.username:}")
 	private String mailFrom;
 	private String contentTemplate;
+	@Autowired
+	private WorkDayService workDayService;
 
 	@Override
 	public void addTask(Task task, Short planTime, Date startDateShow, Date endDateShow, Boolean flow, Long creatorId)
@@ -809,16 +813,11 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		}
 
 		// 判断是否是当前周
-		boolean isCurrentWeek = this.isInCurrentWeek(taskId);
+		boolean isCurrentWeek = this.isTaskTimeInCurrentWeek(taskId, taskDate);
 
-		// 如果是任务责任人但不是项目经理，那么只能填写当天的工时
-		try {
-			if (!isManager && (sdf.parse(sdf.format(taskDate)).getTime() < sdf.parse(sdf.format(now)).getTime()
-					|| isCurrentWeek)) {
-				throw new TaskException("只有项目经理才能补填工时");
-			}
-		} catch (ParseException e) {
-			throw new RuntimeException(e);
+		// 如果是任务责任人但不是项目经理，那么只能补填当前一周工作日的工时
+		if (!isManager && !isCurrentWeek) {
+			throw new TaskException("只有项目经理才能补填工时");
 		}
 
 		String executeDateStr = sdf.format(taskDate);
@@ -838,6 +837,42 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		taskDetails.setModifyMemberId(task.getOwner());// 责任人
 		this.updateTaskDetail(taskDetails, task);// 保存任务
 		return taskDetails.getId();
+	}
+
+	private boolean isTaskTimeInCurrentWeek(Long taskId, Date taskDate) {
+		WorkDay workDay = this.workDayService.getNowWeeklyWorkDay();
+		if (workDay == null) {
+			return false;
+		}
+		Task task = this.getActualDao().selectByPrimaryKey(taskId);
+		long wStart = workDay.getWorkStartTime().getTime();
+		long wEnd = workDay.getWorkEndTime().getTime();
+		long tStart = task.getStartDate().getTime();
+		long tEnd = task.getEndDate().getTime();
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		long current = 0;
+		try {
+			current = df.parse(df.format(new Date())).getTime();
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
+		long taskTime = taskDate.getTime();
+		// -------tStart-------------wStart------------taskTime-------------current-----------tEnd---------------wEnd-----------
+		if (wStart >= tStart && wStart <= tEnd && wEnd >= tEnd && taskTime >= wStart && taskTime <= tEnd
+				&& current >= taskTime && current <= tEnd) {
+			return true;
+		}
+		// ----------wStart----------tStart--------------tEnd------------wEnd----------
+		if (wStart <= tStart && wEnd >= tEnd && taskTime >= tStart && taskTime <= tEnd && current >= taskTime
+				&& current <= tEnd) {
+			return true;
+		}
+		// ----------wStart-------------tStart-------------wEnd-----------tEnd---------
+		if (wStart <= tStart && wEnd >= tStart && wEnd <= tEnd && taskTime >= tStart && taskTime <= wEnd
+				&& current >= taskTime && current <= wEnd) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -1185,8 +1220,24 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	@Override
 	public boolean isInCurrentWeek(Long taskId) {
 		Task task = this.getActualDao().selectByPrimaryKey(taskId);
-		long current = System.currentTimeMillis();
-		return task.getStartDate().getTime() <= current && task.getEndDate().getTime() + 24 * 60 * 60 * 1000 >= current;
+		WorkDay workDay = this.workDayService.getNowWeeklyWorkDay();
+		long wStart = workDay.getWorkStartTime().getTime();
+		long wEnd = workDay.getWorkEndTime().getTime();
+		long tStart = task.getStartDate().getTime();
+		long tEnd = task.getEndDate().getTime();
+		// -------tStart-------wStart-------------tEnd---------------wEnd--------------
+		if (wStart >= tStart && wStart <= tEnd && wEnd > tEnd) {
+			return true;
+		}
+		// ----------wStart----------tStart--------------tEnd------------wEnd----------
+		if (wStart <= tStart && wEnd >= tEnd) {
+			return true;
+		}
+		// ----------wStart-------------tStart-------------wEnd-----------tEnd---------
+		if (wStart <= tStart && wEnd >= tStart && wEnd <= tEnd) {
+			return true;
+		}
+		return false;
 	}
 
 }
