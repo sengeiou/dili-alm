@@ -40,6 +40,15 @@
 			property="factEndDate" />
 	</resultMap>
 
+	<resultMap
+		type="com.dili.alm.domain.dto.UserWorkHourDetailDto"
+		id="UserWorkHourDetailRM">
+		<result column="task_date" property="taskDate" />
+		<result column="task_hours" property="taskHours" />
+		<result column="overtime_hours" property="overtimeHours" />
+		<result column="work_content" property="workContent" />
+	</resultMap>
+
 	<sql id="Base_Column_List">
 		<!-- WARNING - @mbg.generated -->
 		id, name, project_id, version_id, phase_id, start_date, end_date,
@@ -798,4 +807,34 @@
 		</if>
 		AND u.id != 1
 	</select>
+
+	<select id="selectUserWorkHourDetail"
+		resultMap="UserWorkHourDetailRM">
+		SELECT
+		DATE_FORMAT( td.modified, '%Y-%m-%d' ) AS task_date,
+		td.task_hour AS task_hours,
+		td.over_hour AS overtime_hours,
+		td.`describe` AS work_content,
+		t.`owner` AS user_id
+		FROM
+		task_details td
+		INNER JOIN task t ON td.task_id = t.id WHERE t.`owner` = #{userId}
+		UNION
+		SELECT
+		CONCAT( DATE_FORMAT( wo.start_date, '%Y-%m-%d' ), '至',
+		DATE_FORMAT(
+		wo.end_date, '%Y-%m-%d' ) ) AS task_date,
+		wo.task_hours,
+		wo.overtime_hours,
+		wo.work_content,
+		w.executor_id AS user_id
+		FROM
+		work_order_execution_record wo
+		INNER JOIN work_order w ON
+		wo.work_order_id = w.id
+		WHERE w.executor_id = #{userId}
+		ORDER BY
+		task_date
+	</select>
+
 </mapper>

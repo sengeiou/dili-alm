@@ -26,7 +26,6 @@ import com.dili.alm.domain.WorkOrderSource;
 import com.dili.alm.domain.WorkOrderState;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
-import com.dili.alm.exceptions.HardwareResourceApplyException;
 import com.dili.alm.exceptions.WorkOrderException;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.ss.dto.DTOUtils;

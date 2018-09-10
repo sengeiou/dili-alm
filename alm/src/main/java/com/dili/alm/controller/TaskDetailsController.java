@@ -1,8 +1,5 @@
 package com.dili.alm.controller;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,13 +10,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.dili.alm.cache.AlmCache;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.TaskDetails;
-import com.dili.alm.domain.dto.UserTaskDetailsQueryDto;
+import com.dili.alm.domain.dto.UserWorkHourDetailDto;
 import com.dili.alm.service.TaskDetailsService;
 import com.dili.alm.service.TaskService;
+import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.github.pagehelper.Page;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -40,13 +41,14 @@ public class TaskDetailsController {
 
 	@ApiOperation("跳转到TaskDetails页面")
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
-	public String index(@RequestParam(required = false) Long userId, ModelMap modelMap) {
+	public String index(@RequestParam(required = false) Long userId, @RequestParam Long totalHour, ModelMap modelMap) {
 		Task taskQuery = DTOUtils.newDTO(Task.class);
 		if (userId != null) {
 			taskQuery.setOwner(userId);
 		}
 		List<Task> tasks = this.taskService.list(taskQuery);
-		modelMap.addAttribute("userId", userId).addAttribute("tasks", tasks);
+		modelMap.addAttribute("user", AlmCache.getInstance().getUserMap().get(userId)).addAttribute("tasks", tasks)
+				.addAttribute("totalHour", totalHour);
 		return "taskDetails/index";
 	}
 
@@ -62,30 +64,9 @@ public class TaskDetailsController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "TaskDetails", paramType = "form", value = "TaskDetails的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String listPage(@RequestParam(required = false) Long userId, UserTaskDetailsQueryDto query)
-			throws Exception {
-		UserTaskDetailsQueryDto userTaskDetailsQueryDto = DTOUtils.as(query, UserTaskDetailsQueryDto.class);
-		if (userId != null) {
-			Task taskQuery = DTOUtils.newDTO(Task.class);
-			taskQuery.setOwner(userId);
-			List<Task> taskList = this.taskService.list(taskQuery);
-			List<Long> taskIds = new ArrayList<>(taskList.size());
-			taskList.forEach(t -> taskIds.add(t.getId()));
-			userTaskDetailsQueryDto.setTaskIds(taskIds);
-		}
-		if (query.getCreatedEndDate() != null) {
-			// 日期格式为年与日所以查询条件要加一天
-			long time = query.getCreatedEndDate().getTime();
-			time += 24 * 60 * 60 * 1000;
-			query.setCreatedEndDate(new Date(time));
-		}
-		if (query.getModifiedEndDate() != null) {
-			// 日期格式为年与日所以查询条件要加一天
-			long time = query.getModifiedEndDate().getTime();
-			time += 24 * 60 * 60 * 1000;
-			query.setModifiedEndDate(new Date(time));
-		}
-		return this.taskDetailsService.listEasyuiPageByExample(userTaskDetailsQueryDto, true).toString();
+	public @ResponseBody String listPage(@RequestParam Long userId, BaseDomain query) throws Exception {
+		Page<UserWorkHourDetailDto> page = this.taskDetailsService.listUserWorkHourDetail(userId, query);
+		return new EasyuiPageOutput(Long.valueOf(page.getTotal()).intValue(), page.getResult()).toString();
 	}
 
 	@ApiOperation("新增TaskDetails")

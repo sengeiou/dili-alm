@@ -16,28 +16,13 @@
 		<div class="easyui-panel" style="width: 100%; height: 100%; background: #fafafa;"
 			data-options="title:'人员工时详情',tools:'#infoToolbar',collapsible:false">
 			<form id="form" class="easyui-form" method="post" fit="true">
-				<input type="hidden" name="userId" value="${userId!}">
+				<input type="hidden" name="userId" value="${user.id!}">
 				<table style="padding: 10px;">
 					<tr>
-						<td style="padding: 5px;"><select class="easyui-combobox" name="taskId" id="taskId" style="width: 100%"
-							data-options="label:'任务名称', validType:'length[0,19]'">
-								<option value=""></option> <%for(item in tasks){%>
-								<option value="${item.id!}">${item.name!}</option> <%}%>
-						</select></td>
-						<td style="padding: 5px;"><input class="easyui-datebox" name="createdStartDate" id="createdStartDate" style="width: 100%"
-							data-options="label:'创建时间:'" /></td>
-						<td style="padding: 5px;"><input class="easyui-datebox" style="width: 200px;" name="createdEndDate" id="createdEndDate"
-							style="width: 100%" data-options="label:'至:',labelWidth:30" /></td>
-					</tr>
-					<tr>
-						<td style="padding: 5px;"><input class="easyui-datebox" name="modifiedStartDate" id="modifiedStartDate" style="width: 100%"
-							data-options="label:'填写时间:'" /></td>
-						<td style="padding: 5px;"><input class="easyui-datebox" style="width: 200px;" name="modifiedEndDate" id="modifiedEndDate"
-							style="width: 100%" data-options="label:'至:',labelWidth:30" /></td>
-					</tr>
-					<tr>
-						<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid()">查询</a> <a
-							href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">重置</a></td>
+						<td style="padding: 5px;"><input class="easyui-textbox" style="width: 100%" value="${user.realName!}" data-options="label:'姓名',readonly:true">
+						</td>
+						<td style="padding: 5px;"><input class="easyui-textbox" style="width: 100%" value="${totalHour!}"
+							data-options="label:'总工时:',readonly:true" /></td>
 					</tr>
 				</table>
 			</form>
@@ -51,26 +36,15 @@
 		<!-- =========================================================表格========================================================= -->
 		<table class="easyui-datagrid" title="TaskDetails列表" id="grid" fitColumns="true" pagination="true" pageSize="30" pageNumber="1"
 			pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
-			sortName="taskId" align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" data-options="">
+			align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" data-options="">
 			<thead>
 				<tr>
+					<th data-options="field:'taskDate',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">工时日</th>
+					<th data-options="field:'taskHours',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">常规工时</th>
+					<th data-options="field:'overtimeHours',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">加班工时</th>
 					<th
-						data-options="field:'taskId', _provider:'taskProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">任务名称</th>
-					<th data-options="field:'taskHour',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">工时</th>
-					<th data-options="field:'overHour',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">加班工时</th>
-					<th data-options="field:'describe',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">工作描述</th>
-					<th
-						data-options="field:'created',  _provider:'almDateProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-						创建时间</th>
-					<th
-						data-options="field:'modified',  _provider:'almDateProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-						填写时间</th>
-					<th
-						data-options="field:'createMemberId', _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-						创建人</th>
-					<th
-						data-options="field:'modifyMemberId', _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-						填写人</th>
+						data-options="field:'workContent',  _provider:'almDateProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						工作内容</th>
 				</tr>
 			</thead>
 		</table>

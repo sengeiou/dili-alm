@@ -264,7 +264,8 @@
 			return value;
 		}
 		return '<a href="${contextPath!}/taskDetails/index?userId='
-				+ row.userNo + '">' + value + '</a>';
+				+ row.userNo + '&totalHour=' + row.totalHour + '">' + value
+				+ '</a>';
 	}
 
 	function print() {

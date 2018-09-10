@@ -19,6 +19,7 @@ import com.dili.alm.domain.dto.SelectTaskHoursByUserProjectDto;
 import com.dili.alm.domain.dto.TaskByUsersDto;
 import com.dili.alm.domain.dto.TaskHoursByProjectDto;
 import com.dili.alm.domain.dto.TaskStateCountDto;
+import com.dili.alm.domain.dto.UserWorkHourDetailDto;
 import com.dili.ss.base.MyMapper;
 
 public interface TaskMapper extends MyMapper<Task> {
@@ -81,5 +82,7 @@ public interface TaskMapper extends MyMapper<Task> {
 
 	List<Map<Object, Object>> sumUserProjectTaskHour(@Param("projectIds") List<Long> projectIds,
 			@Param("userIds") Set<Long> userIds, @Param("startTime") Date startTime, @Param("endTime") Date endDate);
+
+	List<UserWorkHourDetailDto> selectUserWorkHourDetail(@Param("userId") Long userId);
 
 }
