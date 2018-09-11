@@ -1,6 +1,8 @@
 package com.dili.alm.controller;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -18,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -525,10 +528,13 @@ public class StatisticalController {
 	@ResponseBody
 	@RequestMapping(value = "/exportProjectCost")
 	public void exportProjectCost(@RequestParam(required = false) Long projectId, HttpServletRequest request,
-			HttpServletResponse response) throws UnsupportedEncodingException {
-		String url = Thread.currentThread().getContextClassLoader()
-				.getResource("excel/projectCostStatisticTemplate.xlsx").getFile();
-		TemplateExportParams params = new TemplateExportParams(url);
+			HttpServletResponse response) throws IOException {
+		InputStream stream = getClass().getClassLoader().getResourceAsStream("excel/projectCostStatisticTemplate.xlsx");
+		File targetFile = new File("projectCostStatisticTemplate.xlsx");
+		if (!targetFile.exists()) {
+			FileUtils.copyInputStreamToFile(stream, targetFile);
+		}
+		TemplateExportParams params = new TemplateExportParams(targetFile.getPath());
 		List<ProjectCostStatisticDto> list = this.projectService.projectCostStatistic(projectId);
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("projectCosts", this.buildProjectCostListMap(list));

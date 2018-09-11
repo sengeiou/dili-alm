@@ -167,7 +167,14 @@ table {
 										}
 									}
 								} catch (ee) {
-									window.location.href = "${contextPath}/projectChange/index.html";
+									$.messager
+											.alert(
+													'错误',
+													ee,
+													null,
+													function() {
+														window.location.href = "${contextPath}/projectChange/index.html";
+													});
 								}
 							}
 						});

@@ -1,29 +1,9 @@
 package com.dili.alm.controller;
 
-import com.alibaba.fastjson.JSONObject;
-import com.dili.alm.cache.AlmCache;
-import com.dili.alm.constant.AlmConstants;
-import com.dili.alm.domain.Project;
-import com.dili.alm.domain.ProjectChange;
-import com.dili.alm.domain.Task;
-import com.dili.alm.domain.VerifyApproval;
-import com.dili.alm.exceptions.ApplicationException;
-import com.dili.alm.exceptions.ProjectApplyException;
-import com.dili.alm.service.MessageService;
-import com.dili.alm.service.ProjectChangeService;
-import com.dili.alm.service.ProjectService;
-import com.dili.alm.service.TaskService;
-import com.dili.alm.service.VerifyApprovalService;
-import com.dili.alm.utils.DateUtil;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.metadata.ValueProviderUtils;
-import com.dili.sysadmin.sdk.session.SessionContext;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,11 +14,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.alibaba.fastjson.JSONObject;
+import com.dili.alm.cache.AlmCache;
+import com.dili.alm.constant.AlmConstants;
+import com.dili.alm.domain.Project;
+import com.dili.alm.domain.ProjectChange;
+import com.dili.alm.domain.Task;
+import com.dili.alm.domain.VerifyApproval;
+import com.dili.alm.exceptions.ApplicationException;
+import com.dili.alm.service.MessageService;
+import com.dili.alm.service.ProjectChangeService;
+import com.dili.alm.service.TaskService;
+import com.dili.alm.service.VerifyApprovalService;
+import com.dili.alm.utils.DateUtil;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.sysadmin.sdk.session.SessionContext;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-11-30 17:21:55.
@@ -58,8 +54,6 @@ public class ProjectChangeController {
 
 	@Autowired
 	private MessageService messageService;
-	@Autowired
-	private ProjectService projectService;
 
 	@ApiOperation("跳转到ProjectChange页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)

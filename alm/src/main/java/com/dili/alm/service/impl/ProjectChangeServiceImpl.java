@@ -107,8 +107,8 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 		 */
 		if (change.getStatus() == AlmConstants.ApplyState.APPROVE.getCode()) {
 			Approve as = DTOUtils.as(this.get(change.getId()), Approve.class);
-			change = get(change.getId());
 			as.setId(null);
+			as.setProjectApplyId(change.getId());
 			as.setName(change.getProjectName());
 			as.setCreated(now);
 			as.setProjectApplyId(change.getId());
