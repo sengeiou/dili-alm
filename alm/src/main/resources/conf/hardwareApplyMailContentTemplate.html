@@ -76,8 +76,28 @@
 				<td class="table-title" colspan="6">配置要求</td>
 			</tr>
 			<tr>
-				<td class="table-title" colspan="6"><textarea id="configRequired" class="easyui-textbox" data-options="multiline:true"
-						style="width: 100%;" rows="3"></textarea></td>
+				<td class="table-combo" colspan="6">
+					<table class="table-box">
+						<thead>
+							<tr>
+								<th class="table-title">CPU</th>
+								<th class="table-title">内存(GB)</th>
+								<th class="table-title">磁盘(GB)</th>
+								<th class="table-title">备注</th>
+							</tr>
+						</thead>
+						<tbody>
+							<%for(item in apply.hrrList){%>
+							<tr>
+								<td class="table-combo">${item.cpuAmount!}</td>
+								<td class="table-combo">${item.memoryAmount!}</td>
+								<td class="table-combo">${item.diskAmount!}</td>
+								<td class="table-combo">${item.notes!}</td>
+							</tr>
+							<%}%>
+						</tbody>
+					</table>
+				</td>
 			</tr>
 			<tr>
 				<td class="table-title" colspan="6">其他说明</td>
