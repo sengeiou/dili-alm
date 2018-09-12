@@ -121,6 +121,16 @@ public class ProjectPhaseServiceImpl extends BaseServiceImpl<ProjectPhase, Long>
 		if (count > 0) {
 			throw new ProjectPhaseException("该项目版本已存在相同阶段");
 		}
+		if (dto.getPlannedStartDate().compareTo(dto.getPlannedEndDate()) > 0) {
+			throw new ProjectPhaseException("阶段计划开始时间不能大于阶段计划结束时间");
+		}
+		ProjectVersion version = this.projectVersionMapper.selectByPrimaryKey(dto.getVersionId());
+		if (dto.getPlannedStartDate().compareTo(version.getPlannedStartDate()) < 0) {
+			throw new ProjectPhaseException("阶段计划开始时间不能小于版本计划开始时间");
+		}
+		if (dto.getPlannedEndDate().compareTo(version.getPlannedEndDate()) > 0) {
+			throw new ProjectPhaseException("阶段计划结束时间不能大于本本计划结束时间");
+		}
 		this.checkProjectState(dto);
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		dto.setCreatorId(userTicket.getId());
@@ -180,6 +190,16 @@ public class ProjectPhaseServiceImpl extends BaseServiceImpl<ProjectPhase, Long>
 	@Override
 	public void updateProjectPhase(ProjectPhaseFormDto dto) throws ProjectPhaseException {
 		this.checkProjectState(dto);
+		if (dto.getPlannedStartDate().compareTo(dto.getPlannedEndDate()) > 0) {
+			throw new ProjectPhaseException("阶段计划开始时间不能大于阶段计划结束时间");
+		}
+		ProjectVersion version = this.projectVersionMapper.selectByPrimaryKey(dto.getVersionId());
+		if (dto.getPlannedStartDate().compareTo(version.getPlannedStartDate()) < 0) {
+			throw new ProjectPhaseException("阶段计划开始时间不能小于版本计划开始时间");
+		}
+		if (dto.getPlannedEndDate().compareTo(version.getPlannedEndDate()) > 0) {
+			throw new ProjectPhaseException("阶段计划结束时间不能大于本本计划结束时间");
+		}
 		ProjectPhase query = DTOUtils.newDTO(ProjectPhase.class);
 		query.setProjectId(dto.getProjectId());
 		query.setVersionId(dto.getVersionId());

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="mapper.ProjectCompleteMapper">
+<mapper namespace="com.dili.alm.dao.ProjectCompleteMapper">
   <resultMap id="BaseResultMap" type="com.dili.alm.domain.ProjectComplete">
     <!--
       WARNING - @mbg.generated
@@ -14,43 +14,58 @@
     <result column="end_date" jdbcType="TIMESTAMP" property="endDate" />
     <result column="launch_date" jdbcType="TIMESTAMP" property="launchDate" />
     <result column="complete_date" jdbcType="TIMESTAMP" property="completeDate" />
-    <result column="reason" jdbcType="VARCHAR" property="reason" />
-    <result column="information" jdbcType="VARCHAR" property="information" />
-    <result column="range" jdbcType="VARCHAR" property="range" />
-    <result column="management_method" jdbcType="VARCHAR" property="managementMethod" />
-    <result column="appraise" jdbcType="VARCHAR" property="appraise" />
-    <result column="technical_evaluation" jdbcType="VARCHAR" property="technicalEvaluation" />
-    <result column="raise" jdbcType="VARCHAR" property="raise" />
-    <result column="result" jdbcType="VARCHAR" property="result" />
-    <result column="product" jdbcType="VARCHAR" property="product" />
-    <result column="performance" jdbcType="VARCHAR" property="performance" />
-    <result column="suggest" jdbcType="VARCHAR" property="suggest" />
-    <result column="question" jdbcType="VARCHAR" property="question" />
-    <result column="members" jdbcType="VARCHAR" property="members" />
-    <result column="hardware" jdbcType="VARCHAR" property="hardware" />
-    <result column="email" jdbcType="VARCHAR" property="email" />
     <result column="status" jdbcType="TINYINT" property="status" />
     <result column="created" jdbcType="TIMESTAMP" property="created" />
     <result column="modified" jdbcType="TIMESTAMP" property="modified" />
     <result column="create_member_id" jdbcType="BIGINT" property="createMemberId" />
     <result column="modify_member_id" jdbcType="BIGINT" property="modifyMemberId" />
     <result column="reStatus" jdbcType="TINYINT" property="restatus" />
+    <result column="other_cost" jdbcType="BIGINT" property="otherCost" />
+    <result column="software_cost" jdbcType="BIGINT" property="softwareCost" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.dili.alm.domain.ProjectComplete">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="reason" jdbcType="LONGVARCHAR" property="reason" />
+    <result column="information" jdbcType="LONGVARCHAR" property="information" />
+    <result column="range" jdbcType="LONGVARCHAR" property="range" />
+    <result column="management_method" jdbcType="LONGVARCHAR" property="managementMethod" />
+    <result column="appraise" jdbcType="LONGVARCHAR" property="appraise" />
+    <result column="technical_evaluation" jdbcType="LONGVARCHAR" property="technicalEvaluation" />
+    <result column="raise" jdbcType="LONGVARCHAR" property="raise" />
+    <result column="result" jdbcType="LONGVARCHAR" property="result" />
+    <result column="product" jdbcType="LONGVARCHAR" property="product" />
+    <result column="performance" jdbcType="LONGVARCHAR" property="performance" />
+    <result column="suggest" jdbcType="LONGVARCHAR" property="suggest" />
+    <result column="question" jdbcType="LONGVARCHAR" property="question" />
+    <result column="members" jdbcType="LONGVARCHAR" property="members" />
+    <result column="hardware" jdbcType="LONGVARCHAR" property="hardware" />
+    <result column="email" jdbcType="LONGVARCHAR" property="email" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
       WARNING - @mbg.generated
     -->
     id, project_id, number, name, type, start_date, end_date, launch_date, complete_date, 
-    reason, information, range, management_method, appraise, technical_evaluation, raise, 
-    result, product, performance, suggest, question, members, hardware, email, status, 
-    created, modified, create_member_id, modify_member_id, reStatus
+    status, created, modified, create_member_id, modify_member_id, reStatus, other_cost, 
+    software_cost
   </sql>
-  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  <sql id="Blob_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    reason, information, range, management_method, appraise, technical_evaluation, raise, 
+    result, product, performance, suggest, question, members, hardware, email
+  </sql>
+  <select id="selectBy" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
     <!--
       WARNING - @mbg.generated
     -->
     select 
     <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
     from project_complete
     where id = #{id,jdbcType=BIGINT}
   </select>
@@ -84,51 +99,6 @@
       <if test="completeDate != null">
         complete_date = #{completeDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="reason != null">
-        reason = #{reason,jdbcType=VARCHAR},
-      </if>
-      <if test="information != null">
-        information = #{information,jdbcType=VARCHAR},
-      </if>
-      <if test="range != null">
-        range = #{range,jdbcType=VARCHAR},
-      </if>
-      <if test="managementMethod != null">
-        management_method = #{managementMethod,jdbcType=VARCHAR},
-      </if>
-      <if test="appraise != null">
-        appraise = #{appraise,jdbcType=VARCHAR},
-      </if>
-      <if test="technicalEvaluation != null">
-        technical_evaluation = #{technicalEvaluation,jdbcType=VARCHAR},
-      </if>
-      <if test="raise != null">
-        raise = #{raise,jdbcType=VARCHAR},
-      </if>
-      <if test="result != null">
-        result = #{result,jdbcType=VARCHAR},
-      </if>
-      <if test="product != null">
-        product = #{product,jdbcType=VARCHAR},
-      </if>
-      <if test="performance != null">
-        performance = #{performance,jdbcType=VARCHAR},
-      </if>
-      <if test="suggest != null">
-        suggest = #{suggest,jdbcType=VARCHAR},
-      </if>
-      <if test="question != null">
-        question = #{question,jdbcType=VARCHAR},
-      </if>
-      <if test="members != null">
-        members = #{members,jdbcType=VARCHAR},
-      </if>
-      <if test="hardware != null">
-        hardware = #{hardware,jdbcType=VARCHAR},
-      </if>
-      <if test="email != null">
-        email = #{email,jdbcType=VARCHAR},
-      </if>
       <if test="status != null">
         status = #{status,jdbcType=TINYINT},
       </if>
@@ -146,6 +116,57 @@
       </if>
       <if test="restatus != null">
         reStatus = #{restatus,jdbcType=TINYINT},
+      </if>
+      <if test="otherCost != null">
+        other_cost = #{otherCost,jdbcType=BIGINT},
+      </if>
+      <if test="softwareCost != null">
+        software_cost = #{softwareCost,jdbcType=BIGINT},
+      </if>
+      <if test="reason != null">
+        reason = #{reason,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="information != null">
+        information = #{information,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="range != null">
+        range = #{range,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="managementMethod != null">
+        management_method = #{managementMethod,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="appraise != null">
+        appraise = #{appraise,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="technicalEvaluation != null">
+        technical_evaluation = #{technicalEvaluation,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="raise != null">
+        raise = #{raise,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="result != null">
+        result = #{result,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="product != null">
+        product = #{product,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="performance != null">
+        performance = #{performance,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="suggest != null">
+        suggest = #{suggest,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="question != null">
+        question = #{question,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="members != null">
+        members = #{members,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="hardware != null">
+        hardware = #{hardware,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="email != null">
+        email = #{email,jdbcType=LONGVARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

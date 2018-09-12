@@ -150,6 +150,8 @@
 	//清空表单
 	function clearForm() {
 		$('#form').form('reset');
+		$('#form').form('clear');
+		$('#departmentId').combotree('clear');
 		queryGrid();
 	}
 	//表格查询

@@ -20,6 +20,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.ProjectComplete;
+import com.dili.alm.domain.dto.ProjectCompleteQueryDto;
 import com.dili.alm.exceptions.ProjectApplyException;
 import com.dili.alm.exceptions.ProjectCompleteException;
 import com.dili.alm.service.MessageService;
@@ -124,7 +125,7 @@ public class ProjectCompleteController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "ProjectComplete", paramType = "form", value = "ProjectComplete的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String listPage(ProjectComplete projectComplete) throws Exception {
+	public @ResponseBody String listPage(ProjectCompleteQueryDto projectComplete) throws Exception {
 		if (projectComplete.getCreated() != null) {
 			Date temp = projectComplete.getCreated();
 			projectComplete.setCreated(DateUtil.appendDateToEnd(projectComplete.getCreated()));

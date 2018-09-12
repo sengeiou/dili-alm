@@ -78,6 +78,21 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 				&& !project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
 			throw new ProjectVersionException("项目不在进行中，不能编辑");
 		}
+		if (dto.getPlannedStartDate().compareTo(dto.getPlannedEndDate()) > 0) {
+			throw new ProjectVersionException("版本计划开始时间不能大于版本计划结束时间");
+		}
+		if (dto.getPlannedStartDate().compareTo(project.getStartDate()) < 0) {
+			throw new ProjectVersionException("版本计划开始时间不能小于项目计划开始时间");
+		}
+		if (dto.getPlannedEndDate().compareTo(project.getEndDate()) > 0) {
+			throw new ProjectVersionException("版本计划结束时间不能大于项目计划结束时间");
+		}
+		if (dto.getPlannedOnlineDate().compareTo(dto.getPlannedStartDate()) < 0) {
+			throw new ProjectVersionException("版本计划上线时间不能小于版本计划开始时间");
+		}
+		if (dto.getPlannedEndDate().compareTo(dto.getPlannedOnlineDate()) < 0) {
+			throw new ProjectVersionException("版本计划上线时间不能小于版本计划技术时间");
+		}
 		ProjectVersion query = DTOUtils.newDTO(ProjectVersion.class);
 		query.setProjectId(dto.getProjectId());
 		query.setVersion(dto.getVersion());
@@ -125,6 +140,21 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		if (!project.getProjectState().equals(ProjectState.NOT_START.getValue())
 				&& !project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
 			throw new ProjectVersionException("项目不在进行中，不能编辑");
+		}
+		if (dto.getPlannedStartDate().compareTo(dto.getPlannedEndDate()) > 0) {
+			throw new ProjectVersionException("版本计划开始时间不能大于版本计划结束时间");
+		}
+		if (dto.getPlannedStartDate().compareTo(project.getStartDate()) < 0) {
+			throw new ProjectVersionException("版本计划开始时间不能小于项目计划开始时间");
+		}
+		if (dto.getPlannedEndDate().compareTo(project.getEndDate()) > 0) {
+			throw new ProjectVersionException("版本计划结束时间不能大于项目计划结束时间");
+		}
+		if (dto.getPlannedOnlineDate().compareTo(dto.getPlannedStartDate()) < 0) {
+			throw new ProjectVersionException("版本计划上线时间不能小于版本计划开始时间");
+		}
+		if (dto.getPlannedEndDate().compareTo(dto.getPlannedOnlineDate()) < 0) {
+			throw new ProjectVersionException("版本计划上线时间不能小于版本计划技术时间");
 		}
 		ProjectVersion query = DTOUtils.newDTO(ProjectVersion.class);
 		query.setProjectId(dto.getProjectId());
