@@ -436,6 +436,9 @@ public class AlmCache {
 				Roi roiQuery = DTOUtils.newDTO(Roi.class);
 				roiQuery.setApplyId(a.getId());
 				Roi roi = this.roiMapper.selectOne(roiQuery);
+				if (roi == null) {
+					return;
+				}
 				RoiDto roiDto = DTOUtils.toEntity(roi, RoiDto.class, false);
 				ProjectEarning peQuery = DTOUtils.newDTO(ProjectEarning.class);
 				peQuery.setApplyId(a.getId());
