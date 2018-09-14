@@ -107,7 +107,23 @@ public class ProjectCompleteController {
 	@RequestMapping(value = "/toDetails/{id}", method = RequestMethod.GET)
 	public String toDetails(ModelMap modelMap, @PathVariable("id") Long id) throws Exception {
 		ProjectComplete projectComplete = this.projectCompleteService.get(id);
-		Map<Object, Object> project = this.projectService.getDetailViewData(projectComplete.getProjectId());
+		Project project = this.projectService.get(projectComplete.getProjectId());
+
+		Map<Object, Object> metadata1 = new HashMap<>();
+		metadata1.put("dep", "depProvider");
+		metadata1.put("type", "projectTypeProvider");
+		metadata1.put("startDate", "almDateProvider");
+		metadata1.put("endDate", "almDateProvider");
+		metadata1.put("actualStartDate", "datetimeProvider");
+		metadata1.put("projectManager", "memberProvider");
+		metadata1.put("testManager", "memberProvider");
+		metadata1.put("productManager", "memberProvider");
+		metadata1.put("developManager", "memberProvider");
+		metadata1.put("businessOwner", "memberProvider");
+		metadata1.put("originator", "memberProvider");
+
+		Map projectViewModel = ValueProviderUtils.buildDataByProvider(metadata1, Arrays.asList(project)).get(0);
+		modelMap.addAttribute("project1", projectViewModel);
 
 		Map<Object, Object> metadata = new HashMap<>(2);
 
@@ -121,7 +137,7 @@ public class ProjectCompleteController {
 		}
 
 		Map applyDTO = maps.get(0);
-		modelMap.addAttribute("apply", applyDTO).addAttribute("project1", project);
+		modelMap.addAttribute("apply", applyDTO);
 
 		return "projectComplete/details";
 	}
