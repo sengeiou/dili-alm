@@ -501,39 +501,28 @@
 		SELECT
 		p.id AS project_id,
 		p.`name` AS project_name,
-		max( CASE
-		t1.cost_type WHEN 1 THEN total ELSE '/' END ) AS
+		max( CASE t1.cost_type WHEN 1 THEN total ELSE '/' END ) AS
 		plan_human_cost,
-		max(
-		CASE t1.cost_type WHEN 2 THEN total ELSE '/' END ) AS
+		max( CASE t1.cost_type WHEN 2 THEN total ELSE '/' END ) AS
 		plan_software_cost,
 		(
-		max( CASE t1.cost_type WHEN 3 THEN total ELSE 0
-		END ) + max( CASE
+		max( CASE t1.cost_type WHEN 3 THEN total ELSE 0 END ) + max( CASE
 		t1.cost_type WHEN 4 THEN total ELSE 0 END )
-		) AS
-		plan_hardware_cost,
-		max( CASE t1.cost_type WHEN 5 THEN total ELSE '/'
-		END ) AS
+		) AS plan_hardware_cost,
+		max( CASE t1.cost_type WHEN 5 THEN total ELSE '/' END ) AS
 		plan_travel_cost,
-		max( CASE t1.cost_type WHEN 6 THEN total ELSE
-		'/' END ) AS
+		max( CASE t1.cost_type WHEN 6 THEN total ELSE '/' END ) AS
 		plan_other_cost,
-		IFNULL( sum( t1.total ), '/' ) AS
-		plan_total_cost,
+		IFNULL( sum( t1.total ), '/' ) AS plan_total_cost,
 		IFNULL( t2.human_cost, '/' ) AS actual_human_cost,
 		IFNULL( t3.software_cost, '/' ) AS actual_software_cost,
-		IFNULL(
-		hr.total_cost, '/' ) AS actual_hardware_cost,
-		IFNULL( round(
-		tca.total_amount / 100, 2 ), '/' ) AS actual_travel_cost,
-		IFNULL(
-		t3.other_cost, '/' ) AS actual_other_cost,
+		IFNULL( hr.total_cost, '/' ) AS actual_hardware_cost,
+		IFNULL( round( tca.total_amount / 100, 2 ), '/' ) AS actual_travel_cost,
+		IFNULL( t3.other_cost, '/' ) AS actual_other_cost,
 		(
-		( IFNULL( t2.human_cost, 0
-		) ) + IFNULL( hr.total_cost, 0 ) + ( IFNULL(
-		round( tca.total_amount /
-		100, 2 ), 0 ) )
+		( IFNULL( t2.human_cost, 0 ) ) + ( IFNULL( t3.software_cost, 0 ) ) +
+		IFNULL( hr.total_cost, 0 ) + ( IFNULL( round( tca.total_amount / 100,
+		2 ), 0 ) ) + IFNULL( t3.other_cost, 0 )
 		) AS actual_total_cost
 		FROM
 		project p
@@ -559,19 +548,13 @@
 		GROUP BY
 		t.project_id
 		) t2 ON p.id = t2.project_id
-		LEFT JOIN ( SELECT sum( cost )
-		AS total_cost, project_id FROM
-		hardware_resource GROUP BY project_id )
-		hr ON hr.project_id = p.id
-		LEFT JOIN ( SELECT sum( total_amount ) AS
-		total_amount, project_id
-		FROM travel_cost_apply GROUP BY project_id )
-		tca ON tca.project_id =
+		LEFT JOIN ( SELECT sum( cost ) AS total_cost, project_id FROM
+		hardware_resource GROUP BY project_id ) hr ON hr.project_id = p.id
+		LEFT JOIN ( SELECT sum( total_amount ) AS total_amount, project_id
+		FROM travel_cost_apply GROUP BY project_id ) tca ON tca.project_id =
 		p.id
-		LEFT JOIN ( SELECT project_id, other_cost,
-		software_cost FROM
-		project_complete WHERE `status` = 3 ) t3 ON
-		t3.project_id = p.id
+		LEFT JOIN ( SELECT project_id, other_cost, software_cost FROM
+		project_complete WHERE `status` = 3 ) t3 ON t3.project_id = p.id
 		WHERE
 		1 = 1
 		<if test="projectId != null">
@@ -579,6 +562,7 @@
 		</if>
 		GROUP BY
 		p.id
+
 	</select>
 
 </mapper>
