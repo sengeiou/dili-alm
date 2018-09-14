@@ -19,12 +19,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.constant.AlmConstants;
+import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectComplete;
 import com.dili.alm.domain.dto.ProjectCompleteQueryDto;
 import com.dili.alm.exceptions.ProjectApplyException;
 import com.dili.alm.exceptions.ProjectCompleteException;
 import com.dili.alm.service.MessageService;
 import com.dili.alm.service.ProjectCompleteService;
+import com.dili.alm.service.ProjectService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -47,6 +49,8 @@ public class ProjectCompleteController {
 	ProjectCompleteService projectCompleteService;
 	@Autowired
 	private MessageService messageService;
+	@Autowired
+	private ProjectService projectService;
 
 	@ApiOperation("跳转到ProjectComplete页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
@@ -103,6 +107,7 @@ public class ProjectCompleteController {
 	@RequestMapping(value = "/toDetails/{id}", method = RequestMethod.GET)
 	public String toDetails(ModelMap modelMap, @PathVariable("id") Long id) throws Exception {
 		ProjectComplete projectComplete = this.projectCompleteService.get(id);
+		Map<Object, Object> project = this.projectService.getDetailViewData(projectComplete.getProjectId());
 
 		Map<Object, Object> metadata = new HashMap<>(2);
 
@@ -116,7 +121,7 @@ public class ProjectCompleteController {
 		}
 
 		Map applyDTO = maps.get(0);
-		modelMap.put("apply", applyDTO);
+		modelMap.addAttribute("apply", applyDTO).addAttribute("project1", project);
 
 		return "projectComplete/details";
 	}
