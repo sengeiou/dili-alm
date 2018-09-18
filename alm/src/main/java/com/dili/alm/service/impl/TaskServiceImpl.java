@@ -786,7 +786,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 		Date now = new Date();
 		try {
-			if (sdf.parse(sdf.format(taskDate)).getTime() > sdf.parse(sdf.format(taskDate)).getTime()) {
+			if (sdf.parse(sdf.format(taskDate)).getTime() > sdf.parse(sdf.format(now)).getTime()) {
 				throw new TaskException("不能填写大于当天的任务");
 			}
 		} catch (ParseException e) {
