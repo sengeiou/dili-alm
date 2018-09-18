@@ -400,10 +400,20 @@
 		#{selectOwner,jdbcType=BIGINT}) and td.modified like
 		CONCAT("%",#{selectDate,jdbcType=VARCHAR},"%")
 	</select>
-
+	<select id="selectTotalTaskHourByUserId" resultType="Long">
+		SELECT
+		sum(
+		td.task_hour + td.over_hour )
+		FROM
+		task_details td
+		INNER JOIN task t ON
+		td.task_id = t.id
+		WHERE
+		t.`owner` =
+		#{userId}
+	</select>
 
 	<!-- 数据统计相关 begin -->
-
 	<select id="selectTaskHourByUser"
 		resultType="com.dili.alm.domain.dto.TaskByUsersDto">
 		SELECT
@@ -834,7 +844,7 @@
 		wo.work_order_id = w.id
 		WHERE w.executor_id = #{userId}
 		ORDER BY
-		task_date
+		task_date DESC
 	</select>
 
 </mapper>

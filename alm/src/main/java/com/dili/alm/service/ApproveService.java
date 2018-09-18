@@ -21,7 +21,7 @@ public interface ApproveService extends BaseService<Approve, Long> {
 
     void buildChangeApprove(Map map, Long id);
 
-    void buildCompleteApprove(Map map, Long id);
+    Approve buildCompleteApprove(Map map, Long id);
 
     void applyApprove(Long id, String opt, String notes) throws ApproveException;
 

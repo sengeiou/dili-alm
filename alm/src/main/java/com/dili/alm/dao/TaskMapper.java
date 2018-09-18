@@ -85,4 +85,5 @@ public interface TaskMapper extends MyMapper<Task> {
 
 	List<UserWorkHourDetailDto> selectUserWorkHourDetail(@Param("userId") Long userId);
 
+	Long selectTotalTaskHourByUserId(@Param("userId") Long userId);
 }

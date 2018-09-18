@@ -417,7 +417,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	}
 
 	@Override
-	public void buildCompleteApprove(Map modelMap, Long id) {
+	public Approve buildCompleteApprove(Map modelMap, Long id) {
 		Approve approve = this.get(id);
 
 		String approveDescription = approve.getDescription();
@@ -439,6 +439,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
 		ProjectComplete complete = projectCompleteService.get(approve.getProjectApplyId());
 		modelMap.put("complete", complete);
+		return approve;
 	}
 
 	@Override

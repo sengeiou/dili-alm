@@ -14,6 +14,7 @@ import com.dili.alm.cache.AlmCache;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.TaskDetails;
 import com.dili.alm.domain.dto.UserWorkHourDetailDto;
+import com.dili.alm.service.StatisticalService;
 import com.dili.alm.service.TaskDetailsService;
 import com.dili.alm.service.TaskService;
 import com.dili.ss.domain.BaseDomain;
@@ -38,17 +39,17 @@ public class TaskDetailsController {
 	TaskDetailsService taskDetailsService;
 	@Autowired
 	private TaskService taskService;
+	@Autowired
+	private StatisticalService statisticalService;
 
 	@ApiOperation("跳转到TaskDetails页面")
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
-	public String index(@RequestParam(required = false) Long userId, @RequestParam Long totalHour, ModelMap modelMap) {
+	public String index(@RequestParam Long userId, @RequestParam Long totalHour, ModelMap modelMap) {
 		Task taskQuery = DTOUtils.newDTO(Task.class);
-		if (userId != null) {
-			taskQuery.setOwner(userId);
-		}
+		taskQuery.setOwner(userId);
 		List<Task> tasks = this.taskService.list(taskQuery);
 		modelMap.addAttribute("user", AlmCache.getInstance().getUserMap().get(userId)).addAttribute("tasks", tasks)
-				.addAttribute("totalHour", totalHour);
+				.addAttribute("totalHour", this.statisticalService.getUserTotalTaskHour(userId));
 		return "taskDetails/index";
 	}
 

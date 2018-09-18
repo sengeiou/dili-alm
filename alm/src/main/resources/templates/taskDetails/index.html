@@ -19,8 +19,8 @@
 				<input type="hidden" name="userId" value="${user.id!}">
 				<table style="padding: 10px;">
 					<tr>
-						<td style="padding: 5px;"><input class="easyui-textbox" style="width: 100%" value="${user.realName!}" data-options="label:'姓名',readonly:true">
-						</td>
+						<td style="padding: 5px;"><input class="easyui-textbox" style="width: 100%" value="${user.realName!}"
+							data-options="label:'姓名',readonly:true"></td>
 						<td style="padding: 5px;"><input class="easyui-textbox" style="width: 100%" value="${totalHour!}"
 							data-options="label:'总工时:',readonly:true" /></td>
 					</tr>
@@ -36,13 +36,14 @@
 		<!-- =========================================================表格========================================================= -->
 		<table class="easyui-datagrid" title="TaskDetails列表" id="grid" fitColumns="true" pagination="true" pageSize="30" pageNumber="1"
 			pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
-			align="center"  striped="true" toolbar="#toolbar" idField="id" data-options="onLoadSuccess:loadSuccess">
+			align="center" striped="true" toolbar="#toolbar" idField="id" data-options="onLoadSuccess:loadSuccess">
 			<thead>
 				<tr>
 					<th data-options="field:'taskDate', width:'15%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">工时日</th>
 					<th data-options="field:'taskHours',  width:'10%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">常规工时</th>
 					<th data-options="field:'overtimeHours',   width:'10%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">加班工时</th>
-					<th data-options="field:'workContent', width:'65%', _provider:'almDateProvider', sortable:'true', order:'asc', align:'left', resizable:'true', fixed:'false',formatter:tooltipFormat">
+					<th
+						data-options="field:'workContent', width:'65%', _provider:'almDateProvider', sortable:'true', order:'asc', align:'left', resizable:'true', fixed:'false',formatter:tooltipFormat">
 						工作内容</th>
 				</tr>
 			</thead>
@@ -50,29 +51,30 @@
 	</div>
 </div>
 <!-- ====================================================================================================================== --> <!-- style & script 分隔线 -->
-<!-- ====================================================================================================================== -->
-<script type="text/javascript">
+<!-- ====================================================================================================================== --> <script
+	type="text/javascript">
 	<#taskDetails_index />
-</script>
-<script>
-    function tooltipFormat(id,row,index) {
-        // console.log(row,index)
-        return '<span id="tip'+ index +'" class="easyui-tooltip" title="'+ row.workContent +'">'+ row.workContent +'</span>'
-    }
-    function loadSuccess() {
-        $('.easyui-tooltip').each(function (index) {
-            console.log(index)
-            $('#tip'+index).tooltip({
-                onShow: function(){
-                    $(this).tooltip('tip').css({
-						margin:'0 30px',
-                        backgroundColor: '#666',
-                        borderColor: '#666',
-						color:'#fff'
-                    });
-                }
+</script> <script>
+	function tooltipFormat(value, row, index) {
+		if (!value) {
+			return '';
+		}
+		return '<span id="tip'+ index +'" class="easyui-tooltip" title="'+ value +'">'
+				+ value + '</span>'
+	}
+	function loadSuccess() {
+		$('.easyui-tooltip').each(function(index) {
+			console.log(index)
+			$('#tip' + index).tooltip({
+				onShow : function() {
+					$(this).tooltip('tip').css({
+						margin : '0 30px',
+						backgroundColor : '#666',
+						borderColor : '#666',
+						color : '#fff'
+					});
+				}
 			})
-        })
-    }
-</script>
-</#body>
+		})
+	}
+</script> </#body>

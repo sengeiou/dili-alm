@@ -860,4 +860,9 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		return list;
 	}
 
+	@Override
+	public Long getUserTotalTaskHour(Long userId) {
+		return this.taskMapper.selectTotalTaskHourByUserId(userId);
+	}
+
 }

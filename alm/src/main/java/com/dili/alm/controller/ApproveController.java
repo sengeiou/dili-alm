@@ -3,10 +3,13 @@ package com.dili.alm.controller;
 import com.alibaba.fastjson.JSON;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.Approve;
+import com.dili.alm.domain.Project;
+import com.dili.alm.domain.ProjectComplete;
 import com.dili.alm.domain.dto.apply.ApplyApprove;
 import com.dili.alm.exceptions.ApproveException;
 import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.service.ApproveService;
+import com.dili.alm.service.ProjectService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
@@ -26,6 +29,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -39,10 +44,12 @@ import java.util.Map;
 @RequestMapping("/approve")
 public class ApproveController {
 	@Autowired
-	ApproveService approveService;
+	private ApproveService approveService;
 
 	@Autowired
 	private RoleRpc roleRpc;
+	@Autowired
+	private ProjectService projectService;
 
 	@ApiOperation("跳转到Approve页面")
 	@RequestMapping(value = "/apply/index.html", method = RequestMethod.GET)
@@ -102,11 +109,29 @@ public class ApproveController {
 	}
 
 	@RequestMapping(value = "/complete/{id}", method = RequestMethod.GET)
-	public String complete(ModelMap modelMap, @PathVariable("id") Long id, String viewMode) {
+	public String complete(ModelMap modelMap, @PathVariable("id") Long id, String viewMode) throws Exception {
 
-		approveService.buildCompleteApprove(modelMap, id);
+		Approve approve = approveService.buildCompleteApprove(modelMap, id);
 		if (StringUtils.isNotBlank(viewMode)) {
 			modelMap.put("viewMode", true);
+			Project project = this.projectService.get(((ProjectComplete) modelMap.get("complete")).getProjectId());
+
+			Map<Object, Object> metadata1 = new HashMap<>();
+			metadata1.put("dep", "depProvider");
+			metadata1.put("type", "projectTypeProvider");
+			metadata1.put("startDate", "almDateProvider");
+			metadata1.put("endDate", "almDateProvider");
+			metadata1.put("actualStartDate", "datetimeProvider");
+			metadata1.put("projectManager", "memberProvider");
+			metadata1.put("testManager", "memberProvider");
+			metadata1.put("productManager", "memberProvider");
+			metadata1.put("developManager", "memberProvider");
+			metadata1.put("businessOwner", "memberProvider");
+			metadata1.put("originator", "memberProvider");
+
+			Map projectViewModel = ValueProviderUtils.buildDataByProvider(metadata1, Arrays.asList(project)).get(0);
+			modelMap.addAttribute("project1", projectViewModel);
+			return "approveComplete/detail";
 		} else {
 			modelMap.put("viewMode", false);
 		}

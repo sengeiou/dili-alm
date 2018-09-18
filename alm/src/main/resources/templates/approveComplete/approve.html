@@ -1,255 +1,235 @@
 <#body>
 <style>
-    td {
-        padding-left: 60px;
-    }
+td {
+	padding-left: 60px;
+}
 
-    .datebox-button td {
-        padding-left: 0;
-    }
+.datebox-button td {
+	padding-left: 0;
+}
 
-    input[class^="easyui-"] {
-        width: 300px;
-    }
+input[class^="easyui-"] {
+	width: 300px;
+}
 
-    .title-first,
-    .title-second {
-        margin-top: 20px;
-        background: #f7f7f7;
-    }
+.title-first, .title-second {
+	margin-top: 20px;
+	background: #f7f7f7;
+}
 
-    .title-first {
-        padding-left: 0;
-    }
+.title-first {
+	padding-left: 0;
+}
 
-    .title-second {
-        padding-left: 30px;
-    }
+.title-second {
+	padding-left: 30px;
+}
 
-    .textbox-label {
-        width: 110px;
-    }
+.textbox-label {
+	width: 110px;
+}
 
-    .panel-tool {
-        top: 10px;
-        height: 24px;
-    }
+.panel-tool {
+	top: 10px;
+	height: 24px;
+}
 </style>
 <div id="smDialog" style="display: none;"></div>
 <div id="cusTools">
-    <a onclick="window.location.href='${contextPath}/approve/complete/index.html';" class="easyui-linkbutton"
-       style="width: 50px;height: 24px; text-align: center;text-decoration: none;color: #000;border: 1px solid #ccc;border-radius: 3px;background: #ecf2ef">返回</a>
+	<a onclick="window.location.href='${contextPath}/approve/complete/index.html';" class="easyui-linkbutton"
+		style="width: 50px; height: 24px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef">返回</a>
 </div>
-<!--<div id="cusTools">-->
-<!--<a href="${contextPath}/approve/complete/index.html" style="width: 30px;color: #444;text-decoration: none">返回</a>-->
+<!--<div id="cusTools">--> <!--<a href="${contextPath}/approve/complete/index.html" style="width: 30px;color: #444;text-decoration: none">返回</a>-->
 <!--</div>-->
-<div class="easyui-panel" title="项目立项审批" style="height: 100%"
-     data-options="tools:'#cusTools'">
-    <div style="padding:10px 60px 20px 60px">
-        <form id="ff" method="post" action="">
-            <input type="hidden" name="id" value="${approve.id}">
-            <input type="hidden" name="opt" id="opt" value="">
-            <table cellpadding="5" id="tb" style="width: 100%">
-                <tr>
-                    <td>项目编号</td>
-                    <td>${complete.number}</td>
-                    <td>项目审批状态</td>
-                    <td>${approve.status}</td>
-                </tr>
-                <tr>
-                    <td>申请人</td>
-                    <td>${approve.createMemberId}</td>
-                    <td>创建日期</td>
-                    <td>${approve.created}</td>
-                </tr>
-                <tr>
-                    <td class="title-first" colspan="4">1项目内容及资源</td>
-                </tr>
-                <tr>
-                    <td colspan="2"><input class="easyui-textbox" type="text" name="projectId" value="" id="projectId"
-                                           data-options="required:true,label:'项目编号:'"></td>
-                    <td colspan="2"></td>
-                </tr>
-                <tr>
-                    <td colspan="2"><input disabled class="easyui-textbox" type="text" id="projectName"
-                                           data-options="label:'项目名称:'"></td>
-                    <td colspan="2"><input disabled class="easyui-textbox" type="text" name="type" id="projectType"
-                                           data-options="label:'项目类型:'"></td>
-                </tr>
-                <tr>
-                    <td colspan="2"><input disabled class="easyui-textbox" type="text" id="leader"
-                                           data-options="label:'项目负责人:'"></td>
-                    <td colspan="2"><input disabled class="easyui-textbox" type="text" id="dep"
-                                           data-options="label:'需求所属业务部门:'"></td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <input disabled class="easyui-textbox" type="text" id="buss"
-                               data-options="label:'业务负责人:'">
-                    </td>
-                    <td colspan="2"><input disabled class="easyui-datebox" type="text" id="startDate"
-                                           data-options="label:'计划开始日期:'"></td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <input disabled class="easyui-datebox" type="text" id="endDate"
-                               data-options="label:'计划完成日期:'">
-                    </td>
-                    <td colspan="2">
-                        <input disabled class="easyui-datebox" type="text" id="actualEndDate"
-                               data-options="label:'实际完成日期:'">
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <input class="easyui-datebox" type="text" value="${complete.launchDate!,'yyyy-MM-dd'}" name="launchDate"
-                               data-options="required:true,label:'实际上线日期:'">
-                    </td>
-                    <td colspan="2">
-                        <input class="easyui-datebox" type="text" value="${approve.created!}"
-                               data-options="required:true,label:'提交结项日期:'">
-                    </td>
-                </tr>
-                <tr>
-                    <td class="title-first" colspan="4">2.结项原因</td>
-                </tr>
-                <tr>
-                    <td><input type="radio" checked name="reason" value="0"><span>正常结项</span></td>
-                    <td><input type="radio" name="reason" value="1"><span>项目取消</span></td>
-                    <td><input type="radio" name="reason" value="2"><span>其他原因</span></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td class="title-first" colspan="4">3.项目资料齐备情况</td>
-                </tr>
-                <tr>
-                    <td colspan="2"><input type="radio" checked name="information" value="0"><span>项目结项总结报告</span></td>
-                    <td colspan="2"><input type="radio" name="information" value="1"><span>结项资料清单（清单与交付物完备并一致）</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="title-first" colspan="4">立项评审&审批</td>
-                </tr>
-                <tr>
-                    <td class="" colspan="4">
-                        <table id="dg" class="easyui-datagrid" style="height:auto"
-                               data-options="singleSelect: true,  url: '${contextPath}/approve/loadDesc?id=${approve.id}'">
-                            <thead>
-                            <tr>
-                                <th data-options="field:'approveDate',_provider:'dateProvider',width:'20%',align:'center'">
-                                    审批时间
-                                </th>
-                                <th data-options="field:'userId',width:'15%',align:'center'">
-                                    用户
-                                </th>
-                                <th data-options="field:'role',width:'25%',align:'center'">
-                                    职务
-                                </th>
-                                <th data-options="field:'result',width:'15%',align:'center',formatter:format">
-                                    审批结果
-                                </th>
-                                <th data-options="field:'notes',width:'25%',align:'center'">审批意见</th>
-                            </tr>
-                            </thead>
-                        </table>
-                    </td>
-                </tr>
-            </table>
-            <% if(canOpt){ %>
-            <table style="width: 100%">
-                <tr>
-                    <td colspan="4" style="padding-left: 0"><input id="notes" class="easyui-textbox" name="notes"
-                                                                   data-options="label:'审批意见',multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']"
-                                                                   style="width:100%;height:120px"/></td>
-                </tr>
-            </table>
-            <%}%>
-        </form>
-        <div style="text-align:center;padding:5px;margin-top:50px;">
-            <!--<a href="${contextPath}/approve/complete/index.html" class="easyui-linkbutton" data-options="width:'80px'">返回</a>-->
-            <% if(!viewMode){ %>
-            <% if(canOpt){ %>
-            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
-               onclick="submitForm('reject',this)">拒绝</a>
-            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
-               onclick="submitForm('accept',this)">同意</a>
-            <% } %>
-            <% } %>
-        </div>
-    </div>
+<div class="easyui-panel" title="项目立项审批" style="height: 100%" data-options="tools:'#cusTools'">
+	<div style="padding: 10px 60px 20px 60px">
+		<form id="ff" method="post" action="">
+			<input type="hidden" name="id" value="${approve.id}"> <input type="hidden" name="opt" id="opt" value="">
+			<table cellpadding="5" id="tb" style="width: 100%">
+				<tr>
+					<td>项目编号</td>
+					<td>${complete.number}</td>
+					<td>项目审批状态</td>
+					<td>${approve.status}</td>
+				</tr>
+				<tr>
+					<td>申请人</td>
+					<td>${approve.createMemberId}</td>
+					<td>创建日期</td>
+					<td>${approve.created}</td>
+				</tr>
+				<tr>
+					<td class="title-first" colspan="4">1项目内容及资源</td>
+				</tr>
+				<tr>
+					<td colspan="2"><input class="easyui-textbox" type="text" name="projectId" value="" id="projectId"
+						data-options="required:true,label:'项目编号:'"></td>
+					<td colspan="2"></td>
+				</tr>
+				<tr>
+					<td colspan="2"><input disabled class="easyui-textbox" type="text" id="projectName" data-options="label:'项目名称:'"></td>
+					<td colspan="2"><input disabled class="easyui-textbox" type="text" name="type" id="projectType" data-options="label:'项目类型:'"></td>
+				</tr>
+				<tr>
+					<td colspan="2"><input disabled class="easyui-textbox" type="text" id="leader" data-options="label:'项目负责人:'"></td>
+					<td colspan="2"><input disabled class="easyui-textbox" type="text" id="dep" data-options="label:'需求所属业务部门:'"></td>
+				</tr>
+				<tr>
+					<td colspan="2"><input disabled class="easyui-textbox" type="text" id="buss" data-options="label:'业务负责人:'"></td>
+					<td colspan="2"><input disabled class="easyui-datebox" type="text" id="startDate" data-options="label:'计划开始日期:'"></td>
+				</tr>
+				<tr>
+					<td colspan="2"><input disabled class="easyui-datebox" type="text" id="endDate" data-options="label:'计划完成日期:'"></td>
+					<td colspan="2"><input disabled class="easyui-datebox" type="text" id="actualEndDate" data-options="label:'实际完成日期:'"></td>
+				</tr>
+				<tr>
+					<td colspan="2"><input class="easyui-datebox" type="text" value="${complete.launchDate!,'yyyy-MM-dd'}" name="launchDate"
+						data-options="required:true,label:'实际上线日期:'"></td>
+					<td colspan="2"><input class="easyui-datebox" type="text" value="${approve.created!}" data-options="required:true,label:'提交结项日期:'">
+					</td>
+				</tr>
+				<tr>
+					<td class="title-first" colspan="4">2.结项原因</td>
+				</tr>
+				<tr>
+					<td><input type="radio" checked name="reason" value="0"><span>正常结项</span></td>
+					<td><input type="radio" name="reason" value="1"><span>项目取消</span></td>
+					<td><input type="radio" name="reason" value="2"><span>其他原因</span></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td class="title-first" colspan="4">3.项目资料齐备情况</td>
+				</tr>
+				<tr>
+					<td colspan="2"><input type="radio" checked name="information" value="0"><span>项目结项总结报告</span></td>
+					<td colspan="2"><input type="radio" name="information" value="1"><span>结项资料清单（清单与交付物完备并一致）</span></td>
+				</tr>
+				<tr>
+					<td class="title-first" colspan="4">立项评审&审批</td>
+				</tr>
+				<tr>
+					<td class="" colspan="4">
+						<table id="dg" class="easyui-datagrid" style="height: auto"
+							data-options="singleSelect: true,  url: '${contextPath}/approve/loadDesc?id=${approve.id}'">
+							<thead>
+								<tr>
+									<th data-options="field:'approveDate',_provider:'dateProvider',width:'20%',align:'center'">审批时间</th>
+									<th data-options="field:'userId',width:'15%',align:'center'">用户</th>
+									<th data-options="field:'role',width:'25%',align:'center'">职务</th>
+									<th data-options="field:'result',width:'15%',align:'center',formatter:format">审批结果</th>
+									<th data-options="field:'notes',width:'25%',align:'center'">审批意见</th>
+								</tr>
+							</thead>
+						</table>
+					</td>
+				</tr>
+			</table>
+			<% if(canOpt){ %>
+			<table style="width: 100%">
+				<tr>
+					<td colspan="4" style="padding-left: 0"><input id="notes" class="easyui-textbox" name="notes"
+						data-options="label:'审批意见',multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']" style="width: 100%; height: 120px" /></td>
+				</tr>
+			</table>
+			<%}%>
+		</form>
+		<div style="text-align: center; padding: 5px; margin-top: 50px;">
+			<!--<a href="${contextPath}/approve/complete/index.html" class="easyui-linkbutton" data-options="width:'80px'">返回</a>-->
+			<% if(!viewMode){ %> <% if(canOpt){ %> <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
+				onclick="submitForm('reject',this)">拒绝</a> <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
+				onclick="submitForm('accept',this)">同意</a> <% } %> <% } %>
+		</div>
+	</div>
 </div>
 
 <script type="text/javascript">
-    function format(value) {
-        if (value != undefined) {
-            return value == "accept" ? "通过" : "未通过";
-        }
-        return value;
-    }
+	function format(value) {
+		if (value != undefined) {
+			return value == "accept" ? "通过" : "未通过";
+		}
+		return value;
+	}
 
-    function submitForm(opt, obj) {
-        $('#ff').form('submit', {
-            url: "${contextPath}/approve/applyApprove",
-            onSubmit: function () {
-                if ($("#ff").form('validate')) {
-                    $(obj).linkbutton('disable');
-                }
-                $("#opt").val(opt);
-                return $("#ff").form('validate');
-            },
-            success: function (data) {
-                var data = eval('(' + data + ')');
-                if (data.success == true) {
-                    try {
-                        LogUtils.saveLog(LOG_MODULE_OPS.PROJECT_COMPLETE_APPROVE,"结项审批:${approve.id}:${approve.name}:成功", function () {
-                            window.location.href = "${contextPath}/approve/complete/index.html";
-                        });
-                    } catch (e) {
-                        window.location.href = "${contextPath}/approve/complete/index.html";
-                    }
-                }
-            }
-        });
-    }
+	function submitForm(opt, obj) {
+		$('#ff')
+				.form(
+						'submit',
+						{
+							url : "${contextPath}/approve/applyApprove",
+							onSubmit : function() {
+								if ($("#ff").form('validate')) {
+									$(obj).linkbutton('disable');
+								}
+								$("#opt").val(opt);
+								return $("#ff").form('validate');
+							},
+							success : function(data) {
+								var data = eval('(' + data + ')');
+								if (data.success == true) {
+									try {
+										LogUtils
+												.saveLog(
+														LOG_MODULE_OPS.PROJECT_COMPLETE_APPROVE,
+														"结项审批:${approve.id}:${approve.name}:成功",
+														function() {
+															window.location.href = "${contextPath}/approve/complete/index.html";
+														});
+									} catch (e) {
+										window.location.href = "${contextPath}/approve/complete/index.html";
+									}
+								}
+							}
+						});
+	}
 
+	$(function() {
+		$('#projectId')
+				.combobox(
+						{
+							url : '${contextPath}/project/getProjectList<%if(viewMode==true){%>?queryAll=true&dataAuth=true<%}%>',
+							valueField : 'id',
+							textField : 'serialNumber',
+							onLoadSuccess : function() {
+								$("#projectId").combobox('setValue',
+										'${complete.projectId}');
+							},
+							onChange : function(projectValue) {
+								var datas = $("#projectId").combobox('getData');
+								for (var i = 0; i < datas.length; i++) {
+									var data = datas[i];
+									if (data.id == projectValue) {
+										$("#projectName").textbox("setValue",
+												data.name);
+										$("#projectType").textbox("setValue",
+												data.type);
+										$("#number").val(data.serialNumber);
+										$("#type").val(data.$_type);
+										$("#name").val(data.name);
+										$("#leader").textbox("setValue",
+												data.projectManager);
+										$("#dep").textbox("setValue", data.dep);
+										$("#buss").textbox("setValue",
+												data.businessOwner);
+										$("#startDate").datebox("setValue",
+												data.startDate);
+										$("#startDateVal").val(data.startDate);
+										$("#endDate").datebox("setValue",
+												data.endDate);
+										$("#endDateVal").val(data.endDate);
+										$("#actualEndDate").datebox("setValue",
+												data.actualEndDate);
+									}
+								}
+							}
+						});
+		$("input[name='reason'][value='${complete.reason}']").attr("checked",
+				true);
+		$("input[name='information'][value='${complete.information}']").attr(
+				"checked", true);
+		$('input[class^=easyui-]').textbox("disable");
+		var input = $("body").find("input:radio");
+		input.attr("disabled", "disabled");
+		$('#notes').textbox("enable");
 
-    $(function () {
-        $('#projectId').combobox({
-            url: '${contextPath}/project/getProjectList<%if(viewMode==true){%>?queryAll=true&dataAuth=true<%}%>',
-            valueField: 'id',
-            textField: 'serialNumber',
-            onLoadSuccess: function () {
-                $("#projectId").combobox('setValue', '${complete.projectId}');
-            },
-            onChange: function (projectValue) {
-                var datas = $("#projectId").combobox('getData');
-                for (var i = 0; i < datas.length; i++) {
-                    var data = datas[i];
-                    if (data.id == projectValue) {
-                        $("#projectName").textbox("setValue", data.name);
-                        $("#projectType").textbox("setValue", data.type);
-                        $("#number").val(data.serialNumber);
-                        $("#type").val(data.$_type);
-                        $("#name").val(data.name);
-                        $("#leader").textbox("setValue", data.projectManager);
-                        $("#dep").textbox("setValue", data.dep);
-                        $("#buss").textbox("setValue", data.businessOwner);
-                        $("#startDate").datebox("setValue", data.startDate);
-                        $("#startDateVal").val(data.startDate);
-                        $("#endDate").datebox("setValue", data.endDate);
-                        $("#endDateVal").val(data.endDate);
-                        $("#actualEndDate").datebox("setValue", data.actualEndDate);
-                    }
-                }
-            }
-        });
-        $("input[name='reason'][value='${complete.reason}']").attr("checked", true);
-        $("input[name='information'][value='${complete.information}']").attr("checked", true);
-        $('input[class^=easyui-]').textbox("disable");
-        var input = $("body").find("input:radio");
-        input.attr("disabled", "disabled");
-        $('#notes').textbox("enable");
-
-    });
-</script>
-</#body>
+	});
+</script> </#body>
