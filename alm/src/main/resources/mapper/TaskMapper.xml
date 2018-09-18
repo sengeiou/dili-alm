@@ -402,15 +402,32 @@
 	</select>
 	<select id="selectTotalTaskHourByUserId" resultType="Long">
 		SELECT
-		sum(
-		td.task_hour + td.over_hour )
+		(
+		IFNULL( t1.total_task_hour, 0 ) + IFNULL( t2.total_work_order_hour, 0
+		) ) AS total_hour
+		FROM
+		(
+		SELECT
+		sum( td.task_hour + td.over_hour ) AS
+		total_task_hour
 		FROM
 		task_details td
-		INNER JOIN task t ON
-		td.task_id = t.id
+		INNER JOIN task t ON td.task_id =
+		t.id
 		WHERE
-		t.`owner` =
-		#{userId}
+		t.`owner` = #{userId}
+		) t1,
+		(
+		SELECT
+		sum( wo.task_hours +
+		wo.overtime_hours ) AS total_work_order_hour
+		FROM
+		work_order_execution_record wo
+		INNER JOIN work_order w ON
+		wo.work_order_id = w.id
+		WHERE
+		w.executor_id = #{userId}
+		) t2
 	</select>
 
 	<!-- 数据统计相关 begin -->
