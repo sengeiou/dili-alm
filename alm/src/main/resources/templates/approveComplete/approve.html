@@ -62,31 +62,44 @@ input[class^="easyui-"] {
 					<td class="title-first" colspan="4">1项目内容及资源</td>
 				</tr>
 				<tr>
-					<td colspan="2"><input class="easyui-textbox" type="text" name="projectId" value="" id="projectId"
-						data-options="required:true,label:'项目编号:'"></td>
-					<td colspan="2"></td>
+					<td colspan="2"><input readonly="readonly" class="easyui-textbox" type="text" name="projectId" value="${project1.serialNumber!}"
+						id="projectId" data-options="required:true,label:'项目编号:'"></td>
+					<td colspan="2"><input readonly="readonly" class="easyui-textbox" type="text" id="projectName" value="${project1.name!}"
+						data-options="label:'项目名称:'"></td>
 				</tr>
 				<tr>
-					<td colspan="2"><input disabled class="easyui-textbox" type="text" id="projectName" data-options="label:'项目名称:'"></td>
-					<td colspan="2"><input disabled class="easyui-textbox" type="text" name="type" id="projectType" data-options="label:'项目类型:'"></td>
+					<td colspan="2"><input readonly="readonly" class="easyui-textbox" type="text" name="type" id="projectType"
+						value="${project1.type!}" data-options="label:'项目类型:'"></td>
+					<td colspan="2"><input readonly="readonly" class="easyui-textbox" value="${project1.projectManager!}" type="text"
+						value="${project1.type!}" id="leader" data-options="label:'项目负责人:'"></td>
 				</tr>
 				<tr>
-					<td colspan="2"><input disabled class="easyui-textbox" type="text" id="leader" data-options="label:'项目负责人:'"></td>
-					<td colspan="2"><input disabled class="easyui-textbox" type="text" id="dep" data-options="label:'需求所属业务部门:'"></td>
+					<td colspan="2"><input readonly="readonly" class="easyui-textbox" type="text" id="dep" value="${project1.dep!}"
+						data-options="label:'需求所属业务部门:'"></td>
+					<td colspan="2"><input readonly="readonly" class="easyui-textbox" type="text" id="buss" value="${project1.businessOwner!}"
+						data-options="label:'业务负责人:'"></td>
 				</tr>
 				<tr>
-					<td colspan="2"><input disabled class="easyui-textbox" type="text" id="buss" data-options="label:'业务负责人:'"></td>
-					<td colspan="2"><input disabled class="easyui-datebox" type="text" id="startDate" data-options="label:'计划开始日期:'"></td>
+					<td colspan="2"><input readonly="readonly" class="easyui-textbox" type="text" id="startDate" value="${project1.startDate!}"
+						data-options="label:'计划开始日期:'"></td>
+					<td colspan="2"><input readonly="readonly" class="easyui-textbox" type="text" id="endDate" value="${project1.endDate!}"
+						data-options="label:'计划完成日期:'"></td>
 				</tr>
 				<tr>
-					<td colspan="2"><input disabled class="easyui-datebox" type="text" id="endDate" data-options="label:'计划完成日期:'"></td>
-					<td colspan="2"><input disabled class="easyui-datebox" type="text" id="actualEndDate" data-options="label:'实际完成日期:'"></td>
+					<td colspan="2"><input readonly="readonly" class="easyui-textbox" type="text" id="actualEndDate"
+						value="${project1.actualEndDate!,'yyyy-MM-dd'}" id="actualEndDate" data-options="label:'实际完成日期:'"></td>
+					<td colspan="2"><input readonly="readonly" class="easyui-textbox" type="text" value="${complete.launchDate!,'yyyy-MM-dd'}"
+						name="launchDate" data-options="required:true,label:'实际上线日期:'"></td>
 				</tr>
 				<tr>
-					<td colspan="2"><input class="easyui-datebox" type="text" value="${complete.launchDate!,'yyyy-MM-dd'}" name="launchDate"
-						data-options="required:true,label:'实际上线日期:'"></td>
-					<td colspan="2"><input class="easyui-datebox" type="text" value="${approve.created!}" data-options="required:true,label:'提交结项日期:'">
-					</td>
+					<td colspan="2"><input class="easyui-textbox" readonly="readonly" value="${complete.softwareCost!}" type="text" id="softwareCost"
+						name="softwareCost" data-options="label:'软件成本:',max:99999999"></td>
+					<td colspan="2"><input class="easyui-textbox" readonly="readonly" type="text" value="${complete.otherCost!}" id="otherCost"
+						name="otherCost" data-options="label:'其他成本:',max:99999999"></td>
+				</tr>
+				<tr>
+					<td colspan="2"><input readonly="readonly" class="easyui-textbox" type="text" value="${approve.created!}"
+						data-options="required:true,label:'提交结项日期:'"></td>
 				</tr>
 				<tr>
 					<td class="title-first" colspan="4">2.结项原因</td>
@@ -183,50 +196,10 @@ input[class^="easyui-"] {
 	}
 
 	$(function() {
-		$('#projectId')
-				.combobox(
-						{
-							url : '${contextPath}/project/getProjectList<%if(viewMode==true){%>?queryAll=true&dataAuth=true<%}%>',
-							valueField : 'id',
-							textField : 'serialNumber',
-							onLoadSuccess : function() {
-								$("#projectId").combobox('setValue',
-										'${complete.projectId}');
-							},
-							onChange : function(projectValue) {
-								var datas = $("#projectId").combobox('getData');
-								for (var i = 0; i < datas.length; i++) {
-									var data = datas[i];
-									if (data.id == projectValue) {
-										$("#projectName").textbox("setValue",
-												data.name);
-										$("#projectType").textbox("setValue",
-												data.type);
-										$("#number").val(data.serialNumber);
-										$("#type").val(data.$_type);
-										$("#name").val(data.name);
-										$("#leader").textbox("setValue",
-												data.projectManager);
-										$("#dep").textbox("setValue", data.dep);
-										$("#buss").textbox("setValue",
-												data.businessOwner);
-										$("#startDate").datebox("setValue",
-												data.startDate);
-										$("#startDateVal").val(data.startDate);
-										$("#endDate").datebox("setValue",
-												data.endDate);
-										$("#endDateVal").val(data.endDate);
-										$("#actualEndDate").datebox("setValue",
-												data.actualEndDate);
-									}
-								}
-							}
-						});
 		$("input[name='reason'][value='${complete.reason}']").attr("checked",
 				true);
 		$("input[name='information'][value='${complete.information}']").attr(
 				"checked", true);
-		$('input[class^=easyui-]').textbox("disable");
 		var input = $("body").find("input:radio");
 		input.attr("disabled", "disabled");
 		$('#notes').textbox("enable");

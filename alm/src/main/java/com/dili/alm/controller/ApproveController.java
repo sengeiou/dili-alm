@@ -111,26 +111,26 @@ public class ApproveController {
 	@RequestMapping(value = "/complete/{id}", method = RequestMethod.GET)
 	public String complete(ModelMap modelMap, @PathVariable("id") Long id, String viewMode) throws Exception {
 
-		Approve approve = approveService.buildCompleteApprove(modelMap, id);
+		approveService.buildCompleteApprove(modelMap, id);
+		Project project = this.projectService.get(((ProjectComplete) modelMap.get("complete")).getProjectId());
+
+		Map<Object, Object> metadata1 = new HashMap<>();
+		metadata1.put("dep", "depProvider");
+		metadata1.put("type", "projectTypeProvider");
+		metadata1.put("startDate", "almDateProvider");
+		metadata1.put("endDate", "almDateProvider");
+		metadata1.put("actualStartDate", "datetimeProvider");
+		metadata1.put("projectManager", "memberProvider");
+		metadata1.put("testManager", "memberProvider");
+		metadata1.put("productManager", "memberProvider");
+		metadata1.put("developManager", "memberProvider");
+		metadata1.put("businessOwner", "memberProvider");
+		metadata1.put("originator", "memberProvider");
+
+		Map projectViewModel = ValueProviderUtils.buildDataByProvider(metadata1, Arrays.asList(project)).get(0);
+		modelMap.addAttribute("project1", projectViewModel);
 		if (StringUtils.isNotBlank(viewMode)) {
 			modelMap.put("viewMode", true);
-			Project project = this.projectService.get(((ProjectComplete) modelMap.get("complete")).getProjectId());
-
-			Map<Object, Object> metadata1 = new HashMap<>();
-			metadata1.put("dep", "depProvider");
-			metadata1.put("type", "projectTypeProvider");
-			metadata1.put("startDate", "almDateProvider");
-			metadata1.put("endDate", "almDateProvider");
-			metadata1.put("actualStartDate", "datetimeProvider");
-			metadata1.put("projectManager", "memberProvider");
-			metadata1.put("testManager", "memberProvider");
-			metadata1.put("productManager", "memberProvider");
-			metadata1.put("developManager", "memberProvider");
-			metadata1.put("businessOwner", "memberProvider");
-			metadata1.put("originator", "memberProvider");
-
-			Map projectViewModel = ValueProviderUtils.buildDataByProvider(metadata1, Arrays.asList(project)).get(0);
-			modelMap.addAttribute("project1", projectViewModel);
 			return "approveComplete/detail";
 		} else {
 			modelMap.put("viewMode", false);
