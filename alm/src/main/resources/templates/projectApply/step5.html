@@ -75,11 +75,11 @@ em {
 				</tr>
 				<tr>
 					<td style="background-color: #f5f5f5; text-align: center">实现日期</td>
-					<td><input class="easyui-datebox" name="implemetionDate[0]" value="${roi.businessIndicators[0].implemetionDate!}"
+					<td><input class="easyui-datebox" name="implemetionDate[0]" value="${roi.businessIndicators[0].implemetionDate!,'yyyy-MM-dd'}"
 						data-options="editable:false,required:false" style="width: 100%" /></td>
-					<td><input class="easyui-datebox" name="implemetionDate[1]" value="${roi.businessIndicators[1].implemetionDate!}"
+					<td><input class="easyui-datebox" name="implemetionDate[1]" value="${roi.businessIndicators[1].implemetionDate!,'yyyy-MM-dd'}"
 						data-options="editable:false,required:false" style="width: 100%" /></td>
-					<td><input class="easyui-datebox" name="implemetionDate[2]" value="${roi.businessIndicators[2].implemetionDate!}"
+					<td><input class="easyui-datebox" name="implemetionDate[2]" value="${roi.businessIndicators[2].implemetionDate!,'yyyy-MM-dd'}"
 						data-options="editable:false,required:false" style="width: 100%" /></td>
 				</tr>
 
@@ -125,13 +125,13 @@ em {
 				<tr>
 					<td style="background-color: #f5f5f5; text-align: center">实现日期</td>
 					<td><input class="easyui-datebox" name="implemetionDate[3]"
-						value="${roi.efficiencyAndPerformanceIndicators[0].implemetionDate!}" data-options="editable:false,required:false"
+						value="${roi.efficiencyAndPerformanceIndicators[0].implemetionDate!,'yyyy-MM-dd'}" data-options="editable:false,required:false"
 						style="width: 100%" /></td>
 					<td><input class="easyui-datebox" name="implemetionDate[4]"
-						value="${roi.efficiencyAndPerformanceIndicators[1].implemetionDate!}" data-options="editable:false,required:false"
+						value="${roi.efficiencyAndPerformanceIndicators[1].implemetionDate!,'yyyy-MM-dd'}" data-options="editable:false,required:false"
 						style="width: 100%" /></td>
 					<td><input class="easyui-datebox" name="implemetionDate[5]"
-						value="${roi.efficiencyAndPerformanceIndicators[2].implemetionDate!}" data-options="editable:false,required:false"
+						value="${roi.efficiencyAndPerformanceIndicators[2].implemetionDate!,'yyyy-MM-dd'}" data-options="editable:false,required:false"
 						style="width: 100%" /></td>
 				</tr>
 			</table>
@@ -195,7 +195,8 @@ em {
 				<tr>
 					<td colspan="2" style="background-color: #f5f5f5; text-align: center">差旅会议成本<input type="hidden" name="costType[4]" value="5"></td>
 					<td><input class="easyui-numberbox" type="text" name="amount[4]" value="${roi.travelConferenceCost.amount!}"
-						data-options="min:0,max:999999,prompt:'格式:【实体机 50000元/台VM 1H1G:1200元/年，2H2G：2400元/年，2H4G:4800元/年，4H4G:9600元/年；】'" style="width: 100%; height: 100%"></td>
+						data-options="min:0,max:999999,prompt:'格式:【实体机 50000元/台VM 1H1G:1200元/年，2H2G：2400元/年，2H4G:4800元/年，4H4G:9600元/年；】'"
+						style="width: 100%; height: 100%"></td>
 					<td><input class="easyui-textbox" value="${roi.travelConferenceCost.rate!'机票：4000元/人，补助：600元/人/天；'}" type="text" name="rate[4]"
 						data-options="prompt:'格式:【机票：4000元/人，补助：600元/人/天；】'" style="width: 100%; height: 100%"></td>
 					<td><input class="easyui-numberbox cal" type="text" name="total[4]" value="${roi.travelConferenceCost.total!}"
