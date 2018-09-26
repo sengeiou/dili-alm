@@ -8,9 +8,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.dili.alm.domain.ProjectPhase;
 import com.dili.alm.domain.Task;
-import com.dili.alm.service.ProjectPhaseService;
 import com.dili.alm.service.TaskService;
 import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
@@ -24,7 +22,7 @@ import com.dili.ss.metadata.ValueProvider;
 public class TaskProvider implements ValueProvider {
 
 	@Autowired
-	private TaskService  taskService;
+	private TaskService taskService;
 
 	@Override
 	public List<ValuePair<?>> getLookupList(Object o, Map map, FieldMeta fieldMeta) {

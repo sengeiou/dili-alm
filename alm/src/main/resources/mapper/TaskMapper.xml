@@ -9,7 +9,6 @@
 			property="projectId" />
 		<result column="version_id" jdbcType="BIGINT"
 			property="versionId" />
-		<result column="phase_id" jdbcType="BIGINT" property="phaseId" />
 		<result column="start_date" jdbcType="TIMESTAMP"
 			property="startDate" />
 		<result column="end_date" jdbcType="TIMESTAMP"
@@ -51,10 +50,12 @@
 
 	<sql id="Base_Column_List">
 		<!-- WARNING - @mbg.generated -->
-		id, name, project_id, version_id, phase_id, start_date, end_date,
-		before_task, type,
+		id, name, project_id, version_id, start_date, end_date,
+		before_task,
+		type,
 		owner, plan_time, flow, change_id, describe, status,
-		created, modified,
+		created,
+		modified,
 		create_member_id,
 		modify_member_id,fact_begin_date,fact_end_date
 	</sql>
@@ -64,7 +65,6 @@
 		t.name,
 		t.project_id,
 		t.version_id,
-		t.phase_id,
 		t.start_date,
 		t.end_date,
 		t.before_task,
@@ -103,9 +103,6 @@
 			</if>
 			<if test="versionId != null">
 				version_id = #{versionId,jdbcType=BIGINT},
-			</if>
-			<if test="phaseId != null">
-				phase_id = #{phaseId,jdbcType=BIGINT},
 			</if>
 			<if test="startDate != null">
 				start_date = #{startDate,jdbcType=TIMESTAMP},
@@ -165,20 +162,11 @@
 		<include refid="Join_Column_List" />
 		FROM
 		task t
-		INNER JOIN project_phase pp ON t.phase_id = pp.id
 		INNER JOIN
-		project p ON pp.project_id = p.id
+		project p ON t.project_id = p.id
 		WHERE p.project_state = 1
 	</select>
 
-	<select id="countNotCompletedByPhaseId"
-		parameterType="java.util.Map" resultType="Integer">
-		select count(*) from task
-		where (status = #{startStatus} or
-		status =
-		#{notCompletedStatus}) and
-		phase_id = #{phaseId}
-	</select>
 	<!-- 根据群组查询信息 -->
 	<select id="selectByTeam" resultType="com.dili.alm.domain.Task">
 		select * from alm.task as task where task.project_id in
@@ -197,13 +185,6 @@
 		</if>
 		<if test="task.versionId != null and task.versionId != 0">
 			and task.version_id = #{task.versionId,jdbcType=BIGINT}
-		</if>
-		<if test="ids != null">
-			and task.phase_id in
-			<foreach item="item" index="index" collection="ids" open="("
-				separator="," close=")">
-				#{item}
-			</foreach>
 		</if>
 		<if test="task.owner != null and task.owner != 0">
 			and task.owner = #{task.owner,jdbcType=BIGINT}
@@ -278,13 +259,6 @@
 		</if>
 		<if test="task.versionId != null and task.versionId != 0">
 			and task.version_id = #{task.versionId,jdbcType=BIGINT}
-		</if>
-		<if test="ids != null">
-			and task.phase_id in
-			<foreach item="item" index="index" collection="ids" open="("
-				separator="," close=")">
-				#{item}
-			</foreach>
 		</if>
 		<if test="task.owner != null and task.owner != 0">
 			and task.owner = #{task.owner,jdbcType=BIGINT}

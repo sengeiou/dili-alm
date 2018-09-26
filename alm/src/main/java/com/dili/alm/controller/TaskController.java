@@ -27,7 +27,6 @@ import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.constant.AlmConstants.TaskStatus;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectChange;
-import com.dili.alm.domain.ProjectPhase;
 import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
@@ -38,7 +37,6 @@ import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.TaskException;
 import com.dili.alm.service.MessageService;
 import com.dili.alm.service.ProjectApplyService;
-import com.dili.alm.service.ProjectPhaseService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.ProjectVersionService;
 import com.dili.alm.service.TaskDetailsService;
@@ -78,8 +76,6 @@ public class TaskController {
 	@Autowired
 	ProjectVersionService projectVersionService;
 	@Autowired
-	ProjectPhaseService projectPhaseService;
-	@Autowired
 	TaskDetailsService taskDetailsService;
 	@Autowired
 	MessageService messageService;
@@ -113,14 +109,14 @@ public class TaskController {
 			@ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(Task task) throws Exception {
-		return taskService.listByTeam(task, null).toString();
+		return taskService.listByTeam(task).toString();
 	}
 
 	@ApiOperation(value = "分页查询Task", notes = "按照群组进行分页查询")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listTeamPage", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String listTeamPage(Task task, String phaseName) throws Exception {
+	public @ResponseBody String listTeamPage(Task task) throws Exception {
 		@SuppressWarnings({ "rawtypes" })
 		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
 		if (CollectionUtils.isEmpty(dataAuths)) {
@@ -132,7 +128,7 @@ public class TaskController {
 		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
 		task.setSort("created");
 		task.setOrder("desc");
-		return taskService.listByTeam(query, phaseName).toString();
+		return taskService.listByTeam(query).toString();
 	}
 
 	@ApiOperation(value = "分页查询Task,首页显示", notes = "分页查询Task，返回easyui分页信息")
@@ -144,7 +140,7 @@ public class TaskController {
 		task.setOwner(userTicket.getId());// 设置登录人员信息
 		task.setSort("created");
 		task.setOrder("desc");
-		return taskService.listByTeam(task, null).toString();
+		return taskService.listByTeam(task).toString();
 	}
 
 	@ApiOperation("新增Task")
@@ -262,17 +258,6 @@ public class TaskController {
 	@RequestMapping(value = "/listTreeVersionByTeam.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public List<ProjectVersion> listTreeVersionByTeam() {
 		List<ProjectVersion> list = taskService.listProjectVersionByTeam();
-		return list;
-	}
-
-	// 查询阶段
-	@ResponseBody
-	@RequestMapping(value = "/listTreePhase.json", method = { RequestMethod.GET, RequestMethod.POST })
-	public List<Map> listPhase(Long id) {
-		ProjectPhase projectPhase = DTOUtils.newDTO(ProjectPhase.class);
-		projectPhase.setVersionId(id);
-
-		List<Map> list = projectPhaseService.listEasyUiModels(projectPhase);
 		return list;
 	}
 

@@ -21,21 +21,6 @@ $(function() {
 								return;
 							}
 							// 上传成功后的回调方法。本例中是将返回的文件名保到一个hidden类开的input中，以便后期数据处理
-							$('#phaseForm').append('<input type="hidden" name="fileIds" value="' + data.data[0].id + '">');
-							var row = data.data[0];
-//							var date = new Date();
-//							date.setTime(row.created);
-//							row.created = date.Format('yyyy-MM-dd HH:mm:ss');
-							$('#phaseFileGrid').datagrid('appendRow', row);
-						},
-						onSelect : function(files) {
-							var old = $('#phaseFileGrid').datagrid('getData').rows;
-							for (var i = 0; i < old.length; i++) {
-								if (files[0].name == old[i].name) {
-									$('.ajax-upload-dragdrop').next('div').append('<div class="ajax-file-upload-error">请不要重复上传文件!</div>')
-									return false;
-								}
-							}
 						}
 					});
 		});

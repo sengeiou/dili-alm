@@ -61,11 +61,7 @@ function loadProjectSelect(queryAll) {
 				url : "${contextPath!}/task/listTreeProject.json" + (queryAll ? '?queryAll=true' : ''),
 				valueField : 'id',
 				textField : 'name',
-				editable : false,
-				onChange : function(o, n) {
-					var versionId = $('#_versionId').combobox('getValue');
-					loadPhaseSelect(versionId);
-				}
+				editable : false
 			});
 
 }
@@ -75,11 +71,7 @@ function loadVisionSelect(id) {
 				url : "${contextPath!}/task/listTreeVersion.json?id=" + id,
 				valueField : 'id',
 				textField : 'version',
-				editable : false,
-				onChange : function(o, n) {
-					var versionId = $('#_versionId').combobox('getValue');
-					loadPhaseSelect(versionId);
-				}
+				editable : false
 			});
 
 }
@@ -88,10 +80,7 @@ function loadMemberSelect(id) {
 				url : "${contextPath!}/task/listTreeUserByProject.json?projectId=" + id,
 				valueField : 'id',
 				textField : 'realName',
-				editable : false,
-				onChange : function(o, n) {
-
-				}
+				editable : false
 			});
 }
 
@@ -116,14 +105,6 @@ function loadProjectCondition() {
 				onChange : function(o, n) {
 
 				}
-			});
-}
-function loadPhaseSelect(id, selectId) {
-	$('#_phaseId').combobox({
-				url : "${contextPath!}/task/listTreePhase.json?id=" + id,
-				valueField : 'id',
-				textField : 'name',
-				editable : false
 			});
 }
 
@@ -168,9 +149,6 @@ function noEdit() {
 				disabled : true
 			});
 	$("#_versionId").combobox({
-				disabled : true
-			});
-	$("#_phaseId").combobox({
 				disabled : true
 			});
 	$("#startDateShow").datebox({
@@ -227,9 +205,6 @@ function canEdit() {
 				disabled : false
 			});
 	$("#_versionId").combobox({
-				disabled : false
-			});
-	$("#_phaseId").combobox({
 				disabled : false
 			});
 	$("#startDateShow").datebox({
@@ -321,9 +296,6 @@ function openDetail(selected) {
 	loadVisionSelect(formData._projectId);
 	$('#_versionId').combobox('select', formData._versionId);
 
-	loadPhaseSelect(formData._versionId);
-	$('#_phaseId').combobox('select', formData._phaseId);
-
 	loadTaskSelect(formData._projectId);
 	$('#_beforeTask').combobox('select', formData._beforeTask);
 
@@ -333,7 +305,6 @@ function openDetail(selected) {
 	$('#_form').form('load', {
 				endDateShow : dateFormat_1(formData._endDate)
 			});
-	$('#_phaseId').combobox('select', formData._phaseId);
 	/** *****加载显示数据 end********* */
 	queryDetail(formData._id);
 
@@ -428,8 +399,6 @@ function openUpdateDetail(selected) {
 	loadVisionSelect(formData._projectId);
 	$('#_versionId').combobox('select', formData._versionId);
 
-	loadPhaseSelect(formData._versionId);
-	$('#_phaseId').combobox('select', formData._phaseId);
 	loadTaskSelect(formData._projectId);
 	$('#_beforeTask').combobox('select', formData._beforeTask);
 
@@ -439,7 +408,6 @@ function openUpdateDetail(selected) {
 	$('#_form').form('load', {
 				endDateShow : dateFormat_1(formData._endDate)
 			});
-	$('#_phaseId').combobox('select', formData._phaseId);
 
 	if (formData._status == 0) {
 		$("#task_detail").hide();
@@ -676,7 +644,6 @@ function defaultValue() {
 					if (projectId == "") {
 						$('#_projectId').combobox('select', "----请选择---");
 						$('#_versionId').combobox('select', "----请选择---");
-						$('#_phaseId').combobox('select', "----请选择---");
 						$('#_owner').combobox('select', "----请选择---");
 						$('#_type').combobox('select', "----请选择---");
 					}

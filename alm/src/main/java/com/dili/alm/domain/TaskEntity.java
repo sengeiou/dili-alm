@@ -49,10 +49,6 @@ public class TaskEntity extends BaseDomain implements Task {
 
 	Long owner;
 
-	Long phaseId;
-
-	String phaseStr;// 项目阶段
-
 	String planDays;// 计划周期
 
 	Short planTime;
@@ -88,7 +84,6 @@ public class TaskEntity extends BaseDomain implements Task {
 		this.modified = task.getModified();
 		this.createMemberId = task.getCreateMemberId();
 		this.versionId = task.getVersionId();
-		this.phaseId = task.getPhaseId();
 		this.owner = task.getOwner();
 		this.planTime = task.getPlanTime();
 		this.name = task.getName();
@@ -182,15 +177,6 @@ public class TaskEntity extends BaseDomain implements Task {
 	@Override
 	public Long getOwner() {
 		return owner;
-	}
-
-	@Override
-	public Long getPhaseId() {
-		return phaseId;
-	}
-
-	public String getPhaseStr() {
-		return phaseStr;
 	}
 
 	public String getPlanDays() {
@@ -327,15 +313,6 @@ public class TaskEntity extends BaseDomain implements Task {
 	@Override
 	public void setOwner(Long owner) {
 		this.owner = owner;
-	}
-
-	@Override
-	public void setPhaseId(Long phaseId) {
-		this.phaseId = phaseId;
-	}
-
-	public void setPhaseStr(String phaseStr) {
-		this.phaseStr = phaseStr;
 	}
 
 	public void setPlanDays(String planDays) {

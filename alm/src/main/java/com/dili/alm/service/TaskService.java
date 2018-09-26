@@ -46,7 +46,7 @@ public interface TaskService extends BaseService<Task, Long> {
 
 	boolean isManager(Long managerId);
 
-	EasyuiPageOutput listByTeam(Task task, String phaseName);
+	EasyuiPageOutput listByTeam(Task task);
 
 	/**
 	 * 校验任务开始和结束时间与项目时间

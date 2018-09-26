@@ -21,7 +21,6 @@ public class FilesEntity extends BaseDomain implements Files {
 	private Long modifyMemberId;
 	private Long projectId;
 	private Long versionId;
-	private Long phaseId;
 	private Long recordId;
 	private String notes;
 
@@ -133,16 +132,6 @@ public class FilesEntity extends BaseDomain implements Files {
 	@Override
 	public void setVersionId(Long versionId) {
 		this.versionId = versionId;
-	}
-
-	@Override
-	public Long getPhaseId() {
-		return phaseId;
-	}
-
-	@Override
-	public void setPhaseId(Long phaseId) {
-		this.phaseId = phaseId;
 	}
 
 	@Override

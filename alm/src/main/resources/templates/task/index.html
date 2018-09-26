@@ -26,24 +26,21 @@
 						<td style="padding: 5px;"><input class="easyui-textbox" name="name" id="name" style="width: 100%"
 							data-options="label:'任务名称:', validType:'length[0,255]'" /></td>
 						<td style="padding: 5px;"><input class="easyui-textbox" name="projectId" id="projectId" style="width: 100%"
-							data-options="label:'所属项目:'" /> <#comboProvider _id="projectId" _table="project" _valueField="id" _textField="name" /><td style="padding: 5px; display: none;"><input name="versionId" id="versionId" class="easyui-combobox" style="width: 100%;"
-								data-options="label:'所属版本:'" /></td>
-							<tr>
-								<td style="padding: 5px; display: none;"><input name="phaseName" id="phaseName" class="easyui-combobox" style="width: 100%;"
-									panelWidth="auto" panelHeight="auto" editable="false" data-options="label:'所属阶段:'"> <#comboProvider _id="phaseName"
-										_table="data_dictionary_value" _valueField="value" _textField="code" _orderByClause="order_number asc"
-										_queryParams='{"yn":1,"dd_id":10}' /></td>
-								<td style="padding: 5px;"><input name="owner" id="owner" class="easyui-textbox" style="width: 100%;"
-									data-options="label:'责任人:',buttonText:'选择',editable:false,
+							data-options="label:'所属项目:'" /> <#comboProvider _id="projectId" _table="project" _valueField="id" _textField="name" />
+						<td style="padding: 5px; display: none;"><input name="versionId" id="versionId" class="easyui-combobox" style="width: 100%;"
+							data-options="label:'所属版本:'" /></td>
+					<tr>
+						<td style="padding: 5px;"><input name="owner" id="owner" class="easyui-textbox" style="width: 100%;"
+							data-options="label:'责任人:',buttonText:'选择',editable:false,
 									onClickButton:selectMember,onChange:_changeTextboxShowClear">
-								</td>
-								<td style="padding: 5px;"><input name="status" id="status" class="easyui-combobox" style="width: 100%;" panelWidth="auto"
-									panelHeight="auto" editable="false" data-options="label:'状态:'"> <#comboProvider _id="status" _table="data_dictionary_value"
-										_valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":16}' /></td>
-							</tr>
+						</td>
+						<td style="padding: 5px;"><input name="status" id="status" class="easyui-combobox" style="width: 100%;" panelWidth="auto"
+							panelHeight="auto" editable="false" data-options="label:'状态:'"> <#comboProvider _id="status" _table="data_dictionary_value"
+								_valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":16}' /></td>
+					</tr>
 					<tr>
 						<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid(1)">查询</a> <a
-									href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload" onclick="clearForm()">重置</a></td>
+							href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload" onclick="clearForm()">重置</a></td>
 					</tr>
 				</table>
 			</form>
@@ -63,7 +60,6 @@
 					<th data-options="field:'name',width:'12%',formatter:formatNameOptions,fixed:'false'">任务名称</th>
 					<th data-options="field:'projectId',width:'12%',fixed:'false',_provider:'projectProvider'">项目名称</th>
 					<th data-options="field:'versionId',width:'6%',fixed:'false',_provider:'projectVersionProvider'">所属版本</th>
-					<th data-options="field:'phaseId',width:'10%',fixed:'false',_provider:'projectPhaseProvider'">所属阶段</th>
 					<th data-options="field:'owner',width:'6%',align:'center', fixed:'false',_provider:'memberProvider'">责任人</th>
 					<th data-options="field:'planDays',width:'16%',align:'center', resizable:'true', fixed:'false'">计划工时</th>
 					<th data-options="field:'status',width:'5%', align:'center',  fixed:'false',_provider:'taskStateProvider'">状态</th>
@@ -109,8 +105,6 @@
 			<tr>
 				<td style="padding: 5px;"><input name="_versionId" id="_versionId" class="easyui-combobox" style="width: 100%;" editable="false"
 					data-options="label:'所属版本:', required:true,validType:'isIds',prompt:'--选择所属版本--'"></td>
-				<td style="padding: 5px;"><input name="_phaseId" id="_phaseId" class="easyui-combobox" style="width: 100%;" editable="false"
-					data-options="label:'所属阶段:', required:true,validType:'isIds',prompt:'--选择所属阶段--'"></td>
 			</tr>
 			<tr>
 				<td style="padding: 5px;"><input class="easyui-datebox" name="startDateShow" id="startDateShow" editable="false"

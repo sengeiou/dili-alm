@@ -18,110 +18,103 @@ import javax.persistence.Id;
  */
 @Table(name = "`files`")
 public interface Files extends IBaseDomain {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "`id`")
-    @FieldDef(label="ID")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getId();
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "`id`")
+	@FieldDef(label = "ID")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Long getId();
 
-    void setId(Long id);
+	void setId(Long id);
 
-    @Column(name = "`name`")
-    @FieldDef(label="文件名", maxLength = 200)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getName();
+	@Column(name = "`name`")
+	@FieldDef(label = "文件名", maxLength = 200)
+	@EditMode(editor = FieldEditor.Text, required = false)
+	String getName();
 
-    void setName(String name);
+	void setName(String name);
 
-    @Column(name = "`suffix`")
-    @FieldDef(label="文件后缀", maxLength = 10)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getSuffix();
+	@Column(name = "`suffix`")
+	@FieldDef(label = "文件后缀", maxLength = 10)
+	@EditMode(editor = FieldEditor.Text, required = false)
+	String getSuffix();
 
-    void setSuffix(String suffix);
+	void setSuffix(String suffix);
 
-    @Column(name = "`length`")
-    @FieldDef(label="文件大小")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getLength();
+	@Column(name = "`length`")
+	@FieldDef(label = "文件大小")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Long getLength();
 
-    void setLength(Long length);
+	void setLength(Long length);
 
-    @Column(name = "`url`")
-    @FieldDef(label="文件地址", maxLength = 120)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getUrl();
+	@Column(name = "`url`")
+	@FieldDef(label = "文件地址", maxLength = 120)
+	@EditMode(editor = FieldEditor.Text, required = false)
+	String getUrl();
 
-    void setUrl(String url);
+	void setUrl(String url);
 
-    @Column(name = "`created`")
-    @FieldDef(label="创建时间")
-    @EditMode(editor = FieldEditor.Datetime, required = true)
-    Date getCreated();
+	@Column(name = "`created`")
+	@FieldDef(label = "创建时间")
+	@EditMode(editor = FieldEditor.Datetime, required = true)
+	Date getCreated();
 
-    void setCreated(Date created);
+	void setCreated(Date created);
 
-    @Column(name = "`modified`")
-    @FieldDef(label="修改时间")
-    @EditMode(editor = FieldEditor.Datetime, required = true)
-    Date getModified();
+	@Column(name = "`modified`")
+	@FieldDef(label = "修改时间")
+	@EditMode(editor = FieldEditor.Datetime, required = true)
+	Date getModified();
 
-    void setModified(Date modified);
+	void setModified(Date modified);
 
-    @Column(name = "`create_member_id`")
-    @FieldDef(label="创建人id")
-    @EditMode(editor = FieldEditor.Combo, required = false, params="{\"provider\":\"memberProvider\"}")
-    Long getCreateMemberId();
+	@Column(name = "`create_member_id`")
+	@FieldDef(label = "创建人id")
+	@EditMode(editor = FieldEditor.Combo, required = false, params = "{\"provider\":\"memberProvider\"}")
+	Long getCreateMemberId();
 
-    void setCreateMemberId(Long createMemberId);
+	void setCreateMemberId(Long createMemberId);
 
-    @Column(name = "`modify_member_id`")
-    @FieldDef(label="修改人id")
-    @EditMode(editor = FieldEditor.Combo, required = false, params="{\"provider\":\"memberProvider\"}")
-    Long getModifyMemberId();
+	@Column(name = "`modify_member_id`")
+	@FieldDef(label = "修改人id")
+	@EditMode(editor = FieldEditor.Combo, required = false, params = "{\"provider\":\"memberProvider\"}")
+	Long getModifyMemberId();
 
-    void setModifyMemberId(Long modifyMemberId);
+	void setModifyMemberId(Long modifyMemberId);
 
-    @Column(name = "`type`")
-    @FieldDef(label="文档类型")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Integer getType();
+	@Column(name = "`type`")
+	@FieldDef(label = "文档类型")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Integer getType();
 
-    void setType(Integer type);
+	void setType(Integer type);
 
-    @Column(name = "`project_id`")
-    @FieldDef(label="项目id")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getProjectId();
+	@Column(name = "`project_id`")
+	@FieldDef(label = "项目id")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Long getProjectId();
 
-    void setProjectId(Long projectId);
+	void setProjectId(Long projectId);
 
-    @Column(name = "`version_id`")
-    @FieldDef(label="版本id")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getVersionId();
+	@Column(name = "`version_id`")
+	@FieldDef(label = "版本id")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Long getVersionId();
 
-    void setVersionId(Long versionId);
+	void setVersionId(Long versionId);
 
-    @Column(name = "`phase_id`")
-    @FieldDef(label="阶段id")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getPhaseId();
+	@Column(name = "`record_id`")
+	@FieldDef(label = "记录id，立项、结项、需求变更")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Long getRecordId();
 
-    void setPhaseId(Long phaseId);
+	void setRecordId(Long recordId);
 
-    @Column(name = "`record_id`")
-    @FieldDef(label="记录id，立项、结项、需求变更")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getRecordId();
+	@Column(name = "`notes`")
+	@FieldDef(label = "文档描述")
+	@EditMode(editor = FieldEditor.Text, required = false)
+	String getNotes();
 
-    void setRecordId(Long recordId);
-
-    @Column(name = "`notes`")
-    @FieldDef(label="文档描述")
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getNotes();
-
-    void setNotes(String notes);
+	void setNotes(String notes);
 }

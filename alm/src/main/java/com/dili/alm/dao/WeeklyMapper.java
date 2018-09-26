@@ -69,15 +69,6 @@ public interface WeeklyMapper extends MyMapper<Weekly> {
 	 * */
 	NextWeeklyDto  selectNextWeeklyTaskHour(Long id);
 	/** 
-	 * 下周项目阶段
-	 *   * */
-	List<String> selectNextProjectPhase(List list);
-	
-	/** 
-	 * 本周项目阶段
-	 *   * */
-	List<String> selectProjectPhase(WeeklyPara weeklyPara);
-	/** 
 	 * 本周项目版本
 	 * */
 	List<String> selectProjectVersion(List list);

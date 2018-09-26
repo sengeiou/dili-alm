@@ -275,41 +275,6 @@
 			#{item}
 		</foreach>
 
-
-
-	</select>
-	<!-- 本周项目阶段 -->
-	<select id="selectProjectPhase" resultType="String"
-		parameterType="com.dili.alm.domain.dto.WeeklyPara">
-
-		select v.name from project_phase v
-		WHERE v.id in
-		( select DISTINCT
-		t.phase_id from task t
-		<where>
-			t.start_date &gt;=#{startDate,jdbcType=VARCHAR}
-			and t.end_date &lt;=
-			#{endDate,jdbcType=VARCHAR}
-			and t.start_date &lt;= t.end_date
-
-
-			<if test="id != null">
-				and t.project_id=#{id,jdbcType=BIGINT}
-			</if>
-
-		</where>
-		)
-	</select>
-	<!-- 下周项目阶段 -->
-	<select id="selectNextProjectPhase" resultType="String"
-		parameterType="list">
-
-		select v.name from project_phase v
-		WHERE v.id in
-		<foreach collection="list" index="index" item="item" open="("
-			separator="," close=")">
-			#{item}
-		</foreach>
 	</select>
 
 
@@ -319,9 +284,11 @@
 		resultType="com.dili.alm.domain.dto.TaskDto"
 		parameterType="com.dili.alm.domain.dto.WeeklyPara">
 
-		select t.`name` ,t.phase_id ,t.plan_time ,t.id ,t.project_id,
-		t.`owner`, t.version_id, t.status ,t.start_date
-		,t.end_date,t.fact_end_date as "fackEndDate"
+		select t.`name`,t.plan_time ,t.id ,t.project_id,
+		t.`owner`,
+		t.version_id, t.status ,t.start_date
+		,t.end_date,t.fact_end_date as
+		"fackEndDate"
 		from task t
 		<where>
 			t.end_date &gt;= #{startDate,jdbcType=VARCHAR}
@@ -336,8 +303,9 @@
 
 		UNION
 
-		select t.`name` ,t.phase_id ,t.plan_time ,t.id ,t.project_id,
-		t.`owner`, t.version_id , t.status ,t.start_date
+		select t.`name`, t.plan_time ,t.id ,t.project_id,
+		t.`owner`,
+		t.version_id , t.status ,t.start_date
 		,t.end_date,t.fact_end_date as
 		"fackEndDate"
 		from task t
@@ -396,9 +364,10 @@
 		parameterType="com.dili.alm.domain.dto.WeeklyPara">
 
 
-		select t.`name` ,t.plan_time ,t.phase_id as 'phaseId',t.id,
+		select t.`name` ,t.plan_time, t.id,
 		t.`owner`,
-		t.describe ,t.end_date,t.fact_end_date as "endDate"
+		t.describe
+		,t.end_date,t.fact_end_date as "endDate"
 		from task t
 		<where>
 			t.end_date &gt;= #{startDate,jdbcType=VARCHAR}
@@ -414,8 +383,9 @@
 
 		UNION
 
-		select t.`name` ,t.plan_time ,t.phase_id as 'phaseId',t.id,
-		t.`owner`, t.describe ,t.end_date,t.fact_end_date as "endDate"
+		select t.`name` ,t.plan_time, t.id,
+		t.`owner`, t.describe
+		,t.end_date,t.fact_end_date as "endDate"
 		from
 		task t
 		<where>

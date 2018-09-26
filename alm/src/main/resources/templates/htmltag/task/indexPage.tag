@@ -60,8 +60,6 @@ function openUpdate() {
 	$('#_owner').combobox('select', formData._owner);
 	loadVisionSelect(formData._projectId);
 	$('#_versionId').combobox('select', formData._versionId);
-	loadPhaseSelect(formData._versionId);
-	$('#_phaseId').combobox('select', formData._phaseId);
 	loadTaskSelect(formData._projectId);
 	$('#_beforeTask').combobox('select', formData._beforeTask);
 	$('#_form').form('load', {
@@ -121,8 +119,6 @@ function copyTask(row) {
 	loadVisionSelect(formData._projectId);
 	$('#_versionId').combobox('select', formData._versionId);
 
-	loadPhaseSelect(formData._versionId);
-	$('#_phaseId').combobox('select', formData._phaseId);
 	loadTaskSelect(formData._projectId);
 	$('#_beforeTask').combobox('select', formData._beforeTask);
 
@@ -132,7 +128,6 @@ function copyTask(row) {
 	$('#_form').form('load', {
 				endDateShow : dateFormat_1(formData._endDate)
 			});
-	$('#_phaseId').combobox('select', formData._phaseId);
 	$('#_form').form('load', {
 				_id : formData.id
 			});// 清除ID

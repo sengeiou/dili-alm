@@ -3,11 +3,6 @@ function countVersionGrid() {
 	$('#versionCount').text('（' + data + '条版本记录）');
 }
 
-function countPhaseGrid() {
-	var data = $('#phaseGrid').datagrid('getRows').length;
-	$('#phaseCount').text('（' + data + '条阶段记录）');
-}
-
 function countFileGrid() {
 	var data = $('#fileGrid').datagrid('getRows').length;
 	$('#fileCount').text('（' + data + '条）');
@@ -33,15 +28,6 @@ function versionOptFormatter(value, row, index) {
 		content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="editVersion(' + row.id + ');">编辑</a>';
 		content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="deleteVersion(' + row.id + ');">删除</a>';
 	}
-	return content;
-}
-
-function phaseOptFormatter(value, row, index) {
-	if (row.versionState != 0) {
-		return '';
-	}
-	var content = '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="editPhase(' + row.id + ');">编辑</a>';
-	content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="deletePhase(' + row.id + ');">删除</a>';
 	return content;
 }
 
@@ -77,10 +63,6 @@ function onlineFormatter(value) {
 
 function versionFileOptFormatter(value, row, index) {
 	return '<a href="javascript:void(0);" onclick="delVersionFile(' + row.id + ');">删除</a>';
-}
-
-function phaseFileOptFormatter(value, row, index) {
-	return '<a href="javascript:void(0);" onclick="delPhaseFile(' + row.id + ');">删除</a>';
 }
 
 function fileOptFormatter(value, row, index) {
@@ -145,42 +127,6 @@ function delVersionFile(id) {
 									var selected = $('#versionFileGrid').datagrid('getSelected');
 									var index = $('#versionFileGrid').datagrid('getRowIndex', selected);
 									$('#versionFileGrid').datagrid('deleteRow', index);
-									$($('#fileGrid').datagrid('getRows')).each(function(i, item) {
-												if (item.id == selected.id) {
-													var rowIndex = $('#fileGrid').datagrid('getRowIndex', item);
-													$('#fileGrid').datagrid('deleteRow', rowIndex);
-													$('#fileGrid').datagrid('acceptChanges');
-													return false;
-												}
-											});
-									$('input[name=fileIds][value=' + id + ']').remove();
-								} else {
-									$.messager.alert('错误', data.result);
-								}
-							},
-							error : function() {
-								$.messager.alert('错误', '远程访问失败');
-							}
-						});
-			});
-}
-
-function delPhaseFile(id) {
-	$.messager.confirm('提示', '确定要删除该文档？', function(flag) {
-				if (!flag) {
-					return false;
-				}
-				$.ajax({
-							type : "POST",
-							url : '${contextPath!}/files/delete',
-							data : {
-								id : id
-							},
-							success : function(data) {
-								if (data.code == 200) {
-									var selected = $('#phaseFileGrid').datagrid('getSelected');
-									var index = $('#phaseFileGrid').datagrid('getRowIndex', selected);
-									$('#phaseFileGrid').datagrid('deleteRow', index);
 									$($('#fileGrid').datagrid('getRows')).each(function(i, item) {
 												if (item.id == selected.id) {
 													var rowIndex = $('#fileGrid').datagrid('getRowIndex', item);
@@ -414,157 +360,6 @@ function changeVersionState(id, action, versionState, stateName) {
 				error : function() {
 					$.messager.alert('错误', '远程访问失败');
 				}
-			});
-}
-
-function openInsertPhase() {
-	$('#win').dialog({
-				title : '新建阶段',
-				width : 600,
-				height : 500,
-				href : '${contextPath!}/project/phase/add?projectId=' + $('#projectId').val(),
-				modal : true,
-				buttons : [{
-							text : '保存',
-							handler : function() {
-								if (!$('#phaseForm').form('validate')) {
-									return;
-								}
-								var data = $("#phaseForm").serializeArray();
-								$.ajax({
-											type : "POST",
-											url : '${contextPath!}/project/phase/insert',
-											data : data,
-											success : function(data) {
-												if (data.code == 200) {
-													try {
-														LogUtils.saveLog(LOG_MODULE_OPS.ADD_PROJECT_VERSION_PHASE, "新增项目版本阶段:" + data.data.id + ":" + data.data.name + ":成功", function() {
-																});
-													} catch (e) {
-														$.messager.alert('错误', e);
-													}
-													$('#phaseGrid').datagrid('appendRow', data.data);
-													$('#phaseGrid').datagrid('acceptChanges');
-													countPhaseGrid();
-													if ($('#phaseForm input[name=fileIds]').length > 0) {
-														$('#fileGrid').datagrid('reload');
-														countFileGrid();
-													}
-													$('#win').dialog('close');
-												} else {
-													$.messager.alert('错误', data.result);
-												}
-											},
-											error : function() {
-												$.messager.alert('错误', '远程访问失败');
-											}
-										});
-							}
-						}, {
-							text : '取消',
-							handler : function() {
-								$('#win').dialog('close');
-							}
-						}]
-			});
-}
-
-function editPhase(id) {
-	$('#win').dialog({
-				title : '编辑阶段',
-				width : 600,
-				height : 500,
-				href : '${contextPath!}/project/phase/edit?id=' + id,
-				modal : true,
-				buttons : [{
-							text : '保存',
-							handler : function() {
-								if (!$('#phaseForm').form('validate')) {
-									return;
-								}
-								var data = $("#phaseForm").serializeArray();
-								$.ajax({
-											type : "POST",
-											url : '${contextPath!}/project/phase/update',
-											data : data,
-											success : function(data) {
-												if (data.code == 200) {
-													try {
-														LogUtils.saveLog(LOG_MODULE_OPS.UPDATE_PROJECT_VERSION, "编辑项目版本阶段:" + data.data.id + ":" + data.data.name + ":成功", function() {
-																});
-													} catch (e) {
-														$.messager.alert('错误', e);
-													}
-													var row = $('#phaseGrid').datagrid('getSelected');
-													var index = $('#phaseGrid').datagrid('getRowIndex', row);
-													$('#phaseGrid').datagrid('updateRow', {
-																index : index,
-																row : data.data
-															});
-													$('#phaseGrid').datagrid('acceptChanges');
-													if ($('#phaseForm input[name=fileIds]').length > 0) {
-														$('#fileGrid').datagrid('reload');
-														countFileGrid();
-													}
-													$('#win').dialog('close');
-												} else {
-													$.messager.alert('错误', data.result);
-												}
-											},
-											error : function() {
-												$.messager.alert('错误', '远程访问失败');
-											}
-										});
-							}
-						}, {
-							text : '取消',
-							handler : function() {
-								$('#win').dialog('close');
-							}
-						}]
-			});
-}
-
-function deletePhase(id) {
-	$.messager.confirm('提示', '确定要删除该阶段？', function(flag) {
-				if (!flag) {
-					return false;
-				}
-				$.ajax({
-							type : "POST",
-							url : '${contextPath!}/project/phase/delete',
-							data : {
-								id : id
-							},
-							success : function(data) {
-								if (data.code == 200) {
-									try {
-										LogUtils.saveLog(LOG_MODULE_OPS.DELETE_PROJECT_VERSION_PHASE, "删除项目版本版本阶段:" + data.data.id + ":" + data.data.name + ":成功", function() {
-												});
-									} catch (e) {
-										$.messager.alert('错误', e);
-									}
-									var delRow = $('#phaseGrid').datagrid('getSelected');
-									var index = $('#phaseGrid').datagrid('getRowIndex', delRow);
-									$($('#fileGrid').datagrid('getRows')).each(function(i, item) {
-												if (item.$_phaseId == delRow.id) {
-													var rowIndex = $('#fileGrid').datagrid('getRowIndex', item);
-													$('#fileGrid').datagrid('deleteRow', rowIndex);
-												}
-											});
-									$('#fileGrid').datagrid('acceptChanges');
-									countFileGrid();
-									$('#phaseGrid').datagrid('deleteRow', index);
-									$('#phaseGrid').datagrid('acceptChanges');
-									countPhaseGrid();
-								} else {
-									$.messager.alert('错误', data.result);
-								}
-							},
-							error : function() {
-								$.messager.alert('错误', '远程访问失败');
-							}
-						});
 			});
 }
 

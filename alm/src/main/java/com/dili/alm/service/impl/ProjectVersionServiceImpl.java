@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dili.alm.dao.FilesMapper;
 import com.dili.alm.dao.ProjectActionRecordMapper;
 import com.dili.alm.dao.ProjectMapper;
-import com.dili.alm.dao.ProjectPhaseMapper;
 import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.domain.ActionDateType;
@@ -21,7 +20,6 @@ import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectAction;
 import com.dili.alm.domain.ProjectActionRecord;
 import com.dili.alm.domain.ProjectActionType;
-import com.dili.alm.domain.ProjectPhase;
 import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.ProjectVersionFormDto;
@@ -54,8 +52,6 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 	ScheduleJobService scheduleJobService;
 	@Autowired
 	private FilesMapper filesMapper;
-	@Autowired
-	private ProjectPhaseMapper phaseMapper;
 	@Autowired
 	private TaskMapper taskMapper;
 	@Autowired
@@ -221,15 +217,9 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 				&& !project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
 			throw new ProjectVersionException("项目不在进行中，不能删除");
 		}
-		ProjectPhase phaseQuery = DTOUtils.newDTO(ProjectPhase.class);
-		phaseQuery.setVersionId(id);
-		int count = this.phaseMapper.selectCount(phaseQuery);
-		if (count > 0) {
-			throw new ProjectVersionException("该版本包含阶段信息不能删除");
-		}
 		Task taskQuery = DTOUtils.newDTO(Task.class);
 		taskQuery.setVersionId(id);
-		count = this.taskMapper.selectCount(taskQuery);
+		int count = this.taskMapper.selectCount(taskQuery);
 		if (count > 0) {
 			throw new ProjectVersionException("该版本下包含任务不能删除");
 		}
@@ -257,7 +247,7 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 	public List<Files> listFiles(Long versionId) {
 		Example example = new Example(Files.class);
 		Example.Criteria criteria = example.createCriteria();
-		criteria.andEqualTo("versionId", versionId).andIsNull("phaseId");
+		criteria.andEqualTo("versionId", versionId);
 		return this.filesMapper.selectByExample(example);
 	}
 
