@@ -18,5 +18,5 @@ public interface WorkDayMapper extends MyMapper<WorkDay> {
 
 	Integer deteleWorkDaysByYear(@Param("year") String year);
 
-	Integer countByStartAndEndDate(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
+	Long countByStartAndEndDate(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 }

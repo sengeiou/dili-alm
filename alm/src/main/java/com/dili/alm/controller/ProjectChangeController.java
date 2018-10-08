@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.Project;
@@ -115,34 +114,28 @@ public class ProjectChangeController {
 		if (change == null) {
 			return "redirect:/projectChange/index.html";
 		}
-		modelMap.put("obj", change);
+
+		Map<Object, Object> metadata = new HashMap<>();
+		metadata.put("type", "changeTypeProvider");
+		modelMap.put("obj", ValueProviderUtils.buildDataByProvider(metadata, Arrays.asList(change)).get(0));
+
 		Project project = AlmCache.getInstance().getProjectMap().get(change.getProjectId());
-		@SuppressWarnings("unchecked")
-		Map<Object, Object> metadata = null == project.getMetadata() ? new HashMap<>() : project.getMetadata();
+		Map<Object, Object> metadata1 = new HashMap<>();
 
-		JSONObject projectStatusProvider = new JSONObject();
-		projectStatusProvider.put("provider", "projectStatusProvider");
-		metadata.put("status", projectStatusProvider);
+		metadata1.put("status", "projectStateProvider");
 
-		JSONObject projectTypeProvider = new JSONObject();
-		projectTypeProvider.put("provider", "projectTypeProvider");
-		metadata.put("type", projectTypeProvider);
+		metadata1.put("type", "projectTypeProvider");
 
-		JSONObject memberProvider = new JSONObject();
-		memberProvider.put("provider", "memberProvider");
-		metadata.put("originator", memberProvider);
+		metadata1.put("originator", "memberProvider");
 
-		JSONObject provider = new JSONObject();
-		provider.put("provider", "datetimeProvider");
-		metadata.put("validTimeBegin", provider);
-		metadata.put("validTimeEnd", provider);
-		metadata.put("created", provider);
-		metadata.put("modified", provider);
-		metadata.put("actualStartDate", provider);
+		metadata1.put("validTimeBegin", "datetimeProvider");
+		metadata1.put("validTimeEnd", "datetimeProvider");
+		metadata1.put("created", "datetimeProvider");
+		metadata1.put("modified", "datetimeProvider");
+		metadata1.put("actualStartDate", "datetimeProvider");
 
-		project.setMetadata(metadata);
-		modelMap.addAttribute("project1",
-				ValueProviderUtils.buildDataByProvider(project, Arrays.asList(project)).get(0));
+		project.setMetadata(metadata1);
+		modelMap.addAttribute("project1", ValueProviderUtils.buildDataByProvider(metadata1, Arrays.asList(project)).get(0));
 		return "projectChange/details";
 	}
 
@@ -153,58 +146,50 @@ public class ProjectChangeController {
 	}
 
 	@ApiOperation(value = "查询ProjectChange", notes = "查询ProjectChange，返回列表信息")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "ProjectChange", paramType = "form", value = "ProjectChange的form信息", required = false, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectChange", paramType = "form", value = "ProjectChange的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<ProjectChange> list(ProjectChange projectChange) {
 		return projectChangeService.list(projectChange);
 	}
 
 	@ApiOperation(value = "分页查询ProjectChange", notes = "分页查询ProjectChange，返回easyui分页信息")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "ProjectChange", paramType = "form", value = "ProjectChange的form信息", required = false, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectChange", paramType = "form", value = "ProjectChange的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(ProjectChange projectChange) throws Exception {
 		return projectChangeService.listEasyuiPageByExample(projectChange, true).toString();
 	}
 
 	@ApiOperation("新增ProjectChange")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "ProjectChange", paramType = "form", value = "ProjectChange的form信息", required = true, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectChange", paramType = "form", value = "ProjectChange的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput insert(ProjectChange projectChange) {
 		projectChange.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
 		try {
 			this.projectChangeService.addProjectChange(projectChange);
-			return BaseOutput.success("新增成功")
-					.setData(String.valueOf(projectChange.getId() + ":" + projectChange.getName()));
+			return BaseOutput.success("新增成功").setData(String.valueOf(projectChange.getId() + ":" + projectChange.getName()));
 		} catch (ApplicationException e) {
 			return BaseOutput.failure(e.getMessage());
 		}
 	}
 
 	@ApiOperation("修改ProjectChange")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "ProjectChange", paramType = "form", value = "ProjectChange的form信息", required = true, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectChange", paramType = "form", value = "ProjectChange的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> update(ProjectChange projectChange) {
 		try {
 			this.projectChangeService.updateProjectChange(projectChange);
-			return BaseOutput.success("修改成功")
-					.setData(String.valueOf(projectChange.getId() + ":" + projectChange.getName()));
+			return BaseOutput.success("修改成功").setData(String.valueOf(projectChange.getId() + ":" + projectChange.getName()));
 		} catch (ApplicationException e) {
 			return BaseOutput.failure(e.getMessage());
 		}
 	}
 
 	@ApiOperation("删除ProjectChange")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "id", paramType = "form", value = "ProjectChange的主键", required = true, dataType = "long") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "id", paramType = "form", value = "ProjectChange的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput delete(Long id) {
 		ProjectChange change = projectChangeService.get(id);
-		if (change != null
-				&& change.getCreateMemberId().equals(SessionContext.getSessionContext().getUserTicket().getId())) {
+		if (change != null && change.getCreateMemberId().equals(SessionContext.getSessionContext().getUserTicket().getId())) {
 			messageService.deleteMessage(id, AlmConstants.MessageType.CHANGE.code);
 			projectChangeService.delete(id);
 		}
