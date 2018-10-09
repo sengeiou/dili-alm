@@ -279,8 +279,6 @@ public class WordExport {
 
 		row9.createCell(3).setCellValue(StringUtils.join(projectVersion.toArray(), ","));
 		sheet.addMergedRegion(new CellRangeAddress(9, 9, 3, 5));
-		row9.createCell(6).setCellValue("本周项目阶段:");
-		sheet.addMergedRegion(new CellRangeAddress(9, 9, 6, 8));
 
 		sheet.addMergedRegion(new CellRangeAddress(9, 9, 9, 11));
 		/***********/
@@ -645,10 +643,6 @@ public class WordExport {
 		mergeCellsHorizontal(thisWeekTable, 1, 0, 1);
 		thisWeekTTableRowTwo.getCell(2).setText(StringUtils.join(projectVersion.toArray(), ","));
 		mergeCellsHorizontal(thisWeekTable, 1, 2, 4);
-		thisWeekTTableRowTwo.getCell(5).setText("本周项目阶段");
-		mergeCellsHorizontal(thisWeekTable, 1, 5, 7);
-		
-		mergeCellsHorizontal(thisWeekTable, 1, 8, 10);
 
 		XWPFTableRow thisTableTHREE = thisWeekTable.createRow();
 		thisTableTHREE.getCell(0).setText("序号");

@@ -206,10 +206,6 @@ public class WeeklyController {
 		mv.addObject("pd", (ProjectWeeklyDto) map.get("pd"));
 		// 本周项目版本
 		mv.addObject("pv", (String) map.get("pv"));
-		// 本周项目阶段
-		mv.addObject("pp", (String) map.get("pp"));
-		// 下周项目阶段
-		mv.addObject("npp", (String) map.get("npp"));
 		// 本周进展情况
 		mv.addObject("td", (List<TaskDto>) map.get("td"));
 		// 下周工作计划
@@ -263,10 +259,6 @@ public class WeeklyController {
 		weeklyService.updateSelective(wk);
 		// 本周项目版本
 		mv.addObject("pv", (String) map.get("pv"));
-		// 本周项目阶段
-		mv.addObject("pp", (String) map.get("pp"));
-		// 下周项目阶段
-		mv.addObject("npp", (String) map.get("npp"));
 		// 本周进展情况
 		mv.addObject("td", (List<TaskDto>) map.get("td"));
 		// 下周工作计划
