@@ -48,5 +48,4 @@ public interface ProjectApplyService extends BaseService<ProjectApply, Long> {
 
 	void deleteProjectApply(Long id) throws ProjectApplyException;
 
-	void migrate() throws ParseException;
 }
