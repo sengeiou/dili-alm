@@ -50,9 +50,8 @@ import com.dili.alm.domain.dto.TaskDto;
  */
 public class WordExport {
 
-	public static File getFileExecel(File file, ProjectWeeklyDto pd, List<String> projectVersion, List<TaskDto> td,
-			List<NextWeeklyDto> wk, JSONArray weeklyRistJson, JSONArray weeklyQuestionJson, WeeklyDetails wDetails)
-			throws Exception {
+	public static File getFileExecel(File file, ProjectWeeklyDto pd, List<String> projectVersion, List<TaskDto> td, List<NextWeeklyDto> wk, JSONArray weeklyRistJson, JSONArray weeklyQuestionJson,
+			WeeklyDetails wDetails) throws Exception {
 
 		FileOutputStream out = new FileOutputStream(file);
 		// 创建HSSFWorkbook对象(excel的文档对象)
@@ -93,14 +92,11 @@ public class WordExport {
 				HSSFRow row15Temp = sheet.createRow(currentRistLengthTemp + 1 + i);
 
 				row15Temp.createCell(0).setCellValue(ristList.get(i).getName());
-				sheet.addMergedRegion(
-						new CellRangeAddress(currentRistLengthTemp + 1 + i, currentRistLengthTemp + 1 + i, 0, 3));
+				sheet.addMergedRegion(new CellRangeAddress(currentRistLengthTemp + 1 + i, currentRistLengthTemp + 1 + i, 0, 3));
 				row15Temp.createCell(4).setCellValue(ristList.get(i).getDesc());
-				sheet.addMergedRegion(
-						new CellRangeAddress(currentRistLengthTemp + 1 + i, currentRistLengthTemp + 1 + i, 4, 7));
+				sheet.addMergedRegion(new CellRangeAddress(currentRistLengthTemp + 1 + i, currentRistLengthTemp + 1 + i, 4, 7));
 				row15Temp.createCell(8).setCellValue(ristList.get(i).getStatus());
-				sheet.addMergedRegion(
-						new CellRangeAddress(currentRistLengthTemp + 1 + i, currentRistLengthTemp + 1 + i, 8, 11));
+				sheet.addMergedRegion(new CellRangeAddress(currentRistLengthTemp + 1 + i, currentRistLengthTemp + 1 + i, 8, 11));
 
 			}
 		}
@@ -198,8 +194,7 @@ public class WordExport {
 		sheet.addMergedRegion(new CellRangeAddress(currentRistLength + 1, currentRistLength + 1, 8, 11));
 	}
 
-	private static void getExeclNextWeekTableList(List<NextWeeklyDto> wk, HSSFSheet sheet, int nextWeekLength,
-			int nextLength) {
+	private static void getExeclNextWeekTableList(List<NextWeeklyDto> wk, HSSFSheet sheet, int nextWeekLength, int nextLength) {
 		for (int i = 0; i < nextLength; i++) {
 
 			HSSFRow row13Temp = sheet.createRow(nextWeekLength + 1 + i);
@@ -226,8 +221,6 @@ public class WordExport {
 		sheet.addMergedRegion(new CellRangeAddress(descLength + length, descLength + length, 0, 11));
 
 		HSSFRow row12 = sheet.createRow(descLength + length + 1);
-		row12.createCell(0).setCellValue("下周所处阶段:");
-		sheet.addMergedRegion(new CellRangeAddress(descLength + length + 1, descLength + length + 1, 0, 4));
 		row12.createCell(5).setCellValue("需求确认阶段");
 		sheet.addMergedRegion(new CellRangeAddress(descLength + length + 1, descLength + length + 1, 5, 11));
 		/***********/
@@ -373,23 +366,19 @@ public class WordExport {
 	private static void execlOther(WeeklyDetails wDetails, HSSFSheet sheet, int questTempLength, int questTemp) {
 		HSSFRow row18 = sheet.createRow(questTempLength + questTemp + 1);
 		row18.createCell(0).setCellValue("预期偏差");
-		sheet.addMergedRegion(
-				new CellRangeAddress(questTempLength + questTemp + 1, questTempLength + questTemp + 1, 0, 3));
+		sheet.addMergedRegion(new CellRangeAddress(questTempLength + questTemp + 1, questTempLength + questTemp + 1, 0, 3));
 		row18.createCell(4).setCellValue(wDetails != null ? wDetails.getExpectedDeviation() : "");
-		sheet.addMergedRegion(
-				new CellRangeAddress(questTempLength + questTemp + 1, questTempLength + questTemp + 1, 4, 11));
+		sheet.addMergedRegion(new CellRangeAddress(questTempLength + questTemp + 1, questTempLength + questTemp + 1, 4, 11));
 
 		HSSFRow row19 = sheet.createRow(questTempLength + questTemp + 2);
 		row19.createCell(0).setCellValue("其他");
-		sheet.addMergedRegion(
-				new CellRangeAddress(questTempLength + questTemp + 2, questTempLength + questTemp + 2, 0, 3));
+		sheet.addMergedRegion(new CellRangeAddress(questTempLength + questTemp + 2, questTempLength + questTemp + 2, 0, 3));
 		row19.createCell(4).setCellValue(wDetails != null ? wDetails.getOther() : "");
-		sheet.addMergedRegion(
-				new CellRangeAddress(questTempLength + questTemp + 2, questTempLength + questTemp + 2, 4, 11));
+		sheet.addMergedRegion(new CellRangeAddress(questTempLength + questTemp + 2, questTempLength + questTemp + 2, 4, 11));
 	}
 
-	public static File getFile(File file, ProjectWeeklyDto pd, List<String> projectVersion, List<TaskDto> td,
-			List<NextWeeklyDto> wk, JSONArray weeklyRistJson, JSONArray weeklyQuestionJson, WeeklyDetails wDetails
+	public static File getFile(File file, ProjectWeeklyDto pd, List<String> projectVersion, List<TaskDto> td, List<NextWeeklyDto> wk, JSONArray weeklyRistJson, JSONArray weeklyQuestionJson,
+			WeeklyDetails wDetails
 
 	) throws Exception {
 
@@ -442,8 +431,6 @@ public class WordExport {
 		personTableRowone.addNewTableCell().setText("创建人：");
 		personTableRowone.addNewTableCell().setText(pd.getUserName());
 		personTableRowone.addNewTableCell();
-		// personTableRowone.addNewTableCell().setText("新建阶段人：");
-		// personTableRowone.addNewTableCell().setText(pd.getStageMan());
 		personTableRowone.addNewTableCell();
 		personTableRowone.addNewTableCell().setText("创建时间  :   ");
 		personTableRowone.addNewTableCell().setText(pd.getCreated());
@@ -586,10 +573,6 @@ public class WordExport {
 		// 表格第二行
 
 		XWPFTableRow nextWeekTTableRowTwo = nextWeekTable.createRow();
-		nextWeekTTableRowTwo.getCell(0).setText("下周所处阶段");
-		mergeCellsHorizontal(nextWeekTable, 1, 0, 1);
-		
-		mergeCellsHorizontal(nextWeekTable, 1, 2, 5);
 
 		XWPFTableRow nextTableTHREE = nextWeekTable.createRow();
 		nextTableTHREE.getCell(0).setText("序号");
@@ -648,14 +631,13 @@ public class WordExport {
 		thisTableTHREE.getCell(0).setText("序号");
 		thisTableTHREE.getCell(1).setText("任务名称");
 		thisTableTHREE.getCell(2).setText("版本");
-		thisTableTHREE.getCell(3).setText("阶段");
-		thisTableTHREE.getCell(4).setText("责任人");
-		thisTableTHREE.getCell(5).setText("是否完成");
-		thisTableTHREE.getCell(6).setText("计划完成日期");
-		thisTableTHREE.getCell(7).setText("任务计划工时");
-		thisTableTHREE.getCell(8).setText("本周实际工时");
-		thisTableTHREE.getCell(9).setText("实际总工时");
-		thisTableTHREE.getCell(10).setText("实际完成日期");
+		thisTableTHREE.getCell(3).setText("责任人");
+		thisTableTHREE.getCell(4).setText("是否完成");
+		thisTableTHREE.getCell(5).setText("计划完成日期");
+		thisTableTHREE.getCell(6).setText("任务计划工时");
+		thisTableTHREE.getCell(7).setText("本周实际工时");
+		thisTableTHREE.getCell(8).setText("实际总工时");
+		thisTableTHREE.getCell(9).setText("实际完成日期");
 
 		XWPFTableRow thisTabledd;
 		for (int i = 0; i < td.size(); i++) {

@@ -412,8 +412,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 					weeklyPara2.setUserName(listUserParty.get(0).getRealName());
 				}
 
-				weeklyPara2.setDate(weeklyPara2.getStartDate().substring(0, 10) + " 到 "
-						+ weeklyPara2.getEndDate().substring(0, 10));
+				weeklyPara2.setDate(weeklyPara2.getStartDate().substring(0, 10) + " 到 " + weeklyPara2.getEndDate().substring(0, 10));
 
 				ddv = DTOUtils.newDTO(DataDictionaryValue.class);
 				ddv.setValue(weeklyPara2.getProjectType());
@@ -435,18 +434,6 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			pd.setPlanDate(pd.getPlanDate().substring(0, 10));
 
 		pd.setBeginAndEndTime(pd.getStartDate().substring(0, 10) + "到" + pd.getEndDate().substring(0, 10));
-
-		if (pd.getStageMan() != null | pd.getStageMan() != "") {
-			User userStageMan = new User();
-			if (pd.getStageMan() != null && pd.getStageMan() != "") {
-				userStageMan.setId(Long.parseLong(pd.getStageMan()));
-				BaseOutput<List<User>> listStageMan = userRpc.listByExample(userStageMan);
-				List<User> listUserlistStageMan = listStageMan.getData();
-				if (listUserlistStageMan != null && listUserlistStageMan.size() > 0)
-					pd.setStageMan(listUserlistStageMan.get(0).getRealName());
-			}
-
-		}
 
 		User user = new User();
 		user.setId(Long.parseLong(pd.getBusinessParty()));
@@ -494,8 +481,6 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 
 		pd.setBeginAndEndTime(pd.getStartDate().substring(0, 10) + "到" + pd.getEndDate().substring(0, 10));
 
-		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		pd.setStageMan(userTicket.getRealName());
 		User user = new User();
 		user.setId(Long.parseLong(pd.getBusinessParty()));
 		// 业务方
@@ -575,8 +560,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 				td.get(i).setOwner(listUserParty.get(0).getRealName());
 
 			// 版本
-			td.get(i).setVersionId(
-					projectVersionMapper.selectByPrimaryKey(Long.parseLong(td.get(i).getVersionId())).getVersion());
+			td.get(i).setVersionId(projectVersionMapper.selectByPrimaryKey(Long.parseLong(td.get(i).getVersionId())).getVersion());
 			// 预计结束时间
 			String endtime = DateUtil.getDateStr(td.get(i).getEndDate()).substring(0, 10).toString();
 			td.get(i).setEndDateStr(endtime);
@@ -772,8 +756,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		WeeklyDetails wDetails = weeklyDetailsService.getWeeklyDetailsByWeeklyId(Long.parseLong(id));
 
 		try {
-			file = WordExport.getFileExecel(file, pd, projectVersion, td, wk, weeklyRistJson, weeklyQuestionJson,
-					wDetails);
+			file = WordExport.getFileExecel(file, pd, projectVersion, td, wk, weeklyRistJson, weeklyQuestionJson, wDetails);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

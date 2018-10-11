@@ -32,114 +32,77 @@ button:hover {
 
 	<div height="auto" align="center" data-options="region:'center'">
 		</br> </br>
-		<table id="tt" cellspacing="0" border="1" class="easyui-datagrid"
-			style="width: 800px; height: 135px; border: 1px solid #ddd; border-collapse: collapse;"
+		<table id="tt" cellspacing="0" border="1" class="easyui-datagrid" style="width: 800px; height: 135px; border: 1px solid #ddd; border-collapse: collapse;"
 			data-options="view:scrollview,rownumbers:true,singleSelect:true,autoRowHeight:false,pageSize:50">
-			<caption
-				style="padding: 5px; font-weight: bold; font-size: 15px; line-height: 35px; color: #333">项目周报生成</caption>
+			<caption style="padding: 5px; font-weight: bold; font-size: 15px; line-height: 35px; color: #333">项目周报生成</caption>
 			<input type="hidden" id="inHidden" value="${pd.id}" />
 			<tbody>
 				<tr>
 
-					<td
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">项目名称</td>
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">项目名称</td>
 					<td style="padding: 5px;">${pd.projectName}</td>
-					<td
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">项目编号</td>
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">项目编号</td>
 					<td style="padding: 5px;">${pd.serialNumber}</td>
-					<td
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">项目经理</td>
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">项目经理</td>
 					<td style="padding: 5px;">${pd.userName}</td>
 				</tr>
 				<tr>
 
-					<td
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">项目类型</td>
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">项目类型</td>
 					<td style="padding: 5px;">${pd.projectType}</td>
-					<td
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">项目所在部门</td>
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">项目所在部门</td>
 					<td style="padding: 5px;">${pd.projectInDept}</td>
-					<td
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">业务方</td>
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">业务方</td>
 					<td style="padding: 5px;">${pd.businessParty}</td>
 
 				</tr>
 				<tr>
 
-					<td
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">计划上线日期</td>
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">计划上线日期</td>
 					<td style="padding: 5px;">${pd.planDate}</td>
-					<td
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">本周起止日期</td>
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">本周起止日期</td>
 					<td style="padding: 5px;">${pd.beginAndEndTime}</td>
-					<td
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">总体进展</td>
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">总体进展</td>
 					<td id="progressTotal" style="padding: 5px;"></td>
 					<input id="pdprojectId" type='hidden' value="${pd.projectId}" />
-					<input id="completedProgressInt" type='hidden'
-						value="${pd.completedProgressInt}" />
+					<input id="completedProgressInt" type='hidden' value="${pd.completedProgressInt}" />
 				</tr>
 			</tbody>
 
 			<tfoot>
 				<tr>
-					<td
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold;"
-						colspan="6">项目总体情况描述</td>
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold;" colspan="6">项目总体情况描述</td>
 				</tr>
 				<tr>
-					<td style="padding: 5px;" colspan="6" rowspan='4'"><%
-						if(wDetails!=null){%> <input class="easyui-textbox"
-						name="projectDescription" id="projectDescription"
-						value="${wDetails.projectDescription}"
-						style="width: 100%; height: 40px"
-						data-options=" validType:'length[0,500]'" /> <%}else{%> <input
-						class="easyui-textbox" name="projectDescription"
-						id="projectDescription" value="" style="width: 100%; height: 40px"
-						data-options=" validType:'length[0,500]'" /> <%}%>
+					<td style="padding: 5px;" colspan="6" rowspan='4'"><% if(wDetails!=null){%> <input class="easyui-textbox" name="projectDescription" id="projectDescription"
+						value="${wDetails.projectDescription}" style="width: 100%; height: 40px" data-options=" validType:'length[0,500]'" /> <%}else{%> <input class="easyui-textbox" name="projectDescription"
+						id="projectDescription" value="" style="width: 100%; height: 40px" data-options=" validType:'length[0,500]'" /> <%}%>
 					</td>
 				</tr>
 
 			</tfoot>
 
 		</table>
-		<table id="thisWeek" border="1" cellspacing="0"
-			class="easyui-datagrid"
-			style="width: 800px; border: 1px solid #ddd; border-collapse: collapse;"
+		<table id="thisWeek" border="1" cellspacing="0" class="easyui-datagrid" style="width: 800px; border: 1px solid #ddd; border-collapse: collapse;"
 			data-options="view:scrollview,rownumbers:true,singleSelect:true,autoRowHeight:false,pageSize:50">
-			<caption
-				style="padding: 5px; background-color: #f5f5f5; font-weight: bold">本周进展情况</caption>
+			<caption style="padding: 5px; background-color: #f5f5f5; font-weight: bold">本周进展情况</caption>
 			<thead>
 				<tr>
-					<th
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold"
-						colspan="2">本周项目版本</th>
+					<th style="padding: 5px; background-color: #f5f5f5; font-weight: bold" colspan="2">本周项目版本</th>
 					<th style="padding: 5px;" colspan="11">${pv}</th>
 				</tr>
 				<tr>
-					<th
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">序号</th>
-					<th
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">任务名称</th>
-					<th
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">版本</th>
-					<th
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">阶段</th>
-					<th
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">责任人</th>
-					<th
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">是否完成</th>
+					<th style="padding: 5px; background-color: #f5f5f5; font-weight: bold">序号</th>
+					<th style="padding: 5px; background-color: #f5f5f5; font-weight: bold">任务名称</th>
+					<th style="padding: 5px; background-color: #f5f5f5; font-weight: bold">版本</th>
+					<th style="padding: 5px; background-color: #f5f5f5; font-weight: bold">责任人</th>
+					<th style="padding: 5px; background-color: #f5f5f5; font-weight: bold">是否完成</th>
 
-					<th
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">计划完成日期</th>
-					<th
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">任务计划工时</th>
-					<th
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">本周实际工时</th>
-					<th
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">实际总工时</th>
-					<th
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">实际完成日期</th>
+					<th style="padding: 5px; background-color: #f5f5f5; font-weight: bold">计划完成日期</th>
+					<th style="padding: 5px; background-color: #f5f5f5; font-weight: bold">任务计划工时</th>
+					<th style="padding: 5px; background-color: #f5f5f5; font-weight: bold">本周实际工时</th>
+					<th style="padding: 5px; background-color: #f5f5f5; font-weight: bold">实际总工时</th>
+					<th style="padding: 5px; background-color: #f5f5f5; font-weight: bold">实际完成日期</th>
 				</tr>
 			</thead>
 
@@ -166,29 +129,19 @@ button:hover {
 
 
 
-		<table id="nextWeek" border="1" cellspacing="0"
-			class="easyui-datagrid"
-			style="width: 800px; border: 1px solid #ddd; border-collapse: collapse;"
+		<table id="nextWeek" border="1" cellspacing="0" class="easyui-datagrid" style="width: 800px; border: 1px solid #ddd; border-collapse: collapse;"
 			data-options="view:scrollview,rownumbers:true,singleSelect:true">
 
-			<caption
-				style="padding: 5px; background-color: #f5f5f5; font-weight: bold">下周进展情况</caption>
+			<caption style="padding: 5px; background-color: #f5f5f5; font-weight: bold">下周进展情况</caption>
 			<tbody>
 				<tr>
-					<td
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">序号</td>
-					<td
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">任务名称</td>
-					<td
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">责任人</td>
-					<td
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">任务计划工时</td>
-					<td
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">剩余计划工时</td>
-					<td
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">计划完成日期</td>
-					<td
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">备注</td>
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">序号</td>
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">任务名称</td>
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">责任人</td>
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">任务计划工时</td>
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">剩余计划工时</td>
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">计划完成日期</td>
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">备注</td>
 				</tr>
 				<% if(wk!=null){%> <%for(item in wk){%>
 				<tr>
@@ -213,21 +166,15 @@ button:hover {
 
 
 
-		<table id="maxRist" border="1" cellspacing="0" class="easyui-datagrid"
-			style="width: 800px; border: 1px solid #ddd; border-collapse: collapse;"
+		<table id="maxRist" border="1" cellspacing="0" class="easyui-datagrid" style="width: 800px; border: 1px solid #ddd; border-collapse: collapse;"
 			data-options="view:scrollview,rownumbers:true,singleSelect:true,autoRowHeight:false">
-			<caption
-				style="padding: 5px; background-color: #f5f5f5; font-weight: bold">当前重要风险</caption>
+			<caption style="padding: 5px; background-color: #f5f5f5; font-weight: bold">当前重要风险</caption>
 			<thead>
 				<tr>
-					<th
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">风险名称</th>
-					<th
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">跟踪简述</th>
-					<th
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">当前状态</th>
-					<th
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">操作</th>
+					<th style="padding: 5px; background-color: #f5f5f5; font-weight: bold">风险名称</th>
+					<th style="padding: 5px; background-color: #f5f5f5; font-weight: bold">跟踪简述</th>
+					<th style="padding: 5px; background-color: #f5f5f5; font-weight: bold">当前状态</th>
+					<th style="padding: 5px; background-color: #f5f5f5; font-weight: bold">操作</th>
 				</tr>
 			</thead>
 
@@ -236,23 +183,17 @@ button:hover {
 				<tr>
 					<td style="width: 25%"><input value="${item.name}"></td>
 					<td style="width: 50%"><input value="${item.desc}"></td>
-					<td style="width: 15%"><select class="easyui-combobox"
-						style="width: 100%">
+					<td style="width: 15%"><select class="easyui-combobox" style="width: 100%">
 							<option<%if(item.status == '已识别'){%>selected<%}%>>已识别</option>
 							<option<%if(item.status == '跟踪'){%>selected<%}%>>跟踪</option>
 							<option<%if(item.status == '已发生'){%>selected<%}%>>已发生</option>
 							<option<%if(item.status == '应急处理'){%>selected<%}%>>应急处理</option>
-							<option<%if(item.status ==
-								'关闭（处理）'){%>selected<%}%>>关闭（处理）</option>
-							<option<%if(item.status ==
-								'关闭（规避）'){%>selected<%}%>>关闭（规避）</option>
+							<option<%if(item.status == '关闭（处理）'){%>selected<%}%>>关闭（处理）</option>
+							<option<%if(item.status == '关闭（规避）'){%>selected<%}%>>关闭（规避）</option>
 
 					</select></td>
-					<td style="width: 10%"><% if(wDetails!=null &&
-						wDetails.isSubmit==0 ){%> <a href="#" onclick="delectTr(this)"
-						class="easyui-linkbutton">删除</a> <%}else if(wDetails==null) {%> <a
-						href="#" onclick="delectTr(this)" class="easyui-linkbutton">删除</a>
-						<%}else{%> <a href="#" class="easyui-linkbutton">删除</a> <%}%>
+					<td style="width: 10%"><% if(wDetails!=null && wDetails.isSubmit==0 ){%> <a href="#" onclick="delectTr(this)" class="easyui-linkbutton">删除</a> <%}else if(wDetails==null) {%> <a href="#"
+						onclick="delectTr(this)" class="easyui-linkbutton">删除</a> <%}else{%> <a href="#" class="easyui-linkbutton">删除</a> <%}%>
 					</td>
 				</tr>
 				<%}%> <%}%>
@@ -260,13 +201,8 @@ button:hover {
 
 			<tfoot>
 				<tr>
-					<td colspan="4"><% if(wDetails!=null && wDetails.isSubmit==0
-						){%> <a href="#" onclick="addRistTr()" class="easyui-linkbutton"
-						data-options="iconCls:'icon-add',toggle:true">新增重要风险</a> <%}else
-						if(wDetails==null) {%> <a href="#" onclick="addRistTr()"
-						class="easyui-linkbutton"
-						data-options="iconCls:'icon-add',toggle:true">新增重要风险</a>
-						<%}else{%> <a href="#" class="easyui-linkbutton"
+					<td colspan="4"><% if(wDetails!=null && wDetails.isSubmit==0 ){%> <a href="#" onclick="addRistTr()" class="easyui-linkbutton" data-options="iconCls:'icon-add',toggle:true">新增重要风险</a> <%}else
+						if(wDetails==null) {%> <a href="#" onclick="addRistTr()" class="easyui-linkbutton" data-options="iconCls:'icon-add',toggle:true">新增重要风险</a> <%}else{%> <a href="#" class="easyui-linkbutton"
 						data-options="iconCls:'icon-add',toggle:true">新增重要风险</a> <%}%>
 
 					</td>
@@ -275,21 +211,15 @@ button:hover {
 		</table>
 
 
-		<table id="maxqu" border="1" cellspacing="0" class="easyui-datagrid"
-			style="width: 800px; border: 1px solid #ddd; border-collapse: collapse;"
+		<table id="maxqu" border="1" cellspacing="0" class="easyui-datagrid" style="width: 800px; border: 1px solid #ddd; border-collapse: collapse;"
 			data-options="view:scrollview,rownumbers:true,singleSelect:true,autoRowHeight:false">
-			<caption
-				style="padding: 5px; background-color: #f5f5f5; font-weight: bold">当前重大问题</caption>
+			<caption style="padding: 5px; background-color: #f5f5f5; font-weight: bold">当前重大问题</caption>
 			<thead>
 				<tr>
-					<th
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">问题名称</th>
-					<th
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">问题简述</th>
-					<th
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">当前状态</th>
-					<th
-						style="padding: 5px; background-color: #f5f5f5; font-weight: bold">操作</th>
+					<th style="padding: 5px; background-color: #f5f5f5; font-weight: bold">问题名称</th>
+					<th style="padding: 5px; background-color: #f5f5f5; font-weight: bold">问题简述</th>
+					<th style="padding: 5px; background-color: #f5f5f5; font-weight: bold">当前状态</th>
+					<th style="padding: 5px; background-color: #f5f5f5; font-weight: bold">操作</th>
 				</tr>
 			</thead>
 
@@ -300,71 +230,45 @@ button:hover {
 					<td style="width: 25%"><input value="${item.name}"></td>
 					<td style="width: 50%"><input value="${item.desc}"></td>
 
-					<td style="width: 15%"><select class="easyui-combobox"
-						style="width: 100%">
+					<td style="width: 15%"><select class="easyui-combobox" style="width: 100%">
 							<option<%if(item.status == '已识别'){%>selected<%}%>>已识别</option>
 							<option<%if(item.status == '跟踪'){%>selected<%}%>>跟踪</option>
 							<option<%if(item.status == '已发生'){%>selected<%}%>>已发生</option>
 							<option<%if(item.status == '应急处理'){%>selected<%}%>>应急处理</option>
-							<option<%if(item.status ==
-								'关闭（处理）'){%>selected<%}%>>关闭（处理）</option>
-							<option<%if(item.status ==
-								'关闭（规避）'){%>selected<%}%>>关闭（规避）</option>
+							<option<%if(item.status == '关闭（处理）'){%>selected<%}%>>关闭（处理）</option>
+							<option<%if(item.status == '关闭（规避）'){%>selected<%}%>>关闭（规避）</option>
 
 					</select></td>
 
-					<td style="width: 10%"><% if(wDetails!=null &&
-						wDetails.isSubmit==0 ){%> <a href="#" onclick="delectTr(this)"
-						class="easyui-linkbutton">删除</a> <%}else if(wDetails==null) {%> <a
-						href="#" onclick="delectTr(this)" class="easyui-linkbutton">删除</a>
-						<%}else{%> <a href="#" class="easyui-linkbutton">删除</a> <%}%>
+					<td style="width: 10%"><% if(wDetails!=null && wDetails.isSubmit==0 ){%> <a href="#" onclick="delectTr(this)" class="easyui-linkbutton">删除</a> <%}else if(wDetails==null) {%> <a href="#"
+						onclick="delectTr(this)" class="easyui-linkbutton">删除</a> <%}else{%> <a href="#" class="easyui-linkbutton">删除</a> <%}%>
 					</td>
 				</tr>
 				<%}%> <%}%>
 				<tr colspan="4">
-					<table border="1" cellspacing="0"
-						style="width: 800px; border: 1px solid #ddd; border-collapse: collapse;">
+					<table border="1" cellspacing="0" style="width: 800px; border: 1px solid #ddd; border-collapse: collapse;">
 						<tr>
 
-							<td colspan="4"><% if(wDetails!=null && wDetails.isSubmit==0
-								){%> <a href="#" onclick="addMaxTr()" class="easyui-linkbutton"
-								data-options="iconCls:'icon-add',toggle:true">新增重大问题</a> <%}else
-								if(wDetails==null) {%> <a href="#" onclick="addMaxTr()"
-								class="easyui-linkbutton"
-								data-options="iconCls:'icon-add',toggle:true">新增重大问题</a>
-								<%}else{%> <a href="#" class="easyui-linkbutton"
-								data-options="iconCls:'icon-add',toggle:true">新增重大问题</a> <%}%> <input
-								id="returnProjectId" type='hidden' value="${returnProjectId}" />
-								<% if(wDetails!=null){%> <input id="sSubmit" type='hidden'
-								value="${wDetails.isSubmit}" /> <input id="cancelSubmit"
-								type='hidden' value="${wDetails.id}" /> <%}%>
+							<td colspan="4"><% if(wDetails!=null && wDetails.isSubmit==0 ){%> <a href="#" onclick="addMaxTr()" class="easyui-linkbutton" data-options="iconCls:'icon-add',toggle:true">新增重大问题</a>
+								<%}else if(wDetails==null) {%> <a href="#" onclick="addMaxTr()" class="easyui-linkbutton" data-options="iconCls:'icon-add',toggle:true">新增重大问题</a> <%}else{%> <a href="#"
+								class="easyui-linkbutton" data-options="iconCls:'icon-add',toggle:true">新增重大问题</a> <%}%> <input id="returnProjectId" type='hidden' value="${returnProjectId}" /> <% if(wDetails!=null){%> <input
+								id="sSubmit" type='hidden' value="${wDetails.isSubmit}" /> <input id="cancelSubmit" type='hidden' value="${wDetails.id}" /> <%}%>
 							</td>
 
 						</tr>
 						<tr>
-							<td
-								style="padding: 5px; background-color: #f5f5f5; font-weight: bold">预期偏差</td>
-							<td colspan="3"><% if(wDetails!=null){%> <input
-								class="easyui-textbox" id="expectedDeviation"
-								value="${wDetails.expectedDeviation}"
-								data-options="multiline:true, validType:'length[0,100]'"
-								style="width: 100%; height: 50px"> <%}else{%> <input
-								class="easyui-textbox" id="expectedDeviation"
-								data-options="multiline:true, validType:'length[0,100]'"
+							<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">预期偏差</td>
+							<td colspan="3"><% if(wDetails!=null){%> <input class="easyui-textbox" id="expectedDeviation" value="${wDetails.expectedDeviation}" data-options="multiline:true, validType:'length[0,100]'"
+								style="width: 100%; height: 50px"> <%}else{%> <input class="easyui-textbox" id="expectedDeviation" data-options="multiline:true, validType:'length[0,100]'"
 								style="width: 100%; height: 50px"> <%}%>
 							</td>
 
 						</tr>
 						<tr>
-							<td
-								style="padding: 5px; background-color: #f5f5f5; font-weight: bold">其他</td>
-							<td colspan="3"><% if(wDetails!=null){%> <input
-								class="easyui-textbox" id="other" value="${wDetails.other}"
-								data-options="multiline:true, validType:'length[0,100]'"
-								style="width: 100%; height: 50px"> <%}else{%> <input
-								class="easyui-textbox" id="other"
-								data-options="multiline:true,validType:'length[0,100]'"
-								style="width: 100%; height: 50px"> <%}%>
+							<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">其他</td>
+							<td colspan="3"><% if(wDetails!=null){%> <input class="easyui-textbox" id="other" value="${wDetails.other}" data-options="multiline:true, validType:'length[0,100]'"
+								style="width: 100%; height: 50px"> <%}else{%> <input class="easyui-textbox" id="other" data-options="multiline:true,validType:'length[0,100]'" style="width: 100%; height: 50px">
+								<%}%>
 							</td>
 
 						</tr>
@@ -375,9 +279,8 @@ button:hover {
 
 		<hr />
 
-		<font size="2">创建人：</font> <font size="2">${pd.userName}</font> <font
-			size="2">&nbsp;</font> <font size="2">创建时间：</font> <font size="2">
-			<% if(pd.created!=null){%> ${pd.created} <%}else{%> 无 <%}%> </font> </br> </br>
+		<font size="2">创建人：</font> <font size="2">${pd.userName}</font> <font size="2">&nbsp;</font> <font size="2">创建时间：</font> <font size="2"> <% if(pd.created!=null){%> ${pd.created} <%}else{%> 无
+			<%}%> </font> </br> </br>
 
 
 		<button onclick="pageReturn()">返回</button>
@@ -396,8 +299,7 @@ button:hover {
 
 
 
-<!-- ====================================================================================================================== -->
-<!-- style & script 分隔线 --> <!-- ====================================================================================================================== -->
+<!-- ====================================================================================================================== --> <!-- style & script 分隔线 --> <!-- ====================================================================================================================== -->
 <script type="text/javascript">
 	function pageReturn() {
 
