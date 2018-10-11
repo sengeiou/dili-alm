@@ -1,45 +1,88 @@
 $(document).ready(function() {
 
-			$('#modified').datebox('calendar').calendar({
-						validator : function(date) {
-							var now = new Date();
-							return now.getTime() / 1000 >= date.getTime() / 1000;
-						}
-					});
+	$('#modified').datebox('calendar').calendar({
+				validator : function(date) {
+					var now = new Date();
+					return now.getTime() / 1000 >= date.getTime() / 1000;
+				}
+			});
 
-			$('#owner').textbox('addClearBtn', 'icon-clear');
+	loadProjectSelect();
+	loadVisionCondition();
+	loadProjectCondition();
 
-			loadProjectSelect();
-			loadVisionCondition();
-			loadProjectCondition();
+	$("#changeIdTr").css("display", "none");
+	$('#_projectId').combobox({
+				onChange : function(o, n) {
+					// 获取到的项目ID
+					var projectId = $('#_projectId').combobox('getValue');
+					if (isDefaultValue(projectId)) {
+						return;
+					}
+					loadVisionSelect(projectId);
+					loadMemberSelect(projectId);
+					loadTaskSelect(projectId);
+					loadChangePorjectSelect(projectId);
+				}
+			});
 
-			$("#changeIdTr").css("display", "none");
-			$('#_projectId').combobox({
-						onChange : function(o, n) {
-							// 获取到的项目ID
-							var projectId = $('#_projectId').combobox('getValue');
-							if (isDefaultValue(projectId)) {
-								return;
+	$('#flowSt').combobox({
+				onSelect : function(o, n) {
+					// 获取到的项目ID
+					if (o.value == 0) {
+						$("#changeIdTr").css("display", "block");
+					} else {
+						$("#changeIdTr").css("display", "none");
+						loadChangePorjectSelect($('#_projectId')
+								.combobox('getValue'));
+					}
+				}
+			});
+});
+
+function taskDetailGridLoadSuccess() {
+	$('.easyui-tooltip').each(function(index) {
+				console.log(index)
+				$('#tip' + index).tooltip({
+							onShow : function() {
+								$(this).tooltip('tip').css({
+											margin : '0 30px',
+											backgroundColor : '#666',
+											borderColor : '#666',
+											color : '#fff'
+										});
 							}
-							loadVisionSelect(projectId);
-							loadMemberSelect(projectId);
-							loadTaskSelect(projectId);
-							loadChangePorjectSelect(projectId);
-						}
-					});
+						})
+			})
+}
 
-			$('#flowSt').combobox({
-						onSelect : function(o, n) {
-							// 获取到的项目ID
-							if (o.value == 0) {
-								$("#changeIdTr").css("display", "block");
-							} else {
-								$("#changeIdTr").css("display", "none");
-								loadChangePorjectSelect($('#_projectId').combobox('getValue'));
-							}
-						}
-					});
-		});
+function describeFormatter(value, row, index) {
+	var content;
+	if (value == undefined) {
+		content = "";
+	} else {
+		content = '<span id="tip' + index + '" class="easyui-tooltip" title="'
+				+ value + '">' + value + '</span>';
+	}
+	return content;
+}
+
+var userLoad = false;
+
+function removeAdminUser() {
+	if (userLoad) {
+		return;
+	}
+	var data = $(this).combobox('getData');
+	$(data).each(function(index, item) {
+				if (item.id == 1) {
+					data.splice(index, 1);
+					return false;
+				}
+			});
+	userLoad = true;
+	$(this).combobox('loadData', data);
+}
 
 function isProjectDate() {
 
@@ -48,7 +91,9 @@ function isProjectDate() {
 	var stratDate = $('#startDateShow').val();
 	var endDate = $('#endDateShow').val();
 	var htmlobj = $.ajax({
-				url : "${contextPath}/task/isProjectDate.json?projectId=" + projectId + "&startDateShow=" + stratDate + "&endDateShow=" + endDate,
+				url : "${contextPath}/task/isProjectDate.json?projectId="
+						+ projectId + "&startDateShow=" + stratDate
+						+ "&endDateShow=" + endDate,
 				async : false
 			});
 	var str = htmlobj.responseText;
@@ -58,11 +103,12 @@ function isProjectDate() {
 }
 function loadProjectSelect(queryAll) {
 	$('#_projectId').combobox({
-				url : "${contextPath!}/task/listTreeProject.json" + (queryAll ? '?queryAll=true' : ''),
-				valueField : 'id',
-				textField : 'name',
-				editable : false
-			});
+		url : "${contextPath!}/task/listTreeProject.json"
+				+ (queryAll ? '?queryAll=true' : ''),
+		valueField : 'id',
+		textField : 'name',
+		editable : false
+	});
 
 }
 
@@ -77,11 +123,11 @@ function loadVisionSelect(id) {
 }
 function loadMemberSelect(id) {
 	$('#_owner').combobox({
-				url : "${contextPath!}/task/listTreeUserByProject.json?projectId=" + id,
-				valueField : 'id',
-				textField : 'realName',
-				editable : false
-			});
+		url : "${contextPath!}/task/listTreeUserByProject.json?projectId=" + id,
+		valueField : 'id',
+		textField : 'realName',
+		editable : false
+	});
 }
 
 function loadVisionCondition() {
@@ -122,14 +168,14 @@ function loadTaskSelect(id) {
 
 function loadChangePorjectSelect(id) {
 	$('#_changeId').combobox({
-				url : "${contextPath!}/task/listTreeProjectChange.json?projectId=" + id,
-				valueField : 'id',
-				textField : 'name',
-				editable : false,
-				onChange : function(o, n) {
+		url : "${contextPath!}/task/listTreeProjectChange.json?projectId=" + id,
+		valueField : 'id',
+		textField : 'name',
+		editable : false,
+		onChange : function(o, n) {
 
-				}
-			});
+		}
+	});
 }
 
 function ownerFormatter(value, row, index) {
@@ -524,7 +570,8 @@ function saveTaskDetail() {
 	$('#dlg').dialog('close');
 	$.ajax({
 				type : "POST",
-				url : "${contextPath}/task/updateTaskDetails?planTimeStr=" + planTimeStr,
+				url : "${contextPath}/task/updateTaskDetails?planTimeStr="
+						+ planTimeStr,
 				data : formDate,
 				processData : true,
 				dataType : "json",
@@ -536,8 +583,12 @@ function saveTaskDetail() {
 						} else {
 							$('#grid').datagrid('reload');
 						}
-						LogUtils.saveLog(LOG_MODULE_OPS.PERFORM_PROJECT_VERSION_PHASE_TASK, "执行任务:" + data.data + ":成功", function() {
-								});
+						LogUtils
+								.saveLog(
+										LOG_MODULE_OPS.PERFORM_PROJECT_VERSION_PHASE_TASK,
+										"执行任务:" + data.data + ":成功",
+										function() {
+										});
 					} else {
 						$.messager.alert('错误', data.result);
 					}
@@ -550,41 +601,41 @@ function saveTaskDetail() {
 
 // 工时填写校验
 $.extend($.fn.validatebox.defaults.rules, {
-			taskHours : {
-				validator : function(value, param) {
-					var s = $("input[name=" + param[0] + "]").val();
+	taskHours : {
+		validator : function(value, param) {
+			var s = $("input[name=" + param[0] + "]").val();
 
-					if (value > 0 || s > 0) {
-						if (value > 8) {
-							$.fn.validatebox.defaults.rules.taskHours.message = '当日所填任务工时只能是8小时！';
-							return false;
+			if (value > 0 || s > 0) {
+				if (value > 8) {
+					$.fn.validatebox.defaults.rules.taskHours.message = '当日所填任务工时只能是8小时！';
+					return false;
 
-						} else {
-							return true;
-						}
+				} else {
+					return true;
+				}
 
-					} else {
-						$.fn.validatebox.defaults.rules.taskHours.message = '工时或加班工时必选填写其中一项！';
-						return false;
-					}
-				},
-				message : ''
+			} else {
+				$.fn.validatebox.defaults.rules.taskHours.message = '工时或加班工时必选填写其中一项！';
+				return false;
 			}
-		})
+		},
+		message : ''
+	}
+})
 $.extend($.fn.validatebox.defaults.rules, {
-			overHours : {
-				validator : function(value, param) {
-					var s = $("input[name=" + param[0] + "]").val();
-					if (value > 0 || s > 0) {
-						return true;
-					} else {
-						$.fn.validatebox.defaults.rules.overHours.message = '工时或加班工时必选填写其中一项！';
-						return false;
-					}
-				},
-				message : ''
+	overHours : {
+		validator : function(value, param) {
+			var s = $("input[name=" + param[0] + "]").val();
+			if (value > 0 || s > 0) {
+				return true;
+			} else {
+				$.fn.validatebox.defaults.rules.overHours.message = '工时或加班工时必选填写其中一项！';
+				return false;
 			}
-		});
+		},
+		message : ''
+	}
+});
 
 // 判断是否是项目经理
 function isProjectManager() {
@@ -698,38 +749,42 @@ function pauseTaskStatus() {
 
 function complate(id) {
 	$.messager.confirm('提示', '提前完成任务，该任务将不能填写工时，确定要执行该操作？', function(f) {
-				if (!f) {
-					return false;
-				}
-				if (isTask(id)) {
-					$.ajax({
-								type : "POST",
-								url : "${contextPath}/task/complateTask?id=" + id,
-								processData : true,
-								dataType : "json",
-								async : true,
-								success : function(data) {
-									if (data.code == "200") {
-										if (window.frames[0]) {
-											window.frames[0].reloadGrid();
-										} else {
-											$('#grid').datagrid('reload');
-										}
-										$('#dlg').dialog('close');
-										LogUtils.saveLog(LOG_MODULE_OPS.COMPLETE_PROJECT_VERSION_PHASE_TASK, "完成任务：" + data.data + ":成功", function() {
-												});
-									} else {
-										$.messager.alert('错误', data.result);
-									}
-								},
-								error : function() {
-									$.messager.alert('错误', '远程访问失败');
-								}
-							});
-				} else {
-					$.messager.alert('错误', '任务工时加班工时其中一项不能为0');
+		if (!f) {
+			return false;
+		}
+		if (isTask(id)) {
+			$.ajax({
+				type : "POST",
+				url : "${contextPath}/task/complateTask?id=" + id,
+				processData : true,
+				dataType : "json",
+				async : true,
+				success : function(data) {
+					if (data.code == "200") {
+						if (window.frames[0]) {
+							window.frames[0].reloadGrid();
+						} else {
+							$('#grid').datagrid('reload');
+						}
+						$('#dlg').dialog('close');
+						LogUtils
+								.saveLog(
+										LOG_MODULE_OPS.COMPLETE_PROJECT_VERSION_PHASE_TASK,
+										"完成任务：" + data.data + ":成功",
+										function() {
+										});
+					} else {
+						$.messager.alert('错误', data.result);
+					}
+				},
+				error : function() {
+					$.messager.alert('错误', '远程访问失败');
 				}
 			});
+		} else {
+			$.messager.alert('错误', '任务工时加班工时其中一项不能为0');
+		}
+	});
 }
 
 $.extend($.fn.validatebox.defaults.rules, {

@@ -27,6 +27,20 @@
 			});
 		}
 		$.post(url, {}, function(res) {
+			var userId = $('#userId').combobox('getValue');
+			if (userId) {
+				var clearFlag = true;
+				$(res).each(function(index, item) {
+					if (userId == item.id) {
+						clearFlag = false;
+						return false;
+					}
+				});
+				if (clearFlag) {
+					$('#userId').combobox('initValue', '');
+					$('#userId').combobox('setText', '');
+				}
+			}
 			$('#userId').combobox('loadData', res);
 		});
 	}
@@ -47,19 +61,15 @@
 			<form id="form" class="easyui-form" method="post" fit="true">
 				<table style="padding: 10px;">
 					<tr>
-						<td style="padding: 5px;"><input class="easyui-datebox" name="startTime" id="startDate" style="width: 100%"
-							data-options="editable:false,label:'起止日期:',prompt:'2018-01-01'" /></td>
-						<td style="padding: 5px;"><input class="easyui-datebox" name="endTime" id="endDate" style="width: 100%"
-							data-options="editable:false,label:'至:',prompt:'今日'" /></td>
-						<td style="padding: 5px;"><input class="easyui-combotree" name="userId" id="userId" style="width: 100%"
+						<td style="padding: 5px;"><input class="easyui-datebox" name="startTime" id="startDate" style="width: 100%" data-options="editable:false,label:'起止日期:',prompt:'2018-01-01'" /></td>
+						<td style="padding: 5px;"><input class="easyui-datebox" name="endTime" id="endDate" style="width: 100%" data-options="editable:false,label:'至:',prompt:'今日'" /></td>
+						<td style="padding: 5px;"><input class="easyui-combobox" name="userId" id="userId" style="width: 100%"
 							data-options="
-								loadFilter:treeLoadFilter, 
-								editable:false,
+								editable:true,
 								label:'人员:',
-								multiple:true,
 								prompt:'--全部--',
-								_textField:'realName',
-								_valueField:'id',
+								textField:'realName',
+								valueField:'id',
 								url:'${contextPath!}/member/loadUsersByDepartment'" /></td>
 					</tr>
 					<tr>
@@ -71,14 +81,14 @@
 							_parentIdField:'parentId',
 							multiple:true,
 							url:'${contextPath!}/department/departments',
-							editable:false,
+							editable:true,
 							label:'部门:',
 							prompt:'-所有部门-',
 							onChange:loadUsers" /></td>
 					</tr>
 					<tr>
-						<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid()">查询</a> <a
-							href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload" onclick="clearForm()">重置</a></td>
+						<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid()">查询</a> <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload"
+							onclick="clearForm()">重置</a></td>
 					</tr>
 				</table>
 			</form>
@@ -95,10 +105,10 @@
 			<table class="easyui-form" method="post" fit="true">
 				<tr>
 					<td><a href="#" class="easyui-linkbutton"
-						style="width: 40px; height: 24px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef"
-						onclick="print()"> 打印 </a> <a href="javascript:doExport('grid')" class="easyui-linkbutton"
-						style="width: 80px; height: 24px; margin-right: 3px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef"
-						plain="true"> 导出EXCEL </a></td>
+						style="width: 40px; height: 24px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef" onclick="print()"> 打印 </a> <a
+						href="javascript:doExport('grid')" class="easyui-linkbutton"
+						style="width: 80px; height: 24px; margin-right: 3px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef" plain="true">
+							导出EXCEL </a></td>
 				</tr>
 			</table>
 		</div>
@@ -130,10 +140,8 @@
 	</div>
 </div>
 <div id="smDialog" style="display: none;"></div>
-<!-- ====================================================================================================================== --> <!-- style & script 分隔线 -->
-<!-- ====================================================================================================================== --> <script
-	src="${contextPath}/resources/js/jquery.jqprint-0.3.js"></script> <script src="${contextPath}/resources/js/jquery-migrate-1.1.0.js"></script>
-<script type="text/javascript">
+<!-- ====================================================================================================================== --> <!-- style & script 分隔线 --> <!-- ====================================================================================================================== -->
+<script src="${contextPath}/resources/js/jquery.jqprint-0.3.js"></script> <script src="${contextPath}/resources/js/jquery-migrate-1.1.0.js"></script> <script type="text/javascript">
 	function onLoadSuccess(data) {
 		var merges = [ {
 			index : 1,
@@ -169,66 +177,11 @@
 		formData.userId = $("#userId").val();
 		$("#grid").datagrid("load", formData);
 	}
-	$(function() {
 
-		//初始化多选复选框
-		initCombobox('departmentId');
-	});
-	function initCombobox(id) {
-		var value = "";
-		//加载下拉框复选框
-		$('#' + id)
-				.combobox(
-						{
-							url : '${contextPath}/department/departments',
-							panelHeight : '200px',
-							method : 'post',
-							valueField : 'id',
-							textField : 'name',
-							multiple : true,
-							formatter : function(row) { //formatter方法就是实现了在每个下拉选项前面增加checkbox框的方法
-								var opts = $(this).combobox('options');
-								return '<input type="checkbox" class="combobox-checkbox">'
-										+ row[opts.textField]
-							},
-							onLoadSuccess : function() { //下拉框数据加载成功调用
-								var opts = $(this).combobox('options');
-								var target = this;
-								var values = $(target).combobox('getValues');//获取选中的值的values
-								$.map(values, function(value) {
-									var el = opts.finder.getEl(target, value);
-									el.find('input.combobox-checkbox')
-											._propAttr('checked', true);
-								})
-							},
-							onSelect : function(row) { //选中一个选项时调用
-								var opts = $(this).combobox('options');
-								//获取选中的值的values
-								$("#" + id).val($(this).combobox('getValues'));
-
-								//设置选中值所对应的复选框为选中状态
-								var el = opts.finder.getEl(this,
-										row[opts.valueField]);
-								el.find('input.combobox-checkbox')._propAttr(
-										'checked', true);
-							},
-							onUnselect : function(row) {//不选中一个选项时调用
-								var opts = $(this).combobox('options');
-								//获取选中的值的values
-								$("#" + id).val($(this).combobox('getValues'));
-
-								var el = opts.finder.getEl(this,
-										row[opts.valueField]);
-								el.find('input.combobox-checkbox')._propAttr(
-										'checked', false);
-							}
-						});
-	}
 	function getCheckBoxSelect(row) {
 
 		var opts = $(this).combobox('options');
-		return '<input type="checkbox" class="combobox-checkbox">'
-				+ row[opts.textField];//关键在这一步，在项前面加一个checkbox。opts这个是combobox对象。
+		return '<input type="checkbox" class="combobox-checkbox">' + row[opts.textField];//关键在这一步，在项前面加一个checkbox。opts这个是combobox对象。
 
 	}
 
@@ -265,9 +218,7 @@
 		if (!row.userNo) {
 			return value;
 		}
-		return '<a href="${contextPath!}/taskDetails/index?userId='
-				+ row.userNo + '&totalHour=' + row.totalHour + '">' + value
-				+ '</a>';
+		return '<a href="${contextPath!}/taskDetails/index?userId=' + row.userNo + '&totalHour=' + row.totalHour + '">' + value + '</a>';
 	}
 
 	function print() {
