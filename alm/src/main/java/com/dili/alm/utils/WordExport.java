@@ -249,14 +249,14 @@ public class WordExport {
 			row10Temp.createCell(0).setCellValue(td.get(i).getNumber() + "");
 			row10Temp.createCell(1).setCellValue(td.get(i).getName() + "");
 			row10Temp.createCell(2).setCellValue(td.get(i).getVersionId());
-			row10Temp.createCell(4).setCellValue(td.get(i).getOwner() + "");
-			row10Temp.createCell(5).setCellValue(td.get(i).getStatus() + "");
+			row10Temp.createCell(3).setCellValue(td.get(i).getOwner() + "");
+			row10Temp.createCell(4).setCellValue(td.get(i).getStatus() + "");
 
-			row10Temp.createCell(6).setCellValue(td.get(i).getEndDateStr());
-			row10Temp.createCell(7).setCellValue(td.get(i).getPlanTime() + "");
-			row10Temp.createCell(8).setCellValue(td.get(i).getWeekHour());
-			row10Temp.createCell(9).setCellValue(td.get(i).getRealHour());
-			row10Temp.createCell(10).setCellValue(td.get(i).getFackEndDate());
+			row10Temp.createCell(5).setCellValue(td.get(i).getEndDateStr());
+			row10Temp.createCell(6).setCellValue(td.get(i).getPlanTime() + "");
+			row10Temp.createCell(7).setCellValue(td.get(i).getWeekHour());
+			row10Temp.createCell(8).setCellValue(td.get(i).getRealHour());
+			row10Temp.createCell(9).setCellValue(td.get(i).getFackEndDate());
 
 		}
 	}
@@ -279,13 +279,13 @@ public class WordExport {
 		row10.createCell(0).setCellValue("序号");
 		row10.createCell(1).setCellValue("任务名称");
 		row10.createCell(2).setCellValue("版本");
-		row10.createCell(4).setCellValue("责任人");
-		row10.createCell(5).setCellValue("是否完成");
-		row10.createCell(6).setCellValue("计划完成日期");
-		row10.createCell(7).setCellValue("任务计划工时");
-		row10.createCell(8).setCellValue("本周实际工时");
-		row10.createCell(9).setCellValue("实际总工时");
-		row10.createCell(10).setCellValue("实际完成日期");
+		row10.createCell(3).setCellValue("责任人");
+		row10.createCell(4).setCellValue("是否完成");
+		row10.createCell(5).setCellValue("计划完成日期");
+		row10.createCell(6).setCellValue("任务计划工时");
+		row10.createCell(7).setCellValue("本周实际工时");
+		row10.createCell(8).setCellValue("实际总工时");
+		row10.createCell(9).setCellValue("实际完成日期");
 	}
 
 	private static void getExeclProjectDesc(ProjectWeeklyDto pd, WeeklyDetails wDetails, HSSFSheet sheet) {
