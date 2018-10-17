@@ -704,11 +704,6 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		pd.setId(id);
 		/* WeeklyPara weeklyPara = new WeeklyPara(); */
 		Weekly wkly = weeklyMapper.selectByPrimaryKey(Long.parseLong(id));
-		/*
-		 * weeklyPara.setId(Long.parseLong(pd.getProjectId()));
-		 * weeklyPara.setStartDate(DateUtil.getDateStr(wkly.getStartDate()));
-		 * weeklyPara.setEndDate(DateUtil.getDateStr(wkly.getEndDate()));
-		 */
 
 		pd.setCompletedProgress(wkly.getProgress());
 		// 本周进展情况

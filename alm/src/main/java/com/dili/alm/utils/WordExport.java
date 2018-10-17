@@ -197,7 +197,7 @@ public class WordExport {
 	private static void getExeclNextWeekTableList(List<NextWeeklyDto> wk, HSSFSheet sheet, int nextWeekLength, int nextLength) {
 		for (int i = 0; i < nextLength; i++) {
 
-			HSSFRow row13Temp = sheet.createRow(nextWeekLength + 1 + i);
+			HSSFRow row13Temp = sheet.createRow(nextWeekLength + i);
 			row13Temp.createCell(0).setCellValue(wk.get(i).getNumber() + "");
 			row13Temp.createCell(1).setCellValue(wk.get(i).getName() + "");
 			sheet.addMergedRegion(new CellRangeAddress(nextWeekLength + i + 1, nextWeekLength + i + 1, 1, 2));
@@ -220,12 +220,12 @@ public class WordExport {
 		row11.createCell(0).setCellValue("下周工作计划");
 		sheet.addMergedRegion(new CellRangeAddress(descLength + length, descLength + length, 0, 11));
 
-		HSSFRow row12 = sheet.createRow(descLength + length + 1);
-		row12.createCell(5).setCellValue("需求确认阶段");
-		sheet.addMergedRegion(new CellRangeAddress(descLength + length + 1, descLength + length + 1, 5, 11));
+//		HSSFRow row12 = sheet.createRow(descLength + length + 1);
+//		row12.createCell(5).setCellValue("需求确认阶段");
+//		sheet.addMergedRegion(new CellRangeAddress(descLength + length + 1, descLength + length + 1, 5, 11));
 		/***********/
 
-		HSSFRow row13 = sheet.createRow(descLength + length + 1 + 1);
+		HSSFRow row13 = sheet.createRow(descLength + length + 1);
 		row13.createCell(0).setCellValue("序号");
 		row13.createCell(1).setCellValue("任务名称");
 		sheet.addMergedRegion(new CellRangeAddress(descLength + length + 1 + 1, descLength + length + 1 + 1, 1, 2));
