@@ -12,7 +12,8 @@ function deptMemberFormatter(value, row, index) {
 }
 
 function serialNumberFormatter(value, row, index) {
-	return '<a href="javascript:void(0);" onclick="showDetail(' + row.id + ');">' + value + '</a>';
+	return '<a href="javascript:void(0);" onclick="showDetail(' + row.id
+			+ ');">' + value + '</a>';
 }
 
 function showDetail(id) {
@@ -34,37 +35,47 @@ function showDetail(id) {
 function opptFormatter(value, row, index) {
 	var returnStr = "";
 	if (row.approving) {
-		returnStr = "<a href='javascr:void(0)' onclick='openUpdate(" + index + ")'>编辑</a>&nbsp<a href='javascr:void(0)' onclick='del(" + index + ");'>删除</a>";
+		returnStr = "<a href='javascr:void(0)' onclick='openUpdate(" + index
+				+ ")'>编辑</a>&nbsp<a href='javascr:void(0)' onclick='del("
+				+ index + ");'>删除</a>";
 	} else if (row.$_applyState == "1") {
 		returnStr = "<span> 编辑 &nbsp; 删除 </span>";
 	}
 
 	if (row.projectManagerApprov) {
-		returnStr = '<span><a href="javascr:void(0);" onclick="openApove(' + row.id + ',\'' + approveType.projectManagerApprove + '\');">审批</a></span>';
+		returnStr = '<span><a href="javascr:void(0);" onclick="openApove('
+				+ row.id + ',\'' + approveType.projectManagerApprove
+				+ '\');">审批</a></span>';
 	} else if (row.$_applyState == "2") {
 		returnStr = "<span> 审批  </span>";
 	}
 
 	if (row.generalManagerAppov) {
-		returnStr = '<span><a href="javascr:void(0);" onclick="openApove(' + row.id + ',\'' + approveType.generalManagerApprove + '\');">审批</a></span>';
+		returnStr = '<span><a href="javascr:void(0);" onclick="openApove('
+				+ row.id + ',\'' + approveType.generalManagerApprove
+				+ '\');">审批</a></span>';
 	} else if (row.$_applyState == "3") {
 		returnStr = "<span> 审批  </span>";
 	}
 
 	if (row.operactionManagerAppov) {
-		returnStr = '<span><a href="javascr:void(0);" onclick="openApove(' + row.id + ',\'' + approveType.operationManagerApprove + '\');">审批</a></span>';
+		returnStr = '<span><a href="javascr:void(0);" onclick="openApove('
+				+ row.id + ',\'' + approveType.operationManagerApprove
+				+ '\');">审批</a></span>';
 	} else if (row.$_applyState == "4") {
 		returnStr = "<span> 分配实施  </span>";
 	}
 
 	if (row.implementing) {
-		returnStr = "<span><a href='javascr:void(0)' onclick='implement(" + row.id + ")'>实施</a></span>";
+		returnStr = "<span><a href='javascr:void(0)' onclick='implement("
+				+ row.id + ")'>实施</a></span>";
 	} else if (row.$_applyState == "5") {
 		returnStr = "<span> 实施  </span>";
 	}
 
 	if (row.$_applyState == 6 || row.$_applyState == -1) {
-		returnStr = "<span><a href='javascr:void(0)' onclick='showDetail(" + row.id + ")'>查看</a></span>";
+		returnStr = "<span><a href='javascr:void(0)' onclick='showDetail("
+				+ row.id + ")'>查看</a></span>";
 	}
 	return returnStr;
 }
@@ -95,7 +106,8 @@ function changeProjectSetValue(id) {
 				if (res && res.length > 0) {
 					var p = res[0];
 					$('#projectManager').textbox('initValue', p.projectManager);
-					$('#projectSerialNumber').textbox('initValue', p.serialNumber);
+					$('#projectSerialNumber').textbox('initValue',
+							p.serialNumber);
 					$('#projectName-a').val(p.name);
 					$('#projectManagerId').val(p.$_projectManager);
 				}
@@ -108,64 +120,64 @@ function openInsert() {
 	}
 
 	$('#win').dialog({
-				title : '申请资源',
-				width : 830,
-				height : 500,
-				href : '${contextPath!}/hardwareResourceApply/add',
-				modal : true,
-				buttons : [{
-							text : '保存',
-							handler : function() {
-								var data = $("#editForm").serializeArray();
-								var data2 = createConfigurationRequirementJson();
-								if (data2 == "") {
-									$.messager.alert('错误', "配置信息尚未添加！");
-									return;
+		title : '申请资源',
+		width : 830,
+		height : 500,
+		href : '${contextPath!}/hardwareResourceApply/add',
+		modal : true,
+		buttons : [{
+					text : '保存',
+					handler : function() {
+						var data = $("#editForm").serializeArray();
+						var data2 = createConfigurationRequirementJson();
+						if (data2 == "") {
+							$.messager.alert('错误', "配置信息尚未添加！");
+							return;
+						}
+						$('#editForm').form('submit', {
+									url : '${contextPath!}/hardwareResourceApply/save',
+									queryParams : data2,
+									success : function(data) {
+										var obj = $.parseJSON(data);
+										if (obj.code == 200) {
+											$('#grid').datagrid('reload');
+											$('#win').dialog('close');
+										} else {
+											$.messager.alert('错误', obj.result);
+										}
+									}
+								});
+					}
+				}, {
+					text : '取消',
+					handler : function() {
+						$('#win').dialog('close');
+					}
+				}, {
+					text : '提交',
+					handler : function() {
+						var data = $("#editForm").serializeArray();
+						var data2 = createConfigurationRequirementJson();
+						if (data2 == "") {
+							$.messager.alert('错误', "配置信息尚未添加！");
+							return;
+						}
+						$('#editForm').form('submit', {
+							url : '${contextPath!}/hardwareResourceApply/saveAndSubmit',
+							queryParams : data2,
+							success : function(data) {
+								var obj = $.parseJSON(data);
+								if (obj.code == 200) {
+									$('#grid').datagrid('reload');
+									$('#win').dialog('close');
+								} else {
+									$.messager.alert('错误', obj.result);
 								}
-								$('#editForm').form('submit', {
-											url : '${contextPath!}/hardwareResourceApply/save',
-											queryParams : data2,
-											success : function(data) {
-												var obj = $.parseJSON(data);
-												if (obj.code == 200) {
-													$('#grid').datagrid('reload');
-													$('#win').dialog('close');
-												} else {
-													$.messager.alert('错误', obj.result);
-												}
-											}
-										});
 							}
-						}, {
-							text : '取消',
-							handler : function() {
-								$('#win').dialog('close');
-							}
-						}, {
-							text : '提交',
-							handler : function() {
-								var data = $("#editForm").serializeArray();
-								var data2 = createConfigurationRequirementJson();
-								if (data2 == "") {
-									$.messager.alert('错误', "配置信息尚未添加！");
-									return;
-								}
-								$('#editForm').form('submit', {
-											url : '${contextPath!}/hardwareResourceApply/saveAndSubmit',
-											queryParams : data2,
-											success : function(data) {
-												var obj = $.parseJSON(data);
-												if (obj.code == 200) {
-													$('#grid').datagrid('reload');
-													$('#win').dialog('close');
-												} else {
-													$.messager.alert('错误', obj.result);
-												}
-											}
-										});
-							}
-						}]
-			});
+						});
+					}
+				}]
+	});
 
 }
 
@@ -189,35 +201,37 @@ function openUpdate(index) {
 	}
 
 	$('#win').dialog({
-				title : '资源申请详情',
-				width : 830,
-				height : 500,
-				href : '${contextPath!}/hardwareResourceApply/toUpdate?id=' + selected.id,
-				modal : true,
-				buttons : [{
-							text : '保存',
-							handler : updateForms
-						}, {
-							text : '关闭',
-							handler : function() {
-								$('#win').dialog('close');
-							}
-						}, {
-							text : '提交',
-							handler : function() {
-								$.post('${contextPath!}/hardwareResourceApply/submit', {
-											id : selected.id
-										}, function(res) {
-											if (res.success) {
-												$('#grid').datagrid('reload');
-												$('#win').dialog('close');
-											} else {
-												$.messager.alert('错误', res.result);
-											}
-										});
-							}
-						}]
-			});
+		title : '资源申请详情',
+		width : 830,
+		height : 500,
+		href : '${contextPath!}/hardwareResourceApply/toUpdate?id='
+				+ selected.id,
+		modal : true,
+		buttons : [{
+					text : '保存',
+					handler : updateForms
+				}, {
+					text : '关闭',
+					handler : function() {
+						$('#win').dialog('close');
+					}
+				}, {
+					text : '提交',
+					handler : function() {
+						$.post('${contextPath!}/hardwareResourceApply/submit',
+								{
+									id : selected.id
+								}, function(res) {
+									if (res.success) {
+										$('#grid').datagrid('reload');
+										$('#win').dialog('close');
+									} else {
+										$.messager.alert('错误', res.result);
+									}
+								});
+					}
+				}]
+	});
 
 }
 
@@ -246,28 +260,29 @@ function openApove(id, type) {
 	}
 
 	$('#win').dialog({
-				title : '资源申请详情',
-				width : 830,
-				height : 500,
-				href : '${contextPath!}/hardwareResourceApply/goApprove?id=' + selected.id,
-				modal : true,
-				buttons : [{
-							text : '审批通过',
-							handler : function() {
-								approve();
-							}
-						}, {
-							text : '不通过',
-							handler : function() {
-								noAppov();
-							}
-						}, {
-							text : '关闭',
-							handler : function() {
-								$('#win').dialog('close');
-							}
-						}]
-			});
+		title : '资源申请详情',
+		width : 830,
+		height : 500,
+		href : '${contextPath!}/hardwareResourceApply/goApprove?id='
+				+ selected.id,
+		modal : true,
+		buttons : [{
+					text : '审批通过',
+					handler : function() {
+						approve();
+					}
+				}, {
+					text : '不通过',
+					handler : function() {
+						noAppov();
+					}
+				}, {
+					text : '关闭',
+					handler : function() {
+						$('#win').dialog('close');
+					}
+				}]
+	});
 
 }
 
@@ -284,7 +299,8 @@ function implement(id) {
 				title : '资源申请详情',
 				width : 830,
 				height : 500,
-				href : '${contextPath!}/hardwareResourceApply/goApprove?id=' + id,
+				href : '${contextPath!}/hardwareResourceApply/goApprove?id='
+						+ id,
 				modal : true,
 				buttons : [{
 							text : '完成',
@@ -309,23 +325,24 @@ function updateForms() {
 		return;
 	}
 	$('#editForm2').form('submit', {
-				url : '${contextPath!}/hardwareResourceApply/update',
-				queryParams : data2,
-				success : function(data) {
-					var obj = $.parseJSON(data);
-					if (obj.code == 200) {
+		url : '${contextPath!}/hardwareResourceApply/update',
+		queryParams : data2,
+		success : function(data) {
+			var obj = $.parseJSON(data);
+			if (obj.code == 200) {
 
-						$('#grid').datagrid('reload');
-						$('#grid').datagrid('updateRow', {
-									index : $('#grid').datagrid('getRowIndex', $('#grid').datagrid('getSelected')),
-									row : obj.data
-								});
-						$('#win').dialog('close');
-					} else {
-						$.messager.alert('错误', obj.result);
-					}
-				}
-			});
+				$('#grid').datagrid('reload');
+				$('#grid').datagrid('updateRow', {
+					index : $('#grid').datagrid('getRowIndex',
+							$('#grid').datagrid('getSelected')),
+					row : obj.data
+				});
+				$('#win').dialog('close');
+			} else {
+				$.messager.alert('错误', obj.result);
+			}
+		}
+	});
 }
 
 function saveOrUpdate() {
@@ -491,9 +508,7 @@ function add() {
 	var formInput = $('#configForm').serializeArray();
 	var formData = $.extend({}, formInput);
 
-	var addIndex = rows.length + 1;
-
-	var map = new Array();
+	var map = {};
 	$.each(formData, function(i, item) {
 				if (item.name == 'cpuAmount') {
 					var key = 'cpuAmount';
@@ -512,16 +527,14 @@ function add() {
 					map[key] = item.value;
 				}
 			});
-	if ($("#updateSige").val() != "") {
-		$('#configGrid').datagrid('updateRow', { // updateRow
-			index : 0,
-			row : map
-		});
-	} else {
-		$('#configGrid').datagrid('insertRow', {
-					index : addIndex,
+	alert($("#updateSige").val());
+	if ($("#updateSige").val()) {
+		$('#configGrid').datagrid('updateRow', {
+					index : $("#updateSige").val(),
 					row : map
 				});
+	} else {
+		$('#configGrid').datagrid('appendRow', map);
 	}
 
 	$('#configForm').form('clear');
@@ -545,7 +558,9 @@ function update(rowId) {
 	$('#updateSige').val(rowId);
 }
 function optionFormatter(value, row, index) {
-	return "<a href='JavaScript:delConfigGrid(" + index + ")'>删除</a>&nbsp;&nbsp;<a href='JavaScript:update(" + index + ")'>修改</a>";
+	return "<a href='JavaScript:delConfigGrid(" + index
+			+ ")'>删除</a>&nbsp;&nbsp;<a href='JavaScript:update(" + index
+			+ ")'>修改</a>";
 }
 
 // 配置要求的json串
