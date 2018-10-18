@@ -482,23 +482,26 @@
 		t1.cost_type WHEN 5 THEN total ELSE '/' END ) AS plan_travel_cost,
 		max( CASE t1.cost_type WHEN 6 THEN total ELSE '/' END ) AS plan_other_cost,
 		(
-		IFNULL( sum( t1.total ), '/' ) + ( IFNULL(
-		pc.working_hours, 0 ) / 8 * 1000 )
+		max( CASE t1.cost_type WHEN 1 THEN total ELSE 0 END ) +
+		( IFNULL( pc.working_hours, 0 ) / 8 * 1000 ) + max( CASE t1.cost_type WHEN 2 THEN total ELSE '/' END ) + max( CASE t1.cost_type WHEN 3 THEN total
+		ELSE 0 END ) + max( CASE t1.cost_type WHEN 4 THEN
+		total ELSE 0 END ) + max( CASE t1.cost_type WHEN 5 THEN total ELSE '/' END ) + max( CASE t1.cost_type WHEN 6 THEN total ELSE '/' END )
 		) AS plan_total_cost,
-		IFNULL( t2.human_cost, '/' ) AS actual_human_cost,
+		IFNULL( t2.human_cost, '/' ) AS
+		actual_human_cost,
 		IFNULL( t3.software_cost, '/' ) AS actual_software_cost,
-		IFNULL( hr.total_cost, '/' ) AS
-		actual_hardware_cost,
-		IFNULL( round( tca.total_amount / 100, 2 ), '/' ) AS actual_travel_cost,
+		IFNULL( hr.total_cost, '/' ) AS actual_hardware_cost,
+		IFNULL( round( tca.total_amount / 100, 2 ), '/' ) AS
+		actual_travel_cost,
 		IFNULL( t3.other_cost, '/' ) AS actual_other_cost,
 		(
-		( IFNULL( t2.human_cost, 0 ) ) + ( IFNULL(
-		t3.software_cost, 0 ) ) + IFNULL( hr.total_cost, 0 ) + ( IFNULL( round( tca.total_amount / 100, 2 ), 0 ) ) + IFNULL( t3.other_cost, 0 )
+		( IFNULL( t2.human_cost, 0 ) ) + ( IFNULL( t3.software_cost, 0 ) ) + IFNULL( hr.total_cost, 0 ) + ( IFNULL( round(
+		tca.total_amount / 100, 2 ), 0 ) ) + IFNULL( t3.other_cost, 0 )
 		) AS actual_total_cost
 		FROM
 		project p
-		LEFT JOIN ( SELECT
-		project_id, working_hours FROM project_change WHERE `status` = 3 ) pc ON p.id = pc.project_id
+		LEFT JOIN ( SELECT project_id, working_hours FROM project_change WHERE `status` = 3 ) pc ON p.id =
+		pc.project_id
 		LEFT JOIN (
 		SELECT
 		pc.apply_id,
@@ -506,28 +509,28 @@
 		sum( pc.total ) AS total
 		FROM
 		project_cost pc
-		INNER JOIN project p
-		ON p.apply_id = pc.apply_id
+		INNER JOIN project p ON p.apply_id = pc.apply_id
 		GROUP BY
 		pc.apply_id,
 		pc.cost_type
-		) t1 ON p.apply_id = t1.apply_id
+		) t1 ON p.apply_id =
+		t1.apply_id
 		LEFT JOIN (
 		SELECT
 		t.project_id,
 		round( sum( td.task_hour / 8 * 1000 ), 0 ) AS human_cost
 		FROM
 		task t
-		INNER JOIN
-		task_details td ON t.id = td.task_id
+		INNER JOIN task_details td ON t.id = td.task_id
 		GROUP BY
 		t.project_id
-		) t2 ON p.id = t2.project_id
-		LEFT JOIN ( SELECT sum( cost ) AS total_cost, project_id FROM hardware_resource GROUP BY project_id ) hr ON
-		hr.project_id = p.id
-		LEFT JOIN ( SELECT sum( total_amount ) AS total_amount, project_id FROM travel_cost_apply GROUP BY project_id ) tca ON tca.project_id = p.id
-		LEFT JOIN ( SELECT project_id,
-		other_cost, software_cost FROM project_complete WHERE `status` = 3 ) t3 ON t3.project_id = p.id
+		) t2 ON p.id =
+		t2.project_id
+		LEFT JOIN ( SELECT sum( cost ) AS total_cost, project_id FROM hardware_resource GROUP BY project_id ) hr ON hr.project_id = p.id
+		LEFT JOIN ( SELECT sum( total_amount ) AS total_amount,
+		project_id FROM travel_cost_apply GROUP BY project_id ) tca ON tca.project_id = p.id
+		LEFT JOIN ( SELECT project_id, other_cost, software_cost FROM project_complete WHERE `status` = 3 ) t3 ON
+		t3.project_id = p.id
 		WHERE
 		1 = 1
 		<if test="projectId != null">
@@ -538,25 +541,24 @@
 		SELECT
 		- 1 AS project_id,
 		'总计' AS project_name,
-		sum( t.plan_human_cost ) AS
-		plan_human_cost,
-		sum( t.plan_software_cost ) AS plan_software_cost,
+		sum( t.plan_human_cost ) AS plan_human_cost,
+		sum( t.plan_software_cost ) AS
+		plan_software_cost,
 		sum( t.plan_hardware_cost ) AS
 		plan_hardware_cost,
 		sum( t.plan_travel_cost ) AS plan_travel_cost,
-		sum( t.plan_other_cost ) AS
-		plan_other_cost,
-		sum( t.plan_total_cost ) AS plan_total_cost,
+		sum( t.plan_other_cost ) AS plan_other_cost,
+		sum( t.plan_total_cost ) AS
+		plan_total_cost,
 		sum( t.actual_human_cost ) AS
 		actual_human_cost,
 		sum( t.actual_software_cost ) AS actual_software_cost,
-		CAST( sum( t.actual_hardware_cost )
-		AS DECIMAL ( 20, 2 ) ) AS actual_hardware_cost,
+		CAST( sum( t.actual_hardware_cost ) AS DECIMAL ( 20, 2 ) ) AS
+		actual_hardware_cost,
 		CAST( sum( t.actual_travel_cost ) AS DECIMAL
 		( 20, 2 ) ) AS actual_travel_cost,
 		sum( t.actual_other_cost ) AS actual_other_cost,
-		sum( t.actual_total_cost
-		) AS actual_total_cost
+		sum( t.actual_total_cost ) AS actual_total_cost
 		FROM
 		(
 		SELECT
@@ -565,26 +567,30 @@
 		(
 		max( CASE
 		t1.cost_type WHEN 1 THEN total ELSE 0 END ) + ( IFNULL( pc.working_hours, 0 ) / 8 * 1000 )
-		) AS
-		plan_human_cost,
-		max( CASE t1.cost_type WHEN 2 THEN total ELSE '/' END ) AS plan_software_cost,
+		) AS plan_human_cost,
+		max( CASE
+		t1.cost_type WHEN 2 THEN total ELSE '/' END ) AS plan_software_cost,
 		(
 		max( CASE
-		t1.cost_type WHEN 3 THEN total ELSE 0 END ) + max( CASE t1.cost_type WHEN 4 THEN total ELSE 0
-		END )
-		) AS plan_hardware_cost,
+		t1.cost_type WHEN 3 THEN total ELSE 0 END ) + max( CASE t1.cost_type WHEN 4 THEN total ELSE 0 END )
+		) AS
+		plan_hardware_cost,
 		max( CASE t1.cost_type WHEN 5 THEN total ELSE '/' END ) AS plan_travel_cost,
 		max( CASE t1.cost_type WHEN 6 THEN total ELSE '/' END ) AS plan_other_cost,
 		(
-		IFNULL( sum(
-		t1.total ), '/' ) + ( IFNULL( pc.working_hours, 0 ) / 8 * 1000 )
+		max( CASE t1.cost_type WHEN
+		1 THEN total ELSE 0 END ) + ( IFNULL( pc.working_hours, 0 ) / 8 * 1000 ) + max( CASE
+		t1.cost_type WHEN 2 THEN total ELSE '/' END ) + max( CASE t1.cost_type WHEN 3 THEN total
+		ELSE 0 END ) + max( CASE
+		t1.cost_type WHEN 4 THEN total ELSE 0 END ) + max( CASE t1.cost_type WHEN 5 THEN total
+		ELSE '/' END ) + max( CASE t1.cost_type WHEN 6 THEN total ELSE '/' END )
 		) AS plan_total_cost,
-		IFNULL( t2.human_cost,
-		'/' ) AS actual_human_cost,
+		IFNULL(
+		t2.human_cost, '/' ) AS actual_human_cost,
 		IFNULL( t3.software_cost, '/' ) AS actual_software_cost,
 		IFNULL( hr.total_cost, '/' ) AS actual_hardware_cost,
-		IFNULL( round( tca.total_amount / 100, 2 ), '/' ) AS
-		actual_travel_cost,
+		IFNULL( round( tca.total_amount / 100, 2 ), '/'
+		) AS actual_travel_cost,
 		IFNULL( t3.other_cost, '/' ) AS actual_other_cost,
 		(
 		( IFNULL(
@@ -611,8 +617,8 @@
 		LEFT JOIN (
 		SELECT
 		t.project_id,
-		round( sum( td.task_hour / 8 * 1000 ), 0
-		) AS human_cost
+		round( sum( td.task_hour / 8 * 1000 ), 0 )
+		AS human_cost
 		FROM
 		task t
 		INNER JOIN task_details td ON t.id = td.task_id
@@ -620,12 +626,12 @@
 		t.project_id
 		) t2 ON p.id =
 		t2.project_id
-		LEFT JOIN ( SELECT sum( cost ) AS total_cost, project_id FROM
-		hardware_resource GROUP BY project_id ) hr ON hr.project_id = p.id
+		LEFT JOIN ( SELECT sum( cost ) AS total_cost, project_id FROM hardware_resource
+		GROUP BY project_id ) hr ON hr.project_id = p.id
 		LEFT JOIN ( SELECT sum( total_amount ) AS total_amount,
-		project_id FROM travel_cost_apply GROUP BY project_id ) tca ON
-		tca.project_id = p.id
-		LEFT JOIN ( SELECT project_id, other_cost, software_cost FROM project_complete WHERE `status` = 3 ) t3 ON
+		project_id FROM travel_cost_apply GROUP BY project_id ) tca ON tca.project_id = p.id
+		LEFT JOIN (
+		SELECT project_id, other_cost, software_cost FROM project_complete WHERE `status` = 3 ) t3 ON
 		t3.project_id = p.id
 		WHERE
 		1 = 1
