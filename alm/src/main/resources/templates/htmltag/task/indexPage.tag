@@ -134,7 +134,6 @@ function copyTask(row) {
 }
 
 function saveOrUpdate() {
-
 	var logInfo = "";
 	var moduleInfo = "";
 	$("#task_detail").hide();
@@ -159,7 +158,6 @@ function saveOrUpdate() {
 		$.messager.alert('错误', "不符合项目开始时间和结束时间");
 		return;
 	}
-//	$('#dlg').dialog('close');
 	$.ajax({
 				type : "POST",
 				url : _url,
@@ -173,6 +171,7 @@ function saveOrUpdate() {
 						LogUtils.saveLog(moduleInfo, logIngo + data.data
 										+ ":成功", function() {
 								});
+						$('#dlg').dialog('close');
 					} else {
 						$.messager.alert('错误', data.result);
 					}
