@@ -52,7 +52,6 @@ import com.dili.alm.domain.ProjectComplete;
 import com.dili.alm.domain.ProjectCost;
 import com.dili.alm.domain.ProjectEarning;
 import com.dili.alm.domain.ProjectState;
-import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Team;
 import com.dili.alm.domain.TeamRole;
 import com.dili.alm.domain.User;
@@ -73,7 +72,6 @@ import com.dili.alm.service.MessageService;
 import com.dili.alm.service.ProjectApplyService;
 import com.dili.alm.service.ProjectChangeService;
 import com.dili.alm.service.ProjectCompleteService;
-import com.dili.alm.service.ProjectPhaseService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.ProjectVersionService;
 import com.dili.alm.service.TeamService;
@@ -118,9 +116,6 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
 	@Autowired
 	private ProjectMapper projectMapper;
-
-	@Autowired
-	private ProjectPhaseService projectPhaseService;
 
 	@Autowired
 	private ProjectService projectService;

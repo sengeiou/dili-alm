@@ -13,8 +13,6 @@ import com.dili.ss.quartz.domain.ScheduleMessage;
  */
 public interface AlarmConfigService extends BaseService<AlarmConfig, Long> {
 
-	List<DataDictionaryValueDto> getTypes();
-
 	BaseOutput<Object> saveOrUpdateWithOutput(AlarmConfig alarmConfig);
 
 	void alarm(ScheduleMessage msg);

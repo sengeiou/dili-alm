@@ -1,58 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dili.alm.dao.ProjectMapper">
-	<resultMap id="BaseResultMap"
-		type="com.dili.alm.domain.Project">
+	<resultMap id="BaseResultMap" type="com.dili.alm.domain.Project">
 		<!-- WARNING - @mbg.generated -->
 		<id column="id" jdbcType="BIGINT" property="id" />
 		<result column="apply_id" jdbcType="BIGINT" property="applyId" />
-		<result column="serial_number" jdbcType="VARCHAR"
-			property="serialNumber" />
-		<result column="parent_id" jdbcType="BIGINT"
-			property="parentId" />
+		<result column="serial_number" jdbcType="VARCHAR" property="serialNumber" />
+		<result column="parent_id" jdbcType="BIGINT" property="parentId" />
 		<result column="name" jdbcType="VARCHAR" property="name" />
 		<result column="type" jdbcType="VARCHAR" property="type" />
-		<result column="project_manager" jdbcType="BIGINT"
-			property="projectManager" />
-		<result column="develop_manager" jdbcType="BIGINT"
-			property="developManager" />
-		<result column="test_manager" jdbcType="BIGINT"
-			property="testManager" />
-		<result column="product_manager" jdbcType="BIGINT"
-			property="productManager" />
-		<result column="created" jdbcType="TIMESTAMP"
-			property="created" />
-		<result column="modified" jdbcType="TIMESTAMP"
-			property="modified" />
-		<result column="start_date" jdbcType="DATE"
-			property="startDate" />
+		<result column="project_manager" jdbcType="BIGINT" property="projectManager" />
+		<result column="develop_manager" jdbcType="BIGINT" property="developManager" />
+		<result column="test_manager" jdbcType="BIGINT" property="testManager" />
+		<result column="product_manager" jdbcType="BIGINT" property="productManager" />
+		<result column="created" jdbcType="TIMESTAMP" property="created" />
+		<result column="modified" jdbcType="TIMESTAMP" property="modified" />
+		<result column="start_date" jdbcType="DATE" property="startDate" />
 		<result column="end_date" jdbcType="DATE" property="endDate" />
-		<result column="actual_start_date" jdbcType="TIMESTAMP"
-			property="actualStartDate" />
-		<result column="actual_end_date" jdbcType="TIMESTAMP"
-			property="actualEndDate" />
-		<result column="project_state" jdbcType="INTEGER"
-			property="projectState" />
-		<result column="task_count" jdbcType="INTEGER"
-			property="taskCount" />
-		<result column="member_count" jdbcType="INTEGER"
-			property="memberCount" />
-		<result column="completed_progress" jdbcType="INTEGER"
-			property="completedProgress" />
-		<result column="originator" jdbcType="BIGINT"
-			property="originator" />
+		<result column="actual_start_date" jdbcType="TIMESTAMP" property="actualStartDate" />
+		<result column="actual_end_date" jdbcType="TIMESTAMP" property="actualEndDate" />
+		<result column="project_state" jdbcType="INTEGER" property="projectState" />
+		<result column="task_count" jdbcType="INTEGER" property="taskCount" />
+		<result column="member_count" jdbcType="INTEGER" property="memberCount" />
+		<result column="completed_progress" jdbcType="INTEGER" property="completedProgress" />
+		<result column="originator" jdbcType="BIGINT" property="originator" />
 		<result column="dep" jdbcType="BIGINT" property="dep" />
-		<result column="business_owner" jdbcType="BIGINT"
-			property="businessOwner" />
-		<result column="estimate_launch_date" jdbcType="TIMESTAMP"
-			property="estimateLaunchDate" />
-		<result column="close_time" jdbcType="TIMESTAMP"
-			property="closeTime" />
+		<result column="business_owner" jdbcType="BIGINT" property="businessOwner" />
+		<result column="estimate_launch_date" jdbcType="TIMESTAMP" property="estimateLaunchDate" />
+		<result column="close_time" jdbcType="TIMESTAMP" property="closeTime" />
 	</resultMap>
 
-	<resultMap
-		type="com.dili.alm.domain.dto.ProjectCostStatisticDto"
-		id="projectCostStatisticRM">
+	<resultMap type="com.dili.alm.domain.dto.ProjectCostStatisticDto" id="projectCostStatisticRM">
 		<id column="project_id" property="projectId" />
 		<result column="project_name" property="projectName" />
 		<result column="plan_human_cost" property="planHumanCost" />
@@ -62,10 +40,8 @@
 		<result column="plan_other_cost" property="planOtherCost" />
 		<result column="plan_total_cost" property="planTotalCost" />
 		<result column="actual_human_cost" property="actualHumanCost" />
-		<result column="actual_software_cost"
-			property="actualSoftwareCost" />
-		<result column="actual_hardware_cost"
-			property="actualHardwareCost" />
+		<result column="actual_software_cost" property="actualSoftwareCost" />
+		<result column="actual_hardware_cost" property="actualHardwareCost" />
 		<result column="actual_travel_cost" property="actualTravelCost" />
 		<result column="actual_other_cost" property="actualOtherCost" />
 		<result column="actual_total_cost" property="actualTotalCost" />
@@ -78,22 +54,21 @@
 		test_manager, product_manager, created, modified,
 		start_date, end_date,
 		actual_start_date,
-		actual_end_date, project_state,
+		actual_end_date,
+		project_state,
 		task_count, member_count, completed_progress,
 		originator,
 		dep,
 		business_owner, estimate_launch_date, close_time
 	</sql>
-	<select id="selectBy" parameterType="java.lang.Long"
-		resultMap="BaseResultMap">
+	<select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
 		<!-- WARNING - @mbg.generated -->
 		select
 		<include refid="Base_Column_List" />
 		from project
 		where id = #{id,jdbcType=BIGINT}
 	</select>
-	<update id="updateBy"
-		parameterType="com.dili.alm.domain.Project">
+	<update id="updateBy" parameterType="com.dili.alm.domain.Project">
 		<!-- WARNING - @mbg.generated -->
 		update project
 		<set>
@@ -176,8 +151,7 @@
 		where id = #{id,jdbcType=BIGINT}
 	</update>
 
-	<select id="getChildProjects" parameterType="java.lang.Long"
-		resultMap="BaseResultMap">
+	<select id="getChildProjects" parameterType="java.lang.Long" resultMap="BaseResultMap">
 		{call getChildProjects(#{id})}
 	</select>
 
@@ -196,7 +170,8 @@
 		LEFT JOIN
 		`team`
 		t
-		ON p.id = t.`project_id`
+		ON
+		p.id = t.`project_id`
 		WHERE t.member_id = #{owner}
 		ORDER BY
 		p.actual_start_date desc
@@ -221,8 +196,7 @@
 
 	</select>
 
-	<select id="getTpyeByProjectCount"
-		resultType="com.dili.alm.domain.dto.ProjectStatusCountDto">
+	<select id="getTpyeByProjectCount" resultType="com.dili.alm.domain.dto.ProjectStatusCountDto">
 		SELECT p.TYPE AS projectType ,p.project_state AS
 		projectState,COUNT(*)
 		AS stateCount
@@ -348,8 +322,7 @@
 	</select>
 
 
-	<select id="getProjectProgressList"
-		resultType="com.dili.alm.domain.dto.ProjectProgressDto">
+	<select id="getProjectProgressList" resultType="com.dili.alm.domain.dto.ProjectProgressDto">
 		SELECT
 		p.id as id,
 		p.name as name,
@@ -359,7 +332,8 @@
 		p.project_state as projectState,
 		p.completed_progress as
 		completedProgress,
-		pa.estimate_launch_date as estimateLaunchDate,
+		pa.estimate_launch_date as
+		estimateLaunchDate,
 		pa.`start_date` as startDate,
 		pa.`end_date` as endDate
 		FROM `project` p
@@ -369,8 +343,7 @@
 		WHERE 1=1
 		<if test="list != null and list.size != 0">
 			AND p.project_state IN
-			<foreach close=")" collection="list" index="index"
-				item="item" open="(" separator=",">
+			<foreach close=")" collection="list" index="index" item="item" open="(" separator=",">
 				#{item}
 			</foreach>
 		</if>
@@ -389,8 +362,7 @@
 		WHERE 1=1
 		<if test="list != null and list.size&gt;0">
 			AND p.project_state IN
-			<foreach close=")" collection="list" index="index"
-				item="item" open="(" separator=",">
+			<foreach close=")" collection="list" index="index" item="item" open="(" separator=",">
 				#{item}
 			</foreach>
 		</if>
@@ -456,8 +428,7 @@
 		)
 	</select>
 
-	<select id="getStateByProjectCount"
-		resultType="com.dili.alm.domain.dto.ProjectStatusCountDto">
+	<select id="getStateByProjectCount" resultType="com.dili.alm.domain.dto.ProjectStatusCountDto">
 		SELECT s.projectState AS projectState,COUNT(*) as stateCount
 		FROM
 		(SELECT DISTINCT p.id,p.project_state AS projectState
@@ -468,8 +439,7 @@
 		WHERE 1=1
 		<if test="list != null and list.size&gt;0">
 			AND p.id IN
-			<foreach close=")" collection="list" index="index"
-				item="item" open="(" separator=",">
+			<foreach close=")" collection="list" index="index" item="item" open="(" separator=",">
 				#{item}
 			</foreach>
 		</if>
@@ -496,36 +466,42 @@
 		)
 	</select>
 
-	<select id="projectCostStatistic"
-		resultMap="projectCostStatisticRM">
+	<select id="projectCostStatistic" resultMap="projectCostStatisticRM">
 		SELECT
 		p.id AS project_id,
 		p.`name` AS project_name,
-		max( CASE t1.cost_type WHEN 1 THEN total ELSE '/' END ) AS
-		plan_human_cost,
-		max( CASE t1.cost_type WHEN 2 THEN total ELSE '/' END ) AS
-		plan_software_cost,
 		(
-		max( CASE t1.cost_type WHEN 3 THEN total ELSE 0 END ) + max( CASE
-		t1.cost_type WHEN 4 THEN total ELSE 0 END )
+		max( CASE t1.cost_type WHEN 1 THEN total ELSE 0 END ) + ( IFNULL( pc.working_hours, 0 ) / 8 * 1000 )
+		) AS plan_human_cost,
+		max( CASE t1.cost_type
+		WHEN 2 THEN total ELSE '/' END ) AS plan_software_cost,
+		(
+		max( CASE t1.cost_type WHEN 3 THEN total ELSE 0 END ) + max( CASE t1.cost_type WHEN 4 THEN total ELSE 0 END )
 		) AS plan_hardware_cost,
-		max( CASE t1.cost_type WHEN 5 THEN total ELSE '/' END ) AS
-		plan_travel_cost,
-		max( CASE t1.cost_type WHEN 6 THEN total ELSE '/' END ) AS
-		plan_other_cost,
-		IFNULL( sum( t1.total ), '/' ) AS plan_total_cost,
-		IFNULL( t2.human_cost, '/' ) AS actual_human_cost,
+		max( CASE
+		t1.cost_type WHEN 5 THEN total ELSE '/' END ) AS plan_travel_cost,
+		max( CASE t1.cost_type WHEN 6 THEN total ELSE '/' END ) AS plan_other_cost,
+		(
+		max( CASE t1.cost_type WHEN 1 THEN total ELSE 0 END ) +
+		( IFNULL( pc.working_hours, 0 ) / 8 * 1000 ) + max( CASE t1.cost_type WHEN 2 THEN total ELSE '/' END ) + max( CASE t1.cost_type WHEN 3 THEN total
+		ELSE 0 END ) + max( CASE t1.cost_type WHEN 4 THEN
+		total ELSE 0 END ) + max( CASE t1.cost_type WHEN 5 THEN total ELSE '/' END ) + max( CASE t1.cost_type WHEN 6 THEN total ELSE '/' END )
+		) AS plan_total_cost,
+		IFNULL( t2.human_cost, '/' ) AS
+		actual_human_cost,
 		IFNULL( t3.software_cost, '/' ) AS actual_software_cost,
 		IFNULL( hr.total_cost, '/' ) AS actual_hardware_cost,
-		IFNULL( round( tca.total_amount / 100, 2 ), '/' ) AS actual_travel_cost,
+		IFNULL( round( tca.total_amount / 100, 2 ), '/' ) AS
+		actual_travel_cost,
 		IFNULL( t3.other_cost, '/' ) AS actual_other_cost,
 		(
-		( IFNULL( t2.human_cost, 0 ) ) + ( IFNULL( t3.software_cost, 0 ) ) +
-		IFNULL( hr.total_cost, 0 ) + ( IFNULL( round( tca.total_amount / 100,
-		2 ), 0 ) ) + IFNULL( t3.other_cost, 0 )
+		( IFNULL( t2.human_cost, 0 ) ) + ( IFNULL( t3.software_cost, 0 ) ) + IFNULL( hr.total_cost, 0 ) + ( IFNULL( round(
+		tca.total_amount / 100, 2 ), 0 ) ) + IFNULL( t3.other_cost, 0 )
 		) AS actual_total_cost
 		FROM
 		project p
+		LEFT JOIN ( SELECT project_id, sum( working_hours ) AS working_hours FROM project_change WHERE
+		`status` = 3 GROUP BY project_id ) pc ON p.id = pc.project_id
 		LEFT JOIN (
 		SELECT
 		pc.apply_id,
@@ -544,15 +520,115 @@
 		round( sum( td.task_hour / 8 * 1000 ), 0 ) AS human_cost
 		FROM
 		task t
-		INNER JOIN task_details td ON t.id = td.task_id
+		INNER JOIN task_details td ON t.id =
+		td.task_id
 		GROUP BY
 		t.project_id
 		) t2 ON p.id = t2.project_id
-		LEFT JOIN ( SELECT sum( cost ) AS total_cost, project_id FROM
-		hardware_resource GROUP BY project_id ) hr ON hr.project_id = p.id
-		LEFT JOIN ( SELECT sum( total_amount ) AS total_amount, project_id
-		FROM travel_cost_apply GROUP BY project_id ) tca ON tca.project_id =
-		p.id
+		LEFT JOIN ( SELECT sum( cost ) AS total_cost, project_id FROM hardware_resource GROUP BY project_id ) hr ON hr.project_id = p.id
+		LEFT JOIN (
+		SELECT sum( total_amount ) AS total_amount, project_id FROM travel_cost_apply GROUP BY project_id ) tca ON tca.project_id = p.id
+		LEFT JOIN ( SELECT project_id, other_cost, software_cost FROM
+		project_complete WHERE `status` = 3 ) t3 ON t3.project_id = p.id
+		WHERE
+		1 = 1
+		<if test="projectId != null">
+			AND p.id = #{projectId}
+		</if>
+		GROUP BY
+		p.id UNION
+		SELECT
+		- 1 AS project_id,
+		'总计' AS project_name,
+		sum( t.plan_human_cost ) AS plan_human_cost,
+		sum( t.plan_software_cost ) AS plan_software_cost,
+		sum( t.plan_hardware_cost ) AS
+		plan_hardware_cost,
+		sum( t.plan_travel_cost ) AS plan_travel_cost,
+		sum( t.plan_other_cost ) AS plan_other_cost,
+		sum(
+		t.plan_total_cost ) AS plan_total_cost,
+		sum( t.actual_human_cost ) AS
+		actual_human_cost,
+		sum( t.actual_software_cost ) AS actual_software_cost,
+		CAST( sum( t.actual_hardware_cost ) AS DECIMAL ( 20, 2 )
+		) AS actual_hardware_cost,
+		CAST( sum( t.actual_travel_cost ) AS DECIMAL
+		( 20, 2 ) ) AS actual_travel_cost,
+		sum( t.actual_other_cost ) AS actual_other_cost,
+		sum( t.actual_total_cost ) AS
+		actual_total_cost
+		FROM
+		(
+		SELECT
+		p.id AS project_id,
+		p.`name` AS project_name,
+		(
+		max( CASE
+		t1.cost_type WHEN 1 THEN total ELSE 0 END ) + ( IFNULL( pc.working_hours, 0 ) / 8 * 1000 )
+		) AS plan_human_cost,
+		max( CASE t1.cost_type WHEN 2 THEN total ELSE '/' END ) AS plan_software_cost,
+		(
+		max(
+		CASE t1.cost_type WHEN 3 THEN total ELSE 0 END ) + max( CASE t1.cost_type WHEN 4 THEN total ELSE 0 END )
+		) AS
+		plan_hardware_cost,
+		max( CASE t1.cost_type WHEN 5 THEN total ELSE '/' END ) AS
+		plan_travel_cost,
+		max( CASE t1.cost_type WHEN 6 THEN total ELSE '/' END ) AS plan_other_cost,
+		(
+		max( CASE t1.cost_type WHEN
+		1 THEN total ELSE 0 END ) + ( IFNULL( pc.working_hours, 0 ) / 8 * 1000 ) +
+		max( CASE t1.cost_type WHEN 2 THEN total ELSE '/' END ) + max( CASE t1.cost_type WHEN 3 THEN total
+		ELSE 0 END ) + max( CASE
+		t1.cost_type WHEN 4 THEN total ELSE 0 END ) + max( CASE t1.cost_type WHEN 5
+		THEN total ELSE '/' END ) + max( CASE t1.cost_type WHEN 6 THEN total ELSE '/' END )
+		) AS plan_total_cost,
+		IFNULL(
+		t2.human_cost, '/' ) AS actual_human_cost,
+		IFNULL( t3.software_cost, '/' ) AS
+		actual_software_cost,
+		IFNULL( hr.total_cost, '/' ) AS actual_hardware_cost,
+		IFNULL( round( tca.total_amount / 100, 2 ), '/'
+		) AS actual_travel_cost,
+		IFNULL( t3.other_cost, '/' ) AS actual_other_cost,
+		(
+		(
+		IFNULL( t2.human_cost, 0 ) ) + ( IFNULL( t3.software_cost, 0 ) ) + IFNULL( hr.total_cost, 0 ) + ( IFNULL( round(
+		tca.total_amount / 100, 2 ), 0 ) ) + IFNULL( t3.other_cost, 0 )
+		) AS actual_total_cost
+		FROM
+		project p
+		LEFT JOIN ( SELECT project_id, sum( working_hours ) AS working_hours FROM project_change WHERE
+		`status` = 3 GROUP BY project_id ) pc ON p.id = pc.project_id
+		LEFT JOIN (
+		SELECT
+		pc.apply_id,
+		pc.cost_type,
+		sum( pc.total ) AS total
+		FROM
+		project_cost pc
+		INNER JOIN project p ON p.apply_id = pc.apply_id
+		GROUP BY
+		pc.apply_id,
+		pc.cost_type
+		) t1 ON p.apply_id = t1.apply_id
+		LEFT JOIN (
+		SELECT
+		t.project_id,
+		round( sum( td.task_hour / 8 * 1000 ), 0 ) AS human_cost
+		FROM
+		task t
+		INNER JOIN task_details td ON t.id =
+		td.task_id
+		GROUP BY
+		t.project_id
+		) t2 ON p.id = t2.project_id
+		LEFT JOIN ( SELECT sum(
+		cost ) AS total_cost, project_id FROM hardware_resource GROUP BY project_id ) hr ON hr.project_id = p.id
+		LEFT JOIN (
+		SELECT sum( total_amount ) AS total_amount, project_id FROM travel_cost_apply GROUP
+		BY project_id ) tca ON tca.project_id = p.id
 		LEFT JOIN ( SELECT project_id, other_cost, software_cost FROM
 		project_complete WHERE `status` = 3 ) t3 ON t3.project_id = p.id
 		WHERE
@@ -562,7 +638,7 @@
 		</if>
 		GROUP BY
 		p.id
-
+		) t
 	</select>
 
 </mapper>

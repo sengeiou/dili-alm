@@ -35,7 +35,6 @@ public class AlmConstants {
 	// 项目文件类型数据字典编码
 	public static final String PROJECT_FILE_TYPE_CODE = "project_file_type";
 	// 项目阶段名称数据字典编码
-	public static final String PHASE_NAME_CODE = "phase_name";
 	public static final String APPLY_PLAN_PHASE_CODE = "apply_plan_phase";
 	// 团队角色数据字典编码
 	public static final String TEAM_ROLE_CODE = "team_role";

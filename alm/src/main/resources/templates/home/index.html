@@ -90,8 +90,8 @@ body {
 
 
 	<!-- 隐藏编辑框 -->
-	<div id="scheduleDlg" class="easyui-dialog" shadow="false" resizable="false" constrain="true" shadow="true" draggable="false" title="日程详情"
-		style="width: 400px; height: 200px; padding: 10px" modal="true" border="thin" closed="true"
+	<div id="scheduleDlg" class="easyui-dialog" shadow="false" resizable="false" constrain="true" shadow="true" draggable="false" title="日程详情" style="width: 400px; height: 200px; padding: 10px"
+		modal="true" border="thin" closed="true"
 		data-options="
                     iconCls: 'icon-save',
                     height: 200,
@@ -110,56 +110,45 @@ body {
 			<input name="_id" id="_scheduleId" type="hidden">
 			<table width="360px">
 				<tr>
-					<td style="padding: 5px;"><input class="easyui-textbox" name="scheduleDate" id="scheduleDate" style="width: 100%" editable="false"
-						data-options="label:'编辑时间:'" required="true" /></td>
+					<td style="padding: 5px;"><input class="easyui-textbox" name="scheduleDate" id="scheduleDate" style="width: 100%" editable="false" data-options="label:'编辑时间:'" required="true" /></td>
 				</tr>
 				<tr>
-					<td style="padding: 5px;"><input class="easyui-textbox" name="scheduleText" id="scheduleText" style="width: 100%"
-						data-options="label:'编辑内容:', validType:'length[0,255]'" /></td>
+					<td style="padding: 5px;"><input class="easyui-textbox" name="scheduleText" id="scheduleText" style="width: 100%" data-options="label:'编辑内容:', validType:'length[0,255]'" /></td>
 				</tr>
 			</table>
 		</form>
 	</div>
 
 	<!-- 隐藏编辑框 -->
-	<div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="任务信息" style="padding: 20px"
-		modal="true" border="thin" closed="true" data-options="
+	<div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="任务信息" style="padding: 20px" modal="true" border="thin" closed="true"
+		data-options="
 				iconCls: 'icon-save',
 				height: 480">
 		<form id="_form" class="easyui-form" method="post" fit="true">
 			<input name="_id" id="_id" type="hidden">
 			<table width="560px">
 				<tr>
-					<td style="padding: 5px; width: 50%;"><input class="easyui-textbox" name="_name" id="_name" style="width: 100%"
-						data-options="label:'任务名称:', validType:'length[0,255]'" /></td>
-					<td style="padding: 5px; width: 50%;"><input name="_projectId" id="_projectId" class="easyui-combobox" style="width: 100%;"
-						data-options="label:'所属项目:' "> <#comboProvider _id="_projectId" _table="project" _valueField="id" _textField="name" /></td>
+					<td style="padding: 5px; width: 50%;"><input class="easyui-textbox" name="_name" id="_name" style="width: 100%" data-options="label:'任务名称:', validType:'length[0,255]'" /></td>
+					<td style="padding: 5px; width: 50%;"><input name="_projectId" id="_projectId" class="easyui-combobox" style="width: 100%;" data-options="label:'所属项目:' "> <#comboProvider
+							_id="_projectId" _table="project" _valueField="id" _textField="name" /></td>
 				</tr>
 
 				<tr>
-					<td style="padding: 5px;"><input name="_versionId" id="_versionId" class="easyui-combobox" style="width: 100%;"
-						data-options="label:'所属版本:'"></td>
-					<td style="padding: 5px;"><input name="_phaseId" id="_phaseId" class="easyui-combobox" style="width: 100%;"
-						data-options="label:'所属阶段:'"></td>
+					<td style="padding: 5px;"><input name="_versionId" id="_versionId" class="easyui-combobox" style="width: 100%;" data-options="label:'所属版本:'"></td>
 				</tr>
 				<tr>
-					<td style="padding: 5px;"><input class="easyui-datebox" name="startDateShow" id="startDateShow" style="width: 100%"
-						data-options="label:'开始时间:'" /></td>
-					<td style="padding: 5px;"><input class="easyui-datebox" name="endDateShow" id="endDateShow" style="width: 100%"
-						data-options="label:'结束时间:'" /></td>
+					<td style="padding: 5px;"><input class="easyui-datebox" name="startDateShow" id="startDateShow" style="width: 100%" data-options="label:'开始时间:'" /></td>
+					<td style="padding: 5px;"><input class="easyui-datebox" name="endDateShow" id="endDateShow" style="width: 100%" data-options="label:'结束时间:'" /></td>
 				</tr>
 				<tr>
-					<td style="padding: 5px;"><input name="_beforeTask" id="_beforeTask" class="easyui-combobox" style="width: 100%;"
-						data-options="label:'前置任务:'"> <#comboProvider _id="_beforeTask" _table="task" _valueField="id" _textField="name" /></td>
-					<td style="padding: 5px;"><input name="_type" id="_type" class="easyui-combobox" style="width: 100%;" panelWidth="auto"
-						panelHeight="auto" data-options="label:'任务类型:'"> <#comboProvider _id="_type" _table="data_dictionary_value"
-							_valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":17}' /></td>
+					<td style="padding: 5px;"><input name="_beforeTask" id="_beforeTask" class="easyui-combobox" style="width: 100%;" data-options="label:'前置任务:'"> <#comboProvider _id="_beforeTask"
+							_table="task" _valueField="id" _textField="name" /></td>
+					<td style="padding: 5px;"><input name="_type" id="_type" class="easyui-combobox" style="width: 100%;" panelWidth="auto" panelHeight="auto" data-options="label:'任务类型:'"> <#comboProvider
+							_id="_type" _table="data_dictionary_value" _valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":17}' /></td>
 				</tr>
 				<tr>
-					<td style="padding: 5px;"><input name="_owner" id="_owner" class="easyui-combobox" style="width: 100%"
-						data-options="label:'责任人:', required:true"></td>
-					<td style="padding: 5px;"><input class="easyui-numberbox" name="planTimeStr" id="planTimeStr" style="width: 100%"
-						data-options="label:'计划工时:', validType:'length[0,5]'" /></td>
+					<td style="padding: 5px;"><input name="_owner" id="_owner" class="easyui-combobox" style="width: 100%" data-options="label:'责任人:', required:true"></td>
+					<td style="padding: 5px;"><input class="easyui-numberbox" name="planTimeStr" id="planTimeStr" style="width: 100%" data-options="label:'计划工时:', validType:'length[0,5]'" /></td>
 				</tr>
 				<tr>
 
@@ -176,8 +165,7 @@ body {
 					</td>
 				</tr>
 				<tr>
-					<td style="padding: 5px;" colspan="2"><input class="easyui-textbox" name="_describe" id="_describe"
-						style="width: 100%; height: 50px;" data-options="label:'描述:', validType:'length[0,255]'" /></td>
+					<td style="padding: 5px;" colspan="2"><input class="easyui-textbox" name="_describe" id="_describe" style="width: 100%; height: 50px;" data-options="label:'描述:', validType:'length[0,255]'" /></td>
 				</tr>
 			</table>
 		</form>
@@ -186,28 +174,25 @@ body {
 			<hr style="width: 121%" />
 			<h3>工时任务信息</h3>
 			<form name="detail_form" id="detail_form">
-				<input name="taskId" id="taskId" type="hidden"> <input name="id" id="id" type="hidden"> <input name="taskHour"
-					id="taskHour" type="hidden">
+				<input name="taskId" id="taskId" type="hidden"> <input name="id" id="id" type="hidden"> <input name="taskHour" id="taskHour" type="hidden">
 				<table width="550px;" style="border: 1px;">
 					<tr>
-						<td style="padding: 5px; width: 50%"><input class="easyui-datebox" name="modified" id="modified"
-							style="width: 100%; height: 26px;" data-options="label:'任务日期:', required:true,validType:'checkDate'" /></td>
+						<td style="padding: 5px; width: 50%"><input class="easyui-datebox" name="modified" id="modified" style="width: 100%; height: 26px;"
+							data-options="label:'任务日期:', required:true,validType:'checkDate'" /></td>
 						<td style="padding: 0 5px;"><label style="float: left; width: 30%;">任务进度:</label>
 							<div id="_progressShow" style="width: 180px;"></div></td>
 					</tr>
 					<tr>
 					</tr>
 					<tr>
-						<td style="padding: 5px; width: 50%"><input class="easyui-numberbox" name="taskHourStr" id="taskHourStr"
-							style="width: 100%; height: 26px;" data-options="label:'任务工时:',validType:'taskHours[\'overHourStr\']'" /></td>
-						<td style="padding: 5px; width: 50%"><input class="easyui-numberbox" name="_taskHour" id="_taskHour"
-							style="width: 100%; height: 26px;" data-options="label:'已填工时:',disabled:true" /></td>
+						<td style="padding: 5px; width: 50%"><input class="easyui-numberbox" name="taskHourStr" id="taskHourStr" style="width: 100%; height: 26px;"
+							data-options="label:'任务工时:',validType:'taskHours[\'overHourStr\']'" /></td>
+						<td style="padding: 5px; width: 50%"><input class="easyui-numberbox" name="_taskHour" id="_taskHour" style="width: 100%; height: 26px;" data-options="label:'已填工时:',disabled:true" /></td>
 					</tr>
 					<tr>
-						<td style="padding: 5px; width: 50%"><input class="easyui-numberbox" name="overHourStr" id="overHourStr"
-							style="width: 100%; height: 26px;" data-options="label:'加班工时:',validType:'overHours[\'taskHourStr\']'" /></td>
-						<td style="padding: 5px; width: 50%"><input class="easyui-numberbox" name="_overHour" id="_overHour"
-							style="width: 100%; height: 26px;" data-options="label:'已填加班:',disabled:true" /></td>
+						<td style="padding: 5px; width: 50%"><input class="easyui-numberbox" name="overHourStr" id="overHourStr" style="width: 100%; height: 26px;"
+							data-options="label:'加班工时:',validType:'overHours[\'taskHourStr\']'" /></td>
+						<td style="padding: 5px; width: 50%"><input class="easyui-numberbox" name="_overHour" id="_overHour" style="width: 100%; height: 26px;" data-options="label:'已填加班:',disabled:true" /></td>
 					</tr>
 					<tr>
 						<td style="padding: 5px;" colspan="2"><input class="easyui-textbox" name="describe" id="describe" style="width: 100%;"
@@ -220,11 +205,11 @@ body {
 		<div id="task_detail_list" style="display: none; width: 550px; padding: 5px 5px 25px 5px;">
 			<hr style="width: 121%" />
 			<h3>
-				工时任务信息 &nbsp;&nbsp;&nbsp; <span style="font-weight: lighter; font-size: 12px">已填写 : &nbsp;加班工时&nbsp;<a
-					style="font-weight: bold;" id="showOverFont">6</a>&nbsp;H,常规工时&nbsp;<a style="font-weight: bold" id="showTaskFont">6</a>&nbsp;H。
+				工时任务信息 &nbsp;&nbsp;&nbsp; <span style="font-weight: lighter; font-size: 12px">已填写 : &nbsp;加班工时&nbsp;<a style="font-weight: bold;" id="showOverFont">6</a>&nbsp;H,常规工时&nbsp;<a
+					style="font-weight: bold" id="showTaskFont">6</a>&nbsp;H。
 				</span>
 			</h3>
-			<table class="easyui-datagrid" style="height: 160px" id="detail_grid" loadMsg="数据加载中..." idField="id">
+			<table class="easyui-datagrid" style="height: 160px" id="detail_grid" loadMsg="数据加载中..." idField="id" data-options="onLoadSuccess:taskDetailGridLoadSuccess">
 				<thead>
 					<tr>
 						<th data-options="field:'taskHour',width:'10%',fixed:'false'">工时</th>
@@ -232,22 +217,20 @@ body {
 						<th data-options="field:'owner',width:'10%',fixed:'false',formatter:ownerFormatter">责任人</th>
 						<th data-options="field:'created',width:'20%', _provider:'datetimeProvider',nowarp:false">填写时间</th>
 						<th data-options="field:'modified',width:'20%', _provider:'datetimeProvider',nowarp:false">任务日</th>
-						<th data-options="field:'describe',width:'30%',fixed:'true'">工作内容描述</th>
+						<th data-options="field:'describe',width:'30%',fixed:'true',formatter:describeFormatter">工作内容描述</th>
 					</tr>
 				</thead>
 			</table>
 		</div>
 		<div id="dialog_toolbar" style="display: show; position: absolute; bottom: 0; background-color: #fff; width: 100%; padding: 4px;">
-			<a href="#" class="easyui-linkbutton" id="saveTask" data-options="iconCls:'icon-edit',plain:true" onclose="saveOrUpdate()"
-				style="border: 1px solid #ccc;">保存</a> <a href="#" class="easyui-linkbutton" data-options="plain:true"
-				onclick="$('#dlg').dialog('close');" style="border: 1px solid #ccc;">取消</a>
+			<a href="#" class="easyui-linkbutton" id="saveTask" data-options="iconCls:'icon-edit',plain:true" onclose="saveOrUpdate()" style="border: 1px solid #ccc;">保存</a> <a href="#"
+				class="easyui-linkbutton" data-options="plain:true" onclick="$('#dlg').dialog('close');" style="border: 1px solid #ccc;">取消</a>
 		</div>
 		<div id="dialog_toolbar_detail" style="display: none; position: absolute; bottom: 0; background-color: #fff; width: 100%; padding: 4px;">
-			<a href="javascript:void(0);" id="doTask" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" style="border: 1px solid #ccc;"
-				onclick="startTask()">开始执行任务</a> 
-				<a href="javascript:void(0);" id="pauseTask" class="easyui-linkbutton" data-options="plain:true" style="border: 1px solid #ccc;" onclick="pauseTaskStatus()"> 暂停任务</a> 
-				<a href="javascript:void(0);" id="updateDetail" class="easyui-linkbutton" data-options="plain:true" style="border: 1px solid #ccc;" onclick="saveTaskDetail()">工时填写</a>
-				<a href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true" onclick="$('#dlg').dialog('close');" style="border: 1px solid #ccc;">取消</a>
+			<a href="javascript:void(0);" id="doTask" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" style="border: 1px solid #ccc;" onclick="startTask()">开始执行任务</a> <a
+				href="javascript:void(0);" id="pauseTask" class="easyui-linkbutton" data-options="plain:true" style="border: 1px solid #ccc;" onclick="pauseTaskStatus()"> 暂停任务</a> <a href="javascript:void(0);"
+				id="updateDetail" class="easyui-linkbutton" data-options="plain:true" style="border: 1px solid #ccc;" onclick="saveTaskDetail()">工时填写</a> <a href="javascript:void(0);" class="easyui-linkbutton"
+				data-options="plain:true" onclick="$('#dlg').dialog('close');" style="border: 1px solid #ccc;">取消</a>
 		</div>
 	</div>
 </div>
@@ -285,48 +268,44 @@ body {
 			selDate1 = selectTime;
 		}
 		listEvents(selDate1);
-		$('#calendar')
-				.fullCalendar(
-						{
-							header : {},
-							firstDay : 1,
-							editable : false,
-							timeFormat : 'H:mm',
-							axisFormat : 'H:mm',
-							events : function(start, end, callback) {
-								//得到日期就显示样式
-								var htmlobj = $
-										.ajax({
-											url : "${contextPath}/workSchedule/getWorkScheduleDate.json",
-											async : false
-										});
-								var str = htmlobj.responseText;
-								var obj = $.parseJSON(str);
-								events = [];
-								$(obj).each(function() {
-									events.push({
-										title : "*",
-										start : this.scheduleDate, // will be parsed
-										color : '#A52A2A'
-									});
-								});
+		$('#calendar').fullCalendar({
+			header : {},
+			firstDay : 1,
+			editable : false,
+			timeFormat : 'H:mm',
+			axisFormat : 'H:mm',
+			events : function(start, end, callback) {
+				//得到日期就显示样式
+				var htmlobj = $.ajax({
+					url : "${contextPath}/workSchedule/getWorkScheduleDate.json",
+					async : false
+				});
+				var str = htmlobj.responseText;
+				var obj = $.parseJSON(str);
+				events = [];
+				$(obj).each(function() {
+					events.push({
+						title : "*",
+						start : this.scheduleDate, // will be parsed
+						color : '#A52A2A'
+					});
+				});
 
-								callback(events);
-							},
-							dayClick : function(date, allDay, jsEvent, view) {
-								//弹出框
-								clickEvent(date);
-							},
-							eventMouseover : function(calEvent, jsEvent, view) {
-								var selDate = $.fullCalendar.formatDate(
-										calEvent.start, 'yyyy-MM-dd');//格式化日期
-								listEvents(selDate);
-							},
-							eventClick : function(event, jsEvent, view) {
-								//弹出框
-								clickEvent(event.start);
-							}
-						});
+				callback(events);
+			},
+			dayClick : function(date, allDay, jsEvent, view) {
+				//弹出框
+				clickEvent(date);
+			},
+			eventMouseover : function(calEvent, jsEvent, view) {
+				var selDate = $.fullCalendar.formatDate(calEvent.start, 'yyyy-MM-dd');//格式化日期
+				listEvents(selDate);
+			},
+			eventClick : function(event, jsEvent, view) {
+				//弹出框
+				clickEvent(event.start);
+			}
+		});
 
 	}
 	//根据主键删除
@@ -420,39 +399,28 @@ body {
 	//获取数据方法
 	function listEvents(selDate) {
 		//得到日期就显示样式
-		var htmlobj = $
-				.ajax({
-					url : "${contextPath}/workSchedule/getWorkSchedule.json?scheduleDate="
-							+ selDate,
-					async : false
-				});
+		var htmlobj = $.ajax({
+			url : "${contextPath}/workSchedule/getWorkSchedule.json?scheduleDate=" + selDate,
+			async : false
+		});
 		var str = htmlobj.responseText;
 		var htmlStr = "";
 		var obj = $.parseJSON(str);
 		if (obj.length > 0) {
 			$("#scheduleList").empty();
-			var oldDate = new Date(obj[0].scheduleDateStr.replace("-", "/")
-					.replace("-", "/"));
+			var oldDate = new Date(obj[0].scheduleDateStr.replace("-", "/").replace("-", "/"));
 			var newDate = new Date(showNewDate());
 
 			if (oldDate < newDate) {
+				$(obj).each(function() {
+					htmlStr += "<li>" + this.scheduleText + "&nbsp;&nbsp;</li>";
+				});
+			} else {
 				$(obj).each(
 						function() {
-							htmlStr += "<li>" + this.scheduleText
-									+ "&nbsp;&nbsp;</li>";
+							htmlStr += "<li>" + this.scheduleText + "<a href='javascript:void(0)' onclick='update(" + this.id + ")'>修改</a><a href='javascript:void(0)' onclick='del(" + this.id
+									+ ")'>删除&nbsp;&nbsp;</a></li>";
 						});
-			} else {
-				$(obj)
-						.each(
-								function() {
-									htmlStr += "<li>"
-											+ this.scheduleText
-											+ "<a href='javascript:void(0)' onclick='update("
-											+ this.id
-											+ ")'>修改</a><a href='javascript:void(0)' onclick='del("
-											+ this.id
-											+ ")'>删除&nbsp;&nbsp;</a></li>";
-								});
 			}
 		}
 		$("#scheduleList").html(htmlStr);
@@ -471,18 +439,12 @@ body {
 			$('#scheduleForm').form("load", {
 				scheduleDate : selDate
 			});
-			$('#scheduleDlg').panel(
-					'move',
-					{
-						top : $(document).scrollTop()
-								+ ($(window).height() - 100) * 0.5
-					});
-			$('#scheduleDlg').panel(
-					'move',
-					{
-						left : $(document).scrollTop()
-								+ ($(window).height() + 50) * 0.5
-					});
+			$('#scheduleDlg').panel('move', {
+				top : $(document).scrollTop() + ($(window).height() - 100) * 0.5
+			});
+			$('#scheduleDlg').panel('move', {
+				left : $(document).scrollTop() + ($(window).height() + 50) * 0.5
+			});
 		}
 	}
 	function taskCount(d) {
@@ -494,34 +456,31 @@ body {
 		}
 		var nums = [];
 		var names = [];
-		$
-				.ajax({
-					type : "POST",
-					url : "${contextPath}/statistical/homeTaskCount",
-					data : formData,
-					processData : true,
-					async : true,
-					success : function(data) {
-						for (var i = 0; i < data.length; i++) {
-							nums.push(data[i]);
-							names.push(data[i].name);
-						}
-						echarts.init(document.getElementById('task-box'))
-								.hideLoading();
-						echarts.init(document.getElementById('task-box'))
-								.setOption({
-									series : [ {
-										data : nums,
-									} ],
-									legend : {
-										data : names
-									},
-								});
+		$.ajax({
+			type : "POST",
+			url : "${contextPath}/statistical/homeTaskCount",
+			data : formData,
+			processData : true,
+			async : true,
+			success : function(data) {
+				for (var i = 0; i < data.length; i++) {
+					nums.push(data[i]);
+					names.push(data[i].name);
+				}
+				echarts.init(document.getElementById('task-box')).hideLoading();
+				echarts.init(document.getElementById('task-box')).setOption({
+					series : [ {
+						data : nums,
+					} ],
+					legend : {
+						data : names
 					},
-					error : function() {
-						$.messager.alert('错误', '远程访问失败');
-					}
 				});
+			},
+			error : function() {
+				$.messager.alert('错误', '远程访问失败');
+			}
+		});
 	}
 	function projectCount(d) {
 		var formData;
@@ -544,25 +503,23 @@ body {
 					nums.push(data[i]);
 					names.push(data[i].name);
 				}
-				echarts.init(document.getElementById('project-box'))
-						.hideLoading();
-				echarts.init(document.getElementById('project-box')).setOption(
-						{
-							series : [ {
-								data : nums,
-							} ],
-							legend : {
-								data : names
-							},
-						});
+				echarts.init(document.getElementById('project-box')).hideLoading();
+				echarts.init(document.getElementById('project-box')).setOption({
+					series : [ {
+						data : nums,
+					} ],
+					legend : {
+						data : names
+					},
+				});
 			},
 			error : function() {
 				$.messager.alert('错误', '远程访问失败');
 			}
 		});
 	}
-</script> <script src='${contextPath}/resources/js/jquery-ui-1.10.2.custom.min.js'></script> <script
-	src='${contextPath}/resources/js/fullcalendar.min.js'></script> <script src="${contextPath}/resources/echarts/echarts.common.min.js"></script>
+</script> <script src='${contextPath}/resources/js/jquery-ui-1.10.2.custom.min.js'></script> <script src='${contextPath}/resources/js/fullcalendar.min.js'></script> <script
+	src="${contextPath}/resources/echarts/echarts.common.min.js"></script>
 <link rel="stylesheet" type="text/css" href="${contextPath}/resources/css/fullcalendar.css">
 <script>
 	/* 项目图表 option */
@@ -589,42 +546,9 @@ body {
 			name : '项目状况',
 			type : 'pie',
 			radius : '75%',//显示为普通饼图
-			// radius: [20, 110],//显示为环状图
-			// roseType: 'radius',//去除此项为普通饼图
 			center : [ '57%', '50%' ],
 			label : {
 				show : false,
-			// normal: {
-			//     // formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
-			//     formatter: ' {b|{b}：}{c}  {per|{d}%}  ',
-			//     backgroundColor: '#eee',
-			//     borderColor: '#aaa',
-			//     borderWidth: 1,
-			//     borderRadius: 4,
-			//     rich: {
-			//         a: {
-			//             color: '#999',
-			//             lineHeight: 22,
-			//             align: 'center'
-			//         },
-			//         hr: {
-			//             borderColor: '#aaa',
-			//             width: '100%',
-			//             borderWidth: 0.5,
-			//             height: 0
-			//         },
-			//         b: {
-			//             // fontSize: 16,
-			//             lineHeight: 33
-			//         },
-			//         per: {
-			//             color: '#eee',
-			//             backgroundColor: '#334455',
-			//             padding: [2, 4],
-			//             borderRadius: 2
-			//         }
-			//     }
-			// }
 			},
 			data : [],//项目图表数据
 			itemStyle : {

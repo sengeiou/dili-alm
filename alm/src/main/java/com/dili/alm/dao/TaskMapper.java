@@ -24,8 +24,6 @@ import com.dili.ss.base.MyMapper;
 
 public interface TaskMapper extends MyMapper<Task> {
 
-	Integer countNotCompletedByPhaseId(Map<String, Object> query);
-
 	List<Task> selectByProjectState(Integer value);
 
 	int selectByTeamCount(@Param("task") Task task, @Param("selectOwner") Long selectOwner,

@@ -18,152 +18,145 @@ import javax.persistence.Id;
  */
 @Table(name = "`task`")
 public interface Task extends IBaseDomain {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "`id`")
-    @FieldDef(label="id")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getId();
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "`id`")
+	@FieldDef(label = "id")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Long getId();
 
-    void setId(Long id);
+	void setId(Long id);
 
-    @Column(name = "`name`")
-    @FieldDef(label="name", maxLength = 255)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getName();
+	@Column(name = "`name`")
+	@FieldDef(label = "name", maxLength = 255)
+	@EditMode(editor = FieldEditor.Text, required = false)
+	String getName();
 
-    void setName(String name);
+	void setName(String name);
 
-    @Column(name = "`project_id`")
-    @FieldDef(label="projectId")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getProjectId();
+	@Column(name = "`project_id`")
+	@FieldDef(label = "projectId")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Long getProjectId();
 
-    void setProjectId(Long projectId);
+	void setProjectId(Long projectId);
 
-    @Column(name = "`version_id`")
-    @FieldDef(label="versionId")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getVersionId();
+	@Column(name = "`version_id`")
+	@FieldDef(label = "versionId")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Long getVersionId();
 
-    void setVersionId(Long versionId);
+	void setVersionId(Long versionId);
 
-    @Column(name = "`phase_id`")
-    @FieldDef(label="phaseId")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getPhaseId();
+	@Column(name = "`start_date`")
+	@FieldDef(label = "startDate")
+	@EditMode(editor = FieldEditor.Datetime, required = false)
+	Date getStartDate();
 
-    void setPhaseId(Long phaseId);
+	void setStartDate(Date startDate);
 
-    @Column(name = "`start_date`")
-    @FieldDef(label="startDate")
-    @EditMode(editor = FieldEditor.Datetime, required = false)
-    Date getStartDate();
+	@Column(name = "`end_date`")
+	@FieldDef(label = "endDate")
+	@EditMode(editor = FieldEditor.Datetime, required = false)
+	Date getEndDate();
 
-    void setStartDate(Date startDate);
+	void setEndDate(Date endDate);
 
-    @Column(name = "`end_date`")
-    @FieldDef(label="endDate")
-    @EditMode(editor = FieldEditor.Datetime, required = false)
-    Date getEndDate();
+	@Column(name = "`before_task`")
+	@FieldDef(label = "前置任务")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Long getBeforeTask();
 
-    void setEndDate(Date endDate);
+	void setBeforeTask(Long beforeTask);
 
-    @Column(name = "`before_task`")
-    @FieldDef(label="前置任务")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getBeforeTask();
+	@Column(name = "`type`")
+	@FieldDef(label = "任务类型")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Integer getType();
 
-    void setBeforeTask(Long beforeTask);
+	void setType(Integer type);
 
-    @Column(name = "`type`")
-    @FieldDef(label="任务类型")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Integer getType();
+	@Column(name = "`owner`")
+	@FieldDef(label = "负责人")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Long getOwner();
 
-    void setType(Integer type);
+	void setOwner(Long owner);
 
-    @Column(name = "`owner`")
-    @FieldDef(label="负责人")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getOwner();
+	@Column(name = "`plan_time`")
+	@FieldDef(label = "计划工时")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Short getPlanTime();
 
-    void setOwner(Long owner);
+	void setPlanTime(Short planTime);
 
-    @Column(name = "`plan_time`")
-    @FieldDef(label="计划工时")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Short getPlanTime();
+	@Column(name = "`flow`")
+	@FieldDef(label = "流程")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Boolean getFlow();
 
-    void setPlanTime(Short planTime);
+	void setFlow(Boolean flow);
 
-    @Column(name = "`flow`")
-    @FieldDef(label="流程")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Boolean getFlow();
+	@Column(name = "`change_id`")
+	@FieldDef(label = "changeId")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Long getChangeId();
 
-    void setFlow(Boolean flow);
+	void setChangeId(Long changeId);
 
-    @Column(name = "`change_id`")
-    @FieldDef(label="changeId")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getChangeId();
+	@Column(name = "`describe`")
+	@FieldDef(label = "描述", maxLength = 255)
+	@EditMode(editor = FieldEditor.Text, required = false)
+	String getDescribe();
 
-    void setChangeId(Long changeId);
+	void setDescribe(String describe);
 
-    @Column(name = "`describe`")
-    @FieldDef(label="描述", maxLength = 255)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getDescribe();
+	@Column(name = "`status`")
+	@FieldDef(label = "status")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Integer getStatus();
 
-    void setDescribe(String describe);
+	void setStatus(Integer status);
 
-    @Column(name = "`status`")
-    @FieldDef(label="status")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Integer getStatus();
+	@Column(name = "`created`")
+	@FieldDef(label = "created")
+	@EditMode(editor = FieldEditor.Datetime, required = false)
+	Date getCreated();
 
-    void setStatus(Integer status);
+	void setCreated(Date created);
 
-    @Column(name = "`created`")
-    @FieldDef(label="created")
-    @EditMode(editor = FieldEditor.Datetime, required = false)
-    Date getCreated();
+	@Column(name = "`modified`")
+	@FieldDef(label = "modified")
+	@EditMode(editor = FieldEditor.Datetime, required = false)
+	Date getModified();
 
-    void setCreated(Date created);
+	void setModified(Date modified);
 
-    @Column(name = "`modified`")
-    @FieldDef(label="modified")
-    @EditMode(editor = FieldEditor.Datetime, required = false)
-    Date getModified();
+	@Column(name = "`create_member_id`")
+	@FieldDef(label = "createMemberId")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Long getCreateMemberId();
 
-    void setModified(Date modified);
+	void setCreateMemberId(Long createMemberId);
 
-    @Column(name = "`create_member_id`")
-    @FieldDef(label="createMemberId")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getCreateMemberId();
+	@Column(name = "`modify_member_id`")
+	@FieldDef(label = "modifyMemberId")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Long getModifyMemberId();
 
-    void setCreateMemberId(Long createMemberId);
+	void setModifyMemberId(Long modifyMemberId);
 
-    @Column(name = "`modify_member_id`")
-    @FieldDef(label="modifyMemberId")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getModifyMemberId();
+	@Column(name = "`fact_begin_date`")
+	@FieldDef(label = "factBeginDate")
+	@EditMode(editor = FieldEditor.Datetime, required = false)
+	Date getFactBeginDate();
 
-    void setModifyMemberId(Long modifyMemberId);
-    
-    @Column(name = "`fact_begin_date`")
-    @FieldDef(label="factBeginDate")
-    @EditMode(editor = FieldEditor.Datetime, required = false)
-    Date getFactBeginDate();
+	void setFactBeginDate(Date factBeginDate);
 
-    void setFactBeginDate(Date factBeginDate);
+	@Column(name = "`fact_end_date`")
+	@FieldDef(label = "factEndDate")
+	@EditMode(editor = FieldEditor.Datetime, required = false)
+	Date getFactEndDate();
 
-    @Column(name = "`fact_end_date`")
-    @FieldDef(label="factEndDate")
-    @EditMode(editor = FieldEditor.Datetime, required = false)
-    Date getFactEndDate();
-
-    void setFactEndDate(Date factEndDate);
+	void setFactEndDate(Date factEndDate);
 }

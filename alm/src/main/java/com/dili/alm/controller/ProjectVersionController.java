@@ -65,16 +65,14 @@ public class ProjectVersionController {
 	}
 
 	@ApiOperation(value = "查询Milestones", notes = "查询Milestones，返回列表信息")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Milestones", paramType = "form", value = "Milestones的form信息", required = false, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "Milestones", paramType = "form", value = "Milestones的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<ProjectVersion> list(ProjectVersion projectVersion) {
 		return projectVersionService.list(projectVersion);
 	}
 
 	@ApiOperation(value = "分页查询Milestones", notes = "分页查询Milestones，返回easyui分页信息")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Milestones", paramType = "form", value = "Milestones的form信息", required = false, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "Milestones", paramType = "form", value = "Milestones的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<Map> listPage(ProjectVersion projectVersion) {
 		List<ProjectVersion> list = this.projectVersionService.listByExample(projectVersion);
@@ -86,9 +84,6 @@ public class ProjectVersionController {
 		}
 	}
 
-	@ApiOperation("新增Milestones")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Milestones", paramType = "form", value = "Milestones的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> insert(ProjectVersionFormDto dto) {
 		try {
@@ -103,9 +98,6 @@ public class ProjectVersionController {
 		}
 	}
 
-	@ApiOperation("修改Milestones")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Milestones", paramType = "form", value = "Milestones的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> update(ProjectVersionFormDto dto) {
 		try {
@@ -122,16 +114,27 @@ public class ProjectVersionController {
 		}
 	}
 
+	@RequestMapping("/detail")
+	public String detail(@RequestParam Long id, ModelMap map) {
+		ProjectVersion version = this.projectVersionService.get(id);
+		map.addAttribute("model", version);
+		Project project = this.projectService.get(version.getProjectId());
+		map.addAttribute("project", project);
+		Files record = DTOUtils.newDTO(Files.class);
+		record.setVersionId(id);
+		List<Files> files = this.filesService.list(record);
+		map.addAttribute("files", files);
+		return "project/version/detail";
+	}
+
 	@ApiOperation("删除Milestones")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "id", paramType = "form", value = "Milestones的主键", required = true, dataType = "long") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "id", paramType = "form", value = "Milestones的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput delete(Long id) {
 		try {
 			ProjectVersion projectVersion = projectVersionService.get(id);
 			projectVersionService.deleteProjectVersion(id);
-			return BaseOutput.success("删除成功")
-					.setData(String.valueOf(projectVersion.getId() + ":" + projectVersion.getVersion()));
+			return BaseOutput.success("删除成功").setData(String.valueOf(projectVersion.getId() + ":" + projectVersion.getVersion()));
 		} catch (ProjectVersionException e) {
 			return BaseOutput.failure(e.getMessage());
 		}

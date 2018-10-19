@@ -64,14 +64,12 @@
 					<thead>
 						<tr>
 							<th data-options="field:'name', width:'50%', align:'center', resizable:'true', fixed:'false'">变更名称</th>
-							<th data-options="field:'phaseId', width:'50%', align:'center', resizable:'true', fixed:'false'">阶段</th>
 						</tr>
 					</thead>
 					<tbody>
 						<%for(item in changes){%>
 						<tr>
 							<td>${item.name!}</td>
-							<td>${item.phaseId!}</td>
 						</tr>
 						<%}%>
 					</tbody>

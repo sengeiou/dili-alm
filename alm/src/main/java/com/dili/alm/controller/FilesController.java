@@ -65,10 +65,6 @@ public class FilesController {
 		projectVersionProvider.put("provider", "projectVersionProvider");
 		metadata.put("versionId", projectVersionProvider);
 
-		JSONObject projectPhaseProvider = new JSONObject();
-		projectPhaseProvider.put("provider", "projectPhaseProvider");
-		metadata.put("phaseId", projectPhaseProvider);
-
 		JSONObject memberProvider = new JSONObject();
 		memberProvider.put("provider", "memberProvider");
 		metadata.put("createMemberId", memberProvider);

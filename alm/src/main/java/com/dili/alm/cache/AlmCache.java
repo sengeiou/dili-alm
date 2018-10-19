@@ -35,7 +35,6 @@ import com.dili.alm.service.HardwareResourceService;
 import com.dili.alm.service.LogService;
 import com.dili.alm.service.MessageService;
 import com.dili.alm.service.ProjectApplyService;
-import com.dili.alm.service.ProjectPhaseService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.TaskService;
 import com.dili.alm.service.TeamService;
@@ -67,8 +66,6 @@ public class AlmCache {
 	private static final Map<String, String> TASK_TYPE_MAP = new ConcurrentHashMap<>();
 	// 消息类型
 	private static final Map<String, String> MESSAGE_TYPE_MAP = new ConcurrentHashMap<>();
-	// 阶段名称
-	private static final Map<String, String> PHASE_NAME_MAP = new ConcurrentHashMap<>();
 
 	private static final Map<String, String> APPLY_PLAN_PHASE_MAP = new ConcurrentHashMap<>();
 
@@ -104,8 +101,6 @@ public class AlmCache {
 	// 立项申请roi缓存
 	private static final Map<Long, RoiDto> ROI_MAP = new ConcurrentHashMap<>();
 
-	@Autowired
-	private ProjectPhaseService phaseService;
 	@Autowired
 	private UserRpc userRpc;
 	@Autowired
@@ -272,16 +267,6 @@ public class AlmCache {
 			});
 		}
 		return MESSAGE_TYPE_MAP;
-	}
-
-	public Map<String, String> getPhaseNameMap() {
-		if (AlmCache.PHASE_NAME_MAP.isEmpty()) {
-			List<DataDictionaryValueDto> list = phaseService.getPhaseNames();
-			list.forEach(type -> {
-				AlmCache.PHASE_NAME_MAP.put(type.getValue(), type.getCode());
-			});
-		}
-		return PHASE_NAME_MAP;
 	}
 
 	public Map<String, String> getApplyPlanPhaseMap() {

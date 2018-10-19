@@ -34,11 +34,11 @@ import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.constant.AlmConstants.TaskStatus;
 import com.dili.alm.dao.ProjectActionRecordMapper;
 import com.dili.alm.dao.ProjectMapper;
-import com.dili.alm.dao.ProjectPhaseMapper;
 import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.TaskDetailsMapper;
 import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.dao.TeamMapper;
+import com.dili.alm.dao.WorkDayMapper;
 import com.dili.alm.domain.ActionDateType;
 import com.dili.alm.domain.DataDictionaryValue;
 import com.dili.alm.domain.Project;
@@ -47,7 +47,6 @@ import com.dili.alm.domain.ProjectActionRecord;
 import com.dili.alm.domain.ProjectActionType;
 import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.ProjectChange;
-import com.dili.alm.domain.ProjectPhase;
 import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Role;
@@ -71,7 +70,6 @@ import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.ProjectApplyService;
 import com.dili.alm.service.ProjectChangeService;
-import com.dili.alm.service.ProjectPhaseService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.ProjectVersionService;
 import com.dili.alm.service.TaskDetailsService;
@@ -110,9 +108,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	ProjectApplyService projectApplyService;
 
 	@Autowired
-	ProjectPhaseService projectPhaseService;
-
-	@Autowired
 	ProjectService projectService;
 
 	@Autowired
@@ -138,8 +133,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	private ProjectActionRecordMapper parMapper;
 
 	@Autowired
-	private ProjectPhaseMapper phaseMapper;
-	@Autowired
 	private ProjectChangeService projectChangeService;
 	@Autowired
 	private ProjectMapper projectMapper;
@@ -155,6 +148,8 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	private ProjectVersionMapper versionMapper;
 	@Autowired
 	private WorkDayService workDayService;
+	@Autowired
+	private WorkDayMapper workDayMapper;
 
 	public TaskServiceImpl() {
 		super();
@@ -177,10 +172,11 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	}
 
 	@Override
-	public void addTask(Task task, Short planTime, Date startDateShow, Date endDateShow, Boolean flow, Long creatorId)
-			throws TaskException {
+	public void addTask(Task task, Short planTime, Date startDateShow, Date endDateShow, Boolean flow, Long creatorId) throws TaskException {
 		// 判断项目和阶段是否在进行中
 		this.checkProjectState(task);
+		// 验证任务开始日期和结束日期是否在工作日内
+		this.checkTaskStartAndEndDateInWorkDay(startDateShow, endDateShow);
 		// 判断是否是本项目的项目经理
 		if (!this.isThisProjectManger(task.getProjectId())) {
 			throw new TaskException("只有本项目的项目经理可以添加项目！");
@@ -216,6 +212,16 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		par.setActionType(ProjectActionType.TASK.getValue());
 		par.setTaskId(task.getId());
 		rows = this.parMapper.insertSelective(par);
+	}
+
+	private void checkTaskStartAndEndDateInWorkDay(Date startDate, Date endDate) throws TaskException {
+		if (startDate.compareTo(endDate) > 0) {
+			throw new TaskException("任务开始日期不能大于结束日期");
+		}
+		Long count = this.workDayMapper.countByStartAndEndDate(startDate, endDate);
+		if (count <= 0) {
+			throw new TaskException("任务开始日期和结束日期必须在一个工作周内");
+		}
 	}
 
 	@Override
@@ -310,11 +316,9 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	public boolean isCommittee() {
 		DataDictionaryDto code = dataDictionaryService.findByCode(AlmConstants.ROLE_CODE);
 		List<DataDictionaryValueDto> values = code.getValues();
-		String roleId = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH)).findFirst()
-				.map(DataDictionaryValue::getValue).orElse(null);
+		String roleId = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH)).findFirst().map(DataDictionaryValue::getValue).orElse(null);
 
-		String roleId2 = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH_LEADER))
-				.findFirst().map(DataDictionaryValue::getValue).orElse(null);
+		String roleId2 = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH_LEADER)).findFirst().map(DataDictionaryValue::getValue).orElse(null);
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		List<Role> currentUsercurrent = roleRpc.listRoleByUserId(userTicket.getId()).getData();
 		for (Role role : currentUsercurrent) {
@@ -476,20 +480,10 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	}
 
 	@Override
-	public EasyuiPageOutput listByTeam(Task task, String phaseName) {
+	public EasyuiPageOutput listByTeam(Task task) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		if (userTicket == null) {
 			throw new RuntimeException("未登录");
-		}
-		ProjectPhase projectPhase = DTOUtils.newDTO(ProjectPhase.class);
-		List<Long> ids = null;
-		if (phaseName != null) {
-			projectPhase.setName(phaseName);
-			List<ProjectPhase> projectPhaseList = projectPhaseService.listByExample(projectPhase);
-			ids = new ArrayList<Long>();
-			for (ProjectPhase projectPhase2 : projectPhaseList) {
-				ids.add(projectPhase2.getId());
-			}
 		}
 
 		if (!WebUtil.strIsEmpty(task.getName())) {
@@ -510,10 +504,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		projectVersionProvider.put("projectVersion", "projectVersionProvider");
 		metadata.put("versionId", projectVersionProvider);
 
-		JSONObject projectPhaseProvider = new JSONObject();
-		projectPhaseProvider.put("projectPhase", "projectPhaseProvider");
-		metadata.put("phaseId", projectPhaseProvider);
-
 		JSONObject memberProvider = new JSONObject();
 		memberProvider.put("provider", "memberProvider");
 		metadata.put("owner", memberProvider);
@@ -530,8 +520,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		try {
 			List<TaskEntity> results = this.TaskParseTaskSelectDto(list, false);// 转化为查询的DTO
 			List taskList = ValueProviderUtils.buildDataByProvider(task, results);
-			EasyuiPageOutput taskEasyuiPageOutput = new EasyuiPageOutput(Long.valueOf(list.getTotal()).intValue(),
-					taskList);
+			EasyuiPageOutput taskEasyuiPageOutput = new EasyuiPageOutput(Long.valueOf(list.getTotal()).intValue(), taskList);
 			return taskEasyuiPageOutput;
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
@@ -556,10 +545,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		projectVersionProvider.put("projectVersion", "projectVersionProvider");
 		metadata.put("versionId", projectVersionProvider);
 
-		JSONObject projectPhaseProvider = new JSONObject();
-		projectPhaseProvider.put("projectPhase", "projectPhaseProvider");
-		metadata.put("phaseId", projectPhaseProvider);
-
 		JSONObject memberProvider = new JSONObject();
 		memberProvider.put("provider", "memberProvider");
 		metadata.put("owner", memberProvider);
@@ -576,8 +561,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		try {
 			List<TaskEntity> results = this.TaskParseTaskSelectDto(list, true);// 转化为查询的DTO
 			List taskList = ValueProviderUtils.buildDataByProvider(task, results);
-			EasyuiPageOutput taskEasyuiPageOutput = new EasyuiPageOutput(
-					Integer.valueOf(Integer.parseInt(String.valueOf(page.getTotal()))), taskList);
+			EasyuiPageOutput taskEasyuiPageOutput = new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(page.getTotal()))), taskList);
 			return new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(page.getTotal()))), taskList);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -684,8 +668,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	@Override
 	public int restTaskHour(Long ownerId, String updateDate) {
 
-		// String updateDate = this.dateToString(new Date());
-
 		int dayTotal = 0;
 
 		// 本日更新其他项目的工时
@@ -727,8 +709,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 	@Transactional(rollbackFor = ApplicationException.class)
 	@Override
-	public void startTask(Long taskId, Long modifierId)
-			throws TaskException, ProjectVersionException, ProjectException {
+	public void startTask(Long taskId, Long modifierId) throws TaskException, ProjectVersionException, ProjectException {
 
 		// 查询任务
 		Task task = this.getActualDao().selectByPrimaryKey(taskId);
@@ -746,14 +727,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 		// 版本开始
 		this.projectVersionService.start(task.getVersionId());
-		ProjectPhase phase = this.phaseMapper.selectByPrimaryKey(task.getPhaseId());
-		if (phase.getActualStartDate() == null) {
-			phase.setActualStartDate(now);
-			int rows = this.phaseMapper.updateByPrimaryKey(phase);
-			if (rows <= 0) {
-				throw new TaskException("更新阶段信息失败");
-			}
-		}
 
 		/*** 初始化相关内容的进度 ***/
 		// 进度总量写入project表中
@@ -762,8 +735,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		// 更新版本表中的进度
 		saveProjectVersion(task);
 
-		// 更新阶段表中的进度
-		saveProjectPhase(task);
 		/*** 初始化相关内容的进度 ***/
 
 		int rows = this.update(task);
@@ -773,8 +744,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	}
 
 	@Override
-	public Long submitWorkingHours(Long taskId, Long operator, Date taskDate, Short taskHour, Short overHour,
-			String content) throws TaskException {
+	public Long submitWorkingHours(Long taskId, Long operator, Date taskDate, Short taskHour, Short overHour, String content) throws TaskException {
 
 		// 判断是否填写了工时
 		if (taskHour <= 0 && overHour <= 0) {
@@ -833,10 +803,11 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	}
 
 	@Override
-	public void updateTask(Task task, Long modifyMemberId, Short planTime, Date startDate, Date endDate, Boolean flow)
-			throws TaskException {
+	public void updateTask(Task task, Long modifyMemberId, Short planTime, Date startDate, Date endDate, Boolean flow) throws TaskException {
 		// 判断项目和阶段是否在进行中
 		this.checkProjectState(task);
+		// 验证任务开始日期和结束日期是否在工作日内
+		this.checkTaskStartAndEndDateInWorkDay(task.getStartDate(), task.getEndDate());
 		if (!this.isCreater(task)) {
 			throw new TaskException("不是本项目的创建者，不能进行编辑");
 		}
@@ -929,9 +900,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		// 更新版本表中的进度
 		saveProjectVersion(task);
 
-		// 更新阶段表中的进度
-		saveProjectPhase(task);
-
 		rows = this.saveOrUpdate(task);
 		if (rows <= 0) {
 			throw new TaskException("更新任务信息失败");
@@ -944,16 +912,14 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		if (project == null) {
 			throw new TaskException("项目不存在");
 		}
-		if (!project.getProjectState().equals(ProjectState.NOT_START.getValue())
-				&& !project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
+		if (!project.getProjectState().equals(ProjectState.NOT_START.getValue()) && !project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
 			throw new TaskException("项目不在进行中，不能创建任务");
 		}
 		ProjectVersion version = this.versionMapper.selectByPrimaryKey(task.getVersionId());
 		if (version == null) {
 			throw new TaskException("版本不存在");
 		}
-		if (!version.getVersionState().equals(ProjectState.NOT_START.getValue())
-				&& !version.getVersionState().equals(ProjectState.IN_PROGRESS.getValue())) {
+		if (!version.getVersionState().equals(ProjectState.NOT_START.getValue()) && !version.getVersionState().equals(ProjectState.IN_PROGRESS.getValue())) {
 			throw new TaskException("版本不在进行中，不能创建任务");
 		}
 	}
@@ -971,8 +937,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 	private boolean isProjeactComplate(Long id) {
 		Project project = projectService.get(id);
-		if (project.getProjectState().equals(PROJECT_STATE_SHUT)
-				|| project.getProjectState().equals(PROJECT_STATE_COMPLATE)) {
+		if (project.getProjectState().equals(PROJECT_STATE_SHUT) || project.getProjectState().equals(PROJECT_STATE_COMPLATE)) {
 			return true;
 		}
 		return false;
@@ -997,55 +962,22 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		}
 		long taskTime = taskDate.getTime();
 		// -------tStart---------wStart-------taskTime---------current---------tEnd----------wEnd-----------
-		if (wStart >= tStart && wStart <= tEnd && wEnd >= tEnd && taskTime >= wStart && taskTime <= tEnd
-				&& current >= taskTime && current <= tEnd) {
+		if (tStart <= wStart && wStart <= taskTime && taskTime <= current && current <= tEnd && tEnd <= wEnd) {
 			return true;
 		}
-		// ----------wStart----------tStart--------------tEnd------------wEnd----------
-		if (wStart <= tStart && wEnd >= tEnd && taskTime >= tStart && taskTime <= tEnd && current >= taskTime
-				&& current <= tEnd) {
+		// ----------wStart----------tStart-------------taskTime-----------current-----------tEnd------------wEnd----------
+		if (wStart <= tStart && tStart <= taskTime && taskTime <= current && current <= tEnd && tEnd <= wEnd) {
 			return true;
 		}
-		// ----------wStart-------------tStart-------------wEnd-----------tEnd---------
-		if (wStart <= tStart && wEnd >= tStart && wEnd <= tEnd && taskTime >= tStart && taskTime <= wEnd
-				&& current >= taskTime && current <= wEnd) {
+		// ----------wStart-----------tStart---------taskTime-------------current---------------wEnd-----------tEnd---------
+		if (wStart <= tStart && tStart <= taskTime && taskTime <= current && current <= wEnd && wEnd <= tEnd) {
 			return true;
 		}
 		// -------tStart--------wStart---------taskTime--------current----------wEnd----------tend-------------
-		if (tStart <= wStart && tEnd >= wEnd && taskTime >= wStart && taskTime <= wEnd && current >= taskTime
-				&& current <= wEnd) {
+		if (tStart <= wStart && wStart <= taskTime && taskTime <= current && current <= wEnd && wEnd <= tEnd) {
 			return true;
 		}
 		return false;
-	}
-
-	// 计算阶段进度
-	private void saveProjectPhase(Task task) throws TaskException {
-		// 获取阶段信息 已执行的工时/计划工时累加
-		ProjectPhase projectPhase = projectPhaseService.get(task.getPhaseId());
-		int progress = 0;
-		double totalPlanTime = 0;
-		double totalTaskTime = 0;
-		Task taskSelect = DTOUtils.newDTO(Task.class);
-		taskSelect.setPhaseId(task.getPhaseId());
-		List<Task> taskList = this.list(taskSelect);
-		for (Task taskResult : taskList) {
-			totalPlanTime += taskResult.getPlanTime();
-			TaskDetails taskDetailsSelect = DTOUtils.newDTO(TaskDetails.class);
-			taskDetailsSelect.setTaskId(taskResult.getId());
-			List<TaskDetails> taskDetailsList = taskDetailsService.list(taskDetailsSelect);
-			for (TaskDetails taskDetailsResult : taskDetailsList) {
-				totalTaskTime += taskDetailsResult.getTaskHour();
-				totalTaskTime += taskDetailsResult.getOverHour();
-			}
-		}
-
-		progress = (int) ((totalTaskTime / totalPlanTime) * 100);
-		projectPhase.setCompletedProgress(progress);
-		int rows = projectPhaseService.saveOrUpdate(projectPhase);
-		if (rows <= 0) {
-			throw new TaskException("更新阶段进度失败");
-		}
 	}
 
 	// 计算项目总进度
@@ -1057,14 +989,12 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		// 相对应的立项信息
 		ProjectApply projectApply = projectApplyService.get(project.getApplyId());
 
-		ApplyMajorResource applyMajorResource = JSON.parseObject(
-				Optional.ofNullable(projectApply.getResourceRequire()).orElse("{}"), ApplyMajorResource.class);
+		ApplyMajorResource applyMajorResource = JSON.parseObject(Optional.ofNullable(projectApply.getResourceRequire()).orElse("{}"), ApplyMajorResource.class);
 
 		// 整体项目预估时间
 		double total = Optional.ofNullable(applyMajorResource.getMainWorkTime()).orElse(0) * 8;
 
-		List<ApplyRelatedResource> list = Optional.ofNullable(applyMajorResource.getRelatedResources())
-				.orElse(new ArrayList<ApplyRelatedResource>());
+		List<ApplyRelatedResource> list = Optional.ofNullable(applyMajorResource.getRelatedResources()).orElse(new ArrayList<ApplyRelatedResource>());
 
 		for (int i = 0; i < list.size(); i++) {
 			ApplyRelatedResource applyRelatedResource = list.get(i);
@@ -1153,7 +1083,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 		metadata.put("projectId", "projectProvider");
 		metadata.put("versionId", "projectVersionProvider");
-		metadata.put("phaseId", "projectPhaseProvider");
 		metadata.put("startDate", "dateProvider");
 		metadata.put("endDate", "dateProvider");
 		metadata.put("owner", "memberProvider");
@@ -1173,8 +1102,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			Template template = this.groupTemplate.getTemplate(this.contentTemplate);
 			template.binding("task", viewModel);
 			this.mailManager.sendMail(this.mailFrom, taskExecutor.getEmail(), template.render(), true, "任务超时提醒", null);
-			this.mailManager.sendMail(this.mailFrom, projectManager.getEmail(), template.render(), true, "任务超时提醒",
-					null);
+			this.mailManager.sendMail(this.mailFrom, projectManager.getEmail(), template.render(), true, "任务超时提醒", null);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

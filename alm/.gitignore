@@ -14,3 +14,6 @@
 **/.factorypath
 /projectCostStatisticTemplate.xlsx
 /weekly.xls
+/.apt_generated_tests/
+/weekly.xls
+/change.docx

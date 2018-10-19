@@ -26,7 +26,6 @@ import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.FilesMapper;
 import com.dili.alm.dao.ProjectActionRecordMapper;
 import com.dili.alm.dao.ProjectMapper;
-import com.dili.alm.dao.ProjectPhaseMapper;
 import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.dao.TeamMapper;
@@ -37,7 +36,6 @@ import com.dili.alm.domain.ProjectAction;
 import com.dili.alm.domain.ProjectActionRecord;
 import com.dili.alm.domain.ProjectActionType;
 import com.dili.alm.domain.ProjectEntity;
-import com.dili.alm.domain.ProjectPhase;
 import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
@@ -50,7 +48,6 @@ import com.dili.alm.domain.dto.ProjectCostStatisticDto;
 import com.dili.alm.domain.dto.ProjectDto;
 import com.dili.alm.domain.dto.UploadProjectFileDto;
 import com.dili.alm.exceptions.ProjectException;
-import com.dili.alm.exceptions.TaskException;
 import com.dili.alm.provider.ProjectProvider;
 import com.dili.alm.rpc.DataAuthRpc;
 import com.dili.alm.rpc.UserRpc;
@@ -87,8 +84,6 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	private TeamService teamService;
 	@Autowired
 	private TaskMapper taskMapper;
-	@Autowired
-	private ProjectPhaseMapper phaseMapper;
 	@Autowired
 	private FilesMapper fileMapper;
 	@Autowired
@@ -430,7 +425,6 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 			Files files = this.fileMapper.selectByPrimaryKey(fid);
 			files.setProjectId(dto.getProjectId());
 			files.setVersionId(dto.getVersionId());
-			files.setPhaseId(dto.getPhaseId());
 			files.setType(dto.getType());
 			files.setNotes(dto.getNotes());
 			this.fileMapper.updateByPrimaryKey(files);
@@ -459,9 +453,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		String subject = "主题：" + project.getName() + "有新的文件上传";
 		StringBuilder sb = new StringBuilder();
 		ProjectVersion version = this.projectVersionMapper.selectByPrimaryKey(dto.getVersionId());
-		ProjectPhase phase = this.phaseMapper.selectByPrimaryKey(dto.getPhaseId());
-		sb.append("项目名称：").append(project.getName()).append(version.getVersion()).append("\r\n阶段名称：")
-				.append(AlmCache.getInstance().getPhaseNameMap().get(phase.getName()));
+		sb.append("项目名称：").append(project.getName()).append(version.getVersion());
 		String content = sb.toString();
 		for (String str : userIds) {
 			BaseOutput<User> output = this.userRPC.findUserById(Long.valueOf(str));
@@ -492,10 +484,6 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		JSONObject projectVersionProvider = new JSONObject();
 		projectVersionProvider.put("provider", "projectVersionProvider");
 		metadata.put("versionId", projectVersionProvider);
-
-		JSONObject projectPhaseProvider = new JSONObject();
-		projectPhaseProvider.put("provider", "projectPhaseProvider");
-		metadata.put("phaseId", projectPhaseProvider);
 
 		JSONObject memberProvider = new JSONObject();
 		memberProvider.put("provider", "memberProvider");

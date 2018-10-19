@@ -149,10 +149,6 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 		projectVersionProvider.put("provider", "projectVersionProvider");
 		metadata.put("versionId", projectVersionProvider);
 
-		JSONObject projectPhaseProvider = new JSONObject();
-		projectPhaseProvider.put("provider", "projectPhaseProvider");
-		metadata.put("phaseId", projectPhaseProvider);
-
 		JSONObject changeTypeProvider = new JSONObject();
 		changeTypeProvider.put("provider", "changeTypeProvider");
 		metadata.put("type", changeTypeProvider);

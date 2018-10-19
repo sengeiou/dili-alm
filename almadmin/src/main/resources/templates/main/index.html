@@ -91,9 +91,9 @@ body {
 				</div>
 			</div>
 			<!--消息列表-->
-			<div class="msg show-list" data-id="news-list">
+			<!-- <div class="msg show-list" data-id="news-list">
 				<span id="messageCount" style="display: none;"></span>
-			</div>
+			</div> -->
 		</div>
 		<!--LOGO-->
 		<div class="logo">LOGO</div>
@@ -130,12 +130,12 @@ body {
 	<!--<span class="item dot-top"></span>-->
 </div>
 <!--消息列表-->
-<div class="menu-list" id="news-list" data-index="2">
+<!-- <div class="menu-list" id="news-list" data-index="2">
 	<ul id="messageList">
 
 	</ul>
-	<!--<span class="item dot-top"></span>-->
-</div>
+	<span class="item dot-top"></span>
+</div> -->
 
 <!--工作日设置弹窗-->
 <div id="workdayBox" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="设置"
@@ -525,76 +525,10 @@ body {
 				obj.hide();
 			}, 300);
 		});
-		messagesListen();
 
 	});
 	/** 得到消息通知信息  **/
 	var userIdVal = ${userid!};
-	
-	var getMessages = {
-		type : "POST",
-		url : 'http://almweb.diligrp.com/messageApi/list',
-		data : {
-			'userId' : userIdVal
-		},
-		dataType : 'json',
-		success : function(data) {
-			if (data.count == 0) {
-				$("#messageCount").empty();
-				$("#messageList").empty();
-				$("#messageCount").css('display', 'none');
-			} else {
-				$("#messageCount").css('display', 'block');
-				var result = data.messages;
-				$("#messageCount").empty();
-				$('#messageCount').text(data.count);
-				$("#messageList").empty();
-				for (var i = 0; i < result.length; i++) {
-					$("#messageList")
-							.append(
-									"<li><a id='"
-											+ result[i].id
-											+ "'href='javascript:void(0)' onclick='setMessageTags(this)' rel='"
-											+ result[i].url + "'>"
-											+ result[i].messageName
-											+ "未处理</a></li>");
-
-				}
-			}
-		}
-	};
-	function messagesListen() {
-		$.ajax(getMessages)
-	}
-	//关键在这里，Ajax定时访问服务端，不断获取数据 ，这里是30秒请求一次。	
-	window.setInterval(function() {
-		$.ajax(getMessages)
-	}, 30000);
-
-	function setMessageTags(obj) {
-		var title = "消息管理";
-		var url = obj.rel;
-		var id = obj.id;
-		updateMessageIsRead(id, title, url);
-	}
-	function updateMessageIsRead(id, title, url) {
-		$.ajax({
-			type : "post",
-			url : "http://almweb.diligrp.com/messageApi/updateMessageIsRead",
-			data : {
-				id : id
-			},
-			datatype : 'json',
-			success : function(data) {
-				var flag = data.success;
-				if (flag) {
-					addOneTab(title, url);
-				}
-				messagesListen();
-
-			}
-		});
-	}
 
 	/*菜单切换*/
 	$(function() {
