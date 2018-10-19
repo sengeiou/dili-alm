@@ -159,7 +159,7 @@ function saveOrUpdate() {
 		$.messager.alert('错误', "不符合项目开始时间和结束时间");
 		return;
 	}
-	$('#dlg').dialog('close');
+//	$('#dlg').dialog('close');
 	$.ajax({
 				type : "POST",
 				url : _url,

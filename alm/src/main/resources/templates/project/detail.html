@@ -101,7 +101,7 @@ span.require{
 		idField="id" data-options="url:'${contextPath!}/project/version/listPage?projectId=${model.id!}',onLoadSuccess:countVersionGrid">
 		<thead>
 			<tr>
-				<th data-options="field:'version', width:'16%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">版本号</th>
+				<th data-options="field:'version', width:'16%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:versionFormatter">版本号</th>
 				<th
 					data-options="field:'plannedStartDate', width:'12%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">计划开始日期</th>
 				<th
