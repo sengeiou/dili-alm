@@ -19,8 +19,6 @@ import com.dili.alm.domain.Files;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.ProjectVersionFormDto;
-import com.dili.alm.domain.dto.DataDictionaryValueDto;
-import com.dili.alm.domain.dto.ProjectVersionChangeStateViewDto;
 import com.dili.alm.exceptions.ProjectVersionException;
 import com.dili.alm.provider.ProjectVersionProvider;
 import com.dili.alm.service.FilesService;
@@ -127,10 +125,9 @@ public class ProjectVersionController {
 		return "project/version/detail";
 	}
 
-	@ApiOperation("删除Milestones")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "id", paramType = "form", value = "Milestones的主键", required = true, dataType = "long") })
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput delete(Long id) {
+	public @ResponseBody BaseOutput<Object> delete(Long id) {
 		try {
 			ProjectVersion projectVersion = projectVersionService.get(id);
 			projectVersionService.deleteProjectVersion(id);
