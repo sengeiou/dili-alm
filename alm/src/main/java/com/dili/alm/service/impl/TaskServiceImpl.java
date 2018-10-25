@@ -175,8 +175,10 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	public void addTask(Task task, Short planTime, Date startDateShow, Date endDateShow, Boolean flow, Long creatorId) throws TaskException {
 		// 判断项目和阶段是否在进行中
 		this.checkProjectState(task);
-		// 验证任务开始日期和结束日期是否在工作日内
-		this.checkTaskStartAndEndDateInWorkDay(startDateShow, endDateShow);
+		// 验证任务预估工时是否大于40
+		if (planTime > 40) {
+			throw new TaskException("任务的计划工时不能大于40");
+		}
 		// 判断是否是本项目的项目经理
 		if (!this.isThisProjectManger(task.getProjectId())) {
 			throw new TaskException("只有本项目的项目经理可以添加项目！");
@@ -212,16 +214,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		par.setActionType(ProjectActionType.TASK.getValue());
 		par.setTaskId(task.getId());
 		rows = this.parMapper.insertSelective(par);
-	}
-
-	private void checkTaskStartAndEndDateInWorkDay(Date startDate, Date endDate) throws TaskException {
-		if (startDate.compareTo(endDate) > 0) {
-			throw new TaskException("任务开始日期不能大于结束日期");
-		}
-		Long count = this.workDayMapper.countByStartAndEndDate(startDate, endDate);
-		if (count <= 0) {
-			throw new TaskException("任务开始日期和结束日期必须在一个工作周内");
-		}
 	}
 
 	@Override
@@ -806,8 +798,10 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	public void updateTask(Task task, Long modifyMemberId, Short planTime, Date startDate, Date endDate, Boolean flow) throws TaskException {
 		// 判断项目和阶段是否在进行中
 		this.checkProjectState(task);
-		// 验证任务开始日期和结束日期是否在工作日内
-		this.checkTaskStartAndEndDateInWorkDay(task.getStartDate(), task.getEndDate());
+		// 验证任务预估工时是否大于40
+		if (planTime > 40) {
+			throw new TaskException("任务的计划工时不能大于40");
+		}
 		if (!this.isCreater(task)) {
 			throw new TaskException("不是本项目的创建者，不能进行编辑");
 		}
@@ -975,6 +969,10 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		}
 		// -------tStart--------wStart---------taskTime--------current----------wEnd----------tend-------------
 		if (tStart <= wStart && wStart <= taskTime && taskTime <= current && current <= wEnd && wEnd <= tEnd) {
+			return true;
+		}
+		// --------wStart--------tStart----------taskTime--------tEnd-----------current-------wEnd-----------
+		if (wStart <= tStart && tStart <= taskTime && taskTime <= tEnd && tEnd <= current && current <= wEnd) {
 			return true;
 		}
 		return false;
