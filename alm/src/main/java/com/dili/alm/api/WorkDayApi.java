@@ -75,4 +75,18 @@ public class WorkDayApi {
 	 public  @ResponseBody WorkDay  getWorkDay() {
 	 	return workDayService.getNowWeeklyWorkDay();	
 	 }
+	 
+	 /**
+	  * 查询当前工作时间
+	  * @return
+	  */
+	 @ApiImplicitParams({
+			@ApiImplicitParam(name="WorkDay", paramType="form", value = "WorkDay的form信息", required = true, dataType = "string")
+		})
+	 @CrossOrigin(origins = {"http://almadmin.diligrp.com", "null"})
+	 @RequestMapping(value="/isHasWorkDayYear", method = {RequestMethod.GET, RequestMethod.POST})
+	 public @ResponseBody boolean  isHasWorkDayYear(String year) {
+	 	List<String> workDayYaers = workDayService.getWorkDayYaers();	
+	 	return workDayYaers.contains(year);
+	 }
 }

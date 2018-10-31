@@ -81,6 +81,9 @@
 	    AND 
 	    a.word_day_week=b.word_day_week;
 	</select>
+	  <delete id="deteleWorkDaysByYear" >
+  		DELETE FROM work_day WHERE work_day_year = #{year}
+  	</delete>
 	
 
 </mapper>
