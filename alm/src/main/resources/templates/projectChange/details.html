@@ -52,30 +52,27 @@ input[class^="easyui-"] {
 					<td class="title-first" colspan="4">1基本信息</td>
 				</tr>
 				<tr>
-					<td><input class="easyui-textbox" type="text" name="name" value="${obj.name}"
-						data-options="required:true,validType:'length[1,20]',label:'变更名称:'"></td>
+					<td><input class="easyui-textbox" type="text" name="name" value="${obj.name}" data-options="required:true,validType:'length[1,20]',label:'变更名称:'"></td>
 					<td><input class="easyui-combobox" type="text" value="${obj.name!}" data-options="required:true,label:'项目编号:'"></td>
 				</tr>
 				<tr>
-					<td><input class="easyui-textbox" type="text" readonly name="projectName" id="projectName" value="${obj.projectName!}"
-						data-options="required:true,validType:'length[1,20]',label:'项目名称:'"></td>
-					<td><input class="easyui-textbox" type="text" readonly name="projectType" id="projectType" value="${project1.type!}"
-						data-options="required:true,label:'项目类型:'"></td>
+					<td><input class="easyui-textbox" type="text" readonly name="projectName" id="projectName" value="${obj.projectName!}" data-options="required:true,validType:'length[1,20]',label:'项目名称:'"></td>
+					<td><input class="easyui-textbox" type="text" readonly name="projectType" id="projectType" value="${project1.type!}" data-options="required:true,label:'项目类型:'"></td>
 				</tr>
 				<tr>
-					<td><input class="easyui-textbox" readonly="readonly" type="text" name="type" id="type" value="${obj.type!}"
-						data-options="required:true,validType:'length[1,10]',label:'变更类型:'"></td>
-					<td><input class="easyui-textbox" readonly="readonly" type="text" name="workingHours" value="${obj.workingHours}"
-						data-options="required:true,min:0,max:99999999,label:'变更工作量预估:'"></td>
+					<td><input class="easyui-textbox" readonly="readonly" type="text" name="type" id="type" value="${obj.type!}" data-options="required:true,validType:'length[1,10]',label:'变更类型:'"></td>
+					<td><input class="easyui-textbox" readonly="readonly" type="text" name="workingHours" value="${obj.workingHours}" data-options="required:true,min:0,max:99999999,label:'变更工作量预估:'"></td>
 				</tr>
 				<tr>
-					<td><input id="affectsOnline" class="easyui-textbox" readonly="readonly" type="text" name="affectsOnline" style="width: 305px;"
-						value="<%if(obj.affectsOnline==1){%>是<%}else{%>否<%}%>" data-options="editable:false,label:'是否影响上线:'" required="true"></td>
-					<td><input class="easyui-textbox" readonly="readonly" type="text" value='${obj.estimateLaunchDate!,"yyyy-MM-dd"}' id="estimateLaunchDate"
-						name="estimateLaunchDate" data-options="required:true,label:'变更后上线日期:'"></td>
+					<td><input id="affectsOnline" class="easyui-textbox" readonly="readonly" type="text" name="affectsOnline" style="width: 305px;" value="<%if(obj.affectsOnline==1){%>是<%}else{%>否<%}%>"
+						data-options="editable:false,label:'是否影响上线:'" required="true"></td>
+					<td><input id="affectsOnline" class="easyui-textbox" readonly="readonly" type="text" name="affectsOnline" style="width: 305px;" value="<%if(obj.affectsOnline==1){%>是<%}else{%>否<%}%>"
+						data-options="editable:false,label:'是否影响上线:'" required="true"></td>
 				<tr>
-					<td><input class="easyui-textbox" readonly="readonly" type="text" id="endDate" name="endDate" value="${obj.endDate!,'yyyy-MM-dd'}"
-						data-options="editable:false,required:true,label:'变更后结束日期:',validType:'md'"></td>
+					<td><input class="easyui-textbox" readonly="readonly" type="text" value='${obj.estimateLaunchDate!,"yyyy-MM-dd"}' id="estimateLaunchDate" name="estimateLaunchDate"
+						data-options="required:true,label:'变更后上线日期:'"></td>
+					<td><input class="easyui-textbox" readonly="readonly" type="text" id="endDate" name="endDate" value="${obj.submitDate!,'yyyy-MM-dd'}"
+						data-options="editable:false,required:true,label:'提交日期:',validType:'md'"></td>
 				</tr>
 				<tr>
 					<td class="title-first" colspan="4">2.变更描述</td>

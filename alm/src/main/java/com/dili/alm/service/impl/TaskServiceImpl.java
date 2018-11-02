@@ -975,6 +975,10 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		if (wStart <= tStart && tStart <= taskTime && taskTime <= tEnd && tEnd <= current && current <= wEnd) {
 			return true;
 		}
+		// ---------tStart--------wStart----------taskTime--------tEnd-----------current-------wEnd-----------
+		if (tStart <= wStart && wStart <= taskTime && taskTime <= tEnd && tEnd <= current && current <= wEnd) {
+			return true;
+		}
 		return false;
 	}
 
