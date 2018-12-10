@@ -54,7 +54,7 @@ public class ProjectOnlineApplyAddDto extends BaseDomain implements ProjectOnlin
 	private String emailAddress;
 
 	private String executorId;
-	@Size(max = 50, message = "git地址最大长度50个字符")
+	@Size(max = 255, message = "git地址最大长度50个字符")
 	private String git;
 	@Size(max = 50, message = "分支最大长度不能超过50个字符")
 	private String branch;

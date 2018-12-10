@@ -498,7 +498,7 @@ function openUpdateDetail(selected) {
 		$('#detail_form').form('clear');
 		getDetailInfo(formData._id);
 	}
-	if (isProjectManager() || isCurrentWeek(selected.id)) {
+	if (isProjectManager(selected.projectId) || isCurrentWeek(selected.id)) {
 		$("#modified").datebox({
 					disabled : false
 				});
@@ -638,7 +638,7 @@ $.extend($.fn.validatebox.defaults.rules, {
 });
 
 // 判断是否是项目经理
-function isProjectManager() {
+function isProjectManager(projectId) {
 	var htmlobj = $.ajax({
 				url : "${contextPath}/task/isProjectManger.json",
 				async : false

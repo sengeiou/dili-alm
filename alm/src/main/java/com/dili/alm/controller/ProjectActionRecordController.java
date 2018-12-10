@@ -119,10 +119,10 @@ public class ProjectActionRecordController {
 		return rows > 0 ? BaseOutput.success() : BaseOutput.failure();
 	}
 
+	@SuppressWarnings("unchecked")
 	@ResponseBody
 	@RequestMapping("/gantt.json")
 	public BaseOutput<Object> gantJson(@RequestParam Long projectId, String[] actionCode) {
-		System.out.println(actionCode);
 		return BaseOutput.success().setData(this.projectActionRecordService.getGanntData(projectId,
 				actionCode != null ? Arrays.asList(actionCode) : null));
 	}

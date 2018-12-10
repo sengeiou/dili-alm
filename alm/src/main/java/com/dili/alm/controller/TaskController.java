@@ -294,9 +294,6 @@ public class TaskController {
 		if (task.getOwner().equals(userTicket.getId())) {// 判断是否是任务所有人
 			return true;
 		}
-		if (taskService.isManager(task.getProjectId())) {// 判断是否是项目经理
-			return true;
-		}
 		return false;
 	}
 
@@ -304,8 +301,8 @@ public class TaskController {
 	// 是否是任务所有人，传入任务ID
 	@ResponseBody
 	@RequestMapping(value = "/isProjectManger.json", method = { RequestMethod.GET, RequestMethod.POST })
-	public boolean isProjectManger() {
-		return taskService.isProjectManager();
+	public boolean isProjectManger(@RequestParam Long projectId) {
+		return taskService.isProjectManager(projectId);
 	}
 
 	@ResponseBody

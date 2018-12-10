@@ -29,17 +29,16 @@
 							<tr>
 								<td style="padding: 5px;"><input name="owner" id="owner" class="easyui-combobox" style="width: 100%;"
 									data-options="label:'责任人:',editable:true,url:'${contextPath!}/member/members',textField:'realName',valueField:'id',onLoadSuccess:removeAdminUser"></td>
-						<td style="padding: 5px;"><input name="status" id="status" class="easyui-combobox" style="width: 100%;" panelWidth="auto" panelHeight="auto" editable="false" data-options="label:'状态:'"> <#comboProvider
-										_id="status" _table="data_dictionary_value" _valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":16}' /></td>
+						<td style="padding: 5px;">
+							<input name="status" id="status" class="easyui-combobox" style="width: 100%;" panelWidth="auto" panelHeight="auto" editable="false" data-options="label:'状态:'"> 
+							<#comboProvider _id="status" _table="data_dictionary_value" _valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":16}' />
+						</td>
 					</tr>
 					<tr>
-						<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid(1)">查询</a> <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload"
-									onclick="clearForm()">重置</a></td>
+						<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid(1)">查询</a> 
+							<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload" onclick="clearForm()">重置</a>
+						</td>
 					</tr>
-				
-				
-				
-				
 				</table>
 			</form>
 		</div>
@@ -186,8 +185,8 @@
 		</table>
 	</div>
 	<div id="dialog_toolbar" style="display: show; background-color: #fff; width: 100%;">
-		<a href="#" id="saveTask" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="saveOrUpdate()" style="border: 1px solid #ccc;">保存</a> <a href="#"
-			class="easyui-linkbutton" data-options="plain:true" onclick="$('#dlg').dialog('close');" style="border: 1px solid #ccc;">取消</a>
+		<a href="#" id="saveTask" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="saveOrUpdate()" style="border: 1px solid #ccc;">保存</a> 
+		<a href="#" class="easyui-linkbutton" data-options="plain:true" onclick="$('#dlg').dialog('close');" style="border: 1px solid #ccc;">取消</a>
 	</div>
 	<div id="dialog_toolbar_detail" style="display: none; background-color: #fff; width: 100%;">
 		<a href="#" id="doTask" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" style="border: 1px solid #ccc;" onclick="startTask()">开始执行任务</a> <a href="#" id="pauseTask"
@@ -205,4 +204,5 @@
 		<%}%>
 	<#task_indexPage />
     <#task_index />
-</script> </#body>
+</script> 
+</#body>

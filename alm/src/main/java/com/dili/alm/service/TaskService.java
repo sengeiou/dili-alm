@@ -34,17 +34,12 @@ public interface TaskService extends BaseService<Task, Long> {
 	/**
 	 * 判断是否已经填写超过8小时
 	 * 
-	 * @param id
-	 *            任务所有人
-	 * @param taskHour
-	 *            当期填写的工时
-	 * @param modified
-	 *            任务日
+	 * @param id       任务所有人
+	 * @param taskHour 当期填写的工时
+	 * @param modified 任务日
 	 * @return
 	 */
 	boolean isSetTask(Long id, short taskHour, String modified);
-
-	boolean isManager(Long managerId);
 
 	EasyuiPageOutput listByTeam(Task task);
 
@@ -61,9 +56,11 @@ public interface TaskService extends BaseService<Task, Long> {
 	/**
 	 * 权限，判断是否是项目经理
 	 * 
+	 * @param projectId TODO
+	 * 
 	 * @return
 	 */
-	boolean isProjectManager();
+	boolean isProjectManager(Long projectId);
 
 	List<ProjectChange> projectChangeList(Long projectId);
 
@@ -83,10 +80,8 @@ public interface TaskService extends BaseService<Task, Long> {
 
 	/**
 	 * 
-	 * @param owerId
-	 *            传入任务所有人
-	 * @param modified
-	 *            传入任务填写日期
+	 * @param owerId   传入任务所有人
+	 * @param modified 传入任务填写日期
 	 * @return
 	 */
 	int restTaskHour(Long owerId, String modified);
@@ -97,42 +92,31 @@ public interface TaskService extends BaseService<Task, Long> {
 
 	boolean isCommittee();
 
-	void addTask(Task task, Short planTime, Date startDateShow, Date endDateShow, Boolean flow, Long creatorId)
-			throws TaskException;
+	void addTask(Task task, Short planTime, Date startDateShow, Date endDateShow, Boolean flow, Long creatorId) throws TaskException;
 
-	void updateTask(Task task, Long modifyMemberId, Short planTime, Date startDateShow, Date endDateShow, Boolean flow)
-			throws TaskException;
+	void updateTask(Task task, Long modifyMemberId, Short planTime, Date startDateShow, Date endDateShow, Boolean flow) throws TaskException;
 
 	void deleteTask(Long id) throws TaskException;
 
 	/**
 	 * 提交工时
 	 * 
-	 * @param taskId
-	 *            任务id
-	 * @param operator
-	 *            TODO
-	 * @param taskDate
-	 *            任务日
-	 * @param taskHour
-	 *            正常工时
-	 * @param overHour
-	 *            加班工时
-	 * @param content
-	 *            工作内容
+	 * @param taskId   任务id
+	 * @param operator TODO
+	 * @param taskDate 任务日
+	 * @param taskHour 正常工时
+	 * @param overHour 加班工时
+	 * @param content  工作内容
 	 * @return TODO
 	 * @throws TaskException
 	 */
-	Long submitWorkingHours(Long taskId, Long operator, Date taskDate, Short taskHour, Short overHour, String content)
-			throws TaskException;
+	Long submitWorkingHours(Long taskId, Long operator, Date taskDate, Short taskHour, Short overHour, String content) throws TaskException;
 
 	/**
 	 * 任务id
 	 * 
-	 * @param taskId
-	 *            任务id
-	 * @param operatorId
-	 *            操作人id，只有任务责任人和项目经理可以提前结束任务
+	 * @param taskId     任务id
+	 * @param operatorId 操作人id，只有任务责任人和项目经理可以提前结束任务
 	 * @throws TaskException
 	 */
 	void completeTask(Long taskId, Long operatorId) throws TaskException;
@@ -140,8 +124,7 @@ public interface TaskService extends BaseService<Task, Long> {
 	/**
 	 * 判断任务日期是否在当前周内，任务责任人可以补填当前一周的工时
 	 * 
-	 * @param taskId
-	 *            任务id
+	 * @param taskId 任务id
 	 * @return
 	 */
 	boolean isInCurrentWeek(Long taskId);
