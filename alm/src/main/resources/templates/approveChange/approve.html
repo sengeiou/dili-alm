@@ -81,7 +81,7 @@ input[class^="easyui-"] {
 				<tr>
 					<td colspan="2"><input id="affectsOnline" value="<%if(change.affectsOnline==1){%>是<%}else{%>否<%}%>" class="easyui-textbox"
 						name="affectsOnline" style="width: 305px;" readonly="readonly" data-options="editable:false,label:'是否影响上线'" required="true"></td>
-					<td colspan="2"><input class="easyui-textbox" type="text" readonly="readonly" name="name" value="${change.created!,'yyyy-MM-dd'}"
+					<td colspan="2"><input class="easyui-textbox" type="text" readonly="readonly" name="name" value="${change.submitDate!,'yyyy-MM-dd'}"
 						data-options="label:'提交日期:'"></td>
 				</tr>
 				<tr>

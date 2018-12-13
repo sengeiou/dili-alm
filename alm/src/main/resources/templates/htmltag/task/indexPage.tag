@@ -42,7 +42,7 @@ function openUpdate() {
 		noEdit();
 	}
 
-	if (selected.status != "未开始") {
+	if (selected.$_status != 0) {
 		noEdit();
 	}
 
@@ -168,8 +168,7 @@ function saveOrUpdate() {
 				success : function(data) {
 					if (data.code == "200") {
 						$("#grid").datagrid("reload");
-						LogUtils.saveLog(moduleInfo, logIngo + data.data
-										+ ":成功", function() {
+						LogUtils.saveLog(moduleInfo, logIngo + data.data + ":成功", function() {
 								});
 						$('#dlg').dialog('close');
 					} else {
@@ -197,11 +196,11 @@ function del() {
 	}
 
 	if (!selected.updateDetail) {
-		$.messager.alert('警告', '已结项,不能执行删除操作');
+		$.messager.alert('警告', '当前任务状态不能执行删除操作');
 		return;
 	}
 
-	if (selected.status != "未开始") {
+	if (selected.$_status != 0) {
 		$.messager.alert('警告', '不是未开始的任务不能删除！');
 		return;
 	}
@@ -210,36 +209,32 @@ function del() {
 		return;
 	}
 	$.messager.confirm('确认', '您确认想要删除记录吗？', function(r) {
-		if (r) {
-			$.ajax({
-				type : "POST",
-				url : "${contextPath}/task/delete",
-				data : {
-					id : selected.id
-				},
-				processData : true,
-				dataType : "json",
-				async : true,
-				success : function(data) {
-					if (data.code == "200") {
-						$("#grid").datagrid("reload");
-						$('#dlg').dialog('close');
-						LogUtils
-								.saveLog(
-										LOG_MODULE_OPS.DELETE_PROJECT_VERSION_PHASE_TASK,
-										"删除任务:" + data.data + ":成功",
-										function() {
-										});
-					} else {
-						$.messager.alert('错误', data.result);
-					}
-				},
-				error : function() {
-					$.messager.alert('错误', '远程访问失败');
+				if (r) {
+					$.ajax({
+								type : "POST",
+								url : "${contextPath}/task/delete",
+								data : {
+									id : selected.id
+								},
+								processData : true,
+								dataType : "json",
+								async : true,
+								success : function(data) {
+									if (data.code == "200") {
+										$("#grid").datagrid("reload");
+										$('#dlg').dialog('close');
+										LogUtils.saveLog(LOG_MODULE_OPS.DELETE_PROJECT_VERSION_PHASE_TASK, "删除任务:" + data.data + ":成功", function() {
+												});
+									} else {
+										$.messager.alert('错误', data.result);
+									}
+								},
+								error : function() {
+									$.messager.alert('错误', '远程访问失败');
+								}
+							});
 				}
 			});
-		}
-	});
 
 }
 // 表格查询
@@ -326,19 +321,16 @@ $(function() {
 function formatOptions(value, row, index) {
 	var content = '';
 	if (row.updateDetail && row.canOperation) {
-		content += '<span style="padding:2px;"><a href="javascript:void(0)" onclick="openUpdateDetail('
-				+ index + ')">执行任务</a></span>';
+		content += '<span style="padding:2px;"><a href="javascript:void(0)" onclick="openUpdateDetail(' + index + ')">执行任务</a></span>';
 	} else {
 		content += '<span style="padding:2px;color:#8B8B7A;text-decoration:underline;">执行任务</span>';
 	}
 	if (row.copyButton && row.canOperation) {
-		content += '<span style="padding:2px;"><a href="javascript:void(0)" onclick="copyTask('
-				+ index + ')">复制</a></span>';
+		content += '<span style="padding:2px;"><a href="javascript:void(0)" onclick="copyTask(' + index + ')">复制</a></span>';
 	}
 	if (row.$_status == 1 || row.$_status == 4) {
 		if (row.$_owner == userId || row.projectManagerId == userId) {
-			content += '<span style="padding:2px;"><a href="javascript:void(0)" onclick="complate('
-					+ row.id + ')">完成任务</a></span>';
+			content += '<span style="padding:2px;"><a href="javascript:void(0)" onclick="complate(' + row.id + ')">完成任务</a></span>';
 		} else {
 			content += '<span style="padding:2px;color:#8B8B7A;text-decoration:underline;">完成任务</span>';
 		}
@@ -351,10 +343,8 @@ function progressFormatter(value, rowData, rowIndex) {
 	if (rowData.progress > 100) {
 		progress = 100;
 	}
-	var htmlstr = '<div style="width: 100px; height:20px;border: 1px solid #299a58;"><div style="width:'
-			+ progress
-			+ 'px; height:20px; background-color: #299a58;"><span>'
-			+ rowData.progress + '%</span></div></div>';
+	var htmlstr = '<div style="width: 100px; height:20px;border: 1px solid #299a58;"><div style="width:' + progress + 'px; height:20px; background-color: #299a58;"><span>' + rowData.progress
+			+ '%</span></div></div>';
 	return htmlstr;
 }
 
@@ -375,8 +365,7 @@ function getDetailInfo(taskID) {
 }
 
 function formatNameOptions(value, row, index) {
-	var content = '<span style="padding:2px;"><a href="javascript:void(0)" onclick="openDetail('
-			+ index + ')">' + row.name + '</a></span>';
+	var content = '<span style="padding:2px;"><a href="javascript:void(0)" onclick="openDetail(' + index + ')">' + row.name + '</a></span>';
 	return content;
 }
 
@@ -398,12 +387,8 @@ function startTask() {
 					if (data.code == "200") {
 						$("#grid").datagrid("reload");
 						$.messager.alert('信息', '任务开始成功');
-						LogUtils
-								.saveLog(
-										LOG_MODULE_OPS.START_PROJECT_VERSION_PHASE_TASK,
-										"开始任务:" + data.data + ":成功",
-										function() {
-										});
+						LogUtils.saveLog(LOG_MODULE_OPS.START_PROJECT_VERSION_PHASE_TASK, "开始任务:" + data.data + ":成功", function() {
+								});
 					} else {
 						$.messager.alert('错误', data.result);
 					}
@@ -427,12 +412,8 @@ function pauseTaskStatus() {
 				success : function(data) {
 					if (data.code == "200") {
 						$("#grid").datagrid("reload");
-						LogUtils
-								.saveLog(
-										LOG_MODULE_OPS.PAUSE_PROJECT_VERSION_PHASE_TASK,
-										"暂停任务:" + data.data + ":成功",
-										function() {
-										});
+						LogUtils.saveLog(LOG_MODULE_OPS.PAUSE_PROJECT_VERSION_PHASE_TASK, "暂停任务:" + data.data + ":成功", function() {
+								});
 					} else {
 						$.messager.alert('错误', data.result);
 					}

@@ -1,7 +1,8 @@
-*.iml
-.idea
-.classpath
+.idea/
 */target/
+*.iml
+*.log
+.classpath
 */webapp/WEB-INF/classes
 */webapp/WEB-INF/lib
 *.MF

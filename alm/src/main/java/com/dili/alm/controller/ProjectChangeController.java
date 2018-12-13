@@ -23,6 +23,7 @@ import com.dili.alm.domain.VerifyApproval;
 import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.service.MessageService;
 import com.dili.alm.service.ProjectChangeService;
+import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.TaskService;
 import com.dili.alm.service.VerifyApprovalService;
 import com.dili.alm.utils.DateUtil;
@@ -53,6 +54,9 @@ public class ProjectChangeController {
 
 	@Autowired
 	private MessageService messageService;
+
+	@Autowired
+	private ProjectService projectService;
 
 	@ApiOperation("跳转到ProjectChange页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
@@ -119,22 +123,23 @@ public class ProjectChangeController {
 		metadata.put("type", "changeTypeProvider");
 		modelMap.put("obj", ValueProviderUtils.buildDataByProvider(metadata, Arrays.asList(change)).get(0));
 
-		Project project = AlmCache.getInstance().getProjectMap().get(change.getProjectId());
+//		Project project = AlmCache.getInstance().getProjectMap().get(change.getProjectId());
+		Project project = this.projectService.get(change.getProjectId());
+
 		Map<Object, Object> metadata1 = new HashMap<>();
 
 		metadata1.put("status", "projectStateProvider");
 
 		metadata1.put("type", "projectTypeProvider");
 
-		metadata1.put("originator", "memberProvider");
+//		metadata1.put("originator", "memberProvider");
 
 		metadata1.put("validTimeBegin", "datetimeProvider");
 		metadata1.put("validTimeEnd", "datetimeProvider");
 		metadata1.put("created", "datetimeProvider");
 		metadata1.put("modified", "datetimeProvider");
-		metadata1.put("actualStartDate", "datetimeProvider");
+//		metadata1.put("actualStartDate", "datetimeProvider");
 
-		project.setMetadata(metadata1);
 		modelMap.addAttribute("project1", ValueProviderUtils.buildDataByProvider(metadata1, Arrays.asList(project)).get(0));
 		return "projectChange/details";
 	}
