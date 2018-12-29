@@ -466,7 +466,7 @@
 		OR ( woer.start_date <![CDATA[<=]]>
 		CONCAT(#{beginTime,jdbcType=VARCHAR},'
 		00:00:00') AND woer.end_date <![CDATA[>=]]>
-		'2018-8-31' )
+		CONCAT(#{endTime,jdbcType=VARCHAR},' 23:59:59') )
 		OR ( woer.start_date <![CDATA[<=]]>
 		CONCAT(#{beginTime,jdbcType=VARCHAR},'
 		00:00:00') AND woer.end_date
