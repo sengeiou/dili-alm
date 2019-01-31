@@ -86,8 +86,7 @@ body {
 			<!--用户设置-->
 			<div class="user-info show-list" data-id="user-menu">
 				<div class="user-menu">
-					<a class="user-img" href=""><img src="${contextPath}/resources/images/default-user.png" width="40" height="40" alt="头像"></a> <a
-						class="user-name">${username} </a>
+					<a class="user-img" href=""><img src="${contextPath}/resources/images/default-user.png" width="40" height="40" alt="头像"></a> <a class="user-name">${username} </a>
 				</div>
 			</div>
 			<!--消息列表-->
@@ -129,17 +128,14 @@ body {
 	</ul>
 	<!--<span class="item dot-top"></span>-->
 </div>
-<!--消息列表-->
-<!-- <div class="menu-list" id="news-list" data-index="2">
+<!--消息列表--> <!-- <div class="menu-list" id="news-list" data-index="2">
 	<ul id="messageList">
 
 	</ul>
 	<span class="item dot-top"></span>
-</div> -->
-
-<!--工作日设置弹窗-->
-<div id="workdayBox" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="设置"
-	style="padding: 20px" modal="true" border="thin" closed="true" data-options="
+</div> --> <!--工作日设置弹窗-->
+<div id="workdayBox" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="设置" style="padding: 20px" modal="true" border="thin" closed="true"
+	data-options="
 				width:480,
 				height: 350,">
 	<div class="contain-box">
@@ -153,13 +149,12 @@ body {
 			</div>
 			<div class="box-item">
 				<label class="label-top">数据内容:</label> <input class="easyui-filebox" buttonText="选择上传文件" id="fileuploader" name="file"
-					data-options="prompt:'文件', accept:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel'"
-					style="width: 60%; color: #666">
+					data-options="prompt:'文件', accept:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel'" style="width: 60%; color: #666">
 				<p class="hint">仅支持excel文件，文件不超过1M</p>
 			</div>
 			<div class="box-item">
-				<label class="label-top"></label> <input type="button" class="button confirm" value="确认" onclick="doUpload()"> <input
-					type="button" class="button cancel" value="取消" onclick="$('#workdayBox').dialog('close');">
+				<label class="label-top"></label> <input type="button" class="button confirm" value="确认" onclick="doUpload()"> <input type="button" class="button cancel" value="取消"
+					onclick="$('#workdayBox').dialog('close');">
 			</div>
 		</form>
 	</div>
@@ -170,9 +165,8 @@ body {
 	$(function() {
 		$('#page-layout').layout();
 	});
-</script> <!-- ====================================================================================================================== --> <!-- style & script 分隔线 -->
-<!-- ====================================================================================================================== --> <script
-	type="text/javascript">
+</script> <!-- ====================================================================================================================== --> <!-- style & script 分隔线 --> <!-- ====================================================================================================================== -->
+<script type="text/javascript">
 	var currentYear = new Date().getFullYear();
 	var select = document.getElementById("cbYearContrast");
 	for (var i = 8; i >= -2; i--) {
@@ -317,8 +311,7 @@ body {
 	}
 
 	function getWorkDay() {
-		$
-				.ajax({
+		$.ajax({
 					url : 'http://almweb.diligrp.com/workDayApi/getWorkDay',
 					type : 'POST',
 					data : {
@@ -329,13 +322,17 @@ body {
 						$("#user-workday-outer").empty();
 						$("#user-workday").empty();
 						if (data1.code == 200) {
+							var strs = data1.data.workStartTime.split(' ')[0].split('-');
+							var start = strs[1]+'/'+strs[2];
+							strs = data1.data.workEndTime.split(' ')[0].split('-');
+							var end = strs[1]+'/'+strs[2];
 							if (data1.data.id != "" && data1.data.id != null) {
 								$("#user-workday-outer")
 										.append(
 												"<p>"
-														+ UnixToDate(data1.data.workStartTime)
+														+ start
 														+ "</p><p>"
-														+ UnixToDate(data1.data.workEndTime)
+														+ end
 														+ "</p>");
 								if (data1.data.isRole == 1) {
 									$("#user-workday")
@@ -345,9 +342,9 @@ body {
 															+ "年 第"
 															+ data1.data.wordDayWeek
 															+ "周  "
-															+ UnixToDate(data1.data.workStartTime)
+															+ start
 															+ " -- "
-															+ UnixToDate(data1.data.workEndTime)
+															+ end
 															+ "</span><a href='javascript:;' onclick='workDayOpen()'>设置</a>");
 								} else {
 									$("#user-workday")
@@ -357,9 +354,9 @@ body {
 															+ "年 第"
 															+ data1.data.wordDayWeek
 															+ "周  "
-															+ UnixToDate(data1.data.workStartTime)
+															+ start
 															+ " -- "
-															+ UnixToDate(data1.data.workEndTime)
+															+ end
 															+ "</span>");
 								}
 							} else {
