@@ -315,7 +315,6 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	public void buildApplyApprove(Map modelMap, Long id) {
 		Approve approve = this.get(id);
 
-		String approveDescription = approve.getDescription();
 		modelMap.put("canOpt", checkApprove(approve));
 
 		// 构建Provider
