@@ -22,8 +22,8 @@
 <div class="easyui-panel" title="立项申请(第七步)">
 	<div style="padding: 10px 60px 20px 60px">
 		<form id="ff" method="post">
-			<input type="hidden" name="id" value="${apply.id}" /> <input type="hidden" name="files" id="files" /> <input type="hidden" name="dels"
-				id="dels" /> <input type="hidden" name="status" id="status" /> <input type="hidden" name="email" id="email" />
+			<input type="hidden" name="id" value="${apply.id}" /> <input type="hidden" name="files" id="files" /> <input type="hidden" name="dels" id="dels" /> <input type="hidden" name="status" id="status" />
+			<input type="hidden" name="email" id="email" />
 			<table cellpadding="5" width="100%">
 				<input type="hidden" name="id" value="${apply.id}" />
 				<tr>
@@ -53,8 +53,7 @@
 						<th data-options="field:'id',width:80,hidden:true">ID</th>
 						<th data-options="field:'name', width:'45%', align:'center',formatter:formatDown, resizable:'true', fixed:'false'">文件名</th>
 						<th data-options="field:'length', width:'20%', align:'center', resizable:'true', fixed:'false',formatter:renderSize">大小</th>
-						<th data-options="field:'created', width:'35%',  _provider:'dateProvider', align:'center', resizable:'true', fixed:'false'">上传日期
-						</th>
+						<th data-options="field:'created', width:'35%',  _provider:'dateProvider', align:'center', resizable:'true', fixed:'false'">上传日期</th>
 					</tr>
 				</thead>
 			</table>
@@ -66,15 +65,13 @@
 					<td class="title-first" colspan="4">9.邮件发送列表</td>
 				</tr>
 				<tr>
-					<td colspan="4"><input class="easyui-tagbox" id="tagbx" data-options="prompt: '输完后回车才能生效哦!'" value="${apply.email}"
-						style="width: 100%"></td>
+					<td colspan="4"><input class="easyui-tagbox" id="tagbx" data-options="prompt: '输完后回车才能生效哦!'" value="${apply.email}" style="width: 100%"></td>
 				</tr>
 			</table>
 		</form>
 		<div style="text-align: center; padding: 5px; margin-top: 50px;">
-			<a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'" onclick="backForm()">上一步</a> <a
-				href="${contextPath}/projectApply/index.html" class="easyui-linkbutton" data-options="width:'80px'">取消</a> <a href="javascript:void(0)"
-				class="easyui-linkbutton" data-options="width:'80px'" onclick="submitForm(1,this)">保存</a> <a href="javascript:void(0)"
+			<a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'" onclick="backForm()">上一步</a> <a href="${contextPath}/projectApply/index.html" class="easyui-linkbutton"
+				data-options="width:'80px'">取消</a> <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'" onclick="submitForm(1,this)">保存</a> <a href="javascript:void(0)"
 				class="easyui-linkbutton" data-options="width:'80px'" onclick="submitForm(2,this)">提交</a>
 		</div>
 	</div>
@@ -214,6 +211,9 @@
                     } catch (e) {
                         window.location.href = "${contextPath}/projectApply/index.html";
                     }
+                } else {
+                	$.messager.alert('错误',data.result);
+                	$(obj).linkbutton('enable');
                 }
             }
         });

@@ -376,6 +376,11 @@ function ownerFormatter(value, row, index) {
 
 function startTask() {
 	$('#dlg').dialog('close');
+	$.messager.progress({
+				title : '提示',
+				msg : '数据处理中，请稍候……',
+				text : ''
+			});
 	var id = $("#_id").val();
 	$.ajax({
 				type : "POST",
@@ -384,6 +389,7 @@ function startTask() {
 				dataType : "json",
 				async : true,
 				success : function(data) {
+					$.messager.progress('close');
 					if (data.code == "200") {
 						$("#grid").datagrid("reload");
 						$.messager.alert('信息', '任务开始成功');
@@ -394,6 +400,7 @@ function startTask() {
 					}
 				},
 				error : function() {
+					$.messager.progress('close');
 					$.messager.alert('错误', '远程访问失败');
 				}
 			});
