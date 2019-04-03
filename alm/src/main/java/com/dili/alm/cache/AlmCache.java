@@ -33,7 +33,6 @@ import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.HardwareResourceService;
 import com.dili.alm.service.LogService;
-import com.dili.alm.service.MessageService;
 import com.dili.alm.service.ProjectApplyService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.TaskService;
@@ -64,8 +63,6 @@ public class AlmCache {
 
 	// 任务类型
 	private static final Map<String, String> TASK_TYPE_MAP = new ConcurrentHashMap<>();
-	// 消息类型
-	private static final Map<String, String> MESSAGE_TYPE_MAP = new ConcurrentHashMap<>();
 
 	private static final Map<String, String> APPLY_PLAN_PHASE_MAP = new ConcurrentHashMap<>();
 
@@ -121,8 +118,6 @@ public class AlmCache {
 	private HardwareResourceService hardwareResourceService;
 	@Autowired
 	private TaskService taskService;
-	@Autowired
-	private MessageService messageService;
 	@Autowired
 	private AreaMapper areaMapper;
 	@Autowired
@@ -259,16 +254,6 @@ public class AlmCache {
 		return TASK_TYPE_MAP;
 	}
 
-	public Map<String, String> getMessageTypeMap() {
-		if (AlmCache.MESSAGE_TYPE_MAP.isEmpty()) {
-			List<DataDictionaryValueDto> list = messageService.getMessageTypes();
-			list.forEach(type -> {
-				AlmCache.MESSAGE_TYPE_MAP.put(type.getValue(), type.getCode());
-			});
-		}
-		return MESSAGE_TYPE_MAP;
-	}
-
 	public Map<String, String> getApplyPlanPhaseMap() {
 		if (AlmCache.APPLY_PLAN_PHASE_MAP.isEmpty()) {
 			List<DataDictionaryValueDto> list = projectApplyService.getPlanPhase();
@@ -361,8 +346,7 @@ public class AlmCache {
 			if (CollectionUtils.isEmpty(dto.getValues())) {
 				return RESOURCE_ENVIRONMENT_MAP;
 			}
-			dto.getValues()
-					.forEach(v -> AlmCache.RESOURCE_ENVIRONMENT_MAP.put(Integer.valueOf(v.getValue()), v.getCode()));
+			dto.getValues().forEach(v -> AlmCache.RESOURCE_ENVIRONMENT_MAP.put(Integer.valueOf(v.getValue()), v.getCode()));
 		}
 		return RESOURCE_ENVIRONMENT_MAP;
 	}

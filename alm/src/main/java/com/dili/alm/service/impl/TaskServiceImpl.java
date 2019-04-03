@@ -304,24 +304,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		return dto.getValues();
 	}
 
-	@Override
-	public boolean isCommittee() {
-		DataDictionaryDto code = dataDictionaryService.findByCode(AlmConstants.ROLE_CODE);
-		List<DataDictionaryValueDto> values = code.getValues();
-		String roleId = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH)).findFirst().map(DataDictionaryValue::getValue).orElse(null);
-
-		String roleId2 = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH_LEADER)).findFirst().map(DataDictionaryValue::getValue).orElse(null);
-		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		List<Role> currentUsercurrent = roleRpc.listRoleByUserId(userTicket.getId()).getData();
-		for (Role role : currentUsercurrent) {
-			// 避免ID不一致的问题，用真实名字比对
-			if (role.getId().toString().equals(roleId) || role.getId().toString().equals(roleId2)) {// 委员会&委员会组长
-				return true;
-			}
-		}
-		return false;
-	}
-
 	/**
 	 * 判断是否是任务创建者
 	 */

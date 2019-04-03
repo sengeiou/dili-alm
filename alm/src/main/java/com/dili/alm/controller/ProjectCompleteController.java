@@ -24,7 +24,6 @@ import com.dili.alm.domain.ProjectComplete;
 import com.dili.alm.domain.dto.ProjectCompleteQueryDto;
 import com.dili.alm.exceptions.ProjectApplyException;
 import com.dili.alm.exceptions.ProjectCompleteException;
-import com.dili.alm.service.MessageService;
 import com.dili.alm.service.ProjectCompleteService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.utils.DateUtil;
@@ -48,8 +47,6 @@ public class ProjectCompleteController {
 	@Autowired
 	ProjectCompleteService projectCompleteService;
 	@Autowired
-	private MessageService messageService;
-	@Autowired
 	private ProjectService projectService;
 
 	@ApiOperation("跳转到ProjectComplete页面")
@@ -65,8 +62,7 @@ public class ProjectCompleteController {
 	}
 
 	@RequestMapping(value = "/toStep/{step}/{id}", method = RequestMethod.GET)
-	public String toStep(ModelMap modelMap, @PathVariable("id") Long id, @PathVariable("step") int step)
-			throws Exception {
+	public String toStep(ModelMap modelMap, @PathVariable("id") Long id, @PathVariable("step") int step) throws Exception {
 		ProjectComplete projectComplete = DTOUtils.newDTO(ProjectComplete.class);
 		projectComplete.setId(id);
 
@@ -76,8 +72,7 @@ public class ProjectCompleteController {
 		projectTypeProvider.put("provider", "projectTypeProvider");
 		metadata.put("type", projectTypeProvider);
 
-		List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata,
-				projectCompleteService.listByExample(projectComplete));
+		List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, projectCompleteService.listByExample(projectComplete));
 		if (CollectionUtils.isEmpty(maps)) {
 			return "redirect:/projectComplete/index.html";
 		}
@@ -86,8 +81,7 @@ public class ProjectCompleteController {
 			return "redirect:/projectComplete/index.html";
 		}
 		try {
-			if (Long.parseLong(applyDTO.get("createMemberId").toString()) != SessionContext.getSessionContext()
-					.getUserTicket().getId()) {
+			if (Long.parseLong(applyDTO.get("createMemberId").toString()) != SessionContext.getSessionContext().getUserTicket().getId()) {
 				return "redirect:/projectComplete/index.html";
 			}
 		} catch (Exception ignored) {
@@ -97,8 +91,7 @@ public class ProjectCompleteController {
 	}
 
 	@ApiOperation(value = "查询ProjectComplete", notes = "查询ProjectComplete，返回列表信息")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "ProjectComplete", paramType = "form", value = "ProjectComplete的form信息", required = false, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectComplete", paramType = "form", value = "ProjectComplete的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<ProjectComplete> list(ProjectComplete projectComplete) {
 		return projectCompleteService.list(projectComplete);
@@ -143,8 +136,7 @@ public class ProjectCompleteController {
 	}
 
 	@ApiOperation(value = "分页查询ProjectComplete", notes = "分页查询ProjectComplete，返回easyui分页信息")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "ProjectComplete", paramType = "form", value = "ProjectComplete的form信息", required = false, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectComplete", paramType = "form", value = "ProjectComplete的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(ProjectCompleteQueryDto projectComplete) throws Exception {
 		if (projectComplete.getCreated() != null) {
@@ -156,8 +148,7 @@ public class ProjectCompleteController {
 	}
 
 	@ApiOperation("新增ProjectComplete")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "ProjectComplete", paramType = "form", value = "ProjectComplete的form信息", required = true, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectComplete", paramType = "form", value = "ProjectComplete的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput insert(ProjectComplete projectComplete, String reasonText) {
 		if (projectComplete.getReason().equalsIgnoreCase("2")) {
@@ -167,8 +158,7 @@ public class ProjectCompleteController {
 		projectComplete.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
 		try {
 			projectCompleteService.insertWithCheck(projectComplete);
-			return BaseOutput.success(String.valueOf(projectComplete.getId()))
-					.setData(projectComplete.getId() + ":" + projectComplete.getName());
+			return BaseOutput.success(String.valueOf(projectComplete.getId())).setData(projectComplete.getId() + ":" + projectComplete.getName());
 		} catch (ProjectCompleteException e) {
 			return BaseOutput.failure(e.getMessage());
 		}
@@ -181,8 +171,7 @@ public class ProjectCompleteController {
 	}
 
 	@ApiOperation("修改ProjectComplete")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "ProjectComplete", paramType = "form", value = "ProjectComplete的form信息", required = true, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectComplete", paramType = "form", value = "ProjectComplete的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> update(ProjectComplete projectComplete, String reasonText) {
 		if (StringUtils.isNotEmpty(projectComplete.getReason())) {
@@ -193,22 +182,18 @@ public class ProjectCompleteController {
 		projectCompleteService.updateSelective(projectComplete);
 		try {
 			projectCompleteService.approve(projectComplete);
-			return BaseOutput.success(String.valueOf(projectComplete.getId()))
-					.setData(projectComplete.getId() + ":" + projectComplete.getName());
+			return BaseOutput.success(String.valueOf(projectComplete.getId())).setData(projectComplete.getId() + ":" + projectComplete.getName());
 		} catch (ProjectApplyException e) {
 			return BaseOutput.failure(e.getMessage());
 		}
 	}
 
 	@ApiOperation("删除ProjectComplete")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "id", paramType = "form", value = "ProjectComplete的主键", required = true, dataType = "long") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "id", paramType = "form", value = "ProjectComplete的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput delete(Long id) {
 		ProjectComplete complete = projectCompleteService.get(id);
-		if (complete != null
-				&& complete.getCreateMemberId().equals(SessionContext.getSessionContext().getUserTicket().getId())) {
-			messageService.deleteMessage(id, AlmConstants.MessageType.CHANGE.code);
+		if (complete != null && complete.getCreateMemberId().equals(SessionContext.getSessionContext().getUserTicket().getId())) {
 
 			projectCompleteService.delete(id);
 		}
@@ -259,8 +244,7 @@ public class ProjectCompleteController {
 		metadata.put("businessOwner", JSON.parse("{provider:'memberProvider'}"));
 		metadata.put("dep", JSON.parse("{provider:'depProvider'}"));
 
-		List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata,
-				projectCompleteService.listByExample(projectComplete));
+		List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, projectCompleteService.listByExample(projectComplete));
 		return maps.get(0);
 	}
 }

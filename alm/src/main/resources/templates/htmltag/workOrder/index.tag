@@ -184,6 +184,7 @@ function validateForm() {
 	if (!value) {
 		$('#copyUserIds').combotree('clear');
 	}
+	return true;
 }
 
 function updateGridRow(row) {
@@ -216,9 +217,17 @@ function openInsert() {
 								$('#editForm').form('submit', {
 											url : '${contextPath!}/workOrder/saveOrUpdate',
 											onSubmit : function() {
-												return validateForm();
+												if (!validateForm()) {
+													return false;
+												}
+												$.messager.progress({
+															title : '提示',
+															msg : '正在提交，请稍候……',
+															text : ''
+														});
 											},
 											success : function(data) {
+												$.messager.progress('close');
 												var obj = $.parseJSON(data);
 												if (obj.code == 200) {
 													$('#grid').datagrid('insertRow', {
@@ -245,9 +254,17 @@ function openInsert() {
 								$('#editForm').form('submit', {
 											url : '${contextPath!}/workOrder/saveAndSubmit',
 											onSubmit : function() {
-												return validateForm();
+												if (!validateForm()) {
+													return false;
+												}
+												$.messager.progress({
+															title : '提示',
+															msg : '正在提交，请稍候……',
+															text : ''
+														});
 											},
 											success : function(data) {
+												$.messager.progress('close');
 												var obj = $.parseJSON(data);
 												if (obj.code == 200) {
 													$('#grid').datagrid('appendRow', obj.data);
@@ -298,9 +315,17 @@ function openUpdate(index) {
 								$('#editForm').form('submit', {
 											url : '${contextPath!}/workOrder/saveOrUpdate',
 											onSubmit : function() {
-												validateForm();
+												if (!validateForm()) {
+													return false;
+												}
+												$.messager.progress({
+															title : '提示',
+															msg : '正在提交，请稍候……',
+															text : ''
+														});
 											},
 											success : function(data) {
+												$.messager.progress('close');
 												var obj = $.parseJSON(data);
 												if (obj.code == 200) {
 													if (obj.data.$_workOrderSource == 1) {
@@ -330,11 +355,17 @@ function openUpdate(index) {
 								$('#editForm').form('submit', {
 											url : '${contextPath!}/workOrder/saveAndSubmit',
 											onSubmit : function() {
-												if (!$(this).form('validate')) {
+												if (!validateForm()) {
 													return false;
 												}
+												$.messager.progress({
+															title : '提示',
+															msg : '正在提交，请稍候……',
+															text : ''
+														});
 											},
 											success : function(data) {
+												$.messager.progress('close');
 												var obj = $.parseJSON(data);
 												if (obj.code == 200) {
 													updateGridRow(obj.data);

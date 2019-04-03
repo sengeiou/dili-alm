@@ -14,14 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectChange;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.VerifyApproval;
 import com.dili.alm.exceptions.ApplicationException;
-import com.dili.alm.service.MessageService;
 import com.dili.alm.service.ProjectChangeService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.TaskService;
@@ -51,9 +49,6 @@ public class ProjectChangeController {
 
 	@Autowired
 	private VerifyApprovalService verifyApprovalService;
-
-	@Autowired
-	private MessageService messageService;
 
 	@Autowired
 	private ProjectService projectService;
@@ -195,7 +190,6 @@ public class ProjectChangeController {
 	public @ResponseBody BaseOutput delete(Long id) {
 		ProjectChange change = projectChangeService.get(id);
 		if (change != null && change.getCreateMemberId().equals(SessionContext.getSessionContext().getUserTicket().getId())) {
-			messageService.deleteMessage(id, AlmConstants.MessageType.CHANGE.code);
 			projectChangeService.delete(id);
 		}
 		return BaseOutput.success("删除成功").setData(String.valueOf(change.getId() + ":" + change.getName()));

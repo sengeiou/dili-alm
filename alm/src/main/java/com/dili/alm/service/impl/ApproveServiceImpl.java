@@ -68,7 +68,6 @@ import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.DataDictionaryService;
-import com.dili.alm.service.MessageService;
 import com.dili.alm.service.ProjectApplyService;
 import com.dili.alm.service.ProjectChangeService;
 import com.dili.alm.service.ProjectCompleteService;
@@ -82,6 +81,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.util.SystemConfigUtils;
+import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
 
@@ -101,9 +101,6 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
 	@Autowired
 	private JavaMailSender mailSender;
-
-	@Autowired
-	private MessageService messageService;
 
 	@Autowired
 	private ProjectApplyService projectApplyService;
@@ -182,78 +179,69 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		String approveDescription = approve.getDescription();
 		if (StringUtils.isNotBlank(approveDescription)) {
 			List<ApplyApprove> approveList = JSON.parseArray(approveDescription, ApplyApprove.class);
-			ApplyApprove current = approveList.stream().filter(
-					v -> Objects.equals(v.getUserId(), SessionContext.getSessionContext().getUserTicket().getId()))
-					.findFirst().get();
+			ApplyApprove current = approveList.stream().filter(v -> Objects.equals(v.getUserId(), SessionContext.getSessionContext().getUserTicket().getId())).findFirst().get();
 			current.setApproveDate(new Date());
 			current.setResult(opt);
 			current.setNotes(notes);
 			approve.setDescription(JSON.toJSONString(approveList));
 
 			/*
-			 * 如果审批的是组长，需特殊处理
+			 * 处理立项申请单和立项审批单状态
 			 */
-			if (Objects.equals(SessionContext.getSessionContext().getUserTicket().getId(), getApproveLeader())) {
 
-				/*
-				 * 处理立项申请单和立项审批单状态
-				 */
-
-				switch (opt) {
-				case "reject":
-					approve.setStatus(AlmConstants.ApplyState.NOPASS.getCode());
-					if (Objects.equals(approve.getType(), AlmConstants.ApproveType.APPLY.getCode())) {
-						ProjectApply apply = projectApplyService.get(approve.getProjectApplyId());
-						apply.setStatus(AlmConstants.ApplyState.NOPASS.getCode());
-						projectApplyService.updateSelective(apply);
-						sendMail(apply, false);
-					} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.CHANGE.getCode())) {
-						ProjectChange change = projectChangeService.get(approve.getProjectApplyId());
-						change.setStatus(AlmConstants.ApplyState.NOPASS.getCode());
-						projectChangeService.updateSelective(change);
-						sendMail(change, false);
-					} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.COMPLETE.getCode())) {
-						ProjectComplete complete = projectCompleteService.get(approve.getProjectApplyId());
-						complete.setStatus(AlmConstants.ApplyState.NOPASS.getCode());
-						projectCompleteService.updateSelective(complete);
-						sendMail(complete, false);
-					}
-					break;
-				case "accept":
-					approve.setStatus(AlmConstants.ApplyState.PASS.getCode());
-					if (Objects.equals(approve.getType(), AlmConstants.ApproveType.APPLY.getCode())) {
-						ProjectApply apply = projectApplyService.get(approve.getProjectApplyId());
-						apply.setStatus(AlmConstants.ApplyState.PASS.getCode());
-						// 立项审批通过生成项目信息
-						Project project = buildProject(apply, approve);
-						// 插入立项规划
-						this.addProjectAction(project);
-						projectApplyService.updateSelective(apply);
-						sendMail(apply, true);
-					} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.CHANGE.getCode())) {
-						ProjectChange change = projectChangeService.get(approve.getProjectApplyId());
-						change.setStatus(AlmConstants.ApplyState.PASS.getCode());
-						projectChangeService.updateSelective(change);
-						updateProjectEndDate(change);
-						insertProjectChangeActionRecord(change);
-						sendMail(change, true);
-					} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.COMPLETE.getCode())) {
-						ProjectComplete complete = projectCompleteService.get(approve.getProjectApplyId());
-						complete.setStatus(AlmConstants.ApplyState.PASS.getCode());
-						closeProject(complete);
-						insertProjectCompleteActionRecord(complete);
-						projectCompleteService.updateSelective(complete);
-						sendMail(complete, true);
-					}
-					break;
-				default:
-					break;
+			switch (opt) {
+			case "reject":
+				approve.setStatus(AlmConstants.ApplyState.NOPASS.getCode());
+				if (Objects.equals(approve.getType(), AlmConstants.ApproveType.APPLY.getCode())) {
+					ProjectApply apply = projectApplyService.get(approve.getProjectApplyId());
+					apply.setStatus(AlmConstants.ApplyState.NOPASS.getCode());
+					projectApplyService.updateSelective(apply);
+					sendMail(apply, false);
+				} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.CHANGE.getCode())) {
+					ProjectChange change = projectChangeService.get(approve.getProjectApplyId());
+					change.setStatus(AlmConstants.ApplyState.NOPASS.getCode());
+					projectChangeService.updateSelective(change);
+					sendMail(change, false);
+				} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.COMPLETE.getCode())) {
+					ProjectComplete complete = projectCompleteService.get(approve.getProjectApplyId());
+					complete.setStatus(AlmConstants.ApplyState.NOPASS.getCode());
+					projectCompleteService.updateSelective(complete);
+					sendMail(complete, false);
 				}
+				break;
+			case "accept":
+				if (Objects.equals(approve.getType(), AlmConstants.ApproveType.APPLY.getCode()) && approveList.get(1).equals(current)) {
+					approve.setStatus(AlmConstants.ApplyState.PASS.getCode());
+					ProjectApply apply = projectApplyService.get(approve.getProjectApplyId());
+					apply.setStatus(AlmConstants.ApplyState.PASS.getCode());
+					// 立项审批通过生成项目信息
+					Project project = buildProject(apply, approve);
+					// 插入立项规划
+					this.addProjectAction(project);
+					projectApplyService.updateSelective(apply);
+					sendMail(apply, true);
+				} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.CHANGE.getCode())) {
+					approve.setStatus(AlmConstants.ApplyState.PASS.getCode());
+					ProjectChange change = projectChangeService.get(approve.getProjectApplyId());
+					change.setStatus(AlmConstants.ApplyState.PASS.getCode());
+					projectChangeService.updateSelective(change);
+					updateProjectEndDate(change);
+					insertProjectChangeActionRecord(change);
+					sendMail(change, true);
+				} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.COMPLETE.getCode())) {
+					approve.setStatus(AlmConstants.ApplyState.PASS.getCode());
+					ProjectComplete complete = projectCompleteService.get(approve.getProjectApplyId());
+					complete.setStatus(AlmConstants.ApplyState.PASS.getCode());
+					closeProject(complete);
+					insertProjectCompleteActionRecord(complete);
+					projectCompleteService.updateSelective(complete);
+					sendMail(complete, true);
+				}
+				break;
+			default:
+				break;
 			}
 			updateSelective(approve);
-			sendMessage(id, approve.getType(), SessionContext.getSessionContext().getUserTicket().getId(),
-					approve.getCreateMemberId());
-			sendLeaderApproveMessage(id, approve.getType(), approveList);
 		}
 	}
 
@@ -328,7 +316,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		Approve approve = this.get(id);
 
 		String approveDescription = approve.getDescription();
-		modelMap.put("canOpt", checkApprove(approveDescription, approve.getStatus()));
+		modelMap.put("canOpt", checkApprove(approve));
 
 		// 构建Provider
 		Map<Object, Object> metadata = new HashMap<>();
@@ -363,7 +351,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		Approve approve = this.getActualDao().selectByPrimaryKey(id);
 
 		String approveDescription = approve.getDescription();
-		modelMap.put("canOpt", checkApprove(approveDescription, approve.getStatus()));
+		modelMap.put("canOpt", checkApprove(approve));
 
 		// 构建Provider
 		Map<Object, Object> metadata = new HashMap<>();
@@ -416,7 +404,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		Approve approve = this.get(id);
 
 		String approveDescription = approve.getDescription();
-		modelMap.put("canOpt", checkApprove(approveDescription, approve.getStatus()));
+		modelMap.put("canOpt", checkApprove(approve));
 
 		// 构建Provider
 		Map<Object, Object> metadata = new HashMap<>();
@@ -456,8 +444,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 				metadata.put("startDate", JSON.parse("{provider:'dateProvider'}"));
 				metadata.put("endDate", JSON.parse("{provider:'dateProvider'}"));
 				metadata.put("type", JSON.parse("{provider:'projectTypeProvider'}"));
-				List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata,
-						projectApplyService.listByExample(apply));
+				List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, projectApplyService.listByExample(apply));
 				Map applyDTO = maps.get(0);
 				map.put("apply", applyDTO);
 
@@ -523,8 +510,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 				metadata.put("actualEndDate", JSON.parse("{provider:'dateProvider'}"));
 				metadata.put("estimateLaunchDate", JSON.parse("{provider:'dateProvider'}"));
 				metadata.put("launchDate", JSON.parse("{provider:'dateProvider'}"));
-				List<Map> projectDtos = ValueProviderUtils.buildDataByProvider(metadata,
-						projectService.listByExample(project));
+				List<Map> projectDtos = ValueProviderUtils.buildDataByProvider(metadata, projectService.listByExample(project));
 				map.put("project", projectDtos.get(0));
 				map.put("cl", complete);
 				map.put("clrs", formatReason(complete.getReason()));
@@ -551,38 +537,46 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	public void insertBefore(Approve as) throws ProjectApplyException {
 		DataDictionaryDto code = dataDictionaryService.findByCode(AlmConstants.ROLE_CODE);
 		List<DataDictionaryValueDto> values = code.getValues();
-		String roleId = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH_LEADER))
-				.findFirst().map(DataDictionaryValue::getValue).orElse(null);
+		String roleId = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH_LEADER)).findFirst().map(DataDictionaryValue::getValue).orElse(null);
+		String superRoleId = null;
 
-		int rows = insertSelective(as);
-		if (rows <= 0) {
-			throw new ProjectApplyException("插入审批记录失败");
+		if (roleId == null) {
+			throw new ProjectApplyException("请先指定项目委员会组长");
 		}
 
-		if (roleId != null) {
-			List<ApplyApprove> approveList = Lists.newArrayList();
-			List<User> userByRole = userRpc.listUserByRole(Long.parseLong(roleId)).getData();
-			Long approveLeader = getApproveLeader();
-			final ApplyApprove[] leaderApprove = { null };
-			userByRole.forEach(u -> {
-				ApplyApprove approve = new ApplyApprove();
-				approve.setUserId(u.getId());
-				approve.setRole(roleRpc.listRoleNameByUserId(Long.valueOf(u.getId())).getData());
-				if (!u.getId().equals(approveLeader)) {
-					approveList.add(approve);
-					sendMessage(as.getId(), as.getType(), as.getCreateMemberId(), u.getId());
-				} else {
-					leaderApprove[0] = approve;
-				}
-			});
-			if (leaderApprove[0] != null) {
-				approveList.add(leaderApprove[0]);
+		List<ApplyApprove> approveList = Lists.newArrayList();
+
+		List<User> userByRole = userRpc.listUserByRole(Long.parseLong(roleId)).getData();
+		if (CollectionUtils.isEmpty(userByRole)) {
+			throw new ProjectApplyException("请先指定项目委员会组长");
+		}
+
+		ApplyApprove approve = new ApplyApprove();
+		approve.setUserId(userByRole.get(0).getId());
+		approve.setRole(roleRpc.listRoleNameByUserId(Long.valueOf(userByRole.get(0).getId())).getData());
+		approveList.add(approve);
+
+		if (as.getType().equals(AlmConstants.ApproveType.APPLY.getCode())) {
+			superRoleId = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH_SUPER_LEADER)).findFirst().map(DataDictionaryValue::getValue).orElse(null);
+			if (superRoleId == null) {
+				throw new ProjectApplyException("请先指定项目委员会组长");
 			}
-			as.setDescription(JSON.toJSONString(approveList));
-			rows = updateSelective(as);
-			if (rows <= 0) {
-				throw new ProjectApplyException("更新审批记录失败");
+
+			userByRole = userRpc.listUserByRole(Long.parseLong(superRoleId)).getData();
+			if (CollectionUtils.isEmpty(userByRole)) {
+				throw new ProjectApplyException("请先指定项目委员会组长");
 			}
+
+			approve = new ApplyApprove();
+			approve.setUserId(userByRole.get(0).getId());
+			approve.setRole(roleRpc.listRoleNameByUserId(Long.valueOf(userByRole.get(0).getId())).getData());
+			approveList.add(approve);
+		}
+
+		as.setDescription(JSON.toJSONString(approveList));
+		int rows = insertSelective(as);
+		if (rows <= 0) {
+			throw new ProjectApplyException("更新审批记录失败");
 		}
 
 	}
@@ -597,8 +591,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		verifyApproval.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
 		verifyApprovalService.insert(verifyApproval);
 		Approve approve = get(id);
-		approve.setStatus(
-				Objects.equals(opt, "accept") ? AlmConstants.ChangeState.VRIFY.getCode() : approve.getStatus());
+		approve.setStatus(Objects.equals(opt, "accept") ? AlmConstants.ChangeState.VRIFY.getCode() : approve.getStatus());
 		updateSelective(approve);
 		return BaseOutput.success();
 	}
@@ -708,24 +701,43 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	/**
 	 * 检查是否有审批权限
 	 */
-	private boolean checkApprove(String approveDescription, Integer status) {
-		// 能否审批
-		boolean canOpt = false;
+	private boolean checkApprove(Approve approve) {
 
 		// 只有审批中的才能操作
-		if (StringUtils.isNotBlank(approveDescription) && status == AlmConstants.ApplyState.APPROVE.getCode()) {
-			List<ApplyApprove> approveList = JSON.parseArray(approveDescription, ApplyApprove.class);
-
-			/*
-			 * 能够操作的情况: 当前操作用户在审批组中包括项目委员会组长
-			 */
-			canOpt = approveList.stream()
-					.anyMatch(applyApprove -> Objects.equals(applyApprove.getUserId(),
-							SessionContext.getSessionContext().getUserTicket().getId())
-							&& applyApprove.getResult() == null);
-
+		if (!approve.getStatus().equals(AlmConstants.ApplyState.APPROVE.getCode())) {
+			return false;
 		}
-		return canOpt;
+
+		if (StringUtils.isBlank(approve.getDescription())) {
+			return false;
+		}
+
+		List<ApplyApprove> approveList = JSON.parseArray(approve.getDescription(), ApplyApprove.class);
+
+		if (CollectionUtils.isEmpty(approveList)) {
+			return false;
+		}
+
+		ApplyApprove leaderApprove = approveList.get(0);
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+
+		// 当前登录用户是项目委员会组长，且没有审批过，则可以审批
+		if (leaderApprove.getUserId().equals(user.getId()) && StringUtils.isEmpty(leaderApprove.getResult())) {
+			return true;
+		}
+
+		if (approve.getType().equals(AlmConstants.ApproveType.APPLY.getCode())) {
+			if (StringUtils.isEmpty(leaderApprove.getResult())) {
+				return false;
+			}
+			// 如果是立项审批，还需要研发中心的集团领导人审批
+			ApplyApprove superLeaderApprove = approveList.get(1);
+			if (superLeaderApprove.getUserId().equals(user.getId()) && StringUtils.isEmpty(superLeaderApprove.getResult())) {
+				return true;
+			}
+		}
+		return false;
+
 	}
 
 	private void closeProject(ProjectComplete complete) {
@@ -781,8 +793,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	private Long getApproveLeader() {
 		List<DataDictionaryValueDto> values = dataDictionaryService.findByCode(AlmConstants.ROLE_CODE).getValues();
 
-		String roleId = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH_LEADER))
-				.findFirst().map(DataDictionaryValue::getValue).orElse(null);
+		String roleId = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH_LEADER)).findFirst().map(DataDictionaryValue::getValue).orElse(null);
 
 		if (roleId != null) {
 			List<User> users = userRpc.listUserByRole(Long.valueOf(roleId)).getData();
@@ -792,26 +803,26 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		return null;
 	}
 
-	private void sendLeaderApproveMessage(Long id, String type, List<ApplyApprove> approveList) {
-		try {
-			if (CollectionUtils.isNotEmpty(approveList)) {
-				boolean canSend = approveList.stream()
-						.filter(applyApprove -> !Objects.equals(applyApprove.getUserId(), getApproveLeader())
-								&& applyApprove.getResult() != null)
-						.count() == approveList.size() - 1;
-				if (canSend) {
-					sendMessage(id, type, SessionContext.getSessionContext().getUserTicket().getId(),
-							getApproveLeader());
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+	/**
+	 * 获取系统中项目委员会超级组长用户主键
+	 *
+	 * @return userId
+	 */
+	private Long getApproveSuperLeader() {
+		List<DataDictionaryValueDto> values = dataDictionaryService.findByCode(AlmConstants.ROLE_CODE).getValues();
+
+		String roleId = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH_SUPER_LEADER)).findFirst().map(DataDictionaryValue::getValue).orElse(null);
+
+		if (roleId != null) {
+			List<User> users = userRpc.listUserByRole(Long.valueOf(roleId)).getData();
+			return users.stream().findFirst().map(User::getId).orElse(null);
 		}
+
+		return null;
 	}
 
 	private void sendMail(ProjectApply projectApply, boolean accept) {
-		sendMail(projectApply.getEmail().split(","), "立项申请",
-				projectApply.getName() + "的立项申请" + (accept ? "已经审批通过" : "审批未通过"));
+		sendMail(projectApply.getEmail().split(","), "立项申请", projectApply.getName() + "的立项申请" + (accept ? "已经审批通过" : "审批未通过"));
 	}
 
 	private void sendMail(ProjectChange change, boolean accept) {
@@ -825,8 +836,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		// 发送
 		for (String addr : change.getEmail().split(",")) {
 			try {
-				this.mailManager.sendMail(this.mailFrom, addr, template.render(), true,
-						accept ? "变更申请已经审批通过" : "变更申请审批未通过", null);
+				this.mailManager.sendMail(this.mailFrom, addr, template.render(), true, accept ? "变更申请已经审批通过" : "变更申请审批未通过", null);
 			} catch (Exception e) {
 				LOGGER.error(e.getMessage(), e);
 			}
@@ -847,27 +857,6 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 			mailSender.send(message);
 		} catch (Exception e) {
 			LOGGER.error("邮件发送出错:", e);
-		}
-	}
-
-	private void sendMessage(Long id, String type, Long sender, Long recipient) {
-		try {
-			switch (type) {
-			case "apply":
-				messageService.insertMessage("http://almweb.diligrp.com/approve/apply/" + id, sender, recipient,
-						AlmConstants.MessageType.APPLY.getCode());
-				break;
-			case "change":
-				messageService.insertMessage("http://almweb.diligrp.com/approve/change/" + id, sender, recipient,
-						AlmConstants.MessageType.CHANGE.getCode());
-				break;
-			case "complete":
-				messageService.insertMessage("http://almweb.diligrp.com/approve/complete/" + id, sender, recipient,
-						AlmConstants.MessageType.COMPLETE.getCode());
-				break;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 

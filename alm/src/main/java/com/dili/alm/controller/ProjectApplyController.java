@@ -34,7 +34,6 @@ import com.dili.alm.domain.dto.apply.ApplyRisk;
 import com.dili.alm.exceptions.ProjectApplyException;
 import com.dili.alm.provider.ProjectTypeProvider;
 import com.dili.alm.service.FilesService;
-import com.dili.alm.service.MessageService;
 import com.dili.alm.service.ProjectApplyService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.utils.DateUtil;
@@ -71,8 +70,6 @@ public class ProjectApplyController {
 
 	@Autowired
 	FilesService filesService;
-	@Autowired
-	private MessageService messageService;
 
 	@Autowired
 	private ProjectService projectService;
@@ -90,8 +87,7 @@ public class ProjectApplyController {
 	}
 
 	@RequestMapping(value = "/toStep/{step}/{id}", method = RequestMethod.GET)
-	public String toStep(ModelMap modelMap, @PathVariable("id") Long id, @PathVariable("step") int step)
-			throws Exception {
+	public String toStep(ModelMap modelMap, @PathVariable("id") Long id, @PathVariable("step") int step) throws Exception {
 		ProjectApply projectApply = DTOUtils.newDTO(ProjectApply.class);
 		projectApply.setId(id);
 
@@ -101,8 +97,7 @@ public class ProjectApplyController {
 		projectTypeProvider.put("provider", "projectTypeProvider");
 		metadata.put("type", projectTypeProvider);
 
-		List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata,
-				projectApplyService.listByExample(projectApply));
+		List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, projectApplyService.listByExample(projectApply));
 
 		if (CollectionUtils.isEmpty(maps)) {
 			return "redirect:/projectApply/index.html";
@@ -112,8 +107,7 @@ public class ProjectApplyController {
 			return "redirect:/projectApply/index.html";
 		}
 		try {
-			if (Long.parseLong(applyDTO.get("createMemberId").toString()) != SessionContext.getSessionContext()
-					.getUserTicket().getId()) {
+			if (Long.parseLong(applyDTO.get("createMemberId").toString()) != SessionContext.getSessionContext().getUserTicket().getId()) {
 				return "redirect:/projectApply/index.html";
 			}
 		} catch (Exception ignored) {
@@ -144,8 +138,7 @@ public class ProjectApplyController {
 		projectTypeProvider.put("provider", "projectTypeProvider");
 		metadata.put("type", projectTypeProvider);
 
-		List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata,
-				projectApplyService.listByExample(projectApply));
+		List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, projectApplyService.listByExample(projectApply));
 
 		if (CollectionUtils.isEmpty(maps)) {
 			return "redirect:/projectApply/index.html";
@@ -159,8 +152,7 @@ public class ProjectApplyController {
 	}
 
 	@ApiOperation(value = "分页查询ProjectApply", notes = "分页查询ProjectApply，返回easyui分页信息")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "ProjectApply", paramType = "form", value = "ProjectApply的form信息", required = false, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectApply", paramType = "form", value = "ProjectApply的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(ProjectApply projectApply) throws Exception {
 		if (projectApply.getCreated() != null) {
@@ -189,13 +181,11 @@ public class ProjectApplyController {
 	}
 
 	@ApiOperation("新增ProjectApply")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "ProjectApply", paramType = "form", value = "ProjectApply的form信息", required = true, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectApply", paramType = "form", value = "ProjectApply的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput insert(ProjectApply projectApply) {
 		projectApplyService.insertApply(projectApply);
-		return BaseOutput.success(String.valueOf(projectApply.getId()))
-				.setData(projectApply.getId() + ":" + projectApply.getName());
+		return BaseOutput.success(String.valueOf(projectApply.getId())).setData(projectApply.getId() + ":" + projectApply.getName());
 	}
 
 	@RequestMapping(value = "/insertStep1", method = { RequestMethod.GET, RequestMethod.POST })
@@ -203,8 +193,7 @@ public class ProjectApplyController {
 		projectApply.setResourceRequire(JSON.toJSONString(majorResource));
 		projectApplyService.updateSelective(projectApply);
 		ProjectApply projectApply2 = projectApplyService.get(projectApply.getId());
-		return BaseOutput.success(String.valueOf(projectApply2.getId()))
-				.setData(projectApply2.getId() + ":" + projectApply2.getName());
+		return BaseOutput.success(String.valueOf(projectApply2.getId())).setData(projectApply2.getId() + ":" + projectApply2.getName());
 	}
 
 	@RequestMapping(value = "/insertStep2", method = { RequestMethod.GET, RequestMethod.POST })
@@ -212,8 +201,7 @@ public class ProjectApplyController {
 		projectApply.setDescription(JSON.toJSONString(description));
 		projectApplyService.updateSelective(projectApply);
 		ProjectApply projectApply2 = projectApplyService.get(projectApply.getId());
-		return BaseOutput.success(String.valueOf(projectApply2.getId()))
-				.setData(projectApply2.getId() + ":" + projectApply2.getName());
+		return BaseOutput.success(String.valueOf(projectApply2.getId())).setData(projectApply2.getId() + ":" + projectApply2.getName());
 	}
 
 	@RequestMapping(value = "/insertStep3", method = { RequestMethod.GET, RequestMethod.POST })
@@ -221,16 +209,14 @@ public class ProjectApplyController {
 		projectApply.setGoalsFunctions(JSON.toJSONString(goalsFunctions));
 		projectApplyService.updateSelective(projectApply);
 		ProjectApply projectApply2 = projectApplyService.get(projectApply.getId());
-		return BaseOutput.success(String.valueOf(projectApply2.getId()))
-				.setData(projectApply2.getId() + ":" + projectApply2.getName());
+		return BaseOutput.success(String.valueOf(projectApply2.getId())).setData(projectApply2.getId() + ":" + projectApply2.getName());
 	}
 
 	@RequestMapping(value = "/insertStep", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput insertStep(ProjectApply projectApply) {
 		projectApplyService.updateSelective(projectApply);
 		ProjectApply projectApply2 = projectApplyService.get(projectApply.getId());
-		return BaseOutput.success(String.valueOf(projectApply2.getId()))
-				.setData(projectApply2.getId() + ":" + projectApply2.getName());
+		return BaseOutput.success(String.valueOf(projectApply2.getId())).setData(projectApply2.getId() + ":" + projectApply2.getName());
 	}
 
 	@RequestMapping(value = "/insertRoi", method = { RequestMethod.GET, RequestMethod.POST })
@@ -241,16 +227,14 @@ public class ProjectApplyController {
 			return BaseOutput.failure(e.getMessage());
 		}
 		ProjectApply projectApply2 = projectApplyService.get(roi.getApplyId());
-		return BaseOutput.success(String.valueOf(projectApply2.getId()))
-				.setData(projectApply2.getId() + ":" + projectApply2.getName());
+		return BaseOutput.success(String.valueOf(projectApply2.getId())).setData(projectApply2.getId() + ":" + projectApply2.getName());
 	}
 
 	@RequestMapping(value = "/submit", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput submit(ProjectApply projectApply, ApplyFiles files) {
 		try {
 			projectApplyService.submit(projectApply, files);
-			return BaseOutput.success(String.valueOf(projectApply.getId()))
-					.setData(projectApply.getId() + ":" + projectApply.getName());
+			return BaseOutput.success(String.valueOf(projectApply.getId())).setData(projectApply.getId() + ":" + projectApply.getName());
 		} catch (ProjectApplyException e) {
 			return BaseOutput.failure(e.getMessage());
 		}
@@ -301,14 +285,12 @@ public class ProjectApplyController {
 		metadata.put("startDate", JSON.parse("{provider:'datetimeProvider'}"));
 		metadata.put("endDate", JSON.parse("{provider:'datetimeProvider'}"));
 
-		List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata,
-				projectApplyService.listByExample(projectApply));
+		List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, projectApplyService.listByExample(projectApply));
 		return maps.get(0);
 	}
 
 	@ApiOperation("删除ProjectApply")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "id", paramType = "form", value = "ProjectApply的主键", required = true, dataType = "long") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "id", paramType = "form", value = "ProjectApply的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> delete(Long id) {
 		ProjectApply apply = projectApplyService.get(id);
@@ -320,7 +302,6 @@ public class ProjectApplyController {
 		}
 		try {
 			projectApplyService.deleteProjectApply(id);
-			messageService.deleteMessage(id, AlmConstants.MessageType.APPLY.code);
 			return BaseOutput.success("删除成功").setData(apply.getId() + ":" + apply.getName());
 		} catch (ProjectApplyException e) {
 			return BaseOutput.failure(e.getMessage());

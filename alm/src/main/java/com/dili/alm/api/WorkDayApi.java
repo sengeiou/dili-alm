@@ -1,12 +1,6 @@
 package com.dili.alm.api;
 
 import java.util.List;
-import java.util.Map;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,15 +11,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.dili.alm.domain.Message;
-import com.dili.alm.domain.WorkDay;
 import com.dili.alm.domain.dto.WorkDayRoleDto;
-import com.dili.alm.service.MessageService;
 import com.dili.alm.service.WorkDayService;
 import com.dili.alm.utils.WebUtil;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.sysadmin.sdk.domain.UserTicket;
-import com.dili.sysadmin.sdk.session.SessionContext;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 
 @Api("/workDayApi")
 @Controller

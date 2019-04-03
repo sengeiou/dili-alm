@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.constant.AlmConstants.TaskStatus;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectChange;
@@ -35,7 +34,6 @@ import com.dili.alm.domain.TaskQueryInProjectId;
 import com.dili.alm.domain.User;
 import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.TaskException;
-import com.dili.alm.service.MessageService;
 import com.dili.alm.service.ProjectApplyService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.ProjectVersionService;
@@ -77,13 +75,10 @@ public class TaskController {
 	ProjectVersionService projectVersionService;
 	@Autowired
 	TaskDetailsService taskDetailsService;
-	@Autowired
-	MessageService messageService;
 
 	@ApiOperation("跳转到Task页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
-	public String index(@RequestParam(required = false) Long projectId, @RequestParam(required = false) String backUrl,
-			ModelMap modelMap) throws UnsupportedEncodingException {
+	public String index(@RequestParam(required = false) Long projectId, @RequestParam(required = false) String backUrl, ModelMap modelMap) throws UnsupportedEncodingException {
 		modelMap.put("user", SessionContext.getSessionContext().getUserTicket());
 		if (projectId != null) {
 			Project project = this.projectService.get(projectId);
@@ -96,8 +91,7 @@ public class TaskController {
 	}
 
 	@ApiOperation(value = "查询Task", notes = "查询Task，返回列表信息")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = false, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<Task> list(Task task) {
 
@@ -105,16 +99,14 @@ public class TaskController {
 	}
 
 	@ApiOperation(value = "分页查询Task", notes = "按群组查询首页信息")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = false, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(Task task) throws Exception {
 		return taskService.listByTeam(task).toString();
 	}
 
 	@ApiOperation(value = "分页查询Task", notes = "按照群组进行分页查询")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = false, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listTeamPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listTeamPage(Task task) throws Exception {
 		@SuppressWarnings({ "rawtypes" })
@@ -132,8 +124,7 @@ public class TaskController {
 	}
 
 	@ApiOperation(value = "分页查询Task,首页显示", notes = "分页查询Task，返回easyui分页信息")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = false, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listTaskPageTab", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listTaskPageTab(Task task) throws Exception {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
@@ -144,11 +135,9 @@ public class TaskController {
 	}
 
 	@ApiOperation("新增Task")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = true, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput insert(Task task, String planTimeStr, String startDateShow, String endDateShow,
-			String flowSt) throws ParseException {
+	public @ResponseBody BaseOutput insert(Task task, String planTimeStr, String startDateShow, String endDateShow, String flowSt) throws ParseException {
 
 		Short planTime = Short.parseShort(planTimeStr.trim());
 		DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
@@ -157,24 +146,18 @@ public class TaskController {
 			return BaseOutput.failure("用户登录超时！");
 		}
 		try {
-			this.taskService.addTask(task, planTime, fmt.parse(startDateShow), fmt.parse(endDateShow),
-					flowSt.equals("0") ? true : false, userTicket.getId());
+			this.taskService.addTask(task, planTime, fmt.parse(startDateShow), fmt.parse(endDateShow), flowSt.equals("0") ? true : false, userTicket.getId());
 		} catch (TaskException e) {
 			return BaseOutput.failure(e.getMessage());
 		}
-
-		messageService.insertMessage("http://alm.diligrp.com/task/task/" + task.getId(), userTicket.getId(),
-				task.getOwner(), AlmConstants.MessageType.TASK.getCode());
 
 		return BaseOutput.success("新增成功").setData(String.valueOf(task.getId() + ":" + task.getName()));
 	}
 
 	@ApiOperation("修改Task")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = true, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput update(Task task, String planTimeStr, String startDateShow, String endDateShow,
-			String flowSt) {
+	public @ResponseBody BaseOutput update(Task task, String planTimeStr, String startDateShow, String endDateShow, String flowSt) {
 		DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		if (userTicket == null) {
@@ -182,8 +165,7 @@ public class TaskController {
 		}
 		Short planTime = Short.parseShort(planTimeStr.trim());
 		try {
-			this.taskService.updateTask(task, userTicket.getId(), planTime, fmt.parse(startDateShow),
-					fmt.parse(endDateShow), flowSt.equals("0") ? true : false);
+			this.taskService.updateTask(task, userTicket.getId(), planTime, fmt.parse(startDateShow), fmt.parse(endDateShow), flowSt.equals("0") ? true : false);
 		} catch (ParseException e) {
 			return BaseOutput.failure("日期格式不正确");
 		} catch (TaskException e) {
@@ -194,8 +176,7 @@ public class TaskController {
 	}
 
 	@ApiOperation("删除Task")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "id", paramType = "form", value = "Task的主键", required = true, dataType = "long") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "id", paramType = "form", value = "Task的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput delete(Long id) {
 		Task task = this.taskService.get(id);
@@ -204,7 +185,6 @@ public class TaskController {
 		} catch (TaskException e) {
 			return BaseOutput.failure(e.getMessage());
 		}
-		messageService.deleteMessage(id, AlmConstants.MessageType.TASK.code);
 		return BaseOutput.success("删除成功").setData(String.valueOf(task.getId() + ":" + task.getName()));
 	}
 
@@ -322,11 +302,9 @@ public class TaskController {
 
 	// 更新任务信息
 	@ApiOperation("填写任务工时")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "updateTaskDetails", paramType = "form", value = "TaskDetails的form信息", required = true, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "updateTaskDetails", paramType = "form", value = "TaskDetails的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/updateTaskDetails", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput updateTaskDetails(TaskDetails taskDetails, String planTimeStr, String overHourStr,
-			String taskHourStr) {
+	public @ResponseBody BaseOutput updateTaskDetails(TaskDetails taskDetails, String planTimeStr, String overHourStr, String taskHourStr) {
 
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 
@@ -351,8 +329,7 @@ public class TaskController {
 		}
 		Date taskDate = taskDetails.getModified() == null ? new Date() : taskDetails.getModified();
 		try {
-			this.taskService.submitWorkingHours(taskDetails.getTaskId(), userTicket.getId(), taskDate, taskHour,
-					overHour, taskDetails.getDescribe());
+			this.taskService.submitWorkingHours(taskDetails.getTaskId(), userTicket.getId(), taskDate, taskHour, overHour, taskDetails.getDescribe());
 			Task task = this.taskService.get(taskDetails.getTaskId());
 			return BaseOutput.success().setData(task.getName());
 		} catch (TaskException e) {
@@ -363,8 +340,7 @@ public class TaskController {
 
 	// 开始执行任务
 	@ApiOperation("开始执行任务")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "updateTaskStatus", paramType = "form", value = "TaskDetails的form信息", required = true, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "updateTaskStatus", paramType = "form", value = "TaskDetails的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/updateTaskStatus", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> updateTaskDetails(Long id) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
@@ -382,8 +358,7 @@ public class TaskController {
 
 	// 暂停任务
 	@ApiOperation("暂停执行任务")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "pauseTaskStatus", paramType = "form", value = "TaskDetails的form信息", required = true, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "pauseTaskStatus", paramType = "form", value = "TaskDetails的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/pauseTaskStatus", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput pauseTask(Long id) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
@@ -400,8 +375,7 @@ public class TaskController {
 
 	// 完成任务
 	@ApiOperation("完成任务")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "complateTask", paramType = "form", value = "TaskDetails的form信息", required = true, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "complateTask", paramType = "form", value = "TaskDetails的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/complateTask", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> complateTask(Long id) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
@@ -441,8 +415,7 @@ public class TaskController {
 
 	// 测试未完成任务
 	@ApiOperation("测试未完成任务")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "notComplate", paramType = "form", value = "TaskDetails的form信息", required = true, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "notComplate", paramType = "form", value = "TaskDetails的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/notComplate", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput notComplate() {
 		taskService.notComplateTask(null);
@@ -468,8 +441,7 @@ public class TaskController {
 	}
 
 	@ApiOperation(value = "查询TaskDetails", notes = "查询TaskDetails，返回列表信息")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "TaskDetails", paramType = "form", value = "TaskDetails的form信息", required = false, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "TaskDetails", paramType = "form", value = "TaskDetails的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listTaskDetails", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<Map> list(TaskDetails taskDetails) {
 		Map<Object, Object> metadata = new HashMap<>();

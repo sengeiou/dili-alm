@@ -90,8 +90,6 @@ public interface TaskService extends BaseService<Task, Long> {
 
 	boolean isNoTeam();
 
-	boolean isCommittee();
-
 	void addTask(Task task, Short planTime, Date startDateShow, Date endDateShow, Boolean flow, Long creatorId) throws TaskException;
 
 	void updateTask(Task task, Long modifyMemberId, Short planTime, Date startDateShow, Date endDateShow, Boolean flow) throws TaskException;

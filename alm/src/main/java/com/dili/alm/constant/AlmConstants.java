@@ -10,6 +10,7 @@ public class AlmConstants {
 	public static final String ROLE_CODE = "role_code";
 	public static final String ROLE_CODE_WYH = "wyh";
 	public static final String ROLE_CODE_WYH_LEADER = "wyh_leader";
+	public static final String ROLE_CODE_WYH_SUPER_LEADER = "wyh_super_leader";
 
 	// 运维部门编码
 	public static final String OPERATION_DEPARTMENT_CODE = "maintenance";
