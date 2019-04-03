@@ -5,43 +5,27 @@
 		<!-- WARNING - @mbg.generated -->
 		<id column="id" jdbcType="BIGINT" property="id" />
 		<result column="name" jdbcType="VARCHAR" property="name" />
-		<result column="project_id" jdbcType="BIGINT"
-			property="projectId" />
-		<result column="version_id" jdbcType="BIGINT"
-			property="versionId" />
-		<result column="start_date" jdbcType="TIMESTAMP"
-			property="startDate" />
-		<result column="end_date" jdbcType="TIMESTAMP"
-			property="endDate" />
-		<result column="before_task" jdbcType="BIGINT"
-			property="beforeTask" />
+		<result column="project_id" jdbcType="BIGINT" property="projectId" />
+		<result column="version_id" jdbcType="BIGINT" property="versionId" />
+		<result column="start_date" jdbcType="TIMESTAMP" property="startDate" />
+		<result column="end_date" jdbcType="TIMESTAMP" property="endDate" />
+		<result column="before_task" jdbcType="BIGINT" property="beforeTask" />
 		<result column="type" jdbcType="INTEGER" property="type" />
 		<result column="owner" jdbcType="BIGINT" property="owner" />
-		<result column="plan_time" jdbcType="SMALLINT"
-			property="planTime" />
+		<result column="plan_time" jdbcType="SMALLINT" property="planTime" />
 		<result column="flow" jdbcType="BIT" property="flow" />
-		<result column="change_id" jdbcType="BIGINT"
-			property="changeId" />
-		<result column="describe" jdbcType="VARCHAR"
-			property="describe" />
+		<result column="change_id" jdbcType="BIGINT" property="changeId" />
+		<result column="describe" jdbcType="VARCHAR" property="describe" />
 		<result column="status" jdbcType="TINYINT" property="status" />
-		<result column="created" jdbcType="TIMESTAMP"
-			property="created" />
-		<result column="modified" jdbcType="TIMESTAMP"
-			property="modified" />
-		<result column="create_member_id" jdbcType="BIGINT"
-			property="createMemberId" />
-		<result column="modify_member_id" jdbcType="BIGINT"
-			property="modifyMemberId" />
-		<result column="fact_begin_date" jdbcType="TIMESTAMP"
-			property="factBeginDate" />
-		<result column="fact_end_date" jdbcType="TIMESTAMP"
-			property="factEndDate" />
+		<result column="created" jdbcType="TIMESTAMP" property="created" />
+		<result column="modified" jdbcType="TIMESTAMP" property="modified" />
+		<result column="create_member_id" jdbcType="BIGINT" property="createMemberId" />
+		<result column="modify_member_id" jdbcType="BIGINT" property="modifyMemberId" />
+		<result column="fact_begin_date" jdbcType="TIMESTAMP" property="factBeginDate" />
+		<result column="fact_end_date" jdbcType="TIMESTAMP" property="factEndDate" />
 	</resultMap>
 
-	<resultMap
-		type="com.dili.alm.domain.dto.UserWorkHourDetailDto"
-		id="UserWorkHourDetailRM">
+	<resultMap type="com.dili.alm.domain.dto.UserWorkHourDetailDto" id="UserWorkHourDetailRM">
 		<result column="task_date" property="taskDate" />
 		<result column="task_hours" property="taskHours" />
 		<result column="overtime_hours" property="overtimeHours" />
@@ -83,8 +67,7 @@
 		t.fact_end_date
 	</sql>
 
-	<select id="selectBy" parameterType="java.lang.Long"
-		resultMap="BaseResultMap">
+	<select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
 		<!-- WARNING - @mbg.generated -->
 		select
 		<include refid="Base_Column_List" />
@@ -156,8 +139,7 @@
 		where id = #{id,jdbcType=BIGINT}
 	</update>
 
-	<select id="selectByProjectState" parameterType="Integer"
-		resultMap="BaseResultMap">
+	<select id="selectByProjectState" parameterType="Integer" resultMap="BaseResultMap">
 		SELECT
 		<include refid="Join_Column_List" />
 		FROM
@@ -313,20 +295,19 @@
 		</if>
 
 	</select>
-	<select id="selectProjectChangeByTeam"
-		resultType="com.dili.alm.domain.ProjectChange">
+	<select id="selectProjectChangeByTeam" resultType="com.dili.alm.domain.ProjectChange">
 		select * from project_change as pc where pc.project_id in (select p.id
 		from project as p where p.id in
 		(select t.project_id from team as t
 		where t.member_id
-		=#{selectOwner,jdbcType=BIGINT})) and pc.status = 3
+		=#{selectOwner,jdbcType=BIGINT})) and
+		pc.status = 3
 		<if test="projectId != null">
 			and pc.project_id = #{projectId,jdbcType=BIGINT}
 		</if>
 	</select>
 
-	<select id="selectProjectByTeam"
-		resultType="com.dili.alm.domain.Project">
+	<select id="selectProjectByTeam" resultType="com.dili.alm.domain.Project">
 		select * from
 		project as p where p.id in
 		(select t.project_id
@@ -349,8 +330,7 @@
 
 		ORDER BY t2.join_time DESC
 	</select>
-	<select id="selectVersionByTeam"
-		resultType="com.dili.alm.domain.ProjectVersion">
+	<select id="selectVersionByTeam" resultType="com.dili.alm.domain.ProjectVersion">
 		select * from
 		alm.project_version as version where
 		version.project_id
@@ -365,15 +345,16 @@
 	</select>
 
 	<!-- 任务工时查询一天是否填写8小时 modified为工时执行日期， cread为工时填写日期 -->
-	<select id="selectOtherTaskDetail"
-		resultType="com.dili.alm.domain.TaskDetails">
+	<select id="selectOtherTaskDetail" resultType="com.dili.alm.domain.TaskDetails">
 		select * from
 		alm.task_details as td where td.task_id in
 		(select tt.id from task as
 		tt where tt.owner =
-		#{selectOwner,jdbcType=BIGINT}) and td.modified like
+		#{selectOwner,jdbcType=BIGINT}) and
+		td.modified like
 		CONCAT("%",#{selectDate,jdbcType=VARCHAR},"%")
 	</select>
+
 	<select id="selectTotalTaskHourByUserId" resultType="Long">
 		SELECT
 		(
@@ -382,7 +363,8 @@
 		FROM
 		(
 		SELECT
-		sum( td.task_hour + td.over_hour ) AS
+		sum( td.task_hour + td.over_hour )
+		AS
 		total_task_hour
 		FROM
 		task_details td
@@ -405,8 +387,7 @@
 	</select>
 
 	<!-- 数据统计相关 begin -->
-	<select id="selectTaskHourByUser"
-		resultType="com.dili.alm.domain.dto.TaskByUsersDto">
+	<select id="selectTaskHourByUser" resultType="com.dili.alm.domain.dto.TaskByUsersDto">
 		SELECT
 		CONCAT( #{beginTime,jdbcType=VARCHAR}, '至',
 		#{endTime,jdbcType=VARCHAR} ) AS selectDate,
@@ -423,7 +404,8 @@
 		IFNULL( t1.taskHours, 0 ) AS taskHours,
 		IFNULL( t1.overHours, 0 ) AS
 		overHours,
-		IFNULL( t2.workOrderTaskHours, 0 ) AS workOrderTaskHours
+		IFNULL(
+		t2.workOrderTaskHours, 0 ) AS workOrderTaskHours
 		FROM
 		`user` u
 		LEFT JOIN (
@@ -435,7 +417,8 @@
 		FROM
 		task_details td
 		INNER
-		JOIN task t ON td.task_id = t.id
+		JOIN task t ON
+		td.task_id = t.id
 		WHERE
 		td.modified <![CDATA[>=]]>
 		CONCAT(#{beginTime,jdbcType=VARCHAR},' 00:00:00')
@@ -483,15 +466,13 @@
 		u.id != 1
 		<if test="uIds != null and uIds.size>0">
 			AND u.id in
-			<foreach item="item" index="index" collection="uIds" open="("
-				separator="," close=")">
+			<foreach item="item" index="index" collection="uIds" open="(" separator="," close=")">
 				#{item}
 			</foreach>
 		</if>
 		<if test="departmentIds != null and departmentIds.size>0">
 			AND u.department_id in
-			<foreach item="item" index="index" collection="departmentIds"
-				open="(" separator="," close=")">
+			<foreach item="item" index="index" collection="departmentIds" open="(" separator="," close=")">
 				#{item}
 			</foreach>
 		</if>
@@ -511,8 +492,7 @@
 	</select>
 
 	<!-- 项目以及项目所用总工时 -->
-	<select id="selectProjectHours"
-		resultType="com.dili.alm.domain.dto.TaskHoursByProjectDto">
+	<select id="selectProjectHours" resultType="com.dili.alm.domain.dto.TaskHoursByProjectDto">
 		select p.id as projectId,p.`name` as
 		projectName,ifnull(t2.totalHour,0) as sumHour FROM
 		project
@@ -521,7 +501,8 @@
 		(select
 		t1.project_id as pid ,SUM(td1.taskHours+td1.overHours) as
 		totalHour
-		from task as t1 LEFT JOIN
+		from task as t1
+		LEFT JOIN
 		(SELECT task_id as tid,task_hour as
 		taskHours,over_hour as overHours FROM
 		task_details where 1 =1
@@ -542,16 +523,14 @@
 		1=1
 		<if test="pids != null and pids.size>0">
 			and p.id in
-			<foreach item="item" index="index" collection="pids" open="("
-				separator="," close=")">
+			<foreach item="item" index="index" collection="pids" open="(" separator="," close=")">
 				#{item}
 			</foreach>
 		</if>
 		ORDER BY p.id DESC
 	</select>
 	<!-- 员工以及总工时 -->
-	<select id="selectUsersHours"
-		resultType="com.dili.alm.domain.dto.SelectTaskHoursByUserDto">
+	<select id="selectUsersHours" resultType="com.dili.alm.domain.dto.SelectTaskHoursByUserDto">
 		SELECT distinct(utt2.uid) as userNo ,utt2.real_name as userName FROM
 		(select utt.id as uid ,team.project_id as projectId ,utt.real_name as
 		real_name from team as team LEFT JOIN alm.`user` as utt ON
@@ -565,8 +544,7 @@
 		CONCAT(#{endTime,jdbcType=VARCHAR},' 23:59:59')
 		<if test="pids != null and pids.size>0">
 			and prt.id in
-			<foreach item="item" index="index" collection="pids" open="("
-				separator="," close=")">
+			<foreach item="item" index="index" collection="pids" open="(" separator="," close=")">
 				#{item}
 			</foreach>
 		</if>
@@ -575,12 +553,12 @@
 	</select>
 
 	<!--每个人单独项目下的总工时 -->
-	<select id="selectUsersProjectHours"
-		resultType="com.dili.alm.domain.dto.SelectTaskHoursByUserProjectDto">
+	<select id="selectUsersProjectHours" resultType="com.dili.alm.domain.dto.SelectTaskHoursByUserProjectDto">
 		select SUM(tt.task_hour) as sumUPTaskHours,sum(tt.over_hour) as
 		sumUPOverHours,t.`owner` as ownerId,t.project_id as projectId,p.`name`
 		as projectName from
-		alm.task_details as tt LEFT JOIN alm.task as t ON
+		alm.task_details as tt LEFT JOIN alm.task as t
+		ON
 		tt.task_id = t.id LEFT JOIN project as p on p.id = t.project_id where
 		1=1
 		<if test="startTime != null">
@@ -593,23 +571,20 @@
 		</if>
 		<if test="projectIds != null and projectIds.size>0">
 			and t.project_id in
-			<foreach item="item" index="index" collection="projectIds"
-				open="(" separator="," close=")">
+			<foreach item="item" index="index" collection="projectIds" open="(" separator="," close=")">
 				#{item}
 			</foreach>
 		</if>
 		<if test="userIds != null and userIds.size>0">
 			and t.`owner` in
-			<foreach item="item" index="index" collection="userIds"
-				open="(" separator="," close=")">
+			<foreach item="item" index="index" collection="userIds" open="(" separator="," close=")">
 				#{item}
 			</foreach>
 		</if>
 		GROUP BY t.project_id
 	</select>
 	<!-- 年度总汇 -->
-	<select id="selectProjectYearsCover"
-		resultType="com.dili.alm.domain.dto.ProjectYearCoverDto">
+	<select id="selectProjectYearsCover" resultType="com.dili.alm.domain.dto.ProjectYearCoverDto">
 		SELECT
 		t.project_id AS projectId,
 		p.`name` AS projectName,
@@ -624,7 +599,8 @@
 		t.`status` = 3 THEN 3 END ) / count( * ) AS completionRate,
 		count( CASE
 		WHEN t.`status` = 4 THEN 4 END ) AS noFinish,
-		count( CASE WHEN
+		count( CASE
+		WHEN
 		t.`status` = 4 THEN 4 END ) / count( * ) AS overdueRate,
 		count( CASE
 		WHEN t.`status` = 2 THEN 2 END ) AS pauseTotal,
@@ -661,8 +637,7 @@
 	</select>
 
 	<!-- 年度总汇.图标 -->
-	<select id="selectProjectYearsCoverForAll"
-		resultType="com.dili.alm.domain.dto.ProjectYearCoverForAllDto">
+	<select id="selectProjectYearsCoverForAll" resultType="com.dili.alm.domain.dto.ProjectYearCoverForAllDto">
 		SELECT
 		t.project_id AS pid,
 		count( t.id ) AS taskCount,
@@ -670,7 +645,8 @@
 		t.`status` = 3 THEN 3 END ) AS finishCount,
 		count( CASE WHEN t.`status`
 		= 1 THEN 1 END ) AS ongoing,
-		count( CASE WHEN t.`status` = 4 THEN 4 END
+		count( CASE WHEN t.`status` = 4
+		THEN 4 END
 		) AS noFinish,
 		count( CASE WHEN t.`status` = 2 THEN 2 END ) AS
 		pauseTotal,
@@ -699,8 +675,7 @@
 	</select>
 	<!-- 数据统计相关 end -->
 
-	<select id="selectTaskStateCount"
-		resultType="com.dili.alm.domain.dto.TaskStateCountDto">
+	<select id="selectTaskStateCount" resultType="com.dili.alm.domain.dto.TaskStateCountDto">
 		SELECT d.code as taskState,
 		IFNULL(t1.totalCount, 0) as stateCount
 		FROM
@@ -712,8 +687,7 @@
 		FROM
 		alm.task AS t
 		WHERE t.project_id IN
-		<foreach item="item" index="index" collection="list" open="("
-			separator="," close=")">
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
 			#{item}
 		</foreach>
 		GROUP BY t.status
@@ -722,8 +696,7 @@
 		WHERE d.dd_id =16
 	</select>
 
-	<select id="getStateByTaskCount"
-		resultType="com.dili.alm.domain.dto.TaskStateCountDto">
+	<select id="getStateByTaskCount" resultType="com.dili.alm.domain.dto.TaskStateCountDto">
 		SELECT d.`code` AS taskState,COUNT(*) AS stateCount
 		FROM
 		alm.task AS t
@@ -734,8 +707,7 @@
 		d.dd_id =16
 		<if test="list != null and list.size>0">
 			and t.project_id in
-			<foreach item="item" index="index" collection="list" open="("
-				separator="," close=")">
+			<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
 				#{item}
 			</foreach>
 		</if>
@@ -746,41 +718,37 @@
 		GROUP BY t.`status`
 	</select>
 
-	<select id="sumUserProjectTaskHour"
-		resultType="java.util.HashMap">
+	<select id="sumUserProjectTaskHour" resultType="java.util.HashMap">
 		<!-- {call sumUserProjectTaskHours(#{param})} -->
 		SELECT
 		u.id AS user_id,
 		u.real_name,
-		<foreach collection="projectIds" index="index"
-			item="projectId">
+		<foreach collection="projectIds" index="index" item="projectId">
 			IFNULL( t#{index}.total_task_hour, 0 ) AS
 			#{projectId}_total_task_hour,
 			IFNULL( t#{index}.total_over_hour, 0 )
-			AS #{projectId}_total_over_hour,
+			AS
+			#{projectId}_total_over_hour,
 		</foreach>
-		<foreach collection="projectIds" index="index" open="("
-			separator="+" close=") as project_user_total_task_hour,">
+		<foreach collection="projectIds" index="index" open="(" separator="+" close=") as project_user_total_task_hour,">
 			IFNULL( t#{index}.total_task_hour, 0 )
 		</foreach>
-		<foreach collection="projectIds" index="index" open="("
-			separator="+" close=") as project_user_total_over_hour,">
+		<foreach collection="projectIds" index="index" open="(" separator="+" close=") as project_user_total_over_hour,">
 			IFNULL( t#{index}.total_over_hour, 0 )
 		</foreach>
-		<foreach collection="projectIds" index="index" open="("
-			separator="+" close=") as project_user_total_hour">
+		<foreach collection="projectIds" index="index" open="(" separator="+" close=") as project_user_total_hour">
 			IFNULL( t#{index}.total_task_hour, 0 ) + IFNULL(
 			t#{index}.total_over_hour, 0 )
 		</foreach>
 		FROM `user` u LEFT JOIN
-		<foreach collection="projectIds" index="index"
-			item="projectId" separator=" LEFT JOIN " close="">
+		<foreach collection="projectIds" index="index" item="projectId" separator=" LEFT JOIN " close="">
 			(SELECT DISTINCT
 			t.`owner` AS user_id,
 			sum( td.task_hour ) AS
 			total_task_hour,
 			sum(
-			td.over_hour ) AS total_over_hour
+			td.over_hour ) AS
+			total_over_hour
 			FROM
 			task_details td
 			INNER JOIN task t
@@ -801,21 +769,20 @@
 		WHERE 1 =1
 		<if test="userIds != null and userIds.size > 0">
 			AND u.id IN
-			<foreach collection="userIds" open="(" separator=","
-				close=")" item="userId">
+			<foreach collection="userIds" open="(" separator="," close=")" item="userId">
 				#{userId}
 			</foreach>
 		</if>
 		AND u.id != 1
 	</select>
 
-	<select id="selectUserWorkHourDetail"
-		resultMap="UserWorkHourDetailRM">
+	<select id="selectUserWorkHourDetail" resultMap="UserWorkHourDetailRM">
 		SELECT
 		DATE_FORMAT( td.modified, '%Y-%m-%d' ) AS task_date,
 		td.task_hour AS task_hours,
 		td.over_hour AS overtime_hours,
-		td.`describe` AS work_content,
+		td.`describe` AS
+		work_content,
 		t.`owner` AS user_id
 		FROM
 		task_details td
@@ -836,6 +803,15 @@
 		WHERE w.executor_id = #{userId}
 		ORDER BY
 		task_date DESC
+	</select>
+
+	<select id="sumPlanTimeByVersion" resultType="long">
+		SELECT
+		SUM( plan_time )
+		FROM
+		task
+		WHERE
+		version_id = #{versionId}
 	</select>
 
 </mapper>

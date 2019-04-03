@@ -1,71 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dili.alm.dao.TaskDetailsMapper">
-  <resultMap id="BaseResultMap" type="com.dili.alm.domain.TaskDetails">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="task_id" jdbcType="BIGINT" property="taskId" />
-    <result column="task_hour" jdbcType="SMALLINT" property="taskHour" />
-    <result column="over_hour" jdbcType="SMALLINT" property="overHour" />
-    <result column="describe" jdbcType="VARCHAR" property="describe" />
-    <result column="task_time" jdbcType="LONGVARCHAR" property="taskTime" />
-    <result column="created" jdbcType="TIMESTAMP" property="created" />
-    <result column="modified" jdbcType="TIMESTAMP" property="modified" />
-    <result column="create_member_id" jdbcType="BIGINT" property="createMemberId" />
-    <result column="modify_member_id" jdbcType="BIGINT" property="modifyMemberId" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    id, task_id, task_hour, over_hour, describe, task_time, created, modified, create_member_id, 
-    modify_member_id
-  </sql>
-  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    select 
-    <include refid="Base_Column_List" />
-    from task_details
-    where id = #{id,jdbcType=BIGINT}
-  </select>
-  <update id="updateBy" parameterType="com.dili.alm.domain.TaskDetails">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    update task_details
-    <set>
-      <if test="taskId != null">
-        task_id = #{taskId,jdbcType=BIGINT},
-      </if>
-      <if test="taskHour != null">
-        task_hour = #{taskHour,jdbcType=SMALLINT},
-      </if>
-      <if test="overHour != null">
-        over_hour = #{overHour,jdbcType=SMALLINT},
-      </if>
-      <if test="describe != null">
-        describe = #{describe,jdbcType=VARCHAR},
-      </if>
-      <if test="taskTime != null">
-        task_time = #{taskTime,jdbcType=LONGVARCHAR},
-      </if>
-      <if test="created != null">
-        created = #{created,jdbcType=TIMESTAMP},
-      </if>
-      <if test="modified != null">
-        modified = #{modified,jdbcType=TIMESTAMP},
-      </if>
-      <if test="createMemberId != null">
-        create_member_id = #{createMemberId,jdbcType=BIGINT},
-      </if>
-      <if test="modifyMemberId != null">
-        modify_member_id = #{modifyMemberId,jdbcType=BIGINT},
-      </if>
-    </set>
-    where id = #{id,jdbcType=BIGINT}
-  </update>
+	<resultMap id="BaseResultMap" type="com.dili.alm.domain.TaskDetails">
+		<!-- WARNING - @mbg.generated -->
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="task_id" jdbcType="BIGINT" property="taskId" />
+		<result column="task_hour" jdbcType="SMALLINT" property="taskHour" />
+		<result column="over_hour" jdbcType="SMALLINT" property="overHour" />
+		<result column="describe" jdbcType="VARCHAR" property="describe" />
+		<result column="task_time" jdbcType="LONGVARCHAR" property="taskTime" />
+		<result column="created" jdbcType="TIMESTAMP" property="created" />
+		<result column="modified" jdbcType="TIMESTAMP" property="modified" />
+		<result column="create_member_id" jdbcType="BIGINT" property="createMemberId" />
+		<result column="modify_member_id" jdbcType="BIGINT" property="modifyMemberId" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		<!-- WARNING - @mbg.generated -->
+		id, task_id, task_hour, over_hour, describe, task_time, created, modified, create_member_id,
+		modify_member_id
+	</sql>
+	<select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
+		<!-- WARNING - @mbg.generated -->
+		select
+		<include refid="Base_Column_List" />
+		from task_details
+		where id = #{id,jdbcType=BIGINT}
+	</select>
+	<update id="updateBy" parameterType="com.dili.alm.domain.TaskDetails">
+		<!-- WARNING - @mbg.generated -->
+		update task_details
+		<set>
+			<if test="taskId != null">
+				task_id = #{taskId,jdbcType=BIGINT},
+			</if>
+			<if test="taskHour != null">
+				task_hour = #{taskHour,jdbcType=SMALLINT},
+			</if>
+			<if test="overHour != null">
+				over_hour = #{overHour,jdbcType=SMALLINT},
+			</if>
+			<if test="describe != null">
+				describe = #{describe,jdbcType=VARCHAR},
+			</if>
+			<if test="taskTime != null">
+				task_time = #{taskTime,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="created != null">
+				created = #{created,jdbcType=TIMESTAMP},
+			</if>
+			<if test="modified != null">
+				modified = #{modified,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createMemberId != null">
+				create_member_id = #{createMemberId,jdbcType=BIGINT},
+			</if>
+			<if test="modifyMemberId != null">
+				modify_member_id = #{modifyMemberId,jdbcType=BIGINT},
+			</if>
+		</set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+
+	<select id="sumTaskHourByProject" resultType="long">
+		SELECT
+		SUM( td.task_hour )
+		FROM
+		task_details td
+		INNER JOIN task t ON td.task_id = t.id
+		WHERE
+		t.project_id = #{projectId}
+	</select>
+
+	<select id="sumTaskAndOverHourByVersion" resultType="long">
+		SELECT
+		SUM( td.task_hour + td.over_hour )
+		FROM
+		task_details td
+		INNER JOIN task t ON td.task_id = t.id
+		WHERE
+		t.version_id = #{versionId}
+	</select>
 </mapper>

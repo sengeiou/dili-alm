@@ -572,7 +572,11 @@ function saveTaskDetail() {
 	if (!$('#detail_form').form("validate")) {
 		return;
 	}
-	$('#dlg').dialog('close');
+	$.messager.progress({
+				title : '提示',
+				msg : '数据处理中，请稍候……',
+				text : ''
+			});
 	$.ajax({
 				type : "POST",
 				url : "${contextPath}/task/updateTaskDetails?planTimeStr=" + planTimeStr,
@@ -581,12 +585,14 @@ function saveTaskDetail() {
 				dataType : "json",
 				async : true,
 				success : function(data) {
+					$.messager.progress('close');
 					if (data.code == "200") {
 						if (window.frames[0]) {
 							window.frames[0].reloadGrid();
 						} else {
 							$('#grid').datagrid('reload');
 						}
+						$('#dlg').dialog('close');
 						LogUtils.saveLog(LOG_MODULE_OPS.PERFORM_PROJECT_VERSION_PHASE_TASK, "执行任务:" + data.data + ":成功", function() {
 								});
 					} else {
@@ -594,6 +600,7 @@ function saveTaskDetail() {
 					}
 				},
 				error : function() {
+					$.messager.progress('close');
 					$.messager.alert('错误', '远程访问失败');
 				}
 			});

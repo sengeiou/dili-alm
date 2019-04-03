@@ -11,7 +11,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -30,7 +29,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.component.MailManager;
-import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.constant.AlmConstants.TaskStatus;
 import com.dili.alm.dao.ProjectActionRecordMapper;
 import com.dili.alm.dao.ProjectMapper;
@@ -38,9 +36,7 @@ import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.TaskDetailsMapper;
 import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.dao.TeamMapper;
-import com.dili.alm.dao.WorkDayMapper;
 import com.dili.alm.domain.ActionDateType;
-import com.dili.alm.domain.DataDictionaryValue;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectAction;
 import com.dili.alm.domain.ProjectActionRecord;
@@ -49,7 +45,6 @@ import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.ProjectChange;
 import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.ProjectVersion;
-import com.dili.alm.domain.Role;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.TaskDetails;
 import com.dili.alm.domain.TaskEntity;
@@ -149,7 +144,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	@Autowired
 	private WorkDayService workDayService;
 	@Autowired
-	private WorkDayMapper workDayMapper;
+	private TaskDetailsMapper taskDetailsMapper;
 
 	public TaskServiceImpl() {
 		super();
@@ -976,23 +971,8 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			}
 		}
 		// 任务计划中已完成的时间总和
-		double taskTimes = 0;
+		long taskTimes = this.taskDetailsMapper.sumTaskHourByProject(task.getProjectId());
 
-		Task taskSelect = DTOUtils.newDTO(Task.class);
-		taskSelect.setProjectId(task.getProjectId());
-		// 查询任务表里 项目下的所有任务
-		List<Task> taskList = this.list(taskSelect);
-		for (Task taskDome : taskList) {
-			// 每个项目下的所有任务详情
-			TaskDetails taskDetails = DTOUtils.newDTO(TaskDetails.class);
-			taskDetails.setTaskId(taskDome.getId());
-			// 任务下的工时累加
-			List<TaskDetails> taskDetailsList = taskDetailsService.list(taskDetails);
-			for (TaskDetails taskDetailsDome : taskDetailsList) {
-				taskTimes += taskDetailsDome.getTaskHour();
-				taskTimes += taskDetailsDome.getOverHour();
-			}
-		}
 		progress = (int) ((taskTimes / total) * 100);
 		project.setCompletedProgress(progress);
 
@@ -1012,24 +992,8 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		ProjectVersion projectVersion = projectVersionService.get(task.getVersionId());
 
 		int progress = 0;
-		double totalPlanTime = 0;
-		double totalTaskTime = 0;
-
-		Task taskSelect = DTOUtils.newDTO(Task.class);
-		taskSelect.setVersionId(task.getVersionId());
-
-		List<Task> taskList = this.list(taskSelect);
-
-		for (Task taskResult : taskList) {
-			totalPlanTime += taskResult.getPlanTime();
-			TaskDetails taskDetailsSelect = DTOUtils.newDTO(TaskDetails.class);
-			taskDetailsSelect.setTaskId(taskResult.getId());
-			List<TaskDetails> taskDetailsList = taskDetailsService.list(taskDetailsSelect);
-			for (TaskDetails taskDetailsResult : taskDetailsList) {
-				totalTaskTime += taskDetailsResult.getTaskHour();
-				totalTaskTime += taskDetailsResult.getOverHour();
-			}
-		}
+		double totalPlanTime = this.taskMapper.sumPlanTimeByVersion(task.getVersionId());
+		long totalTaskTime = this.taskDetailsMapper.sumTaskAndOverHourByVersion(task.getVersionId());
 
 		progress = (int) ((totalTaskTime / totalPlanTime) * 100);
 		projectVersion.setCompletedProgress(progress);
