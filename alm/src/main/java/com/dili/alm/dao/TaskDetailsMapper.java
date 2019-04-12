@@ -5,8 +5,8 @@ import com.dili.ss.base.MyMapper;
 
 public interface TaskDetailsMapper extends MyMapper<TaskDetails> {
 
-	long sumTaskHourByProject(Long projectId);
+	Long sumTaskHourByProject(Long projectId);
 	
-	long sumTaskAndOverHourByVersion(Long versionId);
+	Long sumTaskAndOverHourByVersion(Long versionId);
 	
 }

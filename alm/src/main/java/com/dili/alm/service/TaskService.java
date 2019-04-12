@@ -53,15 +53,6 @@ public interface TaskService extends BaseService<Task, Long> {
 	 */
 	boolean validateBeginAndEnd(Long projectId, Date startDate, Date endDate);
 
-	/**
-	 * 权限，判断是否是项目经理
-	 * 
-	 * @param projectId TODO
-	 * 
-	 * @return
-	 */
-	boolean isProjectManager(Long projectId);
-
 	List<ProjectChange> projectChangeList(Long projectId);
 
 	List<User> listUserByTeam();
@@ -72,6 +63,12 @@ public interface TaskService extends BaseService<Task, Long> {
 
 	List<Task> listTaskByProjectId(Long projectId);
 
+	/**
+	 * 判断是否是项目经理
+	 * 
+	 * @param projectId 项目id
+	 * @return
+	 */
 	boolean isThisProjectManger(Long projectId);
 
 	boolean isCreater(Task task);

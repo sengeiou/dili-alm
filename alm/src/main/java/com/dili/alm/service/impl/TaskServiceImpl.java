@@ -356,27 +356,6 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	}
 
 	/**
-	 * 判断是否是项目经理
-	 */
-	@Override
-	public boolean isProjectManager(Long projectId) {
-		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		if (userTicket == null) {
-			throw new RuntimeException("未登录");
-		}
-		Team team = DTOUtils.newDTO(Team.class);
-		team.setMemberId(userTicket.getId());
-		List<Team> teamList = teamService.list(team);
-
-		for (Team team2 : teamList) {
-			if (team2.getRole().equalsIgnoreCase(TeamRole.PROJECT_MANAGER.getValue())) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
 	 * 判断今日所有项目累加总和是否超过8小时
 	 */
 	@Override
@@ -409,6 +388,10 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		team.setProjectId(projectId);
 
 		List<Team> teamList = teamService.list(team);
+
+		if (CollectionUtils.isEmpty(teamList)) {
+			return false;
+		}
 
 		for (Team team2 : teamList) {
 			if (team2.getRole().equalsIgnoreCase(TeamRole.PROJECT_MANAGER.getValue())) {
@@ -716,7 +699,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		// 是否是任务责任人
 		boolean isOwner = operator.equals(task.getOwner());
 		// 是否是项目经理
-		boolean isManager = this.isProjectManager(task.getProjectId());
+		boolean isManager = this.isThisProjectManger(task.getProjectId());
 
 		// 判断是否有权限填写工时
 		if (!isManager && !isOwner) {
@@ -971,7 +954,8 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			}
 		}
 		// 任务计划中已完成的时间总和
-		long taskTimes = this.taskDetailsMapper.sumTaskHourByProject(task.getProjectId());
+		Long taskTimes = this.taskDetailsMapper.sumTaskHourByProject(task.getProjectId());
+		taskTimes = taskTimes == null ? 0 : taskTimes;
 
 		progress = (int) ((taskTimes / total) * 100);
 		project.setCompletedProgress(progress);
@@ -993,7 +977,8 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 		int progress = 0;
 		double totalPlanTime = this.taskMapper.sumPlanTimeByVersion(task.getVersionId());
-		long totalTaskTime = this.taskDetailsMapper.sumTaskAndOverHourByVersion(task.getVersionId());
+		Long totalTaskTime = this.taskDetailsMapper.sumTaskAndOverHourByVersion(task.getVersionId());
+		totalTaskTime = totalTaskTime == null ? 0 : totalTaskTime;
 
 		progress = (int) ((totalTaskTime / totalPlanTime) * 100);
 		projectVersion.setCompletedProgress(progress);
@@ -1085,7 +1070,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			if (isProjeactComplate(task.getProjectId())) {// TODO:项目已完成、关闭都置灰
 				dto.setUpdateDetail(false);
 			} else {
-				if (task.getStatus() != 3 && this.isProjectManager(task.getProjectId())) {// 不是完成状态或者是项目经理或者是任务责任人
+				if (task.getStatus() != 3 && this.isThisProjectManger(task.getProjectId())) {// 不是完成状态或者是项目经理或者是任务责任人
 					dto.setUpdateDetail(true);
 				} else if (task.getStatus() != 3 && userTicket.getId().equals(task.getOwner())) {
 					dto.setUpdateDetail(true);
@@ -1094,7 +1079,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 				}
 			}
 
-			if (!isProjeactComplate(task.getProjectId()) && isProjectManager(task.getProjectId())) {
+			if (!isProjeactComplate(task.getProjectId()) && isThisProjectManger(task.getProjectId())) {
 				dto.setCopyButton(true);
 			} else {
 				dto.setCopyButton(false);
