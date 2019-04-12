@@ -31,6 +31,8 @@ public interface TaskService extends BaseService<Task, Long> {
 
 	List<DataDictionaryValueDto> getTaskTypes();
 
+	boolean isProjectManager(Long projectId);
+	
 	/**
 	 * 判断是否已经填写超过8小时
 	 * 
@@ -69,7 +71,7 @@ public interface TaskService extends BaseService<Task, Long> {
 	 * @param projectId 项目id
 	 * @return
 	 */
-	boolean isThisProjectManger(Long projectId);
+	boolean isThisProjectManager(Long projectId);
 
 	boolean isCreater(Task task);
 

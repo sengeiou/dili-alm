@@ -282,7 +282,7 @@ public class TaskController {
 	@ResponseBody
 	@RequestMapping(value = "/isProjectManger.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public boolean isProjectManger(@RequestParam Long projectId) {
-		return taskService.isThisProjectManger(projectId);
+		return taskService.isProjectManager(projectId);
 	}
 
 	@ResponseBody

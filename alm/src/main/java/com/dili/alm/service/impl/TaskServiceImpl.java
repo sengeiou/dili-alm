@@ -175,7 +175,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			throw new TaskException("任务的计划工时不能大于40");
 		}
 		// 判断是否是本项目的项目经理
-		if (!this.isThisProjectManger(task.getProjectId())) {
+		if (!this.isThisProjectManager(task.getProjectId())) {
 			throw new TaskException("只有本项目的项目经理可以添加项目！");
 		}
 		Project project = this.projectMapper.selectByPrimaryKey(task.getProjectId());
@@ -356,6 +356,32 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	}
 
 	/**
+	 * 判断是否是项目经理
+	 */
+	@Override
+	public boolean isProjectManager(Long projectId) {
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		if (userTicket == null) {
+			throw new RuntimeException("未登录");
+		}
+		Team team = DTOUtils.newDTO(Team.class);
+		team.setProjectId(projectId);
+		team.setMemberId(userTicket.getId());
+		List<Team> teamList = teamService.list(team);
+
+		if (CollectionUtils.isEmpty(teamList)) {
+			return false;
+		}
+
+		for (Team team2 : teamList) {
+			if (team2.getRole().equalsIgnoreCase(TeamRole.PROJECT_MANAGER.getValue())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * 判断今日所有项目累加总和是否超过8小时
 	 */
 	@Override
@@ -378,7 +404,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	 * 项目经理判断
 	 */
 	@Override
-	public boolean isThisProjectManger(Long projectId) {
+	public boolean isThisProjectManager(Long projectId) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		if (userTicket == null) {
 			throw new RuntimeException("未登录");
@@ -699,7 +725,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		// 是否是任务责任人
 		boolean isOwner = operator.equals(task.getOwner());
 		// 是否是项目经理
-		boolean isManager = this.isThisProjectManger(task.getProjectId());
+		boolean isManager = this.isProjectManager(task.getProjectId());
 
 		// 判断是否有权限填写工时
 		if (!isManager && !isOwner) {
@@ -1070,7 +1096,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			if (isProjeactComplate(task.getProjectId())) {// TODO:项目已完成、关闭都置灰
 				dto.setUpdateDetail(false);
 			} else {
-				if (task.getStatus() != 3 && this.isThisProjectManger(task.getProjectId())) {// 不是完成状态或者是项目经理或者是任务责任人
+				if (task.getStatus() != 3 && this.isProjectManager(task.getProjectId())) {// 不是完成状态或者是项目经理或者是任务责任人
 					dto.setUpdateDetail(true);
 				} else if (task.getStatus() != 3 && userTicket.getId().equals(task.getOwner())) {
 					dto.setUpdateDetail(true);
@@ -1079,7 +1105,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 				}
 			}
 
-			if (!isProjeactComplate(task.getProjectId()) && isThisProjectManger(task.getProjectId())) {
+			if (!isProjeactComplate(task.getProjectId()) && isProjectManager(task.getProjectId())) {
 				dto.setCopyButton(true);
 			} else {
 				dto.setCopyButton(false);
