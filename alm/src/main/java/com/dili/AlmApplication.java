@@ -5,11 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.MultipartConfigElement;
+
 import org.beetl.core.Configuration;
 import org.beetl.core.GroupTemplate;
 import org.beetl.core.resource.StringTemplateResourceLoader;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
@@ -44,8 +47,16 @@ public class AlmApplication extends SpringBootServletInitializer implements WebM
 
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
-		registry.addMapping("/**").allowedOrigins("http://alm.diligrp.com").allowCredentials(true)
-				.allowedHeaders("Origin", "X-Requested-With", "Content-Type", "Accept");
+		registry.addMapping("/**").allowedOrigins("http://alm.diligrp.com").allowCredentials(true).allowedHeaders("Origin", "X-Requested-With", "Content-Type", "Accept");
+	}
+
+	@Bean
+	public MultipartConfigElement multipartConfigElement() {
+		MultipartConfigFactory factory = new MultipartConfigFactory();
+		String tempUrl = System.getProperty("java.io.tmpdir");
+		System.out.println("临时目录：" + tempUrl);
+		factory.setLocation(tempUrl);
+		return factory.createMultipartConfig();
 	}
 
 	@Bean

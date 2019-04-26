@@ -5,6 +5,9 @@ package com.dili.alm.constant;
  */
 public class AlmConstants {
 
+	// 序列号生成器步长
+	public static final int SEQUENCE_NUMBER_STEP_LENGTH = 50;
+
 	// 数据字典值表中的数据权限类型为项目
 	public static final String DATA_AUTH_TYPE_PROJECT = "Project";
 	public static final String ROLE_CODE = "role_code";
