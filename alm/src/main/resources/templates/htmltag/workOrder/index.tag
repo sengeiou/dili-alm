@@ -267,7 +267,10 @@ function openInsert() {
 												$.messager.progress('close');
 												var obj = $.parseJSON(data);
 												if (obj.code == 200) {
-													$('#grid').datagrid('appendRow', obj.data);
+													$('#grid').datagrid('insertRow', {
+																index : 0,
+																row : obj.data
+															});
 													$('#grid').datagrid('acceptChanges');
 													$('#win').dialog('close');
 												} else {

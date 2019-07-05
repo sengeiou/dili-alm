@@ -165,7 +165,15 @@ function saveOrUpdate() {
 				processData : true,
 				dataType : "json",
 				async : true,
+				beforeSend : function(xhr) {
+					$.messager.progress({
+								title : '提示',
+								msg : '数据处理中，请稍候……',
+								text : ''
+							});
+				},
 				success : function(data) {
+					$.messager.progress('close');
 					if (data.code == "200") {
 						$("#grid").datagrid("reload");
 						LogUtils.saveLog(moduleInfo, logIngo + data.data + ":成功", function() {
@@ -176,6 +184,7 @@ function saveOrUpdate() {
 					}
 				},
 				error : function() {
+					$.messager.progress('close');
 					$.messager.alert('错误', '远程访问失败');
 				}
 			});
@@ -196,6 +205,7 @@ function del() {
 	}
 
 	if (!selected.updateDetail) {
+		debugger;
 		$.messager.alert('警告', '当前任务状态不能执行删除操作');
 		return;
 	}

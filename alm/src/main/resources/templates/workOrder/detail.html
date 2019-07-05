@@ -57,6 +57,11 @@
 						<td class="table-title">申请人</td>
 						<td class="table-combo">${model.applicantId!}</td>
 					</tr>
+					
+					<tr>
+						<td class="table-title">附件</td>
+						<td><%if(model.$_attachmentFileId != null){%><a href="${contextPath!}/files/download?id=${model.$_attachmentFileId!}">${model.attachmentFileId}</a><%}%></td>
+					</tr>
 
 					<tr>
 						<td class="table-title" colspan="6">描述</td>
