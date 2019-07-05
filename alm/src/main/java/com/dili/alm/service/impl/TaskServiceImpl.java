@@ -176,7 +176,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		}
 		// 判断是否是本项目的项目经理
 		if (!this.isThisProjectManager(task.getProjectId())) {
-			throw new TaskException("只有本项目的项目经理可以创建任务！");
+			throw new TaskException("只有本项目的项目经理可以添加项目！");
 		}
 		Project project = this.projectMapper.selectByPrimaryKey(task.getProjectId());
 		if (project == null) {
@@ -1096,14 +1096,14 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			if (isProjeactComplate(task.getProjectId())) {// TODO:项目已完成、关闭都置灰
 				dto.setUpdateDetail(false);
 			} else {
-				if (task.getStatus().equals(TaskStatus.NOTSTART.getCode())) {
-					if (this.isProjectManager(task.getProjectId()) || userTicket.getId().equals(task.getCreateMemberId()) || userTicket.getId().equals(task.getOwner())) {
+				if (task.getStatus().equals(TaskStatus.COMPLETE.getCode())) {
+					dto.setUpdateDetail(false);
+				} else {
+					if (this.isProjectManager(task.getProjectId()) || userTicket.getId().equals(task.getOwner())) {
 						dto.setUpdateDetail(true);
 					} else {
 						dto.setUpdateDetail(false);
 					}
-				} else {
-					dto.setUpdateDetail(false);
 				}
 			}
 

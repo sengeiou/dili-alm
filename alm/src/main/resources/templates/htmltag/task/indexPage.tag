@@ -38,7 +38,7 @@ function openUpdate() {
 
 	canEdit();
 
-	if (!isCreater(selected.id) || !selected.updateDetail) {
+	if (!isCreater(selected.id) && !selected.updateDetail) {
 		noEdit();
 	}
 
@@ -199,14 +199,8 @@ function del() {
 		return;
 	}
 
-	if (!isCreater(selected.id)) {
-		$.messager.alert('警告', '并非任务创建者,不能执行删除操作');
-		return;
-	}
-
-	if (!selected.updateDetail) {
-		debugger;
-		$.messager.alert('警告', '当前任务状态不能执行删除操作');
+	if (!selected.updateDetail && !isCreater(selected.id)) {
+		$.messager.alert('警告', '当前任务状态不能执行删除操作或当前用户无删除任务权限');
 		return;
 	}
 
