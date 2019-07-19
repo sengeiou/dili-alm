@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>alm</artifactId>
@@ -105,7 +104,7 @@
 
 		<dependency>
 			<groupId>com.dili</groupId>
-			<artifactId>sharp-sword</artifactId>
+			<artifactId>ss-beetl</artifactId>
 			<version>${sharp-sword.version}</version>
 			<exclusions>
 				<exclusion>
@@ -136,32 +135,7 @@
 			<version>1.4.7</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis-typehandlers-jsr310 -->
-		<dependency>
-			<groupId>org.mybatis</groupId>
-			<artifactId>mybatis-typehandlers-jsr310</artifactId>
-			<version>1.0.2</version>
-		</dependency>
 
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger-ui</artifactId>
-			<version>2.4.0</version>
-		</dependency>
-		<dependency>
-			<groupId>io.swagger</groupId>
-			<artifactId>swagger-annotations</artifactId>
-			<!--<version>2.0.0-rc2</version> -->
-			<version>1.5.3</version>
-		</dependency>
-
-
-		<!-- fastjson -->
-		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>fastjson</artifactId>
-			<version>1.2.23</version>
-		</dependency>
 		<!-- if you enable json support in spring mvc. -->
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
@@ -181,27 +155,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-amqp</artifactId>
-		</dependency>
-		<!-- redis -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-redis</artifactId>
-			<version>1.4.7.RELEASE</version>
-		</dependency>
-		<!-- actuator -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
-		<!-- starter-web -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-aop</artifactId>
 		</dependency>
 
 		<!-- poi -->
@@ -281,6 +234,12 @@
 			<artifactId>ooxml-schemas</artifactId>
 			<version>1.3</version>
 			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>com.dili</groupId>
+			<artifactId>ss-scheduler</artifactId>
+			<version>${sharp-sword.version}</version>
 		</dependency>
 
 		<!-- 内部包 -->

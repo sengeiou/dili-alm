@@ -20,10 +20,14 @@
 
 	<dependencies>
 
-		<!-- spring boot 基类 -->
 		<dependency>
 			<groupId>com.dili</groupId>
-			<artifactId>sharp-sword</artifactId>
+			<artifactId>ss-beetl</artifactId>
+			<version>${sharp-sword.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.dili</groupId>
+			<artifactId>ss-redis</artifactId>
 			<version>${sharp-sword.version}</version>
 		</dependency>
 
@@ -39,22 +43,7 @@
 		<!--</exclusion> -->
 		<!--</exclusions> -->
 
-		<!--swagger -->
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger2</artifactId>
-			<version>2.4.0</version>
-		</dependency>
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger-ui</artifactId>
-			<version>2.4.0</version>
-		</dependency>
-		<dependency>
-			<groupId>io.swagger</groupId>
-			<artifactId>swagger-annotations</artifactId>
-			<version>1.5.3</version>
-		</dependency>
+		
 
 		<!-- mariadb -->
 		<!--<dependency> -->
@@ -80,22 +69,7 @@
 			<!--<version>${boot.version}</version> -->
 			<scope>test</scope>
 		</dependency>
-		<!-- redis -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-redis</artifactId>
-			<version>1.4.7.RELEASE</version>
-		</dependency>
-		<!-- actuator -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
-		<!-- starter-web -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
+	
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

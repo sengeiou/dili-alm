@@ -42,7 +42,7 @@
 		<mapper.version>3.3.9</mapper.version>
 		<mysql.version>5.1.38</mysql.version>
 		<aspectj.version>1.8.10</aspectj.version>
-		<sharp-sword.version>2.0.15-SNAPSHOT</sharp-sword.version>
+		<sharp-sword.version>3.2.7-SNAPSHOT</sharp-sword.version>
 	</properties>
 
 	<!--地利 -->
@@ -180,23 +180,15 @@
 						<verbose>true</verbose>
 					</configuration>
 					<dependencies>
-						<dependency>
-							<groupId>mysql</groupId>
-							<artifactId>mysql-connector-java</artifactId>
-							<version>${mysql.version}</version>
-						</dependency>
+						
 						<dependency>
 							<groupId>com.dili</groupId>
-							<artifactId>sharp-sword</artifactId>
+							<artifactId>ss-mbg</artifactId>
 							<version>${sharp-sword.version}</version>
 							<!--<scope>system</scope> -->
 							<!--<systemPath>${\project.basedir}/lib/sharp-sword-1.0.0-SNAPSHOT.jar</systemPath> -->
 						</dependency>
-						<dependency>
-							<groupId>com.ibeetl</groupId>
-							<artifactId>beetl</artifactId>
-							<version>2.7.12</version>
-						</dependency>
+						
 					</dependencies>
 				</plugin>
 			</plugins>
@@ -209,7 +201,7 @@
 				<!-- Import dependency management from Spring Boot -->
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-dependencies</artifactId>
-				<version>2.0.0.RELEASE</version>
+				<version>2.1.4.RELEASE</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>

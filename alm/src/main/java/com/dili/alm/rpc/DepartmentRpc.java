@@ -5,7 +5,6 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.retrofitful.annotation.POST;
 import com.dili.ss.retrofitful.annotation.Restful;
 import com.dili.ss.retrofitful.annotation.VOBody;
-import com.dili.ss.retrofitful.annotation.VOSingleParameter;
 
 import java.util.List;
 
@@ -16,11 +15,11 @@ public interface DepartmentRpc {
 	BaseOutput<List<Department>> list(@VOBody Department department);
 
 	@POST("/api/department/findByUserId")
-	BaseOutput<List<Department>> findByUserId(@VOSingleParameter Long memberId);
+	BaseOutput<List<Department>> findByUserId(@VOBody Long memberId);
 
 	@POST("/api/department/findByDepartmentName")
-	BaseOutput<Department> findByDepartmentName(@VOSingleParameter String departmentName);
+	BaseOutput<Department> findByDepartmentName(@VOBody String departmentName);
 
 	@POST("/api/department/getChildDepartments")
-	BaseOutput<List<Department>> getChildDepartments(@VOSingleParameter Long departmentId);
+	BaseOutput<List<Department>> getChildDepartments(@VOBody Long departmentId);
 }

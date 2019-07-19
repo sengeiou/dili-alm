@@ -74,8 +74,7 @@ import com.github.pagehelper.Page;
  */
 @Transactional(rollbackFor = ApplicationException.class)
 @Service
-public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareResourceApply, Long>
-		implements HardwareResourceApplyService {
+public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareResourceApply, Long> implements HardwareResourceApplyService {
 
 	private final String OP_DEPT_MAIL_GROUP = "yunwei@diligrp.com";
 
@@ -159,7 +158,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		try {
 			Resource res = new ClassPathResource("conf/hardwareApplyMailContentTemplate.html");
 			in = res.getInputStream();
-			this.contentTemplate = IOUtils.toString(in, Charset.defaultCharset());
+			this.contentTemplate = IOUtils.toString(in, Charset.defaultCharset().toString());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} finally {
@@ -238,8 +237,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 
 	@Transactional(readOnly = true)
 	@Override
-	public EasyuiPageOutput listEasyuiPageByExample(HardwareResourceApply domain, boolean useProvider)
-			throws Exception {
+	public EasyuiPageOutput listEasyuiPageByExample(HardwareResourceApply domain, boolean useProvider) throws Exception {
 
 		HardwareResourceApply aa = DTOUtils.newDTO(HardwareResourceApply.class);
 		List<HardwareResourceApply> list = listByExample(domain);
@@ -262,8 +260,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 	}
 
 	@Override
-	public void operationManagerApprove(Long applyId, Long operationManagerId, Set<Long> executors, String description)
-			throws HardwareResourceApplyException {
+	public void operationManagerApprove(Long applyId, Long operationManagerId, Set<Long> executors, String description) throws HardwareResourceApplyException {
 		// 判断记录是否存在
 		HardwareResourceApply apply = this.getActualDao().selectByPrimaryKey(applyId);
 		if (apply == null) {
@@ -329,8 +326,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 	}
 
 	@Override
-	public void operatorExecute(Long applyId, Long executorId, String description)
-			throws HardwareResourceApplyException {
+	public void operatorExecute(Long applyId, Long executorId, String description) throws HardwareResourceApplyException {
 		// 判断记录是否存在
 		HardwareResourceApply apply = this.getActualDao().selectByPrimaryKey(applyId);
 		if (apply == null) {
@@ -381,8 +377,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 	}
 
 	@Override
-	public void projectManagerApprove(Long applyId, Long projectManagerId, ApproveResult result, String description)
-			throws HardwareResourceApplyException {
+	public void projectManagerApprove(Long applyId, Long projectManagerId, ApproveResult result, String description) throws HardwareResourceApplyException {
 		// 判断记录是否存在
 		HardwareResourceApply apply = this.getActualDao().selectByPrimaryKey(applyId);
 		if (apply == null) {
@@ -439,8 +434,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 	}
 
 	@Override
-	public void saveAndSubmit(HardwareResourceApplyUpdateDto hardwareResourceApply)
-			throws HardwareResourceApplyException {
+	public void saveAndSubmit(HardwareResourceApplyUpdateDto hardwareResourceApply) throws HardwareResourceApplyException {
 		this.saveOrUpdate(hardwareResourceApply);
 		this.submit(hardwareResourceApply.getId());
 	}
@@ -573,13 +567,11 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		if (ddDto == null) {
 			throw new HardwareResourceApplyException("请先配置部门经理数据字典");
 		}
-		DataDictionaryValueDto ddValue = ddDto.getValues().stream()
-				.filter(v -> v.getCode().equals(AlmConstants.OPERATION_MANAGER_CODE)).findFirst().orElse(null);
+		DataDictionaryValueDto ddValue = ddDto.getValues().stream().filter(v -> v.getCode().equals(AlmConstants.OPERATION_MANAGER_CODE)).findFirst().orElse(null);
 		if (ddValue == null) {
 			throw new HardwareResourceApplyException("请先配置运维部经理数据字典");
 		}
-		Map.Entry<Long, User> entry = AlmCache.getInstance().getUserMap().entrySet().stream()
-				.filter(e -> e.getValue().getUserName().equals(ddValue.getValue())).findFirst().orElse(null);
+		Map.Entry<Long, User> entry = AlmCache.getInstance().getUserMap().entrySet().stream().filter(e -> e.getValue().getUserName().equals(ddValue.getValue())).findFirst().orElse(null);
 		if (entry == null) {
 			throw new HardwareResourceApplyException("运维部经理账号不存在，请确认数据字典配置正确");
 		}
@@ -643,22 +635,18 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 
 		// 判断界面上用户是否可以点击项目经理确认按钮
 		// 判断申请状态是否是项目经理确认状态
-		boolean projectManagerApprov = apply.getApplyState()
-				.equals(HardwareApplyState.PROJECT_MANAGER_APPROVING.getValue());
+		boolean projectManagerApprov = apply.getApplyState().equals(HardwareApplyState.PROJECT_MANAGER_APPROVING.getValue());
 		// 判断当前登录用户是否是项目经理
-		projectManagerApprov = !projectManagerApprov ? projectManagerApprov
-				: user.getId().equals(apply.getProjectManagerId());
+		projectManagerApprov = !projectManagerApprov ? projectManagerApprov : user.getId().equals(apply.getProjectManagerId());
 		apply.aset("projectManagerApprov", projectManagerApprov);
 
 		try {
 
 			// 判断界面上运维部经理审批
-			boolean operactionManagerAppov = apply.getApplyState()
-					.equals(HardwareApplyState.OPERATION_MANAGER_APPROVING.getValue());
+			boolean operactionManagerAppov = apply.getApplyState().equals(HardwareApplyState.OPERATION_MANAGER_APPROVING.getValue());
 			User operactionManagerU = this.queryOperationManager();
 			// 判断当前登录用户是否是部总经理
-			operactionManagerAppov = !operactionManagerAppov ? operactionManagerAppov
-					: operactionManagerU.getId().equals(user.getId());
+			operactionManagerAppov = !operactionManagerAppov ? operactionManagerAppov : operactionManagerU.getId().equals(user.getId());
 			apply.aset("operactionManagerAppov", operactionManagerAppov);
 
 			// 实施
@@ -728,10 +716,8 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		}
 		dto.getConfigurationRequirement().forEach(c -> c.setApplyId(dto.getId()));
 		List<HardwareResourceRequirementDto> configurationRequirement = dto.getConfigurationRequirement();
-		List<HardwareResourceRequirement> as = new ArrayList<HardwareResourceRequirement>(
-				configurationRequirement.size());
-		configurationRequirement
-				.forEach(cc -> as.add(DTOUtils.switchEntityToDTO(cc, HardwareResourceRequirement.class)));
+		List<HardwareResourceRequirement> as = new ArrayList<HardwareResourceRequirement>(configurationRequirement.size());
+		configurationRequirement.forEach(cc -> as.add(DTOUtils.switchEntityToDTO(cc, HardwareResourceRequirement.class)));
 
 		rows = this.hrrMapper.insertList(as);
 		if (rows <= 0) {
