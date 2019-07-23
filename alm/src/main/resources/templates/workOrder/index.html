@@ -14,24 +14,28 @@
 					<tr>
 						<td style="padding: 5px;"><input class="easyui-textbox" name="workOrderName" id="workOrderName" style="width: 100%"
 							data-options="label:'工单名称:'" /></td>
-						<td style="padding: 5px;"><input class="easyui-textbox" name="workOrderState" id="workOrderState" style="width: 100%"
-							data-options="label:'状态:',editable:false" /> <#comboProvider _id="workOrderState" _provider='workOrderStateProvider' /></td>
-						<td style="padding: 5px;"><input class="easyui-textbox" name="priority" id="priority1" style="width: 100%"
-							data-options="label:'优先级:',editable:false" /> <#comboProvider _id="priority1" _provider='workOrderPriorityProvider' /></td>
+						<td style="padding: 5px;"><input name="workOrderState" id="workOrderState" style="width: 100%"
+							data-options="label:'状态:',editable:false" /> 
+							<#comboProvider _id="workOrderState" _provider='workOrderStateProvider' /></td>
+						<td style="padding: 5px;"><input name="priority" id="priority1" style="width: 100%"
+							data-options="label:'优先级:',editable:false" /> 
+							<#comboProvider _id="priority1" _provider='workOrderPriorityProvider' /></td>
 					</tr>
 					<tr>
 						<td style="padding: 5px;"><input class="easyui-textbox" name="serialNumber" id="serialNumber" style="width: 100%"
 							data-options="label:'工单编号:'" /></td>
-						<td style="padding: 5px;"><input class="easyui-textbox" name="workOrderType" id="workOrderType1" style="width: 100%"
-							data-options="label:'工单类型:',editable:false" /> <#comboProvider _id="workOrderType1" _provider='workOrderTypeProvider' /></td>
+						<td style="padding: 5px;"><input name="workOrderType" id="workOrderType1" style="width: 100%"
+							data-options="label:'工单类型:',editable:false" /> 
+							<#comboProvider _id="workOrderType1" _provider='workOrderTypeProvider' /></td>
 						<td style="padding: 5px;"><input class="easyui-datebox" name="submitStartDate" id="submitStartDate" style="width: 100%"
 							data-options="label:'申请日期:'" /></td>
 						<td style="padding: 5px;"><input class="easyui-datebox" name="submitEndDate" id="submitEndDate" style="width: 190px;"
 							data-options="label:'至:',labelWidth:30" /></td>
 					</tr>
 					<tr>
-						<td style="padding: 5px;"><input class="easyui-textbox" name="workOrderSource" id="workOrderSource1" style="width: 100%"
-							data-options="label:'工单来源:',editable:false" /> <#comboProvider _id="workOrderSource1" _provider='workOrderSourceProvider' /></td>
+						<td style="padding: 5px;"><input name="workOrderSource" id="workOrderSource1" style="width: 100%"
+							data-options="label:'工单来源:',editable:false" /> 
+							<#comboProvider _id="workOrderSource1" _provider='workOrderSourceProvider' /></td>
 						<td style="padding: 5px;"><input class="easyui-textbox" name="applicantId" id="applicantId" style="width: 100%"
 							data-options="label:'申请人:',
 							editable:false,
@@ -49,8 +53,9 @@
 							editable:false,
 									buttonText:'选择',
 									onClickButton:selectMember,onChange:_changeTextboxShowClear" /></td>
-						<td style="padding: 5px;"><input class="easyui-textbox" name="channel" id="channel1" style="width: 100%"
-							data-options="label:'渠道:',editable:false" /> <#comboProvider _id="channel1" _provider='workOrderChannelProvider' /></td>
+						<td style="padding: 5px;"><input name="channel" id="channel1" style="width: 100%"
+							data-options="label:'渠道:',editable:false" /> 
+							<#comboProvider _id="channel1" _provider='workOrderChannelProvider' /></td>
 					</tr>
 					<tr>
 						<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid()">查询</a> <a

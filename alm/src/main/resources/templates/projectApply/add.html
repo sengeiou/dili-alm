@@ -6,7 +6,7 @@
                 <tr>
                     <td>
                         <input name="type" class="easyui-combobox" id="_projectType" style="width:300px" data-options="editable:false" panelWidth="auto" panelHeight="auto" label="项目类型:" required="true" />
-                        <#comboProvider _id="_projectType" _provider='projectTypeProvider' />
+                        <#comboProvider _id="_projectType" _provider='projectTypeProvider' _queryParams='{emptyText:""}'/>
                     </td>
                 </tr>
                 <tr>

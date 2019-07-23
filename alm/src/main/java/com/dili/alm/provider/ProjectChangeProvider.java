@@ -50,13 +50,14 @@ public class ProjectChangeProvider implements ValueProvider {
 		if (metaMap != null && metaMap instanceof JSONObject) {
 			JSONObject json = (JSONObject) metaMap;
 			try {
+				Map<String, String> rowDataMap = (Map<String, String>) json.get(ValueProvider.ROW_DATA_KEY);
 				if (Objects.equals(json.getString("field"), "changeType")) {
-					if (json.get("_rowData") instanceof Approve) {
-						Approve approve = json.getObject("_rowData", Approve.class);
+					if (rowDataMap.containsKey("projectApplyId")) {
+						Approve approve = json.getObject(ValueProvider.ROW_DATA_KEY, Approve.class);
 						obj = approve.getProjectApplyId();
 					}
-					if (json.get("_rowData") instanceof Task) {
-						Task task = json.getObject("_rowData", Task.class);
+					if (rowDataMap.containsKey("changeId")) {
+						Task task = json.getObject(ValueProvider.ROW_DATA_KEY, Task.class);
 						obj = task.getChangeId();
 					}
 					ProjectChange change = this.changeMapper.selectByPrimaryKey(obj);
@@ -64,12 +65,12 @@ public class ProjectChangeProvider implements ValueProvider {
 				}
 
 				if (Objects.equals(json.getString("field"), "changeName")) {
-					if (json.get("_rowData") instanceof Approve) {
-						Approve approve = json.getObject("_rowData", Approve.class);
+					if (rowDataMap.containsKey("projectApplyId")) {
+						Approve approve = json.getObject(ValueProvider.ROW_DATA_KEY, Approve.class);
 						obj = approve.getProjectApplyId();
 					}
-					if (json.get("_rowData") instanceof Task) {
-						Task task = json.getObject("_rowData", Task.class);
+					if (rowDataMap.containsKey("changeId")) {
+						Task task = json.getObject(ValueProvider.ROW_DATA_KEY, Task.class);
 						obj = task.getChangeId();
 					}
 					ProjectChange change = this.changeMapper.selectByPrimaryKey(obj);
@@ -77,12 +78,12 @@ public class ProjectChangeProvider implements ValueProvider {
 				}
 
 				if (Objects.equals(json.getString("field"), "project")) {
-					if (json.get("_rowData") instanceof Approve) {
-						Approve approve = json.getObject("_rowData", Approve.class);
+					if (rowDataMap.containsKey("projectApplyId")) {
+						Approve approve = json.getObject(ValueProvider.ROW_DATA_KEY, Approve.class);
 						obj = approve.getProjectApplyId();
 					}
-					if (json.get("_rowData") instanceof Task) {
-						Task task = json.getObject("_rowData", Task.class);
+					if (rowDataMap.containsKey("changeId")) {
+						Task task = json.getObject(ValueProvider.ROW_DATA_KEY, Task.class);
 						obj = task.getChangeId();
 					}
 					ProjectChange change = this.changeMapper.selectByPrimaryKey(obj);

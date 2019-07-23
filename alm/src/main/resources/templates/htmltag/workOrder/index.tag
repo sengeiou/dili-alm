@@ -538,10 +538,8 @@ function queryGrid() {
 	if (!$('#form').form("validate")) {
 		return;
 	}
-	var param = bindMetadata("grid", true);
-	var formData = $("#form").serializeObject();
-	$.extend(param, formData);
-	$("#grid").datagrid("load", param);
+	alert(JSON.stringify(bindGridMeta2Form('grid', 'form')));
+	$("#grid").datagrid("load", bindGridMeta2Form('grid', 'form'));
 }
 
 // 清空表单

@@ -143,6 +143,21 @@ function loadProjectCondition() {
 				valueField : 'id',
 				textField : 'name',
 				editable : false,
+				onLoadSuccess : function() {
+					var data = $(this).combobox('getData');
+					if (!data || data.length <= 0) {
+						return;
+					}
+					if (!data[0].id) {
+						$(this).combobox('select', '');
+						return;
+					}
+					data.unshift({
+								id : '',
+								name : '--请选择--'
+							});
+					$(this).combobox('loadData', data);
+				},
 				onChange : function(o, n) {
 
 				}

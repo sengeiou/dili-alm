@@ -121,12 +121,17 @@
 					data-options="label:'ip地址:',disabled:true" /></td>
 			</tr>
 			<tr>
-				<td style="padding: 5px;"><input class="easyui-combobox" name="_showserviceEnvironment" id="_showserviceEnvironment"
-					style="width: 100%" editable="false" data-options="label:'使用环境:',disabled:true" /> <#comboProvider _id="_showserviceEnvironment"
+				<td style="padding: 5px;">
+				<input name="_showserviceEnvironment" id="_showserviceEnvironment"
+					style="width: 100%" editable="false" data-options="label:'使用环境:',disabled:true" /> 
+					<#comboProvider _id="_showserviceEnvironment"
 						_table="data_dictionary_value" _valueField="value" _textField="code" _orderByClause="order_number asc"
-						_queryParams='{"yn":1,"dd_id":23}' /></td>
-				<td style="padding: 5px;"><input class="easyui-combobox" name="_showregional" id="_showregional" style="width: 100%"
-					editable="false" data-options="label:'地域:',disabled:true" /> <#comboProvider _id="_showregional" _table="data_dictionary_value"
+						_queryParams='{"yn":1,"dd_id":23}' />
+				</td>
+				<td style="padding: 5px;">
+				<input name="_showregional" id="_showregional" style="width: 100%"
+					editable="false" data-options="label:'地域:',disabled:true" /> 
+					<#comboProvider _id="_showregional" _table="data_dictionary_value"
 						_valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":24}' /></td>
 			</tr>
 			<tr>
@@ -191,13 +196,16 @@
 					data-options="label:'ip地址:', validType:'checkIPValidate',editable:false" required="true" /></td>
 			</tr>
 			<tr>
-				<td style="padding: 5px;"><input class="easyui-combobox" name="_detailserviceEnvironment" id="_detailserviceEnvironment"
-					style="width: 100%" editable="false" data-options="label:'使用环境:'" required="true" /> <#comboProvider _id="_detailserviceEnvironment"
+				<td style="padding: 5px;"><input name="_detailserviceEnvironment" id="_detailserviceEnvironment"
+					style="width: 100%" editable="false" data-options="label:'使用环境:'" required="true" /> 
+					<#comboProvider _id="_detailserviceEnvironment"
 						_table="data_dictionary_value" _valueField="value" _textField="code" _orderByClause="order_number asc"
 						_queryParams='{"yn":1,"dd_id":23}' /></td>
-				<td style="padding: 5px;"><input class="easyui-combobox" name="_detailregional" id="_detailregional" style="width: 100%"
-					editable="false" data-options="label:'地域:'" required="true" /> <#comboProvider _id="_detailregional" _table="data_dictionary_value"
-						_valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":24}' /></td>
+				<td style="padding: 5px;"><input name="_detailregional" id="_detailregional" style="width: 100%"
+					editable="false" data-options="label:'地域:'" required="true" /> 
+					<#comboProvider _id="_detailregional" _table="data_dictionary_value"
+						_valueField="value" _textField="code" _orderByClause="order_number asc" _queryParams='{"yn":1,"dd_id":24}' />
+				</td>
 			</tr>
 			<tr>
 				<td style="padding: 5px;"><input class="easyui-textbox" name="_detailcost" id="_detailcost" style="width: 100%"
