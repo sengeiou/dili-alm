@@ -98,8 +98,7 @@ public class ProjectController {
 
 	@SuppressWarnings("rawtypes")
 	@ApiOperation(value = "查询Project", notes = "查询Project，返回列表信息")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Project", paramType = "form", value = "Project的form信息", required = false, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "Project", paramType = "form", value = "Project的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<Map> list(ProjectQueryDto project) {
 		try {
@@ -151,8 +150,7 @@ public class ProjectController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "/list.json", method = { RequestMethod.GET,
-			RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@RequestMapping(value = "/list.json", method = { RequestMethod.GET, RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public List<Project> listJson(Project project) {
 		try {
 			AlmCache.clearCache();
@@ -163,8 +161,7 @@ public class ProjectController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "/listViewData.json", method = { RequestMethod.GET,
-			RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@RequestMapping(value = "/listViewData.json", method = { RequestMethod.GET, RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public List<Map> listViewDataJson(Project project) {
 		try {
 			AlmCache.clearCache();
@@ -181,8 +178,7 @@ public class ProjectController {
 	}
 
 	@ApiOperation(value = "分页查询Project", notes = "分页查询Project，返回easyui分页信息")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Project", paramType = "form", value = "Project的form信息", required = false, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "Project", paramType = "form", value = "Project的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(ProjectQueryDto project) throws Exception {
 		try {
@@ -191,8 +187,7 @@ public class ProjectController {
 			LOGGER.error(e.getMessage(), e);
 		}
 		if (project.getProjectState() == null) {
-			project.setProjectStates(
-					Arrays.asList(ProjectState.NOT_START.getValue(), ProjectState.IN_PROGRESS.getValue()));
+			project.setProjectStates(Arrays.asList(ProjectState.NOT_START.getValue(), ProjectState.IN_PROGRESS.getValue()));
 		}
 		@SuppressWarnings("rawtypes")
 		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
@@ -218,8 +213,7 @@ public class ProjectController {
 	}
 
 	@ApiOperation("新增Project")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Project", paramType = "form", value = "Project的form信息", required = true, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "Project", paramType = "form", value = "Project的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> insert(Project project) {
 		try {
@@ -230,24 +224,21 @@ public class ProjectController {
 	}
 
 	@ApiOperation("修改Project")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Project", paramType = "form", value = "Project的form信息", required = true, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "Project", paramType = "form", value = "Project的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput update(Project project) {
 		return projectService.updateAfterCheck(project);
 	}
 
 	@ApiOperation("删除Project")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "id", paramType = "form", value = "Project的主键", required = true, dataType = "long") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "id", paramType = "form", value = "Project的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> delete(Long id) {
 		return projectService.deleteBeforeCheck(id);
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "/type.json", method = { RequestMethod.GET,
-			RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@RequestMapping(value = "/type.json", method = { RequestMethod.GET, RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public List<DataDictionaryValueDto> projectTypeJson() {
 		return this.projectService.getPojectTypes();
 	}
@@ -259,30 +250,26 @@ public class ProjectController {
 	}
 
 	@RequestMapping(value = "/detail.html", method = RequestMethod.GET)
-	public String detail(@RequestParam Long id, @RequestParam(defaultValue = "false") Boolean editable,
-			@RequestParam(required = false) String backUrl, ModelMap map) {
+	public String detail(@RequestParam Long id, @RequestParam(defaultValue = "false") Boolean editable, @RequestParam(required = false) String backUrl, ModelMap map) {
 		try {
 			Map<Object, Object> model = this.projectService.getDetailViewData(id);
 			UserTicket user = SessionContext.getSessionContext().getUserTicket();
 			Boolean projectManager = this.teamService.teamMemberIsProjectManager(user.getId(), id);
 			Boolean projectMember = this.teamService.currentUserIsTeamMember(user.getId(), id);
-			if (!model.get("projectState").equals(ProjectState.NOT_START.getValue())
-					&& !model.get("projectState").equals(ProjectState.IN_PROGRESS.getValue())) {
+			if (!model.get("projectState").equals(ProjectState.NOT_START.getValue()) && !model.get("projectState").equals(ProjectState.IN_PROGRESS.getValue())) {
 				editable = false;
 			}
-			map.addAttribute("model", model).addAttribute("editable", editable)
-					.addAttribute("projectManager", projectManager).addAttribute("projectMember", projectMember)
-					.addAttribute("loginUserId", user.getId()).addAttribute("backUrl",
-							StringUtils.isNotBlank(backUrl) ? URLDecoder.decode(backUrl, "UTF-8") : "");
+			map.addAttribute("model", model).addAttribute("editable", editable).addAttribute("projectManager", projectManager).addAttribute("projectMember", projectMember)
+					.addAttribute("loginUserId", user.getId()).addAttribute("backUrl", StringUtils.isNotBlank(backUrl) ? URLDecoder.decode(backUrl, "UTF-8") : "");
 		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
 			return null;
 		}
 		return "project/detail";
 	}
 
 	@RequestMapping(value = "/getProjectList")
-	public @ResponseBody Object getProjectList(Project project,
-			@RequestParam(defaultValue = "false", required = false) Boolean queryAll,
+	public @ResponseBody Object getProjectList(Project project, @RequestParam(defaultValue = "false", required = false) Boolean queryAll,
 			@RequestParam(required = false, defaultValue = "false") Boolean dataAuth) throws Exception {
 		Example example = new Example(Project.class);
 		Criteria criteria = example.createCriteria();
@@ -314,8 +301,7 @@ public class ProjectController {
 	@RequestMapping(value = "/uploadFileView", method = RequestMethod.GET)
 	public String uploadFileView(@RequestParam Long projectId, ModelMap map) {
 		Project project = this.projectService.get(projectId);
-		map.addAttribute("project", project).addAttribute("creator",
-				SessionContext.getSessionContext().getUserTicket());
+		map.addAttribute("project", project).addAttribute("creator", SessionContext.getSessionContext().getUserTicket());
 		return "project/uploadFile";
 	}
 
