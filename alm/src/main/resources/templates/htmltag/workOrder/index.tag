@@ -538,7 +538,6 @@ function queryGrid() {
 	if (!$('#form').form("validate")) {
 		return;
 	}
-	alert(JSON.stringify(bindGridMeta2Form('grid', 'form')));
 	$("#grid").datagrid("load", bindGridMeta2Form('grid', 'form'));
 }
 
