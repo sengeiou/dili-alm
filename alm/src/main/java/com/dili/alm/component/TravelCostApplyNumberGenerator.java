@@ -14,7 +14,7 @@ import com.dili.ss.dto.DTOUtils;
 import tk.mybatis.mapper.entity.Example;
 
 @Component
-public class TravelCostApplyNumberGenerator implements NumberGenerator {
+public class TravelCostApplyNumberGenerator extends AbstractNumberGenerator {
 
 	private static final String TRAVEL_COST_APPLY_NUMBER_GENERATOR_TYPE = "travelCostApplyNumberGenerator";
 

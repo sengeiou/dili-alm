@@ -17,7 +17,7 @@ import com.dili.ss.dto.DTOUtils;
 import tk.mybatis.mapper.entity.Example;
 
 @Component
-public class WorkOrderNumberGenerator implements NumberGenerator {
+public class WorkOrderNumberGenerator extends AbstractNumberGenerator {
 
 	private static final String WORK_ORDER_NUMBER_GENERATOR_TYPE = "workOrderNumberGenerator";
 

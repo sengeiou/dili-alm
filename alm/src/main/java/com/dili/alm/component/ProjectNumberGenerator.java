@@ -14,7 +14,7 @@ import com.dili.ss.dto.DTOUtils;
 import tk.mybatis.mapper.entity.Example;
 
 @Component
-public class ProjectNumberGenerator implements NumberGenerator {
+public class ProjectNumberGenerator extends AbstractNumberGenerator {
 
 	public static final String PROJECT_NUMBER_GENERATOR_TYPE = "projectNumberGenerator";
 

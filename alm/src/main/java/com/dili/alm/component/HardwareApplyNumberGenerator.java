@@ -14,7 +14,7 @@ import com.dili.ss.dto.DTOUtils;
 import tk.mybatis.mapper.entity.Example;
 
 @Component
-public class HardwareApplyNumberGenerator implements NumberGenerator {
+public class HardwareApplyNumberGenerator extends AbstractNumberGenerator {
 
 	private static final String HARDWARE_APPLY_NUMBER_GENERATOR_TYPE = "hardwareApplyNumberGenerator";
 
