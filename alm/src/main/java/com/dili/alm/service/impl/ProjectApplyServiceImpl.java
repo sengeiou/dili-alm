@@ -167,6 +167,7 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 		}
 	}
 
+	@Transactional(rollbackFor = ApplicationException.class)
 	@Override
 	public Long reApply(Long id) {
 		ProjectApply apply = get(id);

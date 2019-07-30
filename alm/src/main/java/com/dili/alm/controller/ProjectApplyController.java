@@ -22,7 +22,7 @@ import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectApply;
-import com.dili.alm.domain.ProjectApplyQuery;
+import com.dili.alm.domain.ProjectApplyQueryDto;
 import com.dili.alm.domain.dto.RoiDto;
 import com.dili.alm.domain.dto.RoiUpdateDto;
 import com.dili.alm.domain.dto.apply.ApplyDescription;
@@ -154,7 +154,7 @@ public class ProjectApplyController {
 	@ApiOperation(value = "分页查询ProjectApply", notes = "分页查询ProjectApply，返回easyui分页信息")
 	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectApply", paramType = "form", value = "ProjectApply的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String listPage(ProjectApply projectApply) throws Exception {
+	public @ResponseBody String listPage(ProjectApplyQueryDto projectApply) throws Exception {
 		if (projectApply.getCreated() != null) {
 			Date temp = projectApply.getCreated();
 			projectApply.setCreated(DateUtil.appendDateToEnd(projectApply.getCreated()));
@@ -316,7 +316,7 @@ public class ProjectApplyController {
 			}
 		}
 		if (StringUtils.isNotBlank(name)) {
-			ProjectApplyQuery appExample = DTOUtils.newDTO(ProjectApplyQuery.class);
+			ProjectApplyQueryDto appExample = DTOUtils.newDTO(ProjectApplyQueryDto.class);
 			appExample.setName(name);
 			List<ProjectApply> applyList = projectApplyService.listByExample(appExample);
 

@@ -17,218 +17,212 @@ import java.util.Date;
  */
 @Table(name = "`project_apply`")
 public interface ProjectApply extends IBaseDomain {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "`ID`")
-    @FieldDef(label="id")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getId();
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "`ID`")
+	@FieldDef(label = "id")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Long getId();
 
-    void setId(Long id);
+	void setId(Long id);
 
-    @Column(name = "`number`")
-    @FieldDef(label="立项编号", maxLength = 255)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getNumber();
+	@Column(name = "`number`")
+	@FieldDef(label = "立项编号", maxLength = 255)
+	@EditMode(editor = FieldEditor.Text, required = false)
+	String getNumber();
 
-    void setNumber(String number);
+	void setNumber(String number);
 
-    @Like(value = Like.BOTH)
-    @Column(name = "`name`")
-    @FieldDef(label="项目名称", maxLength = 255)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getName();
+	@Like(value = Like.BOTH)
+	@Column(name = "`name`")
+	@FieldDef(label = "项目名称", maxLength = 255)
+	@EditMode(editor = FieldEditor.Text, required = false)
+	String getName();
 
-    void setName(String name);
+	void setName(String name);
 
-    @Column(name = "`type`")
-    @FieldDef(label="项目类型", maxLength = 10)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getType();
+	@Column(name = "`type`")
+	@FieldDef(label = "项目类型", maxLength = 10)
+	@EditMode(editor = FieldEditor.Text, required = false)
+	String getType();
 
-    void setType(String type);
+	void setType(String type);
 
-    @Column(name = "`pid`")
-    @FieldDef(label="父项目")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getPid();
+	@Column(name = "`pid`")
+	@FieldDef(label = "父项目")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Long getPid();
 
-    void setPid(Long pid);
+	void setPid(Long pid);
 
-    @Column(name = "`project_leader`")
-    @FieldDef(label="项目负责人")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getProjectLeader();
+	@Column(name = "`project_leader`")
+	@FieldDef(label = "项目负责人")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Long getProjectLeader();
 
-    void setProjectLeader(Long projectLeader);
+	void setProjectLeader(Long projectLeader);
 
-    @Column(name = "`product_manager`")
-    @FieldDef(label="产品经理")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getProductManager();
+	@Column(name = "`product_manager`")
+	@FieldDef(label = "产品经理")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Long getProductManager();
 
-    void setProductManager(Long productManager);
+	void setProductManager(Long productManager);
 
-    @Column(name = "`development_manager`")
-    @FieldDef(label="研发经理")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getDevelopmentManager();
+	@Column(name = "`development_manager`")
+	@FieldDef(label = "研发经理")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Long getDevelopmentManager();
 
-    void setDevelopmentManager(Long developmentManager);
+	void setDevelopmentManager(Long developmentManager);
 
-    @Column(name = "`test_manager`")
-    @FieldDef(label="测试经理")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getTestManager();
+	@Column(name = "`test_manager`")
+	@FieldDef(label = "测试经理")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Long getTestManager();
 
-    void setTestManager(Long testManager);
+	void setTestManager(Long testManager);
 
-    @Column(name = "`business_owner`")
-    @FieldDef(label="业务负责人")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getBusinessOwner();
+	@Column(name = "`business_owner`")
+	@FieldDef(label = "业务负责人")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Long getBusinessOwner();
 
-    void setBusinessOwner(Long businessOwner);
+	void setBusinessOwner(Long businessOwner);
 
-    @Column(name = "`dep`")
-    @FieldDef(label="所属部门")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getDep();
+	@Column(name = "`dep`")
+	@FieldDef(label = "所属部门")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Long getDep();
 
-    void setDep(Long dep);
+	void setDep(Long dep);
 
-    @Column(name = "`expected_launch_date`")
-    @FieldDef(label="期望上线日期")
-    @EditMode(editor = FieldEditor.Datetime, required = false)
-    Date getExpectedLaunchDate();
+	@Column(name = "`expected_launch_date`")
+	@FieldDef(label = "期望上线日期")
+	@EditMode(editor = FieldEditor.Datetime, required = false)
+	Date getExpectedLaunchDate();
 
-    void setExpectedLaunchDate(Date expectedLaunchDate);
+	void setExpectedLaunchDate(Date expectedLaunchDate);
 
-    @Column(name = "`estimate_launch_date`")
-    @FieldDef(label="预估上线日期")
-    @EditMode(editor = FieldEditor.Datetime, required = false)
-    Date getEstimateLaunchDate();
+	@Column(name = "`estimate_launch_date`")
+	@FieldDef(label = "预估上线日期")
+	@EditMode(editor = FieldEditor.Datetime, required = false)
+	Date getEstimateLaunchDate();
 
-    void setEstimateLaunchDate(Date estimateLaunchDate);
+	void setEstimateLaunchDate(Date estimateLaunchDate);
 
-    @Column(name = "`start_date`")
-    @FieldDef(label="计划开始日期")
-    @Operator(Operator.GREAT_EQUAL_THAN)
-    @EditMode(editor = FieldEditor.Datetime, required = false)
-    Date getStartDate();
+	@Column(name = "`start_date`")
+	@FieldDef(label = "计划开始日期")
+	@Operator(Operator.GREAT_EQUAL_THAN)
+	@EditMode(editor = FieldEditor.Datetime, required = false)
+	Date getStartDate();
 
-    void setStartDate(Date startDate);
+	void setStartDate(Date startDate);
 
-    @Column(name = "`end_date`")
-    @Operator(Operator.LITTLE_EQUAL_THAN)
-    @FieldDef(label="计划结束日期")
-    @EditMode(editor = FieldEditor.Datetime, required = false)
-    Date getEndDate();
+	@Column(name = "`end_date`")
+	@Operator(Operator.LITTLE_EQUAL_THAN)
+	@FieldDef(label = "计划结束日期")
+	@EditMode(editor = FieldEditor.Datetime, required = false)
+	Date getEndDate();
 
-    void setEndDate(Date endDate);
+	void setEndDate(Date endDate);
 
-    @Column(name = "`resource_require`")
-    @FieldDef(label="项目资源需求", maxLength = 1000)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getResourceRequire();
+	@Column(name = "`resource_require`")
+	@FieldDef(label = "项目资源需求", maxLength = 1000)
+	@EditMode(editor = FieldEditor.Text, required = false)
+	String getResourceRequire();
 
-    void setResourceRequire(String resourceRequire);
+	void setResourceRequire(String resourceRequire);
 
-    @Column(name = "`description`")
-    @FieldDef(label="项目说明", maxLength = 1000)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getDescription();
+	@Column(name = "`description`")
+	@FieldDef(label = "项目说明", maxLength = 1000)
+	@EditMode(editor = FieldEditor.Text, required = false)
+	String getDescription();
 
-    void setDescription(String description);
+	void setDescription(String description);
 
-    @Column(name = "`goals_functions`")
-    @FieldDef(label="目标以及功能", maxLength = 1000)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getGoalsFunctions();
+	@Column(name = "`goals_functions`")
+	@FieldDef(label = "目标以及功能", maxLength = 1000)
+	@EditMode(editor = FieldEditor.Text, required = false)
+	String getGoalsFunctions();
 
-    void setGoalsFunctions(String goalsFunctions);
+	void setGoalsFunctions(String goalsFunctions);
 
-    @Column(name = "`plan`")
-    @FieldDef(label="概要计划", maxLength = 1000)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getPlan();
+	@Column(name = "`plan`")
+	@FieldDef(label = "概要计划", maxLength = 1000)
+	@EditMode(editor = FieldEditor.Text, required = false)
+	String getPlan();
 
-    void setPlan(String plan);
+	void setPlan(String plan);
 
-    @Column(name = "`roi`")
-    @FieldDef(label="ROI分析", maxLength = 1000)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getRoi();
+	@Column(name = "`roi`")
+	@FieldDef(label = "ROI分析", maxLength = 1000)
+	@EditMode(editor = FieldEditor.Text, required = false)
+	String getRoi();
 
-    void setRoi(String roi);
+	void setRoi(String roi);
 
-    @Column(name = "`impact`")
-    @FieldDef(label="项目影响", maxLength = 1000)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getImpact();
+	@Column(name = "`impact`")
+	@FieldDef(label = "项目影响", maxLength = 1000)
+	@EditMode(editor = FieldEditor.Text, required = false)
+	String getImpact();
 
-    void setImpact(String impact);
+	void setImpact(String impact);
 
-    @Column(name = "`risk`")
-    @FieldDef(label="项目风险", maxLength = 1000)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getRisk();
+	@Column(name = "`risk`")
+	@FieldDef(label = "项目风险", maxLength = 1000)
+	@EditMode(editor = FieldEditor.Text, required = false)
+	String getRisk();
 
-    void setRisk(String risk);
+	void setRisk(String risk);
 
-    @Column(name = "`email`")
-    @FieldDef(label="email", maxLength = 255)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getEmail();
+	@Column(name = "`email`")
+	@FieldDef(label = "email", maxLength = 255)
+	@EditMode(editor = FieldEditor.Text, required = false)
+	String getEmail();
 
-    void setEmail(String email);
+	void setEmail(String email);
 
-    @Column(name = "`status`")
-    @FieldDef(label="status")
-    @EditMode(editor = FieldEditor.Text, required = false)
-    Integer getStatus();
+	@Column(name = "`status`")
+	@FieldDef(label = "status")
+	@EditMode(editor = FieldEditor.Text, required = false)
+	Integer getStatus();
 
-    void setStatus(Integer status);
+	void setStatus(Integer status);
 
+	@Operator(Operator.LITTLE_EQUAL_THAN)
+	@Column(name = "`created`")
+	@FieldDef(label = "created")
+	@EditMode(editor = FieldEditor.Datetime, required = false)
+	Date getCreated();
 
-    @Operator(Operator.LITTLE_EQUAL_THAN)
-    @Column(name = "`created`")
-    @FieldDef(label="created")
-    @EditMode(editor = FieldEditor.Datetime, required = false)
-    Date getCreated();
+	void setCreated(Date created);
 
-    void setCreated(Date created);
+	@Column(name = "`modified`")
+	@FieldDef(label = "modified")
+	@EditMode(editor = FieldEditor.Datetime, required = false)
+	Date getModified();
 
-    @Operator(Operator.GREAT_EQUAL_THAN)
-    @Column(name = "`created`")
-    Date getCreatedStart();
-    void setCreatedStart(Date created);
+	void setModified(Date modified);
 
-    @Column(name = "`modified`")
-    @FieldDef(label="modified")
-    @EditMode(editor = FieldEditor.Datetime, required = false)
-    Date getModified();
+	@Column(name = "`create_member_id`")
+	@FieldDef(label = "createMemberId")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Long getCreateMemberId();
 
-    void setModified(Date modified);
+	void setCreateMemberId(Long createMemberId);
 
-    @Column(name = "`create_member_id`")
-    @FieldDef(label="createMemberId")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getCreateMemberId();
+	@Column(name = "`modify_member_id`")
+	@FieldDef(label = "modifyMemberId")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Long getModifyMemberId();
 
-    void setCreateMemberId(Long createMemberId);
+	void setModifyMemberId(Long modifyMemberId);
 
-    @Column(name = "`modify_member_id`")
-    @FieldDef(label="modifyMemberId")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getModifyMemberId();
+	@Column(name = "`reStatus`")
+	@FieldDef(label = "restatus")
+	@EditMode(editor = FieldEditor.Text, required = false)
+	Integer getRestatus();
 
-    void setModifyMemberId(Long modifyMemberId);
-
-    @Column(name = "`reStatus`")
-    @FieldDef(label="restatus")
-    @EditMode(editor = FieldEditor.Text, required = false)
-    Integer getRestatus();
-
-    void setRestatus(Integer restatus);
+	void setRestatus(Integer restatus);
 }
