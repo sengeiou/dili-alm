@@ -24,11 +24,28 @@
 			<groupId>com.dili</groupId>
 			<artifactId>ss-beetl</artifactId>
 			<version>${sharp-sword.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.dili</groupId>
 			<artifactId>ss-redis</artifactId>
 			<version>${sharp-sword.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>23.0</version>
 		</dependency>
 
 		<!-- 参数校验包 -->
@@ -43,7 +60,7 @@
 		<!--</exclusion> -->
 		<!--</exclusions> -->
 
-		
+
 
 		<!-- mariadb -->
 		<!--<dependency> -->
@@ -69,7 +86,7 @@
 			<!--<version>${boot.version}</version> -->
 			<scope>test</scope>
 		</dependency>
-	
+
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
