@@ -12,14 +12,14 @@ import java.util.List;
 public interface DepartmentRpc {
 
 	@POST("/api/department/list")
-	BaseOutput<List<Department>> list(@VOBody Department department);
+	BaseOutput<List<Department>> list(@VOBody(required = false) Department department);
 
 	@POST("/api/department/findByUserId")
-	BaseOutput<List<Department>> findByUserId(@VOBody Long memberId);
+	BaseOutput<List<Department>> findByUserId(@VOBody(required = false) Long memberId);
 
 	@POST("/api/department/findByDepartmentName")
-	BaseOutput<Department> findByDepartmentName(@VOBody String departmentName);
+	BaseOutput<Department> findByDepartmentName(@VOBody(required = false) String departmentName);
 
 	@POST("/api/department/getChildDepartments")
-	BaseOutput<List<Department>> getChildDepartments(@VOBody Long departmentId);
+	BaseOutput<List<Department>> getChildDepartments(@VOBody(required = false) Long departmentId);
 }

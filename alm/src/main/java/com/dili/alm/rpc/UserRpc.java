@@ -17,20 +17,20 @@ import com.dili.ss.retrofitful.annotation.VOBody;
 @Restful("http://alm.diligrp.com")
 public interface UserRpc {
 	@POST("/userApi/list")
-	BaseOutput<List<User>> list(@VOBody User user);
+	BaseOutput<List<User>> list(@VOBody(required = false) User user);
 
 	@POST("/userApi/listByExample")
-	BaseOutput<List<User>> listByExample(@VOBody User user);
+	BaseOutput<List<User>> listByExample(@VOBody(required = false) User user);
 
 	@POST("/userApi/listUserByRole")
 	BaseOutput<List<User>> listUserByRole(@VOBody Long id);
 
-	@POST("/userApi/listUserRole")		
+	@POST("/userApi/listUserRole")
 	BaseOutput<List<Role>> findUserRoles(@VOBody Long memberId);
 
 	@POST("/userApi/findByUserId")
 	BaseOutput<User> findUserById(@VOBody Long memberId);
 
 	@POST("/userApi/findUserContainDepartmentAndRole")
-	BaseOutput<List<UserDepartmentRole>> findUserContainDepartmentAndRole(@VOBody UserDepartmentRoleQuery dto);
+	BaseOutput<List<UserDepartmentRole>> findUserContainDepartmentAndRole(@VOBody(required = false) UserDepartmentRoleQuery dto);
 }
