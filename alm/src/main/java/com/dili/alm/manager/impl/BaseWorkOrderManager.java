@@ -290,7 +290,7 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 	 */
 	private void buildExactDomain(WorkOrder domain, String fieldName) throws Exception {
 		// 如果不是DTO接口，不构建
-		if (!DTOUtils.isDTOProxy(domain)) {
+		if (!DTOUtils.isProxy(domain)) {
 			return;
 		}
 		// 如果未实现IMybatisForceParams接口不构建

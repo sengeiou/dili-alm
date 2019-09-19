@@ -2,7 +2,6 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>alm</artifactId>
-	<version>3.1.0-RELEASE</version>
 	<description>alm</description>
 	<packaging>jar</packaging>
 	<properties>
@@ -24,7 +23,7 @@
 	<parent>
 		<artifactId>dili-alm</artifactId>
 		<groupId>com.dili</groupId>
-		<version>3.0.0-RELEASE</version>
+		<version>3.0.1-RELEASE</version>
 	</parent>
 
 	<profiles>
@@ -102,17 +101,6 @@
 
 	<dependencies>
 
-		<dependency>
-			<groupId>com.dili</groupId>
-			<artifactId>ss-beetl</artifactId>
-			<version>${sharp-sword.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.sun.mail</groupId>
-					<artifactId>javax.mail</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
 		<!-- https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
 		<dependency>
 			<groupId>commons-fileupload</groupId>
@@ -247,6 +235,12 @@
 			<groupId>com.dili</groupId>
 			<artifactId>almadmin-sdk</artifactId>
 			<version>${project.parent.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.sun.mail</groupId>
+					<artifactId>javax.mail</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 

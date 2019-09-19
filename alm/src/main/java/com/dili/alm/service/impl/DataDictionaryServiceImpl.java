@@ -42,11 +42,11 @@ public class DataDictionaryServiceImpl extends BaseServiceImpl<DataDictionary, L
 		DataDictionaryValue valueRecord = DTOUtils.newDTO(DataDictionaryValue.class);
 		valueRecord.setDdId(model.getId());
 		List<DataDictionaryValue> values = this.valueMapper.select(valueRecord);
-		DataDictionaryDto dto = DTOUtils.cast(model, DataDictionaryDto.class);
+		DataDictionaryDto dto = DTOUtils.as(model, DataDictionaryDto.class);
 		if (CollectionUtils.isNotEmpty(values)) {
 			List<DataDictionaryValueDto> dtos = new ArrayList<>(values.size());
 			for (DataDictionaryValue value : values) {
-				DataDictionaryValueDto valueDto = DTOUtils.cast(value, DataDictionaryValueDto.class);
+				DataDictionaryValueDto valueDto = DTOUtils.as(value, DataDictionaryValueDto.class);
 				dtos.add(valueDto);
 			}
 			dto.setValues(dtos);
