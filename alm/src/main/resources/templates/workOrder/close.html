@@ -87,12 +87,22 @@
 					<tr>
 						<td class="table-title" colspan="6">任务工时</td>
 					</tr>
+					<%for(item in model.executionRecords){%>
 					<tr>
-						<td class="table-title">常规工时</td>
-						<td class="table-combo" colspan="2" style="padding: 0">${model.taskHours!}</td>
-						<td class="table-title">加班工时</td>
-						<td class="table-combo" colspan="2" style="padding: 0">${model.overtimeHours!}</td>
+						<td colspan="6"><table class="table-box" style="padding:0px 0px;margin:0px 0px;" width="100%">
+								<tr>
+									<td class="table-title">开始日期</td>
+									<td class="table-combo">${item.startDate!,'yyyy-MM-dd'}</td>
+									<td class="table-title">结束日期</td>
+									<td class="table-combo">${item.endDate!,'yyyy-MM-dd'}</td>
+									<td class="table-title">常规工时</td>
+									<td class="table-combo">${item.taskHours!}</td>
+									<td class="table-title">加班工时</td>
+									<td class="table-combo">${item.overtimeHours!}</td>
+								</tr>
+							</table></td>
 					</tr>
+					<%}%>
 					<tr>
 						<td class="table-title" colspan="2">是否满意</td>
 						<td colspan="4"><select class="easyui-combobox" name="result" data-options="editable:false,required:true,panelHeight:'auto'"

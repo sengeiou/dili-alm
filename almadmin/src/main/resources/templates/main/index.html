@@ -322,10 +322,12 @@ body {
 						$("#user-workday-outer").empty();
 						$("#user-workday").empty();
 						if (data1.code == 200) {
-							var strs = data1.data.workStartTime.split(' ')[0].split('-');
-							var start = strs[1]+'/'+strs[2];
-							strs = data1.data.workEndTime.split(' ')[0].split('-');
-							var end = strs[1]+'/'+strs[2];
+							if(data1.data.workStartTime){
+								var strs = data1.data.workStartTime.split(' ')[0].split('-');
+								var start = strs[1]+'/'+strs[2];
+								strs = data1.data.workEndTime.split(' ')[0].split('-');
+								var end = strs[1]+'/'+strs[2];
+							}
 							if (data1.data.id != "" && data1.data.id != null) {
 								$("#user-workday-outer")
 										.append(

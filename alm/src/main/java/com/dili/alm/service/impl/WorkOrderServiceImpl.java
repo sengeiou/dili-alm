@@ -184,7 +184,6 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 	@Override
 	public WorkOrder getDetailViewModel(Long id) {
 		WorkOrder workOrder = this.getOperationRecordsViewModel(id);
-		System.out.println(workOrder.getAttachmentFileId());
 		WorkOrderExecutionRecord woerQuery = DTOUtils.newDTO(WorkOrderExecutionRecord.class);
 		woerQuery.setWorkOrderId(id);
 		List<WorkOrderExecutionRecord> woerList = this.woerMapper.select(woerQuery);
