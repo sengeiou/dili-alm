@@ -60,13 +60,13 @@
 						data-options="field:'applicantId',width:'10%',  _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">申请人</th>
 					<th
 						data-options="field:'applyState',width:'12%',  _provider:'projectOnlineApplyStateProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">状态</th>
+					<th data-options="field:'opt',width:'10%', align:'center',formatter:optFormatter">操作</th>
 					<th
 						data-options="field:'submitTime',width:'12%',   _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
 						申请时间</th>
-					<th data-options="field:'dependencyDescription',hideColumn:true">上线子系统及依赖关系描述</th>
-					<th data-options="field:'scopeDescription',hideColumn:true">上线影响范围描述</th>
-					<th data-options="field:'opt',width:'10%', align:'center',formatter:optFormatter">操作</th>
-				</tr>
+					<th data-options="field:'dependencyDescription'">上线版本及功能描述</th>
+					<th data-options="field:'scopeDescription',hidden:true">上线影响范围描述</th>
+ 				</tr>
 			</thead>
 		</table>
 		<!-- datagrid工具栏 -->
