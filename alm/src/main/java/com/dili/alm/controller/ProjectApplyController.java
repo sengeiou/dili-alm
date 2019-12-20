@@ -42,7 +42,7 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValuePairImpl;
 import com.dili.ss.metadata.ValueProviderUtils;
-import com.dili.sysadmin.sdk.session.SessionContext;
+import com.dili.uap.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
 
 import io.swagger.annotations.Api;

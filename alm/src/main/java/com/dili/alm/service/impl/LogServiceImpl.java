@@ -1,18 +1,18 @@
 package com.dili.alm.service.impl;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.LogMapper;
-import com.dili.alm.domain.Files;
 import com.dili.alm.domain.Log;
-import com.dili.alm.domain.Task;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.service.DataDictionaryService;
@@ -22,13 +22,8 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
-import com.dili.sysadmin.sdk.domain.UserTicket;
-import com.dili.sysadmin.sdk.session.SessionContext;
-import com.dili.sysadmin.sdk.util.WebContent;
-
-import org.apache.catalina.mbeans.UserMBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.session.SessionContext;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -75,7 +70,7 @@ public class LogServiceImpl extends BaseServiceImpl<Log, Long> implements LogSer
 			record.setContent(logText);
 			record.setCreated(date);
 			record.setLogModule(logModule);
-			record.setIp(userTicket.getLastLoginIp());
+//			record.setIp(userTicket.getLastLoginIp());
 			return this.getActualDao().insertSelective(record);
 		}
 	}
@@ -88,7 +83,7 @@ public class LogServiceImpl extends BaseServiceImpl<Log, Long> implements LogSer
 		record.setOperatorId(userTicket.getId());
 		record.setContent(logText);
 		record.setModified(new Date());
-		record.setIp(userTicket.getLastLoginIp());
+//		record.setIp(userTicket.getLastLoginIp());
 		return this.getActualDao().updateByPrimaryKeySelective(record);
 	}
 	

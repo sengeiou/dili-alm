@@ -24,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.component.NumberGenerator;
-import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.Department;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.OperationResult;
@@ -38,8 +37,8 @@ import com.dili.alm.rpc.DepartmentRpc;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.WorkOrderService;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.sysadmin.sdk.domain.UserTicket;
-import com.dili.sysadmin.sdk.session.SessionContext;
+import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.session.SessionContext;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;

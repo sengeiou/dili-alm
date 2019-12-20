@@ -1,20 +1,17 @@
 package com.dili.alm.service;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.util.List;
 import java.util.Map;
 
 import com.dili.alm.domain.Weekly;
-import com.dili.alm.domain.WeeklyJson;
 import com.dili.alm.domain.dto.NextWeeklyDto;
-import com.dili.alm.domain.dto.Page;
 import com.dili.alm.domain.dto.ProjectWeeklyDto;
 import com.dili.alm.domain.dto.TaskDto;
 import com.dili.alm.domain.dto.WeeklyPara;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.sysadmin.sdk.domain.UserTicket;
+import com.dili.uap.sdk.domain.UserTicket;
 
 /**
  * ��MyBatis Generator�����Զ����� This file was generated on 2017-11-30

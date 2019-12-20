@@ -1,7 +1,6 @@
 package com.dili.alm.controller;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
@@ -31,7 +30,6 @@ import com.dili.alm.domain.Department;
 import com.dili.alm.domain.HardwareResourceApply;
 import com.dili.alm.domain.HardwareResourceRequirement;
 import com.dili.alm.domain.Project;
-import com.dili.alm.domain.ProjectOnlineApply;
 import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.HardwareResourceApplyListPageQueryDto;
@@ -48,8 +46,8 @@ import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.sysadmin.sdk.domain.UserTicket;
-import com.dili.sysadmin.sdk.session.SessionContext;
+import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.session.SessionContext;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
