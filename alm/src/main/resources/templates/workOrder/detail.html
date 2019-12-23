@@ -59,6 +59,22 @@
 					</tr>
 					
 					<tr>
+						<td colspan="6" style="padding: 5px;">
+							 <table class="easyui-datagrid" id="showDemandListGrid" rownumbers="false" remoteSort="false" loadMsg="数据加载中..."
+					               singleSelect="true" method="post" multiSort="true" data-options="<%if(has(apply) && apply.id != null){%>url:'${contextPath!}/demandProject/projectDemandlist?projectId=${apply.id!}'<%}%>">
+					               <thead>
+							            <tr>
+							                <th data-options="field:'demNum', width:'20%', align:'center', resizable:'true', fixed:'false'">需求编号</th>
+											<th data-options="field:'demName', width:'20%', align:'center', resizable:'true', fixed:'false'">需求名称</th>
+											<th data-options="field:'finishDate', width:'30%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">需求期待时间日期</th>
+											<th data-options="field:'finishDate', width:'30%', align:'center',formatter:showDemandOptFormatter, resizable:'true', fixed:'false'">详情</th>
+											
+							            </tr>
+						            </thead>
+					        </table>
+						</td>
+					</tr>
+					<tr>
 						<td class="table-title">附件</td>
 						<td><%if(model.$_attachmentFileId != null){%><a href="${contextPath!}/files/download?id=${model.$_attachmentFileId!}">${model.attachmentFileId}</a><%}%></td>
 					</tr>
@@ -123,3 +139,9 @@
 
 	</form>
 </div>
+<script type="text/javascript">
+function showDemandOptFormatter(value, row, index) {
+	return '<a href="javascript:void(0);" onclick="showDemandDetail(' + row.id
+			+ ');">详情</a>';
+}
+</script>

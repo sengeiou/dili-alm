@@ -81,8 +81,28 @@
 				</table>
 			</td>
 		</tr>
+		<tr>
+			<td colspan="2" style="padding: 5px;">
+				<div id="tb1" style="height:auto">
+		                <a class="easyui-linkbutton"
+		                   data-options="iconCls:'icon-add',plain:true" onclick='saveDemandToProject()'>添加</a>
+		     	</div>	
+				<table class="easyui-datagrid" title="需求列表" id="demandGrid" style="width: 100%"
+					   fitColumns="true" pagination="false" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" align="center" fit="false" striped="true" idField="id" data-options="toolbar: '#tb1',<%if(has(model) && model.id != null){%>url:'${contextPath!}/demandProject/list?versionId=${model.id!}'<%}%>">
+					<thead>
+					<tr>
+						<th data-options="field:'demNum', width:'20%', align:'center', resizable:'true', fixed:'false'">需求编号</th>
+						<th data-options="field:'demName', width:'20%', align:'center', resizable:'true', fixed:'false'">需求名称</th>
+						<th data-options="field:'finishDate', width:'50%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">需求期待时间日期</th>
+						<th data-options="field:'opt', width:'10%', align:'center', resizable:'true', fixed:'false',formatter:demandOptFormatter">操作</th>
+					</tr>
+					</thead>
+				</table>
+			</td>
+		</tr>
 	</table>
 </form>
+
 <script type="text/javascript">
     <#project_formJs />
 </script>

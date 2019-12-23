@@ -55,9 +55,25 @@ function versionOptFormatter(value, row, index) {
 		content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="deleteVersion('
 				+ row.id + ');">删除</a>';
 	}
+	content += '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="showDemand('
+				+ row.id + ');">查看需求</a>';
 	return content;
 }
 
+function addDemandList(){
+	$('#demandListDlg').dialog('close');
+	console.log("sss");
+/* 	$('#demandListDlg').dialog('close');
+	$('#versionForm').append('<input type="hidden" name="demandIds" value="' + data.data[0].id + '">');
+	var row = data.data[0];
+	$('#demandGrid').datagrid('appendRow', row); 
+}
+function cancelDemandList(){
+	$('#demandListDlg').dialog('close');
+	var demandIds = $('#versionForm').find(".demandIds").val();
+	console.log(demandIds);
+	*/
+}
 function dateFormatter(value, row, index) {
 	if (value) {
 		var date = new Date();
@@ -93,6 +109,18 @@ function onlineFormatter(value) {
 function versionFileOptFormatter(value, row, index) {
 	return '<a href="javascript:void(0);" onclick="delVersionFile(' + row.id
 			+ ');">删除</a>';
+}
+function demandOptFormatter(value, row, index) {
+	return '<a href="javascript:void(0);" onclick="delDemand(' + row.id
+			+ ');">删除</a>';
+}
+function showDemandOptFormatter(value, row, index) {
+	return '<a href="javascript:void(0);" onclick="showDemandDetail(' + row.id
+			+ ');">详情</a>';
+}
+
+function saveDemandToProject() {
+	$('#demandListDlg').dialog('open');
 }
 
 function fileOptFormatter(value, row, index) {
@@ -189,6 +217,53 @@ function delVersionFile(id) {
 	});
 }
 
+
+function delDemand(id) {
+	$.messager.confirm('提示', '确定要删除该需求？', function(flag) {
+		if (!flag) {
+			return false;
+		}
+		$.ajax({
+					type : "POST",
+					url : '${contextPath!}/reqiurementToProject/delete',
+					data : {
+						id : id
+					},
+					success : function(data) {
+						if (data.code == 200) {
+							var selected = $('#versionFileGrid')
+									.datagrid('getSelected');
+							var index = $('#versionFileGrid').datagrid(
+									'getRowIndex', selected);
+							$('#versionFileGrid').datagrid('deleteRow', index);
+							$($('#fileGrid').datagrid('getRows')).each(
+									function(i, item) {
+										if (item.id == selected.id) {
+											var rowIndex = $('#fileGrid')
+													.datagrid('getRowIndex',
+															item);
+											$('#fileGrid').datagrid(
+													'deleteRow', rowIndex);
+											$('#fileGrid')
+													.datagrid('acceptChanges');
+											return false;
+										}
+									});
+							$('input[name=fileIds][value=' + id + ']').remove();
+						} else {
+							$.messager.alert('错误', data.result);
+						}
+					},
+					error : function() {
+						$.messager.alert('错误', '远程访问失败');
+					}
+				});
+	});
+}
+
+
+
+
 function openInsertVersion() {
 	$('#win').dialog({
 		title : '新建版本',
@@ -241,6 +316,9 @@ function openInsertVersion() {
 			text : '取消',
 			handler : function() {
 				$('#win').dialog('close');
+				
+				
+				
 			}
 		}]
 	});
@@ -307,7 +385,12 @@ function editVersion(id) {
 		}]
 	});
 }
-
+function showDemand(id){
+   	var opts = $('#showDemandListGrid').datagrid("options");
+    opts.url = "${contextPath}/demand/queryDemandByVesionId.shtml?vesionId="+id;
+    $("#showDemandListGrid").datagrid("reload");
+    $('#showDemandListDlg').dialog('open');
+}
 function deleteVersion(id) {
 	$.messager.confirm('提示', '确定要删除该版本？', function(flag) {
 				if (!flag) {
