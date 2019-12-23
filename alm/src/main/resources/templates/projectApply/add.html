@@ -3,7 +3,7 @@
     <div style="padding:10px 60px 20px 60px">
         <form id="ff" method="post" action="">
             <table cellpadding="5" width="100%">
-                <tr>
+            	<tr>
                     <td>
                         <input name="type" class="easyui-combobox" id="_projectType" style="width:300px" data-options="editable:false" panelWidth="auto" panelHeight="auto" label="项目类型:" required="true" />
                         <#comboProvider _id="_projectType" _provider='projectTypeProvider' _queryParams='{emptyText:""}'/>
@@ -23,6 +23,25 @@
                         <input class="easyui-combobox"  name="pid" id="child" style="width:300px;" label="父项目:" validType="checked" data-options="editable:false" panelWidth="auto" panelHeight="auto" required="true" />
                     </td>
                 </tr>
+                <tr>
+						<td colspan="6"  style="padding: 5px;" >
+							<div id="tb1" style="height:auto">
+					                <a class="easyui-linkbutton"
+					                   data-options="iconCls:'icon-add',plain:true" onclick='saveDemandToProject()'>添加</a>
+					     	</div>	
+							<table class="easyui-datagrid" title="需求列表" id="demandGrid" style="width: 100%"
+								   fitColumns="true" pagination="false" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" align="center" fit="false" striped="true" idField="id" data-options="toolbar: '#tb1'">
+								<thead>
+								<tr>
+									<th data-options="field:'demNum', width:'20%', align:'center', resizable:'true', fixed:'false'">需求编号</th>
+									<th data-options="field:'demName', width:'20%', align:'center', resizable:'true', fixed:'false'">需求名称</th>
+									<th data-options="field:'finishDate', width:'40%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">需求期待时间日期</th>
+									<th data-options="field:'opt', width:'10%', align:'center', resizable:'true', fixed:'false',formatter:demandOptFormatter">操作</th>
+								</tr>
+								</thead>
+							</table>
+						</td>
+				</tr>
             </table>
         </form>
         <div style="text-align:center;padding:5px 0">
@@ -30,6 +49,33 @@
             <a href="${contextPath}/projectApply/index.html" class="easyui-linkbutton" style="width:80px">取消</a>
         </div>
     </div>
+</div>
+<div id="demandListDlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false"
+         title="需求添加列表" style="padding: 20px; height: 400px; width: 600px"align-content
+         border="thin" closed="true" data-options="
+         			modal:true,
+                  	inline:true, 
+					buttons: [{
+						text:'确定',
+						handler:function(){addDemandList();}
+						},{
+						text:'取消',
+						handler:function(){$('#demandListDlg').dialog('close');}
+					}]
+					
+				">
+        <table class="easyui-datagrid" id="demandListGrid" rownumbers="false" remoteSort="false" loadMsg="数据加载中..."
+               singleSelect="true" method="post" multiSort="true">
+               <thead>
+		            <tr>
+		            	<th data-options="field:'id', checkbox:true ">需求ID</th>
+		                <th data-options="field:'demNum', width:'30%', align:'center', resizable:'true', fixed:'false'">需求编号</th>
+						<th data-options="field:'demName', width:'30%', align:'center', resizable:'true', fixed:'false'">需求名称</th>
+						<th data-options="field:'finishDate', width:'30%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">需求期待时间日期</th>
+						
+		            </tr>
+	            </thead>
+        </table>
 </div>
 <script>
     $('#child').combobox({
@@ -81,5 +127,19 @@
             message: '请选择'
         }
     });
+    function demandOptFormatter(value, row, index) {
+		return '<a href="javascript:void(0);" onclick="delDemand(' + row.id
+				+ ');">删除</a>';
+	}
+	function saveDemandToProject() {
+		$('#demandListDlg').dialog('open');
+	}
+	function addDemandList(){
+		$('#demandListDlg').dialog('close');
+	/* 	$('#demandListDlg').dialog('close');
+		$('#editForm').append('<input type="hidden" name="demandIds" value="' + data.data[0].id + '">');
+		var row = data.data[0];
+		$('#demandGrid').datagrid('appendRow', row); */
+	}
 </script>
 </#body>

@@ -246,6 +246,7 @@ function openInsert() {
 							text : '取消',
 							handler : function() {
 								$('#win').dialog('close');
+								
 							}
 						}, {
 							text : '提交',
