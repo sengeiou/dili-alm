@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.alm.dao.DemandMapper">
+  <resultMap id="BaseResultMap" type="com.dili.alm.domain.Demand">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="serial_number" jdbcType="VARCHAR" property="serialNumber" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="belong_pro_id" jdbcType="BIGINT" property="belongProId" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="finish_date" jdbcType="DATE" property="finishDate" />
+    <result column="document_url" jdbcType="VARCHAR" property="documentUrl" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="submit_date" jdbcType="TIMESTAMP" property="submitDate" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.dili.alm.domain.Demand">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+    <result column="reason" jdbcType="LONGVARCHAR" property="reason" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, serial_number, name, user_id, belong_pro_id, type, status, finish_date, document_url, 
+    create_date, submit_date
+  </sql>
+  <sql id="Blob_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    content, reason
+  </sql>
+  <select id="selectBy" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from demand
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <update id="updateBy" parameterType="com.dili.alm.domain.Demand">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update demand
+    <set>
+      <if test="serialNumber != null">
+        serial_number = #{serialNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="belongProId != null">
+        belong_pro_id = #{belongProId,jdbcType=BIGINT},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=TINYINT},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="finishDate != null">
+        finish_date = #{finishDate,jdbcType=DATE},
+      </if>
+      <if test="documentUrl != null">
+        document_url = #{documentUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="submitDate != null">
+        submit_date = #{submitDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="reason != null">
+        reason = #{reason,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
