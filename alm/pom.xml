@@ -231,7 +231,7 @@
 		</dependency>
 
 		<!-- 内部包 -->
-		<!-- <dependency>
+		 <dependency>
 			<groupId>com.dili</groupId>
 			<artifactId>almadmin-sdk</artifactId>
 			<version>${project.parent.version}</version>
@@ -242,7 +242,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		 -->
+		
 		 	 <dependency>
 			<artifactId>uap-sdk</artifactId>
 			<groupId>com.dili</groupId>
