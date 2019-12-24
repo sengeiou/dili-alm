@@ -7,14 +7,14 @@ import com.dili.ss.metadata.annotation.FieldDef;
 import javax.persistence.*;
 
 /**
- * ÓÉMyBatis Generator¹¤¾ß×Ô¶¯Éú³É
+ * ç”±MyBatis Generatorå·¥å…·è‡ªåŠ¨ç”Ÿæˆ
  * 
  * This file was generated on 2019-12-24 10:21:19.
  */
 @Table(name = "`demand_project`")
 public class DemandProject extends BaseDomain {
     /**
-     * ×ÔÔöid
+     * è‡ªå¢id
      */
     @Id
     @Column(name = "`id`")
@@ -22,150 +22,150 @@ public class DemandProject extends BaseDomain {
     private Long id;
 
     /**
-     * ĞèÇóID
+     * éœ€æ±‚ID
      */
     @Column(name = "`demand_id`")
     private Long demandId;
 
     /**
-     * ¹ØÁªÏîÄ¿ID
+     * å…³è”é¡¹ç›®ç¼–å·
      */
-    @Column(name = "`project_id`")
-    private Long projectId;
+    @Column(name = "`project_number`")
+    private String projectNumber;
 
     /**
-     * ¹ØÁª°æ±¾ID
+     * å…³è”ç‰ˆæœ¬ID
      */
     @Column(name = "`version_id`")
     private Long versionId;
 
     /**
-     * ĞèÇó×´Ì¬
+     * éœ€æ±‚çŠ¶æ€
      */
     @Column(name = "`status`")
-    private Long status;
+    private int status;
 
     /**
-     * ¹ØÁª¹¤µ¥id
+     * å…³è”å·¥å•id
      */
     @Column(name = "`work_order_id`")
     private Long workOrderId;
 
     /**
-     * »ñÈ¡×ÔÔöid
+     * è·å–è‡ªå¢id
      *
-     * @return id - ×ÔÔöid
+     * @return id - è‡ªå¢id
      */
-    @FieldDef(label="×ÔÔöid")
+    @FieldDef(label="è‡ªå¢id")
     @EditMode(editor = FieldEditor.Number, required = true)
     public Long getId() {
         return id;
     }
 
     /**
-     * ÉèÖÃ×ÔÔöid
+     * è®¾ç½®è‡ªå¢id
      *
-     * @param id ×ÔÔöid
+     * @param id è‡ªå¢id
      */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * »ñÈ¡ĞèÇóID
+     * è·å–éœ€æ±‚ID
      *
-     * @return demand_id - ĞèÇóID
+     * @return demand_id - éœ€æ±‚ID
      */
-    @FieldDef(label="ĞèÇóID")
+    @FieldDef(label="éœ€æ±‚ID")
     @EditMode(editor = FieldEditor.Number, required = true)
     public Long getDemandId() {
         return demandId;
     }
 
     /**
-     * ÉèÖÃĞèÇóID
+     * è®¾ç½®éœ€æ±‚ID
      *
-     * @param demandId ĞèÇóID
+     * @param demandId éœ€æ±‚ID
      */
     public void setDemandId(Long demandId) {
         this.demandId = demandId;
     }
 
     /**
-     * »ñÈ¡¹ØÁªÏîÄ¿ID
+     * è·å–å…³è”é¡¹ç›®ç¼–å·
      *
-     * @return project_id - ¹ØÁªÏîÄ¿ID
+     * @return project_id - å…³è”é¡¹ç›®ç¼–å·
      */
-    @FieldDef(label="¹ØÁªÏîÄ¿ID")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    public Long getProjectId() {
-        return projectId;
+    @FieldDef(label="å…³è”é¡¹ç›®ç¼–å·", maxLength = 255)
+	@EditMode(editor = FieldEditor.Text, required = false)
+    public String getProjectNumber() {
+        return projectNumber;
     }
 
     /**
-     * ÉèÖÃ¹ØÁªÏîÄ¿ID
+     * è®¾ç½®å…³è”é¡¹ç›®ç¼–å·
      *
-     * @param projectId ¹ØÁªÏîÄ¿ID
+     * @param projectId å…³è”é¡¹ç›®ç¼–å·
      */
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
+    public void setProjectNumber(String projectNumber) {
+        this.projectNumber = projectNumber;
     }
 
     /**
-     * »ñÈ¡¹ØÁª°æ±¾ID
+     * è·å–å…³è”ç‰ˆæœ¬ID
      *
-     * @return version_id - ¹ØÁª°æ±¾ID
+     * @return version_id - å…³è”ç‰ˆæœ¬ID
      */
-    @FieldDef(label="¹ØÁª°æ±¾ID")
+    @FieldDef(label="å…³è”ç‰ˆæœ¬ID")
     @EditMode(editor = FieldEditor.Number, required = false)
     public Long getVersionId() {
         return versionId;
     }
 
     /**
-     * ÉèÖÃ¹ØÁª°æ±¾ID
+     * è®¾ç½®å…³è”ç‰ˆæœ¬ID
      *
-     * @param versionId ¹ØÁª°æ±¾ID
+     * @param versionId å…³è”ç‰ˆæœ¬ID
      */
     public void setVersionId(Long versionId) {
         this.versionId = versionId;
     }
 
     /**
-     * »ñÈ¡ĞèÇó×´Ì¬
+     * è·å–éœ€æ±‚çŠ¶æ€
      *
-     * @return status - ĞèÇó×´Ì¬
+     * @return status - éœ€æ±‚çŠ¶æ€
      */
-    @FieldDef(label="ĞèÇó×´Ì¬")
+    @FieldDef(label="éœ€æ±‚çŠ¶æ€")
     @EditMode(editor = FieldEditor.Number, required = true)
-    public Long getStatus() {
+    public int getStatus() {
         return status;
     }
 
     /**
-     * ÉèÖÃĞèÇó×´Ì¬
+     * è®¾ç½®éœ€æ±‚çŠ¶æ€
      *
-     * @param status ĞèÇó×´Ì¬
+     * @param status éœ€æ±‚çŠ¶æ€
      */
-    public void setStatus(Long status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 
     /**
-     * »ñÈ¡¹ØÁª¹¤µ¥id
+     * è·å–å…³è”å·¥å•id
      *
-     * @return work_order_id - ¹ØÁª¹¤µ¥id
+     * @return work_order_id - å…³è”å·¥å•id
      */
-    @FieldDef(label="¹ØÁª¹¤µ¥id")
+    @FieldDef(label="å…³è”å·¥å•id")
     @EditMode(editor = FieldEditor.Number, required = false)
     public Long getWorkOrderId() {
         return workOrderId;
     }
 
     /**
-     * ÉèÖÃ¹ØÁª¹¤µ¥id
+     * è®¾ç½®å…³è”å·¥å•id
      *
-     * @param workOrderId ¹ØÁª¹¤µ¥id
+     * @param workOrderId å…³è”å·¥å•id
      */
     public void setWorkOrderId(Long workOrderId) {
         this.workOrderId = workOrderId;

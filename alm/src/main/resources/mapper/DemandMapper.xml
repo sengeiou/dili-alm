@@ -93,4 +93,28 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
+    <select id="selectDemandListToProject" resultMap="ResultMapWithBLOBs">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    d.id, d.serial_number, d.name, user_id, d.belong_pro_id, d.type, d.status, d.finish_date, d.document_url, 
+    d.create_date, d.submit_date, d.content, d.reason
+	FROM  demand d
+    LEFT JOIN 
+    demand_project dp
+    ON d.id = dp.demand_id
+    WHERE (d.belong_pro_id = -1 
+       <if test="projectId != null" >
+           OR d.belong_pro_id=  #{projectId,jdbcType=BIGINT}
+       </if>
+ 
+    
+    ) AND (dp.id IS NULL 
+      <if test="demandProjectStatus != null" >
+      	   OR dp.status = #{demandProjectStatus,jdbcType=INTEGER}
+      </if>
+    )
+  </select>
+  
 </mapper>

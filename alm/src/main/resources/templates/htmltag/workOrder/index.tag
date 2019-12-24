@@ -202,6 +202,7 @@ function updateGridRow(row) {
 
 // 打开新增窗口
 function openInsert() {
+	
 	if (userId == 1) {
 		return false;
 	}
@@ -214,33 +215,37 @@ function openInsert() {
 				buttons : [{
 							text : '保存',
 							handler : function() {
-								$('#editForm').form('submit', {
-											url : '${contextPath!}/workOrder/saveOrUpdate',
-											onSubmit : function() {
-												if (!validateForm()) {
-													return false;
-												}
-												$.messager.progress({
-															title : '提示',
-															msg : '正在提交，请稍候……',
-															text : ''
-														});
-											},
-											success : function(data) {
-												$.messager.progress('close');
-												var obj = $.parseJSON(data);
-												if (obj.code == 200) {
-													$('#grid').datagrid('insertRow', {
-																index : 0,
-																row : obj.data
+								if($($("input[name$='demandIds']")[0]).val()==null||$($("input[name$='demandIds']")[0]).val()==""){
+									$.messager.alert('警告', '请选择至少一个需求');
+								}else{
+									$('#editForm').form('submit', {
+												url : '${contextPath!}/workOrder/saveOrUpdate',
+												onSubmit : function() {
+													if (!validateForm()) {
+														return false;
+													}
+													$.messager.progress({
+																title : '提示',
+																msg : '正在提交，请稍候……',
+																text : ''
 															});
-													$('#grid').datagrid('acceptChanges');
-													$('#win').dialog('close');
-												} else {
-													$.messager.alert('错误', obj.result);
+												},
+												success : function(data) {
+													$.messager.progress('close');
+													var obj = $.parseJSON(data);
+													if (obj.code == 200) {
+														$('#grid').datagrid('insertRow', {
+																	index : 0,
+																	row : obj.data
+																});
+														$('#grid').datagrid('acceptChanges');
+														$('#win').dialog('close');
+													} else {
+														$.messager.alert('错误', obj.result);
+													}
 												}
-											}
-										});
+											});
+								}
 							}
 						}, {
 							text : '取消',
@@ -251,34 +256,38 @@ function openInsert() {
 						}, {
 							text : '提交',
 							handler : function() {
-								var data = $("#editForm").serializeArray();
-								$('#editForm').form('submit', {
-											url : '${contextPath!}/workOrder/saveAndSubmit',
-											onSubmit : function() {
-												if (!validateForm()) {
-													return false;
-												}
-												$.messager.progress({
-															title : '提示',
-															msg : '正在提交，请稍候……',
-															text : ''
-														});
-											},
-											success : function(data) {
-												$.messager.progress('close');
-												var obj = $.parseJSON(data);
-												if (obj.code == 200) {
-													$('#grid').datagrid('insertRow', {
-																index : 0,
-																row : obj.data
+								if($($("input[name$='demandIds']")[0]).val()==null||$($("input[name$='demandIds']")[0]).val()==""){
+									$.messager.alert('警告', '请选择至少一个需求');
+								}else{
+									var data = $("#editForm").serializeArray();
+									$('#editForm').form('submit', {
+												url : '${contextPath!}/workOrder/saveAndSubmit',
+												onSubmit : function() {
+													if (!validateForm()) {
+														return false;
+													}
+													$.messager.progress({
+																title : '提示',
+																msg : '正在提交，请稍候……',
+																text : ''
 															});
-													$('#grid').datagrid('acceptChanges');
-													$('#win').dialog('close');
-												} else {
-													$.messager.alert('错误', obj.result);
+												},
+												success : function(data) {
+													$.messager.progress('close');
+													var obj = $.parseJSON(data);
+													if (obj.code == 200) {
+														$('#grid').datagrid('insertRow', {
+																	index : 0,
+																	row : obj.data
+																});
+														$('#grid').datagrid('acceptChanges');
+														$('#win').dialog('close');
+													} else {
+														$.messager.alert('错误', obj.result);
+													}
 												}
-											}
-										});
+											});
+								}
 							}
 						}]
 			});

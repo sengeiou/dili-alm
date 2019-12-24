@@ -2,6 +2,7 @@ package com.dili.alm.controller;
 
 import com.dili.alm.domain.Demand;
 import com.dili.alm.service.DemandService;
+import com.dili.alm.utils.WebUtil;
 import com.dili.ss.domain.BaseOutput;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -78,5 +79,38 @@ public class DemandController {
     public @ResponseBody BaseOutput delete(Long id) {
         demandService.delete(id);
         return BaseOutput.success("删除成功");
+    }
+    
+    
+    @ApiOperation(value="查询Demand未立项", notes = "查询Demand，返回列表信息")
+    @ApiImplicitParams({
+		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = false, dataType = "string")
+	})
+    @RequestMapping(value="/queryDemandListToProject.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody List<Demand> queryDemandListToProject(Long projectId) {
+        return demandService.queryDemandListToProject(projectId);
+    }
+    
+    @ApiOperation(value="查询Demand根据id集合", notes = "查询Demand，返回列表信息")
+    @ApiImplicitParams({
+		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = false, dataType = "string")
+	})
+    @RequestMapping(value="/queryDemandListByIds.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody List<Demand> queryDemandListByIds(String ids) {
+    	if(WebUtil.strIsEmpty(ids)) {
+    		return null;
+    	}
+        return demandService.queryDemandListByIds(ids);
+    }
+    @ApiOperation(value="查询已关联Demand", notes = "查询Demand，返回列表信息")
+    @ApiImplicitParams({
+		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = false, dataType = "string")
+	})
+    @RequestMapping(value="/queryDemandListByProjectIdOrVersionIdOrWorkOrderId.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody List<Demand> queryDemandListByProjectIdOrVersionIdOrWorkOrderId(Long id,Integer type) {
+    	if(id==null||type==null) {
+    		return null;
+    	}
+        return demandService.queryDemandListByProjectIdOrVersionIdOrWorkOrderId(id,type);
     }
 }

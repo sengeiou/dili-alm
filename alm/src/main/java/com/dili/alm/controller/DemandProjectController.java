@@ -1,6 +1,7 @@
 package com.dili.alm.controller;
 
 import com.dili.alm.domain.DemandProject;
+import com.dili.alm.domain.dto.DemandProjectDto;
 import com.dili.alm.service.DemandProjectService;
 import com.dili.ss.domain.BaseOutput;
 import io.swagger.annotations.Api;
@@ -78,5 +79,21 @@ public class DemandProjectController {
     public @ResponseBody BaseOutput delete(Long id) {
         demandProjectService.delete(id);
         return BaseOutput.success("删除成功");
+    }
+    @ApiOperation("新增需求关联集合")
+    @RequestMapping(value="/insertDemandProjectDto.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput insertDemandProjectDto(DemandProjectDto demandProjectDto) {
+    	return demandProjectService.insertDemandProjectDto(demandProjectDto);
+         
+    }
+    @ApiOperation("删除关联根据项目id,版本id,工单id")
+    @ApiImplicitParams({
+		@ApiImplicitParam(name="id", paramType="form", value = "DemandProject的主键", required = true, dataType = "long")
+	})
+    @RequestMapping(value="/deleteByProjectOrVersionOrWorkOrder.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput deleteByProjectOrVersionOrWorkOrder(Long projectId,Long versionId,Long workOrderId ) {
+        
+    	return demandProjectService.deleteByProjectOrVersionOrWorkOrder(projectId,versionId,workOrderId);
+      
     }
 }

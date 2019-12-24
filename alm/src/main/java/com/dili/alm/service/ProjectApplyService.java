@@ -7,19 +7,21 @@ import java.util.Map;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
+import com.dili.alm.domain.dto.ProjectApplyDto;
 import com.dili.alm.domain.dto.RoiUpdateDto;
 import com.dili.alm.domain.dto.apply.ApplyFiles;
 import com.dili.alm.domain.dto.apply.ApplyImpact;
 import com.dili.alm.domain.dto.apply.ApplyRisk;
 import com.dili.alm.exceptions.ProjectApplyException;
 import com.dili.ss.base.BaseService;
+import com.dili.ss.domain.BaseOutput;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-11-21 16:19:02.
  */
 public interface ProjectApplyService extends BaseService<ProjectApply, Long> {
 
-	int insertApply(ProjectApply apply);
+	BaseOutput insertApply(ProjectApplyDto projectApplyDto);
 
 	List<DataDictionaryValueDto> getPlanPhase();
 

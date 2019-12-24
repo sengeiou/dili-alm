@@ -100,8 +100,9 @@
 								   fitColumns="true" pagination="false" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" align="center" fit="false" striped="true" idField="id" data-options="toolbar: '#tb1'">
 								<thead>
 								<tr>
-									<th data-options="field:'demNum', width:'20%', align:'center', resizable:'true', fixed:'false'">需求编号</th>
-									<th data-options="field:'demName', width:'20%', align:'center', resizable:'true', fixed:'false'">需求名称</th>
+									<th data-options="field:'id',hidden:'true'">
+									<th data-options="field:'serialNumber', width:'20%', align:'center', resizable:'true', fixed:'false'">需求编号</th>
+									<th data-options="field:'name', width:'20%', align:'center', resizable:'true', fixed:'false'">需求名称</th>
 									<th data-options="field:'finishDate', width:'40%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">需求期待时间日期</th>
 									<th data-options="field:'opt', width:'10%', align:'center', resizable:'true', fixed:'false',formatter:demandOptFormatter">操作</th>
 								</tr>
@@ -143,13 +144,13 @@
 					}]
 					
 				">
-        <table class="easyui-datagrid" id="demandListGrid" rownumbers="false" remoteSort="false" loadMsg="数据加载中..."
-               singleSelect="true" method="post" multiSort="true">
+         <table class="easyui-datagrid" id="demandListGrid" rownumbers="false" remoteSort="false" loadMsg="数据加载中..."
+               singleSelect="false" method="post" multiSort="true"  data-options="url:'${contextPath}/demand/queryDemandListToProject.action'">
                <thead>
 		            <tr>
 		            	<th data-options="field:'id', checkbox:true ">需求ID</th>
-		                <th data-options="field:'demNum', width:'30%', align:'center', resizable:'true', fixed:'false'">需求编号</th>
-						<th data-options="field:'demName', width:'30%', align:'center', resizable:'true', fixed:'false'">需求名称</th>
+		                <th data-options="field:'serialNumber', width:'30%', align:'center', resizable:'true', fixed:'false'">需求编号</th>
+						<th data-options="field:'name', width:'30%', align:'center', resizable:'true', fixed:'false'">需求名称</th>
 						<th data-options="field:'finishDate', width:'30%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">需求期待时间日期</th>
 						
 		            </tr>
@@ -165,17 +166,44 @@
 		
 	})
 	function demandOptFormatter(value, row, index) {
-			return '<a href="javascript:void(0);" onclick="delDemand(' + row.id
-					+ ');">删除</a>';
+		return '<a href="javascript:void(0);" onclick="delDemand(' + row.id
+				+ ');">删除</a>';
 	}
 	function saveDemandToProject() {
+		var rows = $('#demandListGrid').datagrid('getRows');
+		$('#demandListGrid').datagrid('uncheckAll'); 
+		var demandId = new Array();
+		$( "input[name$='demandIds']" ).each(function(i){		
+			demandId.push($(this).val());	
+			console.log($(this).val());
+		});
+	
+		for(var g=0;g<rows.length;g++){
+			var s = $.inArray(rows[g].id+"", demandId);
+		 	if(s>=0){
+		 		$('#demandListGrid').datagrid('deleteRow', g); 
+		 	}
+		}
 		$('#demandListDlg').dialog('open');
+
 	}
 	function addDemandList(){
 		$('#demandListDlg').dialog('close');
-	/* 	$('#demandListDlg').dialog('close');
-		$('#editForm').append('<input type="hidden" name="demandIds" value="' + data.data[0].id + '">');
-		var row = data.data[0];
-		$('#demandGrid').datagrid('appendRow', row); */
+		var selRows = $('#demandListGrid').datagrid('getChecked');
+		for(var i=0;i<selRows.length;i++){
+            $('#editForm').append('<input type="hidden" id="demandId'+ selRows[i].id + '" name="demandIds" value="' + selRows[i].id + '">');
+            $('#demandGrid').datagrid('appendRow', selRows[i]); 
+		}	
+	}
+	function delDemand(id){
+		 var rows = $('#demandGrid').datagrid('getRows');
+		 for(var i=0;i<rows.length;i++){
+			 if(rows[i].id==id){
+				 $('#demandListGrid').datagrid('appendRow', rows[i]); 
+				 $('#demandGrid').datagrid('deleteRow', i); 
+				 $("#demandId" + id + "").remove();
+			 }	 
+		 }
+		
 	}
 </script>
