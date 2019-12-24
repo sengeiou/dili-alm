@@ -12,7 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
- * ÓÉMyBatis Generator¹¤¾ß×Ô¶¯Éú³É
+ * ç”±MyBatis Generatorå·¥å…·è‡ªåŠ¨ç”Ÿæˆ
  * 
  * This file was generated on 2019-12-23 17:32:14.
  */
@@ -21,91 +21,91 @@ public interface Demand extends IBaseDomain {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`")
-    @FieldDef(label="×ÔÔö±àºÅ")
+    @FieldDef(label="è‡ªå¢ç¼–å·")
     @EditMode(editor = FieldEditor.Number, required = true)
     Long getId();
 
     void setId(Long id);
 
     @Column(name = "`serial_number`")
-    @FieldDef(label="ĞèÇó±àºÅ£¬ÇøÓòÊ××ÖÄ¸+ÄêÔÂÈÕ+Ê±·Ö+001×ÔÔöÊı×Ö", maxLength = 25)
+    @FieldDef(label="éœ€æ±‚ç¼–å·ï¼ŒåŒºåŸŸé¦–å­—æ¯+å¹´æœˆæ—¥+æ—¶åˆ†+001è‡ªå¢æ•°å­—", maxLength = 25)
     @EditMode(editor = FieldEditor.Text, required = true)
     String getSerialNumber();
 
     void setSerialNumber(String serialNumber);
 
     @Column(name = "`name`")
-    @FieldDef(label="ĞèÇóÃû³Æ", maxLength = 25)
+    @FieldDef(label="éœ€æ±‚åç§°", maxLength = 25)
     @EditMode(editor = FieldEditor.Text, required = true)
     String getName();
 
     void setName(String name);
 
     @Column(name = "`user_id`")
-    @FieldDef(label="ĞèÇóÉêÇëÈË")
+    @FieldDef(label="éœ€æ±‚ç”³è¯·äºº")
     @EditMode(editor = FieldEditor.Number, required = true)
     Long getUserId();
 
     void setUserId(Long userId);
 
     @Column(name = "`belong_pro_id`")
-    @FieldDef(label="ËùÊôÏµÍ³")
+    @FieldDef(label="æ‰€å±ç³»ç»Ÿ")
     @EditMode(editor = FieldEditor.Number, required = false)
     Long getBelongProId();
 
     void setBelongProId(Long belongProId);
 
     @Column(name = "`type`")
-    @FieldDef(label="ĞèÇóÀàĞÍ£¨Êı¾İ×Öµä£©")
+    @FieldDef(label="éœ€æ±‚ç±»å‹ï¼ˆæ•°æ®å­—å…¸ï¼‰")
     @EditMode(editor = FieldEditor.Text, required = true)
     Byte getType();
 
     void setType(Byte type);
 
     @Column(name = "`status`")
-    @FieldDef(label="ĞèÇó×´Ì¬£¨Êı¾İ×Öµä£©")
+    @FieldDef(label="éœ€æ±‚çŠ¶æ€ï¼ˆæ•°æ®å­—å…¸ï¼‰")
     @EditMode(editor = FieldEditor.Text, required = true)
     Byte getStatus();
 
     void setStatus(Byte status);
 
     @Column(name = "`finish_date`")
-    @FieldDef(label="ĞèÇóÆÚÍûÊµÏÖÊ±¼ä(ÄêÔÂÈÕ)")
+    @FieldDef(label="éœ€æ±‚æœŸæœ›å®ç°æ—¶é—´(å¹´æœˆæ—¥)")
     @EditMode(editor = FieldEditor.Date, required = true)
     Date getFinishDate();
 
     void setFinishDate(Date finishDate);
 
     @Column(name = "`document_url`")
-    @FieldDef(label="Ïà¹Ø¸½¼ş", maxLength = 120)
+    @FieldDef(label="ç›¸å…³é™„ä»¶", maxLength = 120)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getDocumentUrl();
 
     void setDocumentUrl(String documentUrl);
 
     @Column(name = "`create_date`")
-    @FieldDef(label="´´½¨Ê±¼ä")
+    @FieldDef(label="åˆ›å»ºæ—¶é—´")
     @EditMode(editor = FieldEditor.Datetime, required = true)
     Date getCreateDate();
 
     void setCreateDate(Date createDate);
 
     @Column(name = "`submit_date`")
-    @FieldDef(label="Ìá½»Ê±¼ä£¨¿ªÆôÁ÷³Ì£©")
+    @FieldDef(label="æäº¤æ—¶é—´ï¼ˆå¼€å¯æµç¨‹ï¼‰")
     @EditMode(editor = FieldEditor.Datetime, required = true)
     Date getSubmitDate();
 
     void setSubmitDate(Date submitDate);
 
     @Column(name = "`content`")
-    @FieldDef(label="ĞèÇóÄÚÈİ")
+    @FieldDef(label="éœ€æ±‚å†…å®¹")
     @EditMode(editor = FieldEditor.Text, required = true)
     String getContent();
 
     void setContent(String content);
 
     @Column(name = "`reason`")
-    @FieldDef(label="ĞèÇó±³¾°")
+    @FieldDef(label="éœ€æ±‚èƒŒæ™¯")
     @EditMode(editor = FieldEditor.Text, required = false)
     String getReason();
 

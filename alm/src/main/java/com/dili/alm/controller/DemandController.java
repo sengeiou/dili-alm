@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
- * ÓÉMyBatis Generator¹¤¾ß×Ô¶¯Éú³É
+ * ç”±MyBatis Generatorå·¥å…·è‡ªåŠ¨ç”Ÿæˆ
  * This file was generated on 2019-12-23 17:32:14.
  */
 @Api("/demand")
@@ -26,57 +26,57 @@ public class DemandController {
     @Autowired
     DemandService demandService;
 
-    @ApiOperation("Ìø×ªµ½DemandÒ³Ãæ")
+    @ApiOperation("è·³è½¬åˆ°Demandé¡µé¢")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
         return "demand/index";
     }
 
-    @ApiOperation(value="²éÑ¯Demand", notes = "²éÑ¯Demand£¬·µ»ØÁĞ±íĞÅÏ¢")
+    @ApiOperation(value="æŸ¥è¯¢Demand", notes = "æŸ¥è¯¢Demandï¼Œè¿”å›åˆ—è¡¨ä¿¡æ¯")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="Demand", paramType="form", value = "DemandµÄformĞÅÏ¢", required = false, dataType = "string")
+		@ApiImplicitParam(name="Demand", paramType="form", value = "Demandçš„formä¿¡æ¯", required = false, dataType = "string")
 	})
     @RequestMapping(value="/list.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody List<Demand> list(Demand demand) {
         return demandService.list(demand);
     }
 
-    @ApiOperation(value="·ÖÒ³²éÑ¯Demand", notes = "·ÖÒ³²éÑ¯Demand£¬·µ»Øeasyui·ÖÒ³ĞÅÏ¢")
+    @ApiOperation(value="åˆ†é¡µæŸ¥è¯¢Demand", notes = "åˆ†é¡µæŸ¥è¯¢Demandï¼Œè¿”å›easyuiåˆ†é¡µä¿¡æ¯")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="Demand", paramType="form", value = "DemandµÄformĞÅÏ¢", required = false, dataType = "string")
+		@ApiImplicitParam(name="Demand", paramType="form", value = "Demandçš„formä¿¡æ¯", required = false, dataType = "string")
 	})
     @RequestMapping(value="/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String listPage(Demand demand) throws Exception {
         return demandService.listEasyuiPageByExample(demand, true).toString();
     }
 
-    @ApiOperation("ĞÂÔöDemand")
+    @ApiOperation("æ–°å¢Demand")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="Demand", paramType="form", value = "DemandµÄformĞÅÏ¢", required = true, dataType = "string")
+		@ApiImplicitParam(name="Demand", paramType="form", value = "Demandçš„formä¿¡æ¯", required = true, dataType = "string")
 	})
     @RequestMapping(value="/insert.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput insert(Demand demand) {
         demandService.insertSelective(demand);
-        return BaseOutput.success("ĞÂÔö³É¹¦");
+        return BaseOutput.success("æ–°å¢æˆåŠŸ");
     }
 
-    @ApiOperation("ĞŞ¸ÄDemand")
+    @ApiOperation("ä¿®æ”¹Demand")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="Demand", paramType="form", value = "DemandµÄformĞÅÏ¢", required = true, dataType = "string")
+		@ApiImplicitParam(name="Demand", paramType="form", value = "Demandçš„formä¿¡æ¯", required = true, dataType = "string")
 	})
     @RequestMapping(value="/update.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput update(Demand demand) {
         demandService.updateSelective(demand);
-        return BaseOutput.success("ĞŞ¸Ä³É¹¦");
+        return BaseOutput.success("ä¿®æ”¹æˆåŠŸ");
     }
 
-    @ApiOperation("É¾³ıDemand")
+    @ApiOperation("åˆ é™¤Demand")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="id", paramType="form", value = "DemandµÄÖ÷¼ü", required = true, dataType = "long")
+		@ApiImplicitParam(name="id", paramType="form", value = "Demandçš„ä¸»é”®", required = true, dataType = "long")
 	})
     @RequestMapping(value="/delete.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput delete(Long id) {
         demandService.delete(id);
-        return BaseOutput.success("É¾³ı³É¹¦");
+        return BaseOutput.success("åˆ é™¤æˆåŠŸ");
     }
 }

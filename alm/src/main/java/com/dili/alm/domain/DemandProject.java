@@ -11,7 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
- * ÓÉMyBatis Generator¹¤¾ß×Ô¶¯Éú³É
+ * ç”±MyBatis Generatorå·¥å…·è‡ªåŠ¨ç”Ÿæˆ
  * 
  * This file was generated on 2019-12-23 17:47:02.
  */
@@ -20,42 +20,42 @@ public interface DemandProject extends IBaseDomain {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`")
-    @FieldDef(label="×ÔÔöid")
+    @FieldDef(label="è‡ªå¢id")
     @EditMode(editor = FieldEditor.Number, required = true)
     Long getId();
 
     void setId(Long id);
 
     @Column(name = "`demand_id`")
-    @FieldDef(label="ĞèÇóID")
+    @FieldDef(label="éœ€æ±‚ID")
     @EditMode(editor = FieldEditor.Number, required = true)
     Long getDemandId();
 
     void setDemandId(Long demandId);
 
     @Column(name = "`project_id`")
-    @FieldDef(label="¹ØÁªÏîÄ¿ID")
+    @FieldDef(label="å…³è”é¡¹ç›®ID")
     @EditMode(editor = FieldEditor.Number, required = false)
     Long getProjectId();
 
     void setProjectId(Long projectId);
 
     @Column(name = "`version_id`")
-    @FieldDef(label="¹ØÁª°æ±¾ID")
+    @FieldDef(label="å…³è”ç‰ˆæœ¬ID")
     @EditMode(editor = FieldEditor.Number, required = false)
     Long getVersionId();
 
     void setVersionId(Long versionId);
 
     @Column(name = "`status`")
-    @FieldDef(label="ĞèÇó×´Ì¬")
+    @FieldDef(label="éœ€æ±‚çŠ¶æ€")
     @EditMode(editor = FieldEditor.Number, required = true)
     Long getStatus();
 
     void setStatus(Long status);
 
     @Column(name = "`work_order_id`")
-    @FieldDef(label="¹ØÁª¹¤µ¥id")
+    @FieldDef(label="å…³è”å·¥å•id")
     @EditMode(editor = FieldEditor.Number, required = false)
     Long getWorkOrderId();
 
