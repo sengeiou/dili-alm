@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
- * ÓÉMyBatis Generator¹¤¾ß×Ô¶¯Éú³É
+ * ç”±MyBatis Generatorå·¥å…·è‡ªåŠ¨ç”Ÿæˆ
  * This file was generated on 2019-12-23 17:47:02.
  */
 @Api("/demandProject")
@@ -26,57 +26,57 @@ public class DemandProjectController {
     @Autowired
     DemandProjectService demandProjectService;
 
-    @ApiOperation("Ìø×ªµ½DemandProjectÒ³Ãæ")
+    @ApiOperation("è·³è½¬åˆ°DemandProjecté¡µé¢")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
         return "demandProject/index";
     }
 
-    @ApiOperation(value="²éÑ¯DemandProject", notes = "²éÑ¯DemandProject£¬·µ»ØÁĞ±íĞÅÏ¢")
+    @ApiOperation(value="æŸ¥è¯¢DemandProject", notes = "æŸ¥è¯¢DemandProjectï¼Œè¿”å›åˆ—è¡¨ä¿¡æ¯")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="DemandProject", paramType="form", value = "DemandProjectµÄformĞÅÏ¢", required = false, dataType = "string")
+		@ApiImplicitParam(name="DemandProject", paramType="form", value = "DemandProjectçš„formä¿¡æ¯", required = false, dataType = "string")
 	})
     @RequestMapping(value="/list.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody List<DemandProject> list(DemandProject demandProject) {
         return demandProjectService.list(demandProject);
     }
 
-    @ApiOperation(value="·ÖÒ³²éÑ¯DemandProject", notes = "·ÖÒ³²éÑ¯DemandProject£¬·µ»Øeasyui·ÖÒ³ĞÅÏ¢")
+    @ApiOperation(value="åˆ†é¡µæŸ¥è¯¢DemandProject", notes = "åˆ†é¡µæŸ¥è¯¢DemandProjectï¼Œè¿”å›easyuiåˆ†é¡µä¿¡æ¯")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="DemandProject", paramType="form", value = "DemandProjectµÄformĞÅÏ¢", required = false, dataType = "string")
+		@ApiImplicitParam(name="DemandProject", paramType="form", value = "DemandProjectçš„formä¿¡æ¯", required = false, dataType = "string")
 	})
     @RequestMapping(value="/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String listPage(DemandProject demandProject) throws Exception {
         return demandProjectService.listEasyuiPageByExample(demandProject, true).toString();
     }
 
-    @ApiOperation("ĞÂÔöDemandProject")
+    @ApiOperation("æ–°å¢DemandProject")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="DemandProject", paramType="form", value = "DemandProjectµÄformĞÅÏ¢", required = true, dataType = "string")
+		@ApiImplicitParam(name="DemandProject", paramType="form", value = "DemandProjectçš„formä¿¡æ¯", required = true, dataType = "string")
 	})
     @RequestMapping(value="/insert.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput insert(DemandProject demandProject) {
         demandProjectService.insertSelective(demandProject);
-        return BaseOutput.success("ĞÂÔö³É¹¦");
+        return BaseOutput.success("æ–°å¢æˆåŠŸ");
     }
 
-    @ApiOperation("ĞŞ¸ÄDemandProject")
+    @ApiOperation("ä¿®æ”¹DemandProject")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="DemandProject", paramType="form", value = "DemandProjectµÄformĞÅÏ¢", required = true, dataType = "string")
+		@ApiImplicitParam(name="DemandProject", paramType="form", value = "DemandProjectçš„formä¿¡æ¯", required = true, dataType = "string")
 	})
     @RequestMapping(value="/update.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput update(DemandProject demandProject) {
         demandProjectService.updateSelective(demandProject);
-        return BaseOutput.success("ĞŞ¸Ä³É¹¦");
+        return BaseOutput.success("ä¿®æ”¹æˆåŠŸ");
     }
 
-    @ApiOperation("É¾³ıDemandProject")
+    @ApiOperation("åˆ é™¤DemandProject")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="id", paramType="form", value = "DemandProjectµÄÖ÷¼ü", required = true, dataType = "long")
+		@ApiImplicitParam(name="id", paramType="form", value = "DemandProjectçš„ä¸»é”®", required = true, dataType = "long")
 	})
     @RequestMapping(value="/delete.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput delete(Long id) {
         demandProjectService.delete(id);
-        return BaseOutput.success("É¾³ı³É¹¦");
+        return BaseOutput.success("åˆ é™¤æˆåŠŸ");
     }
 }
