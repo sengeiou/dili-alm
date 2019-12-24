@@ -1,0 +1,379 @@
+ <#body>
+ <style>
+     .textbox-label{
+         width: 60px;
+     }
+
+ </style>
+    <div class="easyui-layout" fit="true">
+        <!-- ====================================================================================================================== -->
+        <!-- 上方布局 -->
+        <!-- ====================================================================================================================== -->
+        <div region="north" height="auto" align="center">
+            <!-- =========================================================表单========================================================= -->
+            <div class="easyui-panel" style="width:100%;" align="left">
+                <form id="form" class="easyui-form" method="post" fit="true">
+                        <table style="padding:10px;">
+                        <tr>
+                            <td style="padding:5px;">
+                                <input class="easyui-textbox" name="realName" id="realName" style="width:100%" data-options="label:'真实名字:', validType:'length[0,19]'" />
+                            </td>
+                             <td style="padding:5px;">
+                                <input class="easyui-textbox" name="userName" id="userName" style="width:100%" data-options="label:'用户名称:', validType:'length[0,19]'" />
+                            </td>
+                              <td style="padding:5px;">
+                                <input class="easyui-textbox" name="cellphone" id="cellphone" style="width:100%" data-options="label:'电话:', validType:'length[0,19]'" />
+                            </td>
+                            
+                        </tr>
+                     
+                        <tr>
+                            <td>
+                                <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
+                                   onclick="queryGrid()">查询</a>
+                                <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload" onclick="clearForm()">重置</a>
+                                  
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+        <!-- ====================================================================================================================== -->
+        <!-- 中央布局 -->
+        <!-- ====================================================================================================================== -->
+        <!-- 表格 -->
+        <div region="center" style="width:100%;" height="auto">
+		
+            <!-- =========================================================表格========================================================= -->
+            <table class="easyui-datagrid" title="用户迁移页面" id="grid" fitColumns="true"
+                   pagination="true" pageSize="30" pageNumber="1" pagePosition="both" rownumbers="true" remoteSort="false"
+                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"  sortOrder="desc"
+                   align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
+                <thead>
+                    <tr>
+                        <th data-options="field:'id',width:'10%', formatter:formatserialNumber,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">用户id   </th>
+                        <th data-options="field:'userName',width:'10%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">用户名称  </th>
+                        <th data-options="field:'realName',width:'10%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">真实姓名   </th>
+                        <th data-options="field:'email',width:'20%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">邮件   </th>
+                        <th data-options="field:'cellphone',width:'12%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">手机   </th>
+                        <th data-options="field:'_operate',width:'10%',align:'center',formatter:formatOper">操作</th>
+                    </tr>
+                </thead>
+            </table>
+  
+        </div>
+    </div>
+    
+
+  
+    <!-- ====================================================================================================================== -->
+    <!-- style & script 分隔线 -->
+    <!-- ====================================================================================================================== -->
+    <script type="text/javascript">
+    
+    
+   
+   //项目名称
+     function a(val,row,index){  
+     	//  alert(val+"s:" +row.applyId +"ss:"+index);
+        // return "<a href='javascript:void(0)'>"+val+"</a>"; 
+        if(row.projectStatus<8){
+        	return 	 "<font color='green'>正常--偏差<8%</font>";
+        }else if(row.projectStatus>15){
+        	return "<font color='red'>警戒--偏差>15%</font>";
+        }else{
+        	return "<font color='orange'>预警--8%<偏差<15%</font>";
+        }
+       
+     }
+   
+/*      function clearadd(){  
+     	
+        	window.location.href="${contextPath}/weekly/getDescAddByProjectId?projectId=47";
+     } */
+    
+    
+    
+        //打开新增窗口
+        function openInsert(){
+            $('#dlg').dialog('open');
+            $('#dlg').dialog('center');
+            $('#_form').form('clear');
+            formFocus("_form", "_serialNumber");
+        }
+
+        //打开修改窗口
+        function openUpdate(){
+            var selected = $("#grid").datagrid("getSelected");
+            if (null == selected) {
+                $.messager.alert('警告','请选中一条数据');
+                return;
+            }
+            $('#dlg').dialog('open');
+            $('#dlg').dialog('center');
+            formFocus("_form", "_serialNumber");
+            var formData = $.extend({},selected);
+            formData = addKeyStartWith(getOriginalData(formData),"_");
+            $('#_form').form('load', formData);
+        }
+
+        function saveOrUpdate(){
+            if(!$('#_form').form("validate")){
+                return;
+            }
+            var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
+            var _url = null;
+            //没有id就新增
+            if(_formData.id == null || _formData.id==""){
+                _url = "${contextPath}/weekly/insert";
+            }else{//有id就修改
+                _url = "${contextPath}/weekly/update";
+            }
+            $.ajax({
+                type: "POST",
+                url: _url,
+                data: _formData,
+                processData:true,
+                dataType: "json",
+                async : true,
+                success: function (data) {
+                    if(data.code=="200"){
+                        $("#grid").datagrid("reload");
+                        $('#dlg').dialog('close');
+                    }else{
+                        $.messager.alert('错误',data.result);
+                    }
+                },
+                error: function(){
+                    $.messager.alert('错误','远程访问失败');
+                }
+            });
+        }
+
+        //根据主键删除
+        function del() {
+            var selected = $("#grid").datagrid("getSelected");
+            if (null == selected) {
+                $.messager.alert('警告','请选中一条数据');
+                return;
+            }
+            $.messager.confirm('确认','您确认想要删除记录吗？',function(r){
+                if (r){
+                    $.ajax({
+                        type: "POST",
+                        url: "${contextPath}/weekly/delete",
+                        data: {id:selected.id},
+                        processData:true,
+                        dataType: "json",
+                        async : true,
+                        success: function (data) {
+                            if(data.code=="200"){
+                                $("#grid").datagrid("reload");
+                                $('#dlg').dialog('close');
+                            }else{
+                                $.messager.alert('错误',data.result);
+                            }
+                        },
+                        error: function(){
+                            $.messager.alert('错误','远程访问失败');
+                        }
+                    });
+                }
+            });
+
+        }
+        //表格查询
+        function queryGrid() {
+            var opts = $("#grid").datagrid("options");
+            if (null == opts.url || "" == opts.url) {
+                opts.url = "${contextPath}/move/myMoveList";
+            }
+            if(!$('#form').form("validate")){
+                return;
+            }
+            
+         /*    var start=$("#startDate").val()+"";
+            var end=$("#endDate").val()+"";
+            if(start>end){
+            	 $.messager.alert('错误','开始时间必须小于结束时间');
+             	return;
+            } */
+            
+            var param = bindMetadata("grid", true);
+            var formData = $("#form").serializeObject();
+            $.extend(param, formData);
+            $("#grid").datagrid("load", param);
+        }
+
+
+        //清空表单
+        function clearForm() {
+            $('#form').form('clear');
+        }
+
+        //表格表头右键菜单
+        function headerContextMenu(e, field){
+            e.preventDefault();
+            if (!cmenu){
+                createColumnMenu("grid");
+            }
+            cmenu.menu('show', {
+                left:e.pageX,
+                top:e.pageY
+            });
+        }
+
+        $.messager.progress({
+            title:"提示",
+            msg:"加载中,请稍候...",
+            value : '10',
+            text: '{value}%',
+            interval:200
+        });
+        $.parser.onComplete = function(){
+            $.messager.progress("close");
+        }
+        //全局按键事件`
+        function getKey(e){
+            e = e || window.event;
+            var keycode = e.which ? e.which : e.keyCode;
+            if(keycode == 46){ //如果按下删除键
+                var selected = $("#grid").datagrid("getSelected");
+                if(selected && selected!= null){
+                    del();
+                }
+            }
+        }
+		function isWeekSubmit(id){
+	        var  htmlobj=$.ajax({url:"${contextPath!}/weekly/IsWeeklySubmit?weeklyId="+id,async:false});
+	        var str=htmlobj.responseText;
+	        var obj = $.parseJSON(str);
+	        return obj;
+		}
+        
+        function formatOper(val,row,index){  
+        	var out;
+              //  out='<a href="${contextPath}/weekly/getDescById?id='+row.id+'">修改 </a>';
+               out='<a href="javascript:void(0)" onclick="updateData(' + row.id + ')">迁移</a>';   
+            return out;  
+        }
+        function updateData(delid){  
+        	// var selected = $("#grid").datagrid("getSelected");
+           //  if (null == selected) {
+            //     $.messager.alert('警告','请选中一条数据');
+            //     return;
+          //   }
+           
+             $.messager.confirm('确认','您确认想要迁移记录吗？',function(r){
+                 if (r){
+                	 
+                	 
+                     $.ajax({
+                         type: "post",
+                         url: "${contextPath}/move/updateData",
+                         data: {id:delid},
+                         processData:true,
+                         dataType: "json",
+                         async : true,
+                         success: function (data) {
+                             if(data.code=="200"){
+                                 $("#grid").datagrid("reload");
+                                 $('#dlg').dialog('close');
+                             }else{
+                                 $.messager.alert('错误',data.result);
+                             }
+                         },
+                         error: function(){
+                             $.messager.alert('错误','远程访问失败');
+                         }
+                     });
+                     
+                     
+                     
+                     
+                 }
+             });
+        	
+        }
+        
+        //项目编号
+        function formatserialNumber(val,row,index){  
+        	// "<a href='${contextPath}/project/detail?id=" + row.id + "' target='_blank'>"+val+"</a>"; 
+        	  return  "<a href='javascript:void(0)' onclick='projectDesc(" + row.projectId + ")'>"+val+"</a>";   
+        	
+
+        }
+        //项目名称
+        function formatprojectName(val,row,index){  
+        	//  alert(val+"s:" +row.applyId +"ss:"+index);
+           // return "<a href='javascript:void(0)'>"+val+"</a>"; 
+            return  "<a href='javascript:void(0)' onclick='formatprojectApply(" + row.applyId + ")'>"+val+"</a>";  
+        }
+        function formatprojectApply(applyId){  
+        
+        	  var url='${contextPath}/projectApply/toDetails/'+applyId;        //转向网页的地址;
+        	   //alert(url);
+        	  var name='项目申请详情';                           //网页名称，可为空;
+        	  var iWidth=1000;                          //弹出窗口的宽度;
+        	  var iHeight=1200;                        //弹出窗口的高度;
+        	  var iTop = (window.screen.availHeight-30-iHeight)/2;       //获得窗口的垂直位置;
+        	  var iLeft = (window.screen.availWidth-10-iWidth)/2;           //获得窗口的水平位置;
+            //	return	window.open(url,name,'height='+iHeight+',innerHeight='+iHeight+',width='+iWidth+',innerWidth='+iWidth+',top='+iTop+',left='+iLeft+',toolbar=no,menubar=no,scrollbars=yes,resizeable=no,location=no,status=no');
+      	 
+      	  //   return       window.open('${contextPath}/projectApply/toDetails/'+applyId,'_blank','top='+iTop+',left='+iLeft+',width=1100,top=0,left=0,toolbar=no,menubar=no,scrollbars=yes, resizable=no,location=no, status=no')
+           return   window.location.href="${contextPath}/projectApply/toDetails/"+applyId+"";
+       }
+        
+        
+        
+        
+        //
+        function projectDesc(id){  
+        	
+
+      	  var url='${contextPath}/project/detail.html?id='+id;        //转向网页的地址;
+      	   //alert(url);
+      	  var name='项目详情';                           //网页名称，可为空;
+      	  var iWidth=1000;                          //弹出窗口的宽度;
+      	  var iHeight=1200;                        //弹出窗口的高度;
+      	  var iTop = (window.screen.availHeight-30-iHeight)/2;       //获得窗口的垂直位置;
+      	  var iLeft = (window.screen.availWidth-10-iWidth)/2;           //获得窗口的水平位置;
+        //  	return	window.open(url,name,'height='+iHeight+',innerHeight='+iHeight+',width='+iWidth+',innerWidth='+iWidth+',top='+iTop+',left='+iLeft+',toolbar=no,menubar=no,scrollbars=yes,resizeable=no,location=no,status=no');
+    	 
+          	
+        	 return   window.location.href="${contextPath}/project/detail.html?id="+id+"&backUrl=${contextPath!}/weekly/index.html";
+        	
+         }
+        
+ 
+        
+        
+        /**
+         * 绑定页面回车事件，以及初始化页面时的光标定位
+         * @formId
+         *          表单ID
+         * @elementName
+         *          光标定位在指点表单元素的name属性的值
+         * @submitFun
+         *          表单提交需执行的任务
+         */
+        $(function () {
+        	//$('#win').window('close');
+            // bindFormEvent("form", "serialNumber", queryGrid);
+            // bindFormEvent("_form", "_serialNumber", saveOrUpdate, function (){$('#dlg').dialog('close');});
+            if (document.addEventListener) {
+                document.addEventListener("keyup",getKey,false);
+            } else if (document.attachEvent) {
+                document.attachEvent("onkeyup",getKey);
+            } else {
+                document.onkeyup = getKey;
+            }
+            
+            queryGrid();
+            
+        })
+    </script>
+    
+     
+</#body>
