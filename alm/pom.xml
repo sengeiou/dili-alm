@@ -231,10 +231,22 @@
 		</dependency>
 
 		<!-- 内部包 -->
-		<dependency>
+		 <dependency>
 			<groupId>com.dili</groupId>
 			<artifactId>almadmin-sdk</artifactId>
 			<version>${project.parent.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.sun.mail</groupId>
+					<artifactId>javax.mail</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		 	 <dependency>
+			<artifactId>uap-sdk</artifactId>
+			<groupId>com.dili</groupId>
+		   <version>2.4.5-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
 					<groupId>com.sun.mail</groupId>
