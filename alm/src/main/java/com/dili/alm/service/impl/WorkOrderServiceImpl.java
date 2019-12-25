@@ -11,13 +11,18 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.alm.component.NumberGenerator;
 import com.dili.alm.constant.AlmConstants;
+import com.dili.alm.dao.DemandProjectMapper;
 import com.dili.alm.dao.WorkOrderExecutionRecordMapper;
 import com.dili.alm.dao.WorkOrderMapper;
+import com.dili.alm.domain.DemandProject;
+import com.dili.alm.domain.DemandProjectStatus;
 import com.dili.alm.domain.OperationResult;
+import com.dili.alm.domain.Project;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.WorkOrder;
 import com.dili.alm.domain.WorkOrderExecutionRecord;
@@ -25,10 +30,12 @@ import com.dili.alm.domain.WorkOrderSource;
 import com.dili.alm.domain.WorkOrderState;
 import com.dili.alm.domain.dto.WorkOrderUpdateDto;
 import com.dili.alm.exceptions.ApplicationException;
+import com.dili.alm.exceptions.ProjectVersionException;
 import com.dili.alm.exceptions.WorkOrderException;
 import com.dili.alm.manager.WorkOrderManager;
 import com.dili.alm.service.WorkOrderService;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.quartz.domain.ScheduleMessage;
 
@@ -54,7 +61,8 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 	private Map<Integer, WorkOrderManager> workOrderManagerMap;
 	@Autowired
 	private WorkOrderExecutionRecordMapper woerMapper;
-
+	@Autowired
+	private DemandProjectMapper demandProjectMapper;
 	@Override
 	public void allocate(Long id, Long executorId, Integer workOrderType, Integer priority, OperationResult result,
 			String description) throws WorkOrderException {
@@ -124,12 +132,31 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 	}
 
 	@Override
+	@Transactional(rollbackFor = Exception.class)
 	public void saveOrUpdate(WorkOrderUpdateDto dto) throws WorkOrderException {
-		if (dto.getId() == null) {
-			this.insertWorkOrder(dto);
-		} else {
-			this.updateWorkOrder(dto);
+		try {
+			if (dto.getId() == null) {
+				this.insertWorkOrder(dto);
+			} else {
+				this.updateWorkOrder(dto);
+			}
+			DemandProject demandProject= new DemandProject();
+			demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
+			demandProject.setWorkOrderId(dto.getId());
+			List<String> demandIds = dto.getDemandIds();			
+			for (String demandId : demandIds) {
+				demandProject.setDemandId(Long.valueOf(demandId));
+				int insertExact = this.demandProjectMapper.insertExact(demandProject);
+				if(insertExact==0) {
+					throw new ProjectVersionException("插入关联失败");
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 		}
+
 	}
 
 	@Override

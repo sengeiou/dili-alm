@@ -1,4 +1,4 @@
-package com.dili.alm.service.impl;
+ package com.dili.alm.service.impl;
 
 import java.util.Date;
 import java.util.List;
@@ -8,12 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dili.alm.dao.DemandProjectMapper;
 import com.dili.alm.dao.FilesMapper;
 import com.dili.alm.dao.ProjectActionRecordMapper;
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.domain.ActionDateType;
+import com.dili.alm.domain.DemandProject;
+import com.dili.alm.domain.DemandProjectStatus;
 import com.dili.alm.domain.FileType;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.Project;
@@ -26,6 +29,7 @@ import com.dili.alm.domain.ProjectVersionFormDto;
 import com.dili.alm.domain.ProjectVersionState;
 import com.dili.alm.domain.Task;
 import com.dili.alm.exceptions.ApplicationException;
+import com.dili.alm.exceptions.ProjectApplyException;
 import com.dili.alm.exceptions.ProjectVersionException;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.ProjectVersionService;
@@ -60,7 +64,8 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 	private ProjectActionRecordMapper parMapper;
 	@Autowired
 	private TeamService teamService;
-
+	@Autowired
+	private DemandProjectMapper demandProjectMapper;
 	public ProjectVersionMapper getActualDao() {
 		return (ProjectVersionMapper) getDao();
 	}
@@ -124,6 +129,19 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		rows = this.parMapper.insertSelective(par);
 		if (rows <= 0) {
 			throw new ProjectVersionException("插入项目进程记录失败");
+		}
+		DemandProject demandProject= new DemandProject();
+		demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
+		Project selectByPrimaryKey = this.projectMapper.selectByPrimaryKey(dto.getProjectId());
+		demandProject.setProjectNumber(selectByPrimaryKey.getSerialNumber());
+		demandProject.setVersionId(dto.getId());
+		List<String> demandIds = dto.getDemandIds();			
+		for (String demandId : demandIds) {
+			demandProject.setDemandId(Long.valueOf(demandId));
+			int insertExact = this.demandProjectMapper.insertExact(demandProject);
+			if(insertExact==0) {
+				throw new ProjectVersionException("插入关联失败");
+			}
 		}
 
 	}
