@@ -9,7 +9,7 @@ import javax.persistence.*;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2019-12-24 10:21:19.
+ * This file was generated on 2019-12-24 18:39:07.
  */
 @Table(name = "`demand_project`")
 public class DemandProject extends BaseDomain {
@@ -28,10 +28,10 @@ public class DemandProject extends BaseDomain {
     private Long demandId;
 
     /**
-     * 关联项目ID
+     * 关联项目编号
      */
-    @Column(name = "`project_id`")
-    private Long projectId;
+    @Column(name = "`project_number`")
+    private String projectNumber;
 
     /**
      * 关联版本ID
@@ -40,10 +40,10 @@ public class DemandProject extends BaseDomain {
     private Long versionId;
 
     /**
-     * 需求状态
+     * 需求状态状态{data:[{value:2,text:"已关联"},{value:1,text:"未关联"}]}
      */
     @Column(name = "`status`")
-    private Long status;
+    private Integer status;
 
     /**
      * 关联工单id
@@ -92,23 +92,23 @@ public class DemandProject extends BaseDomain {
     }
 
     /**
-     * 获取关联项目ID
+     * 获取关联项目编号
      *
-     * @return project_id - 关联项目ID
+     * @return project_number - 关联项目编号
      */
-    @FieldDef(label="关联项目ID")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    public Long getProjectId() {
-        return projectId;
+    @FieldDef(label="关联项目编号", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    public String getProjectNumber() {
+        return projectNumber;
     }
 
     /**
-     * 设置关联项目ID
+     * 设置关联项目编号
      *
-     * @param projectId 关联项目ID
+     * @param projectNumber 关联项目编号
      */
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
+    public void setProjectNumber(String projectNumber) {
+        this.projectNumber = projectNumber;
     }
 
     /**
@@ -132,22 +132,22 @@ public class DemandProject extends BaseDomain {
     }
 
     /**
-     * 获取需求状态
+     * 获取需求状态状态{data:[{value:2,text:"已关联"},{value:1,text:"未关联"}]}
      *
-     * @return status - 需求状态
+     * @return status - 需求状态状态{data:[{value:2,text:"已关联"},{value:1,text:"未关联"}]}
      */
-    @FieldDef(label="需求状态")
+    @FieldDef(label="需求状态状态{data:[{value:2,text:'已关联'},{value:1,text:'未关联'}]}")
     @EditMode(editor = FieldEditor.Number, required = true)
-    public Long getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
     /**
-     * 设置需求状态
+     * 设置需求状态状态{data:[{value:2,text:"已关联"},{value:1,text:"未关联"}]}
      *
-     * @param status 需求状态
+     * @param status 需求状态状态{data:[{value:2,text:"已关联"},{value:1,text:"未关联"}]}
      */
-    public void setStatus(Long status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 

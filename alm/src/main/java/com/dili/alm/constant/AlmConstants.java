@@ -60,7 +60,11 @@ public class AlmConstants {
 	public static final String WORK_ORDER_MEMBER_FILTER_SWITCH = "work_order_member_filter_switch";
 	// 工单超时自动关闭时间
 	public static final long CLOSE_OVER_TIME = 2 * 24 * 60 * 60 * 1000;
-
+	
+	//需求状态数据字典配置
+	public static final String DEMAND_STATUS = "demand_status";
+	//需求类型数据字典配置
+	public static final String DEMAND_TYPE = "demand_type";
 	// 团队成员状态: 加入/离开
 	public enum MemberState {
 		LEAVE(0), JOIN(1);
@@ -189,6 +193,22 @@ public class AlmConstants {
 		public int code;
 
 		MessageType(int code) {
+			this.code = code;
+		}
+
+		public int getCode() {
+			return code;
+		}
+	}
+	
+	// 请求状态 未提交，提交，审批中，完成
+	public enum DemandStatus {
+
+		NOTSUBMIT(1), SUBMIT(2), APPROVING(3), COMPLETE(4);
+
+		public int code;
+
+		DemandStatus(int code) {
 			this.code = code;
 		}
 
