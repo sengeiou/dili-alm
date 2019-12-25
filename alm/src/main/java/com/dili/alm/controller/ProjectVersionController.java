@@ -15,12 +15,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.dili.alm.domain.Demand;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.ProjectVersionFormDto;
 import com.dili.alm.exceptions.ProjectVersionException;
 import com.dili.alm.provider.ProjectVersionProvider;
+import com.dili.alm.service.DemandService;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.ProjectVersionService;
@@ -48,6 +50,8 @@ public class ProjectVersionController {
 	private ProjectService projectService;
 	@Autowired
 	private FilesService filesService;
+	@Autowired
+	private DemandService demandService;
 
 	@ApiOperation("跳转到Milestones页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
@@ -141,6 +145,14 @@ public class ProjectVersionController {
 	public String addView(@RequestParam Long projectId, ModelMap map) {
 		Project project = this.projectService.get(projectId);
 		map.addAttribute("project", project);
+		ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
+		projectVersion.setProjectId(projectId);
+		List<ProjectVersion> selectByExample = this.projectVersionService.list(projectVersion);
+		if(selectByExample!=null&&selectByExample.size()>0) {
+			map.addAttribute("addVersionNumber", selectByExample.size());
+		}else{
+			map.addAttribute("addVersionNumber",0);
+		}
 		return "project/version/form";
 	}
 
@@ -154,6 +166,16 @@ public class ProjectVersionController {
 		record.setVersionId(id);
 		List<Files> files = this.filesService.list(record);
 		map.addAttribute("files", files);
+		List<Demand> showDemandList = this.demandService.queryDemandListByProjectIdOrVersionIdOrWorkOrderId(version.getId(), 2);
+		map.addAttribute("showDemandList", showDemandList);
+		ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
+		projectVersion.setProjectId(version.getProjectId());
+		List<ProjectVersion> selectByExample = this.projectVersionService.list(projectVersion);
+		if(selectByExample!=null&&selectByExample.size()>=0) {
+			map.addAttribute("updateVersionNumber", selectByExample.size());
+		}else{
+			map.addAttribute("updateVersionNumber",0);
+		}
 		return "project/version/form";
 	}
 

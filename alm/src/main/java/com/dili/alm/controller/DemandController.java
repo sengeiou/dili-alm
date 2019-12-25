@@ -52,8 +52,8 @@ public class DemandController {
 		return "demand/add";
 	}
     
-	@RequestMapping(value = "/detail.html", method = RequestMethod.GET)
-	public String detail(@RequestParam Long id,  ModelMap map) {
+	@RequestMapping(value = "/detail", method = RequestMethod.GET)
+	public String detail(@RequestParam Long id,  ModelMap map) throws Exception {
 		DemandDto detailViewData = this.demandService.getDetailViewData(id);
 		try {
 			map.addAttribute("model",DemandService.parseViewModel(detailViewData));
@@ -137,7 +137,7 @@ public class DemandController {
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = false, dataType = "string")
 	})
-    @RequestMapping(value="/queryDemandListByProjectIdOrVersionIdOrWorkOrderId.action", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value="/queryDemandListByApplyIdOrVersionIdOrWorkOrderId.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody List<Demand> queryDemandListByProjectIdOrVersionIdOrWorkOrderId(Long id,Integer type) {
     	if(id==null||type==null) {
     		return null;

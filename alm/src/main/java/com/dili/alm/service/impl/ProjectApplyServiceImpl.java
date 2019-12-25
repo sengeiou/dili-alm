@@ -105,7 +105,7 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public BaseOutput insertApply(ProjectApplyDto applyDto) {
+	public BaseOutput insertApply(ProjectApply applyDto, String[] demandIds) {
 		applyDto.setNumber(getProjectNumber(applyDto));
 		applyDto.setName(applyDto.getNumber());
 		applyDto.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
@@ -115,13 +115,13 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 			if(insertSelective==0) {
 				throw new ProjectApplyException("插入关联失败");
 			}
-			DemandProject demandProject= new DemandProject();
-			demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
-			demandProject.setProjectNumber(applyDto.getNumber());
-			List<String> demandIds = applyDto.getDemandIds();			
+		
 			for (String demandId : demandIds) {
+				DemandProject demandProject= new DemandProject();
+				demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
+				demandProject.setProjectNumber(applyDto.getNumber());	
 				demandProject.setDemandId(Long.valueOf(demandId));
-				int insertExact = this.demandProjectMapper.insertExact(demandProject);
+				int insertExact = this.demandProjectMapper.insert(demandProject);
 				if(insertExact==0) {
 					throw new ProjectApplyException("插入关联失败");
 				}
@@ -393,6 +393,7 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 	@Transactional
 	@Override
 	public void deleteProjectApply(Long id) throws ProjectApplyException {
+		ProjectApply selectByPrimaryKey = this.getActualDao().selectByPrimaryKey(id);
 		ProjectEarning peQuery = DTOUtils.newDTO(ProjectEarning.class);
 		peQuery.setApplyId(id);
 		this.projectEarningMapper.delete(peQuery);
@@ -408,6 +409,17 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 		int rows = this.getActualDao().deleteByPrimaryKey(id);
 		if (rows <= 0) {
 			throw new ProjectApplyException("删除失败");
+		}
+		//删除关联
+		DemandProject demandProject=new DemandProject();
+		demandProject.setProjectNumber(selectByPrimaryKey.getNumber());
+		demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
+		List<DemandProject> select = this.demandProjectMapper.select(demandProject);
+		if(select!=null&&select.size()>0) {
+			int delete = this.demandProjectMapper.delete(demandProject);
+			if(delete!=select.size()) {
+				throw new ProjectApplyException("删除失败");
+			}
 		}
 		AlmCache.getInstance().getProjectApplyRois().remove(id);
 	}

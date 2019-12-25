@@ -8,7 +8,7 @@ import com.dili.alm.domain.ProjectApply;
 
 public interface ProjectApplyDto extends ProjectApply{
 	
-	List<String> getDemandIds();
+	String[] getDemandIds();
 
-	void setDemandIds(List<String> demandIds);
+	void setDemandIds(String[] demandIds);
 }

@@ -1,11 +1,13 @@
 package com.dili.alm.service.impl;
 
 import com.dili.alm.dao.DemandProjectMapper;
+import com.dili.alm.dao.ProjectApplyMapper;
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.domain.DemandProject;
 import com.dili.alm.domain.DemandProjectStatus;
 import com.dili.alm.domain.FileType;
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.dto.DemandProjectDto;
 import com.dili.alm.exceptions.ProjectVersionException;
 import com.dili.alm.service.DemandProjectService;
@@ -33,6 +35,8 @@ public class DemandProjectServiceImpl extends BaseServiceImpl<DemandProject, Lon
     }
     @Autowired
     private ProjectMapper projectMapper;
+    @Autowired
+    private ProjectApplyMapper projectApplyMapper;
 	@Override
 	public BaseOutput insertDemandProjectDto(DemandProjectDto demandProjectDto) {
 		demandProjectDto.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
@@ -60,8 +64,8 @@ public class DemandProjectServiceImpl extends BaseServiceImpl<DemandProject, Lon
 		// TODO Auto-generated method stub
 		DemandProject demandProject =new DemandProject();
 		if(projectId!=null&&versionId==null&&workOrderId==null) {
-			Project selectByPrimaryKey = this.projectMapper.selectByPrimaryKey(projectId);
-			demandProject.setProjectNumber(selectByPrimaryKey.getSerialNumber());
+			ProjectApply selectByPrimaryKey = this.projectApplyMapper.selectByPrimaryKey(projectId);
+			demandProject.setProjectNumber(selectByPrimaryKey.getNumber());
 		}
 		if(versionId!=null&&workOrderId==null) {
 			demandProject.setVersionId(versionId);

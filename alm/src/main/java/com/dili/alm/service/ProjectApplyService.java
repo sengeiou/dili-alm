@@ -21,7 +21,7 @@ import com.dili.ss.domain.BaseOutput;
  */
 public interface ProjectApplyService extends BaseService<ProjectApply, Long> {
 
-	BaseOutput insertApply(ProjectApplyDto projectApplyDto);
+	BaseOutput insertApply(ProjectApply projectApply, String[] demandIds);
 
 	List<DataDictionaryValueDto> getPlanPhase();
 

@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.component.NumberGenerator;
 import com.dili.alm.constant.AlmConstants;
+import com.dili.alm.domain.Demand;
 import com.dili.alm.domain.Department;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.OperationResult;
@@ -35,6 +36,7 @@ import com.dili.alm.domain.dto.WorkOrderQueryDto;
 import com.dili.alm.domain.dto.WorkOrderUpdateDto;
 import com.dili.alm.exceptions.WorkOrderException;
 import com.dili.alm.rpc.DepartmentRpc;
+import com.dili.alm.service.DemandService;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.WorkOrderService;
 import com.dili.ss.domain.BaseOutput;
@@ -63,7 +65,8 @@ public class WorkOrderController {
 	private FilesService filesService;
 	@Autowired
 	private DepartmentRpc deptRpc;
-
+	@Autowired
+	private DemandService demandService;
 	@GetMapping("/detail")
 	public String deital(@RequestParam Long id, ModelMap modelMap) {
 		WorkOrder workOrder = this.workOrderService.getDetailViewModel(id);
@@ -115,12 +118,14 @@ public class WorkOrderController {
 	public String updateView(@RequestParam Long id, ModelMap modelMap) {
 		Map<Object, Object> model = this.workOrderService.getViewModel(id);
 		modelMap.addAttribute("model", model);
+		List<Demand> showDemandList = this.demandService.queryDemandListByProjectIdOrVersionIdOrWorkOrderId(id, 3);
+		modelMap.addAttribute("showDemandList", showDemandList);
 		return "workOrder/update";
 	}
 
 	@ResponseBody
 	@PostMapping("/saveOrUpdate")
-	public BaseOutput<Object> saveOrUpdate(WorkOrderUpdateDto dto, Long[] copyUserIds, MultipartFile attachment) {
+	public BaseOutput<Object> saveOrUpdate(WorkOrderUpdateDto dto, Long[] copyUserIds, MultipartFile attachment,String[] demandIds) {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		if (user == null) {
 			return BaseOutput.failure("请先登录");
@@ -135,7 +140,7 @@ public class WorkOrderController {
 			dto.setAttachmentFileId(files.get(0).getId());
 		}
 		try {
-			this.workOrderService.saveOrUpdate(dto);
+			this.workOrderService.saveOrUpdate(dto,demandIds);
 			Map<Object, Object> viewModel = this.workOrderService.getViewModel(dto.getId());
 			return BaseOutput.success().setData(viewModel);
 		} catch (WorkOrderException e) {
@@ -145,7 +150,7 @@ public class WorkOrderController {
 
 	@ResponseBody
 	@PostMapping("/saveAndSubmit")
-	public BaseOutput<Object> saveAndSubmit(WorkOrderUpdateDto dto, Long[] copyUserIds, MultipartFile attachment) {
+	public BaseOutput<Object> saveAndSubmit(WorkOrderUpdateDto dto, Long[] copyUserIds, MultipartFile attachment,String[] demandIds) {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		if (user == null) {
 			return BaseOutput.failure("请先登录");
@@ -160,7 +165,7 @@ public class WorkOrderController {
 			dto.setAttachmentFileId(files.get(0).getId());
 		}
 		try {
-			this.workOrderService.saveAndSubmit(dto);
+			this.workOrderService.saveAndSubmit(dto,demandIds);
 			Map<Object, Object> viewModel = this.workOrderService.getViewModel(dto.getId());
 			return BaseOutput.success().setData(viewModel);
 		} catch (WorkOrderException e) {

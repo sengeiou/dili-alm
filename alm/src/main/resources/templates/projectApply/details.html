@@ -66,7 +66,7 @@ em {
 }
 </style>
 <div id="smDialog" style="display: none;"></div>
-
+<div id="win" style="display: none;"></div>
 <div id="cusTools">
 	<a onclick="window.history.go(-1);" class="easyui-linkbutton"
 		style="width: 50px; height: 24px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef">返回</a>
@@ -185,13 +185,14 @@ em {
 					</tr>
 			</table>
 	        <table class="easyui-datagrid" id="showDemandListGrid" rownumbers="false" remoteSort="false" loadMsg="数据加载中..."
-	               singleSelect="true" method="post" multiSort="true" data-options="<%if(has(apply) && apply.id != null){%>url:'${contextPath!}/demandProject/projectDemandlist?projectId=${apply.id!}'<%}%>">
+	               singleSelect="true" method="post" multiSort="true" data-options="<%if(has(apply) && apply.id != null){%>url:'${contextPath!}/demand/queryDemandListByApplyIdOrVersionIdOrWorkOrderId.action?id=${apply.id!}&type=1'<%}%>">
 	               <thead>
 			            <tr>
-			                <th data-options="field:'demNum', width:'20%', align:'center', resizable:'true', fixed:'false'">需求编号</th>
-							<th data-options="field:'demName', width:'20%', align:'center', resizable:'true', fixed:'false'">需求名称</th>
+			            	<th data-options="field:'id',hidden:'true'">
+			              	<th data-options="field:'serialNumber', width:'20%', align:'center', resizable:'true', fixed:'false'">需求编号</th>
+							<th data-options="field:'name', width:'20%', align:'center', resizable:'true', fixed:'false'">需求名称</th>
 							<th data-options="field:'finishDate', width:'30%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">需求期待时间日期</th>
-							<th data-options="field:'finishDate', width:'30%', align:'center',formatter:showDemandOptFormatter, resizable:'true', fixed:'false'">详情</th>
+							<th data-options="field:'opt', width:'25%', align:'center',formatter:showDemandOptFormatter, resizable:'true', fixed:'false'">详情</th>
 							
 			            </tr>
 		            </thead>
@@ -649,11 +650,27 @@ em {
 
         $('input[class^=easyui-]').textbox("disable");
     })
-</script> <script type="text/javascript">
-    <#members_index/>
     function showDemandOptFormatter(value, row, index) {
     	return '<a href="javascript:void(0);" onclick="showDemandDetail(' + row.id
     			+ ');">详情</a>';
     }
+    function showDemandDetail(id){
+    	$('#win').dialog({
+			title : '需求详情',
+			width : 800,
+			height : 640,
+			href : '${contextPath!}/demand/detail?id=' + id,
+			modal : true,
+			buttons : [{
+						text : '返回',
+						handler : function() {
+							$('#win').dialog('close');
+						}
+					}]
+		});
+    }
+</script> <script type="text/javascript">
+    <#members_index/>
+   
 </script> 
 </#body>

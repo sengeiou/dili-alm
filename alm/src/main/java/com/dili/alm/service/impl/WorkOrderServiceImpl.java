@@ -126,36 +126,43 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 	}
 
 	@Override
-	public void saveAndSubmit(WorkOrderUpdateDto dto) throws WorkOrderException {
-		this.saveOrUpdate(dto);
+	public void saveAndSubmit(WorkOrderUpdateDto dto,String[] demandIds) throws WorkOrderException {
+		dto.setCreationTime(new Date());
+		this.saveOrUpdate(dto,demandIds);
 		this.submit(dto.getId());
 	}
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public void saveOrUpdate(WorkOrderUpdateDto dto) throws WorkOrderException {
-		try {
+	public void saveOrUpdate(WorkOrderUpdateDto dto,String[] demandIds) throws WorkOrderException {
 			if (dto.getId() == null) {
 				this.insertWorkOrder(dto);
 			} else {
 				this.updateWorkOrder(dto);
-			}
-			DemandProject demandProject= new DemandProject();
-			demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
-			demandProject.setWorkOrderId(dto.getId());
-			List<String> demandIds = dto.getDemandIds();			
-			for (String demandId : demandIds) {
-				demandProject.setDemandId(Long.valueOf(demandId));
-				int insertExact = this.demandProjectMapper.insertExact(demandProject);
-				if(insertExact==0) {
-					throw new ProjectVersionException("插入关联失败");
+				DemandProject demandProject=new DemandProject();
+				demandProject.setWorkOrderId(dto.getId());
+				demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
+				List<DemandProject> select = this.demandProjectMapper.select(demandProject);
+				int delete = this.demandProjectMapper.delete(demandProject);
+				if(select!=null&&select.size()>0) {
+					if(delete!=select.size()) {
+						throw new WorkOrderException("刪除关联失败");
+					}
 				}
 			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-		}
+			if(demandIds!=null&&demandIds.length>0) {
+				for (String demandId : demandIds) {
+					DemandProject demandProject= new DemandProject();
+					demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
+					demandProject.setWorkOrderId(dto.getId());
+					demandProject.setDemandId(Long.valueOf(demandId));
+					int insertExact = this.demandProjectMapper.insertExact(demandProject);
+					if(insertExact==0) {
+						throw new WorkOrderException("插入关联失败");
+					}
+				}
+			}
+
 
 	}
 
@@ -200,10 +207,21 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 	}
 
 	@Override
+	@Transactional
 	public void deleteWorkOrder(Long id) throws WorkOrderException {
 		WorkOrder workOrder = this.getActualDao().selectByPrimaryKey(id);
 		if (!workOrder.getWorkOrderState().equals(WorkOrderState.APPLING.getValue())) {
 			throw new WorkOrderException("当前状态不能删除");
+		}
+		DemandProject demandProject=new DemandProject();
+		demandProject.setWorkOrderId(id);
+		demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
+		List<DemandProject> select = this.demandProjectMapper.select(demandProject);
+		int delete = this.demandProjectMapper.delete(demandProject);
+		if(select!=null&&select.size()>0) {
+			if(delete!=select.size()) {
+				throw new WorkOrderException("刪除关联失败");
+			}
 		}
 		this.getActualDao().deleteByPrimaryKey(id);
 	}

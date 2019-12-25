@@ -30,6 +30,9 @@
 <div class="easyui-panel" style="box-sizing: border-box; width: 100%;">
 	<form id="editForm" action="" method="post" enctype="multipart/form-data" style="box-sizing: border-box; display: block; width: 100%">
 		<input type="hidden" name="id" value="${model.id!}">
+		<%if(showDemandList!null != null){for(item in showDemandList){%>
+			<input type="hidden" id="demandId${item.id!}" name="demandIds" value="${item.id!}">
+		<%} }%>
 		<div style="box-sizing: border-box;; width: 100%; padding: 10px 0px 10px 10px;">
 			<div class="easyui-layout" style="box-sizing: border-box; width: 100%;">
 				<table class="table-box" width="100%">
@@ -100,20 +103,22 @@
 					<tr>
 						<td colspan="6"  style="padding: 5px;" >
 							<div id="tb1" style="height:auto">
-					                <a class="easyui-linkbutton"
-					                   data-options="iconCls:'icon-add',plain:true" onclick='saveDemandToProject()'>添加</a>
-					     	</div>	
-							<table class="easyui-datagrid" title="需求列表" id="demandGrid" style="width: 100%"
-								   fitColumns="true" pagination="false" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" align="center" fit="false" striped="true" idField="id" data-options="toolbar: '#tb1',<%if(has(model) && model.id != null){%>url:'${contextPath!}/demandProject/workOrderDemandList?workOrderId=${model.id!}'<%}%>">
-								<thead>
-								<tr>
-									<th data-options="field:'demNum', width:'20%', align:'center', resizable:'true', fixed:'false'">需求编号</th>
-									<th data-options="field:'demName', width:'20%', align:'center', resizable:'true', fixed:'false'">需求名称</th>
-									<th data-options="field:'finishDate', width:'40%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">需求期待时间日期</th>
-									<th data-options="field:'opt', width:'10%', align:'center', resizable:'true', fixed:'false',formatter:demandOptFormatter">操作</th>
-								</tr>
-								</thead>
-							</table>
+						                <a class="easyui-linkbutton"
+						                   data-options="iconCls:'icon-add',plain:true" onclick='saveDemandToProject()'>添加</a>
+						     </div>										
+							  <table class="easyui-datagrid" title="需求列表" id="demandGrid" style="width: 100%"
+									   fitColumns="true" pagination="false" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" align="center" fit="false" striped="true" idField="id" data-options="toolbar: '#tb1',<%if(has(model) && model.id != null){%>url:'${contextPath!}/demand/queryDemandListByApplyIdOrVersionIdOrWorkOrderId.action?id=${model.id!}&type=3'<%}%>">
+									<thead>
+											<tr>
+												<th data-options="field:'id',hidden:'true'">
+												<th data-options="field:'serialNumber', width:'20%', align:'center', resizable:'true', fixed:'false'">需求编号</th>
+												<th data-options="field:'name', width:'20%', align:'center', resizable:'true', fixed:'false'">需求名称</th>
+												<th data-options="field:'finishDate', width:'40%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">需求期待时间日期</th>
+												<th data-options="field:'opt', width:'10%', align:'center', resizable:'true', fixed:'false',formatter:demandOptFormatter">操作</th>
+											</tr>
+									</thead>
+								</table>
+							</td>
 						</td>
 					</tr>
 					<tr>
@@ -157,17 +162,18 @@
 					
 				">
         <table class="easyui-datagrid" id="demandListGrid" rownumbers="false" remoteSort="false" loadMsg="数据加载中..."
-               singleSelect="true" method="post" multiSort="true">
+               singleSelect="false" method="post" multiSort="true" data-options="url:'${contextPath}/demand/queryDemandListToProject.action'">
                <thead>
-		            <tr>
+		          	<tr>
 		            	<th data-options="field:'id', checkbox:true ">需求ID</th>
-		                <th data-options="field:'demNum', width:'30%', align:'center', resizable:'true', fixed:'false'">需求编号</th>
-						<th data-options="field:'demName', width:'30%', align:'center', resizable:'true', fixed:'false'">需求名称</th>
+		                <th data-options="field:'serialNumber', width:'30%', align:'center', resizable:'true', fixed:'false'">需求编号</th>
+						<th data-options="field:'name', width:'30%', align:'center', resizable:'true', fixed:'false'">需求名称</th>
 						<th data-options="field:'finishDate', width:'30%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">需求期待时间日期</th>
 						
 		            </tr>
 	            </thead>
         </table>
+
 </div>
 <script type="text/javascript">
 	<#members_index/>
@@ -207,13 +213,35 @@
 				+ ');">删除</a>';
 	}
 	function saveDemandToProject() {
+		$( "input[name$='demandIds']" ).each(function(i){	
+			var id = $(this).val();
+			var rows = $('#demandListGrid').datagrid('getRows');
+			$('#demandListGrid').datagrid('uncheckAll'); 
+			for(var g=0;g<rows.length;g++){
+				if(rows[g].id==id){
+					$('#demandListGrid').datagrid('deleteRow', g); 
+				}
+			}							
+		});
 		$('#demandListDlg').dialog('open');
 	}
 	function addDemandList(){
 		$('#demandListDlg').dialog('close');
-	/* 	$('#demandListDlg').dialog('close');
-		$('#editForm').append('<input type="hidden" name="demandIds" value="' + data.data[0].id + '">');
-		var row = data.data[0];
-		$('#demandGrid').datagrid('appendRow', row); */
+		var selRows = $('#demandListGrid').datagrid('getChecked');
+		for(var i=0;i<selRows.length;i++){
+            $('#editForm').append('<input  id="demandId'+ selRows[i].id + '" name="demandIds" value="' + selRows[i].id + '">');
+            $('#demandGrid').datagrid('appendRow', selRows[i]); 
+		}	
+	}
+	function delDemand(id){
+		 var rows = $('#demandGrid').datagrid('getRows');
+		 for(var i=0;i<rows.length;i++){
+			 if(rows[i].id==id){
+				 $('#demandListGrid').datagrid('appendRow', rows[i]); 
+				 $('#demandGrid').datagrid('deleteRow', i); 
+				 $("#demandId" + id + "").remove();
+			 }	 
+		 }
+		
 	}
 </script>

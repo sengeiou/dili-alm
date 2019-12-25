@@ -59,7 +59,25 @@ function versionOptFormatter(value, row, index) {
 				+ row.id + ');">查看需求</a>';
 	return content;
 }
-
+    function showDemandOptFormatter(value, row, index) {
+    	return '<a href="javascript:void(0);" onclick="showDemandDetail(' + row.id
+    			+ ');">详情</a>';
+    }
+    function showDemandDetail(id){
+    	$('#win').dialog({
+			title : '需求详情',
+			width : 800,
+			height : 640,
+			href : '${contextPath!}/demand/detail?id=' + id,
+			modal : true,
+			buttons : [{
+						text : '返回',
+						handler : function() {
+							$('#win').dialog('close');
+						}
+					}]
+		});
+    }
 
 function dateFormatter(value, row, index) {
 	if (value) {
@@ -128,20 +146,16 @@ function saveDemandToProject() {
  		var opts = $('#demandListGrid').datagrid("options");
  		var projectId = $('#id').val();
     	opts.url = "${contextPath}/demand/queryDemandListToProject.action?projectId="+projectId;
-		var rows = $('#demandListGrid').datagrid('getRows');
-		$('#demandListGrid').datagrid('uncheckAll'); 
-		var demandId = new Array();
-		$( "input[name$='demandIds']" ).each(function(i){		
-			demandId.push($(this).val());	
-			console.log($(this).val());
+		$( "input[name$='demandIds']" ).each(function(i){	
+			var id = $(this).val();
+			var rows = $('#demandListGrid').datagrid('getRows');
+			$('#demandListGrid').datagrid('uncheckAll'); 
+			for(var g=0;g<rows.length;g++){
+				if(rows[g].id==id){
+					$('#demandListGrid').datagrid('deleteRow', g); 
+				}
+			}							
 		});
-	
-		for(var g=0;g<rows.length;g++){
-			var s = $.inArray(rows[g].id+"", demandId);
-		 	if(s>=0){
-		 		$('#demandListGrid').datagrid('deleteRow', g); 
-		 	}
-		}
 		$('#demandListDlg').dialog('open');
 
 	}
@@ -255,9 +269,12 @@ function openInsertVersion() {
 		buttons : [{
 			text : '保存',
 			handler : function() {
-				if($($("input[name$='demandIds']")[0]).val()==null||$($("input[name$='demandIds']")[0]).val()==""){
-					$.messager.alert('警告', '请选择至少一个需求');
-					return;
+				var addnumber=$("#addVersionNumber").val();
+				if(addnumber!=addnumber>0){
+					if($($("input[name$='demandIds']")[0]).val()==null||$($("input[name$='demandIds']")[0]).val()==""){
+						$.messager.alert('警告', '请选择至少一个需求');
+						return;
+					}
 				}
 				if (!$('#versionForm').form('validate')) {
 					return;
@@ -286,7 +303,9 @@ function openInsertVersion() {
 								$('#fileGrid').datagrid('reload');
 								countFileGrid();
 							}
+							$("#addVersionNumber").val('');
 							$('#win').dialog('close');
+							
 						} else {
 							$.messager.alert('错误', data.result);
 						}
@@ -299,6 +318,7 @@ function openInsertVersion() {
 		}, {
 			text : '取消',
 			handler : function() {
+				$("#addVersionNumber").val('');
 				$('#win').dialog('close');
 				
 				
@@ -306,6 +326,7 @@ function openInsertVersion() {
 			}
 		}]
 	});
+	
 }
 
 function editVersion(id) {
@@ -318,6 +339,13 @@ function editVersion(id) {
 		buttons : [{
 			text : '保存',
 			handler : function() {
+				var updatenumber=$("#updateVersionNumber").val();
+				if(updatenumber!=updatenumber>1){
+					if($($("input[name$='demandIds']")[0]).val()==null||$($("input[name$='demandIds']")[0]).val()==""){
+							$.messager.alert('警告', '请选择至少一个需求');
+							return;
+					}
+				}
 				if (!$('#versionForm').form('validate')) {
 					return;
 				}
@@ -351,6 +379,7 @@ function editVersion(id) {
 								$('#fileGrid').datagrid('reload');
 								countFileGrid();
 							}
+							$("#updateVersionNumber").val('');
 							$('#win').dialog('close');
 						} else {
 							$.messager.alert('错误', res.result);
@@ -364,14 +393,16 @@ function editVersion(id) {
 		}, {
 			text : '取消',
 			handler : function() {
+				$("#updateVersionNumber").val('');
 				$('#win').dialog('close');
 			}
 		}]
 	});
+
 }
 function showDemand(id){
    	var opts = $('#showDemandListGrid').datagrid("options");
-    opts.url = "${contextPath}/demand/queryDemandByVesionId.shtml?vesionId="+id;
+    opts.url = '${contextPath!}/demand/queryDemandListByApplyIdOrVersionIdOrWorkOrderId.action?id='+id+'&type=2';
     $("#showDemandListGrid").datagrid("reload");
     $('#showDemandListDlg').dialog('open');
 }

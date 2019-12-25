@@ -170,20 +170,16 @@
 				+ ');">删除</a>';
 	}
 	function saveDemandToProject() {
-		var rows = $('#demandListGrid').datagrid('getRows');
-		$('#demandListGrid').datagrid('uncheckAll'); 
-		var demandId = new Array();
-		$( "input[name$='demandIds']" ).each(function(i){		
-			demandId.push($(this).val());	
-			console.log($(this).val());
+		$( "input[name$='demandIds']" ).each(function(i){	
+			var id = $(this).val();
+			var rows = $('#demandListGrid').datagrid('getRows');
+			$('#demandListGrid').datagrid('uncheckAll'); 
+			for(var g=0;g<rows.length;g++){
+				if(rows[g].id==id){
+					$('#demandListGrid').datagrid('deleteRow', g); 
+				}
+			}							
 		});
-	
-		for(var g=0;g<rows.length;g++){
-			var s = $.inArray(rows[g].id+"", demandId);
-		 	if(s>=0){
-		 		$('#demandListGrid').datagrid('deleteRow', g); 
-		 	}
-		}
 		$('#demandListDlg').dialog('open');
 
 	}

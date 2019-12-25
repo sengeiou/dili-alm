@@ -23,7 +23,7 @@ public interface DemandService extends BaseService<Demand, Long> {
 
 	List<Demand> queryDemandListByProjectIdOrVersionIdOrWorkOrderId(Long id, Integer type);
 
-	DemandDto getDetailViewData(Long id);
+	DemandDto getDetailViewData(Long id) throws Exception;
 
 	static Object parseViewModel(DemandDto detailViewData) throws Exception {
 		Map<Object, Object> metadata = new HashMap<>();

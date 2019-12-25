@@ -184,8 +184,8 @@ public class ProjectApplyController {
 	@ApiOperation("新增ProjectApply")
 	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectApply", paramType = "form", value = "ProjectApply的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput insert(ProjectApplyDto projectApplyDto) {
-		return projectApplyService.insertApply(projectApplyDto);
+	public @ResponseBody BaseOutput insert(ProjectApply projectApply,String[] demandIds) {
+		return projectApplyService.insertApply(projectApply,demandIds);
 		 
 	}
 

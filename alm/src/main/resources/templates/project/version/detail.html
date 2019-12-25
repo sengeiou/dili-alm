@@ -57,5 +57,25 @@
 					</thead>
 				</table></td>
 		</tr>
+		<tr>
+			<td colspan="2" style="padding: 5px;">
+				<table class="easyui-datagrid"  rownumbers="false" remoteSort="false" loadMsg="数据加载中..."
+	               singleSelect="true" method="post" multiSort="true" data-options="<%if(has(model) && model.id != null){%>url:'${contextPath!}/demand/queryDemandListByApplyIdOrVersionIdOrWorkOrderId.action?id=${model.id!}&type=2'<%}%>">
+	               <thead>
+			            <tr>
+			            	<th data-options="field:'id',hidden:'true'">
+			              	<th data-options="field:'serialNumber', width:'20%', align:'center', resizable:'true', fixed:'false'">需求编号</th>
+							<th data-options="field:'name', width:'20%', align:'center', resizable:'true', fixed:'false'">需求名称</th>
+							<th data-options="field:'finishDate', width:'30%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">需求期待时间日期</th>
+							<th data-options="field:'opt', width:'25%', align:'center',formatter:showDemandOptFormatter, resizable:'true', fixed:'false'">详情</th>
+							
+			            </tr>
+		            </thead>
+	        	</table>
+			</td>
+		</tr>
+		
+		
+		 
 	</table>
 </form>

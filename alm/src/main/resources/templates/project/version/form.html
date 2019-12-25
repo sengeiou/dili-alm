@@ -1,9 +1,15 @@
 <style>
 	#versionForm .textbox-label{width: 110px}
 </style>
+<input  id="addVersionNumber" type="hidden" value="${addVersionNumber!}">
+<input  id="updateVersionNumber" type="hidden" value="${updateVersionNumber!}">
 <form id="versionForm" action="${contextPath!}/project/version/insert" class="easyui-form" method="post" fit="true">
 	<input name="id" id="id" type="hidden" value="${model.id!}">
 	<input type="hidden" name="projectId" value="${project.id!}">
+	<%if(showDemandList!null != null){for(item in showDemandList){%>
+		<input type="hidden" id="demandId${item.id!}" name="demandIds" value="${item.id!}">
+	<%} }%>
+	
 	<table width="100%">
 		<tr>
 			<td style="width:50%;padding: 5px;">
@@ -81,14 +87,14 @@
 				</table>
 			</td>
 		</tr>
-		<tr>
+		<tr id="saveDemandDiv" >
 			<td colspan="2" style="padding: 5px;">
 				<div id="tb1" style="height:auto">
 		                <a class="easyui-linkbutton"
 		                   data-options="iconCls:'icon-add',plain:true" onclick='saveDemandToProject()'>添加</a>
 		     	</div>	
 				<table class="easyui-datagrid" title="需求列表" id="demandGrid" style="width: 100%"
-					   fitColumns="true" pagination="false" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" align="center" fit="false" striped="true" idField="id" data-options="toolbar: '#tb1',<%if(has(model) && model.id != null){%>url:'${contextPath!}/demandProject/list?versionId=${model.id!}'<%}%>">
+					   fitColumns="true" pagination="false" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" align="center" fit="false" striped="true" idField="id" data-options="toolbar: '#tb1',<%if(has(model) && model.id != null){%>url:'${contextPath!}/demand/queryDemandListByApplyIdOrVersionIdOrWorkOrderId.action?id=${model.id!}&type=2'<%}%>">
 					<thead>
 							<tr>
 								<th data-options="field:'id',hidden:'true'">
@@ -118,7 +124,7 @@
 					
 				">
         <table class="easyui-datagrid" id="demandListGrid" rownumbers="false" remoteSort="false" loadMsg="数据加载中..."
-               singleSelect="true" method="post" multiSort="true" data-options="url:'${contextPath}/demand/queryDemandListToProject.action?projectId=${project.id!}'">
+               singleSelect="false" method="post" multiSort="true" data-options="url:'${contextPath}/demand/queryDemandListToProject.action?projectId=${project.id!}'">
                <thead>
 		          	<tr>
 		            	<th data-options="field:'id', checkbox:true ">需求ID</th>
@@ -133,5 +139,29 @@
 </div>
 	
 <script type="text/javascript">
+	$(function(){
+		var addnumber=$("#addVersionNumber").val();
+		var updatenumber=$("#updateVersionNumber").val();
+
+		if(updatenumber==null||updatenumber==''){
+			if(addnumber!=null&&addnumber<1){
+				$("#saveDemandDiv").hide();
+			}else{
+				$("#saveDemandDiv").show();
+			}
+		}
+		
+		
+		if(addnumber==null||addnumber==''){
+			if(updatenumber<2){
+				$("#saveDemandDiv").hide();
+			}else{
+				$("#saveDemandDiv").show();
+			}
+		}
+		
+		
+	})
     <#project_formJs />
+    
 </script>

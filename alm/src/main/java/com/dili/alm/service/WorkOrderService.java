@@ -66,9 +66,6 @@ public interface WorkOrderService extends BaseService<WorkOrder, Long> {
 
 	}
 
-	void saveOrUpdate(WorkOrderUpdateDto dto) throws WorkOrderException;
-
-	void saveAndSubmit(WorkOrderUpdateDto dto) throws WorkOrderException;
 
 	/**
 	 * 分配
@@ -129,4 +126,9 @@ public interface WorkOrderService extends BaseService<WorkOrder, Long> {
 	void deleteWorkOrder(Long id) throws WorkOrderException;
 
 	WorkOrder getDetailViewModel(Long id);
+
+	void saveOrUpdate(WorkOrderUpdateDto dto, String[] demandIds) throws WorkOrderException;
+
+
+	void saveAndSubmit(WorkOrderUpdateDto dto, String[] demandIds) throws WorkOrderException;
 }

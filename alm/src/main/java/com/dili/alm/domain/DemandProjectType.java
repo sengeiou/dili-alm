@@ -2,7 +2,7 @@ package com.dili.alm.domain;
 
 public enum DemandProjectType {
 
-	PROJECRT("项目", 1), VERSION("版本", 2),WORKORDER("工单", 1);
+	APPLY("立项", 1), VERSION("版本", 2),WORKORDER("工单", 3);
 	private String name;
 	private int value;
 

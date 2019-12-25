@@ -91,9 +91,10 @@ public class DemandProjectController {
 		@ApiImplicitParam(name="id", paramType="form", value = "DemandProject的主键", required = true, dataType = "long")
 	})
     @RequestMapping(value="/deleteByProjectOrVersionOrWorkOrder.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput deleteByProjectOrVersionOrWorkOrder(Long projectId,Long versionId,Long workOrderId ) {
+    public @ResponseBody BaseOutput deleteByProjectOrVersionOrWorkOrder(Long applyId,Long versionId,Long workOrderId ) {
         
-    	return demandProjectService.deleteByProjectOrVersionOrWorkOrder(projectId,versionId,workOrderId);
+    	return demandProjectService.deleteByProjectOrVersionOrWorkOrder(applyId,versionId,workOrderId);
       
     }
+    
 }

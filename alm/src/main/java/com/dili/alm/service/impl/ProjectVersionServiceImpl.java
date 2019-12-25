@@ -94,6 +94,12 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		if (dto.getPlannedEndDate().compareTo(dto.getPlannedOnlineDate()) < 0) {
 			throw new ProjectVersionException("版本计划上线时间不能小于版本计划技术时间");
 		}
+		
+		
+		ProjectVersion query1 = DTOUtils.newDTO(ProjectVersion.class);
+		query1.setProjectId(dto.getProjectId());
+		int versionCount = this.getActualDao().selectCount(query1);
+		
 		ProjectVersion query = DTOUtils.newDTO(ProjectVersion.class);
 		query.setProjectId(dto.getProjectId());
 		query.setVersion(dto.getVersion());
@@ -101,6 +107,7 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		if (count > 0) {
 			throw new ProjectVersionException("版本已存在");
 		}
+		
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		dto.setCreatorId(userTicket.getId());
 		dto.setCreated(new Date());
@@ -108,6 +115,22 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		if (rows <= 0) {
 			throw new ProjectVersionException("新增项目版本失败");
 		}
+		
+		if(versionCount==0) {
+			Project selectByPrimaryKey = this.projectMapper.selectByPrimaryKey(dto.getProjectId());
+			DemandProject demandProject =new DemandProject();
+			demandProject.setProjectNumber(selectByPrimaryKey.getSerialNumber());
+			demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
+			List<DemandProject> demandLists = this.demandProjectMapper.select(demandProject);
+			for (DemandProject updateDemandProject : demandLists) {
+				updateDemandProject.setVersionId(dto.getId());
+				int updateByPrimaryKey = this.demandProjectMapper.updateByPrimaryKey(updateDemandProject);
+				if(updateByPrimaryKey==0) {
+					throw new ProjectVersionException("修改关联失败");
+				}
+			}
+		}
+		
 		if (CollectionUtils.isNotEmpty(dto.getFileIds())) {
 			dto.getFileIds().forEach(id -> {
 				Files file = this.filesService.get(id);
@@ -130,17 +153,20 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		if (rows <= 0) {
 			throw new ProjectVersionException("插入项目进程记录失败");
 		}
-		DemandProject demandProject= new DemandProject();
-		demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
-		Project selectByPrimaryKey = this.projectMapper.selectByPrimaryKey(dto.getProjectId());
-		demandProject.setProjectNumber(selectByPrimaryKey.getSerialNumber());
-		demandProject.setVersionId(dto.getId());
-		List<String> demandIds = dto.getDemandIds();			
-		for (String demandId : demandIds) {
-			demandProject.setDemandId(Long.valueOf(demandId));
-			int insertExact = this.demandProjectMapper.insertExact(demandProject);
-			if(insertExact==0) {
-				throw new ProjectVersionException("插入关联失败");
+		
+		List<String> demandIds = dto.getDemandIds();
+		if(demandIds!=null&&demandIds.size()>0) {
+			for (String demandId : demandIds) {
+				DemandProject demandProject= new DemandProject();
+				demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
+				Project selectByPrimaryKey = this.projectMapper.selectByPrimaryKey(dto.getProjectId());
+				demandProject.setProjectNumber(selectByPrimaryKey.getSerialNumber());
+				demandProject.setVersionId(dto.getId());
+				demandProject.setDemandId(Long.valueOf(demandId));
+				int insertExact = this.demandProjectMapper.insertExact(demandProject);
+				if(insertExact==0) {
+					throw new ProjectVersionException("插入关联失败");
+				}
 			}
 		}
 
@@ -223,6 +249,33 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		if (rows <= 0) {
 			throw new ProjectVersionException("修改项目进程记录失败");
 		}
+		
+		DemandProject demandProject=new DemandProject();
+		demandProject.setVersionId(dto.getId());
+		demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
+		List<DemandProject> select = this.demandProjectMapper.select(demandProject);
+		if(select!=null&&select.size()>0) {
+			int delete = this.demandProjectMapper.delete(demandProject);
+			if(delete!=select.size()) {
+				throw new ProjectVersionException("删除关联失败");
+			}
+		}
+		List<String> demandIds = dto.getDemandIds();		
+		if(demandIds!=null&&demandIds.size()>0) {
+			for (String demandId : demandIds) {
+				DemandProject demandProject1= new DemandProject();
+				demandProject1.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
+				Project selectByPrimaryKey = this.projectMapper.selectByPrimaryKey(dto.getProjectId());
+				demandProject1.setProjectNumber(selectByPrimaryKey.getSerialNumber());
+				demandProject1.setVersionId(dto.getId());
+				demandProject1.setDemandId(Long.valueOf(demandId));
+				int insertExact = this.demandProjectMapper.insertExact(demandProject1);
+				if(insertExact==0) {
+					throw new ProjectVersionException("插入关联失败");
+				}
+			}
+		}
+		
 	}
 
 	@Transactional(rollbackFor = ApplicationException.class)
@@ -259,6 +312,16 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		ProjectActionRecord parQuery = DTOUtils.newDTO(ProjectActionRecord.class);
 		parQuery.setVersionId(id);
 		this.parMapper.delete(parQuery);
+		DemandProject demandProject=new DemandProject();
+		demandProject.setVersionId(id);
+		demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
+		List<DemandProject> select = this.demandProjectMapper.select(demandProject);
+		if(select!=null&&select.size()>0) {
+			int delete = this.demandProjectMapper.delete(demandProject);
+			if(delete!=select.size()) {
+				throw new ProjectVersionException("删除失败");
+			}
+		}
 	}
 
 	@Override
