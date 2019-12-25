@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.alm.dao.OnlineDataChangeMapper">
+  <resultMap id="BaseResultMap" type="com.dili.alm.domain.OnlineDataChange">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="apply_user_id" jdbcType="BIGINT" property="applyUserId" />
+    <result column="apply_market_id" jdbcType="BIGINT" property="applyMarketId" />
+    <result column="project_id" jdbcType="BIGINT" property="projectId" />
+    <result column="version_id" jdbcType="BIGINT" property="versionId" />
+    <result column="apply_date" jdbcType="TIMESTAMP" property="applyDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="dba_name" jdbcType="VARCHAR" property="dbaName" />
+    <result column="sql_script" jdbcType="VARCHAR" property="sqlScript" />
+    <result column="sql_file_id" jdbcType="VARCHAR" property="sqlFileId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, apply_user_id, apply_market_id, project_id, version_id, apply_date, update_date, 
+    dba_name, sql_script, sql_file_id
+  </sql>
+  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from online_data_change
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <update id="updateBy" parameterType="com.dili.alm.domain.OnlineDataChange">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update online_data_change
+    <set>
+      <if test="applyUserId != null">
+        apply_user_id = #{applyUserId,jdbcType=BIGINT},
+      </if>
+      <if test="applyMarketId != null">
+        apply_market_id = #{applyMarketId,jdbcType=BIGINT},
+      </if>
+      <if test="projectId != null">
+        project_id = #{projectId,jdbcType=BIGINT},
+      </if>
+      <if test="versionId != null">
+        version_id = #{versionId,jdbcType=BIGINT},
+      </if>
+      <if test="applyDate != null">
+        apply_date = #{applyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="dbaName != null">
+        dba_name = #{dbaName,jdbcType=VARCHAR},
+      </if>
+      <if test="sqlScript != null">
+        sql_script = #{sqlScript,jdbcType=VARCHAR},
+      </if>
+      <if test="sqlFileId != null">
+        sql_file_id = #{sqlFileId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

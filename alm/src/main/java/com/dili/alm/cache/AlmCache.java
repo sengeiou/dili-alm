@@ -98,6 +98,12 @@ public class AlmCache {
 	// 立项申请roi缓存
 	private static final Map<Long, RoiDto> ROI_MAP = new ConcurrentHashMap<>();
 
+	
+	//需求状态缓存
+	private static final Map<String, String> DAMAND_STATUS_MAP = new ConcurrentHashMap<>();
+	//需求类型缓存
+	private static final Map<String, String> DAMAND_TYPE_MAP = new ConcurrentHashMap<>();
+	
 	@Autowired
 	private UserRpc userRpc;
 	@Autowired
@@ -422,5 +428,26 @@ public class AlmCache {
 		}
 		return ROI_MAP;
 	}
+	
+	public Map<String, String> getDemandStetusMap() {
+		if (AlmCache.DAMAND_STATUS_MAP.isEmpty()) {
+			DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.DEMAND_TYPE);
+			if (CollectionUtils.isEmpty(dd.getValues())) {
+				return DAMAND_STATUS_MAP;
+			}
+			dd.getValues().forEach(v -> DAMAND_STATUS_MAP.put(v.getValue(), v.getCode()));
+		}
+		return DAMAND_STATUS_MAP;
+	}
 
+	public Map<String, String> getDemandTypeMap() {
+		if (AlmCache.DAMAND_TYPE_MAP.isEmpty()) {
+			DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.DEMAND_TYPE);
+			if (CollectionUtils.isEmpty(dd.getValues())) {
+				return DAMAND_TYPE_MAP;
+			}
+			dd.getValues().forEach(v -> DAMAND_TYPE_MAP.put(v.getValue(), v.getCode()));
+		}
+		return DAMAND_TYPE_MAP;
+	}
 }
