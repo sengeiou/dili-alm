@@ -8,14 +8,14 @@ import java.util.Date;
 import javax.persistence.*;
 
 /**
- * ÓÉMyBatis Generator¹¤¾ß×Ô¶¯Éú³É
+ * ç”±MyBatis Generatorå·¥å…·è‡ªåŠ¨ç”Ÿæˆ
  * 
  * This file was generated on 2019-12-24 10:20:34.
  */
 @Table(name = "`demand`")
 public class Demand extends BaseDomain {
     /**
-     * ×ÔÔö±àºÅ
+     * è‡ªå¢ç¼–å·
      */
     @Id
     @Column(name = "`id`")
@@ -23,332 +23,332 @@ public class Demand extends BaseDomain {
     private Long id;
 
     /**
-     * ĞèÇó±àºÅ£¬ÇøÓòÊ××ÖÄ¸+ÄêÔÂÈÕ+Ê±·Ö+001×ÔÔöÊı×Ö
+     * éœ€æ±‚ç¼–å·ï¼ŒåŒºåŸŸé¦–å­—æ¯+å¹´æœˆæ—¥+æ—¶åˆ†+001è‡ªå¢æ•°å­—
      */
     @Column(name = "`serial_number`")
     private String serialNumber;
 
     /**
-     * ĞèÇóÃû³Æ
+     * éœ€æ±‚åç§°
      */
     @Column(name = "`name`")
     private String name;
 
     /**
-     * ĞèÇóÉêÇëÈË
+     * éœ€æ±‚ç”³è¯·äºº
      */
     @Column(name = "`user_id`")
     private Long userId;
 
     /**
-     * ËùÊôÏµÍ³
+     * æ‰€å±ç³»ç»Ÿ
      */
     @Column(name = "`belong_pro_id`")
     private Long belongProId;
 
     /**
-     * ĞèÇóÀàĞÍ£¨Êı¾İ×Öµä£©
+     * éœ€æ±‚ç±»å‹ï¼ˆæ•°æ®å­—å…¸ï¼‰
      */
     @Column(name = "`type`")
     private Byte type;
 
     /**
-     * ĞèÇó×´Ì¬£¨Êı¾İ×Öµä£©
+     * éœ€æ±‚çŠ¶æ€ï¼ˆæ•°æ®å­—å…¸ï¼‰
      */
     @Column(name = "`status`")
     private Byte status;
 
     /**
-     * ĞèÇóÆÚÍûÊµÏÖÊ±¼ä(ÄêÔÂÈÕ)
+     * éœ€æ±‚æœŸæœ›å®ç°æ—¶é—´(å¹´æœˆæ—¥)
      */
     @Column(name = "`finish_date`")
     private Date finishDate;
 
     /**
-     * Ïà¹Ø¸½¼ş
+     * ç›¸å…³é™„ä»¶
      */
     @Column(name = "`document_url`")
     private String documentUrl;
 
     /**
-     * ´´½¨Ê±¼ä
+     * åˆ›å»ºæ—¶é—´
      */
     @Column(name = "`create_date`")
     private Date createDate;
 
     /**
-     * Ìá½»Ê±¼ä£¨¿ªÆôÁ÷³Ì£©
+     * æäº¤æ—¶é—´ï¼ˆå¼€å¯æµç¨‹ï¼‰
      */
     @Column(name = "`submit_date`")
     private Date submitDate;
 
     /**
-     * ĞèÇóÄÚÈİ
+     * éœ€æ±‚å†…å®¹
      */
     @Column(name = "`content`")
     private String content;
 
     /**
-     * ĞèÇó±³¾°
+     * éœ€æ±‚èƒŒæ™¯
      */
     @Column(name = "`reason`")
     private String reason;
 
     /**
-     * »ñÈ¡×ÔÔö±àºÅ
+     * è·å–è‡ªå¢ç¼–å·
      *
-     * @return id - ×ÔÔö±àºÅ
+     * @return id - è‡ªå¢ç¼–å·
      */
-    @FieldDef(label="×ÔÔö±àºÅ")
+    @FieldDef(label="è‡ªå¢ç¼–å·")
     @EditMode(editor = FieldEditor.Number, required = true)
     public Long getId() {
         return id;
     }
 
     /**
-     * ÉèÖÃ×ÔÔö±àºÅ
+     * è®¾ç½®è‡ªå¢ç¼–å·
      *
-     * @param id ×ÔÔö±àºÅ
+     * @param id è‡ªå¢ç¼–å·
      */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * »ñÈ¡ĞèÇó±àºÅ£¬ÇøÓòÊ××ÖÄ¸+ÄêÔÂÈÕ+Ê±·Ö+001×ÔÔöÊı×Ö
+     * è·å–éœ€æ±‚ç¼–å·ï¼ŒåŒºåŸŸé¦–å­—æ¯+å¹´æœˆæ—¥+æ—¶åˆ†+001è‡ªå¢æ•°å­—
      *
-     * @return serial_number - ĞèÇó±àºÅ£¬ÇøÓòÊ××ÖÄ¸+ÄêÔÂÈÕ+Ê±·Ö+001×ÔÔöÊı×Ö
+     * @return serial_number - éœ€æ±‚ç¼–å·ï¼ŒåŒºåŸŸé¦–å­—æ¯+å¹´æœˆæ—¥+æ—¶åˆ†+001è‡ªå¢æ•°å­—
      */
-    @FieldDef(label="ĞèÇó±àºÅ£¬ÇøÓòÊ××ÖÄ¸+ÄêÔÂÈÕ+Ê±·Ö+001×ÔÔöÊı×Ö", maxLength = 25)
+    @FieldDef(label="éœ€æ±‚ç¼–å·ï¼ŒåŒºåŸŸé¦–å­—æ¯+å¹´æœˆæ—¥+æ—¶åˆ†+001è‡ªå¢æ•°å­—", maxLength = 25)
     @EditMode(editor = FieldEditor.Text, required = true)
     public String getSerialNumber() {
         return serialNumber;
     }
 
     /**
-     * ÉèÖÃĞèÇó±àºÅ£¬ÇøÓòÊ××ÖÄ¸+ÄêÔÂÈÕ+Ê±·Ö+001×ÔÔöÊı×Ö
+     * è®¾ç½®éœ€æ±‚ç¼–å·ï¼ŒåŒºåŸŸé¦–å­—æ¯+å¹´æœˆæ—¥+æ—¶åˆ†+001è‡ªå¢æ•°å­—
      *
-     * @param serialNumber ĞèÇó±àºÅ£¬ÇøÓòÊ××ÖÄ¸+ÄêÔÂÈÕ+Ê±·Ö+001×ÔÔöÊı×Ö
+     * @param serialNumber éœ€æ±‚ç¼–å·ï¼ŒåŒºåŸŸé¦–å­—æ¯+å¹´æœˆæ—¥+æ—¶åˆ†+001è‡ªå¢æ•°å­—
      */
     public void setSerialNumber(String serialNumber) {
         this.serialNumber = serialNumber;
     }
 
     /**
-     * »ñÈ¡ĞèÇóÃû³Æ
+     * è·å–éœ€æ±‚åç§°
      *
-     * @return name - ĞèÇóÃû³Æ
+     * @return name - éœ€æ±‚åç§°
      */
-    @FieldDef(label="ĞèÇóÃû³Æ", maxLength = 25)
+    @FieldDef(label="éœ€æ±‚åç§°", maxLength = 25)
     @EditMode(editor = FieldEditor.Text, required = true)
     public String getName() {
         return name;
     }
 
     /**
-     * ÉèÖÃĞèÇóÃû³Æ
+     * è®¾ç½®éœ€æ±‚åç§°
      *
-     * @param name ĞèÇóÃû³Æ
+     * @param name éœ€æ±‚åç§°
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * »ñÈ¡ĞèÇóÉêÇëÈË
+     * è·å–éœ€æ±‚ç”³è¯·äºº
      *
-     * @return user_id - ĞèÇóÉêÇëÈË
+     * @return user_id - éœ€æ±‚ç”³è¯·äºº
      */
-    @FieldDef(label="ĞèÇóÉêÇëÈË")
+    @FieldDef(label="éœ€æ±‚ç”³è¯·äºº")
     @EditMode(editor = FieldEditor.Number, required = true)
     public Long getUserId() {
         return userId;
     }
 
     /**
-     * ÉèÖÃĞèÇóÉêÇëÈË
+     * è®¾ç½®éœ€æ±‚ç”³è¯·äºº
      *
-     * @param userId ĞèÇóÉêÇëÈË
+     * @param userId éœ€æ±‚ç”³è¯·äºº
      */
     public void setUserId(Long userId) {
         this.userId = userId;
     }
 
     /**
-     * »ñÈ¡ËùÊôÏµÍ³
+     * è·å–æ‰€å±ç³»ç»Ÿ
      *
-     * @return belong_pro_id - ËùÊôÏµÍ³
+     * @return belong_pro_id - æ‰€å±ç³»ç»Ÿ
      */
-    @FieldDef(label="ËùÊôÏµÍ³")
+    @FieldDef(label="æ‰€å±ç³»ç»Ÿ")
     @EditMode(editor = FieldEditor.Number, required = false)
     public Long getBelongProId() {
         return belongProId;
     }
 
     /**
-     * ÉèÖÃËùÊôÏµÍ³
+     * è®¾ç½®æ‰€å±ç³»ç»Ÿ
      *
-     * @param belongProId ËùÊôÏµÍ³
+     * @param belongProId æ‰€å±ç³»ç»Ÿ
      */
     public void setBelongProId(Long belongProId) {
         this.belongProId = belongProId;
     }
 
     /**
-     * »ñÈ¡ĞèÇóÀàĞÍ£¨Êı¾İ×Öµä£©
+     * è·å–éœ€æ±‚ç±»å‹ï¼ˆæ•°æ®å­—å…¸ï¼‰
      *
-     * @return type - ĞèÇóÀàĞÍ£¨Êı¾İ×Öµä£©
+     * @return type - éœ€æ±‚ç±»å‹ï¼ˆæ•°æ®å­—å…¸ï¼‰
      */
-    @FieldDef(label="ĞèÇóÀàĞÍ£¨Êı¾İ×Öµä£©")
+    @FieldDef(label="éœ€æ±‚ç±»å‹ï¼ˆæ•°æ®å­—å…¸ï¼‰")
     @EditMode(editor = FieldEditor.Text, required = true)
     public Byte getType() {
         return type;
     }
 
     /**
-     * ÉèÖÃĞèÇóÀàĞÍ£¨Êı¾İ×Öµä£©
+     * è®¾ç½®éœ€æ±‚ç±»å‹ï¼ˆæ•°æ®å­—å…¸ï¼‰
      *
-     * @param type ĞèÇóÀàĞÍ£¨Êı¾İ×Öµä£©
+     * @param type éœ€æ±‚ç±»å‹ï¼ˆæ•°æ®å­—å…¸ï¼‰
      */
     public void setType(Byte type) {
         this.type = type;
     }
 
     /**
-     * »ñÈ¡ĞèÇó×´Ì¬£¨Êı¾İ×Öµä£©
+     * è·å–éœ€æ±‚çŠ¶æ€ï¼ˆæ•°æ®å­—å…¸ï¼‰
      *
-     * @return status - ĞèÇó×´Ì¬£¨Êı¾İ×Öµä£©
+     * @return status - éœ€æ±‚çŠ¶æ€ï¼ˆæ•°æ®å­—å…¸ï¼‰
      */
-    @FieldDef(label="ĞèÇó×´Ì¬£¨Êı¾İ×Öµä£©")
+    @FieldDef(label="éœ€æ±‚çŠ¶æ€ï¼ˆæ•°æ®å­—å…¸ï¼‰")
     @EditMode(editor = FieldEditor.Text, required = true)
     public Byte getStatus() {
         return status;
     }
 
     /**
-     * ÉèÖÃĞèÇó×´Ì¬£¨Êı¾İ×Öµä£©
+     * è®¾ç½®éœ€æ±‚çŠ¶æ€ï¼ˆæ•°æ®å­—å…¸ï¼‰
      *
-     * @param status ĞèÇó×´Ì¬£¨Êı¾İ×Öµä£©
+     * @param status éœ€æ±‚çŠ¶æ€ï¼ˆæ•°æ®å­—å…¸ï¼‰
      */
     public void setStatus(Byte status) {
         this.status = status;
     }
 
     /**
-     * »ñÈ¡ĞèÇóÆÚÍûÊµÏÖÊ±¼ä(ÄêÔÂÈÕ)
+     * è·å–éœ€æ±‚æœŸæœ›å®ç°æ—¶é—´(å¹´æœˆæ—¥)
      *
-     * @return finish_date - ĞèÇóÆÚÍûÊµÏÖÊ±¼ä(ÄêÔÂÈÕ)
+     * @return finish_date - éœ€æ±‚æœŸæœ›å®ç°æ—¶é—´(å¹´æœˆæ—¥)
      */
-    @FieldDef(label="ĞèÇóÆÚÍûÊµÏÖÊ±¼ä(ÄêÔÂÈÕ)")
+    @FieldDef(label="éœ€æ±‚æœŸæœ›å®ç°æ—¶é—´(å¹´æœˆæ—¥)")
     @EditMode(editor = FieldEditor.Date, required = true)
     public Date getFinishDate() {
         return finishDate;
     }
 
     /**
-     * ÉèÖÃĞèÇóÆÚÍûÊµÏÖÊ±¼ä(ÄêÔÂÈÕ)
+     * è®¾ç½®éœ€æ±‚æœŸæœ›å®ç°æ—¶é—´(å¹´æœˆæ—¥)
      *
-     * @param finishDate ĞèÇóÆÚÍûÊµÏÖÊ±¼ä(ÄêÔÂÈÕ)
+     * @param finishDate éœ€æ±‚æœŸæœ›å®ç°æ—¶é—´(å¹´æœˆæ—¥)
      */
     public void setFinishDate(Date finishDate) {
         this.finishDate = finishDate;
     }
 
     /**
-     * »ñÈ¡Ïà¹Ø¸½¼ş
+     * è·å–ç›¸å…³é™„ä»¶
      *
-     * @return document_url - Ïà¹Ø¸½¼ş
+     * @return document_url - ç›¸å…³é™„ä»¶
      */
-    @FieldDef(label="Ïà¹Ø¸½¼ş", maxLength = 120)
+    @FieldDef(label="ç›¸å…³é™„ä»¶", maxLength = 120)
     @EditMode(editor = FieldEditor.Text, required = false)
     public String getDocumentUrl() {
         return documentUrl;
     }
 
     /**
-     * ÉèÖÃÏà¹Ø¸½¼ş
+     * è®¾ç½®ç›¸å…³é™„ä»¶
      *
-     * @param documentUrl Ïà¹Ø¸½¼ş
+     * @param documentUrl ç›¸å…³é™„ä»¶
      */
     public void setDocumentUrl(String documentUrl) {
         this.documentUrl = documentUrl;
     }
 
     /**
-     * »ñÈ¡´´½¨Ê±¼ä
+     * è·å–åˆ›å»ºæ—¶é—´
      *
-     * @return create_date - ´´½¨Ê±¼ä
+     * @return create_date - åˆ›å»ºæ—¶é—´
      */
-    @FieldDef(label="´´½¨Ê±¼ä")
+    @FieldDef(label="åˆ›å»ºæ—¶é—´")
     @EditMode(editor = FieldEditor.Datetime, required = true)
     public Date getCreateDate() {
         return createDate;
     }
 
     /**
-     * ÉèÖÃ´´½¨Ê±¼ä
+     * è®¾ç½®åˆ›å»ºæ—¶é—´
      *
-     * @param createDate ´´½¨Ê±¼ä
+     * @param createDate åˆ›å»ºæ—¶é—´
      */
     public void setCreateDate(Date createDate) {
         this.createDate = createDate;
     }
 
     /**
-     * »ñÈ¡Ìá½»Ê±¼ä£¨¿ªÆôÁ÷³Ì£©
+     * è·å–æäº¤æ—¶é—´ï¼ˆå¼€å¯æµç¨‹ï¼‰
      *
-     * @return submit_date - Ìá½»Ê±¼ä£¨¿ªÆôÁ÷³Ì£©
+     * @return submit_date - æäº¤æ—¶é—´ï¼ˆå¼€å¯æµç¨‹ï¼‰
      */
-    @FieldDef(label="Ìá½»Ê±¼ä£¨¿ªÆôÁ÷³Ì£©")
+    @FieldDef(label="æäº¤æ—¶é—´ï¼ˆå¼€å¯æµç¨‹ï¼‰")
     @EditMode(editor = FieldEditor.Datetime, required = true)
     public Date getSubmitDate() {
         return submitDate;
     }
 
     /**
-     * ÉèÖÃÌá½»Ê±¼ä£¨¿ªÆôÁ÷³Ì£©
+     * è®¾ç½®æäº¤æ—¶é—´ï¼ˆå¼€å¯æµç¨‹ï¼‰
      *
-     * @param submitDate Ìá½»Ê±¼ä£¨¿ªÆôÁ÷³Ì£©
+     * @param submitDate æäº¤æ—¶é—´ï¼ˆå¼€å¯æµç¨‹ï¼‰
      */
     public void setSubmitDate(Date submitDate) {
         this.submitDate = submitDate;
     }
 
     /**
-     * »ñÈ¡ĞèÇóÄÚÈİ
+     * è·å–éœ€æ±‚å†…å®¹
      *
-     * @return content - ĞèÇóÄÚÈİ
+     * @return content - éœ€æ±‚å†…å®¹
      */
-    @FieldDef(label="ĞèÇóÄÚÈİ")
+    @FieldDef(label="éœ€æ±‚å†…å®¹")
     @EditMode(editor = FieldEditor.Text, required = true)
     public String getContent() {
         return content;
     }
 
     /**
-     * ÉèÖÃĞèÇóÄÚÈİ
+     * è®¾ç½®éœ€æ±‚å†…å®¹
      *
-     * @param content ĞèÇóÄÚÈİ
+     * @param content éœ€æ±‚å†…å®¹
      */
     public void setContent(String content) {
         this.content = content;
     }
 
     /**
-     * »ñÈ¡ĞèÇó±³¾°
+     * è·å–éœ€æ±‚èƒŒæ™¯
      *
-     * @return reason - ĞèÇó±³¾°
+     * @return reason - éœ€æ±‚èƒŒæ™¯
      */
-    @FieldDef(label="ĞèÇó±³¾°")
+    @FieldDef(label="éœ€æ±‚èƒŒæ™¯")
     @EditMode(editor = FieldEditor.Text, required = false)
     public String getReason() {
         return reason;
     }
 
     /**
-     * ÉèÖÃĞèÇó±³¾°
+     * è®¾ç½®éœ€æ±‚èƒŒæ™¯
      *
-     * @param reason ĞèÇó±³¾°
+     * @param reason éœ€æ±‚èƒŒæ™¯
      */
     public void setReason(String reason) {
         this.reason = reason;

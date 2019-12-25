@@ -90,19 +90,48 @@
 				<table class="easyui-datagrid" title="需求列表" id="demandGrid" style="width: 100%"
 					   fitColumns="true" pagination="false" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" align="center" fit="false" striped="true" idField="id" data-options="toolbar: '#tb1',<%if(has(model) && model.id != null){%>url:'${contextPath!}/demandProject/list?versionId=${model.id!}'<%}%>">
 					<thead>
-					<tr>
-						<th data-options="field:'demNum', width:'20%', align:'center', resizable:'true', fixed:'false'">需求编号</th>
-						<th data-options="field:'demName', width:'20%', align:'center', resizable:'true', fixed:'false'">需求名称</th>
-						<th data-options="field:'finishDate', width:'50%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">需求期待时间日期</th>
-						<th data-options="field:'opt', width:'10%', align:'center', resizable:'true', fixed:'false',formatter:demandOptFormatter">操作</th>
-					</tr>
+							<tr>
+								<th data-options="field:'id',hidden:'true'">
+								<th data-options="field:'serialNumber', width:'20%', align:'center', resizable:'true', fixed:'false'">需求编号</th>
+								<th data-options="field:'name', width:'20%', align:'center', resizable:'true', fixed:'false'">需求名称</th>
+								<th data-options="field:'finishDate', width:'40%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">需求期待时间日期</th>
+								<th data-options="field:'opt', width:'10%', align:'center', resizable:'true', fixed:'false',formatter:demandOptFormatter">操作</th>
+							</tr>
 					</thead>
 				</table>
 			</td>
 		</tr>
 	</table>
 </form>
+<div id="demandListDlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false"
+         title="需求添加列表" style="padding: 20px; height: 400px; width: 600px"align-content
+         border="thin" closed="true" data-options="
+         			modal:true,
+                  	inline:true, 
+					buttons: [{
+						text:'确定',
+						handler:function(){addDemandList();}
+						},{
+						text:'取消',
+						handler:function(){$('#demandListDlg').dialog('close');}
+					}]
+					
+				">
+        <table class="easyui-datagrid" id="demandListGrid" rownumbers="false" remoteSort="false" loadMsg="数据加载中..."
+               singleSelect="true" method="post" multiSort="true" data-options="url:'${contextPath}/demand/queryDemandListToProject.action?projectId=${project.id!}'">
+               <thead>
+		          	<tr>
+		            	<th data-options="field:'id', checkbox:true ">需求ID</th>
+		                <th data-options="field:'serialNumber', width:'30%', align:'center', resizable:'true', fixed:'false'">需求编号</th>
+						<th data-options="field:'name', width:'30%', align:'center', resizable:'true', fixed:'false'">需求名称</th>
+						<th data-options="field:'finishDate', width:'30%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">需求期待时间日期</th>
+						
+		            </tr>
+	            </thead>
+        </table>
 
+</div>
+	
 <script type="text/javascript">
     <#project_formJs />
 </script>

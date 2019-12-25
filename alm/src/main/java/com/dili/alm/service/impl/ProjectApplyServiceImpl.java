@@ -20,17 +20,21 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.component.NumberGenerator;
 import com.dili.alm.constant.AlmConstants;
+import com.dili.alm.dao.DemandProjectMapper;
 import com.dili.alm.dao.ProjectApplyMapper;
 import com.dili.alm.dao.ProjectCostMapper;
 import com.dili.alm.dao.ProjectEarningMapper;
 import com.dili.alm.dao.RoiMapper;
 import com.dili.alm.domain.Approve;
+import com.dili.alm.domain.DemandProject;
+import com.dili.alm.domain.DemandProjectStatus;
 import com.dili.alm.domain.FileType;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.IndicatorType;
@@ -41,6 +45,7 @@ import com.dili.alm.domain.ProjectEarning;
 import com.dili.alm.domain.Roi;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
+import com.dili.alm.domain.dto.ProjectApplyDto;
 import com.dili.alm.domain.dto.RoiUpdateDto;
 import com.dili.alm.domain.dto.apply.ApplyFiles;
 import com.dili.alm.domain.dto.apply.ApplyImpact;
@@ -54,6 +59,7 @@ import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.ProjectApplyService;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.util.SystemConfigUtils;
@@ -89,18 +95,45 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 	private ProjectCostMapper projectCostMapper;
 	@Autowired
 	private RoiMapper roiMapper;
+	
+	@Autowired
+	private DemandProjectMapper demandProjectMapper;
 
 	public ProjectApplyMapper getActualDao() {
 		return (ProjectApplyMapper) getDao();
 	}
 
 	@Override
-	public int insertApply(ProjectApply apply) {
-		apply.setNumber(getProjectNumber(apply));
-		apply.setName(apply.getNumber());
-		apply.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
-		apply.setStatus(AlmConstants.ApplyState.APPLY.getCode());
-		return getActualDao().insertSelective(apply);
+	@Transactional(rollbackFor = Exception.class)
+	public BaseOutput insertApply(ProjectApplyDto applyDto) {
+		applyDto.setNumber(getProjectNumber(applyDto));
+		applyDto.setName(applyDto.getNumber());
+		applyDto.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
+		applyDto.setStatus(AlmConstants.ApplyState.APPLY.getCode());
+		try {
+			int insertSelective = getActualDao().insertSelective(applyDto);
+			if(insertSelective==0) {
+				throw new ProjectApplyException("插入关联失败");
+			}
+			DemandProject demandProject= new DemandProject();
+			demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
+			demandProject.setProjectNumber(applyDto.getNumber());
+			List<String> demandIds = applyDto.getDemandIds();			
+			for (String demandId : demandIds) {
+				demandProject.setDemandId(Long.valueOf(demandId));
+				int insertExact = this.demandProjectMapper.insertExact(demandProject);
+				if(insertExact==0) {
+					throw new ProjectApplyException("插入关联失败");
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			return BaseOutput.failure("立项申请失败");
+		}
+		
+		return 	BaseOutput.success(String.valueOf(applyDto.getId())).setData(applyDto.getId() + ":" + applyDto.getName());
+
 	}
 
 	@Override

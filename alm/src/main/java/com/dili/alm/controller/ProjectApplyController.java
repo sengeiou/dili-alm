@@ -23,6 +23,7 @@ import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.ProjectApplyQueryDto;
+import com.dili.alm.domain.dto.ProjectApplyDto;
 import com.dili.alm.domain.dto.RoiDto;
 import com.dili.alm.domain.dto.RoiUpdateDto;
 import com.dili.alm.domain.dto.apply.ApplyDescription;
@@ -183,9 +184,9 @@ public class ProjectApplyController {
 	@ApiOperation("新增ProjectApply")
 	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectApply", paramType = "form", value = "ProjectApply的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput insert(ProjectApply projectApply) {
-		projectApplyService.insertApply(projectApply);
-		return BaseOutput.success(String.valueOf(projectApply.getId())).setData(projectApply.getId() + ":" + projectApply.getName());
+	public @ResponseBody BaseOutput insert(ProjectApplyDto projectApplyDto) {
+		return projectApplyService.insertApply(projectApplyDto);
+		 
 	}
 
 	@RequestMapping(value = "/insertStep1", method = { RequestMethod.GET, RequestMethod.POST })

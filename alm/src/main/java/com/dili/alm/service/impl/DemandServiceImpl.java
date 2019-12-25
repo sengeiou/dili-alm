@@ -1,5 +1,6 @@
 package com.dili.alm.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -9,12 +10,23 @@ import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.component.NumberGenerator;
 import com.dili.alm.constant.AlmConstants.DemandStatus;
 import com.dili.alm.dao.DemandMapper;
+import com.dili.alm.dao.DemandProjectMapper;
+import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.dao.SequenceMapper;
 import com.dili.alm.domain.Demand;
+import com.dili.alm.domain.DemandProject;
+import com.dili.alm.domain.DemandProjectStatus;
+import com.dili.alm.domain.DemandProjectType;
+import com.dili.alm.domain.Department;
+import com.dili.alm.domain.Project;
 import com.dili.alm.domain.Sequence;
+import com.dili.alm.domain.dto.DemandDto;
 import com.dili.alm.exceptions.DemandExceptions;
+import com.dili.alm.rpc.DepartmentRpc;
 import com.dili.alm.service.DemandService;
+import com.dili.alm.utils.WebUtil;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
@@ -40,13 +52,21 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	@Autowired
 	private SequenceMapper sequenceMapper;
 	
+	    public DemandMapper getActualDao() {
+        return (DemandMapper)getDao();
+    }
+	@Autowired
+	private DepartmentRpc departmentRpc;
+    @Autowired
+    private DemandProjectMapper demandProjectMapper;
+    @Autowired
+    private ProjectMapper projectMapper;
+	
 	
 	@Autowired
 	private DemandMapper demandMapper;
 	
-    public DemandMapper getActualDao() {
-        return (DemandMapper)getDao();
-    }
+
     /**
      * 添加需求
      * @throws DemandExceptions 
@@ -117,6 +137,64 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+		@Override
+	public List<Demand> queryDemandListToProject(Long projectId) {
+		return this.getActualDao().selectDemandListToProject(projectId, DemandProjectStatus.NOASSOCIATED.getValue());
+	}
+
+	@Override
+	public List<Demand> queryDemandListByIds(String ids) {
+		DemandDto demandDto=new DemandDto();
+		String[] split = ids.split(",");
+		List<Long> demandIds= new ArrayList<Long>();
+		for (String id : split) {
+			if(!WebUtil.strIsEmpty(id)) {
+				demandIds.add(Long.valueOf(id));
+			}
+		}
+		demandDto.setIds(demandIds);
+		List<Demand> selectByExampleExpand = this.getActualDao().selectByExampleExpand(demandDto);
+		return selectByExampleExpand;
+	}
+
+	@Override
+	public List<Demand> queryDemandListByProjectIdOrVersionIdOrWorkOrderId(Long id, Integer type) {
+		DemandDto demandDto=new DemandDto();
+		DemandProject demandProject=new DemandProject();
+		List<Long> ids =new ArrayList<Long>();
+		if(type==DemandProjectType.PROJECRT.getValue()) {
+			Project selectByPrimaryKey = this.projectMapper.selectByPrimaryKey(id);
+			demandProject.setProjectNumber(selectByPrimaryKey.getSerialNumber());
+		}
+		if(type==DemandProjectType.VERSION.getValue()) {
+			demandProject.setVersionId(id);
+		}
+		if(type==DemandProjectType.WORKORDER.getValue()) {
+			demandProject.setWorkOrderId(id);
+		}
+		List<DemandProject> selectByExample = demandProjectMapper.selectByExample(demandProject);
+		for (DemandProject selectDemandProject : selectByExample) {
+			ids.add(selectDemandProject.getDemandId());
+		}
+		demandDto.setIds(ids);
+		return this.getActualDao().selectByExampleExpand(demandDto);
+		 
+	}
+
+	@Override
+	public DemandDto getDetailViewData(Long id) {
+		Demand demand = this.getActualDao().selectByPrimaryKey(id);
+		DemandProject demandProject=new DemandProject();
+		demandProject.getDemandId();
+		DemandProject selectOne = this.demandProjectMapper.selectOne(demandProject);
+		DemandDto demandDto = DTOUtils.as(demand, DemandDto.class);
+		BaseOutput<List<Department>> findByUserId = this.departmentRpc.findByUserId(demand.getUserId());
+		Department department = findByUserId.getData().get(0);
+		demandDto.setDepartmentId(department.getId());
+		demandDto.setDepartmentName(department.getName());
+		return demandDto;
 	}
    
 }

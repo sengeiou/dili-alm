@@ -60,20 +60,7 @@ function versionOptFormatter(value, row, index) {
 	return content;
 }
 
-function addDemandList(){
-	$('#demandListDlg').dialog('close');
-	console.log("sss");
-/* 	$('#demandListDlg').dialog('close');
-	$('#versionForm').append('<input type="hidden" name="demandIds" value="' + data.data[0].id + '">');
-	var row = data.data[0];
-	$('#demandGrid').datagrid('appendRow', row); 
-}
-function cancelDemandList(){
-	$('#demandListDlg').dialog('close');
-	var demandIds = $('#versionForm').find(".demandIds").val();
-	console.log(demandIds);
-	*/
-}
+
 function dateFormatter(value, row, index) {
 	if (value) {
 		var date = new Date();
@@ -118,10 +105,47 @@ function showDemandOptFormatter(value, row, index) {
 	return '<a href="javascript:void(0);" onclick="showDemandDetail(' + row.id
 			+ ');">详情</a>';
 }
+function delDemand(id){
+		 var rows = $('#demandGrid').datagrid('getRows');
+		 for(var i=0;i < rows.length;i++){
+			 if(rows[i].id == id){
+				 $('#demandListGrid').datagrid('appendRow', rows[i]); 
+				 $('#demandGrid').datagrid('deleteRow', i); 
+				 $("#demandId" + id + "").remove();
+			 }	 
+		 }
 
-function saveDemandToProject() {
-	$('#demandListDlg').dialog('open');
 }
+function addDemandList(){
+		$('#demandListDlg').dialog('close');
+		var selRows = $('#demandListGrid').datagrid('getChecked');
+		for(var i=0;i < selRows.length;i++){
+            $('#versionForm').append('<input type="hidden" id="demandId'+ selRows[i].id + '" name="demandIds" value="' + selRows[i].id + '">');
+            $('#demandGrid').datagrid('appendRow', selRows[i]); 
+		}	
+}
+function saveDemandToProject() {
+ 		var opts = $('#demandListGrid').datagrid("options");
+ 		var projectId = $('#id').val();
+    	opts.url = "${contextPath}/demand/queryDemandListToProject.action?projectId="+projectId;
+		var rows = $('#demandListGrid').datagrid('getRows');
+		$('#demandListGrid').datagrid('uncheckAll'); 
+		var demandId = new Array();
+		$( "input[name$='demandIds']" ).each(function(i){		
+			demandId.push($(this).val());	
+			console.log($(this).val());
+		});
+	
+		for(var g=0;g<rows.length;g++){
+			var s = $.inArray(rows[g].id+"", demandId);
+		 	if(s>=0){
+		 		$('#demandListGrid').datagrid('deleteRow', g); 
+		 	}
+		}
+		$('#demandListDlg').dialog('open');
+
+	}
+
 
 function fileOptFormatter(value, row, index) {
 	var content = '';
@@ -218,63 +242,23 @@ function delVersionFile(id) {
 }
 
 
-function delDemand(id) {
-	$.messager.confirm('提示', '确定要删除该需求？', function(flag) {
-		if (!flag) {
-			return false;
-		}
-		$.ajax({
-					type : "POST",
-					url : '${contextPath!}/reqiurementToProject/delete',
-					data : {
-						id : id
-					},
-					success : function(data) {
-						if (data.code == 200) {
-							var selected = $('#versionFileGrid')
-									.datagrid('getSelected');
-							var index = $('#versionFileGrid').datagrid(
-									'getRowIndex', selected);
-							$('#versionFileGrid').datagrid('deleteRow', index);
-							$($('#fileGrid').datagrid('getRows')).each(
-									function(i, item) {
-										if (item.id == selected.id) {
-											var rowIndex = $('#fileGrid')
-													.datagrid('getRowIndex',
-															item);
-											$('#fileGrid').datagrid(
-													'deleteRow', rowIndex);
-											$('#fileGrid')
-													.datagrid('acceptChanges');
-											return false;
-										}
-									});
-							$('input[name=fileIds][value=' + id + ']').remove();
-						} else {
-							$.messager.alert('错误', data.result);
-						}
-					},
-					error : function() {
-						$.messager.alert('错误', '远程访问失败');
-					}
-				});
-	});
-}
-
-
 
 
 function openInsertVersion() {
 	$('#win').dialog({
 		title : '新建版本',
-		width : 600,
-		height : 500,
+		width : 800,
+		height : 550,
 		href : '${contextPath!}/project/version/add?projectId='
 				+ $('#projectId').val(),
 		modal : true,
 		buttons : [{
 			text : '保存',
 			handler : function() {
+				if($($("input[name$='demandIds']")[0]).val()==null||$($("input[name$='demandIds']")[0]).val()==""){
+					$.messager.alert('警告', '请选择至少一个需求');
+					return;
+				}
 				if (!$('#versionForm').form('validate')) {
 					return;
 				}

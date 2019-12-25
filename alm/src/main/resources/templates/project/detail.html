@@ -154,35 +154,7 @@ span.require{
 		<%if(editable == true && (projectManager!'' == true || projectMember!'' == true)){%> <a href="#" class="easyui-linkbutton"
 			iconCls="icon-add" onclick="uploadFile(${model.id!})" plain="true">新建文档</a> <%}%> <span id="fileCount" style="color: red;"></span>
 	</div>
-	<div id="demandListDlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false"
-         title="需求添加列表" style="padding: 20px; height: 400px; width: 600px"align-content
-         border="thin" closed="true" data-options="
-         			modal:true,
-                  	inline:true, 
-					buttons: [{
-						text:'确定',
-						handler:function(){addDemandList();}
-						},{
-						text:'取消',
-						handler:function(){$('#demandListDlg').dialog('close');}
-					}]
-					
-				">
-        <table class="easyui-datagrid" id="demandListGrid" rownumbers="false" remoteSort="false" loadMsg="数据加载中..."
-               singleSelect="true" method="post" multiSort="true">
-               <thead>
-		            <tr>
-		            	<th data-options="field:'id', checkbox:true ">需求ID</th>
-		                <th data-options="field:'demNum', width:'30%', align:'center', resizable:'true', fixed:'false'">需求编号</th>
-						<th data-options="field:'demName', width:'30%', align:'center', resizable:'true', fixed:'false'">需求名称</th>
-						<th data-options="field:'finishDate', width:'30%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">需求期待时间日期</th>
-						
-		            </tr>
-	            </thead>
-        </table>
 
-	</div>
-	
 	<div id="showDemandListDlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false"
          title="版本需求列表" style="padding: 20px; height: 400px; width: 600px"align-content
          border="thin" closed="true" data-options="

@@ -43,7 +43,7 @@ public class DemandProject extends BaseDomain {
      * 需求状态状态{data:[{value:2,text:"已关联"},{value:1,text:"未关联"}]}
      */
     @Column(name = "`status`")
-    private Integer status;
+    private int status;
 
     /**
      * 关联工单id
@@ -138,7 +138,7 @@ public class DemandProject extends BaseDomain {
      */
     @FieldDef(label="需求状态状态{data:[{value:2,text:'已关联'},{value:1,text:'未关联'}]}")
     @EditMode(editor = FieldEditor.Number, required = true)
-    public Integer getStatus() {
+    public int getStatus() {
         return status;
     }
 
@@ -147,7 +147,7 @@ public class DemandProject extends BaseDomain {
      *
      * @param status 需求状态状态{data:[{value:2,text:"已关联"},{value:1,text:"未关联"}]}
      */
-    public void setStatus(Integer status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 
