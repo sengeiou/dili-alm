@@ -7,16 +7,16 @@ import com.dili.alm.domain.Demand;
 import com.dili.alm.domain.DemandProject;
 import com.dili.alm.domain.DemandProjectStatus;
 import com.dili.alm.domain.DemandProjectType;
-import com.dili.alm.domain.FileType;
-import com.dili.alm.domain.Files;
+import com.dili.alm.domain.Department;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.dto.DemandDto;
+import com.dili.alm.rpc.DepartmentRpc;
 import com.dili.alm.service.DemandService;
 import com.dili.alm.utils.WebUtil;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.dto.DTOUtils;
 
-import bsh.StringUtil;
-import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +34,8 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
     public DemandMapper getActualDao() {
         return (DemandMapper)getDao();
     }
+	@Autowired
+	private DepartmentRpc departmentRpc;
     @Autowired
     private DemandProjectMapper demandProjectMapper;
     @Autowired
@@ -80,5 +82,19 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		demandDto.setIds(ids);
 		return this.getActualDao().selectByExampleExpand(demandDto);
 		 
+	}
+
+	@Override
+	public DemandDto getDetailViewData(Long id) {
+		Demand demand = this.getActualDao().selectByPrimaryKey(id);
+		DemandProject demandProject=new DemandProject();
+		demandProject.getDemandId();
+		DemandProject selectOne = this.demandProjectMapper.selectOne(demandProject);
+		DemandDto demandDto = DTOUtils.as(demand, DemandDto.class);
+		BaseOutput<List<Department>> findByUserId = this.departmentRpc.findByUserId(demand.getUserId());
+		Department department = findByUserId.getData().get(0);
+		demandDto.setDepartmentId(department.getId());
+		demandDto.setDepartmentName(department.getName());
+		return demandDto;
 	}
 }

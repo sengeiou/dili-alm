@@ -1,19 +1,33 @@
 package com.dili.alm.controller;
 
 import com.dili.alm.domain.Demand;
+import com.dili.alm.domain.ProjectState;
+import com.dili.alm.domain.dto.DemandDto;
 import com.dili.alm.service.DemandService;
+import com.dili.alm.service.WorkOrderService;
 import com.dili.alm.utils.WebUtil;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.sysadmin.sdk.domain.UserTicket;
+import com.dili.sysadmin.sdk.session.SessionContext;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+
+import java.net.URLDecoder;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -26,13 +40,30 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class DemandController {
     @Autowired
     DemandService demandService;
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(DemandController.class);
     @ApiOperation("跳转到Demand页面")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
         return "demand/index";
     }
-
+    
+    @RequestMapping(value = "/add", method = RequestMethod.GET)
+	public String add() {
+		return "demand/add";
+	}
+    
+	@RequestMapping(value = "/detail.html", method = RequestMethod.GET)
+	public String detail(@RequestParam Long id,  ModelMap map) {
+		DemandDto detailViewData = this.demandService.getDetailViewData(id);
+		try {
+			map.addAttribute("model",DemandService.parseViewModel(detailViewData));
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			return null;
+		}
+		return "project/detail";
+	}
+	
     @ApiOperation(value="查询Demand", notes = "查询Demand，返回列表信息")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = false, dataType = "string")
