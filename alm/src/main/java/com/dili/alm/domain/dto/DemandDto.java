@@ -17,6 +17,14 @@ public class DemandDto extends Demand {
 	@Column(name = "`id`")
 	List<Long> ids;
 
+	Long departmentId;
+	
+	String departmentName;
+	
+	String userPhone;
+	
+	String belongSystemName;
+
 	public List<Long> getIds() {
 		return ids;
 	}
@@ -24,6 +32,39 @@ public class DemandDto extends Demand {
 	public void setIds(List<Long> ids) {
 		this.ids = ids;
 	}
+
+	public Long getDepartmentId() {
+		return departmentId;
+	}
+
+	public void setDepartmentId(Long departmentId) {
+		this.departmentId = departmentId;
+	}
+
+	public String getDepartmentName() {
+		return departmentName;
+	}
+
+	public void setDepartmentName(String departmentName) {
+		this.departmentName = departmentName;
+	}
+
+	public String getUserPhone() {
+		return userPhone;
+	}
+
+	public void setUserPhone(String userPhone) {
+		this.userPhone = userPhone;
+	}
+
+	public String getBelongSystemName() {
+		return belongSystemName;
+	}
+
+	public void setBelongSystemName(String belongSystemName) {
+		this.belongSystemName = belongSystemName;
+	}
+	
 	
 	
 }

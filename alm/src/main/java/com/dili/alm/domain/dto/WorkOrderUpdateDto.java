@@ -10,4 +10,7 @@ public interface WorkOrderUpdateDto extends WorkOrder {
 
 	void setCopyUserIds(List<Long> copyUserIds);
 
+	List<String> getDemandIds();
+
+	void setDemandIds(List<String> demandIds);
 }

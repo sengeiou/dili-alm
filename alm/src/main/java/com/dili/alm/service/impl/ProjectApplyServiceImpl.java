@@ -129,7 +129,7 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 		} catch (Exception e) {
 			e.printStackTrace();
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-			return BaseOutput.success("立项申请失败");
+			return BaseOutput.failure("立项申请失败");
 		}
 		
 		return 	BaseOutput.success(String.valueOf(applyDto.getId())).setData(applyDto.getId() + ":" + applyDto.getName());
