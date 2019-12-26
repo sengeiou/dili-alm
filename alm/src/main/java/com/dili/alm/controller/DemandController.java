@@ -1,5 +1,6 @@
 package com.dili.alm.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.domain.Demand;
 import com.dili.alm.domain.Files;
@@ -24,6 +25,7 @@ import io.swagger.annotations.ApiOperation;
 import tk.mybatis.mapper.entity.Example;
 
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -173,10 +175,17 @@ public class DemandController {
 	})
     @RequestMapping(value="/files/list", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody List<Map> filesList(Long id) {
-    	Example example = new Example(Files.class);
-		Example.Criteria criteria = example.createCriteria();
-		criteria.andEqualTo("demandId", id);
-		List<Files> list = this.filesService.selectByExample(example);
+		Demand demand = this.demandService.get(id);
+		List<Long> ids = JSONArray.parseArray(demand.getDocumentUrl(), Long.class); 
+		List<Files> list=new ArrayList<Files>();
+		if(ids!=null&&ids.size()>0) {
+			Example example = new Example(Files.class);
+			Example.Criteria criteria = example.createCriteria();
+			criteria.andIn("id", ids);
+			list = this.filesService.selectByExample(example);
+		}else {
+			return null;
+		}
 		Map<Object, Object> metadata = new HashMap<>();
 
 		JSONObject fileTypeProvider = new JSONObject();
