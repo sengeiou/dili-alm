@@ -3,6 +3,8 @@ package com.dili.alm.controller;
 import com.dili.alm.domain.OnlineDataChange;
 import com.dili.alm.service.OnlineDataChangeService;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.sysadmin.sdk.session.SessionContext;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -27,11 +29,18 @@ public class OnlineDataChangeController {
     @Autowired
     OnlineDataChangeService onlineDataChangeService;
 
-    @ApiOperation("跳转到OnlineDataChange页面")
+    @ApiOperation("跳转到index页面")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
         return "onlineDataChange/index";
     }
+	@ApiOperation("跳转到dataChange页面")
+	@RequestMapping(value = "/dataChange.html", method = RequestMethod.GET)
+	public String projectOverview(ModelMap modelMap) {
+		return "onlineDataChange/dataChange";
+	}
+	
+	
 
     @ApiOperation(value="查询OnlineDataChange", notes = "查询OnlineDataChange，返回列表信息")
     @ApiImplicitParams({
@@ -57,6 +66,8 @@ public class OnlineDataChangeController {
 	})
     @RequestMapping(value="/insert.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput insert(@ModelAttribute OnlineDataChange onlineDataChange) {
+    	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
+    	onlineDataChange.setApplyUserId(id);
         onlineDataChangeService.insertSelective(onlineDataChange);
         return BaseOutput.success("新增成功");
     }
