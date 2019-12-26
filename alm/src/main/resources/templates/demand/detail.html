@@ -1,89 +1,109 @@
  <#body>
  <div class="easyui-panel">
         <form id="form" class="easyui-form" method="post" enctype="multipart/form-data">
-        <input name="id" id="id" type="hidden">
         <table width="100%">
+         	<tr>
+                <td style="padding:5px;" colspan="2">
+                    <input class="easyui-textbox" style="width:700px" data-options="label:'需求编号:'" 
+                         readonly="readonly" value="${model.serialNumber!}"/>
+                </td>
+           
+            </tr>
+           
             <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="name" id="name" style="width:100%" data-options="label:'需求名称:', validType:'length[0,25]'" 
-                        required="true" />
+                <td style="padding:5px;" >
+                    <input class="easyui-numberbox" name="userId" id="userId" style="width:300px" data-options="label:'需求申请人:'" 
+                        readonly="readonly"  value="${model.userId!}"/>
+                     <#comboProvider _id="userId" _provider='memberProvider' />
                 </td>
-            </tr>
-            <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="userId" id="userId" style="width:100%" data-options="label:'需求申请人:'" 
-                        required="true" />
-                </td>
-            </tr>
-             <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="userId" id="userId" style="width:100%" data-options="label:'申请人电话:'" 
-                        required="true" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="userId" id="userId" style="width:100%" data-options="label:'申请人电话:'" 
-                        required="true" />
-                </td>
-            </tr>
-              <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="userId" id="userId" style="width:100%" data-options="label:'需求部门:'" 
-                        required="true" />
-                </td>
-            </tr>
-             <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="userId" id="userId" style="width:100%" data-options="label:'所属系统:'" 
-                        required="true" />
+                    <input class="easyui-numberbox"  style="width:300px" data-options="label:'申请人电话:'" 
+                        readonly="readonly"  value="${model.userPhone!}"/>
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="belongProId" id="belongProId" style="width:100%" data-options="label:'所属項目:'" />
+                    <input class="easyui-numberbox" style="width:300px" data-options="label:'申请人部门:'" 
+                       readonly="readonly"    value="${model.departmentName!}"/>
+                </td>
+                <td style="padding:5px;">
+                    <input class="easyui-numberbox"  id="belongProId" style="width:300px" data-options="label:'所属系统:'" 
+                       readonly="readonly"    value="${model.belongProId!}"/>
+                       <#comboProvider _id="belongProId" _provider='projectProvider' />
+                </td>
+            </tr>
+            
+            <tr >
+                <td style="padding:5px;" colspan="2">
+                    <input class="easyui-textbox"  style="width:700px" data-options="label:'期望时间:'" 
+                         readonly="readonly" value="${model.finishDate!}"/>
+                </td>
+            </tr>
+            
+            
+            <tr>
+                <td style="padding:5px;" colspan="2">
+                    <input class="easyui-textbox"  style="width:700px" data-options="label:'需求名称:'" 
+                         readonly="readonly" value="${model.name!}"/>
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-textbox" name="type" id="type" style="width:100%" data-options="label:'需求类型:', validType:'length[0,3]'" 
-                        required="true" />
+                    <input class="easyui-textbox" readonly="readonly"  id="status" style="width:300px" data-options="label:'需求状态:'" 
+                         value="${model.status!}"/>
+                    <#comboProvider _id="status" _provider='demandStatusProvider' />   
+                </td>
+                <td style="padding:5px;">
+                    <input class="easyui-textbox" readonly="readonly"  id="type" style="width:300px" data-options="label:'需求类型:'" 
+                         value="${model.type!}"/>
+                    <#comboProvider _id="type" _provider='demandTypeProvider' />   
+                </td>
+            </tr>
+
+        
+            <tr>
+                <td style="padding:5px;" colspan="2">
+                	<span>需求内容</span>
+                	<div style="width:700px" id="content">${model.content!}</div>
                 </td>
             </tr>
             <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="status" id="status" style="width:100%" data-options="label:'需求状态:', validType:'length[0,3]'" 
-                        required="true" />
+                <td style="padding:5px;" colspan="2">
+                	<span>需求背景</span>
+                	<div style="width:700px" id="reason">${model.reason!}</div>
                 </td>
             </tr>
             <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-datebox" name="finishDate" id="finishDate" style="width:100%" data-options="label:'需求期望实现时间:'" 
-                        required="true" />
-                </td>
+				<td colspan="2" style="padding: 5px;">
+					<table class="easyui-datagrid" title="上传文件列表" id="fileGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"  style="width: 100%;"
+					pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
+					sortName="name" align="center" fit="false" striped="true" toolbar="#fileToolbar" idField="id"
+					data-options="url:'${contextPath!}/demand/files/list?id=${model.id!}'">
+							<thead>
+								<tr>
+									<th data-options="field:'name', width:'30%',  sortable:'true', order:'asc', align:'left', resizable:'true', fixed:'false'">文件名</th>
+									<th data-options="field:'type', width:'20%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">文件类型</th>
+									<th data-options="field:'createMemberId', width:'10%',  _provider:'memberProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">创建人</th>
+									<th data-options="field:'created', width:'20%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">创建时间</th>
+									<th data-options="field:'opt',width:'20%',formatter:fileOptFormatter, align:'center'">操作</th>
+								</tr>
+							</thead>
+					</table>
+				</td>
             </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="documentUrl" id="documentUrl" style="width:100%" data-options="label:'相关附件:', validType:'length[0,120]'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="content" id="content" style="width:100%" data-options="label:'需求内容:', validType:'length[0,65535]'" 
-                        required="true" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="reason" id="reason" style="width:100%" data-options="label:'需求背景:', validType:'length[0,65535]'" />
-                </td>
-            </tr>
-        </table>
+           </table>   
     </form>
 </div>
     <!-- ====================================================================================================================== -->
     <!-- style & script 分隔线 -->
     <!-- ====================================================================================================================== -->
     <script type="text/javascript">
+	    function fileOptFormatter(value, row, index) {
+	    	var content = '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="downloadFile('+ row.id + ');">下载</a>';
+	    	return content;
+	    }
+	    function downloadFile(id) {
+	    	window.open('${contextPath!}/files/download?id=' + id);
+	    }
     </script>
 </#body>

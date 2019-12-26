@@ -1,4 +1,5 @@
  <#body>
+ 	win
     <div class="easyui-layout" fit="true">
         <!-- ====================================================================================================================== -->
         <!-- 上方布局 -->
@@ -75,6 +76,7 @@
                 <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true"></a>
                 <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()" plain="true"></a>
                 <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true"></a>
+                <a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="detail()" plain="true"></a>
                 <a href="#" class="easyui-linkbutton" iconCls="icon-export" onclick="doExport('grid')" plain="true"></a>
                 <div style="float:right">
                 边框显示:<select onchange="changeBorder('grid',this.value)">
@@ -213,6 +215,8 @@
         </table>
     </form>
     </div>
+    <div id="win" style="display: none;"></div>
+    
     <!-- ====================================================================================================================== -->
     <!-- style & script 分隔线 -->
     <!-- ====================================================================================================================== -->
@@ -386,6 +390,21 @@
         	var htmlobj = $.ajax({
 				url : "${contextPath}/demand/sendseq.json",
 				async : false
+			});
+        }
+        function detail(){
+        	$('#win').dialog({
+				title : '需求详情',
+				width : 750,
+				height : 600,
+				href : '${contextPath!}/demand/detail?id=' + 1,
+				modal : true,
+				buttons : [{
+							text : '关闭',
+							handler : function() {
+								$('#win').dialog('close');
+							}
+						}]
 			});
         }
     </script>

@@ -22,8 +22,6 @@ public class DemandDto extends Demand {
 	String departmentName;
 	
 	String userPhone;
-	
-	String belongSystemName;
 
 	public List<Long> getIds() {
 		return ids;
@@ -56,15 +54,5 @@ public class DemandDto extends Demand {
 	public void setUserPhone(String userPhone) {
 		this.userPhone = userPhone;
 	}
-
-	public String getBelongSystemName() {
-		return belongSystemName;
-	}
-
-	public void setBelongSystemName(String belongSystemName) {
-		this.belongSystemName = belongSystemName;
-	}
-	
-	
 	
 }

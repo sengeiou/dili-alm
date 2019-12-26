@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.DemandProjectMapper;
 import com.dili.alm.dao.FilesMapper;
 import com.dili.alm.dao.ProjectActionRecordMapper;
@@ -304,6 +305,35 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		if (projectVersion == null) {
 			throw new ProjectVersionException("版本不存在");
 		}
+		//判断删除关联
+		DemandProject demandProject=new DemandProject();
+		demandProject.setVersionId(id);
+		demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
+		List<DemandProject> select = this.demandProjectMapper.select(demandProject);
+		if(select!=null&&select.size()>0) {
+			ProjectVersion newProjectVersion=DTOUtils.newDTO(ProjectVersion.class); 
+			newProjectVersion.setProjectId(projectVersion.getProjectId());
+			int selectProjectVesionCount = this.getActualDao().selectCount(newProjectVersion);
+			if(selectProjectVesionCount==1) {
+				Project selectProject = this.projectMapper.selectByPrimaryKey(projectVersion.getProjectId());
+				for (DemandProject updateDemandProject : select) {
+					updateDemandProject.setVersionId(null);
+					updateDemandProject.setProjectNumber(selectProject.getSerialNumber());
+					int updateByPrimaryKey = this.demandProjectMapper.updateByPrimaryKey(updateDemandProject);
+					if(updateByPrimaryKey==0) {
+						throw new ProjectVersionException("清空关联失败");
+					}
+				}	
+			}else if(selectProjectVesionCount>1){
+				int delete = this.demandProjectMapper.delete(demandProject);
+				if(delete!=select.size()) {
+					throw new ProjectVersionException("删除关联失败");
+				}
+			}
+		}
+					
+		
+		
 		int rows = this.getActualDao().deleteByPrimaryKey(id);
 		if (rows <= 0) {
 			throw new ProjectVersionException("删除版本失败");
@@ -312,16 +342,6 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		ProjectActionRecord parQuery = DTOUtils.newDTO(ProjectActionRecord.class);
 		parQuery.setVersionId(id);
 		this.parMapper.delete(parQuery);
-		DemandProject demandProject=new DemandProject();
-		demandProject.setVersionId(id);
-		demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
-		List<DemandProject> select = this.demandProjectMapper.select(demandProject);
-		if(select!=null&&select.size()>0) {
-			int delete = this.demandProjectMapper.delete(demandProject);
-			if(delete!=select.size()) {
-				throw new ProjectVersionException("删除失败");
-			}
-		}
 	}
 
 	@Override

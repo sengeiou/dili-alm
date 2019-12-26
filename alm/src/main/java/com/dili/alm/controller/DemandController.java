@@ -1,12 +1,17 @@
 package com.dili.alm.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.domain.Demand;
+import com.dili.alm.domain.Files;
 import com.dili.alm.exceptions.DemandExceptions;
 import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.dto.DemandDto;
 import com.dili.alm.service.DemandService;
+import com.dili.alm.service.FilesService;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.alm.service.WorkOrderService;
+import com.dili.alm.service.impl.DemandServiceImpl;
 import com.dili.alm.utils.WebUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.sysadmin.sdk.domain.UserTicket;
@@ -16,8 +21,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import tk.mybatis.mapper.entity.Example;
 
 import java.net.URLDecoder;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +49,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class DemandController {
     @Autowired
     DemandService demandService;
+    @Autowired
+    FilesService filesService;
 	private static final Logger LOGGER = LoggerFactory.getLogger(DemandController.class);
     @ApiOperation("跳转到Demand页面")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
@@ -54,16 +63,16 @@ public class DemandController {
 		return "demand/add";
 	}
 	
-	@RequestMapping(value = "/detail.html", method = RequestMethod.GET)
+	@RequestMapping(value = "/detail", method = RequestMethod.GET)
 	public String detail(@RequestParam Long id,  ModelMap map) throws Exception {
 		DemandDto detailViewData = this.demandService.getDetailViewData(id);
 		try {
-			map.addAttribute("model",DemandService.parseViewModel(detailViewData));
+			map.addAttribute("model",DemandServiceImpl.parseViewModel(detailViewData));
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			return null;
 		}
-		return "project/detail";
+		return "demand/detail";
 	}
 	
 	@ApiOperation(value = "查询Task", notes = "查询Task，返回列表信息")
@@ -158,4 +167,36 @@ public class DemandController {
     	}
         return demandService.queryDemandListByProjectIdOrVersionIdOrWorkOrderId(id,type);
     }
+    @ApiOperation(value="根据Id获取附件", notes = "查询File返回列表信息")
+    @ApiImplicitParams({
+		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = false, dataType = "string")
+	})
+    @RequestMapping(value="/files/list", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody List<Map> filesList(Long id) {
+    	Example example = new Example(Files.class);
+		Example.Criteria criteria = example.createCriteria();
+		criteria.andEqualTo("demandId", id);
+		List<Files> list = this.filesService.selectByExample(example);
+		Map<Object, Object> metadata = new HashMap<>();
+
+		JSONObject fileTypeProvider = new JSONObject();
+		fileTypeProvider.put("provider", "fileTypeProvider");
+		metadata.put("type", fileTypeProvider);
+
+		JSONObject memberProvider = new JSONObject();
+		memberProvider.put("provider", "memberProvider");
+		metadata.put("createMemberId", memberProvider);
+
+		JSONObject datetimeProvider = new JSONObject();
+		datetimeProvider.put("provider", "datetimeProvider");
+		metadata.put("created", datetimeProvider);
+
+		try {
+			return ValueProviderUtils.buildDataByProvider(metadata, list);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+    }
+    
 }

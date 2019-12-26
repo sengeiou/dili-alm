@@ -2,6 +2,7 @@ package com.dili.alm.service.impl;
 
 import com.dili.alm.constant.AlmConstants;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -25,9 +26,11 @@ import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Sequence;
+import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DemandDto;
 import com.dili.alm.exceptions.DemandExceptions;
 import com.dili.alm.rpc.DepartmentRpc;
+import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DemandService;
 import com.dili.alm.utils.WebUtil;
 import com.dili.ss.base.BaseServiceImpl;
@@ -77,12 +80,41 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
     private ProjectMapper projectMapper;
     @Autowired
     private ProjectVersionMapper projectVesionMapper;
-	
+	@Autowired
+	private UserRpc userRpc;
 	
 	@Autowired
 	private DemandMapper demandMapper;
 	
+	public static Object parseViewModel(DemandDto detailViewData) throws Exception {
+		Map<Object, Object> metadata = new HashMap<>();
 
+		JSONObject projectProvider = new JSONObject();
+		projectProvider.put("provider", "projectProvider");
+		metadata.put("belongProId", projectProvider);
+
+		JSONObject memberProvider = new JSONObject();
+		memberProvider.put("provider", "memberProvider");
+		metadata.put("userId", memberProvider);
+
+		JSONObject demandStateProvider = new JSONObject();
+		demandStateProvider.put("provider", "demandStateProvider");
+		metadata.put("status", demandStateProvider);
+
+		JSONObject demandTypeProvider = new JSONObject();
+		demandTypeProvider.put("provider", "demandTypeProvider");
+		metadata.put("type", demandTypeProvider);
+
+		JSONObject datetimeProvider = new JSONObject();
+		datetimeProvider.put("provider", "datetimeProvider");
+		metadata.put("createDate", datetimeProvider);
+		metadata.put("submitDate", datetimeProvider);
+		metadata.put("finishDate", datetimeProvider);
+
+		List<Map> listMap = ValueProviderUtils.buildDataByProvider(metadata,
+				Arrays.asList(detailViewData));
+		return listMap.get(0);
+	}
     /**
      * 添加需求
      * @throws DemandExceptions 
@@ -195,6 +227,20 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 				}else {
 					return null;
 				}
+			}else if(apply.getStatus()==AlmConstants.ApplyState.APPROVE.getCode()){
+				Project project = DTOUtils.newDTO(Project.class);
+				project.setApplyId(apply.getId());
+				Project selectOne = this.projectMapper.selectOne(project);
+				ProjectVersion projectVesion = DTOUtils.newDTO(ProjectVersion.class);
+				projectVesion.setProjectId(selectOne.getId());
+				projectVesion.setOrder("asc");
+				projectVesion.setSort("id");
+				List<ProjectVersion> selectProjectVesions = this.projectVesionMapper.select(projectVesion);
+				if(selectProjectVesions!=null&&selectProjectVesions.size()>0) {
+					demandProject.setVersionId(selectProjectVesions.get(0).getId());	
+				}else {
+					demandProject.setProjectNumber(apply.getNumber());
+				}
 			}else{
 				demandProject.setProjectNumber(apply.getNumber());
 			}
@@ -228,13 +274,21 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		demandProject.setDemandId(demand.getId());
 		demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
 		DemandProject selectOne = this.demandProjectMapper.selectOne(demandProject);
+		
+		
+		
 		DemandDto demandDto =new DemandDto();
 		BeanUtils.copyProperties(demandDto, demand);
-		BaseOutput<List<Department>> findByUserId = this.departmentRpc.findByUserId(demand.getUserId());
-		if(findByUserId.getData()!=null&&findByUserId.getData().size()>0) {
-			Department department = findByUserId.getData().get(0);
+		BaseOutput<List<Department>> departmentBase = this.departmentRpc.findByUserId(demand.getUserId());
+		if(departmentBase.getData()!=null&&departmentBase.getData().size()>0) {
+			Department department= departmentBase.getData().get(0);
 			demandDto.setDepartmentId(department.getId());
 			demandDto.setDepartmentName(department.getName());
+		}
+		BaseOutput<User> userBase = this.userRpc.findUserById(demand.getUserId());
+		if(userBase.getData()!=null) {
+			User user = userBase.getData();
+			demandDto.setUserPhone(user.getCellphone());
 		}
 		return demandDto;
 	}
