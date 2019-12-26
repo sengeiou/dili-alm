@@ -10,15 +10,15 @@
                     <table style="padding:10px;">
                         <tr>
                             <td style="padding:5px;">
-                                <input class="easyui-combobox" name="projectId" id="projectId" style="width:100%" data-options="label:'项目id:', validType:'length[0,19]'" />
+                                <input class="easyui-combobox" name="projectId" id="projectId" style="width:100%" data-options="label:'项目名称:', validType:'length[0,19]'" />
 
                             </td>
                             <td style="padding:5px;">
-                                <input class="easyui-combobox" name="versionId" id="versionId" style="width:100%" data-options="label:'versionId:', validType:'length[0,19]'" />
+                                <input class="easyui-combobox" name="versionId" id="versionId" style="width:100%" data-options="label:'项目版本:', validType:'length[0,19]'" />
 
                             </td>
                             <td style="padding:5px;">
-                                <input class="easyui-datebox" name="申请时间" id="applyDate" style="width:100%" data-options="label:'     申请时间:'" />
+                                <input class="easyui-datebox" name="申请时间" id="applyDate" style="width:100%" data-options="label:' 申请时间:'" />
 
                             </td>
                         </tr>
@@ -57,31 +57,31 @@
                 <thead>
                     <tr>
                         <th data-options="field:'applyUserId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            申请人
+                                                                                     申请人
                         </th>
                         <th data-options="field:'applyMarketId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                                      市场名称                   
+                                                                                        市场名称                   
                         </th>
-                        <th data-options="field:'projectId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                                    项目名称
+                        <th data-options="field:'projectId',_provider:'projectProvider',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                                                                                         项目名称
                         </th>
                         <th data-options="field:'versionId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            版本
+                                                                                    版本
                         </th>
                         <th data-options="field:'applyDate',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                           申请时间
+                                                                                     申请时间
                         </th>
                         <th data-options="field:'updateDate',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                           申请更新时间
+                                                                                   申请更新时间
                         </th>
                         <th data-options="field:'dbaName',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            数据库名
+                                                                                    数据库名
                         </th>
                         <th data-options="field:'sqlScript',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                             sql脚本
                         </th>
                         <th data-options="field:'sqlFileId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                           文件附件
+                                                                                       文件附件
                         </th>
                     </tr>
                 </thead>
@@ -129,7 +129,8 @@
 				<tr>
 
 					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">申请人</td>
-					<td style="padding: 5px;">申请人sun guang qiang </td>
+					<td style="padding: 5px;"><input class="easyui-textbox" name="_applyUserId"  id="_applyUserId" value=""
+							data-options="validType:['length[0,30]']" />   </td>
 					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">申请时间</td>
 					<td style="padding: 5px;"> <input class="easyui-datebox" name="_applyDate" id="_applyDate" editable="false" style="width: 100%"
 					data-options="required:true,validType:'isIds',prompt:'申请时间'" /></td>
@@ -227,10 +228,27 @@
             $('#dlg').dialog('open');
             $('#dlg').dialog('center');
             $('#_form').form('clear');
+            $('#_projectId').combobox('clear');
+            $('#_versionId').combobox('clear');
             reloadProjectSelect();
-          //  $('#_projectId').combobox('initValue', '${project.id!}');
-       	//	$('#_projectId').combobox('setText', '${project.name!}');
-       	//	$("#_versionId").combobox('setValue','选择所属版本');//根据ID设定默认值
+            $('#_projectId').combobox('initValue', '${project.id!}');
+       		$('#_projectId').combobox('setText', '${project.name!}');
+       		$("#_versionId").combobox('setValue','选择所属版本');//根据ID设定默认值
+       		$('#_applyUserId').textbox('setText', '');
+       		$.ajax({
+                type: "get",
+                url: "${contextPath}/onlineDataChange/getUserName.action",
+                data: {},
+                async : true,
+                success: function (data) {
+                	
+                	$('#_applyUserId').combobox('setText', data);
+                	
+                },
+                error: function(){
+                    $.messager.alert('错误','远程访问失败');
+                }
+            });
        		
             formFocus("_form", "_applyUserId");
         }
@@ -266,9 +284,6 @@
 	    });
 			
 		
-		
-		
-		
         
 
         //打开修改窗口
@@ -295,6 +310,22 @@
             $('#_form').form('load', formData);
            
             $('#_versionId').combobox('initValue', selected.versionId);
+            $('#_applyUserId').textbox('setText', '');
+       		$.ajax({
+                type: "get",
+                url: "${contextPath}/onlineDataChange/getUserName.action?id+"+selected.applyUserId,
+                data: {},
+                async : true,
+                success: function (data) {
+                	
+                	$('#_applyUserId').combobox('setText', data);
+                	
+                },
+                error: function(){
+                    $.messager.alert('错误','远程访问失败');
+                }
+            });
+       		
             
         }
 
@@ -342,7 +373,7 @@
                 if (r){
                     $.ajax({
                         type: "POST",
-                        url: "${contextPath}/onlineDataChange/delete",
+                        url: "${contextPath}/onlineDataChange/delete.action",
                         data: {id:selected.id},
                         processData:true,
                         dataType: "json",
@@ -370,6 +401,7 @@
             if (null == opts.url || "" == opts.url) {
                 opts.url = "${contextPath}/onlineDataChange/listPage.action";
             }
+            
             if(!$('#form').form("validate")){
                 return;
             }
@@ -437,8 +469,8 @@
          */
         $(function () {
         	  queryGrid();
-            bindFormEvent("form", "applyUserId", queryGrid);
-            bindFormEvent("_form", "_applyUserId", saveOrUpdate, function (){$('#dlg').dialog('close');});
+           // bindFormEvent("form", "projectId", queryGrid);
+            bindFormEvent("_form", "_projectId", saveOrUpdate, function (){$('#dlg').dialog('close');});
             if (document.addEventListener) {
                 document.addEventListener("keyup",getKey,false);
             } else if (document.attachEvent) {

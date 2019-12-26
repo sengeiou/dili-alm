@@ -1,15 +1,28 @@
 package com.dili.alm.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.domain.OnlineDataChange;
+import com.dili.alm.domain.Task;
+import com.dili.alm.domain.TaskEntity;
+import com.dili.alm.domain.User;
+import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.OnlineDataChangeService;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
+import com.github.pagehelper.Page;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -28,7 +41,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class OnlineDataChangeController {
     @Autowired
     OnlineDataChangeService onlineDataChangeService;
-
+    @Autowired
+	private UserRpc userRpc;
     @ApiOperation("跳转到index页面")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
@@ -57,7 +71,37 @@ public class OnlineDataChangeController {
 	})
     @RequestMapping(value="/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String listPage(@ModelAttribute OnlineDataChange onlineDataChange) throws Exception {
-        return onlineDataChangeService.listEasyuiPageByExample(onlineDataChange, true).toString();
+    	EasyuiPageOutput   epo=onlineDataChangeService.listEasyuiPageByExample(onlineDataChange, true);
+    	List<OnlineDataChange>   list=epo.getRows();
+    	 // Page<OnlineDataChange> page =  (Page<OnlineDataChange>) list;
+    	
+		 
+		Map<Object, Object> metadata = null == onlineDataChange.getMetadata() ? new HashMap<>() : onlineDataChange.getMetadata();
+
+		JSONObject projectProvider = new JSONObject();
+		projectProvider.put("provider", "projectProvider");
+		metadata.put("projectId", projectProvider);
+
+		JSONObject projectVersionProvider = new JSONObject();
+		projectVersionProvider.put("projectVersion", "projectVersionProvider");
+		metadata.put("versionId", projectVersionProvider);
+
+		onlineDataChange.setMetadata(metadata);
+		
+		try {
+			
+			//List taskList = ValueProviderUtils.buildDataByProvider(onlineDataChange, list);
+			
+			  EasyuiPageOutput taskEasyuiPageOutput = new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(epo.getTotal()))), list);
+			  return taskEasyuiPageOutput.toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		
+		
+       // return onlineDataChangeService.listEasyuiPageByExample(onlineDataChange, true).toString();
     }
 
     @ApiOperation("新增OnlineDataChange")
@@ -91,4 +135,24 @@ public class OnlineDataChangeController {
         onlineDataChangeService.delete(id);
         return BaseOutput.success("删除成功");
     }
+    
+ 
+    @RequestMapping(value="/getUserName.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody String getUserName(Long id ) {
+    	
+    	 ;
+    	if(id==null) {
+    		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+    	     return user.getRealName();
+    	 }else {
+    		User user=userRpc.findUserById(id).getData();
+    		 return user.getRealName();
+    	}
+        
+    }
+    
+    
+    
+    
+    
 }
