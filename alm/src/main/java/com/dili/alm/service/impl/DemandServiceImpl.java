@@ -227,6 +227,20 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 				}else {
 					return null;
 				}
+			}else if(apply.getStatus()==AlmConstants.ApplyState.APPROVE.getCode()){
+				Project project = DTOUtils.newDTO(Project.class);
+				project.setApplyId(apply.getId());
+				Project selectOne = this.projectMapper.selectOne(project);
+				ProjectVersion projectVesion = DTOUtils.newDTO(ProjectVersion.class);
+				projectVesion.setProjectId(selectOne.getId());
+				projectVesion.setOrder("asc");
+				projectVesion.setSort("id");
+				List<ProjectVersion> selectProjectVesions = this.projectVesionMapper.select(projectVesion);
+				if(selectProjectVesions!=null&&selectProjectVesions.size()>0) {
+					demandProject.setVersionId(selectProjectVesions.get(0).getId());	
+				}else {
+					demandProject.setProjectNumber(apply.getNumber());
+				}
 			}else{
 				demandProject.setProjectNumber(apply.getNumber());
 			}
