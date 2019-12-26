@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
- * ÓÉMyBatis Generator¹¤¾ß×Ô¶¯Éú³É
+ * ï¿½ï¿½MyBatis Generatorï¿½ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½
  * This file was generated on 2019-12-25 18:22:44.
  */
 @Api("/onlineDataChange")
@@ -43,12 +43,12 @@ public class OnlineDataChangeController {
     OnlineDataChangeService onlineDataChangeService;
     @Autowired
 	private UserRpc userRpc;
-    @ApiOperation("Ìø×ªµ½indexÒ³Ãæ")
+    @ApiOperation("ï¿½ï¿½×ªï¿½ï¿½indexÒ³ï¿½ï¿½")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
         return "onlineDataChange/index";
     }
-	@ApiOperation("Ìø×ªµ½dataChangeÒ³Ãæ")
+	@ApiOperation("ï¿½ï¿½×ªï¿½ï¿½dataChangeÒ³ï¿½ï¿½")
 	@RequestMapping(value = "/dataChange.html", method = RequestMethod.GET)
 	public String projectOverview(ModelMap modelMap) {
 		return "onlineDataChange/dataChange";
@@ -56,18 +56,18 @@ public class OnlineDataChangeController {
 	
 	
 
-    @ApiOperation(value="²éÑ¯OnlineDataChange", notes = "²éÑ¯OnlineDataChange£¬·µ»ØÁÐ±íÐÅÏ¢")
+    @ApiOperation(value="ï¿½ï¿½Ñ¯OnlineDataChange", notes = "ï¿½ï¿½Ñ¯OnlineDataChangeï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½ï¿½ï¿½Ï¢")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "OnlineDataChangeµÄformÐÅÏ¢", required = false, dataType = "string")
+		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "OnlineDataChangeï¿½ï¿½formï¿½ï¿½Ï¢", required = false, dataType = "string")
 	})
     @RequestMapping(value="/list.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody List<OnlineDataChange> list(@ModelAttribute OnlineDataChange onlineDataChange) {
         return onlineDataChangeService.list(onlineDataChange);
     }
 
-    @ApiOperation(value="·ÖÒ³²éÑ¯OnlineDataChange", notes = "·ÖÒ³²éÑ¯OnlineDataChange£¬·µ»Øeasyui·ÖÒ³ÐÅÏ¢")
+    @ApiOperation(value="ï¿½ï¿½Ò³ï¿½ï¿½Ñ¯OnlineDataChange", notes = "ï¿½ï¿½Ò³ï¿½ï¿½Ñ¯OnlineDataChangeï¿½ï¿½ï¿½ï¿½ï¿½ï¿½easyuiï¿½ï¿½Ò³ï¿½ï¿½Ï¢")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "OnlineDataChangeµÄformÐÅÏ¢", required = false, dataType = "string")
+		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "OnlineDataChangeï¿½ï¿½formï¿½ï¿½Ï¢", required = false, dataType = "string")
 	})
     @RequestMapping(value="/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String listPage(@ModelAttribute OnlineDataChange onlineDataChange) throws Exception {
@@ -104,36 +104,36 @@ public class OnlineDataChangeController {
        // return onlineDataChangeService.listEasyuiPageByExample(onlineDataChange, true).toString();
     }
 
-    @ApiOperation("ÐÂÔöOnlineDataChange")
+    @ApiOperation("ï¿½ï¿½ï¿½ï¿½OnlineDataChange")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "OnlineDataChangeµÄformÐÅÏ¢", required = true, dataType = "string")
+		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "OnlineDataChangeï¿½ï¿½formï¿½ï¿½Ï¢", required = true, dataType = "string")
 	})
     @RequestMapping(value="/insert.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput insert(@ModelAttribute OnlineDataChange onlineDataChange) {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
     	onlineDataChange.setApplyUserId(id);
         onlineDataChangeService.insertSelective(onlineDataChange);
-        return BaseOutput.success("ÐÂÔö³É¹¦");
+        return BaseOutput.success("ï¿½ï¿½ï¿½ï¿½ï¿½É¹ï¿½");
     }
 
-    @ApiOperation("ÐÞ¸ÄOnlineDataChange")
+    @ApiOperation("ï¿½Þ¸ï¿½OnlineDataChange")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "OnlineDataChangeµÄformÐÅÏ¢", required = true, dataType = "string")
+		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "OnlineDataChangeï¿½ï¿½formï¿½ï¿½Ï¢", required = true, dataType = "string")
 	})
     @RequestMapping(value="/update.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput update(@ModelAttribute OnlineDataChange onlineDataChange) {
         onlineDataChangeService.updateSelective(onlineDataChange);
-        return BaseOutput.success("ÐÞ¸Ä³É¹¦");
+        return BaseOutput.success("ï¿½Þ¸Ä³É¹ï¿½");
     }
 
-    @ApiOperation("É¾³ýOnlineDataChange")
+    @ApiOperation("É¾ï¿½ï¿½OnlineDataChange")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="id", paramType="form", value = "OnlineDataChangeµÄÖ÷¼ü", required = true, dataType = "long")
+		@ApiImplicitParam(name="id", paramType="form", value = "OnlineDataChangeï¿½ï¿½ï¿½ï¿½ï¿½ï¿½", required = true, dataType = "long")
 	})
     @RequestMapping(value="/delete.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput delete(Long id) {
         onlineDataChangeService.delete(id);
-        return BaseOutput.success("É¾³ý³É¹¦");
+        return BaseOutput.success("É¾ï¿½ï¿½ï¿½É¹ï¿½");
     }
     
  

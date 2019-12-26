@@ -56,7 +56,7 @@
                    align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
                 <thead>
                     <tr>
-                        <th data-options="field:'applyUserId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'applyUserId',  _provider:'memberProvider',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                      申请人
                         </th>
                         <th data-options="field:'applyMarketId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -65,13 +65,13 @@
                         <th data-options="field:'projectId',_provider:'projectProvider',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                          项目名称
                         </th>
-                        <th data-options="field:'versionId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'versionId',_provider:'projectVersionProvider' ,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                     版本
                         </th>
-                        <th data-options="field:'applyDate',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'applyDate',  _provider:'dateProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                      申请时间
                         </th>
-                        <th data-options="field:'updateDate',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'updateDate',  _provider:'dateProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                    申请更新时间
                         </th>
                         <th data-options="field:'dbaName',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
