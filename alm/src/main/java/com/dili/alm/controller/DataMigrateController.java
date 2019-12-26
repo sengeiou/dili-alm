@@ -102,6 +102,11 @@ public class DataMigrateController {
 
 
 	
+	@ApiOperation("跳转到pendingDisposal页面")
+	@RequestMapping(value = "/dataChange", method = RequestMethod.GET)
+	public String dataChange(ModelMap modelMap) {
+		return "onlineDataChange/dataChange";
+	}
 
 
 

@@ -29,7 +29,7 @@ button:hover {
 <div class="easyui-layout" data-options="fit:true">
 
 	<div height="auto" align="center" data-options="region:'center'">
-	   <form id="editForm" action="" method="post" enctype="multipart/form-data" style="box-sizing: border-box; display: block; width: 100%">
+	   <form id="_form"  enctype="multipart/form-data" class="easyui-form" method="post" fit="true">
 	     <table id="tt" cellspacing="0" border="1" class="easyui-datagrid" style="width:90%; height: 135px; border: 1px solid #ddd; border-collapse: collapse;"
 			   data-options="view:scrollview,rownumbers:true,singleSelect:true,autoRowHeight:false,pageSize:50">
 			<caption style="padding: 5px; font-weight: bold; font-size: 15px; line-height: 35px; color: #333">线上数据变更申请表</caption>
@@ -40,7 +40,7 @@ button:hover {
 					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">申请人</td>
 					<td style="padding: 5px;">申请人sun guang qiang </td>
 					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">申请时间</td>
-					<td style="padding: 5px;"> <input class="easyui-datebox" name="startDateShow" id="startDateShow" editable="false" style="width: 100%"
+					<td style="padding: 5px;"> <input class="easyui-datebox" name="_applyDate" id="_applyDate" editable="false" style="width: 100%"
 					data-options="required:true,validType:'isIds',prompt:'申请时间'" /></td>
 				
 				</tr>
@@ -59,7 +59,7 @@ button:hover {
 				<tr>
 
 					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">申请更新时间</td>
-					<td style="padding: 5px;"><input class="easyui-datebox" name="DateShow" id="DateShow" editable="false" style="width: 100%"
+					<td style="padding: 5px;"><input class="easyui-datebox" name="_updateDate" id="_updateDate" editable="false" style="width: 100%"
 					data-options="required:true,validType:'isIds',prompt:'申请更新时间'" /></td>
 					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">灰度是否同步执行</td>
 					<td style="padding: 5px;">
@@ -71,14 +71,14 @@ button:hover {
 				
 				<tr>
 					<td  colspan="2"   style="padding: 5px; background-color: #f5f5f5; font-weight: bold">数据库名</td>
-					<td  colspan="2"  style="padding: 5px;"><input class="easyui-textbox" name="sqlScript" value=""
+					<td  colspan="2"  style="padding: 5px;"><input class="easyui-textbox" name="_dbaName"  id="_dbaName" value=""
 							data-options="validType:['length[0,30]']" style="width: 70%"/></td>
 				</tr>
 				
 				<tr>
 				   <td  colspan="2"   style="padding: 5px; background-color: #f5f5f5; font-weight: bold">生产环境名称（市场）</td>
 					<td  colspan="2"  style="padding: 5px;">
-					<input class="easyui-textbox" name="sqlScript" value="" data-options="validType:['length[0,30]']" style="width: 70%"/>
+					<input class="easyui-textbox" id="_applyMarketId" name="_applyMarketId" value="" data-options="validType:['length[0,30]']" style="width: 70%"/>
 					
 					
 					</td>
@@ -88,10 +88,10 @@ button:hover {
 				      <td     style="padding: 5px; background-color: #f5f5f5; font-weight: bold">SQL脚本（可附件）</td>
 							
 					  <td colspan="3"  style="padding: 5px; background-color: #f5f5f5; font-weight: bold">
-					       <input class="easyui-textbox" name="sqlScript" value=""
+					       <input class="easyui-textbox"  id="_sqlScript" name="_sqlScript" value=""
 							data-options="validType:['length[0,50]']" style="width: 49%">
 							
-					        <input class="easyui-filebox" name="sqlFile"
+					        <input class="easyui-filebox" id="_sqlFileId" name="_sqlFileId"
 							data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 49%">
 					  </td>
 				</tr>
@@ -112,7 +112,10 @@ button:hover {
 				</tr>
 				<tr>
 				   <td  colspan="2"   style="padding: 5px; background-color: #f5f5f5; font-weight: bold">申请人确认</td>
-					<td  colspan="2"  style="padding: 5px;"><a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm(this)" style="width:80px">提交确认</a></td>
+					<td  colspan="2"  style="padding: 5px;"> 
+					    <a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'">申请提交</a>
+					     
+					</td>
 				</tr>
 				
 				
@@ -176,28 +179,43 @@ button:hover {
 	    });
 			
 			
+		$('#btn').bind('click', function(){
+		   
 			
-		
-		 $('#editForm').form('submit', {
-	            url: "${contextPath}/onlineDataChange/insert",
-	            onSubmit: function() {
-	                if ($("#editForm").form('validate')) {
-	                    $(obj).linkbutton('disable');
-	                }
-	                return $("#editForm").form('validate');
-	            },
-	            success: function(data) {
-	                var data = eval('(' + data + ')');
-	                if (data.success == true) {
-	                    
-	                }
+			 if(!$('#_form').form("validate")){
+	                return;
 	            }
-	        });
-		 
-		 
-		 
+	            var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
+	            
+	            var _url = "${contextPath}/onlineDataChange/insert.action";
+	           
+	            $.ajax({
+	                type: "POST",
+	                url: _url,
+	                data: _formData,
+	                processData:true,
+	                dataType: "json",
+	                async : true,
+	                success: function (data) {
+	                   
+	                        $.messager.alert('错误',data.result);
+	                   
+	                },
+	                error: function(){
+	                    $.messager.alert('错误','远程访问失败');
+	                }
+	            });
+	            
+	            
+	            
+	    });
 		
-	})
+		
+		 
+		  
+		  
+		
+	  })
 	
 	
 	
