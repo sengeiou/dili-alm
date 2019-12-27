@@ -1,0 +1,357 @@
+ <#body>
+ <style>
+.contain-box {
+	box-sizing: border-box;
+	width: 100%;
+	padding: 10px 30px;
+	font-size: 14px;
+	color: #666;
+}
+
+.contain-box .label-top {
+	display: inline-block;
+	width: 20%;
+	padding-right: 18px;
+	text-align: right;
+}
+
+.contain-box div.box-item {
+	margin-bottom: 24px;
+	height: 40px;
+	/*line-height: 40px;*/
+}
+
+.contain-box span.span-box {
+	display: inline-block;
+	width: 60px;
+	border-radius: 15px;
+	line-height: 28px;
+	text-align: center;
+	color: #666;
+	background: #eee;
+}
+
+div.box-item .button {
+	width: 80px;
+	height: 36px;
+	border-radius: 5px;
+	text-align: center;
+	font-size: 15px;
+	margin-right: 16px;
+	cursor: pointer;
+}
+
+div.box-item .confirm {
+	background: #2fa060;
+	color: #fff;
+}
+
+div.box-item .confirm:hover {
+	background: #26b564;
+}
+
+div.box-item .cancel {
+	background: #e5e8e9;
+	color: #666;
+}
+
+div.box-item .cancel:hover {
+	background: #d4d9dc;
+}
+
+div.box-item .hint {
+	margin-left: 18px;
+	margin-top: 5px;
+	padding-left: 21%;
+	font-size: 12px;
+	color: #bbb;
+}
+</style>
+ 
+    <div class="easyui-layout" fit="true">
+        	<div class="contain-box">
+			<form id="uploadForm">
+	
+				<div id="hasYear" class="box-item"></div>
+				<div class="box-item">
+					<label class="label-top">年度:</label> <select class="easyui-combobox" id="cbYearContrast" name="year" style="width: 60%;">
+						<option value="0">请选择年份</option>
+					</select>
+				</div>
+				<div class="box-item">
+					<label class="label-top">数据内容:</label> <input class="easyui-filebox" buttonText="选择上传文件" id="fileuploader" name="file"
+						data-options="prompt:'文件', accept:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel'" style="width: 60%; color: #666">
+					<p class="hint">仅支持excel文件，文件不超过1M</p>
+				</div>
+				<div class="box-item">
+					<label class="label-top"></label> <input type="button" class="button confirm" value="确认" onclick="doUpload()"> 
+				</div>
+			</form>
+		</div>
+        
+    </div>
+    
+    
+
+    <script type="text/javascript">
+    var currentYear = new Date().getFullYear();
+	var select = document.getElementById("cbYearContrast");
+	for (var i = 8; i >= -2; i--) {
+		var theOption = document.createElement("option");
+		theOption.innerHTML = currentYear + i + "年";
+		theOption.value = currentYear + i;
+		select.appendChild(theOption);
+
+	}
+	$(function () {
+		$("#uploadForm").form('clear');
+		console.log("aaa");
+		var data = $('#cbYearContrast').combobox('getData');
+		console.log(data);
+		$("#cbYearContrast").combobox('select', data[0].value);
+		workDayYear();
+	});
+	function doUpload() {
+		var formData = new FormData($("#uploadForm")[0]);
+		if (validate()) {
+			if (isHaveYear()) {
+				$.messager
+						.confirm(
+								'确认',
+								'是否替换对应年份数据？',
+								function(r) {
+									if (r) {
+										$
+												.ajax({
+													url : 'http://almweb.diligrp.com/workDayApi/uploadWordDayDate',
+													type : 'POST',
+													data : formData,
+													async : false,
+													cache : false,
+													contentType : false,
+													processData : false,
+													success : function(data) {
+														if (data.code == "200") {
+															$.messager
+																	.alert(
+																			'成功',
+																			data.result);
+														} else {
+															$.messager
+																	.alert(
+																			'错误',
+																			data.result);
+														}
+													},
+													error : function(data) {
+														$.messager.alert('错误',
+																'远程访问失败');
+													}
+												});
+									}
+								});
+			} else {
+				$
+						.ajax({
+							url : 'http://almweb.diligrp.com/workDayApi/uploadWordDayDate',
+							type : 'POST',
+							data : formData,
+							async : false,
+							cache : false,
+							contentType : false,
+							processData : false,
+							success : function(data) {
+								if (data.code == "200") {
+									$.messager.alert('成功', data.result);
+								} else {
+									$.messager.alert('错误', data.result);
+								}
+							},
+							error : function(data) {
+								$.messager.alert('错误', '远程访问失败');
+							}
+						});
+			}
+		}
+	}
+	function isHaveYear() {
+		var htmlobj = $.ajax({
+			url : "http://almweb.diligrp.com/workDayApi/isHasWorkDayYear?year="
+					+ $("input[name=year]").val(),
+			async : false
+		});
+		var str = htmlobj.responseText;
+		var obj = $.parseJSON(str);
+		return obj;
+	}
+
+	function workDayYear() {
+		$.ajax({
+			url : 'http://almweb.diligrp.com/workDayApi/selectWorkDayYear',
+			type : 'POST',
+			data : {},
+			async : false,
+			cache : false,
+			contentType : false,
+			processData : false,
+			success : function(data) {
+				if (data != "" && data != null) {
+					$("#hasYear").empty();
+					$("#hasYear").append(
+							"<label  class='label-top'>已设定年份:</label>");
+					for (var i = 0; i < data.length; i++) {
+						$("#hasYear")
+								.append(
+										"<span class='span-box'>" + data[i]
+												+ "</span>");
+					}
+				}
+			},
+			error : function(data) {
+				$.messager.alert('错误', '远程访问失败');
+			}
+		});
+	}
+	function validate() {
+
+		if ($("input[name=year]").val() == null
+				|| $("input[name=year]").val() == "0") {
+			$.messager.alert('警告', '必须选择对应年份');
+			return false;
+		}
+		if ($("input[name=file]").get(0).files[0] == null) {
+			$.messager.alert('警告', '上传的文件为空！');
+			return false;
+		}
+		var file_size = $("input[name=file]").get(0).files[0].size;
+		var size = file_size / 1024;
+		if (size > 1024) {
+			$.messager.alert('警告', '上传的文件大小不能超过1M！');
+			return false;
+		}
+		return true;
+
+	}
+	function getWorkDay() {
+		$.ajax({
+					url : 'http://almweb.diligrp.com/workDayApi/getWorkDay',
+					type : 'POST',
+					data : {
+						'userId' : userIdVal
+					},
+					async : false,
+					success : function(data1) {
+						$("#user-workday-outer").empty();
+						$("#user-workday").empty();
+						if (data1.code == 200) {
+							if(data1.data.workStartTime){
+								var strs = data1.data.workStartTime.split(' ')[0].split('-');
+								var start = strs[1]+'/'+strs[2];
+								strs = data1.data.workEndTime.split(' ')[0].split('-');
+								var end = strs[1]+'/'+strs[2];
+							}
+							if (data1.data.id != "" && data1.data.id != null) {
+								$("#user-workday-outer")
+										.append(
+												"<p>"
+														+ start
+														+ "</p><p>"
+														+ end
+														+ "</p>");
+								if (data1.data.isRole == 1) {
+									$("#user-workday")
+											.append(
+													"<span>"
+															+ data1.data.workDayYear
+															+ "年 第"
+															+ data1.data.wordDayWeek
+															+ "周  "
+															+ start
+															+ " -- "
+															+ end
+															+ "</span><a href='javascript:;' onclick='workDayOpen()'>设置</a>");
+								} else {
+									$("#user-workday")
+											.append(
+													"<span>"
+															+ data1.data.workDayYear
+															+ "年 第"
+															+ data1.data.wordDayWeek
+															+ "周  "
+															+ start
+															+ " -- "
+															+ end
+															+ "</span>");
+								}
+							} else {
+								$("#user-workday-outer").append(
+										"<p>非工作日</p><p>" + UnixToDate(0)
+												+ "</p>");
+								if (data1.data.isRole == 1) {
+									$("#user-workday")
+											.append(
+													"<span>非工作日："
+															+ UnixToYear()
+															+ "年 "
+															+ UnixToDate(0)
+															+ "</span><a href='javascript:;' onclick='workDayOpen()'>设置</a>");
+								} else {
+									$("#user-workday")
+											.append(
+													"<span>非工作日："
+															+ UnixToYear()
+															+ "年 "
+															+ UnixToDate(0)
+															+ "</span>");
+								}
+							}
+						} else {
+							$("#user-workday-outer")
+									.append("<p>请导入新一年的工作日</p>");
+							if (data1.data.isRole == 1) {
+								$("#user-workday")
+										.append(
+												"<span>请管理员导入新一年的工作日</span><a href='javascript:;' onclick='workDayOpen()'>设置</a>");
+							} else {
+								$("#user-workday").append(
+										"<span>请管理员导入新一年的工作日</span>");
+							}
+						}
+					},
+					error : function(data1) {
+						$.messager.alert('错误', '远程访问失败');
+					}
+				});
+	}
+	function UnixToYear() {
+		var yearTime = new Date();
+		return yearTime.getFullYear();
+	}
+	function UnixToDate(unixTime) {
+		var ymdhis = "";
+		var time;
+		if (unixTime == 0) {
+			ymdhis = "";
+			time = new Date();
+			if (time.getUTCMonth() + 1 < 10) {
+				ymdhis += "0" + (time.getUTCMonth() + 1) + "/";
+			} else {
+				ymdhis += (time.getUTCMonth() + 1) + "/";
+			}
+			ymdhis += time.getUTCDate();
+		} else {
+			ymdhis = "";
+			time = new Date(unixTime);
+			if (time.getUTCMonth() + 1 < 10) {
+				ymdhis += "0" + (time.getUTCMonth() + 1) + "/";
+			} else {
+				ymdhis += (time.getUTCMonth() + 1) + "/";
+			}
+
+			ymdhis += time.getUTCDate() + 1;
+		}
+		return ymdhis;
+	}
+
+    </script>
+</#body>

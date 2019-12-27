@@ -77,7 +77,6 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
-import com.dili.ss.quartz.domain.ScheduleMessage;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
@@ -580,7 +579,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	 * 定时刷过期任务
 	 */
 	@Override
-	public void notComplateTask(ScheduleMessage msg) {
+	public void notComplateTask() {
 		// 查询任务表里 项目下的所有任务
 		Example example = new Example(Task.class);
 		example.createCriteria().andEqualTo("status", TaskStatus.START.getCode());

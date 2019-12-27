@@ -413,15 +413,6 @@ public class TaskController {
 		return false;
 	}
 
-	// 测试未完成任务
-	@ApiOperation("测试未完成任务")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "notComplate", paramType = "form", value = "TaskDetails的form信息", required = true, dataType = "string") })
-	@RequestMapping(value = "/notComplate", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput notComplate() {
-		taskService.notComplateTask(null);
-		return BaseOutput.success("测试未完成任务");
-	}
-
 	// 判断是否是项时间
 	@ResponseBody
 	@RequestMapping(value = "/isProjectDate.json", method = { RequestMethod.GET, RequestMethod.POST })

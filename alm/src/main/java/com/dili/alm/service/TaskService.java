@@ -14,7 +14,6 @@ import com.dili.alm.exceptions.ProjectVersionException;
 import com.dili.alm.exceptions.TaskException;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.quartz.domain.ScheduleMessage;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-11-23 10:23:05.
@@ -25,7 +24,7 @@ public interface TaskService extends BaseService<Task, Long> {
 
 	void startTask(Long taskId, Long modifierId) throws TaskException, ProjectVersionException, ProjectException;
 
-	void notComplateTask(ScheduleMessage msg);
+	void notComplateTask();
 
 	List<DataDictionaryValueDto> getTaskStates();
 

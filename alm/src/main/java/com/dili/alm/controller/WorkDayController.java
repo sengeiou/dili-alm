@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiOperation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,7 +36,11 @@ public class WorkDayController {
 	@Autowired
 	private WorkDayService workDayService;
 
-
+    @ApiOperation("跳转到workDay页面")
+    @RequestMapping(value="/setWorkDay", method = RequestMethod.GET)
+    public String workDay(ModelMap modelMap) {
+        return "workDay/index";
+    }
     @ApiImplicitParams({
 		@ApiImplicitParam(name="WorkDay", paramType="form", value = "WorkDay的form信息", required = true, dataType = "string")
 	})
