@@ -2,7 +2,7 @@ package com.dili.alm.controller;
 
 import com.dili.alm.domain.Demand;
 import com.dili.alm.domain.Department;
-import com.dili.alm.domain.HardwareResourceApply;
+import com.dili.alm.domain.Files;
 import com.dili.alm.exceptions.DemandExceptions;
 import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.dto.DemandDto;
@@ -10,7 +10,7 @@ import com.dili.alm.rpc.DepartmentRpc;
 import com.dili.alm.service.DemandService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.alm.service.WorkOrderService;
-import com.dili.alm.service.impl.HardwareResourceApplyServiceImpl;
+import com.dili.alm.service.impl.DemandServiceImpl;
 import com.dili.alm.utils.WebUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.sysadmin.sdk.domain.UserTicket;
@@ -72,7 +72,7 @@ public class DemandController {
 	public String detail(@RequestParam Long id,  ModelMap map) throws Exception {
 		DemandDto detailViewData = this.demandService.getDetailViewData(id);
 		try {
-			map.addAttribute("model",DemandService.parseViewModel(detailViewData));
+			map.addAttribute("model",DemandServiceImpl.parseViewModel(detailViewData));
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			return null;
