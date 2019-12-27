@@ -30,7 +30,6 @@ import com.dili.alm.service.ProjectVersionService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.quartz.domain.ScheduleMessage;
 import com.dili.ss.util.SystemConfigUtils;
 
 /**
@@ -77,7 +76,7 @@ public class AlarmConfigServiceImpl extends BaseServiceImpl<AlarmConfig, Long> i
 
 	// 每天早上6点检查项目进度完成情况并发送邮件告警
 	@Override
-	public void alarm(ScheduleMessage msg) {
+	public void alarm() {
 		List<AlarmConfig> configs = this.getActualDao().select(null);
 		if (CollectionUtils.isEmpty(configs)) {
 			return;

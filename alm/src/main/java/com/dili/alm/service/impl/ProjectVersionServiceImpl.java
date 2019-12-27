@@ -1,4 +1,4 @@
- package com.dili.alm.service.impl;
+package com.dili.alm.service.impl;
 
 import java.util.Date;
 import java.util.List;
@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.DemandProjectMapper;
 import com.dili.alm.dao.FilesMapper;
 import com.dili.alm.dao.ProjectActionRecordMapper;
@@ -30,14 +29,12 @@ import com.dili.alm.domain.ProjectVersionFormDto;
 import com.dili.alm.domain.ProjectVersionState;
 import com.dili.alm.domain.Task;
 import com.dili.alm.exceptions.ApplicationException;
-import com.dili.alm.exceptions.ProjectApplyException;
 import com.dili.alm.exceptions.ProjectVersionException;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.ProjectVersionService;
 import com.dili.alm.service.TeamService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.quartz.service.ScheduleJobService;
 import com.dili.sysadmin.sdk.domain.UserTicket;
 import com.dili.sysadmin.sdk.session.SessionContext;
 
@@ -54,8 +51,6 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 	FilesService filesService;
 
 	@Autowired
-	ScheduleJobService scheduleJobService;
-	@Autowired
 	private FilesMapper filesMapper;
 	@Autowired
 	private TaskMapper taskMapper;
@@ -67,6 +62,7 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 	private TeamService teamService;
 	@Autowired
 	private DemandProjectMapper demandProjectMapper;
+
 	public ProjectVersionMapper getActualDao() {
 		return (ProjectVersionMapper) getDao();
 	}
@@ -76,8 +72,7 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 	public void addProjectVersion(ProjectVersionFormDto dto) throws ProjectVersionException {
 		// 检查项目状态是否为进行中
 		Project project = this.projectMapper.selectByPrimaryKey(dto.getProjectId());
-		if (!project.getProjectState().equals(ProjectState.NOT_START.getValue())
-				&& !project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
+		if (!project.getProjectState().equals(ProjectState.NOT_START.getValue()) && !project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
 			throw new ProjectVersionException("项目不在进行中，不能编辑");
 		}
 		if (dto.getPlannedStartDate().compareTo(dto.getPlannedEndDate()) > 0) {
@@ -95,12 +90,11 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		if (dto.getPlannedEndDate().compareTo(dto.getPlannedOnlineDate()) < 0) {
 			throw new ProjectVersionException("版本计划上线时间不能小于版本计划技术时间");
 		}
-		
-		
+
 		ProjectVersion query1 = DTOUtils.newDTO(ProjectVersion.class);
 		query1.setProjectId(dto.getProjectId());
 		int versionCount = this.getActualDao().selectCount(query1);
-		
+
 		ProjectVersion query = DTOUtils.newDTO(ProjectVersion.class);
 		query.setProjectId(dto.getProjectId());
 		query.setVersion(dto.getVersion());
@@ -108,7 +102,7 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		if (count > 0) {
 			throw new ProjectVersionException("版本已存在");
 		}
-		
+
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		dto.setCreatorId(userTicket.getId());
 		dto.setCreated(new Date());
@@ -116,22 +110,22 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		if (rows <= 0) {
 			throw new ProjectVersionException("新增项目版本失败");
 		}
-		
-		if(versionCount==0) {
+
+		if (versionCount == 0) {
 			Project selectByPrimaryKey = this.projectMapper.selectByPrimaryKey(dto.getProjectId());
-			DemandProject demandProject =new DemandProject();
+			DemandProject demandProject = new DemandProject();
 			demandProject.setProjectNumber(selectByPrimaryKey.getSerialNumber());
 			demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
 			List<DemandProject> demandLists = this.demandProjectMapper.select(demandProject);
 			for (DemandProject updateDemandProject : demandLists) {
 				updateDemandProject.setVersionId(dto.getId());
 				int updateByPrimaryKey = this.demandProjectMapper.updateByPrimaryKey(updateDemandProject);
-				if(updateByPrimaryKey==0) {
+				if (updateByPrimaryKey == 0) {
 					throw new ProjectVersionException("修改关联失败");
 				}
 			}
 		}
-		
+
 		if (CollectionUtils.isNotEmpty(dto.getFileIds())) {
 			dto.getFileIds().forEach(id -> {
 				Files file = this.filesService.get(id);
@@ -154,18 +148,18 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		if (rows <= 0) {
 			throw new ProjectVersionException("插入项目进程记录失败");
 		}
-		
+
 		List<String> demandIds = dto.getDemandIds();
-		if(demandIds!=null&&demandIds.size()>0) {
+		if (demandIds != null && demandIds.size() > 0) {
 			for (String demandId : demandIds) {
-				DemandProject demandProject= new DemandProject();
+				DemandProject demandProject = new DemandProject();
 				demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
 				Project selectByPrimaryKey = this.projectMapper.selectByPrimaryKey(dto.getProjectId());
 				demandProject.setProjectNumber(selectByPrimaryKey.getSerialNumber());
 				demandProject.setVersionId(dto.getId());
 				demandProject.setDemandId(Long.valueOf(demandId));
 				int insertExact = this.demandProjectMapper.insertExact(demandProject);
-				if(insertExact==0) {
+				if (insertExact == 0) {
 					throw new ProjectVersionException("插入关联失败");
 				}
 			}
@@ -178,8 +172,7 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 	public void updateProjectVersion(ProjectVersionFormDto dto) throws ProjectVersionException {
 		// 检查项目状态是否为进行中
 		Project project = this.projectMapper.selectByPrimaryKey(dto.getProjectId());
-		if (!project.getProjectState().equals(ProjectState.NOT_START.getValue())
-				&& !project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
+		if (!project.getProjectState().equals(ProjectState.NOT_START.getValue()) && !project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
 			throw new ProjectVersionException("项目不在进行中，不能编辑");
 		}
 		if (dto.getPlannedStartDate().compareTo(dto.getPlannedEndDate()) > 0) {
@@ -250,33 +243,33 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		if (rows <= 0) {
 			throw new ProjectVersionException("修改项目进程记录失败");
 		}
-		
-		DemandProject demandProject=new DemandProject();
+
+		DemandProject demandProject = new DemandProject();
 		demandProject.setVersionId(dto.getId());
 		demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
 		List<DemandProject> select = this.demandProjectMapper.select(demandProject);
-		if(select!=null&&select.size()>0) {
+		if (select != null && select.size() > 0) {
 			int delete = this.demandProjectMapper.delete(demandProject);
-			if(delete!=select.size()) {
+			if (delete != select.size()) {
 				throw new ProjectVersionException("删除关联失败");
 			}
 		}
-		List<String> demandIds = dto.getDemandIds();		
-		if(demandIds!=null&&demandIds.size()>0) {
+		List<String> demandIds = dto.getDemandIds();
+		if (demandIds != null && demandIds.size() > 0) {
 			for (String demandId : demandIds) {
-				DemandProject demandProject1= new DemandProject();
+				DemandProject demandProject1 = new DemandProject();
 				demandProject1.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
 				Project selectByPrimaryKey = this.projectMapper.selectByPrimaryKey(dto.getProjectId());
 				demandProject1.setProjectNumber(selectByPrimaryKey.getSerialNumber());
 				demandProject1.setVersionId(dto.getId());
 				demandProject1.setDemandId(Long.valueOf(demandId));
 				int insertExact = this.demandProjectMapper.insertExact(demandProject1);
-				if(insertExact==0) {
+				if (insertExact == 0) {
 					throw new ProjectVersionException("插入关联失败");
 				}
 			}
 		}
-		
+
 	}
 
 	@Transactional(rollbackFor = ApplicationException.class)
@@ -285,8 +278,7 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		// 检查项目状态是否为进行中
 		ProjectVersion version = this.getActualDao().selectByPrimaryKey(id);
 		Project project = this.projectMapper.selectByPrimaryKey(version.getProjectId());
-		if (!project.getProjectState().equals(ProjectState.NOT_START.getValue())
-				&& !project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
+		if (!project.getProjectState().equals(ProjectState.NOT_START.getValue()) && !project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
 			throw new ProjectVersionException("项目不在进行中，不能删除");
 		}
 		Task taskQuery = DTOUtils.newDTO(Task.class);
@@ -305,35 +297,33 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		if (projectVersion == null) {
 			throw new ProjectVersionException("版本不存在");
 		}
-		//判断删除关联
-		DemandProject demandProject=new DemandProject();
+		// 判断删除关联
+		DemandProject demandProject = new DemandProject();
 		demandProject.setVersionId(id);
 		demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
 		List<DemandProject> select = this.demandProjectMapper.select(demandProject);
-		if(select!=null&&select.size()>0) {
-			ProjectVersion newProjectVersion=DTOUtils.newDTO(ProjectVersion.class); 
+		if (select != null && select.size() > 0) {
+			ProjectVersion newProjectVersion = DTOUtils.newDTO(ProjectVersion.class);
 			newProjectVersion.setProjectId(projectVersion.getProjectId());
 			int selectProjectVesionCount = this.getActualDao().selectCount(newProjectVersion);
-			if(selectProjectVesionCount==1) {
+			if (selectProjectVesionCount == 1) {
 				Project selectProject = this.projectMapper.selectByPrimaryKey(projectVersion.getProjectId());
 				for (DemandProject updateDemandProject : select) {
 					updateDemandProject.setVersionId(null);
 					updateDemandProject.setProjectNumber(selectProject.getSerialNumber());
 					int updateByPrimaryKey = this.demandProjectMapper.updateByPrimaryKey(updateDemandProject);
-					if(updateByPrimaryKey==0) {
+					if (updateByPrimaryKey == 0) {
 						throw new ProjectVersionException("清空关联失败");
 					}
-				}	
-			}else if(selectProjectVesionCount>1){
+				}
+			} else if (selectProjectVesionCount > 1) {
 				int delete = this.demandProjectMapper.delete(demandProject);
-				if(delete!=select.size()) {
+				if (delete != select.size()) {
 					throw new ProjectVersionException("删除关联失败");
 				}
 			}
 		}
-					
-		
-		
+
 		int rows = this.getActualDao().deleteByPrimaryKey(id);
 		if (rows <= 0) {
 			throw new ProjectVersionException("删除版本失败");

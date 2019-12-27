@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.alm.component.NumberGenerator;
@@ -22,7 +21,6 @@ import com.dili.alm.dao.WorkOrderMapper;
 import com.dili.alm.domain.DemandProject;
 import com.dili.alm.domain.DemandProjectStatus;
 import com.dili.alm.domain.OperationResult;
-import com.dili.alm.domain.Project;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.WorkOrder;
 import com.dili.alm.domain.WorkOrderExecutionRecord;
@@ -30,14 +28,11 @@ import com.dili.alm.domain.WorkOrderSource;
 import com.dili.alm.domain.WorkOrderState;
 import com.dili.alm.domain.dto.WorkOrderUpdateDto;
 import com.dili.alm.exceptions.ApplicationException;
-import com.dili.alm.exceptions.ProjectVersionException;
 import com.dili.alm.exceptions.WorkOrderException;
 import com.dili.alm.manager.WorkOrderManager;
 import com.dili.alm.service.WorkOrderService;
 import com.dili.ss.base.BaseServiceImpl;
-import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.quartz.domain.ScheduleMessage;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2018-05-23 11:51:37.
@@ -86,7 +81,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 		workOrderManager.close(workOrder, operatorId, result, description);
 	}
 
-	public void checkTimeToClose(ScheduleMessage msg) throws WorkOrderException {
+	public void checkTimeToClose() throws WorkOrderException {
 		WorkOrder query = DTOUtils.newDTO(WorkOrder.class);
 		query.setWorkOrderState(WorkOrderState.SOLVED.getValue());
 		List<WorkOrder> workOrders = this.getActualDao().select(query);
