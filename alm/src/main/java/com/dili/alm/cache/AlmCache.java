@@ -23,12 +23,14 @@ import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.ProjectCost;
 import com.dili.alm.domain.ProjectEarning;
+import com.dili.alm.domain.ProjectSysEntity;
 import com.dili.alm.domain.Roi;
 import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.RoiDto;
 import com.dili.alm.rpc.DepartmentRpc;
+import com.dili.alm.rpc.SysProjectRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.HardwareResourceService;
@@ -103,9 +105,13 @@ public class AlmCache {
 	private static final Map<String, String> DAMAND_STATUS_MAP = new ConcurrentHashMap<>();
 	//需求类型缓存
 	private static final Map<String, String> DAMAND_TYPE_MAP = new ConcurrentHashMap<>();
+	//系统缓存
+	private static final Map<Integer, ProjectSysEntity> PROJECT_SYS_MAP = new ConcurrentHashMap<>();
 	
 	@Autowired
 	private UserRpc userRpc;
+	@Autowired
+	private SysProjectRpc sysProjectRpc;
 	@Autowired
 	private ProjectMapper projectMapper;
 	@Autowired
@@ -450,4 +456,18 @@ public class AlmCache {
 		}
 		return DAMAND_TYPE_MAP;
 	}
+	
+	public Map<Integer, ProjectSysEntity> getProjectSysMap() {
+		// 应用启动时初始化userMap
+		if (AlmCache.PROJECT_SYS_MAP.isEmpty()) {
+			BaseOutput<List<ProjectSysEntity>> output = sysProjectRpc.list(new ProjectSysEntity());
+			if (output.isSuccess()) {
+				output.getData().forEach(entity -> {
+					AlmCache.PROJECT_SYS_MAP.put(entity.getId(), entity);
+				});
+			}
+		}
+		return PROJECT_SYS_MAP;
+	}
+
 }

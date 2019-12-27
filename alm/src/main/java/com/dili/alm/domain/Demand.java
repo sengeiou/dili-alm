@@ -45,6 +45,11 @@ public class Demand extends BaseDomain {
      */
     @Column(name = "`belong_pro_id`")
     private Long belongProId;
+    /**
+     * 所属系统
+     */
+    @Column(name = "`belong_sys_id`")
+    private Long belongSysId;
 
     /**
      * 需求类型（数据字典）
@@ -177,7 +182,7 @@ public class Demand extends BaseDomain {
     /**
      * 获取所属系统
      *
-     * @return belong_pro_id - 所属系统
+     * @return belong_pro_id - 所属项目
      */
     @FieldDef(label="所属系统")
     @EditMode(editor = FieldEditor.Number, required = false)
@@ -188,10 +193,30 @@ public class Demand extends BaseDomain {
     /**
      * 设置所属系统
      *
-     * @param belongProId 所属系统
+     * @param belongProId 所属项目
      */
     public void setBelongProId(Long belongProId) {
         this.belongProId = belongProId;
+    }
+    
+    /**
+     * 获取所属系统
+     *
+     * @return belong_pro_id - 所属项目
+     */
+    @FieldDef(label="所属系统")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    public Long getBelongSysId() {
+        return belongProId;
+    }
+
+    /**
+     * 设置所属系统
+     *
+     * @param belongProId 所属项目
+     */
+    public void setBelongSysId(Long belongSysId) {
+        this.belongSysId =belongSysId;
     }
 
     /**

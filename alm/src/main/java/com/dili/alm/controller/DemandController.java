@@ -1,12 +1,16 @@
 package com.dili.alm.controller;
 
 import com.dili.alm.domain.Demand;
+import com.dili.alm.domain.Department;
+import com.dili.alm.domain.HardwareResourceApply;
 import com.dili.alm.exceptions.DemandExceptions;
 import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.dto.DemandDto;
+import com.dili.alm.rpc.DepartmentRpc;
 import com.dili.alm.service.DemandService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.alm.service.WorkOrderService;
+import com.dili.alm.service.impl.HardwareResourceApplyServiceImpl;
 import com.dili.alm.utils.WebUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.sysadmin.sdk.domain.UserTicket;
@@ -40,6 +44,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("/demand")
 public class DemandController {
+	@Autowired
+	private DepartmentRpc deptRpc;
     @Autowired
     DemandService demandService;
 	private static final Logger LOGGER = LoggerFactory.getLogger(DemandController.class);
@@ -50,7 +56,15 @@ public class DemandController {
     }
     
     @RequestMapping(value = "/add", method = RequestMethod.GET)
-	public String add() {
+	public String add(ModelMap modelMap) {
+		/** 查询 所有部门 ***/
+		List<Department> departments = this.deptRpc.list(new Department()).getData();
+		modelMap.addAttribute("departments", departments);
+
+		/** 个人信息 **/
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		modelMap.addAttribute("userInfo", userTicket);
+
 		return "demand/add";
 	}
 	
