@@ -10,6 +10,7 @@
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="user_id" jdbcType="BIGINT" property="userId" />
     <result column="belong_pro_id" jdbcType="BIGINT" property="belongProId" />
+    <result column="belong_sys_id" jdbcType="BIGINT" property="belongSysId" />
     <result column="type" jdbcType="TINYINT" property="type" />
     <result column="status" jdbcType="TINYINT" property="status" />
     <result column="finish_date" jdbcType="DATE" property="finishDate" />
@@ -28,7 +29,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    id, serial_number, name, user_id, belong_pro_id, type, status, finish_date, document_url, 
+    id, serial_number, name, user_id, belong_pro_id,belong_sys_id, type, status, finish_date, document_url, 
     create_date, submit_date
   </sql>
   <sql id="Blob_Column_List">
@@ -66,6 +67,9 @@
       <if test="belongProId != null">
         belong_pro_id = #{belongProId,jdbcType=BIGINT},
       </if>
+       <if test="belongSysId != null">
+        belong_sys_id = #{belongSysId,jdbcType=BIGINT},
+      </if>
       <if test="type != null">
         type = #{type,jdbcType=TINYINT},
       </if>
@@ -98,7 +102,7 @@
       WARNING - @mbg.generated
     -->
     select 
-    d.id, d.serial_number, d.name, user_id, d.belong_pro_id, d.type, d.status, d.finish_date, d.document_url, 
+    d.id, d.serial_number, d.name, user_id, d.belong_pro_id,belong_sys_id, d.type, d.status, d.finish_date, d.document_url, 
     d.create_date, d.submit_date, d.content, d.reason
 	FROM  demand d
     LEFT JOIN 

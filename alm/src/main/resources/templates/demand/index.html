@@ -1,101 +1,106 @@
  <#body>
- 	win
-    <div class="easyui-layout" fit="true">
-        <!-- ====================================================================================================================== -->
-        <!-- 上方布局 -->
-        <!-- ====================================================================================================================== -->
-        <div region="north" height="auto" align="center">
-            <!-- =========================================================表单========================================================= -->
-            <div class="easyui-panel" style="width:100%;" align="left">
-                <form id="form" class="easyui-form" method="post" fit="true">
-                    <table style="padding:10px;">
-                        <tr>
-                            <td style="padding:5px;">
-                                <input class="easyui-textbox" name="name" id="name" style="width:100%" data-options="label:'需求名称:', validType:'length[0,25]'" />
+<div class="easyui-layout" fit="true">
+	<!-- ====================================================================================================================== -->
+	<!-- 上方布局 -->
+	<!-- ====================================================================================================================== -->
+	<div region="north" height="auto" align="center">
+		<!-- =========================================================表单========================================================= -->
+		<div class="easyui-panel" style="width: 100%;" align="left">
+			<form id="form" class="easyui-form" method="post" fit="true">
+				<table style="padding: 10px;">
+					<tr>
+						<td style="padding: 5px;"><input class="easyui-textbox"
+							name="name" id="name" style="width: 100%"
+							data-options="label:'需求名称:', validType:'length[0,25]'" /></td>
 
-                            </td>
-
-                            <td style="padding:5px;">
-                                <input class="easyui-numberbox" name="belongProId" id="belongProId" style="width:100%" data-options="label:'所属系统:', validType:'length[0,19]'" />
-
-                            </td>
-                            <td style="padding:5px;">
-                                <input class="easyui-datebox" name="submitDate" id="submitDate" style="width:100%" data-options="label:'需求申请日期:'" />
-
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
-                                   onclick="queryGrid()">查询</a>
-                                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="aa()">清除</a>
-                            </td>
-                        </tr>
-                    </table>
-                </form>
-            </div>
-        </div>
-        <!-- ====================================================================================================================== -->
-        <!-- 中央布局 -->
-        <!-- ====================================================================================================================== -->
-        <!-- 表格 -->
-        <div region="center" style="width:100%;" height="auto">
-            <!-- =========================================================表格========================================================= -->
-            <table class="easyui-datagrid" title="需求列表" id="grid" fitColumns="true"
-                   pagination="true" pageSize="30" pageNumber="1" pagePosition="both" rownumbers="true" remoteSort="false"
-                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="serialNumber"
-                   align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
-                <thead>
-                    <tr>
-                        <th data-options="field:'serialNumber',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            需求编号
-                        </th>
-                        <th data-options="field:'name',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            需求名称
-                        </th><!-- TODO:显示10个字符，提示 -->
-                        <th data-options="field:'belongProId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            所属系统
-                        </th>
-                        <th data-options="field:'type',    _provider:'projectTypeProvider' ,sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            需求类型
-                        </th>
-                        <th data-options="field:'status',   _provider:'projectStateProvider' , sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            需求状态
-                        </th>
-                        <th data-options="field:'depament',  _provider:'depProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                           所属部门
-                        </th><!-- user信息里 -->
-                        <th data-options="field:'createDate',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            申请时间
-                        </th><!-- 草稿时间、提交时间 -->
-                    </tr>
-                </thead>
-            </table>
-            <!-- datagrid工具栏 -->
-            <div id="toolbar" style="padding:2px 5px;">
-                <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()" plain="true"></a>
-                <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()" plain="true"></a>
-                <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()" plain="true"></a>
-                <a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="detail()" plain="true"></a>
-                <a href="#" class="easyui-linkbutton" iconCls="icon-export" onclick="doExport('grid')" plain="true"></a>
-                <div style="float:right">
-                边框显示:<select onchange="changeBorder('grid',this.value)">
-                    <option value="lines-both">全边框</option>
-                    <option value="lines-no">无边框</option>
-                    <option value="lines-right">右边框</option>
-                    <option value="lines-bottom">下边框</option>
-                </select>
-                行条纹:<input type="checkbox" checked="checked" onclick="$('#grid').datagrid({striped:$(this).is(':checked')})">
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- 隐藏编辑框  *迁移-->
-    <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="Demand信息" style="padding:20px" modal="true" border="thin" closed="true"
-         data-options="
+						<td style="padding: 5px;"><input class="easyui-numberbox"
+							name="belongProId" id="belongProId" style="width: 100%"
+							data-options="label:'所属系统:', validType:'length[0,19]'" /></td>
+						<td style="padding: 5px;"><input class="easyui-datebox"
+							name="submitDate" id="submitDate" style="width: 100%"
+							data-options="label:'需求申请日期:'" /></td>
+					</tr>
+					<tr>
+						<td><a href="#" class="easyui-linkbutton"
+							iconCls="icon-search" id="queryBtn" onclick="queryGrid()">查询</a>
+							<a href="javascript:void(0)" class="easyui-linkbutton"
+							onclick="aa()">清除</a></td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>
+	<!-- ====================================================================================================================== -->
+	<!-- 中央布局 -->
+	<!-- ====================================================================================================================== -->
+	<!-- 表格 -->
+	<div region="center" style="width: 100%;" height="auto">
+		<!-- =========================================================表格========================================================= -->
+		<table class="easyui-datagrid" title="需求列表" id="grid"
+			fitColumns="true" pagination="true" pageSize="30" pageNumber="1"
+			pagePosition="both" rownumbers="true" remoteSort="false"
+			loadMsg="数据加载中..." singleSelect="true" method="post"
+			multiSort="false" sortName="serialNumber" align="center" fit="true"
+			striped="true" toolbar="#toolbar" idField="id"
+			data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
+			<thead>
+				<tr>
+					<th
+						data-options="field:'serialNumber',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						需求编号</th>
+					<th
+						data-options="field:'name',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						需求名称</th>
+					<th
+						data-options="field:'belongProId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						所属系统</th>
+					<th
+						data-options="field:'type',    _provider:'projectTypeProvider' ,sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						需求类型</th>
+					<th
+						data-options="field:'status',   _provider:'projectStateProvider' , sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						需求状态</th>
+					<th
+						data-options="field:'depament',  _provider:'depProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						所属部门</th>
+					<!-- user信息里 -->
+					<th
+						data-options="field:'createDate',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						申请时间</th>
+					<!-- 草稿时间、提交时间 -->
+				</tr>
+			</thead>
+		</table>
+		<!-- datagrid工具栏 -->
+		<div id="toolbar" style="padding: 2px 5px;">
+			<a href="#" class="easyui-linkbutton" iconCls="icon-add"
+				onclick="openInsert()" plain="true"></a> <a href="#"
+				class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()"
+				plain="true"></a> <a href="#" class="easyui-linkbutton"
+				iconCls="icon-remove" onclick="del()" plain="true"></a> <a href="#"
+				class="easyui-linkbutton" iconCls="icon-export"
+				onclick="doExport('grid')" plain="true"></a>
+			<div style="float: right">
+				边框显示:<select onchange="changeBorder('grid',this.value)">
+					<option value="lines-both">全边框</option>
+					<option value="lines-no">无边框</option>
+					<option value="lines-right">右边框</option>
+					<option value="lines-bottom">下边框</option>
+				</select> 行条纹:<input type="checkbox" checked="checked"
+					onclick="$('#grid').datagrid({striped:$(this).is(':checked')})">
+			</div>
+		</div>
+	</div>
+</div>
+<!-- 隐藏编辑框  *迁移-->
+<div id="dlg" class="easyui-dialog" resizable="false" constrain="true"
+	shadow="true" draggable="false" title="Demand信息" style="padding: 20px"
+	modal="true" border="thin" closed="true"
+	data-options="
 				iconCls: 'icon-save',
 				width: 680,
 				height: 480,
+				href:'${contextPath}/demand/add',
 				modal : true,
 				buttons: [{
 					text:'保存',
@@ -107,6 +112,7 @@
 							$.messager.confirm('确认', '提交后信息不能在进行编辑！', function(r) {
 								if (r) {
 								       //TODO:提交操作
+								       getText();
 								}})
 					}}
 					,{
@@ -116,111 +122,13 @@
 					}
 				}]
 			">
-       <form id="_form" class="easyui-form" method="post" enctype="multipart/form-data">
-        <input name="_id" id="_id" type="hidden">
-        <table width="360px">
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_name" id="_name" style="width:100%" data-options="label:'需求名称:', validType:'length[0,25]'" 
-                        required="true" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="" id="" style="width:100%" data-options="label:'需求申请人:'" 
-                        required="true" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="tel" id="tel" style="width:100%" data-options="label:'申请人电话:'" 
-                        required="true" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="dep" id="dep" style="width:100%" data-options="label:'需求部门:'" 
-                        required="true" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="belong_sys_id" id="belong_sys_id" style="width:100%" data-options="label:'所属系统:'" 
-                        required="true" />
-                </td>
-            </tr>
-<!--             <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_userId" id="_userId" style="width:100%" data-options="label:'需求申请人:'" 
-                        required="true" />
-                </td>
-            </tr>
-             <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_userId" id="_userId" style="width:100%" data-options="label:'申请人电话:'" 
-                        required="true" />
-                </td>
-            </tr>
-              <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_userId" id="_userId" style="width:100%" data-options="label:'需求部门:'" 
-                        required="true" />
-                </td>
-            </tr>
-              <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_userId" id="_userId" style="width:100%" data-options="label:'所属系统:'" 
-                        required="true" />
-                </td>
-            </tr> 
-             <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_userId" id="_userId" style="width:100%" data-options="label:'所属系统:'" 
-                        required="true" />
-                </td>
-            </tr>-->
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_belongProId" id="_belongProId" style="width:100%" data-options="label:'所属項目:'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_type" id="_type" style="width:100%" data-options="label:'需求类型:', validType:'length[0,3]'" 
-                        required="true" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-datebox" name="_finishDate" id="_finishDate" style="width:100%" data-options="label:'需求期望实现时间:'" 
-                        required="true" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_documentUrl" id="_documentUrl" style="width:100%" data-options="label:'相关附件:', validType:'length[0,120]'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_content" id="_content" style="width:100%" data-options="label:'需求内容:', validType:'length[0,65535]'" 
-                        required="true" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_reason" id="_reason" style="width:100%" data-options="label:'需求背景:', validType:'length[0,65535]'" />
-                </td>
-            </tr>
-        </table>
-    </form>
-    </div>
-    <div id="win" style="display: none;"></div>
-    
-    <!-- ====================================================================================================================== -->
-    <!-- style & script 分隔线 -->
-    <!-- ====================================================================================================================== -->
-    <script type="text/javascript">
+
+</div>
+<!-- ====================================================================================================================== -->
+<!-- style & script 分隔线 -->
+<!-- ====================================================================================================================== -->
+
+<script type="text/javascript">
         //打开新增窗口
         function openInsert(){
             $('#dlg').dialog('open');
@@ -248,7 +156,16 @@
             if(!$('#_form').form("validate")){
                 return;
             }
+            if(editor.txt.html()==""){
+            	 $.messager.alert('警告','需求内容为必填项目');
+            	 return;
+            }
+
             var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
+             
+            _formData.content = editor.txt.html();
+            _formData.reason =  editor2.txt.html();
+        	console.log(_formData);
             var _url = null;
             //没有id就新增
             if(_formData.id == null || _formData.id==""){
@@ -256,6 +173,7 @@
             }else{//有id就修改
                 _url = "${contextPath}/demand/update";
             }
+            console.log(_formData);
             $.ajax({
                 type: "POST",
                 url: _url,
@@ -276,6 +194,7 @@
                 }
             });
         }
+        
 
         //根据主键删除
         function del() {
@@ -392,7 +311,7 @@
 				async : false
 			});
         }
-        function detail(){
+       function detail(){
         	$('#win').dialog({
 				title : '需求详情',
 				width : 750,
@@ -407,5 +326,7 @@
 						}]
 			});
         }
+
+
     </script>
 </#body>
