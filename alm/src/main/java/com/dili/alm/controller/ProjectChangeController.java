@@ -27,7 +27,7 @@ import com.dili.alm.service.VerifyApprovalService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
-import com.dili.sysadmin.sdk.session.SessionContext;
+import com.dili.uap.sdk.session.SessionContext;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;

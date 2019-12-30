@@ -7,7 +7,7 @@ import com.dili.alm.domain.ProjectChange;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.TaskDetails;
-import com.dili.alm.domain.User;
+import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.exceptions.ProjectException;
 import com.dili.alm.exceptions.ProjectVersionException;

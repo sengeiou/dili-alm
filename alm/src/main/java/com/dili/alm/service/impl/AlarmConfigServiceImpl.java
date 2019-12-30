@@ -23,7 +23,7 @@ import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
-import com.dili.alm.domain.User;
+import com.dili.uap.sdk.domain.User;
 import com.dili.alm.service.AlarmConfigService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.ProjectVersionService;

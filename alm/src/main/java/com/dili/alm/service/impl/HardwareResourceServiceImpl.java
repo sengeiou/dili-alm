@@ -9,20 +9,20 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.HashedMap;
-//import org.apache.ibatis.javassist.expr.NewArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.HardwareResourceMapper;
 import com.dili.alm.dao.ProjectApplyMapper;
 import com.dili.alm.dao.ProjectMapper;
-import com.dili.alm.domain.Department;
+import com.dili.uap.sdk.domain.Department;
 import com.dili.alm.domain.HardwareResource;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectApply;
-import com.dili.alm.domain.User;
+import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.exceptions.HardwareResourceException;
@@ -35,9 +35,8 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.metadata.ValueProviderUtils;
-import com.dili.sysadmin.sdk.domain.UserTicket;
-import com.dili.sysadmin.sdk.session.SessionContext;
+import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.session.SessionContext;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2018-03-20 17:22:08.
@@ -68,11 +67,13 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 		if (userTicket == null) {
 			throw new RuntimeException("未登录");
 		}
-		BaseOutput<Department> findByDepartmentName = departmentRpc.findByDepartmentName(DEPARTMENTNAME);
+		Department newDepartment = DTOUtils.newDTO(Department.class);
+		newDepartment.setName(DEPARTMENTNAME);
+		BaseOutput<Department> findByDepartmentName = departmentRpc.listByOne(newDepartment);
 		Department department = findByDepartmentName.getData();
-		User user = new User();
+		User user = DTOUtils.newDTO(User.class);
 		user.setDepartmentId(department.getId());
-		return userRpc.list(user).getData();
+		return userRpc.listByExample(user).getData();
 	}
 
 	@Override

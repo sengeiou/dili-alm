@@ -40,7 +40,7 @@ import com.dili.alm.service.ProjectActionRecordService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
-import com.dili.sysadmin.sdk.session.SessionContext;
+import com.dili.uap.sdk.session.SessionContext;
 
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;

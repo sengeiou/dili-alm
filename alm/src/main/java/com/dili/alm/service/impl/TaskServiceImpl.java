@@ -29,6 +29,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.component.MailManager;
+import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.constant.AlmConstants.TaskStatus;
 import com.dili.alm.dao.ProjectActionRecordMapper;
 import com.dili.alm.dao.ProjectMapper;
@@ -50,7 +51,7 @@ import com.dili.alm.domain.TaskDetails;
 import com.dili.alm.domain.TaskEntity;
 import com.dili.alm.domain.Team;
 import com.dili.alm.domain.TeamRole;
-import com.dili.alm.domain.User;
+import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.WorkDay;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
@@ -77,8 +78,8 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
-import com.dili.sysadmin.sdk.domain.UserTicket;
-import com.dili.sysadmin.sdk.session.SessionContext;
+import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
 
 import tk.mybatis.mapper.entity.Example;
@@ -569,8 +570,8 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		}
 
 		List<User> userList = new ArrayList<User>();
-
-		userList = userRpc.list(new User()).getData();
+		User user = DTOUtils.newDTO(User.class);
+		userList = userRpc.listByExample(user).getData();
 
 		return userList;
 	}

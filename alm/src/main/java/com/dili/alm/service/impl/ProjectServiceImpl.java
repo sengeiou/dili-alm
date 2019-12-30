@@ -41,7 +41,7 @@ import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.Team;
 import com.dili.alm.domain.TeamRole;
-import com.dili.alm.domain.User;
+import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectCostStatisticDto;
@@ -50,6 +50,7 @@ import com.dili.alm.domain.dto.UploadProjectFileDto;
 import com.dili.alm.exceptions.ProjectException;
 import com.dili.alm.provider.ProjectProvider;
 import com.dili.alm.rpc.DataAuthRpc;
+import com.dili.alm.rpc.DataDictionaryRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.ProjectService;
@@ -60,8 +61,8 @@ import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.util.SystemConfigUtils;
-import com.dili.sysadmin.sdk.domain.UserTicket;
-import com.dili.sysadmin.sdk.session.SessionContext;
+import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
 
 /**
@@ -78,8 +79,6 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	private ProjectVersionMapper projectVersionMapper;
 	@Autowired
 	private TeamMapper teamMapper;
-	@Autowired
-	DataAuthRpc dataAuthRpc;
 	@Autowired
 	private TeamService teamService;
 	@Autowired
@@ -103,11 +102,11 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		if (StringUtils.isNotBlank(condtion.getName())) {
 			AlmCache.getInstance().getProjectMap().get(condtion.getId()).setName(condtion.getName());
 		}
-		BaseOutput<DataDictionaryDto> output = dataAuthRpc.updateDataAuth(condtion.getId().toString(),
+/*		BaseOutput<DataDictionaryDto> output = dataAuthRpc.updateDataAuth(condtion.getId().toString(),
 				AlmConstants.DATA_AUTH_TYPE_PROJECT, condtion.getName());
 		if (!output.isSuccess()) {
 			throw new RuntimeException(output.getResult());
-		}
+		}*/
 		return super.update(condtion);
 	}
 
@@ -117,12 +116,12 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		// 同步更新缓存
 		AlmCache.getInstance().getProjectMap().put(project.getId(), project);
 		// 向权限系统中添加项目数据权限
-		String parentId = project.getParentId() == null ? null : project.getParentId().toString();
+		/*String parentId = project.getParentId() == null ? null : project.getParentId().toString();
 		BaseOutput<DataDictionaryDto> output = dataAuthRpc.addDataAuth(project.getId().toString(),
 				AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName(), parentId);
 		if (!output.isSuccess()) {
 			throw new RuntimeException(output.getResult());
-		}
+		}*/
 		return i;
 	}
 
@@ -132,23 +131,23 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		// 同步更新缓存
 		AlmCache.getInstance().getProjectMap().put(project.getId(), project);
 		// 向权限系统中添加项目数据权限
-		String parentId = project.getParentId() == null ? null : project.getParentId().toString();
+		/*	String parentId = project.getParentId() == null ? null : project.getParentId().toString();
 		BaseOutput<DataDictionaryDto> output = dataAuthRpc.addDataAuth(project.getId().toString(),
 				AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName(), parentId);
 		if (!output.isSuccess()) {
 			throw new RuntimeException(output.getResult());
-		}
+		}*/
 		return i;
 	}
 
 	@Override
 	public int delete(Long id) {
 		AlmCache.getInstance().getProjectMap().remove(id);
-		BaseOutput<DataDictionaryDto> output = dataAuthRpc.deleteDataAuth(id.toString(),
+		/*BaseOutput<DataDictionaryDto> output = dataAuthRpc.deleteDataAuth(id.toString(),
 				AlmConstants.DATA_AUTH_TYPE_PROJECT);
 		if (!output.isSuccess()) {
 			throw new RuntimeException(output.getResult());
-		}
+		}*/
 		return super.delete(id);
 	}
 
@@ -156,12 +155,15 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	public int delete(List<Long> ids) {
 		ids.forEach(id -> {
 			AlmCache.getInstance().getProjectMap().remove(id);
-			BaseOutput<DataDictionaryDto> output = dataAuthRpc.deleteDataAuth(id.toString(),
+/*			BaseOutput<DataDictionaryDto> output = dataAuthRpc.deleteDataAuth(id.toString(),
 					AlmConstants.DATA_AUTH_TYPE_PROJECT);
 			if (!output.isSuccess()) {
 				throw new RuntimeException(output.getResult());
-			}
+			}*/
 		});
+		if(ids!=null&&ids.size()>0){
+			throw new RuntimeException("参数为空");
+		}
 		return super.delete(ids);
 	}
 
@@ -304,7 +306,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		// 刷新projectProvider缓存
 		AlmCache.getInstance().getProjectMap().put(project.getId(), project);
 
-		dataAuthRpc.updateDataAuth(project.getId().toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName());
+//		dataAuthRpc.updateDataAuth(project.getId().toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName());
 		if (result > 0) {
 			return BaseOutput.success().setData(project);
 		}

@@ -2,35 +2,33 @@ package com.dili.alm.rpc;
 
 import java.util.List;
 
-import com.dili.alm.domain.Role;
-import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.UserDepartmentRole;
 import com.dili.alm.domain.dto.UserDepartmentRoleQuery;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.retrofitful.annotation.POST;
 import com.dili.ss.retrofitful.annotation.Restful;
 import com.dili.ss.retrofitful.annotation.VOBody;
+import com.dili.uap.sdk.domain.User;
 
 /**
  * Created by asiamaster on 2017/10/19 0019.
  */
-@Restful("http://alm.diligrp.com")
+@Restful("http://uap.diligrp.com")
 public interface UserRpc {
-	@POST("/userApi/list")
-	BaseOutput<List<User>> list(@VOBody(required = false) User user);
+/*	@POST("/userApi/list")
+	BaseOutput<List<User>> list(@VOBody(required = false) User user);*/
 
-	@POST("/userApi/listByExample")
+	@POST("/userApi/listByExample.api")
 	BaseOutput<List<User>> listByExample(@VOBody(required = false) User user);
+	
+	@POST("/userApi/get.api")
+	BaseOutput<User> findUserById(@VOBody Long id);
+	
+	
+	@POST("/userApi/listUserByRoleId.api")
+	BaseOutput<List<User>> listUserByRoleId(@VOBody Long roleId);
 
-	@POST("/userApi/listUserByRole")
-	BaseOutput<List<User>> listUserByRole(@VOBody Long id);
-
-	@POST("/userApi/listUserRole")
-	BaseOutput<List<Role>> findUserRoles(@VOBody Long memberId);
-
-	@POST("/userApi/findByUserId")
-	BaseOutput<User> findUserById(@VOBody Long memberId);
-
-	@POST("/userApi/findUserContainDepartmentAndRole")
+	
+	@POST("/userApi/findUserContainDepartmentAndRole.api")
 	BaseOutput<List<UserDepartmentRole>> findUserContainDepartmentAndRole(@VOBody(required = false) UserDepartmentRoleQuery dto);
 }

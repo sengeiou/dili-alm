@@ -44,10 +44,9 @@ import com.dili.alm.dao.ProjectOnlineOperationRecordMapper;
 import com.dili.alm.dao.ProjectOnlineSubsystemMapper;
 import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.TeamMapper;
-import com.dili.alm.dao.VersionMarketOnlineRecordMapper;
 import com.dili.alm.domain.ActionDateType;
 import com.dili.alm.domain.ApplyType;
-import com.dili.alm.domain.Department;
+import com.dili.uap.sdk.domain.Department;
 import com.dili.alm.domain.EmailAddress;
 import com.dili.alm.domain.OperationResult;
 import com.dili.alm.domain.Project;
@@ -62,8 +61,7 @@ import com.dili.alm.domain.ProjectOnlineOperationRecord;
 import com.dili.alm.domain.ProjectOnlineSubsystem;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Team;
-import com.dili.alm.domain.User;
-import com.dili.alm.domain.VersionMarketOnlineRecord;
+import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectOnlineApplyUpdateDto;
@@ -83,11 +81,9 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
-import com.dili.sysadmin.sdk.domain.UserTicket;
-import com.dili.sysadmin.sdk.session.SessionContext;
+import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
-
-import tk.mybatis.mapper.entity.Example;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2018-03-13 15:31:10.
@@ -953,14 +949,14 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		Set<String> emailStrs = new HashSet<>();
 		// 默认邮件发送列表，运维组和项目组成员
 		// 运维部成员
-		Department deptQuery = new Department();
+		Department deptQuery = DTOUtils.newDTO(Department.class);
 		deptQuery.setCode(AlmConstants.OPERATION_DEPARTMENT_CODE);
-		BaseOutput<List<Department>> deptOutput = this.deptRpc.list(deptQuery);
+		BaseOutput<List<Department>> deptOutput = this.deptRpc.listByDepartment(deptQuery);
 		if (deptOutput.isSuccess() && CollectionUtils.isNotEmpty(deptOutput.getData())) {
 			Long departmentId = deptOutput.getData().get(0).getId();
-			User userQuery = new User();
+			User userQuery = DTOUtils.newDTO(User.class);
 			userQuery.setDepartmentId(departmentId);
-			BaseOutput<List<User>> userOutput = this.userRpc.list(userQuery);
+			BaseOutput<List<User>> userOutput = this.userRpc.listByExample(userQuery);
 			if (userOutput.isSuccess() && CollectionUtils.isNotEmpty(userOutput.getData())) {
 				userOutput.getData().forEach(u -> emailStrs.add(u.getEmail()));
 			}

@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.dili.alm.domain.HardwareResource;
 import com.dili.alm.domain.Project;
-import com.dili.alm.domain.User;
+import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.exceptions.HardwareResourceException;
 import com.dili.ss.base.BaseService;

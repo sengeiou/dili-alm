@@ -1,9 +1,9 @@
 package com.dili.alm.controller;
 
 import com.dili.alm.domain.Demand;
-import com.dili.alm.domain.Department;
+import com.dili.uap.sdk.domain.Department;
 import com.dili.alm.domain.Files;
-import com.dili.alm.domain.User;
+import com.dili.uap.sdk.domain.User;
 import com.dili.alm.exceptions.DemandExceptions;
 import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.dto.DemandDto;
@@ -11,12 +11,13 @@ import com.dili.alm.rpc.DepartmentRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DemandService;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.alm.service.WorkOrderService;
 import com.dili.alm.service.impl.DemandServiceImpl;
 import com.dili.alm.utils.WebUtil;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.sysadmin.sdk.domain.UserTicket;
-import com.dili.sysadmin.sdk.session.SessionContext;
+import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.session.SessionContext;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -62,7 +63,8 @@ public class DemandController {
     @RequestMapping(value = "/add", method = RequestMethod.GET)
 	public String add(ModelMap modelMap) {
 		/** 查询 所有部门 ***/
-		List<Department> departments = this.deptRpc.list(new Department()).getData();
+    	Department department=DTOUtils.newDTO(Department.class);
+		List<Department> departments = this.deptRpc.listByDepartment(department).getData();
 		modelMap.addAttribute("departments", departments);
 
 		/** 个人信息 **/

@@ -1,4 +1,4 @@
-package com.dili.alm.rpc;
+package com.dili.sysadmin.rpc;
 
 import java.util.List;
 
@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.dili.alm.domain.DataAuthRef;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.retrofitful.annotation.POST;
 import com.dili.ss.retrofitful.annotation.Restful;
@@ -24,8 +23,5 @@ public interface DataAuthRpc {
 
 	@POST("/dataAuthRpc/deleteUserDataAuth")
 	BaseOutput<Object> deleteUserDataAuth(@VOField("userId") Long userId, @VOField("value") String value, @VOField("refCode") String refCode);
-
-	@POST("/dataAuthRpc/listDataAuths.api") 
-	BaseOutput<List<DataAuthRef>> listDataAuths(@VOBody DataAuthRef dataAuthRef);
         
 }

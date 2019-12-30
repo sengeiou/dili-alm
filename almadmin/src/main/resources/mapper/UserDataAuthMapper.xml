@@ -51,5 +51,12 @@
       <!--</if>-->
     <!--</where>-->
   <!--</delete>-->
+    <select id="listUserDataAuthDto"  resultType="com.dili.sysadmin.domain.dto.UserDataAuthDto">
+    select 
+      ud.id as id,ud.user_id as userId,d.type as type,d.data_id as dataId
+    from user_data_auth ud
+    left join data_auth d
+    on ud.data_auth_id = d.id
+  </select>
 
 </mapper>

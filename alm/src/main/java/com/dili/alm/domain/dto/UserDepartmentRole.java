@@ -2,34 +2,20 @@ package com.dili.alm.domain.dto;
 
 import java.util.List;
 
-import com.dili.alm.domain.Department;
-import com.dili.alm.domain.Role;
-import com.dili.alm.domain.User;
+import com.dili.uap.sdk.domain.Department;
+import com.dili.uap.sdk.domain.Role;
+import com.dili.uap.sdk.domain.User;
 
-public class UserDepartmentRole extends User {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1562069406116228728L;
+public interface UserDepartmentRole extends User {
 
-	private Department department;
-	private List<Role> roles;
 
-	public Department getDepartment() {
-		return department;
-	}
+	Department getDepartment();
 
-	public void setDepartment(Department department) {
-		this.department = department;
-	}
+	void setDepartment(Department department);
 
-	public List<Role> getRoles() {
-		return roles;
-	}
+	List<Role> getRoles();
 
-	public void setRoles(List<Role> roles) {
-		this.roles = roles;
-	}
+	void setRoles(List<Role> roles);
 
 }

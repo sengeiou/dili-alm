@@ -1,6 +1,6 @@
 package com.dili.alm.controller;
 
-import com.dili.alm.domain.Department;
+import com.dili.uap.sdk.domain.Department;
 import com.dili.alm.rpc.DepartmentRpc;
 import com.dili.ss.domain.BaseOutput;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ public class DepartmentController {
     @ResponseBody
     @RequestMapping(value = "/departments", method = { RequestMethod.GET, RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<Department> departmentJson(Department department){
-        BaseOutput<List<Department>> baseOutput = departmentRpc.list(department);
+        BaseOutput<List<Department>> baseOutput = departmentRpc.listByDepartment(department);
         return baseOutput.getData();
     }
 

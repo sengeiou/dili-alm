@@ -39,7 +39,7 @@ import com.dili.alm.dao.WorkOrderMapper;
 import com.dili.alm.dao.WorkOrderOperationRecordMapper;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.OperationResult;
-import com.dili.alm.domain.User;
+import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.WorkOrder;
 import com.dili.alm.domain.WorkOrderExecutionRecord;
 import com.dili.alm.domain.WorkOrderOperationRecord;

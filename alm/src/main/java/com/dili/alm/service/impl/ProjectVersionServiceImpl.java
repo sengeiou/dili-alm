@@ -35,8 +35,8 @@ import com.dili.alm.service.ProjectVersionService;
 import com.dili.alm.service.TeamService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.sysadmin.sdk.domain.UserTicket;
-import com.dili.sysadmin.sdk.session.SessionContext;
+import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.session.SessionContext;
 
 import tk.mybatis.mapper.entity.Example;
 
@@ -72,7 +72,8 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 	public void addProjectVersion(ProjectVersionFormDto dto) throws ProjectVersionException {
 		// 检查项目状态是否为进行中
 		Project project = this.projectMapper.selectByPrimaryKey(dto.getProjectId());
-		if (!project.getProjectState().equals(ProjectState.NOT_START.getValue()) && !project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
+		if (!project.getProjectState().equals(ProjectState.NOT_START.getValue())
+				&& !project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
 			throw new ProjectVersionException("项目不在进行中，不能编辑");
 		}
 		if (dto.getPlannedStartDate().compareTo(dto.getPlannedEndDate()) > 0) {
@@ -102,7 +103,6 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		if (count > 0) {
 			throw new ProjectVersionException("版本已存在");
 		}
-
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		dto.setCreatorId(userTicket.getId());
 		dto.setCreated(new Date());

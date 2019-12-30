@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.dili.alm.domain.OperationResult;
-import com.dili.alm.domain.User;
+import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.WorkOrder;
 import com.dili.alm.domain.WorkOrderSource;
 import com.dili.alm.exceptions.WorkOrderException;

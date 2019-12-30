@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.dili.alm.domain.OnlineDataChange;
 import com.dili.alm.domain.Project;
-import com.dili.alm.domain.User;
+import com.dili.uap.sdk.domain.User;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.AssignmentService;
 import com.dili.alm.service.OnlineDataChangeService;
@@ -40,7 +40,7 @@ public class AssignmentServiceImpl implements AssignmentService {
         
 		Project  pro=	projectService.get(odc.getProjectId());
 		
-		User uprojectser = new User();
+		User uprojectser =DTOUtils.newDTO(User.class);
 		uprojectser.setId(pro.getDevelopManager());
 		BaseOutput<List<User>> listUserByExample = userRpc.listByExample(uprojectser);
 		
@@ -59,7 +59,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 		
 		Project  pro=	projectService.get(odc.getProjectId());
 		
-		User uprojectser = new User();
+		User uprojectser = DTOUtils.newDTO(User.class);
 		uprojectser.setId(pro.getTestManager());
 		BaseOutput<List<User>> listUserByExample = userRpc.listByExample(uprojectser);
 	

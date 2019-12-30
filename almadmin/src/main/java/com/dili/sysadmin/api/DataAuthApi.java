@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.sysadmin.domain.DataAuth;
 import com.dili.sysadmin.domain.UserDataAuth;
+import com.dili.sysadmin.domain.dto.UserDataAuthDto;
 import com.dili.sysadmin.service.DataAuthService;
 import com.dili.sysadmin.service.UserDataAuthService;
 import io.swagger.annotations.Api;
@@ -109,5 +110,12 @@ public class DataAuthApi {
 		userDataAuth.setDataAuthId(dataAuths.get(0).getId());
 		userDataAuthService.delete(userDataAuth);
 		return BaseOutput.success("删除用户数据权成功");
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/listUserDataAuth", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public BaseOutput<List<UserDataAuthDto>> listUserDataAuth() {
+		List<UserDataAuthDto> listUserDataAuthDto = userDataAuthService.listUserDataAuthDto();
+		return  BaseOutput.success().setData(listUserDataAuthDto);
 	}
 }

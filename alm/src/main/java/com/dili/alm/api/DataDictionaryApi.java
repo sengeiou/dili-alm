@@ -1,4 +1,4 @@
-package com.dili.alm.api;
+/*package com.dili.alm.api;
 
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.service.DataDictionaryService;
@@ -22,4 +22,4 @@ public class DataDictionaryApi {
 		DataDictionaryDto dto = this.dataDictionaryService.findByCode(code);
 		return BaseOutput.success().setData(dto);
 	}
-}
+}*/

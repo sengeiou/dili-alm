@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.alm.domain.AlarmConfig;
 import com.dili.alm.domain.Project;
-import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.provider.ProjectProvider;
 import com.dili.alm.service.AlarmConfigService;
 import com.dili.alm.service.ProjectService;

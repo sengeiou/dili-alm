@@ -33,7 +33,7 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.util.SystemConfigUtils;
-import com.dili.sysadmin.sdk.session.SessionContext;
+import com.dili.uap.sdk.session.SessionContext;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-12-08 11:29:47.
