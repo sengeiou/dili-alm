@@ -3,10 +3,12 @@ package com.dili.alm.controller;
 import com.dili.alm.domain.Demand;
 import com.dili.alm.domain.Department;
 import com.dili.alm.domain.Files;
+import com.dili.alm.domain.User;
 import com.dili.alm.exceptions.DemandExceptions;
 import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.dto.DemandDto;
 import com.dili.alm.rpc.DepartmentRpc;
+import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DemandService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.alm.service.WorkOrderService;
@@ -46,6 +48,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class DemandController {
 	@Autowired
 	private DepartmentRpc deptRpc;
+	@Autowired
+	private UserRpc userRpc;
     @Autowired
     DemandService demandService;
 	private static final Logger LOGGER = LoggerFactory.getLogger(DemandController.class);
@@ -63,8 +67,10 @@ public class DemandController {
 
 		/** 个人信息 **/
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		BaseOutput<List<Department>> de = deptRpc.findByUserId(userTicket.getId());
+		userTicket.setDepName(de.getData().get(0).getName());
 		modelMap.addAttribute("userInfo", userTicket);
-
+		
 		return "demand/add";
 	}
 	
@@ -111,6 +117,19 @@ public class DemandController {
         return BaseOutput.success("新增成功");
     }
 
+    @ApiOperation("提交Demand")
+    @ApiImplicitParams({
+		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = true, dataType = "string")
+	})
+    @RequestMapping(value="/submint", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput submint(Demand demand) {
+        try {
+			demandService.submint(demand);
+		} catch (DemandExceptions e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+        return BaseOutput.success("提交成功");
+    }
     @ApiOperation("修改Demand")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = true, dataType = "string")
@@ -120,7 +139,7 @@ public class DemandController {
         demandService.updateSelective(demand);
         return BaseOutput.success("修改成功");
     }
-
+    
     @ApiOperation("删除Demand")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="id", paramType="form", value = "Demand的主键", required = true, dataType = "long")

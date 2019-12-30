@@ -44,7 +44,7 @@ public class DemandNumberGenerator extends AbstractNumberGenerator {
 
 	@Override
 	public String get() {
-		DecimalFormat df = new DecimalFormat("0000");
+		DecimalFormat df = new DecimalFormat("000");
 		Integer sequence = number.getAndIncrement();
 		if (sequence % AlmConstants.SEQUENCE_NUMBER_STEP_LENGTH == 0) {
 			this.persist();

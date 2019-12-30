@@ -9,4 +9,7 @@ import com.dili.ss.base.MyMapper;
 
 public interface DemandMapper extends MyMapper<Demand> {
 	List<Demand> selectDemandListToProject(@Param("projectId")Long projectId,@Param("demandProjectStatus")Integer demandProjectStatus);
+	
+	
+	List<Demand> selectDemandList(Demand demand);
 }

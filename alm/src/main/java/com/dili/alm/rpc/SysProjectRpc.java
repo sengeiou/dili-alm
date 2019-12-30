@@ -11,7 +11,7 @@ import java.util.List;
 @Restful("http://uap.diligrp.com")
 public interface SysProjectRpc {
 
-	@POST("/systemApi/list")
+	@POST("/systemApi/list.api")
 	BaseOutput<List<ProjectSysEntity>> list(@VOBody(required = false) ProjectSysEntity projectSys);
 
 }

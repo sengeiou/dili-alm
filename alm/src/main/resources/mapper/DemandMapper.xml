@@ -120,5 +120,22 @@
       </if>
     )
   </select>
-  
+  	<!--查询 -->
+	<select id="selectDemandList" parameterType="com.dili.alm.domain.Demand" resultType="com.dili.alm.domain.Demand">
+		 select 
+    id,serial_number,name, user_id, belong_pro_id,belong_sys_id, type, status,finish_date, document_url, 
+   create_date,submit_date, content,reason
+	FROM  demand  
+   <where>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+       <if test="belongSysId != null">
+        belong_sys_id = #{belongSysId,jdbcType=BIGINT},
+      </if>
+      <if test="createDate != null">
+        create_date = UNIX_TIMESTAMP(#{submintDate,jdbcType=TIMESTAMP}) or  submit_date =UNIX_TIMESTAMP(#{submintDate,jdbcType=TIMESTAMP})
+      </if>
+      </where>
+	</select>
 </mapper>

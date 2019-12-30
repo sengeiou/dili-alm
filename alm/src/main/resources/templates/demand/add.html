@@ -1,80 +1,82 @@
  <#body>
- <link href="${contextPath!}/resources/css/uploadfile.css"
+<link href="${contextPath!}/resources/css/uploadfile.css"
 	rel="stylesheet">
-	<form id="_form" class="easyui-form" method="post"
-		enctype="multipart/form-data">
-		<input name="_id" id="_id" type="hidden">
-		<table width="100%">
-			<tr>
-				<td style="padding: 5px;width: 50%">
-				<input class="easyui-textbox"
-					style="width: 100%"
-					data-options="label:'需求申请人'"value="${userInfo.realName}" />
-					<input type="hidden" id="userId" name="userId" value="${userInfo.id}" /></td>
-					<td style="padding: 5px;width: 50%"><input class="easyui-textbox"
-					style="width: 100%"
-					data-options="label:'申请人电话'"value="${userInfo.cellphone}" /></td>
-			</tr>
-			<tr>
-				<td style="padding: 5px;"><input class="easyui-textbox"
-					 style="width: 100%"data-options="label:'需求部门:'"value="${userInfo.depName}" data-options="editable:false" /></td>
-					<td style="padding: 5px;"><input class="easyui-numberbox"
-					name="_belongSysId" id="_belongSysId" style="width: 100%"
-					data-options="label:'所属系统:'" required="true" />
-					<!-- <#comboProvider _id="belong_sys_id" _provider='projectSysProvider' /> -->
-					</td>
-			</tr>
-						<tr>
-				<td style="padding: 5px;"><input class="easyui-textbox"
-					name="_name" id="_name" style="width: 100%"
-					data-options="label:'需求名称:', validType:'length[0,25]'"
-					required="true" /></td>
-									<td style="padding: 5px;"><input class="easyui-textbox" 
-					name="_belongProId" id="_belongProId" style="width: 100%"
-					data-options="label:'所属項目:'" />
-					</td>
-			</tr>
-			<tr>
-
-									<td style="padding: 5px;"><input class="easyui-textbox"
-					name="_type" id="_type" style="width: 100%"
-					data-options="label:'需求类型:', validType:'length[0,3]'"
-					required="true" />
-					<#comboProvider _id="_type" _provider='demandTypeProvider' />
-					</td>
-									<td style="padding: 5px;"><input class="easyui-datebox"
-					name="_finishDate" id="_finishDate" style="width: 100%"
-					data-options="label:'期望实现日期:'" required="true" /></td>
-			</tr>
-			<tr>
-				<td style="padding: 5px;"  colspan="2">
-				<p>添加附件：</p>
-					<div id="fileuploader">选择文件</div>
+<form id="_form" class="easyui-form" method="post"
+	enctype="multipart/form-data">
+	<input name="_id" id="_id" class="easyui-textbox">
+	<table width="100%">
+		<tr>
+			<td style="padding: 5px; width: 50%"><input
+				class="easyui-textbox" style="width: 100%"
+				data-options="label:'需求申请人'" value="${userInfo.realName}" /> <input
+				type="hidden" id="userId" name="userId" value="${userInfo.id}" /></td>
+			<td style="padding: 5px; width: 50%"><input
+				class="easyui-textbox" style="width: 100%"
+				data-options="label:'申请人电话'" value="${userInfo.cellphone}" /></td>
+		</tr>
+		<tr>
+			<td style="padding: 5px;"> <input class="easyui-textbox"
+				style="width: 100%" data-options="label:'需求部门:'"
+				value="${userInfo.depName}" data-options="editable:false" /> 
 				</td>
-			</tr>
-			<tr>
-				<td style="padding: 5px;"  colspan="2">
-					<!-- <input class="easyui-textbox"
+			<td style="padding: 5px;"><input class="easyui-numberbox"
+				name="_belongSysId" id="_belongSysId" style="width: 100%"
+				data-options="label:'所属系统:'" required="true" /> <#comboProvider
+				_id="_belongSysId" _provider='projectSysProvider' /></td>
+		</tr>
+		<tr>
+			<td style="padding: 5px;"><input class="easyui-textbox"
+				name="_name" id="_name" style="width: 100%"
+				data-options="label:'需求名称:', validType:'length[0,25]'"
+				required="true" /></td>
+			<td style="padding: 5px;"><input class="easyui-textbox"
+				name="_belongProId" id="_belongProId" style="width: 100%"
+				data-options="label:'所属項目:'" />
+				<#comboProvider
+				_id="_belongProId" _provider='projectProvider' />
+				</td>
+		</tr>
+		<tr>
+
+			<td style="padding: 5px;"><input class="easyui-textbox"
+				name="_type" id="_type" style="width: 100%"
+				data-options="label:'需求类型:'"
+				required="true" /> <#comboProvider _id="_type"
+				_provider='demandTypeProvider' /></td>
+			<td style="padding: 5px;"><input class="easyui-datetimebox"
+				name="_finishDate" id="_finishDate" style="width: 100%"
+				data-options="label:'期望实现日期:'" required="true" /></td>
+		</tr>
+		<tr>
+			<td style="padding: 5px;" colspan="2">
+				<p>添加附件：</p>
+				<div id="fileuploader">选择文件</div>
+			</td>
+		</tr>
+		<tr>
+			<td style="padding: 5px;" colspan="2">
+				<!-- <input class="easyui-textbox"
 					name="_content" id="_content" style="width: 100%"
 					data-options="label:'需求内容:', validType:'length[0,65535]'"
 					required="true" /></td> -->
-					<p>需求内容:</p>
-					<div id="editor_content"  style="width: 100%"></div>
-			</tr>
-			<tr>
-				<td style="padding: 5px;" colspan="2"><!-- <input class="easyui-textbox"
+				<p>需求内容:</p>
+				<div id="editor_content" style="width: 100%"></div>
+		</tr>
+		<tr>
+			<td style="padding: 5px;" colspan="2">
+				<!-- <input class="easyui-textbox"
 					name="_reason" id="_reason" style="width: 100%"
 					data-options="label:'需求背景:', validType:'length[0,65535]'" /> -->
-					<p>需求背景:</p>
-					<div id="editor_reason"  style="width: 100%"></div>
-					</td>
-			</tr>
-		</table>
-		<input type="hidden" id="documentUrl" name="documentUrl" value=""/>
-	</form>
-    <!-- ====================================================================================================================== -->
-    <!-- style & script 分隔线 -->
-    <!-- ====================================================================================================================== -->
+				<p>需求背景:</p>
+				<div id="editor_reason" style="width: 100%"></div>
+			</td>
+		</tr>
+	</table>
+	<input type="hidden" id="documentUrl" name="documentUrl" value="" />
+</form>
+<!-- ====================================================================================================================== -->
+<!-- style & script 分隔线 -->
+<!-- ====================================================================================================================== -->
 <script type="text/javascript"
 	src="${contextPath!}/resources/js/jquery.uploadfile.min.js"></script>
 <script type="text/javascript"
@@ -106,10 +108,6 @@
                                  'justify',
                              ]
     editor2.create()
-	
-	function getText(){
-		 alert(editor.txt.html())
-	}
 </script>
 <script type="text/javascript">
 var myfiles = new Array();
@@ -118,7 +116,7 @@ $("#fileuploader").uploadFile({
     fileName : "file",             //提交到服务器的文件名
     maxFileCount: 10,                //上传文件个数（多个时修改此处
     returnType: 'json',              //服务返回数据
-    allowedTypes: 'jpg,jpeg,png,gif',  //允许上传的文件式
+    allowedTypes: 'doc,xls,ppt,pdf,txt,dwg,exb,dps,wps,et,rar,zip,xmind,JPG,GIF,png,bmp',  //允许上传的文件式
     showDone: false,                     //是否显示"Done"(完成)按钮
     showDelete: true,                  //是否显示"Delete"(删除)按钮
     deleteCallback: function(data,pd)
@@ -161,18 +159,6 @@ $("#fileuploader").uploadFile({
     }
 });
 
-function loadProjectSelect(queryAll) {
-	$('#_belongProId').combobox({
-				url : "${contextPath!}/task/listTreeProject.json",
-				valueField : 'id',
-				textField : 'name',
-				editable : false
-			});
 
-}
-
-$(document).ready(function() {
-	loadProjectSelect();
-})
 </script>
 </#body>

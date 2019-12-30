@@ -437,7 +437,7 @@ public class AlmCache {
 	
 	public Map<String, String> getDemandStetusMap() {
 		if (AlmCache.DAMAND_STATUS_MAP.isEmpty()) {
-			DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.DEMAND_TYPE);
+			DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.DEMAND_STATUS);
 			if (CollectionUtils.isEmpty(dd.getValues())) {
 				return DAMAND_STATUS_MAP;
 			}

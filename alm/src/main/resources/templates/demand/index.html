@@ -55,10 +55,10 @@
 						data-options="field:'belongProId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
 						所属系统</th>
 					<th
-						data-options="field:'type',    _provider:'projectTypeProvider' ,sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						data-options="field:'type',    _provider:'demandTypeProvider' ,sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
 						需求类型</th>
 					<th
-						data-options="field:'status',   _provider:'projectStateProvider' , sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						data-options="field:'status',   _provider:'demandStateProvider' , sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
 						需求状态</th>
 					<th
 						data-options="field:'depament',  _provider:'depProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -68,6 +68,9 @@
 						data-options="field:'createDate',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
 						申请时间</th>
 					<!-- 草稿时间、提交时间 -->
+					<th
+						data-options="field:'createDate',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						操作</th>
 				</tr>
 			</thead>
 		</table>
@@ -149,6 +152,7 @@
             formFocus("_form", "_serialNumber");
             var formData = $.extend({},selected);
             formData = addKeyStartWith(getOriginalData(formData),"_");
+            console.log(formData);
             $('#_form').form('load', formData);
         }
 
@@ -304,7 +308,9 @@
             }
         })
        
-        
+        /**
+        *页面测试调用
+        **/
         function aa(){
         	var htmlobj = $.ajax({
 				url : "${contextPath}/demand/sendseq.json",

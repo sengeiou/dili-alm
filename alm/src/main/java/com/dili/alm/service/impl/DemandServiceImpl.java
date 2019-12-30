@@ -1,6 +1,7 @@
 package com.dili.alm.service.impl;
 
 import com.dili.alm.constant.AlmConstants;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -32,12 +33,15 @@ import com.dili.alm.exceptions.DemandExceptions;
 import com.dili.alm.rpc.DepartmentRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DemandService;
+import com.dili.alm.utils.GetFirstCharUtil;
 import com.dili.alm.utils.WebUtil;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.sysadmin.sdk.domain.UserTicket;
+import com.dili.sysadmin.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
 
 import tk.mybatis.mapper.entity.Example;
@@ -82,6 +86,8 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
     private ProjectVersionMapper projectVesionMapper;
 	@Autowired
 	private UserRpc userRpc;
+	@Autowired
+	private DepartmentRpc deptRpc;
 	
 	@Autowired
 	private DemandMapper demandMapper;
@@ -122,9 +128,29 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
     @Override
    public int addNewDemand(Demand newDemand) throws DemandExceptions{
     	this.numberGenerator.init();
-	newDemand.setSerialNumber(""+this.numberGenerator.get());//TODO:加部门全拼获取自增
+	/** 个人信息 **/
+	UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+	BaseOutput<List<Department>> de = deptRpc.findByUserId(userTicket.getId());
+	String depStr = "";
+	if (de.getData().size()>0) {
+		depStr = de.getData().get(0).getName();
+		 if (depStr.indexOf("市场")>-1) {
+			 depStr = depStr.substring(0,depStr.length()-2);
+		}else if(depStr.indexOf("部")>-1){
+			depStr = depStr.substring(0,depStr.length()-1);
+		}
+		 depStr = GetFirstCharUtil.getFirstSpell(depStr).toUpperCase();
+	}
+
+	
+	newDemand.setSerialNumber(depStr+this.numberGenerator.get());//加部门全拼获取自增
 	newDemand.setCreateDate(new Date());
-	newDemand.setStatus((byte) DemandStatus.NOTSUBMIT.getCode());//初始化状态为未提交
+	if (newDemand.getStatus()!=null&&newDemand.getStatus()==(byte) DemandStatus.APPROVING.getCode()) {
+		newDemand.setStatus((byte) DemandStatus.APPROVING.getCode());//直接提交为申请单
+	}else{
+		newDemand.setStatus((byte) DemandStatus.NOTSUBMIT.getCode());
+	}
+	
 	int rows = this.insertSelective(newDemand);
 	if (rows <= 0) {
 		throw new DemandExceptions("新增需求失败");
@@ -139,10 +165,14 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		sequence.setNumber(1);
 		this.sequenceMapper.updateByPrimaryKey(sequence);
 	}
+	
+	
 	@Override
 	public int submint(Demand newDemand) throws DemandExceptions {
+		//判断是否是直接提交
 		int rows =0;
 		if (newDemand.getId()==null) {
+			newDemand.setStatus((byte) DemandStatus.APPROVING.getCode());
 			this.addNewDemand(newDemand);
 		}
 		Demand selectDeman = demandMapper.selectOne(newDemand);
@@ -150,7 +180,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			throw new DemandExceptions("找不到当前需求!");
 		}
 		
-		selectDeman.setStatus((byte) DemandStatus.SUBMIT.getCode());
+		selectDeman.setStatus((byte) DemandStatus.APPROVING.getCode());
 		rows=this.demandMapper.updateByPrimaryKey(selectDeman);
 		
 		if (rows<=0) {
@@ -162,7 +192,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	public EasyuiPageOutput listPageForUser(Demand selectDemand) {
 		selectDemand.setOrder("desc");
 		selectDemand.setSort("created");
-		List<Demand> list = this.listByExample(selectDemand);// 查询出来
+		List<Demand> list = demandMapper.selectDemandList(selectDemand);// 查询出来
 		Page<Demand> page = (Page<Demand>) list;
 		@SuppressWarnings("unchecked")
 		Map<Object, Object> metadata = null == selectDemand.getMetadata() ? new HashMap<>() : selectDemand.getMetadata();
@@ -177,7 +207,6 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 
 		selectDemand.setMetadata(metadata);
 		try {
-			//List<Demand> results = this.TaskParseTaskSelectDto(list, true);// 转化为查询的DTO
 			List demandList = ValueProviderUtils.buildDataByProvider(selectDemand, list);
 			EasyuiPageOutput demandEasyuiPageOutput = new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(page.getTotal()))), demandList);
 			return demandEasyuiPageOutput;
