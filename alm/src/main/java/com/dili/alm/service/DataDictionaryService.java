@@ -15,4 +15,6 @@ public interface DataDictionaryService extends BaseService<DataDictionary, Long>
 	DataDictionaryDto findByCode(String code);
 
 	List<DataDictionary> listDataDictionary(DataDictionary ddit);
+
+	void updateUapDataDictionaryList();
 }

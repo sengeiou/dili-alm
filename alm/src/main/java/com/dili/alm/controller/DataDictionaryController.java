@@ -8,6 +8,7 @@ import com.dili.ss.metadata.ValueProviderUtils;
 import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -85,4 +86,10 @@ public class DataDictionaryController {
 		return BaseOutput.success("删除成功");
 	}
 
+	
+	@RequestMapping(value = "/updateUapDataDictionaryList", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public BaseOutput<Object> updateUapDataDictionaryList() {
+		dataDictionaryService.updateUapDataDictionaryList();
+		return  BaseOutput.success("添加成功");
+	}
 }
