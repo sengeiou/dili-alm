@@ -4,12 +4,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.domain.OnlineDataChange;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.TaskEntity;
-import com.dili.uap.sdk.domain.User;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.OnlineDataChangeService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
@@ -23,13 +23,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * ��MyBatis Generator�����Զ�����
@@ -109,10 +113,11 @@ public class OnlineDataChangeController {
 		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "OnlineDataChange��form��Ϣ", required = true, dataType = "string")
 	})
     @RequestMapping(value="/insert.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput insert(@ModelAttribute OnlineDataChange onlineDataChange) {
+    public  BaseOutput insert( @ModelAttribute OnlineDataChange onlineDataChange) {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
     	onlineDataChange.setApplyUserId(id);
-        onlineDataChangeService.insertSelective(onlineDataChange);
+    	// String fileName = sqlFile.getOriginalFilename();
+       onlineDataChangeService.insertSelective(onlineDataChange);
         return BaseOutput.success("�����ɹ�");
     }
 
@@ -121,7 +126,8 @@ public class OnlineDataChangeController {
 		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "OnlineDataChange��form��Ϣ", required = true, dataType = "string")
 	})
     @RequestMapping(value="/update.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput update(@ModelAttribute OnlineDataChange onlineDataChange) {
+    public @ResponseBody BaseOutput update(@ModelAttribute OnlineDataChange onlineDataChange,@RequestParam("onlinefilename") MultipartFile file,
+            HttpServletRequest reques) {
         onlineDataChangeService.updateSelective(onlineDataChange);
         return BaseOutput.success("�޸ĳɹ�");
     }
@@ -150,7 +156,14 @@ public class OnlineDataChangeController {
     	}
         
     }
-    
+    @RequestMapping(value="/upload.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput upload(  @RequestParam MultipartFile sqlFile) {
+    	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
+    	//onlineDataChange.setApplyUserId(id);
+    	 String fileName = sqlFile.getOriginalFilename();
+     //   onlineDataChangeService.insertSelective(onlineDataChange);
+        return BaseOutput.success("11111");
+    }
     
     
     
