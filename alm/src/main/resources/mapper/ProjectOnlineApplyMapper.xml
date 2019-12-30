@@ -152,4 +152,19 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
+  
+    
+   <select id="selectProjectOnlineApplyByExecutorId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from project_online_apply
+    where executor_id REGEXP '#{id,jdbcType=BIGINT}';
+  </select>
+  
+  
+  
+  
+  
+  
+  
 </mapper>
