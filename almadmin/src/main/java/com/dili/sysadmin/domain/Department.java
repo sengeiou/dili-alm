@@ -34,17 +34,18 @@ public class Department extends BaseDomain {
     @Column(name = "`code`")
     private String code;
 
-    /**
-     * 操作员id
-     */
-    @Column(name = "`operator_id`")
-    private Long operatorId;
-
+    
+    @Column(name = "`modified_id`")
+    private Long modifiedId;
+    
+    
+    @Column(name = "`created_id`")
+    private Long createdId;
     /**
      * 备注
      */
-    @Column(name = "`notes`")
-    private String notes;
+    @Column(name = "`description`")
+    private String description;
 
     @Column(name = "`parent_id`")
     private Long parentId;
@@ -116,48 +117,32 @@ public class Department extends BaseDomain {
     public void setCode(String code) {
         this.code = code;
     }
+   
+    public Long getModifiedId() {
+		return modifiedId;
+	}
 
-    /**
-     * 获取操作员id
-     *
-     * @return operator_id - 操作员id
-     */
-    @FieldDef(label="操作员id")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    public Long getOperatorId() {
-        return operatorId;
-    }
+	public void setModifiedId(Long modifiedId) {
+		this.modifiedId = modifiedId;
+	}
 
-    /**
-     * 设置操作员id
-     *
-     * @param operatorId 操作员id
-     */
-    public void setOperatorId(Long operatorId) {
-        this.operatorId = operatorId;
-    }
+	public Long getCreatedId() {
+		return createdId;
+	}
 
-    /**
-     * 获取备注
-     *
-     * @return notes - 备注
-     */
-    @FieldDef(label="备注", maxLength = 255)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    public String getNotes() {
-        return notes;
-    }
+	public void setCreatedId(Long createdId) {
+		this.createdId = createdId;
+	}
 
-    /**
-     * 设置备注
-     *
-     * @param notes 备注
-     */
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    /**
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	/**
      * @return parent_id
      */
     @FieldDef(label="parentId")

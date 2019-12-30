@@ -31,7 +31,7 @@ import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.TaskDetails;
 import com.dili.alm.domain.TaskQueryInProjectId;
-import com.dili.alm.domain.User;
+import com.dili.uap.sdk.domain.User;
 import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.TaskException;
 import com.dili.alm.service.ProjectApplyService;

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.alm.cache.AlmCache;
-import com.dili.alm.domain.User;
+import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.dto.UserDepartmentRole;
 import com.dili.alm.domain.dto.UserDepartmentRoleQuery;
 import com.dili.alm.rpc.UserRpc;

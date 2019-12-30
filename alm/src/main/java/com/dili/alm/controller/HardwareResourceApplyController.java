@@ -26,12 +26,13 @@ import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.ApproveResult;
 import com.dili.alm.domain.DataDictionaryValue;
-import com.dili.alm.domain.Department;
+import com.dili.uap.sdk.domain.Department;
 import com.dili.alm.domain.HardwareResourceApply;
 import com.dili.alm.domain.HardwareResourceRequirement;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectState;
-import com.dili.alm.domain.User;
+import com.dili.uap.sdk.domain.User;
+import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.HardwareResourceApplyListPageQueryDto;
 import com.dili.alm.domain.dto.HardwareResourceApplyUpdateDto;
 import com.dili.alm.domain.dto.HardwareResourceRequirementDto;
@@ -108,7 +109,7 @@ public class HardwareResourceApplyController {
 		}
 
 		/** 查询 所有部门 ***/
-		List<Department> departments = this.deptRpc.list(new Department()).getData();
+		List<Department> departments = this.deptRpc.listByDepartment(DTOUtils.newDTO(Department.class)).getData();
 		modelMap.addAttribute("departments", departments);
 
 		/** 个人信息 **/
@@ -116,19 +117,17 @@ public class HardwareResourceApplyController {
 		modelMap.addAttribute("userInfo", userTicket);
 
 		/*** 环境 **/
-		DataDictionaryValue dd = DTOUtils.newDTO(DataDictionaryValue.class);
-		dd.setDdId((long) 23);
-		List<DataDictionaryValue> ddValue = ddvService.list(dd);
+		List<DataDictionaryValueDto> ddValue = ddvService.listDataDictionaryValueByCode(AlmConstants.ALM_ENVIRONMENT);
 		modelMap.addAttribute("ddValue", ddValue);
 		/*** 运维部门下的所有人员查询 begin **/
-		Department deptQuery = new Department();
+		Department deptQuery = DTOUtils.newDTO(Department.class);
 		deptQuery.setCode(AlmConstants.OPERATION_DEPARTMENT_CODE);
-		BaseOutput<List<Department>> deptOutput = this.deptRpc.list(deptQuery);
+		BaseOutput<List<Department>> deptOutput = this.deptRpc.listByDepartment(deptQuery);
 		if (deptOutput.isSuccess() && CollectionUtils.isNotEmpty(deptOutput.getData())) {
 			Long departmentId = deptOutput.getData().get(0).getId();
-			User userQuery = new User();
+			User userQuery =  DTOUtils.newDTO(User.class);
 			userQuery.setDepartmentId(departmentId);
-			BaseOutput<List<User>> userOutput = this.userRpc.list(userQuery);
+			BaseOutput<List<User>> userOutput = this.userRpc.listByExample(userQuery);
 			if (userOutput.isSuccess() && CollectionUtils.isNotEmpty(userOutput.getData())) {
 				StringBuilder sb = new StringBuilder();
 				userOutput.getData().forEach(u -> sb.append(u.getEmail()).append(";"));
@@ -156,7 +155,8 @@ public class HardwareResourceApplyController {
 		modelMap.addAttribute("plist", plist).addAttribute("ulist", AlmCache.getInstance().getUserMap().values());
 
 		/** 查询 所有部门 ***/
-		List<Department> departments = this.deptRpc.list(new Department()).getData();
+		Department newDepartment = DTOUtils.newDTO(Department.class);
+		List<Department> departments = this.deptRpc.listByDepartment(newDepartment).getData();
 		modelMap.addAttribute("departments", departments);
 
 		/** 个人信息 **/
@@ -164,15 +164,13 @@ public class HardwareResourceApplyController {
 		modelMap.addAttribute("userInfo", userTicket);
 
 		/*** 环境 **/
-		DataDictionaryValue dd = DTOUtils.newDTO(DataDictionaryValue.class);
-		dd.setDdId((long) 23);
-		List<DataDictionaryValue> ddValue = ddvService.list(dd);
+		List<DataDictionaryValueDto> ddValue = ddvService.listDataDictionaryValueByCode(AlmConstants.ALM_ENVIRONMENT);
 		modelMap.addAttribute("ddValue", ddValue);
 
 		/*** 运维部门下的所有人员查询 begin **/
-		Department deptQuery = new Department();
+		Department deptQuery =DTOUtils.newDTO(Department.class);
 		deptQuery.setCode(AlmConstants.OPERATION_DEPARTMENT_CODE);
-		BaseOutput<List<Department>> deptOutput = this.deptRpc.list(deptQuery);
+		BaseOutput<List<Department>> deptOutput = this.deptRpc.listByDepartment(deptQuery);
 		HardwareResourceApply dto = this.hardwareResourceApplyService.get(id);
 		modelMap.addAttribute("apply", dto);
 		List<String> envList = (List<String>) JSONObject.parseObject(dto.getServiceEnvironment(),
@@ -352,19 +350,17 @@ public class HardwareResourceApplyController {
 		modelMap.addAttribute("plist", plist).addAttribute("ulist", AlmCache.getInstance().getUserMap().values());
 
 		/** 查询 所有部门 ***/
-		List<Department> departments = this.deptRpc.list(new Department()).getData();
+		List<Department> departments = this.deptRpc.listByDepartment(DTOUtils.newDTO(Department.class)).getData();
 		modelMap.addAttribute("departments", departments);
 
 		/*** 环境 **/
-		DataDictionaryValue dd = DTOUtils.newDTO(DataDictionaryValue.class);
-		dd.setDdId((long) 23);
-		List<DataDictionaryValue> ddValue = ddvService.list(dd);
+		List<DataDictionaryValueDto> ddValue = ddvService.listDataDictionaryValueByCode(AlmConstants.ALM_ENVIRONMENT);
 		modelMap.addAttribute("ddValue", ddValue);
 
 		/*** 运维部门下的所有人员查询 begin **/
-		Department deptQuery = new Department();
+		Department deptQuery = DTOUtils.newDTO(Department.class);
 		deptQuery.setCode(AlmConstants.OPERATION_DEPARTMENT_CODE);
-		BaseOutput<List<Department>> deptOutput = this.deptRpc.list(deptQuery);
+		BaseOutput<List<Department>> deptOutput = this.deptRpc.listByDepartment(deptQuery);
 		HardwareResourceApply dto = this.hardwareResourceApplyService.getDetailViewModel(id);
 		modelMap.addAttribute("apply", dto);
 		modelMap.addAttribute("opRecords", dto.aget("opRecords"));
@@ -447,7 +443,7 @@ public class HardwareResourceApplyController {
 			@ApiImplicitParam(name = "id", paramType = "form", value = "HardwareResourceApply的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/operMemers.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<User> operMemers() throws HardwareResourceApplyException {
-		User user = new User();
+		User user = DTOUtils.newDTO(User.class);
 		user.setDepartmentId((long) 28);
 		List<User> operUsers = userRpc.listByExample(user).getData();
 		return operUsers;

@@ -4,15 +4,19 @@ import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.domain.VerifyApproval;
 import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.service.VerifyApprovalService;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValueProvider;
+import com.dili.uap.sdk.domain.Role;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Created by asiamaster on 2017/10/18 0018.
@@ -41,11 +45,14 @@ public class RoleNameProvider implements ValueProvider {
 				if(json.get("_rowData") instanceof VerifyApproval){
 					VerifyApproval approve = json.getObject("_rowData", VerifyApproval.class);
 					approve = verifyApprovalService.get(approve.getId());
-					return roleRpc.listRoleNameByUserId(approve.getApprover()).getData();
+					BaseOutput<List<Role>> listRoleByUserId = roleRpc.listByUser(approve.getApprover(),null);	
+					return listRoleByUserId.getData().stream().map(Role::getRoleName).collect(Collectors.joining(","));				
 				}
 			}
 		}catch (Exception ignored){}
 		if(o == null) return null;
-		return roleRpc.listRoleNameByUserId(Long.parseLong(o.toString())).getData();
+		BaseOutput<List<Role>> listRoleByUserId = roleRpc.listByUser(Long.parseLong(o.toString()),null);
+		
+		return listRoleByUserId.getData().stream().map(Role::getRoleName).collect(Collectors.joining(","));
 	}
 }

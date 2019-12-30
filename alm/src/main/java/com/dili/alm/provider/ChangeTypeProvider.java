@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.dili.alm.cache.AlmCache;
-import com.dili.alm.service.DataDictionaryService;
 import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValuePairImpl;
@@ -19,9 +17,6 @@ import com.dili.ss.metadata.ValueProvider;
  */
 @Component
 public class ChangeTypeProvider implements ValueProvider {
-
-	@Autowired
-	private DataDictionaryService dataDictionaryService;
 
 	@Override
 	public List<ValuePair<?>> getLookupList(Object obj, Map metaMap, FieldMeta fieldMeta) {

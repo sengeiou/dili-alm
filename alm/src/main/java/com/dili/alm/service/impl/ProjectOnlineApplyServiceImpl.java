@@ -46,7 +46,7 @@ import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.TeamMapper;
 import com.dili.alm.domain.ActionDateType;
 import com.dili.alm.domain.ApplyType;
-import com.dili.alm.domain.Department;
+import com.dili.uap.sdk.domain.Department;
 import com.dili.alm.domain.EmailAddress;
 import com.dili.alm.domain.OperationResult;
 import com.dili.alm.domain.Project;
@@ -61,7 +61,7 @@ import com.dili.alm.domain.ProjectOnlineOperationRecord;
 import com.dili.alm.domain.ProjectOnlineSubsystem;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Team;
-import com.dili.alm.domain.User;
+import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectOnlineApplyUpdateDto;
@@ -949,14 +949,14 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		Set<String> emailStrs = new HashSet<>();
 		// 默认邮件发送列表，运维组和项目组成员
 		// 运维部成员
-		Department deptQuery = new Department();
+		Department deptQuery = DTOUtils.newDTO(Department.class);
 		deptQuery.setCode(AlmConstants.OPERATION_DEPARTMENT_CODE);
-		BaseOutput<List<Department>> deptOutput = this.deptRpc.list(deptQuery);
+		BaseOutput<List<Department>> deptOutput = this.deptRpc.listByDepartment(deptQuery);
 		if (deptOutput.isSuccess() && CollectionUtils.isNotEmpty(deptOutput.getData())) {
 			Long departmentId = deptOutput.getData().get(0).getId();
-			User userQuery = new User();
+			User userQuery = DTOUtils.newDTO(User.class);
 			userQuery.setDepartmentId(departmentId);
-			BaseOutput<List<User>> userOutput = this.userRpc.list(userQuery);
+			BaseOutput<List<User>> userOutput = this.userRpc.listByExample(userQuery);
 			if (userOutput.isSuccess() && CollectionUtils.isNotEmpty(userOutput.getData())) {
 				userOutput.getData().forEach(u -> emailStrs.add(u.getEmail()));
 			}

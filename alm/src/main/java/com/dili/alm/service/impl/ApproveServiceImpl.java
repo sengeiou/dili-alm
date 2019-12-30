@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
@@ -54,7 +55,7 @@ import com.dili.alm.domain.ProjectEarning;
 import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.Team;
 import com.dili.alm.domain.TeamRole;
-import com.dili.alm.domain.User;
+import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.VerifyApproval;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
@@ -81,6 +82,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.util.SystemConfigUtils;
+import com.dili.uap.sdk.domain.Role;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
@@ -545,14 +547,15 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
 		List<ApplyApprove> approveList = Lists.newArrayList();
 
-		List<User> userByRole = userRpc.listUserByRole(Long.parseLong(roleId)).getData();
+		List<User> userByRole = userRpc.listUserByRoleId(Long.parseLong(roleId)).getData();
 		if (CollectionUtils.isEmpty(userByRole)) {
 			throw new ProjectApplyException("请先指定项目委员会组长");
 		}
 
 		ApplyApprove approve = new ApplyApprove();
 		approve.setUserId(userByRole.get(0).getId());
-		approve.setRole(roleRpc.listRoleNameByUserId(Long.valueOf(userByRole.get(0).getId())).getData());
+		BaseOutput<List<Role>> listRoleByUserId = roleRpc.listByUser(Long.valueOf(userByRole.get(0).getId()),null);	
+		approve.setRole(listRoleByUserId.getData().stream().map(Role::getRoleName).collect(Collectors.joining(",")));
 		approveList.add(approve);
 
 		if (as.getType().equals(AlmConstants.ApproveType.APPLY.getCode())) {
@@ -561,14 +564,15 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 				throw new ProjectApplyException("请先指定项目委员会组长");
 			}
 
-			userByRole = userRpc.listUserByRole(Long.parseLong(superRoleId)).getData();
+			userByRole = userRpc.listUserByRoleId(Long.parseLong(superRoleId)).getData();
 			if (CollectionUtils.isEmpty(userByRole)) {
 				throw new ProjectApplyException("请先指定项目委员会组长");
 			}
 
 			approve = new ApplyApprove();
 			approve.setUserId(userByRole.get(0).getId());
-			approve.setRole(roleRpc.listRoleNameByUserId(Long.valueOf(userByRole.get(0).getId())).getData());
+			BaseOutput<List<Role>> listRoleByUserId1 = roleRpc.listByUser(Long.valueOf(userByRole.get(0).getId()),null);	
+			approve.setRole(listRoleByUserId1.getData().stream().map(Role::getRoleName).collect(Collectors.joining(",")));
 			approveList.add(approve);
 		}
 
@@ -795,7 +799,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		String roleId = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH_LEADER)).findFirst().map(DataDictionaryValue::getValue).orElse(null);
 
 		if (roleId != null) {
-			List<User> users = userRpc.listUserByRole(Long.valueOf(roleId)).getData();
+			List<User> users = userRpc.listUserByRoleId(Long.valueOf(roleId)).getData();
 			return users.stream().findFirst().map(User::getId).orElse(null);
 		}
 
@@ -813,7 +817,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		String roleId = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH_SUPER_LEADER)).findFirst().map(DataDictionaryValue::getValue).orElse(null);
 
 		if (roleId != null) {
-			List<User> users = userRpc.listUserByRole(Long.valueOf(roleId)).getData();
+			List<User> users = userRpc.listUserByRoleId(Long.valueOf(roleId)).getData();
 			return users.stream().findFirst().map(User::getId).orElse(null);
 		}
 

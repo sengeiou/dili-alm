@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.WorkOrderMapper;
-import com.dili.alm.domain.User;
+import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.WorkOrder;
 import com.dili.alm.domain.WorkOrderSource;
 import com.dili.alm.domain.WorkOrderState;

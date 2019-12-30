@@ -1,5 +1,7 @@
 package com.dili.alm.service;
 
+import java.util.List;
+
 import com.dili.alm.domain.DataDictionary;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.ss.base.BaseService;
@@ -11,4 +13,6 @@ import com.dili.ss.base.BaseService;
 public interface DataDictionaryService extends BaseService<DataDictionary, Long> {
 
 	DataDictionaryDto findByCode(String code);
+
+	List<DataDictionary> listDataDictionary(DataDictionary ddit);
 }

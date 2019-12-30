@@ -25,7 +25,9 @@ import com.dili.sysadmin.domain.dto.EditRoleDataAuthDto;
 import com.dili.sysadmin.domain.dto.EditUserDataAuthDto;
 import com.dili.sysadmin.domain.dto.UpdateRoleDataAuthDto;
 import com.dili.sysadmin.domain.dto.UpdateUserDataAuthDto;
+import com.dili.sysadmin.domain.dto.UserDataAuthDto;
 import com.dili.sysadmin.service.DataAuthService;
+import com.dili.sysadmin.service.UserDataAuthService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -44,7 +46,9 @@ public class DataAuthController {
 
 	@Autowired
 	DataAuthService dataAuthService;
-
+	@Autowired
+	UserDataAuthService userDataAuthService;
+	
 	@ApiOperation("跳转到DataAuth页面")
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
@@ -139,5 +143,12 @@ public class DataAuthController {
 	@RequestMapping(value = "/updateRoleDataAuth.json", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public BaseOutput<Object> updateRoleDataAuth(@RequestBody @Valid UpdateRoleDataAuthDto dto) {
 		return this.dataAuthService.updateRoleDataAuth(dto);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/updateUserDataAuthList", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public BaseOutput<Object> updateUserDataAuthList() {
+		userDataAuthService.updateUserDataAuthList();
+		return  BaseOutput.success("添加失败");
 	}
 }

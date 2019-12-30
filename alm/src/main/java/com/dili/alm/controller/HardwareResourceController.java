@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.domain.HardwareResource;
 import com.dili.alm.domain.Project;
-import com.dili.alm.domain.User;
+import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.dto.HardwareResourceQueryDto;
 import com.dili.alm.exceptions.HardwareResourceException;
 import com.dili.alm.service.HardwareResourceService;

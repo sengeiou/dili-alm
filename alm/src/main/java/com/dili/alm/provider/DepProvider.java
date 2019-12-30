@@ -7,7 +7,7 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 import com.dili.alm.cache.AlmCache;
-import com.dili.alm.domain.Department;
+import com.dili.uap.sdk.domain.Department;
 import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValuePairImpl;

@@ -11,13 +11,14 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.HardwareResourceMapper;
 import com.dili.alm.dao.ProjectApplyMapper;
 import com.dili.alm.dao.ProjectMapper;
-import com.dili.alm.domain.Department;
+import com.dili.uap.sdk.domain.Department;
 import com.dili.alm.domain.HardwareResource;
 import com.dili.alm.domain.Project;
-import com.dili.alm.domain.User;
+import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.exceptions.HardwareResourceException;
@@ -60,11 +61,13 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 		if (userTicket == null) {
 			throw new RuntimeException("未登录");
 		}
-		BaseOutput<Department> findByDepartmentName = departmentRpc.findByDepartmentName(DEPARTMENTNAME);
+		Department newDepartment = DTOUtils.newDTO(Department.class);
+		newDepartment.setName(DEPARTMENTNAME);
+		BaseOutput<Department> findByDepartmentName = departmentRpc.listByOne(newDepartment);
 		Department department = findByDepartmentName.getData();
-		User user = new User();
+		User user = DTOUtils.newDTO(User.class);
 		user.setDepartmentId(department.getId());
-		return userRpc.list(user).getData();
+		return userRpc.listByExample(user).getData();
 	}
 
 	@Override

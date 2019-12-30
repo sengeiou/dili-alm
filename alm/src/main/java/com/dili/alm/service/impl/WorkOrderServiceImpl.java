@@ -18,7 +18,7 @@ import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.WorkOrderExecutionRecordMapper;
 import com.dili.alm.dao.WorkOrderMapper;
 import com.dili.alm.domain.OperationResult;
-import com.dili.alm.domain.User;
+import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.WorkOrder;
 import com.dili.alm.domain.WorkOrderExecutionRecord;
 import com.dili.alm.domain.WorkOrderSource;

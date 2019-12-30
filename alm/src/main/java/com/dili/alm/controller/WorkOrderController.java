@@ -24,10 +24,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.component.NumberGenerator;
-import com.dili.alm.domain.Department;
+import com.dili.uap.sdk.domain.Department;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.OperationResult;
-import com.dili.alm.domain.User;
+import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.WorkOrder;
 import com.dili.alm.domain.WorkOrderSource;
 import com.dili.alm.domain.dto.WorkOrderQueryDto;
@@ -37,6 +37,7 @@ import com.dili.alm.rpc.DepartmentRpc;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.WorkOrderService;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 
@@ -80,7 +81,9 @@ public class WorkOrderController {
 	@RequestMapping("/currentUserDepartmentUsers")
 	public List<User> currentUserDepartmentUsers() {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
-		BaseOutput<List<Department>> output = this.deptRpc.getChildDepartments(user.getDepartmentId());
+		Department department = DTOUtils.newDTO(Department.class);
+		department.setParentId(user.getDepartmentId());
+		BaseOutput<List<Department>> output = this.deptRpc.listByDepartment(department);
 		if (!output.isSuccess()) {
 			return null;
 		}

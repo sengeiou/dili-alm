@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.alm.cache.AlmCache;
-import com.dili.alm.domain.Department;
+import com.dili.uap.sdk.domain.Department;
 import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.TravelCostApply;
 import com.dili.alm.domain.TravelCostApplyState;
-import com.dili.alm.domain.User;
+import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.dto.TravelCostApplyQueryDto;
 import com.dili.alm.domain.dto.TravelCostApplyUpdateDto;
 import com.dili.alm.exceptions.TravelCostApplyException;

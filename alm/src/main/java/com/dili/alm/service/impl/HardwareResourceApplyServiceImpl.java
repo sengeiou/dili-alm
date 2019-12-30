@@ -47,7 +47,7 @@ import com.dili.alm.domain.HardwareApplyState;
 import com.dili.alm.domain.HardwareResourceApply;
 import com.dili.alm.domain.HardwareResourceRequirement;
 import com.dili.alm.domain.Project;
-import com.dili.alm.domain.User;
+import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.HardwareResourceApplyUpdateDto;

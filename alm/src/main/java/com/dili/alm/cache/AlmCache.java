@@ -18,13 +18,11 @@ import com.dili.alm.dao.ProjectEarningMapper;
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.dao.RoiMapper;
 import com.dili.alm.domain.Area;
-import com.dili.alm.domain.Department;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.ProjectCost;
 import com.dili.alm.domain.ProjectEarning;
 import com.dili.alm.domain.Roi;
-import com.dili.alm.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.RoiDto;
@@ -39,6 +37,8 @@ import com.dili.alm.service.TaskService;
 import com.dili.alm.service.TeamService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.uap.sdk.domain.Department;
+import com.dili.uap.sdk.domain.User;
 
 /**
  * Created by asiamaster on 2017/10/19 0019.
@@ -164,7 +164,8 @@ public class AlmCache {
 	public Map<Long, User> getUserMap() {
 		// 应用启动时初始化userMap
 		if (AlmCache.USER_MAP.isEmpty()) {
-			BaseOutput<List<User>> output = userRpc.list(new User());
+			User newDTO = DTOUtils.newDTO(User.class);
+			BaseOutput<List<User>> output = userRpc.listByExample(newDTO);
 			if (output.isSuccess()) {
 				output.getData().forEach(user -> {
 					AlmCache.USER_MAP.put(user.getId(), user);
@@ -297,7 +298,8 @@ public class AlmCache {
 
 	public Map<Long, Department> getDepMap() {
 		if (AlmCache.DEP_MAP.isEmpty()) {
-			BaseOutput<List<Department>> output = this.departmentRpc.list(new Department());
+			Department newDTO = DTOUtils.newDTO(Department.class);
+			BaseOutput<List<Department>> output = this.departmentRpc.listByDepartment(newDTO);
 			if (output.isSuccess()) {
 				output.getData().forEach(dep -> {
 					AlmCache.DEP_MAP.put(dep.getId(), dep);

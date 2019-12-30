@@ -87,7 +87,7 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department, Long> imp
 		Department target = this.getActualDao().selectByPrimaryKey(department.getId());
 		target.setModified(new Date());
 		target.setName(department.getName());
-		target.setNotes(department.getNotes());
+//		target.setNotes(department.getNotes());
 		int result = this.getActualDao().updateByPrimaryKey(target);
 		if (result > 0) {
 			return BaseOutput.success().setData(target);
