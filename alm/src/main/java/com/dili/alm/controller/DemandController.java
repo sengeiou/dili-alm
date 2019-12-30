@@ -70,9 +70,8 @@ public class DemandController {
 		/** 个人信息 **/
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		BaseOutput<List<Department>> de = deptRpc.findByUserId(userTicket.getId());
-		userTicket.setDepName(de.getData().get(0).getName());
 		modelMap.addAttribute("userInfo", userTicket);
-		
+		modelMap.addAttribute("depName", de.getData().get(0).getName());
 		return "demand/add";
 	}
 	
