@@ -120,7 +120,7 @@
 					}
 				}]
 			">
-    <form id="_form" class="easyui-form" method="post" fit="true">
+    <form id="_form"  id="editForm" action="" method="post" enctype="multipart/form-data">
         <input name="_id" id="_id" type="hidden">
              <table id="tt" cellspacing="0" border="1" >
 			<caption style="padding: 5px; font-weight: bold; font-size: 15px; line-height: 35px; color: #333">线上数据变更申请表</caption>
@@ -129,7 +129,7 @@
 				<tr>
 
 					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">申请人</td>
-					<td style="padding: 5px;"><input class="easyui-textbox" name="_applyUserId"  id="_applyUserId" value=""
+					<td style="padding: 5px;"><input class="easyui-textbox" name="_applyUserIdName"  id="_applyUserIdName" value=""
 							data-options="validType:['length[0,30]']" />   </td>
 					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">申请时间</td>
 					<td style="padding: 5px;"> <input class="easyui-datebox" name="_applyDate" id="_applyDate" editable="false" style="width: 100%"
@@ -140,9 +140,10 @@
 
 					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">项目名称</td>
 					<td style="padding: 5px;">	 <input class="easyui-combobox" name="_projectId"  id="_projectId" style="width: 100%" /> </td>
-					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">版本号</td>
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">版本号  <input name="_versionId" id="_versionId" class="easyui-combobox" style="width: 100%;" editable="false" type="hidden"></td>
 					<td style="padding: 5px;">
-					     <input name="_versionId" id="_versionId" class="easyui-combobox" style="width: 100%;" editable="false"
+					     
+					     <input name="_versionIdName" id="_versionIdName" class="easyui-combobox" style="width: 100%;" editable="false"
 					      data-options="required:true,validType:'isIds',prompt:'--选择所属版本--'">
 					
 					</td>
@@ -181,10 +182,11 @@
 							
 					  <td colspan="3"  style="padding: 5px; background-color: #f5f5f5; font-weight: bold">
 					       <input class="easyui-textbox"  id="_sqlScript" name="_sqlScript" value=""
-							data-options="validType:['length[0,50]']" style="width: 49%">
+							data-options="validType:['length[0,50]']" style="width: 39%">
 							
-					        <input class="easyui-filebox" id="_sqlFileId" name="_sqlFileId"
-							data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 49%">
+					        <input class="easyui-filebox" id="sqlFile" name="sqlFile" 
+							data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 39%">
+							<a id="btnShangChuan" href="#" class="easyui-linkbutton"   data-options="iconCls:'icon-save'">上传</a>
 					  </td>
 				</tr>
 				
@@ -229,12 +231,14 @@
             $('#dlg').dialog('center');
             $('#_form').form('clear');
             $('#_projectId').combobox('clear');
-            $('#_versionId').combobox('clear');
+            $('#_versionIdName').combobox('clear');
+            
+         
             reloadProjectSelect();
             $('#_projectId').combobox('initValue', '${project.id!}');
        		$('#_projectId').combobox('setText', '${project.name!}');
-       		$("#_versionId").combobox('setValue','选择所属版本');//根据ID设定默认值
-       		$('#_applyUserId').textbox('setText', '');
+       		$("#_versionIdName").combobox('setValue','选择所属版本');//根据ID设定默认值
+       		$('#_applyUserIdName').textbox('setText', '');
        		$.ajax({
                 type: "get",
                 url: "${contextPath}/onlineDataChange/getUserName.action",
@@ -242,7 +246,7 @@
                 async : true,
                 success: function (data) {
                 	
-                	$('#_applyUserId').combobox('setText', data);
+                	$('#_applyUserIdName').combobox('setText', data);
                 	
                 },
                 error: function(){
@@ -250,7 +254,7 @@
                 }
             });
        		
-            formFocus("_form", "_applyUserId");
+            formFocus("_form", "_applyUserIdName");
         }
         function reloadProjectSelect(queryAll) {
 			 $('#_projectId').combobox({
@@ -265,7 +269,7 @@
       
    		function reloadVisionSelect(id) {
    			
-   			       $('#_versionId').combobox({
+   			       $('#_versionIdName').combobox({
    						url : "${contextPath!}/task/listTreeVersion.json?id=" + id,
    						valueField : 'id',
    						textField : 'version',
@@ -282,6 +286,14 @@
 			　　  }  
 
 	    });
+		$("#_versionIdName").combobox({  
+
+			   onSelect: function () {
+				   var curValue=$('#_versionIdName').combobox('getValue');
+				   $('#_versionId').textbox('setText', curValue);
+			　　  }  
+
+	    });
 			
 		
         
@@ -295,7 +307,7 @@
             }
             $('#_projectId').combobox('initValue', selected.projectId);
            
-             $('#_versionId').combobox({
+             $('#_versionIdName').combobox({
 					url : "${contextPath!}/task/listTreeVersion.json?id=" + selected.projectId,
 					valueField : 'id',
 					textField : 'version',
@@ -309,8 +321,8 @@
             formData = addKeyStartWith(getOriginalData(formData),"_");
             $('#_form').form('load', formData);
            
-            $('#_versionId').combobox('initValue', selected.versionId);
-            $('#_applyUserId').textbox('setText', '');
+            $('#_versionIdName').combobox('initValue', selected.versionId);
+            $('#_applyUserIdName').textbox('setText', '');
        		$.ajax({
                 type: "get",
                 url: "${contextPath}/onlineDataChange/getUserName.action?id+"+selected.applyUserId,
@@ -318,7 +330,7 @@
                 async : true,
                 success: function (data) {
                 	
-                	$('#_applyUserId').combobox('setText', data);
+                	$('#_applyUserIdName').combobox('setText', data);
                 	
                 },
                 error: function(){
@@ -344,6 +356,7 @@
             $.ajax({
                 type: "POST",
                 url: _url,
+                encType: 'multipart/form-data',
                 data: _formData,
                 processData:true,
                 dataType: "json",
@@ -519,6 +532,29 @@
 				
 			reloadProjectSelect();
             
+			////	 $("#btnShangChuan").onChange(function () {
+
+			 $('#btnShangChuan').bind('click', function(){
+				   // var filename =null;// $("#sqlFile").[0].files[0];
+				    var formdata = new FormData();
+				    var  filename= document.getElementById("sqlFile").files[0];
+				    formdata.append('file', filename);
+				    
+				    $.ajax({
+				       type: "POST",
+				       url: "${contextPath!}/files/filesUpload",
+				       data: formdata,
+				       processData: false,
+				        contentType: false,
+				        dataType:"json",
+
+			           success:function(res){
+			            alert("上传成功");
+			        }
+			    });
+			 });	    
+			 
+			 
             
         })
     </script>

@@ -109,4 +109,34 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
+  
+    <update id="updateByCreateMemberId" parameterType="com.dili.alm.domain.Approve">
+      update approve
+      <set>
+         <if test="createMemberId != null">
+            create_member_id = #{createMemberId,jdbcType=BIGINT},
+        </if>
+     </set>
+    
+       where create_member_id = #{create_member_id,jdbcType=BIGINT}
+  </update>
+  
+    <update id="updateByModifyMemberId" parameterType="com.dili.alm.domain.Approve">
+      update approve
+      <set>
+         <if test="modifyMemberId != null">
+             modify_member_id = #{modifyMemberId,jdbcType=BIGINT},
+         </if>
+     </set>
+    
+       where modify_member_id = #{modifyMemberId,jdbcType=BIGINT}
+  </update>
+  
+  
+  
+  
+  
+  
+  
+  
 </mapper>

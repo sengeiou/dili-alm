@@ -101,4 +101,16 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
+  
+  
+   <select id="selectWorkOrdeByCopyUserId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from work_order
+    where copy_user_id REGEXP '#{id,jdbcType=BIGINT}';
+  </select>
+  
+  
+  
+  
 </mapper>
