@@ -535,10 +535,9 @@
 			////	 $("#btnShangChuan").onChange(function () {
 
 			 $('#btnShangChuan').bind('click', function(){
-				   // var filename =null;// $("#sqlFile").[0].files[0];
+						    var filename = $("#file").val();
 				    var formdata = new FormData();
-				    var  filename= document.getElementById("sqlFile").files[0];
-				    formdata.append('file', filename);
+				    formdata.append('files', filename);
 				    
 				    $.ajax({
 				       type: "POST",

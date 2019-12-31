@@ -107,7 +107,7 @@
     select 
     <include refid="Base_Column_List" />
     from work_order
-    where copy_user_id REGEXP '#{id,jdbcType=BIGINT}';
+    where copy_user_id REGEXP #{uapUserId,jdbcType=BIGINT};
   </select>
   
   

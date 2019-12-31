@@ -7,5 +7,5 @@ import com.dili.ss.base.MyMapper;
 
 public interface WorkOrderMapper extends MyMapper<WorkOrder> {
 	
-	List<WorkOrder>  selectWorkOrdeByCopyUserId(Long id );
+	List<WorkOrder>  selectWorkOrdeByCopyUserId(Long uapUserId );
 }
