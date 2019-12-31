@@ -113,7 +113,7 @@ public class OnlineDataChangeController {
 		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "OnlineDataChange��form��Ϣ", required = true, dataType = "string")
 	})
     @RequestMapping(value="/insert.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public  BaseOutput insert( @ModelAttribute OnlineDataChange onlineDataChange) {
+    public  BaseOutput insert(@ModelAttribute OnlineDataChange onlineDataChange) {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
     	onlineDataChange.setApplyUserId(id);
     	// String fileName = sqlFile.getOriginalFilename();
@@ -126,7 +126,7 @@ public class OnlineDataChangeController {
 		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "OnlineDataChange��form��Ϣ", required = true, dataType = "string")
 	})
     @RequestMapping(value="/update.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput update(@ModelAttribute OnlineDataChange onlineDataChange,@RequestParam("onlinefilename") MultipartFile file,
+    public @ResponseBody BaseOutput update(@ModelAttribute OnlineDataChange onlineDataChange,
             HttpServletRequest reques) {
         onlineDataChangeService.updateSelective(onlineDataChange);
         return BaseOutput.success("�޸ĳɹ�");
@@ -145,11 +145,13 @@ public class OnlineDataChangeController {
  
     @RequestMapping(value="/getUserName.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String getUserName(Long id ) {
-    	
-    	 ;
     	if(id==null) {
     		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+    		
+    		if(user!=null)
     	     return user.getRealName();
+    		else
+    		  return "12";
     	 }else {
     		User user=userRpc.findUserById(id).getData();
     		 return user.getRealName();

@@ -120,7 +120,7 @@
 					}
 				}]
 			">
-    <form id="_form"  id="editForm" action="" method="post" enctype="multipart/form-data">
+    <form id="_form" action="" method="post" >
         <input name="_id" id="_id" type="hidden">
              <table id="tt" cellspacing="0" border="1" >
 			<caption style="padding: 5px; font-weight: bold; font-size: 15px; line-height: 35px; color: #333">线上数据变更申请表</caption>
@@ -144,7 +144,7 @@
 					<td style="padding: 5px;">
 					     
 					     <input name="_versionIdName" id="_versionIdName" class="easyui-combobox" style="width: 100%;" editable="false"
-					      data-options="required:true,validType:'isIds',prompt:'--选择所属版本--'">
+					      data-options="required:false,validType:'isIds',prompt:'--选择所属版本--'">
 					
 					</td>
 
@@ -184,7 +184,8 @@
 					       <input class="easyui-textbox"  id="_sqlScript" name="_sqlScript" value=""
 							data-options="validType:['length[0,50]']" style="width: 39%">
 							
-					        <input class="easyui-filebox" id="sqlFile" name="sqlFile" 
+							 <input   name="_sqlFileId" id="_sqlFileId" type="hidden">
+					        <input type="file" id="sqlFile" name="sqlFile" 
 							data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 39%">
 							<a id="btnShangChuan" href="#" class="easyui-linkbutton"   data-options="iconCls:'icon-save'">上传</a>
 					  </td>
@@ -207,7 +208,7 @@
 				<tr>
 				   <td  colspan="2"   style="padding: 5px; background-color: #f5f5f5; font-weight: bold">申请人确认</td>
 					<td  colspan="2"  style="padding: 5px;"> 
-					    <a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'">申请提交</a>
+					            申请提交
 					     
 					</td>
 				</tr>
@@ -224,6 +225,13 @@
     <!-- ====================================================================================================================== -->
     <!-- style & script 分隔线 -->
     <!-- ====================================================================================================================== -->
+    
+    <script type="text/javascript"
+	src="${contextPath!}/resources/js/jquery.uploadfile.min.js"></script>
+	<link href="${contextPath!}/resources/css/uploadfile.css"
+	rel="stylesheet">
+
+
     <script type="text/javascript">
         //打开新增窗口
         function openInsert(){
@@ -232,8 +240,8 @@
             $('#_form').form('clear');
             $('#_projectId').combobox('clear');
             $('#_versionIdName').combobox('clear');
-            
-         
+            $('#_sqlFileId').val(""); 
+            $('#sqlFile').textbox(""); 
             reloadProjectSelect();
             $('#_projectId').combobox('initValue', '${project.id!}');
        		$('#_projectId').combobox('setText', '${project.name!}');
@@ -255,6 +263,7 @@
             });
        		
             formFocus("_form", "_applyUserIdName");
+           
         }
         function reloadProjectSelect(queryAll) {
 			 $('#_projectId').combobox({
@@ -323,6 +332,9 @@
            
             $('#_versionIdName').combobox('initValue', selected.versionId);
             $('#_applyUserIdName').textbox('setText', '');
+           // $('#_sqlFileId').val(""); 
+           // $('#sqlFile').textbox(""); 
+            
        		$.ajax({
                 type: "get",
                 url: "${contextPath}/onlineDataChange/getUserName.action?id+"+selected.applyUserId,
@@ -535,9 +547,11 @@
 			////	 $("#btnShangChuan").onChange(function () {
 
 			 $('#btnShangChuan').bind('click', function(){
-						    var filename = $("#file").val();
+				 
+				 var input = document.getElementById('sqlFile');
+				
 				    var formdata = new FormData();
-				    formdata.append('files', filename);
+				    formdata.append('file', input.files[0]);
 				    
 				    $.ajax({
 				       type: "POST",
@@ -547,10 +561,17 @@
 				        contentType: false,
 				        dataType:"json",
 
-			           success:function(res){
-			            alert("上传成功");
-			        }
+			           success:function(data){
+			        	   var row = data.data[0];
+			        	   alert(row.id);
+			        	//   $('#_sqlFileId').textbox('setText', row.id); 
+			        	   $('#_sqlFileId').val( row.id); 
+			           }
+			           
+			       
 			    });
+				    
+				    
 			 });	    
 			 
 			 

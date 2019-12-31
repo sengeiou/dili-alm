@@ -83,7 +83,8 @@ public class DataMigrateController {
 		
 		//数据更新，用户相关表
 		int  num=moveService.updateData(null,id);
-		
+		if(num==1)
+			return BaseOutput.success("已经迁移");
 		return BaseOutput.success("修改成功");
 	}
 	@RequestMapping(value = "/myMoveList", method = { RequestMethod.GET, RequestMethod.POST })
