@@ -156,7 +156,7 @@
 					data-options="required:true,validType:'isIds',prompt:'申请更新时间'" /></td>
 					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">灰度是否同步执行</td>
 					<td style="padding: 5px;">
- 					    <select id="cc" class="easyui-combobox" name="dept" style="width: 100%" >
+ 					    <select class="easyui-combobox"  name="_isSynchronization" id="_isSynchronization" style="width: 100%" >
 						    <option value="1">是</option>
 						    <option value="0">否</option>
 						</select></td>
@@ -551,7 +551,9 @@
 				 var input = document.getElementById('sqlFile');
 				
 				    var formdata = new FormData();
+				    var curValue=$('#_projectId').combobox('getValue');
 				    formdata.append('file', input.files[0]);
+				    formdata.append('projectId',curValue);
 				    
 				    $.ajax({
 				       type: "POST",
