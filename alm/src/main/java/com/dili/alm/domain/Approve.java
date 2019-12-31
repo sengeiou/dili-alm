@@ -166,4 +166,6 @@ public interface Approve extends IBaseDomain {
     Long getModifyMemberId();
 
     void setModifyMemberId(Long modifyMemberId);
+    
+    
 }

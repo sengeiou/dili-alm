@@ -8,7 +8,7 @@ import java.util.Date;
 import javax.persistence.*;
 
 /**
- * ÓÉMyBatis Generator¹¤¾ß×Ô¶¯Éú³É
+ * ï¿½ï¿½MyBatis Generatorï¿½ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½
  * 
  * This file was generated on 2019-12-25 18:22:44.
  */
@@ -21,15 +21,19 @@ public class OnlineDataChange extends BaseDomain {
 
     @Column(name = "`apply_user_id`")
     private Long applyUserId;
+    
+    @Column(name = "`is_synchronization`")
+    private Byte isSynchronization;
+    
 
     /**
-     * ÊÐ³¡id
+     * ï¿½Ð³ï¿½id
      */
     @Column(name = "`apply_market_id`")
     private Long applyMarketId;
 
     /**
-     * ÏîÄ¿id
+     * ï¿½ï¿½Ä¿id
      */
     @Column(name = "`project_id`")
     private Long projectId;
@@ -44,7 +48,7 @@ public class OnlineDataChange extends BaseDomain {
     private Date updateDate;
 
     /**
-     * Êý¾Ý¿âÃû
+     * ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½ï¿½
      */
     @Column(name = "`dba_name`")
     private String dbaName;
@@ -88,40 +92,40 @@ public class OnlineDataChange extends BaseDomain {
     }
 
     /**
-     * »ñÈ¡ÊÐ³¡id
+     * ï¿½ï¿½È¡ï¿½Ð³ï¿½id
      *
-     * @return apply_market_id - ÊÐ³¡id
+     * @return apply_market_id - ï¿½Ð³ï¿½id
      */
-    @FieldDef(label="ÊÐ³¡id")
+    @FieldDef(label="ï¿½Ð³ï¿½id")
     @EditMode(editor = FieldEditor.Number, required = false)
     public Long getApplyMarketId() {
         return applyMarketId;
     }
 
     /**
-     * ÉèÖÃÊÐ³¡id
+     * ï¿½ï¿½ï¿½ï¿½ï¿½Ð³ï¿½id
      *
-     * @param applyMarketId ÊÐ³¡id
+     * @param applyMarketId ï¿½Ð³ï¿½id
      */
     public void setApplyMarketId(Long applyMarketId) {
         this.applyMarketId = applyMarketId;
     }
 
     /**
-     * »ñÈ¡ÏîÄ¿id
+     * ï¿½ï¿½È¡ï¿½ï¿½Ä¿id
      *
-     * @return project_id - ÏîÄ¿id
+     * @return project_id - ï¿½ï¿½Ä¿id
      */
-    @FieldDef(label="ÏîÄ¿id")
+    @FieldDef(label="ï¿½ï¿½Ä¿id")
     @EditMode(editor = FieldEditor.Number, required = false)
     public Long getProjectId() {
         return projectId;
     }
 
     /**
-     * ÉèÖÃÏîÄ¿id
+     * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿id
      *
-     * @param projectId ÏîÄ¿id
+     * @param projectId ï¿½ï¿½Ä¿id
      */
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
@@ -176,20 +180,20 @@ public class OnlineDataChange extends BaseDomain {
     }
 
     /**
-     * »ñÈ¡Êý¾Ý¿âÃû
+     * ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½ï¿½
      *
-     * @return dba_name - Êý¾Ý¿âÃû
+     * @return dba_name - ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½ï¿½
      */
-    @FieldDef(label="Êý¾Ý¿âÃû", maxLength = 50)
+    @FieldDef(label="ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½ï¿½", maxLength = 50)
     @EditMode(editor = FieldEditor.Text, required = false)
     public String getDbaName() {
         return dbaName;
     }
 
     /**
-     * ÉèÖÃÊý¾Ý¿âÃû
+     * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½ï¿½
      *
-     * @param dbaName Êý¾Ý¿âÃû
+     * @param dbaName ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½ï¿½
      */
     public void setDbaName(String dbaName) {
         this.dbaName = dbaName;
@@ -226,4 +230,22 @@ public class OnlineDataChange extends BaseDomain {
     public void setSqlFileId(String sqlFileId) {
         this.sqlFileId = sqlFileId;
     }
+    
+    /**
+     * @return is_synchronization
+     */
+    @FieldDef(label="isSynchronization", maxLength = 2)
+    @EditMode(editor = FieldEditor.Number ,required = false)
+    public Byte getIsSynchronization() {
+        return isSynchronization;
+    }
+
+    /**
+     * @param isSynchronization
+     */
+    public void setIsSynchronization(Byte isSynchronization) {
+        this.isSynchronization = isSynchronization;
+    }
+    
+
 }
