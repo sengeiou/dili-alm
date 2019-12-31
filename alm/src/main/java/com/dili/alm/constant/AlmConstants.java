@@ -61,11 +61,11 @@ public class AlmConstants {
 	// 工单超时自动关闭时间
 	public static final long CLOSE_OVER_TIME = 2 * 24 * 60 * 60 * 1000;
 		//需求状态数据字典配置
-	public static final String DEMAND_STATUS = "demand_status";
+	public static final String DEMAND_STATUS = "damand_status";
 	//需求类型数据字典配置
 	public static final String DEMAND_TYPE = "demand_type";
 	// 所属系统的字典值
-	public static final String ALM_SYSTEM_CODE = "alm";
+	public static final String ALM_SYSTEM_CODE = "ALM";
 	//字典表开发环境code码
 	public static final String ALM_ENVIRONMENT = "environment";
 	
