@@ -41,7 +41,7 @@ public class HardwareResourceController {
 	@Autowired
 	private HardwareResourceService hardwareResourceService;
 
-	private static final String DATA_AUTH_TYPE = "Project";
+	private static final String DATA_AUTH_TYPE = "project";
 
 	@ApiOperation("跳转到HardwareResource页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
@@ -54,7 +54,7 @@ public class HardwareResourceController {
 		}
 		List<Project> projects = new ArrayList<>(dataAuths.size());
 		Map<Long, Project> projectMap = AlmCache.getInstance().getProjectMap();
-		dataAuths.forEach(m -> projects.add(projectMap.get(Long.valueOf(m.get("dataId").toString()))));
+		dataAuths.forEach(m -> projects.add(projectMap.get(Long.valueOf(m.get("value").toString()))));
 		modelMap.addAttribute("projects", projects);
 		return "hardwareResource/index";
 	}
