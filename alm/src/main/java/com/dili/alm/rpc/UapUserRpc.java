@@ -16,5 +16,9 @@ import com.dili.uap.sdk.domain.User;
 public interface UapUserRpc {
 	@POST("/userApi/listByExample.api")
 	PageOutput<List<User>>  listByExample(@VOBody(required = false) User user);
+	
+	
+	@POST("/userApi/get.api")
+	 BaseOutput<User> get(@VOBody(required = false) Long id);
 }
 

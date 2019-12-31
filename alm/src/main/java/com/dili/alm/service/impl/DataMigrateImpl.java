@@ -49,6 +49,7 @@ import com.dili.alm.domain.VerifyApproval;
 import com.dili.alm.domain.Weekly;
 import com.dili.alm.domain.WorkOrder;
 import com.dili.alm.domain.WorkOrderOperationRecord;
+import com.dili.alm.rpc.UapUserRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataMigrateService;
 import com.dili.ss.domain.BaseOutput;
@@ -125,13 +126,21 @@ public class DataMigrateImpl implements DataMigrateService {
 	private MoveLogTableMapper moveLogTableMapper;
 
 	@Autowired
-	private UserRpc userRpc;
+	private UapUserRpc userRpc;
+	
+	@Autowired
+	private  UserRpc  localUserRpc;
 
 	@Override
 	public int updateData(Long userId, Long uapUserId) {// userId 本地userId, uapUserId
 		
+		BaseOutput<User>  uapUser=userRpc.get(uapUserId);
+		String  strRealName=uapUser.getData().getRealName();
+		User  localUser= DTOUtils.newDTO(User.class);
+		localUser.setRealName(strRealName);
+	    BaseOutput<List<User>>  lolcalUserList=localUserRpc.listByExample(localUser);
 		
-		
+	    userId=lolcalUserList.getData().get(0).getId();
 	    //uapUserId 和本地userId转换 在页面
 		
 		int  num=getDataIsExistence(null,uapUserId);//再次查询，使用uapUserId 查询，看看是否迁移过的
@@ -140,15 +149,16 @@ public class DataMigrateImpl implements DataMigrateService {
         }
 		//
 
-		MoveLogTable dto = DTOUtils.newDTO(MoveLogTable.class);
+        
+		MoveLogTable dto =new MoveLogTable();
 		// approve
 		Approve record = DTOUtils.newDTO(Approve.class);
 		record.setCreateMemberId(userId);
-		List<Approve> listCreateMember = approveMapper.selectByExample(record);
+		List<Approve> listCreateMember = approveMapper.select(record);
 
 		for (Approve approve : listCreateMember) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(approve.getId());
 			dto.setFileField("create_member_id");// 设为常量
 			dto.setTableName("approve");// 设为常量
@@ -161,11 +171,11 @@ public class DataMigrateImpl implements DataMigrateService {
 		record.setCreateMemberId(null);
 
 		record.setModifyMemberId(uapUserId);
-		List<Approve> listModifyMember = approveMapper.selectByExample(record);
+		List<Approve> listModifyMember = approveMapper.select(record);
 
 		for (Approve approve : listModifyMember) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(approve.getId());
 			dto.setFileField("modify_member_id");// 设为常量
 			dto.setTableName("approve");// 设为常量
@@ -178,10 +188,10 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		Files files = DTOUtils.newDTO(Files.class);
 		files.setCreateMemberId(userId);
-		List<Files> listFilesCreateMember = filesMapper.selectByExample(files);
+		List<Files> listFilesCreateMember = filesMapper.select(files);
 		for (Files approve : listFilesCreateMember) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(approve.getId());
 			dto.setFileField("create_member_id");// 设为常量
 			dto.setTableName("files");// 设为常量
@@ -193,11 +203,11 @@ public class DataMigrateImpl implements DataMigrateService {
 		files.setCreateMemberId(null);
 		files.setModifyMemberId(userId);
 
-		List<Files> lisFilestModifyMember = filesMapper.selectByExample(files);
+		List<Files> lisFilestModifyMember = filesMapper.select(files);
 
 		for (Files file : lisFilestModifyMember) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(file.getId());
 			dto.setFileField("modify_member_id");// 设为常量
 			dto.setTableName("files");// 设为常量
@@ -213,10 +223,10 @@ public class DataMigrateImpl implements DataMigrateService {
 		HardwareApplyOperationRecord hardwareApplyOperationRecord = DTOUtils.newDTO(HardwareApplyOperationRecord.class);
 		hardwareApplyOperationRecord.setOperatorId(userId);
 		List<HardwareApplyOperationRecord> lisHardwareApplyOperationRecordCreateMember = hardwareApplyOperationRecordMapper
-				.selectByExample(hardwareApplyOperationRecord);
+				.select(hardwareApplyOperationRecord);
 		for (HardwareApplyOperationRecord object : lisHardwareApplyOperationRecordCreateMember) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("operator_id");// 设为常量
 			dto.setTableName("hardware_apply_operation_record");// 设为常量
@@ -230,10 +240,10 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		HardwareResource hardwareResource = DTOUtils.newDTO(HardwareResource.class);
 		hardwareResource.setMaintenanceOwner(userId);
-		List<HardwareResource> listHardwareResource = hardwareResourceMapper.selectByExample(hardwareResource);
+		List<HardwareResource> listHardwareResource = hardwareResourceMapper.select(hardwareResource);
 		for (HardwareResource object : listHardwareResource) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("maintenance_owner");// 设为常量
 			dto.setTableName("hardware_resource");// 设为常量
@@ -246,10 +256,10 @@ public class DataMigrateImpl implements DataMigrateService {
 		// log
 		Log log = DTOUtils.newDTO(Log.class);
 		log.setOperatorId(userId);
-		List<Log> listLog = logMapper.selectByExample(log);
+		List<Log> listLog = logMapper.select(log);
 		for (Log object : listLog) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("operator_id");// 设为常量
 			dto.setTableName("log");// 设为常量
@@ -263,10 +273,10 @@ public class DataMigrateImpl implements DataMigrateService {
 		// Project
 		Project project = DTOUtils.newDTO(Project.class);
 		project.setProjectManager(userId);
-		List<Project> listProjectManager = projectMapper.selectByExample(project);
+		List<Project> listProjectManager = projectMapper.select(project);
 		for (Project object : listProjectManager) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("project_manager");// 设为常量
 			dto.setTableName("project");// 设为常量
@@ -280,10 +290,10 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		project.setProjectManager(null);
 		project.setDevelopManager(userId);
-		List<Project> listDevelopManager = projectMapper.selectByExample(project);
+		List<Project> listDevelopManager = projectMapper.select(project);
 		for (Project object : listDevelopManager) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("develop_manager");// 设为常量
 			dto.setTableName("project");// 设为常量
@@ -298,10 +308,10 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		project.setDevelopManager(null);
 		project.setTestManager(userId);
-		List<Project> listDevelopManagerr = projectMapper.selectByExample(project);
+		List<Project> listDevelopManagerr = projectMapper.select(project);
 		for (Project object : listDevelopManagerr) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("test_manager");// 设为常量
 			dto.setTableName("project");// 设为常量
@@ -314,10 +324,10 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		project.setTestManager(null);
 		project.setProductManager(userId);
-		List<Project> listProductManager = projectMapper.selectByExample(project);
+		List<Project> listProductManager = projectMapper.select(project);
 		for (Project object : listProductManager) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("product_manager");// 设为常量
 			dto.setTableName("project");// 设为常量
@@ -331,10 +341,10 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		project.setProductManager(null);
 		project.setOriginator(userId);
-		List<Project> listOriginator = projectMapper.selectByExample(project);
+		List<Project> listOriginator = projectMapper.select(project);
 		for (Project object : listOriginator) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("originator");// 设为常量
 			dto.setTableName("project");// 设为常量
@@ -348,10 +358,10 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		project.setOriginator(null);
 		project.setDep(userId);
-		List<Project> listDep = projectMapper.selectByExample(project);
+		List<Project> listDep = projectMapper.select(project);
 		for (Project object : listDep) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("dep");// 设为常量
 			dto.setTableName("project");// 设为常量
@@ -364,10 +374,10 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		project.setDep(null);
 		project.setBusinessOwner(userId);
-		List<Project> listBusinessOwner = projectMapper.selectByExample(project);
+		List<Project> listBusinessOwner = projectMapper.select(project);
 		for (Project object : listBusinessOwner) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("business_owner");// 设为常量
 			dto.setTableName("project");// 设为常量
@@ -381,10 +391,10 @@ public class DataMigrateImpl implements DataMigrateService {
 		// project_apply:立项申请表
 		ProjectApply projectApply = DTOUtils.newDTO(ProjectApply.class);
 		projectApply.setProjectLeader(userId);
-		List<ProjectApply> listProjectApply = projectApplyMapper.selectByExample(projectApply);
+		List<ProjectApply> listProjectApply = projectApplyMapper.select(projectApply);
 		for (ProjectApply object : listProjectApply) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("project_leader");// 设为常量
 			dto.setTableName("project_apply");// 设为常量
@@ -399,10 +409,10 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		projectApply.setProjectLeader(null);
 		projectApply.setProductManager(userId);
-		List<ProjectApply> listProjectApplyProductManager = projectApplyMapper.selectByExample(projectApply);
+		List<ProjectApply> listProjectApplyProductManager = projectApplyMapper.select(projectApply);
 		for (ProjectApply object : listProjectApplyProductManager) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("product_manager");// 设为常量
 			dto.setTableName("project_apply");// 设为常量
@@ -414,10 +424,10 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		projectApply.setProductManager(null);
 		projectApply.setDevelopmentManager(userId);
-		List<ProjectApply> listProjectApplyDevelopmentManager = projectApplyMapper.selectByExample(projectApply);
+		List<ProjectApply> listProjectApplyDevelopmentManager = projectApplyMapper.select(projectApply);
 		for (ProjectApply object : listProjectApplyDevelopmentManager) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("development_manager");// 设为常量
 			dto.setTableName("project_apply");// 设为常量
@@ -429,10 +439,10 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		projectApply.setDevelopmentManager(null);
 		projectApply.setTestManager(userId);
-		List<ProjectApply> listProjectApplyTestManager = projectApplyMapper.selectByExample(projectApply);
+		List<ProjectApply> listProjectApplyTestManager = projectApplyMapper.select(projectApply);
 		for (ProjectApply object : listProjectApplyTestManager) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("test_manager");// 设为常量
 			dto.setTableName("project_apply");// 设为常量
@@ -444,10 +454,10 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		projectApply.setTestManager(null);
 		projectApply.setBusinessOwner(userId);
-		List<ProjectApply> listProjectBusinessOwner = projectApplyMapper.selectByExample(projectApply);
+		List<ProjectApply> listProjectBusinessOwner = projectApplyMapper.select(projectApply);
 		for (ProjectApply object : listProjectBusinessOwner) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("business_owner");// 设为常量
 			dto.setTableName("project_apply");// 设为常量
@@ -461,10 +471,10 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		ProjectChange projectChange = DTOUtils.newDTO(ProjectChange.class);
 		projectChange.setCreateMemberId(userId);
-		List<ProjectChange> listProjectChange = projectChangeMapper.selectByExample(projectChange);
+		List<ProjectChange> listProjectChange = projectChangeMapper.select(projectChange);
 		for (ProjectChange object : listProjectChange) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("create_member_id");// 设为常量
 			dto.setTableName("project_change");// 设为常量
@@ -477,10 +487,10 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		projectChange.setCreateMemberId(null);
 		projectChange.setModifyMemberId(userId);
-		List<ProjectChange> listModifyMemberId = projectChangeMapper.selectByExample(projectChange);
+		List<ProjectChange> listModifyMemberId = projectChangeMapper.select(projectChange);
 		for (ProjectChange object : listModifyMemberId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("modify_member_id");// 设为常量
 			dto.setTableName("project_change");// 设为常量
@@ -494,11 +504,11 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		ProjectComplete projectComplete = DTOUtils.newDTO(ProjectComplete.class);
 		projectComplete.setCreateMemberId(userId);
-		List<ProjectComplete> listProjectCompleteCreateMember = projectCompleteMapper.selectByExample(projectComplete);
+		List<ProjectComplete> listProjectCompleteCreateMember = projectCompleteMapper.select(projectComplete);
 
 		for (ProjectComplete object : listProjectCompleteCreateMember) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("create_member_id");// 设为常量
 			dto.setTableName("project_complete");// 设为常量
@@ -512,10 +522,10 @@ public class DataMigrateImpl implements DataMigrateService {
 		projectComplete.setCreateMemberId(null);
 		projectComplete.setModifyMemberId(userId);
 
-		List<ProjectComplete> listProjectCompleteModifyMember = projectCompleteMapper.selectByExample(projectChange);
+		List<ProjectComplete> listProjectCompleteModifyMember = projectCompleteMapper.select(projectComplete);
 		for (ProjectComplete object : listProjectCompleteModifyMember) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("modify_member_id");// 设为常量
 			dto.setTableName("project_complete");// 设为常量
@@ -530,11 +540,11 @@ public class DataMigrateImpl implements DataMigrateService {
 		ProjectOnlineApply projectOnlineApply = DTOUtils.newDTO(ProjectOnlineApply.class);
 		projectOnlineApply.setBusinessOwnerId(userId);
 		List<ProjectOnlineApply> listProjectOnlineApplyProjectOnlineApply = projectOnlineApplyMapper
-				.selectByExample(projectOnlineApply);
+				.select(projectOnlineApply);
 
 		for (ProjectOnlineApply object : listProjectOnlineApplyProjectOnlineApply) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("business_owner_id");// 设为常量
 			dto.setTableName("project_online_apply");// 设为常量
@@ -548,10 +558,10 @@ public class DataMigrateImpl implements DataMigrateService {
 		projectOnlineApply.setBusinessOwnerId(null);
 		projectOnlineApply.setProductManagerId(userId);
 		List<ProjectOnlineApply> listProjectOnlineApplyProductManagerId = projectOnlineApplyMapper
-				.selectByExample(projectOnlineApply);
+				.select(projectOnlineApply);
 		for (ProjectOnlineApply object : listProjectOnlineApplyProductManagerId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("product_manager_id");// 设为常量
 			dto.setTableName("project_online_apply");// 设为常量
@@ -565,10 +575,10 @@ public class DataMigrateImpl implements DataMigrateService {
 		projectOnlineApply.setProductManagerId(null);
 		projectOnlineApply.setTestManagerId(userId);
 		List<ProjectOnlineApply> listProjectOnlineApplyTestManagerId = projectOnlineApplyMapper
-				.selectByExample(projectOnlineApply);
+				.select(projectOnlineApply);
 		for (ProjectOnlineApply object : listProjectOnlineApplyTestManagerId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("test_manager_id");// 设为常量
 			dto.setTableName("project_online_apply");// 设为常量
@@ -582,10 +592,10 @@ public class DataMigrateImpl implements DataMigrateService {
 		projectOnlineApply.setTestManagerId(null);
 		projectOnlineApply.setDevelopmentManagerId(userId);
 		List<ProjectOnlineApply> listProjectOnlineApplyDevelopmentManagerId = projectOnlineApplyMapper
-				.selectByExample(projectOnlineApply);
+				.select(projectOnlineApply);
 		for (ProjectOnlineApply object : listProjectOnlineApplyDevelopmentManagerId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("development_manager_id");// 设为常量
 			dto.setTableName("project_online_apply");// 设为常量
@@ -598,10 +608,10 @@ public class DataMigrateImpl implements DataMigrateService {
 		projectOnlineApply.setDevelopmentManagerId(null);
 		projectOnlineApply.setApplicantId(userId);
 		List<ProjectOnlineApply> listProjectOnlineApplyApplicantId = projectOnlineApplyMapper
-				.selectByExample(projectOnlineApply);
+				.select(projectOnlineApply);
 		for (ProjectOnlineApply object : listProjectOnlineApplyApplicantId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("applicant_id");// 设为常量
 			dto.setTableName("project_online_apply");// 设为常量
@@ -617,7 +627,7 @@ public class DataMigrateImpl implements DataMigrateService {
 		List<ProjectOnlineApply> listProjectOnlinetExecutorId = projectOnlineApplyMapper.selectProjectOnlineApplyByExecutorId(userId);
 		for (ProjectOnlineApply object : listProjectOnlinetExecutorId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("executor_id");// 设为常量
 			dto.setTableName("project_online_apply");// 设为常量
@@ -631,10 +641,10 @@ public class DataMigrateImpl implements DataMigrateService {
 		ProjectOnlineOperationRecord projectOnlineOperationRecord = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
 		projectOnlineOperationRecord.setOperatorId(userId);
 		List<ProjectOnlineOperationRecord> listprojectOnlineOperationRecord = projectOnlineOperationRecordMapper
-				.selectByExample(projectOnlineOperationRecord);
+				.select(projectOnlineOperationRecord);
 		for (ProjectOnlineOperationRecord object : listprojectOnlineOperationRecord) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("operator_id");// 设为常量
 			dto.setTableName("project_online_operation_record");// 设为常量
@@ -650,10 +660,10 @@ public class DataMigrateImpl implements DataMigrateService {
 		projectOnlineSubsystem.setManagerId(userId);
 
 		List<ProjectOnlineSubsystem> listprojectOnlineSubsystem = projectOnlineSubsystemMapper
-				.selectByExample(projectOnlineSubsystem);
+				.select(projectOnlineSubsystem);
 		for (ProjectOnlineSubsystem object : listprojectOnlineSubsystem) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("manager_id");// 设为常量
 			dto.setTableName("project_online_subsystem");// 设为常量
@@ -666,13 +676,13 @@ public class DataMigrateImpl implements DataMigrateService {
 		///// manager_name
 		/////// 需要重新写
 		projectOnlineSubsystem.setManagerId(null);
-		BaseOutput<User> userTempManagerId = userRpc.findUserById(userId);
+		BaseOutput<User> userTempManagerId = userRpc.get(userId);
 		projectOnlineSubsystem.setManagerName(userTempManagerId.getData().getRealName());
 		List<ProjectOnlineSubsystem> listprojectManagerName = projectOnlineSubsystemMapper
-				.selectByExample(projectOnlineSubsystem);
+				.select(projectOnlineSubsystem);
 		for (ProjectOnlineSubsystem object : listprojectManagerName) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("manager_name");// 设为常量
 			dto.setTableName("project_online_subsystem");// 设为常量
@@ -687,10 +697,10 @@ public class DataMigrateImpl implements DataMigrateService {
 		ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
 		projectVersion.setCreatorId(userId);
 
-		List<ProjectVersion> listprojectProjectVersion = projectVersionMapper.selectByExample(projectVersion);
+		List<ProjectVersion> listprojectProjectVersion = projectVersionMapper.select(projectVersion);
 		for (ProjectVersion object : listprojectProjectVersion) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("creator_id");// 设为常量
 			dto.setTableName("project_version");// 设为常量
@@ -702,10 +712,10 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		projectVersion.setCreatorId(null);
 		projectVersion.setModifierId(userId);
-		List<ProjectVersion> listprojectModifierId = projectVersionMapper.selectByExample(projectVersion);
+		List<ProjectVersion> listprojectModifierId = projectVersionMapper.select(projectVersion);
 		for (ProjectVersion object : listprojectModifierId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("modifier_id");// 设为常量
 			dto.setTableName("project_version");// 设为常量
@@ -719,10 +729,10 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		Task task = DTOUtils.newDTO(Task.class);
 		task.setOwner(userId);
-		List<Task> listTaskOwner = taskMapper.selectByExample(task);
+		List<Task> listTaskOwner = taskMapper.select(task);
 		for (Task object : listTaskOwner) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("owner");// 设为常量
 			dto.setTableName("task");// 设为常量
@@ -734,10 +744,10 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		task.setOwner(null);
 		task.setCreateMemberId(userId);
-		List<Task> listTaskCreateMemberId = taskMapper.selectByExample(task);
+		List<Task> listTaskCreateMemberId = taskMapper.select(task);
 		for (Task object : listTaskCreateMemberId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("create_member_id");// 设为常量
 			dto.setTableName("task");// 设为常量
@@ -748,10 +758,10 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		task.setCreateMemberId(null);
 		task.setModifyMemberId(userId);
-		List<Task> listTaskModifyMemberId = taskMapper.selectByExample(task);
+		List<Task> listTaskModifyMemberId = taskMapper.select(task);
 		for (Task object : listTaskModifyMemberId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("modify_member_id");// 设为常量
 			dto.setTableName("task");// 设为常量
@@ -765,10 +775,10 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		TaskDetails taskDetails = DTOUtils.newDTO(TaskDetails.class);
 		taskDetails.setCreateMemberId(userId);
-		List<TaskDetails> listtaskDetailsCreateMemberId = taskDetailsMapper.selectByExample(taskDetails);
+		List<TaskDetails> listtaskDetailsCreateMemberId = taskDetailsMapper.select(taskDetails);
 		for (TaskDetails object : listtaskDetailsCreateMemberId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("create_member_id");// 设为常量
 			dto.setTableName("task_details");// 设为常量
@@ -780,10 +790,10 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		taskDetails.setCreateMemberId(null);
 		taskDetails.setModifyMemberId(userId);
-		List<TaskDetails> listtaskDetailsModifyMemberId = taskDetailsMapper.selectByExample(taskDetails);
+		List<TaskDetails> listtaskDetailsModifyMemberId = taskDetailsMapper.select(taskDetails);
 		for (TaskDetails object : listtaskDetailsModifyMemberId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("modify_member_id");// 设为常量
 			dto.setTableName("task_details");// 设为常量
@@ -798,10 +808,10 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		Team team = DTOUtils.newDTO(Team.class);
 		team.setMemberId(userId);
-		List<Team> listteam = teamMapper.selectByExample(team);
+		List<Team> listteam = teamMapper.select(team);
 		for (Team object : listteam) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("member_id");// 设为常量
 			dto.setTableName("team");// 设为常量
@@ -813,10 +823,10 @@ public class DataMigrateImpl implements DataMigrateService {
 		///// travel_cost_apply
 		TravelCostApply travelCostApply = DTOUtils.newDTO(TravelCostApply.class);
 		travelCostApply.setApplicantId(userId);
-		List<TravelCostApply> listtravelCostApply = travelCostApplyMapper.selectByExample(travelCostApply);
+		List<TravelCostApply> listtravelCostApply = travelCostApplyMapper.select(travelCostApply);
 		for (TravelCostApply object : listtravelCostApply) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("applicant_id");// 设为常量
 			dto.setTableName("travel_cost_apply");// 设为常量
@@ -828,14 +838,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		// 需要重新写
 
-		BaseOutput<User> userTemp = userRpc.findUserById(userId);
+		BaseOutput<User> userTemp = userRpc.get(userId);
 
 		travelCostApply.setApplicantId(userId);
 		travelCostApply.setRootDepartemntId(userTemp.getData().getDepartmentId());
-		List<TravelCostApply> listtraveRootDepartemntId = travelCostApplyMapper.selectByExample(travelCostApply);
+		List<TravelCostApply> listtraveRootDepartemntId = travelCostApplyMapper.select(travelCostApply);
 		for (TravelCostApply object : listtraveRootDepartemntId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("root_departemnt_id");// 设为常量
 			dto.setTableName("travel_cost_apply");// 设为常量
@@ -847,10 +857,10 @@ public class DataMigrateImpl implements DataMigrateService {
 		/// 需要重新写
 		travelCostApply.setRootDepartemntId(null);
 		travelCostApply.setDepartmentId(userTemp.getData().getDepartmentId());
-		List<TravelCostApply> travelCostApplyRootDepartemntId = travelCostApplyMapper.selectByExample(travelCostApply);
+		List<TravelCostApply> travelCostApplyRootDepartemntId = travelCostApplyMapper.select(travelCostApply);
 		for (TravelCostApply object : travelCostApplyRootDepartemntId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("department_id");// 设为常量
 			dto.setTableName("travel_cost_apply");// 设为常量
@@ -864,10 +874,10 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		VerifyApproval verifyApprova = DTOUtils.newDTO(VerifyApproval.class);
 		verifyApprova.setApproveId(userId);
-		List<VerifyApproval> listVerifyApproval = verifyApprovalMapper.selectByExample(verifyApprova);
+		List<VerifyApproval> listVerifyApproval = verifyApprovalMapper.select(verifyApprova);
 		for (VerifyApproval object : listVerifyApproval) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("approve_id");// 设为常量
 			dto.setTableName("verify_approval");// 设为常量
@@ -880,10 +890,10 @@ public class DataMigrateImpl implements DataMigrateService {
 		verifyApprova.setApproveId(null);
 		verifyApprova.setCreateMemberId(userId);
 
-		List<VerifyApproval> listVerifyApprovalCreateMemberId = verifyApprovalMapper.selectByExample(verifyApprova);
+		List<VerifyApproval> listVerifyApprovalCreateMemberId = verifyApprovalMapper.select(verifyApprova);
 		for (VerifyApproval object : listVerifyApprovalCreateMemberId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("create_member_id");// 设为常量
 			dto.setTableName("verify_approval");// 设为常量
@@ -896,10 +906,10 @@ public class DataMigrateImpl implements DataMigrateService {
 		verifyApprova.setCreateMemberId(null);
 		verifyApprova.setModifyMemberId(userId);
 
-		List<VerifyApproval> listVerifyApprovaltModifyMemberId = verifyApprovalMapper.selectByExample(verifyApprova);
+		List<VerifyApproval> listVerifyApprovaltModifyMemberId = verifyApprovalMapper.select(verifyApprova);
 		for (VerifyApproval object : listVerifyApprovaltModifyMemberId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("modify_member_id");// 设为常量
 			dto.setTableName("verify_approval");// 设为常量
@@ -912,10 +922,10 @@ public class DataMigrateImpl implements DataMigrateService {
 		////// weekly
 		Weekly weekly = DTOUtils.newDTO(Weekly.class);
 		weekly.setCreateMemberId(userId);
-		List<Weekly> listWeeklyCreateMemberId = weeklyMapper.selectByExample(weekly);
+		List<Weekly> listWeeklyCreateMemberId = weeklyMapper.select(weekly);
 		for (Weekly object : listWeeklyCreateMemberId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("create_member_id");// 设为常量
 			dto.setTableName("weekly");// 设为常量
@@ -928,10 +938,10 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		weekly.setCreateMemberId(null);
 		weekly.setModifyMemberId(userId);
-		List<Weekly> listWeeklyModifyMemberId = weeklyMapper.selectByExample(weekly);
+		List<Weekly> listWeeklyModifyMemberId = weeklyMapper.select(weekly);
 		for (Weekly object : listWeeklyModifyMemberId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("modify_member_id");// 设为常量
 			dto.setTableName("weekly");// 设为常量
@@ -944,10 +954,10 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		WorkOrder weeklyOrder = DTOUtils.newDTO(WorkOrder.class);
 		weeklyOrder.setAcceptorId(userId);
-		List<WorkOrder> listWeeklyOrderAcceptorId = workOrderMapper.selectByExample(weeklyOrder);
+		List<WorkOrder> listWeeklyOrderAcceptorId = workOrderMapper.select(weeklyOrder);
 		for (WorkOrder object : listWeeklyOrderAcceptorId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("acceptor_id");// 设为常量
 			dto.setTableName("work_order");// 设为常量
@@ -963,7 +973,7 @@ public class DataMigrateImpl implements DataMigrateService {
 		List<WorkOrder> listWeeklyCopyUserId = workOrderMapper.selectWorkOrdeByCopyUserId(userId);
 		for (WorkOrder object : listWeeklyCopyUserId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("copy_user_id");// 设为常量
 			dto.setTableName("work_order");// 设为常量
@@ -977,10 +987,10 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		weeklyOrder.setAcceptorId(null);
 		weeklyOrder.setApplicantId(userId);
-		List<WorkOrder> listWeeklyOrderOrderApplicantId = workOrderMapper.selectByExample(weeklyOrder);
+		List<WorkOrder> listWeeklyOrderOrderApplicantId = workOrderMapper.select(weeklyOrder);
 		for (WorkOrder object : listWeeklyOrderOrderApplicantId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("applicant_id");// 设为常量
 			dto.setTableName("work_order");// 设为常量AcceptorId
@@ -992,10 +1002,10 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		weeklyOrder.setApplicantId(null);
 		weeklyOrder.setExecutorId(userId);
-		List<WorkOrder> listWeeklyOrderOrdeExecutorId = workOrderMapper.selectByExample(weeklyOrder);
+		List<WorkOrder> listWeeklyOrderOrdeExecutorId = workOrderMapper.select(weeklyOrder);
 		for (WorkOrder object : listWeeklyOrderOrdeExecutorId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("executor_id");// 设为常量
 			dto.setTableName("work_order");// 设为常量AcceptorId
@@ -1011,10 +1021,10 @@ public class DataMigrateImpl implements DataMigrateService {
 		workOrderOperationRecord.setOperatorId(userId);
 
 		List<WorkOrderOperationRecord> listworkOrderOperationRecord = workOrderOperationRecordMapper
-				.selectByExample(workOrderOperationRecord);
+				.select(workOrderOperationRecord);
 		for (WorkOrderOperationRecord object : listworkOrderOperationRecord) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("operator_id");// 设为常量
 			dto.setTableName("work_order_operation_record");// 设为常量
@@ -1119,20 +1129,41 @@ public class DataMigrateImpl implements DataMigrateService {
 	@Override
 	public int getDataIsExistence(Long userId, Long uapUserId) {
 		//这个时候应收uapUserId ，因为它不变
-		MoveLogTable dto = DTOUtils.newDTO(MoveLogTable.class);
+		MoveLogTable dto = new MoveLogTable();
 		List<MoveLogTable> approveList = null;
 
+		
+		/////// work_order_operation_record
+
+		WorkOrderOperationRecord workOrderOperationRecord = DTOUtils.newDTO(WorkOrderOperationRecord.class);
+		workOrderOperationRecord.setOperatorId(uapUserId);
+
+		List<WorkOrderOperationRecord> listworkOrderOperationRecord = workOrderOperationRecordMapper.select(workOrderOperationRecord);
+		for (WorkOrderOperationRecord object : listworkOrderOperationRecord) {
+
+			dto =new MoveLogTable();
+			dto.setFileId(object.getId());
+			dto.setFileField("operator_id");// 设为常量
+			dto.setTableName("work_order_operation_record");// 设为常量
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
+			if (list != null && list.size() > 0) {
+				return 1;
+			}
+		}
+		
+		
+		
 		Approve record = DTOUtils.newDTO(Approve.class);
 		record.setProjectLeader(uapUserId);
-		List<Approve> listCreateMember = approveMapper.selectByExample(record);
+		List<Approve> listCreateMember = approveMapper.select(record);
 
 		for (Approve approve : listCreateMember) {
-
+			dto =new MoveLogTable();
 			dto.setTableName("approve");
 			dto.setFileField("project_leader");
 			dto.setId(approve.getId());
 			approveList = null;
-			approveList = moveLogTableMapper.selectByExample(dto);
+			approveList = moveLogTableMapper.select(dto);
 			if (approveList != null && approveList.size() > 0) {
 				return 1;
 			}
@@ -1140,14 +1171,14 @@ public class DataMigrateImpl implements DataMigrateService {
 		}
 		record.setProjectLeader(null);
 		record.setBusinessOwner(uapUserId);
-		listCreateMember = approveMapper.selectByExample(record);
+		listCreateMember = approveMapper.select(record);
 		for (Approve approve : listCreateMember) {
-
+			dto =new MoveLogTable();
 			dto.setTableName("approve");
 			dto.setFileField("business_owner");
 			dto.setId(approve.getId());
 			approveList = null;
-			approveList = moveLogTableMapper.selectByExample(dto);
+			approveList = moveLogTableMapper.select(dto);
 			if (approveList != null && approveList.size() > 0) {
 				return 1;
 			}
@@ -1156,14 +1187,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		record.setBusinessOwner(null);
 		record.setDep(uapUserId);
-		listCreateMember = approveMapper.selectByExample(record);
+		listCreateMember = approveMapper.select(record);
 		for (Approve approve : listCreateMember) {
-
+			dto =new MoveLogTable();
 			dto.setTableName("approve");
 			dto.setId(approve.getId());
 			dto.setFileField("dep");
 			approveList = null;
-			approveList = moveLogTableMapper.selectByExample(dto);
+			approveList = moveLogTableMapper.select(dto);
 			if (approveList != null && approveList.size() > 0) {
 				return 1;
 			}
@@ -1172,14 +1203,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		record.setDep(null);
 		record.setCreateMemberId(uapUserId);
-		listCreateMember = approveMapper.selectByExample(record);
+		listCreateMember = approveMapper.select(record);
 		for (Approve approve : listCreateMember) {
-
+			dto =new MoveLogTable();
 			dto.setTableName("approve");
 			dto.setId(approve.getId());
 			approveList = null;
 			dto.setFileField("create_member_id");
-			approveList = moveLogTableMapper.selectByExample(dto);
+			approveList = moveLogTableMapper.select(dto);
 			if (approveList != null && approveList.size() > 0) {
 				return 1;
 			}
@@ -1188,14 +1219,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		record.setCreateMemberId(null);
 		record.setModifyMemberId(uapUserId);
-		listCreateMember = approveMapper.selectByExample(record);
+		listCreateMember = approveMapper.select(record);
 		for (Approve approve : listCreateMember) {
-
+			dto =new MoveLogTable();
 			dto.setTableName("approve");
 			dto.setId(approve.getId());
 			approveList = null;
 			dto.setFileField("modify_member_id");
-			approveList = moveLogTableMapper.selectByExample(dto);
+			approveList = moveLogTableMapper.select(dto);
 			if (approveList != null && approveList.size() > 0) {
 				return 1;
 			}
@@ -1206,15 +1237,15 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		Files files = DTOUtils.newDTO(Files.class);
 		files.setCreateMemberId(uapUserId);
-		List<Files> filesList = filesMapper.selectByExample(files);
+		List<Files> filesList = filesMapper.select(files);
 
 		for (Files filesObject : filesList) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setId(filesObject.getId());
 			dto.setTableName("files");
 			dto.setFileField("create_member_id");
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1223,15 +1254,15 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		files.setCreateMemberId(null);
 		files.setModifyMemberId(uapUserId);
-		filesList = filesMapper.selectByExample(files);
+		filesList = filesMapper.select(files);
 
 		for (Files filesObject : filesList) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setId(filesObject.getId());
 			dto.setTableName("files");
 			dto.setFileField("modify_member_id");
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1241,15 +1272,14 @@ public class DataMigrateImpl implements DataMigrateService {
 		// hardware_apply_operation_record
 		HardwareApplyOperationRecord hardwareApplyOperationRecord = DTOUtils.newDTO(HardwareApplyOperationRecord.class);
 		hardwareApplyOperationRecord.setOperatorId(uapUserId);
-		List<HardwareApplyOperationRecord> hardwareApplyOperationRecordList = hardwareApplyOperationRecordMapper
-				.selectByExample(hardwareApplyOperationRecord);
+		List<HardwareApplyOperationRecord> hardwareApplyOperationRecordList = hardwareApplyOperationRecordMapper.select(hardwareApplyOperationRecord);
 		for (HardwareApplyOperationRecord hardwareApplyOperationRecordObject : hardwareApplyOperationRecordList) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setId(hardwareApplyOperationRecordObject.getId());
 			dto.setTableName("hardware_apply_operation_record");
 			dto.setFileField("operator_id");
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1260,14 +1290,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		HardwareResource hardwareResource = DTOUtils.newDTO(HardwareResource.class);
 		hardwareResource.setMaintenanceOwner(uapUserId);
-		List<HardwareResource> hardwareResourceList = hardwareResourceMapper.selectByExample(files);
+		List<HardwareResource> hardwareResourceList = hardwareResourceMapper.select(hardwareResource);
 		for (HardwareResource hardwareResourceObject : hardwareResourceList) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setId(hardwareResourceObject.getId());
 			dto.setTableName("hardware_resource");
 			dto.setFileField("maintenance_owner");
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1277,14 +1307,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		Log log = DTOUtils.newDTO(Log.class);
 		log.setOperatorId(uapUserId);
-		List<Log> logList = logMapper.selectByExample(log);
+		List<Log> logList = logMapper.select(log);
 		for (Log logListObject : logList) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setId(logListObject.getId());
 			dto.setTableName("log");
 			dto.setFileField("operator_id");
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1295,14 +1325,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		Project project = DTOUtils.newDTO(Project.class);
 		project.setProjectManager(uapUserId);
-		List<Project> listProjectManager = projectMapper.selectByExample(project);
+		List<Project> listProjectManager = projectMapper.select(project);
 		for (Project object : listProjectManager) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("project_manager");// 设为常量
 			dto.setTableName("project");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1310,14 +1340,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		project.setProjectManager(null);
 		project.setDevelopManager(uapUserId);
-		List<Project> listDevelopManager = projectMapper.selectByExample(project);
+		List<Project> listDevelopManager = projectMapper.select(project);
 		for (Project object : listDevelopManager) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("develop_manager");// 设为常量
 			dto.setTableName("project");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1325,14 +1355,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		project.setDevelopManager(null);
 		project.setTestManager(uapUserId);
-		List<Project> listDevelopManagerr = projectMapper.selectByExample(project);
+		List<Project> listDevelopManagerr = projectMapper.select(project);
 		for (Project object : listDevelopManagerr) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("test_manager");// 设为常量
 			dto.setTableName("project");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1340,14 +1370,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		project.setTestManager(null);
 		project.setProductManager(uapUserId);
-		List<Project> listProductManager = projectMapper.selectByExample(project);
+		List<Project> listProductManager = projectMapper.select(project);
 		for (Project object : listProductManager) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("product_manager");// 设为常量
 			dto.setTableName("project");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1355,14 +1385,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		project.setProductManager(null);
 		project.setOriginator(uapUserId);
-		List<Project> listOriginator = projectMapper.selectByExample(project);
+		List<Project> listOriginator = projectMapper.select(project);
 		for (Project object : listOriginator) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("originator");// 设为常量
 			dto.setTableName("project");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1370,14 +1400,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		project.setOriginator(null);
 		project.setDep(uapUserId);
-		List<Project> listDep = projectMapper.selectByExample(project);
+		List<Project> listDep = projectMapper.select(project);
 		for (Project object : listDep) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("dep");// 设为常量
 			dto.setTableName("project");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1385,14 +1415,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		project.setDep(null);
 		project.setBusinessOwner(uapUserId);
-		List<Project> listBusinessOwner = projectMapper.selectByExample(project);
+		List<Project> listBusinessOwner = projectMapper.select(project);
 		for (Project object : listBusinessOwner) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("business_owner");// 设为常量
 			dto.setTableName("project");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1400,14 +1430,14 @@ public class DataMigrateImpl implements DataMigrateService {
 		// project_apply:立项申请表
 		ProjectApply projectApply = DTOUtils.newDTO(ProjectApply.class);
 		projectApply.setProjectLeader(uapUserId);
-		List<ProjectApply> listProjectApply = projectApplyMapper.selectByExample(projectApply);
+		List<ProjectApply> listProjectApply = projectApplyMapper.select(projectApply);
 		for (ProjectApply object : listProjectApply) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("project_leader");// 设为常量
 			dto.setTableName("project_apply");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1415,14 +1445,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		projectApply.setProjectLeader(null);
 		projectApply.setProductManager(uapUserId);
-		List<ProjectApply> listProjectApplyProductManager = projectApplyMapper.selectByExample(projectApply);
+		List<ProjectApply> listProjectApplyProductManager = projectApplyMapper.select(projectApply);
 		for (ProjectApply object : listProjectApplyProductManager) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("product_manager");// 设为常量
 			dto.setTableName("project_apply");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1430,14 +1460,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		projectApply.setProductManager(null);
 		projectApply.setDevelopmentManager(uapUserId);
-		List<ProjectApply> listProjectApplyDevelopmentManager = projectApplyMapper.selectByExample(projectApply);
+		List<ProjectApply> listProjectApplyDevelopmentManager = projectApplyMapper.select(projectApply);
 		for (ProjectApply object : listProjectApplyDevelopmentManager) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("development_manager");// 设为常量
 			dto.setTableName("project_apply");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1445,14 +1475,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		projectApply.setDevelopmentManager(null);
 		projectApply.setTestManager(uapUserId);
-		List<ProjectApply> listProjectApplyTestManager = projectApplyMapper.selectByExample(projectApply);
+		List<ProjectApply> listProjectApplyTestManager = projectApplyMapper.select(projectApply);
 		for (ProjectApply object : listProjectApplyTestManager) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("test_manager");// 设为常量
 			dto.setTableName("project_apply");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1460,14 +1490,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		projectApply.setTestManager(null);
 		projectApply.setBusinessOwner(uapUserId);
-		List<ProjectApply> listProjectBusinessOwner = projectApplyMapper.selectByExample(projectApply);
+		List<ProjectApply> listProjectBusinessOwner = projectApplyMapper.select(projectApply);
 		for (ProjectApply object : listProjectBusinessOwner) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("business_owner");// 设为常量
 			dto.setTableName("project_apply");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1477,14 +1507,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		ProjectChange projectChange = DTOUtils.newDTO(ProjectChange.class);
 		projectChange.setCreateMemberId(uapUserId);
-		List<ProjectChange> listProjectChange = projectChangeMapper.selectByExample(projectChange);
+		List<ProjectChange> listProjectChange = projectChangeMapper.select(projectChange);
 		for (ProjectChange object : listProjectChange) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("create_member_id");// 设为常量
 			dto.setTableName("project_change");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1492,14 +1522,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		projectChange.setCreateMemberId(null);
 		projectChange.setModifyMemberId(uapUserId);
-		List<ProjectChange> listModifyMemberId = projectChangeMapper.selectByExample(projectChange);
+		List<ProjectChange> listModifyMemberId = projectChangeMapper.select(projectChange);
 		for (ProjectChange object : listModifyMemberId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("modify_member_id");// 设为常量
 			dto.setTableName("project_change");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1509,11 +1539,11 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		ProjectComplete projectComplete = DTOUtils.newDTO(ProjectComplete.class);
 		projectComplete.setCreateMemberId(uapUserId);
-		List<ProjectComplete> listProjectCompleteCreateMember = projectCompleteMapper.selectByExample(projectComplete);
+		List<ProjectComplete> listProjectCompleteCreateMember = projectCompleteMapper.select(projectComplete);
 
 		for (ProjectComplete object : listProjectCompleteCreateMember) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("create_member_id");// 设为常量
 			dto.setTableName("project_complete");// 设为常量
@@ -1523,10 +1553,10 @@ public class DataMigrateImpl implements DataMigrateService {
 		projectComplete.setCreateMemberId(null);
 		projectComplete.setModifyMemberId(uapUserId);
 
-		List<ProjectComplete> listProjectCompleteModifyMember = projectCompleteMapper.selectByExample(projectChange);
+		List<ProjectComplete> listProjectCompleteModifyMember = projectCompleteMapper.select(projectComplete);
 		for (ProjectComplete object : listProjectCompleteModifyMember) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("modify_member_id");// 设为常量
 			dto.setTableName("project_complete");// 设为常量
@@ -1538,11 +1568,11 @@ public class DataMigrateImpl implements DataMigrateService {
 		ProjectOnlineApply projectOnlineApply = DTOUtils.newDTO(ProjectOnlineApply.class);
 		projectOnlineApply.setBusinessOwnerId(uapUserId);
 		List<ProjectOnlineApply> listProjectOnlineApplyProjectOnlineApply = projectOnlineApplyMapper
-				.selectByExample(projectOnlineApply);
+				.select(projectOnlineApply);
 
 		for (ProjectOnlineApply object : listProjectOnlineApplyProjectOnlineApply) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("business_owner_id");// 设为常量
 			dto.setTableName("project_online_apply");// 设为常量
@@ -1552,10 +1582,10 @@ public class DataMigrateImpl implements DataMigrateService {
 		projectOnlineApply.setBusinessOwnerId(null);
 		projectOnlineApply.setProductManagerId(uapUserId);
 		List<ProjectOnlineApply> listProjectOnlineApplyProductManagerId = projectOnlineApplyMapper
-				.selectByExample(projectOnlineApply);
+				.select(projectOnlineApply);
 		for (ProjectOnlineApply object : listProjectOnlineApplyProductManagerId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("product_manager_id");// 设为常量
 			dto.setTableName("project_online_apply");// 设为常量
@@ -1565,14 +1595,14 @@ public class DataMigrateImpl implements DataMigrateService {
 		projectOnlineApply.setProductManagerId(null);
 		projectOnlineApply.setTestManagerId(uapUserId);
 		List<ProjectOnlineApply> listProjectOnlineApplyTestManagerId = projectOnlineApplyMapper
-				.selectByExample(projectOnlineApply);
+				.select(projectOnlineApply);
 		for (ProjectOnlineApply object : listProjectOnlineApplyTestManagerId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("test_manager_id");// 设为常量
 			dto.setTableName("project_online_apply");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1581,14 +1611,14 @@ public class DataMigrateImpl implements DataMigrateService {
 		projectOnlineApply.setTestManagerId(null);
 		projectOnlineApply.setDevelopmentManagerId(uapUserId);
 		List<ProjectOnlineApply> listProjectOnlineApplyDevelopmentManagerId = projectOnlineApplyMapper
-				.selectByExample(projectOnlineApply);
+				.select(projectOnlineApply);
 		for (ProjectOnlineApply object : listProjectOnlineApplyDevelopmentManagerId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("development_manager_id");// 设为常量
 			dto.setTableName("project_online_apply");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1597,14 +1627,14 @@ public class DataMigrateImpl implements DataMigrateService {
 		projectOnlineApply.setDevelopmentManagerId(null);
 		projectOnlineApply.setApplicantId(uapUserId);
 		List<ProjectOnlineApply> listProjectOnlineApplyApplicantId = projectOnlineApplyMapper
-				.selectByExample(projectOnlineApply);
+				.select(projectOnlineApply);
 		for (ProjectOnlineApply object : listProjectOnlineApplyApplicantId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("applicant_id");// 设为常量
 			dto.setTableName("project_online_apply");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1613,15 +1643,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		projectOnlineApply.setApplicantId(null);
 
-		List<ProjectOnlineApply> listProjectOnlinetExecutorId = projectOnlineApplyMapper
-				.selectProjectOnlineApplyByExecutorId(uapUserId);
+		List<ProjectOnlineApply> listProjectOnlinetExecutorId = projectOnlineApplyMapper.selectProjectOnlineApplyByExecutorId(uapUserId);
 		for (ProjectOnlineApply object : listProjectOnlinetExecutorId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("executor_id");// 设为常量
 			dto.setTableName("project_online_apply");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1631,14 +1660,14 @@ public class DataMigrateImpl implements DataMigrateService {
 		ProjectOnlineOperationRecord projectOnlineOperationRecord = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
 		projectOnlineOperationRecord.setOperatorId(uapUserId);
 		List<ProjectOnlineOperationRecord> listprojectOnlineOperationRecord = projectOnlineOperationRecordMapper
-				.selectByExample(projectOnlineOperationRecord);
+				.select(projectOnlineOperationRecord);
 		for (ProjectOnlineOperationRecord object : listprojectOnlineOperationRecord) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("operator_id");// 设为常量
 			dto.setTableName("project_online_operation_record");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1650,14 +1679,14 @@ public class DataMigrateImpl implements DataMigrateService {
 		projectOnlineSubsystem.setManagerId(uapUserId);
 
 		List<ProjectOnlineSubsystem> listprojectOnlineSubsystem = projectOnlineSubsystemMapper
-				.selectByExample(projectOnlineSubsystem);
+				.select(projectOnlineSubsystem);
 		for (ProjectOnlineSubsystem object : listprojectOnlineSubsystem) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("manager_id");// 设为常量
 			dto.setTableName("project_online_subsystem");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1666,17 +1695,17 @@ public class DataMigrateImpl implements DataMigrateService {
 		///// manager_name
 		/////// 需要重新写
 		projectOnlineSubsystem.setManagerId(null);
-		BaseOutput<User> userTempManagerId = userRpc.findUserById(uapUserId);
+		BaseOutput<User> userTempManagerId = userRpc.get(uapUserId);
 		projectOnlineSubsystem.setManagerName(userTempManagerId.getData().getRealName());
 		List<ProjectOnlineSubsystem> listprojectManagerName = projectOnlineSubsystemMapper
-				.selectByExample(projectOnlineSubsystem);
+				.select(projectOnlineSubsystem);
 		for (ProjectOnlineSubsystem object : listprojectManagerName) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("manager_name");// 设为常量
 			dto.setTableName("project_online_subsystem");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1687,14 +1716,14 @@ public class DataMigrateImpl implements DataMigrateService {
 		ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
 		projectVersion.setCreatorId(uapUserId);
 
-		List<ProjectVersion> listprojectProjectVersion = projectVersionMapper.selectByExample(projectVersion);
+		List<ProjectVersion> listprojectProjectVersion = projectVersionMapper.select(projectVersion);
 		for (ProjectVersion object : listprojectProjectVersion) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("creator_id");// 设为常量
 			dto.setTableName("project_version");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1702,14 +1731,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		projectVersion.setCreatorId(null);
 		projectVersion.setModifierId(uapUserId);
-		List<ProjectVersion> listprojectModifierId = projectVersionMapper.selectByExample(projectVersion);
+		List<ProjectVersion> listprojectModifierId = projectVersionMapper.select(projectVersion);
 		for (ProjectVersion object : listprojectModifierId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("modifier_id");// 设为常量
 			dto.setTableName("project_version");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1719,14 +1748,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		Task task = DTOUtils.newDTO(Task.class);
 		task.setOwner(uapUserId);
-		List<Task> listTaskOwner = taskMapper.selectByExample(task);
+		List<Task> listTaskOwner = taskMapper.select(task);
 		for (Task object : listTaskOwner) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("owner");// 设为常量
 			dto.setTableName("task");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1734,14 +1763,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		task.setOwner(null);
 		task.setCreateMemberId(uapUserId);
-		List<Task> listTaskCreateMemberId = taskMapper.selectByExample(task);
+		List<Task> listTaskCreateMemberId = taskMapper.select(task);
 		for (Task object : listTaskCreateMemberId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("create_member_id");// 设为常量
 			dto.setTableName("task");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1749,14 +1778,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		task.setCreateMemberId(null);
 		task.setModifyMemberId(uapUserId);
-		List<Task> listTaskModifyMemberId = taskMapper.selectByExample(task);
+		List<Task> listTaskModifyMemberId = taskMapper.select(task);
 		for (Task object : listTaskModifyMemberId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("modify_member_id");// 设为常量
 			dto.setTableName("task");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1765,14 +1794,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		TaskDetails taskDetails = DTOUtils.newDTO(TaskDetails.class);
 		taskDetails.setCreateMemberId(uapUserId);
-		List<TaskDetails> listtaskDetailsCreateMemberId = taskDetailsMapper.selectByExample(taskDetails);
+		List<TaskDetails> listtaskDetailsCreateMemberId = taskDetailsMapper.select(taskDetails);
 		for (TaskDetails object : listtaskDetailsCreateMemberId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("create_member_id");// 设为常量
 			dto.setTableName("task_details");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1780,14 +1809,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		taskDetails.setCreateMemberId(null);
 		taskDetails.setModifyMemberId(uapUserId);
-		List<TaskDetails> listtaskDetailsModifyMemberId = taskDetailsMapper.selectByExample(taskDetails);
+		List<TaskDetails> listtaskDetailsModifyMemberId = taskDetailsMapper.select(taskDetails);
 		for (TaskDetails object : listtaskDetailsModifyMemberId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("modify_member_id");// 设为常量
 			dto.setTableName("task_details");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1797,14 +1826,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		Team team = DTOUtils.newDTO(Team.class);
 		team.setMemberId(uapUserId);
-		List<Team> listteam = teamMapper.selectByExample(team);
+		List<Team> listteam = teamMapper.select(team);
 		for (Team object : listteam) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("member_id");// 设为常量
 			dto.setTableName("team");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1812,14 +1841,14 @@ public class DataMigrateImpl implements DataMigrateService {
 		///// travel_cost_apply
 		TravelCostApply travelCostApply = DTOUtils.newDTO(TravelCostApply.class);
 		travelCostApply.setApplicantId(uapUserId);
-		List<TravelCostApply> listtravelCostApply = travelCostApplyMapper.selectByExample(travelCostApply);
+		List<TravelCostApply> listtravelCostApply = travelCostApplyMapper.select(travelCostApply);
 		for (TravelCostApply object : listtravelCostApply) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("applicant_id");// 设为常量
 			dto.setTableName("travel_cost_apply");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1827,18 +1856,18 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		// 需要重新写
 
-		BaseOutput<User> userTemp = userRpc.findUserById(uapUserId);
+		BaseOutput<User> userTemp = userRpc.get(uapUserId);
 
 		travelCostApply.setApplicantId(uapUserId);
 		travelCostApply.setRootDepartemntId(userTemp.getData().getDepartmentId());
-		List<TravelCostApply> listtraveRootDepartemntId = travelCostApplyMapper.selectByExample(travelCostApply);
+		List<TravelCostApply> listtraveRootDepartemntId = travelCostApplyMapper.select(travelCostApply);
 		for (TravelCostApply object : listtraveRootDepartemntId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("root_departemnt_id");// 设为常量
 			dto.setTableName("travel_cost_apply");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1847,14 +1876,14 @@ public class DataMigrateImpl implements DataMigrateService {
 		/// 需要重新写
 		travelCostApply.setRootDepartemntId(null);
 		travelCostApply.setDepartmentId(userTemp.getData().getDepartmentId());
-		List<TravelCostApply> travelCostApplyRootDepartemntId = travelCostApplyMapper.selectByExample(travelCostApply);
+		List<TravelCostApply> travelCostApplyRootDepartemntId = travelCostApplyMapper.select(travelCostApply);
 		for (TravelCostApply object : travelCostApplyRootDepartemntId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("department_id");// 设为常量
 			dto.setTableName("travel_cost_apply");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1864,14 +1893,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		VerifyApproval verifyApprova = DTOUtils.newDTO(VerifyApproval.class);
 		verifyApprova.setApproveId(uapUserId);
-		List<VerifyApproval> listVerifyApproval = verifyApprovalMapper.selectByExample(verifyApprova);
+		List<VerifyApproval> listVerifyApproval = verifyApprovalMapper.select(verifyApprova);
 		for (VerifyApproval object : listVerifyApproval) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("approve_id");// 设为常量
 			dto.setTableName("verify_approval");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1880,14 +1909,14 @@ public class DataMigrateImpl implements DataMigrateService {
 		verifyApprova.setApproveId(null);
 		verifyApprova.setCreateMemberId(uapUserId);
 
-		List<VerifyApproval> listVerifyApprovalCreateMemberId = verifyApprovalMapper.selectByExample(verifyApprova);
+		List<VerifyApproval> listVerifyApprovalCreateMemberId = verifyApprovalMapper.select(verifyApprova);
 		for (VerifyApproval object : listVerifyApprovalCreateMemberId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("create_member_id");// 设为常量
 			dto.setTableName("verify_approval");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1896,14 +1925,14 @@ public class DataMigrateImpl implements DataMigrateService {
 		verifyApprova.setCreateMemberId(null);
 		verifyApprova.setModifyMemberId(uapUserId);
 
-		List<VerifyApproval> listVerifyApprovaltModifyMemberId = verifyApprovalMapper.selectByExample(verifyApprova);
+		List<VerifyApproval> listVerifyApprovaltModifyMemberId = verifyApprovalMapper.select(verifyApprova);
 		for (VerifyApproval object : listVerifyApprovaltModifyMemberId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("modify_member_id");// 设为常量
 			dto.setTableName("verify_approval");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1912,14 +1941,14 @@ public class DataMigrateImpl implements DataMigrateService {
 		////// weekly
 		Weekly weekly = DTOUtils.newDTO(Weekly.class);
 		weekly.setCreateMemberId(uapUserId);
-		List<Weekly> listWeeklyCreateMemberId = weeklyMapper.selectByExample(weekly);
+		List<Weekly> listWeeklyCreateMemberId = weeklyMapper.select(weekly);
 		for (Weekly object : listWeeklyCreateMemberId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("create_member_id");// 设为常量
 			dto.setTableName("weekly");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1927,14 +1956,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		weekly.setCreateMemberId(null);
 		weekly.setModifyMemberId(uapUserId);
-		List<Weekly> listWeeklyModifyMemberId = weeklyMapper.selectByExample(weekly);
+		List<Weekly> listWeeklyModifyMemberId = weeklyMapper.select(weekly);
 		for (Weekly object : listWeeklyModifyMemberId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("modify_member_id");// 设为常量
 			dto.setTableName("weekly");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1943,14 +1972,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		WorkOrder weeklyOrder = DTOUtils.newDTO(WorkOrder.class);
 		weeklyOrder.setAcceptorId(uapUserId);
-		List<WorkOrder> listWeeklyOrderAcceptorId = workOrderMapper.selectByExample(weeklyOrder);
+		List<WorkOrder> listWeeklyOrderAcceptorId = workOrderMapper.select(weeklyOrder);
 		for (WorkOrder object : listWeeklyOrderAcceptorId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("acceptor_id");// 设为常量
 			dto.setTableName("work_order");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1962,11 +1991,11 @@ public class DataMigrateImpl implements DataMigrateService {
 		List<WorkOrder> listWeeklyCopyUserId = workOrderMapper.selectWorkOrdeByCopyUserId(uapUserId);
 		for (WorkOrder object : listWeeklyCopyUserId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("copy_user_id");// 设为常量
 			dto.setTableName("work_order");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1974,14 +2003,14 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		weeklyOrder.setAcceptorId(null);
 		weeklyOrder.setApplicantId(uapUserId);
-		List<WorkOrder> listWeeklyOrderOrderApplicantId = workOrderMapper.selectByExample(weeklyOrder);
+		List<WorkOrder> listWeeklyOrderOrderApplicantId = workOrderMapper.select(weeklyOrder);
 		for (WorkOrder object : listWeeklyOrderOrderApplicantId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("applicant_id");// 设为常量
 			dto.setTableName("work_order");// 设为常量AcceptorId
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
@@ -1989,37 +2018,20 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		weeklyOrder.setApplicantId(null);
 		weeklyOrder.setExecutorId(userId);
-		List<WorkOrder> listWeeklyOrderOrdeExecutorId = workOrderMapper.selectByExample(weeklyOrder);
+		List<WorkOrder> listWeeklyOrderOrdeExecutorId = workOrderMapper.select(weeklyOrder);
 		for (WorkOrder object : listWeeklyOrderOrdeExecutorId) {
 
-			dto = DTOUtils.newDTO(MoveLogTable.class);
+			dto =new MoveLogTable();
 			dto.setFileId(object.getId());
 			dto.setFileField("executor_id");// 设为常量
 			dto.setTableName("work_order");// 设为常量AcceptorId
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
+			List<MoveLogTable> list = moveLogTableMapper.select(dto);
 			if (list != null && list.size() > 0) {
 				return 1;
 			}
 		}
 
-		/////// work_order_operation_record
-
-		WorkOrderOperationRecord workOrderOperationRecord = DTOUtils.newDTO(WorkOrderOperationRecord.class);
-		workOrderOperationRecord.setOperatorId(uapUserId);
-
-		List<WorkOrderOperationRecord> listworkOrderOperationRecord = workOrderOperationRecordMapper
-				.selectByExample(workOrderOperationRecord);
-		for (WorkOrderOperationRecord object : listworkOrderOperationRecord) {
-
-			dto = DTOUtils.newDTO(MoveLogTable.class);
-			dto.setFileId(object.getId());
-			dto.setFileField("operator_id");// 设为常量
-			dto.setTableName("work_order_operation_record");// 设为常量
-			List<MoveLogTable> list = moveLogTableMapper.selectByExample(dto);
-			if (list != null && list.size() > 0) {
-				return 1;
-			}
-		}
+	
 
 		/*
 		 * /// project_apply:立项申请表

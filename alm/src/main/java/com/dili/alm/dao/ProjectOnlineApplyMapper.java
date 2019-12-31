@@ -8,5 +8,5 @@ import com.dili.ss.base.MyMapper;
 public interface ProjectOnlineApplyMapper extends MyMapper<ProjectOnlineApply> {
 	
 	
-	List<ProjectOnlineApply>  selectProjectOnlineApplyByExecutorId(Long id );
+	List<ProjectOnlineApply>  selectProjectOnlineApplyByExecutorId(Long uapUserId );
 }

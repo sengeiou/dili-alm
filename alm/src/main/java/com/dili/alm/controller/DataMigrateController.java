@@ -37,6 +37,7 @@ public class DataMigrateController {
 	@Autowired
 	private UapUserRpc userRpc;
 	
+	
 	@Autowired
 	private  DataMigrateService moveService;
 	
@@ -81,7 +82,7 @@ public class DataMigrateController {
 	public @ResponseBody BaseOutput updateData( Long id) {
 		
 		//数据更新，用户相关表
-		int  num=moveService.updateData(id,null);
+		int  num=moveService.updateData(null,id);
 		
 		return BaseOutput.success("修改成功");
 	}
