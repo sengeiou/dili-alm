@@ -30,6 +30,7 @@ import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.dao.TeamMapper;
 import com.dili.alm.domain.ActionDateType;
+import com.dili.alm.domain.Demand;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectAction;
@@ -64,6 +65,8 @@ import com.dili.ss.util.SystemConfigUtils;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
+
+import tk.mybatis.mapper.entity.Example;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-10-18 17:22:54.
@@ -588,5 +591,13 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	@Override
 	public List<ProjectCostStatisticDto> projectCostStatistic(Long projectId) {
 		return this.getActualDao().projectCostStatistic(projectId);
+	}
+
+	@Override
+	public List<Project> selectByIds(List<Long> idsList) {
+		Example example = new Example(Demand.class);
+		Example.Criteria criteria = example.createCriteria();
+		criteria.andIn("id", idsList);
+		return this.getActualDao().selectByExample(example);
 	}
 }

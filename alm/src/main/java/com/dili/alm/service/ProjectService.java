@@ -82,4 +82,6 @@ public interface ProjectService extends BaseService<Project, Long> {
 	 */
 	List<ProjectCostStatisticDto> projectCostStatistic(Long projectId);
 
+	List<Project> selectByIds(List<Long> idsList);
+
 }
