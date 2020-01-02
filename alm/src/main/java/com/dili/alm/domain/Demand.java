@@ -207,13 +207,13 @@ public class Demand extends BaseDomain {
     @FieldDef(label="所属系统")
     @EditMode(editor = FieldEditor.Number, required = false)
     public Long getBelongSysId() {
-        return belongProId;
+        return belongSysId;
     }
 
     /**
      * 设置所属系统
      *
-     * @param belongProId 所属项目
+     * @param belongSysId 所属项目
      */
     public void setBelongSysId(Long belongSysId) {
         this.belongSysId =belongSysId;
