@@ -97,7 +97,7 @@ public class OnlineDataChange extends BaseDomain {
      * @return apply_market_id - �г�id
      */
     @FieldDef(label="�г�id")
-    @EditMode(editor = FieldEditor.Number, required = false)
+    @EditMode(editor = FieldEditor.Text, required = false)
     public String getApplyMarketId() {
         return applyMarketId;
     }
