@@ -10,5 +10,5 @@ public class BpmConsts {
     /**
      * 流程标识，用于启动流程
      */
-    public static final String PROCESS_DEFINITION_KEY = "rentalOrderProcess";
+    public static final String PROCESS_DEFINITION_KEY = "almDemandProcess";
 }
