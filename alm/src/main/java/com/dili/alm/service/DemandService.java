@@ -27,6 +27,12 @@ public interface DemandService extends BaseService<Demand, Long> {
 	 * @return
 	 */
 	public int addNewDemand(Demand newDemand) throws DemandExceptions;
+	/***
+	 * 完成流程
+	 * @param newDemandCode 需求流程号
+	 * @return
+	 */
+	public int finishStutas(String newDemandCode);
 
 	/**
 	 * 直接提交

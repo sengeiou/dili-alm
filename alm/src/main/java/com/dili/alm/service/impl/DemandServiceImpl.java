@@ -12,6 +12,7 @@ import java.util.Map;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.component.NumberGenerator;
 import com.dili.alm.constant.AlmConstants.DemandStatus;
+import com.dili.alm.constant.BpmConsts;
 import com.dili.alm.dao.DemandMapper;
 import com.dili.alm.dao.DemandProjectMapper;
 import com.dili.alm.dao.ProjectApplyMapper;
@@ -39,6 +40,8 @@ import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DemandService;
 import com.dili.alm.utils.GetFirstCharUtil;
 import com.dili.alm.utils.WebUtil;
+import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
+import com.dili.bpmc.sdk.rpc.RuntimeRpc;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
@@ -51,8 +54,6 @@ import com.github.pagehelper.Page;
 import tk.mybatis.mapper.entity.Example;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +72,8 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	@Qualifier(DEMAND_NUMBER_GENERATOR_TYPE)
 	@Autowired
 	private NumberGenerator numberGenerator;
-	
+    @Autowired
+    RuntimeRpc runtimeRpc;
 	@Autowired
 	private SequenceMapper sequenceMapper;
 	
@@ -174,6 +176,8 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	
 	@Override
 	public int submint(Demand newDemand) throws DemandExceptions {
+		/** 个人信息 **/
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		//判断是否是直接提交
 		int rows =0;
 		if (newDemand.getId()==null) {
@@ -184,12 +188,25 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		if (selectDeman==null) {
 			throw new DemandExceptions("找不到当前需求!");
 		}
-		
-		selectDeman.setStatus((byte) DemandStatus.APPROVING.getCode());
+        //流程启动参数设置
+        Map<String, Object> variables = new HashMap<>(1);
+        variables.put(BpmConsts.DEMAND_CODE, selectDeman.getSerialNumber());
+        //启动流程
+        BaseOutput<ProcessInstanceMapping> processInstanceOutput = runtimeRpc.startProcessInstanceByKey(BpmConsts.PROCESS_DEFINITION_KEY, selectDeman.getSerialNumber(), userTicket.getId().toString(), variables);
+        if(!processInstanceOutput.isSuccess()){
+           throw new DemandExceptions(processInstanceOutput.getMessage());
+        }
+        //回调，写入相关流程任务数据
+        ProcessInstanceMapping processInstance = processInstanceOutput.getData();
+        selectDeman.setProcessDefinitionId(processInstance.getProcessDefinitionId());
+        selectDeman.setProcessInstanceId(processInstance.getProcessInstanceId());
+        selectDeman.setStatus((byte)DemandStatus.APPROVING.getCode());
+        //修改需求状态，记录流程实例id和流程定义id
 		rows=this.demandMapper.updateByPrimaryKey(selectDeman);
 		
+		
 		if (rows<=0) {
-			throw new DemandExceptions("新增需求失败");
+			throw new DemandExceptions("提交需求失败");
 		}
 		return 1;
 	}
@@ -332,5 +349,10 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			}
 		}
 		return demandDto;
+	}
+	@Override
+	public int finishStutas(String newDemandCode) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

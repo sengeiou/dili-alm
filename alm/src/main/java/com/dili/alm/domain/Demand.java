@@ -378,4 +378,32 @@ public class Demand extends BaseDomain {
     public void setReason(String reason) {
         this.reason = reason;
     }
+    
+    private String processInstanceId;
+
+    @Column(name = "`process_instance_id`")
+    @FieldDef(label="流程实例id", maxLength = 64)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    public String getProcessInstanceId() {
+    	return processInstanceId;
+    };
+
+    public void setProcessInstanceId(String processInstanceId) {
+    	this.processInstanceId=processInstanceId;
+    };
+
+    
+    private String processDefinitionId;
+
+    
+    @Column(name = "`process_definition_id`")
+    @FieldDef(label="流程定义id", maxLength = 64)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    public String getProcessDefinitionId() {
+    	return processDefinitionId;
+    };
+
+    public void setProcessDefinitionId(String processDefinitionId) {
+    	this.processDefinitionId=processDefinitionId;
+    };
 }
