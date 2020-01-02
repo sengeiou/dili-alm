@@ -115,7 +115,11 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		JSONObject demandTypeProvider = new JSONObject();
 		demandTypeProvider.put("provider", "demandTypeProvider");
 		metadata.put("type", demandTypeProvider);
-
+		
+		JSONObject projectSysProvider = new JSONObject();
+		projectSysProvider.put("provider", "projectSysProvider");
+		metadata.put("belongSysId", projectSysProvider);
+		
 		JSONObject datetimeProvider = new JSONObject();
 		datetimeProvider.put("provider", "datetimeProvider");
 		metadata.put("createDate", datetimeProvider);
