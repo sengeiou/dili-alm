@@ -35,13 +35,13 @@ import com.dili.alm.domain.dto.DemandDto;
 import com.dili.alm.exceptions.DemandExceptions;
 import com.dili.alm.rpc.DepartmentRpc;
 import com.dili.alm.rpc.FirmRpc;
-import com.dili.alm.rpc.RuntimeRpc;
 import com.dili.alm.rpc.SysProjectRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DemandService;
 import com.dili.alm.utils.GetFirstCharUtil;
 import com.dili.alm.utils.WebUtil;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
+import com.dili.bpmc.sdk.rpc.RuntimeRpc;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
@@ -196,7 +196,9 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
         Map<String, Object> variables = new HashMap<>(1);
         variables.put(BpmConsts.DEMAND_CODE, selectDeman.getSerialNumber());
         //启动流程
-        BaseOutput<ProcessInstanceMapping> processInstanceOutput = runtimeRpc.startProcessInstanceByKey(BpmConsts.PROCESS_DEFINITION_KEY, selectDeman.getSerialNumber(), userTicket.getId().toString(), null);
+        BaseOutput<ProcessInstanceMapping> processInstanceOutput = runtimeRpc.
+        		startProcessInstanceByKey(BpmConsts.PROCESS_DEFINITION_KEY, 
+        				selectDeman.getSerialNumber(), userTicket.getId().toString(), variables);
         if(!processInstanceOutput.isSuccess()){
            throw new DemandExceptions(processInstanceOutput.getMessage());
         }

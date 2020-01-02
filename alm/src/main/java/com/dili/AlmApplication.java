@@ -35,7 +35,7 @@ import tk.mybatis.spring.annotation.MapperScan;
 @SpringBootApplication
 @EnableTransactionManagement
 @ComponentScan(basePackages = { "com.dili.ss", "com.dili.alm", "com.dili.uap.sdk" })
-@RestfulScan({ "com.dili.alm.rpc", "com.dili.uap.sdk.rpc" })
+@RestfulScan({ "com.dili.alm.rpc", "com.dili.uap.sdk.rpc","com.dili.bpmc.sdk.rpc" })
 @MapperScan(basePackages = { "com.dili.alm.dao", "com.dili.ss.dao", "com.dili.ss.quartz.dao" })
 @EnableAsync
 /**
