@@ -326,7 +326,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			if(departmentBase.getData()!=null) {
 				demandDto.setDepartmentId(departmentBase.getData().getId());
 				demandDto.setDepartmentName(departmentBase.getData().getName());
-				BaseOutput<Department> firstDepartment = this.departmentRpc.getFirstDepartment(demand.getId());
+				BaseOutput<Department> firstDepartment = this.departmentRpc.getFirstDepartment(departmentBase.getData().getId());
 				if(firstDepartment.getData()!=null) {
 					demandDto.setDepartmentFirstName(firstDepartment.getData().getName());
 				}
