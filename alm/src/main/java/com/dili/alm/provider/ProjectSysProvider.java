@@ -7,7 +7,7 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 import com.dili.alm.cache.AlmCache;
-import com.dili.alm.domain.ProjectSysEntity;
+import com.dili.alm.domain.SystemDto;
 import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValuePairImpl;
@@ -34,7 +34,7 @@ public class ProjectSysProvider implements ValueProvider {
 	public String getDisplayText(Object o, Map map, FieldMeta fieldMeta) {
 		if (o == null)
 			return null;
-		ProjectSysEntity entity = AlmCache.getInstance().getProjectSysMap().get(Integer.parseInt(o.toString()));
+		SystemDto entity = AlmCache.getInstance().getProjectSysMap().get(Long.valueOf((o.toString())));
 		return entity == null ? null : entity.getName();
 	}
 }

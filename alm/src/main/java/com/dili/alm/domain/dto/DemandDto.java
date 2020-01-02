@@ -20,9 +20,9 @@ public class DemandDto extends Demand {
 	Long departmentId;
 	
 	String departmentName;
-	
+	String departmentFirstName;
 	String userPhone;
-
+	String firmName;
 	public List<Long> getIds() {
 		return ids;
 	}
@@ -53,6 +53,22 @@ public class DemandDto extends Demand {
 
 	public void setUserPhone(String userPhone) {
 		this.userPhone = userPhone;
+	}
+
+	public String getDepartmentFirstName() {
+		return departmentFirstName;
+	}
+
+	public void setDepartmentFirstName(String departmentFirstName) {
+		this.departmentFirstName = departmentFirstName;
+	}
+
+	public String getFirmName() {
+		return firmName;
+	}
+
+	public void setFirmName(String firmName) {
+		this.firmName = firmName;
 	}
 	
 }
