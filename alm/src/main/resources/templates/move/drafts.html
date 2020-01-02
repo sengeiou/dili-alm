@@ -44,7 +44,7 @@
         <!-- ====================================================================================================================== -->
         <!-- 表格 -->
         <div region="center" style="width:100%;" height="auto">
-		
+		  <a href="#" class="easyui-linkbutton" iconCls="icon-save" id="setBtn"  onclick="setyGrid()">更新完毕后执行</a>
             <!-- =========================================================表格========================================================= -->
             <table class="easyui-datagrid" title="用户迁移页面" id="grid" fitColumns="true"
                    pagination="true" pageSize="30" pageNumber="1" pagePosition="both" rownumbers="true" remoteSort="false"
@@ -212,6 +212,8 @@
         function clearForm() {
             $('#form').form('clear');
         }
+        
+        
 
         //表格表头右键菜单
         function headerContextMenu(e, field){
@@ -350,6 +352,31 @@
          }
         
  
+        
+        
+        $('#setBtn').bind('click', function(){
+			 
+            $.ajax({
+                type: "post",
+                url: "${contextPath!}/move/updateUserStrData",
+                data: {},
+                processData:true,
+                dataType: "json",
+                async : true,
+                success: function (data) {
+                    alert("執行成功");
+                },
+                error: function(){
+                   
+                }
+            });
+            
+		
+			    
+			    
+		 });	    
+        
+        
         
         
         /**

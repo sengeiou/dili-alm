@@ -37,7 +37,6 @@ public class DataMigrateController {
 	@Autowired
 	private UapUserRpc userRpc;
 	
-	
 	@Autowired
 	private  DataMigrateService moveService;
 	
@@ -64,20 +63,12 @@ public class DataMigrateController {
 	public String taskHoursForUser(ModelMap modelMap) {
 		return "move/processed";
 	}
-	
+	@ApiOperation(value = "刪除用戶", notes = "刪除用戶")
 	@RequestMapping(value = "/deleteDrafts", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput deleteDraftsCancel( Long id) {
-		
-	//	User newDTO = DTOUtils.newDTO(User.class);
-	//	userInfoApi.get
-	//	BasePage<User>  list=userInfoApi.listPageByExample(newDTO);
-		
-	//	User userQuery = new User();
-	//	userQuery.setDepartmentId(departmentId);
-	//	BaseOutput<List<User>> userOutput = this.userRpc.list(userQuery);
-	   //System.out.println(list+"sssssssssssssssssssssss");
 		return BaseOutput.success("修改成功");
 	}
+	@ApiOperation(value = "uap用戶遷移", notes = "查询uap用戶返回列表信息")
 	@RequestMapping(value = "/updateData", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput updateData( Long id) {
 		
@@ -87,31 +78,39 @@ public class DataMigrateController {
 			return BaseOutput.success("已经迁移");
 		return BaseOutput.success("修改成功");
 	}
+	@ApiOperation(value = "查询uap用戶", notes = "查询uap用戶返回列表信息")
 	@RequestMapping(value = "/myMoveList", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String  myTasksList( User user) {
-		
 		PageOutput<List<User>> userOutput =userRpc.listByExample(user);
     	EasyuiPageOutput  out= new EasyuiPageOutput(userOutput.getTotal(), userOutput.getData());
 	   return out.toString();
 
 	}
-
-	@RequestMapping(value = "/getUapUserList", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput updates( Long id) {
+	@ApiOperation(value = "替換用戶表--", notes = "替換用戶表--")
+	@RequestMapping(value = "/updateUserStrData", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody BaseOutput updateUserStrData() {
 		
+		//数据更新，用户相关表
+		int  num=moveService.updateUserIdStrData();
+		if(num==1)
+			return BaseOutput.success("執行成功");
 		return BaseOutput.success("修改成功");
 	}
-
-
-	
 	@ApiOperation("跳转到pendingDisposal页面")
 	@RequestMapping(value = "/dataChange", method = RequestMethod.GET)
 	public String dataChange(ModelMap modelMap) {
-		return "onlineDataChange/dataChange";
+		return "move/drafts";
 	}
 
 
 
+/*	@RequestMapping(value = "/getUapUserList", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody BaseOutput updates( Long id) {
+		return BaseOutput.success("修改成功");
+	}
+
+*/
+	
 
 
 
