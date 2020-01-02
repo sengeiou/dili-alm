@@ -81,7 +81,7 @@ public class DemandController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/detail.html", method = RequestMethod.GET)
+	@RequestMapping(value = "/detail", method = RequestMethod.GET)
 	public String detail(@RequestParam Long id,  ModelMap map) throws Exception {
 		DemandDto detailViewData = this.demandService.getDetailViewData(id);
 		try {

@@ -68,7 +68,7 @@ function versionOptFormatter(value, row, index) {
 			title : '需求详情',
 			width : 800,
 			height : 640,
-			href : '${contextPath!}/demand/detail.html?id=' + id,
+			href : '${contextPath!}/demand/detail?id=' + id,
 			modal : true,
 			buttons : [{
 						text : '返回',
