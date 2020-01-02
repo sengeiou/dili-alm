@@ -91,7 +91,7 @@ public class DemandController {
 			LOGGER.error(e.getMessage(), e);
 			return null;
 		}
-		return "project/detail";
+		return "demand/detail";
 	}
 	
 	@ApiOperation(value = "查询Task", notes = "查询Task，返回列表信息")
