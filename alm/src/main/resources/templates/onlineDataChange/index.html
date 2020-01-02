@@ -80,9 +80,7 @@
                         <th data-options="field:'sqlScript',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                             sql脚本
                         </th>
-                        <th data-options="field:'sqlFileId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                                                                                       文件附件
-                        </th>
+                       
                     </tr>
                 </thead>
             </table>
@@ -565,9 +563,10 @@
 
 			           success:function(data){
 			        	   var row = data.data[0];
-			        	   alert(row.id);
+			        	    alert("上传成功");
 			        	//   $('#_sqlFileId').textbox('setText', row.id); 
 			        	   $('#_sqlFileId').val( row.id); 
+			        	  
 			           }
 			           
 			       

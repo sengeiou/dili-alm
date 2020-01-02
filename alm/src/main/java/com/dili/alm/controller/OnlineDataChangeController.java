@@ -58,8 +58,6 @@ public class OnlineDataChangeController {
 		return "onlineDataChange/dataChange";
 	}
 	
-	
-
     @ApiOperation(value="��ѯOnlineDataChange", notes = "��ѯOnlineDataChange�������б���Ϣ")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "OnlineDataChange��form��Ϣ", required = false, dataType = "string")
@@ -81,30 +79,21 @@ public class OnlineDataChangeController {
     	
 		 
 		Map<Object, Object> metadata = null == onlineDataChange.getMetadata() ? new HashMap<>() : onlineDataChange.getMetadata();
-
 		JSONObject projectProvider = new JSONObject();
 		projectProvider.put("provider", "projectProvider");
 		metadata.put("projectId", projectProvider);
-
 		JSONObject projectVersionProvider = new JSONObject();
 		projectVersionProvider.put("projectVersion", "projectVersionProvider");
 		metadata.put("versionId", projectVersionProvider);
-
 		onlineDataChange.setMetadata(metadata);
-		
 		try {
-			
 			//List taskList = ValueProviderUtils.buildDataByProvider(onlineDataChange, list);
-			
 			  EasyuiPageOutput taskEasyuiPageOutput = new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(epo.getTotal()))), list);
 			  return taskEasyuiPageOutput.toString();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
-		
-		
-		
        // return onlineDataChangeService.listEasyuiPageByExample(onlineDataChange, true).toString();
     }
 
@@ -143,29 +132,29 @@ public class OnlineDataChangeController {
     }
     
  
+    @ApiOperation("返回当前登录者的信息")
     @RequestMapping(value="/getUserName.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String getUserName(Long id ) {
     	if(id==null) {
     		UserTicket user = SessionContext.getSessionContext().getUserTicket();
-    		
     		if(user!=null)
     	     return user.getRealName();
     		else
-    		  return "12";
+    		  return "请登录";
     	 }else {
     		User user=userRpc.findUserById(id).getData();
     		 return user.getRealName();
     	}
         
     }
-    @RequestMapping(value="/upload.action", method = {RequestMethod.GET, RequestMethod.POST})
+/*    @RequestMapping(value="/upload.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput upload(  @RequestParam MultipartFile sqlFile) {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
     	//onlineDataChange.setApplyUserId(id);
     	 String fileName = sqlFile.getOriginalFilename();
      //   onlineDataChangeService.insertSelective(onlineDataChange);
         return BaseOutput.success("11111");
-    }
+    }*/
     
     
     

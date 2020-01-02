@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.dao.ApproveMapper;
 import com.dili.alm.dao.FilesMapper;
 import com.dili.alm.dao.HardwareApplyOperationRecordMapper;
@@ -55,6 +57,8 @@ import com.dili.alm.service.DataMigrateService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.uap.sdk.domain.User;
+
+import net.minidev.json.JSONArray;
 
 @Service
 public class DataMigrateImpl implements DataMigrateService {
@@ -633,7 +637,17 @@ public class DataMigrateImpl implements DataMigrateService {
 			dto.setTableName("project_online_apply");// 设为常量
 			moveLogTableMapper.insertSelective(dto);
 			
-			object.setExecutorId(object.getExecutorId().toString().replace("userId", "uapUserId"));//带处理
+			if(object.getExecutorId()!=null) {
+				String[] strList=object.getExecutorId().split(",");
+				for (int i = 0; i < strList.length; i++) {
+					 if(strList[i].equals(userId+"")) {
+						 strList[i]= uapUserId+"--";
+					 }
+				}
+				object.setExecutorId(strList.toString());//带处理
+				
+			}
+		
 			projectOnlineApplyMapper.updateByPrimaryKeySelective(object);
 		}
 
@@ -659,8 +673,7 @@ public class DataMigrateImpl implements DataMigrateService {
 		ProjectOnlineSubsystem projectOnlineSubsystem = DTOUtils.newDTO(ProjectOnlineSubsystem.class);
 		projectOnlineSubsystem.setManagerId(userId);
 
-		List<ProjectOnlineSubsystem> listprojectOnlineSubsystem = projectOnlineSubsystemMapper
-				.select(projectOnlineSubsystem);
+		List<ProjectOnlineSubsystem> listprojectOnlineSubsystem = projectOnlineSubsystemMapper.select(projectOnlineSubsystem);
 		for (ProjectOnlineSubsystem object : listprojectOnlineSubsystem) {
 
 			dto =new MoveLogTable();
@@ -676,10 +689,11 @@ public class DataMigrateImpl implements DataMigrateService {
 		///// manager_name
 		/////// 需要重新写
 		projectOnlineSubsystem.setManagerId(null);
-		BaseOutput<User> userTempManagerId = userRpc.get(userId);
-		projectOnlineSubsystem.setManagerName(userTempManagerId.getData().getRealName());
-		List<ProjectOnlineSubsystem> listprojectManagerName = projectOnlineSubsystemMapper
-				.select(projectOnlineSubsystem);
+		BaseOutput<User> userTempManagerIdLocal = localUserRpc.findUserById(userId);
+		projectOnlineSubsystem.setManagerName(userTempManagerIdLocal.getData().getRealName());
+		
+		BaseOutput<User> userTempManagerIdUapRpc= userRpc.get(uapUserId);
+		List<ProjectOnlineSubsystem> listprojectManagerName = projectOnlineSubsystemMapper.select(projectOnlineSubsystem);
 		for (ProjectOnlineSubsystem object : listprojectManagerName) {
 
 			dto =new MoveLogTable();
@@ -688,7 +702,17 @@ public class DataMigrateImpl implements DataMigrateService {
 			dto.setTableName("project_online_subsystem");// 设为常量
 			moveLogTableMapper.insertSelective(dto);
 			
-			object.setManagerName(object.getManagerName().replace(object.getManagerName(), userTempManagerId.getData().getRealName()));
+			if(object.getManagerName()!=null) {
+				String[] strList=object.getManagerName().split(",");
+				for (int i = 0; i < strList.length; i++) {
+					 if(strList[i].equals(userTempManagerIdLocal.getData().getRealName())) {
+						 strList[i]= userTempManagerIdUapRpc.getData().getRealName()+"--";
+					 }
+				}
+				object.setManagerName(strList.toString());//带处理
+				
+			}
+			//object.setManagerName(object.getManagerName().replace(object.getManagerName(), userTempManagerId.getData().getRealName()));
 			projectOnlineSubsystemMapper.updateByPrimaryKeySelective(object);
 		}
 
@@ -979,8 +1003,20 @@ public class DataMigrateImpl implements DataMigrateService {
 			dto.setTableName("work_order");// 设为常量
 			moveLogTableMapper.insertSelective(dto);
 			String str=object.getCopyUserId();
-			
-			object.setCopyUserId(str.replace(userId+"", uapUserId+""));
+			if(object.getCopyUserId()!=null) {
+				List<String> list = JSONObject.parseArray(str,String.class);
+				
+				for (int j = 0; j < list.size(); j++) {
+					if(list.get(j).equals(userId+"")) {
+						list.set(j, uapUserId+"--");
+					}
+				}
+				
+				com.alibaba.fastjson.JSONArray  studentJsonArray = JSON.parseArray(JSONObject.toJSONString(list));
+				object.setCopyUserId(studentJsonArray.toString());//带处理
+				
+			}
+			//object.setCopyUserId(str.replace(userId+"", uapUserId+""));
 			workOrderMapper.updateByPrimaryKeySelective(object);
 			
 		}
@@ -2198,6 +2234,56 @@ public class DataMigrateImpl implements DataMigrateService {
 		 */
 
 		return 0;
+	}
+
+	@Override
+	public int updateUserIdStrData() {
+		
+		
+		List<ProjectOnlineApply> listProjectOnlinetExecutorId = projectOnlineApplyMapper.select(null);
+		for (ProjectOnlineApply object : listProjectOnlinetExecutorId) {
+			
+			
+			if(object.getExecutorId()!=null) {
+				String strList=object.getExecutorId().replace("--", "");
+				object.setExecutorId(strList.toString());//带处理
+			}
+		
+			projectOnlineApplyMapper.updateByPrimaryKeySelective(object);
+		}
+		
+		List<WorkOrder> listWeeklyCopyUserId = workOrderMapper.select(null);
+		for (WorkOrder object : listWeeklyCopyUserId) {
+		
+			String str=object.getCopyUserId();
+			object.setCopyUserId(str.replace("--",""));
+			workOrderMapper.updateByPrimaryKeySelective(object);
+			
+		}
+		
+	
+		List<ProjectOnlineSubsystem> listprojectManagerName = projectOnlineSubsystemMapper.select(null);
+		for (ProjectOnlineSubsystem object : listprojectManagerName) {
+			object.setManagerName(object.getManagerName().replace("--", ""));
+			projectOnlineSubsystemMapper.updateByPrimaryKeySelective(object);
+		}
+		
+		
+		
+		return 1;
+	}
+	public static void main(String[] args) {
+		String str="1634,163";
+		String[] strList=str.split(",");
+		for (int i = 0; i < strList.length; i++) {
+			 if(strList[i].equals("163")) {
+				 strList[i]="1227acc";
+			 }
+		}
+		
+		for (String string : strList) {
+			System.out.println(string);
+		}
 	}
 
 }

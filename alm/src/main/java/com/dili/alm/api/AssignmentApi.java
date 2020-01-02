@@ -18,6 +18,7 @@ import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,13 +37,15 @@ public class AssignmentApi {
 	private AssignmentService assignmentService;
 
 	//申请数据变
-	@RequestMapping("/setSubmitOnlineDataChangeAssigneeName")
+	@ApiOperation("申请数据变")
+	@RequestMapping("/setSubmitOnlineDataChangeAssigneeName.api")
 	public @ResponseBody BaseOutput<Assignment> setsubmitOnlineDataChangeAssigneeName(@RequestBody Long onlineDataChangeId) {
 		Assignment record = assignmentService.setSubmitOnlineDataChangeAssigneeName(onlineDataChangeId);
 		return BaseOutput.success().setData(record);
 	}
 	//根据变更ID，返回部门审批人
-	@RequestMapping("/setDeptOnlineDataChangeAssigneeName")
+	@ApiOperation("根据变更ID，返回部门审批人")
+	@RequestMapping("/setDeptOnlineDataChangeAssigneeName.api")
 	public @ResponseBody BaseOutput<Assignment> setDeptOnlineDataChangeAssigneeName(@RequestBody Long onlineDataChangeId) {
 		Assignment record = assignmentService.setDeptOnlineDataChangeAssigneeName(onlineDataChangeId);
 		
@@ -50,7 +53,8 @@ public class AssignmentApi {
 		
 	}
 	//根据变更ID，返回测试审批人
-	@RequestMapping("/setTestOnlineDataChangeAssigneeName")
+	@ApiOperation("根据变更ID，返回测试审批人")
+	@RequestMapping("/setTestOnlineDataChangeAssigneeName.api")
 	public @ResponseBody BaseOutput<Assignment> setTestOnlineDataChangeAssigneeName(@RequestBody Long onlineDataChangeId) {
 		
 		Assignment record = assignmentService.setTestOnlineDataChangeAssigneeName(onlineDataChangeId);
@@ -58,6 +62,7 @@ public class AssignmentApi {
 		
 	}
 	//根据变更ID，返回dba审批人
+	//@ApiOperation("根据变更ID，返回dba审批人")
 /*	@RequestMapping("/setDbaOnlineDataChangeAssigneeName")
 	public @ResponseBody BaseOutput<Assignment> setDbaOnlineDataChangeAssigneeName(@RequestBody Long onlineDataChangeId) {
 		

@@ -30,7 +30,7 @@ public class OnlineDataChange extends BaseDomain {
      * �г�id
      */
     @Column(name = "`apply_market_id`")
-    private Long applyMarketId;
+    private String applyMarketId;
 
     /**
      * ��Ŀid
@@ -97,8 +97,8 @@ public class OnlineDataChange extends BaseDomain {
      * @return apply_market_id - �г�id
      */
     @FieldDef(label="�г�id")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    public Long getApplyMarketId() {
+    @EditMode(editor = FieldEditor.Text, required = false)
+    public String getApplyMarketId() {
         return applyMarketId;
     }
 
@@ -107,7 +107,7 @@ public class OnlineDataChange extends BaseDomain {
      *
      * @param applyMarketId �г�id
      */
-    public void setApplyMarketId(Long applyMarketId) {
+    public void setApplyMarketId(String applyMarketId) {
         this.applyMarketId = applyMarketId;
     }
 
