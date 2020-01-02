@@ -25,19 +25,30 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class ProjectApi {
 	@Autowired
 	ProjectService projectService;
-
+	/**
+	 * 查询所有项目信息
+	 * @return
+	 */
 	@RequestMapping("/selectAll.api")
 	public @ResponseBody BaseOutput<List<Project>> selectAll() {
 		Project project=DTOUtils.newDTO(Project.class);
 		List<Project> selectAll = this.projectService.list(project);
 		return BaseOutput.success().setData(selectAll);
 	}
-	
+	/**
+	 * 根据Id获取项目信息
+	 * @param id
+	 * @return
+	 */
 	@RequestMapping("/get.api")
 	public @ResponseBody BaseOutput<Project> get(@RequestBody Long id) {
 		return BaseOutput.success().setData(this.projectService.get(id));
 	}
-	
+	/**
+	 * 根据id集合获取项目信息
+	 * @param ids
+	 * @return
+	 */
 	@RequestMapping("/selectByIds.api")
 	public @ResponseBody BaseOutput<List<Project>> selectByIds(@RequestBody List<String> ids) {
 		List<Long> idsList=new ArrayList<Long>();

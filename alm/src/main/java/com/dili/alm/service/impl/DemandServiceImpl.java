@@ -117,7 +117,11 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		JSONObject demandTypeProvider = new JSONObject();
 		demandTypeProvider.put("provider", "demandTypeProvider");
 		metadata.put("type", demandTypeProvider);
-
+		
+		JSONObject projectSysProvider = new JSONObject();
+		projectSysProvider.put("provider", "projectSysProvider");
+		metadata.put("belongSysId", projectSysProvider);
+		
 		JSONObject datetimeProvider = new JSONObject();
 		datetimeProvider.put("provider", "datetimeProvider");
 		metadata.put("createDate", datetimeProvider);
@@ -334,11 +338,12 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		if(userBase.getData()!=null) {
 			User user = userBase.getData();
 			demandDto.setUserPhone(user.getCellphone());
+			demandDto.setUserName(user.getRealName());
 			BaseOutput<Department> departmentBase = this.departmentRpc.get(user.getDepartmentId());
 			if(departmentBase.getData()!=null) {
 				demandDto.setDepartmentId(departmentBase.getData().getId());
 				demandDto.setDepartmentName(departmentBase.getData().getName());
-				BaseOutput<Department> firstDepartment = this.departmentRpc.getFirstDepartment(demand.getId());
+				BaseOutput<Department> firstDepartment = this.departmentRpc.getFirstDepartment(departmentBase.getData().getId());
 				if(firstDepartment.getData()!=null) {
 					demandDto.setDepartmentFirstName(firstDepartment.getData().getName());
 				}

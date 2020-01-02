@@ -12,27 +12,36 @@
            
             <tr>
                 <td style="padding:5px;" >
-                    <input class="easyui-numberbox" name="userId" id="userId" style="width:300px" data-options="label:'需求申请人:'" 
-                        readonly="readonly"  value="${model.userId!}"/>
-                     <#comboProvider _id="userId" _provider='memberProvider' />
+                    <input class="easyui-textbox" name="userId" id="userId" style="width:300px" data-options="label:'需求申请人:'" 
+                        readonly="readonly"  value="${model.userName!}"/>
                 </td>
                 <td style="padding:5px;">
-                    <input class="easyui-numberbox"  style="width:300px" data-options="label:'申请人电话:'" 
+                    <input class="easyui-textbox"  style="width:300px" data-options="label:'申请人电话:'" 
                         readonly="readonly"  value="${model.userPhone!}"/>
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-numberbox" style="width:300px" data-options="label:'申请人部门:'" 
+                    <input class="easyui-textbox" style="width:300px" data-options="label:'申请人部门:'" 
                        readonly="readonly"    value="${model.departmentName!}"/>
                 </td>
                 <td style="padding:5px;">
-                    <input class="easyui-numberbox"  id="belongProId" style="width:300px" data-options="label:'所属系统:'" 
+                    <input class="easyui-textbox"  id="belongProId" style="width:300px" data-options="label:'所属项目:'" 
                        readonly="readonly"    value="${model.belongProId!}"/>
                        <#comboProvider _id="belongProId" _provider='projectProvider' />
                 </td>
             </tr>
-            
+               <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-textbox" style="width:300px" data-options="label:'申请一级部门:'" 
+                       readonly="readonly"    value="${model.departmentFirstName!}"/>
+                </td>
+                <td style="padding:5px;">
+                    <input class="easyui-textbox"  id="belongSysId" style="width:300px" data-options="label:'所属系统:'" 
+                       readonly="readonly"    value="${model.belongSysId!}"/>
+                       <#comboProvider _id="belongSysId" _provider='projectSysProvider' />
+                </td>
+            </tr>
             <tr >
                 <td style="padding:5px;" colspan="2">
                     <input class="easyui-textbox"  style="width:700px" data-options="label:'期望时间:'" 
