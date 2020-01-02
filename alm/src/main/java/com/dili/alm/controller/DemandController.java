@@ -75,7 +75,13 @@ public class DemandController {
 		modelMap.addAttribute("depName",de.getData().getName());
 		return "demand/add";
 	}
-	
+	/**
+	 * 需求详情页面显示
+	 * @param id
+	 * @param map
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(value = "/detail.html", method = RequestMethod.GET)
 	public String detail(@RequestParam Long id,  ModelMap map) throws Exception {
 		DemandDto detailViewData = this.demandService.getDetailViewData(id);
@@ -161,7 +167,11 @@ public class DemandController {
         return BaseOutput.success("新增成功");
     }
     
-    
+    /**
+     * 查询未立项以及对应project的需求集合
+     * @param projectId可以为空，只查询未立项;不为空，查询未立项以及对应project的需求的并集
+     * @return
+     */
     @ApiOperation(value="查询Demand未立项", notes = "查询Demand，返回列表信息")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = false, dataType = "string")
@@ -170,7 +180,11 @@ public class DemandController {
     public @ResponseBody List<Demand> queryDemandListToProject(Long projectId) {
         return demandService.queryDemandListToProject(projectId);
     }
-    
+    /**
+     * 根据需求id的集合查询对应需求
+     * @param ids
+     * @return
+     */
     @ApiOperation(value="查询Demand根据id集合", notes = "查询Demand，返回列表信息")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = false, dataType = "string")
@@ -182,6 +196,13 @@ public class DemandController {
     	}
         return demandService.queryDemandListByIds(ids);
     }
+    /**
+     * 根据id和type组合查询对应id的需求集合
+     * @param id （立项Id,工单Id,版本Id）
+     * @param type（立项,工单,版本）
+     * @return
+     */
+    
     @ApiOperation(value="查询已关联Demand", notes = "查询Demand，返回列表信息")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = false, dataType = "string")

@@ -23,14 +23,18 @@ import com.dili.alm.domain.DemandProject;
 import com.dili.alm.domain.DemandProjectStatus;
 import com.dili.alm.domain.DemandProjectType;
 import com.dili.uap.sdk.domain.Department;
+import com.dili.uap.sdk.domain.Firm;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Sequence;
+import com.dili.alm.domain.SystemDto;
 import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.dto.DemandDto;
 import com.dili.alm.exceptions.DemandExceptions;
 import com.dili.alm.rpc.DepartmentRpc;
+import com.dili.alm.rpc.FirmRpc;
+import com.dili.alm.rpc.SysProjectRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DemandService;
 import com.dili.alm.utils.GetFirstCharUtil;
@@ -87,8 +91,9 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	@Autowired
 	private UserRpc userRpc;
 	@Autowired
-	private DepartmentRpc deptRpc;
-	
+	private SysProjectRpc sysProjectRpc;
+	@Autowired
+	private FirmRpc firmRpc;
 	@Autowired
 	private DemandMapper demandMapper;
 	
@@ -130,7 +135,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
     	this.numberGenerator.init();
 	/** 个人信息 **/
 	UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-	BaseOutput<List<Department>> de = deptRpc.findByUserId(userTicket.getId());
+	BaseOutput<List<Department>> de = departmentRpc.findByUserId(userTicket.getId());
 	String depStr = "";
 	if (de.getData().size()>0) {
 		depStr = de.getData().get(0).getName();
@@ -299,25 +304,32 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	@Override
 	public DemandDto getDetailViewData(Long id) throws Exception {
 		Demand demand = this.getActualDao().selectByPrimaryKey(id);
-		DemandProject demandProject=new DemandProject();
+/*		DemandProject demandProject=new DemandProject();
 		demandProject.setDemandId(demand.getId());
 		demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
 		DemandProject selectOne = this.demandProjectMapper.selectOne(demandProject);
-		
-		
-		
+		if(selectOne!=null) {
+			
+		}*/
 		DemandDto demandDto =new DemandDto();
 		BeanUtils.copyProperties(demandDto, demand);
-		BaseOutput<List<Department>> departmentBase = this.departmentRpc.findByUserId(demand.getUserId());
-		if(departmentBase.getData()!=null&&departmentBase.getData().size()>0) {
-			Department department= departmentBase.getData().get(0);
-			demandDto.setDepartmentId(department.getId());
-			demandDto.setDepartmentName(department.getName());
-		}
 		BaseOutput<User> userBase = this.userRpc.findUserById(demand.getUserId());
 		if(userBase.getData()!=null) {
 			User user = userBase.getData();
 			demandDto.setUserPhone(user.getCellphone());
+			BaseOutput<Department> departmentBase = this.departmentRpc.get(user.getDepartmentId());
+			if(departmentBase.getData()!=null) {
+				demandDto.setDepartmentId(departmentBase.getData().getId());
+				demandDto.setDepartmentName(departmentBase.getData().getName());
+				BaseOutput<Department> firstDepartment = this.departmentRpc.getFirstDepartment(demand.getId());
+				if(firstDepartment.getData()!=null) {
+					demandDto.setDepartmentFirstName(firstDepartment.getData().getName());
+				}
+			}
+			BaseOutput<Firm> firm = this.firmRpc.getByCode(user.getFirmCode());
+			if(firm.getData()!=null){
+				demandDto.setFirmName(firm.getData().getName());
+			}
 		}
 		return demandDto;
 	}

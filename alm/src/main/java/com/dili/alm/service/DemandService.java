@@ -48,14 +48,32 @@ public interface DemandService extends BaseService<Demand, Long> {
 	 * 定时重新设置自增值
 	 */
 	public void setDailyBegin();
-
+	/**
+	 * 查询未立项以及对应project的需求集合
+	 * @param projectId
+	 * @return
+	 */
 	List<Demand> queryDemandListToProject(Long projectId);
-
+	/**
+	 * 查询未立项以及对应project的需求集合
+	 * @param ids
+	 * @return
+	 */
 	List<Demand> queryDemandListByIds(String ids);
-
+	/**
+	 * 根据id和type组合查询对应id的需求集合
+	 * @param id
+	 * @param type
+	 * @return
+	 */
 	List<Demand> queryDemandListByProjectIdOrVersionIdOrWorkOrderId(Long id,
 			Integer type);
-
+	/**
+	 * 根据需求id返回显示集合
+	 * @param id
+	 * @return
+	 * @throws Exception
+	 */
 	DemandDto getDetailViewData(Long id) throws Exception;
 
 	

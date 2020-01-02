@@ -22,8 +22,8 @@ import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.ProjectCost;
 import com.dili.alm.domain.ProjectEarning;
-import com.dili.alm.domain.ProjectSysEntity;
 import com.dili.alm.domain.Roi;
+import com.dili.alm.domain.SystemDto;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.RoiDto;
@@ -106,7 +106,7 @@ public class AlmCache {
 	//需求类型缓存
 	private static final Map<String, String> DAMAND_TYPE_MAP = new ConcurrentHashMap<>();
 	//系统缓存
-	private static final Map<Integer, ProjectSysEntity> PROJECT_SYS_MAP = new ConcurrentHashMap<>();
+	private static final Map<Long, SystemDto> PROJECT_SYS_MAP = new ConcurrentHashMap<>();
 	
 	@Autowired
 	private UserRpc userRpc;
@@ -459,10 +459,10 @@ public class AlmCache {
 		return DAMAND_TYPE_MAP;
 	}
 	
-	public Map<Integer, ProjectSysEntity> getProjectSysMap() {
+	public Map<Long, SystemDto> getProjectSysMap() {
 		// 应用启动时初始化userMap
 		if (AlmCache.PROJECT_SYS_MAP.isEmpty()) {
-			BaseOutput<List<ProjectSysEntity>> output = sysProjectRpc.list(new ProjectSysEntity());
+			BaseOutput<List<SystemDto>> output = sysProjectRpc.list(DTOUtils.newDTO(SystemDto.class));
 			if (output.isSuccess()) {
 				output.getData().forEach(entity -> {
 					AlmCache.PROJECT_SYS_MAP.put(entity.getId(), entity);

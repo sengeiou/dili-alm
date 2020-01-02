@@ -41,5 +41,6 @@ public interface DepartmentRpc {
 	@POST("/departmentApi/get.api")
 	BaseOutput<Department> get(@VOBody Long id);
 	
-	
+	@POST("/departmentApi/getFirstDepartment.api")
+	BaseOutput<Department> getFirstDepartment(@VOBody Long id);
 }
