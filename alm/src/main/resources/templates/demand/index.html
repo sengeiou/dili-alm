@@ -114,8 +114,7 @@
 					handler:function(){
 							$.messager.confirm('确认', '提交后信息不能在进行编辑！', function(r) {
 								if (r) {
-								       //TODO:提交操作
-								       getText();
+								       submit();
 								}})
 					}}
 					,{
@@ -152,10 +151,48 @@
             formFocus("_form", "_serialNumber");
             var formData = $.extend({},selected);
             formData = addKeyStartWith(getOriginalData(formData),"_");
-            console.log(formData);
+            
+            formData._finishDate=dateFormat_1(formData._finishDate);
             $('#_form').form('load', formData);
         }
 
+        /*
+        *直接提交
+        */
+        function submit(){
+            if(!$('#_form').form("validate")){
+                return;
+            }
+            if(editor.txt.html()==""){
+            	 $.messager.alert('警告','需求内容为必填项目');
+            	 return;
+            }
+
+            var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
+             
+            _formData.content = editor.txt.html();
+            _formData.reason =  editor2.txt.html();
+            var _url = "${contextPath}/demand/submint";
+            $.ajax({
+                type: "POST",
+                url: _url,
+                data: _formData,
+                processData:true,
+                dataType: "json",
+                async : true,
+                success: function (data) {
+                    if(data.code=="200"){
+                        $("#grid").datagrid("reload");
+                        $('#dlg').dialog('close');
+                    }else{
+                        $.messager.alert('错误',data.result);
+                    }
+                },
+                error: function(){
+                    $.messager.alert('错误','远程访问失败');
+                }
+            });
+        }
         function saveOrUpdate(){
             if(!$('#_form').form("validate")){
                 return;
@@ -169,7 +206,6 @@
              
             _formData.content = editor.txt.html();
             _formData.reason =  editor2.txt.html();
-        	console.log(_formData);
             var _url = null;
             //没有id就新增
             if(_formData.id == null || _formData.id==""){
@@ -332,7 +368,33 @@
 						}]
 			});
         }
+       function dateFormat_1(longTypeDate) {
+    		var dateType = "";
+    		var date = new Date();
+    		date.setTime(longTypeDate);
+    		dateType += date.getFullYear(); // 年
+    		dateType += "-" + getMonth(date); // 月
+    		dateType += "-" + getDay(date); // 日
+    		return dateType;
+    	}
 
-
+    	// 返回 01-12 的月份值
+    	function getMonth(date) {
+    		var month = "";
+    		month = date.getMonth() + 1; // getMonth()得到的月份是0-11
+    		if (month < 10) {
+    			month = "0" + month;
+    		}
+    		return month;
+    	}
+    	// 返回01-30的日期
+    	function getDay(date) {
+    		var day = "";
+    		day = date.getDate();
+    		if (day < 10) {
+    			day = "0" + day;
+    		}
+    		return day;
+    	}
     </script>
 </#body>
