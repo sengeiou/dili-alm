@@ -26,12 +26,22 @@
                        readonly="readonly"    value="${model.departmentName!}"/>
                 </td>
                 <td style="padding:5px;">
-                    <input class="easyui-textbox"  id="belongProId" style="width:300px" data-options="label:'所属系统:'" 
+                    <input class="easyui-textbox"  id="belongProId" style="width:300px" data-options="label:'所属项目:'" 
                        readonly="readonly"    value="${model.belongProId!}"/>
                        <#comboProvider _id="belongProId" _provider='projectProvider' />
                 </td>
             </tr>
-            
+               <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-textbox" style="width:300px" data-options="label:'申请一级部门:'" 
+                       readonly="readonly"    value="${model.departmentFirstName!}"/>
+                </td>
+                <td style="padding:5px;">
+                    <input class="easyui-textbox"  id="belongSysId" style="width:300px" data-options="label:'所属系统:'" 
+                       readonly="readonly"    value="${model.belongSysId!}"/>
+                       <#comboProvider _id="belongSysId" _provider='ProjectSysProvider' />
+                </td>
+            </tr>
             <tr >
                 <td style="padding:5px;" colspan="2">
                     <input class="easyui-textbox"  style="width:700px" data-options="label:'期望时间:'" 
