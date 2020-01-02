@@ -317,6 +317,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		if(userBase.getData()!=null) {
 			User user = userBase.getData();
 			demandDto.setUserPhone(user.getCellphone());
+			demandDto.setUserName(user.getRealName());
 			BaseOutput<Department> departmentBase = this.departmentRpc.get(user.getDepartmentId());
 			if(departmentBase.getData()!=null) {
 				demandDto.setDepartmentId(departmentBase.getData().getId());
