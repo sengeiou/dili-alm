@@ -1,33 +1,17 @@
 package com.dili.alm.api;
 
-import com.dili.alm.domain.OnlineDataChange;
-import com.dili.alm.domain.Project;
-import com.dili.alm.domain.Team;
-import com.dili.uap.sdk.domain.User;
-import com.dili.alm.domain.dto.DataDictionaryDto;
-import com.dili.alm.rpc.UserRpc;
-import com.dili.alm.service.AssignmentService;
-import com.dili.alm.service.DataDictionaryService;
-import com.dili.alm.service.OnlineDataChangeService;
-import com.dili.alm.service.ProjectService;
-import com.dili.bpmc.sdk.domain.TaskMapping;
-import com.dili.bpmc.sdk.dto.Assignment;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.uap.sdk.domain.UserTicket;
-import com.dili.uap.sdk.session.SessionContext;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.dili.alm.service.AssignmentService;
+import com.dili.bpmc.sdk.dto.Assignment;
+import com.dili.ss.domain.BaseOutput;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Api("/assignmentApi")
 @Controller
@@ -62,16 +46,35 @@ public class AssignmentApi {
 		
 	}
 	//根据变更ID，返回dba审批人
-	//@ApiOperation("根据变更ID，返回dba审批人")
-/*	@RequestMapping("/setDbaOnlineDataChangeAssigneeName")
+	@ApiOperation("根据变更ID，返回dba审批人")
+	@RequestMapping("/setDbaOnlineDataChangeAssigneeName")
 	public @ResponseBody BaseOutput<Assignment> setDbaOnlineDataChangeAssigneeName(@RequestBody Long onlineDataChangeId) {
 		
 		Assignment record = assignmentService.setDbaOnlineDataChangeAssigneeName(onlineDataChangeId);
 		return BaseOutput.success().setData(record);
 		
-	}*/
+	}
+	//根据变更ID，返回dba审批人
+	@ApiOperation("根据变更ID，返回dba审批人")
+	@RequestMapping("/setOnlineConfirm")
+	public @ResponseBody BaseOutput<Assignment> setOnlineConfirm(@RequestBody Long onlineDataChangeId) {
+		
+		Assignment record = assignmentService.setOnlineConfirm(onlineDataChangeId);
+		return BaseOutput.success().setData(record);
+		
+	}
 	
 	
+	
+	//根据变更ID，返回测试审批人
+	@ApiOperation("根据变更ID,項目申請人")
+	@RequestMapping("/getTestOnlineDataChangeUserName.api")
+	public @ResponseBody BaseOutput<String> getTestOnlineDataChangeUserName(@RequestBody Long onlineDataChangeId) {
+		
+		String record = assignmentService.setTestOnlineDataChangeUserName(onlineDataChangeId);
+		return BaseOutput.success().setData(record);
+		
+	}
 	
 	
 	

@@ -16,9 +16,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.domain.OnlineDataChange;
+import com.dili.alm.rpc.RuntimeApiRpc;
 //import com.dili.alm.rpc.RuntimeRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.OnlineDataChangeService;
+import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
+import com.dili.bpmc.sdk.rpc.RuntimeRpc;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.uap.sdk.domain.User;
@@ -43,8 +46,8 @@ public class OnlineDataChangeController {
     @Autowired
 	private UserRpc userRpc;
     
-    //@Autowired
-  	//private   RuntimeRpc  runtimeRpc;
+    @Autowired
+  	private   RuntimeApiRpc  runtimeRpc;
     @ApiOperation("��ת��indexҳ��")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
@@ -118,10 +121,16 @@ public class OnlineDataChangeController {
     public  BaseOutput insert(@ModelAttribute OnlineDataChange onlineDataChange) {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
     	onlineDataChange.setApplyUserId(id);
-    	// String fileName = sqlFile.getOriginalFilename();
-      int  bukey= onlineDataChangeService.insertSelective(onlineDataChange);
-      // runtimeRpc.startProcessInstanceById("almOnlineDataChangeProcess", bukey+"", id+"", null);
-        return BaseOutput.success("�����ɹ�");
+        onlineDataChangeService.insertSelective(onlineDataChange);
+        try {
+    	   Map<String, Object> map=new HashMap<String, Object>();
+		   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almOnlineDataChangeProcess", onlineDataChange.getId().toString(), id+"",map);
+	       System.out.println(object.getCode()+object.getData()+object.getErrorData());
+        } catch (Exception e) {
+		   e.printStackTrace();
+		   System.out.println(e);
+	    }
+        return BaseOutput.success("保存成功");
     }
 
     @ApiOperation("�޸�OnlineDataChange")
