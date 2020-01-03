@@ -56,28 +56,28 @@
                    align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
                 <thead>
                     <tr>
-                        <th data-options="field:'applyUserId',  _provider:'memberProvider',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'applyUserId',  _provider:'memberProvider', width:'10%',    sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                      申请人
                         </th>
-                        <th data-options="field:'applyMarketId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'applyMarketId' ,width:'10%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                         市场名称                   
                         </th>
-                        <th data-options="field:'projectId',_provider:'projectProvider',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'projectId',_provider:'projectProvider',width:'15%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                          项目名称
                         </th>
-                        <th data-options="field:'versionId',_provider:'projectVersionProvider' ,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'versionId',_provider:'projectVersionProvider' ,width:'10%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                     版本
                         </th>
-                        <th data-options="field:'applyDate',  _provider:'dateProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'applyDate',  _provider:'dateProvider', width:'10%',sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                      申请时间
                         </th>
-                        <th data-options="field:'updateDate',  _provider:'dateProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'updateDate',  _provider:'dateProvider',width:'10%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                    申请更新时间
                         </th>
-                        <th data-options="field:'dbaName',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'dbaName',width:'10%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                     数据库名
                         </th>
-                        <th data-options="field:'sqlScript',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'sqlScript', width:'15%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                             sql脚本
                         </th>
                        
@@ -106,7 +106,7 @@
     <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="OnlineDataChange信息" style="padding:20px" modal="true" border="thin" closed="true"
          data-options="
 				iconCls: 'icon-save',
-				height: 480,
+				height: 580,
 				buttons: [{
 					text:'Ok',
 					iconCls:'icon-ok',

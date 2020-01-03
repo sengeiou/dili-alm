@@ -58,8 +58,6 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.uap.sdk.domain.User;
 
-import net.minidev.json.JSONArray;
-
 @Service
 public class DataMigrateImpl implements DataMigrateService {
 

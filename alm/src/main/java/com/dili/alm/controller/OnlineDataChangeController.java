@@ -1,24 +1,5 @@
 package com.dili.alm.controller;
 
-import com.alibaba.fastjson.JSONObject;
-import com.dili.alm.domain.OnlineDataChange;
-import com.dili.alm.domain.Task;
-import com.dili.alm.domain.TaskEntity;
-import com.dili.alm.rpc.UserRpc;
-import com.dili.alm.service.OnlineDataChangeService;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.metadata.ValueProviderUtils;
-import com.dili.uap.sdk.domain.User;
-import com.dili.uap.sdk.domain.UserTicket;
-import com.dili.uap.sdk.session.SessionContext;
-import com.github.pagehelper.Page;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,9 +12,23 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
+
+import com.alibaba.fastjson.JSONObject;
+import com.dili.alm.domain.OnlineDataChange;
+import com.dili.alm.rpc.RuntimeRpc;
+import com.dili.alm.rpc.UserRpc;
+import com.dili.alm.service.OnlineDataChangeService;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.uap.sdk.domain.User;
+import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.session.SessionContext;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 
 /**
  * ��MyBatis Generator�����Զ�����
@@ -47,16 +42,31 @@ public class OnlineDataChangeController {
     OnlineDataChangeService onlineDataChangeService;
     @Autowired
 	private UserRpc userRpc;
+    
+    @Autowired
+  	private   RuntimeRpc  runtimeRpc;
     @ApiOperation("��ת��indexҳ��")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
         return "onlineDataChange/index";
     }
 	@ApiOperation("��ת��dataChangeҳ��")
-	@RequestMapping(value = "/dataChange.html", method = RequestMethod.GET)
-	public String projectOverview(ModelMap modelMap) {
-		return "onlineDataChange/dataChange";
+	@RequestMapping(value = "/dataChange1.html", method = RequestMethod.GET)
+	public String dataChange1(ModelMap modelMap) {
+		return "onlineDataChange/dataChange1";
 	}
+	@ApiOperation("��ת��dataChangeҳ��")
+	@RequestMapping(value = "/dataChange2.html", method = RequestMethod.GET)
+	public String dataChange2(ModelMap modelMap) {
+		return "onlineDataChange/dataChange2";
+	}
+	
+	@ApiOperation("��ת��dataChangeҳ��")
+	@RequestMapping(value = "/dataChange3.html", method = RequestMethod.GET)
+	public String projectOverview(ModelMap modelMap) {
+		return "onlineDataChange/dataChange3";
+	}
+	
 	
     @ApiOperation(value="��ѯOnlineDataChange", notes = "��ѯOnlineDataChange�������б���Ϣ")
     @ApiImplicitParams({
@@ -64,6 +74,8 @@ public class OnlineDataChangeController {
 	})
     @RequestMapping(value="/list.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody List<OnlineDataChange> list(@ModelAttribute OnlineDataChange onlineDataChange) {
+    	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
+    	onlineDataChange.setApplyUserId(id);
         return onlineDataChangeService.list(onlineDataChange);
     }
 
@@ -73,11 +85,12 @@ public class OnlineDataChangeController {
 	})
     @RequestMapping(value="/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String listPage(@ModelAttribute OnlineDataChange onlineDataChange) throws Exception {
+    	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
+    	onlineDataChange.setApplyUserId(id);
+    	
     	EasyuiPageOutput   epo=onlineDataChangeService.listEasyuiPageByExample(onlineDataChange, true);
     	List<OnlineDataChange>   list=epo.getRows();
     	 // Page<OnlineDataChange> page =  (Page<OnlineDataChange>) list;
-    	
-		 
 		Map<Object, Object> metadata = null == onlineDataChange.getMetadata() ? new HashMap<>() : onlineDataChange.getMetadata();
 		JSONObject projectProvider = new JSONObject();
 		projectProvider.put("provider", "projectProvider");
@@ -106,7 +119,8 @@ public class OnlineDataChangeController {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
     	onlineDataChange.setApplyUserId(id);
     	// String fileName = sqlFile.getOriginalFilename();
-       onlineDataChangeService.insertSelective(onlineDataChange);
+      int  bukey= onlineDataChangeService.insertSelective(onlineDataChange);
+       runtimeRpc.startProcessInstanceById("almOnlineDataChangeProcess", bukey+"", id+"", null);
         return BaseOutput.success("�����ɹ�");
     }
 
