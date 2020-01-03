@@ -2270,18 +2270,18 @@ public class DataMigrateImpl implements DataMigrateService {
 		
 		return 1;
 	}
-	public static void main(String[] args) {
-		String str="1634,163";
-		String[] strList=str.split(",");
-		for (int i = 0; i < strList.length; i++) {
-			 if(strList[i].equals("163")) {
-				 strList[i]="1227acc";
-			 }
-		}
-		
-		for (String string : strList) {
-			System.out.println(string);
-		}
-	}
+//	public static void main(String[] args) {
+//		String str="1634,163";
+//		String[] strList=str.split(",");
+//		for (int i = 0; i < strList.length; i++) {
+//			 if(strList[i].equals("163")) {
+//				 strList[i]="1227acc";
+//			 }
+//		}
+//		
+//		for (String string : strList) {
+//			System.out.println(string);
+//		}
+//	}
 
 }
