@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.domain.OnlineDataChange;
-import com.dili.alm.rpc.RuntimeRpc;
+//import com.dili.alm.rpc.RuntimeRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.OnlineDataChangeService;
 import com.dili.ss.domain.BaseOutput;
@@ -43,8 +43,8 @@ public class OnlineDataChangeController {
     @Autowired
 	private UserRpc userRpc;
     
-    @Autowired
-  	private   RuntimeRpc  runtimeRpc;
+    //@Autowired
+  	//private   RuntimeRpc  runtimeRpc;
     @ApiOperation("��ת��indexҳ��")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
@@ -120,7 +120,7 @@ public class OnlineDataChangeController {
     	onlineDataChange.setApplyUserId(id);
     	// String fileName = sqlFile.getOriginalFilename();
       int  bukey= onlineDataChangeService.insertSelective(onlineDataChange);
-       runtimeRpc.startProcessInstanceById("almOnlineDataChangeProcess", bukey+"", id+"", null);
+      // runtimeRpc.startProcessInstanceById("almOnlineDataChangeProcess", bukey+"", id+"", null);
         return BaseOutput.success("�����ɹ�");
     }
 
