@@ -124,6 +124,7 @@ public class OnlineDataChangeController {
         onlineDataChangeService.insertSelective(onlineDataChange);
         try {
     	   Map<String, Object> map=new HashMap<String, Object>();
+    	   map.put("dataId", onlineDataChange.getId());
 		   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almOnlineDataChangeProcess", onlineDataChange.getId().toString(), id+"",map);
 	       System.out.println(object.getCode()+object.getData()+object.getErrorData());
         } catch (Exception e) {
