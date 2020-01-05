@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Restful("http://uap.diligrp.com")
 public interface DepartmentRpc {
 
-	@POST("/departmentApi/listByOne.api")
-	BaseOutput<Department> listByOne(@VOBody(required = false) Department department);
+	@POST("/departmentApi/getOne.api")
+	BaseOutput<Department> getOne(@VOBody(required = false) Department department);
 
 /*	@POST("/api/departmentApi/listByExample.api")
 	BaseOutput<Department> listByExample(@VOBody(required = false) Long memberId);*/

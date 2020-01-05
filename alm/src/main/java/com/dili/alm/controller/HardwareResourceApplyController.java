@@ -74,6 +74,7 @@ public class HardwareResourceApplyController {
 	@Autowired
 	private DataDictionaryValueService ddvService;
 
+	private static final String DEPARTMENT_MAINTENANCE_CODE = "maintenance";
 	private static final String DATA_AUTH_TYPE = "project";
 
 	@ApiOperation("跳转到HardwareResourceApply页面")
@@ -127,6 +128,7 @@ public class HardwareResourceApplyController {
 		if (deptOutput.isSuccess() && CollectionUtils.isNotEmpty(deptOutput.getData())) {
 			Long departmentId = deptOutput.getData().get(0).getId();
 			User userQuery =  DTOUtils.newDTO(User.class);
+			userQuery.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 			userQuery.setDepartmentId(departmentId);
 			BaseOutput<List<User>> userOutput = this.userRpc.listByExample(userQuery);
 			if (userOutput.isSuccess() && CollectionUtils.isNotEmpty(userOutput.getData())) {
@@ -447,8 +449,13 @@ public class HardwareResourceApplyController {
 			@ApiImplicitParam(name = "id", paramType = "form", value = "HardwareResourceApply的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/operMemers.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<User> operMemers() throws HardwareResourceApplyException {
+		Department department=DTOUtils.newDTO(Department.class);
+		department.setFirmCode(AlmConstants.ALM_FIRM_CODE);
+		department.setCode(DEPARTMENT_MAINTENANCE_CODE);
+		Department getDepartment = this.deptRpc.getOne(department).getData();
 		User user = DTOUtils.newDTO(User.class);
-		user.setDepartmentId((long) 28);
+		user.setDepartmentId(getDepartment.getId());
+		user.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		List<User> operUsers = userRpc.listByExample(user).getData();
 		return operUsers;
 	}

@@ -177,6 +177,7 @@ public class AlmCache {
 		// 应用启动时初始化userMap
 		if (AlmCache.USER_MAP.isEmpty()) {
 			User newDTO = DTOUtils.newDTO(User.class);
+			newDTO.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 			BaseOutput<List<User>> output = userRpc.listByExample(newDTO);
 			if (output.isSuccess()) {
 				output.getData().forEach(user -> {

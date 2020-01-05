@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.OnlineDataChange;
 import com.dili.alm.domain.Project;
 import com.dili.uap.sdk.domain.User;
@@ -61,6 +62,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 		
 		User uprojectser = DTOUtils.newDTO(User.class);
 		uprojectser.setId(pro.getTestManager());
+		uprojectser.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		BaseOutput<List<User>> listUserByExample = userRpc.listByExample(uprojectser);
 	
 		Assignment record = DTOUtils.newDTO(Assignment.class);

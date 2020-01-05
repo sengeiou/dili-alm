@@ -957,6 +957,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			Long departmentId = deptOutput.getData().get(0).getId();
 			User userQuery = DTOUtils.newDTO(User.class);
 			userQuery.setDepartmentId(departmentId);
+			userQuery.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 			BaseOutput<List<User>> userOutput = this.userRpc.listByExample(userQuery);
 			if (userOutput.isSuccess() && CollectionUtils.isNotEmpty(userOutput.getData())) {
 				userOutput.getData().forEach(u -> emailStrs.add(u.getEmail()));

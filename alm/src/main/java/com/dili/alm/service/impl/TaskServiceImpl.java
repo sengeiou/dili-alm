@@ -571,6 +571,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 		List<User> userList = new ArrayList<User>();
 		User user = DTOUtils.newDTO(User.class);
+		user.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		userList = userRpc.listByExample(user).getData();
 
 		return userList;

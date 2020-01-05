@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.ApproveMapper;
 import com.dili.alm.dao.FilesMapper;
 import com.dili.alm.dao.HardwareApplyOperationRecordMapper;
@@ -140,6 +141,7 @@ public class DataMigrateImpl implements DataMigrateService {
 		String  strRealName=uapUser.getData().getRealName();
 		User  localUser= DTOUtils.newDTO(User.class);
 		localUser.setRealName(strRealName);
+		localUser.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 	    BaseOutput<List<User>>  lolcalUserList=localUserRpc.listByExample(localUser);
 		
 	    userId=lolcalUserList.getData().get(0).getId();

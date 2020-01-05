@@ -405,6 +405,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 
 				// 项目负责人
 				user = DTOUtils.newDTO(User.class);
+				user.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 				user.setId(Long.parseLong(weeklyPara2.getUserName()));
 				BaseOutput<List<User>> listByExample = userRpc.listByExample(user);
 				List<User> listUserParty = listByExample.getData();
@@ -437,6 +438,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		pd.setBeginAndEndTime(pd.getStartDate().substring(0, 10) + "到" + pd.getEndDate().substring(0, 10));
 
 		User user = DTOUtils.newDTO(User.class);
+		user.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		user.setId(Long.parseLong(pd.getBusinessParty()));
 		// 业务方
 		BaseOutput<List<User>> listByExample = userRpc.listByExample(user);
@@ -485,6 +487,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		pd.setBeginAndEndTime(pd.getStartDate().substring(0, 10) + "到" + pd.getEndDate().substring(0, 10));
 
 		User user = DTOUtils.newDTO(User.class);
+		user.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		user.setId(Long.parseLong(pd.getBusinessParty()));
 		// 业务方
 		BaseOutput<List<User>> listByExample = userRpc.listByExample(user);
@@ -558,6 +561,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 
 			// 责任人
 			user = DTOUtils.newDTO(User.class);
+			user.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 			user.setId(Long.parseLong(td.get(i).getOwner()));
 			BaseOutput<List<User>> listByExample = userRpc.listByExample(user);
 			List<User> listUserParty = listByExample.getData();
@@ -662,6 +666,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			// surplus=Integer.parseInt(nextWeeklyDto.getPlanTime())-Integer.parseInt(nd.getTaskHour())-Integer.parseInt(nd.getOverHour());
 			nextWeeklyDto.setSurplus(surplus + "");// 剩余工时
 			user =DTOUtils.newDTO(User.class);// 字典接口
+			user.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 			user.setId(Long.parseLong(nextWeeklyDto.getOwner()));
 			BaseOutput<List<User>> listByExample = userRpc.listByExample(user);
 			List<User> listUserParty = listByExample.getData();
@@ -779,6 +784,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 
 		for (int j = 0; j < userList.size(); j++) {
 			user = DTOUtils.newDTO(User.class);
+			user.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 			user.setId(Long.parseLong(userList.get(j).getUserName()));
 			BaseOutput<List<User>> listByExample = userRpc.listByExample(user);
 			List<User> listUserParty = listByExample.getData();
