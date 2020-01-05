@@ -470,7 +470,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		// List<DataDictionary> dditList=dictionaryMapper.selectByExample(ddit);//查询出id
 
 		DataDictionaryValue ddv = DTOUtils.newDTO(DataDictionaryValue.class);
-		ddv.setCode(pd.getProjectType());
+		ddv.setValue(pd.getProjectType());
 		ddv.setDdId(dditList.get(0).getId());
 		pd.setProjectType(dataDictionaryValueService.listDataDictionaryValue(ddv).get(0).getCode());
 		pd.setCompletedProgressInt(Integer.parseInt(pd.getCompletedProgress()));
@@ -518,7 +518,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		List<DataDictionary> dditList = dataDictionaryService.listDataDictionary(ddit);
 
 		DataDictionaryValue ddv = DTOUtils.newDTO(DataDictionaryValue.class);
-		ddv.setCode(pd.getProjectType());
+		ddv.setValue(pd.getProjectType());
 		ddv.setDdId(dditList.get(0).getId());
 		pd.setProjectType(dataDictionaryValueService.listDataDictionaryValue(ddv).get(0).getCode());
 		//
