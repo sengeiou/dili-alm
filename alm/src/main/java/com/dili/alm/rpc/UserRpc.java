@@ -5,6 +5,7 @@ import java.util.List;
 import com.dili.alm.domain.dto.UserDepartmentRole;
 import com.dili.alm.domain.dto.UserDepartmentRoleQuery;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.PageOutput;
 import com.dili.ss.retrofitful.annotation.POST;
 import com.dili.ss.retrofitful.annotation.Restful;
 import com.dili.ss.retrofitful.annotation.VOBody;
@@ -19,7 +20,7 @@ public interface UserRpc {
 	BaseOutput<List<User>> list(@VOBody(required = false) User user);*/
 
 	@POST("/userApi/listByExample.api")
-	BaseOutput<List<User>> listByExample(@VOBody(required = false) User user);
+	 PageOutput<List<User>> listByExample(@VOBody(required = false) User user);
 	
 	@POST("/userApi/get.api")
 	BaseOutput<User> findUserById(@VOBody Long id);
