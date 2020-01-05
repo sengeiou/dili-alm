@@ -10,7 +10,11 @@ public interface AssignmentService {
 	
 	Assignment  setTestOnlineDataChangeAssigneeName(Long onlineDataChangeId);
 	
-/*	Assignment   setDbaOnlineDataChangeAssigneeName(Long onlineDataChangeId);*/
+     Assignment   setDbaOnlineDataChangeAssigneeName(Long onlineDataChangeId);
+	
+	String    setTestOnlineDataChangeUserName(Long onlineDataChangeId);
+	  Assignment   setOnlineConfirm(Long onlineDataChangeId);
+	
 	
 
 }

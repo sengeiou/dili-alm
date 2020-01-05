@@ -73,29 +73,57 @@ public class AssignmentServiceImpl implements AssignmentService {
 		
 	}
 
-/*	@Override
-	public Assignment setDbaOnlineDataChangeAssigneeName(Long onlineDataChangeId) {
-      OnlineDataChange  odc=onlineDataChangeService.get(onlineDataChangeId);
-		
-		Project  pro=	projectService.get(odc.getProjectId());
-		
-		BaseOutput<List<User>> listUserByExample = userRpc.listUserByRole(pro.getTestManager());
-		
-		Assignment record = DTOUtils.newDTO(Assignment.class);
-		
-		List<User> listUsernName = listUserByExample.getData();
-		
-		List<String>  reList=new ArrayList<>();
-		if (listUsernName != null && listUsernName.size() > 0) {
-	       for (User user : listUsernName) {
-	    	   reList.add(user.getId().toString());
-		   }		
-		}	
-		record.setCandidateUser(reList); 
-		
-		return record;
+	@Override
+	public String setTestOnlineDataChangeUserName(Long onlineDataChangeId) {
+		OnlineDataChange  odc=onlineDataChangeService.get(onlineDataChangeId);
+		return odc.getApplyUserId().toString();
 	}
-	*/
+
+      @Override
+	public Assignment setDbaOnlineDataChangeAssigneeName(Long onlineDataChangeId) {
+    	  OnlineDataChange  odc=onlineDataChangeService.get(onlineDataChangeId);
+  		
+  		Project  pro=	projectService.get(odc.getProjectId());
+  		BaseOutput<List<User>> listUserByExample = userRpc.listUserByRoleId(pro.getTestManager());
+  		
+  		Assignment record = DTOUtils.newDTO(Assignment.class);
+  		
+  		List<User> listUsernName = listUserByExample.getData();
+  		
+  		List<String>  reList=new ArrayList<>();
+  		if (listUsernName != null && listUsernName.size() > 0) {
+  	       for (User user : listUsernName) {
+  	    	   reList.add(user.getId().toString());
+  		   }		
+  		}	
+  		record.setCandidateUser(reList); 
+  		
+  		return record;
+	}
+
+	@Override
+	public Assignment setOnlineConfirm(Long onlineDataChangeId) {
+		  OnlineDataChange  odc=onlineDataChangeService.get(onlineDataChangeId);
+	  		
+	  		Project  pro=	projectService.get(odc.getProjectId());
+	  		
+	  		BaseOutput<List<User>> listUserByExample = userRpc.listUserByRoleId(pro.getTestManager());
+	  		
+	  		Assignment record = DTOUtils.newDTO(Assignment.class);
+	  		
+	  		List<User> listUsernName = listUserByExample.getData();
+	  		
+	  		List<String>  reList=new ArrayList<>();
+	  		if (listUsernName != null && listUsernName.size() > 0) {
+	  	       for (User user : listUsernName) {
+	  	    	   reList.add(user.getId().toString());
+	  		   }		
+	  		}	
+	  		record.setCandidateUser(reList); 
+	  		
+	  		return record;
+	}
+	
 	
 
 }
