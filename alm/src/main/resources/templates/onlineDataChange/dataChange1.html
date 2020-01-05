@@ -35,71 +35,15 @@ button:hover {
 			<caption style="padding: 5px; font-weight: bold; font-size: 15px; line-height: 35px; color: #333">线上数据变更申请表</caption>
 		
 			<tbody>
-				<tr>
-
-					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">申请人</td>
-					<td style="padding: 5px;">申请人sun guang qiang </td>
-					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">申请时间</td>
-					<td style="padding: 5px;"> <input class="easyui-datebox" name="_applyDate" id="_applyDate" editable="false" style="width: 100%"
-					data-options="required:true,validType:'isIds',prompt:'申请时间'" /></td>
-				
-				</tr>
-				<tr>
-
-					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">项目名称</td>
-					<td style="padding: 5px;">	 <input class="easyui-combobox" name="projectId"  id="_projectId" style="width: 100%" /> </td>
-					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">版本号</td>
-					<td style="padding: 5px;">
-					     <input name="_versionId" id="_versionId" class="easyui-combobox" style="width: 100%;" editable="false"
-					      data-options="required:true,validType:'isIds',prompt:'--选择所属版本--'">
-					
-					</td>
-
-				</tr>
-				<tr>
-
-					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">申请更新时间</td>
-					<td style="padding: 5px;"><input class="easyui-datebox" name="_updateDate" id="_updateDate" editable="false" style="width: 100%"
-					data-options="required:true,validType:'isIds',prompt:'申请更新时间'" /></td>
-					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">灰度是否同步执行</td>
-					<td style="padding: 5px;">
- 					    <select id="cc" class="easyui-combobox" name="dept" style="width: 100%" >
-						    <option value="1">是</option>
-						    <option value="0">否</option>
-						</select></td>
-				</tr>
+	      
 				
 				<tr>
-					<td  colspan="2"   style="padding: 5px; background-color: #f5f5f5; font-weight: bold">数据库名</td>
-					<td  colspan="2"  style="padding: 5px;"><input class="easyui-textbox" name="_dbaName"  id="_dbaName" value=""
-							data-options="validType:['length[0,30]']" style="width: 70%"/></td>
-				</tr>
-				
-				<tr>
-				   <td  colspan="2"   style="padding: 5px; background-color: #f5f5f5; font-weight: bold">生产环境名称（市场）</td>
+				   <td  colspan="2"   style="padding: 5px; background-color: #f5f5f5; font-weight: bold">  	<a id="agree" href="#" class="easyui-linkbutton" 
+					   	  data-options="iconCls:'icon-save'">同意</a></td>
 					<td  colspan="2"  style="padding: 5px;">
-					<input class="easyui-textbox" id="_applyMarketId" name="_applyMarketId" value="" data-options="validType:['length[0,30]']" style="width: 70%"/>
-					
-					
-					</td>
-				</tr>
-				
-				<tr>
-				      <td     style="padding: 5px; background-color: #f5f5f5; font-weight: bold">SQL脚本（可附件）</td>
-							
-					  <td colspan="3"  style="padding: 5px; background-color: #f5f5f5; font-weight: bold">
-					       <input class="easyui-textbox"  id="_sqlScript" name="_sqlScript" value=""
-							data-options="validType:['length[0,50]']" style="width: 49%">
-							
-					        <input class="easyui-filebox" id="_sqlFileId" name="_sqlFileId"
-							data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 49%">
-					  </td>
-				</tr>
-				
-				
-				<tr>
-				   <td  colspan="2"   style="padding: 5px; background-color: #f5f5f5; font-weight: bold">项目经理确认</td>
-					<td  colspan="2"  style="padding: 5px;">项目经理确认</td>
+					   	<a id="notAgree " href="#" class="easyui-linkbutton" 
+					   	  data-options="iconCls:'icon-save'">不同意</a>   
+				 	</td>
 				</tr>
 				
 			</tbody>
@@ -120,87 +64,39 @@ button:hover {
 
 <!-- ====================================================================================================================== --> <!-- style & script 分隔线 --> <!-- ====================================================================================================================== -->
 <script type="text/javascript">
-
- 
-   $(function(){
-	   
-	   
-	     function loadProjectSelect(queryAll) {
-			 $('#_projectId').combobox({
-						url : "${contextPath!}/task/listTreeProject.json" + (queryAll ? '?queryAll=true' : ''),
-						valueField : 'id',
-						textField : 'name',
-						editable : false
-					});
-
-		 }
-	   
-	   
-	     loadProjectSelect();
-		$('#_projectId').combobox('initValue', '${project.id!}');
-		$('#_projectId').combobox('setText', '${project.name!}');
-		$("#_versionId").combobox('setValue','选择所属版本');//根据ID设定默认值
-		function loadVisionSelect(id) {
-			
-			       $('#_versionId').combobox({
-						url : "${contextPath!}/task/listTreeVersion.json?id=" + id,
-						valueField : 'id',
-						textField : 'version',
-						editable : false
-					});
-
-		}
-		
-		
-		$("#_projectId").combobox({  
-
-			   onSelect: function () {
-				   var curValue=$('#_projectId').combobox('getValue');
-				   loadVisionSelect(curValue);
-			　　  }  
-
-	    });
-			
-			
-		$('#btn').bind('click', function(){
-		   
-			
-			 if(!$('#_form').form("validate")){
-	                return;
-	            }
-	            var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
-	            
-	            var _url = "${contextPath}/onlineDataChange/insert.action";
-	           
-	            $.ajax({
-	                type: "POST",
-	                url: _url,
-	                data: _formData,
-	                processData:true,
-	                dataType: "json",
-	                async : true,
-	                success: function (data) {
-	                   
-	                        $.messager.alert('错误',data.result);
-	                   
-	                },
-	                error: function(){
-	                    $.messager.alert('错误','远程访问失败');
-	                }
-	            });
-	            
-	            
-	            
-	    });
-		
-		
-		 
-		  
-		  
-		
-	  })
+   $('#agree').bind('click', function(){
+	 
+	 var input = document.getElementById('sqlFile');
 	
-	
+	    var formdata = new FormData();
+	    var curValue=$('#_projectId').combobox('getValue');
+	    formdata.append('file', input.files[0]);
+	    formdata.append('projectId',curValue);
+	    
+	    $.ajax({
+	       type: "POST",
+	       url: "${contextPath!}/files/filesUpload",
+	       data: formdata,
+	       processData: false,
+	        contentType: false,
+	        dataType:"json",
+
+          success:function(data){
+       	   var row = data.data[0];
+       	    alert("上传成功");
+       	//   $('#_sqlFileId').textbox('setText', row.id); 
+       	   $('#_sqlFileId').val( row.id); 
+       	  
+          }
+          
+      
+   });
+	    
+	    
+});	    
+
+
+	   
 	
 </script>
 <style type="text/css">
