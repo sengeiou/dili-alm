@@ -122,6 +122,7 @@ public class HardwareResourceApplyController {
 		/*** 运维部门下的所有人员查询 begin **/
 		Department deptQuery = DTOUtils.newDTO(Department.class);
 		deptQuery.setCode(AlmConstants.OPERATION_DEPARTMENT_CODE);
+		deptQuery.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		BaseOutput<List<Department>> deptOutput = this.deptRpc.listByDepartment(deptQuery);
 		if (deptOutput.isSuccess() && CollectionUtils.isNotEmpty(deptOutput.getData())) {
 			Long departmentId = deptOutput.getData().get(0).getId();
@@ -156,6 +157,7 @@ public class HardwareResourceApplyController {
 
 		/** 查询 所有部门 ***/
 		Department newDepartment = DTOUtils.newDTO(Department.class);
+		newDepartment.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		List<Department> departments = this.deptRpc.listByDepartment(newDepartment).getData();
 		modelMap.addAttribute("departments", departments);
 
@@ -170,6 +172,7 @@ public class HardwareResourceApplyController {
 		/*** 运维部门下的所有人员查询 begin **/
 		Department deptQuery =DTOUtils.newDTO(Department.class);
 		deptQuery.setCode(AlmConstants.OPERATION_DEPARTMENT_CODE);
+		deptQuery.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		BaseOutput<List<Department>> deptOutput = this.deptRpc.listByDepartment(deptQuery);
 		HardwareResourceApply dto = this.hardwareResourceApplyService.get(id);
 		modelMap.addAttribute("apply", dto);
@@ -360,6 +363,7 @@ public class HardwareResourceApplyController {
 		/*** 运维部门下的所有人员查询 begin **/
 		Department deptQuery = DTOUtils.newDTO(Department.class);
 		deptQuery.setCode(AlmConstants.OPERATION_DEPARTMENT_CODE);
+		deptQuery.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		BaseOutput<List<Department>> deptOutput = this.deptRpc.listByDepartment(deptQuery);
 		HardwareResourceApply dto = this.hardwareResourceApplyService.getDetailViewModel(id);
 		modelMap.addAttribute("apply", dto);

@@ -87,6 +87,7 @@ public class WorkOrderController {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		Department department = DTOUtils.newDTO(Department.class);
 		department.setParentId(user.getDepartmentId());
+		department.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		BaseOutput<List<Department>> output = this.deptRpc.listByDepartment(department);
 		if (!output.isSuccess()) {
 			return null;

@@ -2,6 +2,7 @@ package com.dili.alm.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.Demand;
 import com.dili.uap.sdk.domain.Department;
 import com.dili.alm.domain.Files;
@@ -74,6 +75,7 @@ public class DemandController {
 	public String add(ModelMap modelMap) {
 		/** 查询 所有部门 ***/
     	Department department=DTOUtils.newDTO(Department.class);
+		department.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		List<Department> departments = this.deptRpc.listByDepartment(department).getData();
 		modelMap.addAttribute("departments", departments);
 

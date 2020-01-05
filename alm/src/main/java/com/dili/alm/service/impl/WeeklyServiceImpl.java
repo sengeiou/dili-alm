@@ -454,6 +454,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		// 项目所在部门
 		Department department = DTOUtils.newDTO(Department.class);
 		department.setId(Long.parseLong(pd.getProjectInDept()));
+		department.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		BaseOutput<List<Department>> departmentByExample = departmentRpc.listByDepartment(department);
 		List<Department> departmentList = departmentByExample.getData();
 		if (departmentList != null && departmentList.size() > 0)
@@ -501,6 +502,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		// 项目所在部门
 		Department department = DTOUtils.newDTO(Department.class);
 		department.setId(Long.parseLong(pd.getProjectInDept()));
+		department.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		BaseOutput<List<Department>> departmentByExample = departmentRpc.listByDepartment(department);
 		List<Department> departmentList = departmentByExample.getData();
 		if (departmentList != null && departmentList.size() > 0)

@@ -69,6 +69,7 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 		}
 		Department newDepartment = DTOUtils.newDTO(Department.class);
 		newDepartment.setName(DEPARTMENTNAME);
+		newDepartment.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		BaseOutput<Department> findByDepartmentName = departmentRpc.listByOne(newDepartment);
 		Department department = findByDepartmentName.getData();
 		User user = DTOUtils.newDTO(User.class);

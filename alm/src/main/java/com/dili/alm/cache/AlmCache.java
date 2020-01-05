@@ -311,6 +311,7 @@ public class AlmCache {
 	public Map<Long, Department> getDepMap() {
 		if (AlmCache.DEP_MAP.isEmpty()) {
 			Department newDTO = DTOUtils.newDTO(Department.class);
+			newDTO.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 			BaseOutput<List<Department>> output = this.departmentRpc.listByDepartment(newDTO);
 			if (output.isSuccess()) {
 				output.getData().forEach(dep -> {

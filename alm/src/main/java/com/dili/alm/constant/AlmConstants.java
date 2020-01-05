@@ -68,7 +68,8 @@ public class AlmConstants {
 	public static final String ALM_SYSTEM_CODE = "ALM";
 	//字典表开发环境code码
 	public static final String ALM_ENVIRONMENT = "environment";
-	
+	//部门所属市场Code码
+	public static final String ALM_FIRM_CODE = "szpt";
 	// 团队成员状态: 加入/离开
 	public enum MemberState {
 		LEAVE(0), JOIN(1);

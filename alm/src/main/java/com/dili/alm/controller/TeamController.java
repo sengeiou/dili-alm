@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.alm.cache.AlmCache;
+import com.dili.alm.constant.AlmConstants;
 import com.dili.uap.sdk.domain.Department;
 import com.dili.alm.domain.Team;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
@@ -146,6 +147,7 @@ public class TeamController {
 	@RequestMapping(value = "/department.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public List<Department> listDepartments() {
 		Department department = DTOUtils.newDTO(Department.class);
+		department.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		BaseOutput<List<Department>> output = this.deptRPC.listByDepartment(department);
 		if (output != null && output.isSuccess()) {
 			return output.getData();
