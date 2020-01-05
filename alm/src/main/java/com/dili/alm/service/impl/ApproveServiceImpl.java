@@ -693,7 +693,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 			default:
 				return;
 			}
-			int rows = teamService.insert(team);
+			int rows = teamService.insertTeamAndUserDataAuth(team);
 			if (rows <= 0) {
 				throw new ApproveException("创建团队失败");
 			}

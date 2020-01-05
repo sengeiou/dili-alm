@@ -22,7 +22,7 @@ public interface DataAuthRpc {
 	@POST("/dataAuthRpc/addUserDataAuth.api")
 	BaseOutput<Object> addUserDataAuth(@VOField("userId") Long userId, @VOField("value") String value, @VOField("refCode") String refCode);
 
-	@POST("/dataAuthRpc/deleteUserDataAuth")
+	@POST("/dataAuthRpc/deleteUserDataAuth.api")
 	BaseOutput<Object> deleteUserDataAuth(@VOField("userId") Long userId, @VOField("value") String value, @VOField("refCode") String refCode);
 
 	@POST("/dataAuthRpc/listDataAuths.api") 
