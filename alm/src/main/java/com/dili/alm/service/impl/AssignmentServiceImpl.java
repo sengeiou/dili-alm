@@ -42,7 +42,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 		Project  pro=	projectService.get(odc.getProjectId());
 		
 		User uprojectser =DTOUtils.newDTO(User.class);
-		uprojectser.setId(pro.getDevelopManager());
+		uprojectser.setId(Long.parseLong("74"));
 		BaseOutput<List<User>> listUserByExample = userRpc.listByExample(uprojectser);
 		
 		Assignment record = DTOUtils.newDTO(Assignment.class);
@@ -61,7 +61,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 		Project  pro=	projectService.get(odc.getProjectId());
 		
 		User uprojectser = DTOUtils.newDTO(User.class);
-		uprojectser.setId(pro.getTestManager());
+		uprojectser.setId(Long.parseLong("89"));
 		uprojectser.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		BaseOutput<List<User>> listUserByExample = userRpc.listByExample(uprojectser);
 	

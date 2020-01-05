@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.domain.OnlineDataChange;
+import com.dili.alm.rpc.MyTasksRpc;
 import com.dili.alm.rpc.RuntimeApiRpc;
 //import com.dili.alm.rpc.RuntimeRpc;
 import com.dili.alm.rpc.UserRpc;
@@ -49,6 +50,9 @@ public class OnlineDataChangeController {
 	private UserRpc userRpc;
     
     @Autowired
+   	private   MyTasksRpc  tasksRpc;
+    
+    @Autowired
   	private   RuntimeApiRpc  runtimeRpc;
     @ApiOperation("��ת��indexҳ��")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
@@ -57,7 +61,11 @@ public class OnlineDataChangeController {
     }
 	@ApiOperation("��ת��dataChangeҳ��")
 	@RequestMapping(value = "/dataChange1.html", method = RequestMethod.GET)
-	public String dataChange1(ModelMap modelMap) {
+	public String dataChange1(ModelMap modelMap,String  taskId) {
+		BaseOutput<Map<String, Object>>  map=tasksRpc.getVariables(taskId);
+		String id = (String) map.getData().get("businessKey");
+	    OnlineDataChange  odc=  onlineDataChangeService.get(Long.parseLong(id));
+	    modelMap.addAttribute(odc);
 		return "onlineDataChange/dataChange1";
 		
 	}
@@ -138,7 +146,8 @@ public class OnlineDataChangeController {
         try {
     	   Map<String, Object> map=new HashMap<String, Object>();
     	   map.put("dataId", onlineDataChange.getId());
-		   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almOnlineDataChangeProcess", onlineDataChange.getId().toString(), id+"",map);
+		   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almOnlineDataChangeProcess",
+				   onlineDataChange.getId().toString(), 74+"",map);
 	       System.out.println(object.getCode()+object.getData()+object.getErrorData());
         } catch (Exception e) {
 		   e.printStackTrace();
