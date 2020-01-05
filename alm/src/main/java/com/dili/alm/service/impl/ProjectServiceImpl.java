@@ -94,7 +94,8 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	private UserRpc userRPC;
 	@Autowired
 	private ProjectActionRecordMapper parMapper;
-
+	@Autowired
+	private DataAuthRpc dataAuthRpc;
 	public ProjectMapper getActualDao() {
 		return (ProjectMapper) getDao();
 	}
@@ -105,6 +106,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		if (StringUtils.isNotBlank(condtion.getName())) {
 			AlmCache.getInstance().getProjectMap().get(condtion.getId()).setName(condtion.getName());
 		}
+		
 /*		BaseOutput<DataDictionaryDto> output = dataAuthRpc.updateDataAuth(condtion.getId().toString(),
 				AlmConstants.DATA_AUTH_TYPE_PROJECT, condtion.getName());
 		if (!output.isSuccess()) {
@@ -193,7 +195,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		List<Team> teams = this.teamMapper.select(teamQuery);
 		if (CollectionUtils.isNotEmpty(teams)) {
 			teams.forEach(t -> {
-				this.teamService.delete(t.getId());
+				this.teamService.deleteTeamAndUserDataAuth(t.getId());
 			});
 		}
 

@@ -49,7 +49,7 @@ public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements Team
 	}
 
 	@Override
-	public int insert(Team team) {
+	public int insertTeamAndUserDataAuth(Team team) {
 		int i = super.insert(team);
 		dataAuthRpc.addUserDataAuth(team.getMemberId(), team.getProjectId().toString(),
 				AlmConstants.DATA_AUTH_TYPE_PROJECT);
@@ -57,7 +57,7 @@ public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements Team
 	}
 
 	@Override
-	public int delete(Long id) {
+	public int deleteTeamAndUserDataAuth(Long id) {
 		Team team = get(id);
 		dataAuthRpc.deleteUserDataAuth(team.getMemberId(), team.getProjectId().toString(),
 				AlmConstants.DATA_AUTH_TYPE_PROJECT);
@@ -65,7 +65,7 @@ public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements Team
 	}
 
 	@Override
-	public int delete(List<Long> ids) {
+	public int deleteTeamAndUserDataAuthByIds(List<Long> ids) {
 		ids.forEach(id -> {
 			dataAuthRpc.deleteUserDataAuth(id, get(id).getProjectId().toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT);
 		});
@@ -78,11 +78,11 @@ public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements Team
 		if (!team.getDeletable()) {
 			return BaseOutput.failure("该数据不能删除");
 		}
-		return this.delete(id) > 0 ? BaseOutput.success() : BaseOutput.failure();
+		return this.deleteTeamAndUserDataAuth(id) > 0 ? BaseOutput.success() : BaseOutput.failure();
 	}
 
 	@Override
-	public int insertSelective(Team t) {
+	public int insertTeamAndUserDataAuthSelective(Team t) {
 		Date now = new Date();
 		t.setJoinTime(now);
 		dataAuthRpc.addUserDataAuth(t.getMemberId(), t.getProjectId().toString(), AlmConstants.DATA_AUTH_TYPE_PROJECT);
@@ -100,7 +100,7 @@ public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements Team
 		if (count > 0) {
 			return BaseOutput.failure("项目和团队已存在，不能重复添加");
 		}
-		int result = this.insertSelective(team);
+		int result = this.insertTeamAndUserDataAuthSelective(team);
 		if (result > 0) {
 			team.setDeletable(true);
 			try {

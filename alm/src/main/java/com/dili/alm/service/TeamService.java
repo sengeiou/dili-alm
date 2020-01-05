@@ -27,4 +27,12 @@ public interface TeamService extends BaseService<Team, Long> {
 	Boolean teamMemberIsProjectManager(Long memberId, Long projectId);
 
 	Boolean currentUserIsTeamMember(Long userId, Long projectId);
+
+	int insertTeamAndUserDataAuth(Team team);
+
+	int deleteTeamAndUserDataAuth(Long id);
+
+	int deleteTeamAndUserDataAuthByIds(List<Long> ids);
+
+	int insertTeamAndUserDataAuthSelective(Team t);
 }

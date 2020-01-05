@@ -19,13 +19,13 @@ import io.swagger.annotations.ApiOperation;
 @Restful("http://uap.diligrp.com/")
 public interface DataAuthRpc {
 
-	@POST("/dataAuthRpc/addUserDataAuth.api")
+	@POST("/dataAuthApi/addUserDataAuth.api")
 	BaseOutput<Object> addUserDataAuth(@VOField("userId") Long userId, @VOField("value") String value, @VOField("refCode") String refCode);
 
-	@POST("/dataAuthRpc/deleteUserDataAuth")
+	@POST("/dataAuthApi/deleteUserDataAuth.api")
 	BaseOutput<Object> deleteUserDataAuth(@VOField("userId") Long userId, @VOField("value") String value, @VOField("refCode") String refCode);
 
-	@POST("/dataAuthRpc/listDataAuths.api") 
+	@POST("/dataAuthApi/listDataAuths.api") 
 	BaseOutput<List<DataAuthRef>> listDataAuths(@VOBody DataAuthRef dataAuthRef);
         
 }
