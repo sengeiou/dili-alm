@@ -57,7 +57,7 @@ public class ProjectController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProjectController.class);
 
-	private static final String DATA_AUTH_TYPE = "Project";
+	private static final String DATA_AUTH_TYPE = "project";
 
 	@Autowired
 	ProjectService projectService;

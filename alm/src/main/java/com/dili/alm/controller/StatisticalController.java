@@ -74,7 +74,7 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/statistical")
 public class StatisticalController {
 
-	private static final String DATA_AUTH_TYPE = "Project";
+	private static final String DATA_AUTH_TYPE = "project";
 	private static final Logger LOGGER = LoggerFactory.getLogger(StatisticalController.class);
 	@Autowired
 	private StatisticalService statisticalService;

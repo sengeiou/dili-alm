@@ -61,7 +61,7 @@ import tk.mybatis.mapper.entity.Example.Criteria;
 @RequestMapping("/projectApply")
 public class ProjectApplyController {
 
-	private static final String DATA_AUTH_TYPE = "Project";
+	private static final String DATA_AUTH_TYPE = "project";
 
 	@Autowired
 	ProjectApplyService projectApplyService;

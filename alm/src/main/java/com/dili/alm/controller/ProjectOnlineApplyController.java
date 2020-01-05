@@ -62,7 +62,7 @@ import tk.mybatis.mapper.entity.Example;
 public class ProjectOnlineApplyController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProjectOnlineApplyController.class);
-	private static final String DATA_AUTH_TYPE = "Project";
+	private static final String DATA_AUTH_TYPE = "project";
 
 	@Autowired
 	ProjectOnlineApplyService projectOnlineApplyService;

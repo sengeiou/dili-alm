@@ -9,7 +9,7 @@ public class AlmConstants {
 	public static final int SEQUENCE_NUMBER_STEP_LENGTH = 50;
 
 	// 数据字典值表中的数据权限类型为项目
-	public static final String DATA_AUTH_TYPE_PROJECT = "Project";
+	public static final String DATA_AUTH_TYPE_PROJECT = "project";
 	public static final String ROLE_CODE = "role_code";
 	public static final String ROLE_CODE_WYH = "wyh";
 	public static final String ROLE_CODE_WYH_LEADER = "wyh_leader";

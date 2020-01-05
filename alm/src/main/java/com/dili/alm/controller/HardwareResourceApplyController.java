@@ -74,7 +74,7 @@ public class HardwareResourceApplyController {
 	@Autowired
 	private DataDictionaryValueService ddvService;
 
-	private static final String DATA_AUTH_TYPE = "Project";
+	private static final String DATA_AUTH_TYPE = "project";
 
 	@ApiOperation("跳转到HardwareResourceApply页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)

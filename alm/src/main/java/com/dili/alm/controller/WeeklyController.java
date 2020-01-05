@@ -48,7 +48,7 @@ import io.swagger.annotations.ApiOperation;
 public class WeeklyController {
 	private static final String WEEKLY = "weekly";
 
-	private static final String DATA_AUTH_TYPE = "Project";
+	private static final String DATA_AUTH_TYPE = "project";
 
 	@Autowired
 	WeeklyService weeklyService;
