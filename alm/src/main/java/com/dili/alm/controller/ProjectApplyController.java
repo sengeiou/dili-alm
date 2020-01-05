@@ -173,7 +173,7 @@ public class ProjectApplyController {
 			return new ArrayList<>(0);
 		}
 		List<Long> projectIds = new ArrayList<>(dataAuths.size());
-		dataAuths.forEach(dataAuth -> projectIds.add(Long.valueOf(dataAuth.get("dataId").toString())));
+		dataAuths.forEach(dataAuth -> projectIds.add(Long.valueOf(dataAuth.get("value").toString())));
 		Example example = new Example(Project.class);
 		Criteria criteria = example.createCriteria().andIn("id", projectIds);
 		List<Project> list = this.projectService.selectByExample(example);

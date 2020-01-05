@@ -100,7 +100,7 @@ public class HardwareResourceApplyController {
 		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
 		if (!CollectionUtils.isEmpty(dataAuths)) {
 			List<Long> projectIds = new ArrayList<>();
-			dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
+			dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("value").toString())));
 			Example example = new Example(Project.class);
 			Example.Criteria criteria = example.createCriteria();
 			criteria.andIn("id", projectIds).andNotEqualTo("projectState", ProjectState.CLOSED.getValue());
@@ -145,7 +145,7 @@ public class HardwareResourceApplyController {
 			return null;
 		}
 		List<Long> projectIds = new ArrayList<>();
-		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
+		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("value").toString())));
 		Example example = new Example(Project.class);
 		Example.Criteria criteria = example.createCriteria();
 		criteria.andIn("id", projectIds).andNotEqualTo("projectState", ProjectState.CLOSED.getValue());
@@ -218,7 +218,7 @@ public class HardwareResourceApplyController {
 			return new EasyuiPageOutput(0, new ArrayList<>(0)).toString();
 		}
 		List<Long> projectIds = new ArrayList<>();
-		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
+		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("value").toString())));
 		query.setProjectIds(projectIds);
 		query.setSort("created");
 		query.setOrder("desc");

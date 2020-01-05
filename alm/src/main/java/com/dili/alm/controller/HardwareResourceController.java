@@ -78,7 +78,7 @@ public class HardwareResourceController {
 			return new EasyuiPageOutput(0, new ArrayList<>(0)).toString();
 		}
 		List<Long> projectIds = new ArrayList<>();
-		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
+		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("value").toString())));
 		query.setProjectIds(projectIds);
 		return hardwareResourceService.listEasyuiPageByExample(query, true).toString();
 	}

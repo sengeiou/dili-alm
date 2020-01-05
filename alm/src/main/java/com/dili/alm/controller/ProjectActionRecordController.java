@@ -75,7 +75,7 @@ public class ProjectActionRecordController {
 		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
 		if (!CollectionUtils.isEmpty(dataAuths)) {
 			List<Long> projectIds = new ArrayList<>();
-			dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
+			dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("value").toString())));
 			modelMap.addAttribute("projects", AlmCache.getInstance().getProjectMap().values().stream()
 					.filter(p -> projectIds.contains(p.getId())).collect(Collectors.toList()));
 		}

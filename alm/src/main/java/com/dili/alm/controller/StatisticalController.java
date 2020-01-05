@@ -434,7 +434,7 @@ public class StatisticalController {
 			if (CollectionUtils.isEmpty(dataAuths)) {
 				return null;
 			}
-			dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
+			dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("value").toString())));
 			userId = null;
 		}
 		return statisticalService.getHomeProject(userId, projectIds);
@@ -454,7 +454,7 @@ public class StatisticalController {
 			if (CollectionUtils.isEmpty(dataAuths)) {
 				return null;
 			}
-			dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
+			dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("value").toString())));
 			userId = null;
 		}
 		return statisticalService.getHomeProjectTask(userId, projectIds);

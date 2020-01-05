@@ -111,7 +111,7 @@ public class ProjectController {
 			return new ArrayList<>(0);
 		}
 		List<Long> projectIds = new ArrayList<>(dataAuths.size());
-		dataAuths.forEach(dataAuth -> projectIds.add(Long.valueOf(dataAuth.get("dataId").toString())));
+		dataAuths.forEach(dataAuth -> projectIds.add(Long.valueOf(dataAuth.get("value").toString())));
 		project.setProjectIds(projectIds);
 		Map<Object, Object> metadata = new HashMap<>();
 
@@ -195,7 +195,7 @@ public class ProjectController {
 			return null;
 		}
 		List<Long> projectIds = new ArrayList<>(dataAuths.size());
-		dataAuths.forEach(dataAuth -> projectIds.add(Long.valueOf(dataAuth.get("dataId").toString())));
+		dataAuths.forEach(dataAuth -> projectIds.add(Long.valueOf(dataAuth.get("value").toString())));
 		project.setProjectIds(projectIds);
 		if (project.getActualStartDate() != null) {
 			project.setActualBeginStartDate(project.getActualStartDate());
@@ -279,7 +279,7 @@ public class ProjectController {
 				return new ArrayList<>(0);
 			}
 			List<Long> projectIds = new ArrayList<>(dataAuths.size());
-			dataAuths.forEach(da -> projectIds.add(Long.valueOf(da.get("dataId").toString())));
+			dataAuths.forEach(da -> projectIds.add(Long.valueOf(da.get("value").toString())));
 			criteria.andIn("id", projectIds);
 		}
 		if (!queryAll) {

@@ -117,7 +117,7 @@ public class TaskController {
 		List<Long> projectIds = new ArrayList<>();
 		TaskQueryInProjectId query = DTOUtils.as(task, TaskQueryInProjectId.class);
 		query.setInProjectIds(projectIds);
-		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("dataId").toString())));
+		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("value").toString())));
 		task.setSort("created");
 		task.setOrder("desc");
 		return taskService.listByTeam(query).toString();
@@ -212,7 +212,7 @@ public class TaskController {
 			return new ArrayList<>(0);
 		}
 		List<Long> projectIds = new ArrayList<>(dataAuths.size());
-		dataAuths.forEach(dataAuth -> projectIds.add(Long.valueOf(dataAuth.get("dataId").toString())));
+		dataAuths.forEach(dataAuth -> projectIds.add(Long.valueOf(dataAuth.get("value").toString())));
 		Example example = new Example(Project.class);
 		Criteria criteria = example.createCriteria();
 		if (!queryAll) {
