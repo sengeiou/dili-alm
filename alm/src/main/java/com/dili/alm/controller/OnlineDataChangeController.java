@@ -6,12 +6,14 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
@@ -57,6 +59,7 @@ public class OnlineDataChangeController {
 	@RequestMapping(value = "/dataChange1.html", method = RequestMethod.GET)
 	public String dataChange1(ModelMap modelMap) {
 		return "onlineDataChange/dataChange1";
+		
 	}
 	@ApiOperation("��ת��dataChangeҳ��")
 	@RequestMapping(value = "/dataChange2.html", method = RequestMethod.GET)
@@ -87,11 +90,21 @@ public class OnlineDataChangeController {
 		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "OnlineDataChange��form��Ϣ", required = false, dataType = "string")
 	})
     @RequestMapping(value="/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody String listPage(@ModelAttribute OnlineDataChange onlineDataChange) throws Exception {
+    public @ResponseBody String listPage(@ModelAttribute OnlineDataChange onlineDataChange, @RequestParam String projectIdcc) throws Exception {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
     	onlineDataChange.setApplyUserId(id);
     	
+    	
+   	    if(NumberUtils.isNumber(projectIdcc)) {
+		 
+   	 	onlineDataChange.setProjectId(Long.parseLong(projectIdcc));
+	    }
+   	 
     	EasyuiPageOutput   epo=onlineDataChangeService.listEasyuiPageByExample(onlineDataChange, true);
+    	System.out.println(projectIdcc);
+    	if(projectIdcc.contains("")) {
+    		
+    	}
     	List<OnlineDataChange>   list=epo.getRows();
     	 // Page<OnlineDataChange> page =  (Page<OnlineDataChange>) list;
 		Map<Object, Object> metadata = null == onlineDataChange.getMetadata() ? new HashMap<>() : onlineDataChange.getMetadata();
@@ -118,20 +131,20 @@ public class OnlineDataChangeController {
 		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "OnlineDataChange��form��Ϣ", required = true, dataType = "string")
 	})
     @RequestMapping(value="/insert.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public  BaseOutput insert(@ModelAttribute OnlineDataChange onlineDataChange) {
+    public @ResponseBody BaseOutput insert(@ModelAttribute OnlineDataChange onlineDataChange) {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
     	onlineDataChange.setApplyUserId(id);
         onlineDataChangeService.insertSelective(onlineDataChange);
         try {
     	   Map<String, Object> map=new HashMap<String, Object>();
-    	   map.put("value", onlineDataChange.getId());
+    	   map.put("dataId", onlineDataChange.getId());
 		   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almOnlineDataChangeProcess", onlineDataChange.getId().toString(), id+"",map);
 	       System.out.println(object.getCode()+object.getData()+object.getErrorData());
         } catch (Exception e) {
 		   e.printStackTrace();
 		   System.out.println(e);
 	    }
-        return BaseOutput.success("保存成功");
+        return BaseOutput.success("保存成功");    
     }
 
     @ApiOperation("�޸�OnlineDataChange")

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.ApproveMapper;
 import com.dili.alm.dao.FilesMapper;
 import com.dili.alm.dao.HardwareApplyOperationRecordMapper;
@@ -30,6 +29,7 @@ import com.dili.alm.dao.VerifyApprovalMapper;
 import com.dili.alm.dao.WeeklyMapper;
 import com.dili.alm.dao.WorkOrderMapper;
 import com.dili.alm.dao.WorkOrderOperationRecordMapper;
+import com.dili.alm.domain.AlmUser;
 import com.dili.alm.domain.Approve;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.HardwareApplyOperationRecord;
@@ -52,10 +52,11 @@ import com.dili.alm.domain.VerifyApproval;
 import com.dili.alm.domain.Weekly;
 import com.dili.alm.domain.WorkOrder;
 import com.dili.alm.domain.WorkOrderOperationRecord;
-import com.dili.alm.rpc.UapUserRpc;
+import com.dili.alm.rpc.AlmUserRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataMigrateService;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.PageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.uap.sdk.domain.User;
 
@@ -129,20 +130,19 @@ public class DataMigrateImpl implements DataMigrateService {
 	private MoveLogTableMapper moveLogTableMapper;
 
 	@Autowired
-	private UapUserRpc userRpc;
+	private AlmUserRpc   localUserRpc;
 	
 	@Autowired
-	private  UserRpc  localUserRpc;
+	private  UserRpc  userRpc ;
 
 	@Override
 	public int updateData(Long userId, Long uapUserId) {// userId 本地userId, uapUserId
 		
-		BaseOutput<User>  uapUser=userRpc.get(uapUserId);
+		BaseOutput<User>  uapUser=userRpc.findUserById(uapUserId);
 		String  strRealName=uapUser.getData().getRealName();
-		User  localUser= DTOUtils.newDTO(User.class);
+		AlmUser  localUser= new AlmUser();
 		localUser.setRealName(strRealName);
-		localUser.setFirmCode(AlmConstants.ALM_FIRM_CODE);
-	    BaseOutput<List<User>>  lolcalUserList=localUserRpc.listByExample(localUser);
+		BaseOutput<List<AlmUser>> lolcalUserList=localUserRpc.list(localUser);
 		
 	    userId=lolcalUserList.getData().get(0).getId();
 	    //uapUserId 和本地userId转换 在页面
@@ -689,10 +689,10 @@ public class DataMigrateImpl implements DataMigrateService {
 		///// manager_name
 		/////// 需要重新写
 		projectOnlineSubsystem.setManagerId(null);
-		BaseOutput<User> userTempManagerIdLocal = localUserRpc.findUserById(userId);
+		BaseOutput<AlmUser> userTempManagerIdLocal = localUserRpc.findByUserId(userId);
 		projectOnlineSubsystem.setManagerName(userTempManagerIdLocal.getData().getRealName());
 		
-		BaseOutput<User> userTempManagerIdUapRpc= userRpc.get(uapUserId);
+		BaseOutput<User> userTempManagerIdUapRpc= userRpc.findUserById(uapUserId);
 		List<ProjectOnlineSubsystem> listprojectManagerName = projectOnlineSubsystemMapper.select(projectOnlineSubsystem);
 		for (ProjectOnlineSubsystem object : listprojectManagerName) {
 
@@ -862,7 +862,7 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		// 需要重新写
 
-		BaseOutput<User> userTemp = userRpc.get(userId);
+		BaseOutput<User> userTemp = userRpc.findUserById(userId);
 
 		travelCostApply.setApplicantId(userId);
 		travelCostApply.setRootDepartemntId(userTemp.getData().getDepartmentId());
@@ -1171,7 +1171,7 @@ public class DataMigrateImpl implements DataMigrateService {
 		
 		/////// work_order_operation_record
 
-		WorkOrderOperationRecord workOrderOperationRecord = DTOUtils.newDTO(WorkOrderOperationRecord.class);
+  		WorkOrderOperationRecord workOrderOperationRecord = DTOUtils.newDTO(WorkOrderOperationRecord.class);
 		workOrderOperationRecord.setOperatorId(uapUserId);
 
 		List<WorkOrderOperationRecord> listworkOrderOperationRecord = workOrderOperationRecordMapper.select(workOrderOperationRecord);
@@ -1731,7 +1731,7 @@ public class DataMigrateImpl implements DataMigrateService {
 		///// manager_name
 		/////// 需要重新写
 		projectOnlineSubsystem.setManagerId(null);
-		BaseOutput<User> userTempManagerId = userRpc.get(uapUserId);
+		BaseOutput<User> userTempManagerId = userRpc.findUserById(uapUserId);
 		projectOnlineSubsystem.setManagerName(userTempManagerId.getData().getRealName());
 		List<ProjectOnlineSubsystem> listprojectManagerName = projectOnlineSubsystemMapper
 				.select(projectOnlineSubsystem);
@@ -1892,7 +1892,7 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		// 需要重新写
 
-		BaseOutput<User> userTemp = userRpc.get(uapUserId);
+		BaseOutput<User> userTemp = userRpc.findUserById(uapUserId);
 
 		travelCostApply.setApplicantId(uapUserId);
 		travelCostApply.setRootDepartemntId(userTemp.getData().getDepartmentId());

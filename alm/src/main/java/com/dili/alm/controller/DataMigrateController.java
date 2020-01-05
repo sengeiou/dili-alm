@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.alm.rpc.MyTasksRpc;
-import com.dili.alm.rpc.UapUserRpc;
+
+import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataMigrateService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
@@ -35,7 +36,7 @@ public class DataMigrateController {
 	MyTasksRpc myTasksRpc;
 
 	@Autowired
-	private UapUserRpc userRpc;
+	private UserRpc userRpc;
 	
 	@Autowired
 	private  DataMigrateService moveService;

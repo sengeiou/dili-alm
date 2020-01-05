@@ -30,8 +30,11 @@ public class AssignmentApi {
 	// 申请数据变
 	@ApiOperation("申请数据变")
 	@RequestMapping("/setSubmitOnlineDataChangeAssigneeName.api")
-	public @ResponseBody BaseOutput<Assignment> setsubmitOnlineDataChangeAssigneeName(@RequestBody Long onlineDataChangeId) {
-		Assignment record = assignmentService.setSubmitOnlineDataChangeAssigneeName(onlineDataChangeId);
+	public @ResponseBody BaseOutput<Assignment> setsubmitOnlineDataChangeAssigneeName(HttpServletRequest request) {
+		Map<String, String[]> map = request.getParameterMap();
+		String[] strs = map.get("processVariables");
+		JSONObject jsonObj = JSON.parseObject(strs[0]);
+		Assignment record = assignmentService.setSubmitOnlineDataChangeAssigneeName(jsonObj.getLong("businessKey"));
 		return BaseOutput.success().setData(record);
 	}
 
@@ -51,15 +54,17 @@ public class AssignmentApi {
 	// 根据变更ID，返回测试审批人
 	@ApiOperation("根据变更ID，返回测试审批人")
 	@RequestMapping("/setTestOnlineDataChangeAssigneeName.api")
-	public @ResponseBody BaseOutput<Assignment> setTestOnlineDataChangeAssigneeName(@RequestBody Long onlineDataChangeId) {
-
-		Assignment record = assignmentService.setTestOnlineDataChangeAssigneeName(onlineDataChangeId);
+	public @ResponseBody BaseOutput<Assignment> setTestOnlineDataChangeAssigneeName(HttpServletRequest request) {
+		Map<String, String[]> map = request.getParameterMap();
+		String[] strs = map.get("processVariables");
+		JSONObject jsonObj = JSON.parseObject(strs[0]);
+		Assignment record = assignmentService.setTestOnlineDataChangeAssigneeName(jsonObj.getLong("businessKey"));
 		return BaseOutput.success().setData(record);
 
 	}
 
 	// 根据变更ID，返回dba审批人
-	@ApiOperation("根据变更ID，返回dba审批人")
+/*	@ApiOperation("根据变更ID，返回dba审批人")
 	@RequestMapping("/setDbaOnlineDataChangeAssigneeName")
 	public @ResponseBody BaseOutput<Assignment> setDbaOnlineDataChangeAssigneeName(@RequestBody Long onlineDataChangeId) {
 
@@ -76,14 +81,16 @@ public class AssignmentApi {
 		Assignment record = assignmentService.setOnlineConfirm(onlineDataChangeId);
 		return BaseOutput.success().setData(record);
 
-	}
+	}*/
 
 	// 根据变更ID，返回测试审批人
 	@ApiOperation("根据变更ID,項目申請人")
-	@RequestMapping("/getTestOnlineDataChangeUserName.api")
-	public @ResponseBody BaseOutput<String> getTestOnlineDataChangeUserName(@RequestBody Long onlineDataChangeId) {
-
-		String record = assignmentService.setTestOnlineDataChangeUserName(onlineDataChangeId);
+	@RequestMapping("/getOnlineDataChangeUserName.api")
+	public @ResponseBody BaseOutput<String> getTestOnlineDataChangeUserName(HttpServletRequest request) {
+		Map<String, String[]> map = request.getParameterMap();
+		String[] strs = map.get("processVariables");
+		JSONObject jsonObj = JSON.parseObject(strs[0]);
+		String record = assignmentService.setTestOnlineDataChangeUserName(jsonObj.getLong("businessKey"));
 		return BaseOutput.success().setData(record);
 
 	}
