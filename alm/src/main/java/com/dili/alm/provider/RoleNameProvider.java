@@ -45,13 +45,13 @@ public class RoleNameProvider implements ValueProvider {
 				if(json.get("_rowData") instanceof VerifyApproval){
 					VerifyApproval approve = json.getObject("_rowData", VerifyApproval.class);
 					approve = verifyApprovalService.get(approve.getId());
-					BaseOutput<List<Role>> listRoleByUserId = roleRpc.listByUser(approve.getApprover(),null);	
+					BaseOutput<List<Role>> listRoleByUserId = roleRpc.listByUser(approve.getApprover(),"");	
 					return listRoleByUserId.getData().stream().map(Role::getRoleName).collect(Collectors.joining(","));				
 				}
 			}
 		}catch (Exception ignored){}
 		if(o == null) return null;
-		BaseOutput<List<Role>> listRoleByUserId = roleRpc.listByUser(Long.parseLong(o.toString()),null);
+		BaseOutput<List<Role>> listRoleByUserId = roleRpc.listByUser(Long.parseLong(o.toString()),"");
 		
 		return listRoleByUserId.getData().stream().map(Role::getRoleName).collect(Collectors.joining(","));
 	}

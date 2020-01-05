@@ -6,6 +6,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.retrofitful.annotation.POST;
 import com.dili.ss.retrofitful.annotation.Restful;
 import com.dili.ss.retrofitful.annotation.VOBody;
+import com.dili.ss.retrofitful.annotation.VOField;
 import com.dili.uap.sdk.domain.Role;
 
 /**
@@ -15,6 +16,6 @@ import com.dili.uap.sdk.domain.Role;
 public interface RoleRpc {
 
 	@POST("/roleApi/listByUser.api")
-	BaseOutput<List<Role>> listByUser(@VOBody Long userId,@VOBody String userNames);
+	BaseOutput<List<Role>> listByUser(@VOField("userId") Long userId,@VOField("userName") String userName);
 	
 }

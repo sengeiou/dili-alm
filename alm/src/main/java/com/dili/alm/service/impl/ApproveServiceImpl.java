@@ -554,7 +554,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
 		ApplyApprove approve = new ApplyApprove();
 		approve.setUserId(userByRole.get(0).getId());
-		BaseOutput<List<Role>> listRoleByUserId = roleRpc.listByUser(Long.valueOf(userByRole.get(0).getId()),null);	
+		BaseOutput<List<Role>> listRoleByUserId = roleRpc.listByUser(Long.valueOf(userByRole.get(0).getId()),"");	
 		approve.setRole(listRoleByUserId.getData().stream().map(Role::getRoleName).collect(Collectors.joining(",")));
 		approveList.add(approve);
 
@@ -571,7 +571,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
 			approve = new ApplyApprove();
 			approve.setUserId(userByRole.get(0).getId());
-			BaseOutput<List<Role>> listRoleByUserId1 = roleRpc.listByUser(Long.valueOf(userByRole.get(0).getId()),null);	
+			BaseOutput<List<Role>> listRoleByUserId1 = roleRpc.listByUser(Long.valueOf(userByRole.get(0).getId()),"");	
 			approve.setRole(listRoleByUserId1.getData().stream().map(Role::getRoleName).collect(Collectors.joining(",")));
 			approveList.add(approve);
 		}
