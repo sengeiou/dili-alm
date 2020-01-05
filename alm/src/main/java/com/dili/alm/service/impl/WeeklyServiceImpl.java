@@ -417,7 +417,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 
 				ddv = DTOUtils.newDTO(DataDictionaryValue.class);
 				
-				ddv.setCode(weeklyPara2.getProjectType());
+				ddv.setValue(weeklyPara2.getProjectType());
 				ddv.setDdId(dditList.get(0).getId());
 				weeklyPara2.setProjectType(dataDictionaryValueService.listDataDictionaryValue(ddv).get(0).getCode());
 				weeklyPara2.setCreated(weeklyPara2.getCreated().substring(0, 19));
