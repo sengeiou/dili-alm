@@ -145,7 +145,7 @@
 					
 				">
          <table class="easyui-datagrid" id="demandListGrid" rownumbers="false" remoteSort="false" loadMsg="数据加载中..."
-               singleSelect="false" method="post" multiSort="true"  data-options="url:'${contextPath}/demand/queryDemandListToProject.action'">
+               singleSelect="false" method="post" multiSort="true"  data-options="">
                <thead>
 		            <tr>
 		            	<th data-options="field:'id', checkbox:true ">需求ID</th>
@@ -170,16 +170,24 @@
 				+ ');">删除</a>';
 	}
 	function saveDemandToProject() {
-		$( "input[name$='demandIds']" ).each(function(i){	
-			var id = $(this).val();
-			var rows = $('#demandListGrid').datagrid('getRows');
-			$('#demandListGrid').datagrid('uncheckAll'); 
-			for(var g=0;g<rows.length;g++){
-				if(rows[g].id==id){
-					$('#demandListGrid').datagrid('deleteRow', g); 
-				}
-			}							
+		$('#demandListGrid').datagrid({  
+	        url: '${contextPath}/demand/queryDemandListToProject.action' ,
+	        onLoadSuccess:function(data){   
+	            $( "input[name$='demandIds']" ).each(function(i){	
+	    			var id = $(this).val();
+	    			var rows = $('#demandListGrid').datagrid('getRows');
+	    			$('#demandListGrid').datagrid('uncheckAll'); 
+	    			for(var g=0;g<rows.length;g++){
+	    				if(rows[g].id==id){
+	    					console.log("aaaaa");
+	    					$('#demandListGrid').datagrid('deleteRow', g); 
+	    				}
+	    			}							
+	    		});
+	        }
+		        
 		});
+		
 		$('#demandListDlg').dialog('open');
 
 	}

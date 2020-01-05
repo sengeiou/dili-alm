@@ -137,28 +137,22 @@ function delDemand(id){
 function addDemandList(){
 		$('#demandListDlg').dialog('close');
 		var selRows = $('#demandListGrid').datagrid('getChecked');
+		var rows = $('#demandListGrid').datagrid('getRows');
 		for(var i=0;i < selRows.length;i++){
             $('#versionForm').append('<input type="hidden" id="demandId'+ selRows[i].id + '" name="demandIds" value="' + selRows[i].id + '">');
             $('#demandGrid').datagrid('appendRow', selRows[i]); 
-		}	
-}
-function saveDemandToProject() {
- 		var opts = $('#demandListGrid').datagrid("options");
- 		var projectId = $('#id').val();
-    	opts.url = "${contextPath}/demand/queryDemandListToProject.action?projectId="+projectId;
-		$( "input[name$='demandIds']" ).each(function(i){	
-			var id = $(this).val();
-			var rows = $('#demandListGrid').datagrid('getRows');
-			$('#demandListGrid').datagrid('uncheckAll'); 
-			for(var g=0;g<rows.length;g++){
-				if(rows[g].id==id){
+			for(var g=0;g< rows.length;g++){
+				if(rows[g].id == selRows[i].id){
 					$('#demandListGrid').datagrid('deleteRow', g); 
 				}
 			}							
-		});
+            
+		}	
+}
+function saveDemandToProject() {
+		$('#demandListGrid').datagrid('uncheckAll'); 
 		$('#demandListDlg').dialog('open');
-
-	}
+}
 
 
 function fileOptFormatter(value, row, index) {

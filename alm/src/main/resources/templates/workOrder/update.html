@@ -213,24 +213,21 @@
 				+ ');">删除</a>';
 	}
 	function saveDemandToProject() {
-		$( "input[name$='demandIds']" ).each(function(i){	
-			var id = $(this).val();
-			var rows = $('#demandListGrid').datagrid('getRows');
-			$('#demandListGrid').datagrid('uncheckAll'); 
-			for(var g=0;g<rows.length;g++){
-				if(rows[g].id==id){
-					$('#demandListGrid').datagrid('deleteRow', g); 
-				}
-			}							
-		});
+		$('#demandListGrid').datagrid('uncheckAll'); 
 		$('#demandListDlg').dialog('open');
 	}
 	function addDemandList(){
 		$('#demandListDlg').dialog('close');
 		var selRows = $('#demandListGrid').datagrid('getChecked');
+        var rows = $('#demandListGrid').datagrid('getRows');
 		for(var i=0;i<selRows.length;i++){
             $('#editForm').append('<input  id="demandId'+ selRows[i].id + '" name="demandIds" value="' + selRows[i].id + '">');
             $('#demandGrid').datagrid('appendRow', selRows[i]); 
+            for(var g=0;g<rows.length;g++){
+				if(rows[g].id==selRows[i].id ){
+					$('#demandListGrid').datagrid('deleteRow', g); 
+				}
+			}
 		}	
 	}
 	function delDemand(id){

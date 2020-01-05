@@ -66,7 +66,7 @@
 					
 				">
         <table class="easyui-datagrid" id="demandListGrid" rownumbers="false" remoteSort="false" loadMsg="数据加载中..."
-               singleSelect="false" method="post" multiSort="true"  data-options="url:'${contextPath}/demand/queryDemandListToProject.action'">
+               singleSelect="false" method="post" multiSort="true"  data-options="">
                <thead>
 		            <tr>
 		            	<th data-options="field:'id', checkbox:true ">需求ID</th>
@@ -138,16 +138,22 @@
 				+ ');">删除</a>';
 	}
 	function saveDemandToProject() {
-		$( "input[name$='demandIds']" ).each(function(i){	
-			var id = $(this).val();
-			var rows = $('#demandListGrid').datagrid('getRows');
-			$('#demandListGrid').datagrid('uncheckAll'); 
-			for(var g=0;g<rows.length;g++){
-				if(rows[g].id==id){
-					$('#demandListGrid').datagrid('deleteRow', g); 
-				}
-			}							
-		});
+		$('#demandListGrid').datagrid({  
+		        url: '${contextPath}/demand/queryDemandListToProject.action' ,
+		        onLoadSuccess:function(data){   
+		            $( "input[name$='demandIds']" ).each(function(i){	
+		    			var id = $(this).val();
+		    			var rows = $('#demandListGrid').datagrid('getRows');
+		    			$('#demandListGrid').datagrid('uncheckAll'); 
+		    			for(var g=0;g<rows.length;g++){
+		    				if(rows[g].id==id){
+		    					$('#demandListGrid').datagrid('deleteRow', g); 
+		    				}
+		    			}							
+		    		});
+		        }
+		        
+		}); 
 		
 		$('#demandListDlg').dialog('open');
 
@@ -156,7 +162,7 @@
 		$('#demandListDlg').dialog('close');
 		var selRows = $('#demandListGrid').datagrid('getChecked');
 		for(var i=0;i<selRows.length;i++){
-            $('#ff').append('<input  type="hidden" id="demandId'+ selRows[i].id + '" name="demandIds" value="' + selRows[i].id + '">');
+            $('#ff').append('<input type="hidden"  id="demandId'+ selRows[i].id + '" name="demandIds" value="' + selRows[i].id + '">');
             $('#demandGrid').datagrid('appendRow', selRows[i]); 
 		}	
 	}
@@ -164,7 +170,6 @@
 		 var rows = $('#demandGrid').datagrid('getRows');
 		 for(var i=0;i<rows.length;i++){
 			 if(rows[i].id==id){
-				 $('#demandListGrid').datagrid('appendRow', rows[i]); 
 				 $('#demandGrid').datagrid('deleteRow', i); 
 				 $("#demandId" + id + "").remove();
 			 }	 
