@@ -27,6 +27,7 @@ import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
 import com.dili.bpmc.sdk.rpc.RuntimeRpc;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.retrofitful.annotation.ReqParam;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
@@ -65,7 +66,8 @@ public class OnlineDataChangeController {
 		BaseOutput<Map<String, Object>>  map=tasksRpc.getVariables(taskId);
 		String id = (String) map.getData().get("businessKey");
 	    OnlineDataChange  odc=  onlineDataChangeService.get(Long.parseLong(id));
-	    modelMap.addAttribute(odc);
+	  //  modelMap.addAttribute(odc);
+	    modelMap.addAttribute("taskId",taskId);
 		return "onlineDataChange/dataChange1";
 		
 	}
@@ -202,7 +204,22 @@ public class OnlineDataChangeController {
         return BaseOutput.success("11111");
     }*/
     
-    
+    @RequestMapping(value="/agree.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput agree( @RequestParam String taskId ) {
+    	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
+    	Map<String, Object> map=new HashMap<>();
+    	map.put("approved", true);
+    	tasksRpc.complete("202001051851295160000001", map);
+    	 return BaseOutput.success("11111");
+    }
+    @RequestMapping(value="/notAgree.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput notAgree( @RequestParam String taskId ) {
+    	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
+    	Map<String, Object> map=new HashMap<>();
+    	map.put("approved", false);
+    	tasksRpc.complete("202001051851295160000001", map);
+        return BaseOutput.success("11111");
+    }
     
     
 }
