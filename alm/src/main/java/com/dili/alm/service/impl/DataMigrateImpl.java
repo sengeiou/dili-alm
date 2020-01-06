@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -136,1036 +138,1045 @@ public class DataMigrateImpl implements DataMigrateService {
 	private  UserRpc  userRpc ;
 
 	@Override
+	@Transactional
 	public int updateData(Long userId, Long uapUserId) {// userId 本地userId, uapUserId
 		
-		BaseOutput<User>  uapUser=userRpc.findUserById(uapUserId);
-		String  strRealName=uapUser.getData().getUserName();
-		AlmUser  localUser= new AlmUser();
-		localUser.setUserName(strRealName);
-		//localUser.setCellphone(uapUser.getData().getCellphone());
-		BaseOutput<List<AlmUser>> lolcalUserList=localUserRpc.list(localUser);
-		
-		if(lolcalUserList.getData()!=null&&lolcalUserList.getData().size()>0) {
-			 userId=lolcalUserList.getData().get(0).getId();
-		}else {
-			return 2;	
-		}
-	   
-	    //uapUserId 和本地userId转换 在页面
-		
-		int  num=getDataIsExistence(null,uapUserId);//再次查询，使用uapUserId 查询，看看是否迁移过的
-        if(num==1) {//已经迁移过
-        	return 1;
-        }
-		//
-
-        
-		MoveLogTable dto =new MoveLogTable();
-		// approve
-		Approve record = DTOUtils.newDTO(Approve.class);
-		record.setCreateMemberId(userId);
-		List<Approve> listCreateMember = approveMapper.select(record);
-
-		for (Approve approve : listCreateMember) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(approve.getId());
-			dto.setFileField("create_member_id");// 设为常量
-			dto.setTableName("approve");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
+		try {
+			BaseOutput<User>  uapUser=userRpc.findUserById(uapUserId);
+			String  strRealName=uapUser.getData().getUserName();
+			AlmUser  localUser= new AlmUser();
+			localUser.setUserName(strRealName);
+			//localUser.setCellphone(uapUser.getData().getCellphone());
+			BaseOutput<List<AlmUser>> lolcalUserList=localUserRpc.list(localUser);
 			
-			approve.setCreateMemberId(uapUserId);
-			approveMapper.updateByPrimaryKeySelective(approve);
-		}
-
-		record.setCreateMemberId(null);
-
-		record.setModifyMemberId(uapUserId);
-		List<Approve> listModifyMember = approveMapper.select(record);
-
-		for (Approve approve : listModifyMember) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(approve.getId());
-			dto.setFileField("modify_member_id");// 设为常量
-			dto.setTableName("approve");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
+			if(lolcalUserList.getData()!=null&&lolcalUserList.getData().size()>0) {
+				 userId=lolcalUserList.getData().get(0).getId();
+			}else {
+				return 2;	
+			}
+   
+			//uapUserId 和本地userId转换 在页面
 			
-			approve.setModifyMemberId(uapUserId);
-			approveMapper.updateByPrimaryKeySelective(approve);
-		}
-		// files
+			int  num=getDataIsExistence(null,uapUserId);//再次查询，使用uapUserId 查询，看看是否迁移过的
+			if(num==1) {//已经迁移过
+				return 1;
+			}
+			//
 
-		Files files = DTOUtils.newDTO(Files.class);
-		files.setCreateMemberId(userId);
-		List<Files> listFilesCreateMember = filesMapper.select(files);
-		for (Files approve : listFilesCreateMember) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(approve.getId());
-			dto.setFileField("create_member_id");// 设为常量
-			dto.setTableName("files");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			approve.setCreateMemberId(uapUserId);
-			filesMapper.updateByPrimaryKeySelective(approve);
-		}
-
-		files.setCreateMemberId(null);
-		files.setModifyMemberId(userId);
-
-		List<Files> lisFilestModifyMember = filesMapper.select(files);
-
-		for (Files file : lisFilestModifyMember) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(file.getId());
-			dto.setFileField("modify_member_id");// 设为常量
-			dto.setTableName("files");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
 			
-			file.setModifyMemberId(uapUserId);
-			filesMapper.updateByPrimaryKeySelective(file);
-			
-		}
+			MoveLogTable dto =new MoveLogTable();
+			// approve
+			Approve record = DTOUtils.newDTO(Approve.class);
+			record.setCreateMemberId(userId);
+			List<Approve> listCreateMember = approveMapper.select(record);
 
-		///// hardware_apply_operation_record
+			for (Approve approve : listCreateMember) {
 
-		HardwareApplyOperationRecord hardwareApplyOperationRecord = DTOUtils.newDTO(HardwareApplyOperationRecord.class);
-		hardwareApplyOperationRecord.setOperatorId(userId);
-		List<HardwareApplyOperationRecord> lisHardwareApplyOperationRecordCreateMember = hardwareApplyOperationRecordMapper
-				.select(hardwareApplyOperationRecord);
-		for (HardwareApplyOperationRecord object : lisHardwareApplyOperationRecordCreateMember) {
+				dto =new MoveLogTable();
+				dto.setFileId(approve.getId());
+				dto.setFileField("create_member_id");// 设为常量
+				dto.setTableName("approve");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				approve.setCreateMemberId(uapUserId);
+				approveMapper.updateByPrimaryKeySelective(approve);
+			}
 
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("operator_id");// 设为常量
-			dto.setTableName("hardware_apply_operation_record");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setOperatorId(uapUserId);
-			hardwareApplyOperationRecordMapper.updateByPrimaryKeySelective(object);
-		}
+			record.setCreateMemberId(null);
 
-		// HardwareResource
+			record.setModifyMemberId(uapUserId);
+			List<Approve> listModifyMember = approveMapper.select(record);
 
-		HardwareResource hardwareResource = DTOUtils.newDTO(HardwareResource.class);
-		hardwareResource.setMaintenanceOwner(userId);
-		List<HardwareResource> listHardwareResource = hardwareResourceMapper.select(hardwareResource);
-		for (HardwareResource object : listHardwareResource) {
+			for (Approve approve : listModifyMember) {
 
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("maintenance_owner");// 设为常量
-			dto.setTableName("hardware_resource");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setMaintenanceOwner(uapUserId);
-			hardwareResourceMapper.updateByPrimaryKeySelective(object);
-		}
+				dto =new MoveLogTable();
+				dto.setFileId(approve.getId());
+				dto.setFileField("modify_member_id");// 设为常量
+				dto.setTableName("approve");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				approve.setModifyMemberId(uapUserId);
+				approveMapper.updateByPrimaryKeySelective(approve);
+			}
+			// files
 
-		// log
-		Log log = DTOUtils.newDTO(Log.class);
-		log.setOperatorId(userId);
-		List<Log> listLog = logMapper.select(log);
-		for (Log object : listLog) {
+			Files files = DTOUtils.newDTO(Files.class);
+			files.setCreateMemberId(userId);
+			List<Files> listFilesCreateMember = filesMapper.select(files);
+			for (Files approve : listFilesCreateMember) {
 
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("operator_id");// 设为常量
-			dto.setTableName("log");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setOperatorId(uapUserId);
-			logMapper.updateByPrimaryKeySelective(object);
-		}
+				dto =new MoveLogTable();
+				dto.setFileId(approve.getId());
+				dto.setFileField("create_member_id");// 设为常量
+				dto.setTableName("files");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				approve.setCreateMemberId(uapUserId);
+				filesMapper.updateByPrimaryKeySelective(approve);
+			}
 
-		//
-		// Project
-		Project project = DTOUtils.newDTO(Project.class);
-		project.setProjectManager(userId);
-		List<Project> listProjectManager = projectMapper.select(project);
-		for (Project object : listProjectManager) {
+			files.setCreateMemberId(null);
+			files.setModifyMemberId(userId);
 
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("project_manager");// 设为常量
-			dto.setTableName("project");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setProjectManager(uapUserId);
-			projectMapper.updateByPrimaryKeySelective(object);
-			
-			
-		}
+			List<Files> lisFilestModifyMember = filesMapper.select(files);
 
-		project.setProjectManager(null);
-		project.setDevelopManager(userId);
-		List<Project> listDevelopManager = projectMapper.select(project);
-		for (Project object : listDevelopManager) {
+			for (Files file : lisFilestModifyMember) {
 
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("develop_manager");// 设为常量
-			dto.setTableName("project");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setDevelopManager(uapUserId);
-			projectMapper.updateByPrimaryKeySelective(object);
-			
-			
-			
-		}
-
-		project.setDevelopManager(null);
-		project.setTestManager(userId);
-		List<Project> listDevelopManagerr = projectMapper.select(project);
-		for (Project object : listDevelopManagerr) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("test_manager");// 设为常量
-			dto.setTableName("project");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setTestManager(uapUserId);
-			projectMapper.updateByPrimaryKeySelective(object);
-			
-		}
-
-		project.setTestManager(null);
-		project.setProductManager(userId);
-		List<Project> listProductManager = projectMapper.select(project);
-		for (Project object : listProductManager) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("product_manager");// 设为常量
-			dto.setTableName("project");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-
-			object.setProductManager(uapUserId);
-			projectMapper.updateByPrimaryKeySelective(object);
-			
-		}
-
-		project.setProductManager(null);
-		project.setOriginator(userId);
-		List<Project> listOriginator = projectMapper.select(project);
-		for (Project object : listOriginator) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("originator");// 设为常量
-			dto.setTableName("project");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setOriginator(uapUserId);
-			projectMapper.updateByPrimaryKeySelective(object);
-			
-			
-		}
-
-		project.setOriginator(null);
-		project.setDep(userId);
-		List<Project> listDep = projectMapper.select(project);
-		for (Project object : listDep) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("dep");// 设为常量
-			dto.setTableName("project");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setDep(uapUserId);
-			projectMapper.updateByPrimaryKeySelective(object);
-			
-		}
-
-		project.setDep(null);
-		project.setBusinessOwner(userId);
-		List<Project> listBusinessOwner = projectMapper.select(project);
-		for (Project object : listBusinessOwner) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("business_owner");// 设为常量
-			dto.setTableName("project");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setBusinessOwner(uapUserId);
-			projectMapper.updateByPrimaryKeySelective(object);
-			
-		}
-
-		// project_apply:立项申请表
-		ProjectApply projectApply = DTOUtils.newDTO(ProjectApply.class);
-		projectApply.setProjectLeader(userId);
-		List<ProjectApply> listProjectApply = projectApplyMapper.select(projectApply);
-		for (ProjectApply object : listProjectApply) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("project_leader");// 设为常量
-			dto.setTableName("project_apply");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setProjectLeader(uapUserId);
-			projectApplyMapper.updateByPrimaryKeySelective(object);
-			
-			
-			
-		}
-
-		projectApply.setProjectLeader(null);
-		projectApply.setProductManager(userId);
-		List<ProjectApply> listProjectApplyProductManager = projectApplyMapper.select(projectApply);
-		for (ProjectApply object : listProjectApplyProductManager) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("product_manager");// 设为常量
-			dto.setTableName("project_apply");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			object.setProductManager(uapUserId);
-			projectApplyMapper.updateByPrimaryKeySelective(object);
-			
-		}
-
-		projectApply.setProductManager(null);
-		projectApply.setDevelopmentManager(userId);
-		List<ProjectApply> listProjectApplyDevelopmentManager = projectApplyMapper.select(projectApply);
-		for (ProjectApply object : listProjectApplyDevelopmentManager) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("development_manager");// 设为常量
-			dto.setTableName("project_apply");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setDevelopmentManager(uapUserId);
-			projectApplyMapper.updateByPrimaryKeySelective(object);
-		}
-
-		projectApply.setDevelopmentManager(null);
-		projectApply.setTestManager(userId);
-		List<ProjectApply> listProjectApplyTestManager = projectApplyMapper.select(projectApply);
-		for (ProjectApply object : listProjectApplyTestManager) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("test_manager");// 设为常量
-			dto.setTableName("project_apply");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setTestManager(uapUserId);
-			projectApplyMapper.updateByPrimaryKeySelective(object);
-		}
-
-		projectApply.setTestManager(null);
-		projectApply.setBusinessOwner(userId);
-		List<ProjectApply> listProjectBusinessOwner = projectApplyMapper.select(projectApply);
-		for (ProjectApply object : listProjectBusinessOwner) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("business_owner");// 设为常量
-			dto.setTableName("project_apply");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setBusinessOwner(uapUserId);
-			projectApplyMapper.updateByPrimaryKeySelective(object);
-		}
-
-		///////// project_change
-
-		ProjectChange projectChange = DTOUtils.newDTO(ProjectChange.class);
-		projectChange.setCreateMemberId(userId);
-		List<ProjectChange> listProjectChange = projectChangeMapper.select(projectChange);
-		for (ProjectChange object : listProjectChange) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("create_member_id");// 设为常量
-			dto.setTableName("project_change");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setCreateMemberId(uapUserId);
-			projectChangeMapper.updateByPrimaryKeySelective(object);
-			
-		}
-
-		projectChange.setCreateMemberId(null);
-		projectChange.setModifyMemberId(userId);
-		List<ProjectChange> listModifyMemberId = projectChangeMapper.select(projectChange);
-		for (ProjectChange object : listModifyMemberId) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("modify_member_id");// 设为常量
-			dto.setTableName("project_change");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setModifyMemberId(uapUserId);
-			projectChangeMapper.updateByPrimaryKeySelective(object);
-		}
-
-		////// project_complete:结项申请表
-
-		ProjectComplete projectComplete = DTOUtils.newDTO(ProjectComplete.class);
-		projectComplete.setCreateMemberId(userId);
-		List<ProjectComplete> listProjectCompleteCreateMember = projectCompleteMapper.select(projectComplete);
-
-		for (ProjectComplete object : listProjectCompleteCreateMember) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("create_member_id");// 设为常量
-			dto.setTableName("project_complete");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			object.setCreateMemberId(uapUserId);
-			projectCompleteMapper.updateByPrimaryKeySelective(object);
-			
-			
-		}
-
-		projectComplete.setCreateMemberId(null);
-		projectComplete.setModifyMemberId(userId);
-
-		List<ProjectComplete> listProjectCompleteModifyMember = projectCompleteMapper.select(projectComplete);
-		for (ProjectComplete object : listProjectCompleteModifyMember) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("modify_member_id");// 设为常量
-			dto.setTableName("project_complete");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setModifyMemberId(uapUserId);
-			projectCompleteMapper.updateByPrimaryKeySelective(object);
-		}
-
-		// project_oneline_apply
-
-		ProjectOnlineApply projectOnlineApply = DTOUtils.newDTO(ProjectOnlineApply.class);
-		projectOnlineApply.setBusinessOwnerId(userId);
-		List<ProjectOnlineApply> listProjectOnlineApplyProjectOnlineApply = projectOnlineApplyMapper
-				.select(projectOnlineApply);
-
-		for (ProjectOnlineApply object : listProjectOnlineApplyProjectOnlineApply) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("business_owner_id");// 设为常量
-			dto.setTableName("project_online_apply");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setBusinessOwnerId(uapUserId);
-			projectOnlineApplyMapper.updateByPrimaryKeySelective(object);
-			
-		}
-
-		projectOnlineApply.setBusinessOwnerId(null);
-		projectOnlineApply.setProductManagerId(userId);
-		List<ProjectOnlineApply> listProjectOnlineApplyProductManagerId = projectOnlineApplyMapper
-				.select(projectOnlineApply);
-		for (ProjectOnlineApply object : listProjectOnlineApplyProductManagerId) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("product_manager_id");// 设为常量
-			dto.setTableName("project_online_apply");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setProductManagerId(uapUserId);
-			projectOnlineApplyMapper.updateByPrimaryKeySelective(object);
-			
-		}
-
-		projectOnlineApply.setProductManagerId(null);
-		projectOnlineApply.setTestManagerId(userId);
-		List<ProjectOnlineApply> listProjectOnlineApplyTestManagerId = projectOnlineApplyMapper
-				.select(projectOnlineApply);
-		for (ProjectOnlineApply object : listProjectOnlineApplyTestManagerId) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("test_manager_id");// 设为常量
-			dto.setTableName("project_online_apply");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setTestManagerId(uapUserId);
-			projectOnlineApplyMapper.updateByPrimaryKeySelective(object);
-			
-		}
-
-		projectOnlineApply.setTestManagerId(null);
-		projectOnlineApply.setDevelopmentManagerId(userId);
-		List<ProjectOnlineApply> listProjectOnlineApplyDevelopmentManagerId = projectOnlineApplyMapper
-				.select(projectOnlineApply);
-		for (ProjectOnlineApply object : listProjectOnlineApplyDevelopmentManagerId) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("development_manager_id");// 设为常量
-			dto.setTableName("project_online_apply");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setDevelopmentManagerId(uapUserId);
-			projectOnlineApplyMapper.updateByPrimaryKeySelective(object);
-		}
-
-		projectOnlineApply.setDevelopmentManagerId(null);
-		projectOnlineApply.setApplicantId(userId);
-		List<ProjectOnlineApply> listProjectOnlineApplyApplicantId = projectOnlineApplyMapper
-				.select(projectOnlineApply);
-		for (ProjectOnlineApply object : listProjectOnlineApplyApplicantId) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("applicant_id");// 设为常量
-			dto.setTableName("project_online_apply");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setApplicantId(uapUserId);
-			projectOnlineApplyMapper.updateByPrimaryKeySelective(object);
-		}
-		/////// 需要重新写
-
-		projectOnlineApply.setApplicantId(null);
-
-		List<ProjectOnlineApply> listProjectOnlinetExecutorId = projectOnlineApplyMapper.selectProjectOnlineApplyByExecutorId(userId);
-		for (ProjectOnlineApply object : listProjectOnlinetExecutorId) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("executor_id");// 设为常量
-			dto.setTableName("project_online_apply");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			if(object.getExecutorId()!=null) {
-				String[] strList=object.getExecutorId().split(",");
-				for (int i = 0; i < strList.length; i++) {
-					 if(strList[i].equals(userId+"")) {
-						 strList[i]= uapUserId+"--";
-					 }
-				}
-				object.setExecutorId(strList.toString());//带处理
+				dto =new MoveLogTable();
+				dto.setFileId(file.getId());
+				dto.setFileField("modify_member_id");// 设为常量
+				dto.setTableName("files");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				file.setModifyMemberId(uapUserId);
+				filesMapper.updateByPrimaryKeySelective(file);
 				
 			}
-		
-			projectOnlineApplyMapper.updateByPrimaryKeySelective(object);
-		}
 
-		////// project_online_operation_record
-		ProjectOnlineOperationRecord projectOnlineOperationRecord = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
-		projectOnlineOperationRecord.setOperatorId(userId);
-		List<ProjectOnlineOperationRecord> listprojectOnlineOperationRecord = projectOnlineOperationRecordMapper
-				.select(projectOnlineOperationRecord);
-		for (ProjectOnlineOperationRecord object : listprojectOnlineOperationRecord) {
+			///// hardware_apply_operation_record
 
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("operator_id");// 设为常量
-			dto.setTableName("project_online_operation_record");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setOperatorId(uapUserId);
-			projectOnlineOperationRecordMapper.updateByPrimaryKeySelective(object);
-		}
+			HardwareApplyOperationRecord hardwareApplyOperationRecord = DTOUtils.newDTO(HardwareApplyOperationRecord.class);
+			hardwareApplyOperationRecord.setOperatorId(userId);
+			List<HardwareApplyOperationRecord> lisHardwareApplyOperationRecordCreateMember = hardwareApplyOperationRecordMapper
+					.select(hardwareApplyOperationRecord);
+			for (HardwareApplyOperationRecord object : lisHardwareApplyOperationRecordCreateMember) {
 
-		//// project_online_subsystem:
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("operator_id");// 设为常量
+				dto.setTableName("hardware_apply_operation_record");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setOperatorId(uapUserId);
+				hardwareApplyOperationRecordMapper.updateByPrimaryKeySelective(object);
+			}
 
-		ProjectOnlineSubsystem projectOnlineSubsystem = DTOUtils.newDTO(ProjectOnlineSubsystem.class);
-		projectOnlineSubsystem.setManagerId(userId);
+			// HardwareResource
 
-		List<ProjectOnlineSubsystem> listprojectOnlineSubsystem = projectOnlineSubsystemMapper.select(projectOnlineSubsystem);
-		for (ProjectOnlineSubsystem object : listprojectOnlineSubsystem) {
+			HardwareResource hardwareResource = DTOUtils.newDTO(HardwareResource.class);
+			hardwareResource.setMaintenanceOwner(userId);
+			List<HardwareResource> listHardwareResource = hardwareResourceMapper.select(hardwareResource);
+			for (HardwareResource object : listHardwareResource) {
 
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("manager_id");// 设为常量
-			dto.setTableName("project_online_subsystem");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setManagerId(uapUserId);
-			projectOnlineSubsystemMapper.updateByPrimaryKeySelective(object);
-		}
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("maintenance_owner");// 设为常量
+				dto.setTableName("hardware_resource");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setMaintenanceOwner(uapUserId);
+				hardwareResourceMapper.updateByPrimaryKeySelective(object);
+			}
 
-		///// manager_name
-		/////// 需要重新写
-		projectOnlineSubsystem.setManagerId(null);
-		BaseOutput<AlmUser> userTempManagerIdLocal = localUserRpc.findByUserId(userId);
-		projectOnlineSubsystem.setManagerName(userTempManagerIdLocal.getData().getRealName());
-		
-		BaseOutput<User> userTempManagerIdUapRpc= userRpc.findUserById(uapUserId);
-		List<ProjectOnlineSubsystem> listprojectManagerName = projectOnlineSubsystemMapper.select(projectOnlineSubsystem);
-		for (ProjectOnlineSubsystem object : listprojectManagerName) {
+			// log
+			Log log = DTOUtils.newDTO(Log.class);
+			log.setOperatorId(userId);
+			List<Log> listLog = logMapper.select(log);
+			for (Log object : listLog) {
 
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("manager_name");// 设为常量
-			dto.setTableName("project_online_subsystem");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			if(object.getManagerName()!=null) {
-				String[] strList=object.getManagerName().split(",");
-				for (int i = 0; i < strList.length; i++) {
-					 if(strList[i].equals(userTempManagerIdLocal.getData().getRealName())) {
-						 strList[i]= userTempManagerIdUapRpc.getData().getRealName()+"--";
-					 }
-				}
-				object.setManagerName(strList.toString());//带处理
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("operator_id");// 设为常量
+				dto.setTableName("log");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setOperatorId(uapUserId);
+				logMapper.updateByPrimaryKeySelective(object);
+			}
+
+			//
+			// Project
+			Project project = DTOUtils.newDTO(Project.class);
+			project.setProjectManager(userId);
+			List<Project> listProjectManager = projectMapper.select(project);
+			for (Project object : listProjectManager) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("project_manager");// 设为常量
+				dto.setTableName("project");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setProjectManager(uapUserId);
+				projectMapper.updateByPrimaryKeySelective(object);
+				
 				
 			}
-			//object.setManagerName(object.getManagerName().replace(object.getManagerName(), userTempManagerId.getData().getRealName()));
-			projectOnlineSubsystemMapper.updateByPrimaryKeySelective(object);
-		}
 
-		/////// project_version:项目版本
+			project.setProjectManager(null);
+			project.setDevelopManager(userId);
+			List<Project> listDevelopManager = projectMapper.select(project);
+			for (Project object : listDevelopManager) {
 
-		ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
-		projectVersion.setCreatorId(userId);
-
-		List<ProjectVersion> listprojectProjectVersion = projectVersionMapper.select(projectVersion);
-		for (ProjectVersion object : listprojectProjectVersion) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("creator_id");// 设为常量
-			dto.setTableName("project_version");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setCreatorId(uapUserId);
-			projectVersionMapper.updateByPrimaryKeySelective(object);
-		}
-
-		projectVersion.setCreatorId(null);
-		projectVersion.setModifierId(userId);
-		List<ProjectVersion> listprojectModifierId = projectVersionMapper.select(projectVersion);
-		for (ProjectVersion object : listprojectModifierId) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("modifier_id");// 设为常量
-			dto.setTableName("project_version");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setModifierId(uapUserId);
-			projectVersionMapper.updateByPrimaryKeySelective(object);
-		}
-
-		//////
-
-		Task task = DTOUtils.newDTO(Task.class);
-		task.setOwner(userId);
-		List<Task> listTaskOwner = taskMapper.select(task);
-		for (Task object : listTaskOwner) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("owner");// 设为常量
-			dto.setTableName("task");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setOwner(uapUserId);
-			taskMapper.updateByPrimaryKeySelective(object);
-		}
-
-		task.setOwner(null);
-		task.setCreateMemberId(userId);
-		List<Task> listTaskCreateMemberId = taskMapper.select(task);
-		for (Task object : listTaskCreateMemberId) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("create_member_id");// 设为常量
-			dto.setTableName("task");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			object.setCreateMemberId(uapUserId);
-			taskMapper.updateByPrimaryKeySelective(object);
-		}
-
-		task.setCreateMemberId(null);
-		task.setModifyMemberId(userId);
-		List<Task> listTaskModifyMemberId = taskMapper.select(task);
-		for (Task object : listTaskModifyMemberId) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("modify_member_id");// 设为常量
-			dto.setTableName("task");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setModifyMemberId(uapUserId);
-			taskMapper.updateByPrimaryKeySelective(object);
-			
-		}
-		//// task_details
-
-		TaskDetails taskDetails = DTOUtils.newDTO(TaskDetails.class);
-		taskDetails.setCreateMemberId(userId);
-		List<TaskDetails> listtaskDetailsCreateMemberId = taskDetailsMapper.select(taskDetails);
-		for (TaskDetails object : listtaskDetailsCreateMemberId) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("create_member_id");// 设为常量
-			dto.setTableName("task_details");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setCreateMemberId(uapUserId);
-			taskDetailsMapper.updateByPrimaryKeySelective(object);
-		}
-
-		taskDetails.setCreateMemberId(null);
-		taskDetails.setModifyMemberId(userId);
-		List<TaskDetails> listtaskDetailsModifyMemberId = taskDetailsMapper.select(taskDetails);
-		for (TaskDetails object : listtaskDetailsModifyMemberId) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("modify_member_id");// 设为常量
-			dto.setTableName("task_details");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setModifyMemberId(uapUserId);
-			taskDetailsMapper.updateByPrimaryKeySelective(object);
-			
-		}
-
-		// team
-
-		Team team = DTOUtils.newDTO(Team.class);
-		team.setMemberId(userId);
-		List<Team> listteam = teamMapper.select(team);
-		for (Team object : listteam) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("member_id");// 设为常量
-			dto.setTableName("team");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setMemberId(uapUserId);
-			teamMapper.updateByPrimaryKeySelective(object);
-		}
-		///// travel_cost_apply
-		TravelCostApply travelCostApply = DTOUtils.newDTO(TravelCostApply.class);
-		travelCostApply.setApplicantId(userId);
-		List<TravelCostApply> listtravelCostApply = travelCostApplyMapper.select(travelCostApply);
-		for (TravelCostApply object : listtravelCostApply) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("applicant_id");// 设为常量
-			dto.setTableName("travel_cost_apply");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setApplicantId(uapUserId);
-			travelCostApplyMapper.updateByPrimaryKeySelective(object);
-		}
-
-		// 需要重新写
-
-		BaseOutput<User> userTemp = userRpc.findUserById(uapUserId);
-
-		travelCostApply.setApplicantId(userId);
-		travelCostApply.setRootDepartemntId(userTemp.getData().getDepartmentId());
-		List<TravelCostApply> listtraveRootDepartemntId = travelCostApplyMapper.select(travelCostApply);
-		for (TravelCostApply object : listtraveRootDepartemntId) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("root_departemnt_id");// 设为常量
-			dto.setTableName("travel_cost_apply");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			object.setDepartmentId(userTemp.getData().getDepartmentId());
-			travelCostApplyMapper.updateByPrimaryKeySelective(object);
-		}
-
-		/// 需要重新写
-		travelCostApply.setRootDepartemntId(null);
-		travelCostApply.setDepartmentId(userTemp.getData().getDepartmentId());
-		List<TravelCostApply> travelCostApplyRootDepartemntId = travelCostApplyMapper.select(travelCostApply);
-		for (TravelCostApply object : travelCostApplyRootDepartemntId) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("department_id");// 设为常量
-			dto.setTableName("travel_cost_apply");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setDepartmentId(userTemp.getData().getDepartmentId());
-			travelCostApplyMapper.updateByPrimaryKeySelective(object);
-		}
-
-		////// verify_approval
-
-		VerifyApproval verifyApprova = DTOUtils.newDTO(VerifyApproval.class);
-		verifyApprova.setApproveId(userId);
-		List<VerifyApproval> listVerifyApproval = verifyApprovalMapper.select(verifyApprova);
-		for (VerifyApproval object : listVerifyApproval) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("approve_id");// 设为常量
-			dto.setTableName("verify_approval");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setApproveId(uapUserId);
-			verifyApprovalMapper.updateByPrimaryKeySelective(object);
-		}
-
-		verifyApprova.setApproveId(null);
-		verifyApprova.setCreateMemberId(userId);
-
-		List<VerifyApproval> listVerifyApprovalCreateMemberId = verifyApprovalMapper.select(verifyApprova);
-		for (VerifyApproval object : listVerifyApprovalCreateMemberId) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("create_member_id");// 设为常量
-			dto.setTableName("verify_approval");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setCreateMemberId(uapUserId);
-			verifyApprovalMapper.updateByPrimaryKeySelective(object);
-		}
-
-		verifyApprova.setCreateMemberId(null);
-		verifyApprova.setModifyMemberId(userId);
-
-		List<VerifyApproval> listVerifyApprovaltModifyMemberId = verifyApprovalMapper.select(verifyApprova);
-		for (VerifyApproval object : listVerifyApprovaltModifyMemberId) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("modify_member_id");// 设为常量
-			dto.setTableName("verify_approval");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setModifyMemberId(uapUserId);
-			verifyApprovalMapper.updateByPrimaryKeySelective(object);
-		}
-
-		////// weekly
-		Weekly weekly = DTOUtils.newDTO(Weekly.class);
-		weekly.setCreateMemberId(userId);
-		List<Weekly> listWeeklyCreateMemberId = weeklyMapper.select(weekly);
-		for (Weekly object : listWeeklyCreateMemberId) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("create_member_id");// 设为常量
-			dto.setTableName("weekly");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setCreateMemberId(uapUserId);
-			weeklyMapper.updateByPrimaryKeySelective(object);
-			
-		}
-
-		weekly.setCreateMemberId(null);
-		weekly.setModifyMemberId(userId);
-		List<Weekly> listWeeklyModifyMemberId = weeklyMapper.select(weekly);
-		for (Weekly object : listWeeklyModifyMemberId) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("modify_member_id");// 设为常量
-			dto.setTableName("weekly");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setModifyMemberId(uapUserId);
-			weeklyMapper.updateByPrimaryKeySelective(object);
-		}
-		/////// work_order
-
-		WorkOrder weeklyOrder = DTOUtils.newDTO(WorkOrder.class);
-		weeklyOrder.setAcceptorId(userId);
-		List<WorkOrder> listWeeklyOrderAcceptorId = workOrderMapper.select(weeklyOrder);
-		for (WorkOrder object : listWeeklyOrderAcceptorId) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("acceptor_id");// 设为常量
-			dto.setTableName("work_order");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setAcceptorId(uapUserId);
-			workOrderMapper.updateByPrimaryKeySelective(object);
-		}
-
-		/// 需要重新写 完成
-		weeklyOrder.setAcceptorId(null);
-		weeklyOrder.setCopyUserId(userId + "");
-		List<WorkOrder> listWeeklyCopyUserId = workOrderMapper.selectWorkOrdeByCopyUserId(userId);
-		for (WorkOrder object : listWeeklyCopyUserId) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("copy_user_id");// 设为常量
-			dto.setTableName("work_order");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			String str=object.getCopyUserId();
-			if(object.getCopyUserId()!=null) {
-				List<String> list = JSONObject.parseArray(str,String.class);
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("develop_manager");// 设为常量
+				dto.setTableName("project");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
 				
-				for (int j = 0; j < list.size(); j++) {
-					if(list.get(j).equals(userId+"")) {
-						list.set(j, uapUserId+"--");
+				object.setDevelopManager(uapUserId);
+				projectMapper.updateByPrimaryKeySelective(object);
+				
+				
+				
+			}
+
+			project.setDevelopManager(null);
+			project.setTestManager(userId);
+			List<Project> listDevelopManagerr = projectMapper.select(project);
+			for (Project object : listDevelopManagerr) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("test_manager");// 设为常量
+				dto.setTableName("project");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setTestManager(uapUserId);
+				projectMapper.updateByPrimaryKeySelective(object);
+				
+			}
+
+			project.setTestManager(null);
+			project.setProductManager(userId);
+			List<Project> listProductManager = projectMapper.select(project);
+			for (Project object : listProductManager) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("product_manager");// 设为常量
+				dto.setTableName("project");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+
+				object.setProductManager(uapUserId);
+				projectMapper.updateByPrimaryKeySelective(object);
+				
+			}
+
+			project.setProductManager(null);
+			project.setOriginator(userId);
+			List<Project> listOriginator = projectMapper.select(project);
+			for (Project object : listOriginator) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("originator");// 设为常量
+				dto.setTableName("project");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setOriginator(uapUserId);
+				projectMapper.updateByPrimaryKeySelective(object);
+				
+				
+			}
+
+			project.setOriginator(null);
+			project.setDep(userId);
+			List<Project> listDep = projectMapper.select(project);
+			for (Project object : listDep) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("dep");// 设为常量
+				dto.setTableName("project");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setDep(uapUserId);
+				projectMapper.updateByPrimaryKeySelective(object);
+				
+			}
+
+			project.setDep(null);
+			project.setBusinessOwner(userId);
+			List<Project> listBusinessOwner = projectMapper.select(project);
+			for (Project object : listBusinessOwner) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("business_owner");// 设为常量
+				dto.setTableName("project");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setBusinessOwner(uapUserId);
+				projectMapper.updateByPrimaryKeySelective(object);
+				
+			}
+
+			// project_apply:立项申请表
+			ProjectApply projectApply = DTOUtils.newDTO(ProjectApply.class);
+			projectApply.setProjectLeader(userId);
+			List<ProjectApply> listProjectApply = projectApplyMapper.select(projectApply);
+			for (ProjectApply object : listProjectApply) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("project_leader");// 设为常量
+				dto.setTableName("project_apply");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setProjectLeader(uapUserId);
+				projectApplyMapper.updateByPrimaryKeySelective(object);
+				
+				
+				
+			}
+
+			projectApply.setProjectLeader(null);
+			projectApply.setProductManager(userId);
+			List<ProjectApply> listProjectApplyProductManager = projectApplyMapper.select(projectApply);
+			for (ProjectApply object : listProjectApplyProductManager) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("product_manager");// 设为常量
+				dto.setTableName("project_apply");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				object.setProductManager(uapUserId);
+				projectApplyMapper.updateByPrimaryKeySelective(object);
+				
+			}
+
+			projectApply.setProductManager(null);
+			projectApply.setDevelopmentManager(userId);
+			List<ProjectApply> listProjectApplyDevelopmentManager = projectApplyMapper.select(projectApply);
+			for (ProjectApply object : listProjectApplyDevelopmentManager) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("development_manager");// 设为常量
+				dto.setTableName("project_apply");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setDevelopmentManager(uapUserId);
+				projectApplyMapper.updateByPrimaryKeySelective(object);
+			}
+
+			projectApply.setDevelopmentManager(null);
+			projectApply.setTestManager(userId);
+			List<ProjectApply> listProjectApplyTestManager = projectApplyMapper.select(projectApply);
+			for (ProjectApply object : listProjectApplyTestManager) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("test_manager");// 设为常量
+				dto.setTableName("project_apply");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setTestManager(uapUserId);
+				projectApplyMapper.updateByPrimaryKeySelective(object);
+			}
+
+			projectApply.setTestManager(null);
+			projectApply.setBusinessOwner(userId);
+			List<ProjectApply> listProjectBusinessOwner = projectApplyMapper.select(projectApply);
+			for (ProjectApply object : listProjectBusinessOwner) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("business_owner");// 设为常量
+				dto.setTableName("project_apply");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setBusinessOwner(uapUserId);
+				projectApplyMapper.updateByPrimaryKeySelective(object);
+			}
+
+			///////// project_change
+
+			ProjectChange projectChange = DTOUtils.newDTO(ProjectChange.class);
+			projectChange.setCreateMemberId(userId);
+			List<ProjectChange> listProjectChange = projectChangeMapper.select(projectChange);
+			for (ProjectChange object : listProjectChange) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("create_member_id");// 设为常量
+				dto.setTableName("project_change");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setCreateMemberId(uapUserId);
+				projectChangeMapper.updateByPrimaryKeySelective(object);
+				
+			}
+
+			projectChange.setCreateMemberId(null);
+			projectChange.setModifyMemberId(userId);
+			List<ProjectChange> listModifyMemberId = projectChangeMapper.select(projectChange);
+			for (ProjectChange object : listModifyMemberId) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("modify_member_id");// 设为常量
+				dto.setTableName("project_change");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setModifyMemberId(uapUserId);
+				projectChangeMapper.updateByPrimaryKeySelective(object);
+			}
+
+			////// project_complete:结项申请表
+
+			ProjectComplete projectComplete = DTOUtils.newDTO(ProjectComplete.class);
+			projectComplete.setCreateMemberId(userId);
+			List<ProjectComplete> listProjectCompleteCreateMember = projectCompleteMapper.select(projectComplete);
+
+			for (ProjectComplete object : listProjectCompleteCreateMember) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("create_member_id");// 设为常量
+				dto.setTableName("project_complete");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				object.setCreateMemberId(uapUserId);
+				projectCompleteMapper.updateByPrimaryKeySelective(object);
+				
+				
+			}
+
+			projectComplete.setCreateMemberId(null);
+			projectComplete.setModifyMemberId(userId);
+
+			List<ProjectComplete> listProjectCompleteModifyMember = projectCompleteMapper.select(projectComplete);
+			for (ProjectComplete object : listProjectCompleteModifyMember) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("modify_member_id");// 设为常量
+				dto.setTableName("project_complete");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setModifyMemberId(uapUserId);
+				projectCompleteMapper.updateByPrimaryKeySelective(object);
+			}
+
+			// project_oneline_apply
+
+			ProjectOnlineApply projectOnlineApply = DTOUtils.newDTO(ProjectOnlineApply.class);
+			projectOnlineApply.setBusinessOwnerId(userId);
+			List<ProjectOnlineApply> listProjectOnlineApplyProjectOnlineApply = projectOnlineApplyMapper
+					.select(projectOnlineApply);
+
+			for (ProjectOnlineApply object : listProjectOnlineApplyProjectOnlineApply) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("business_owner_id");// 设为常量
+				dto.setTableName("project_online_apply");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setBusinessOwnerId(uapUserId);
+				projectOnlineApplyMapper.updateByPrimaryKeySelective(object);
+				
+			}
+
+			projectOnlineApply.setBusinessOwnerId(null);
+			projectOnlineApply.setProductManagerId(userId);
+			List<ProjectOnlineApply> listProjectOnlineApplyProductManagerId = projectOnlineApplyMapper
+					.select(projectOnlineApply);
+			for (ProjectOnlineApply object : listProjectOnlineApplyProductManagerId) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("product_manager_id");// 设为常量
+				dto.setTableName("project_online_apply");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setProductManagerId(uapUserId);
+				projectOnlineApplyMapper.updateByPrimaryKeySelective(object);
+				
+			}
+
+			projectOnlineApply.setProductManagerId(null);
+			projectOnlineApply.setTestManagerId(userId);
+			List<ProjectOnlineApply> listProjectOnlineApplyTestManagerId = projectOnlineApplyMapper
+					.select(projectOnlineApply);
+			for (ProjectOnlineApply object : listProjectOnlineApplyTestManagerId) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("test_manager_id");// 设为常量
+				dto.setTableName("project_online_apply");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setTestManagerId(uapUserId);
+				projectOnlineApplyMapper.updateByPrimaryKeySelective(object);
+				
+			}
+
+			projectOnlineApply.setTestManagerId(null);
+			projectOnlineApply.setDevelopmentManagerId(userId);
+			List<ProjectOnlineApply> listProjectOnlineApplyDevelopmentManagerId = projectOnlineApplyMapper
+					.select(projectOnlineApply);
+			for (ProjectOnlineApply object : listProjectOnlineApplyDevelopmentManagerId) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("development_manager_id");// 设为常量
+				dto.setTableName("project_online_apply");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setDevelopmentManagerId(uapUserId);
+				projectOnlineApplyMapper.updateByPrimaryKeySelective(object);
+			}
+
+			projectOnlineApply.setDevelopmentManagerId(null);
+			projectOnlineApply.setApplicantId(userId);
+			List<ProjectOnlineApply> listProjectOnlineApplyApplicantId = projectOnlineApplyMapper
+					.select(projectOnlineApply);
+			for (ProjectOnlineApply object : listProjectOnlineApplyApplicantId) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("applicant_id");// 设为常量
+				dto.setTableName("project_online_apply");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setApplicantId(uapUserId);
+				projectOnlineApplyMapper.updateByPrimaryKeySelective(object);
+			}
+			/////// 需要重新写
+
+			projectOnlineApply.setApplicantId(null);
+
+			List<ProjectOnlineApply> listProjectOnlinetExecutorId = projectOnlineApplyMapper.selectProjectOnlineApplyByExecutorId(userId);
+			for (ProjectOnlineApply object : listProjectOnlinetExecutorId) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("executor_id");// 设为常量
+				dto.setTableName("project_online_apply");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				if(object.getExecutorId()!=null) {
+					String[] strList=object.getExecutorId().split(",");
+					for (int i = 0; i < strList.length; i++) {
+						 if(strList[i].equals(userId+"")) {
+							 strList[i]= uapUserId+"--";
+						 }
 					}
+					object.setExecutorId(strList.toString());//带处理
+					
 				}
+			
+				projectOnlineApplyMapper.updateByPrimaryKeySelective(object);
+			}
+
+			////// project_online_operation_record
+			ProjectOnlineOperationRecord projectOnlineOperationRecord = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
+			projectOnlineOperationRecord.setOperatorId(userId);
+			List<ProjectOnlineOperationRecord> listprojectOnlineOperationRecord = projectOnlineOperationRecordMapper
+					.select(projectOnlineOperationRecord);
+			for (ProjectOnlineOperationRecord object : listprojectOnlineOperationRecord) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("operator_id");// 设为常量
+				dto.setTableName("project_online_operation_record");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
 				
-				com.alibaba.fastjson.JSONArray  studentJsonArray = JSON.parseArray(JSONObject.toJSONString(list));
-				object.setCopyUserId(studentJsonArray.toString());//带处理
+				object.setOperatorId(uapUserId);
+				projectOnlineOperationRecordMapper.updateByPrimaryKeySelective(object);
+			}
+
+			//// project_online_subsystem:
+
+			ProjectOnlineSubsystem projectOnlineSubsystem = DTOUtils.newDTO(ProjectOnlineSubsystem.class);
+			projectOnlineSubsystem.setManagerId(userId);
+
+			List<ProjectOnlineSubsystem> listprojectOnlineSubsystem = projectOnlineSubsystemMapper.select(projectOnlineSubsystem);
+			for (ProjectOnlineSubsystem object : listprojectOnlineSubsystem) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("manager_id");// 设为常量
+				dto.setTableName("project_online_subsystem");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setManagerId(uapUserId);
+				projectOnlineSubsystemMapper.updateByPrimaryKeySelective(object);
+			}
+
+			///// manager_name
+			/////// 需要重新写
+			projectOnlineSubsystem.setManagerId(null);
+			BaseOutput<AlmUser> userTempManagerIdLocal = localUserRpc.findByUserId(userId);
+			projectOnlineSubsystem.setManagerName(userTempManagerIdLocal.getData().getRealName());
+			
+			BaseOutput<User> userTempManagerIdUapRpc= userRpc.findUserById(uapUserId);
+			List<ProjectOnlineSubsystem> listprojectManagerName = projectOnlineSubsystemMapper.select(projectOnlineSubsystem);
+			for (ProjectOnlineSubsystem object : listprojectManagerName) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("manager_name");// 设为常量
+				dto.setTableName("project_online_subsystem");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				if(object.getManagerName()!=null) {
+					String[] strList=object.getManagerName().split(",");
+					for (int i = 0; i < strList.length; i++) {
+						 if(strList[i].equals(userTempManagerIdLocal.getData().getRealName())) {
+							 strList[i]= userTempManagerIdUapRpc.getData().getRealName()+"--";
+						 }
+					}
+					object.setManagerName(strList.toString());//带处理
+					
+				}
+				//object.setManagerName(object.getManagerName().replace(object.getManagerName(), userTempManagerId.getData().getRealName()));
+				projectOnlineSubsystemMapper.updateByPrimaryKeySelective(object);
+			}
+
+			/////// project_version:项目版本
+
+			ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
+			projectVersion.setCreatorId(userId);
+
+			List<ProjectVersion> listprojectProjectVersion = projectVersionMapper.select(projectVersion);
+			for (ProjectVersion object : listprojectProjectVersion) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("creator_id");// 设为常量
+				dto.setTableName("project_version");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setCreatorId(uapUserId);
+				projectVersionMapper.updateByPrimaryKeySelective(object);
+			}
+
+			projectVersion.setCreatorId(null);
+			projectVersion.setModifierId(userId);
+			List<ProjectVersion> listprojectModifierId = projectVersionMapper.select(projectVersion);
+			for (ProjectVersion object : listprojectModifierId) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("modifier_id");// 设为常量
+				dto.setTableName("project_version");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setModifierId(uapUserId);
+				projectVersionMapper.updateByPrimaryKeySelective(object);
+			}
+
+			//////
+
+			Task task = DTOUtils.newDTO(Task.class);
+			task.setOwner(userId);
+			List<Task> listTaskOwner = taskMapper.select(task);
+			for (Task object : listTaskOwner) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("owner");// 设为常量
+				dto.setTableName("task");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setOwner(uapUserId);
+				taskMapper.updateByPrimaryKeySelective(object);
+			}
+
+			task.setOwner(null);
+			task.setCreateMemberId(userId);
+			List<Task> listTaskCreateMemberId = taskMapper.select(task);
+			for (Task object : listTaskCreateMemberId) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("create_member_id");// 设为常量
+				dto.setTableName("task");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				object.setCreateMemberId(uapUserId);
+				taskMapper.updateByPrimaryKeySelective(object);
+			}
+
+			task.setCreateMemberId(null);
+			task.setModifyMemberId(userId);
+			List<Task> listTaskModifyMemberId = taskMapper.select(task);
+			for (Task object : listTaskModifyMemberId) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("modify_member_id");// 设为常量
+				dto.setTableName("task");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setModifyMemberId(uapUserId);
+				taskMapper.updateByPrimaryKeySelective(object);
 				
 			}
-			//object.setCopyUserId(str.replace(userId+"", uapUserId+""));
-			workOrderMapper.updateByPrimaryKeySelective(object);
-			
+			//// task_details
+
+			TaskDetails taskDetails = DTOUtils.newDTO(TaskDetails.class);
+			taskDetails.setCreateMemberId(userId);
+			List<TaskDetails> listtaskDetailsCreateMemberId = taskDetailsMapper.select(taskDetails);
+			for (TaskDetails object : listtaskDetailsCreateMemberId) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("create_member_id");// 设为常量
+				dto.setTableName("task_details");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setCreateMemberId(uapUserId);
+				taskDetailsMapper.updateByPrimaryKeySelective(object);
+			}
+
+			taskDetails.setCreateMemberId(null);
+			taskDetails.setModifyMemberId(userId);
+			List<TaskDetails> listtaskDetailsModifyMemberId = taskDetailsMapper.select(taskDetails);
+			for (TaskDetails object : listtaskDetailsModifyMemberId) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("modify_member_id");// 设为常量
+				dto.setTableName("task_details");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setModifyMemberId(uapUserId);
+				taskDetailsMapper.updateByPrimaryKeySelective(object);
+				
+			}
+
+			// team
+
+			Team team = DTOUtils.newDTO(Team.class);
+			team.setMemberId(userId);
+			List<Team> listteam = teamMapper.select(team);
+			for (Team object : listteam) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("member_id");// 设为常量
+				dto.setTableName("team");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setMemberId(uapUserId);
+				teamMapper.updateByPrimaryKeySelective(object);
+			}
+			///// travel_cost_apply
+			TravelCostApply travelCostApply = DTOUtils.newDTO(TravelCostApply.class);
+			travelCostApply.setApplicantId(userId);
+			List<TravelCostApply> listtravelCostApply = travelCostApplyMapper.select(travelCostApply);
+			for (TravelCostApply object : listtravelCostApply) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("applicant_id");// 设为常量
+				dto.setTableName("travel_cost_apply");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setApplicantId(uapUserId);
+				travelCostApplyMapper.updateByPrimaryKeySelective(object);
+			}
+
+			// 需要重新写
+
+			BaseOutput<User> userTemp = userRpc.findUserById(uapUserId);
+
+			travelCostApply.setApplicantId(userId);
+			travelCostApply.setRootDepartemntId(userTemp.getData().getDepartmentId());
+			List<TravelCostApply> listtraveRootDepartemntId = travelCostApplyMapper.select(travelCostApply);
+			for (TravelCostApply object : listtraveRootDepartemntId) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("root_departemnt_id");// 设为常量
+				dto.setTableName("travel_cost_apply");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				object.setDepartmentId(userTemp.getData().getDepartmentId());
+				travelCostApplyMapper.updateByPrimaryKeySelective(object);
+			}
+
+			/// 需要重新写
+			travelCostApply.setRootDepartemntId(null);
+			travelCostApply.setDepartmentId(userTemp.getData().getDepartmentId());
+			List<TravelCostApply> travelCostApplyRootDepartemntId = travelCostApplyMapper.select(travelCostApply);
+			for (TravelCostApply object : travelCostApplyRootDepartemntId) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("department_id");// 设为常量
+				dto.setTableName("travel_cost_apply");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setDepartmentId(userTemp.getData().getDepartmentId());
+				travelCostApplyMapper.updateByPrimaryKeySelective(object);
+			}
+
+			////// verify_approval
+
+			VerifyApproval verifyApprova = DTOUtils.newDTO(VerifyApproval.class);
+			verifyApprova.setApproveId(userId);
+			List<VerifyApproval> listVerifyApproval = verifyApprovalMapper.select(verifyApprova);
+			for (VerifyApproval object : listVerifyApproval) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("approve_id");// 设为常量
+				dto.setTableName("verify_approval");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setApproveId(uapUserId);
+				verifyApprovalMapper.updateByPrimaryKeySelective(object);
+			}
+
+			verifyApprova.setApproveId(null);
+			verifyApprova.setCreateMemberId(userId);
+
+			List<VerifyApproval> listVerifyApprovalCreateMemberId = verifyApprovalMapper.select(verifyApprova);
+			for (VerifyApproval object : listVerifyApprovalCreateMemberId) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("create_member_id");// 设为常量
+				dto.setTableName("verify_approval");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setCreateMemberId(uapUserId);
+				verifyApprovalMapper.updateByPrimaryKeySelective(object);
+			}
+
+			verifyApprova.setCreateMemberId(null);
+			verifyApprova.setModifyMemberId(userId);
+
+			List<VerifyApproval> listVerifyApprovaltModifyMemberId = verifyApprovalMapper.select(verifyApprova);
+			for (VerifyApproval object : listVerifyApprovaltModifyMemberId) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("modify_member_id");// 设为常量
+				dto.setTableName("verify_approval");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setModifyMemberId(uapUserId);
+				verifyApprovalMapper.updateByPrimaryKeySelective(object);
+			}
+
+			////// weekly
+			Weekly weekly = DTOUtils.newDTO(Weekly.class);
+			weekly.setCreateMemberId(userId);
+			List<Weekly> listWeeklyCreateMemberId = weeklyMapper.select(weekly);
+			for (Weekly object : listWeeklyCreateMemberId) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("create_member_id");// 设为常量
+				dto.setTableName("weekly");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setCreateMemberId(uapUserId);
+				weeklyMapper.updateByPrimaryKeySelective(object);
+				
+			}
+
+			weekly.setCreateMemberId(null);
+			weekly.setModifyMemberId(userId);
+			List<Weekly> listWeeklyModifyMemberId = weeklyMapper.select(weekly);
+			for (Weekly object : listWeeklyModifyMemberId) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("modify_member_id");// 设为常量
+				dto.setTableName("weekly");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setModifyMemberId(uapUserId);
+				weeklyMapper.updateByPrimaryKeySelective(object);
+			}
+			/////// work_order
+
+			WorkOrder weeklyOrder = DTOUtils.newDTO(WorkOrder.class);
+			weeklyOrder.setAcceptorId(userId);
+			List<WorkOrder> listWeeklyOrderAcceptorId = workOrderMapper.select(weeklyOrder);
+			for (WorkOrder object : listWeeklyOrderAcceptorId) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("acceptor_id");// 设为常量
+				dto.setTableName("work_order");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setAcceptorId(uapUserId);
+				workOrderMapper.updateByPrimaryKeySelective(object);
+			}
+
+			/// 需要重新写 完成
+			weeklyOrder.setAcceptorId(null);
+			weeklyOrder.setCopyUserId(userId + "");
+			List<WorkOrder> listWeeklyCopyUserId = workOrderMapper.selectWorkOrdeByCopyUserId(userId);
+			for (WorkOrder object : listWeeklyCopyUserId) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("copy_user_id");// 设为常量
+				dto.setTableName("work_order");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				String str=object.getCopyUserId();
+				if(object.getCopyUserId()!=null) {
+					List<String> list = JSONObject.parseArray(str,String.class);
+					
+					for (int j = 0; j < list.size(); j++) {
+						if(list.get(j).equals(userId+"")) {
+							list.set(j, uapUserId+"--");
+						}
+					}
+					
+					com.alibaba.fastjson.JSONArray  studentJsonArray = JSON.parseArray(JSONObject.toJSONString(list));
+					object.setCopyUserId(studentJsonArray.toString());//带处理
+					
+				}
+				//object.setCopyUserId(str.replace(userId+"", uapUserId+""));
+				workOrderMapper.updateByPrimaryKeySelective(object);
+				
+			}
+
+			weeklyOrder.setAcceptorId(null);
+			weeklyOrder.setApplicantId(userId);
+			List<WorkOrder> listWeeklyOrderOrderApplicantId = workOrderMapper.select(weeklyOrder);
+			for (WorkOrder object : listWeeklyOrderOrderApplicantId) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("applicant_id");// 设为常量
+				dto.setTableName("work_order");// 设为常量AcceptorId
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setApplicantId(uapUserId);
+				workOrderMapper.updateByPrimaryKeySelective(object);
+			}
+
+			weeklyOrder.setApplicantId(null);
+			weeklyOrder.setExecutorId(userId);
+			List<WorkOrder> listWeeklyOrderOrdeExecutorId = workOrderMapper.select(weeklyOrder);
+			for (WorkOrder object : listWeeklyOrderOrdeExecutorId) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("executor_id");// 设为常量
+				dto.setTableName("work_order");// 设为常量AcceptorId
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setExecutorId(uapUserId);
+				workOrderMapper.updateByPrimaryKeySelective(object);
+			}
+
+			/////// work_order_operation_record
+
+			WorkOrderOperationRecord workOrderOperationRecord = DTOUtils.newDTO(WorkOrderOperationRecord.class);
+			workOrderOperationRecord.setOperatorId(userId);
+
+			List<WorkOrderOperationRecord> listworkOrderOperationRecord = workOrderOperationRecordMapper
+					.select(workOrderOperationRecord);
+			for (WorkOrderOperationRecord object : listworkOrderOperationRecord) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("operator_id");// 设为常量
+				dto.setTableName("work_order_operation_record");// 设为常量
+				moveLogTableMapper.insertSelective(dto);
+				
+				object.setOperatorId(uapUserId);
+				workOrderOperationRecordMapper.updateByPrimaryKeySelective(object);
+			}
+
+			/*
+			 * approve:审批表，包含立项审批，变更审批，结项审批的数据 project_leader->用户 business_owner->用户
+			 * 
+			 * ApproveMapper
+			 * 
+			 * dep->部门 create_member_id->用户 // modify_member_id->用户 //
+			 * 
+			 * 
+			 * files:文件表，包含上传文件信息 create_member_id->用户// modify_member_id->用户// FilesMapper
+			 * 
+			 * hardware_apply_operation_record：IT资源申请审批记录表 operator_id->用户 //
+			 * 
+			 * HardwareApplyOperationRecordMapper
+			 * 
+			 * 
+			 * hardware_resource:IT资源维护表 maintenance_owner->用户 //
+			 * 
+			 * HardwareResourceMapper
+			 * 
+			 * 
+			 * log:日志表 operator_id->用户//
+			 * 
+			 * LogMapper
+			 * 
+			 * 
+			 * project:项目表 project_manager->用户 develop_manager->用户 test_manager->用户
+			 * product_manager->用户 originator->用户 ProjectMapper
+			 * 
+			 * 
+			 * dep->部门 business_owner->用户
+			 * 
+			 * project_apply:立项申请表 project_leader->用户 product_manager->用户
+			 * development_manager->用户 test_manager->用户 business_owner->用户 dep->部门
+			 * create_member_id->用户 modify_member_id->用户
+			 * 
+			 * ProjectApplyMapper
+			 * 
+			 * project_change:项目变更表 create_member_id->用户 modify_member_id->用户
+			 * 
+			 * ProjectChangeMapper
+			 * 
+			 * 
+			 * project_complete:结项申请表 create_member_id->用户 modify_member_id->用户
+			 * ProjectCompleteMapper
+			 * 
+			 * project_oneline_apply:上线申请表 business_owner_id->用户 project_manager_id->用户
+			 * test_manager_id->用户 development_manager_id->用户 applicant_id->用户
+			 * executor_id->用户 ProjectOnlineApplyMapper
+			 * 
+			 * project_online_operation_record:上线申请记录 operator_id->用户
+			 * 
+			 * ProjectOnlineOperationRecordMapper
+			 * 
+			 * project_online_subsystem:上线申请影响系统 manager_id->用户 manager_name->用户真实姓名
+			 * ProjectOnlineSubsystemMapper
+			 * 
+			 * project_version:项目版本 creator_id->用户 modifier_id->用户 ProjectVersionMapper
+			 * 
+			 * 
+			 * task:任务表 owner->用户 create_member_id->用户 modify_member_id->用户 TaskMapper
+			 * 
+			 * task_details:任务工时表 create_member_id->用户 modify_member_id->用户
+			 * TaskDetailsMapper
+			 * 
+			 * team:团队表 member_id->用户 TeamMapper
+			 * 
+			 * 
+			 * travel_cost_apply:差旅申请 applicant_id->用户 root_departemnt_id->部门
+			 * department_id->部门 TravelCostApplyMapper
+			 * 
+			 * 
+			 * verify_approval：项目变更验证审批表 approver->用户 create_member_id->用户
+			 * modify_member_id->用户
+			 * 
+			 * VerifyApprovalMapper
+			 * 
+			 * weekly：周报 create_member_id->用户 modify_member_id->用户 WeeklyMapper
+			 * 
+			 * work_order：工单表 acceptor_id->用户 copy_user_id->用户，json数组需要先解析 applicant_id->用户
+			 * executor_id->用户 WorkOrderMapper
+			 * 
+			 * work_order_operation_record：工单操作记录表 operator_id->用户
+			 * 
+			 * WorkOrderOperationRecordMapper
+			 * 
+			 * 
+			 */
+
+			// TODO Auto-generated method stub
+			return 0;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			return -1;
 		}
-
-		weeklyOrder.setAcceptorId(null);
-		weeklyOrder.setApplicantId(userId);
-		List<WorkOrder> listWeeklyOrderOrderApplicantId = workOrderMapper.select(weeklyOrder);
-		for (WorkOrder object : listWeeklyOrderOrderApplicantId) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("applicant_id");// 设为常量
-			dto.setTableName("work_order");// 设为常量AcceptorId
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setApplicantId(uapUserId);
-			workOrderMapper.updateByPrimaryKeySelective(object);
-		}
-
-		weeklyOrder.setApplicantId(null);
-		weeklyOrder.setExecutorId(userId);
-		List<WorkOrder> listWeeklyOrderOrdeExecutorId = workOrderMapper.select(weeklyOrder);
-		for (WorkOrder object : listWeeklyOrderOrdeExecutorId) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("executor_id");// 设为常量
-			dto.setTableName("work_order");// 设为常量AcceptorId
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setExecutorId(uapUserId);
-			workOrderMapper.updateByPrimaryKeySelective(object);
-		}
-
-		/////// work_order_operation_record
-
-		WorkOrderOperationRecord workOrderOperationRecord = DTOUtils.newDTO(WorkOrderOperationRecord.class);
-		workOrderOperationRecord.setOperatorId(userId);
-
-		List<WorkOrderOperationRecord> listworkOrderOperationRecord = workOrderOperationRecordMapper
-				.select(workOrderOperationRecord);
-		for (WorkOrderOperationRecord object : listworkOrderOperationRecord) {
-
-			dto =new MoveLogTable();
-			dto.setFileId(object.getId());
-			dto.setFileField("operator_id");// 设为常量
-			dto.setTableName("work_order_operation_record");// 设为常量
-			moveLogTableMapper.insertSelective(dto);
-			
-			object.setOperatorId(uapUserId);
-			workOrderOperationRecordMapper.updateByPrimaryKeySelective(object);
-		}
-
-		/*
-		 * approve:审批表，包含立项审批，变更审批，结项审批的数据 project_leader->用户 business_owner->用户
-		 * 
-		 * ApproveMapper
-		 * 
-		 * dep->部门 create_member_id->用户 // modify_member_id->用户 //
-		 * 
-		 * 
-		 * files:文件表，包含上传文件信息 create_member_id->用户// modify_member_id->用户// FilesMapper
-		 * 
-		 * hardware_apply_operation_record：IT资源申请审批记录表 operator_id->用户 //
-		 * 
-		 * HardwareApplyOperationRecordMapper
-		 * 
-		 * 
-		 * hardware_resource:IT资源维护表 maintenance_owner->用户 //
-		 * 
-		 * HardwareResourceMapper
-		 * 
-		 * 
-		 * log:日志表 operator_id->用户//
-		 * 
-		 * LogMapper
-		 * 
-		 * 
-		 * project:项目表 project_manager->用户 develop_manager->用户 test_manager->用户
-		 * product_manager->用户 originator->用户 ProjectMapper
-		 * 
-		 * 
-		 * dep->部门 business_owner->用户
-		 * 
-		 * project_apply:立项申请表 project_leader->用户 product_manager->用户
-		 * development_manager->用户 test_manager->用户 business_owner->用户 dep->部门
-		 * create_member_id->用户 modify_member_id->用户
-		 * 
-		 * ProjectApplyMapper
-		 * 
-		 * project_change:项目变更表 create_member_id->用户 modify_member_id->用户
-		 * 
-		 * ProjectChangeMapper
-		 * 
-		 * 
-		 * project_complete:结项申请表 create_member_id->用户 modify_member_id->用户
-		 * ProjectCompleteMapper
-		 * 
-		 * project_oneline_apply:上线申请表 business_owner_id->用户 project_manager_id->用户
-		 * test_manager_id->用户 development_manager_id->用户 applicant_id->用户
-		 * executor_id->用户 ProjectOnlineApplyMapper
-		 * 
-		 * project_online_operation_record:上线申请记录 operator_id->用户
-		 * 
-		 * ProjectOnlineOperationRecordMapper
-		 * 
-		 * project_online_subsystem:上线申请影响系统 manager_id->用户 manager_name->用户真实姓名
-		 * ProjectOnlineSubsystemMapper
-		 * 
-		 * project_version:项目版本 creator_id->用户 modifier_id->用户 ProjectVersionMapper
-		 * 
-		 * 
-		 * task:任务表 owner->用户 create_member_id->用户 modify_member_id->用户 TaskMapper
-		 * 
-		 * task_details:任务工时表 create_member_id->用户 modify_member_id->用户
-		 * TaskDetailsMapper
-		 * 
-		 * team:团队表 member_id->用户 TeamMapper
-		 * 
-		 * 
-		 * travel_cost_apply:差旅申请 applicant_id->用户 root_departemnt_id->部门
-		 * department_id->部门 TravelCostApplyMapper
-		 * 
-		 * 
-		 * verify_approval：项目变更验证审批表 approver->用户 create_member_id->用户
-		 * modify_member_id->用户
-		 * 
-		 * VerifyApprovalMapper
-		 * 
-		 * weekly：周报 create_member_id->用户 modify_member_id->用户 WeeklyMapper
-		 * 
-		 * work_order：工单表 acceptor_id->用户 copy_user_id->用户，json数组需要先解析 applicant_id->用户
-		 * executor_id->用户 WorkOrderMapper
-		 * 
-		 * work_order_operation_record：工单操作记录表 operator_id->用户
-		 * 
-		 * WorkOrderOperationRecordMapper
-		 * 
-		 * 
-		 */
-
-		// TODO Auto-generated method stub
-		return 0;
+	
 	}
 
 	@Override

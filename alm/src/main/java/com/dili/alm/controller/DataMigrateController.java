@@ -77,9 +77,10 @@ public class DataMigrateController {
 		int  num=moveService.updateData(null,id);
 		if(num==1)
 			return BaseOutput.success("已经迁移");
-		if(num==2)
+		if(num==-1)
 		    return BaseOutput.success("迁移失败");
-		
+		if(num==2)
+		    return BaseOutput.success("alm用户不存在失败");
 		return BaseOutput.success("修改成功");
 	}
 	@ApiOperation(value = "查询uap用戶", notes = "查询uap用戶返回列表信息")
