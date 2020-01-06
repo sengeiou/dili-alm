@@ -139,9 +139,10 @@ public class DataMigrateImpl implements DataMigrateService {
 	public int updateData(Long userId, Long uapUserId) {// userId 本地userId, uapUserId
 		
 		BaseOutput<User>  uapUser=userRpc.findUserById(uapUserId);
-		String  strRealName=uapUser.getData().getRealName();
+		String  strRealName=uapUser.getData().getUserName();
 		AlmUser  localUser= new AlmUser();
-		localUser.setRealName(strRealName);
+		localUser.setUserName(strRealName);
+		//localUser.setCellphone(uapUser.getData().getCellphone());
 		BaseOutput<List<AlmUser>> lolcalUserList=localUserRpc.list(localUser);
 		
 		if(lolcalUserList.getData()!=null&&lolcalUserList.getData().size()>0) {
@@ -867,7 +868,7 @@ public class DataMigrateImpl implements DataMigrateService {
 
 		// 需要重新写
 
-		BaseOutput<User> userTemp = userRpc.findUserById(userId);
+		BaseOutput<User> userTemp = userRpc.findUserById(uapUserId);
 
 		travelCostApply.setApplicantId(userId);
 		travelCostApply.setRootDepartemntId(userTemp.getData().getDepartmentId());

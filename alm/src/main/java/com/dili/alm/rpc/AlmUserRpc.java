@@ -22,9 +22,9 @@ public interface  AlmUserRpc {
 	BaseOutput<List<AlmUser>> list(@VOBody AlmUser user);
 	
 	@POST("/userApi/listByExample")
-	PageOutput<List<User>> listByExample(User user) ;
+	PageOutput<List<User>> listByExample(@VOBody User user) ;
 	
 	@POST("/userApi/findByUserId")
-	BaseOutput<AlmUser> findByUserId( Long userId);
+	BaseOutput<AlmUser> findByUserId(@VOBody Long userId);
 }
 
