@@ -33,12 +33,80 @@ button:hover {
 	     <table id="tt" cellspacing="0" border="1" class="easyui-datagrid" style="width:90%; height: 135px; border: 1px solid #ddd; border-collapse: collapse;"
 			   data-options="view:scrollview,rownumbers:true,singleSelect:true,autoRowHeight:false,pageSize:50">
 			<caption style="padding: 5px; font-weight: bold; font-size: 15px; line-height: 35px; color: #333">线上数据变更申请表</caption>
-		
 			<tbody>
-	            <tr>
-	          
-	                <input  id="taskId" value="202001051851295160000001"  editable="false">
-	           </tr>
+			
+				<tr>
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold;width: 15%;">申请人</td>
+					<td style="padding: 5px;width: 30%;" ><input class="easyui-textbox" style="width: 100%" editable="false"     value="${applyUserIdName}"
+							data-options="validType:['length[0,30]']" />   </td>
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold;width: 15%;">申请时间</td>
+					<td style="padding: 5px;width: 30%;"> <input class="easyui-datebox"   value="${odc.applyDate}"  editable="false" style="width: 100%"
+					   data-options="required:false,validType:'isIds',prompt:'申请时间'" /></td>
+				
+				</tr>
+				<tr>
+
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">项目名称</td>
+					<td style="padding: 5px;">	<input class="easyui-textbox"
+						name="_projectId" id="_projectId"  value="${odc.projectId}" style="width: 100%" />
+						<#comboProvider _id="_projectId" _provider='projectProvider' />
+				
+					 </td>
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">版本号  
+					   </td>
+					<td style="padding: 5px;">
+					     
+					     <input name="_versionIdName"    value="${version}"  class="easyui-textbox" style="width: 100%;" editable="false"
+					    >
+					
+					</td>
+
+				</tr>
+				<tr>
+
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">申请更新时间</td>
+					<td style="padding: 5px;"><input class="easyui-datebox"    value="${odc.updateDate}" id="_updateDate" editable="false" style="width: 100%"
+					data-options="required:true,validType:'isIds',prompt:'申请更新时间'" /></td>
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">灰度是否同步执行</td>
+					<td style="padding: 5px;">
+ 					    <select class="easyui-combobox"  value="${odc.isSynchronization}"   name="_isSynchronization" id="_isSynchronization" style="width: 100%" >
+						    <option value="1">是</option>
+						    <option value="0">否</option>
+						</select></td>
+				</tr>
+				
+				<tr>
+					<td  colspan="2"   style="padding: 5px; background-color: #f5f5f5; font-weight: bold">数据库名</td>
+					<td  colspan="2"  style="padding: 5px;"><input class="easyui-textbox"   value="${odc.dbaName}" id="_dbaName" value=""
+							data-options="validType:['length[0,30]']" style="width: 70%"/></td>
+				</tr>
+				
+				<tr>
+				   <td  colspan="2"   style="padding: 5px; background-color: #f5f5f5; font-weight: bold">生产环境名称（市场）</td>
+					<td  colspan="2"  style="padding: 5px;">
+					<input class="easyui-textbox" id="_applyMarketId" name="_applyMarketId"   value="${odc.applyMarketId}"    data-options="validType:['length[0,30]']" style="width: 70%"/>
+					
+					
+					</td>
+				</tr>
+				
+				<tr>
+				      <td     style="padding: 5px; background-color: #f5f5f5; font-weight: bold">SQL脚本（可附件）</td>
+							
+					  <td colspan="3"  style="padding: 5px; background-color: #f5f5f5; font-weight: bold">
+					       <input class="easyui-textbox"  id="_sqlScript" name="_sqlScript" value="${odc.sqlScript}"
+							data-options="validType:['length[0,50]']" style="width: 39%">
+							
+						<!-- 	 <input  class="easyui-linkbutton" name="_sqlFileId"   style="width: 39%"  value="${odc.sqlFileId}"   id="_sqlFileId"> -->
+					   
+						 	<a id="xiazai  " href="${contextPath}/files/download?id=${odc.sqlFileId}" class="easyui-linkbutton"  data-options="iconCls:'icon-download'">下载sql文件</a>   	
+					  </td>
+				</tr>
+				
+				
+				
+				
+	            
 				  
 				<tr>
 				   <td  colspan="2"   style="padding: 5px; background-color: #f5f5f5; font-weight: bold">  	<a id="agree" href="#" class="easyui-linkbutton" 
@@ -48,6 +116,11 @@ button:hover {
 					   	  data-options="iconCls:'icon-save'">不同意</a>   
 				 	</td>
 				</tr>
+				<tr>
+	          
+	                  <input type="hidden" id="taskId" value="${taskId}" />
+	                
+	           </tr>
 				
 			</tbody>
 
@@ -67,51 +140,55 @@ button:hover {
 
 <!-- ====================================================================================================================== --> <!-- style & script 分隔线 --> <!-- ====================================================================================================================== -->
 <script type="text/javascript">
+	
+
    $('#agree').bind('click', function(){
 	 
-	    $.ajax({
-	       type: "POST",
-	       url: "${contextPath!}/onlineDataChange/agree.action",
-	       data: {"taskId":"202001051851295160000001"},
-	       processData: false,
-	        contentType: false,
-	        dataType:"json",
-
-          success:function(data){
-       	   var row = data.data[0];
-       	    alert("上传成功");
-       	//   $('#_sqlFileId').textbox('setText', row.id); 
-       	
-       	  
-          }
-          
-      
-     });
+	   var taskIdd=$('#taskId').val();
+	
+	   $.ajax({
+           type: "post",
+           url: "${contextPath}/onlineDataChange/agreeDeptOnlineData.action",
+           data: {"taskId":taskIdd},
+           async : true,
+           success: function (data) {
+           	
+             	alert("执行成功");
+           	
+           },
+           error: function(){
+               $.messager.alert('错误','远程访问失败');
+           }
+       });
 	    
 	    
 });
    
    $('#notAgree').bind('click', function(){
 		 
+	
+	   var taskIdd=$('#taskId').val();
 	    $.ajax({
 	       type: "POST",
-	       url: "${contextPath!}/onlineDataChange/notAgree.action",
-	       data: {"taskId":"202001051851295160000001"},
+	       url: "${contextPath!}/onlineDataChange/notAgreeDeptOnlineData.action",
+	       data: {"taskId":taskIdd},       
 	       processData: false,
 	        contentType: false,
 	        dataType:"json",
-
-         success:function(data){
-      	   var row = data.data[0];
-      	    alert("上传成功");
-     
-         }
+           success:function(data){
+      	  
+             	alert("执行成功");
+           },
+           error: function(){
+               $.messager.alert('错误','远程访问失败');
+           }
          
      
     });
 	    
 	    
 });	    
+
 
 
 
