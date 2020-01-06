@@ -1,5 +1,6 @@
 package com.dili.alm.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import com.dili.alm.service.DataMigrateService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.domain.PageOutput;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.uap.sdk.domain.User;
 
 import io.swagger.annotations.Api;
@@ -80,8 +82,29 @@ public class DataMigrateController {
 		if(num==-1)
 		    return BaseOutput.success("迁移失败");
 		if(num==2)
-		    return BaseOutput.success("alm用户不存在失败");
+		    return BaseOutput.success("alm用户不存在");
 		return BaseOutput.success("修改成功");
+	}
+	@ApiOperation(value = "uap用戶遷移", notes = "查询uap用戶返回列表信息")
+	@RequestMapping(value = "/updateDataList", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody BaseOutput updateDataList() {
+		User user=DTOUtils.newDTO(User.class);
+		List<String> noHasList=new ArrayList<String>();
+		List<String> failureList=new ArrayList<String>();
+		 List<User> userOutput =userRpc.listByExample(user).getData();
+		 for (User uapUser : userOutput) {
+			int  num=moveService.updateData(null,uapUser.getId());
+			if(num==-1)
+				failureList.add("迁移失败 userName:"+uapUser.getRealName());
+			failureList.add("迁移 userName:"+uapUser.getRealName());
+			if(num==2)
+				noHasList.add("迁移不存在alm userName:"+uapUser.getRealName());
+		}
+		 if((noHasList!=null&&noHasList.size()>0)||(failureList!=null&&failureList.size()>0)) {
+			 return BaseOutput.create("201", "迁移部分成功").setData(failureList.toString()+noHasList.toString());
+		 }
+		//数据更新，用户相关表
+		return BaseOutput.success("迁移成功");
 	}
 	@ApiOperation(value = "查询uap用戶", notes = "查询uap用戶返回列表信息")
 	@RequestMapping(value = "/myMoveList", method = { RequestMethod.GET, RequestMethod.POST })

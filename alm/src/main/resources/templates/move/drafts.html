@@ -32,6 +32,8 @@
                                 <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
                                    onclick="queryGrid()">查询</a>
                                 <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload" onclick="clearForm()">重置</a>
+                                
+                                <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-update" onclick="updateList()">一键修改</a>
                                   
                             </td>
                         </tr>
@@ -151,7 +153,32 @@
                 }
             });
         }
+        
+        function updateList() {
+            $.messager.confirm('确认','您确认想要删除记录吗？',function(r){
+                if (r){
+                    $.ajax({
+                        type: "POST",
+                        url: "${contextPath}/move/updateDataList",
+                        processData:true,
+                        dataType: "json",
+                        async : true,
+                        success: function (data) {
+                            if(data.code=="200"){
+                                $("#grid").datagrid("reload");
+                                $('#dlg').dialog('close');
+                            }else if(data.code=="201"){
+                                $.messager.alert('部分成功',data.result);
+                            }
+                        },
+                        error: function(){
+                            $.messager.alert('错误','远程访问失败');
+                        }
+                    });
+                }
+            });
 
+        }
         //根据主键删除
         function del() {
             var selected = $("#grid").datagrid("getSelected");
