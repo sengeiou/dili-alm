@@ -281,7 +281,6 @@
                          async : true,
                          success: function (data) {
                              if(data.code=="200"){
-                            	 
                             	 $.messager.alert('success',data.message);
                                  $("#grid").datagrid("reload");
                                  $('#dlg').dialog('close');

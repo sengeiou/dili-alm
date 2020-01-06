@@ -18,15 +18,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.domain.OnlineDataChange;
+import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.rpc.MyTasksRpc;
 import com.dili.alm.rpc.RuntimeApiRpc;
 //import com.dili.alm.rpc.RuntimeRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.OnlineDataChangeService;
+import com.dili.alm.service.ProjectVersionService;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
 import com.dili.bpmc.sdk.rpc.RuntimeRpc;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.retrofitful.annotation.ReqParam;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
@@ -55,6 +58,10 @@ public class OnlineDataChangeController {
     
     @Autowired
   	private   RuntimeApiRpc  runtimeRpc;
+    
+    @Autowired
+	ProjectVersionService projectVersionService;
+    
     @ApiOperation("��ת��indexҳ��")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
@@ -66,23 +73,113 @@ public class OnlineDataChangeController {
 		BaseOutput<Map<String, Object>>  map=tasksRpc.getVariables(taskId);
 		String id = (String) map.getData().get("businessKey");
 	    OnlineDataChange  odc=  onlineDataChangeService.get(Long.parseLong(id));
-	  //  modelMap.addAttribute(odc);
+	    modelMap.addAttribute("odc",odc);
+	    modelMap.addAttribute("applyUserIdName",userRpc.findUserById(odc.getApplyUserId()).getData().getRealName());
+	    ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
+		projectVersion.setProjectId(odc.getProjectId());
+		List<ProjectVersion> list = projectVersionService.list(projectVersion);
+		if(list!=null&&list.size()>0) {
+			for (ProjectVersion projectVersion2 : list) {
+				 if(projectVersion2.getVersion().equals(odc.getVersionId())) {
+					 modelMap.addAttribute("version",projectVersion2.getVersion());
+					 break;
+				 }
+			}
+		}
 	    modelMap.addAttribute("taskId",taskId);
 		return "onlineDataChange/dataChange1";
 		
 	}
 	@ApiOperation("��ת��dataChangeҳ��")
 	@RequestMapping(value = "/dataChange2.html", method = RequestMethod.GET)
-	public String dataChange2(ModelMap modelMap) {
+	public String dataChange2(ModelMap modelMap,String  taskId) {
+		BaseOutput<Map<String, Object>>  map=tasksRpc.getVariables(taskId);
+		String id = (String) map.getData().get("businessKey");
+	    OnlineDataChange  odc=  onlineDataChangeService.get(Long.parseLong(id));
+	    modelMap.addAttribute("odc",odc);
+	    modelMap.addAttribute("applyUserIdName",userRpc.findUserById(odc.getApplyUserId()).getData().getRealName());
+	    ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
+		projectVersion.setProjectId(odc.getProjectId());
+		List<ProjectVersion> list = projectVersionService.list(projectVersion);
+		if(list!=null&&list.size()>0) {
+			for (ProjectVersion projectVersion2 : list) {
+				 if(projectVersion2.getVersion().equals(odc.getVersionId())) {
+					 modelMap.addAttribute("version",projectVersion2.getVersion());
+					 break;
+				 }
+			}
+		}
+	    modelMap.addAttribute("taskId",taskId);
 		return "onlineDataChange/dataChange2";
 	}
 	
 	@ApiOperation("��ת��dataChangeҳ��")
 	@RequestMapping(value = "/dataChange3.html", method = RequestMethod.GET)
-	public String projectOverview(ModelMap modelMap) {
+	public String projectOverview(ModelMap modelMap,String  taskId) {
+		BaseOutput<Map<String, Object>>  map=tasksRpc.getVariables(taskId);
+		String id = (String) map.getData().get("businessKey");
+	    OnlineDataChange  odc=  onlineDataChangeService.get(Long.parseLong(id));
+	    modelMap.addAttribute("odc",odc);
+	    modelMap.addAttribute("applyUserIdName",userRpc.findUserById(odc.getApplyUserId()).getData().getRealName());
+	    ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
+		projectVersion.setProjectId(odc.getProjectId());
+		List<ProjectVersion> list = projectVersionService.list(projectVersion);
+		if(list!=null&&list.size()>0) {
+			for (ProjectVersion projectVersion2 : list) {
+				 if(projectVersion2.getVersion().equals(odc.getVersionId())) {
+					 modelMap.addAttribute("version",projectVersion2.getVersion());
+					 break;
+				 }
+			}
+		}
+	    modelMap.addAttribute("taskId",taskId);
 		return "onlineDataChange/dataChange3";
 	}
 	
+	@ApiOperation("��ת��dataChangeҳ��")
+	@RequestMapping(value = "/dbaDataChange.html", method = RequestMethod.GET)
+	public String dbaDataChange(ModelMap modelMap,String  taskId) {
+		BaseOutput<Map<String, Object>>  map=tasksRpc.getVariables(taskId);
+		String id = (String) map.getData().get("businessKey");
+	    OnlineDataChange  odc=  onlineDataChangeService.get(Long.parseLong(id));
+	    modelMap.addAttribute("odc",odc);
+	    modelMap.addAttribute("applyUserIdName",userRpc.findUserById(odc.getApplyUserId()).getData().getRealName());
+	    ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
+		projectVersion.setProjectId(odc.getProjectId());
+		List<ProjectVersion> list = projectVersionService.list(projectVersion);
+		if(list!=null&&list.size()>0) {
+			for (ProjectVersion projectVersion2 : list) {
+				 if(projectVersion2.getVersion().equals(odc.getVersionId())) {
+					 modelMap.addAttribute("version",projectVersion2.getVersion());
+					 break;
+				 }
+			}
+		}
+	    modelMap.addAttribute("taskId",taskId);
+		return "onlineDataChange/dbaDataChange.html";
+	}
+	@ApiOperation("��ת��dataChangeҳ��")
+	@RequestMapping(value = "/OnlineDbaDataChange.html", method = RequestMethod.GET)
+	public String OnlineDbaDataChange(ModelMap modelMap,String  taskId) {
+		BaseOutput<Map<String, Object>>  map=tasksRpc.getVariables(taskId);
+		String id = (String) map.getData().get("businessKey");
+	    OnlineDataChange  odc=  onlineDataChangeService.get(Long.parseLong(id));
+	    modelMap.addAttribute("odc",odc);
+	    modelMap.addAttribute("applyUserIdName",userRpc.findUserById(odc.getApplyUserId()).getData().getRealName());
+	    ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
+		projectVersion.setProjectId(odc.getProjectId());
+		List<ProjectVersion> list = projectVersionService.list(projectVersion);
+		if(list!=null&&list.size()>0) {
+			for (ProjectVersion projectVersion2 : list) {
+				 if(projectVersion2.getVersion().equals(odc.getVersionId())) {
+					 modelMap.addAttribute("version",projectVersion2.getVersion());
+					 break;
+				 }
+			}
+		}
+	    modelMap.addAttribute("taskId",taskId);
+		return "onlineDataChange/OnlineDbaDataChange";
+	}
 	
     @ApiOperation(value="��ѯOnlineDataChange", notes = "��ѯOnlineDataChange�������б���Ϣ")
     @ApiImplicitParams({
@@ -103,18 +200,11 @@ public class OnlineDataChangeController {
     public @ResponseBody String listPage(@ModelAttribute OnlineDataChange onlineDataChange, @RequestParam String projectIdcc) throws Exception {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
     	onlineDataChange.setApplyUserId(id);
-    	
-    	
    	    if(NumberUtils.isNumber(projectIdcc)) {
-		 
-   	 	onlineDataChange.setProjectId(Long.parseLong(projectIdcc));
+   	 	   onlineDataChange.setProjectId(Long.parseLong(projectIdcc));
 	    }
    	 
     	EasyuiPageOutput   epo=onlineDataChangeService.listEasyuiPageByExample(onlineDataChange, true);
-    	System.out.println(projectIdcc);
-    	if(projectIdcc.contains("")) {
-    		
-    	}
     	List<OnlineDataChange>   list=epo.getRows();
     	 // Page<OnlineDataChange> page =  (Page<OnlineDataChange>) list;
 		Map<Object, Object> metadata = null == onlineDataChange.getMetadata() ? new HashMap<>() : onlineDataChange.getMetadata();
@@ -204,20 +294,36 @@ public class OnlineDataChangeController {
         return BaseOutput.success("11111");
     }*/
     
-    @RequestMapping(value="/agree.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput agree( @RequestParam String taskId ) {
+    @RequestMapping(value="/agreeDeptOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput agreeDeptOnlineData(  @RequestParam(value="taskId", required = false) String taskId) {
+    	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
+    	Map<String, Object> map=new HashMap<>();
+    	map.put("approved", "true");
+    	tasksRpc.complete(taskId, map);
+    	return BaseOutput.success("执行成功");
+    }
+    @RequestMapping(value="/notAgreeDeptOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput notAgreeDeptOnlineData(  @RequestParam(value="taskId", required = false) String taskId ) {
+    	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
+    	Map<String, Object> map=new HashMap<>();
+    	map.put("approved", "false");
+    	tasksRpc.complete(taskId, map);
+        return BaseOutput.success("执行成功");
+    }
+    @RequestMapping(value="/agreeTestOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput agreeTestOnlineData(  @RequestParam(value="taskId", required = false) String taskId) {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
     	Map<String, Object> map=new HashMap<>();
     	map.put("approved", true);
-    	tasksRpc.complete("202001051851295160000001", map);
-    	 return BaseOutput.success("11111");
+    	tasksRpc.complete(taskId, map);
+    	return BaseOutput.success("执行成功");
     }
-    @RequestMapping(value="/notAgree.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput notAgree( @RequestParam String taskId ) {
+    @RequestMapping(value="/notAgreeTestOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput notAgreeTestOnlineData(  @RequestParam(value="taskId", required = false) String taskId ) {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
     	Map<String, Object> map=new HashMap<>();
     	map.put("approved", false);
-    	tasksRpc.complete("202001051851295160000001", map);
+    	tasksRpc.complete(taskId, map);
         return BaseOutput.success("11111");
     }
     
