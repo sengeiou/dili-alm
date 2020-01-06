@@ -237,9 +237,8 @@ public class OnlineDataChangeController {
         onlineDataChangeService.insertSelective(onlineDataChange);
         try {
     	   Map<String, Object> map=new HashMap<String, Object>();
-    	   map.put("dataId", onlineDataChange.getId());
-		   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almOnlineDataChangeProcess",
-				   onlineDataChange.getId().toString(), 74+"",map);
+    	   map.put("dataId", onlineDataChange.getId()+"");
+		   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almOnlineDataChangeProcess", onlineDataChange.getId().toString(), 74+"",map);
 	       System.out.println(object.getCode()+object.getData()+object.getErrorData());
         } catch (Exception e) {
 		   e.printStackTrace();
@@ -314,7 +313,7 @@ public class OnlineDataChangeController {
     public @ResponseBody BaseOutput agreeTestOnlineData(  @RequestParam(value="taskId", required = false) String taskId) {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
     	Map<String, Object> map=new HashMap<>();
-    	map.put("approved", true);
+    	map.put("approved", "true");
     	tasksRpc.complete(taskId, map);
     	return BaseOutput.success("执行成功");
     }
@@ -322,7 +321,24 @@ public class OnlineDataChangeController {
     public @ResponseBody BaseOutput notAgreeTestOnlineData(  @RequestParam(value="taskId", required = false) String taskId ) {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
     	Map<String, Object> map=new HashMap<>();
-    	map.put("approved", false);
+    	map.put("approved", "false");
+    	tasksRpc.complete(taskId, map);
+        return BaseOutput.success("11111");
+    }
+    
+    @RequestMapping(value="/agreeDBAOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput agreeDBAOnlineData(  @RequestParam(value="taskId", required = false) String taskId) {
+    	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
+    	Map<String, Object> map=new HashMap<>();
+    	map.put("approved", "true");
+    	tasksRpc.complete(taskId, map);
+    	return BaseOutput.success("执行成功");
+    }
+    @RequestMapping(value="/notAgreeDBAOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput notAgreeDBAOnlineData(  @RequestParam(value="taskId", required = false) String taskId ) {
+    	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
+    	Map<String, Object> map=new HashMap<>();
+    	map.put("approved", "false");
     	tasksRpc.complete(taskId, map);
         return BaseOutput.success("11111");
     }
