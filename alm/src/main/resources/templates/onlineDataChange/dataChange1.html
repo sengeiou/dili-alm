@@ -112,7 +112,7 @@ button:hover {
 				   <td  colspan="2"   style="padding: 5px; background-color: #f5f5f5; font-weight: bold">  	<a id="agree" href="#" class="easyui-linkbutton" 
 					   	  data-options="iconCls:'icon-save'">同意</a></td>
 					<td  colspan="2"  style="padding: 5px;">
-					   	<a id="notAgree " href="#" class="easyui-linkbutton" 
+					   	<a id="notAgree" href="#" class="easyui-linkbutton" 
 					   	  data-options="iconCls:'icon-save'">不同意</a>   
 				 	</td>
 				</tr>
@@ -165,26 +165,23 @@ button:hover {
 });
    
    $('#notAgree').bind('click', function(){
-		 
-	
 	   var taskIdd=$('#taskId').val();
-	    $.ajax({
-	       type: "POST",
-	       url: "${contextPath!}/onlineDataChange/notAgreeDeptOnlineData.action",
-	       data: {"taskId":taskIdd},       
-	       processData: false,
-	        contentType: false,
-	        dataType:"json",
-           success:function(data){
-      	  
+	  
+	   $.ajax({
+           type: "post",
+           url: "${contextPath}/onlineDataChange/notAgreeDeptOnlineData.action",
+           data: {"taskId":taskIdd},
+           async : true,
+           success: function (data) {
+           	
              	alert("执行成功");
+           	
            },
            error: function(){
                $.messager.alert('错误','远程访问失败');
            }
-         
-     
-    });
+       });
+	    
 	    
 	    
 });	    

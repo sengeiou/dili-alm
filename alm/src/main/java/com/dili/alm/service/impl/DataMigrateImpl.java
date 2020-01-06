@@ -144,7 +144,12 @@ public class DataMigrateImpl implements DataMigrateService {
 		localUser.setRealName(strRealName);
 		BaseOutput<List<AlmUser>> lolcalUserList=localUserRpc.list(localUser);
 		
-	    userId=lolcalUserList.getData().get(0).getId();
+		if(lolcalUserList.getData()!=null&&lolcalUserList.getData().size()>0) {
+			 userId=lolcalUserList.getData().get(0).getId();
+		}else {
+			return 2;	
+		}
+	   
 	    //uapUserId 和本地userId转换 在页面
 		
 		int  num=getDataIsExistence(null,uapUserId);//再次查询，使用uapUserId 查询，看看是否迁移过的
