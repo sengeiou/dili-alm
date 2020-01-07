@@ -103,7 +103,7 @@
         </div>
     </div>
     <!-- 隐藏编辑框 -->
-    <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="OnlineDataChange信息" style="padding:20px" modal="true" border="thin" closed="true"
+    <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="数据变更审批流信息" style="padding:20px" modal="true" border="thin" closed="true"
          data-options="
 				iconCls: 'icon-save',
 				height: 450,
@@ -263,12 +263,12 @@
             $('#_versionIdName').combobox('clear');
             $('#_sqlFileId').val(""); 
             $('#sqlFile').textbox(""); 
-       
+           
             $('#_projectId').combobox('initValue', '${project.id!}');
        		$('#_projectId').combobox('setText', '${project.name!}');
        		$("#_versionIdName").combobox('setValue','选择所属版本');//根据ID设定默认值
        	
-       		
+       	 $('#_versionIdName').combobox('clear');
        		
        		
             formFocus("_form", "_applyUserIdName");
@@ -324,7 +324,7 @@
                 return;
             }
             $('#_projectId').combobox('initValue', selected.projectId);
-           
+            $('#_versionIdName').combobox('clear');
              $('#_versionIdName').combobox({
 					url : "${contextPath!}/task/listTreeVersion.json?id=" + selected.projectId,
 					valueField : 'id',
@@ -332,9 +332,10 @@
 					editable : false
 			 });
            //alert(selected.projectId);
-                 $('#_versionIdName').combobox('clear');
-       		$("#_versionIdName").combobox('setValue','选择所属版本');//根据ID设定默认值
+           
+       	//	$("#_versionIdName").combobox('setValue','选择所属版本');//根据ID设定默认值
        	
+	       	//	$("#_versionIdName").combobox('setValue','选择所属版本');//根据ID设定默认值
        		
        		
             $('#dlg').dialog('open');
@@ -595,13 +596,10 @@
 			 
 			 
 			 
-		     $('#_versionIdName').combobox('clear');
+	
 	       		$("#_versionIdName").combobox('setValue','选择所属版本');//根据ID设定默认值
-	       		
-	       		
-	       		$("#_isSynchronization").combobox("select", "是");
-	    		$("#_isSynchronization").combobox("setValue", 1);
-
+	 	       $('#_versionIdName').combobox('clear');
+	  
 	    		
 	       	  //$("#_isSynchronization").combobox('select', 0);
 	      // 	 $('#_isSynchronization').combobox('setValue','0');
