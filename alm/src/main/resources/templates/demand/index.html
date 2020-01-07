@@ -24,7 +24,7 @@
 						<td><a href="#" class="easyui-linkbutton"
 							iconCls="icon-search" id="queryBtn" onclick="queryGrid()">查询</a>
 							<a href="javascript:void(0)" class="easyui-linkbutton"
-							onclick="aa()">清除</a></td>
+							onclick="clearForm()">清除</a></td>
 					</tr>
 				</table>
 			</form>
@@ -52,7 +52,7 @@
 						data-options="field:'name',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
 						需求名称</th>
 					<th
-						data-options="field:'belongProId',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						data-options="field:'belongProId',   _provider:'projectSysProvider' ,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
 						所属系统</th>
 					<th
 						data-options="field:'type',    _provider:'demandTypeProvider' ,sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -61,7 +61,7 @@
 						data-options="field:'status',   _provider:'demandStateProvider' , sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
 						需求状态</th>
 					<th
-						data-options="field:'depament',  _provider:'depProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						data-options="field:'departmentFirstName', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
 						所属部门</th>
 					<!-- user信息里 -->
 					<th
@@ -69,7 +69,7 @@
 						申请时间</th>
 					<!-- 草稿时间、提交时间 -->
 					<th
-						data-options="field:'createDate',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+						data-options="field:'options', formatter:formatOptions, sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
 						操作</th>
 				</tr>
 			</thead>
@@ -126,6 +126,15 @@
 			">
 
 </div>
+        <!-- 隐藏编辑框 -->
+        <div id="progressDlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="true" title="流程图" style="padding:20px" modal="true" border="thin" closed="true"
+             data-options="
+				iconCls: 'icon-save',
+				width:1366,
+				height: 640
+			">
+            <img id="processInstanceImg" />
+        </div>
 <!-- ====================================================================================================================== -->
 <!-- style & script 分隔线 -->
 <!-- ====================================================================================================================== -->
@@ -300,7 +309,11 @@
                 top:e.pageY
             });
         }
-
+        function formatOptions(value, row, index) {
+        	var content = '<span style="padding:2px;"><a href="javascript:void(0)" onclick="showProgress('+index+')">查看进度</a></span>';
+        	    content += '<span style="padding:2px;"><a href="javascript:void(0)" onclick="handle('+index+')">处理</a></span>';
+        	return content;
+        }
         $.messager.progress({
             title:"提示",
             msg:"加载中,请稍候...",
@@ -333,8 +346,8 @@
          *          表单提交需执行的任务
          */
         $(function () {
-            bindFormEvent("form", "serialNumber", queryGrid);
-            bindFormEvent("_form", "_serialNumber", saveOrUpdate, function (){$('#dlg').dialog('close');});
+            //bindFormEvent("form", "serialNumber", queryGrid);
+           // bindFormEvent("_form", "_serialNumber", saveOrUpdate, function (){$('#dlg').dialog('close');});
             if (document.addEventListener) {
                 document.addEventListener("keyup",getKey,false);
             } else if (document.attachEvent) {
@@ -342,17 +355,11 @@
             } else {
                 document.onkeyup = getKey;
             }
+            
+          queryGrid();
+            
         })
        
-        /**
-        *页面测试调用
-        **/
-        function aa(){
-        	var htmlobj = $.ajax({
-				url : "${contextPath}/demand/sendseq.json",
-				async : false
-			});
-        }
        function detail(){
         	$('#win').dialog({
 				title : '需求详情',
@@ -396,5 +403,27 @@
     		}
     		return day;
     	}
+    	
+        /**
+         * 显示流程图,查看进度图片
+         * @param processInstanceId
+         * @param processDefinitionId
+         * @param processInstanceName
+         */
+        function showProgress(index){
+        	var rows = $("#grid").datagrid('getRows');//获得所有行
+        	var r = rows[index];//根据index获得其中一行。
+            //var selected = $("#grid").datagrid("getSelected");
+            if (null == r) {
+
+            	console.log(r);
+            	return;
+            }
+            $('#progressDlg').dialog('open');
+            $('#progressDlg').dialog('center');
+            var href = '<#config name="bpmc.server.address"/>/api/runtime/progress?processInstanceId='+r.processInstanceId+'&processDefinitionId='+r.processDefinitionId+"&"+Math.random();
+            $("#processInstanceImg").attr("src", href);
+        }
+        
     </script>
 </#body>

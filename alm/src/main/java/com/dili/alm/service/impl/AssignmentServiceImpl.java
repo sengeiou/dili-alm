@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.OnlineDataChange;
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.dto.UserDepartmentRoleQuery;
 import com.dili.uap.sdk.domain.User;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.AssignmentService;
@@ -124,6 +125,13 @@ public class AssignmentServiceImpl implements AssignmentService {
 	  		record.setCandidateUser(reList); 
 	  		
 	  		return record;
+	}
+
+	@Override
+	public Assignment setReciprocate(Long queryUserId){
+		Assignment record = DTOUtils.newDTO(Assignment.class);
+		record.setAssignee(queryUserId.toString()); 
+		return record;
 	}
 	
 	

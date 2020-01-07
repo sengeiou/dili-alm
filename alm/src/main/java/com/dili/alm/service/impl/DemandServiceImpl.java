@@ -40,14 +40,23 @@ import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DemandService;
 import com.dili.alm.utils.GetFirstCharUtil;
 import com.dili.alm.utils.WebUtil;
+import com.dili.bpmc.sdk.domain.ActForm;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
+import com.dili.bpmc.sdk.domain.TaskMapping;
+import com.dili.bpmc.sdk.dto.TaskDto;
+import com.dili.bpmc.sdk.rpc.FormRpc;
 import com.dili.bpmc.sdk.rpc.RuntimeRpc;
+import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.constant.ResultCode;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.exception.BusinessException;
+import com.dili.ss.exception.ParamErrorException;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.exception.NotLoginException;
 import com.dili.uap.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
 
@@ -56,9 +65,11 @@ import tk.mybatis.mapper.entity.Example;
 import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -74,6 +85,8 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	private NumberGenerator numberGenerator;
     @Autowired
     RuntimeRpc runtimeRpc;
+    @Autowired
+    TaskRpc taskRpc;
 	@Autowired
 	private SequenceMapper sequenceMapper;
 	
@@ -94,6 +107,9 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	private UserRpc userRpc;
 	@Autowired
 	private SysProjectRpc sysProjectRpc;
+    @Autowired
+    FormRpc formRpc;
+	
 	@Autowired
 	private FirmRpc firmRpc;
 	@Autowired
@@ -143,6 +159,9 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 	BaseOutput<List<Department>> de = departmentRpc.findByUserId(userTicket.getId());
 	String depStr = "";
+	if (de.getData()==null) {
+		depStr="cp";
+	}else
 	if (de.getData().size()>0) {
 		depStr = de.getData().get(0).getName();
 		 if (depStr.indexOf("市场")>-1) {
@@ -210,38 +229,78 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
         //修改需求状态，记录流程实例id和流程定义id
 		rows=this.demandMapper.updateByPrimaryKey(selectDeman);
 		
-		
 		if (rows<=0) {
 			throw new DemandExceptions("提交需求失败");
 		}
 		return 1;
 	}
 	@Override
-	public EasyuiPageOutput listPageForUser(Demand selectDemand) {
-		selectDemand.setOrder("desc");
-		selectDemand.setSort("created");
-		List<Demand> list = demandMapper.selectDemandList(selectDemand);// 查询出来
-		Page<Demand> page = (Page<Demand>) list;
-		@SuppressWarnings("unchecked")
-		Map<Object, Object> metadata = null == selectDemand.getMetadata() ? new HashMap<>() : selectDemand.getMetadata();
-
-		JSONObject projectProvider = new JSONObject();
-		projectProvider.put("provider", "projectProvider");
-		metadata.put("projectId", projectProvider);
-
-		JSONObject memberProvider = new JSONObject();
-		memberProvider.put("provider", "memberProvider");
-		metadata.put("owner", memberProvider);
-
-		selectDemand.setMetadata(metadata);
+	public EasyuiPageOutput listPageForUser (Demand selectDemand) {
+		
 		try {
-			List demandList = ValueProviderUtils.buildDataByProvider(selectDemand, list);
-			EasyuiPageOutput demandEasyuiPageOutput = new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(page.getTotal()))), demandList);
-			return demandEasyuiPageOutput;
+			DemandDto demandDto =new DemandDto();
+			Map<Object, Object> metadata = new HashMap<>();
+			List<Demand> dates =this.list(selectDemand);
+			List<DemandDto> dtoDates = new ArrayList<DemandDto>();
+			//循环塞部门
+			dates.forEach(d -> {
+				try {
+					DemandDto newDemandDto =new DemandDto();
+			    	BeanUtils.copyProperties(newDemandDto, d);
+					BaseOutput<User> userBase = this.userRpc.findUserById(d.getUserId());
+					User user = userBase.getData();
+					if (user==null) {
+					    return;
+					}
+					BaseOutput<Department> departmentBase = this.departmentRpc.get(user.getDepartmentId());
+					if(departmentBase.getData()!=null) {
+						newDemandDto.setDepartmentId(departmentBase.getData().getId());
+						newDemandDto.setDepartmentName(departmentBase.getData().getName());
+						BaseOutput<Department> firstDepartment = this.departmentRpc.getFirstDepartment(departmentBase.getData().getId());
+						if(firstDepartment.getData()!=null) {
+							newDemandDto.setDepartmentFirstName(firstDepartment.getData().getName());
+						}
+					}
+					dtoDates.add(newDemandDto);
+				} catch (Exception e) {
+					e.getMessage();
+				}
+
+			});
+			JSONObject projectProvider = new JSONObject();
+			projectProvider.put("provider", "projectProvider");
+			metadata.put("belongProId", projectProvider);
+
+			JSONObject memberProvider = new JSONObject();
+			memberProvider.put("provider", "memberProvider");
+			metadata.put("userId", memberProvider);
+
+			JSONObject demandStateProvider = new JSONObject();
+			demandStateProvider.put("provider", "demandStateProvider");
+			metadata.put("status", demandStateProvider);
+
+			JSONObject demandTypeProvider = new JSONObject();
+			demandTypeProvider.put("provider", "demandTypeProvider");
+			metadata.put("type", demandTypeProvider);
+			
+			JSONObject projectSysProvider = new JSONObject();
+			projectSysProvider.put("provider", "projectSysProvider");
+			metadata.put("belongSysId", projectSysProvider);
+			
+			JSONObject datetimeProvider = new JSONObject();
+			datetimeProvider.put("provider", "datetimeProvider");
+			metadata.put("createDate", datetimeProvider);
+			metadata.put("submitDate", datetimeProvider);
+			metadata.put("finishDate", datetimeProvider);
+			demandDto.setMetadata(metadata);
+			
+			List dtoDatesValue = ValueProviderUtils.buildDataByProvider(demandDto, dtoDates);
+            return new EasyuiPageOutput(dtoDatesValue.size(), dtoDatesValue);
 		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
+			e.getMessage();
 		}
+		return null;
+		
 	}
 	
 	@Override
@@ -334,6 +393,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		if(selectOne!=null) {
 			
 		}*/
+		//复制dto
 		DemandDto demandDto =new DemandDto();
 		BeanUtils.copyProperties(demandDto, demand);
 		BaseOutput<User> userBase = this.userRpc.findUserById(demand.getUserId());
@@ -357,9 +417,86 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		}
 		return demandDto;
 	}
+	
 	@Override
-	public int finishStutas(String newDemandCode) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int finishStutas(Long id,boolean approved) throws DemandExceptions {
+    	Demand selectDemand = new Demand();
+    	selectDemand=this.get(id);
+    	String valProcess = selectDemand.getProcessInstanceId();
+    	
+        //根据业务号查询任务
+        TaskDto taskDto = DTOUtils.newInstance(TaskDto.class);
+        taskDto.setProcessInstanceBusinessKey(valProcess);
+        BaseOutput<List<TaskMapping>> output = taskRpc.list(taskDto);
+        if(!output.isSuccess()){
+            throw new DemandExceptions(output.getMessage());
+        }
+        List<TaskMapping> taskMappings = output.getData();
+        //没有进行中的任务或任务已结束
+        if(CollectionUtils.isEmpty(taskMappings)){
+        	throw new DemandExceptions("未找到进行中的任务");
+        }
+        //默认没有并发流程，所以取第一个任务
+        //如果有并发流程，需使用TaskDefKey来确认流程节点
+        TaskMapping taskMapping = taskMappings.get(0);
+        //流程启动参数设置
+        Map<String, Object> variables = new HashMap<>(1);
+        variables.put("approved", approved);
+    	if (valProcess!=null) {//完成流程
+			//发送消息通知流程
+    		taskRpc.complete(taskMapping.getId(), variables);
+		}
+    	
+    	selectDemand.setStatus((byte)DemandStatus.COMPLETE.getCode());
+    	int i = this.update(selectDemand);
+		return i;
 	}
+	
+    @Override
+    @Transactional
+    public int logicDelete(Long id) throws DemandExceptions {
+    	Demand selectDemand = new Demand();
+    	selectDemand=this.get(id);
+    	if (selectDemand.getStatus().equals((byte)DemandStatus.COMPLETE.getCode())) {
+    		throw new DemandExceptions("需求已经通过申请，不能删除");
+		}
+    	String valProcess = selectDemand.getProcessInstanceId();
+    	if (valProcess!=null) {//已经开启流程的，停止流程
+    		 //发送消息通知流程
+    		taskRpc.messageEventReceived("demandDeleteMsg", selectDemand.getProcessInstanceId(), null);
+		}
+    	selectDemand.setStatus((byte)DemandStatus.DELETE.getCode());
+    	int i = this.update(selectDemand);
+        return i;
+    }
+	@Override
+	public Demand getByCode(String code) {
+	    Demand condition = new Demand();
+	    condition.setSerialNumber(code);;
+	    List<Demand> list = listByExample(condition);
+	    return CollectionUtils.isEmpty(list) ? null : list.get(0);
+	}
+	@Override
+	public BaseOutput submitApproveAndAccept(String code, String taskId,String userId) {
+	    Map<String,Object> variables = new HashMap<>();
+	    variables.put("approved", "true");
+	    return taskRpc.complete(taskId,variables);
+	}
+	
+	@Override
+	public BaseOutput submitApprove(String code, String taskId,String content,Byte status) {
+	    Demand condition = new Demand();
+	    condition.setSerialNumber(code);;
+	    List<Demand> list = listByExample(condition);
+	    if (status!=null) {
+		    Demand selectDemand = list.get(0);
+		    selectDemand.setStatus(status);
+		    this.update(selectDemand);
+		}
+	    Map<String,Object> variables = new HashMap<>();
+	    variables.put("approved", "true");
+	   // variables.put("userId",content);
+		return taskRpc.complete(taskId,variables);
+	}
+
 }

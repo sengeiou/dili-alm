@@ -19,10 +19,10 @@
 				style="width: 100%" data-options="label:'需求部门:'"
 				value="${depName}" data-options="editable:false" /> 
 				</td>
-			<td style="padding: 5px;"><input class="easyui-numberbox"
-				name="_belongSysId" id="_belongSysId" style="width: 100%"
-				data-options="label:'所属系统:'" required="true" /> <#comboProvider
-				_id="_belongSysId" _provider='projectSysProvider' /></td>
+			<td style="padding: 5px;">
+			<input name="_belongSysId" id="_belongSysId" class="easyui-combobox" style="width: 100%;" editable="false"
+					data-options="label:'所属系统:', required:true,prompt:'--选择系统项目--'">
+				</td>
 		</tr>
 		<tr>
 			<td style="padding: 5px;"><input class="easyui-textbox"
@@ -55,18 +55,11 @@
 		</tr>
 		<tr>
 			<td style="padding: 5px;" colspan="2">
-				<!-- <input class="easyui-textbox"
-					name="_content" id="_content" style="width: 100%"
-					data-options="label:'需求内容:', validType:'length[0,65535]'"
-					required="true" /></td> -->
 				<p>需求内容:</p>
 				<div id="editor_content" style="width: 100%"></div>
 		</tr>
 		<tr>
 			<td style="padding: 5px;" colspan="2">
-				<!-- <input class="easyui-textbox"
-					name="_reason" id="_reason" style="width: 100%"
-					data-options="label:'需求背景:', validType:'length[0,65535]'" /> -->
 				<p>需求背景:</p>
 				<div id="editor_reason" style="width: 100%"></div>
 			</td>
@@ -158,7 +151,37 @@ $("#fileuploader").uploadFile({
         }
     }
 });
+/**
+ * 显示流程图,查看进度图片
+ * @param processInstanceId
+ * @param processDefinitionId
+ * @param processInstanceName
+ */
+function showProgress(){
+    var selected = $("#grid").datagrid("getSelected");
+    if (null == selected) {
+        swal('警告','请选中一条数据', 'warning');
+        return;
+    }
+    $('#progressDlg').dialog('open');
+    $('#progressDlg').dialog('center');
+    var href = '<#config name="bpmc.server.address"/>/api/runtime/progress?processInstanceId='+selected.processInstanceId+'&processDefinitionId='+selected.processDefinitionId+"&"+Math.random();
+    $("#processInstanceImg").attr("src", href);
+}
 
+function loadSystemSelect() {
+	$('#_belongSysId').combobox({
+				url : "${contextPath!}/demand/listTree.json",
+				valueField : 'id',
+				textField : 'name',
+				editable : false
+			});
 
+}
+$(function () {
+    //所属项目自动加载
+    loadSystemSelect();
+    
+})
 </script>
 </#body>

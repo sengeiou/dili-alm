@@ -3,24 +3,28 @@ package com.dili.alm.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.constant.AlmConstants;
+import com.dili.alm.constant.AlmConstants.DemandStatus;
 import com.dili.alm.domain.Demand;
 import com.dili.uap.sdk.domain.Department;
 import com.dili.alm.domain.Files;
-import com.dili.uap.sdk.domain.User;
+import com.dili.alm.domain.SystemDto;
+import com.dili.alm.domain.Task;
 import com.dili.alm.exceptions.DemandExceptions;
-import com.dili.alm.domain.ProjectState;
 import com.dili.alm.domain.dto.DemandDto;
 import com.dili.alm.rpc.DepartmentRpc;
-import com.dili.alm.rpc.UserRpc;
+import com.dili.alm.rpc.SysProjectRpc;
 import com.dili.alm.service.DemandService;
 import com.dili.alm.service.FilesService;
+import com.dili.alm.service.impl.DemandServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.exception.AppException;
+import com.dili.ss.exception.BusinessException;
 import com.dili.ss.metadata.ValueProviderUtils;
-import com.dili.alm.service.WorkOrderService;
-import com.dili.alm.service.impl.DemandServiceImpl;
 import com.dili.alm.utils.WebUtil;
-import com.dili.ss.domain.BaseOutput;
+import com.dili.bpmc.sdk.annotation.BpmTask;
+import com.dili.bpmc.sdk.domain.TaskMapping;
+import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 
@@ -30,13 +34,11 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import tk.mybatis.mapper.entity.Example;
 
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,8 +59,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class DemandController {
 	@Autowired
 	private DepartmentRpc deptRpc;
-	@Autowired
-	private UserRpc userRpc;
+    @Autowired
+    TaskRpc taskRpc;
+    @Autowired
+    private SysProjectRpc sysProjectRpc;
     @Autowired
     DemandService demandService;
     @Autowired
@@ -120,7 +124,7 @@ public class DemandController {
 	})
     @RequestMapping(value="/listPage", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String listPage(Demand demand) throws Exception {
-        return demandService.listEasyuiPageByExample(demand, true).toString();
+        return demandService.listPageForUser(demand).toString();
     }
 
     @ApiOperation("新增Demand")
@@ -269,4 +273,187 @@ public class DemandController {
 			return null;
 		}
     }
+    
+	//查询系统
+	@ResponseBody
+	@RequestMapping(value = "/listTree.json", method = { RequestMethod.GET, RequestMethod.POST })
+	public List<SystemDto> listTree(Long projectId) {
+		return sysProjectRpc.list(DTOUtils.newDTO(SystemDto.class)).getData();
+	}
+    /**departmentApprove
+     * 流程控制
+     */
+    @ApiOperation("跳转到权限页面")
+    @RequestMapping(value="/departmentApprove.html", method = RequestMethod.GET)
+    public String departmentApprove(@RequestParam String taskId, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
+        BaseOutput<TaskMapping> output = taskRpc.getById(taskId);
+        if(!output.isSuccess()){
+            throw new AppException(output.getMessage());
+        }
+        BaseOutput<Map<String, Object>> taskVariablesOutput = taskRpc.getVariables(taskId);
+        if(!taskVariablesOutput.isSuccess()){
+            throw new AppException(taskVariablesOutput.getMessage());
+        }
+        String codeDates = taskVariablesOutput.getData().get("businessKey").toString();
+        modelMap.put("demand", demandService.getByCode(codeDates));
+        modelMap.put("taskId", taskId);
+        modelMap.put("cover", cover == null ? output.getData().getAssignee() == null : cover);
+    	return "demand/departmentApprove";
+    }
+    /**
+     * 同意申请
+     * @param code  需求编号
+     * @param taskId 任务id
+     * @return
+     */
+    @RequestMapping(value="/demandDepartmentApprove.action", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseOutput<String> doSubmit(@RequestParam String code, @RequestParam String taskId) {
+    	return demandService.submitApprove(code, taskId, null, (byte) DemandStatus.COMPLETE.getCode());
+    }
+    
+    @ApiOperation("跳转到接受需求页面")
+    @RequestMapping(value="/accept.html", method = RequestMethod.GET)
+    public String accept(@RequestParam String taskId, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
+        BaseOutput<TaskMapping> output = taskRpc.getById(taskId);
+        if(!output.isSuccess()){
+            throw new AppException(output.getMessage());
+        }
+        BaseOutput<Map<String, Object>> taskVariablesOutput = taskRpc.getVariables(taskId);
+        if(!taskVariablesOutput.isSuccess()){
+            throw new AppException(taskVariablesOutput.getMessage());
+        }
+        String codeDates = taskVariablesOutput.getData().get("businessKey").toString();
+        modelMap.put("demand", demandService.getByCode(codeDates));
+        modelMap.put("taskId", taskId);
+        modelMap.put("cover", cover == null ? output.getData().getAssignee() == null : cover);
+    	return "demand/accept";
+    }
+    /**
+     * 同意申请，并制定对接人
+     * @param code  需求编号
+     * @param taskId 任务id
+     * @return
+     */
+    @RequestMapping(value="/accept.action", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseOutput<String> accept(@RequestParam String code, @RequestParam String taskId,@RequestParam String acceptId) {
+    	return demandService.submitApproveAndAccept(code, taskId,acceptId);
+    }
+ 
+    
+    @ApiOperation("跳转到接受需求对接人")
+    @RequestMapping(value="/reciprocate.html", method = RequestMethod.GET)
+    public String reciprocate(@RequestParam String taskId, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
+        BaseOutput<TaskMapping> output = taskRpc.getById(taskId);
+        if(!output.isSuccess()){
+            throw new AppException(output.getMessage());
+        }
+        BaseOutput<Map<String, Object>> taskVariablesOutput = taskRpc.getVariables(taskId);
+        if(!taskVariablesOutput.isSuccess()){
+            throw new AppException(taskVariablesOutput.getMessage());
+        }
+        String codeDates = taskVariablesOutput.getData().get("businessKey").toString();
+        modelMap.put("demand", demandService.getByCode(codeDates));
+        modelMap.put("taskId", taskId);
+        modelMap.put("cover", cover == null ? output.getData().getAssignee() == null : cover);
+    	return "demand/reciprocate";
+    }
+    /**
+     * 需求对接人处理，接入动态表单
+     * @param code  需求编号
+     * @param taskId 任务id
+     * @return
+     */
+    @RequestMapping(value="/reciprocate.action", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseOutput<String> reciprocate(@RequestParam String code, @RequestParam String taskId,@RequestParam String acceptId) {
+    	return demandService.submitApproveAndAccept(code, taskId, acceptId);
+    }
+    
+    
+    
+    @ApiOperation("反馈方案")
+    @RequestMapping(value="/feedback.html", method = RequestMethod.GET)
+    public String feedback(@RequestParam String taskId, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
+        BaseOutput<TaskMapping> output = taskRpc.getById(taskId);
+        if(!output.isSuccess()){
+            throw new AppException(output.getMessage());
+        }
+        BaseOutput<Map<String, Object>> taskVariablesOutput = taskRpc.getVariables(taskId);
+        if(!taskVariablesOutput.isSuccess()){
+            throw new AppException(taskVariablesOutput.getMessage());
+        }
+        String codeDates = taskVariablesOutput.getData().get("businessKey").toString();
+        modelMap.put("demand", demandService.getByCode(codeDates));
+        modelMap.put("taskId", taskId);
+        modelMap.put("cover", cover == null ? output.getData().getAssignee() == null : cover);
+    	return "demand/feedback";
+    }
+    /**
+     * 反馈方案
+     * @param code  需求编号
+     * @param taskId 任务id，反馈的form
+     * @return
+     */
+    @RequestMapping(value="/feedback.action", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseOutput<String> feedback(@RequestParam String code, @RequestParam String taskId, @RequestParam String content, @RequestParam String documentUrl) {
+    	return demandService.submitApprove(code, taskId,null,null);
+    }
+    @ApiOperation("需求管理员同意")
+    @RequestMapping(value="/demandManagerApprove.html", method = RequestMethod.GET)
+    public String demandManagerApprove(@RequestParam String taskId, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
+        BaseOutput<TaskMapping> output = taskRpc.getById(taskId);
+        if(!output.isSuccess()){
+            throw new AppException(output.getMessage());
+        }
+        BaseOutput<Map<String, Object>> taskVariablesOutput = taskRpc.getVariables(taskId);
+        if(!taskVariablesOutput.isSuccess()){
+            throw new AppException(taskVariablesOutput.getMessage());
+        }
+        String codeDates = taskVariablesOutput.getData().get("businessKey").toString();
+        modelMap.put("demand", demandService.getByCode(codeDates));
+        modelMap.put("taskId", taskId);
+        modelMap.put("cover", cover == null ? output.getData().getAssignee() == null : cover);
+    	return "demand/demandManagerApprove";
+    }
+    /**
+     * 需求管理员同意
+     * @param code  需求编号
+     * @param taskId 任务id
+     * @return
+     */
+    @RequestMapping(value="/demandManagerApprove.action", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseOutput<String> demandManagerApprove(@RequestParam String code, @RequestParam String taskId) {
+    	return demandService.submitApprove(code, taskId,null,(byte)DemandStatus.COMPLETE.getCode());
+    }
+
+    /**
+     * 提交申请同意表单页面
+     * @param modelMap
+     * @param cover 用于是否
+     * @return
+     */
+    @BpmTask(formKey = "almDemandDepartmentApproveForm", defKey = "departmentManagerApprove")
+    @RequestMapping(value="/departmentManagerApprove.html", method = RequestMethod.GET)
+    public String submit(@RequestParam String taskId, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
+        BaseOutput<TaskMapping> output = taskRpc.getById(taskId);
+        if(!output.isSuccess()){
+            throw new AppException(output.getMessage());
+        }
+        BaseOutput<Map<String, Object>> taskVariablesOutput = taskRpc.getVariables(taskId);
+        if(!taskVariablesOutput.isSuccess()){
+            throw new AppException(taskVariablesOutput.getMessage());
+        }
+        String code = taskVariablesOutput.getData().get("businessKey").toString();
+        modelMap.put("orders", demandService.getByCode(code));
+        modelMap.put("taskId", taskId);
+        modelMap.put("cover", cover == null ? output.getData().getAssignee() == null : cover);
+        return "departmentApprove";
+    }
+    
+    
+
 }

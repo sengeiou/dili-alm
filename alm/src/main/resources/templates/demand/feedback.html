@@ -1,0 +1,145 @@
+ <#body>
+ <link href="${contextPath!}/resources/css/uploadfile.css"
+	rel="stylesheet">
+  <div class="easyui-panel" id="submitDiv" style="width:100%;" align="center">
+    <form id="form" class="easyui-form" method="post" fit="true">
+        <input name="taskId" id="taskId" value="${taskId}" type="hidden">
+         <input name="code" id="code" value="${demand.serialNumber}" type="hidden">
+        <table width="60%" style="alignment: center">
+            <tr>
+            <td>
+            	<p>解决方案描述:</p>
+				<div id="editor_content" style="width: 100%"></div>
+            </td>
+            </tr>
+            <tr>
+            <td>
+            	<p>添加附件：</p>
+				<div id="fileuploader">选择文件</div>
+            </td>
+            </tr>
+            <tr>
+              <td align="center" style="padding:15px;">
+                <a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="submitBtn"
+                   onclick="save()">提交</a>
+            </td>
+            </tr>
+        </table>
+        	<input type="hidden" id="documentUrl" name="documentUrl" value="" />
+        	<input type="hidden" id="content" name="content" value="" />
+    </form>
+ </div>
+    <!-- ====================================================================================================================== -->
+    <!-- style & script 分隔线 -->
+    <!-- ====================================================================================================================== -->
+    <script type="text/javascript"
+	src="${contextPath!}/resources/js/jquery.uploadfile.min.js"></script>
+<script type="text/javascript"
+	src="${contextPath!}/resources/js/wangEditor.min.js"></script>
+	<script type="text/javascript">
+	var E = window.wangEditor
+	var editor = new E('#editor_content')
+	editor.customConfig.menus = [
+                                  'head',
+                                  'bold',
+                                  'italic',
+                                  'underline',
+                                  'image',
+                                  'justify',
+                              ]
+	editor.create();
+	
+</script>
+<script type="text/javascript">
+var myfiles = new Array();
+$("#fileuploader").uploadFile({
+	url :"${contextPath!}/files/filesUpload", // 文件上传url                 //文件上传url
+    fileName : "file",             //提交到服务器的文件名
+    maxFileCount: 10,                //上传文件个数（多个时修改此处
+    returnType: 'json',              //服务返回数据
+    allowedTypes: 'doc,xls,ppt,pdf,txt,dwg,exb,dps,wps,et,rar,zip,xmind,JPG,GIF,png,bmp',  //允许上传的文件式
+    showDone: false,                     //是否显示"Done"(完成)按钮
+    showDelete: true,                  //是否显示"Delete"(删除)按钮
+    deleteCallback: function(data,pd)
+    {
+    	
+			$.ajax({
+						type : "POST",
+						url : '${contextPath!}/files/delete',
+						data : {
+							id : data.data[0].id
+						},
+						success : function(dataresult) {
+							if (dataresult.code == 200) {
+				                pd.statusbar.hide();        //删除成功后隐藏进度条等
+			                    $('#image').val('');
+							} else {
+								$.messager.alert('错误', dataresult.result);
+							}
+							var fileIds =new Array($('#documentUrl').val()) ;//取值
+							var index_id=fileIds.indexOf(data.data[0].id);
+ 							console.log(data.data[0].id);
+ 							fileIds.splice(index_id,1);
+ 							$("#documentUrl").val();
+ 						    $("#documentUrl").val(fileIds);
+						},
+						error : function() {
+							$.messager.alert('错误', '远程访问失败');
+						}
+					});
+    },
+    onSuccess: function(files,data,xhr,pd)
+    {
+        //组织文件ID上传
+         $("#documentUrl").val();
+        myfiles.push(data.data[0].id);
+        $("#documentUrl").val(myfiles);
+        if(data&&data.code===0){
+            $('#image').val(data.url);
+        }
+    }
+});
+
+</script>
+    <script type="text/javascript">
+
+        function cancel() {
+            //向任务中心发送消息，参数为要跳转的地址
+            window.parent.postMessage('<#config name="bpmn.server.address"/>/demand/index.html', '<#config name="bpmc.server.address"/>');
+            location.href = "${contextPath}/demand/index.html";
+        }
+        
+
+        function save(){
+            if(!$('#form').form("validate")){
+                return;
+            }
+            $("#submitBtn").linkbutton("disable");
+            $("#content").val(editor.txt.html());
+            $('#form').form('submit', {
+                url : "${contextPath}/demand/feedback.action",
+                dataType : "json",
+                onSubmit : function(){
+
+                },
+                success:function(data){
+                    var data = eval('(' + data + ')');
+                    if(data.success) {
+                        //如果父页面是任务中心
+                        if(parent.location.href='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
+                            //向任务中心发送消息，参数为要跳转的地址
+                            window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
+                        }else{
+                            location.href = "${contextPath}/demand/index.html";
+                        }
+                    }else{
+                    	$.messager.alert('警告',"错误:"+data.message);
+                    }
+                }
+            });
+
+
+        }
+
+    </script>
+</#body>

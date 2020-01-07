@@ -61,7 +61,7 @@ public class AlmConstants {
 	// 工单超时自动关闭时间
 	public static final long CLOSE_OVER_TIME = 2 * 24 * 60 * 60 * 1000;
 		//需求状态数据字典配置
-	public static final String DEMAND_STATUS = "damand_status";
+	public static final String DEMAND_STATUS = "demand_status";
 	//需求类型数据字典配置
 	public static final String DEMAND_TYPE = "demand_type";
 	// 所属系统的字典值
@@ -209,7 +209,7 @@ public class AlmConstants {
 	// 请求状态 未提交，提交，审批中，完成
 	public enum DemandStatus {
 
-		NOTSUBMIT(1), SUBMIT(2), APPROVING(3), COMPLETE(4);
+		NOTSUBMIT(1), SUBMIT(2), APPROVING(3), COMPLETE(4),DELETE(5);
 
 		public int code;
 

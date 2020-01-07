@@ -10,8 +10,10 @@ import com.dili.alm.domain.Demand;
 import com.dili.alm.domain.dto.DemandDto;
 import com.dili.alm.exceptions.DemandExceptions;
 import com.dili.ss.base.BaseService;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.exception.BusinessException;
 import com.dili.ss.metadata.ValueProviderUtils;
 
 /**
@@ -32,7 +34,7 @@ public interface DemandService extends BaseService<Demand, Long> {
 	 * @param newDemandCode 需求流程号
 	 * @return
 	 */
-	public int finishStutas(String newDemandCode);
+	public int finishStutas(Long id,boolean approved) throws DemandExceptions ;
 
 	/**
 	 * 直接提交
@@ -48,7 +50,7 @@ public interface DemandService extends BaseService<Demand, Long> {
 	 * 
 	 * @return 查询列表
 	 */
-	public EasyuiPageOutput listPageForUser(Demand selectDemand);
+	public EasyuiPageOutput listPageForUser (Demand selectDemand);
 
 	/**
 	 * 定时重新设置自增值
@@ -82,5 +84,29 @@ public interface DemandService extends BaseService<Demand, Long> {
 	 */
 	DemandDto getDetailViewData(Long id) throws Exception;
 
-	
+    /**
+     * 逻辑删除
+     * @param id
+     * @return
+     */
+    int logicDelete(Long id) throws DemandExceptions;
+    /**
+     * 根据编号获取需求
+     * @param code
+     * @return
+     */
+    Demand getByCode(String code);
+    
+    /**
+     * 完成提交
+     * @param code
+     * @return
+     */
+    BaseOutput submitApprove(String code, String taskId,String content,Byte status);
+    /**
+     * 添加指定的接收人
+     * @param codesubmitApproveAndAccept
+     * @return
+     */
+    BaseOutput submitApproveAndAccept(String code, String taskId,String userId);
 }
