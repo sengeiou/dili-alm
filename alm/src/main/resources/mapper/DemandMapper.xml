@@ -14,9 +14,11 @@
     <result column="type" jdbcType="TINYINT" property="type" />
     <result column="status" jdbcType="TINYINT" property="status" />
     <result column="finish_date" jdbcType="DATE" property="finishDate" />
+    <result column="feedback_file" jdbcType="VARCHAR" property="feedbackFile" />
     <result column="document_url" jdbcType="VARCHAR" property="documentUrl" />
     <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
     <result column="submit_date" jdbcType="TIMESTAMP" property="submitDate" />
+    <result column="reciprocate_id" jdbcType="BIGINT" property="reciprocateId" />
     <result column="process_instance_id" jdbcType="VARCHAR" property="processInstanceId" />
     <result column="process_definition_id" jdbcType="VARCHAR" property="processDefinitionId" />
   </resultMap>
@@ -26,19 +28,20 @@
     -->
     <result column="content" jdbcType="LONGVARCHAR" property="content" />
     <result column="reason" jdbcType="LONGVARCHAR" property="reason" />
+    <result column="feedback_content" jdbcType="LONGVARCHAR" property="feedbackContent" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
       WARNING - @mbg.generated
     -->
     id, serial_number, name, user_id, belong_pro_id,belong_sys_id, type, status, finish_date, document_url, 
-    create_date, submit_date,process_instance_id,process_definition_id,
+    create_date, submit_date,reciprocateId,process_instance_id,process_definition_id,
   </sql>
   <sql id="Blob_Column_List">
     <!--
       WARNING - @mbg.generated
     -->
-    content, reason
+    content, reason,feedbackContent
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
     <!--
@@ -81,8 +84,11 @@
       <if test="finishDate != null">
         finish_date = #{finishDate,jdbcType=DATE},
       </if>
-      <if test="documentUrl != null">
+      <if test="documentUrl != null">feedbackFile
         document_url = #{documentUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="documentUrl != null">
+        feedback_file = #{feedbackFile,jdbcType=VARCHAR},
       </if>
       <if test="createDate != null">
         create_date = #{createDate,jdbcType=TIMESTAMP},
@@ -95,6 +101,12 @@
       </if>
       <if test="reason != null">
         reason = #{reason,jdbcType=LONGVARCHAR},
+      </if>
+       <if test="feedbackContent != null">
+        feedbackContent = #{feedbackContent,jdbcType=LONGVARCHAR},
+      </if>
+        <if test="reciprocateId != null">
+        reciprocateId = #{reciprocateId,jdbcType=LONGVARCHAR},
       </if>
       <if test="processInstanceId != null">
         reason = #{processInstanceId,jdbcType=VARCHAR},
@@ -132,7 +144,7 @@
 	<select id="selectDemandList" parameterType="com.dili.alm.domain.Demand" resultType="com.dili.alm.domain.Demand">
 		 select 
     id,serial_number,name, user_id, belong_pro_id,belong_sys_id, type, status,finish_date, document_url, 
-   create_date,submit_date, content,reason,process_instance_id,process_definition_id
+   create_date,submit_date, content,reason,reciprocateId,process_instance_id,reciprocateId,process_definition_id
 	FROM  demand  
    <where>
       <if test="name != null">

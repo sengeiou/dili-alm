@@ -103,7 +103,7 @@ public class AssignmentApi {
 		Map<String, String[]> map = request.getParameterMap();
 		String[] strs = map.get("processVariables");
 		JSONObject jsonObj = JSON.parseObject(strs[0]);
-		Assignment record = assignmentService.setReciprocate(jsonObj.getLong("businessKey"));
+		Assignment record = assignmentService.setReciprocate(jsonObj.get("businessKey").toString());
 		return BaseOutput.success().setData(record);
 
 	}

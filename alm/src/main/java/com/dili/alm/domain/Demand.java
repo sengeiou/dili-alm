@@ -379,6 +379,49 @@ public class Demand extends BaseDomain {
         this.reason = reason;
     }
     
+    
+    private Long reciprocateId;
+
+    
+    @Column(name = "`reciprocate_id`")
+    @FieldDef(label="指派需求接收人", maxLength = 64)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    public Long getReciprocateId() {
+    	return reciprocateId;
+    };
+
+    public void setReciprocateId(Long reciprocateId) {
+    	this.reciprocateId=reciprocateId;
+    };
+    
+    
+   private Long feedbackFile;
+
+    
+    @Column(name = "`feedback_file`")
+    @FieldDef(label="反馈文件", maxLength = 64)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    public Long getFeedbackFile() {
+    	return feedbackFile;
+    };
+
+    public void setFeedbackFile(Long feedbackFile) {
+    	this.feedbackFile=feedbackFile;
+    };
+    
+   private Long feedbackContent;
+
+    
+    @Column(name = "`feedback_content`")
+    @FieldDef(label="反馈内容", maxLength = 64)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    public Long getFeedbackContent() {
+    	return feedbackContent;
+    };
+
+    public void setFeedbackContent(Long feedbackContent) {
+    	this.feedbackContent=feedbackContent;
+    };
     private String processInstanceId;
 
     @Column(name = "`process_instance_id`")

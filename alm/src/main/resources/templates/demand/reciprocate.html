@@ -1,20 +1,16 @@
  <#body>
- reciprocate.htmlreciprocate.htmlreciprocate.htmlreciprocate.htmlreciprocate.html
   <div class="easyui-panel" id="submitDiv" style="width:100%;" align="center">
     <form id="form" class="easyui-form" method="post" fit="true">
         <input name="taskId" id="taskId" value="${taskId}" type="hidden">
          <input name="code" id="code" value="${demand.serialNumber}" type="hidden">
         <table width="60%" style="alignment: center">
+           <tr>
+
+            </td>
             <tr>
-            	<td align="center" style="padding:5px;">
-	            <input name="acceptId" id="acceptId" class="easyui-combobox" style="width: 100%;"
-									data-options="label:'责任人:',editable:true,url:'${contextPath!}/member/members',textField:'realName',valueField:'id'">
-	            </td>
                 <td align="center" style="padding:5px;">
                 <a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="submitBtn"
-                   onclick="save()">同意</a>
-                <a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="cancelBtn"
-                   onclick="cancel()">不同意</a>
+                   onclick="save()">已接收</a>
             </td>
         </table>
     </form>
@@ -36,7 +32,7 @@
             }
             $("#submitBtn").linkbutton("disable");
             $('#form').form('submit', {
-                url : "${contextPath}/demand/accept.action",
+                url : "${contextPath}/demand/reciprocate.action",
                 dataType : "json",
                 onSubmit : function(){
 

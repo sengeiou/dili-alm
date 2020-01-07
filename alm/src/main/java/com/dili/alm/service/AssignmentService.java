@@ -21,6 +21,6 @@ public interface AssignmentService {
 	 * @param onlineDataChangeId
 	 * @return
 	 */
-	Assignment setReciprocate(Long queryUserId);
+	Assignment setReciprocate(String queryUserId);
 
 }

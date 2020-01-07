@@ -337,7 +337,7 @@ public class DemandController {
      */
     @RequestMapping(value="/accept.action", method = RequestMethod.POST)
     @ResponseBody
-    public BaseOutput<String> accept(@RequestParam String code, @RequestParam String taskId,@RequestParam String acceptId) {
+    public BaseOutput<String> accept(@RequestParam String code, @RequestParam String taskId,@RequestParam Long acceptId) {
     	return demandService.submitApproveAndAccept(code, taskId,acceptId);
     }
  
@@ -367,8 +367,8 @@ public class DemandController {
      */
     @RequestMapping(value="/reciprocate.action", method = RequestMethod.POST)
     @ResponseBody
-    public BaseOutput<String> reciprocate(@RequestParam String code, @RequestParam String taskId,@RequestParam String acceptId) {
-    	return demandService.submitApproveAndAccept(code, taskId, acceptId);
+    public BaseOutput<String> reciprocate(@RequestParam String code, @RequestParam String taskId) {
+    	return demandService.submitApprove(code, taskId,null,null);
     }
     
     

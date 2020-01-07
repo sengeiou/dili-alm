@@ -7,12 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.dili.alm.constant.AlmConstants;
+import com.dili.alm.domain.Demand;
 import com.dili.alm.domain.OnlineDataChange;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.dto.UserDepartmentRoleQuery;
 import com.dili.uap.sdk.domain.User;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.AssignmentService;
+import com.dili.alm.service.DemandService;
 import com.dili.alm.service.OnlineDataChangeService;
 import com.dili.alm.service.ProjectService;
 import com.dili.bpmc.sdk.dto.Assignment;
@@ -25,6 +27,8 @@ public class AssignmentServiceImpl implements AssignmentService {
 	private OnlineDataChangeService onlineDataChangeService;
 	@Autowired
 	private ProjectService   projectService;
+	@Autowired
+	private DemandService demandService;
 	@Autowired
 	private UserRpc userRpc;
 	
@@ -128,9 +132,10 @@ public class AssignmentServiceImpl implements AssignmentService {
 	}
 
 	@Override
-	public Assignment setReciprocate(Long queryUserId){
+	public Assignment setReciprocate(String busCode){
 		Assignment record = DTOUtils.newDTO(Assignment.class);
-		record.setAssignee(queryUserId.toString()); 
+		Demand demand = demandService.getByCode(busCode);
+		record.setAssignee(demand.getReciprocateId().toString()); 
 		return record;
 	}
 	

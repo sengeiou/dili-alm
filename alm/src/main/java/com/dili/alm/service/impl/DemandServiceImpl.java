@@ -476,10 +476,15 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	    List<Demand> list = listByExample(condition);
 	    return CollectionUtils.isEmpty(list) ? null : list.get(0);
 	}
+	
 	@Override
-	public BaseOutput submitApproveAndAccept(String code, String taskId,String userId) {
+	public BaseOutput submitApproveAndAccept(String code, String taskId,Long userId) {
 	    Map<String,Object> variables = new HashMap<>();
 	    variables.put("approved", "true");
+	    Demand selectDemand = new Demand();
+	    selectDemand=this.getByCode(code);
+	    selectDemand.setReciprocateId(userId);
+	    this.update(selectDemand);
 	    return taskRpc.complete(taskId,variables);
 	}
 	
@@ -495,7 +500,6 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		}
 	    Map<String,Object> variables = new HashMap<>();
 	    variables.put("approved", "true");
-	   // variables.put("userId",content);
 		return taskRpc.complete(taskId,variables);
 	}
 
