@@ -139,6 +139,13 @@ public class AssignmentServiceImpl implements AssignmentService {
 		return record;
 	}
 	
+	@Override
+	public Assignment setDemandAppId(String busCode){
+		Assignment record = DTOUtils.newDTO(Assignment.class);
+		Demand demand = demandService.getByCode(busCode);
+		record.setAssignee(demand.getUserId().toString()); 
+		return record;
+	}
 	
 
 }

@@ -107,4 +107,16 @@ public class AssignmentApi {
 		return BaseOutput.success().setData(record);
 
 	}
+	
+	// 驳回返回给需求发布人
+	@ApiOperation("根据变更ID,項目申請人")
+	@RequestMapping("/setDemandAppId.api")
+	public @ResponseBody BaseOutput<String> setDemandAppId(HttpServletRequest request) {
+		Map<String, String[]> map = request.getParameterMap();
+		String[] strs = map.get("processVariables");
+		JSONObject jsonObj = JSON.parseObject(strs[0]);
+		Assignment record = assignmentService.setDemandAppId(jsonObj.get("businessKey").toString());
+		return BaseOutput.success().setData(record);
+
+	}
 }

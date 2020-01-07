@@ -311,7 +311,6 @@
         }
         function formatOptions(value, row, index) {
         	var content = '<span style="padding:2px;"><a href="javascript:void(0)" onclick="showProgress('+index+')">查看进度</a></span>';
-        	    content += '<span style="padding:2px;"><a href="javascript:void(0)" onclick="handle('+index+')">处理</a></span>';
         	return content;
         }
         $.messager.progress({
@@ -357,6 +356,8 @@
             }
             
           queryGrid();
+          $('#dlg').dialog('open');
+          $('#dlg').dialog('close');
             
         })
        

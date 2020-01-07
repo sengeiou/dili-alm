@@ -489,7 +489,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	}
 	
 	@Override
-	public BaseOutput submitApprove(String code, String taskId,String content,Byte status) {
+	public BaseOutput submitApprove(String code, String taskId,Byte status) {
 	    Demand condition = new Demand();
 	    condition.setSerialNumber(code);;
 	    List<Demand> list = listByExample(condition);
@@ -501,6 +501,12 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	    Map<String,Object> variables = new HashMap<>();
 	    variables.put("approved", "true");
 		return taskRpc.complete(taskId,variables);
+	}
+	@Override
+	public BaseOutput rejectApprove(String code, String taskId) {
+		Map<String,Object> variables = new HashMap<>();
+	    variables.put("approved", "false");
+	    return taskRpc.complete(taskId,variables);
 	}
 
 }

@@ -6,6 +6,7 @@ import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.constant.AlmConstants.DemandStatus;
 import com.dili.alm.domain.Demand;
 import com.dili.uap.sdk.domain.Department;
+import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.SystemDto;
 import com.dili.alm.domain.Task;
@@ -13,6 +14,7 @@ import com.dili.alm.exceptions.DemandExceptions;
 import com.dili.alm.domain.dto.DemandDto;
 import com.dili.alm.rpc.DepartmentRpc;
 import com.dili.alm.rpc.SysProjectRpc;
+import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DemandService;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.impl.DemandServiceImpl;
@@ -62,6 +64,8 @@ public class DemandController {
     @Autowired
     TaskRpc taskRpc;
     @Autowired
+    UserRpc userRpc;
+    @Autowired
     private SysProjectRpc sysProjectRpc;
     @Autowired
     DemandService demandService;
@@ -89,6 +93,31 @@ public class DemandController {
 		modelMap.addAttribute("userInfo", userTicket);
 		
 		modelMap.addAttribute("depName",de.getData().getName());
+		return "demand/add";
+	}
+    
+    @RequestMapping(value = "/editForTask.html", method = RequestMethod.GET)
+	public String editForTask(@RequestParam String taskId, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
+        BaseOutput<TaskMapping> output = taskRpc.getById(taskId);
+        if(!output.isSuccess()){
+            throw new AppException(output.getMessage());
+        }
+        BaseOutput<Map<String, Object>> taskVariablesOutput = taskRpc.getVariables(taskId);
+        if(!taskVariablesOutput.isSuccess()){
+            throw new AppException(taskVariablesOutput.getMessage());
+        }
+        String codeDates = taskVariablesOutput.getData().get("businessKey").toString();
+        Demand demand = new Demand();
+        demand = demandService.getByCode(codeDates);
+        modelMap.put("model", demand);
+
+    	/** 个人信息 **/
+        User userTicket = this.userRpc.findUserById(demand.getUserId()).getData();
+    	BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
+    	modelMap.addAttribute("userInfo", userTicket);
+    		
+    	modelMap.addAttribute("depName",de.getData().getName());
+
 		return "demand/add";
 	}
 	/**
@@ -309,7 +338,7 @@ public class DemandController {
     @RequestMapping(value="/demandDepartmentApprove.action", method = RequestMethod.POST)
     @ResponseBody
     public BaseOutput<String> doSubmit(@RequestParam String code, @RequestParam String taskId) {
-    	return demandService.submitApprove(code, taskId, null, (byte) DemandStatus.COMPLETE.getCode());
+    	return demandService.submitApprove(code, taskId, (byte) DemandStatus.COMPLETE.getCode());
     }
     
     @ApiOperation("跳转到接受需求页面")
@@ -368,7 +397,7 @@ public class DemandController {
     @RequestMapping(value="/reciprocate.action", method = RequestMethod.POST)
     @ResponseBody
     public BaseOutput<String> reciprocate(@RequestParam String code, @RequestParam String taskId) {
-    	return demandService.submitApprove(code, taskId,null,null);
+    	return demandService.submitApprove(code, taskId,null);
     }
     
     
@@ -399,7 +428,11 @@ public class DemandController {
     @RequestMapping(value="/feedback.action", method = RequestMethod.POST)
     @ResponseBody
     public BaseOutput<String> feedback(@RequestParam String code, @RequestParam String taskId, @RequestParam String content, @RequestParam String documentUrl) {
-    	return demandService.submitApprove(code, taskId,null,null);
+    	Demand demand = demandService.getByCode(code);
+    	demand.setFeedbackContent(content);
+    	demand.setFeedbackFile(documentUrl);
+    	demandService.saveOrUpdate(demand);
+    	return demandService.submitApprove(code, taskId,null);
     }
     @ApiOperation("需求管理员同意")
     @RequestMapping(value="/demandManagerApprove.html", method = RequestMethod.GET)
@@ -427,7 +460,19 @@ public class DemandController {
     @RequestMapping(value="/demandManagerApprove.action", method = RequestMethod.POST)
     @ResponseBody
     public BaseOutput<String> demandManagerApprove(@RequestParam String code, @RequestParam String taskId) {
-    	return demandService.submitApprove(code, taskId,null,(byte)DemandStatus.COMPLETE.getCode());
+    	return demandService.submitApprove(code, taskId,(byte)DemandStatus.COMPLETE.getCode());
+    }
+    
+    /**
+     * 驳回请求
+     * @param code  需求编号
+     * @param taskId 任务id
+     * @return
+     */
+    @RequestMapping(value="/rejectDemand.action", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseOutput<String> rejectDemand(@RequestParam String code, @RequestParam String taskId) {
+    	return demandService.rejectApprove(code, taskId);
     }
 
     /**

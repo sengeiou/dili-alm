@@ -395,31 +395,31 @@ public class Demand extends BaseDomain {
     };
     
     
-   private Long feedbackFile;
+   private String feedbackFile;
 
     
     @Column(name = "`feedback_file`")
     @FieldDef(label="反馈文件", maxLength = 64)
     @EditMode(editor = FieldEditor.Text, required = false)
-    public Long getFeedbackFile() {
+    public String getFeedbackFile() {
     	return feedbackFile;
     };
 
-    public void setFeedbackFile(Long feedbackFile) {
+    public void setFeedbackFile(String feedbackFile) {
     	this.feedbackFile=feedbackFile;
     };
     
-   private Long feedbackContent;
+   private String feedbackContent;
 
     
     @Column(name = "`feedback_content`")
     @FieldDef(label="反馈内容", maxLength = 64)
     @EditMode(editor = FieldEditor.Text, required = false)
-    public Long getFeedbackContent() {
+    public String getFeedbackContent() {
     	return feedbackContent;
     };
 
-    public void setFeedbackContent(Long feedbackContent) {
+    public void setFeedbackContent(String feedbackContent) {
     	this.feedbackContent=feedbackContent;
     };
     private String processInstanceId;

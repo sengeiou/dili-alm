@@ -22,5 +22,11 @@ public interface AssignmentService {
 	 * @return
 	 */
 	Assignment setReciprocate(String queryUserId);
+	/**
+	 * 返回给需求申请人
+	 * @param onlineDataChangeId
+	 * @return
+	 */
+	Assignment setDemandAppId(String busCode);
 
 }
