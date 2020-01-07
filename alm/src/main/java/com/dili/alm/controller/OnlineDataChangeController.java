@@ -62,128 +62,49 @@ public class OnlineDataChangeController {
     @Autowired
 	ProjectVersionService projectVersionService;
     
-    @ApiOperation("��ת��indexҳ��")
+    @ApiOperation("跳转到index页面")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
         return "onlineDataChange/index";
     }
-	@ApiOperation("��ת��dataChangeҳ��")
+	@ApiOperation("跳转到dataChange页面")
 	@RequestMapping(value = "/dataChange1.html", method = RequestMethod.GET)
 	public String dataChange1(ModelMap modelMap,String  taskId) {
-		BaseOutput<Map<String, Object>>  map=tasksRpc.getVariables(taskId);
-		String id = (String) map.getData().get("businessKey");
-	    OnlineDataChange  odc=  onlineDataChangeService.get(Long.parseLong(id));
-	    modelMap.addAttribute("odc",odc);
-	    modelMap.addAttribute("applyUserIdName",userRpc.findUserById(odc.getApplyUserId()).getData().getRealName());
-	    ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
-		projectVersion.setProjectId(odc.getProjectId());
-		List<ProjectVersion> list = projectVersionService.list(projectVersion);
-		if(list!=null&&list.size()>0) {
-			for (ProjectVersion projectVersion2 : list) {
-				 if(projectVersion2.getVersion().equals(odc.getVersionId())) {
-					 modelMap.addAttribute("version",projectVersion2.getVersion());
-					 break;
-				 }
-			}
-		}
-	    modelMap.addAttribute("taskId",taskId);
+		getModelmap(modelMap, taskId);
 		return "onlineDataChange/dataChange1";
 		
 	}
-	@ApiOperation("��ת��dataChangeҳ��")
+	
+	@ApiOperation("跳转到dataChange页面")
 	@RequestMapping(value = "/dataChange2.html", method = RequestMethod.GET)
 	public String dataChange2(ModelMap modelMap,String  taskId) {
-		BaseOutput<Map<String, Object>>  map=tasksRpc.getVariables(taskId);
-		String id = (String) map.getData().get("businessKey");
-	    OnlineDataChange  odc=  onlineDataChangeService.get(Long.parseLong(id));
-	    modelMap.addAttribute("odc",odc);
-	    modelMap.addAttribute("applyUserIdName",userRpc.findUserById(odc.getApplyUserId()).getData().getRealName());
-	    ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
-		projectVersion.setProjectId(odc.getProjectId());
-		List<ProjectVersion> list = projectVersionService.list(projectVersion);
-		if(list!=null&&list.size()>0) {
-			for (ProjectVersion projectVersion2 : list) {
-				 if(projectVersion2.getVersion().equals(odc.getVersionId())) {
-					 modelMap.addAttribute("version",projectVersion2.getVersion());
-					 break;
-				 }
-			}
-		}
-	    modelMap.addAttribute("taskId",taskId);
+		getModelmap(modelMap, taskId);
 		return "onlineDataChange/dataChange2";
 	}
 	
-	@ApiOperation("��ת��dataChangeҳ��")
+	@ApiOperation("跳转到dataChange页面")
 	@RequestMapping(value = "/dataChange3.html", method = RequestMethod.GET)
 	public String projectOverview(ModelMap modelMap,String  taskId) {
-		BaseOutput<Map<String, Object>>  map=tasksRpc.getVariables(taskId);
-		String id = (String) map.getData().get("businessKey");
-	    OnlineDataChange  odc=  onlineDataChangeService.get(Long.parseLong(id));
-	    modelMap.addAttribute("odc",odc);
-	    modelMap.addAttribute("applyUserIdName",userRpc.findUserById(odc.getApplyUserId()).getData().getRealName());
-	    ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
-		projectVersion.setProjectId(odc.getProjectId());
-		List<ProjectVersion> list = projectVersionService.list(projectVersion);
-		if(list!=null&&list.size()>0) {
-			for (ProjectVersion projectVersion2 : list) {
-				 if(projectVersion2.getVersion().equals(odc.getVersionId())) {
-					 modelMap.addAttribute("version",projectVersion2.getVersion());
-					 break;
-				 }
-			}
-		}
-	    modelMap.addAttribute("taskId",taskId);
+		getModelmap(modelMap, taskId);
 		return "onlineDataChange/dataChange3";
 	}
 	
-	@ApiOperation("��ת��dataChangeҳ��")
+	@ApiOperation("跳转到dataChange页面")
 	@RequestMapping(value = "/indexDataChange.html", method = RequestMethod.GET)
 	public String dbaDataChange(ModelMap modelMap,String  taskId) {
-		BaseOutput<Map<String, Object>>  map=tasksRpc.getVariables(taskId);
-		String id = (String) map.getData().get("businessKey");
-	    OnlineDataChange  odc=  onlineDataChangeService.get(Long.parseLong(id));
-	    modelMap.addAttribute("odc",odc);
-	    modelMap.addAttribute("applyUserIdName",userRpc.findUserById(odc.getApplyUserId()).getData().getRealName());
-	    ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
-		projectVersion.setProjectId(odc.getProjectId());
-		List<ProjectVersion> list = projectVersionService.list(projectVersion);
-		if(list!=null&&list.size()>0) {
-			for (ProjectVersion projectVersion2 : list) {
-				 if(projectVersion2.getVersion().equals(odc.getVersionId())) {
-					 modelMap.addAttribute("version",projectVersion2.getVersion());
-					 break;
-				 }
-			}
-		}
-	    modelMap.addAttribute("taskId",taskId);
+		getModelmap(modelMap, taskId);
 		return "onlineDataChange/indexDataChange";
 	}
 	@ApiOperation("OnlineDbaDataChange.html")
 	@RequestMapping(value = "/OnlineDbaDataChange.html", method = RequestMethod.GET)
 	public String OnlineDbaDataChange(ModelMap modelMap,String  taskId) {
-		BaseOutput<Map<String, Object>>  map=tasksRpc.getVariables(taskId);
-		String id = (String) map.getData().get("businessKey");
-	    OnlineDataChange  odc=  onlineDataChangeService.get(Long.parseLong(id));
-	    modelMap.addAttribute("odc",odc);
-	    modelMap.addAttribute("applyUserIdName",userRpc.findUserById(odc.getApplyUserId()).getData().getRealName());
-	    ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
-		projectVersion.setProjectId(odc.getProjectId());
-		List<ProjectVersion> list = projectVersionService.list(projectVersion);
-		if(list!=null&&list.size()>0) {
-			for (ProjectVersion projectVersion2 : list) {
-				 if(projectVersion2.getVersion().equals(odc.getVersionId())) {
-					 modelMap.addAttribute("version",projectVersion2.getVersion());
-					 break;
-				 }
-			}
-		}
-	    modelMap.addAttribute("taskId",taskId);
+		getModelmap(modelMap, taskId);
 		return "onlineDataChange/OnlineDbaDataChange";
 	}
 	
-    @ApiOperation(value="��ѯOnlineDataChange", notes = "��ѯOnlineDataChange�������б���Ϣ")
+    @ApiOperation(value="分页查询OnlineDataChange", notes = "查询OnlineDataChange，返回列表信息")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "OnlineDataChange��form��Ϣ", required = false, dataType = "string")
+		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "查询OnlineDataChange，返回列表信息", required = false, dataType = "string")
 	})
     @RequestMapping(value="/list.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody List<OnlineDataChange> list(@ModelAttribute OnlineDataChange onlineDataChange) {
@@ -192,9 +113,9 @@ public class OnlineDataChangeController {
         return onlineDataChangeService.list(onlineDataChange);
     }
 
-    @ApiOperation(value="��ҳ��ѯOnlineDataChange", notes = "��ҳ��ѯOnlineDataChange������easyui��ҳ��Ϣ")
+    @ApiOperation(value="分页查询OnlineDataChange", notes = "分页查询HardwareResourceApply，返回easyui分页信息")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "OnlineDataChange��form��Ϣ", required = false, dataType = "string")
+		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "分页查询HardwareResourceApply，返回easyui分页信息", required = false, dataType = "string")
 	})
     @RequestMapping(value="/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String listPage(@ModelAttribute OnlineDataChange onlineDataChange,   @RequestParam(value="projectIdcc", required = false) String projectIdcc) throws Exception {
@@ -226,9 +147,9 @@ public class OnlineDataChangeController {
        // return onlineDataChangeService.listEasyuiPageByExample(onlineDataChange, true).toString();
     }
 
-    @ApiOperation("����OnlineDataChange")
+    @ApiOperation("保存OnlineDataChange")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "OnlineDataChange��form��Ϣ", required = true, dataType = "string")
+		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "OnlineDataChange的form信息", required = true, dataType = "string")
 	})
     @RequestMapping(value="/insert.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput insert(@ModelAttribute OnlineDataChange onlineDataChange) {
@@ -247,7 +168,7 @@ public class OnlineDataChangeController {
         return BaseOutput.success("保存成功");    
     }
 
-    @ApiOperation("�޸�OnlineDataChange")
+    @ApiOperation("修改OnlineDataChange")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "OnlineDataChange��form��Ϣ", required = true, dataType = "string")
 	})
@@ -255,17 +176,17 @@ public class OnlineDataChangeController {
     public @ResponseBody BaseOutput update(@ModelAttribute OnlineDataChange onlineDataChange,
             HttpServletRequest reques) {
         onlineDataChangeService.updateSelective(onlineDataChange);
-        return BaseOutput.success("�޸ĳɹ�");
+        return BaseOutput.success("修改成功");
     }
 
-    @ApiOperation("ɾ��OnlineDataChange")
+    @ApiOperation("删除OnlineDataChange")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="id", paramType="form", value = "OnlineDataChange������", required = true, dataType = "long")
 	})
     @RequestMapping(value="/delete.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput delete(Long id) {
         onlineDataChangeService.delete(id);
-        return BaseOutput.success("ɾ���ɹ�");
+        return BaseOutput.success("删除成功");
     }
     
  
@@ -349,5 +270,25 @@ public class OnlineDataChangeController {
     	tasksRpc.complete(taskId);
     	return BaseOutput.success("执行成功");
     }
+    
+    private void getModelmap(ModelMap modelMap, String taskId) {
+		BaseOutput<Map<String, Object>>  map=tasksRpc.getVariables(taskId);
+		String id = (String) map.getData().get("businessKey");
+	    OnlineDataChange  odc=  onlineDataChangeService.get(Long.parseLong(id));
+	    modelMap.addAttribute("odc",odc);
+	    modelMap.addAttribute("applyUserIdName","");
+	    ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
+		//projectVersion.setProjectId(odc.getProjectId());
+		List<ProjectVersion> list = projectVersionService.list(projectVersion);
+		if(list!=null&&list.size()>0) {
+			for (ProjectVersion projectVersion2 : list) {
+				/* if(projectVersion2.getVersion().equals(odc.getVersionId())) {
+					 modelMap.addAttribute("version",projectVersion2.getVersion());
+					 break;
+				 }*/
+			}
+		}
+	    modelMap.addAttribute("taskId",taskId);
+	}
     
 }

@@ -66,7 +66,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 		Project  pro=	projectService.get(odc.getProjectId());
 		
 		User uprojectser = DTOUtils.newDTO(User.class);
-		uprojectser.setId(Long.parseLong("89"));
+		uprojectser.setId(pro.getTestManager());
 		uprojectser.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		BaseOutput<List<User>> listUserByExample = userRpc.listByExample(uprojectser);
 	
