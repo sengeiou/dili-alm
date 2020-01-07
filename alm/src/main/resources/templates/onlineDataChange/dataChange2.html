@@ -164,32 +164,29 @@ button:hover {
 	    
 });
    
+   
+
    $('#notAgree').bind('click', function(){
-		 
-	
 	   var taskIdd=$('#taskId').val();
-	    $.ajax({
-	       type: "POST",
-	       url: "${contextPath!}/onlineDataChange/notAgreeTestOnlineData.action",
-	       data: {"taskId":taskIdd},       
-	       processData: false,
-	        contentType: false,
-	        dataType:"json",
-           success:function(data){
-      	  
+	   alert(taskIdd);
+	   $.ajax({
+           type: "post",
+           url: "${contextPath!}/onlineDataChange/notAgreeTestOnlineData.action",
+           data: {"taskId":taskIdd},
+           async : true,
+           success: function (data) {
+           	
              	alert("执行成功");
+           	
            },
            error: function(){
                $.messager.alert('错误','远程访问失败');
            }
-         
-     
-    });
+       });
 	    
 	    
-});	    
-
-
+	    
+});	   
 
 
 	   

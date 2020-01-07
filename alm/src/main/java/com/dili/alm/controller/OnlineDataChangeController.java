@@ -137,7 +137,7 @@ public class OnlineDataChangeController {
 	}
 	
 	@ApiOperation("��ת��dataChangeҳ��")
-	@RequestMapping(value = "/dbaDataChange.html", method = RequestMethod.GET)
+	@RequestMapping(value = "/indexDataChange.html", method = RequestMethod.GET)
 	public String dbaDataChange(ModelMap modelMap,String  taskId) {
 		BaseOutput<Map<String, Object>>  map=tasksRpc.getVariables(taskId);
 		String id = (String) map.getData().get("businessKey");
@@ -156,9 +156,9 @@ public class OnlineDataChangeController {
 			}
 		}
 	    modelMap.addAttribute("taskId",taskId);
-		return "onlineDataChange/dbaDataChange.html";
+		return "onlineDataChange/indexDataChange";
 	}
-	@ApiOperation("��ת��dataChangeҳ��")
+	@ApiOperation("OnlineDbaDataChange.html")
 	@RequestMapping(value = "/OnlineDbaDataChange.html", method = RequestMethod.GET)
 	public String OnlineDbaDataChange(ModelMap modelMap,String  taskId) {
 		BaseOutput<Map<String, Object>>  map=tasksRpc.getVariables(taskId);
@@ -323,7 +323,7 @@ public class OnlineDataChangeController {
     	Map<String, Object> map=new HashMap<>();
     	map.put("approved", "false");
     	tasksRpc.complete(taskId, map);
-        return BaseOutput.success("11111");
+        return BaseOutput.success("执行成功");
     }
     
     @RequestMapping(value="/agreeDBAOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
@@ -340,8 +340,14 @@ public class OnlineDataChangeController {
     	Map<String, Object> map=new HashMap<>();
     	map.put("approved", "false");
     	tasksRpc.complete(taskId, map);
-        return BaseOutput.success("11111");
+        return BaseOutput.success("执行成功");
     }
-    
+    @RequestMapping(value="/indexOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput indexOnlineData(  @RequestParam(value="taskId", required = false) String taskId) {
+    	Map<String, Object> map=new HashMap<>();
+    	map.put("approved", "true");
+    	tasksRpc.complete(taskId);
+    	return BaseOutput.success("执行成功");
+    }
     
 }
