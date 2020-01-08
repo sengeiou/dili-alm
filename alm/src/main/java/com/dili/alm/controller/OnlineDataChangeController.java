@@ -177,6 +177,7 @@ public class OnlineDataChangeController {
             HttpServletRequest reques) {
         onlineDataChangeService.updateSelective(onlineDataChange);
         return BaseOutput.success("修改成功");
+         
     }
 
     @ApiOperation("删除OnlineDataChange")
