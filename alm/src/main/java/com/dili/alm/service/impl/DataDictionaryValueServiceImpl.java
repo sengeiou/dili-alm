@@ -101,7 +101,7 @@ public class DataDictionaryValueServiceImpl extends BaseServiceImpl<DataDictiona
 		}
 		List<DataDictionaryValueDto> values =new ArrayList<DataDictionaryValueDto>();
 		List<com.dili.uap.sdk.domain.DataDictionaryValue> DataDictionaryValues = model.getDataDictionaryValues();
-		if (CollectionUtils.isNotEmpty(values)) {
+		if (CollectionUtils.isNotEmpty(DataDictionaryValues)) {
 			for (com.dili.uap.sdk.domain.DataDictionaryValue dataDictionaryValue : DataDictionaryValues) {
 				DataDictionaryValueDto dataDictionaryValueDto=DTOUtils.newDTO(DataDictionaryValueDto.class);
 				dataDictionaryValueDto.setId(dataDictionaryValue.getId());
