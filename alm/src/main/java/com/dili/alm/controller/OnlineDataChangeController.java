@@ -177,6 +177,7 @@ public class OnlineDataChangeController {
             HttpServletRequest reques) {
         onlineDataChangeService.updateSelective(onlineDataChange);
         return BaseOutput.success("修改成功");
+         
     }
 
     @ApiOperation("删除OnlineDataChange")
@@ -276,16 +277,16 @@ public class OnlineDataChangeController {
 		String id = (String) map.getData().get("businessKey");
 	    OnlineDataChange  odc=  onlineDataChangeService.get(Long.parseLong(id));
 	    modelMap.addAttribute("odc",odc);
-	    modelMap.addAttribute("applyUserIdName","");
+	    modelMap.addAttribute("applyUserIdName",userRpc.findUserById(odc.getApplyUserId()).getData().getUserName());
 	    ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
 		//projectVersion.setProjectId(odc.getProjectId());
 		List<ProjectVersion> list = projectVersionService.list(projectVersion);
 		if(list!=null&&list.size()>0) {
 			for (ProjectVersion projectVersion2 : list) {
-				/* if(projectVersion2.getVersion().equals(odc.getVersionId())) {
+				 if(projectVersion2.getVersion().equals(odc.getVersionId())) {
 					 modelMap.addAttribute("version",projectVersion2.getVersion());
 					 break;
-				 }*/
+				 }
 			}
 		}
 	    modelMap.addAttribute("taskId",taskId);
