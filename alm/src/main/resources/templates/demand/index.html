@@ -97,7 +97,7 @@
 </div>
 <!-- 隐藏编辑框  *迁移-->
 <div id="dlg" class="easyui-dialog" resizable="false" constrain="true"
-	shadow="true" draggable="false" title="Demand信息" style="padding: 20px"
+	shadow="true" draggable="false" title="需求信息" style="padding: 20px"
 	modal="true" border="thin" closed="true"
 	data-options="
 				iconCls: 'icon-save',
@@ -144,6 +144,7 @@
         function openInsert(){
             $('#dlg').dialog('open');
             $('#dlg').dialog('center');
+            $('#dlg').dialog('refresh');
             $('#_form').form('clear');
             formFocus("_form", "_serialNumber");
         }
@@ -155,6 +156,7 @@
                 $.messager.alert('警告','请选中一条数据');
                 return;
             }
+
             $('#dlg').dialog('open');
             $('#dlg').dialog('center');
             formFocus("_form", "_serialNumber");
@@ -310,7 +312,10 @@
             });
         }
         function formatOptions(value, row, index) {
-        	var content = '<span style="padding:2px;"><a href="javascript:void(0)" onclick="showProgress('+index+')">查看进度</a></span>';
+        	var content = "";
+        	if(row.status==3){//审批中的显示进度
+        		content+='<span style="padding:2px;"><a href="javascript:void(0)" onclick="showProgress('+index+')">查看进度</a></span>';
+        	}
         	return content;
         }
         $.messager.progress({

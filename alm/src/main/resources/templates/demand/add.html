@@ -29,9 +29,9 @@
 				name="_name" id="_name" style="width: 100%"
 				data-options="label:'需求名称:', validType:'length[0,25]'"
 				required="true" /></td>
-			<td style="padding: 5px;"><input class="easyui-textbox"
+			<td style="padding: 5px;"><input class="easyui-combobox"
 				name="_belongProId" id="_belongProId" style="width: 100%"
-				data-options="label:'所属項目:'" />
+				data-options="label:'所属項目:'" required="true"/>
 				<#comboProvider
 				_id="_belongProId" _provider='projectProvider' />
 				</td>
@@ -40,7 +40,7 @@
 
 			<td style="padding: 5px;"><input class="easyui-textbox"
 				name="_type" id="_type" style="width: 100%"
-				data-options="label:'需求类型:'"
+				data-options="label:'需求类型:', required:true"
 				required="true" /> <#comboProvider _id="_type"
 				_provider='demandTypeProvider' /></td>
 			<td style="padding: 5px;"><input class="easyui-datebox"
@@ -107,6 +107,7 @@ var myfiles = new Array();
 $("#fileuploader").uploadFile({
 	url :"${contextPath!}/files/filesUpload", // 文件上传url                 //文件上传url
     fileName : "file",             //提交到服务器的文件名
+    uploadStr: '上传附件',
     maxFileCount: 10,                //上传文件个数（多个时修改此处
     returnType: 'json',              //服务返回数据
     allowedTypes: 'doc,xls,ppt,pdf,txt,dwg,exb,dps,wps,et,rar,zip,xmind,JPG,GIF,png,bmp',  //允许上传的文件式
@@ -151,23 +152,7 @@ $("#fileuploader").uploadFile({
         }
     }
 });
-/**
- * 显示流程图,查看进度图片
- * @param processInstanceId
- * @param processDefinitionId
- * @param processInstanceName
- */
-function showProgress(){
-    var selected = $("#grid").datagrid("getSelected");
-    if (null == selected) {
-        swal('警告','请选中一条数据', 'warning');
-        return;
-    }
-    $('#progressDlg').dialog('open');
-    $('#progressDlg').dialog('center');
-    var href = '<#config name="bpmc.server.address"/>/api/runtime/progress?processInstanceId='+selected.processInstanceId+'&processDefinitionId='+selected.processDefinitionId+"&"+Math.random();
-    $("#processInstanceImg").attr("src", href);
-}
+
 
 function loadSystemSelect() {
 	$('#_belongSysId').combobox({

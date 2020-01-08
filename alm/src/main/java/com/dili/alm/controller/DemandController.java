@@ -162,6 +162,9 @@ public class DemandController {
 	})
     @RequestMapping(value="/insert", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput insert(Demand demand) {
+    	if (demand.getType()==null) {
+    		return BaseOutput.failure("需求类型不能为空！");
+		}
         try {
 			demandService.addNewDemand(demand);
 		} catch (DemandExceptions e) {
