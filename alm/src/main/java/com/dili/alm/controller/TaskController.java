@@ -458,5 +458,16 @@ public class TaskController {
 		modelMap.put("taskId", id);
 		return "task/index";
 	}
+	@ApiOperation("项目版本查询")
+	@ResponseBody
+	@RequestMapping(value = "/listTreeVersionByProject.json", method = { RequestMethod.GET, RequestMethod.POST })
+	public List<ProjectVersion> listTreeVersionByProject(Long id) {
+		ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
+		projectVersion.setProjectId(id);
+		List<ProjectVersion> list=new ArrayList<>();
+		if(id!=null)
+		      list = projectVersionService.list(projectVersion);
+		return list;
+	}
 
 }

@@ -137,13 +137,14 @@
 				<tr>
 
 					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">项目名称</td>
-					<td style="padding: 5px;">	<input class="easyui-textbox"
+					<td style="padding: 5px;">	 <input class="easyui-textbox"
 						name="_projectId" id="_projectId" style="width: 100%"  data-options="required:true"   />
-						<#comboProvider _id="_projectId" _provider='projectProvider'  data-options="required:true"   />
+						<#comboProvider _id="_projectId" _provider='projectProvider'  data-options="required:true"   /> 
+
 				
 					 </td>
 					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">版本号  
-					    <input name="_versionId" id="_versionId" class="easyui-combobox"   type="hidden"></td>
+					    <input name="_versionId" id="_versionId"  type="hidden"></td>
 					<td style="padding: 5px;">
 					     
 					     <input name="_versionIdName" id="_versionIdName" class="easyui-combobox" style="width: 100%;" editable="false"
@@ -259,18 +260,11 @@
             $('#dlg').dialog('open');
             $('#dlg').dialog('center');
             $('#_form').form('clear');
-            $('#_projectId').combobox('clear');
+          // $('#_projectId').combobox('clear');
             $('#_versionIdName').combobox('clear');
             $('#_sqlFileId').val(""); 
             $('#sqlFile').textbox(""); 
-           
-            $('#_projectId').combobox('initValue', '${project.id!}');
-       		$('#_projectId').combobox('setText', '${project.name!}');
-       		$("#_versionIdName").combobox('setValue','选择所属版本');//根据ID设定默认值
-       	
-       	 $('#_versionIdName').combobox('clear');
-       		
-       		
+      
             formFocus("_form", "_applyUserIdName");
            
         }
@@ -285,34 +279,8 @@
 		}
         
       
-   		function reloadVisionSelect(id) {
-   			
-   			       $('#_versionIdName').combobox({
-   						url : "${contextPath!}/task/listTreeVersion.json?id=" + id,
-   						valueField : 'id',
-   						textField : 'version',
-   						editable : false
-   					});
-
-   		}
-       
-		$("#_projectId").combobox({  
-
-			   onSelect: function () {
-				   var curValue=$('#_projectId').combobox('getValue');
-				   reloadVisionSelect(curValue);
-			　　  }  
-
-	    });
-		$("#_versionIdName").combobox({  
-
-			   onSelect: function () {
-				   var curValue=$('#_versionIdName').combobox('getValue');
-				   $('#_versionId').textbox('setText', curValue);
-			　　  }  
-
-	    });
-			
+  
+		
 		
         
 
@@ -323,20 +291,18 @@
                 $.messager.alert('警告','请选中一条数据');
                 return;
             }
-            $('#_projectId').combobox('initValue', selected.projectId);
+        
             $('#_versionIdName').combobox('clear');
-             $('#_versionIdName').combobox({
-					url : "${contextPath!}/task/listTreeVersion.json?id=" + selected.projectId,
+            $('#_versionIdName').combobox({
+					url : "${contextPath!}/task/listTreeVersionByProject.json?id=" + selected.projectId,
 					valueField : 'id',
 					textField : 'version',
-					editable : false
+					editable : false,
+					onLoadSuccess : function() {
+						$("#_versionIdName").combobox("select",selected.versionId);
+					}
 			 });
-           //alert(selected.projectId);
-           
-       	//	$("#_versionIdName").combobox('setValue','选择所属版本');//根据ID设定默认值
-       	
-	       	//	$("#_versionIdName").combobox('setValue','选择所属版本');//根据ID设定默认值
-       		
+
        		
             $('#dlg').dialog('open');
             $('#dlg').dialog('center');
@@ -382,6 +348,7 @@
             }else{//有id就修改
                 _url = "${contextPath!}/onlineDataChange/update.action";
             }
+            console.log(_formData);
             $.ajax({
                 type: "POST",
                 url: _url,
@@ -522,7 +489,7 @@
 
             
             
-            function loadProjectSelect(queryAll) {
+         ///   function loadProjectSelect(queryAll) {
      			/*  $('#projectIdcc').combobox({
      						url : "${contextPath!}/task/listTreeProject.json" + (queryAll ? '?queryAll=true' : ''),
      						valueField : 'id',
@@ -530,14 +497,14 @@
      						editable : false
      					}); */
 
-     		 }
+     		// }
      	   
             
             //loadProjectSelect(); 
 	   	   
          /*    $('#projectId').combobox('initValue', '${project.id!}');
 	   		$('#projectId').combobox('setText', '${project.name!}'); */
-	   		$("#versionId").combobox('setValue','');//根据ID设定默认值
+	   	//	$("#versionId").combobox('setValue','');//根据ID设定默认值
 	   		function loadVisionSelect(id) {
 	   			
 	   			       $('#versionId').combobox({
@@ -557,8 +524,22 @@
 				　　  }  
 
 		    });
+			
+	 		function reloadVisionSelect(id) {
+	   			
+			       $('#_versionIdName').combobox({
+						url : "${contextPath!}/task/listTreeVersionByProject.json?id=" + id,
+						valueField : 'id',
+						textField : 'version',
+						editable : false
+					});
+
+		  }
+    
+	 		
+	 		
 				
-			reloadProjectSelect();
+			//reloadProjectSelect();
             
 			////	 $("#btnShangChuan").onChange(function () {
 
@@ -591,15 +572,42 @@
 			    });
 				    
 				    
-			 });	    
+			 });	
 			 
+			 
+			 
+			 
+			 $("#_projectId").combobox({  
+
+				   onChange: function () {
+					 
+					   var curValue=$('#_projectId').combobox('getValue');
+					   $('#_versionIdName').combobox('clear');
+					   if(curValue!=null){
+					       reloadVisionSelect(curValue);
+				        }
+				　　  }  
+
+		    });
+			$("#_versionIdName").combobox({  
+
+				   onChange: function () {
+					   var curValue=$('#_versionIdName').combobox('getValue');
+					 //  alert(curValue);
+					   $('#_versionId').val( curValue);
+					 alert(  $('#_versionId').textbox('getText'));
+				　　  }  
+
+		    });
+				
 			 
 			 
 			 
 	
-	       		$("#_versionIdName").combobox('setValue','选择所属版本');//根据ID设定默认值
+	       	//	$("#_versionIdName").combobox('setValue','选择所属版本');//根据ID设定默认值
 	 	       $('#_versionIdName').combobox('clear');
-	  
+	 	      // $('#_projectId').combobox('initValue', 1);
+	       
 	    		
 	       	  //$("#_isSynchronization").combobox('select', 0);
 	      // 	 $('#_isSynchronization').combobox('setValue','0');
