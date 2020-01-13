@@ -133,6 +133,13 @@ public class OnlineDataChangeController {
 		JSONObject projectVersionProvider = new JSONObject();
 		projectVersionProvider.put("projectVersion", "projectVersionProvider");
 		metadata.put("versionId", projectVersionProvider);
+		
+		JSONObject memberProvider = new JSONObject();
+		memberProvider.put("provider", "memberProvider");
+		metadata.put("applyUserId", memberProvider);
+		onlineDataChange.setMetadata(metadata);
+		
+		
 		onlineDataChange.setMetadata(metadata);
 		try {
 			//List taskList = ValueProviderUtils.buildDataByProvider(onlineDataChange, list);
