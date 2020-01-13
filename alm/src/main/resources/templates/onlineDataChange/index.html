@@ -303,7 +303,8 @@
 					}
 			 });
 
-       		
+          
+         //   alert( $('#_versionId').val());
             $('#dlg').dialog('open');
             $('#dlg').dialog('center');
             formFocus("_form", "_applyUserId");
@@ -326,12 +327,31 @@
                 success: function (data) {
                 	
                 	$('#_applyUserIdName').combobox('setText', data);
+                	//  $('#_versionId').val(selected.versionId);
                 	
                 },
                 error: function(){
                     $.messager.alert('错误','远程访问失败');
                 }
             });
+       	//	alert(selected.id);
+       		var  idTemp=selected.id;
+       		$.ajax({
+                type: "post",
+                url: "${contextPath}/onlineDataChange/getOnlineDataChange.action",
+                data: {id:idTemp},
+                async : true,
+                success: function (data) {
+                	//alert(data);
+                	  $('#_versionId').val(data);
+                	//  alert( $('#_versionId').val());
+                },
+                error: function(){
+                    $.messager.alert('错误','远程访问失败');
+                }
+            });
+       		
+       		//alert("ssssssssssssss");
        		
             
         }
@@ -595,7 +615,7 @@
 					   var curValue=$('#_versionIdName').combobox('getValue');
 					 //  alert(curValue);
 					   $('#_versionId').val( curValue);
-					 alert(  $('#_versionId').textbox('getText'));
+					// alert(  $('#_versionId').textbox('getText'));
 				　　  }  
 
 		    });

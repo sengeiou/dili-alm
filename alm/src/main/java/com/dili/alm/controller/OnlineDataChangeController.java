@@ -133,10 +133,6 @@ public class OnlineDataChangeController {
 		JSONObject projectVersionProvider = new JSONObject();
 		projectVersionProvider.put("projectVersion", "projectVersionProvider");
 		metadata.put("versionId", projectVersionProvider);
-		
-		JSONObject memberProvider = new JSONObject();
-		memberProvider.put("provider", "memberProvider");
-		metadata.put("applyUserId", memberProvider);
 		onlineDataChange.setMetadata(metadata);
 		try {
 			//List taskList = ValueProviderUtils.buildDataByProvider(onlineDataChange, list);
@@ -169,6 +165,17 @@ public class OnlineDataChangeController {
 	    }
         return BaseOutput.success("保存成功");    
     }
+   
+    
+    @ApiOperation("返回版本id的信息")
+    @RequestMapping(value="/getOnlineDataChange.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody String getOnlineDataChange(Long id ) {
+        OnlineDataChange  object=	onlineDataChangeService.get(id);
+        return object.getVersionId().toString();    
+        
+    }
+    
+    
 
     @ApiOperation("修改OnlineDataChange")
     @ApiImplicitParams({
