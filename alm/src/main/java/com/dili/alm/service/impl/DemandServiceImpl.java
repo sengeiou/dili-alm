@@ -159,6 +159,9 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 	BaseOutput<List<Department>> de = departmentRpc.findByUserId(userTicket.getId());
 	String depStr = "";
+/*	if (de.getData()==null) {//正确的部门校验
+		throw new DemandExceptions("所属部门为空！");
+	}*/
 	if (de.getData()==null) {
 		depStr="cp";
 	}else

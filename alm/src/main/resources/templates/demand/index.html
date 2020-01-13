@@ -130,8 +130,8 @@
         <div id="progressDlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="true" title="流程图" style="padding:20px" modal="true" border="thin" closed="true"
              data-options="
 				iconCls: 'icon-save',
-				width:1366,
-				height: 640
+				width:800,
+				height:450
 			">
             <img id="processInstanceImg" />
         </div>
@@ -151,15 +151,21 @@
 
         //打开修改窗口
         function openUpdate(){
+        	
+
             var selected = $("#grid").datagrid("getSelected");
             if (null == selected) {
                 $.messager.alert('警告','请选中一条数据');
                 return;
             }
 
+        	if(selected.$_status!=1){//审批中的显示进度
+       		 $.messager.alert('警告','未提交的需求才能进行修改！');
+                return;
+       	     }
             $('#dlg').dialog('open');
             $('#dlg').dialog('center');
-            formFocus("_form", "_serialNumber");
+            //formFocus("_form", "_serialNumber");
             var formData = $.extend({},selected);
             formData = addKeyStartWith(getOriginalData(formData),"_");
             
@@ -174,11 +180,10 @@
             if(!$('#_form').form("validate")){
                 return;
             }
-            if(editor.txt.html()==""){
+            if(editor.txt.html()=="<p>请输入内容...</p><p><br></p>"||editor.txt.html()=="<p><br></p>"){
             	 $.messager.alert('警告','需求内容为必填项目');
             	 return;
             }
-
             var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
              
             _formData.content = editor.txt.html();
@@ -208,10 +213,10 @@
             if(!$('#_form').form("validate")){
                 return;
             }
-            if(editor.txt.html()==""){
-            	 $.messager.alert('警告','需求内容为必填项目');
-            	 return;
-            }
+            if(editor.txt.html()=="<p>请输入内容...</p><p><br></p>"||editor.txt.html()=="<p><br></p>"){
+           	 $.messager.alert('警告','需求内容为必填项目');
+           	 return;
+           }
 
             var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
              
@@ -313,7 +318,7 @@
         }
         function formatOptions(value, row, index) {
         	var content = "";
-        	if(row.status==3){//审批中的显示进度
+        	if(row.$_status==3){//审批中的显示进度
         		content+='<span style="padding:2px;"><a href="javascript:void(0)" onclick="showProgress('+index+')">查看进度</a></span>';
         	}
         	return content;

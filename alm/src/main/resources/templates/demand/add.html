@@ -8,20 +8,20 @@
 		<tr>
 			<td style="padding: 5px; width: 50%"><input
 				class="easyui-textbox" style="width: 100%"
-				data-options="label:'需求申请人'" value="${userInfo.realName}" /> <input
+				data-options="label:'需求申请人'" value="${userInfo.realName}"  readonly="readonly"/> <input
 				type="hidden" id="userId" name="userId" value="${userInfo.id}" /></td>
 			<td style="padding: 5px; width: 50%"><input
 				class="easyui-textbox" style="width: 100%"
-				data-options="label:'申请人电话'" value="${userInfo.cellphone}" /></td>
+				data-options="label:'申请人电话'" value="${userInfo.cellphone}"  readonly="readonly"/></td>
 		</tr>
 		<tr>
 			<td style="padding: 5px;"> <input class="easyui-textbox"
 				style="width: 100%" data-options="label:'需求部门:'"
-				value="${depName}" data-options="editable:false" /> 
+				value="${depName}" data-options="editable:false" readonly="readonly" /> 
 				</td>
 			<td style="padding: 5px;">
 			<input name="_belongSysId" id="_belongSysId" class="easyui-combobox" style="width: 100%;" editable="false"
-					data-options="label:'所属系统:', required:true,prompt:'--选择系统项目--'">
+					data-options="label:'所属系统:', required:true,prompt:'--选择系统项目--'" >
 				</td>
 		</tr>
 		<tr>
@@ -31,7 +31,7 @@
 				required="true" /></td>
 			<td style="padding: 5px;"><input class="easyui-combobox"
 				name="_belongProId" id="_belongProId" style="width: 100%"
-				data-options="label:'所属項目:'" required="true"/>
+				data-options="label:'所属項目:'" required="true" editable="false" />
 				<#comboProvider
 				_id="_belongProId" _provider='projectProvider' />
 				</td>
@@ -41,11 +41,11 @@
 			<td style="padding: 5px;"><input class="easyui-textbox"
 				name="_type" id="_type" style="width: 100%"
 				data-options="label:'需求类型:', required:true"
-				required="true" /> <#comboProvider _id="_type"
+				editable="false"/> <#comboProvider _id="_type"
 				_provider='demandTypeProvider' /></td>
 			<td style="padding: 5px;"><input class="easyui-datebox"
 				name="_finishDate" id="_finishDate" style="width: 100%"
-				data-options="label:'期望实现日期:'" required="true" /></td>
+				data-options="label:'期望实现日期:'" required="true"  editable="false"/></td>
 		</tr>
 		<tr>
 			<td style="padding: 5px;" colspan="2">
@@ -56,12 +56,16 @@
 		<tr>
 			<td style="padding: 5px;" colspan="2">
 				<p>需求内容:</p>
-				<div id="editor_content" style="width: 100%"></div>
+				<div id="editor_content" style="width: 100%">
+				<p>请输入内容...</p>
+				</div>
 		</tr>
 		<tr>
 			<td style="padding: 5px;" colspan="2">
 				<p>需求背景:</p>
-				<div id="editor_reason" style="width: 100%"></div>
+				<div id="editor_reason" style="width: 100%">
+				<p>请输入内容...</p>
+				</div>
 			</td>
 		</tr>
 	</table>
@@ -88,9 +92,20 @@
                                   'underline',
                                   'image',
                                   'justify',
-                              ]
+                              ];
+    editor.customConfig.onfocus = function () {
+    	if(editor.txt.html()=="<p>请输入内容...</p><p><br></p>"){
+    		editor.txt.html("");
+    	}
+    	
+    }
+    editor.customConfig.onblur = function (html) {
+    	if(editor.txt.html()=="<p><br></p>"){
+    	 editor.txt.html("<p>请输入内容...</p><p><br></p>");
+    	}
+    }
 	editor.create();
-	
+
     var editor2 = new E('#editor_reason');
     editor2.customConfig.menus = [
                                  'head',
@@ -100,7 +115,19 @@
                                  'image',
                                  'justify',
                              ]
+    editor2.customConfig.onfocus = function () {
+    	if(editor.txt.html()=="<p>请输入内容...</p><p><br></p>"){
+    		editor.txt.html("");
+    	}
+    	
+    }
+    editor2.customConfig.onblur = function (html) {
+    	if(editor.txt.html()=="<p><br></p>"){
+    	 editor.txt.html("<p>请输入内容...</p><p><br></p>");
+    	}
+    }
     editor2.create()
+
 </script>
 <script type="text/javascript">
 var myfiles = new Array();
@@ -108,6 +135,8 @@ $("#fileuploader").uploadFile({
 	url :"${contextPath!}/files/filesUpload", // 文件上传url                 //文件上传url
     fileName : "file",             //提交到服务器的文件名
     uploadStr: '上传附件',
+    deleteStr: '删除',
+    abortStr: '上传中',
     maxFileCount: 10,                //上传文件个数（多个时修改此处
     returnType: 'json',              //服务返回数据
     allowedTypes: 'doc,xls,ppt,pdf,txt,dwg,exb,dps,wps,et,rar,zip,xmind,JPG,GIF,png,bmp',  //允许上传的文件式

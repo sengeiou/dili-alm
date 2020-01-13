@@ -82,17 +82,22 @@ public class DemandController {
     @RequestMapping(value = "/add", method = RequestMethod.GET)
 	public String add(ModelMap modelMap) {
 		/** 查询 所有部门 ***/
-    	Department department=DTOUtils.newDTO(Department.class);
+/*    	Department department=DTOUtils.newDTO(Department.class);
 		department.setFirmCode(AlmConstants.ALM_FIRM_CODE);
+		
 		List<Department> departments = this.deptRpc.listByDepartment(department).getData();
-		modelMap.addAttribute("departments", departments);
+		modelMap.addAttribute("departments", departments);*/
 
 		/** 个人信息 **/
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
-		modelMap.addAttribute("userInfo", userTicket);
 		
-		modelMap.addAttribute("depName",de.getData().getName());
+		modelMap.addAttribute("userInfo", userTicket);
+		if (userTicket.getDepartmentId()!=null) {
+			BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
+			modelMap.addAttribute("depName",de.getData().getName());
+		}else {
+			modelMap.addAttribute("depName","");
+		}
 		return "demand/add";
 	}
     
