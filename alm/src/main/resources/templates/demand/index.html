@@ -130,11 +130,12 @@
         <div id="progressDlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="true" title="流程图" style="padding:20px" modal="true" border="thin" closed="true"
              data-options="
 				iconCls: 'icon-save',
-				width:800,
+				width:500,
 				height:450
 			">
             <img id="processInstanceImg" />
         </div>
+        <div id="win" style="display: none;"></div>
 <!-- ====================================================================================================================== -->
 <!-- style & script 分隔线 -->
 <!-- ====================================================================================================================== -->
@@ -168,7 +169,17 @@
             //formFocus("_form", "_serialNumber");
             var formData = $.extend({},selected);
             formData = addKeyStartWith(getOriginalData(formData),"_");
-            
+            console.log(formData);
+            if(formData._content==""){
+            	editor.txt.html("<p>请输入内容...</p><p><br></p>");
+            }else{
+            	 editor.txt.html(formData._content)
+            }
+            if(formData._reason==""){
+            	editor2.txt.html("<p>请输入内容...</p><p><br></p>");
+            }else{
+            	 editor2.txt.html(formData._reason)
+            }
             formData._finishDate=dateFormat_1(formData._finishDate);
             $('#_form').form('load', formData);
         }
@@ -184,10 +195,15 @@
             	 $.messager.alert('警告','需求内容为必填项目');
             	 return;
             }
+
             var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
              
+            //设置需求内容
             _formData.content = editor.txt.html();
-            _formData.reason =  editor2.txt.html();
+            //设置需求背景
+            if(editor2.txt.html()=="<p>请输入内容...</p><p><br></p>"){
+            	_formData.reason =  editor2.txt.html("");
+            }
             var _url = "${contextPath}/demand/submint";
             $.ajax({
                 type: "POST",
@@ -219,9 +235,12 @@
            }
 
             var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
-             
+            //设置需求内容
             _formData.content = editor.txt.html();
-            _formData.reason =  editor2.txt.html();
+            //设置需求背景
+            if(editor2.txt.html()=="<p>请输入内容...</p><p><br></p>"){
+            	_formData.reason =  editor2.txt.html("");
+            }
             var _url = null;
             //没有id就新增
             if(_formData.id == null || _formData.id==""){
@@ -320,6 +339,7 @@
         	var content = "";
         	if(row.$_status==3){//审批中的显示进度
         		content+='<span style="padding:2px;"><a href="javascript:void(0)" onclick="showProgress('+index+')">查看进度</a></span>';
+        	    content+='<span style="padding:2px;"><a href="javascript:void(0)" onclick="showDemandDetail('+row.id+')">查看详情</a></span>';
         	}
         	return content;
         }
@@ -434,6 +454,22 @@
             $('#progressDlg').dialog('center');
             var href = '<#config name="bpmc.server.address"/>/api/runtime/progress?processInstanceId='+r.processInstanceId+'&processDefinitionId='+r.processDefinitionId+"&"+Math.random();
             $("#processInstanceImg").attr("src", href);
+        }
+        
+        function showDemandDetail(id){
+        	$('#win').dialog({
+    			title : '需求详情',
+    			width : 800,
+    			height : 640,
+    			href : '${contextPath!}/demand/detail?id=' + id,
+    			modal : true,
+    			buttons : [{
+    						text : '返回',
+    						handler : function() {
+    							$('#win').dialog('close');
+    						}
+    					}]
+    		});
         }
         
     </script>

@@ -116,14 +116,14 @@
                                  'justify',
                              ]
     editor2.customConfig.onfocus = function () {
-    	if(editor.txt.html()=="<p>请输入内容...</p><p><br></p>"){
-    		editor.txt.html("");
+    	if(editor2.txt.html()=="<p>请输入内容...</p><p><br></p>"){
+    		editor2.txt.html("");
     	}
     	
     }
     editor2.customConfig.onblur = function (html) {
-    	if(editor.txt.html()=="<p><br></p>"){
-    	 editor.txt.html("<p>请输入内容...</p><p><br></p>");
+    	if(editor2.txt.html()=="<p><br></p>"){
+    	 editor2.txt.html("<p>请输入内容...</p><p><br></p>");
     	}
     }
     editor2.create()
