@@ -29,6 +29,7 @@ import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
@@ -123,24 +124,28 @@ public class OnlineDataChangeController {
    	 	   onlineDataChange.setProjectId(Long.parseLong(projectIdcc));
 	    }
    	 
-    	EasyuiPageOutput   epo=onlineDataChangeService.listEasyuiPageByExample(onlineDataChange, true);
-    	List<OnlineDataChange>   list=epo.getRows();
+    	List<OnlineDataChange> list = onlineDataChangeService.list(onlineDataChange);
     	 // Page<OnlineDataChange> page =  (Page<OnlineDataChange>) list;
 		Map<Object, Object> metadata = null == onlineDataChange.getMetadata() ? new HashMap<>() : onlineDataChange.getMetadata();
 		JSONObject projectProvider = new JSONObject();
 		projectProvider.put("provider", "projectProvider");
 		metadata.put("projectId", projectProvider);
 		JSONObject projectVersionProvider = new JSONObject();
-		projectVersionProvider.put("projectVersion", "projectVersionProvider");
+		projectVersionProvider.put("provider", "projectVersionProvider");
 		metadata.put("versionId", projectVersionProvider);
 		
 		JSONObject memberProvider = new JSONObject();
 		memberProvider.put("provider", "memberProvider");
 		metadata.put("applyUserId", memberProvider);
-		onlineDataChange.setMetadata(metadata);
+		
+		JSONObject datetimeProvider = new JSONObject();
+		datetimeProvider.put("provider", "datetimeProvider");
+		metadata.put("applyDate", datetimeProvider);
+		metadata.put("updateDate", datetimeProvider);
+		
 		try {
-			//List taskList = ValueProviderUtils.buildDataByProvider(onlineDataChange, list);
-			  EasyuiPageOutput taskEasyuiPageOutput = new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(epo.getTotal()))), list);
+			  List onlineDataChangeList = ValueProviderUtils.buildDataByProvider(metadata, list);
+			  EasyuiPageOutput taskEasyuiPageOutput = new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(list.size()))), onlineDataChangeList);
 			  return taskEasyuiPageOutput.toString();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -169,6 +174,17 @@ public class OnlineDataChangeController {
 	    }
         return BaseOutput.success("保存成功");    
     }
+   
+    
+    @ApiOperation("返回版本id的信息")
+    @RequestMapping(value="/getOnlineDataChange.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody String getOnlineDataChange(Long id ) {
+        OnlineDataChange  object=	onlineDataChangeService.get(id);
+        return object.getVersionId().toString();    
+        
+    }
+    
+    
 
     @ApiOperation("修改OnlineDataChange")
     @ApiImplicitParams({
@@ -179,7 +195,6 @@ public class OnlineDataChangeController {
             HttpServletRequest reques) {
         onlineDataChangeService.updateSelective(onlineDataChange);
         return BaseOutput.success("修改成功");
-         
     }
 
     @ApiOperation("删除OnlineDataChange")
