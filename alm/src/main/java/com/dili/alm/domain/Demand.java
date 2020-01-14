@@ -90,6 +90,7 @@ public class Demand extends BaseDomain {
     /**
      * 需求内容
      */
+    @Transient
     @Column(name = "`content`")
     private String content;
 

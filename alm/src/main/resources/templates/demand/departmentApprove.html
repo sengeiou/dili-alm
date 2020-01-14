@@ -1,6 +1,78 @@
  <#body>
  <!-- 需求申请员确认做需求 -->
   <div class="easyui-panel" id="submitDiv" style="width:100%;" align="center">
+ <form id="_form" class="easyui-form" method="post"
+	enctype="multipart/form-data">
+	<input name="_id" id="_id" type="hidden">
+	<input name="taskId" id="taskId" value="${taskId}" type="hidden">
+	<table width="100%">
+		<tr>
+			<td style="padding: 5px; width: 50%"><input
+				class="easyui-textbox" style="width: 100%"
+				data-options="label:'需求申请人'" value="${userInfo.realName}"  readonly="readonly"/> <input
+				type="hidden" id="userId" name="userId" value="${userInfo.id}" /></td>
+			<td style="padding: 5px; width: 50%"><input
+				class="easyui-textbox" style="width: 100%"
+				data-options="label:'申请人电话'" value="${userInfo.cellphone}"  readonly="readonly"/></td>
+		</tr>
+		<tr>
+			<td style="padding: 5px;"> <input class="easyui-textbox"
+				style="width: 100%" data-options="label:'需求部门:'"
+				value="${depName}" data-options="editable:false" readonly="readonly" /> 
+				</td>
+			<td style="padding: 5px;">
+			<input name="_belongSysId" id="_belongSysId" class="easyui-combobox" style="width: 100%;" editable="false"
+					data-options="label:'所属系统:', required:true,prompt:'--选择系统项目--'" >
+				</td>
+		</tr>
+		<tr>
+			<td style="padding: 5px;"><input class="easyui-textbox"
+				name="_name" id="_name" style="width: 100%"
+				data-options="label:'需求名称:', validType:'length[0,20]'"
+				required="true" /></td>
+			<td style="padding: 5px;"><input class="easyui-combobox"
+				name="_belongProId" id="_belongProId" style="width: 100%"
+				data-options="label:'所属項目:'" required="true" editable="false" />
+				<#comboProvider
+				_id="_belongProId" _provider='projectProvider' />
+				</td>
+		</tr>
+		<tr>
+
+			<td style="padding: 5px;"><input class="easyui-textbox"
+				name="_type" id="_type" style="width: 100%"
+				data-options="label:'需求类型:', required:true"
+				editable="false"/> <#comboProvider _id="_type"
+				_provider='demandTypeProvider' /></td>
+			<td style="padding: 5px;"><input class="easyui-datebox"
+				name="_finishDate" id="_finishDate" style="width: 100%"
+				data-options="label:'期望实现日期:'" required="true"  editable="false"/></td>
+		</tr>
+		<tr>
+			<td style="padding: 5px;" colspan="2">
+				<p>需求内容:</p>
+				<div id="editor_content" style="width: 100%">
+				 ${demand.content!}
+				</div>
+		</tr>
+		<tr>
+			<td style="padding: 5px;" colspan="2">
+				<p>需求背景:</p>
+				<div id="editor_reason" style="width: 100%">
+				 ${demand.reason!}
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td style="padding: 5px;" colspan="2">
+				<p>添加附件：</p>
+				<div style="width: 100%">
+				</div>
+			</td>
+		</tr>
+	</table>
+	<input type="hidden" id="documentUrl" name="documentUrl" value="" />
+</form>
     <form id="form" class="easyui-form" method="post" fit="true">
         <input name="taskId" id="taskId" value="${taskId}" type="hidden">
          <input name="code" id="code" value="${demand.serialNumber}" type="hidden">
@@ -74,6 +146,58 @@
 
 
         }
+        $(function () {
+            //所属项目自动加载
+            loadSystemSelect();
+            
+            
+            //加载数据
+            var formData = $.extend({},${modelStr!});
+            formData = addKeyStartWith(getOriginalData(formData),"_");
+            console.log(formData);
+            if(formData._belongProId==0){
+            	formData._belongProId="";
+            }
+            formData._finishDate=dateFormat_1(formData._finishDate);
+            $('#_form').form('load', formData);
+            
+        })
+        function loadSystemSelect() {
+			$('#_belongSysId').combobox({
+						url : "${contextPath!}/demand/listTree.json",
+						valueField : 'id',
+						textField : 'name',
+						editable : false
+					});
+		
+		}
+       function dateFormat_1(longTypeDate) {
+    		var dateType = "";
+    		var date = new Date();
+    		date.setTime(longTypeDate);
+    		dateType += date.getFullYear(); // 年
+    		dateType += "-" + getMonth(date); // 月
+    		dateType += "-" + getDay(date); // 日
+    		return dateType;
+    	}
 
+    	// 返回 01-12 的月份值
+    	function getMonth(date) {
+    		var month = "";
+    		month = date.getMonth() + 1; // getMonth()得到的月份是0-11
+    		if (month < 10) {
+    			month = "0" + month;
+    		}
+    		return month;
+    	}
+    	// 返回01-30的日期
+    	function getDay(date) {
+    		var day = "";
+    		day = date.getDate();
+    		if (day < 10) {
+    			day = "0" + day;
+    		}
+    		return day;
+    	}
     </script>
 </#body>
