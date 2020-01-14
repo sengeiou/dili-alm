@@ -287,6 +287,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 				selectDemandDto.setRows(selectDemand.getRows());
 			}
 			List<Demand> dates =this.getActualDao().selectDemandList(selectDemandDto);
+			int total=this.getActualDao().selectDemandListCount(selectDemandDto);
 			DemandDto demandDto =new DemandDto();
 			List<DemandDto> dtoDates = new ArrayList<DemandDto>();
 			//循环塞部门
@@ -340,7 +341,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			metadata.put("finishDate", datetimeProvider);
 			demandDto.setMetadata(metadata);
 			List dtoDatesValue = ValueProviderUtils.buildDataByProvider(demandDto, dtoDates);
-            return new EasyuiPageOutput(dtoDatesValue.size(), dtoDatesValue);
+            return new EasyuiPageOutput(total, dtoDatesValue);
 		} catch (Exception e) {
 			e.getMessage();
 		}

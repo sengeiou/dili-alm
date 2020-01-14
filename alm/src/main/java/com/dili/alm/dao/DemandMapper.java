@@ -13,4 +13,7 @@ public interface DemandMapper extends MyMapper<Demand> {
 	
 	
 	List<Demand> selectDemandList(DemandDto selectDemandDto);
+
+
+	int selectDemandListCount(DemandDto selectDemandDto);
 }
