@@ -296,16 +296,15 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			    	BeanUtils.copyProperties(newDemandDto, d);
 					BaseOutput<User> userBase = this.userRpc.findUserById(d.getUserId());
 					User user = userBase.getData();
-					if (user==null) {
-					    return;
-					}
-					BaseOutput<Department> departmentBase = this.departmentRpc.get(user.getDepartmentId());
-					if(departmentBase.getData()!=null) {
-						newDemandDto.setDepartmentId(departmentBase.getData().getId());
-						newDemandDto.setDepartmentName(departmentBase.getData().getName());
-						BaseOutput<Department> firstDepartment = this.departmentRpc.getFirstDepartment(departmentBase.getData().getId());
-						if(firstDepartment.getData()!=null) {
-							newDemandDto.setDepartmentFirstName(firstDepartment.getData().getName());
+					if (user!=null) {
+						BaseOutput<Department> departmentBase = this.departmentRpc.get(user.getDepartmentId());
+						if(departmentBase.getData()!=null) {
+							newDemandDto.setDepartmentId(departmentBase.getData().getId());
+							newDemandDto.setDepartmentName(departmentBase.getData().getName());
+							BaseOutput<Department> firstDepartment = this.departmentRpc.getFirstDepartment(departmentBase.getData().getId());
+							if(firstDepartment.getData()!=null) {
+								newDemandDto.setDepartmentFirstName(firstDepartment.getData().getName());
+							}
 						}
 					}
 					dtoDates.add(newDemandDto);
@@ -340,7 +339,6 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			metadata.put("submitDate", datetimeProvider);
 			metadata.put("finishDate", datetimeProvider);
 			demandDto.setMetadata(metadata);
-			
 			List dtoDatesValue = ValueProviderUtils.buildDataByProvider(demandDto, dtoDates);
             return new EasyuiPageOutput(dtoDatesValue.size(), dtoDatesValue);
 		} catch (Exception e) {

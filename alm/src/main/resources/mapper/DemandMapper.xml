@@ -171,7 +171,9 @@
       <if test="order!=null and  sort != null ">
 	     order by ${sort} ${order}
 	  </if>
-
+      <if test="page!=null and  rows != null ">
+	     limit ${(page-1)*rows},${rows}
+	  </if>
 	
      
 	</select>
