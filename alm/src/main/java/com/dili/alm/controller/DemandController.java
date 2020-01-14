@@ -19,6 +19,7 @@ import com.dili.alm.service.DemandService;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.impl.DemandServiceImpl;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.exception.AppException;
 import com.dili.ss.exception.BusinessException;
@@ -158,7 +159,8 @@ public class DemandController {
 	})
     @RequestMapping(value="/listPage", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String listPage(Demand demand) throws Exception {
-        return demandService.listPageForUser(demand).toString();
+    	EasyuiPageOutput listPageForUser = demandService.listPageForUser(demand);
+        return listPageForUser.toString();
     }
 
     @ApiOperation("新增Demand")

@@ -23,6 +23,8 @@ import com.dili.alm.domain.Demand;
 import com.dili.alm.domain.DemandProject;
 import com.dili.alm.domain.DemandProjectStatus;
 import com.dili.alm.domain.DemandProjectType;
+import com.dili.alm.domain.FileType;
+import com.dili.alm.domain.Files;
 import com.dili.uap.sdk.domain.Department;
 import com.dili.uap.sdk.domain.Firm;
 import com.dili.alm.domain.Project;
@@ -38,6 +40,8 @@ import com.dili.alm.rpc.FirmRpc;
 import com.dili.alm.rpc.SysProjectRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DemandService;
+import com.dili.alm.utils.ColumnUtil;
+import com.dili.alm.utils.DateUtil;
 import com.dili.alm.utils.GetFirstCharUtil;
 import com.dili.alm.utils.WebUtil;
 import com.dili.bpmc.sdk.domain.ActForm;
@@ -63,6 +67,7 @@ import com.github.pagehelper.Page;
 import tk.mybatis.mapper.entity.Example;
 
 import java.lang.reflect.InvocationTargetException;
+import java.text.SimpleDateFormat;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -241,9 +246,36 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	public EasyuiPageOutput listPageForUser (Demand selectDemand) {
 		
 		try {
-			DemandDto demandDto =new DemandDto();
+			DemandDto selectDemandDto =new DemandDto();
 			Map<Object, Object> metadata = new HashMap<>();
-			List<Demand> dates =this.list(selectDemand);
+
+			if(selectDemand.getBelongProId()!=null) {
+				selectDemandDto.setBelongProId(selectDemand.getBelongProId());
+			}
+			if(!WebUtil.strIsEmpty(selectDemand.getName())) {
+				selectDemandDto.setName(selectDemand.getName());
+				
+			}
+			if(selectDemand.getSubmitDate()!=null) {
+				String selectDate = DateUtil.getDate(selectDemand.getSubmitDate());
+				selectDemandDto.setStartTime(selectDate+" 00:00:00");
+				selectDemandDto.setEndTime(selectDate+" 23:59:59");
+			}
+			if(!WebUtil.strIsEmpty(selectDemand.getSort())) {
+				String columnValue = ColumnUtil.getColumnValue(Demand.class,selectDemand.getSort());
+				selectDemandDto.setSort(columnValue);
+			}
+			if(!WebUtil.strIsEmpty(selectDemand.getOrder())) {
+				selectDemandDto.setOrder(selectDemand.getOrder());
+			}
+			if(selectDemand.getPage()!=null) {
+				selectDemandDto.setPage(selectDemand.getPage());
+			}
+			if(selectDemand.getRows()!=null) {
+				selectDemandDto.setRows(selectDemand.getRows());
+			}
+			List<Demand> dates =this.getActualDao().selectDemandList(selectDemandDto);
+			DemandDto demandDto =new DemandDto();
 			List<DemandDto> dtoDates = new ArrayList<DemandDto>();
 			//循环塞部门
 			dates.forEach(d -> {

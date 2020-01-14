@@ -210,8 +210,11 @@
             //设置需求内容
             _formData.content = editor.txt.html();
             //设置需求背景
-            if(editor2.txt.html()=="<p>请输入内容...</p><p><br></p>"){
+            if(editor2.txt.html()=="<p>请输入内容...</p><p><br></p>"||editor.txt.html()=="<p><br></p>"){
             	_formData.reason =  editor2.txt.html("");
+            }else{
+            	//设置需求背景内容
+                _formData.reason = editor2.txt.html();
             }
             var _url = "${contextPath}/demand/submint";
             $.ajax({
@@ -249,6 +252,9 @@
             //设置需求背景
             if(editor2.txt.html()=="<p>请输入内容...</p><p><br></p>"){
             	_formData.reason =  editor2.txt.html("");
+            }else{
+            	//设置需求背景内容
+                _formData.reason = editor2.txt.html();
             }
             var _url = null;
             //没有id就新增
