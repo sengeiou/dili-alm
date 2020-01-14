@@ -76,11 +76,20 @@
 		</table>
 		<!-- datagrid工具栏 -->
 		<div id="toolbar" style="padding: 2px 5px;">
+		<#resource code="addDemand">
 			<a href="#" class="easyui-linkbutton" iconCls="icon-add"
-				onclick="openInsert()" plain="true"></a> <a href="#"
+				onclick="openInsert()" plain="true"></a>
+		</#resource>
+		<#resource code="updateDemand"> 
+			<a href="#"
 				class="easyui-linkbutton" iconCls="icon-edit" onclick="openUpdate()"
-				plain="true"></a> <a href="#" class="easyui-linkbutton"
-				iconCls="icon-remove" onclick="del()" plain="true"></a> <a href="#"
+				plain="true"></a> 
+		</#resource> 
+		<#resource code="delDemand">   	
+			<a href="#" class="easyui-linkbutton"
+				iconCls="icon-remove" onclick="del()" plain="true"></a> 
+         </#resource>				
+			<a href="#"
 				class="easyui-linkbutton" iconCls="icon-export"
 				onclick="doExport('grid')" plain="true"></a>
 			<div style="float: right">
