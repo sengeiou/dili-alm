@@ -23,6 +23,10 @@ public class DemandDto extends Demand {
 	String userPhone;
 	String firmName;
 	String userName;
+	@Transient
+    @Column(name = "`content`")
+    private String content;
+	
 	public List<Long> getIds() {
 		return ids;
 	}
@@ -77,6 +81,16 @@ public class DemandDto extends Demand {
 
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+
+	@Override
+	public String getContent() {
+		return content;
+	}
+
+	@Override
+	public void setContent(String content) {
+		this.content = content;
 	}
 	
 }
