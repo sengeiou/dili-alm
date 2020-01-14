@@ -23,6 +23,8 @@ public class DemandDto extends Demand {
 	String userPhone;
 	String firmName;
 	String userName;
+	String startTime;
+	String endTime;
 	@Transient
     @Column(name = "`content`")
     private String content;
@@ -81,6 +83,22 @@ public class DemandDto extends Demand {
 
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+
+	public String getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(String startTime) {
+		this.startTime = startTime;
+	}
+
+	public String getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
 	}
 
 	@Override

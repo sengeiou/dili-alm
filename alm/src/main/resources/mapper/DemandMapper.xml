@@ -35,13 +35,13 @@
       WARNING - @mbg.generated
     -->
     id, serial_number, name, user_id, belong_pro_id,belong_sys_id, type, status, finish_date, document_url, 
-    create_date, submit_date,reciprocateId,process_instance_id,process_definition_id,
+    create_date, submit_date,reciprocate_id,process_instance_id,process_definition_id,
   </sql>
   <sql id="Blob_Column_List">
     <!--
       WARNING - @mbg.generated
     -->
-    content, reason,feedbackContent
+    content, reason,feedback_content
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
     <!--
@@ -103,16 +103,16 @@
         reason = #{reason,jdbcType=LONGVARCHAR},
       </if>
        <if test="feedbackContent != null">
-        feedbackContent = #{feedbackContent,jdbcType=LONGVARCHAR},
+        feedback_content = #{feedbackContent,jdbcType=LONGVARCHAR},
       </if>
         <if test="reciprocateId != null">
-        reciprocateId = #{reciprocateId,jdbcType=LONGVARCHAR},
+        reciprocate_id = #{reciprocateId,jdbcType=LONGVARCHAR},
       </if>
       <if test="processInstanceId != null">
-        reason = #{processInstanceId,jdbcType=VARCHAR},
+        process_instance_id = #{processInstanceId,jdbcType=VARCHAR},
       </if>
       <if test="processDefinitionId != null">
-        reason = #{processDefinitionId,jdbcType=VARCHAR},
+        process_definition_id = #{processDefinitionId,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
@@ -141,21 +141,75 @@
     )
   </select>
   	<!--查询 -->
-	<select id="selectDemandList" parameterType="com.dili.alm.domain.Demand" resultType="com.dili.alm.domain.Demand">
-		 select 
-    id,serial_number,name, user_id, belong_pro_id,belong_sys_id, type, status,finish_date, document_url, 
-   create_date,submit_date, content,reason,reciprocateId,process_instance_id,reciprocateId,process_definition_id
+	<select id="selectDemandList" parameterType="com.dili.alm.domain.dto.DemandDto" resultType="com.dili.alm.domain.Demand">
+	select 
+    id, serial_number, name, user_id, belong_pro_id,belong_sys_id, type, status, finish_date, document_url, 
+    create_date, submit_date,reciprocate_id,process_instance_id,process_definition_id
 	FROM  demand  
-   <where>
+   where 1=1
       <if test="name != null">
-        name = #{name,jdbcType=VARCHAR},
+       and  name = #{name,jdbcType=VARCHAR}
       </if>
-       <if test="belongSysId != null">
-        belong_sys_id = #{belongSysId,jdbcType=BIGINT},
+       <if test="belongProId != null">
+         and  belong_pro_id = #{belongProId,jdbcType=BIGINT}
+      </if>
+      <if test="belongSysId != null">
+        and   belong_sys_id = #{belongSysId,jdbcType=BIGINT}
       </if>
       <if test="createDate != null">
-        create_date = UNIX_TIMESTAMP(#{submintDate,jdbcType=TIMESTAMP}) or  submit_date =UNIX_TIMESTAMP(#{submintDate,jdbcType=TIMESTAMP})
+        and  create_date = UNIX_TIMESTAMP(#{submintDate,jdbcType=TIMESTAMP}) or  submit_date =UNIX_TIMESTAMP(#{submintDate,jdbcType=TIMESTAMP})
       </if>
-      </where>
+      <if test="startTime != null">
+        and  create_date &gt;= #{startTime,jdbcType=VARCHAR}
+      </if>
+      <if test="endTime != null ">
+        and  create_date &lt;= #{endTime,jdbcType=VARCHAR}
+      </if>
+      <if test="type != null">
+        and type = #{type,jdbcType=TINYINT}
+      </if>
+      <if test="status != null">
+        and status = #{status,jdbcType=TINYINT}
+      </if>
+      <if test="order!=null and  sort != null ">
+	     order by ${sort} ${order}
+	  </if>
+      <if test="page!=null and  rows != null ">
+	     limit ${(page-1)*rows},${rows}
+	  </if>
+	
+     
 	</select>
+		<select id="selectDemandListCount" parameterType="com.dili.alm.domain.dto.DemandDto" resultType="java.lang.Integer">
+	select 
+    count(id)
+	FROM  demand  
+   where 1=1
+      <if test="name != null">
+       and  name = #{name,jdbcType=VARCHAR}
+      </if>
+       <if test="belongProId != null">
+         and  belong_pro_id = #{belongProId,jdbcType=BIGINT}
+      </if>
+      <if test="belongSysId != null">
+        and   belong_sys_id = #{belongSysId,jdbcType=BIGINT}
+      </if>
+      <if test="createDate != null">
+        and  create_date = UNIX_TIMESTAMP(#{submintDate,jdbcType=TIMESTAMP}) or  submit_date =UNIX_TIMESTAMP(#{submintDate,jdbcType=TIMESTAMP})
+      </if>
+      <if test="startTime != null">
+        and  create_date &gt;= #{startTime,jdbcType=VARCHAR}
+      </if>
+      <if test="endTime != null ">
+        and  create_date &lt;= #{endTime,jdbcType=VARCHAR}
+      </if>
+ 	  <if test="type != null">
+        and type = #{type,jdbcType=TINYINT}
+      </if>
+      <if test="status != null">
+        and status = #{status,jdbcType=TINYINT}
+      </if>
+      
+	</select>
+	
 </mapper>

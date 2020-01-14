@@ -120,7 +120,8 @@ public class TaskController {
 		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("value").toString())));
 		task.setSort("created");
 		task.setOrder("desc");
-		return taskService.listByTeam(query).toString();
+		EasyuiPageOutput listByTeam = taskService.listByTeam(query);
+		return listByTeam.toString();
 	}
 
 	@ApiOperation(value = "分页查询Task,首页显示", notes = "分页查询Task，返回easyui分页信息")
