@@ -25,6 +25,10 @@ public class DemandDto extends Demand {
 	String userName;
 	String startTime;
 	String endTime;
+	@Transient
+    @Column(name = "`content`")
+    private String content;
+	
 	public List<Long> getIds() {
 		return ids;
 	}
@@ -95,6 +99,16 @@ public class DemandDto extends Demand {
 
 	public void setEndTime(String endTime) {
 		this.endTime = endTime;
+	}
+
+	@Override
+	public String getContent() {
+		return content;
+	}
+
+	@Override
+	public void setContent(String content) {
+		this.content = content;
 	}
 	
 }

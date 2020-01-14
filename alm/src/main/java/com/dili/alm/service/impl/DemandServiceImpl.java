@@ -159,7 +159,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
      */
     @Override
    public int addNewDemand(Demand newDemand) throws DemandExceptions{
-    	this.numberGenerator.init();
+    this.numberGenerator.init();
 	/** 个人信息 **/
 	UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 	BaseOutput<List<Department>> de = departmentRpc.findByUserId(userTicket.getId());
@@ -209,16 +209,28 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	public int submint(Demand newDemand) throws DemandExceptions {
 		/** 个人信息 **/
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		Demand selectDeman = null;
 		//判断是否是直接提交
 		int rows =0;
 		if (newDemand.getId()==null) {
 			newDemand.setStatus((byte) DemandStatus.APPROVING.getCode());
 			this.addNewDemand(newDemand);
+		}else {
+			selectDeman= demandMapper.selectByPrimaryKey(newDemand.getId());
+			if (selectDeman==null) {
+				throw new DemandExceptions("找不到当前需求!");
+			}
+			selectDeman.setBelongProId(newDemand.getBelongProId());
+			selectDeman.setBelongSysId(newDemand.getBelongSysId());
+			selectDeman.setContent(newDemand.getContent());
+			selectDeman.setDocumentUrl(newDemand.getDocumentUrl());
+			selectDeman.setReason(newDemand.getReason());
+			selectDeman.setName(newDemand.getName());
+			selectDeman.setType(newDemand.getType());
+			selectDeman.setFinishDate(newDemand.getFinishDate());
+			this.update(selectDeman);
 		}
-		Demand selectDeman = demandMapper.selectByPrimaryKey(newDemand.getId());
-		if (selectDeman==null) {
-			throw new DemandExceptions("找不到当前需求!");
-		}
+
         //流程启动参数设置
         Map<String, Object> variables = new HashMap<>(1);
         variables.put(BpmConsts.DEMAND_CODE, selectDeman.getSerialNumber());
@@ -539,6 +551,26 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	}
 	@Override
 	public BaseOutput rejectApprove(String code, String taskId) {
+		Map<String,Object> variables = new HashMap<>();
+	    variables.put("approved", "false");
+	    return taskRpc.complete(taskId,variables);
+	}
+	@Override
+	public BaseOutput reSubmint(Demand newDemand, String taskId) throws DemandExceptions {
+		// TODO Auto-generated method stub
+		Demand selectDeman= demandMapper.selectByPrimaryKey(newDemand.getId());
+		if (selectDeman==null) {
+			throw new DemandExceptions("找不到当前需求!");
+		}
+		selectDeman.setBelongProId(newDemand.getBelongProId());
+		selectDeman.setBelongSysId(newDemand.getBelongSysId());
+		selectDeman.setContent(newDemand.getContent());
+		selectDeman.setDocumentUrl(newDemand.getDocumentUrl());
+		selectDeman.setReason(newDemand.getReason());
+		selectDeman.setName(newDemand.getName());
+		selectDeman.setType(newDemand.getType());
+		selectDeman.setFinishDate(newDemand.getFinishDate());
+		this.update(selectDeman);
 		Map<String,Object> variables = new HashMap<>();
 	    variables.put("approved", "false");
 	    return taskRpc.complete(taskId,variables);

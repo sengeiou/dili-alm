@@ -44,6 +44,14 @@ public interface DemandService extends BaseService<Demand, Long> {
 	 * @return
 	 */
 	public int submint(Demand newDemand) throws DemandExceptions;
+	/**
+	 * 流程中修改提交
+	 * 
+	 * @param newDemand
+	 *            需要添加字段
+	 * @return
+	 */
+	public BaseOutput reSubmint(Demand newDemand, String taskId) throws DemandExceptions;
 
 	/**
 	 * 分页查询

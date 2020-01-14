@@ -4,34 +4,35 @@
 <form id="_form" class="easyui-form" method="post"
 	enctype="multipart/form-data">
 	<input name="_id" id="_id" type="hidden">
+	<input name="taskId" id="taskId" value="${taskId}" type="hidden">
 	<table width="100%">
 		<tr>
 			<td style="padding: 5px; width: 50%"><input
 				class="easyui-textbox" style="width: 100%"
-				data-options="label:'需求申请人'" value="${userInfo.realName}" /> <input
+				data-options="label:'需求申请人'" value="${userInfo.realName}"  readonly="readonly"/> <input
 				type="hidden" id="userId" name="userId" value="${userInfo.id}" /></td>
 			<td style="padding: 5px; width: 50%"><input
 				class="easyui-textbox" style="width: 100%"
-				data-options="label:'申请人电话'" value="${userInfo.cellphone}" /></td>
+				data-options="label:'申请人电话'" value="${userInfo.cellphone}"  readonly="readonly"/></td>
 		</tr>
 		<tr>
 			<td style="padding: 5px;"> <input class="easyui-textbox"
 				style="width: 100%" data-options="label:'需求部门:'"
-				value="${depName}" data-options="editable:false" /> 
+				value="${depName}" data-options="editable:false" readonly="readonly" /> 
 				</td>
 			<td style="padding: 5px;">
 			<input name="_belongSysId" id="_belongSysId" class="easyui-combobox" style="width: 100%;" editable="false"
-					data-options="label:'所属系统:', required:true,prompt:'--选择系统项目--'"  readonly="readonly"    value="${model.belongSysId!}">
+					data-options="label:'所属系统:', required:true,prompt:'--选择系统项目--'" >
 				</td>
 		</tr>
 		<tr>
 			<td style="padding: 5px;"><input class="easyui-textbox"
 				name="_name" id="_name" style="width: 100%"
-				data-options="label:'需求名称:', validType:'length[0,25]'"
-				required="true" value="${model.name!}"/></td>
-			<td style="padding: 5px;"><input class="easyui-textbox"
+				data-options="label:'需求名称:', validType:'length[0,20]'"
+				required="true" /></td>
+			<td style="padding: 5px;"><input class="easyui-combobox"
 				name="_belongProId" id="_belongProId" style="width: 100%"
-				data-options="label:'所属項目:'" />
+				data-options="label:'所属項目:'" required="true" editable="false" />
 				<#comboProvider
 				_id="_belongProId" _provider='projectProvider' />
 				</td>
@@ -40,12 +41,12 @@
 
 			<td style="padding: 5px;"><input class="easyui-textbox"
 				name="_type" id="_type" style="width: 100%"
-				data-options="label:'需求类型:'"
-				required="true" /> <#comboProvider _id="_type"
+				data-options="label:'需求类型:', required:true"
+				editable="false"/> <#comboProvider _id="_type"
 				_provider='demandTypeProvider' /></td>
 			<td style="padding: 5px;"><input class="easyui-datebox"
 				name="_finishDate" id="_finishDate" style="width: 100%"
-				data-options="label:'期望实现日期:'" required="true"value="${model.finishDate!}" /></td>
+				data-options="label:'期望实现日期:'" required="true"  editable="false"/></td>
 		</tr>
 		<tr>
 			<td style="padding: 5px;" colspan="2">
@@ -56,18 +57,22 @@
 		<tr>
 			<td style="padding: 5px;" colspan="2">
 				<p>需求内容:</p>
-				<div id="editor_content" style="width: 100%"></div>
+				<div id="editor_content" style="width: 100%">
+				<p>请输入内容...</p>
+				</div>
 		</tr>
 		<tr>
 			<td style="padding: 5px;" colspan="2">
 				<p>需求背景:</p>
-				<div id="editor_reason" style="width: 100%"></div>
+				<div id="editor_reason" style="width: 100%">
+				<p>请输入内容...</p>
+				</div>
 			</td>
 		</tr>
 		<tr>
 			<td style="padding: 5px;" colspan="2">
-				  <a href="#" class="easyui-linkbutton" iconCls="icon-ok"
-                   onclick="submit()">提交</a>
+				<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" id="submitBtn"
+                   onclick="submit()">重新提交</a>
 			</td>
 		</tr>
 	</table>
@@ -94,9 +99,20 @@
                                   'underline',
                                   'image',
                                   'justify',
-                              ]
+                              ];
+    editor.customConfig.onfocus = function () {
+    	if(editor.txt.html()=="<p>请输入内容...</p><p><br></p>"){
+    		editor.txt.html("");
+    	}
+    	
+    }
+    editor.customConfig.onblur = function (html) {
+    	if(editor.txt.html()=="<p><br></p>"){
+    	 editor.txt.html("<p>请输入内容...</p><p><br></p>");
+    	}
+    }
 	editor.create();
-	
+
     var editor2 = new E('#editor_reason');
     editor2.customConfig.menus = [
                                  'head',
@@ -106,13 +122,28 @@
                                  'image',
                                  'justify',
                              ]
+    editor2.customConfig.onfocus = function () {
+    	if(editor2.txt.html()=="<p>请输入内容...</p><p><br></p>"){
+    		editor2.txt.html("");
+    	}
+    	
+    }
+    editor2.customConfig.onblur = function (html) {
+    	if(editor2.txt.html()=="<p><br></p>"){
+    	 editor2.txt.html("<p>请输入内容...</p><p><br></p>");
+    	}
+    }
     editor2.create()
+
 </script>
 <script type="text/javascript">
 var myfiles = new Array();
 $("#fileuploader").uploadFile({
 	url :"${contextPath!}/files/filesUpload", // 文件上传url                 //文件上传url
     fileName : "file",             //提交到服务器的文件名
+    uploadStr: '上传附件',
+    deleteStr: '删除',
+    abortStr: '上传中',
     maxFileCount: 10,                //上传文件个数（多个时修改此处
     returnType: 'json',              //服务返回数据
     allowedTypes: 'doc,xls,ppt,pdf,txt,dwg,exb,dps,wps,et,rar,zip,xmind,JPG,GIF,png,bmp',  //允许上传的文件式
@@ -157,23 +188,7 @@ $("#fileuploader").uploadFile({
         }
     }
 });
-/**
- * 显示流程图,查看进度图片
- * @param processInstanceId
- * @param processDefinitionId
- * @param processInstanceName
- */
-function showProgress(){
-    var selected = $("#grid").datagrid("getSelected");
-    if (null == selected) {
-        swal('警告','请选中一条数据', 'warning');
-        return;
-    }
-    $('#progressDlg').dialog('open');
-    $('#progressDlg').dialog('center');
-    var href = '<#config name="bpmc.server.address"/>/api/runtime/progress?processInstanceId='+selected.processInstanceId+'&processDefinitionId='+selected.processDefinitionId+"&"+Math.random();
-    $("#processInstanceImg").attr("src", href);
-}
+
 
 function loadSystemSelect() {
 	$('#_belongSysId').combobox({
@@ -188,44 +203,98 @@ $(function () {
     //所属项目自动加载
     loadSystemSelect();
     
+    //加载数据
+    var formData = $.extend({},${modelStr!});
+    formData = addKeyStartWith(getOriginalData(formData),"_");
+    console.log(formData);
+    if(formData._content=="<p><br></p>"||formData._content==""){
+    	editor.txt.html("<p>请输入内容...</p><p><br></p>");
+    }else{
+    	 editor.txt.html(formData._content)
+    }
+    if(formData._reason=="<p><br></p>"||formData._reason==""){
+    	editor2.txt.html("<p>请输入内容...</p><p><br></p>");
+    }else{
+    	 editor2.txt.html(formData._reason)
+    }
+    if(formData._belongProId==0){
+    	formData._belongProId="";
+    }
+    formData._finishDate=dateFormat_1(formData._finishDate);
+    $('#_form').form('load', formData);
+    
 })
+function dateFormat_1(longTypeDate) {
+    		var dateType = "";
+    		var date = new Date();
+    		date.setTime(longTypeDate);
+    		dateType += date.getFullYear(); // 年
+    		dateType += "-" + getMonth(date); // 月
+    		dateType += "-" + getDay(date); // 日
+    		return dateType;
+    	}
 
- /*
-        *直接提交
-        */
-        function submit(){
-            if(!$('#_form').form("validate")){
-                return;
-            }
-            if(editor.txt.html()==""){
-            	 $.messager.alert('警告','需求内容为必填项目');
-            	 return;
-            }
+    	// 返回 01-12 的月份值
+    	function getMonth(date) {
+    		var month = "";
+    		month = date.getMonth() + 1; // getMonth()得到的月份是0-11
+    		if (month < 10) {
+    			month = "0" + month;
+    		}
+    		return month;
+    	}
+    	// 返回01-30的日期
+    	function getDay(date) {
+    		var day = "";
+    		day = date.getDate();
+    		if (day < 10) {
+    			day = "0" + day;
+    		}
+    		return day;
+    	}
+    	/*
+         *直接提交
+         */
+         function submit(){
+    		
+        	 $("#submitBtn").linkbutton("disable");
+             if(!$('#_form').form("validate")){
+                 return;
+             }
+             if(editor.txt.html()=="<p>请输入内容...</p><p><br></p>"||editor.txt.html()=="<p><br></p>"){
+             	 $.messager.alert('警告','需求内容为必填项目');
+             	 return;
+             }
 
-            var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
-             
-            _formData.content = editor.txt.html();
-            _formData.reason =  editor2.txt.html();
-            var _url = "${contextPath}/demand/submint";
-            $.ajax({
-                type: "POST",
-                url: _url,
-                data: _formData,
-                processData:true,
-                dataType: "json",
-                async : true,
-                success: function (data) {
-                    if(data.code=="200"){
-                        $("#grid").datagrid("reload");
-                        $('#dlg').dialog('close');
-                    }else{
-                        $.messager.alert('错误',data.result);
-                    }
-                },
-                error: function(){
-                    $.messager.alert('错误','远程访问失败');
-                }
-            });
-        }
+             var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
+              
+             //设置需求内容
+             _formData.content = editor.txt.html();
+             //设置需求背景
+             if(editor2.txt.html()=="<p>请输入内容...</p><p><br></p>"){
+             	_formData.reason =  editor2.txt.html("");
+             }
+             console.log(_formData);
+             var _url = "${contextPath}/demand/submintForTask.action";
+             $.ajax({
+                 type: "POST",
+                 url: _url,
+                 data: _formData,
+                 processData:true,
+                 dataType: "json",
+                 async : true,
+                 success: function (data) {
+                	 console.log(data);
+                     if(data.code=="200"){
+                    	 $.messager.alert('提示',data.message);
+                     }else{
+                         $.messager.alert('错误',data.result);
+                     }
+                 },
+                 error: function(){
+                     $.messager.alert('错误','远程访问失败');
+                 }
+             });
+         }
 </script>
 </#body>

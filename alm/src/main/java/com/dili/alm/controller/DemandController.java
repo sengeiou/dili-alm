@@ -101,31 +101,7 @@ public class DemandController {
 		}
 		return "demand/add";
 	}
-    
-    @RequestMapping(value = "/editForTask.html", method = RequestMethod.GET)
-	public String editForTask(@RequestParam String taskId, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
-        BaseOutput<TaskMapping> output = taskRpc.getById(taskId);
-        if(!output.isSuccess()){
-            throw new AppException(output.getMessage());
-        }
-        BaseOutput<Map<String, Object>> taskVariablesOutput = taskRpc.getVariables(taskId);
-        if(!taskVariablesOutput.isSuccess()){
-            throw new AppException(taskVariablesOutput.getMessage());
-        }
-        String codeDates = taskVariablesOutput.getData().get("businessKey").toString();
-        Demand demand = new Demand();
-        demand = demandService.getByCode(codeDates);
-        modelMap.put("model", demand);
-
-    	/** 个人信息 **/
-        User userTicket = this.userRpc.findUserById(demand.getUserId()).getData();
-    	BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
-    	modelMap.addAttribute("userInfo", userTicket);
-    		
-    	modelMap.addAttribute("depName",de.getData().getName());
-
-		return "demand/add";
-	}
+  
 	/**
 	 * 需求详情页面显示
 	 * @param id
@@ -334,8 +310,22 @@ public class DemandController {
             throw new AppException(taskVariablesOutput.getMessage());
         }
         String codeDates = taskVariablesOutput.getData().get("businessKey").toString();
-        modelMap.put("demand", demandService.getByCode(codeDates));
-        modelMap.put("taskId", taskId);
+        Demand demand = new Demand();
+        demand = demandService.getByCode(codeDates);
+        
+        String demandJsonStr = JSONObject.toJSONString(demand);
+        modelMap.put("demand", demand);
+        modelMap.put("modelStr", demandJsonStr);
+    	/** 个人信息 **/
+        User userTicket = this.userRpc.findUserById(demand.getUserId()).getData();
+        if (userTicket==null) {
+			return "用户错误！";
+		}
+    	BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
+    	modelMap.addAttribute("userInfo", userTicket);
+    		
+    	modelMap.addAttribute("depName",de.getData().getName());
+    	modelMap.put("taskId", taskId);
         modelMap.put("cover", cover == null ? output.getData().getAssignee() == null : cover);
     	return "demand/departmentApprove";
     }
@@ -363,8 +353,22 @@ public class DemandController {
             throw new AppException(taskVariablesOutput.getMessage());
         }
         String codeDates = taskVariablesOutput.getData().get("businessKey").toString();
-        modelMap.put("demand", demandService.getByCode(codeDates));
-        modelMap.put("taskId", taskId);
+        Demand demand = new Demand();
+        demand = demandService.getByCode(codeDates);
+        
+        String demandJsonStr = JSONObject.toJSONString(demand);
+        modelMap.put("demand", demand);
+        modelMap.put("modelStr", demandJsonStr);
+    	/** 个人信息 **/
+        User userTicket = this.userRpc.findUserById(demand.getUserId()).getData();
+        if (userTicket==null) {
+			return "用户错误！";
+		}
+    	BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
+    	modelMap.addAttribute("userInfo", userTicket);
+    		
+    	modelMap.addAttribute("depName",de.getData().getName());
+    	modelMap.put("taskId", taskId);
         modelMap.put("cover", cover == null ? output.getData().getAssignee() == null : cover);
     	return "demand/accept";
     }
@@ -393,8 +397,22 @@ public class DemandController {
             throw new AppException(taskVariablesOutput.getMessage());
         }
         String codeDates = taskVariablesOutput.getData().get("businessKey").toString();
-        modelMap.put("demand", demandService.getByCode(codeDates));
-        modelMap.put("taskId", taskId);
+        Demand demand = new Demand();
+        demand = demandService.getByCode(codeDates);
+        
+        String demandJsonStr = JSONObject.toJSONString(demand);
+        modelMap.put("demand", demand);
+        modelMap.put("modelStr", demandJsonStr);
+    	/** 个人信息 **/
+        User userTicket = this.userRpc.findUserById(demand.getUserId()).getData();
+        if (userTicket==null) {
+			return "用户错误！";
+		}
+    	BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
+    	modelMap.addAttribute("userInfo", userTicket);
+    		
+    	modelMap.addAttribute("depName",de.getData().getName());
+    	modelMap.put("taskId", taskId);
         modelMap.put("cover", cover == null ? output.getData().getAssignee() == null : cover);
     	return "demand/reciprocate";
     }
@@ -424,8 +442,22 @@ public class DemandController {
             throw new AppException(taskVariablesOutput.getMessage());
         }
         String codeDates = taskVariablesOutput.getData().get("businessKey").toString();
-        modelMap.put("demand", demandService.getByCode(codeDates));
-        modelMap.put("taskId", taskId);
+        Demand demand = new Demand();
+        demand = demandService.getByCode(codeDates);
+        
+        String demandJsonStr = JSONObject.toJSONString(demand);
+        modelMap.put("demand", demand);
+        modelMap.put("modelStr", demandJsonStr);
+    	/** 个人信息 **/
+        User userTicket = this.userRpc.findUserById(demand.getUserId()).getData();
+        if (userTicket==null) {
+			return "用户错误！";
+		}
+    	BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
+    	modelMap.addAttribute("userInfo", userTicket);
+    		
+    	modelMap.addAttribute("depName",de.getData().getName());
+    	modelMap.put("taskId", taskId);
         modelMap.put("cover", cover == null ? output.getData().getAssignee() == null : cover);
     	return "demand/feedback";
     }
@@ -456,8 +488,22 @@ public class DemandController {
             throw new AppException(taskVariablesOutput.getMessage());
         }
         String codeDates = taskVariablesOutput.getData().get("businessKey").toString();
-        modelMap.put("demand", demandService.getByCode(codeDates));
-        modelMap.put("taskId", taskId);
+        Demand demand = new Demand();
+        demand = demandService.getByCode(codeDates);
+        
+        String demandJsonStr = JSONObject.toJSONString(demand);
+        modelMap.put("demand", demand);
+        modelMap.put("modelStr", demandJsonStr);
+    	/** 个人信息 **/
+        User userTicket = this.userRpc.findUserById(demand.getUserId()).getData();
+        if (userTicket==null) {
+			return "用户错误！";
+		}
+    	BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
+    	modelMap.addAttribute("userInfo", userTicket);
+    		
+    	modelMap.addAttribute("depName",de.getData().getName());
+    	modelMap.put("taskId", taskId);
         modelMap.put("cover", cover == null ? output.getData().getAssignee() == null : cover);
     	return "demand/demandManagerApprove";
     }
@@ -502,13 +548,69 @@ public class DemandController {
         if(!taskVariablesOutput.isSuccess()){
             throw new AppException(taskVariablesOutput.getMessage());
         }
-        String code = taskVariablesOutput.getData().get("businessKey").toString();
-        modelMap.put("orders", demandService.getByCode(code));
-        modelMap.put("taskId", taskId);
+        String codeDates = taskVariablesOutput.getData().get("businessKey").toString();
+        Demand demand = new Demand();
+        demand = demandService.getByCode(codeDates);
+        
+        String demandJsonStr = JSONObject.toJSONString(demand);
+        modelMap.put("demand", demand);
+        modelMap.put("modelStr", demandJsonStr);
+    	/** 个人信息 **/
+        User userTicket = this.userRpc.findUserById(demand.getUserId()).getData();
+        if (userTicket==null) {
+			return "用户错误！";
+		}
+    	BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
+    	modelMap.addAttribute("userInfo", userTicket);
+    		
+    	modelMap.addAttribute("depName",de.getData().getName());
+    	modelMap.put("taskId", taskId);
         modelMap.put("cover", cover == null ? output.getData().getAssignee() == null : cover);
         return "departmentApprove";
     }
     
     
+    @RequestMapping(value = "/editForTask.html", method = RequestMethod.GET)
+	public String editForTask(@RequestParam String taskId, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
+        BaseOutput<TaskMapping> output = taskRpc.getById(taskId);
+        if(!output.isSuccess()){
+            throw new AppException(output.getMessage());
+        }
+        BaseOutput<Map<String, Object>> taskVariablesOutput = taskRpc.getVariables(taskId);
+        if(!taskVariablesOutput.isSuccess()){
+            throw new AppException(taskVariablesOutput.getMessage());
+        }
+        String codeDates = taskVariablesOutput.getData().get("businessKey").toString();
+        Demand demand = new Demand();
+        demand = demandService.getByCode(codeDates);
+        
+        String demandJsonStr = JSONObject.toJSONString(demand);
+        modelMap.put("model", demand);
+        modelMap.put("modelStr", demandJsonStr);
+    	/** 个人信息 **/
+        User userTicket = this.userRpc.findUserById(demand.getUserId()).getData();
+        if (userTicket==null) {
+			return "用户错误！";
+		}
+    	BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
+    	modelMap.addAttribute("userInfo", userTicket);
+    		
+    	modelMap.addAttribute("depName",de.getData().getName());
+    	modelMap.put("taskId", taskId);
+		return "demand/editForTask";
+	}
+    @ApiOperation("重新提交Demand")
+    @ApiImplicitParams({
+		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = true, dataType = "string")
+	})
+    @RequestMapping(value="/submintForTask.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput submintForTask(@RequestParam String taskId, Demand demand) {
+        try {
+			demandService.reSubmint(demand, taskId);
+		} catch (DemandExceptions e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+        return BaseOutput.success("提交成功");
+    }
 
 }

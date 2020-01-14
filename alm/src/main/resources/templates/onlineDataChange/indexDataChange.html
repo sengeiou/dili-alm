@@ -156,11 +156,11 @@ button:hover {
                 if(parent.location.href='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
                     //向任务中心发送消息，参数为要跳转的地址
                    //   	alert("111");
-                     alert("执行成功");
+                   ///  alert("跳转");
                     window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
                 }else{
                 	//alert("222");
-                	   alert("三生三世成功");
+                	  // alert("三生三世成功");
                     location.href = "${contextPath}/onlineDataChange/index.html";
                  
                 }

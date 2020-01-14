@@ -144,7 +144,7 @@
 			">
             <img id="processInstanceImg" />
         </div>
-        <div id="win" style="display: none;"></div>
+        <div id="win" style="display: none;"  ></div>
 <!-- ====================================================================================================================== -->
 <!-- style & script 分隔线 -->
 <!-- ====================================================================================================================== -->
@@ -405,22 +405,7 @@
           $('#dlg').dialog('close');
             
         })
-       
-       function detail(){
-        	$('#win').dialog({
-				title : '需求详情',
-				width : 800,
-				height : 550,
-				href : '${contextPath!}/demand/detail?id=' + 1,
-				modal : true,
-				buttons : [{
-							text : '关闭',
-							handler : function() {
-								$('#win').dialog('close');
-							}
-						}]
-			});
-        }
+
        function dateFormat_1(longTypeDate) {
     		var dateType = "";
     		var date = new Date();
