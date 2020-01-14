@@ -200,7 +200,7 @@
             if(!$('#_form').form("validate")){
                 return;
             }
-            if(editor.txt.html()=="<p>请输入内容...</p><p><br></p>"||editor.txt.html()=="<p><br></p>"){
+            if(editor.txt.html()=="<p>请输入内容...</p><p><br></p>"||editor.txt.html()=="<p><br></p>"||editor.txt.html()==""){
             	 $.messager.alert('警告','需求内容为必填项目');
             	 return;
             }
@@ -212,6 +212,9 @@
             //设置需求背景
             if(editor2.txt.html()=="<p>请输入内容...</p><p><br></p>"){
             	_formData.reason =  editor2.txt.html("");
+            }
+            if(editor2.txt.html()!="<p>请输入内容...</p><p><br></p>"||editor2.txt.html()!=""){
+            	_formData.reason =  editor2.txt.html();
             }
             var _url = "${contextPath}/demand/submint";
             $.ajax({
@@ -249,6 +252,9 @@
             //设置需求背景
             if(editor2.txt.html()=="<p>请输入内容...</p><p><br></p>"){
             	_formData.reason =  editor2.txt.html("");
+            }
+            if(editor2.txt.html()!="<p>请输入内容...</p><p><br></p>"||editor2.txt.html()!=""){
+            	_formData.reason =  editor2.txt.html();
             }
             var _url = null;
             //没有id就新增

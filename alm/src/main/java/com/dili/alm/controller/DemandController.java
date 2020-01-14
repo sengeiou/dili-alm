@@ -146,6 +146,9 @@ public class DemandController {
     	if (demand.getType()==null) {
     		return BaseOutput.failure("需求类型不能为空！");
 		}
+    	if (demand.getClass()==null) {
+    		return BaseOutput.failure("需求类型不能为空！");
+		}
         try {
 			demandService.addNewDemand(demand);
 		} catch (DemandExceptions e) {
@@ -160,6 +163,9 @@ public class DemandController {
 	})
     @RequestMapping(value="/submint", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput submint(Demand demand) {
+    	if (demand.getType()==null) {
+    		return BaseOutput.failure("需求类型不能为空！");
+		}
         try {
 			demandService.submint(demand);
 		} catch (DemandExceptions e) {
@@ -183,10 +189,14 @@ public class DemandController {
 	})
     @RequestMapping(value="/delete", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput delete(Long id) {
-        demandService.delete(id);
+    	try {
+    		demandService.logicDelete(id);
+		} catch (Exception e) {
+			BaseOutput.failure("删除失败，"+e.getMessage());
+		}
         return BaseOutput.success("删除成功");
     }
-    @ApiOperation("新增Demand")
+    @ApiOperation("页面测试重置索引值")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = true, dataType = "string")
 	})

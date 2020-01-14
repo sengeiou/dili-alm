@@ -210,6 +210,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		if (newDemand.getId()==null) {
 			newDemand.setStatus((byte) DemandStatus.APPROVING.getCode());
 			this.addNewDemand(newDemand);
+			selectDeman=this.list(newDemand).get(0);
 		}else {
 			selectDeman= demandMapper.selectByPrimaryKey(newDemand.getId());
 			if (selectDeman==null) {
@@ -223,6 +224,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			selectDeman.setName(newDemand.getName());
 			selectDeman.setType(newDemand.getType());
 			selectDeman.setFinishDate(newDemand.getFinishDate());
+			selectDeman.setSubmitDate(new Date());
 			this.update(selectDeman);
 		}
 
