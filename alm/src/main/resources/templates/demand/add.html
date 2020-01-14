@@ -190,5 +190,14 @@ $(function () {
     loadSystemSelect();
     
 })
+        function loadSystemSelect() {
+			$('#_belongSysId').combobox({
+						url : "${contextPath!}/demand/listTree.json",
+						valueField : 'id',
+						textField : 'name',
+						editable : false
+					});
+		
+		}
 </script>
 </#body>
