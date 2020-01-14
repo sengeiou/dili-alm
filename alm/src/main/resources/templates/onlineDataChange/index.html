@@ -1,3 +1,6 @@
+ <script>
+    document.domain="diligrp.com";
+</script>
  <#body>
     <div class="easyui-layout" fit="true">
         <!-- ====================================================================================================================== -->
@@ -78,7 +81,7 @@
                                                                                     数据库名
                         </th>
                         <th data-options="field:'sqlScript', width:'15%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            sql脚本
+                            sql脚本内容
                         </th>
                        
                     </tr>
@@ -147,7 +150,7 @@
 					    <input name="_versionId" id="_versionId"  type="hidden"></td>
 					<td style="padding: 5px;">
 					     
-					     <input name="_versionIdName" id="_versionIdName" class="easyui-combobox" style="width: 100%;" editable="false"
+					     <input  id="_versionIdName" class="easyui-combobox" style="width: 100%;" editable="false"
 					      data-options="required:true,validType:'isIds',prompt:'--选择所属版本--'">
 					
 					</td>
@@ -191,7 +194,7 @@
 							 <input   name="_sqlFileId" id="_sqlFileId" type="hidden">
 					        <input type="file" id="sqlFile" name="sqlFile" 
 							data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 39%">
-							<a id="btnShangChuan" href="#" class="easyui-linkbutton"   data-options="iconCls:'icon-save'">上传</a>
+							<a id="btnShangChuan" href="#" class="easyui-linkbutton"   data-options="iconCls:'icon-save'">上传后保存</a>
 					  </td>
 				</tr>
 				

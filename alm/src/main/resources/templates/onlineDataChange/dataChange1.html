@@ -1,4 +1,6 @@
-
+<script>
+    document.domain="diligrp.com";
+</script>
 <#body>
 <style>
 .panel-body {
@@ -154,21 +156,20 @@ button:hover {
            success: function (data) {
            	
              
-              if(data.code=="200"){
+        	  
                     //如果父页面是任务中心
-                   
                     if(parent.location.href='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
                         //向任务中心发送消息，参数为要跳转的地址
                        //   	alert("111");
+                        // alert("执行成功");
                         window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
                     }else{
                     	//alert("222");
+                    	//   alert("三生三世成功");
                         location.href = "${contextPath}/onlineDataChange/index.html";
-                    
+                     
                     }
-                }else{
-                   // swal('警告', "错误:"+data.message, 'warning');
-                }
+               
              	 
            	
            },
@@ -191,7 +192,7 @@ button:hover {
            success: function (data) {
            	
              	alert("执行成功");
-             	 if(data.code=="200"){
+             
                     //如果父页面是任务中心
                     if(parent.location.href='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
                         //向任务中心发送消息，参数为要跳转的地址
@@ -199,9 +200,7 @@ button:hover {
                     }else{
                         location.href = "${contextPath}/orders/index.html";
                     }
-                }else{
-                    swal('警告', "错误:"+data.message, 'warning');
-                }
+              
              	
            },
            error: function(){

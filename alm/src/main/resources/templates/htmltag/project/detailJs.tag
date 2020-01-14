@@ -67,7 +67,7 @@ function versionOptFormatter(value, row, index) {
     	$('#win').dialog({
 			title : '需求详情',
 			width : 800,
-			height : 640,
+			height : 550,
 			href : '${contextPath!}/demand/detail?id=' + id,
 			modal : true,
 			buttons : [{
