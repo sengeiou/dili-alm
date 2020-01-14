@@ -72,14 +72,19 @@
         
             <tr>
                 <td style="padding:5px;" colspan="2">
-                	<span>需求内容:</span><br/>
-                	<div style="width:700px" id="content">${model.content!}</div>
+                	<span>需求内容:</span>
+                	<%if(model.content!=null){%>
+                		<div style="width:100%;border:1px solid #000;" id="content">${model.content!}</div>
+                	<%}%>
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;" colspan="2">
-                	<span>需求背景:</span><br/>
-                	<div style="width:700px" id="reason">${model.reason!}</div>
+                	<span>需求背景:</span>
+                	<%if(model.reason!=null){%>
+                		<div style="width:100%;border:1px solid #000;" id="reason">${model.reason!}</div>
+                	<%}%>
+                	
                 </td>
             </tr>
             <tr>
