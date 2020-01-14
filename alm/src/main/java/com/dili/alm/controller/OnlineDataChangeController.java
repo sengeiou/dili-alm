@@ -138,10 +138,10 @@ public class OnlineDataChangeController {
 		memberProvider.put("provider", "memberProvider");
 		metadata.put("applyUserId", memberProvider);
 		
-		JSONObject datetimeProvider = new JSONObject();
-		datetimeProvider.put("provider", "datetimeProvider");
-		metadata.put("applyDate", datetimeProvider);
-		metadata.put("updateDate", datetimeProvider);
+		JSONObject dateProvider = new JSONObject();
+		dateProvider.put("provider", "dateProvider");
+		metadata.put("applyDate", dateProvider);
+		metadata.put("updateDate", dateProvider);
 		
 		try {
 			  List onlineDataChangeList = ValueProviderUtils.buildDataByProvider(metadata, list);
@@ -294,7 +294,9 @@ public class OnlineDataChangeController {
 		String id = (String) map.getData().get("businessKey");
 	    OnlineDataChange  odc=  onlineDataChangeService.get(Long.parseLong(id));
 	    modelMap.addAttribute("odc",odc);
-	    modelMap.addAttribute("applyUserIdName",userRpc.findUserById(odc.getApplyUserId()).getData().getUserName());
+	    if(odc!=null&&userRpc.findUserById(odc.getApplyUserId())!=null) {
+	        modelMap.addAttribute("applyUserIdName",userRpc.findUserById(odc.getApplyUserId()).getData().getUserName());
+	    }
 	    ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
 		//projectVersion.setProjectId(odc.getProjectId());
 		List<ProjectVersion> list = projectVersionService.list(projectVersion);
