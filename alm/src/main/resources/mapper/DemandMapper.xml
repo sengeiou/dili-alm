@@ -160,10 +160,10 @@
         and  create_date = UNIX_TIMESTAMP(#{submintDate,jdbcType=TIMESTAMP}) or  submit_date =UNIX_TIMESTAMP(#{submintDate,jdbcType=TIMESTAMP})
       </if>
       <if test="startTime != null">
-        and  submit_date &gt;= #{startTime,jdbcType=VARCHAR}
+        and  create_date &gt;= #{startTime,jdbcType=VARCHAR}
       </if>
       <if test="endTime != null ">
-        and  submit_date &lt;= #{endTime,jdbcType=VARCHAR}
+        and  create_date &lt;= #{endTime,jdbcType=VARCHAR}
       </if>
       <if test="type != null">
         and type = #{type,jdbcType=TINYINT}
@@ -198,10 +198,10 @@
         and  create_date = UNIX_TIMESTAMP(#{submintDate,jdbcType=TIMESTAMP}) or  submit_date =UNIX_TIMESTAMP(#{submintDate,jdbcType=TIMESTAMP})
       </if>
       <if test="startTime != null">
-        and  submit_date &gt;= #{startTime,jdbcType=VARCHAR}
+        and  create_date &gt;= #{startTime,jdbcType=VARCHAR}
       </if>
       <if test="endTime != null ">
-        and  submit_date &lt;= #{endTime,jdbcType=VARCHAR}
+        and  create_date &lt;= #{endTime,jdbcType=VARCHAR}
       </if>
  	  <if test="type != null">
         and type = #{type,jdbcType=TINYINT}
