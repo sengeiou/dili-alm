@@ -240,6 +240,17 @@
         //打开新增窗口
         function openInsert(){
         	
+        	
+        	 $('#_versionIdName').combobox({
+					url : "${contextPath!}/task/listTreeVersionByProject.json",
+					valueField : 'id',
+					textField : 'version',
+					editable : false,
+					onLoadSuccess : function() {
+						$("#_versionIdName").combobox("select",'');
+					}
+			 });
+        	 
             $('#_applyUserIdName').textbox('setText', '');
          	$.ajax({
                   type: "post",
@@ -247,9 +258,7 @@
                   data: {},
                   async : true,
                   success: function (data) {
-                  	 
                   	$('#_applyUserIdName').combobox('setText', data);
-                  	
                   },
                   error: function(){
                       $.messager.alert('错误','远程访问失败');
@@ -260,7 +269,10 @@
             $('#dlg').dialog('open');
             $('#dlg').dialog('center');
             $('#_form').form('clear');
-          // $('#_projectId').combobox('clear');
+       
+            $('#_versionIdName').combobox('clear');
+            $('#_versionIdName').combobox('clear');
+            $('#_versionIdName').combobox('clear');
             $('#_versionIdName').combobox('clear');
             $('#_sqlFileId').val(""); 
             $('#sqlFile').textbox(""); 
@@ -268,22 +280,6 @@
             formFocus("_form", "_applyUserIdName");
            
         }
-        function reloadProjectSelect(queryAll) {
-			/*  $('#_projectId').combobox({
-						url : "${contextPath!}/task/listTreeProject.json" + (queryAll ? '?queryAll=true' : ''),
-						valueField : 'id',
-						textField : 'name',
-						editable : false
-					}); */
-
-		}
-        
-      
-  
-		
-		
-        
-
         //打开修改窗口
         function openUpdate(){
             var selected = $("#grid").datagrid("getSelected");
@@ -302,22 +298,15 @@
 						$("#_versionIdName").combobox("select",selected.versionId);
 					}
 			 });
+            
 
-          
-         //   alert( $('#_versionId').val());
             $('#dlg').dialog('open');
             $('#dlg').dialog('center');
             formFocus("_form", "_applyUserId");
             var formData = $.extend({},selected);
             formData = addKeyStartWith(getOriginalData(formData),"_");
             $('#_form').form('load', formData);
-           
-           // $('#_versionIdName').combobox('initValue', selected.versionId);
             $('#_applyUserIdName').textbox('setText', '');
-            
-            
-           // $('#_sqlFileId').val(""); 
-           // $('#sqlFile').textbox(""); 
             
        		$.ajax({
                 type: "get",
@@ -325,16 +314,14 @@
                 data: {},
                 async : true,
                 success: function (data) {
-                	
                 	$('#_applyUserIdName').combobox('setText', data);
-                	//  $('#_versionId').val(selected.versionId);
-                	
                 },
                 error: function(){
                     $.messager.alert('错误','远程访问失败');
                 }
             });
-       	//	alert(selected.id);
+
+       		
        		var  idTemp=selected.id;
        		$.ajax({
                 type: "post",
@@ -342,18 +329,14 @@
                 data: {id:idTemp},
                 async : true,
                 success: function (data) {
-                	//alert(data);
                 	  $('#_versionId').val(data);
-                	//  alert( $('#_versionId').val());
                 },
                 error: function(){
                     $.messager.alert('错误','远程访问失败');
                 }
             });
        		
-       		//alert("ssssssssssssss");
-       		
-            
+       	
         }
 
         function saveOrUpdate(){
@@ -377,12 +360,13 @@
                 dataType: "json",
                 async : true,
                 success: function (data) {
-                    if(data.code=="200"){
+                     if(data.code=="200"){
                         $("#grid").datagrid("reload");
                         $('#dlg').dialog('close');
                     }else{
                         $.messager.alert('错误',data.result);
-                    }
+                    } 
+
                 },
                 error: function(){
                     $.messager.alert('错误','远程访问失败');
@@ -506,25 +490,7 @@
             } else {
                 document.onkeyup = getKey;
             }
-
             
-            
-         ///   function loadProjectSelect(queryAll) {
-     			/*  $('#projectIdcc').combobox({
-     						url : "${contextPath!}/task/listTreeProject.json" + (queryAll ? '?queryAll=true' : ''),
-     						valueField : 'id',
-     						textField : 'name',
-     						editable : false
-     					}); */
-
-     		// }
-     	   
-            
-            //loadProjectSelect(); 
-	   	   
-         /*    $('#projectId').combobox('initValue', '${project.id!}');
-	   		$('#projectId').combobox('setText', '${project.name!}'); */
-	   	//	$("#versionId").combobox('setValue','');//根据ID设定默认值
 	   		function loadVisionSelect(id) {
 	   			
 	   			       $('#versionId').combobox({
@@ -555,15 +521,9 @@
 					});
 
 		  }
-    
-	 		
-	 		
-				
-			//reloadProjectSelect();
-            
-			////	 $("#btnShangChuan").onChange(function () {
+   
 
-			 $('#btnShangChuan').bind('click', function(){
+	       $('#btnShangChuan').bind('click', function(){
 				 
 				 var input = document.getElementById('sqlFile');
 				
@@ -600,7 +560,6 @@
 			 $("#_projectId").combobox({  
 
 				   onChange: function () {
-					 
 					   var curValue=$('#_projectId').combobox('getValue');
 					   $('#_versionIdName').combobox('clear');
 					   if(curValue!=null){
@@ -613,24 +572,13 @@
 
 				   onChange: function () {
 					   var curValue=$('#_versionIdName').combobox('getValue');
-					 //  alert(curValue);
 					   $('#_versionId').val( curValue);
-					// alert(  $('#_versionId').textbox('getText'));
 				　　  }  
 
 		    });
-				
-			 
-			 
-			 
-	
-	       	//	$("#_versionIdName").combobox('setValue','选择所属版本');//根据ID设定默认值
-	 	       $('#_versionIdName').combobox('clear');
-	 	      // $('#_projectId').combobox('initValue', 1);
-	       
-	    		
-	       	  //$("#_isSynchronization").combobox('select', 0);
-	      // 	 $('#_isSynchronization').combobox('setValue','0');
+		
+	 	    $('#_versionIdName').combobox('clear');
+	 	  
 	       		
             
         })
