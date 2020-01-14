@@ -15,10 +15,17 @@
 
 						<td style="padding: 5px;"><input class="easyui-numberbox"
 							name="belongProId" id="belongProId" style="width: 100%"
-							data-options="label:'所属系统:', validType:'length[0,19]'" /></td>
+							data-options="label:'所属系统:',editable:false, validType:'length[0,19]'" /></td>
 						<td style="padding: 5px;"><input class="easyui-datebox"
 							name="submitDate" id="submitDate" style="width: 100%"
 							data-options="label:'需求申请日期:'" /></td>
+						<td style="padding: 5px;">
+							<input 
+							name="type" id="type" style="width: 100%"
+							data-options="editable:false,label:'需求状态:'" />
+							<#comboProvider _id="type" _provider='demandTypeProvider' />
+						
+						</td>
 					</tr>
 					<tr>
 						<td><a href="#" class="easyui-linkbutton"

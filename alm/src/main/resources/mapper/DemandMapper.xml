@@ -160,13 +160,16 @@
         and  create_date = UNIX_TIMESTAMP(#{submintDate,jdbcType=TIMESTAMP}) or  submit_date =UNIX_TIMESTAMP(#{submintDate,jdbcType=TIMESTAMP})
       </if>
       <if test="startTime != null">
-        and  submit_date &gt;= #{startTime,jdbcType=VARCHAR}) 
+        and  submit_date &gt;= #{startTime,jdbcType=VARCHAR}
       </if>
       <if test="endTime != null ">
-        and  submit_date &lt;= #{endTime,jdbcType=VARCHAR})
+        and  submit_date &lt;= #{endTime,jdbcType=VARCHAR}
       </if>
-      <if test="endTime != null ">
-        and  submit_date &lt;= #{endTime,jdbcType=VARCHAR})
+      <if test="type != null">
+        and type = #{type,jdbcType=TINYINT}
+      </if>
+      <if test="status != null">
+        and status = #{status,jdbcType=TINYINT}
       </if>
       <if test="order!=null and  sort != null ">
 	     order by ${sort} ${order}
@@ -195,14 +198,18 @@
         and  create_date = UNIX_TIMESTAMP(#{submintDate,jdbcType=TIMESTAMP}) or  submit_date =UNIX_TIMESTAMP(#{submintDate,jdbcType=TIMESTAMP})
       </if>
       <if test="startTime != null">
-        and  submit_date &gt;= #{startTime,jdbcType=VARCHAR}) 
+        and  submit_date &gt;= #{startTime,jdbcType=VARCHAR}
       </if>
       <if test="endTime != null ">
-        and  submit_date &lt;= #{endTime,jdbcType=VARCHAR})
+        and  submit_date &lt;= #{endTime,jdbcType=VARCHAR}
       </if>
-      <if test="endTime != null ">
-        and  submit_date &lt;= #{endTime,jdbcType=VARCHAR})
+ 	  <if test="type != null">
+        and type = #{type,jdbcType=TINYINT}
       </if>
+      <if test="status != null">
+        and status = #{status,jdbcType=TINYINT}
+      </if>
+      
 	</select>
 	
 </mapper>

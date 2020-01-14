@@ -268,6 +268,12 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 				selectDemandDto.setName(selectDemand.getName());
 				
 			}
+			if(selectDemand.getType()!=null) {
+				selectDemandDto.setType(selectDemand.getType());
+			}
+			if(selectDemand.getStatus()!=null) {
+				selectDemandDto.setStatus(selectDemand.getStatus());
+			}
 			if(selectDemand.getSubmitDate()!=null) {
 				String selectDate = DateUtil.getDate(selectDemand.getSubmitDate());
 				selectDemandDto.setStartTime(selectDate+" 00:00:00");
