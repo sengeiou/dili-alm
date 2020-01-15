@@ -25,6 +25,9 @@ public class OnlineDataChange extends BaseDomain {
     @Column(name = "`is_synchronization`")
     private Byte isSynchronization;
     
+    @Column(name = "is_submit")
+    private Byte isSubmit;
+    
 
     /**
      * �г�id
@@ -58,6 +61,10 @@ public class OnlineDataChange extends BaseDomain {
 
     @Column(name = "`sql_file_id`")
     private String sqlFileId;
+    
+    @Column(name = "data_status")
+    private Byte dataStatus;
+    
 
     /**
      * @return id
@@ -202,7 +209,7 @@ public class OnlineDataChange extends BaseDomain {
     /**
      * @return sql_script
      */
-    @FieldDef(label="sqlScript", maxLength = 50)
+    @FieldDef(label="sqlScript", maxLength = 250)
     @EditMode(editor = FieldEditor.Text, required = false)
     public String getSqlScript() {
         return sqlScript;
@@ -246,6 +253,42 @@ public class OnlineDataChange extends BaseDomain {
     public void setIsSynchronization(Byte isSynchronization) {
         this.isSynchronization = isSynchronization;
     }
-    
+    /**
+     * @return is_submit
+     */
+    @FieldDef(label="isSubmit", maxLength = 2)
+    @EditMode(editor = FieldEditor.Number ,required = false)
+    public Byte getIsSubmit() {
+        return isSubmit;
+    }
 
+    /**
+     * @param isSubmit
+     */
+    public void setIsSubmit(Byte isSubmit) {
+        this.isSubmit = isSubmit;
+    }
+    
+    /**
+     * @return data_status
+     */
+    @FieldDef(label="dataStatus", maxLength = 2)
+    @EditMode(editor = FieldEditor.Number ,required = false)
+    public Byte getDataStatus() {
+        return dataStatus;
+    }
+
+    /**
+     * @param dataStatus
+     */
+    public void setDataStatus(Byte dataStatus) {
+        this.dataStatus = dataStatus;
+    }
+
+    
+    
+    
+    
+    
+    
 }

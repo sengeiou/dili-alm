@@ -148,7 +148,7 @@ button:hover {
 	
 	   $.ajax({
            type: "post",
-           url: "${contextPath}/onlineDataChange/agreeTestOnlineData.action",
+           url: "${contextPath}/onlineDataChange/agreeOnlineData.action",
            data: {"taskId":taskIdd},
            async : true,
            success: function (data) {
@@ -182,7 +182,7 @@ button:hover {
 	   var taskIdd=$('#taskId').val();
 	    $.ajax({
 	       type: "POST",
-	       url: "${contextPath!}/onlineDataChange/notAgreeTestOnlineData.action",
+	       url: "${contextPath!}/onlineDataChange/notAgreeOnlineData.action",
 	       data: {"taskId":taskIdd},       
 	       processData: false,
 	        contentType: false,

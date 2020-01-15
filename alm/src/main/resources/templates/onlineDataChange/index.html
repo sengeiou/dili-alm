@@ -83,6 +83,9 @@
                         <th data-options="field:'sqlScript', width:'15%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                             sql脚本内容
                         </th>
+                          <th data-options="field:'dataStatus', width:'10%',  formatter: formatprojectName,   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                                                                                                     进度状态
+                        </th> 
                        
                     </tr>
                 </thead>
@@ -240,6 +243,27 @@
 
 
     <script type="text/javascript">
+    
+       function formatprojectName(val,row,index){  
+    	   if(row.dataStatus==1){
+           	    return "<font color='red'>驳回中</font>";
+    	   }else if(row.dataStatus==2){
+             	return "<font color='orange'>项目经理确认中</font>";
+           }else if(row.dataStatus==3){
+           	   return "<font color='green'>测试人员 确认中</font>";
+           }else if(row.dataStatus==4){
+              	return "<font color='gray'>dba确认中</font>";
+           }else if(row.dataStatus==5){
+              	return "<font color='blue'>线上验证中</font>";
+           }else if(row.dataStatus==6){
+              	return "<font color='blue'>归档</font>";
+           }else{
+           	   return "<font color='orange'>其他</font>";
+           }
+    	   
+       }
+    
+    
         //打开新增窗口
         function openInsert(){
         	
@@ -290,10 +314,14 @@
                 $.messager.alert('警告','请选中一条数据');
                 return;
             }
-        
+            if (1 == selected.isSubmit) {
+                $.messager.alert('警告','不可修改数据');
+                return;
+            }
+         
             $('#_versionIdName').combobox('clear');
             $('#_versionIdName').combobox({
-					url : "${contextPath!}/task/listTreeVersionByProject.json?id=" + selected.projectId,
+					url : "${contextPath!}/task/listTreeVersionByProject.json?id=" +"-1",
 					valueField : 'id',
 					textField : 'version',
 					editable : false,
@@ -302,7 +330,7 @@
 					}
 			 });
             
-
+        
             $('#dlg').dialog('open');
             $('#dlg').dialog('center');
             formFocus("_form", "_applyUserId");
@@ -354,27 +382,33 @@
             }else{//有id就修改
                 _url = "${contextPath!}/onlineDataChange/update.action";
             }
-            console.log(_formData);
-            $.ajax({
-                type: "POST",
-                url: _url,
-                data: _formData,
-                processData:true,
-                dataType: "json",
-                async : true,
-                success: function (data) {
-                     if(data.code=="200"){
-                        $("#grid").datagrid("reload");
-                        $('#dlg').dialog('close');
-                    }else{
-                        $.messager.alert('错误',data.result);
-                    } 
-
-                },
-                error: function(){
-                    $.messager.alert('错误','远程访问失败');
+            //console.log(_formData);
+            
+            
+              $.messager.confirm('确认','提交后不可修改？',function(r){
+                if (r){
+			            $.ajax({
+			                type: "POST",
+			                url: _url,
+			                data: _formData,
+			                processData:true,
+			                dataType: "json",
+			                async : true,
+			                success: function (data) {
+			                     if(data.code=="200"){
+			                        $("#grid").datagrid("reload");
+			                        $('#dlg').dialog('close');
+			                    }else{
+			                        $.messager.alert('错误',data.result);
+			                    } 
+			
+			                },
+			                error: function(){
+			                    $.messager.alert('错误','远程访问失败');
+			                }
+			            });
                 }
-            });
+              });
         }
 
         //根据主键删除
@@ -585,5 +619,9 @@
 	       		
             
         })
+        
+    
+        
+        
     </script>
 </#body>
