@@ -64,6 +64,7 @@
 				</div>
 			</td>
 		</tr>
+		<% if(demand.documentUrl!=null){%>
 		<tr>
 				<td colspan="2" style="padding: 5px;">
 					<table class="easyui-datagrid" title="上传文件列表" id="fileGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"  style="width: 100%;"
@@ -82,6 +83,7 @@
 					</table>
 				</td>
 		</tr>
+		<%}%>
 	</table>
 	<input type="hidden" id="documentUrl" name="documentUrl" value="" />
 </form>
@@ -92,7 +94,7 @@
            <tr>
             <td>
             	<p>解决方案描述:</p>
-				<div id="editor_content" style="width: 100%"></div>
+				<div id="editor_content_rt" style="width: 100%"></div>
             </td>
             </tr> 
             <tr>
@@ -115,7 +117,7 @@
 	src="${contextPath!}/resources/js/wangEditor.min.js"></script>
 	<script type="text/javascript">
 	var E = window.wangEditor
-	var editor = new E('#editor_content')
+	var editor = new E('#editor_content_rt')
 	editor.customConfig.menus = [
                                   'head',
                                   'bold',
@@ -220,5 +222,14 @@
     		}
     		return day;
     	}
+    </script>
+  <script type="text/javascript">
+	    function fileOptFormatter(value, row, index) {
+	    	var content = '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="downloadFile('+ row.id + ');">下载</a>';
+	    	return content;
+	    }
+	    function downloadFile(id) {
+	    	window.open('${contextPath!}/files/download?id=' + id);
+	    }
     </script>
 </#body>

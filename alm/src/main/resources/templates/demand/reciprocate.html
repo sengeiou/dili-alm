@@ -193,4 +193,13 @@
     	}
 
     </script>
+        <script type="text/javascript">
+	    function fileOptFormatter(value, row, index) {
+	    	var content = '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="downloadFile('+ row.id + ');">下载</a>';
+	    	return content;
+	    }
+	    function downloadFile(id) {
+	    	window.open('${contextPath!}/files/download?id=' + id);
+	    }
+    </script>
 </#body>

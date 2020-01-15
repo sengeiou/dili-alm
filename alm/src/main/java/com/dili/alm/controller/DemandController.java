@@ -1,15 +1,12 @@
 package com.dili.alm.controller;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.constant.AlmConstants.DemandStatus;
 import com.dili.alm.domain.Demand;
 import com.dili.uap.sdk.domain.Department;
 import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.SystemDto;
-import com.dili.alm.domain.Task;
 import com.dili.alm.exceptions.DemandExceptions;
 import com.dili.alm.domain.dto.DemandDto;
 import com.dili.alm.rpc.DepartmentRpc;
@@ -44,7 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.xerces.dom.DOMOutputImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -322,7 +319,10 @@ public class DemandController {
     @ApiOperation("跳转到权限页面")
     @RequestMapping(value="/departmentApprove.html", method = RequestMethod.GET)
     public String departmentApprove(@RequestParam String taskId, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
-        BaseOutput<TaskMapping> output = taskRpc.getById(taskId);
+/*    	BaseOutput<TaskMapping> taskOutput = taskRpc.getById(taskId);
+    	TaskMapping taskMapping = taskOutput.getData();*/
+    	
+    	BaseOutput<TaskMapping> output = taskRpc.getById(taskId);
         if(!output.isSuccess()){
             throw new AppException(output.getMessage());
         }
@@ -359,7 +359,7 @@ public class DemandController {
     @RequestMapping(value="/demandDepartmentApprove.action", method = RequestMethod.POST)
     @ResponseBody
     public BaseOutput<String> doSubmit(@RequestParam String code, @RequestParam String taskId) {
-    	return demandService.submitApprove(code, taskId, (byte) DemandStatus.COMPLETE.getCode());
+    	return demandService.submitApprove(code, taskId,null);
     }
     
     @ApiOperation("跳转到接受需求页面")
@@ -537,7 +537,7 @@ public class DemandController {
     @RequestMapping(value="/demandManagerApprove.action", method = RequestMethod.POST)
     @ResponseBody
     public BaseOutput<String> demandManagerApprove(@RequestParam String code, @RequestParam String taskId) {
-    	return demandService.submitApprove(code, taskId,(byte)DemandStatus.COMPLETE.getCode());
+    	return demandService.submitApprove(code, taskId, (byte) DemandStatus.COMPLETE.getCode());
     }
     
     /**

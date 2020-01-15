@@ -27,7 +27,7 @@
 							data-options="editable:false,label:'需求类型:'" />
 							<#comboProvider _id="type" _provider='demandTypeProvider' />
 							<input 
-								name="status" id="status" type="hidden"/>
+								name="status" id="status_search" type="hidden"/>
 						</td>
 					</tr>
 					<tr>
@@ -159,7 +159,7 @@
         <div id="progressDlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="true" title="流程图" style="padding:20px" modal="true" border="thin" closed="true"
              data-options="
 				iconCls: 'icon-save',
-				width:500,
+				width:800,
 				height:450
 			">
             <img id="processInstanceImg" />
@@ -353,9 +353,11 @@
             if(!$('#form').form("validate")){
                 return;
             }
+            
             var param = bindMetadata("grid", true);
             var formData = $("#form").serializeObject();
             $.extend(param, formData);
+            console.log(formData);
             $("#grid").datagrid("load", param);
         }
 
@@ -363,6 +365,7 @@
         //清空表单
         function clearForm() {
             $('#form').form('clear');
+            $("#status_search").val(1); 
         }
 
         //表格表头右键菜单
@@ -381,9 +384,7 @@
         	if(row.$_status==3){//审批中的显示进度
         		content+='<span style="padding:2px;"><a href="javascript:void(0)" onclick="showProgress('+index+')">查看进度</a></span>';
         	}
-        	if(row.$_status==3||row.$_status==4){
-        		content+='<span style="padding:2px;"><a href="javascript:void(0)" onclick="showDemandDetail('+row.id+')">查看详情</a></span>';
-        	}
+        	content+='<span style="padding:2px;"><a href="javascript:void(0)" onclick="showDemandDetail('+row.id+')">查看详情</a></span>';
         	return content;
         }
         $.messager.progress({
@@ -427,7 +428,7 @@
             } else {
                 document.onkeyup = getKey;
             }
-          $("#status").val(1);  
+          $("#status_search").val(1);  
           queryGrid();
           $('#dlg').dialog('open');
           $('#dlg').dialog('close');
@@ -512,7 +513,7 @@
               		}else if(title=="处理完"){
               			status=4;
               		}
-      				$("#status").val(status);
+      				$("#status_search").val(status);
       				 queryGrid();
               	  }
               	});
