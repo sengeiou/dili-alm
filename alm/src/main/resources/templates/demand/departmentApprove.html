@@ -64,11 +64,22 @@
 			</td>
 		</tr>
 		<tr>
-			<td style="padding: 5px;" colspan="2">
-				<p>添加附件：</p>
-				<div style="width: 100%">
-				</div>
-			</td>
+				<td colspan="2" style="padding: 5px;">
+					<table class="easyui-datagrid" title="上传文件列表" id="fileGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"  style="width: 100%;"
+					pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
+					sortName="name" align="center" fit="false" striped="true" toolbar="#fileToolbar" idField="id"
+					data-options="url:'${contextPath!}/demand/files/list?id=${demand.id!}'">
+							<thead>
+								<tr>
+									<th data-options="field:'name', width:'30%',  sortable:'true', order:'asc', align:'left', resizable:'true', fixed:'false'">文件名</th>
+									<th data-options="field:'type', width:'20%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">文件类型</th>
+									<th data-options="field:'createMemberId', width:'10%',  _provider:'memberProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">创建人</th>
+									<th data-options="field:'created', width:'20%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">创建时间</th>
+									<th data-options="field:'opt',width:'20%',formatter:fileOptFormatter, align:'center'">操作</th>
+								</tr>
+							</thead>
+					</table>
+				</td>
 		</tr>
 	</table>
 	<input type="hidden" id="documentUrl" name="documentUrl" value="" />

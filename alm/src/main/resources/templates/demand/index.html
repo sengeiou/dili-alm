@@ -22,9 +22,10 @@
 						<td style="padding: 5px;">
 							<input 
 							name="type" id="type" style="width: 100%"
-							data-options="editable:false,label:'需求状态:'" />
+							data-options="editable:false,label:'需求类型:'" />
 							<#comboProvider _id="type" _provider='demandTypeProvider' />
-						
+							<input 
+								name="status" id="status" type="hidden"/>
 						</td>
 					</tr>
 					<tr>
@@ -42,6 +43,16 @@
 	<!-- ====================================================================================================================== -->
 	<!-- 表格 -->
 	<div region="center" style="width: 100%;" height="auto">
+	<!-- ===================tabs==================== -->
+	<div id="statusTab" class="easyui-tabs" style="width:100%;height:0px;">
+    <div title="草稿" style="padding:20px;display:none;">
+    </div>
+    <div title="已提交" data-options="" style="padding:20px;display:none;">
+    </div>
+    <div title="处理完" data-options="" style="padding:20px;display:none;">
+    </div>
+	</div>
+	<!-- ===================tabs==================== -->
 		<!-- =========================================================表格========================================================= -->
 		<table class="easyui-datagrid" title="需求列表" id="grid"
 			fitColumns="true" pagination="true" pageSize="30" pageNumber="1"
@@ -367,7 +378,9 @@
         	var content = "";
         	if(row.$_status==3){//审批中的显示进度
         		content+='<span style="padding:2px;"><a href="javascript:void(0)" onclick="showProgress('+index+')">查看进度</a></span>';
-        	    content+='<span style="padding:2px;"><a href="javascript:void(0)" onclick="showDemandDetail('+row.id+')">查看详情</a></span>';
+        	}
+        	if(row.$_status==3||row.$_status==4){
+        		content+='<span style="padding:2px;"><a href="javascript:void(0)" onclick="showDemandDetail('+row.id+')">查看详情</a></span>';
         	}
         	return content;
         }
@@ -412,11 +425,12 @@
             } else {
                 document.onkeyup = getKey;
             }
-            
+          $("#status").val(1);  
           queryGrid();
           $('#dlg').dialog('open');
           $('#dlg').dialog('close');
-            
+          
+          tabsOnSelect();  
         })
 
        function dateFormat_1(longTypeDate) {
@@ -485,5 +499,22 @@
     		});
         }
         
+        function tabsOnSelect(){
+            $('#statusTab').tabs({
+              	onSelect: function(title,index){
+              		var status = 1;
+              		if(title=="草稿"){
+              			status=1;
+              		}else if(title=="已提交"){
+              			status=3;
+              		}else if(title=="处理完"){
+              			status=4;
+              		}
+      				$("#status").val(status);
+      				 queryGrid();
+              	  }
+              	});
+        }
+
     </script>
 </#body>

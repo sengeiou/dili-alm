@@ -38,10 +38,13 @@ import io.swagger.annotations.ApiOperation;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.apache.commons.beanutils.ConvertUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -267,7 +270,16 @@ public class DemandController {
     @RequestMapping(value="/files/list", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody List<Map> filesList(Long id) {
 		Demand demand = this.demandService.get(id);
-		List<Long> ids = JSONArray.parseArray(demand.getDocumentUrl(), Long.class); 
+		//List<Long> ids = JSONArray.parseArray(demand.getDocumentUrl(), Long.class);
+		String urlStr = demand.getDocumentUrl();
+		if (urlStr==null) {
+			return null;
+		}
+		//截取字符串
+		String[] strArr = urlStr.split(",");
+		List<Long> ids = Arrays.stream(strArr)
+		        .map(s ->Long.parseLong(s.trim())).collect(Collectors.toList());
+		
 		List<Files> list=new ArrayList<Files>();
 		if(ids!=null&&ids.size()>0) {
 			Example example = new Example(Files.class);
@@ -298,7 +310,6 @@ public class DemandController {
 			return null;
 		}
     }
-    
 	//查询系统
 	@ResponseBody
 	@RequestMapping(value = "/listTree.json", method = { RequestMethod.GET, RequestMethod.POST })
