@@ -6,11 +6,6 @@ import com.dili.alm.domain.dto.DemandDto;
 
 import java.lang.reflect.Field;
 public class ColumnUtil {
-	
-		public static void main(String[] args) {
-		    String str=getColumnValue(Demand.class,"serialNumber");
-		    System.out.println(str);
-		}
 
 		public static String getColumnValue(Class classz,String property) {
 	        Field[] fields=classz.getDeclaredFields();
