@@ -21,17 +21,17 @@
 
                             </td> 
                             <td style="padding:5px;">
-                                <input class="easyui-datebox" name="申请时间" id="applyDate" style="width:100%" data-options="label:' 申请时间:'" />
+                                <input class="easyui-datebox" name="applyDate" id="applyDate" style="width:100%" data-options="label:' 申请时间:'" />
 
                             </td>
                         </tr>
                         <tr>
                             <td style="padding:5px;">
-                                <input class="easyui-datebox" name="申请更新时间" id="updateDate" style="width:100%" data-options="label:'申请更新时间:'" />
+                                <input class="easyui-datebox" name="updateDate" id="updateDate" style="width:100%" data-options="label:'申请更新时间:'" />
 
                             </td>
                             <td style="padding:5px;">
-                                <input class="easyui-textbox" name="数据名字" id="dbaName" style="width:100%" data-options="label:'数据库名:', validType:'length[0,50]'" />
+                                <input class="easyui-textbox" name="dbaName" id="dbaName" style="width:100%" data-options="label:'数据库名:', validType:'length[0,50]'" />
 
                             </td>
                           
@@ -250,13 +250,13 @@
     	   }else if(row.dataStatus==2){
              	return "<font color='orange'>项目经理确认中</font>";
            }else if(row.dataStatus==3){
-           	   return "<font color='green'>测试人员 确认中</font>";
+           	   return "<font color='green'>测试人员确认中</font>";
            }else if(row.dataStatus==4){
-              	return "<font color='gray'>dba确认中</font>";
+              	return "<font color='blue'>dba确认中</font>";
            }else if(row.dataStatus==5){
               	return "<font color='blue'>线上验证中</font>";
            }else if(row.dataStatus==6){
-              	return "<font color='blue'>归档</font>";
+              	return "<font color='gray'>归档</font>";
            }else{
            	   return "<font color='orange'>其他</font>";
            }
@@ -416,6 +416,10 @@
             var selected = $("#grid").datagrid("getSelected");
             if (null == selected) {
                 $.messager.alert('警告','请选中一条数据');
+                return;
+            }
+            if (1 == selected.isSubmit) {
+                $.messager.alert('警告','不可删除数据');
                 return;
             }
             $.messager.confirm('确认','您确认想要删除记录吗？',function(r){
