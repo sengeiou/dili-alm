@@ -114,6 +114,9 @@
     <script type="text/javascript">
 
         function cancel() {
+        	//禁用按钮
+        	disableBtn();
+        	
         	$('#form').form('submit', {
                 url : "${contextPath}/demand/rejectDemand.action",
                 dataType : "json",
@@ -124,7 +127,7 @@
                     var data = eval('(' + data + ')');
                     if(data.success) {
                         //如果父页面是任务中心
-                        if(parent.location.href='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
+                        if(parent.location.href=='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
                             //向任务中心发送消息，参数为要跳转的地址
                             window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
                         }else{
@@ -141,7 +144,8 @@
             if(!$('#form').form("validate")){
                 return;
             }
-            $("#submitBtn").linkbutton("disable");
+        	//禁用按钮
+        	disableBtn();
             $('#form').form('submit', {
                 url : "${contextPath}/demand/accept.action",
                 dataType : "json",
@@ -165,6 +169,11 @@
             });
 
 
+        }
+        
+        function disableBtn(){
+        	 $("#submitBtn").linkbutton("disable");
+        	 $("#cancelBtn").linkbutton("disable");
         }
         
         $(function () {

@@ -104,6 +104,16 @@
     	 editor.txt.html("<p>请输入内容...</p><p><br></p>");
     	}
     }
+
+    editor.customConfig.uploadFileName = 'file';
+    editor.customConfig.uploadImgServer = "${contextPath!}/files/filesUpload"
+    editor.customConfig.uploadImgHooks = {
+           customInsert: function (insertImg, result, editor) {
+                 var id = result.data[0].id;
+                 insertImg("http://almweb.diligrp.com/files/images?id="+id);
+            }
+        }
+    editor.customConfig.uploadImgParamsWithUrl = true
 	editor.create();
 
     var editor2 = new E('#editor_reason');
@@ -115,6 +125,7 @@
                                  'image',
                                  'justify',
                              ]
+    editor2.customConfig.zIndex = 100
     editor2.customConfig.onfocus = function () {
     	if(editor2.txt.html()=="<p>请输入内容...</p><p><br></p>"){
     		editor2.txt.html("");
@@ -126,6 +137,16 @@
     	 editor2.txt.html("<p>请输入内容...</p><p><br></p>");
     	}
     }
+
+    editor2.customConfig.uploadFileName = 'file';
+    editor2.customConfig.uploadImgServer = "${contextPath!}/files/filesUpload"
+    editor2.customConfig.uploadImgHooks = {
+           customInsert: function (insertImg, result, editor) {
+                 var id = result.data[0].id;
+                 insertImg("http://almweb.diligrp.com/files/images?id="+id);
+            }
+        }
+    editor2.customConfig.uploadImgParamsWithUrl = true
     editor2.create()
 
 </script>

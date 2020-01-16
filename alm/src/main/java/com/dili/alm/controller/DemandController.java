@@ -175,6 +175,28 @@ public class DemandController {
 		}
         return BaseOutput.success("提交成功");
     }
+    
+    @ApiOperation("转入修改Demand")
+    @ApiImplicitParams({
+		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = true, dataType = "string")
+	})
+    @RequestMapping(value="/update.html", method = {RequestMethod.GET, RequestMethod.POST})
+    public String updatePage(Long id, ModelMap modelMap) {
+    	//TODO:从后台查详细信息
+        Demand demand = new Demand();
+        demand = demandService.get(id);
+        String demandJsonStr = JSONObject.toJSONString(demand);
+        return demandJsonStr;
+    }
+    
+	//查询系统
+	@ResponseBody
+	@RequestMapping(value = "/demandInfo.json", method = { RequestMethod.GET, RequestMethod.POST })
+	public Demand updateDemandInfo(Long id) {
+        Demand demand = new Demand();
+        demand = demandService.get(id);
+		return demand;
+	}
     @ApiOperation("修改Demand")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = true, dataType = "string")

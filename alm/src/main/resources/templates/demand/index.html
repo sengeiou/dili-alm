@@ -204,7 +204,12 @@
             $('#dlg').dialog('open');
             $('#dlg').dialog('center');
             //formFocus("_form", "_serialNumber");
-            var formData = $.extend({},selected);
+            //重新读取需求信息
+            var htmlobj = $.ajax({url : "${contextPath}/demand/demandInfo.json?id=" + selected.id,async : false});
+			var str = htmlobj.responseText;
+			var detailInfo = $.parseJSON(str);
+			
+            var formData = $.extend({},detailInfo);
             formData = addKeyStartWith(getOriginalData(formData),"_");
             console.log(formData);
             if(formData._content==""){

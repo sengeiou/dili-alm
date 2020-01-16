@@ -1,4 +1,5 @@
  <#body>
+ <!-- 需求对接人 -->
   <div class="easyui-panel" id="submitDiv" style="width:100%;" align="center">
  <form id="_form" class="easyui-form" method="post"
 	enctype="multipart/form-data">
@@ -62,6 +63,7 @@
 				</div>
 			</td>
 		</tr>
+		<% if(demand.documentUrl!=null){%>
 		<tr>
 				<td colspan="2" style="padding: 5px;">
 					<table class="easyui-datagrid" title="上传文件列表" id="fileGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"  style="width: 100%;"
@@ -80,6 +82,7 @@
 					</table>
 				</td>
 		</tr>
+		<%}%>
 	</table>
 	<input type="hidden" id="documentUrl" name="documentUrl" value="" />
 </form>
@@ -124,7 +127,7 @@
                     var data = eval('(' + data + ')');
                     if(data.success) {
                         //如果父页面是任务中心
-                        if(parent.location.href='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
+                        if(parent.location.href=='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
                             //向任务中心发送消息，参数为要跳转的地址
                             window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
                         }else{
@@ -146,7 +149,6 @@
             //加载数据
             var formData = $.extend({},${modelStr!});
             formData = addKeyStartWith(getOriginalData(formData),"_");
-            console.log(formData);
             if(formData._belongProId==0){
             	formData._belongProId="";
             }
