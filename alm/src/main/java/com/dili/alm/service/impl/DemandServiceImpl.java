@@ -143,11 +143,11 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		projectSysProvider.put("provider", "projectSysProvider");
 		metadata.put("belongSysId", projectSysProvider);
 		
-		JSONObject datetimeProvider = new JSONObject();
-		datetimeProvider.put("provider", "datetimeProvider");
-		metadata.put("createDate", datetimeProvider);
-		metadata.put("submitDate", datetimeProvider);
-		metadata.put("finishDate", datetimeProvider);
+		JSONObject almDateProvider = new JSONObject();
+		almDateProvider.put("provider", "almDateProvider");
+		metadata.put("createDate", almDateProvider);
+		metadata.put("submitDate", almDateProvider);
+		metadata.put("finishDate", almDateProvider);
 
 		List<Map> listMap = ValueProviderUtils.buildDataByProvider(metadata,
 				Arrays.asList(detailViewData));
@@ -268,6 +268,10 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			}
 			if(!WebUtil.strIsEmpty(selectDemand.getName())) {
 				selectDemandDto.setName(selectDemand.getName());
+				
+			}
+			if(!WebUtil.strIsEmpty(selectDemand.getSerialNumber())) {
+				selectDemandDto.setSerialNumber(selectDemand.getSerialNumber());
 				
 			}
 			if(selectDemand.getType()!=null) {

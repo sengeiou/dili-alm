@@ -10,8 +10,8 @@
 				<table style="padding: 10px;">
 					<tr>
 						<td style="padding: 5px;"><input class="easyui-textbox"
-							name="name" id="name" style="width: 100%"
-							data-options="label:'需求名称:', validType:'length[0,25]'" /></td>
+							name="serialNumber" id="serialNumber" style="width: 100%"
+							data-options="label:'需求编号:', validType:'englishLowerCase'" /></td>
 
 						<td style="padding: 5px;"><input 
 							name="belongProId" id="belongProId" style="width: 100%"
@@ -170,6 +170,14 @@
 <!-- ====================================================================================================================== -->
 
 <script type="text/javascript">
+		$.extend($.fn.validatebox.defaults.rules, {
+			englishLowerCase: {
+		        validator: function (value, param) {
+		            return /^[a-zA-Z0-9]{0,20}$/.test(value)//其他长度注意改正则
+		        },
+		        message: '只能输入字母或数字且长度小于20！'
+		    }
+		});
         //打开新增窗口
         function openInsert(){
             $('#dlg').dialog('open');

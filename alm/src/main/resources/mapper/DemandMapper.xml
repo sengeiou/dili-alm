@@ -150,6 +150,9 @@
       <if test="name != null">
        and  name = #{name,jdbcType=VARCHAR}
       </if>
+      <if test="serial_number != null">
+       and  serial_number = #{serialNumber,jdbcType=VARCHAR}
+      </if>
        <if test="belongProId != null">
          and  belong_pro_id = #{belongProId,jdbcType=BIGINT}
       </if>
@@ -188,7 +191,10 @@
       <if test="name != null">
        and  name = #{name,jdbcType=VARCHAR}
       </if>
-       <if test="belongProId != null">
+      <if test="serial_number != null">
+       and  serial_number = #{serialNumber,jdbcType=VARCHAR}
+      </if>
+      <if test="belongProId != null">
          and  belong_pro_id = #{belongProId,jdbcType=BIGINT}
       </if>
       <if test="belongSysId != null">
