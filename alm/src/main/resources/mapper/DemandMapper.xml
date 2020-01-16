@@ -150,7 +150,7 @@
       <if test="name != null">
        and  name = #{name,jdbcType=VARCHAR}
       </if>
-      <if test="serial_number != null">
+      <if test="serialNumber != null">
        and  serial_number = #{serialNumber,jdbcType=VARCHAR}
       </if>
        <if test="belongProId != null">
@@ -191,7 +191,7 @@
       <if test="name != null">
        and  name = #{name,jdbcType=VARCHAR}
       </if>
-      <if test="serial_number != null">
+      <if test="serialNumber != null">
        and  serial_number = #{serialNumber,jdbcType=VARCHAR}
       </if>
       <if test="belongProId != null">

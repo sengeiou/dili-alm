@@ -173,9 +173,9 @@
 		$.extend($.fn.validatebox.defaults.rules, {
 			englishLowerCase: {
 		        validator: function (value, param) {
-		            return /^[a-zA-Z0-9]{0,20}$/.test(value)//其他长度注意改正则
+		            return /^[a-zA-Z0-9]{0,30}$/.test(value)//其他长度注意改正则
 		        },
-		        message: '只能输入字母或数字且长度小于20！'
+		        message: '只能输入字母或数字且长度小于30！'
 		    }
 		});
         //打开新增窗口
