@@ -165,6 +165,15 @@
             <img id="processInstanceImg" />
         </div>
         <div id="win" style="display: none;"  ></div>
+                <!-- 隐藏编辑框 -->
+        <div id="demandForTaskDlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="true"  style="padding:20px" modal="true" border="thin" closed="true"
+             data-options="
+				iconCls: 'icon-save',
+				width: 680,
+				height: 480
+			">
+			<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" id="demandForTaskSrc"  scrolling="no"  width="100%" height="100%"></iframe>
+        </div>
 <!-- ====================================================================================================================== -->
 <!-- style & script 分隔线 -->
 <!-- ====================================================================================================================== -->
@@ -186,44 +195,76 @@
             $('#_form').form('clear');
             formFocus("_form", "_serialNumber");
         }
-
+        //TODO:调整弹出框样式
+        function openUpdateForTask(id){
+    		$("#demandForTaskSrc").attr("src",'${contextPath!}/demand/editForTaskByAlm.html?id=' +id); //设置IFRAME的SRC;
+            $("#demandForTaskDlg").dialog({
+                bgiframe: true,
+                resizable: true, //是否可以重置大小
+                height: 283, //高度
+                width: 626, //宽度
+                draggable: false, //是否可以拖动。
+                title: "修改编辑",
+                modal: true,
+                open: function (e) {  //打开的时候触发的事件
+                  
+                    document.body.style.overflow = "hidden"; //隐藏滚动条
+                },
+                close: function () { //关闭Dialog时候触发的事件
+                    document.body.style.overflow = "visible";  //显示滚动条
+                    Test();
+                }
+            })
+            $('#demandForTaskDlg').dialog('open');
+            $('#demandForTaskDlg').dialog('center');
+        }
+        
         //打开修改窗口
         function openUpdate(){
-        	
 
             var selected = $("#grid").datagrid("getSelected");
             if (null == selected) {
                 $.messager.alert('警告','请选中一条数据');
                 return;
             }
+            
+        	if(selected.processFlag==1){//驳回重新编辑
+        		openUpdateForTask(selected.id);
+        	}else{
+        		//未提流程交编辑
+                //重新读取需求信息
+                var htmlobj = $.ajax({url : "${contextPath}/demand/editFlag.json?id=" + selected.id,async : false});
+    			var str = htmlobj.responseText;
+    			var returnInfo = $.parseJSON(str);
+    			if(returnInfo.code=="5000"){
+    				$.messager.alert('警告',returnInfo.message);
+    				return;
+    			}
 
-        	if(selected.$_status!=1){//审批中的显示进度
-       		 $.messager.alert('警告','未提交的需求才能进行修改！');
-                return;
-       	     }
-            $('#dlg').dialog('open');
-            $('#dlg').dialog('center');
-            //formFocus("_form", "_serialNumber");
-            //重新读取需求信息
-            var htmlobj = $.ajax({url : "${contextPath}/demand/demandInfo.json?id=" + selected.id,async : false});
-			var str = htmlobj.responseText;
-			var detailInfo = $.parseJSON(str);
-			
-            var formData = $.extend({},detailInfo);
-            formData = addKeyStartWith(getOriginalData(formData),"_");
-            console.log(formData);
-            if(formData._content==""){
-            	editor.txt.html("<p>请输入内容...</p><p><br></p>");
-            }else{
-            	 editor.txt.html(formData._content)
-            }
-            if(formData._reason==""){
-            	editor2.txt.html("<p>请输入内容...</p><p><br></p>");
-            }else{
-            	 editor2.txt.html(formData._reason)
-            }
-            formData._finishDate=dateFormat_1(formData._finishDate);
-            $('#_form').form('load', formData);
+                $('#dlg').dialog('open');
+                $('#dlg').dialog('center');
+                //formFocus("_form", "_serialNumber");
+                //重新读取需求信息
+                var htmlobj = $.ajax({url : "${contextPath}/demand/demandInfo.json?id=" + selected.id,async : false});
+    			var str = htmlobj.responseText;
+    			var detailInfo = $.parseJSON(str);
+    			
+                var formData = $.extend({},detailInfo);
+                formData = addKeyStartWith(getOriginalData(formData),"_");
+                console.log(formData);
+                if(formData._content==""){
+                	editor.txt.html("<p>请输入内容...</p><p><br></p>");
+                }else{
+                	 editor.txt.html(formData._content)
+                }
+                if(formData._reason==""){
+                	editor2.txt.html("<p>请输入内容...</p><p><br></p>");
+                }else{
+                	 editor2.txt.html(formData._reason)
+                }
+                formData._finishDate=dateFormat_1(formData._finishDate);
+                $('#_form').form('load', formData);
+        	}
         }
 
         /*
@@ -397,7 +438,12 @@
         	if(row.$_status==3){//审批中的显示进度
         		content+='<span style="padding:2px;"><a href="javascript:void(0)" onclick="showProgress('+index+')">查看进度</a></span>';
         	}
-        	content+='<span style="padding:2px;"><a href="javascript:void(0)" onclick="showDemandDetail('+row.id+')">查看详情</a></span>';
+        	if(row.processFlag==1){
+        		content+='<span style="padding:2px;color:red;"><a style="color:red;" href="javascript:void(0)" onclick="openUpdateForTask('+row.id+')">驳回修改</a></span>';
+        	}else{
+        		content+='<span style="padding:2px;"><a href="javascript:void(0)" onclick="showDemandDetail('+row.id+')">查看详情</a></span>';
+        	}
+        	
         	return content;
         }
         $.messager.progress({

@@ -11,6 +11,7 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.component.NumberGenerator;
+import com.dili.alm.constant.AlmConstants.DemandProcessStatus;
 import com.dili.alm.constant.AlmConstants.DemandStatus;
 import com.dili.alm.constant.BpmConsts;
 import com.dili.alm.dao.DemandMapper;
@@ -143,8 +144,14 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		projectSysProvider.put("provider", "projectSysProvider");
 		metadata.put("belongSysId", projectSysProvider);
 		
+		
+		JSONObject demandProcessProvider = new JSONObject();
+		demandProcessProvider.put("provider", "demandProcessProvider");
+		metadata.put("belongSysId", demandProcessProvider);
+		
 		JSONObject almDateProvider = new JSONObject();
 		almDateProvider.put("provider", "almDateProvider");
+		
 		metadata.put("createDate", almDateProvider);
 		metadata.put("submitDate", almDateProvider);
 		metadata.put("finishDate", almDateProvider);
@@ -214,6 +221,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		int rows =0;
 		if (newDemand.getId()==null) {
 			newDemand.setStatus((byte) DemandStatus.APPROVING.getCode());
+			newDemand.setProcessType(DemandProcessStatus.DEPARTMENTMANAGER.getCode());
 			this.addNewDemand(newDemand);
 			selectDeman=this.list(newDemand).get(0);
 		}else {
@@ -230,6 +238,8 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			selectDeman.setType(newDemand.getType());
 			selectDeman.setFinishDate(newDemand.getFinishDate());
 			selectDeman.setSubmitDate(new Date());
+			selectDeman.setStatus((byte) DemandStatus.APPROVING.getCode());
+			selectDeman.setProcessType(DemandProcessStatus.DEPARTMENTMANAGER.getCode());
 			this.update(selectDeman);
 		}
 
@@ -320,10 +330,13 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 							}
 						}
 					}
+					//添加可编辑按钮
+					newDemandDto.setProcessFlag(this.isBackEdit(d));
 					dtoDates.add(newDemandDto);
 				} catch (Exception e) {
 					e.getMessage();
 				}
+				
 
 			});
 			JSONObject projectProvider = new JSONObject();
@@ -473,6 +486,10 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 				demandDto.setFirmName(firm.getData().getName());
 			}
 		}
+		//判断是否可修改需求内容
+		//流程状态为返回编辑，是页面返回且编辑
+	    demandDto.setProcessFlag(this.isBackEdit(demand));
+		
 		return demandDto;
 	}
 	
@@ -518,10 +535,14 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
     	if (selectDemand.getStatus().equals((byte)DemandStatus.COMPLETE.getCode())) {
     		throw new DemandExceptions("需求已经通过申请，不能删除");
 		}
+    	if (selectDemand.getStatus().equals((byte)DemandStatus.APPROVING.getCode())) {
+    		throw new DemandExceptions("需求已经进入申请，不能删除");
+		}
     	String valProcess = selectDemand.getProcessInstanceId();
+    	BaseOutput<String>  outPut =null;
     	if (valProcess!=null) {//已经开启流程的，停止流程
     		 //发送消息通知流程
-    		taskRpc.messageEventReceived("demandDeleteMsg", selectDemand.getProcessInstanceId(), null);
+    		outPut = taskRpc.messageEventReceived("demandDeleteMsg", selectDemand.getProcessInstanceId(), null);
 		}
     	selectDemand.setStatus((byte)DemandStatus.DELETE.getCode());
     	int i = this.update(selectDemand);
@@ -542,18 +563,24 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	    Demand selectDemand = new Demand();
 	    selectDemand=this.getByCode(code);
 	    selectDemand.setReciprocateId(userId);
+	    selectDemand.setProcessType(DemandProcessStatus.ACCEPT.code);
 	    this.update(selectDemand);
 	    return taskRpc.complete(taskId,variables);
 	}
 	
 	@Override
-	public BaseOutput submitApprove(String code, String taskId,Byte status) {
+	public BaseOutput submitApprove(String code, String taskId,Byte status,String processType) {
 	    Demand condition = new Demand();
 	    condition.setSerialNumber(code);;
 	    List<Demand> list = listByExample(condition);
 	    if (status!=null) {
 		    Demand selectDemand = list.get(0);
 		    selectDemand.setStatus(status);
+		    this.update(selectDemand);
+		}
+	    if (processType!=null) {
+		    Demand selectDemand = list.get(0);
+		    selectDemand.setProcessType(processType);
 		    this.update(selectDemand);
 		}
 	    Map<String,Object> variables = new HashMap<>();
@@ -563,12 +590,14 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	@Override
 	public BaseOutput rejectApprove(String code, String taskId) {
 		Map<String,Object> variables = new HashMap<>();
+		Demand demand = this.getByCode(code);
+		demand.setProcessType(DemandProcessStatus.BACKANDEDIT.getCode());//被驳回的状态
+		this.update(demand);
 	    variables.put("approved", "false");
 	    return taskRpc.complete(taskId,variables);
 	}
 	@Override
 	public BaseOutput reSubmint(Demand newDemand, String taskId) throws DemandExceptions {
-		// TODO Auto-generated method stub
 		Demand selectDeman= demandMapper.selectByPrimaryKey(newDemand.getId());
 		if (selectDeman==null) {
 			throw new DemandExceptions("找不到当前需求!");
@@ -581,10 +610,24 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		selectDeman.setName(newDemand.getName());
 		selectDeman.setType(newDemand.getType());
 		selectDeman.setFinishDate(newDemand.getFinishDate());
+		selectDeman.setProcessType(DemandProcessStatus.DEPARTMENTMANAGER.getCode());
 		this.update(selectDeman);
 		Map<String,Object> variables = new HashMap<>();
 	    variables.put("approved", "false");
 	    return taskRpc.complete(taskId,variables);
+	}
+	
+	public int isBackEdit(Demand demand) {
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket(); 
+		if(demand.getProcessType()==null) {
+			return 0;
+		}
+		//满足条件，1创建人和编辑人是同一个人 2流程状态是返回编辑状态
+		if (demand.getProcessType().equals(DemandProcessStatus.BACKANDEDIT.getCode())&&demand.getUserId().equals(userTicket.getId())) {
+			return 1;
+		}
+
+		return 0;
 	}
 
 }

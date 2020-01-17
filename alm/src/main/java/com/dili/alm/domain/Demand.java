@@ -422,6 +422,21 @@ public class Demand extends BaseDomain {
     public void setFeedbackContent(String feedbackContent) {
     	this.feedbackContent=feedbackContent;
     };
+    
+    private String processType;
+
+    
+    @Column(name = "`process_type`")
+    @FieldDef(label="流程状态", maxLength = 30)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    public String getProcessType() {
+    	return processType;
+    };
+
+    public void setProcessType(String processType) {
+    	this.processType=processType;
+    };
+    
     private String processInstanceId;
 
     @Column(name = "`process_instance_id`")

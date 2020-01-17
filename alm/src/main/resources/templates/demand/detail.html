@@ -58,9 +58,15 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
+                 <% if(model.processType!=null){%>
+                    <input class="easyui-textbox" readonly="readonly"  id="processType" style="width:300px" data-options="label:'流程状态:'" 
+                         value="${model.processType!}"/>
+                    <#comboProvider _id="processType" _provider='demandProcessProvider' />   
+                <%}else{%>
                     <input class="easyui-textbox" readonly="readonly"  id="status" style="width:300px" data-options="label:'需求状态:'" 
                          value="${model.status!}"/>
                     <#comboProvider _id="status" _provider='demandStatusProvider' />   
+                    <%}%>
                 </td>
                 <td style="padding:5px;">
                     <input class="easyui-textbox" readonly="readonly"  id="type" style="width:300px" data-options="label:'需求类型:'" 
@@ -69,7 +75,6 @@
                 </td>
             </tr>
 
-        
             <tr>
                 <td style="padding:5px;" colspan="2">
                 	<span>需求内容:</span>

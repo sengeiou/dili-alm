@@ -25,6 +25,7 @@ public class DemandDto extends Demand {
 	String userName;
 	String startTime;
 	String endTime;
+	int processFlag;//流程编辑标识 1是可编辑，空为不可编辑
 	@Transient
     @Column(name = "`content`")
     private String content;
@@ -110,5 +111,14 @@ public class DemandDto extends Demand {
 	public void setContent(String content) {
 		this.content = content;
 	}
+
+	public int getProcessFlag() {
+		return processFlag;
+	}
+
+	public void setProcessFlag(int processFlag) {
+		this.processFlag = processFlag;
+	}
+	
 	
 }
