@@ -1,5 +1,6 @@
 package com.dili.alm.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,8 @@ import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.OnlineDataChangeService;
 import com.dili.alm.service.ProjectVersionService;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
+import com.dili.alm.domain.TaskDto;
+import com.dili.alm.domain.TaskMapping;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -170,13 +173,24 @@ public class OnlineDataChangeController {
     	   map.put("dataId", onlineDataChange.getId()+"");
 		   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almOnlineDataChangeProcess", onlineDataChange.getId().toString(), id+"",map);
 	       System.out.println(object.getCode()+object.getData()+object.getErrorData());
+	       onlineDataChange.setProcessInstanceId(object.getData().getProcessInstanceId()); 
+	       onlineDataChange.setId(onlineDataChange.getId());
+	       
+	       onlineDataChangeService.update(onlineDataChange);
         } catch (Exception e) {
 		   e.printStackTrace();
 		   System.out.println(e);
 	    }
+        return BaseOutput.success("提交申请成功");    
+    }
+    @RequestMapping(value="/insertSave.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput insertSave(@ModelAttribute OnlineDataChange onlineDataChange) {
+    	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
+    	onlineDataChange.setApplyUserId(id);
+        onlineDataChangeService.insertSelective(onlineDataChange);
+
         return BaseOutput.success("保存成功");    
     }
-   
     
     @ApiOperation("返回版本id的信息")
     @RequestMapping(value="/getOnlineDataChange.action", method = {RequestMethod.GET, RequestMethod.POST})
@@ -193,11 +207,54 @@ public class OnlineDataChangeController {
 		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "OnlineDataChange��form��Ϣ", required = true, dataType = "string")
 	})
     @RequestMapping(value="/update.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput update(@ModelAttribute OnlineDataChange onlineDataChange,
+    public @ResponseBody BaseOutput update(@ModelAttribute OnlineDataChange onlineDataChange, 
+            HttpServletRequest reques) {
+    	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
+         OnlineDataChange  odc=	onlineDataChangeService.get(onlineDataChange.getId());
+        if(odc.getProcessInstanceId()==null) {
+        	
+		   	 try {
+		    	   Map<String, Object> map=new HashMap<String, Object>();
+		    	   map.put("dataId", onlineDataChange.getId()+"");
+				   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almOnlineDataChangeProcess", onlineDataChange.getId().toString(), id+"",map);
+			       System.out.println(object.getCode()+object.getData()+object.getErrorData());
+			     
+			       OnlineDataChange onlineData=new OnlineDataChange();
+			       onlineData.setProcessInstanceId(object.getData().getProcessInstanceId());
+			       onlineData.setId(onlineDataChange.getId());
+			       onlineData.setDataStatus((byte)2);
+			       onlineData.setIsSubmit((byte)1);
+			       onlineDataChangeService.updateSelective(onlineData);
+		        } catch (Exception e) {
+				   e.printStackTrace();
+				   System.out.println(e);
+			    }
+        } else {
+        	ArrayList list=new ArrayList<String>();
+        	list.add(odc.getProcessInstanceId());
+        	TaskDto tdo=DTOUtils.newDTO(TaskDto.class);
+        	tdo.setProcessInstanceIds(list);
+        	BaseOutput<List<TaskMapping>>  task=tasksRpc.listTaskMapping(tdo);
+        	String  taskId=task.getData().get(0).getId();
+    		onlineDataChange.setDataStatus((byte)2);
+    		onlineDataChange.setIsSubmit((byte)1);
+    		onlineDataChangeService.updateSelective(onlineDataChange);
+    		Map<String, Object> map=new HashMap<>();
+        	map.put("approved", "true");
+        	tasksRpc.complete(taskId);
+	    	   
+    	   
+       }
+        return BaseOutput.success("修改成功");
+    }
+    @RequestMapping(value="/updateSvae.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput updateSvae(@ModelAttribute OnlineDataChange onlineDataChange,
             HttpServletRequest reques) {
         onlineDataChangeService.updateSelective(onlineDataChange);
         return BaseOutput.success("修改成功");
     }
+    
+    
 
     @ApiOperation("删除OnlineDataChange")
     @ApiImplicitParams({

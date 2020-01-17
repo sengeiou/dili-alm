@@ -118,6 +118,10 @@
 					iconCls:'icon-ok',
 					handler:saveOrUpdate
 				},{
+					text:'保存按钮',
+					iconCls:'icon-save',
+					handler:saveOrUpdateSave
+				},{
 					text:'取消',
 					handler:function(){
 						$('#dlg').dialog('close');
@@ -257,6 +261,8 @@
               	return "<font color='blue'>线上验证中</font>";
            }else if(row.dataStatus==6){
               	return "<font color='gray'>归档</font>";
+           }else if(row.dataStatus==0){
+              	return "<font color='gray'>保存中</font>";
            }else{
            	   return "<font color='orange'>其他</font>";
            }
@@ -314,10 +320,17 @@
                 $.messager.alert('警告','请选中一条数据');
                 return;
             }
-            if (1 == selected.isSubmit) {
+           /*  if (1 == selected.isSubmit) {
                 $.messager.alert('警告','不可修改数据');
                 return;
-            }
+            } */
+            if( selected.dataStatus==2|
+           		selected.dataStatus==3|selected.dataStatus==4|
+           		selected.dataStatus==5 ){
+            	  $.messager.alert('警告','流程执行中不可修改');
+                return;
+  	         }
+            
          
             $('#_versionIdName').combobox('clear');
             $('#_versionIdName').combobox({
@@ -411,6 +424,45 @@
               });
         }
 
+        function saveOrUpdateSave(){
+            if(!$('#_form').form("validate")){
+                return;
+            }
+            var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
+            var _url = null;
+            //没有id就新增
+            if(_formData.id == null || _formData.id==""){
+                _url = "${contextPath!}/onlineDataChange/insertSave.action";
+            }else{//有id就修改
+                _url = "${contextPath!}/onlineDataChange/updateSvae.action";
+            }
+            //console.log(_formData);
+            
+        
+			            $.ajax({
+			                type: "POST",
+			                url: _url,
+			                data: _formData,
+			                processData:true,
+			                dataType: "json",
+			                async : true,
+			                success: function (data) {
+			                     if(data.code=="200"){
+			                        $("#grid").datagrid("reload");
+			                        $('#dlg').dialog('close');
+			                    }else{
+			                        $.messager.alert('错误',data.result);
+			                    } 
+			
+			                },
+			                error: function(){
+			                    $.messager.alert('错误','远程访问失败');
+			                }
+			            });
+            
+        }
+        
+
         //根据主键删除
         function del() {
             var selected = $("#grid").datagrid("getSelected");
@@ -418,10 +470,10 @@
                 $.messager.alert('警告','请选中一条数据');
                 return;
             }
-            if (1 == selected.isSubmit) {
-                $.messager.alert('警告','不可删除数据');
-                return;
-            }
+            if(selected.dataStatus!=0){
+            	  $.messager.alert('警告','流程执行中不可删除');
+                  return;
+    	   }
             $.messager.confirm('确认','您确认想要删除记录吗？',function(r){
                 if (r){
                     $.ajax({
