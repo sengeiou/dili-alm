@@ -146,7 +146,7 @@
     id, serial_number, name, user_id, belong_pro_id,belong_sys_id, type, status, finish_date, document_url, 
     create_date, submit_date,reciprocate_id,process_instance_id,process_definition_id
 	FROM  demand  
-   where 1=1
+   where status &lt;&gt; 5
       <if test="name != null">
        and  name = #{name,jdbcType=VARCHAR}
       </if>
@@ -187,7 +187,7 @@
 	select 
     count(id)
 	FROM  demand  
-   where 1=1
+   where status &lt;&gt; 5
       <if test="name != null">
        and  name = #{name,jdbcType=VARCHAR}
       </if>
