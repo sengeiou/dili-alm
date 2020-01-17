@@ -7,7 +7,7 @@
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="apply_user_id" jdbcType="BIGINT" property="applyUserId" />
-    <result column="apply_market_id" jdbcType="BIGINT" property="applyMarketId" />
+    <result column="apply_market_id" jdbcType="VARCHAR" property="applyMarketId" />
     <result column="project_id" jdbcType="BIGINT" property="projectId" />
     <result column="version_id" jdbcType="BIGINT" property="versionId" />
     <result column="apply_date" jdbcType="TIMESTAMP" property="applyDate" />
@@ -18,6 +18,7 @@
     <result column="is_synchronization" jdbcType="TINYINT" property="isSynchronization" />
     <result column="is_submit" jdbcType="TINYINT" property="isSubmit" />
     <result column="data_status" jdbcType="TINYINT" property="dataStatus" />
+    <result column="process_instance_id" jdbcType="VARCHAR" property="processInstanceId" />
     
   </resultMap>
   <sql id="Base_Column_List">
@@ -25,7 +26,7 @@
       WARNING - @mbg.generated
     -->
     id, apply_user_id, apply_market_id, project_id, version_id, apply_date, update_date, 
-    dba_name, sql_script, sql_file_id,,is_synchronization,is_submit,data_status
+    dba_name, sql_script, sql_file_id,,is_synchronization,is_submit,data_status,process_instance_id
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -46,7 +47,7 @@
         apply_user_id = #{applyUserId,jdbcType=BIGINT},
       </if>
       <if test="applyMarketId != null">
-        apply_market_id = #{applyMarketId,jdbcType=BIGINT},
+        apply_market_id = #{applyMarketId,jdbcType=VARCHAR},
       </if>
       <if test="projectId != null">
         project_id = #{projectId,jdbcType=BIGINT},
