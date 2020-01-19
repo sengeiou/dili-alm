@@ -195,13 +195,13 @@
             $('#_form').form('clear');
             formFocus("_form", "_serialNumber");
         }
-        //TODO:调整弹出框样式
+        //打开被驳回的需求进行编辑
         function openUpdateForTask(id){
     		$("#demandForTaskSrc").attr("src",'${contextPath!}/demand/editForTaskByAlm.html?id=' +id); //设置IFRAME的SRC;
             $("#demandForTaskDlg").dialog({
                 bgiframe: true,
                 resizable: true, //是否可以重置大小
-                height: 283, //高度
+                height: 480, //高度
                 width: 626, //宽度
                 draggable: false, //是否可以拖动。
                 title: "修改编辑",
@@ -576,6 +576,11 @@
       				 queryGrid();
               	  }
               	});
+        }
+        //子页面回调函数
+        function CloseEditPage() {
+            $("#demandForTaskDlg").dialog("close");
+            queryGrid();
         }
 
     </script>

@@ -167,7 +167,6 @@ $("#fileuploader").uploadFile({
 							}
 							var fileIds =new Array($('#documentUrl').val()) ;//取值
 							var index_id=fileIds.indexOf(data.data[0].id);
- 							console.log(data.data[0].id);
  							fileIds.splice(index_id,1);
  							$("#documentUrl").val();
  						    $("#documentUrl").val(fileIds);
@@ -223,6 +222,9 @@ $(function () {
     formData._finishDate=dateFormat_1(formData._finishDate);
     $('#_form').form('load', formData);
     
+    
+    //加载父元素高度
+    setParentIframeHeight();
 })
 function dateFormat_1(longTypeDate) {
     		var dateType = "";
@@ -271,8 +273,8 @@ function dateFormat_1(longTypeDate) {
              //设置需求内容
              _formData.content = editor.txt.html();
              //设置需求背景
-             if(editor2.txt.html()=="<p>请输入内容...</p><p><br></p>"){
-             	_formData.reason =  editor2.txt.html("");
+             if(editor2.txt.html()!="<p>请输入内容...</p><p><br></p>"||editor2.txt.html()!=""){
+             	_formData.reason =  editor2.txt.html();
              }
              console.log(_formData);
              var _url = "${contextPath}/demand/submintForTask.action";
@@ -287,6 +289,10 @@ function dateFormat_1(longTypeDate) {
                 	 console.log(data);
                      if(data.code=="200"){
                     	 $.messager.alert('提示',data.message);
+                    	 if(typeof(window.opener.ReRender)!="undefined"){
+                    		 window.parent.CloseEditPage();
+                    	 }
+                    	
                      }else{
                          $.messager.alert('错误',data.result);
                      }
@@ -296,5 +302,25 @@ function dateFormat_1(longTypeDate) {
                  }
              });
          }
+</script>
+<script type="text/javascript">
+function setParentIframeHeight(){
+    try{
+        var parentIframe = parent.document.getElementById("demandForTaskSrc");
+         if(window.attachEvent){
+            window.attachEvent("onload", function(){
+                parentIframe.height = document.documentElement.scrollHeight;
+            });
+            return;
+        }else{
+            window.onload = function(){
+                parentIframe.height = document.body.scrollHeight+50;
+            };
+            return;                 
+        }     
+    }catch(e){
+        throw new Error('setParentIframeHeight Error');
+    }
+}
 </script>
 </#body>
