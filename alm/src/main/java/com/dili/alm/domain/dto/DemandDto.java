@@ -1,18 +1,15 @@
 package com.dili.alm.domain.dto;
 
-import com.dili.alm.domain.Demand;
-import com.dili.ss.domain.BaseDomain;
-import com.dili.ss.domain.annotation.Operator;
-import com.dili.ss.metadata.FieldEditor;
-import com.dili.ss.metadata.annotation.EditMode;
-import com.dili.ss.metadata.annotation.FieldDef;
-import java.util.Date;
 import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Transient;
 
+import com.dili.alm.component.ProcessHandleInfoDto;
+import com.dili.alm.domain.Demand;
+import com.dili.ss.domain.annotation.Operator;
 
-public class DemandDto extends Demand {
+public class DemandDto extends Demand implements ProcessHandleInfoDto {
 	@Operator(Operator.IN)
 	@Column(name = "`id`")
 	List<Long> ids;
@@ -26,9 +23,15 @@ public class DemandDto extends Demand {
 	String startTime;
 	String endTime;
 	@Transient
-    @Column(name = "`content`")
-    private String content;
-	
+	@Column(name = "`content`")
+	private String content;
+	/**
+	 * 当前登录人是否可以处理流程
+	 */
+	private Boolean isHandleProcess = false;
+	private String formKey;
+	private String taskId;
+
 	public List<Long> getIds() {
 		return ids;
 	}
@@ -110,5 +113,35 @@ public class DemandDto extends Demand {
 	public void setContent(String content) {
 		this.content = content;
 	}
-	
+
+	@Override
+	public Boolean getIsHandleProcess() {
+		return isHandleProcess;
+	}
+
+	@Override
+	public void setIsHandleProcess(Boolean isHandleProcess) {
+		this.isHandleProcess = isHandleProcess;
+	}
+
+	@Override
+	public String getFormKey() {
+		return formKey;
+	}
+
+	@Override
+	public void setFormKey(String formKey) {
+		this.formKey = formKey;
+	}
+
+	@Override
+	public String getTaskId() {
+		return taskId;
+	}
+
+	@Override
+	public void setTaskId(String taskId) {
+		this.taskId = taskId;
+	}
+
 }
