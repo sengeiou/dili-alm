@@ -6,7 +6,6 @@
       WARNING - @mbg.generated
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="overall_progress" jdbcType="VARCHAR" property="overallProgress" />
     <result column="expected_deviation" jdbcType="VARCHAR" property="expectedDeviation" />
     <result column="other" jdbcType="VARCHAR" property="other" />
     <result column="weekly_id" jdbcType="BIGINT" property="weeklyId" />

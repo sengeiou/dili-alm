@@ -1,15 +1,14 @@
 package com.dili.alm.controller;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.dili.alm.constant.AlmConstants;
+import com.dili.alm.constant.AlmConstants.DemandProcessStatus;
 import com.dili.alm.constant.AlmConstants.DemandStatus;
 import com.dili.alm.domain.Demand;
+import com.dili.alm.domain.DemandProjectStatus;
 import com.dili.uap.sdk.domain.Department;
 import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.SystemDto;
-import com.dili.alm.domain.Task;
 import com.dili.alm.exceptions.DemandExceptions;
 import com.dili.alm.domain.dto.DemandDto;
 import com.dili.alm.rpc.DepartmentRpc;
@@ -27,6 +26,7 @@ import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.alm.utils.WebUtil;
 import com.dili.bpmc.sdk.annotation.BpmTask;
 import com.dili.bpmc.sdk.domain.TaskMapping;
+import com.dili.bpmc.sdk.dto.TaskDto;
 import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
@@ -44,7 +44,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.xerces.dom.DOMOutputImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -178,6 +179,15 @@ public class DemandController {
 		}
         return BaseOutput.success("提交成功");
     }
+    
+	//后台查询需求信息
+	@ResponseBody
+	@RequestMapping(value = "/demandInfo.json", method = { RequestMethod.GET, RequestMethod.POST })
+	public Demand updateDemandInfo(Long id) {
+        Demand demand = new Demand();
+        demand = demandService.get(id);
+		return demand;
+	}
     @ApiOperation("修改Demand")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = true, dataType = "string")
@@ -186,6 +196,20 @@ public class DemandController {
     public @ResponseBody BaseOutput update(Demand demand) {
         demandService.updateSelective(demand);
         return BaseOutput.success("修改成功");
+    }
+    
+    @ApiOperation("需求修改状态")
+    @ApiImplicitParams({
+		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = true, dataType = "string")
+	})
+    @RequestMapping(value="/editFlag.json", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput isEdit(Long id) {
+    	Demand demand = demandService.get(id);
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+    	if (!userTicket.getId().equals(demand.getUserId())) {
+    		 return BaseOutput.failure("当前用户不是需求创建用户");
+		}
+        return BaseOutput.success().setCode("1");
     }
     
     @ApiOperation("删除Demand")
@@ -197,7 +221,7 @@ public class DemandController {
     	try {
     		demandService.logicDelete(id);
 		} catch (Exception e) {
-			BaseOutput.failure("删除失败，"+e.getMessage());
+			 return  BaseOutput.failure("删除失败，"+e.getMessage());
 		}
         return BaseOutput.success("删除成功");
     }
@@ -322,7 +346,7 @@ public class DemandController {
     @ApiOperation("跳转到权限页面")
     @RequestMapping(value="/departmentApprove.html", method = RequestMethod.GET)
     public String departmentApprove(@RequestParam String taskId, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
-        BaseOutput<TaskMapping> output = taskRpc.getById(taskId);
+    	BaseOutput<TaskMapping> output = taskRpc.getById(taskId);
         if(!output.isSuccess()){
             throw new AppException(output.getMessage());
         }
@@ -351,7 +375,7 @@ public class DemandController {
     	return "demand/departmentApprove";
     }
     /**
-     * 同意申请
+     * 部门经理同意申请
      * @param code  需求编号
      * @param taskId 任务id
      * @return
@@ -359,7 +383,7 @@ public class DemandController {
     @RequestMapping(value="/demandDepartmentApprove.action", method = RequestMethod.POST)
     @ResponseBody
     public BaseOutput<String> doSubmit(@RequestParam String code, @RequestParam String taskId) {
-    	return demandService.submitApprove(code, taskId, (byte) DemandStatus.COMPLETE.getCode());
+    	return demandService.submitApprove(code, taskId,null,DemandProcessStatus.ACCEPT.getCode());
     }
     
     @ApiOperation("跳转到接受需求页面")
@@ -446,7 +470,7 @@ public class DemandController {
     @RequestMapping(value="/reciprocate.action", method = RequestMethod.POST)
     @ResponseBody
     public BaseOutput<String> reciprocate(@RequestParam String code, @RequestParam String taskId) {
-    	return demandService.submitApprove(code, taskId,null);
+    	return demandService.submitApprove(code, taskId,null,DemandProcessStatus.FEEDBACK.getCode());
     }
     
     
@@ -495,7 +519,7 @@ public class DemandController {
     	demand.setFeedbackContent(content);
     	demand.setFeedbackFile(documentUrl);
     	demandService.saveOrUpdate(demand);
-    	return demandService.submitApprove(code, taskId,null);
+    	return demandService.submitApprove(code, taskId,null,DemandProcessStatus.DEMANDMANAGER.getCode());
     }
     @ApiOperation("需求管理员同意")
     @RequestMapping(value="/demandManagerApprove.html", method = RequestMethod.GET)
@@ -537,7 +561,7 @@ public class DemandController {
     @RequestMapping(value="/demandManagerApprove.action", method = RequestMethod.POST)
     @ResponseBody
     public BaseOutput<String> demandManagerApprove(@RequestParam String code, @RequestParam String taskId) {
-    	return demandService.submitApprove(code, taskId,(byte)DemandStatus.COMPLETE.getCode());
+    	return demandService.submitApprove(code, taskId, (byte) DemandStatus.COMPLETE.getCode(),DemandProcessStatus.FINISH.getCode());
     }
     
     /**
@@ -591,6 +615,8 @@ public class DemandController {
     }
     
     
+
+    
     @RequestMapping(value = "/editForTask.html", method = RequestMethod.GET)
 	public String editForTask(@RequestParam String taskId, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
         BaseOutput<TaskMapping> output = taskRpc.getById(taskId);
@@ -618,6 +644,38 @@ public class DemandController {
     		
     	modelMap.addAttribute("depName",de.getData().getName());
     	modelMap.put("taskId", taskId);
+		return "demand/editForTask";
+	}
+    @ApiOperation("需求列表编辑用户信息")
+    @RequestMapping(value = "/editForTaskByAlm.html", method = RequestMethod.GET)
+	public String editForDemandList(@RequestParam Long id, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
+    	Demand selectDemand = new Demand();
+    	selectDemand=demandService.get(id);
+    	String valProcess = selectDemand.getSerialNumber();
+    	
+        //根据业务号查询任务
+        TaskDto taskDto = DTOUtils.newInstance(TaskDto.class);
+        taskDto.setProcessInstanceBusinessKey(valProcess);
+        BaseOutput<List<TaskMapping>> outputList = taskRpc.list(taskDto);
+        if(!outputList.isSuccess()){
+        	return "用户错误！"+outputList.getMessage(); 
+        }
+        
+        List<TaskMapping> taskMappings = outputList.getData();
+        
+        String demandJsonStr = JSONObject.toJSONString(selectDemand);
+        modelMap.put("model", selectDemand);
+        modelMap.put("modelStr", demandJsonStr);
+    	/** 个人信息 **/
+        User userTicket = this.userRpc.findUserById(selectDemand.getUserId()).getData();
+        if (userTicket==null) {
+			return "用户错误！";
+		}
+    	BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
+    	modelMap.addAttribute("userInfo", userTicket);
+    		
+    	modelMap.addAttribute("depName",de.getData().getName());
+    	modelMap.put("taskId", taskMappings.get(0).getId());
 		return "demand/editForTask";
 	}
     @ApiOperation("重新提交Demand")

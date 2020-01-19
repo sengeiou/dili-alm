@@ -19,6 +19,7 @@
     <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
     <result column="submit_date" jdbcType="TIMESTAMP" property="submitDate" />
     <result column="reciprocate_id" jdbcType="BIGINT" property="reciprocateId" />
+    <result column="process_type" jdbcType="VARCHAR" property="processType" />
     <result column="process_instance_id" jdbcType="VARCHAR" property="processInstanceId" />
     <result column="process_definition_id" jdbcType="VARCHAR" property="processDefinitionId" />
   </resultMap>
@@ -35,7 +36,7 @@
       WARNING - @mbg.generated
     -->
     id, serial_number, name, user_id, belong_pro_id,belong_sys_id, type, status, finish_date, document_url, 
-    create_date, submit_date,reciprocate_id,process_instance_id,process_definition_id,
+    create_date, submit_date,reciprocate_id,process_type,process_instance_id,process_definition_id,
   </sql>
   <sql id="Blob_Column_List">
     <!--
@@ -108,6 +109,9 @@
         <if test="reciprocateId != null">
         reciprocate_id = #{reciprocateId,jdbcType=LONGVARCHAR},
       </if>
+       <if test="process_type != null">
+        process_type = #{processType,jdbcType=VARCHAR},
+      </if>
       <if test="processInstanceId != null">
         process_instance_id = #{processInstanceId,jdbcType=VARCHAR},
       </if>
@@ -144,11 +148,14 @@
 	<select id="selectDemandList" parameterType="com.dili.alm.domain.dto.DemandDto" resultType="com.dili.alm.domain.Demand">
 	select 
     id, serial_number, name, user_id, belong_pro_id,belong_sys_id, type, status, finish_date, document_url, 
-    create_date, submit_date,reciprocate_id,process_instance_id,process_definition_id
+    create_date, submit_date,reciprocate_id,process_type,process_instance_id,process_definition_id
 	FROM  demand  
-   where 1=1
+   where status &lt;&gt; 5
       <if test="name != null">
        and  name = #{name,jdbcType=VARCHAR}
+      </if>
+      <if test="serialNumber != null">
+       and  serial_number = #{serialNumber,jdbcType=VARCHAR}
       </if>
        <if test="belongProId != null">
          and  belong_pro_id = #{belongProId,jdbcType=BIGINT}
@@ -171,6 +178,9 @@
       <if test="status != null">
         and status = #{status,jdbcType=TINYINT}
       </if>
+      <if test="processType != null">
+         and  process_type = #{processType,jdbcType=VARCHAR}
+      </if>
       <if test="order!=null and  sort != null ">
 	     order by ${sort} ${order}
 	  </if>
@@ -184,11 +194,14 @@
 	select 
     count(id)
 	FROM  demand  
-   where 1=1
+   where status &lt;&gt; 5
       <if test="name != null">
        and  name = #{name,jdbcType=VARCHAR}
       </if>
-       <if test="belongProId != null">
+      <if test="serialNumber != null">
+       and  serial_number = #{serialNumber,jdbcType=VARCHAR}
+      </if>
+      <if test="belongProId != null">
          and  belong_pro_id = #{belongProId,jdbcType=BIGINT}
       </if>
       <if test="belongSysId != null">
@@ -209,7 +222,9 @@
       <if test="status != null">
         and status = #{status,jdbcType=TINYINT}
       </if>
-      
+      <if test="processType != null">
+         and  process_type = #{processType,jdbcType=VARCHAR}
+      </if>
 	</select>
 	
 </mapper>

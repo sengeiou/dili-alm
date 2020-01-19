@@ -1,5 +1,5 @@
  <#body>
-  <!-- 需求申请领导确认做需求 -->
+  <!-- 需求管理员确定 -->
   <div class="easyui-panel" id="submitDiv" style="width:100%;" align="center">
   <form id="_form" class="easyui-form" method="post"
 	enctype="multipart/form-data">
@@ -50,19 +50,20 @@
 		</tr>
 		<tr>
 			<td style="padding: 5px;" colspan="2">
-				<p>需求内容:</p>
+				<h4>需求内容:</h4>
 				<div id="editor_content" style="width: 100%">
 				 ${demand.content!}
 				</div>
 		</tr>
 		<tr>
 			<td style="padding: 5px;" colspan="2">
-				<p>需求背景:</p>
+				<h4>需求背景:</h4>
 				<div id="editor_reason" style="width: 100%">
 				 ${demand.reason!}
 				</div>
 			</td>
 		</tr>
+		<% if(demand.documentUrl!=null){%>
 		<tr>
 				<td colspan="2" style="padding: 5px;">
 					<table class="easyui-datagrid" title="上传文件列表" id="fileGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"  style="width: 100%;"
@@ -81,6 +82,15 @@
 					</table>
 				</td>
 		</tr>
+		<%}%>
+	 <tr>
+			<td style="padding: 5px;" colspan="2">
+				<h4>反馈方案:</h4>
+				<div id="editor_reason" style="width: 100%">
+				 ${demand.feedbackContent!}
+				</div>
+			</td>
+		</tr>
 	</table>
 	<input type="hidden" id="documentUrl" name="documentUrl" value="" />
 </form>
@@ -92,7 +102,7 @@
                 <td align="center" style="padding:5px;">
                 <a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="submitBtn"
                    onclick="save()">同意</a>
-                <a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="cancelBtn"
+                <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" id="cancelBtn"
                    onclick="cancel()">不同意</a>
             </td>
         </table>
@@ -105,6 +115,7 @@
 
 
     function cancel() {
+    	disableBtn();
     	$('#form').form('submit', {
             url : "${contextPath}/demand/rejectDemand.action",
             dataType : "json",
@@ -132,7 +143,7 @@
             if(!$('#form').form("validate")){
                 return;
             }
-            $("#submitBtn").linkbutton("disable");
+            disableBtn();
             $('#form').form('submit', {
                 url : "${contextPath}/demand/demandDepartmentApprove.action",
                 dataType : "json",
@@ -143,7 +154,7 @@
                     var data = eval('(' + data + ')');
                     if(data.success) {
                         //如果父页面是任务中心
-                        if(parent.location.href='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
+                        if(parent.location.href=='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
                             //向任务中心发送消息，参数为要跳转的地址
                             window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
                         }else{
@@ -157,6 +168,10 @@
 
 
         }
+        function disableBtn(){
+       	 $("#submitBtn").linkbutton("disable");
+       	 $("#cancelBtn").linkbutton("disable");
+       }
         $(function () {
             //所属项目自动加载
             loadSystemSelect();
@@ -210,5 +225,14 @@
     		}
     		return day;
     	}
+    </script>
+        <script type="text/javascript">
+	    function fileOptFormatter(value, row, index) {
+	    	var content = '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="downloadFile('+ row.id + ');">下载</a>';
+	    	return content;
+	    }
+	    function downloadFile(id) {
+	    	window.open('${contextPath!}/files/download?id=' + id);
+	    }
     </script>
 </#body>

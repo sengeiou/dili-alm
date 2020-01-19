@@ -1,14 +1,15 @@
 package com.dili.sysadmin.sdk.component.beetl;
 
-import com.dili.sysadmin.sdk.domain.UserTicket;
-import com.dili.sysadmin.sdk.redis.UserResourceRedis;
-import com.dili.sysadmin.sdk.session.SessionContext;
-import org.beetl.core.Tag;
+import java.io.IOException;
+import java.util.Map;
+
+import org.beetl.core.tag.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.util.Map;
+import com.dili.sysadmin.sdk.domain.UserTicket;
+import com.dili.sysadmin.sdk.redis.UserResourceRedis;
+import com.dili.sysadmin.sdk.session.SessionContext;
 
 /**
  * 用户资源权限检查标签

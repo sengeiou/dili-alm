@@ -64,6 +64,7 @@
 				</div>
 			</td>
 		</tr>
+		<% if(demand.documentUrl!=null){%>
 		<tr>
 				<td colspan="2" style="padding: 5px;">
 					<table class="easyui-datagrid" title="上传文件列表" id="fileGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"  style="width: 100%;"
@@ -82,17 +83,18 @@
 					</table>
 				</td>
 		</tr>
+		<%}%>
 	</table>
 	<input type="hidden" id="documentUrl" name="documentUrl" value="" />
 </form>
     <form id="form" class="easyui-form" method="post" fit="true">
         <input name="taskId" id="taskId" value="${taskId}" type="hidden">
          <input name="code" id="code" value="${demand.serialNumber}" type="hidden">
-        <table width="60%" style="alignment: center">
+        <table width="100%" style="alignment: center">
            <tr>
             <td>
             	<p>解决方案描述:</p>
-				<div id="editor_content" style="width: 100%"></div>
+				<div id="editor_content_rt" style="width: 100%"></div>
             </td>
             </tr> 
             <tr>
@@ -115,7 +117,7 @@
 	src="${contextPath!}/resources/js/wangEditor.min.js"></script>
 	<script type="text/javascript">
 	var E = window.wangEditor
-	var editor = new E('#editor_content')
+	var editor = new E('#editor_content_rt')
 	editor.customConfig.menus = [
                                   'head',
                                   'bold',
@@ -124,6 +126,16 @@
                                   'image',
                                   'justify',
                               ]
+
+    editor.customConfig.uploadFileName = 'file';
+    editor.customConfig.uploadImgServer = "${contextPath!}/files/filesUpload"
+    editor.customConfig.uploadImgHooks = {
+           customInsert: function (insertImg, result, editor) {
+                 var id = result.data[0].id;
+                 insertImg("http://almweb.diligrp.com/files/images?id="+id);
+            }
+        }
+    editor.customConfig.uploadImgParamsWithUrl = true
 	editor.create(); 
 	
 </script>
@@ -153,7 +165,7 @@
                     var data = eval('(' + data + ')');
                     if(data.success) {
                         //如果父页面是任务中心
-                        if(parent.location.href='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
+                        if(parent.location.href=='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
                             //向任务中心发送消息，参数为要跳转的地址
                             window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
                         }else{
@@ -220,5 +232,14 @@
     		}
     		return day;
     	}
+    </script>
+  <script type="text/javascript">
+	    function fileOptFormatter(value, row, index) {
+	    	var content = '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="downloadFile('+ row.id + ');">下载</a>';
+	    	return content;
+	    }
+	    function downloadFile(id) {
+	    	window.open('${contextPath!}/files/download?id=' + id);
+	    }
     </script>
 </#body>

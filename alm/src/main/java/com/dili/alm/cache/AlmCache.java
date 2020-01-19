@@ -107,6 +107,8 @@ public class AlmCache {
 	private static final Map<String, String> DAMAND_TYPE_MAP = new ConcurrentHashMap<>();
 	//系统缓存
 	private static final Map<Long, SystemDto> PROJECT_SYS_MAP = new ConcurrentHashMap<>();
+	//需求流程状态
+	private static final Map<String, String> DAMAND_PROCESS_STATUS_MAP = new ConcurrentHashMap<>();
 	
 	@Autowired
 	private UserRpc userRpc;
@@ -471,5 +473,18 @@ public class AlmCache {
 		}
 		return PROJECT_SYS_MAP;
 	}
-
+	/**
+	 * 流程类型缓存
+	 * @return
+	 */
+	public Map<String, String> getDemandProcessStetusMap(){
+		if (AlmCache.DAMAND_PROCESS_STATUS_MAP.isEmpty()) {
+			DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.DEMAND_PROCESS_TYPE);
+			if (CollectionUtils.isEmpty(dd.getValues())) {
+				return DAMAND_PROCESS_STATUS_MAP;
+			}
+			dd.getValues().forEach(v -> DAMAND_PROCESS_STATUS_MAP.put(v.getValue(), v.getCode()));
+		}
+		return DAMAND_PROCESS_STATUS_MAP;
+	}
 }

@@ -179,4 +179,35 @@ public class FilesController {
 			}
 		}
 	}
+	
+	@RequestMapping(value = "/images")  
+    @ResponseBody  
+	public String imagesReader(HttpServletRequest request,  
+            HttpServletResponse response, @RequestParam Long id) {  
+		String filePath = FilesService.MILESTONES_PATH_PREFIX + "/";
+		Files files = this.filesService.get(id);
+		String path = filePath + files.getName();
+        FileInputStream fis = null;  
+        OutputStream os = null;  
+        try {  
+            fis = new FileInputStream(path);  
+            os = response.getOutputStream();  
+            int count = 0;  
+            byte[] buffer = new byte[1024 * 8];  
+            while ((count = fis.read(buffer)) != -1) {  
+                os.write(buffer, 0, count);  
+                os.flush();  
+            }  
+        } catch (Exception e) {  
+            e.printStackTrace();  
+        }  
+        try {  
+            fis.close();  
+            os.close();  
+        } catch (IOException e) {  
+            e.printStackTrace();  
+        }  
+        return "ok";  
+    }  
+
 }

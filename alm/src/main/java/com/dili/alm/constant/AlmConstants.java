@@ -64,6 +64,8 @@ public class AlmConstants {
 	public static final String DEMAND_STATUS = "demand_status";
 	//需求类型数据字典配置
 	public static final String DEMAND_TYPE = "demand_type";
+	//需求流程类型数据字典配置
+	public static final String DEMAND_PROCESS_TYPE = "demand_process_type";
 	// 所属系统的字典值
 	public static final String ALM_SYSTEM_CODE = "ALM";
 	//字典表开发环境code码
@@ -218,6 +220,22 @@ public class AlmConstants {
 		}
 
 		public int getCode() {
+			return code;
+		}
+	}
+	
+	// 流程状态 部门经理同意 接受需求 指派人 反馈方案 需求管理员同意 驳回编辑
+	public enum DemandProcessStatus {
+
+		DEPARTMENTMANAGER("departmentManager"), ACCEPT("accept"), RECIPROCATE("reciprocate"), FEEDBACK("feedback"),DEMANDMANAGER("demandManager"),BACKANDEDIT("backAndEdit"),FINISH("finish");
+
+		public String code;
+
+		DemandProcessStatus(String code) {
+			this.code = code;
+		}
+
+		public String getCode() {
 			return code;
 		}
 	}

@@ -62,6 +62,7 @@
 				</div>
 			</td>
 		</tr>
+		<% if(demand.documentUrl!=null){%>
 		<tr>
 				<td colspan="2" style="padding: 5px;">
 					<table class="easyui-datagrid" title="上传文件列表" id="fileGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"  style="width: 100%;"
@@ -80,6 +81,7 @@
 					</table>
 				</td>
 		</tr>
+		<%}%>
 	</table>
 	<input type="hidden" id="documentUrl" name="documentUrl" value="" />
 </form>
@@ -88,15 +90,20 @@
          <input name="code" id="code" value="${demand.serialNumber}" type="hidden">
         <table width="60%" style="alignment: center">
             <tr>
-	            <td align="center" style="padding:5px;">
-	            <input name="acceptId" id="acceptId" class="easyui-combobox" style="width: 100%;"
+            	<td align="center">
+	           		 <input name="acceptId" id="acceptId" class="easyui-combobox" style="width: 100%;"required="true" 
 									data-options="label:'责任人:',editable:true,url:'${contextPath!}/member/members',textField:'realName',valueField:'id'">
 	            </td>
+            </tr>
+            <tr>
                 <td align="center" style="padding:5px;">
                 <a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="submitBtn"
                    onclick="save()">同意</a>
-                <a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="cancelBtn"
+                <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" id="cancelBtn"
                    onclick="cancel()">不同意</a>
+            </td>
+            <tr style="height:200px">
+             <td align="center" style="padding:5px;">
             </td>
         </table>
     </form>
@@ -107,6 +114,9 @@
     <script type="text/javascript">
 
         function cancel() {
+        	//禁用按钮
+        	disableBtn();
+        	
         	$('#form').form('submit', {
                 url : "${contextPath}/demand/rejectDemand.action",
                 dataType : "json",
@@ -117,7 +127,7 @@
                     var data = eval('(' + data + ')');
                     if(data.success) {
                         //如果父页面是任务中心
-                        if(parent.location.href='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
+                        if(parent.location.href=='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
                             //向任务中心发送消息，参数为要跳转的地址
                             window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
                         }else{
@@ -134,7 +144,8 @@
             if(!$('#form').form("validate")){
                 return;
             }
-            $("#submitBtn").linkbutton("disable");
+        	//禁用按钮
+        	disableBtn();
             $('#form').form('submit', {
                 url : "${contextPath}/demand/accept.action",
                 dataType : "json",
@@ -158,6 +169,11 @@
             });
 
 
+        }
+        
+        function disableBtn(){
+        	 $("#submitBtn").linkbutton("disable");
+        	 $("#cancelBtn").linkbutton("disable");
         }
         
         $(function () {
@@ -213,5 +229,14 @@
     		}
     		return day;
     	}
+    </script>
+    <script type="text/javascript">
+	    function fileOptFormatter(value, row, index) {
+	    	var content = '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="downloadFile('+ row.id + ');">下载</a>';
+	    	return content;
+	    }
+	    function downloadFile(id) {
+	    	window.open('${contextPath!}/files/download?id=' + id);
+	    }
     </script>
 </#body>

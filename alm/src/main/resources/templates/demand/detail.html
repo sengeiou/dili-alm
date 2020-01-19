@@ -58,9 +58,15 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
+                 <% if(model.processType!=null){%>
+                    <input class="easyui-textbox" readonly="readonly"  id="processType" style="width:300px" data-options="label:'流程状态:'" 
+                         value="${model.processType!}"/>
+                    <#comboProvider _id="processType" _provider='demandProcessProvider' />   
+                <%}else{%>
                     <input class="easyui-textbox" readonly="readonly"  id="status" style="width:300px" data-options="label:'需求状态:'" 
                          value="${model.status!}"/>
                     <#comboProvider _id="status" _provider='demandStatusProvider' />   
+                    <%}%>
                 </td>
                 <td style="padding:5px;">
                     <input class="easyui-textbox" readonly="readonly"  id="type" style="width:300px" data-options="label:'需求类型:'" 
@@ -69,12 +75,11 @@
                 </td>
             </tr>
 
-        
             <tr>
                 <td style="padding:5px;" colspan="2">
                 	<span>需求内容:</span>
                 	<%if(model.content!=null){%>
-                		<div style="width:100%;border:1px solid #000;" id="content">${model.content!}</div>
+                		<div style="width:710px;border:1px solid #D4D4D4;" id="content">${model.content!}</div>
                 	<%}%>
                 </td>
             </tr>
@@ -82,21 +87,21 @@
                 <td style="padding:5px;" colspan="2">
                 	<span>需求背景:</span>
                 	<%if(model.reason!=null){%>
-                		<div style="width:100%;border:1px solid #000;" id="reason">${model.reason!}</div>
+                		<div style="width:710px;border:1px solid #D4D4D4;" id="reason">${model.reason!}</div>
                 	<%}%>
                 	
                 </td>
             </tr>
             <tr>
 				<td colspan="2" style="padding: 5px;">
-					<table class="easyui-datagrid" title="上传文件列表" id="fileGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"  style="width: 100%;"
+					<table class="easyui-datagrid" title="上传文件列表" id="fileGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"  style="width: 95%;"
 					pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
 					sortName="name" align="center" fit="false" striped="true" toolbar="#fileToolbar" idField="id"
 					data-options="url:'${contextPath!}/demand/files/list?id=${model.id!}'">
 							<thead>
 								<tr>
 									<th data-options="field:'name', width:'30%',  sortable:'true', order:'asc', align:'left', resizable:'true', fixed:'false'">文件名</th>
-									<th data-options="field:'type', width:'20%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">文件类型</th>
+									<th data-options="field:'suffix', width:'20%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">文件类型</th>
 									<th data-options="field:'createMemberId', width:'10%',  _provider:'memberProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">创建人</th>
 									<th data-options="field:'created', width:'20%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">创建时间</th>
 									<th data-options="field:'opt',width:'20%',formatter:fileOptFormatter, align:'center'">操作</th>

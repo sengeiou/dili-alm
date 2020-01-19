@@ -6,7 +6,12 @@ import com.dili.alm.domain.dto.DemandDto;
 
 import java.lang.reflect.Field;
 public class ColumnUtil {
-
+		/**
+		 * 根据实体字段名称返回对应的数据库字段名称
+		 * @param classz 实体class	
+		 * @param property 实体字段名
+		 * @return 数据库字段名
+		 */
 		public static String getColumnValue(Class classz,String property) {
 	        Field[] fields=classz.getDeclaredFields();
 	        Field field;

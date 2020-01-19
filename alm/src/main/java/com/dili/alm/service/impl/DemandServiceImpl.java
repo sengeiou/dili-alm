@@ -1,5 +1,7 @@
 package com.dili.alm.service.impl;
 
+import com.dili.alm.constant.AlmConstants;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -7,17 +9,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.component.BpmcUtil;
 import com.dili.alm.component.NumberGenerator;
-import com.dili.alm.constant.AlmConstants;
+import com.dili.alm.constant.AlmConstants.DemandProcessStatus;
 import com.dili.alm.constant.AlmConstants.DemandStatus;
 import com.dili.alm.constant.BpmConsts;
 import com.dili.alm.dao.DemandMapper;
@@ -30,15 +25,20 @@ import com.dili.alm.domain.Demand;
 import com.dili.alm.domain.DemandProject;
 import com.dili.alm.domain.DemandProjectStatus;
 import com.dili.alm.domain.DemandProjectType;
+import com.dili.alm.domain.FileType;
+import com.dili.alm.domain.Files;
+import com.dili.uap.sdk.domain.Department;
+import com.dili.uap.sdk.domain.Firm;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Sequence;
+import com.dili.alm.domain.SystemDto;
+import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.dto.DemandDto;
 import com.dili.alm.exceptions.DemandExceptions;
 import com.dili.alm.rpc.DepartmentRpc;
 import com.dili.alm.rpc.FirmRpc;
-import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.rpc.SysProjectRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DemandService;
@@ -46,6 +46,7 @@ import com.dili.alm.utils.ColumnUtil;
 import com.dili.alm.utils.DateUtil;
 import com.dili.alm.utils.GetFirstCharUtil;
 import com.dili.alm.utils.WebUtil;
+import com.dili.bpmc.sdk.domain.ActForm;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
 import com.dili.bpmc.sdk.domain.TaskMapping;
 import com.dili.bpmc.sdk.dto.TaskDto;
@@ -53,17 +54,29 @@ import com.dili.bpmc.sdk.rpc.FormRpc;
 import com.dili.bpmc.sdk.rpc.RuntimeRpc;
 import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.constant.ResultCode;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.exception.BusinessException;
+import com.dili.ss.exception.ParamErrorException;
 import com.dili.ss.metadata.ValueProviderUtils;
-import com.dili.uap.sdk.domain.Department;
-import com.dili.uap.sdk.domain.Firm;
-import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.exception.NotLoginException;
 import com.dili.uap.sdk.session.SessionContext;
+import com.github.pagehelper.Page;
 
 import tk.mybatis.mapper.entity.Example;
+
+import java.lang.reflect.InvocationTargetException;
+import java.text.SimpleDateFormat;
+
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-12-23 17:32:14.
@@ -134,11 +147,16 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		projectSysProvider.put("provider", "projectSysProvider");
 		metadata.put("belongSysId", projectSysProvider);
 
-		JSONObject datetimeProvider = new JSONObject();
-		datetimeProvider.put("provider", "datetimeProvider");
-		metadata.put("createDate", datetimeProvider);
-		metadata.put("submitDate", datetimeProvider);
-		metadata.put("finishDate", datetimeProvider);
+		JSONObject demandProcessProvider = new JSONObject();
+		demandProcessProvider.put("provider", "demandProcessProvider");
+		metadata.put("belongSysId", demandProcessProvider);
+
+		JSONObject almDateProvider = new JSONObject();
+		almDateProvider.put("provider", "almDateProvider");
+
+		metadata.put("createDate", almDateProvider);
+		metadata.put("submitDate", almDateProvider);
+		metadata.put("finishDate", almDateProvider);
 
 		List<Map> listMap = ValueProviderUtils.buildDataByProvider(metadata, Arrays.asList(detailViewData));
 		return listMap.get(0);
@@ -204,6 +222,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		int rows = 0;
 		if (newDemand.getId() == null) {
 			newDemand.setStatus((byte) DemandStatus.APPROVING.getCode());
+			newDemand.setProcessType(DemandProcessStatus.DEPARTMENTMANAGER.getCode());
 			this.addNewDemand(newDemand);
 			selectDeman = this.list(newDemand).get(0);
 		} else {
@@ -220,6 +239,8 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			selectDeman.setType(newDemand.getType());
 			selectDeman.setFinishDate(newDemand.getFinishDate());
 			selectDeman.setSubmitDate(new Date());
+			selectDeman.setStatus((byte) DemandStatus.APPROVING.getCode());
+			selectDeman.setProcessType(DemandProcessStatus.DEPARTMENTMANAGER.getCode());
 			this.update(selectDeman);
 		}
 
@@ -247,69 +268,76 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	}
 
 	@Override
-	public EasyuiPageOutput listPageForUser(Demand selectDemand) {
-
+	public EasyuiPageOutput listPageForUser (Demand selectDemand) {
+		
 		try {
-			DemandDto selectDemandDto = new DemandDto();
+			DemandDto selectDemandDto =new DemandDto();
 			Map<Object, Object> metadata = new HashMap<>();
 
-			if (selectDemand.getBelongProId() != null) {
+			if(selectDemand.getBelongProId()!=null) {
 				selectDemandDto.setBelongProId(selectDemand.getBelongProId());
 			}
-			if (!WebUtil.strIsEmpty(selectDemand.getName())) {
+			if(!WebUtil.strIsEmpty(selectDemand.getName())) {
 				selectDemandDto.setName(selectDemand.getName());
-
+				
 			}
-			if (selectDemand.getType() != null) {
+			if(!WebUtil.strIsEmpty(selectDemand.getSerialNumber())) {
+				selectDemandDto.setSerialNumber(selectDemand.getSerialNumber());
+				
+			}
+			if(selectDemand.getType()!=null) {
 				selectDemandDto.setType(selectDemand.getType());
 			}
-			if (selectDemand.getStatus() != null) {
+			if(selectDemand.getStatus()!=null) {
 				selectDemandDto.setStatus(selectDemand.getStatus());
 			}
-			if (selectDemand.getSubmitDate() != null) {
+			if(selectDemand.getSubmitDate()!=null) {
 				String selectDate = DateUtil.getDate(selectDemand.getSubmitDate());
-				selectDemandDto.setStartTime(selectDate + " 00:00:00");
-				selectDemandDto.setEndTime(selectDate + " 23:59:59");
+				selectDemandDto.setStartTime(selectDate+" 00:00:00");
+				selectDemandDto.setEndTime(selectDate+" 23:59:59");
 			}
-			if (!WebUtil.strIsEmpty(selectDemand.getSort())) {
-				String columnValue = ColumnUtil.getColumnValue(Demand.class, selectDemand.getSort());
+			if(!WebUtil.strIsEmpty(selectDemand.getSort())) {
+				String columnValue = ColumnUtil.getColumnValue(Demand.class,selectDemand.getSort());
 				selectDemandDto.setSort(columnValue);
 			}
-			if (!WebUtil.strIsEmpty(selectDemand.getOrder())) {
+			if(!WebUtil.strIsEmpty(selectDemand.getOrder())) {
 				selectDemandDto.setOrder(selectDemand.getOrder());
 			}
-			if (selectDemand.getPage() != null) {
+			if(selectDemand.getPage()!=null) {
 				selectDemandDto.setPage(selectDemand.getPage());
 			}
-			if (selectDemand.getRows() != null) {
+			if(selectDemand.getRows()!=null) {
 				selectDemandDto.setRows(selectDemand.getRows());
 			}
-			List<Demand> dates = this.getActualDao().selectDemandList(selectDemandDto);
-			int total = this.getActualDao().selectDemandListCount(selectDemandDto);
-			DemandDto demandDto = new DemandDto();
+			List<Demand> dates =this.getActualDao().selectDemandList(selectDemandDto);
+			int total=this.getActualDao().selectDemandListCount(selectDemandDto);
+			DemandDto demandDto =new DemandDto();
 			List<DemandDto> dtoDates = new ArrayList<DemandDto>();
-			// 循环塞部门
+			//循环塞部门
 			dates.forEach(d -> {
 				try {
-					DemandDto newDemandDto = new DemandDto();
-					BeanUtils.copyProperties(newDemandDto, d);
+					DemandDto newDemandDto =new DemandDto();
+			    	BeanUtils.copyProperties(newDemandDto, d);
 					BaseOutput<User> userBase = this.userRpc.findUserById(d.getUserId());
 					User user = userBase.getData();
-					if (user != null) {
+					if (user!=null) {
 						BaseOutput<Department> departmentBase = this.departmentRpc.get(user.getDepartmentId());
-						if (departmentBase.getData() != null) {
+						if(departmentBase.getData()!=null) {
 							newDemandDto.setDepartmentId(departmentBase.getData().getId());
 							newDemandDto.setDepartmentName(departmentBase.getData().getName());
 							BaseOutput<Department> firstDepartment = this.departmentRpc.getFirstDepartment(departmentBase.getData().getId());
-							if (firstDepartment.getData() != null) {
+							if(firstDepartment.getData()!=null) {
 								newDemandDto.setDepartmentFirstName(firstDepartment.getData().getName());
 							}
 						}
 					}
+					//添加可编辑按钮
+					newDemandDto.setProcessFlag(this.isBackEdit(d));
 					dtoDates.add(newDemandDto);
 				} catch (Exception e) {
 					e.getMessage();
 				}
+				
 
 			});
 			this.bpmcUtil.fitLoggedUserIsCanHandledProcess(dtoDates);
@@ -328,11 +356,11 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			JSONObject demandTypeProvider = new JSONObject();
 			demandTypeProvider.put("provider", "demandTypeProvider");
 			metadata.put("type", demandTypeProvider);
-
+			
 			JSONObject projectSysProvider = new JSONObject();
 			projectSysProvider.put("provider", "projectSysProvider");
 			metadata.put("belongSysId", projectSysProvider);
-
+			
 			JSONObject datetimeProvider = new JSONObject();
 			datetimeProvider.put("provider", "datetimeProvider");
 			metadata.put("createDate", datetimeProvider);
@@ -340,12 +368,12 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			metadata.put("finishDate", datetimeProvider);
 			demandDto.setMetadata(metadata);
 			List dtoDatesValue = ValueProviderUtils.buildDataByProvider(demandDto, dtoDates);
-			return new EasyuiPageOutput(total, dtoDatesValue);
+            return new EasyuiPageOutput(total, dtoDatesValue);
 		} catch (Exception e) {
 			e.getMessage();
 		}
 		return null;
-
+		
 	}
 
 	@Override
@@ -461,6 +489,10 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 				demandDto.setFirmName(firm.getData().getName());
 			}
 		}
+		// 判断是否可修改需求内容
+		// 流程状态为返回编辑，是页面返回且编辑
+		demandDto.setProcessFlag(this.isBackEdit(demand));
+
 		return demandDto;
 	}
 
@@ -506,10 +538,14 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		if (selectDemand.getStatus().equals((byte) DemandStatus.COMPLETE.getCode())) {
 			throw new DemandExceptions("需求已经通过申请，不能删除");
 		}
+		if (selectDemand.getStatus().equals((byte) DemandStatus.APPROVING.getCode())) {
+			throw new DemandExceptions("需求已经进入申请，不能删除");
+		}
 		String valProcess = selectDemand.getProcessInstanceId();
+		BaseOutput<String> outPut = null;
 		if (valProcess != null) {// 已经开启流程的，停止流程
 			// 发送消息通知流程
-			taskRpc.messageEventReceived("demandDeleteMsg", selectDemand.getProcessInstanceId(), null);
+			outPut = taskRpc.messageEventReceived("demandDeleteMsg", selectDemand.getProcessInstanceId(), null);
 		}
 		selectDemand.setStatus((byte) DemandStatus.DELETE.getCode());
 		int i = this.update(selectDemand);
@@ -532,12 +568,13 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		Demand selectDemand = new Demand();
 		selectDemand = this.getByCode(code);
 		selectDemand.setReciprocateId(userId);
+		selectDemand.setProcessType(DemandProcessStatus.ACCEPT.code);
 		this.update(selectDemand);
 		return taskRpc.complete(taskId, variables);
 	}
 
 	@Override
-	public BaseOutput submitApprove(String code, String taskId, Byte status) {
+	public BaseOutput submitApprove(String code, String taskId, Byte status, String processType) {
 		Demand condition = new Demand();
 		condition.setSerialNumber(code);
 		;
@@ -545,6 +582,11 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		if (status != null) {
 			Demand selectDemand = list.get(0);
 			selectDemand.setStatus(status);
+			this.update(selectDemand);
+		}
+		if (processType != null) {
+			Demand selectDemand = list.get(0);
+			selectDemand.setProcessType(processType);
 			this.update(selectDemand);
 		}
 		Map<String, Object> variables = new HashMap<>();
@@ -555,13 +597,15 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	@Override
 	public BaseOutput rejectApprove(String code, String taskId) {
 		Map<String, Object> variables = new HashMap<>();
+		Demand demand = this.getByCode(code);
+		demand.setProcessType(DemandProcessStatus.BACKANDEDIT.getCode());// 被驳回的状态
+		this.update(demand);
 		variables.put("approved", "false");
 		return taskRpc.complete(taskId, variables);
 	}
 
 	@Override
 	public BaseOutput reSubmint(Demand newDemand, String taskId) throws DemandExceptions {
-		// TODO Auto-generated method stub
 		Demand selectDeman = demandMapper.selectByPrimaryKey(newDemand.getId());
 		if (selectDeman == null) {
 			throw new DemandExceptions("找不到当前需求!");
@@ -574,10 +618,24 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		selectDeman.setName(newDemand.getName());
 		selectDeman.setType(newDemand.getType());
 		selectDeman.setFinishDate(newDemand.getFinishDate());
+		selectDeman.setProcessType(DemandProcessStatus.DEPARTMENTMANAGER.getCode());
 		this.update(selectDeman);
 		Map<String, Object> variables = new HashMap<>();
 		variables.put("approved", "false");
 		return taskRpc.complete(taskId, variables);
+	}
+
+	public int isBackEdit(Demand demand) {
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		if (demand.getProcessType() == null) {
+			return 0;
+		}
+		// 满足条件，1创建人和编辑人是同一个人 2流程状态是返回编辑状态
+		if (demand.getProcessType().equals(DemandProcessStatus.BACKANDEDIT.getCode()) && demand.getUserId().equals(userTicket.getId())) {
+			return 1;
+		}
+
+		return 0;
 	}
 
 }

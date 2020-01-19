@@ -110,7 +110,7 @@ public interface DemandService extends BaseService<Demand, Long> {
      * @param code
      * @return
      */
-    BaseOutput submitApprove(String code, String taskId,Byte status);
+    BaseOutput submitApprove(String code, String taskId,Byte status,String processType);
     
     /**
      * 添加指定的接收人
@@ -120,9 +120,15 @@ public interface DemandService extends BaseService<Demand, Long> {
     BaseOutput submitApproveAndAccept(String code, String taskId,Long userId);
     
     /**
-     * 完成提交
+     * 驳回需求申请
      * @param code
      * @return
      */
     BaseOutput rejectApprove(String code, String taskId);
+    /**
+     * 是否是流程驳回可编辑的
+     * @param code
+     * @return
+     */
+    int isBackEdit(Demand demand);
 }

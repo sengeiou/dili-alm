@@ -10,8 +10,8 @@
 				<table style="padding: 10px;">
 					<tr>
 						<td style="padding: 5px;"><input class="easyui-textbox"
-							name="name" id="name" style="width: 100%"
-							data-options="label:'需求名称:', validType:'length[0,25]'" /></td>
+							name="serialNumber" id="serialNumber" style="width: 100%"
+							data-options="label:'需求编号:', validType:'englishLowerCase'" /></td>
 
 						<td style="padding: 5px;"><input 
 							name="belongProId" id="belongProId" style="width: 100%"
@@ -27,7 +27,7 @@
 							data-options="editable:false,label:'需求类型:'" />
 							<#comboProvider _id="type" _provider='demandTypeProvider' />
 							<input 
-								name="status" id="status" type="hidden"/>
+								name="status" id="status_search" type="hidden"/>
 						</td>
 					</tr>
 					<tr>
@@ -159,17 +159,34 @@
         <div id="progressDlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="true" title="流程图" style="padding:20px" modal="true" border="thin" closed="true"
              data-options="
 				iconCls: 'icon-save',
-				width:500,
+				width:800,
 				height:450
 			">
             <img id="processInstanceImg" />
         </div>
         <div id="win" style="display: none;"  ></div>
+                <!-- 隐藏编辑框 -->
+        <div id="demandForTaskDlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="true"  style="padding:20px" modal="true" border="thin" closed="true"
+             data-options="
+				iconCls: 'icon-save',
+				width: 680,
+				height: 480
+			">
+			<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" id="demandForTaskSrc"  scrolling="no"  width="100%" height="100%"></iframe>
+        </div>
 <!-- ====================================================================================================================== -->
 <!-- style & script 分隔线 -->
 <!-- ====================================================================================================================== -->
 
 <script type="text/javascript">
+		$.extend($.fn.validatebox.defaults.rules, {
+			englishLowerCase: {
+		        validator: function (value, param) {
+		            return /^[a-zA-Z0-9]{0,30}$/.test(value)//其他长度注意改正则
+		        },
+		        message: '只能输入字母或数字且长度小于30！'
+		    }
+		});
         //打开新增窗口
         function openInsert(){
             $('#dlg').dialog('open');
@@ -178,39 +195,76 @@
             $('#_form').form('clear');
             formFocus("_form", "_serialNumber");
         }
-
+        //打开被驳回的需求进行编辑
+        function openUpdateForTask(id){
+    		$("#demandForTaskSrc").attr("src",'${contextPath!}/demand/editForTaskByAlm.html?id=' +id); //设置IFRAME的SRC;
+            $("#demandForTaskDlg").dialog({
+                bgiframe: true,
+                resizable: true, //是否可以重置大小
+                height: 480, //高度
+                width: 626, //宽度
+                draggable: false, //是否可以拖动。
+                title: "修改编辑",
+                modal: true,
+                open: function (e) {  //打开的时候触发的事件
+                  
+                    document.body.style.overflow = "hidden"; //隐藏滚动条
+                },
+                close: function () { //关闭Dialog时候触发的事件
+                    document.body.style.overflow = "visible";  //显示滚动条
+                    Test();
+                }
+            })
+            $('#demandForTaskDlg').dialog('open');
+            $('#demandForTaskDlg').dialog('center');
+        }
+        
         //打开修改窗口
         function openUpdate(){
-        	
 
             var selected = $("#grid").datagrid("getSelected");
             if (null == selected) {
                 $.messager.alert('警告','请选中一条数据');
                 return;
             }
+            
+        	if(selected.processFlag==1){//驳回重新编辑
+        		openUpdateForTask(selected.id);
+        	}else{
+        		//未提流程交编辑
+                //重新读取需求信息
+                var htmlobj = $.ajax({url : "${contextPath}/demand/editFlag.json?id=" + selected.id,async : false});
+    			var str = htmlobj.responseText;
+    			var returnInfo = $.parseJSON(str);
+    			if(returnInfo.code=="5000"){
+    				$.messager.alert('警告',returnInfo.message);
+    				return;
+    			}
 
-        	if(selected.$_status!=1){//审批中的显示进度
-       		 $.messager.alert('警告','未提交的需求才能进行修改！');
-                return;
-       	     }
-            $('#dlg').dialog('open');
-            $('#dlg').dialog('center');
-            //formFocus("_form", "_serialNumber");
-            var formData = $.extend({},selected);
-            formData = addKeyStartWith(getOriginalData(formData),"_");
-            console.log(formData);
-            if(formData._content==""){
-            	editor.txt.html("<p>请输入内容...</p><p><br></p>");
-            }else{
-            	 editor.txt.html(formData._content)
-            }
-            if(formData._reason==""){
-            	editor2.txt.html("<p>请输入内容...</p><p><br></p>");
-            }else{
-            	 editor2.txt.html(formData._reason)
-            }
-            formData._finishDate=dateFormat_1(formData._finishDate);
-            $('#_form').form('load', formData);
+                $('#dlg').dialog('open');
+                $('#dlg').dialog('center');
+                //formFocus("_form", "_serialNumber");
+                //重新读取需求信息
+                var htmlobj = $.ajax({url : "${contextPath}/demand/demandInfo.json?id=" + selected.id,async : false});
+    			var str = htmlobj.responseText;
+    			var detailInfo = $.parseJSON(str);
+    			
+                var formData = $.extend({},detailInfo);
+                formData = addKeyStartWith(getOriginalData(formData),"_");
+                console.log(formData);
+                if(formData._content==""){
+                	editor.txt.html("<p>请输入内容...</p><p><br></p>");
+                }else{
+                	 editor.txt.html(formData._content)
+                }
+                if(formData._reason==""){
+                	editor2.txt.html("<p>请输入内容...</p><p><br></p>");
+                }else{
+                	 editor2.txt.html(formData._reason)
+                }
+                formData._finishDate=dateFormat_1(formData._finishDate);
+                $('#_form').form('load', formData);
+        	}
         }
 
         /*
@@ -353,9 +407,11 @@
             if(!$('#form').form("validate")){
                 return;
             }
+            
             var param = bindMetadata("grid", true);
             var formData = $("#form").serializeObject();
             $.extend(param, formData);
+            console.log(formData);
             $("#grid").datagrid("load", param);
         }
 
@@ -363,6 +419,7 @@
         //清空表单
         function clearForm() {
             $('#form').form('clear');
+            $("#status_search").val(1); 
         }
 
         //表格表头右键菜单
@@ -381,9 +438,12 @@
         	if(row.$_status==3){//审批中的显示进度
         		content+='<span style="padding:2px;"><a href="javascript:void(0)" onclick="showProgress('+index+')">查看进度</a></span>';
         	}
-        	if(row.$_status==3||row.$_status==4){
+        	if(row.processFlag==1){
+        		content+='<span style="padding:2px;color:red;"><a style="color:red;" href="javascript:void(0)" onclick="openUpdateForTask('+row.id+')">驳回修改</a></span>';
+        	}else{
         		content+='<span style="padding:2px;"><a href="javascript:void(0)" onclick="showDemandDetail('+row.id+')">查看详情</a></span>';
         	}
+        	
         	return content;
         }
         $.messager.progress({
@@ -427,7 +487,7 @@
             } else {
                 document.onkeyup = getKey;
             }
-          $("#status").val(1);  
+          $("#status_search").val(1);  
           queryGrid();
           $('#dlg').dialog('open');
           $('#dlg').dialog('close');
@@ -512,10 +572,15 @@
               		}else if(title=="处理完"){
               			status=4;
               		}
-      				$("#status").val(status);
+      				$("#status_search").val(status);
       				 queryGrid();
               	  }
               	});
+        }
+        //子页面回调函数
+        function CloseEditPage() {
+            $("#demandForTaskDlg").dialog("close");
+            queryGrid();
         }
 
     </script>
