@@ -151,64 +151,69 @@
 
 </script>
 <script type="text/javascript">
-var myfiles = new Array();
-$("#fileuploader").uploadFile({
-	url :"${contextPath!}/files/filesUpload", // 文件上传url                 //文件上传url
-    fileName : "file",             //提交到服务器的文件名
-    uploadStr: '上传附件',
-    deleteStr: '删除',
-    abortStr: '上传中',
-    maxFileCount: 10,                //上传文件个数（多个时修改此处
-    returnType: 'json',              //服务返回数据
-    allowedTypes: 'doc,xls,ppt,pdf,txt,dwg,exb,dps,wps,et,rar,zip,xmind,JPG,GIF,png,bmp',  //允许上传的文件式
-    extErrorStr : '文件格式错误！允许上传格式：',
-    dragDropStr:'',
-    showDone: false,                     //是否显示"Done"(完成)按钮
-    showDelete: true,                  //是否显示"Delete"(删除)按钮
-    deleteCallback: function(data,pd)
-    {
-    	
-			$.ajax({
-						type : "POST",
-						url : '${contextPath!}/files/delete',
-						data : {
-							id : data.data[0].id
-						},
-						success : function(dataresult) {
-							if (dataresult.code == 200) {
-				                pd.statusbar.hide();        //删除成功后隐藏进度条等
-			                    $('#image').val('');
-							} else {
-								$.messager.alert('错误', dataresult.result);
+function initFileuploader(imgPathArray){
+	var myfiles = new Array();
+	$("#fileuploader").uploadFile({
+		url :"${contextPath!}/files/filesUpload", // 文件上传url              
+	    fileName : "file",             //提交到服务器的文件名
+	    uploadStr: '上传附件',
+	    deleteStr: '删除',
+	    abortStr: '上传中',
+	    maxFileCount: 10,                //上传文件个数（多个时修改此处
+	    returnType: 'json',              //服务返回数据
+	    allowedTypes: 'doc,xls,ppt,pdf,txt,dwg,exb,dps,wps,et,rar,zip,xmind,JPG,GIF,png,bmp',  //允许上传的文件式
+	    extErrorStr : '文件格式错误！允许上传格式：',
+	    dragDropStr:'',
+	    showDone: false,                     //是否显示"Done"(完成)按钮
+	    showDelete: true,                  //是否显示"Delete"(删除)按钮
+	    initialPreview:imgPathArray,
+	    deleteCallback: function(data,pd)
+	    {
+	 			$.ajax({
+							type : "POST",
+							url : '${contextPath!}/files/delete',
+							data : {
+								id : data.data[0].id
+							},
+							success : function(dataresult) {
+								if (dataresult.code == 200) {
+					                pd.statusbar.hide();        //删除成功后隐藏进度条等
+				                    $('#image').val('');
+								} else {
+									$.messager.alert('错误', dataresult.result);
+								}
+								var fileIds =new Array($('#documentUrl').val()) ;//取值
+								var index_id=fileIds.indexOf(data.data[0].id);
+	 							console.log(data.data[0].id);
+	 							fileIds.splice(index_id,1);
+	 							$("#documentUrl").val();
+	 						    $("#documentUrl").val(fileIds);
+							},
+							error : function() {
+								$.messager.alert('错误', '远程访问失败');
 							}
-							var fileIds =new Array($('#documentUrl').val()) ;//取值
-							var index_id=fileIds.indexOf(data.data[0].id);
- 							console.log(data.data[0].id);
- 							fileIds.splice(index_id,1);
- 							$("#documentUrl").val();
- 						    $("#documentUrl").val(fileIds);
-						},
-						error : function() {
-							$.messager.alert('错误', '远程访问失败');
-						}
-					});
-    },
-    onSuccess: function(files,data,xhr,pd)
-    {
-        //组织文件ID上传
-         $("#documentUrl").val();
-        myfiles.push(data.data[0].id);
-        $("#documentUrl").val(myfiles);
-        if(data&&data.code===0){
-            $('#image').val(data.url);
-        }
-    }
-});
+						}); 
+	    },
+	    onSuccess: function(files,data,xhr,pd)
+	    {
+	        //组织文件ID上传
+	         $("#documentUrl").val();
+	        myfiles.push(data.data[0].id);
+	        $("#documentUrl").val(myfiles);
+	        if(data&&data.code===0){
+	            $('#image').val(data.url);
+	        }
+	    }
+	});
+}
+
 
 
 $(function () {
     //所属项目自动加载
     loadSystemSelect();
+    //初始化上传框
+    initFileuploader(null);
     
 })
         function loadSystemSelect() {
@@ -220,5 +225,6 @@ $(function () {
 					});
 		
 		}
+		
 </script>
 </#body>

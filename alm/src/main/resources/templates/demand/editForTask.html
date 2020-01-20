@@ -55,6 +55,24 @@
 			</td>
 		</tr>
 		<tr>
+				<td colspan="2" style="padding: 5px;">
+					<table class="easyui-datagrid" title="上传文件列表" id="fileGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"  style="width: 100%;"
+					pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
+					sortName="name" align="center" fit="false" striped="true" toolbar="#fileToolbar" idField="id"
+					data-options="url:'${contextPath!}/demand/files/list?id=${demand.id!}'">
+							<thead>
+								<tr>
+									<th data-options="field:'name', width:'30%',  sortable:'true', order:'asc', align:'left', resizable:'true', fixed:'false'">文件名</th>
+									<th data-options="field:'type', width:'20%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">文件类型</th>
+									<th data-options="field:'createMemberId', width:'10%',  _provider:'memberProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">创建人</th>
+									<th data-options="field:'created', width:'20%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">创建时间</th>
+									<th data-options="field:'opt',width:'20%',formatter:fileOptFormatter, align:'center'">操作</th>
+								</tr>
+							</thead>
+					</table>
+				</td>
+		</tr>
+		<tr>
 			<td style="padding: 5px;" colspan="2">
 				<p>需求内容:</p>
 				<div id="editor_content" style="width: 100%">
@@ -147,8 +165,10 @@ $("#fileuploader").uploadFile({
     maxFileCount: 10,                //上传文件个数（多个时修改此处
     returnType: 'json',              //服务返回数据
     allowedTypes: 'doc,xls,ppt,pdf,txt,dwg,exb,dps,wps,et,rar,zip,xmind,JPG,GIF,png,bmp',  //允许上传的文件式
+    extErrorStr : '文件格式错误！允许上传格式：',
+    dragDropStr:'',
     showDone: false,                     //是否显示"Done"(完成)按钮
-    showDelete: true,                  //是否显示"Delete"(删除)按钮
+    showDelete: true,                  //是否显示"Delete"(删除)按钮                 
     deleteCallback: function(data,pd)
     {
     	
@@ -222,9 +242,6 @@ $(function () {
     formData._finishDate=dateFormat_1(formData._finishDate);
     $('#_form').form('load', formData);
     
-    
-    //加载父元素高度
-    setParentIframeHeight();
 })
 function dateFormat_1(longTypeDate) {
     		var dateType = "";
@@ -304,23 +321,6 @@ function dateFormat_1(longTypeDate) {
          }
 </script>
 <script type="text/javascript">
-function setParentIframeHeight(){
-    try{
-        var parentIframe = parent.document.getElementById("demandForTaskSrc");
-         if(window.attachEvent){
-            window.attachEvent("onload", function(){
-                parentIframe.height = document.documentElement.scrollHeight;
-            });
-            return;
-        }else{
-            window.onload = function(){
-                parentIframe.height = document.body.scrollHeight+50;
-            };
-            return;                 
-        }     
-    }catch(e){
-        throw new Error('setParentIframeHeight Error');
-    }
-}
-</script>
+	<#demand_publicJs />
+</script> 
 </#body>

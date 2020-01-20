@@ -25,8 +25,10 @@ import com.dili.ss.exception.BusinessException;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.alm.utils.WebUtil;
 import com.dili.bpmc.sdk.annotation.BpmTask;
+import com.dili.bpmc.sdk.domain.ActForm;
 import com.dili.bpmc.sdk.domain.TaskMapping;
 import com.dili.bpmc.sdk.dto.TaskDto;
+import com.dili.bpmc.sdk.rpc.BpmcFormRpc;
 import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
@@ -76,6 +78,8 @@ public class DemandController {
     DemandService demandService;
     @Autowired
     FilesService filesService;
+    @Autowired
+    BpmcFormRpc bpmcFormRpc;
     
 	private static final Logger LOGGER = LoggerFactory.getLogger(DemandController.class);
     @ApiOperation("跳转到Demand页面")
@@ -693,4 +697,41 @@ public class DemandController {
         return BaseOutput.success("提交成功");
     }
 
+    @ApiOperation("页面流程审批")
+    @RequestMapping(value = "/submitApproveByAlm.html", method = RequestMethod.GET)
+	public String submitApproveByAlm(@RequestParam Long id, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
+    	Demand selectDemand = new Demand();
+    	selectDemand=demandService.get(id);
+    	String valProcess = selectDemand.getSerialNumber();
+    	
+        //根据业务号查询任务
+        TaskDto taskDto = DTOUtils.newInstance(TaskDto.class);
+        taskDto.setProcessInstanceBusinessKey(valProcess);
+        BaseOutput<List<TaskMapping>> outputList = taskRpc.list(taskDto);
+        if(!outputList.isSuccess()){
+        	return "用户错误！"+outputList.getMessage(); 
+        }
+        
+        List<TaskMapping> taskMappings = outputList.getData();
+        //获取formKey
+        TaskMapping selected = taskMappings.get(0);
+        //通过bpmc的form表单，跳转到相应的提交页面
+        ActForm selectActFrom  = bpmcFormRpc.getByKey(selected.getFormKey()).getData();
+        String url = selectActFrom.getActionUrl();
+        
+        String demandJsonStr = JSONObject.toJSONString(selectDemand);
+        modelMap.put("model", selectDemand);
+        modelMap.put("modelStr", demandJsonStr);
+    	/** 个人信息 **/
+        User userTicket = this.userRpc.findUserById(selectDemand.getUserId()).getData();
+        if (userTicket==null) {
+			return "用户错误！";
+		}
+    	BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
+    	modelMap.addAttribute("userInfo", userTicket);
+    		
+    	modelMap.addAttribute("depName",de.getData().getName());
+    	modelMap.put("taskId",selected.getId());
+		return url+"?taskId="+selected.getId();
+	}
 }

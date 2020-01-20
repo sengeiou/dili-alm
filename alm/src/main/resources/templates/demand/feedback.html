@@ -169,8 +169,11 @@
                             //向任务中心发送消息，参数为要跳转的地址
                             window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
                         }else{
-                            location.href = "${contextPath}/demand/index.html";
+   	                   	 if(typeof(window.opener.ReRender)!="undefined"){
+	                		 window.parent.CloseEditPage();
+	                	 }
                         }
+
                     }else{
                     	$.messager.alert('警告',"错误:"+data.message);
                     }
@@ -242,4 +245,7 @@
 	    	window.open('${contextPath!}/files/download?id=' + id);
 	    }
     </script>
+   <script type="text/javascript">
+	<#demand_publicJs />
+    </script> 
 </#body>

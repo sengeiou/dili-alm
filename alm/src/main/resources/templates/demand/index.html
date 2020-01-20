@@ -204,6 +204,29 @@
                 height: 480, //高度
                 width: 626, //宽度
                 draggable: false, //是否可以拖动。
+                title: "审批",
+                modal: true,
+                open: function (e) {  //打开的时候触发的事件
+                  
+                    document.body.style.overflow = "hidden"; //隐藏滚动条
+                },
+                close: function () { //关闭Dialog时候触发的事件
+                    document.body.style.overflow = "visible";  //显示滚动条
+                    Test();
+                }
+            })
+            $('#demandForTaskDlg').dialog('open');
+            $('#demandForTaskDlg').dialog('center');
+        }
+        //打开被驳回的需求进行编辑
+        function openForTask(id){
+    		$("#demandForTaskSrc").attr("src",'${contextPath!}/demand/submitApproveByAlm.html?id=' +id); //设置IFRAME的SRC;
+            $("#demandForTaskDlg").dialog({
+                bgiframe: true,
+                resizable: true, //是否可以重置大小
+                height: 480, //高度
+                width: 626, //宽度
+                draggable: false, //是否可以拖动。
                 title: "修改编辑",
                 modal: true,
                 open: function (e) {  //打开的时候触发的事件
@@ -218,7 +241,6 @@
             $('#demandForTaskDlg').dialog('open');
             $('#demandForTaskDlg').dialog('center');
         }
-        
         //打开修改窗口
         function openUpdate(){
 
@@ -230,7 +252,7 @@
             
         	if(selected.processFlag==1){//驳回重新编辑
         		openUpdateForTask(selected.id);
-        	}else{
+        	}else if(selected.$_status==1){
         		//未提流程交编辑
                 //重新读取需求信息
                 var htmlobj = $.ajax({url : "${contextPath}/demand/editFlag.json?id=" + selected.id,async : false});
@@ -240,7 +262,6 @@
     				$.messager.alert('警告',returnInfo.message);
     				return;
     			}
-
                 $('#dlg').dialog('open');
                 $('#dlg').dialog('center');
                 //formFocus("_form", "_serialNumber");
@@ -435,8 +456,10 @@
         }
         function formatOptions(value, row, index) {
         	var content = "";
-        	if(row.$_status==3){//审批中的显示进度
+        	if(row.$_status==3&&!row.isHandleProcess){//审批中的显示进度
         		content+='<span style="padding:2px;"><a href="javascript:void(0)" onclick="showProgress('+index+')">查看进度</a></span>';
+        	}else if(row.$_status==3&&row.isHandleProcess){//显示执行审批操作
+        		content+='<span style="padding:2px;"><a href="javascript:void(0)" style="color:red;" onclick="openForTask('+row.id+')">审批</a></span>';
         	}
         	if(row.processFlag==1){
         		content+='<span style="padding:2px;color:red;"><a style="color:red;" href="javascript:void(0)" onclick="openUpdateForTask('+row.id+')">驳回修改</a></span>';
