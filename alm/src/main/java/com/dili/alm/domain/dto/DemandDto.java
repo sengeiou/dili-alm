@@ -22,7 +22,7 @@ public class DemandDto extends Demand implements ProcessHandleInfoDto {
 	String userName;
 	String startTime;
 	String endTime;
-	int processFlag;//流程编辑标识 1是可编辑，空为不可编辑
+	int processFlag;// 流程编辑标识 1是可编辑，空为不可编辑
 	@Transient
 	@Column(name = "`content`")
 	private String content;
@@ -32,6 +32,7 @@ public class DemandDto extends Demand implements ProcessHandleInfoDto {
 	private Boolean isHandleProcess = false;
 	private String formKey;
 	private String taskId;
+	private Boolean isNeedClaim;
 
 	public List<Long> getIds() {
 		return ids;
@@ -114,7 +115,7 @@ public class DemandDto extends Demand implements ProcessHandleInfoDto {
 	public void setContent(String content) {
 		this.content = content;
 	}
-	
+
 	public int getProcessFlag() {
 		return processFlag;
 	}
@@ -122,7 +123,6 @@ public class DemandDto extends Demand implements ProcessHandleInfoDto {
 	public void setProcessFlag(int processFlag) {
 		this.processFlag = processFlag;
 	}
-	
 
 	@Override
 	public Boolean getIsHandleProcess() {
@@ -152,6 +152,16 @@ public class DemandDto extends Demand implements ProcessHandleInfoDto {
 	@Override
 	public void setTaskId(String taskId) {
 		this.taskId = taskId;
+	}
+
+	@Override
+	public Boolean getIsNeedClaim() {
+		return isNeedClaim;
+	}
+
+	@Override
+	public void setIsNeedClaim(Boolean isNeedClaim) {
+		this.isNeedClaim = isNeedClaim;
 	}
 
 }

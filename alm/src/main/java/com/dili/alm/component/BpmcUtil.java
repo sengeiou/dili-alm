@@ -63,6 +63,7 @@ public class BpmcUtil {
 					d.setFormKey(taskIdentity.getFormKey());
 					if (StringUtils.isNotBlank(taskIdentity.getAssignee()) && Long.valueOf(taskIdentity.getAssignee()).equals(userId)) {
 						d.setIsHandleProcess(true);
+						d.setIsNeedClaim(false);
 					} else {
 						GroupUserDto groupUser = taskIdentity.getGroupUsers().stream().filter(gu -> {
 							if (userId.toString().equals(gu.getUserId())) {
@@ -75,6 +76,7 @@ public class BpmcUtil {
 							return false;
 						}).findFirst().orElse(null);
 						d.setIsHandleProcess(groupUser != null);
+						d.setIsNeedClaim(groupUser != null ? true : null);
 					}
 				}
 
