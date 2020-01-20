@@ -48,9 +48,20 @@
 				data-options="label:'期望实现日期:'" required="true"  editable="false"/></td>
 		</tr>
 		<tr>
-			<td style="padding: 5px;" colspan="2">
-				<p>添加附件：</p>
-				<div id="fileuploader">选择文件</div>
+			<td colspan="2" style="padding: 5px;">
+				<label style="float:left;margin-left: 11px;">添加附件：</label>
+				<div id="fileuploader" style="margin-left: 120px;padding: 5px">选择文件</div>
+				<table class="easyui-datagrid" title="需求文档列表" id="demandFileGrid" style="width: 100%"
+					   fitColumns="true" pagination="false" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" align="center" fit="false" striped="true" idField="id" >
+					<thead>
+					<tr>
+						<th data-options="field:'name', width:'20%', align:'center', resizable:'true', fixed:'false'">文件名</th>
+						<th data-options="field:'length', width:'20%', align:'center', resizable:'true', fixed:'false'">大小</th>
+						<th data-options="field:'created', width:'50%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">上传日期</th>
+						<th data-options="field:'opt', width:'10%', align:'center', resizable:'true', fixed:'false',formatter:demandFileOptFormatter">操作</th>
+					</tr>
+					</thead>
+				</table>
 			</td>
 		</tr>
 		<tr>
@@ -68,7 +79,9 @@
 				</div>
 			</td>
 		</tr>
+		
 	</table>
+
 	<input type="hidden" id="documentUrl" name="documentUrl" value="" />
 </form>
 <!-- ====================================================================================================================== -->
@@ -151,7 +164,7 @@
 
 </script>
 <script type="text/javascript">
-var myfiles = new Array();
+/* var myfiles = new Array();
 $("#fileuploader").uploadFile({
 	url :"${contextPath!}/files/filesUpload", // 文件上传url                 //文件上传url
     fileName : "file",             //提交到服务器的文件名
@@ -183,7 +196,6 @@ $("#fileuploader").uploadFile({
 							}
 							var fileIds =new Array($('#documentUrl').val()) ;//取值
 							var index_id=fileIds.indexOf(data.data[0].id);
- 							console.log(data.data[0].id);
  							fileIds.splice(index_id,1);
  							$("#documentUrl").val();
  						    $("#documentUrl").val(fileIds);
@@ -203,14 +215,116 @@ $("#fileuploader").uploadFile({
             $('#image').val(data.url);
         }
     }
-});
+}); */
+var myfiles = new Array();
+function demandFileOptFormatter(value, row, index) {
+	return '<a href="javascript:void(0);" onclick="delVersionFile(' + row.id
+			+ ');">删除</a>';
+}
+function delVersionFile(id) {
+	$.messager.confirm('提示', '确定要删除该文档？', function(flag) {
+		if (!flag) {
+			return false;
+		}
+		$.ajax({
+					type : "POST",
+					url : '${contextPath!}/files/delete',
+					data : {
+						id : id
+					},
+					success : function(data) {
+						if (data.code == 200) {
+							var fileIds =$('#documentUrl').val().split(",");
+					        for(var i=0; i<fileIds.length;i++){
+					        	if(fileIds[i]==id){
+					        		fileIds.splice(i,1);
+		 							$("#documentUrl").val();
+		 						    $("#documentUrl").val(fileIds);
+					        	}
+					        }
 
+ 						    
+							var selected = $('#demandFileGrid')
+									.datagrid('getSelected');
+							var index = $('#demandFileGrid').datagrid(
+									'getRowIndex', selected);
+							$('#demandFileGrid').datagrid('deleteRow', index);
+							$($('#fileGrid').datagrid('getRows')).each(
+									function(i, item) {
+										if (item.id == selected.id) {
+											var rowIndex = $('#fileGrid')
+													.datagrid('getRowIndex',
+															item);
+											$('#fileGrid').datagrid(
+													'deleteRow', rowIndex);
+											$('#fileGrid')
+													.datagrid('acceptChanges');
+											return false;
+										}
+							});
+							
+						} else {
+							$.messager.alert('错误', data.result);
+						}
+					},
+					error : function() {
+						$.messager.alert('错误', '远程访问失败');
+					}
+				});
+	});
+}
 
 $(function () {
-    //所属项目自动加载
-    loadSystemSelect();
+    //需求加载
+	$("#fileuploader").uploadFile({
+						url : "${contextPath!}/files/filesUpload", // 文件上传url
+						fileName : "file", // 提交到服务器的文件名
+						uploadStr : '上传',
+						maxFileCount : 10, // 上传文件个数（多个时修改此处
+						returnType : 'json', // 服务返回数据
+					    allowedTypes: 'doc,xls,ppt,pdf,txt,dwg,exb,dps,wps,et,rar,zip,xmind,JPG,GIF,png,bmp',  //允许上传的文件式
+						showDone : false, // 是否显示"Done"(完成)按钮
+						showDelete : false, // 是否显示"Delete"(删除)按钮
+						// showError : false,
+						sizeErrorStr : '文件过大，允许上传文件最大为',// 超过最大文件限制
+						showStatusAfterSuccess : false,
+						maxFileSize : 10485760, // 上传文件个数（多个时修改此处
+						onError : function(files, status, errMsg, pd) {
+							$.messager.alert('错误', '上传失败！');
+						},
+						onSuccess : function(files, data, xhr, pd) {
+							if (data.code != 200) {
+								$.messager.alert('错误', data.result);
+								return;
+							}
+							// 上传成功后的回调方法。本例中是将返回的文件名保到一个hidden类开的input中，以便后期数据处理
+							$("#documentUrl").val();
+					        myfiles.push(data.data[0].id);
+					        $("#documentUrl").val(myfiles);
+							var row = data.data[0];
+							$('#demandFileGrid').datagrid('appendRow', row);
+						},
+						onSelect : function(files) {
+							var old = $('#demandFileGrid').datagrid('getData').rows;
+							for (var i = 0; i < old.length; i++) {
+								if (files[0].name == old[i].name) {
+									$('.ajax-upload-dragdrop').next('div').append('<div class="ajax-file-upload-error">请不要重复上传文件!</div>')
+									return false;
+								}
+							}
+						}
+	});
     
-})
+    loadSystemSelect();
+    fileEcho();
+    
+})		
+ 		function fileEcho() {
+	  		var fileIds=$("#documentUrl").val();
+            for(var i=0; i<fileIds.length;i++){
+            	myfiles.push(fileIds[i]);
+            }
+		}
         function loadSystemSelect() {
 			$('#_belongSysId').combobox({
 						url : "${contextPath!}/demand/listTree.json",
