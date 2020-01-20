@@ -243,7 +243,6 @@
         }
         //打开修改窗口
         function openUpdate(){
-
             var selected = $("#grid").datagrid("getSelected");
             if (null == selected) {
                 $.messager.alert('警告','请选中一条数据');
@@ -284,7 +283,12 @@
                 	 editor2.txt.html(formData._reason)
                 }
                 formData._finishDate=dateFormat_1(formData._finishDate);
+                formData.documentUrl=formData._documentUrl;
+                console.log(formData);
                 $('#_form').form('load', formData);
+                console.log('${contextPath!}/demand/files/list?id='+formData._id);
+        		$('#demandFileGrid').datagrid({url:'${contextPath!}/demand/files/list?id='+formData._id });
+
         	}
         }
 
@@ -379,6 +383,7 @@
                     }else{
                         $.messager.alert('错误',data.result);
                     }
+
                 },
                 error: function(){
                     $.messager.alert('错误','远程访问失败');
@@ -432,7 +437,6 @@
             var param = bindMetadata("grid", true);
             var formData = $("#form").serializeObject();
             $.extend(param, formData);
-            console.log(formData);
             $("#grid").datagrid("load", param);
         }
 

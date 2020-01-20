@@ -563,13 +563,28 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 
 	@Override
 	public BaseOutput submitApproveAndAccept(String code, String taskId, Long userId) {
+//		Map<String, Object> variables = new HashMap<>();
+//		variables.put("approved", "true");
+//		Demand selectDemand = new Demand();
+//		selectDemand = this.getByCode(code);
+//		selectDemand.setReciprocateId(userId);
+//		selectDemand.setProcessType(DemandProcessStatus.ACCEPT.code);
+//		this.update(selectDemand);
+//		return taskRpc.complete(taskId, variables);
+		
 		Map<String, Object> variables = new HashMap<>();
 		variables.put("approved", "true");
 		Demand selectDemand = new Demand();
 		selectDemand = this.getByCode(code);
 		selectDemand.setReciprocateId(userId);
-		selectDemand.setProcessType(DemandProcessStatus.ACCEPT.code);
-		this.update(selectDemand);
+		selectDemand.setProcessType(DemandProcessStatus.FINISH.getCode());
+		///sgq
+		BaseOutput<Map<String, Object>>  mapId=taskRpc.getVariables(taskId);
+		String dataId = (String) mapId.getData().get("businessKey");
+		selectDemand.setId(Long.parseLong(dataId));
+		this.updateSelective(selectDemand);
+		//sgq
+		
 		return taskRpc.complete(taskId, variables);
 	}
 
