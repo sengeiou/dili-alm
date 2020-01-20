@@ -28,5 +28,13 @@ public interface ProcessHandleInfoDto extends AlmProcessInstanceDto {
 	String getTaskId();
 
 	void setTaskId(String taskId);
+	
+	/**
+	 * 是否需要签收任务
+	 * @return
+	 */
+	Boolean getIsNeedClaim();
+	
+	void setIsNeedClaim(Boolean isNeedClaim);
 
 }
