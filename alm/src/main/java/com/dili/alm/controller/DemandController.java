@@ -117,7 +117,8 @@ public class DemandController {
 	public String detail(@RequestParam Long id,  ModelMap map) throws Exception {
 		DemandDto detailViewData = this.demandService.getDetailViewData(id);
 		try {
-			map.addAttribute("model",DemandServiceImpl.parseViewModel(detailViewData));
+			Object parseViewModel = DemandServiceImpl.parseViewModel(detailViewData);
+			map.addAttribute("model",parseViewModel);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			return null;

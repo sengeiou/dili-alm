@@ -149,7 +149,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 
 		JSONObject demandProcessProvider = new JSONObject();
 		demandProcessProvider.put("provider", "demandProcessProvider");
-		metadata.put("belongSysId", demandProcessProvider);
+		metadata.put("processType", demandProcessProvider);
 
 		JSONObject almDateProvider = new JSONObject();
 		almDateProvider.put("provider", "almDateProvider");
