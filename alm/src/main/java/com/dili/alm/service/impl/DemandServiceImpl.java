@@ -556,7 +556,6 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	public Demand getByCode(String code) {
 		Demand condition = new Demand();
 		condition.setSerialNumber(code);
-		;
 		List<Demand> list = listByExample(condition);
 		return CollectionUtils.isEmpty(list) ? null : list.get(0);
 	}
@@ -581,7 +580,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		///sgq
 		BaseOutput<Map<String, Object>>  mapId=taskRpc.getVariables(taskId);
 		String dataId = (String) mapId.getData().get("businessKey");
-		selectDemand.setId(Long.parseLong(dataId));
+		selectDemand.setSerialNumber(dataId);
 		this.updateSelective(selectDemand);
 		//sgq
 		
