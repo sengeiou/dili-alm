@@ -164,8 +164,9 @@ $("#fileuploader").uploadFile({
     abortStr: '上传中',
     maxFileCount: 10,                //上传文件个数（多个时修改此处
     returnType: 'json',              //服务返回数据
-    allowedTypes: 'doc,xls,ppt,pdf,txt,dwg,exb,dps,wps,et,rar,zip,xmind,JPG,GIF,png,bmp',  //允许上传的文件式
-    extErrorStr : '文件格式错误！允许上传格式：',
+    allowedTypes: 'docx,doc,xls,ppt,pdf,txt,dwg,exb,dps,wps,et,rar,zip,xmind,JPG,GIF,png,bmp',  //允许上传的文件式
+	extErrorStr : '文件格式错误！允许上传格式：',
+	sizeErrorStr : '文件过大，允许上传文件最大为',// 超过最大文件限制
     dragDropStr:'',
     showDone: false,                     //是否显示"Done"(完成)按钮
     showDelete: true,                  //是否显示"Delete"(删除)按钮                 
