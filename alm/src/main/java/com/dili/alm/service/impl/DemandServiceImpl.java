@@ -576,11 +576,11 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		Demand selectDemand = new Demand();
 		selectDemand = this.getByCode(code);
 		selectDemand.setReciprocateId(userId);
-		selectDemand.setProcessType(DemandProcessStatus.FINISH.getCode());
+		selectDemand.setProcessType(DemandProcessStatus.ACCEPT.getCode());
 		///sgq
-		BaseOutput<Map<String, Object>>  mapId=taskRpc.getVariables(taskId);
+/*		BaseOutput<Map<String, Object>>  mapId=taskRpc.getVariables(taskId);
 		String dataId = (String) mapId.getData().get("businessKey");
-		selectDemand.setSerialNumber(dataId);
+		selectDemand.setSerialNumber(dataId);*/
 		this.updateSelective(selectDemand);
 		//sgq
 		
