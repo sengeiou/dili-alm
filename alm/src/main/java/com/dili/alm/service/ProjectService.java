@@ -48,8 +48,7 @@ public interface ProjectService extends BaseService<Project, Long> {
 	/**
 	 * 暂停项目
 	 * 
-	 * @param id
-	 *            项目id
+	 * @param id 项目id
 	 * @throws ProjectException
 	 */
 	void pause(Long id) throws ProjectException;
@@ -57,8 +56,7 @@ public interface ProjectService extends BaseService<Project, Long> {
 	/**
 	 * 重启项目
 	 * 
-	 * @param id
-	 *            项目id
+	 * @param id 项目id
 	 * @throws ProjectException
 	 */
 	void resume(Long id) throws ProjectException;
@@ -76,8 +74,7 @@ public interface ProjectService extends BaseService<Project, Long> {
 	/**
 	 * 项目成本统计
 	 * 
-	 * @param projectId
-	 *            项目id
+	 * @param projectId 项目id
 	 * @return
 	 */
 	List<ProjectCostStatisticDto> projectCostStatistic(Long projectId);

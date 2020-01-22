@@ -2,6 +2,7 @@ package com.dili.alm.controller;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
+import com.dili.alm.constant.BpmConsts;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.OperationResult;
 import com.dili.alm.domain.Project;
@@ -42,6 +44,10 @@ import com.dili.alm.service.FilesService;
 import com.dili.alm.service.ProjectOnlineApplyService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.impl.ProjectOnlineApplyServiceImpl;
+import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
+import com.dili.bpmc.sdk.domain.TaskMapping;
+import com.dili.bpmc.sdk.rpc.RuntimeRpc;
+import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.uap.sdk.domain.UserTicket;
@@ -73,6 +79,10 @@ public class ProjectOnlineApplyController {
 	@Autowired
 	private DataDictionaryService ddService;
 	private static final String EMAIL_REGEX = "^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$";
+	@Autowired
+	private TaskRpc taskRpc;
+	@Autowired
+	private RuntimeRpc runtimeRpc;
 
 	@RequestMapping(value = "/detail", method = RequestMethod.GET)
 	public String detail(@RequestParam Long id, ModelMap modelMap) {
@@ -87,9 +97,15 @@ public class ProjectOnlineApplyController {
 	}
 
 	@RequestMapping(value = "/projectManagerConfirm", method = RequestMethod.GET)
-	public String projectManagerConfirmView(@RequestParam Long id, ModelMap modelMap) {
+	public String projectManagerConfirmView(@RequestParam String taskId, ModelMap modelMap) {
 		try {
-			ProjectOnlineApply vm = this.projectOnlineApplyService.getProjectManagerConfirmViewModel(id);
+			BaseOutput<Map<String, Object>> output = this.taskRpc.getVariables(taskId);
+			if (!output.isSuccess()) {
+				LOGGER.error(output.getMessage());
+				return "redirect:/projectOnlineApply/index.html";
+			}
+			String serialNumber = output.getData().get("businessKey").toString();
+			ProjectOnlineApply vm = this.projectOnlineApplyService.getProjectManagerConfirmViewModel(serialNumber);
 			modelMap.addAttribute("apply", ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
 		} catch (ProjectOnlineApplyException e) {
 			LOGGER.error(e.getMessage(), e);
@@ -100,15 +116,13 @@ public class ProjectOnlineApplyController {
 
 	@ResponseBody
 	@RequestMapping(value = "/projectManagerConfirm", method = RequestMethod.POST)
-	public BaseOutput<Object> projectManagerConfirm(@RequestParam Long id, @RequestParam Integer result,
-			@RequestParam(required = false) String description) {
+	public BaseOutput<Object> projectManagerConfirm(@RequestParam Long id, @RequestParam Integer result, @RequestParam(required = false) String description) {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		if (user == null) {
 			return BaseOutput.failure("请先登录");
 		}
 		try {
-			this.projectOnlineApplyService.projectManagerConfirm(id, user.getId(), OperationResult.valueOf(result),
-					description);
+			this.projectOnlineApplyService.projectManagerConfirm(id, user.getId(), OperationResult.valueOf(result), description);
 			ProjectOnlineApply vm = this.projectOnlineApplyService.getEasyUiRowData(id);
 			return BaseOutput.success().setData(ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
 		} catch (ProjectOnlineApplyException e) {
@@ -130,15 +144,13 @@ public class ProjectOnlineApplyController {
 
 	@ResponseBody
 	@RequestMapping(value = "/testConfirm", method = RequestMethod.POST)
-	public BaseOutput<Object> testConfirm(@RequestParam Long id, @RequestParam Integer result,
-			@RequestParam(required = false) String description) {
+	public BaseOutput<Object> testConfirm(@RequestParam Long id, @RequestParam Integer result, @RequestParam(required = false) String description) {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		if (user == null) {
 			return BaseOutput.failure("请先登录");
 		}
 		try {
-			this.projectOnlineApplyService.testerConfirm(id, user.getId(), OperationResult.valueOf(result),
-					description);
+			this.projectOnlineApplyService.testerConfirm(id, user.getId(), OperationResult.valueOf(result), description);
 			ProjectOnlineApply vm = this.projectOnlineApplyService.getEasyUiRowData(id);
 			return BaseOutput.success().setData(ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
 		} catch (ProjectOnlineApplyException e) {
@@ -148,8 +160,7 @@ public class ProjectOnlineApplyController {
 
 	@ResponseBody
 	@RequestMapping(value = "/startExecute", method = RequestMethod.POST)
-	public BaseOutput<Object> startExecute(@RequestParam Long id, @RequestParam String executor,
-			@RequestParam Integer result, @RequestParam(required = false) String description) {
+	public BaseOutput<Object> startExecute(@RequestParam Long id, @RequestParam String executor, @RequestParam Integer result, @RequestParam(required = false) String description) {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		if (user == null) {
 			return BaseOutput.failure("请先登录");
@@ -203,15 +214,13 @@ public class ProjectOnlineApplyController {
 
 	@ResponseBody
 	@RequestMapping(value = "/confirmExecute", method = RequestMethod.POST)
-	public BaseOutput<Object> confirmExecute(@RequestParam Long id, @RequestParam Integer result,
-			@RequestParam(required = false) String description) {
+	public BaseOutput<Object> confirmExecute(@RequestParam Long id, @RequestParam Integer result, @RequestParam(required = false) String description) {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		if (user == null) {
 			return BaseOutput.failure("请先登录");
 		}
 		try {
-			this.projectOnlineApplyService.excuteConfirm(id, user.getId(), OperationResult.valueOf(result),
-					description);
+			this.projectOnlineApplyService.excuteConfirm(id, user.getId(), OperationResult.valueOf(result), description);
 			ProjectOnlineApply vm = this.projectOnlineApplyService.getEasyUiRowData(id);
 			return BaseOutput.success().setData(ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
 		} catch (ProjectOnlineApplyException e) {
@@ -233,8 +242,7 @@ public class ProjectOnlineApplyController {
 
 	@ResponseBody
 	@RequestMapping(value = "/verify", method = RequestMethod.POST)
-	public BaseOutput<Object> verify(@RequestParam Long id, @RequestParam Integer result,
-			@RequestParam(required = false) String description) {
+	public BaseOutput<Object> verify(@RequestParam Long id, @RequestParam Integer result, @RequestParam(required = false) String description) {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		if (user == null) {
 			return BaseOutput.failure("请先登录");
@@ -270,6 +278,19 @@ public class ProjectOnlineApplyController {
 		ProjectOnlineApplyUpdateDto dto = this.parseServiceModel(apply);
 		try {
 			projectOnlineApplyService.saveAndSubmit(dto);
+			BaseOutput<ProcessInstanceMapping> output = this.runtimeRpc.startProcessInstanceByKey(BpmConsts.PROJECT_ONLINE_APPLY_PROCESS_KEY, dto.getSerialNumber(),
+					SessionContext.getSessionContext().getUserTicket().getId().toString(), new HashMap<String, Object>() {
+						{
+							put(BpmConsts.PROJECT_ONLINE_APPLY_PROCESS_VARIABLES_KEY, dto.getSerialNumber());
+						}
+					});
+			if (!output.isSuccess()) {
+				LOGGER.error(output.getMessage());
+				throw new ProjectOnlineApplyException("启动流程实例失败");
+			}
+			ProjectOnlineApply target = this.projectOnlineApplyService.get(dto.getId());
+			target.setProcessInstanceId(output.getData().getProcessInstanceId());
+			this.projectOnlineApplyService.updateSelective(target);
 			ProjectOnlineApply vm = this.projectOnlineApplyService.getEasyUiRowData(dto.getId());
 			return BaseOutput.success().setData(ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
 		} catch (Exception e) {
@@ -334,16 +355,14 @@ public class ProjectOnlineApplyController {
 	}
 
 	@ApiOperation(value = "查询ProjectOnlineApply", notes = "查询ProjectOnlineApply，返回列表信息")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "ProjectOnlineApply", paramType = "form", value = "ProjectOnlineApply的form信息", required = false, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectOnlineApply", paramType = "form", value = "ProjectOnlineApply的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<ProjectOnlineApply> list(ProjectOnlineApply projectOnlineApply) {
 		return projectOnlineApplyService.list(projectOnlineApply);
 	}
 
 	@ApiOperation(value = "分页查询ProjectOnlineApply", notes = "分页查询ProjectOnlineApply，返回easyui分页信息")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "ProjectOnlineApply", paramType = "form", value = "ProjectOnlineApply的form信息", required = false, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectOnlineApply", paramType = "form", value = "ProjectOnlineApply的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(ProjectOnlineApplyListQueryDto projectOnlineApply) throws Exception {
 		projectOnlineApply.setSort("created");
@@ -353,8 +372,7 @@ public class ProjectOnlineApplyController {
 
 	@SuppressWarnings("unchecked")
 	@ApiOperation("新增ProjectOnlineApply")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "ProjectOnlineApply", paramType = "form", value = "ProjectOnlineApply的form信息", required = true, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectOnlineApply", paramType = "form", value = "ProjectOnlineApply的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/add", method = { RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> insert(@Valid ProjectOnlineApplyAddDto apply, BindingResult br) {
 		if (br.hasErrors()) {
@@ -375,8 +393,7 @@ public class ProjectOnlineApplyController {
 	}
 
 	@ApiOperation("修改ProjectOnlineApply")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "ProjectOnlineApply", paramType = "form", value = "ProjectOnlineApply的form信息", required = true, dataType = "string") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectOnlineApply", paramType = "form", value = "ProjectOnlineApply的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> update(@Valid ProjectOnlineApplyAddDto apply, BindingResult br) {
 		if (br.hasErrors()) {
@@ -397,8 +414,7 @@ public class ProjectOnlineApplyController {
 	}
 
 	@ApiOperation("删除ProjectOnlineApply")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "id", paramType = "form", value = "ProjectOnlineApply的主键", required = true, dataType = "long") })
+	@ApiImplicitParams({ @ApiImplicitParam(name = "id", paramType = "form", value = "ProjectOnlineApply的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput delete(Long id) {
 		try {
@@ -419,12 +435,10 @@ public class ProjectOnlineApplyController {
 		if (apply.getSqlFileId() == null && apply.getSqlFile() == null && StringUtils.isBlank(apply.getSqlScript())) {
 			return "sql脚本不能为空";
 		}
-		if (apply.getStartupScriptFileId() == null && apply.getStartupScriptFile() == null
-				&& StringUtils.isBlank(apply.getStartupScript())) {
+		if (apply.getStartupScriptFileId() == null && apply.getStartupScriptFile() == null && StringUtils.isBlank(apply.getStartupScript())) {
 			return "启动脚本不能为空";
 		}
-		if (apply.getDependencySystemFileId() == null && apply.getDependencySystemFile() == null
-				&& StringUtils.isBlank(apply.getDependencySystem())) {
+		if (apply.getDependencySystemFileId() == null && apply.getDependencySystemFile() == null && StringUtils.isBlank(apply.getDependencySystem())) {
 			return "启动脚本不能为空";
 		}
 		// 清除文件id，不然后台逻辑会有问题

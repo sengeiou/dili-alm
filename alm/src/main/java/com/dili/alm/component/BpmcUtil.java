@@ -26,10 +26,10 @@ public class BpmcUtil {
 	@Autowired
 	private RoleRpc roleRpc;
 
-	public void fitLoggedUserIsCanHandledProcess(List<? extends ProcessHandleInfoDto> demandDtos) {
+	public void fitLoggedUserIsCanHandledProcess(List<? extends ProcessHandleInfoDto> dtos) {
 		// 根据流程实例批量查询任务
 		Set<String> processInstanceIds = new HashSet<>();
-		demandDtos.forEach(d -> {
+		dtos.forEach(d -> {
 			if (StringUtils.isNotBlank(d.getProcessInstanceId())) {
 				processInstanceIds.add(d.getProcessInstanceId());
 			}
@@ -57,10 +57,11 @@ public class BpmcUtil {
 			return;
 		}
 		Long userId = SessionContext.getSessionContext().getUserTicket().getId();
-		demandDtos.forEach(d -> {
+		dtos.forEach(d -> {
 			for (TaskIdentityDto taskIdentity : tiOutput.getData()) {
 				if (taskIdentity.getProcessInstanceId().equals(d.getProcessInstanceId())) {
 					d.setFormKey(taskIdentity.getFormKey());
+					d.setTaskId(taskIdentity.getTaskId());
 					if (StringUtils.isNotBlank(taskIdentity.getAssignee()) && Long.valueOf(taskIdentity.getAssignee()).equals(userId)) {
 						d.setIsHandleProcess(true);
 						d.setIsNeedClaim(false);

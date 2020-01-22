@@ -52,7 +52,7 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 		this.updateExactSimple(workOrder);
 		int rows = this.updateExactSimple(workOrder);
 		if (rows <= 0) {
-			throw new WorkOrderException("新增工单失败");
+			throw new WorkOrderException("修改工单失败");
 		}
 	}
 
@@ -98,7 +98,7 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 			String workContent) throws WorkOrderException {
 		// 检查状态
 		if (!workOrder.getWorkOrderState().equals(WorkOrderState.SOLVING.getValue())) {
-			throw new WorkOrderException("当前状态不能执行分配操作");
+			throw new WorkOrderException("当前状态不能执行解决操作");
 		}
 
 		// 判断工时

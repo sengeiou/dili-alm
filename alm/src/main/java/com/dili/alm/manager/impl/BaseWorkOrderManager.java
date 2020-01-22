@@ -221,7 +221,7 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 			String workContent) throws WorkOrderException {
 		// 检查状态
 		if (!workOrder.getWorkOrderState().equals(WorkOrderState.SOLVING.getValue())) {
-			throw new WorkOrderException("当前状态不能执行分配操作");
+			throw new WorkOrderException("当前状态不能执行工单解决操作");
 		}
 
 		// 判断工时

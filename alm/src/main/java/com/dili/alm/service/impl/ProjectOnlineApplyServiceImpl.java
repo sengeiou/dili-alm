@@ -31,9 +31,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
+import com.dili.alm.component.BpmcUtil;
 import com.dili.alm.component.MailManager;
 import com.dili.alm.component.NumberGenerator;
 import com.dili.alm.constant.AlmConstants;
+import com.dili.alm.constant.BpmConsts;
 import com.dili.alm.dao.EmailAddressMapper;
 import com.dili.alm.dao.FilesMapper;
 import com.dili.alm.dao.ProjectActionRecordMapper;
@@ -46,7 +48,6 @@ import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.TeamMapper;
 import com.dili.alm.domain.ActionDateType;
 import com.dili.alm.domain.ApplyType;
-import com.dili.uap.sdk.domain.Department;
 import com.dili.alm.domain.EmailAddress;
 import com.dili.alm.domain.OperationResult;
 import com.dili.alm.domain.Project;
@@ -61,9 +62,9 @@ import com.dili.alm.domain.ProjectOnlineOperationRecord;
 import com.dili.alm.domain.ProjectOnlineSubsystem;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Team;
-import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
+import com.dili.alm.domain.dto.ProjectOnlineApplyProcessDto;
 import com.dili.alm.domain.dto.ProjectOnlineApplyUpdateDto;
 import com.dili.alm.domain.dto.ProjectOnlineOperationRecordDto;
 import com.dili.alm.domain.dto.UserDepartmentRole;
@@ -76,11 +77,17 @@ import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.ProjectOnlineApplyDetailDto;
 import com.dili.alm.service.ProjectOnlineApplyService;
+import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
+import com.dili.bpmc.sdk.dto.ProcessInstanceDto;
+import com.dili.bpmc.sdk.rpc.RuntimeRpc;
+import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.uap.sdk.domain.Department;
+import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
@@ -90,8 +97,7 @@ import com.github.pagehelper.Page;
  */
 @Transactional(rollbackFor = ApplicationException.class, propagation = Propagation.REQUIRED)
 @Service
-public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnlineApply, Long>
-		implements ProjectOnlineApplyService {
+public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnlineApply, Long> implements ProjectOnlineApplyService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProjectOnlineApplyServiceImpl.class);
 
@@ -134,6 +140,12 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	private ProjectVersionMapper versionMapper;
 	@Autowired
 	private ProjectActionRecordMapper parMapper;
+	@Autowired
+	private BpmcUtil bpmcUtil;
+	@Autowired
+	private TaskRpc taskRpc;
+	@Autowired
+	private RuntimeRpc runtimeRpc;
 
 	@SuppressWarnings("unchecked")
 	public static Map<Object, Object> buildApplyViewModel(ProjectOnlineApply apply) {
@@ -238,8 +250,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	}
 
 	@Override
-	public void excuteConfirm(Long applyId, Long executorId, OperationResult result, String description)
-			throws ProjectOnlineApplyException {
+	public void excuteConfirm(Long applyId, Long executorId, OperationResult result, String description) throws ProjectOnlineApplyException {
 		// 验证记录是否存在
 		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(applyId);
 		if (apply == null) {
@@ -482,14 +493,16 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	@Override
 	public EasyuiPageOutput listEasyuiPageByExample(ProjectOnlineApply domain, boolean useProvider) throws Exception {
 		List<ProjectOnlineApply> list = listByExample(domain);
+		List<ProjectOnlineApplyProcessDto> targetList = DTOUtils.as(list, ProjectOnlineApplyProcessDto.class);
+		this.bpmcUtil.fitLoggedUserIsCanHandledProcess(targetList);
 		for (ProjectOnlineApply a : list) {
 			this.setMarkets(a);
 			this.setOperationColumn(a);
 		}
 		@SuppressWarnings("rawtypes")
-		long total = list instanceof Page ? ((Page) list).getTotal() : list.size();
+		long total = targetList instanceof Page ? ((Page) targetList).getTotal() : targetList.size();
 		@SuppressWarnings("rawtypes")
-		List results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, list) : list;
+		List results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, targetList) : targetList;
 		return new EasyuiPageOutput(Long.valueOf(total).intValue(), results);
 	}
 
@@ -502,8 +515,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	 * java.lang.String)
 	 */
 	@Override
-	public void projectManagerConfirm(Long applyId, Long executorId, OperationResult result, String description)
-			throws ProjectOnlineApplyException {
+	public void projectManagerConfirm(Long applyId, Long executorId, OperationResult result, String description) throws ProjectOnlineApplyException {
 		// 验证记录是否存在
 		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(applyId);
 		if (apply == null) {
@@ -562,8 +574,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	}
 
 	@Override
-	public void startExecute(Long applyId, Long executorId, Set<Long> executors, String description)
-			throws ProjectOnlineApplyException {
+	public void startExecute(Long applyId, Long executorId, Set<Long> executors, String description) throws ProjectOnlineApplyException {
 		// 验证记录是否存在
 		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(applyId);
 		if (apply == null) {
@@ -645,8 +656,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	}
 
 	@Override
-	public void testerConfirm(Long applyId, Long executorId, OperationResult result, String description)
-			throws ProjectOnlineApplyException {
+	public void testerConfirm(Long applyId, Long executorId, OperationResult result, String description) throws ProjectOnlineApplyException {
 		// 验证记录是否存在
 		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(applyId);
 		if (apply == null) {
@@ -808,8 +818,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	}
 
 	@Override
-	public void verify(Long applyId, Long verifierId, OperationResult result, String description)
-			throws ProjectOnlineApplyException {
+	public void verify(Long applyId, Long verifierId, OperationResult result, String description) throws ProjectOnlineApplyException {
 		// 验证记录是否存在
 		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(applyId);
 		if (apply == null) {
@@ -945,6 +954,25 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		return apply;
 	}
 
+	private ProjectOnlineApply getFlowViewData(ProjectOnlineApply apply) throws ProjectOnlineApplyException {
+		if (apply == null) {
+			throw new ProjectOnlineApplyException("申请记录不存在");
+		}
+		// 上线子系统
+		ProjectOnlineSubsystem subsysQuery = DTOUtils.newDTO(ProjectOnlineSubsystem.class);
+		subsysQuery.setApplyId(apply.getId());
+		List<ProjectOnlineSubsystem> subsystems = this.posMapper.select(subsysQuery);
+		apply.aset("subsystems", subsystems);
+		// 操作记录
+		ProjectOnlineOperationRecord poorQuery = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
+		poorQuery.setApplyId(apply.getId());
+		List<ProjectOnlineOperationRecord> poorList = this.poorMapper.select(poorQuery);
+		apply.aset("opRecords", this.buildOperationRecordViewModel(poorList));
+		// 查询上线市场
+		this.setMarkets(apply);
+		return apply;
+	}
+
 	private Set<String> getOperationDepartmentUserEmails(ProjectOnlineApply apply) {
 		Set<String> emailStrs = new HashSet<>();
 		// 默认邮件发送列表，运维组和项目组成员
@@ -1009,10 +1037,8 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		} else {
 			apply.aset("marketVersion", true);
 			StringBuilder sb = new StringBuilder();
-			dd.getValues().stream()
-					.filter(v -> poamList.stream().filter(pv -> pv.getMarketCode().equals(v.getValue())).findFirst()
-							.orElse(null) != null)
-					.collect(Collectors.toList()).forEach(v -> sb.append(v.getCode()).append(","));
+			dd.getValues().stream().filter(v -> poamList.stream().filter(pv -> pv.getMarketCode().equals(v.getValue())).findFirst().orElse(null) != null).collect(Collectors.toList())
+					.forEach(v -> sb.append(v.getCode()).append(","));
 			apply.aset("markets", sb.length() > 0 ? sb.substring(0, sb.length() - 1) : "");
 		}
 	}
@@ -1033,62 +1059,13 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		editable = !editable ? editable : user.getId().equals(apply.getApplicantId());
 		apply.aset("editable", editable);
 
-		// 判断界面上用户是否可以点击项目经理确认按钮
-		// 判断申请状态是否是项目经理确认状态
-		boolean projectManagerConfirmable = apply.getApplyState()
-				.equals(ProjectOnlineApplyState.PROJECT_MANAGER_CONFIRMING.getValue());
-		// 判断当前登录用户是否是测试负责人
-		projectManagerConfirmable = !projectManagerConfirmable ? projectManagerConfirmable
-				: user.getId().equals(apply.getProjectManagerId());
-		apply.aset("projectManagerConfirmable", projectManagerConfirmable);
+	}
 
-		// 判断界面上用户是否可以点击测试确认按钮
-		// 判断申请状态是否是测试确认状态
-		boolean testConfirmable = apply.getApplyState().equals(ProjectOnlineApplyState.TESTER_CONFIRMING.getValue());
-		// 判断当前登录用户是否是测试负责人
-		DataDictionaryValueDto ddValueDto = ddDto.getValues().stream()
-				.filter(v -> v.getCode().equals(AlmConstants.TEST_MANAGER_CODE)).findFirst().orElse(null);
-		testConfirmable = !testConfirmable ? testConfirmable
-				: ddValueDto != null && user.getUserName().equals(ddValueDto.getValue());
-		apply.aset("testConfirmable", testConfirmable);
-
-		// 判断界面上用户是否可点击开始执行按钮
-		// 判断申请状态是否是执行中
-		boolean startExecutable = apply.getApplyState().equals(ProjectOnlineApplyState.EXECUTING.getValue());
-		// 判断当前申请是否分配了执行人
-		if (startExecutable && StringUtils.isNotEmpty(apply.getExecutorId())) {
-			startExecutable = false;
-		}
-		// 判断当前登录用户是否是运维负责人
-		ddValueDto = ddDto.getValues().stream().filter(v -> v.getCode().equals(AlmConstants.OPERATION_MANAGER_CODE))
-				.findFirst().orElse(null);
-		startExecutable = !startExecutable ? startExecutable
-				: ddValueDto != null && user.getUserName().equals(ddValueDto.getValue());
-		apply.aset("startExecutable", startExecutable);
-
-		// 判断界面上用户是否可点击确认执行按钮
-		// 判断申请状态是否是执行中
-		boolean confirmExecutable = apply.getApplyState().equals(ProjectOnlineApplyState.EXECUTING.getValue());
-		// 判断当前申请是否分配了执行人
-		if (confirmExecutable && StringUtils.isNotEmpty(apply.getExecutorId())) {
-			// 检查当前的执行人是否在运维经理分配的执行人当中,同时要判断当前用户是否已经确认执行过
-			confirmExecutable = false;
-			for (String str : apply.getExecutorId().split(",")) {
-				if (user.getId().equals(Long.valueOf(str))) {
-					confirmExecutable = true;
-					break;
-				}
-			}
-		} else {
-			confirmExecutable = false;
-		}
-		apply.aset("confirmExecutable", confirmExecutable);
-
-		// 判断界面上用户是否可以点击验证按钮
-		// 判断申请状态是否是验证中
-		boolean verifiable = apply.getApplyState().equals(ProjectOnlineApplyState.VARIFING.getValue());
-		// 判断当前登录用户是否是当前项目的产品经理
-		verifiable = !verifiable ? verifiable : apply.getProductManagerId().equals(user.getId());
-		apply.aset("verifiable", verifiable);
+	@Override
+	public ProjectOnlineApply getProjectManagerConfirmViewModel(String serialNumber) throws ProjectOnlineApplyException {
+		ProjectOnlineApply record = DTOUtils.newDTO(ProjectOnlineApply.class);
+		record.setSerialNumber(serialNumber);
+		ProjectOnlineApply target = this.getActualDao().selectOne(record);
+		return this.getFlowViewData(target);
 	}
 }

@@ -9,6 +9,7 @@ function serialNumberFormatter(value, row, index) {
 }
 
 function detail(id) {
+	alert('asfsafasfd');
 	$('#win').dialog({
 				title : '上线申请详情',
 				width : 800,
@@ -33,30 +34,10 @@ function optFormatter(value, row, index) {
 		content += '<span style="padding:0px 2px;">编辑</span>';
 		content += '<span style="padding:0px 2px;">删除</span>';
 	}
-	if (row.projectManagerConfirmable) {
-		content += '<a href="javascript:void(0);" onclick="projectManagerConfirm(' + row.id + ');">项目经理确认</a>';
-	} else if (row.$_applyState == 6) {
-		content += '<span">项目经理确认</span>';
-	}
-	if (row.testConfirmable) {
-		content += '<a href="javascript:void(0);" onclick="testConfirm(' + row.id + ');">测试确认</a>';
-	} else if (row.$_applyState == 2) {
-		content += '<span">测试确认</span>';
-	}
-	if (row.startExecutable) {
-		content += '<a href="javascript:void(0);" onclick="startExecute(' + row.id + ');">开始执行</a>';
-	} else if (row.$_applyState == 3 && !row.executorId) {
-		content += '<span>开始执行</span>';
-	}
-	if (row.confirmExecutable) {
-		content += '<a href="javascript:void(0);" onclick="confirmExecute(' + row.id + ');">确认执行</a>';
-	} else if (row.$_applyState == 3 && row.executorId) {
-		content += '<span>确认执行</span>'
-	}
-	if (row.verifiable) {
-		content += '<a href="javascript:void(0);" onclick="verify(' + row.id + ');">验证</a>';
-	} else if (row.$_applyState == 4) {
-		content += '<span>验证</span>'
+	if (row.isHandleProcess) {
+		content += '<a href="javascript:void(0);" onclick="handleProcess(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim +');">处理流程</a>';
+	} else {
+		content += '<span">处理流程</span>';
 	}
 	return content;
 
@@ -84,56 +65,31 @@ function downloadFile(id) {
 	window.open('${contextPath!}/files/download?id=' + id);
 }
 
-function projectManagerConfirm(id) {
-	$('#win').dialog({
-				title : '项目经理确认',
-				width : 800,
-				height : 540,
-				href : '${contextPath!}/projectOnlineApply/projectManagerConfirm?id=' + id,
-				modal : true,
-				buttons : [{
-							text : '确认',
-							handler : function() {
-								$('#editForm').form('submit', {
-											url : '${contextPath!}/projectOnlineApply/projectManagerConfirm',
-											queryParams : {
-												result : 1
-											},
-											success : function(data) {
-												var obj = $.parseJSON(data);
-												if (obj.code == 200) {
-													updateGrid(obj.data);
-													$('#win').dialog('close');
-												} else {
-													$.messager.alert('错误', obj.result);
-												}
-											}
-										});
-							}
-						}, {
-							text : '回退',
-							handler : function() {
-								var data = $("#editForm").serializeArray();
-								$('#editForm').form('submit', {
-											url : '${contextPath!}/projectOnlineApply/projectManagerConfirm',
-											queryParams : {
-												result : 0
-											},
-											success : function(data) {
-												var obj = $.parseJSON(data);
-												if (obj.code == 200) {
-													updateGrid(obj.data);
-													$('#win').dialog('close');
-												} else {
-													$.messager.alert('错误', obj.result);
-												}
-											}
-										});
-							}
-						}]
-			});
-
+function handleProcess(taskId,formKey,isNeedClaim) {
+	$.ajax({
+		type : "POST",
+		url : '${contextPath!}/process/getTaskUrl',
+		data : {
+			taskId : taskId,
+			formKey:formKey,
+			isNeedClaim:isNeedClaim
+		},
+		processData : true,
+		dataType : "json",
+		async : true,
+		success : function(data) {
+			if (data.success) {
+				window.location.href=data.data.taskUrl+'?taskId='+taskId;
+			} else {
+				$.messager.alert('错误', data.result);
+			}
+		},
+		error : function() {
+			$.messager.alert('错误', '远程访问失败');
+		}
+	});
 }
+
 
 function testConfirm(id) {
 	$('#win').dialog({

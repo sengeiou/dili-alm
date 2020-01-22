@@ -80,6 +80,7 @@ public class ProjectOnlineApplyAddDto extends BaseDomain implements ProjectOnlin
 	@NotNull(message = "请选择是否针对市场上线")
 	private Boolean marketVersion;
 	private List<String> market;
+	private String processInstanceId;
 
 	@Override
 	public String getProjectName() {
@@ -433,6 +434,16 @@ public class ProjectOnlineApplyAddDto extends BaseDomain implements ProjectOnlin
 
 	public void setMarket(List<String> market) {
 		this.market = market;
+	}
+
+	@Override
+	public String getProcessInstanceId() {
+		return processInstanceId;
+	}
+
+	@Override
+	public void setProcessInstanceId(String processInstanceId) {
+		this.processInstanceId = processInstanceId;
 	}
 
 }

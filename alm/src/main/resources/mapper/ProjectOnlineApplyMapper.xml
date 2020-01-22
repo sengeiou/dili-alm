@@ -35,6 +35,7 @@
     <result column="dependency_system" jdbcType="VARCHAR" property="dependencySystem" />
     <result column="dependency_system_file_id" jdbcType="BIGINT" property="dependencySystemFileId" />
     <result column="other_description" jdbcType="VARCHAR" property="otherDescription" />
+    <result column="process_instance_id" jdbcType="VARCHAR" property="processInstanceId" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
@@ -45,7 +46,7 @@
     online_date, dependency_description, scope_description, applicant_id, created, apply_state, 
     actual_online_date, submit_time, executor_id, git, branch, sql_script, sql_file_id, 
     startup_script, startup_script_file_id, dependency_system, dependency_system_file_id, 
-    other_description
+    other_description,process_instance_id
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -148,6 +149,9 @@
       </if>
       <if test="otherDescription != null">
         other_description = #{otherDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="processInstanceId != null">
+        process_instance_id = #{processInstanceId,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

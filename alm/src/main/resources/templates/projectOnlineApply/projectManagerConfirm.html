@@ -1,3 +1,4 @@
+<#body>
 <style>
 .table-box {
 	width: 100%;
@@ -69,15 +70,15 @@
 						<td class="table-title" colspan="6">上线版本及功能描述</td>
 					</tr>
 					<tr>
-						<td class="table-title" colspan="6"><input class="easyui-textbox" name="dependencyDescription"
-							value="${apply.dependencyDescription!}" data-options="multiline:true,editable:false" style="width: 100%; height: 60px"></td>
+						<td class="table-title" colspan="6"><input class="easyui-textbox" name="dependencyDescription" value="${apply.dependencyDescription!}" data-options="multiline:true,editable:false"
+							style="width: 100%; height: 60px"></td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="6">上线影响范围描述</td>
 					</tr>
 					<tr>
-						<td class="table-title" colspan="6"><input class="easyui-textbox" name="scopeDescription" value="${apply.scopeDescription!}"
-							data-options="multiline:true,editable:false" style="width: 100%; height: 60px"></td>
+						<td class="table-title" colspan="6"><input class="easyui-textbox" name="scopeDescription" value="${apply.scopeDescription!}" data-options="multiline:true,editable:false"
+							style="width: 100%; height: 60px"></td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="6">上线系统详情</td>
@@ -100,20 +101,17 @@
 					</tr>
 					<tr>
 						<td class="table-title" colspan="2">SQL脚本</td>
-						<td class="table-combo" colspan="4" style="padding: 0">${apply.sqlScript!} <a href="javascript:void(0);"
-							onclick="downloadFile(${apply.$_sqlFileId});">${apply.sqlFileId!}</a>
+						<td class="table-combo" colspan="4" style="padding: 0">${apply.sqlScript!} <a href="javascript:void(0);" onclick="downloadFile(${apply.$_sqlFileId});">${apply.sqlFileId!}</a>
 						</td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="2">系统启动脚本</td>
-						<td class="table-combo" colspan="4" style="padding: 0">${apply.startupScript!} <a href="javascript:void(0);"
-							onclick="downloadFile(${apply.$_startupScriptFileId});">${apply.startupScriptFileId!}</a>
+						<td class="table-combo" colspan="4" style="padding: 0">${apply.startupScript!} <a href="javascript:void(0);" onclick="downloadFile(${apply.$_startupScriptFileId});">${apply.startupScriptFileId!}</a>
 						</td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="2">依赖系统</td>
-						<td class="table-combo" colspan="4" style="padding: 0">${apply.dependencySystem!}<a href="javascript:void(0);"
-							onclick="downloadFile(${apply.$_dependencySystemFileId});">${apply.dependencySystemFileId!}</a></td>
+						<td class="table-combo" colspan="4" style="padding: 0">${apply.dependencySystem!}<a href="javascript:void(0);" onclick="downloadFile(${apply.$_dependencySystemFileId});">${apply.dependencySystemFileId!}</a></td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="2">其他说明</td>
@@ -142,8 +140,7 @@
 					<%}%>
 					<tr>
 						<td class="table-title" colspan="2">描述</td>
-						<td colspan="4"><input style="width: 94%" class="easyui-textbox" name="description" data-options="validType:['length[0,500]']">
-						</td>
+						<td colspan="4"><input style="width: 94%" class="easyui-textbox" name="description" data-options="validType:['length[0,500]']"></td>
 					</tr>
 					<tr>
 						<td class="table-title" colspan="2">申请人</td>
@@ -151,9 +148,54 @@
 						<td class="table-title">创建时间</td>
 						<td class="table-title" colspan="2">${apply.created!}</td>
 					</tr>
+					<tr>
+					<td class="table-title" colspan="2">操作</td>
+						<td class="table-title" colspan="4">
+							<span style="margin: 0px 10px">
+							<a id="btn" href="#" class="easyui-linkbutton" data-options="onClick:accept">同意</a>
+							</span>
+							<span style="margin: 0px 10px">
+							<a id="btn" href="#" class="easyui-linkbutton" data-options="onClick:reject">拒绝</a>
+							</span>
+							<span style="margin: 0px 10px">
+							<a id="btn" href="#" class="easyui-linkbutton" data-options="onClick:function(){window.history.go(-1);}">返回</a>
+							</span>
+						</td>
+					</tr>
 				</table>
 			</div>
 		</div>
 
 	</form>
 </div>
+<script type="text/javascript">
+	<#members_index/>
+	<#projectOnlineApply_index />
+	var applyId = ${apply.id!};
+	
+	function approve(result){
+		var data = $("#editForm").serializeArray();
+		$('#editForm').form('submit', {
+					url : '${contextPath!}/projectOnlineApply/projectManagerConfirm',
+					queryParams : {
+						result : result
+					},
+					success : function(data) {
+						var obj = $.parseJSON(data);
+						if (obj.code == 200) {
+							window.location.href='${contextPath!}/projectOnlineApply/index.html';
+						} else {
+							$.messager.alert('错误', obj.result);
+						}
+					}
+				});
+	}
+	
+	function accept() {
+		approve(1);
+	}
+	
+	function reject(){
+		approve(0);
+	}
+</script> </#body>

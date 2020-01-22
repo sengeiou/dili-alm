@@ -71,6 +71,8 @@ public class ProjectOnlineApplyDto extends BaseDomain implements ProjectOnlineAp
 
 	private String otherDescription;
 
+	private String processInstanceId;
+
 	@Override
 	public String getProjectName() {
 		return projectName;
@@ -359,6 +361,16 @@ public class ProjectOnlineApplyDto extends BaseDomain implements ProjectOnlineAp
 	@Override
 	public void setOtherDescription(String otherDescription) {
 		this.otherDescription = otherDescription;
+	}
+
+	@Override
+	public String getProcessInstanceId() {
+		return processInstanceId;
+	}
+
+	@Override
+	public void setProcessInstanceId(String processInstanceId) {
+		this.processInstanceId = processInstanceId;
 	}
 
 }
