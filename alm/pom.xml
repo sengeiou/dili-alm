@@ -24,7 +24,7 @@
 	<parent>
 		<artifactId>dili-alm</artifactId>
 		<groupId>com.dili</groupId>
-		<version>3.0.1-RELEASE</version>
+		<version>4.0.2-SNAPSHOT</version>
 	</parent>
 
 	<profiles>
