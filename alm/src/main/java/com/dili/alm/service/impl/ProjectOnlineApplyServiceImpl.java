@@ -70,6 +70,7 @@ import com.dili.alm.domain.dto.ProjectOnlineOperationRecordDto;
 import com.dili.alm.domain.dto.UserDepartmentRole;
 import com.dili.alm.domain.dto.UserDepartmentRoleQuery;
 import com.dili.alm.exceptions.ApplicationException;
+import com.dili.alm.exceptions.ProjectApplyException;
 import com.dili.alm.exceptions.ProjectOnlineApplyException;
 import com.dili.alm.provider.ProjectVersionProvider;
 import com.dili.alm.rpc.DepartmentRpc;
@@ -515,7 +516,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	 * java.lang.String)
 	 */
 	@Override
-	public void projectManagerConfirm(Long applyId, Long executorId, OperationResult result, String description) throws ProjectOnlineApplyException {
+	public void projectManagerConfirm(Long applyId, Long executorId, OperationResult result, String description, String taskId, Boolean isNeedClaim) throws ProjectOnlineApplyException {
 		// 验证记录是否存在
 		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(applyId);
 		if (apply == null) {
@@ -551,6 +552,24 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		rows = this.poorMapper.insertSelective(record);
 		if (rows <= 0) {
 			throw new ProjectOnlineApplyException("生成操作记录失败");
+		}
+		// 签收任务
+		if (isNeedClaim) {
+			BaseOutput<String> output = this.taskRpc.claim(taskId, executorId.toString());
+			if (!output.isSuccess()) {
+				LOGGER.error(output.getMessage());
+				throw new ProjectOnlineApplyException("任务签收失败");
+			}
+		}
+		// 完成任务
+		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
+			{
+				put("approved", OperationResult.SUCCESS.equals(result));
+			}
+		});
+		if (!output.isSuccess()) {
+			LOGGER.error(output.getMessage());
+			throw new ProjectOnlineApplyException("执行任务失败");
 		}
 		// 发邮件
 		// 这里面包含了运维不经理，后面就不用在单独发了

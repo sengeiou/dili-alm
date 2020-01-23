@@ -58,9 +58,11 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 	 * @param executorId  执行人id
 	 * @param result      审批意见
 	 * @param description 描述
+	 * @param taskId TODO
+	 * @param isNeedClaim TODO
 	 * @throws ProjectOnlineApplyException
 	 */
-	void projectManagerConfirm(Long applyId, Long executorId, OperationResult result, String description) throws ProjectOnlineApplyException;
+	void projectManagerConfirm(Long applyId, Long executorId, OperationResult result, String description, String taskId, Boolean isNeedClaim) throws ProjectOnlineApplyException;
 
 	/**
 	 * 保存并提交

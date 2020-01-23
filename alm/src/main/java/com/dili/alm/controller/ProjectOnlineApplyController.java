@@ -97,7 +97,7 @@ public class ProjectOnlineApplyController {
 	}
 
 	@RequestMapping(value = "/projectManagerConfirm", method = RequestMethod.GET)
-	public String projectManagerConfirmView(@RequestParam String taskId, ModelMap modelMap) {
+	public String projectManagerConfirmView(@RequestParam String taskId, @RequestParam(defaultValue = "false") Boolean isNeedClaim, ModelMap modelMap) {
 		try {
 			BaseOutput<Map<String, Object>> output = this.taskRpc.getVariables(taskId);
 			if (!output.isSuccess()) {
@@ -106,7 +106,7 @@ public class ProjectOnlineApplyController {
 			}
 			String serialNumber = output.getData().get("businessKey").toString();
 			ProjectOnlineApply vm = this.projectOnlineApplyService.getProjectManagerConfirmViewModel(serialNumber);
-			modelMap.addAttribute("apply", ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
+			modelMap.addAttribute("apply", ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm)).addAttribute("taskId", taskId).addAttribute("isNeedClaim", isNeedClaim);
 		} catch (ProjectOnlineApplyException e) {
 			LOGGER.error(e.getMessage(), e);
 			return null;
@@ -116,13 +116,14 @@ public class ProjectOnlineApplyController {
 
 	@ResponseBody
 	@RequestMapping(value = "/projectManagerConfirm", method = RequestMethod.POST)
-	public BaseOutput<Object> projectManagerConfirm(@RequestParam Long id, @RequestParam Integer result, @RequestParam(required = false) String description) {
+	public BaseOutput<Object> projectManagerConfirm(@RequestParam String taskId, @RequestParam(defaultValue = "false") Boolean isNeedClaim, @RequestParam Long id, @RequestParam Integer result,
+			@RequestParam(required = false) String description) {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		if (user == null) {
 			return BaseOutput.failure("请先登录");
 		}
 		try {
-			this.projectOnlineApplyService.projectManagerConfirm(id, user.getId(), OperationResult.valueOf(result), description);
+			this.projectOnlineApplyService.projectManagerConfirm(id, user.getId(), OperationResult.valueOf(result), description, taskId, isNeedClaim);
 			ProjectOnlineApply vm = this.projectOnlineApplyService.getEasyUiRowData(id);
 			return BaseOutput.success().setData(ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
 		} catch (ProjectOnlineApplyException e) {

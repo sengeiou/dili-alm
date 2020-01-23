@@ -79,7 +79,7 @@ function handleProcess(taskId,formKey,isNeedClaim) {
 		async : true,
 		success : function(data) {
 			if (data.success) {
-				window.location.href=data.data.taskUrl+'?taskId='+taskId;
+				window.location.href=data.data.taskUrl+'?taskId=' + taskId + '&isNeedClaim=' + isNeedClaim;
 			} else {
 				$.messager.alert('错误', data.result);
 			}
