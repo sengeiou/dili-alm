@@ -874,4 +874,9 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		}
 
 	}
+
+	@Override
+	public Approve selectOne(Approve selectApprove) {
+		return this.getDao().selectOneExpand(selectApprove);
+	}
 }

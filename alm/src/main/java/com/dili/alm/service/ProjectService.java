@@ -9,6 +9,7 @@ import com.dili.alm.domain.Project;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectCostStatisticDto;
 import com.dili.alm.domain.dto.UploadProjectFileDto;
+import com.dili.alm.domain.dto.UserDataDto;
 import com.dili.alm.exceptions.ProjectException;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
@@ -80,5 +81,7 @@ public interface ProjectService extends BaseService<Project, Long> {
 	List<ProjectCostStatisticDto> projectCostStatistic(Long projectId);
 
 	List<Project> selectByIds(List<Long> idsList);
+
+	List<UserDataDto> listUserDataAuth(List<String> ids);
 
 }

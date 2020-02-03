@@ -167,5 +167,11 @@ public interface Approve extends IBaseDomain {
 
     void setModifyMemberId(Long modifyMemberId);
     
+    @Column(name = "`process_instance_id`")
+    @FieldDef(label="流程实例id", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getProcessInstanceId();
+    
+    void setProcessInstanceId(String processInstanceId);
     
 }

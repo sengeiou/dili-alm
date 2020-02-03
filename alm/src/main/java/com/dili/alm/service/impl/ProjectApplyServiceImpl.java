@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.units.qual.s;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ import com.alibaba.fastjson.JSON;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.component.NumberGenerator;
 import com.dili.alm.constant.AlmConstants;
+import com.dili.alm.constant.BpmConsts;
+import com.dili.alm.constant.AlmConstants.DemandStatus;
 import com.dili.alm.dao.DemandProjectMapper;
 import com.dili.alm.dao.ProjectApplyMapper;
 import com.dili.alm.dao.ProjectCostMapper;
@@ -50,11 +53,14 @@ import com.dili.alm.domain.dto.apply.ApplyMajorResource;
 import com.dili.alm.domain.dto.apply.ApplyPlan;
 import com.dili.alm.domain.dto.apply.ApplyRisk;
 import com.dili.alm.exceptions.ApplicationException;
+import com.dili.alm.exceptions.DemandExceptions;
 import com.dili.alm.exceptions.ProjectApplyException;
 import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.ProjectApplyService;
+import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
+import com.dili.bpmc.sdk.rpc.RuntimeRpc;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -92,7 +98,8 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 	private ProjectCostMapper projectCostMapper;
 	@Autowired
 	private RoiMapper roiMapper;
-	
+	@Autowired
+	private RuntimeRpc runtimeRpc;
 	@Autowired
 	private DemandProjectMapper demandProjectMapper;
 
@@ -172,15 +179,34 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 			as.setProjectType(as.getType());
 			as.setExtend(as.getDescription());
 			as.setType(AlmConstants.ApproveType.APPLY.getCode());
-
 			approveService.insertBefore(as);
 			sendMail(this.get(projectApply.getId()));
+			
+			//开启引擎流程
+			Long  userId=SessionContext.getSessionContext().getUserTicket().getId();
+			Map<String, Object> map=new HashMap<String, Object>();
+	    	map.put("dataId", as.getId().toString());
+			BaseOutput<ProcessInstanceMapping>  processInstanceOutput= runtimeRpc.startProcessInstanceByKey(BpmConsts.PROJECT_APPLY_PROCESS,  as.getId().toString(), userId+"",map);
+			if (!processInstanceOutput.isSuccess()) {
+				throw new ProjectApplyException(processInstanceOutput.getMessage());
+			}
+//			 回调，写入相关流程任务数据
+			ProcessInstanceMapping processInstance = processInstanceOutput.getData();
+			Approve selectApprove=DTOUtils.newDTO(Approve.class);
+			selectApprove.setId(as.getId());
+			selectApprove.setProcessInstanceId(processInstance.getProcessInstanceId());
+			// 修改需求状态，记录流程实例id和流程定义id
+			int update = approveService.updateSelective(selectApprove);
+			if (update <= 0) {
+				throw new ProjectApplyException("提交立项引擎流程失败");
+			}
 		}
-
 		int rows = this.updateSelective(projectApply);
 		if (rows <= 0) {
 			throw new ProjectApplyException("提交立项申请失败");
 		}
+		
+	   
 	}
 
 	public void sendMail(ProjectApply projectApply) {

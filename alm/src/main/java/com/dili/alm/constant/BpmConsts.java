@@ -15,4 +15,17 @@ public class BpmConsts {
 	public static final String PROJECT_ONLINE_APPLY_PROCESS_KEY = "almProjectOnlineApplyProcess";
 
 	public static final String PROJECT_ONLINE_APPLY_PROCESS_VARIABLES_KEY = "serialNumber";
+	/**
+     * 立项流程标识，用于启动流程
+     */
+    public static final String PROJECT_APPLY_PROCESS = "almProjectApplyProcess";
+	/**
+     * 变更流程标识，用于启动流程
+     */
+    public static final String PROJECT_CHANGE_PROCESS = "almProjectChangeProcess";
+	/**
+     * 结项流程标识，用于启动流程
+     */
+    public static final String PROJECT_COMPLETE_PROCESS = "almProjectCompleteProcess";
+
 }
