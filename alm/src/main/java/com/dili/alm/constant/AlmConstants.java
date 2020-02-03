@@ -72,6 +72,11 @@ public class AlmConstants {
 	public static final String ALM_ENVIRONMENT = "environment";
 	//部门所属市场Code码
 	public static final String ALM_FIRM_CODE = "szpt";
+	
+    /**
+     * 树状结构，菜单ID前缀
+     */
+    public static final String ALM_PROJECT_PREFIX = "alm_";
 	// 团队成员状态: 加入/离开
 	public enum MemberState {
 		LEAVE(0), JOIN(1);

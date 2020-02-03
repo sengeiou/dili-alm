@@ -48,14 +48,17 @@ import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectCostStatisticDto;
 import com.dili.alm.domain.dto.ProjectDto;
 import com.dili.alm.domain.dto.UploadProjectFileDto;
+import com.dili.alm.domain.dto.UserDataDto;
 import com.dili.alm.exceptions.ProjectException;
 import com.dili.alm.provider.ProjectProvider;
 import com.dili.alm.rpc.DataAuthRpc;
 import com.dili.alm.rpc.DataDictionaryRpc;
+import com.dili.alm.rpc.UserDataAuthRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.TeamService;
+import com.dili.alm.utils.WebUtil;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
@@ -95,7 +98,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	@Autowired
 	private ProjectActionRecordMapper parMapper;
 	@Autowired
-	private DataAuthRpc dataAuthRpc;
+	private UserDataAuthRpc userDataAuthRpc;
 	public ProjectMapper getActualDao() {
 		return (ProjectMapper) getDao();
 	}
@@ -596,10 +599,72 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	}
 
 	@Override
-	public List<Project> selectByIds(List<Long> idsList) {
+	public List<UserDataDto> listUserDataAuthByIds(List<Long> idsList) {
 		Example example = new Example(Demand.class);
 		Example.Criteria criteria = example.createCriteria();
 		criteria.andIn("id", idsList);
-		return this.getActualDao().selectByExample(example);
+		List<Project> selectAll = this.getActualDao().selectByExample(example);
+		List<UserDataDto> selectUserDatas =new ArrayList<UserDataDto>();
+		if(selectAll!=null&&selectAll.size()>0) {
+		      List<String> selectUserDataAuthValue = userDataAuthRpc.listUserDataAuthValue(SessionContext.getSessionContext().getUserTicket().getId()).getData();
+		      //添加根目录
+		      boolean isRootChecked=false;
+				for (Project project : selectAll) {
+		      	UserDataDto userDataDto=DTOUtils.newInstance(UserDataDto.class);
+		      	userDataDto.setTreeId(AlmConstants.ALM_PROJECT_PREFIX+project.getId());
+		      	if(project.getParentId()!=null) {
+		          	userDataDto.setParentId(AlmConstants.ALM_PROJECT_PREFIX+project.getParentId());
+		      	}else {
+		          	userDataDto.setParentId(AlmConstants.ALM_PROJECT_PREFIX+0);
+		      	}
+		      	userDataDto.setName(project.getName());
+		      	boolean isChecked = selectUserDataAuthValue.contains(project.getId().toString());
+		      	if(!isRootChecked&&isChecked) {
+		      		isRootChecked=true;
+		      	}
+		      	userDataDto.setChecked(isChecked);
+		      	selectUserDatas.add(userDataDto);
+				}
+				UserDataDto almDataDto=DTOUtils.newInstance(UserDataDto.class);
+			  	almDataDto.setTreeId(AlmConstants.ALM_PROJECT_PREFIX+0);
+			  	almDataDto.setName("项目生命周期管理");
+			  	almDataDto.setChecked(isRootChecked);
+			  	selectUserDatas.add(almDataDto);
+		}
+		return selectUserDatas;
+	}
+
+	@Override
+	public List<UserDataDto> listUserDataAuth() {
+
+		List<Project> selectAll = this.getDao().selectAll();
+		List<UserDataDto> selectUserDatas =new ArrayList<UserDataDto>();
+		if(selectAll!=null&&selectAll.size()>0) {
+		      List<String> selectUserDataAuthValue = userDataAuthRpc.listUserDataAuthValue(SessionContext.getSessionContext().getUserTicket().getId()).getData();
+		      //添加根目录
+		      boolean isRootChecked=false;
+				for (Project project : selectAll) {
+		      	UserDataDto userDataDto=DTOUtils.newInstance(UserDataDto.class);
+		      	userDataDto.setTreeId(AlmConstants.ALM_PROJECT_PREFIX+project.getId());
+		      	if(project.getParentId()!=null) {
+		          	userDataDto.setParentId(AlmConstants.ALM_PROJECT_PREFIX+project.getParentId());
+		      	}else {
+		          	userDataDto.setParentId(AlmConstants.ALM_PROJECT_PREFIX+0);
+		      	}
+		      	userDataDto.setName(project.getName());
+		      	boolean isChecked = selectUserDataAuthValue.contains(project.getId().toString());
+		      	if(!isRootChecked&&isChecked) {
+		      		isRootChecked=true;
+		      	}
+		      	userDataDto.setChecked(isChecked);
+		      	selectUserDatas.add(userDataDto);
+				}
+				UserDataDto almDataDto=DTOUtils.newInstance(UserDataDto.class);
+			  	almDataDto.setTreeId(AlmConstants.ALM_PROJECT_PREFIX+0);
+			  	almDataDto.setName("项目生命周期管理");
+			  	almDataDto.setChecked(isRootChecked);
+			  	selectUserDatas.add(almDataDto);
+		}
+		return selectUserDatas;
 	}
 }
