@@ -1,18 +1,22 @@
 package com.dili.alm.api;
 
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.dili.alm.domain.Project;
+import com.dili.alm.constant.BpmConsts;
 import com.dili.alm.domain.ProjectOnlineApply;
 import com.dili.alm.service.AssignmentService;
 import com.dili.alm.service.ProjectOnlineApplyService;
@@ -21,6 +25,14 @@ import com.dili.bpmc.sdk.domain.TaskMapping;
 import com.dili.bpmc.sdk.dto.Assignment;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.github.rholder.retry.Attempt;
+import com.github.rholder.retry.RetryException;
+import com.github.rholder.retry.RetryListener;
+import com.github.rholder.retry.Retryer;
+import com.github.rholder.retry.RetryerBuilder;
+import com.github.rholder.retry.StopStrategies;
+import com.github.rholder.retry.WaitStrategies;
+import com.google.common.base.Predicates;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,6 +41,7 @@ import io.swagger.annotations.ApiOperation;
 @Controller
 @RequestMapping("/assignmentApi")
 public class AssignmentApi {
+	private static final Logger LOGGER = LoggerFactory.getLogger(AssignmentApi.class);
 	@Autowired
 	private AssignmentService assignmentService;
 	@Autowired
@@ -138,12 +151,27 @@ public class AssignmentApi {
 	@ResponseBody
 	@RequestMapping(value = "/getProjectOnlineApplyProjectManager.api")
 	public BaseOutput<Assignment> getProjectManager(TaskMapping taskMapping) {
-		String serialNumber = taskMapping.getProcessVariables().get("businessKey").toString();
-		ProjectOnlineApply record = DTOUtils.newDTO(ProjectOnlineApply.class);
-		record.setSerialNumber(serialNumber);
-		ProjectOnlineApply apply = this.projectOnlineApplyService.list(record).get(0);
+		String projectManagerId = taskMapping.getProcessVariables().get(BpmConsts.ProjectOnlineApply.PROJECT_MANAGER_KEY.getName()).toString();
 		Assignment assignment = DTOUtils.newDTO(Assignment.class);
-		assignment.setAssignee(apply.getProjectManagerId().toString());
+		assignment.setAssignee(projectManagerId);
+		return BaseOutput.success().setData(assignment);
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/getProjectOnlineApplyExecutor.api")
+	public BaseOutput<Assignment> getProjectOnlineApplyExecutor(TaskMapping taskMapping) {
+		String executorId = taskMapping.getProcessVariables().get(BpmConsts.ProjectOnlineApply.EXECUTOR_KEY.getName()).toString();
+		Assignment assignment = DTOUtils.newDTO(Assignment.class);
+		assignment.setAssignee(executorId);
+		return BaseOutput.success().setData(assignment);
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/getProjectOnlineApplyProductManager.api")
+	public BaseOutput<Assignment> getProjectOnlineApplyProductManager(TaskMapping taskMapping) {
+		String productManagerId = taskMapping.getProcessVariables().get(BpmConsts.ProjectOnlineApply.PRODUCT_MANAGER_KEY.getName()).toString();
+		Assignment assignment = DTOUtils.newDTO(Assignment.class);
+		assignment.setAssignee(productManagerId);
 		return BaseOutput.success().setData(assignment);
 	}
 }

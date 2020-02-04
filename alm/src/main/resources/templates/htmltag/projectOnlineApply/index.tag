@@ -28,16 +28,22 @@ function detail(id) {
 function optFormatter(value, row, index) {
 	var content = '';
 	if (row.editable) {
-		content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="openUpdate(' + index + ',' + row.id + ');">编辑</a>';
-		content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="del(' + row.id + ',' + index + ');">删除</a>';
+		if (row.isHandleProcess) {
+			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="openUpdate(' + index + ',' + row.id + ',\'' + row.taskId + '\');">编辑</a>';
+			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="del(' + row.id + ',' + index + ',\'' + row.taskId + '\');">删除</a>';
+		} else {
+			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="openUpdate(' + index + ',' + row.id + ');">编辑</a>';
+			content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="del(' + row.id + ',' + index + ');">删除</a>';
+		}
 	} else if (row.$_applyState == 1) {
 		content += '<span style="padding:0px 2px;">编辑</span>';
 		content += '<span style="padding:0px 2px;">删除</span>';
-	}
-	if (row.isHandleProcess) {
-		content += '<a href="javascript:void(0);" onclick="handleProcess(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim +');">处理流程</a>';
 	} else {
-		content += '<span">处理流程</span>';
+		if (row.isHandleProcess) {
+			content += '<a href="javascript:void(0);" onclick="handleProcess(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">处理流程</a>';
+		} else {
+			content += '<span">处理流程</span>';
+		}
 	}
 	return content;
 
@@ -65,171 +71,29 @@ function downloadFile(id) {
 	window.open('${contextPath!}/files/download?id=' + id);
 }
 
-function handleProcess(taskId,formKey,isNeedClaim) {
+function handleProcess(taskId, formKey, isNeedClaim) {
 	$.ajax({
-		type : "POST",
-		url : '${contextPath!}/process/getTaskUrl',
-		data : {
-			taskId : taskId,
-			formKey:formKey,
-			isNeedClaim:isNeedClaim
-		},
-		processData : true,
-		dataType : "json",
-		async : true,
-		success : function(data) {
-			if (data.success) {
-				window.location.href=data.data.taskUrl+'?taskId=' + taskId + '&isNeedClaim=' + isNeedClaim;
-			} else {
-				$.messager.alert('错误', data.result);
-			}
-		},
-		error : function() {
-			$.messager.alert('错误', '远程访问失败');
-		}
-	});
-}
-
-
-function testConfirm(id) {
-	$('#win').dialog({
-				title : '测试确认',
-				width : 800,
-				height : 540,
-				href : '${contextPath!}/projectOnlineApply/testConfirm?id=' + id,
-				modal : true,
-				buttons : [{
-							text : '确认',
-							handler : function() {
-								var data = $("#editForm").serializeArray();
-								$('#editForm').form('submit', {
-											url : '${contextPath!}/projectOnlineApply/testConfirm',
-											queryParams : {
-												result : 1
-											},
-											success : function(data) {
-												var obj = $.parseJSON(data);
-												if (obj.code == 200) {
-													updateGrid(obj.data);
-													$('#win').dialog('close');
-												} else {
-													$.messager.alert('错误', obj.result);
-												}
-											}
-										});
-							}
-						}, {
-							text : '回退',
-							handler : function() {
-								var data = $("#editForm").serializeArray();
-								$('#editForm').form('submit', {
-											url : '${contextPath!}/projectOnlineApply/testConfirm',
-											queryParams : {
-												result : 0
-											},
-											success : function(data) {
-												var obj = $.parseJSON(data);
-												if (obj.code == 200) {
-													updateGrid(obj.data);
-													$('#win').dialog('close');
-												} else {
-													$.messager.alert('错误', obj.result);
-												}
-											}
-										});
-							}
-						}]
+				type : "POST",
+				url : '${contextPath!}/process/getTaskUrl',
+				data : {
+					taskId : taskId,
+					formKey : formKey,
+					isNeedClaim : isNeedClaim
+				},
+				processData : true,
+				dataType : "json",
+				async : true,
+				success : function(data) {
+					if (data.success) {
+						window.location.href = data.data.taskUrl + '?taskId=' + taskId + '&isNeedClaim=' + isNeedClaim;
+					} else {
+						$.messager.alert('错误', data.result);
+					}
+				},
+				error : function() {
+					$.messager.alert('错误', '远程访问失败');
+				}
 			});
-
-}
-
-function startExecute(id) {
-	$('#win').dialog({
-				title : '确认执行',
-				width : 800,
-				height : 540,
-				href : '${contextPath!}/projectOnlineApply/startExecute?id=' + id,
-				modal : true,
-				buttons : [{
-							text : '开始',
-							handler : function() {
-								var data = $("#editForm").serializeArray();
-								$('#editForm').form('submit', {
-											url : '${contextPath!}/projectOnlineApply/startExecute',
-											queryParams : {
-												result : 1
-											},
-											success : function(data) {
-												var obj = $.parseJSON(data);
-												if (obj.code == 200) {
-													updateGrid(obj.data);
-													$('#win').dialog('close');
-												} else {
-													$.messager.alert('错误', obj.result);
-												}
-											}
-										});
-							}
-						}, {
-							text : '返回',
-							handler : function() {
-								$('#win').dialog('close');
-							}
-						}]
-			});
-
-}
-
-function confirmExecute(id) {
-	$('#win').dialog({
-				title : '确认执行',
-				width : 800,
-				height : 540,
-				href : '${contextPath!}/projectOnlineApply/confirmExecute?id=' + id,
-				modal : true,
-				buttons : [{
-							text : '完成',
-							handler : function() {
-								var data = $("#editForm").serializeArray();
-								$('#editForm').form('submit', {
-											url : '${contextPath!}/projectOnlineApply/confirmExecute',
-											queryParams : {
-												result : 1
-											},
-											success : function(data) {
-												var obj = $.parseJSON(data);
-												if (obj.code == 200) {
-													updateGrid(obj.data);
-													$('#win').dialog('close');
-												} else {
-													$.messager.alert('错误', obj.result);
-												}
-											}
-										});
-							}
-						}, {
-							text : '失败',
-							handler : function() {
-								var data = $("#editForm").serializeArray();
-								$('#editForm').form('submit', {
-											url : '${contextPath!}/projectOnlineApply/confirmExecute',
-											queryParams : {
-												result : 0
-											},
-											success : function(data) {
-												var obj = $.parseJSON(data);
-												if (obj.code == 200) {
-													updateGrid(obj.data);
-													$('#win').dialog('close');
-												} else {
-													$.messager.alert('错误', obj.result);
-												}
-											}
-										});
-							}
-						}]
-			});
-
 }
 
 function verify(id) {
@@ -418,20 +282,11 @@ function validateForm() {
 }
 
 function updateGrid(row) {
-	var index = $('#grid').datagrid('getRowIndex', $('#grid').datagrid('getSelected'));
-	if (index >= 0) {
-		$('#grid').datagrid('updateRow', {
-					index : index,
-					row : row
-				});
-	} else {
-		$('#grid').datagrid('appendRow', row);
-	}
-	$('#grid').datagrid('acceptChanges');
+	var index = $('#grid').datagrid('reload');
 }
 
 // 打开修改窗口
-function openUpdate(index, id) {
+function openUpdate(index, id, taskId) {
 	var selected = null;
 	if (index >= 0) {
 		selected = $('#grid').datagrid('getRows')[index]
@@ -448,11 +303,15 @@ function openUpdate(index, id) {
 	if (selected.$_applicantId != userId) {
 		return;
 	}
+	var url = '${contextPath!}/projectOnlineApply/update?id=' + selected.id + '&dialog=true';
+	if (taskId) {
+		url += '&taskId=' + taskId;
+	}
 	$('#win').dialog({
 				title : '上线申请',
 				width : 800,
 				height : 540,
-				href : '${contextPath!}/projectOnlineApply/update?id=' + selected.id,
+				href : url,
 				modal : true,
 				buttons : [{
 							text : '保存',
