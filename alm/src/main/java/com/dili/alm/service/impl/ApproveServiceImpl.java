@@ -28,6 +28,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.ModelMap;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -43,6 +44,7 @@ import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.domain.ActionDateType;
 import com.dili.alm.domain.Approve;
 import com.dili.alm.domain.DataDictionaryValue;
+import com.dili.alm.domain.OnlineDataChange;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectAction;
 import com.dili.alm.domain.ProjectActionRecord;
@@ -65,6 +67,7 @@ import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.ApproveException;
 import com.dili.alm.exceptions.ProjectApplyException;
 import com.dili.alm.provider.ProjectTypeProvider;
+import com.dili.alm.rpc.MyTasksRpc;
 import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.ApproveService;
@@ -150,6 +153,9 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	private ProjectCostMapper projectCostMapper;
 	@Autowired
 	private ProjectVersionMapper projectVersionMapper;
+  
+    @Autowired
+   	private   MyTasksRpc  tasksRpc;
 
 	public ApproveServiceImpl() {
 		super();
@@ -199,6 +205,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 					apply.setStatus(AlmConstants.ApplyState.NOPASS.getCode());
 					projectApplyService.updateSelective(apply);
 					sendMail(apply, false);
+					
 				} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.CHANGE.getCode())) {
 					ProjectChange change = projectChangeService.get(approve.getProjectApplyId());
 					change.setStatus(AlmConstants.ApplyState.NOPASS.getCode());
@@ -246,7 +253,101 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 			updateSelective(approve);
 		}
 	}
+	
+	@Transactional(rollbackFor = ApplicationException.class)
+	@Override
+	public synchronized void bpmcApprove(String taskId, String opt, String notes) throws ApproveException {
+		BaseOutput<Map<String, Object>>  map=tasksRpc.getVariables(taskId);
+		Long id = Long.valueOf(map.getData().get("businessKey").toString());
+		Approve approve = this.get(id);
+		if (approve.getStatus() != AlmConstants.ApplyState.APPROVE.getCode()) {
+			throw new ApproveException("当前状态不能进行审批操作");
+		}
+		String approveDescription = approve.getDescription();
+		if (StringUtils.isNotBlank(approveDescription)) {
+			List<ApplyApprove> approveList = JSON.parseArray(approveDescription, ApplyApprove.class);
+			ApplyApprove current = approveList.stream().filter(v -> Objects.equals(v.getUserId(), SessionContext.getSessionContext().getUserTicket().getId())).findFirst().get();
+			current.setApproveDate(new Date());
+			current.setResult(opt);
+			current.setNotes(notes);
+			approve.setDescription(JSON.toJSONString(approveList));
 
+			/*
+			 * 处理立项申请单和立项审批单状态
+			 */
+
+			switch (opt) {
+			case "reject":
+				approve.setStatus(AlmConstants.ApplyState.NOPASS.getCode());
+				if (Objects.equals(approve.getType(), AlmConstants.ApproveType.APPLY.getCode())) {
+					ProjectApply apply = projectApplyService.get(approve.getProjectApplyId());
+					apply.setStatus(AlmConstants.ApplyState.NOPASS.getCode());
+					projectApplyService.updateSelective(apply);
+					sendMail(apply, false);
+					
+				} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.CHANGE.getCode())) {
+					ProjectChange change = projectChangeService.get(approve.getProjectApplyId());
+					change.setStatus(AlmConstants.ApplyState.NOPASS.getCode());
+					projectChangeService.updateSelective(change);
+					sendMail(change, false);
+				} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.COMPLETE.getCode())) {
+					ProjectComplete complete = projectCompleteService.get(approve.getProjectApplyId());
+					complete.setStatus(AlmConstants.ApplyState.NOPASS.getCode());
+					projectCompleteService.updateSelective(complete);
+					sendMail(complete, false);
+				}
+				
+				Map<String, Object> map1=new HashMap<>();
+				Map<String, Object> variables = this.tasksRpc.getVariables(taskId).getData();
+				if(variables.containsKey("reStatus")) {
+			    	map1.put("reStatus", "1");
+				}else {
+			    	map1.put("reStatus", "0");
+				}
+		    	map1.put("approved", "false");
+		    	tasksRpc.complete(taskId, map1);
+		    	
+				break;
+			case "accept":
+				if (Objects.equals(approve.getType(), AlmConstants.ApproveType.APPLY.getCode()) && approveList.get(1).equals(current)) {
+					approve.setStatus(AlmConstants.ApplyState.PASS.getCode());
+					ProjectApply apply = projectApplyService.get(approve.getProjectApplyId());
+					apply.setStatus(AlmConstants.ApplyState.PASS.getCode());
+					// 立项审批通过生成项目信息
+					Project project = buildProject(apply, approve);
+					// 插入立项规划
+					this.addProjectAction(project);
+					projectApplyService.updateSelective(apply);
+					sendMail(apply, true);
+				} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.CHANGE.getCode())) {
+					approve.setStatus(AlmConstants.ApplyState.PASS.getCode());
+					ProjectChange change = projectChangeService.get(approve.getProjectApplyId());
+					change.setStatus(AlmConstants.ApplyState.PASS.getCode());
+					projectChangeService.updateSelective(change);
+					updateProjectEndDate(change);
+					insertProjectChangeActionRecord(change);
+					sendMail(change, true);
+				} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.COMPLETE.getCode())) {
+					approve.setStatus(AlmConstants.ApplyState.PASS.getCode());
+					ProjectComplete complete = projectCompleteService.get(approve.getProjectApplyId());
+					complete.setStatus(AlmConstants.ApplyState.PASS.getCode());
+					closeProject(complete);
+					insertProjectCompleteActionRecord(complete);
+					projectCompleteService.updateSelective(complete);
+					sendMail(complete, true);
+				}
+				Map<String, Object> map2=new HashMap<>();
+		    	map2.put("approved", "true");
+		    	tasksRpc.complete(taskId, map2);
+				break;
+			default:
+				break;
+			}
+			
+			updateSelective(approve);
+		}
+	}
+	
 	private void insertProjectCompleteActionRecord(ProjectComplete complete) throws ApproveException {
 
 		// 结项申请记录
@@ -878,5 +979,40 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	@Override
 	public Approve selectOne(Approve selectApprove) {
 		return this.getDao().selectOneExpand(selectApprove);
+	}
+
+	@Override
+	public void getModel(ModelMap modelMap, String taskId) {
+		BaseOutput<Map<String, Object>>  map=tasksRpc.getVariables(taskId);
+		String id = (String) map.getData().get("businessKey");
+	    Approve approve = this.getDao().selectByPrimaryKey(Long.parseLong(id));   
+	    modelMap.put("canOpt", checkApprove(approve));
+
+		// 构建Provider
+		Map<Object, Object> metadata = new HashMap<>();
+		metadata.put("projectLeader", JSON.parse("{provider:'memberProvider'}"));
+		metadata.put("businessOwner", JSON.parse("{provider:'memberProvider'}"));
+		metadata.put("projectType", JSON.parse("{provider:'projectTypeProvider'}"));
+		metadata.put("dep", JSON.parse("{provider:'depProvider'}"));
+		metadata.put("createMemberId", JSON.parse("{provider:'memberProvider'}"));
+		metadata.put("created", JSON.parse("{provider:'dateProvider'}"));
+		metadata.put("expectedLaunchDate", JSON.parse("{provider:'dateProvider'}"));
+		metadata.put("estimateLaunchDate", JSON.parse("{provider:'dateProvider'}"));
+		metadata.put("startDate", JSON.parse("{provider:'dateProvider'}"));
+		metadata.put("endDate", JSON.parse("{provider:'dateProvider'}"));
+		metadata.put("status", JSON.parse("{provider:'approveStateProvider'}"));
+
+		Map dto = null;
+		try {
+			dto = ValueProviderUtils.buildDataByProvider(metadata, Lists.newArrayList(approve)).get(0);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		Objects.requireNonNull(dto).remove("description");
+
+		modelMap.put("apply", dto);
+		modelMap.put("extend", dto.remove("extend"));
+		modelMap.put("json", JSON.toJSON(dto));
+		modelMap.put("taskId",taskId);
 	}
 }

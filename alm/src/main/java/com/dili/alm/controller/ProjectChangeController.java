@@ -60,12 +60,12 @@ public class ProjectChangeController {
 		return "projectChange/index";
 	}
 
-	@RequestMapping(value = "/add", method = RequestMethod.GET)
+	@RequestMapping(value = "/add.html", method = RequestMethod.GET)
 	public String add(ModelMap modelMap) {
 		return "projectChange/add";
 	}
 
-	@RequestMapping(value = "/edit", method = RequestMethod.GET)
+	@RequestMapping(value = "/edit.html", method = RequestMethod.GET)
 	public String edit(ModelMap modelMap, Long id) {
 		ProjectChange change = projectChangeService.get(id);
 		if (change == null) {

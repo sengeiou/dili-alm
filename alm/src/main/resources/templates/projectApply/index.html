@@ -118,7 +118,7 @@
         // console.log(row);
         if (row.$_status == 1) {
             if(row.$_createMemberId == userid) {
-                return '<span class="opt" style="padding:5px;"><a href="${contextPath}/projectApply/toStep/1.html?id=' + row.id + '">编辑</a></span><span class="opt" style="padding:5px;"><a href="javascript:void(0)" onclick="del(' + row.id + ')">删除</a></span>';
+                return '<span class="opt" style="padding:5px;"><a href="${contextPath}/projectApply/toStep/1/index.html?id=' + row.id + '">编辑</a></span><span class="opt" style="padding:5px;"><a href="javascript:void(0)" onclick="del(' + row.id + ')">删除</a></span>';
             }else{
                 return '<span style="padding:5px;"><a>编辑</a></span><span style="padding:5px;"><a>删除</a></span>';
             }

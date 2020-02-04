@@ -92,15 +92,26 @@
             </table>
         </div>
     </div>
+    <div id="progressDlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="true" title="流程图" style="padding:20px" modal="true" border="thin" closed="true"
+             data-options="
+				iconCls: 'icon-save',
+				width:800,
+				height:450
+			">
+            <img id="processInstanceImg" />
+    </div>
     <!-- ====================================================================================================================== -->
     <!-- style & script 分隔线 -->
     <!-- ====================================================================================================================== -->
     <script type="text/javascript">
 
-        function formatStatus(value, row) {
+        function formatStatus(value, row, index) {
             var dom = '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/doc/apply/' + row.projectApplyId + '">立项文档下载</a></span>';
+          
             if (row.$_status == 2) {
-                return '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/apply/' + row.id + '">审批</a></span>';
+            	var dom1='<span style="padding:2px;"><a href="javascript:void(0)" onclick="showProgress('+index+')">查看进度</a></span>';
+            	dom1+='<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/apply/' + row.id + '">审批</a></span>';
+                return dom1;
             } else if (row.$_status == 3) {
                 return dom;
             }
@@ -108,7 +119,19 @@
         function formatName(value,row) {
             return '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/apply/' + row.id + '?viewMode=true">' + value + '</a></span>';
         }
-
+        function showProgress(index){
+        	var rows = $("#grid").datagrid('getRows');//获得所有行
+        	var r = rows[index];//根据index获得其中一行。
+            //var selected = $("#grid").datagrid("getSelected");
+            if (null == r) {
+            	console.log(r);
+            	return;
+            }
+            $('#progressDlg').dialog('open');
+            $('#progressDlg').dialog('center');
+            var href = '<#config name="bpmc.server.address"/>/api/runtime/progress?processInstanceId='+r.processInstanceId+'&processDefinitionId='+r.processDefinitionId+"&"+Math.random();
+            $("#processInstanceImg").attr("src", href);
+        }
         //打开新增窗口
         function openInsert(){
             $('#dlg').dialog('open');

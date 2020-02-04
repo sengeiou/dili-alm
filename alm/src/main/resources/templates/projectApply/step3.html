@@ -61,7 +61,7 @@
 </div>
 <script>
     function backForm() {
-        window.location.href = "${contextPath}/projectApply/toStep/2.html?id="+${apply.id};
+        window.location.href = "${contextPath}/projectApply/toStep/2/index.html?id="+${apply.id};
     }
     function submitForm() {
         $('#ff').form('submit', {
@@ -75,10 +75,10 @@
                     if(data.success==true){
                         try {
                             LogUtils.saveLog(LOG_MODULE_OPS.UPDATE_PROJECT_APPLY,"修改立项申请:" + data.data+":成功", function () {
-                                window.location.href="${contextPath}/projectApply/toStep/4.html?id=" + data.result;
+                                window.location.href="${contextPath}/projectApply/toStep/4/index.html?id=" + data.result;
                             });
                         } catch (e) {
-                            window.location.href="${contextPath}/projectApply/toStep/4.html?id=" + data.result;
+                            window.location.href="${contextPath}/projectApply/toStep/4/index.html?id=" + data.result;
                         }
                     }
                 }

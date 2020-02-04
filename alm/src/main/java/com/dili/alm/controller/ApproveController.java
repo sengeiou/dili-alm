@@ -25,10 +25,12 @@ import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectComplete;
 import com.dili.alm.domain.dto.apply.ApplyApprove;
 import com.dili.alm.exceptions.ApproveException;
+import com.dili.alm.rpc.MyTasksRpc;
 import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.utils.DateUtil;
+import com.dili.alm.utils.WebUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.uap.sdk.session.SessionContext;
@@ -52,6 +54,9 @@ public class ApproveController {
 	private RoleRpc roleRpc;
 	@Autowired
 	private ProjectService projectService;
+	
+	@Autowired
+	private   MyTasksRpc  tasksRpc;
 
 	@ApiOperation("跳转到Approve页面")
 	@RequestMapping(value = "/apply/index.html", method = RequestMethod.GET)
@@ -73,7 +78,56 @@ public class ApproveController {
 		modelMap.put("sessionID", SessionContext.getSessionContext().getUserTicket().getId());
 		return "approveComplete/index";
 	}
-
+	
+	
+	@ApiOperation("跳转到wyhLeaderApprove页面")
+	@RequestMapping(value = "/apply/wyhLeaderApprove.html", method = RequestMethod.GET)
+	public String wyhLeaderApprove(ModelMap modelMap,String  taskId, String viewMode) {
+		approveService.getModel(modelMap, taskId);
+		if (StringUtils.isNotBlank(viewMode)) {
+			modelMap.put("viewMode", true);
+		} else {
+			modelMap.put("viewMode", false);
+		}
+		return "approveApply/wyhManagerApprove";
+		
+	}
+	
+	@ApiOperation("跳转到wyhManagerApprove页面")
+	@RequestMapping(value = "/apply/wyhManagerApprove.html", method = RequestMethod.GET)
+	public String wyhManagerApprove(ModelMap modelMap,String  taskId, String viewMode) {
+		
+		approveService.getModel(modelMap, taskId);
+		if (StringUtils.isNotBlank(viewMode)) {
+			modelMap.put("viewMode", true);
+		} else {
+			modelMap.put("viewMode", false);
+		}
+		return "approveApply/wyhManagerApprove";
+	}
+	
+	@RequestMapping("/applyWyhManagerApprove")
+	@ResponseBody
+	public BaseOutput<Object> applyWyhManagerApprove(String taskId,  String opt, String notes) {
+		try {
+			approveService.bpmcApprove(taskId, opt, notes);
+			return BaseOutput.success();
+		} catch (ApproveException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+	
+	@RequestMapping("/applyWyhLeaderApprove")
+	@ResponseBody
+	public BaseOutput<Object> applyWyhLeaderApprove(String taskId, String opt, String notes) {
+		try {
+			approveService.bpmcApprove(taskId, opt, notes);
+			return BaseOutput.success();
+		} catch (ApproveException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+	
 	@RequestMapping(value = "/apply/{id}", method = RequestMethod.GET)
 	public String apply(ModelMap modelMap, @PathVariable("id") Long id, String viewMode) {
 

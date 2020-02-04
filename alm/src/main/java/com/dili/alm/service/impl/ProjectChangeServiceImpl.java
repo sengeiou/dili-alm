@@ -142,6 +142,7 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 			Approve selectApprove=DTOUtils.newDTO(Approve.class);
 			selectApprove.setId(as.getId());
 			selectApprove.setProcessInstanceId(processInstance.getProcessInstanceId());
+			selectApprove.setProcessDefinitionId(processInstance.getProcessDefinitionId());
 			// 修改需求状态，记录流程实例id和流程定义id
 			int update = approveService.updateSelective(selectApprove);
 			if (update <= 0) {

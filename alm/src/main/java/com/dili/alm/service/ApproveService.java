@@ -11,6 +11,8 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.ui.ModelMap;
+
 /**
  * 由MyBatis Generator工具自动生成
  * This file was generated on 2017-12-04 17:39:37.
@@ -34,5 +36,7 @@ public interface ApproveService extends BaseService<Approve, Long> {
 
 	Approve selectOne(Approve selectApprove);
 
+	void getModel(ModelMap modelMap, String taskId);
 
+    void bpmcApprove(String taskId, String opt, String notes) throws ApproveException;
 }
