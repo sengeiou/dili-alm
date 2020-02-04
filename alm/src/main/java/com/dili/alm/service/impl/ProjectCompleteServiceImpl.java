@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.alm.constant.AlmConstants;
+import com.dili.alm.constant.BpmConsts;
 import com.dili.alm.constant.AlmConstants.ApplyState;
 import com.dili.alm.dao.ProjectCompleteMapper;
 import com.dili.alm.dao.ProjectMapper;
@@ -29,7 +30,10 @@ import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.ProjectCompleteService;
 import com.dili.alm.service.TeamService;
 import com.dili.alm.utils.DateUtil;
+import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
+import com.dili.bpmc.sdk.rpc.RuntimeRpc;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.util.SystemConfigUtils;
@@ -53,6 +57,9 @@ public class ProjectCompleteServiceImpl extends BaseServiceImpl<ProjectComplete,
 	private TeamService teamService;
 	@Autowired
 	private ProjectMapper projectMapper;
+	
+	@Autowired
+	private RuntimeRpc runtimeRpc;
 
 	public ProjectCompleteMapper getActualDao() {
 		return (ProjectCompleteMapper) getDao();
@@ -83,6 +90,24 @@ public class ProjectCompleteServiceImpl extends BaseServiceImpl<ProjectComplete,
 
 			approveService.insertBefore(as);
 			sendMail(projectComplete);
+			//开启引擎流程
+			Long  userId=SessionContext.getSessionContext().getUserTicket().getId();
+			Map<String, Object> map=new HashMap<String, Object>();
+	    	map.put("dataId", complete.getNumber());
+			BaseOutput<ProcessInstanceMapping>  processInstanceOutput= runtimeRpc.startProcessInstanceByKey(BpmConsts.PROJECT_APPLY_PROCESS, complete.getNumber(), userId+"",map);
+			if (!processInstanceOutput.isSuccess()) {
+				throw new ProjectApplyException(processInstanceOutput.getMessage());
+			}
+//			 回调，写入相关流程任务数据
+			ProcessInstanceMapping processInstance = processInstanceOutput.getData();
+			Approve selectApprove=DTOUtils.newDTO(Approve.class);
+			selectApprove.setId(as.getId());
+			selectApprove.setProcessInstanceId(processInstance.getProcessInstanceId());
+			// 修改需求状态，记录流程实例id和流程定义id
+			int update = approveService.updateSelective(selectApprove);
+			if (update <= 0) {
+				throw new ProjectApplyException("提交立项引擎流程失败");
+			}
 		}
 	}
 

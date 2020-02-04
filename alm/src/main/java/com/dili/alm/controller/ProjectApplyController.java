@@ -87,8 +87,8 @@ public class ProjectApplyController {
 		return "projectApply/add";
 	}
 
-	@RequestMapping(value = "/toStep/{step}/{id}", method = RequestMethod.GET)
-	public String toStep(ModelMap modelMap, @PathVariable("id") Long id, @PathVariable("step") int step) throws Exception {
+	@RequestMapping(value = "/toStep/{step}", method = RequestMethod.GET)
+	public String toStep(ModelMap modelMap, Long id, @PathVariable("step") int step) throws Exception {
 		ProjectApply projectApply = DTOUtils.newDTO(ProjectApply.class);
 		projectApply.setId(id);
 
@@ -127,7 +127,7 @@ public class ProjectApplyController {
 	@RequestMapping(value = "/reApply/{id}", method = RequestMethod.GET)
 	public String reApply(@PathVariable("id") Long id) {
 		Long reApplyId = projectApplyService.reApply(id);
-		return reApplyId == -1 ? "redirect:/projectApply/index.html" : "redirect:/projectApply/toStep/1/" + reApplyId;
+		return reApplyId == -1 ? "redirect:/projectApply/index.html" : "redirect:/projectApply/toStep/1.html?id=" + reApplyId;
 	}
 
 	@RequestMapping(value = "/toDetails/{id}", method = RequestMethod.GET)

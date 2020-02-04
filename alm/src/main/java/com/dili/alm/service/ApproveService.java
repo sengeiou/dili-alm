@@ -8,6 +8,7 @@ import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
 
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,6 +31,8 @@ public interface ApproveService extends BaseService<Approve, Long> {
     void downloadProjectDoc(AlmConstants.ApproveType approveType, Long id, OutputStream os);
 
     void insertBefore(Approve approve) throws ProjectApplyException;
+
+	Approve selectOne(Approve selectApprove);
 
 
 }
