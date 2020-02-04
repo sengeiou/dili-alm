@@ -63,14 +63,12 @@ import com.dili.alm.domain.ProjectOnlineSubsystem;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Team;
 import com.dili.alm.domain.dto.DataDictionaryDto;
-import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectOnlineApplyProcessDto;
 import com.dili.alm.domain.dto.ProjectOnlineApplyUpdateDto;
 import com.dili.alm.domain.dto.ProjectOnlineOperationRecordDto;
 import com.dili.alm.domain.dto.UserDepartmentRole;
 import com.dili.alm.domain.dto.UserDepartmentRoleQuery;
 import com.dili.alm.exceptions.ApplicationException;
-import com.dili.alm.exceptions.ProjectApplyException;
 import com.dili.alm.exceptions.ProjectOnlineApplyException;
 import com.dili.alm.provider.ProjectVersionProvider;
 import com.dili.alm.rpc.DepartmentRpc;
@@ -79,7 +77,7 @@ import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.ProjectOnlineApplyDetailDto;
 import com.dili.alm.service.ProjectOnlineApplyService;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
-import com.dili.bpmc.sdk.dto.ProcessInstanceDto;
+import com.dili.bpmc.sdk.dto.TaskIdentityDto;
 import com.dili.bpmc.sdk.rpc.RuntimeRpc;
 import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.ss.base.BaseServiceImpl;
@@ -248,10 +246,17 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		if (result <= 0) {
 			throw new ProjectOnlineApplyException("删除失败");
 		}
+		if (StringUtils.isNotBlank(apply.getProcessInstanceId())) {
+			BaseOutput<String> output = this.taskRpc.messageEventReceived("deleteProjectOnlineApplyMsg", apply.getProcessInstanceId(), null);
+			if (!output.isSuccess()) {
+				LOGGER.error(output.getMessage());
+				throw new ProjectOnlineApplyException("结束流程实例失败");
+			}
+		}
 	}
 
 	@Override
-	public void excuteConfirm(Long applyId, Long executorId, OperationResult result, String description) throws ProjectOnlineApplyException {
+	public void excuteConfirm(Long applyId, Long executorId, OperationResult result, String description, String taskId, Boolean isNeedClaim) throws ProjectOnlineApplyException {
 		// 验证记录是否存在
 		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(applyId);
 		if (apply == null) {
@@ -302,6 +307,27 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		if (rows <= 0) {
 			throw new ProjectOnlineApplyException("生成操作记录失败");
 		}
+
+		// 签收任务
+		if (isNeedClaim) {
+			BaseOutput<String> output = this.taskRpc.claim(taskId, executorId.toString());
+			if (!output.isSuccess()) {
+				LOGGER.error(output.getMessage());
+				throw new ProjectOnlineApplyException("任务签收失败");
+			}
+		}
+		// 完成任务
+		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
+			{
+				put("approved", Boolean.valueOf(OperationResult.SUCCESS.equals(result)).toString());
+				put(BpmConsts.ProjectOnlineApply.PRODUCT_MANAGER_KEY.getName(), apply.getProductManagerId().toString());
+			}
+		});
+		if (!output.isSuccess()) {
+			LOGGER.error(output.getMessage());
+			throw new ProjectOnlineApplyException("执行任务失败");
+		}
+
 		// 发邮件给产品经理
 		if (OperationResult.FAILURE.equals(result)) {
 			User user = AlmCache.getInstance().getUserMap().get(apply.getProductManagerId());
@@ -564,7 +590,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		// 完成任务
 		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
 			{
-				put("approved", OperationResult.SUCCESS.equals(result));
+				put("approved", Boolean.valueOf(OperationResult.SUCCESS.equals(result)).toString());
 			}
 		});
 		if (!output.isSuccess()) {
@@ -578,9 +604,9 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	}
 
 	@Override
-	public void saveAndSubmit(ProjectOnlineApplyUpdateDto dto) throws ProjectOnlineApplyException {
+	public void saveAndSubmit(ProjectOnlineApplyUpdateDto dto, String taskId) throws ProjectOnlineApplyException {
 		this.saveOrUpdate(dto);
-		this.submit(dto.getId());
+		this.submit(dto.getId(), taskId);
 	}
 
 	@Override
@@ -593,7 +619,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	}
 
 	@Override
-	public void startExecute(Long applyId, Long executorId, Set<Long> executors, String description) throws ProjectOnlineApplyException {
+	public void startExecute(Long applyId, Long executorId, Set<Long> executors, String description, String taskId, Boolean isNeedClaim) throws ProjectOnlineApplyException {
 		// 验证记录是否存在
 		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(applyId);
 		if (apply == null) {
@@ -647,6 +673,26 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		if (rows <= 0) {
 			throw new ProjectOnlineApplyException("生成操作记录失败");
 		}
+
+		// 签收任务
+		if (isNeedClaim) {
+			BaseOutput<String> output = this.taskRpc.claim(taskId, executorId.toString());
+			if (!output.isSuccess()) {
+				LOGGER.error(output.getMessage());
+				throw new ProjectOnlineApplyException("任务签收失败");
+			}
+		}
+		// 完成任务
+		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
+			{
+				put(BpmConsts.ProjectOnlineApply.EXECUTOR_KEY.getName(), executors.toArray(new Long[] {})[0].toString());
+			}
+		});
+		if (!output.isSuccess()) {
+			LOGGER.error(output.getMessage());
+			throw new ProjectOnlineApplyException("执行任务失败");
+		}
+
 		// 发邮件
 		// 给运维部发，这里面包含了运维部执行人，后面就不用在单独发了
 		Set<String> emails = this.getDefaultEmails(apply);
@@ -654,7 +700,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	}
 
 	@Override
-	public void submit(Long applyId) throws ProjectOnlineApplyException {
+	public void submit(Long applyId, String taskId) throws ProjectOnlineApplyException {
 		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(applyId);
 		if (apply == null) {
 			throw new ProjectOnlineApplyException("申请记录不存在");
@@ -665,17 +711,39 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		// 提交申请进入项目经理确认状态
 		apply.setApplyState(ProjectOnlineApplyState.PROJECT_MANAGER_CONFIRMING.getValue());
 		apply.setSubmitTime(new Date());
+
+		if (StringUtils.isBlank(taskId)) {
+			BaseOutput<ProcessInstanceMapping> output = this.runtimeRpc.startProcessInstanceByKey(BpmConsts.ProjectOnlineApply.PROCESS_KEY.getName(), apply.getSerialNumber(),
+					SessionContext.getSessionContext().getUserTicket().getId().toString(), new HashMap<String, Object>() {
+						{
+							put(BpmConsts.ProjectOnlineApply.BUSINESS_KEY.getName(), apply.getSerialNumber());
+							put(BpmConsts.ProjectOnlineApply.PROJECT_MANAGER_KEY.getName(), apply.getProjectManagerId().toString());
+						}
+					});
+			if (!output.isSuccess()) {
+				LOGGER.error(output.getMessage());
+				throw new ProjectOnlineApplyException("启动流程实例失败");
+			}
+			apply.setProcessInstanceId(output.getData().getProcessInstanceId());
+		} else {
+			BaseOutput<String> output = this.taskRpc.complete(taskId);
+			if (!output.isSuccess()) {
+				LOGGER.error(output.getMessage());
+				throw new ProjectOnlineApplyException("执行任务失败");
+			}
+		}
 		int result = this.getActualDao().updateByPrimaryKey(apply);
 		if (result <= 0) {
 			throw new ProjectOnlineApplyException("更新状态失败");
 		}
+
 		// 发送邮件
 		Set<String> emailStrs = this.getDefaultEmails(apply);
 		this.sendMail(apply, "上线申请", emailStrs);
 	}
 
 	@Override
-	public void testerConfirm(Long applyId, Long executorId, OperationResult result, String description) throws ProjectOnlineApplyException {
+	public void testerConfirm(Long applyId, Long executorId, OperationResult result, String description, String taskId, Boolean isNeedClaim) throws ProjectOnlineApplyException {
 		// 验证记录是否存在
 		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(applyId);
 		if (apply == null) {
@@ -711,6 +779,26 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		if (rows <= 0) {
 			throw new ProjectOnlineApplyException("生成操作记录失败");
 		}
+
+		// 签收任务
+		if (isNeedClaim) {
+			BaseOutput<String> output = this.taskRpc.claim(taskId, executorId.toString());
+			if (!output.isSuccess()) {
+				LOGGER.error(output.getMessage());
+				throw new ProjectOnlineApplyException("任务签收失败");
+			}
+		}
+		// 完成任务
+		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
+			{
+				put("approved", Boolean.valueOf(OperationResult.SUCCESS.equals(result)).toString());
+			}
+		});
+		if (!output.isSuccess()) {
+			LOGGER.error(output.getMessage());
+			throw new ProjectOnlineApplyException("执行任务失败");
+		}
+
 		// 发邮件
 		Set<String> emails = this.getDefaultEmails(apply);
 		// 给测试部经理发
@@ -837,7 +925,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	}
 
 	@Override
-	public void verify(Long applyId, Long verifierId, OperationResult result, String description) throws ProjectOnlineApplyException {
+	public void verify(Long applyId, Long verifierId, OperationResult result, String description, String taskId, Boolean isNeedClaim) throws ProjectOnlineApplyException {
 		// 验证记录是否存在
 		ProjectOnlineApply apply = this.getActualDao().selectByPrimaryKey(applyId);
 		if (apply == null) {
@@ -900,6 +988,18 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		if (rows <= 0) {
 			throw new ProjectOnlineApplyException("更新项目版本上线状态失败");
 		}
+
+		// 完成任务
+		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
+			{
+				put("approved", Boolean.valueOf(OperationResult.SUCCESS.equals(result)).toString());
+			}
+		});
+		if (!output.isSuccess()) {
+			LOGGER.error(output.getMessage());
+			throw new ProjectOnlineApplyException("执行任务失败");
+		}
+
 		// 发邮件
 		Set<String> emails = this.getDefaultEmails(apply);
 		if (OperationResult.FAILURE.equals(result)) {
@@ -1086,5 +1186,45 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		record.setSerialNumber(serialNumber);
 		ProjectOnlineApply target = this.getActualDao().selectOne(record);
 		return this.getFlowViewData(target);
+	}
+
+	@Override
+	public ProjectOnlineApply getStartExecuteViewData(String serialNumber) throws ProjectOnlineApplyException {
+		ProjectOnlineApply record = DTOUtils.newDTO(ProjectOnlineApply.class);
+		record.setSerialNumber(serialNumber);
+		ProjectOnlineApply target = this.getActualDao().selectOne(record);
+		return this.getFlowViewData(target);
+	}
+
+	@Override
+	public ProjectOnlineApply getTestConfirmViewModel(String serialNumber) throws ProjectOnlineApplyException {
+		ProjectOnlineApply record = DTOUtils.newDTO(ProjectOnlineApply.class);
+		record.setSerialNumber(serialNumber);
+		ProjectOnlineApply target = this.getActualDao().selectOne(record);
+		return this.getFlowViewData(target);
+	}
+
+	@Override
+	public ProjectOnlineApply getConfirmExecuteViewModel(String serialNumber) throws ProjectOnlineApplyException {
+		ProjectOnlineApply record = DTOUtils.newDTO(ProjectOnlineApply.class);
+		record.setSerialNumber(serialNumber);
+		ProjectOnlineApply target = this.getActualDao().selectOne(record);
+		return this.getFlowViewData(target);
+	}
+
+	@Override
+	public ProjectOnlineApply getVerifyViewData(String serialNumber) throws ProjectOnlineApplyException {
+		ProjectOnlineApply record = DTOUtils.newDTO(ProjectOnlineApply.class);
+		record.setSerialNumber(serialNumber);
+		ProjectOnlineApply target = this.getActualDao().selectOne(record);
+		return this.getFlowViewData(target);
+	}
+
+	@Override
+	public ProjectOnlineApply getBySerialNumber(String serialNumber) {
+		ProjectOnlineApply record = DTOUtils.newDTO(ProjectOnlineApply.class);
+		record.setSerialNumber(serialNumber);
+		ProjectOnlineApply apply = this.getActualDao().selectOne(record);
+		return apply;
 	}
 }

@@ -12,7 +12,22 @@ public class BpmConsts {
 	 */
 	public static final String PROCESS_DEFINITION_KEY = "almDemandProcess";
 
-	public static final String PROJECT_ONLINE_APPLY_PROCESS_KEY = "almProjectOnlineApplyProcess";
+	public enum ProjectOnlineApply {
+		PROCESS_KEY("almProjectOnlineApplyProcess"), 
+		BUSINESS_KEY("serialNumber"), 
+		PROJECT_MANAGER_KEY("projectManager"), 
+		PRODUCT_MANAGER_KEY("productManager"),
+		EXECUTOR_KEY("executorId");
 
-	public static final String PROJECT_ONLINE_APPLY_PROCESS_VARIABLES_KEY = "serialNumber";
+		private String name;
+
+		private ProjectOnlineApply(String name) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+	}
 }

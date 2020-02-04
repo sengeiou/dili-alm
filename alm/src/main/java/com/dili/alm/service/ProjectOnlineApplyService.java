@@ -25,9 +25,11 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 	 * @param executorId  执行人id
 	 * @param result      执行结果
 	 * @param description 描述
+	 * @param taskId      TODO
+	 * @param isNeedClaim TODO
 	 * @throws ProjectOnlineApplyException
 	 */
-	void excuteConfirm(Long applyId, Long executorId, OperationResult result, String description) throws ProjectOnlineApplyException;
+	void excuteConfirm(Long applyId, Long executorId, OperationResult result, String description, String taskId, Boolean isNeedClaim) throws ProjectOnlineApplyException;
 
 	ProjectOnlineApply getConfirmExecuteViewModel(Long id) throws ProjectOnlineApplyException;
 
@@ -58,7 +60,7 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 	 * @param executorId  执行人id
 	 * @param result      审批意见
 	 * @param description 描述
-	 * @param taskId TODO
+	 * @param taskId      TODO
 	 * @param isNeedClaim TODO
 	 * @throws ProjectOnlineApplyException
 	 */
@@ -68,14 +70,16 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 	 * 保存并提交
 	 * 
 	 * @param dto 数据模型
+	 * @param taskId TODO
 	 * @throws ProjectOnlineApplyException
 	 */
-	void saveAndSubmit(ProjectOnlineApplyUpdateDto dto) throws ProjectOnlineApplyException;
+	void saveAndSubmit(ProjectOnlineApplyUpdateDto dto, String taskId) throws ProjectOnlineApplyException;
 
 	/**
 	 * 新增或修改上线申请
 	 * 
-	 * @param dto 数据模型
+	 * @param dto    数据模型
+	 * @param taskId TODO
 	 * @throws ProjectOnlineApplyException
 	 */
 	void saveOrUpdate(ProjectOnlineApplyUpdateDto dto) throws ProjectOnlineApplyException;
@@ -87,16 +91,19 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 	 * @param executorId  执行人id
 	 * @param executors   运维分配的执行人
 	 * @param description 描述
+	 * @param taskId      TODO
+	 * @param isNeedClaim TODO
 	 * @throws ProjectOnlineApplyException
 	 */
-	void startExecute(Long applyId, Long executorId, Set<Long> executors, String description) throws ProjectOnlineApplyException;
+	void startExecute(Long applyId, Long executorId, Set<Long> executors, String description, String taskId, Boolean isNeedClaim) throws ProjectOnlineApplyException;
 
 	/**
 	 * 提交申请进入上线操作流程
 	 * 
 	 * @param applyId 申请id
+	 * @param taskId TODO
 	 */
-	void submit(Long applyId) throws ProjectOnlineApplyException;
+	void submit(Long applyId, String taskId) throws ProjectOnlineApplyException;
 
 	/**
 	 * 测试确认
@@ -105,9 +112,11 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 	 * @param executorId  执行人id
 	 * @param result      审批意见
 	 * @param description 描述
+	 * @param taskId      TODO
+	 * @param needClaim   TODO
 	 * @throws ProjectOnlineApplyException
 	 */
-	void testerConfirm(Long applyId, Long executorId, OperationResult result, String description) throws ProjectOnlineApplyException;
+	void testerConfirm(Long applyId, Long executorId, OperationResult result, String description, String taskId, Boolean isNeedClaim) throws ProjectOnlineApplyException;
 
 	void updateProjectOnlineApply(ProjectOnlineApplyUpdateDto dto) throws ProjectOnlineApplyException;
 
@@ -118,21 +127,67 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 	 * @param verifierId  验证人id
 	 * @param result      验证结果
 	 * @param description 描述
+	 * @param taskId      TODO
+	 * @param isNeedClaim TODO
 	 * @throws ProjectOnlineApplyException
 	 */
-	void verify(Long applyId, Long verifierId, OperationResult result, String description) throws ProjectOnlineApplyException;
+	void verify(Long applyId, Long verifierId, OperationResult result, String description, String taskId, Boolean isNeedClaim) throws ProjectOnlineApplyException;
 
 	ProjectOnlineApply getProjectManagerConfirmViewModel(Long id) throws ProjectOnlineApplyException;
 
 	ProjectOnlineApply getDetailViewData(Long id) throws ProjectOnlineApplyException;
 
 	/**
+	 * 查询上线申请项目经理确认视图模型
+	 * 
+	 * @param serialNumber
+	 * @return
+	 * @throws ProjectOnlineApplyException
+	 */
+	ProjectOnlineApply getProjectManagerConfirmViewModel(String serialNumber) throws ProjectOnlineApplyException;
+
+	/**
+	 * 查询上线申请开始执行视图模型
+	 * 
+	 * @param serialNumber
+	 * @return
+	 * @throws ProjectOnlineApplyException
+	 */
+	ProjectOnlineApply getStartExecuteViewData(String serialNumber) throws ProjectOnlineApplyException;
+
+	/**
+	 * 查询上线申请开始执行视图模型
+	 * 
+	 * @param serialNumber
+	 * @return
+	 * @throws ProjectOnlineApplyException
+	 */
+	ProjectOnlineApply getTestConfirmViewModel(String serialNumber) throws ProjectOnlineApplyException;
+
+	/**
+	 * 上线申请确认执行视图模型
+	 * 
+	 * @param serialNumber
+	 * @return
+	 * @throws ProjectOnlineApplyException
+	 */
+	ProjectOnlineApply getConfirmExecuteViewModel(String serialNumber) throws ProjectOnlineApplyException;
+
+	/**
+	 * 上线申请产品验证视图模型
+	 * 
+	 * @param serialNumber
+	 * @return
+	 * @throws ProjectOnlineApplyException
+	 */
+	ProjectOnlineApply getVerifyViewData(String serialNumber) throws ProjectOnlineApplyException;
+
+	/**
 	 * 根据申请编号查询上线申请
 	 * 
 	 * @param serialNumber
 	 * @return
-	 * @throws ProjectOnlineApplyException 
 	 */
-	ProjectOnlineApply getProjectManagerConfirmViewModel(String serialNumber) throws ProjectOnlineApplyException;
+	ProjectOnlineApply getBySerialNumber(String serialNumber);
 
 }

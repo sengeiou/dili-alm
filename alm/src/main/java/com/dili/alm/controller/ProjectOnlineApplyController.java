@@ -132,10 +132,16 @@ public class ProjectOnlineApplyController {
 	}
 
 	@RequestMapping(value = "/testConfirm", method = RequestMethod.GET)
-	public String testConfirmView(@RequestParam Long id, ModelMap modelMap) {
+	public String testConfirmView(@RequestParam String taskId, @RequestParam(defaultValue = "false") Boolean isNeedClaim, ModelMap modelMap) {
 		try {
-			ProjectOnlineApply vm = this.projectOnlineApplyService.getTestConfirmViewModel(id);
-			modelMap.addAttribute("apply", ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
+			BaseOutput<Map<String, Object>> output = this.taskRpc.getVariables(taskId);
+			if (!output.isSuccess()) {
+				LOGGER.error(output.getMessage());
+				return "redirect:/projectOnlineApply/index.html";
+			}
+			String serialNumber = output.getData().get("businessKey").toString();
+			ProjectOnlineApply vm = this.projectOnlineApplyService.getTestConfirmViewModel(serialNumber);
+			modelMap.addAttribute("apply", ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm)).addAttribute("taskId", taskId).addAttribute("isNeedClaim", isNeedClaim);
 		} catch (ProjectOnlineApplyException e) {
 			LOGGER.error(e.getMessage(), e);
 			return null;
@@ -145,13 +151,14 @@ public class ProjectOnlineApplyController {
 
 	@ResponseBody
 	@RequestMapping(value = "/testConfirm", method = RequestMethod.POST)
-	public BaseOutput<Object> testConfirm(@RequestParam Long id, @RequestParam Integer result, @RequestParam(required = false) String description) {
+	public BaseOutput<Object> testConfirm(@RequestParam String taskId, @RequestParam(defaultValue = "false") Boolean isNeedClaim, @RequestParam Long id, @RequestParam Integer result,
+			@RequestParam(required = false) String description) {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		if (user == null) {
 			return BaseOutput.failure("请先登录");
 		}
 		try {
-			this.projectOnlineApplyService.testerConfirm(id, user.getId(), OperationResult.valueOf(result), description);
+			this.projectOnlineApplyService.testerConfirm(id, user.getId(), OperationResult.valueOf(result), description, taskId, isNeedClaim);
 			ProjectOnlineApply vm = this.projectOnlineApplyService.getEasyUiRowData(id);
 			return BaseOutput.success().setData(ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
 		} catch (ProjectOnlineApplyException e) {
@@ -161,7 +168,8 @@ public class ProjectOnlineApplyController {
 
 	@ResponseBody
 	@RequestMapping(value = "/startExecute", method = RequestMethod.POST)
-	public BaseOutput<Object> startExecute(@RequestParam Long id, @RequestParam String executor, @RequestParam Integer result, @RequestParam(required = false) String description) {
+	public BaseOutput<Object> startExecute(@RequestParam String taskId, @RequestParam(defaultValue = "false") Boolean isNeedClaim, @RequestParam Long id, @RequestParam String executor,
+			@RequestParam Integer result, @RequestParam(required = false) String description) {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		if (user == null) {
 			return BaseOutput.failure("请先登录");
@@ -181,7 +189,7 @@ public class ProjectOnlineApplyController {
 			executors.add(Long.valueOf(str));
 		}
 		try {
-			this.projectOnlineApplyService.startExecute(id, user.getId(), executors, description);
+			this.projectOnlineApplyService.startExecute(id, user.getId(), executors, description, taskId, isNeedClaim);
 			ProjectOnlineApply vm = this.projectOnlineApplyService.getEasyUiRowData(id);
 			return BaseOutput.success().setData(ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
 		} catch (ProjectOnlineApplyException e) {
@@ -190,10 +198,16 @@ public class ProjectOnlineApplyController {
 	}
 
 	@RequestMapping(value = "/startExecute", method = RequestMethod.GET)
-	public String startExecuteView(@RequestParam Long id, ModelMap modelMap) {
+	public String startExecuteView(@RequestParam String taskId, @RequestParam(defaultValue = "false") Boolean isNeedClaim, ModelMap modelMap) {
 		try {
-			ProjectOnlineApply vm = this.projectOnlineApplyService.getStartExecuteViewData(id);
-			modelMap.addAttribute("apply", ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
+			BaseOutput<Map<String, Object>> output = this.taskRpc.getVariables(taskId);
+			if (!output.isSuccess()) {
+				LOGGER.error(output.getMessage());
+				return "redirect:/projectOnlineApply/index.html";
+			}
+			String serialNumber = output.getData().get("businessKey").toString();
+			ProjectOnlineApply vm = this.projectOnlineApplyService.getStartExecuteViewData(serialNumber);
+			modelMap.addAttribute("apply", ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm)).addAttribute("taskId", taskId).addAttribute("isNeedClaim", isNeedClaim);
 		} catch (ProjectOnlineApplyException e) {
 			LOGGER.error(e.getMessage(), e);
 			return null;
@@ -202,10 +216,16 @@ public class ProjectOnlineApplyController {
 	}
 
 	@RequestMapping(value = "/confirmExecute", method = RequestMethod.GET)
-	public String confirmExecuteView(@RequestParam Long id, ModelMap modelMap) {
+	public String confirmExecuteView(@RequestParam String taskId, @RequestParam(defaultValue = "false") Boolean isNeedClaim, ModelMap modelMap) {
 		try {
-			ProjectOnlineApply vm = this.projectOnlineApplyService.getConfirmExecuteViewModel(id);
-			modelMap.addAttribute("apply", ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
+			BaseOutput<Map<String, Object>> output = this.taskRpc.getVariables(taskId);
+			if (!output.isSuccess()) {
+				LOGGER.error(output.getMessage());
+				return "redirect:/projectOnlineApply/index.html";
+			}
+			String serialNumber = output.getData().get("businessKey").toString();
+			ProjectOnlineApply vm = this.projectOnlineApplyService.getConfirmExecuteViewModel(serialNumber);
+			modelMap.addAttribute("apply", ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm)).addAttribute("taskId", taskId).addAttribute("isNeedClaim", isNeedClaim);
 		} catch (ProjectOnlineApplyException e) {
 			LOGGER.error(e.getMessage(), e);
 			return null;
@@ -215,13 +235,14 @@ public class ProjectOnlineApplyController {
 
 	@ResponseBody
 	@RequestMapping(value = "/confirmExecute", method = RequestMethod.POST)
-	public BaseOutput<Object> confirmExecute(@RequestParam Long id, @RequestParam Integer result, @RequestParam(required = false) String description) {
+	public BaseOutput<Object> confirmExecute(@RequestParam String taskId, @RequestParam(defaultValue = "false") Boolean isNeedClaim, @RequestParam Long id, @RequestParam Integer result,
+			@RequestParam(required = false) String description) {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		if (user == null) {
 			return BaseOutput.failure("请先登录");
 		}
 		try {
-			this.projectOnlineApplyService.excuteConfirm(id, user.getId(), OperationResult.valueOf(result), description);
+			this.projectOnlineApplyService.excuteConfirm(id, user.getId(), OperationResult.valueOf(result), description, taskId, isNeedClaim);
 			ProjectOnlineApply vm = this.projectOnlineApplyService.getEasyUiRowData(id);
 			return BaseOutput.success().setData(ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
 		} catch (ProjectOnlineApplyException e) {
@@ -230,10 +251,16 @@ public class ProjectOnlineApplyController {
 	}
 
 	@RequestMapping(value = "/verify", method = RequestMethod.GET)
-	public String verifyView(@RequestParam Long id, ModelMap modelMap) {
+	public String verifyView(@RequestParam String taskId, @RequestParam(defaultValue = "false") Boolean isNeedClaim, ModelMap modelMap) {
 		try {
-			ProjectOnlineApply vm = this.projectOnlineApplyService.getVerifyViewData(id);
-			modelMap.addAttribute("apply", ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
+			BaseOutput<Map<String, Object>> output = this.taskRpc.getVariables(taskId);
+			if (!output.isSuccess()) {
+				LOGGER.error(output.getMessage());
+				return "redirect:/projectOnlineApply/index.html";
+			}
+			String serialNumber = output.getData().get("businessKey").toString();
+			ProjectOnlineApply vm = this.projectOnlineApplyService.getVerifyViewData(serialNumber);
+			modelMap.addAttribute("apply", ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm)).addAttribute("taskId", taskId).addAttribute("isNeedClaim", isNeedClaim);
 		} catch (ProjectOnlineApplyException e) {
 			LOGGER.error(e.getMessage(), e);
 			return null;
@@ -243,13 +270,14 @@ public class ProjectOnlineApplyController {
 
 	@ResponseBody
 	@RequestMapping(value = "/verify", method = RequestMethod.POST)
-	public BaseOutput<Object> verify(@RequestParam Long id, @RequestParam Integer result, @RequestParam(required = false) String description) {
+	public BaseOutput<Object> verify(@RequestParam String taskId, @RequestParam(defaultValue = "false") Boolean isNeedClaim, @RequestParam Long id, @RequestParam Integer result,
+			@RequestParam(required = false) String description) {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		if (user == null) {
 			return BaseOutput.failure("请先登录");
 		}
 		try {
-			this.projectOnlineApplyService.verify(id, user.getId(), OperationResult.valueOf(result), description);
+			this.projectOnlineApplyService.verify(id, user.getId(), OperationResult.valueOf(result), description, taskId, isNeedClaim);
 			ProjectOnlineApply vm = this.projectOnlineApplyService.getEasyUiRowData(id);
 			return BaseOutput.success().setData(ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
 		} catch (ProjectOnlineApplyException e) {
@@ -278,20 +306,7 @@ public class ProjectOnlineApplyController {
 		}
 		ProjectOnlineApplyUpdateDto dto = this.parseServiceModel(apply);
 		try {
-			projectOnlineApplyService.saveAndSubmit(dto);
-			BaseOutput<ProcessInstanceMapping> output = this.runtimeRpc.startProcessInstanceByKey(BpmConsts.PROJECT_ONLINE_APPLY_PROCESS_KEY, dto.getSerialNumber(),
-					SessionContext.getSessionContext().getUserTicket().getId().toString(), new HashMap<String, Object>() {
-						{
-							put(BpmConsts.PROJECT_ONLINE_APPLY_PROCESS_VARIABLES_KEY, dto.getSerialNumber());
-						}
-					});
-			if (!output.isSuccess()) {
-				LOGGER.error(output.getMessage());
-				throw new ProjectOnlineApplyException("启动流程实例失败");
-			}
-			ProjectOnlineApply target = this.projectOnlineApplyService.get(dto.getId());
-			target.setProcessInstanceId(output.getData().getProcessInstanceId());
-			this.projectOnlineApplyService.updateSelective(target);
+			projectOnlineApplyService.saveAndSubmit(dto, null);
 			ProjectOnlineApply vm = this.projectOnlineApplyService.getEasyUiRowData(dto.getId());
 			return BaseOutput.success().setData(ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
 		} catch (Exception e) {
@@ -324,7 +339,8 @@ public class ProjectOnlineApplyController {
 	}
 
 	@RequestMapping(value = "/update", method = RequestMethod.GET)
-	public String updateView(@RequestParam Long id, ModelMap modelMap) {
+	public String updateView(@RequestParam(required = false) String taskId, @RequestParam(required = false, defaultValue = "false") Boolean dialog, @RequestParam Long id, ModelMap modelMap,
+			@RequestParam(required = false, defaultValue = "true") Boolean aaa) {
 		@SuppressWarnings("rawtypes")
 		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
 		if (CollectionUtils.isEmpty(dataAuths)) {
@@ -348,8 +364,12 @@ public class ProjectOnlineApplyController {
 		try {
 			ProjectOnlineApply dto = this.projectOnlineApplyService.getEditViewDataById(id);
 			Map<Object, Object> model = ProjectOnlineApplyServiceImpl.buildApplyViewModel(dto);
-			modelMap.addAttribute("apply", model);
-			return "projectOnlineApply/update";
+			modelMap.addAttribute("apply", model).addAttribute("taskId", taskId);
+			if (dialog) {
+				return "projectOnlineApply/update";
+			} else {
+				return "projectOnlineApply/updateBody";
+			}
 		} catch (ProjectOnlineApplyException e) {
 			return "";
 		}
