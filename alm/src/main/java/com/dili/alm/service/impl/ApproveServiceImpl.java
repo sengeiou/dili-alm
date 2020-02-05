@@ -1026,7 +1026,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	}
 
 	@Override
-	public EasyuiPageOutput selectByPage(Approve approve) {
+	public EasyuiPageOutput selectApproveByPage(Approve approve) {
 		List<Approve> selectByExample = this.listByExample(approve);
 		int total = this.getDao().selectCount(approve);
 		List<ApproveDto> listDto=new ArrayList<ApproveDto>();

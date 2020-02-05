@@ -477,7 +477,7 @@ public class ApproveController {
 			approve.setCreatedStart(DateUtil.appendDateToStart(temp));
 		}
 
-		return approveService.selectByPage(approve).toString();
+		return approveService.selectApproveByPage(approve).toString();
 	}
 
 	@RequestMapping(value = "/change/listPage", method = { RequestMethod.GET, RequestMethod.POST })
@@ -488,7 +488,7 @@ public class ApproveController {
 			approve.setCreated(DateUtil.appendDateToEnd(approve.getCreated()));
 			approve.setCreatedStart(DateUtil.appendDateToStart(temp));
 		}
-		return approveService.listEasyuiPageByExample(approve, true).toString();
+		return approveService.selectApproveByPage(approve).toString();
 	}
 
 	@RequestMapping(value = "/complete/listPage", method = { RequestMethod.GET, RequestMethod.POST })
@@ -499,7 +499,7 @@ public class ApproveController {
 			approve.setCreated(DateUtil.appendDateToEnd(approve.getCreated()));
 			approve.setCreatedStart(DateUtil.appendDateToStart(temp));
 		}
-		return approveService.listEasyuiPageByExample(approve, true).toString();
+		return approveService.selectApproveByPage(approve).toString();
 	}
 
 	@ApiOperation("新增Approve")

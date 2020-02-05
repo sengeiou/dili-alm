@@ -41,5 +41,6 @@ public interface ApproveService extends BaseService<Approve, Long> {
 
     void bpmcApprove(String taskId, String opt, String notes) throws ApproveException;
 
-    EasyuiPageOutput selectByPage(Approve approve) throws Exception;
+    EasyuiPageOutput selectApproveByPage(Approve approve) throws Exception;
+
 }
