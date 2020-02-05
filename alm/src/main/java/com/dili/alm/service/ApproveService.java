@@ -6,6 +6,7 @@ import com.dili.alm.exceptions.ApproveException;
 import com.dili.alm.exceptions.ProjectApplyException;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
 
 import java.io.OutputStream;
 import java.util.List;
@@ -39,4 +40,6 @@ public interface ApproveService extends BaseService<Approve, Long> {
 	void getModel(ModelMap modelMap, String taskId);
 
     void bpmcApprove(String taskId, String opt, String notes) throws ApproveException;
+
+    EasyuiPageOutput selectByPage(Approve approve) throws Exception;
 }

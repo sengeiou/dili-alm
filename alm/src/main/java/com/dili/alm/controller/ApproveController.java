@@ -16,11 +16,14 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.Approve;
+import com.dili.alm.domain.Demand;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectComplete;
 import com.dili.alm.domain.dto.apply.ApplyApprove;
@@ -31,8 +34,17 @@ import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.alm.utils.WebUtil;
+import com.dili.bpmc.sdk.domain.ActForm;
+import com.dili.bpmc.sdk.domain.TaskMapping;
+import com.dili.bpmc.sdk.dto.TaskDto;
+import com.dili.bpmc.sdk.rpc.BpmcFormRpc;
+import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.uap.sdk.domain.Department;
+import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.session.SessionContext;
 
 import io.swagger.annotations.Api;
@@ -55,9 +67,10 @@ public class ApproveController {
 	@Autowired
 	private ProjectService projectService;
 	
-	@Autowired
-	private   MyTasksRpc  tasksRpc;
-
+    @Autowired
+    BpmcFormRpc bpmcFormRpc;
+    @Autowired
+    TaskRpc bpmcTaskRpc;
 	@ApiOperation("跳转到Approve页面")
 	@RequestMapping(value = "/apply/index.html", method = RequestMethod.GET)
 	public String applyIndex(ModelMap modelMap) {
@@ -127,7 +140,34 @@ public class ApproveController {
 			return BaseOutput.failure(e.getMessage());
 		}
 	}
-	
+	@ApiOperation("页面流程审批")
+    @RequestMapping(value = "/applyApproveByAlm.html", method = RequestMethod.GET)
+	public String applyApproveByAlm(@RequestParam Long id, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
+		Approve approve = approveService.get(id);
+        //根据业务号查询任务
+        TaskDto taskDto = DTOUtils.newInstance(TaskDto.class);
+        taskDto.setProcessInstanceBusinessKey(approve.getId().toString());
+        BaseOutput<List<TaskMapping>> outputList = bpmcTaskRpc.list(taskDto);
+        if(!outputList.isSuccess()){
+        	return "用户错误！"+outputList.getMessage(); 
+        }
+        //获取formKey
+        TaskMapping task  = outputList.getData().get(0);
+        //通过bpmc的form表单，跳转到相应的提交页面
+        ActForm selectActFrom  = bpmcFormRpc.getByKey(task.getFormKey()).getData();
+        String url = selectActFrom.getActionUrl();
+        if(WebUtil.strIsEmpty(task.getAssignee())) {
+            bpmcTaskRpc.claim(task.getId().toString(), SessionContext.getSessionContext().getUserTicket().getId().toString());
+        }else {
+        	if(!task.getAssignee().equals(SessionContext.getSessionContext().getUserTicket().getId().toString())) {
+        		return null;
+        	}
+        }
+        approveService.getModel(modelMap, task.getId());
+		modelMap.put("viewMode", false);
+    	modelMap.put("taskId",task.getId());
+		return url+"?taskId="+task.getId();
+	}
 	@RequestMapping(value = "/apply/{id}", method = RequestMethod.GET)
 	public String apply(ModelMap modelMap, @PathVariable("id") Long id, String viewMode) {
 
@@ -242,7 +282,8 @@ public class ApproveController {
 			approve.setCreated(DateUtil.appendDateToEnd(approve.getCreated()));
 			approve.setCreatedStart(DateUtil.appendDateToStart(temp));
 		}
-		return approveService.listEasyuiPageByExample(approve, true).toString();
+
+		return approveService.selectByPage(approve).toString();
 	}
 
 	@RequestMapping(value = "/change/listPage", method = { RequestMethod.GET, RequestMethod.POST })

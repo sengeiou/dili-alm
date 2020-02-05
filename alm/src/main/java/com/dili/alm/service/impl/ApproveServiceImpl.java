@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -59,6 +60,7 @@ import com.dili.alm.domain.Team;
 import com.dili.alm.domain.TeamRole;
 import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.VerifyApproval;
+import com.dili.alm.domain.dto.ApproveDto;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.RoiDto;
@@ -82,7 +84,9 @@ import com.dili.alm.service.VerifyApprovalService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.exception.AppException;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.util.SystemConfigUtils;
 import com.dili.uap.sdk.domain.Role;
@@ -298,7 +302,12 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 				}
 				
 				Map<String, Object> map1=new HashMap<>();
-				Map<String, Object> variables = this.tasksRpc.getVariables(taskId).getData();
+			
+				BaseOutput<Map<String, Object>> taskVariablesOutput = tasksRpc.getVariables(taskId);
+		        if(!taskVariablesOutput.isSuccess()){
+		            throw new AppException(taskVariablesOutput.getMessage());
+		        }
+		    	Map<String, Object> variables = taskVariablesOutput.getData();
 				if(variables.containsKey("reStatus")) {
 			    	map1.put("reStatus", "1");
 				}else {
@@ -1014,5 +1023,44 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		modelMap.put("extend", dto.remove("extend"));
 		modelMap.put("json", JSON.toJSON(dto));
 		modelMap.put("taskId",taskId);
+	}
+
+	@Override
+	public EasyuiPageOutput selectByPage(Approve approve) {
+		List<Approve> selectByExample = this.listByExample(approve);
+		int total = this.getDao().selectCount(approve);
+		List<ApproveDto> listDto=new ArrayList<ApproveDto>();
+		for (Approve approve1 : selectByExample) {
+			ApproveDto approveDto= DTOUtils.as(approve1, ApproveDto.class);
+			approveDto.setIsApprove(checkApprove(approve1));
+			listDto.add(approveDto);
+		}
+		@SuppressWarnings("unchecked")
+		Map<Object, Object> metadata = null == approve.getMetadata() ? new HashMap<>() : approve.getMetadata();
+
+		JSONObject projectStatusProvider = new JSONObject();
+		projectStatusProvider.put("provider", "approveStateProvider");
+		metadata.put("status", projectStatusProvider);
+
+		JSONObject projectTypeProvider = new JSONObject();
+		projectTypeProvider.put("provider", "projectTypeProvider");
+		metadata.put("type", projectTypeProvider);
+
+		JSONObject memberProvider = new JSONObject();
+		memberProvider.put("provider", "memberProvider");
+		metadata.put("createMemberId", memberProvider);
+
+		JSONObject provider = new JSONObject();
+		provider.put("provider", "datetimeProvider");
+		metadata.put("created", provider);
+		metadata.put("modified", provider);
+
+		approve.setMetadata(metadata);
+		try {
+			List list = ValueProviderUtils.buildDataByProvider(approve, listDto);
+			return new EasyuiPageOutput(total, list);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 }
