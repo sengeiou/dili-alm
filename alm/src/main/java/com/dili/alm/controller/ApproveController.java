@@ -256,7 +256,8 @@ public class ApproveController {
         		return null;
         	}
         }
-        approveService.getModel(modelMap, task.getId());
+
+		approveService.buildChangeApprove(modelMap, id);
 		modelMap.put("viewMode", false);
     	modelMap.put("taskId",task.getId());
 		return url+"?taskId="+task.getId();
@@ -372,7 +373,7 @@ public class ApproveController {
 	}
 	@ApiOperation("结项页面流程审批")
     @RequestMapping(value = "/completeApproveByAlm.html", method = RequestMethod.GET)
-	public String completeApproveByAlm(@RequestParam Long id, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
+	public String completeApproveByAlm(@RequestParam Long id, @RequestParam(required = false) Boolean cover, ModelMap modelMap) throws Exception {
 		Approve approve = approveService.get(id);
         //根据业务号查询任务
         TaskDto taskDto = DTOUtils.newInstance(TaskDto.class);
@@ -393,7 +394,24 @@ public class ApproveController {
         		return null;
         	}
         }
-        approveService.getModel(modelMap, task.getId());
+        approveService.buildCompleteApprove(modelMap, Long.valueOf(id));
+		Project project = this.projectService.get(((ProjectComplete) modelMap.get("complete")).getProjectId());
+
+		Map<Object, Object> metadata1 = new HashMap<>();
+		metadata1.put("dep", "depProvider");
+		metadata1.put("type", "projectTypeProvider");
+		metadata1.put("startDate", "almDateProvider");
+		metadata1.put("endDate", "almDateProvider");
+		metadata1.put("actualStartDate", "datetimeProvider");
+		metadata1.put("projectManager", "memberProvider");
+		metadata1.put("testManager", "memberProvider");
+		metadata1.put("productManager", "memberProvider");
+		metadata1.put("developManager", "memberProvider");
+		metadata1.put("businessOwner", "memberProvider");
+		metadata1.put("originator", "memberProvider");
+
+		Map projectViewModel = ValueProviderUtils.buildDataByProvider(metadata1, Arrays.asList(project)).get(0);
+		modelMap.addAttribute("project1", projectViewModel);
 		modelMap.put("viewMode", false);
     	modelMap.put("taskId",task.getId());
 		return url+"?taskId="+task.getId();
