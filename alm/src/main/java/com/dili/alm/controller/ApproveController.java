@@ -93,22 +93,23 @@ public class ApproveController {
 	}
 	
 	
-	@ApiOperation("跳转到wyhLeaderApprove页面")
+	@ApiOperation("跳转到/apply/wyhLeaderApprove页面")
 	@RequestMapping(value = "/apply/wyhLeaderApprove.html", method = RequestMethod.GET)
-	public String wyhLeaderApprove(ModelMap modelMap,String  taskId, String viewMode) {
+	public String wyhLeaderApplyApprove(ModelMap modelMap,String  taskId, String viewMode) {
 		approveService.getModel(modelMap, taskId);
 		if (StringUtils.isNotBlank(viewMode)) {
 			modelMap.put("viewMode", true);
 		} else {
 			modelMap.put("viewMode", false);
 		}
-		return "approveApply/wyhManagerApprove";
+		return "approveApply/wyhLeaderApprove";
 		
 	}
 	
-	@ApiOperation("跳转到wyhManagerApprove页面")
+	
+	@ApiOperation("跳转到/apply/wyhManagerApprove页面")
 	@RequestMapping(value = "/apply/wyhManagerApprove.html", method = RequestMethod.GET)
-	public String wyhManagerApprove(ModelMap modelMap,String  taskId, String viewMode) {
+	public String wyhManagerApplyApprove(ModelMap modelMap,String  taskId, String viewMode) {
 		
 		approveService.getModel(modelMap, taskId);
 		if (StringUtils.isNotBlank(viewMode)) {
@@ -117,6 +118,19 @@ public class ApproveController {
 			modelMap.put("viewMode", false);
 		}
 		return "approveApply/wyhManagerApprove";
+	}
+	
+
+	
+	@RequestMapping("/applyWyhLeaderApprove")
+	@ResponseBody
+	public BaseOutput<Object> applyWyhLeaderApprove(String taskId, String opt, String notes) {
+		try {
+			approveService.bpmcApprove(taskId, opt, notes);
+			return BaseOutput.success();
+		} catch (ApproveException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
 	}
 	
 	@RequestMapping("/applyWyhManagerApprove")
@@ -130,17 +144,7 @@ public class ApproveController {
 		}
 	}
 	
-	@RequestMapping("/applyWyhLeaderApprove")
-	@ResponseBody
-	public BaseOutput<Object> applyWyhLeaderApprove(String taskId, String opt, String notes) {
-		try {
-			approveService.bpmcApprove(taskId, opt, notes);
-			return BaseOutput.success();
-		} catch (ApproveException e) {
-			return BaseOutput.failure(e.getMessage());
-		}
-	}
-	@ApiOperation("页面流程审批")
+	@ApiOperation("立项页面流程审批")
     @RequestMapping(value = "/applyApproveByAlm.html", method = RequestMethod.GET)
 	public String applyApproveByAlm(@RequestParam Long id, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
 		Approve approve = approveService.get(id);
@@ -179,7 +183,84 @@ public class ApproveController {
 		}
 		return "approveApply/approve";
 	}
-
+	@ApiOperation("跳转到/change/wyhLeaderApprove页面")
+	@RequestMapping(value = "/change/wyhLeaderApprove.html", method = RequestMethod.GET)
+	public String wyhLeaderChangeApprove(ModelMap modelMap,String  taskId, String viewMode) {
+		BaseOutput<Map<String, Object>>  map=bpmcTaskRpc.getVariables(taskId);
+		String id = (String) map.getData().get("businessKey");
+		approveService.buildChangeApprove(modelMap, Long.valueOf(id));
+		if (StringUtils.isNotBlank(viewMode)) {
+			modelMap.put("viewMode", true);
+		} else {
+			modelMap.put("viewMode", false);
+		}
+		return "approveChange/wyhLeaderApprove";
+		
+	}
+	
+	@ApiOperation("跳转到/change/wyhManagerApprove页面")
+	@RequestMapping(value = "/change/wyhManagerApprove.html", method = RequestMethod.GET)
+	public String wyhManagerChangeApprove(ModelMap modelMap,String  taskId, String viewMode) {
+		BaseOutput<Map<String, Object>>  map=bpmcTaskRpc.getVariables(taskId);
+		String id = (String) map.getData().get("businessKey");
+		approveService.buildChangeApprove(modelMap, Long.valueOf(id));
+		if (StringUtils.isNotBlank(viewMode)) {
+			modelMap.put("viewMode", true);
+		} else {
+			modelMap.put("viewMode", false);
+		}
+		return "approveChange/wyhManagerApprove";
+	}
+	
+	@RequestMapping("/changeWyhManagerApprove")
+	@ResponseBody
+	public BaseOutput<Object> changeWyhManagerApprove(String taskId,  String opt, String notes) {
+		try {
+			approveService.bpmcApprove(taskId, opt, notes);
+			return BaseOutput.success();
+		} catch (ApproveException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+	
+	@RequestMapping("/changeWyhLeaderApprove")
+	@ResponseBody
+	public BaseOutput<Object> changeWyhLeaderApprove(String taskId, String opt, String notes) {
+		try {
+			approveService.bpmcApprove(taskId, opt, notes);
+			return BaseOutput.success();
+		} catch (ApproveException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+	@ApiOperation("变更页面流程审批")
+    @RequestMapping(value = "/changeApproveByAlm.html", method = RequestMethod.GET)
+	public String changeApproveByAlm(@RequestParam Long id, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
+		Approve approve = approveService.get(id);
+        //根据业务号查询任务
+        TaskDto taskDto = DTOUtils.newInstance(TaskDto.class);
+        taskDto.setProcessInstanceBusinessKey(approve.getId().toString());
+        BaseOutput<List<TaskMapping>> outputList = bpmcTaskRpc.list(taskDto);
+        if(!outputList.isSuccess()){
+        	return "用户错误！"+outputList.getMessage(); 
+        }
+        //获取formKey
+        TaskMapping task  = outputList.getData().get(0);
+        //通过bpmc的form表单，跳转到相应的提交页面
+        ActForm selectActFrom  = bpmcFormRpc.getByKey(task.getFormKey()).getData();
+        String url = selectActFrom.getActionUrl();
+        if(WebUtil.strIsEmpty(task.getAssignee())) {
+            bpmcTaskRpc.claim(task.getId().toString(), SessionContext.getSessionContext().getUserTicket().getId().toString());
+        }else {
+        	if(!task.getAssignee().equals(SessionContext.getSessionContext().getUserTicket().getId().toString())) {
+        		return null;
+        	}
+        }
+        approveService.getModel(modelMap, task.getId());
+		modelMap.put("viewMode", false);
+    	modelMap.put("taskId",task.getId());
+		return url+"?taskId="+task.getId();
+	}
 	@RequestMapping(value = "/change/{id}", method = RequestMethod.GET)
 	public String change(ModelMap modelMap, @PathVariable("id") Long id, String viewMode) {
 
@@ -203,7 +284,120 @@ public class ApproveController {
 		}
 		return "approveChange/verify";
 	}
+	@ApiOperation("跳转到/complete/wyhLeaderApprove页面")
+	@RequestMapping(value = "/complete/wyhLeaderApprove.html", method = RequestMethod.GET)
+	public String wyhLeaderCompleteApprove(ModelMap modelMap,String  taskId, String viewMode) throws Exception {
+		BaseOutput<Map<String, Object>>  map=bpmcTaskRpc.getVariables(taskId);
+		String id = (String) map.getData().get("businessKey");
+		approveService.buildCompleteApprove(modelMap, Long.valueOf(id));
+		Project project = this.projectService.get(((ProjectComplete) modelMap.get("complete")).getProjectId());
 
+		Map<Object, Object> metadata1 = new HashMap<>();
+		metadata1.put("dep", "depProvider");
+		metadata1.put("type", "projectTypeProvider");
+		metadata1.put("startDate", "almDateProvider");
+		metadata1.put("endDate", "almDateProvider");
+		metadata1.put("actualStartDate", "datetimeProvider");
+		metadata1.put("projectManager", "memberProvider");
+		metadata1.put("testManager", "memberProvider");
+		metadata1.put("productManager", "memberProvider");
+		metadata1.put("developManager", "memberProvider");
+		metadata1.put("businessOwner", "memberProvider");
+		metadata1.put("originator", "memberProvider");
+
+		Map projectViewModel = ValueProviderUtils.buildDataByProvider(metadata1, Arrays.asList(project)).get(0);
+		modelMap.addAttribute("project1", projectViewModel);
+		if (StringUtils.isNotBlank(viewMode)) {
+			modelMap.put("viewMode", true);
+			return "approveComplete/detail";
+		} else {
+			modelMap.put("viewMode", false);
+		}
+		return "approveChange/wyhLeaderApprove";
+		
+	}
+	
+	@ApiOperation("跳转到/complete/wyhManagerApprove页面")
+	@RequestMapping(value = "/complete/wyhManagerApprove.html", method = RequestMethod.GET)
+	public String wyhManagerCompleteApprove(ModelMap modelMap,String  taskId, String viewMode) throws Exception {
+		BaseOutput<Map<String, Object>>  map=bpmcTaskRpc.getVariables(taskId);
+		String id = (String) map.getData().get("businessKey");
+		approveService.buildCompleteApprove(modelMap, Long.valueOf(id));
+		Project project = this.projectService.get(((ProjectComplete) modelMap.get("complete")).getProjectId());
+
+		Map<Object, Object> metadata1 = new HashMap<>();
+		metadata1.put("dep", "depProvider");
+		metadata1.put("type", "projectTypeProvider");
+		metadata1.put("startDate", "almDateProvider");
+		metadata1.put("endDate", "almDateProvider");
+		metadata1.put("actualStartDate", "datetimeProvider");
+		metadata1.put("projectManager", "memberProvider");
+		metadata1.put("testManager", "memberProvider");
+		metadata1.put("productManager", "memberProvider");
+		metadata1.put("developManager", "memberProvider");
+		metadata1.put("businessOwner", "memberProvider");
+		metadata1.put("originator", "memberProvider");
+
+		Map projectViewModel = ValueProviderUtils.buildDataByProvider(metadata1, Arrays.asList(project)).get(0);
+		modelMap.addAttribute("project1", projectViewModel);
+		if (StringUtils.isNotBlank(viewMode)) {
+			modelMap.put("viewMode", true);
+			return "approveComplete/detail";
+		} else {
+			modelMap.put("viewMode", false);
+		}
+		return "approveChange/wyhManagerApprove";
+	}
+	
+	@RequestMapping("/completeWyhManagerApprove")
+	@ResponseBody
+	public BaseOutput<Object> completeWyhManagerApprove(String taskId,  String opt, String notes) {
+		try {
+			approveService.bpmcApprove(taskId, opt, notes);
+			return BaseOutput.success();
+		} catch (ApproveException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+	
+	@RequestMapping("/completeWyhLeaderApprove")
+	@ResponseBody
+	public BaseOutput<Object> completeWyhLeaderApprove(String taskId, String opt, String notes) {
+		try {
+			approveService.bpmcApprove(taskId, opt, notes);
+			return BaseOutput.success();
+		} catch (ApproveException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+	@ApiOperation("结项页面流程审批")
+    @RequestMapping(value = "/completeApproveByAlm.html", method = RequestMethod.GET)
+	public String completeApproveByAlm(@RequestParam Long id, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
+		Approve approve = approveService.get(id);
+        //根据业务号查询任务
+        TaskDto taskDto = DTOUtils.newInstance(TaskDto.class);
+        taskDto.setProcessInstanceBusinessKey(approve.getId().toString());
+        BaseOutput<List<TaskMapping>> outputList = bpmcTaskRpc.list(taskDto);
+        if(!outputList.isSuccess()){
+        	return "用户错误！"+outputList.getMessage(); 
+        }
+        //获取formKey
+        TaskMapping task  = outputList.getData().get(0);
+        //通过bpmc的form表单，跳转到相应的提交页面
+        ActForm selectActFrom  = bpmcFormRpc.getByKey(task.getFormKey()).getData();
+        String url = selectActFrom.getActionUrl();
+        if(WebUtil.strIsEmpty(task.getAssignee())) {
+            bpmcTaskRpc.claim(task.getId().toString(), SessionContext.getSessionContext().getUserTicket().getId().toString());
+        }else {
+        	if(!task.getAssignee().equals(SessionContext.getSessionContext().getUserTicket().getId().toString())) {
+        		return null;
+        	}
+        }
+        approveService.getModel(modelMap, task.getId());
+		modelMap.put("viewMode", false);
+    	modelMap.put("taskId",task.getId());
+		return url+"?taskId="+task.getId();
+	}
 	@RequestMapping(value = "/complete/{id}", method = RequestMethod.GET)
 	public String complete(ModelMap modelMap, @PathVariable("id") Long id, String viewMode) throws Exception {
 
