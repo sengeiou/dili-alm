@@ -175,9 +175,17 @@ input[class^="easyui-"] {
 				                        //向任务中心发送消息，参数为要跳转的地址
 				                        window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
 				                    }else{
-					                   	 if(typeof(window.opener.ReRender)!="undefined"){
-				                		 window.parent.CloseEditPage();
-				                	 	}
+				                    	try {
+											LogUtils
+													.saveLog(
+															LOG_MODULE_OPS.PROJECT_COMPLETE_APPROVE,
+															"结项审批:${approve.id}:${approve.name}:成功",
+															function() {
+																window.location.href = "${contextPath}/approve/complete/index.html";
+															});
+										} catch (e) {
+											window.location.href = "${contextPath}/approve/complete/index.html";
+										}
 				                    }
 				            	}
 							}

@@ -194,6 +194,7 @@ public class ApproveController {
 		} else {
 			modelMap.put("viewMode", false);
 		}
+		modelMap.put("taskId",taskId);
 		return "approveChange/wyhLeaderApprove";
 		
 	}
@@ -209,6 +210,7 @@ public class ApproveController {
 		} else {
 			modelMap.put("viewMode", false);
 		}
+		modelMap.put("taskId",taskId);
 		return "approveChange/wyhManagerApprove";
 	}
 	
@@ -314,6 +316,7 @@ public class ApproveController {
 		} else {
 			modelMap.put("viewMode", false);
 		}
+		modelMap.put("taskId",taskId);
 		return "approveChange/wyhLeaderApprove";
 		
 	}
@@ -347,6 +350,7 @@ public class ApproveController {
 		} else {
 			modelMap.put("viewMode", false);
 		}
+		modelMap.put("taskId",taskId);
 		return "approveChange/wyhManagerApprove";
 	}
 	
@@ -457,7 +461,13 @@ public class ApproveController {
 				JSON.parseArray(approve.getDescription(), ApplyApprove.class));
 		return maps;
 	}
-
+	/**
+	 * alm3.5以前的审批功能
+	 * @param id
+	 * @param opt
+	 * @param notes
+	 * @return
+	 */
 	@RequestMapping("/applyApprove")
 	@ResponseBody
 	public BaseOutput<Object> applyApprove(Long id, String opt, String notes) {

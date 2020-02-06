@@ -165,7 +165,7 @@ input[class^="easyui-"] {
 				.form(
 						'submit',
 						{
-							url : "${contextPath}/approve/applyApprove",
+							url : "${contextPath}/approve/completeWyhLeaderApprove",
 							onSubmit : function() {
 								if ($("#ff").form('validate')) {
 									$(obj).linkbutton('disable');
@@ -175,19 +175,25 @@ input[class^="easyui-"] {
 							},
 							success : function(data) {
 								var data = eval('(' + data + ')');
-								if (data.success == true) {
-									try {
-										LogUtils
-												.saveLog(
-														LOG_MODULE_OPS.PROJECT_COMPLETE_APPROVE,
-														"结项审批:${approve.id}:${approve.name}:成功",
-														function() {
-															window.location.href = "${contextPath}/approve/complete/index.html";
-														});
-									} catch (e) {
-										window.location.href = "${contextPath}/approve/complete/index.html";
-									}
-								}
+				                if(data.success) {
+				                    //如果父页面是任务中心
+				                    if(parent.location.href=='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
+				                        //向任务中心发送消息，参数为要跳转的地址
+				                        window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
+				                    }else{
+				                    	try {
+											LogUtils
+													.saveLog(
+															LOG_MODULE_OPS.PROJECT_COMPLETE_APPROVE,
+															"结项审批:${approve.id}:${approve.name}:成功",
+															function() {
+																window.location.href = "${contextPath}/approve/complete/index.html";
+															});
+										} catch (e) {
+											window.location.href = "${contextPath}/approve/complete/index.html";
+										}
+				                    }
+				            	}
 							}
 						});
 	}

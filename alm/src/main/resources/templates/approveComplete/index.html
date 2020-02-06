@@ -116,7 +116,7 @@
     <!-- ====================================================================================================================== -->
     <script type="text/javascript">
 
-        function formatStatus(value, row) {
+        function formatStatus(value, row,index) {
             var dom = '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/doc/complete/' + row.projectApplyId + '">结项文档下载</a></span>';
             if (row.$_status == 2) {
             	var dom1='<span style="padding:2px;"><a href="javascript:void(0)" onclick="showProgress('+index+')">查看进度</a></span>';
@@ -126,6 +126,8 @@
                 return dom1;
             } else if (row.$_status == 3) {
                 return dom;
+            }else if (row.$_status == 6) {
+                return ;
             }
         }
 
@@ -158,6 +160,7 @@
         	var rows = $("#grid").datagrid('getRows');//获得所有行
         	var r = rows[index];//根据index获得其中一行。
             //var selected = $("#grid").datagrid("getSelected");
+        	console.log("sss"+r);
             if (null == r) {
             	console.log(r);
             	return;

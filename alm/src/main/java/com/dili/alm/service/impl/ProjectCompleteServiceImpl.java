@@ -93,8 +93,8 @@ public class ProjectCompleteServiceImpl extends BaseServiceImpl<ProjectComplete,
 			//开启引擎流程
 			Long  userId=SessionContext.getSessionContext().getUserTicket().getId();
 			Map<String, Object> map=new HashMap<String, Object>();
-	    	map.put("dataId", complete.getNumber());
-			BaseOutput<ProcessInstanceMapping>  processInstanceOutput= runtimeRpc.startProcessInstanceByKey(BpmConsts.PROJECT_APPLY_PROCESS, complete.getNumber(), userId+"",map);
+	    	map.put("dataId", as.getId().toString());
+			BaseOutput<ProcessInstanceMapping>  processInstanceOutput= runtimeRpc.startProcessInstanceByKey(BpmConsts.PROJECT_COMPLETE_PROCESS, as.getId()+"", userId+"",map);
 			if (!processInstanceOutput.isSuccess()) {
 				throw new ProjectApplyException(processInstanceOutput.getMessage());
 			}
@@ -107,7 +107,7 @@ public class ProjectCompleteServiceImpl extends BaseServiceImpl<ProjectComplete,
 			// 修改需求状态，记录流程实例id和流程定义id
 			int update = approveService.updateSelective(selectApprove);
 			if (update <= 0) {
-				throw new ProjectApplyException("提交立项引擎流程失败");
+				throw new ProjectApplyException("提交结项引擎流程失败");
 			}
 		}
 	}
