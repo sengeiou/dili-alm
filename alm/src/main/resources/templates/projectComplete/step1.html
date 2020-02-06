@@ -109,7 +109,7 @@ input[class^="easyui-"] {
 							success : function(data) {
 								var data = eval('(' + data + ')');
 								if (data.success == true) {
-									window.location.href = "${contextPath}/projectComplete/toStep/2/"
+									window.location.href = "${contextPath}/projectComplete/toStep/2/index.html?id="
 											+ data.result;
 								}
 							}

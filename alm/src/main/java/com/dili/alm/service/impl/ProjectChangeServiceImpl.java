@@ -97,6 +97,7 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 	}
 
 	@Override
+	@Transactional(rollbackFor = ApplicationException.class)
 	public void approve(ProjectChange change) throws ProjectApplyException {
 		if (change.getStatus() == null) {
 			return;
@@ -132,8 +133,8 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 			//开启引擎流程
 			Long  userId=SessionContext.getSessionContext().getUserTicket().getId();
 			Map<String, Object> map=new HashMap<String, Object>();
-	    	map.put("dataId", projectChange.getNumber());
-			BaseOutput<ProcessInstanceMapping>  processInstanceOutput= runtimeRpc.startProcessInstanceByKey(BpmConsts.PROJECT_CHANGE_PROCESS, projectChange.getNumber(), userId+"",map);
+	    	map.put("dataId", as.getId().toString());
+			BaseOutput<ProcessInstanceMapping>  processInstanceOutput= runtimeRpc.startProcessInstanceByKey(BpmConsts.PROJECT_CHANGE_PROCESS,  as.getId().toString(), userId+"",map);
 			if (!processInstanceOutput.isSuccess()) {
 				throw new ProjectApplyException(processInstanceOutput.getMessage());
 			}
@@ -142,10 +143,11 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 			Approve selectApprove=DTOUtils.newDTO(Approve.class);
 			selectApprove.setId(as.getId());
 			selectApprove.setProcessInstanceId(processInstance.getProcessInstanceId());
+			selectApprove.setProcessDefinitionId(processInstance.getProcessDefinitionId());
 			// 修改需求状态，记录流程实例id和流程定义id
 			int update = approveService.updateSelective(selectApprove);
 			if (update <= 0) {
-				throw new ProjectApplyException("提交立项引擎流程失败");
+				throw new ProjectApplyException("提交项目变更引擎流程失败");
 			}
 		}
 		

@@ -174,4 +174,10 @@ public interface Approve extends IBaseDomain {
     
     void setProcessInstanceId(String processInstanceId);
     
+    @Column(name = "`process_definition_id`")
+    @FieldDef(label="流程运行id", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getProcessDefinitionId();
+    
+    void setProcessDefinitionId(String processDefinitionId);
 }

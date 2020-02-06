@@ -45,7 +45,6 @@ import com.dili.alm.domain.ProjectEarning;
 import com.dili.alm.domain.Roi;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
-import com.dili.alm.domain.dto.ProjectApplyDto;
 import com.dili.alm.domain.dto.RoiUpdateDto;
 import com.dili.alm.domain.dto.apply.ApplyFiles;
 import com.dili.alm.domain.dto.apply.ApplyImpact;
@@ -195,6 +194,7 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 			Approve selectApprove=DTOUtils.newDTO(Approve.class);
 			selectApprove.setId(as.getId());
 			selectApprove.setProcessInstanceId(processInstance.getProcessInstanceId());
+			selectApprove.setProcessDefinitionId(processInstance.getProcessDefinitionId());
 			// 修改需求状态，记录流程实例id和流程定义id
 			int update = approveService.updateSelective(selectApprove);
 			if (update <= 0) {

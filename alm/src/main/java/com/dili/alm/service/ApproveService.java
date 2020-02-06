@@ -6,10 +6,13 @@ import com.dili.alm.exceptions.ApproveException;
 import com.dili.alm.exceptions.ProjectApplyException;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
 
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.ui.ModelMap;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -34,5 +37,10 @@ public interface ApproveService extends BaseService<Approve, Long> {
 
 	Approve selectOne(Approve selectApprove);
 
+	void getModel(ModelMap modelMap, String taskId);
+
+    void bpmcApprove(String taskId, String opt, String notes) throws ApproveException;
+
+    EasyuiPageOutput selectApproveByPage(Approve approve) throws Exception;
 
 }
