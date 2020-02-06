@@ -234,7 +234,7 @@ public class ProjectApplyController {
 		try {
 			projectApplyService.submit(projectApply, files);
 			return BaseOutput.success(String.valueOf(projectApply.getId())).setData(projectApply.getId() + ":" + projectApply.getName());
-		} catch (ProjectApplyException e) {
+		} catch (Exception e) {
 			return BaseOutput.failure(e.getMessage());
 		}
 	}
