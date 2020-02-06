@@ -52,9 +52,13 @@ public class BpmcUtil {
 				}
 			});
 		});
-		BaseOutput<List<RoleUserDto>> ruOutput = this.roleRpc.listRoleUserByRoleIds(roleIds);
-		if (!ruOutput.isSuccess()) {
-			return;
+		final List<RoleUserDto> roleUsers = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(roleIds)) {
+			BaseOutput<List<RoleUserDto>> ruOutput = this.roleRpc.listRoleUserByRoleIds(roleIds);
+			if (!ruOutput.isSuccess()) {
+				return;
+			}
+			roleUsers.addAll(ruOutput.getData());
 		}
 		Long userId = SessionContext.getSessionContext().getUserTicket().getId();
 		dtos.forEach(d -> {
@@ -70,7 +74,7 @@ public class BpmcUtil {
 							if (userId.toString().equals(gu.getUserId())) {
 								return true;
 							}
-							RoleUserDto ruTarget = ruOutput.getData().stream().filter(ru -> ru.getId().toString().equals(gu.getGroupId())).findFirst().orElse(null);
+							RoleUserDto ruTarget = roleUsers.stream().filter(ru -> ru.getId().toString().equals(gu.getGroupId())).findFirst().orElse(null);
 							if (ruTarget != null) {
 								return ruTarget.getUsers().stream().filter(u -> u.getId().equals(userId)).findFirst().orElse(null) != null;
 							}

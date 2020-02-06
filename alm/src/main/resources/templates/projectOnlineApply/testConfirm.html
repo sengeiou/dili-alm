@@ -152,13 +152,13 @@
 						<td class="table-title" colspan="2">操作</td>
 						<td class="table-title" colspan="4">
 							<span style="margin: 0px 10px">
-							<a id="btn" href="#" class="easyui-linkbutton" data-options="onClick:accept">同意</a>
+							<a id="btn" href="javascript:void(0);" class="easyui-linkbutton" data-options="onClick:accept">同意</a>
 							</span>
 							<span style="margin: 0px 10px">
-							<a id="btn" href="#" class="easyui-linkbutton" data-options="onClick:reject">拒绝</a>
+							<a id="btn" href="javascript:void(0);" class="easyui-linkbutton" data-options="onClick:reject">拒绝</a>
 							</span>
 							<span style="margin: 0px 10px">
-							<a id="btn" href="#" class="easyui-linkbutton" data-options="onClick:function(){window.history.go(-1);}">返回</a>
+							<a id="btn" href="javascript:void(0);" class="easyui-linkbutton" data-options="onClick:function(){window.history.go(-1);}">返回</a>
 							</span>
 						</td>
 					</tr>
@@ -183,7 +183,20 @@
 					success : function(data) {
 						var obj = $.parseJSON(data);
 						if (obj.code == 200) {
-							window.location.href='${contextPath!}/projectOnlineApply/index.html';
+							try{
+								document.domain="diligrp.com";
+								//如果父页面是任务中心
+		                        var plh = parent.location.href.indexOf('?') > 0 ? parent.location.href.substring(0, parent.location.href.indexOf('?')) : parent.location.href;
+		                        if(plh=='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
+		                            //向任务中心发送消息，参数为要跳转的地址
+		                            window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
+		                        }else{
+		                        	window.location.href='${contextPath!}/projectOnlineApply/index.html';
+		                        }
+	                        }catch(ex){
+	                        	console.log(ex);
+	                        	window.location.href='${contextPath!}/projectOnlineApply/index.html';
+	                        }
 						} else {
 							$.messager.alert('错误', obj.result);
 						}
