@@ -296,7 +296,7 @@ public class ProjectOnlineApplyController {
 	@SuppressWarnings("unchecked")
 	@ResponseBody
 	@RequestMapping(value = "/saveAndSubmit", method = RequestMethod.POST)
-	public BaseOutput<Object> saveAndSubmit(@Valid ProjectOnlineApplyAddDto apply, BindingResult br) {
+	public BaseOutput<Object> saveAndSubmit(@RequestParam(required = false) String taskId, @Valid ProjectOnlineApplyAddDto apply, BindingResult br) {
 		if (br.hasErrors()) {
 			return BaseOutput.failure(br.getFieldError().getDefaultMessage());
 		}
@@ -306,7 +306,7 @@ public class ProjectOnlineApplyController {
 		}
 		ProjectOnlineApplyUpdateDto dto = this.parseServiceModel(apply);
 		try {
-			projectOnlineApplyService.saveAndSubmit(dto, null);
+			projectOnlineApplyService.saveAndSubmit(dto, taskId);
 			ProjectOnlineApply vm = this.projectOnlineApplyService.getEasyUiRowData(dto.getId());
 			return BaseOutput.success().setData(ProjectOnlineApplyServiceImpl.buildApplyViewModel(vm));
 		} catch (Exception e) {
@@ -339,8 +339,8 @@ public class ProjectOnlineApplyController {
 	}
 
 	@RequestMapping(value = "/update", method = RequestMethod.GET)
-	public String updateView(@RequestParam(required = false) String taskId, @RequestParam(required = false, defaultValue = "false") Boolean dialog, @RequestParam Long id, ModelMap modelMap,
-			@RequestParam(required = false, defaultValue = "true") Boolean aaa) {
+	public String updateView(@RequestParam(required = false) String taskId, @RequestParam(required = false, defaultValue = "false") Boolean dialog, @RequestParam(required = false) Long id,
+			ModelMap modelMap) {
 		@SuppressWarnings("rawtypes")
 		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
 		if (CollectionUtils.isEmpty(dataAuths)) {
@@ -362,7 +362,21 @@ public class ProjectOnlineApplyController {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		modelMap.addAttribute("applicant", user);
 		try {
-			ProjectOnlineApply dto = this.projectOnlineApplyService.getEditViewDataById(id);
+			ProjectOnlineApply dto = null;
+			if (StringUtils.isNotBlank(taskId)) {
+				BaseOutput<Map<String, Object>> output = this.taskRpc.getVariables(taskId);
+				if (!output.isSuccess()) {
+					LOGGER.error(output.getMessage());
+					return "";
+				}
+				String serialNumber = output.getData().get(BpmConsts.ProjectOnlineApplyConstant.BUSINESS_KEY.getName()).toString();
+				dto = this.projectOnlineApplyService.getEditViewDataBySerialNumber(serialNumber);
+			} else if (id != null) {
+				dto = this.projectOnlineApplyService.getEditViewDataById(id);
+			} else {
+				LOGGER.error("参数错误");
+				return "";
+			}
 			Map<Object, Object> model = ProjectOnlineApplyServiceImpl.buildApplyViewModel(dto);
 			modelMap.addAttribute("apply", model).addAttribute("taskId", taskId);
 			if (dialog) {
@@ -371,6 +385,7 @@ public class ProjectOnlineApplyController {
 				return "projectOnlineApply/updateBody";
 			}
 		} catch (ProjectOnlineApplyException e) {
+			LOGGER.error(e.getMessage(), e);
 			return "";
 		}
 	}

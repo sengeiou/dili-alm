@@ -25,12 +25,17 @@ public class BpmConsts {
 	 */
 	public static final String PROJECT_COMPLETE_PROCESS = "almProjectCompleteProcess";
 
-	public enum ProjectOnlineApply {
-		PROCESS_KEY("almProjectOnlineApplyProcess"), BUSINESS_KEY("serialNumber"), PROJECT_MANAGER_KEY("projectManager"), PRODUCT_MANAGER_KEY("productManager"), EXECUTOR_KEY("executorId");
+	public enum ProjectOnlineApplyConstant {
+		PROCESS_KEY("almProjectOnlineApplyProcess"), 
+		BUSINESS_KEY("serialNumber"), 
+		PROJECT_MANAGER_KEY("projectManager"), 
+		PRODUCT_MANAGER_KEY("productManager"), 
+		EXECUTOR_KEY("executorId"),
+		APPLICANT_KEY("applicantId");
 
 		private String name;
 
-		private ProjectOnlineApply(String name) {
+		private ProjectOnlineApplyConstant(String name) {
 			this.name = name;
 		}
 

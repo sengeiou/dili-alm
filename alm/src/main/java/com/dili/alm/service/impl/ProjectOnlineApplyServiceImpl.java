@@ -320,7 +320,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
 			{
 				put("approved", Boolean.valueOf(OperationResult.SUCCESS.equals(result)).toString());
-				put(BpmConsts.ProjectOnlineApply.PRODUCT_MANAGER_KEY.getName(), apply.getProductManagerId().toString());
+				put(BpmConsts.ProjectOnlineApplyConstant.PRODUCT_MANAGER_KEY.getName(), apply.getProductManagerId().toString());
 			}
 		});
 		if (!output.isSuccess()) {
@@ -685,7 +685,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		// 完成任务
 		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
 			{
-				put(BpmConsts.ProjectOnlineApply.EXECUTOR_KEY.getName(), executors.toArray(new Long[] {})[0].toString());
+				put(BpmConsts.ProjectOnlineApplyConstant.EXECUTOR_KEY.getName(), executors.toArray(new Long[] {})[0].toString());
 			}
 		});
 		if (!output.isSuccess()) {
@@ -713,11 +713,12 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		apply.setSubmitTime(new Date());
 
 		if (StringUtils.isBlank(taskId)) {
-			BaseOutput<ProcessInstanceMapping> output = this.runtimeRpc.startProcessInstanceByKey(BpmConsts.ProjectOnlineApply.PROCESS_KEY.getName(), apply.getSerialNumber(),
+			BaseOutput<ProcessInstanceMapping> output = this.runtimeRpc.startProcessInstanceByKey(BpmConsts.ProjectOnlineApplyConstant.PROCESS_KEY.getName(), apply.getSerialNumber(),
 					SessionContext.getSessionContext().getUserTicket().getId().toString(), new HashMap<String, Object>() {
 						{
-							put(BpmConsts.ProjectOnlineApply.BUSINESS_KEY.getName(), apply.getSerialNumber());
-							put(BpmConsts.ProjectOnlineApply.PROJECT_MANAGER_KEY.getName(), apply.getProjectManagerId().toString());
+							put(BpmConsts.ProjectOnlineApplyConstant.BUSINESS_KEY.getName(), apply.getSerialNumber());
+							put(BpmConsts.ProjectOnlineApplyConstant.PROJECT_MANAGER_KEY.getName(), apply.getProjectManagerId().toString());
+							put(BpmConsts.ProjectOnlineApplyConstant.APPLICANT_KEY.getName(), apply.getApplicantId().toString());
 						}
 					});
 			if (!output.isSuccess()) {
@@ -1225,6 +1226,35 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		ProjectOnlineApply record = DTOUtils.newDTO(ProjectOnlineApply.class);
 		record.setSerialNumber(serialNumber);
 		ProjectOnlineApply apply = this.getActualDao().selectOne(record);
+		return apply;
+	}
+
+	@Override
+	public ProjectOnlineApply getEditViewDataBySerialNumber(String serialNumber) throws ProjectOnlineApplyException {
+		ProjectOnlineApply record = DTOUtils.newDTO(ProjectOnlineApply.class);
+		record.setSerialNumber(serialNumber);
+		ProjectOnlineApply apply = this.getActualDao().selectOne(record);
+		if (apply == null) {
+			throw new ProjectOnlineApplyException("申请不存在");
+		}
+		ProjectOnlineSubsystem subsysQuery = DTOUtils.newDTO(ProjectOnlineSubsystem.class);
+		subsysQuery.setApplyId(apply.getId());
+		List<ProjectOnlineSubsystem> subsystems = this.posMapper.select(subsysQuery);
+		apply.aset("subsystems", subsystems);
+		EmailAddress emailQuery = DTOUtils.newDTO(EmailAddress.class);
+		emailQuery.setApplyId(apply.getId());
+		List<EmailAddress> emails = this.emailAddressMapper.select(emailQuery);
+		apply.aset("emails", emails);
+		ProjectOnlineApplyMarket poamQuery = DTOUtils.newDTO(ProjectOnlineApplyMarket.class);
+		poamQuery.setApplyId(apply.getId());
+		// 判断是否针对市场上线
+		List<ProjectOnlineApplyMarket> poamList = this.applyMarketMapper.select(poamQuery);
+		if (poamList.size() == 1 && poamList.get(0).getMarketCode().equals("-1")) {
+			apply.aset("marketVersion", false);
+		} else {
+			apply.aset("marketVersion", true);
+			apply.aset("selectedMarkets", poamList);
+		}
 		return apply;
 	}
 }

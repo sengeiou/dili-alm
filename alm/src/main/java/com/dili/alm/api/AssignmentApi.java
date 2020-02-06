@@ -151,7 +151,7 @@ public class AssignmentApi {
 	@ResponseBody
 	@RequestMapping(value = "/getProjectOnlineApplyProjectManager.api")
 	public BaseOutput<Assignment> getProjectManager(TaskMapping taskMapping) {
-		String projectManagerId = taskMapping.getProcessVariables().get(BpmConsts.ProjectOnlineApply.PROJECT_MANAGER_KEY.getName()).toString();
+		String projectManagerId = taskMapping.getProcessVariables().get(BpmConsts.ProjectOnlineApplyConstant.PROJECT_MANAGER_KEY.getName()).toString();
 		Assignment assignment = DTOUtils.newDTO(Assignment.class);
 		assignment.setAssignee(projectManagerId);
 		return BaseOutput.success().setData(assignment);
@@ -160,7 +160,7 @@ public class AssignmentApi {
 	@ResponseBody
 	@RequestMapping(value = "/getProjectOnlineApplyExecutor.api")
 	public BaseOutput<Assignment> getProjectOnlineApplyExecutor(TaskMapping taskMapping) {
-		String executorId = taskMapping.getProcessVariables().get(BpmConsts.ProjectOnlineApply.EXECUTOR_KEY.getName()).toString();
+		String executorId = taskMapping.getProcessVariables().get(BpmConsts.ProjectOnlineApplyConstant.EXECUTOR_KEY.getName()).toString();
 		Assignment assignment = DTOUtils.newDTO(Assignment.class);
 		assignment.setAssignee(executorId);
 		return BaseOutput.success().setData(assignment);
@@ -169,9 +169,18 @@ public class AssignmentApi {
 	@ResponseBody
 	@RequestMapping(value = "/getProjectOnlineApplyProductManager.api")
 	public BaseOutput<Assignment> getProjectOnlineApplyProductManager(TaskMapping taskMapping) {
-		String productManagerId = taskMapping.getProcessVariables().get(BpmConsts.ProjectOnlineApply.PRODUCT_MANAGER_KEY.getName()).toString();
+		String productManagerId = taskMapping.getProcessVariables().get(BpmConsts.ProjectOnlineApplyConstant.PRODUCT_MANAGER_KEY.getName()).toString();
 		Assignment assignment = DTOUtils.newDTO(Assignment.class);
 		assignment.setAssignee(productManagerId);
+		return BaseOutput.success().setData(assignment);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/getProjectOnlineApplyApplicant.api")
+	public BaseOutput<Assignment> getProjectOnlineApplyApplicant(TaskMapping taskMapping) {
+		String applicantId = taskMapping.getProcessVariables().get(BpmConsts.ProjectOnlineApplyConstant.APPLICANT_KEY.getName()).toString();
+		Assignment assignment = DTOUtils.newDTO(Assignment.class);
+		assignment.setAssignee(applicantId);
 		return BaseOutput.success().setData(assignment);
 	}
 }
