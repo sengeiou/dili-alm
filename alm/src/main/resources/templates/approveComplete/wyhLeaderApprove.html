@@ -187,10 +187,10 @@ input[class^="easyui-"] {
 															LOG_MODULE_OPS.PROJECT_COMPLETE_APPROVE,
 															"结项审批:${approve.id}:${approve.name}:成功",
 															function() {
-																window.location.href = "${contextPath}/approve/complete/index.html";
+																parent.location.href = "${contextPath}/approve/complete/index.html";
 															});
 										} catch (e) {
-											window.location.href = "${contextPath}/approve/complete/index.html";
+											parent.location.href = "${contextPath}/approve/complete/index.html";
 										}
 				                    }
 				            	}

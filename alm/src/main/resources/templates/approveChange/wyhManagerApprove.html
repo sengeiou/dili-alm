@@ -180,10 +180,10 @@ input[class^="easyui-"] {
 															LOG_MODULE_OPS.PROJECT_CHANGE_APPROVE,
 															"变更审批:${approve.id}:${approve.name}:成功",
 															function() {
-																window.location.href = "${contextPath}/approve/change/index.html";
+																parent.location.href = "${contextPath}/approve/change/index.html";
 															});
 										} catch (e) {
-											window.location.href = "${contextPath}/approve/change/index.html";
+											parent.location.href = "${contextPath}/approve/change/index.html";
 										}
 				                    }
 				            	}

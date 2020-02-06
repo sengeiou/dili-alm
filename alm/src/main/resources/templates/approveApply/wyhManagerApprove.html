@@ -204,10 +204,10 @@
                     }else{
                     	try {
                             LogUtils.saveLog(LOG_MODULE_OPS.PROJECT_APPROVE,"立项审批:${apply.id}:${apply.name}:成功", function () {
-                                window.location.href = "${contextPath}/approve/apply/index.html";
+                            	parent.location.href = "${contextPath}/approve/apply/index.html";
                             });
                         } catch (e) {
-                            window.location.href = "${contextPath}/approve/apply/index.html";
+                        	parent.location.href = "${contextPath}/approve/apply/index.html";
                         }
                     }
             	}

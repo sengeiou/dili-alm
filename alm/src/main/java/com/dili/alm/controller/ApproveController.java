@@ -317,7 +317,7 @@ public class ApproveController {
 			modelMap.put("viewMode", false);
 		}
 		modelMap.put("taskId",taskId);
-		return "approveChange/wyhLeaderApprove";
+		return "approveComplete/wyhLeaderApprove";
 		
 	}
 	
@@ -351,7 +351,7 @@ public class ApproveController {
 			modelMap.put("viewMode", false);
 		}
 		modelMap.put("taskId",taskId);
-		return "approveChange/wyhManagerApprove";
+		return "approveComplete/wyhManagerApprove";
 	}
 	
 	@RequestMapping("/completeWyhManagerApprove")
