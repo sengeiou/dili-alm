@@ -176,24 +176,31 @@ input[class^="easyui-"] {
 							success : function(data) {
 								var data = eval('(' + data + ')');
 				                if(data.success) {
-				                    //如果父页面是任务中心
-				                    if(parent.location.href=='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
-				                        //向任务中心发送消息，参数为要跳转的地址
-				                        window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
-				                    }else{
-				                    	try {
+				                	document.domain="diligrp.com";
+									//如果父页面是任务中心
+				                    var plh1= window.location.href.indexOf('?') > 0 ? window.location.href.substring(0, window.location.href.indexOf('?')) : window.location.href;
+									if(plh1=='http://almweb.diligrp.com/approve/completeApproveByAlm.html'){
+										try {
 											LogUtils
 													.saveLog(
 															LOG_MODULE_OPS.PROJECT_COMPLETE_APPROVE,
 															"结项审批:${approve.id}:${approve.name}:成功",
 															function() {
-																parent.location.href = "${contextPath}/approve/complete/index.html";
+											                	window.location.href = "${contextPath}/approve/complete/index.html";
 															});
 										} catch (e) {
-											parent.location.href = "${contextPath}/approve/complete/index.html";
+											window.location.href = "${contextPath}/approve/complete/index.html";
 										}
+				                    }else{
+					                    var plh = parent.location.href.indexOf('?') > 0 ? parent.location.href.substring(0, parent.location.href.indexOf('?')) : parent.location.href;
+					                    if(plh=='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
+					                        //向任务中心发送消息，参数为要跳转的地址
+					                        window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
+					                    }
 				                    }
-				            	}
+				                } else {
+									$.messager.alert('错误', obj.result);
+								}
 							}
 						});
 	}

@@ -142,7 +142,7 @@ public class ProjectChangeController {
 	@RequestMapping(value = "/reChange/{id}", method = RequestMethod.GET)
 	public String reChange(@PathVariable("id") Long id) {
 		Long reApplyId = projectChangeService.reChange(id);
-		return reApplyId == -1 ? "redirect:/projectChange/index.html" : "redirect:/projectChange/edit?id=" + reApplyId;
+		return reApplyId == -1 ? "redirect:/projectChange/index.html" : "redirect:/projectChange/edit.html?id=" + reApplyId;
 	}
 
 	@ApiOperation(value = "查询ProjectChange", notes = "查询ProjectChange，返回列表信息")

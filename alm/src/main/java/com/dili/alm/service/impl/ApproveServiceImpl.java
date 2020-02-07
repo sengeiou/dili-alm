@@ -700,6 +700,55 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		}
 
 	}
+	@Override
+	public void updateBefore(Approve as) throws ProjectApplyException {
+		DataDictionaryDto code = dataDictionaryService.findByCode(AlmConstants.ROLE_CODE);
+		List<DataDictionaryValueDto> values = code.getValues();
+		String roleId = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH_LEADER)).findFirst().map(DataDictionaryValue::getValue).orElse(null);
+		String superRoleId = null;
+
+		if (roleId == null) {
+			throw new ProjectApplyException("请先指定项目委员会组长");
+		}
+
+		List<ApplyApprove> approveList = Lists.newArrayList();
+
+		List<User> userByRole = userRpc.listUserByRoleId(Long.parseLong(roleId)).getData();
+		if (CollectionUtils.isEmpty(userByRole)) {
+			throw new ProjectApplyException("请先指定项目委员会组长");
+		}
+
+		ApplyApprove approve = new ApplyApprove();
+		approve.setUserId(userByRole.get(0).getId());
+		BaseOutput<List<Role>> listRoleByUserId = roleRpc.listByUser(Long.valueOf(userByRole.get(0).getId()),"");	
+		approve.setRole(listRoleByUserId.getData().stream().map(Role::getRoleName).collect(Collectors.joining(",")));
+		approveList.add(approve);
+
+//		if (as.getType().equals(AlmConstants.ApproveType.APPLY.getCode())) {
+			superRoleId = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH_SUPER_LEADER)).findFirst().map(DataDictionaryValue::getValue).orElse(null);
+			if (superRoleId == null) {
+				throw new ProjectApplyException("请先指定项目委员会组长");
+			}
+
+			userByRole = userRpc.listUserByRoleId(Long.parseLong(superRoleId)).getData();
+			if (CollectionUtils.isEmpty(userByRole)) {
+				throw new ProjectApplyException("请先指定项目委员会组长");
+			}
+
+			approve = new ApplyApprove();
+			approve.setUserId(userByRole.get(0).getId());
+			BaseOutput<List<Role>> listRoleByUserId1 = roleRpc.listByUser(Long.valueOf(userByRole.get(0).getId()),"");	
+			approve.setRole(listRoleByUserId1.getData().stream().map(Role::getRoleName).collect(Collectors.joining(",")));
+			approveList.add(approve);
+//		}
+
+		as.setDescription(JSON.toJSONString(approveList));
+		int rows = updateSelective(as);
+		if (rows <= 0) {
+			throw new ProjectApplyException("更新审批记录失败");
+		}
+
+	}
 
 	@Override
 	public BaseOutput verity(Long id, String opt, String notes) {
@@ -994,7 +1043,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
 	@Override
 	public Approve selectOne(Approve selectApprove) {
-		return this.getDao().selectOneExpand(selectApprove);
+		return this.getDao().selectOne(selectApprove);
 	}
 
 	@Override

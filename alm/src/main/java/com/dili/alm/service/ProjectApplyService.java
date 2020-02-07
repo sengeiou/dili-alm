@@ -24,7 +24,7 @@ public interface ProjectApplyService extends BaseService<ProjectApply, Long> {
 
 	List<DataDictionaryValueDto> getPlanPhase();
 
-	void submit(ProjectApply projectApply, ApplyFiles files) throws ProjectApplyException;
+	void submit(ProjectApply projectApply, ApplyFiles files) throws  Exception;
 
 	Long reApply(Long id);
 
