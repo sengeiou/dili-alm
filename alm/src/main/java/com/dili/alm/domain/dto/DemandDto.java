@@ -1,5 +1,6 @@
 package com.dili.alm.domain.dto;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -10,18 +11,35 @@ import com.dili.alm.domain.Demand;
 import com.dili.ss.domain.annotation.Operator;
 
 public class DemandDto extends Demand implements ProcessHandleInfoDto {
+	/**
+	 * 
+	 */
+	@Transient
+	private static final long serialVersionUID = -8773268871608713471L;
+
 	@Operator(Operator.IN)
 	@Column(name = "`id`")
 	List<Long> ids;
 
+	@Transient
 	Long departmentId;
+	@Transient
 	String departmentName;
+	@Transient
 	String departmentFirstName;
+	@Transient
 	String userPhone;
+	@Transient
 	String firmName;
+	@Transient
 	String userName;
-	String startTime;
-	String endTime;
+	@Operator(Operator.GREAT_EQUAL_THAN)
+	@Column(name = "create_date")
+	Date startTime;
+	@Operator(Operator.LITTLE_THAN)
+	@Column(name = "create_date")
+	Date endTime;
+	@Transient
 	int processFlag;// 流程编辑标识 1是可编辑，空为不可编辑
 	@Transient
 	@Column(name = "`content`")
@@ -29,10 +47,17 @@ public class DemandDto extends Demand implements ProcessHandleInfoDto {
 	/**
 	 * 当前登录人是否可以处理流程
 	 */
+	@Transient
 	private Boolean isHandleProcess = false;
+	@Transient
 	private String formKey;
+	@Transient
 	private String taskId;
+	@Transient
 	private Boolean isNeedClaim;
+	@Operator(Operator.NOT_EQUAL)
+	@Column(name = "status")
+	private Byte filterStatus;
 
 	public List<Long> getIds() {
 		return ids;
@@ -90,19 +115,19 @@ public class DemandDto extends Demand implements ProcessHandleInfoDto {
 		this.userName = userName;
 	}
 
-	public String getStartTime() {
+	public Date getStartTime() {
 		return startTime;
 	}
 
-	public void setStartTime(String startTime) {
+	public void setStartTime(Date startTime) {
 		this.startTime = startTime;
 	}
 
-	public String getEndTime() {
+	public Date getEndTime() {
 		return endTime;
 	}
 
-	public void setEndTime(String endTime) {
+	public void setEndTime(Date endTime) {
 		this.endTime = endTime;
 	}
 
@@ -162,6 +187,14 @@ public class DemandDto extends Demand implements ProcessHandleInfoDto {
 	@Override
 	public void setIsNeedClaim(Boolean isNeedClaim) {
 		this.isNeedClaim = isNeedClaim;
+	}
+
+	public Byte getFilterStatus() {
+		return filterStatus;
+	}
+
+	public void setFilterStatus(Byte filterStatus) {
+		this.filterStatus = filterStatus;
 	}
 
 }

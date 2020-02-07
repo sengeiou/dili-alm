@@ -60,7 +60,7 @@
 			fitColumns="true" pagination="true" pageSize="30" pageNumber="1"
 			pagePosition="both" rownumbers="true" remoteSort="false"
 			loadMsg="数据加载中..." singleSelect="true" method="post"
-			multiSort="false" sortName="serialNumber" align="center" fit="true"
+			multiSort="false" sortName="modificationTime" sortOrder="desc" align="center" fit="true"
 			striped="true" toolbar="#toolbar" idField="id"
 			data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
 			<thead>
@@ -87,6 +87,9 @@
 					<th
 						data-options="field:'createDate',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
 						申请时间</th>
+					<th
+						data-options="field:'modificationTime',hidden:true,sortable:'true', order:'asc',sortable:'true', order:'desc',">
+						修改时间</th>	
 					<!-- 草稿时间、提交时间 -->
 					<th
 						data-options="field:'options', formatter:formatOptions, sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
