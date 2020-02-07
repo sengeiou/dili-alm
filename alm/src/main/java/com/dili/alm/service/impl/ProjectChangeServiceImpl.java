@@ -28,10 +28,14 @@ import com.dili.alm.dao.ProjectChangeMapper;
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.domain.Approve;
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.ProjectChange;
+import com.dili.alm.domain.TaskDto;
+import com.dili.alm.domain.TaskMapping;
 import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.ProjectApplyException;
 import com.dili.alm.provider.ProjectTypeProvider;
+import com.dili.alm.rpc.MyTasksRpc;
 import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.ProjectChangeService;
 import com.dili.alm.service.ProjectService;
@@ -40,6 +44,7 @@ import com.dili.bpmc.sdk.rpc.RuntimeRpc;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.exception.AppException;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.uap.sdk.session.SessionContext;
 
@@ -71,6 +76,8 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 	
 	@Autowired
 	private RuntimeRpc runtimeRpc;
+	@Autowired
+	private MyTasksRpc tasksRpc;
 
 	public ProjectChangeMapper getActualDao() {
 		return (ProjectChangeMapper) getDao();
@@ -115,40 +122,68 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 		 */
 		if (change.getStatus() == AlmConstants.ApplyState.APPROVE.getCode()) {
 			ProjectChange projectChange = this.get(change.getId());
+			Approve newApprove = DTOUtils.newInstance(Approve.class);
+			newApprove.setProjectApplyId(change.getId());
+			newApprove.setType(AlmConstants.ApproveType.CHANGE.getCode());
+			Approve selectOne = approveService.selectOne(newApprove);
 			Approve as = DTOUtils.as(projectChange, Approve.class);
-			as.setId(null);
-			as.setProjectApplyId(change.getId());
-			as.setName(change.getProjectName());
-			as.setCreated(now);
-			as.setProjectApplyId(change.getId());
-			as.setStatus(AlmConstants.ApplyState.APPROVE.getCode());
-			as.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
-			as.setType(AlmConstants.ApproveType.CHANGE.getCode());
-			Project project = projectService.get(change.getProjectId());
-			as.setProjectType(project.getType());
-			as.setExtend(change.getType());
+			if(selectOne==null) {
+				as.setId(null);
+				as.setProjectApplyId(change.getId());
+				as.setName(change.getProjectName());
+				as.setCreated(now);
+				as.setProjectApplyId(change.getId());
+				as.setStatus(AlmConstants.ApplyState.APPROVE.getCode());
+				as.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
+				as.setType(AlmConstants.ApproveType.CHANGE.getCode());
+				Project project = projectService.get(change.getProjectId());
+				as.setProjectType(project.getType());
+				as.setExtend(change.getType());
+	
+				approveService.insertBefore(as);
 
-			approveService.insertBefore(as);
+				//开启引擎流程
+				Long  userId=SessionContext.getSessionContext().getUserTicket().getId();
+				Map<String, Object> map=new HashMap<String, Object>();
+		    	map.put("dataId", as.getId().toString());
+				BaseOutput<ProcessInstanceMapping>  processInstanceOutput= runtimeRpc.startProcessInstanceByKey(BpmConsts.PROJECT_CHANGE_PROCESS,  as.getId().toString(), userId+"",map);
+				if (!processInstanceOutput.isSuccess()) {
+					throw new ProjectApplyException(processInstanceOutput.getMessage());
+				}
+	//			 回调，写入相关流程任务数据
+				ProcessInstanceMapping processInstance = processInstanceOutput.getData();
+				Approve selectApprove=DTOUtils.newDTO(Approve.class);
+				selectApprove.setId(as.getId());
+				selectApprove.setProcessInstanceId(processInstance.getProcessInstanceId());
+				selectApprove.setProcessDefinitionId(processInstance.getProcessDefinitionId());
+				// 修改需求状态，记录流程实例id和流程定义id
+				int update = approveService.updateSelective(selectApprove);
+				if (update <= 0) {
+					throw new ProjectApplyException("提交项目变更引擎流程失败");
+				}
+			}else {
+				selectOne.setProjectApplyId(change.getId());
+				selectOne.setName(change.getProjectName());
+				selectOne.setProjectApplyId(change.getId());
+				selectOne.setStatus(AlmConstants.ApplyState.APPROVE.getCode());
+				selectOne.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
+				selectOne.setType(AlmConstants.ApproveType.CHANGE.getCode());
+				Project project = projectService.get(change.getProjectId());
+				selectOne.setProjectType(project.getType());
+				selectOne.setExtend(change.getType());
+	
+				approveService.updateBefore(selectOne);
+				TaskDto taskDto = DTOUtils.newInstance(TaskDto.class);
+		        taskDto.setProcessInstanceBusinessKey(selectOne.getId().toString());
+		        BaseOutput<List<TaskMapping>> outputList = tasksRpc.list(taskDto);
+		        if(!outputList.isSuccess()){
+		        	throw new AppException("用户错误！"+outputList.getMessage()); 
+		        }
+		        //获取formKey
+		        TaskMapping task  = outputList.getData().get(0);
+		    	tasksRpc.complete(task.getId(),SessionContext.getSessionContext().getUserTicket().getId().toString());
+			}
 			sendMail(change);
-			//开启引擎流程
-			Long  userId=SessionContext.getSessionContext().getUserTicket().getId();
-			Map<String, Object> map=new HashMap<String, Object>();
-	    	map.put("dataId", as.getId().toString());
-			BaseOutput<ProcessInstanceMapping>  processInstanceOutput= runtimeRpc.startProcessInstanceByKey(BpmConsts.PROJECT_CHANGE_PROCESS,  as.getId().toString(), userId+"",map);
-			if (!processInstanceOutput.isSuccess()) {
-				throw new ProjectApplyException(processInstanceOutput.getMessage());
-			}
-//			 回调，写入相关流程任务数据
-			ProcessInstanceMapping processInstance = processInstanceOutput.getData();
-			Approve selectApprove=DTOUtils.newDTO(Approve.class);
-			selectApprove.setId(as.getId());
-			selectApprove.setProcessInstanceId(processInstance.getProcessInstanceId());
-			selectApprove.setProcessDefinitionId(processInstance.getProcessDefinitionId());
-			// 修改需求状态，记录流程实例id和流程定义id
-			int update = approveService.updateSelective(selectApprove);
-			if (update <= 0) {
-				throw new ProjectApplyException("提交项目变更引擎流程失败");
-			}
 		}
 		
 	}
@@ -207,13 +242,17 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 		if (!change.getCreateMemberId().equals(SessionContext.getSessionContext().getUserTicket().getId())) {
 			return -1L;
 		}
-		change.setRestatus(0);
-		update(change);
-		change.setId(null);
-		change.setCreated(new Date());
-		change.setRestatus(null);
+//		change.setRestatus(0);
+//		update(change);
+//		change.setId(null);
+//		change.setCreated(new Date());
+//		change.setRestatus(null);
+//		change.setStatus(AlmConstants.ApplyState.APPLY.getCode());
+//		insertSelective(change);
 		change.setStatus(AlmConstants.ApplyState.APPLY.getCode());
-		insertSelective(change);
+		change.setRestatus(0);
+		change.setModified(new Date());
+		update(change);
 		return change.getId();
 	}
 

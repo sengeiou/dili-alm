@@ -151,6 +151,8 @@ public class ApproveController {
         //根据业务号查询任务
         TaskDto taskDto = DTOUtils.newInstance(TaskDto.class);
         taskDto.setProcessInstanceBusinessKey(approve.getId().toString());
+        taskDto.setProcessDefinitionId(approve.getProcessDefinitionId());
+        taskDto.setProcessInstanceId( approve.getProcessInstanceId());
         BaseOutput<List<TaskMapping>> outputList = bpmcTaskRpc.list(taskDto);
         if(!outputList.isSuccess()){
         	return "用户错误！"+outputList.getMessage(); 
@@ -242,6 +244,8 @@ public class ApproveController {
         //根据业务号查询任务
         TaskDto taskDto = DTOUtils.newInstance(TaskDto.class);
         taskDto.setProcessInstanceBusinessKey(approve.getId().toString());
+        taskDto.setProcessDefinitionId(approve.getProcessDefinitionId());
+        taskDto.setProcessInstanceId( approve.getProcessInstanceId());
         BaseOutput<List<TaskMapping>> outputList = bpmcTaskRpc.list(taskDto);
         if(!outputList.isSuccess()){
         	return "用户错误！"+outputList.getMessage(); 
@@ -382,6 +386,8 @@ public class ApproveController {
         //根据业务号查询任务
         TaskDto taskDto = DTOUtils.newInstance(TaskDto.class);
         taskDto.setProcessInstanceBusinessKey(approve.getId().toString());
+        taskDto.setProcessDefinitionId(approve.getProcessDefinitionId());
+        taskDto.setProcessInstanceId( approve.getProcessInstanceId());
         BaseOutput<List<TaskMapping>> outputList = bpmcTaskRpc.list(taskDto);
         if(!outputList.isSuccess()){
         	return "用户错误！"+outputList.getMessage(); 

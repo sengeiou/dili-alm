@@ -212,7 +212,6 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 					throw new ProjectApplyException("提交立项引擎流程失败");
 				}
 			}else {
-				selectOne.setId(selectOne.getId());
 				selectOne.setProjectApplyId(projectApply.getId());
 				selectOne.setStatus(AlmConstants.ApplyState.APPROVE.getCode());
 				selectOne.setProjectLeader(as.getProjectLeader());
