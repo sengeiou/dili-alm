@@ -181,13 +181,9 @@ input[class^="easyui-"] {
 				                    var plh1= window.location.href.indexOf('?') > 0 ? window.location.href.substring(0, window.location.href.indexOf('?')) : window.location.href;
 									if(plh1=='http://almweb.diligrp.com/approve/completeApproveByAlm.html'){
 										try {
-											LogUtils
-													.saveLog(
-															LOG_MODULE_OPS.PROJECT_COMPLETE_APPROVE,
-															"结项审批:${approve.id}:${approve.name}:成功",
-															function() {
-											                	window.location.href = "${contextPath}/approve/complete/index.html";
-															});
+											LogUtils.saveLog(LOG_MODULE_OPS.PROJECT_COMPLETE_APPROVE,"结项审批:${approve.id}:${approve.name}:成功",function() {
+											          window.location.href = "${contextPath}/approve/complete/index.html";
+											});
 										} catch (e) {
 											window.location.href = "${contextPath}/approve/complete/index.html";
 										}

@@ -116,14 +116,6 @@ table {
 </div>
 <script>
 	var d;
-	$("#tagbx").tagbox({
-		onBeforeRemoveTag : function(value) {
-			if (value == pmo_email) {
-				return false;
-			}
-		}
-	});
-
 	$.extend($.fn.validatebox.defaults.rules, {
 		md : {
 			validator : function(value) {
@@ -134,6 +126,15 @@ table {
 			message : '结束日期不能小于开始日期.'
 		}
 	});
+	$("#tagbx").tagbox({
+		onBeforeRemoveTag : function(value) {
+			if (value == pmo_email) {
+				return false;
+			}
+		}
+	});
+
+	
 
 	function submitForm(type, obj) {
 		$('#ff')

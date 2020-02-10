@@ -107,7 +107,7 @@
 			}
 		}else if(row.$_status == 6){
             return '<span class="opt" style="padding:5px;"><a>编辑</a></span><span class="opt" style="padding:5px;"><a>删除</a></span>';
-        }
+        } 
 	}
 
 	function formatName(value, row) {
@@ -165,7 +165,6 @@
 		}
 		$("#grid").datagrid("load", bindGridMeta2Form('grid', 'form'));
 	}
-
 	//清空表单
 	function clearForm() {
 		$('#form').form('clear');
