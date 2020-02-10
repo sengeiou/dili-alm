@@ -1,44 +1,5 @@
 package com.dili.alm.controller;
 
-import com.alibaba.fastjson.JSONObject;
-import com.dili.alm.constant.AlmConstants.DemandProcessStatus;
-import com.dili.alm.constant.AlmConstants.DemandStatus;
-import com.dili.alm.domain.Demand;
-import com.dili.alm.domain.DemandProjectStatus;
-import com.dili.uap.sdk.domain.Department;
-import com.dili.uap.sdk.domain.User;
-import com.dili.alm.domain.Files;
-import com.dili.alm.domain.SystemDto;
-import com.dili.alm.exceptions.DemandExceptions;
-import com.dili.alm.domain.dto.DemandDto;
-import com.dili.alm.rpc.DepartmentRpc;
-import com.dili.alm.rpc.SysProjectRpc;
-import com.dili.alm.rpc.UserRpc;
-import com.dili.alm.service.DemandService;
-import com.dili.alm.service.FilesService;
-import com.dili.alm.service.impl.DemandServiceImpl;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.exception.AppException;
-import com.dili.ss.exception.BusinessException;
-import com.dili.ss.metadata.ValueProviderUtils;
-import com.dili.alm.utils.WebUtil;
-import com.dili.bpmc.sdk.annotation.BpmTask;
-import com.dili.bpmc.sdk.domain.ActForm;
-import com.dili.bpmc.sdk.domain.TaskMapping;
-import com.dili.bpmc.sdk.dto.TaskDto;
-import com.dili.bpmc.sdk.rpc.BpmcFormRpc;
-import com.dili.bpmc.sdk.rpc.TaskRpc;
-import com.dili.uap.sdk.domain.UserTicket;
-import com.dili.uap.sdk.session.SessionContext;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import tk.mybatis.mapper.entity.Example;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.xerces.dom.DOMOutputImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +16,43 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSONObject;
+import com.dili.alm.constant.AlmConstants.DemandProcessStatus;
+import com.dili.alm.constant.AlmConstants.DemandStatus;
+import com.dili.alm.domain.Demand;
+import com.dili.alm.domain.Files;
+import com.dili.alm.domain.SystemDto;
+import com.dili.alm.domain.dto.DemandDto;
+import com.dili.alm.exceptions.DemandExceptions;
+import com.dili.alm.rpc.DepartmentRpc;
+import com.dili.alm.rpc.SysProjectRpc;
+import com.dili.alm.rpc.UserRpc;
+import com.dili.alm.service.DemandService;
+import com.dili.alm.service.FilesService;
+import com.dili.alm.service.impl.DemandServiceImpl;
+import com.dili.alm.utils.WebUtil;
+import com.dili.bpmc.sdk.annotation.BpmTask;
+import com.dili.bpmc.sdk.domain.ActForm;
+import com.dili.bpmc.sdk.domain.TaskMapping;
+import com.dili.bpmc.sdk.dto.TaskDto;
+import com.dili.bpmc.sdk.rpc.BpmcFormRpc;
+import com.dili.bpmc.sdk.rpc.TaskRpc;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.exception.AppException;
+import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.uap.sdk.domain.Department;
+import com.dili.uap.sdk.domain.User;
+import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.session.SessionContext;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import tk.mybatis.mapper.entity.Example;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -143,7 +139,7 @@ public class DemandController {
 		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = false, dataType = "string")
 	})
     @RequestMapping(value="/listPage", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody String listPage(Demand demand) throws Exception {
+    public @ResponseBody String listPage(DemandDto demand) throws Exception {
     	EasyuiPageOutput listPageForUser = demandService.listPageForUser(demand);
         return listPageForUser.toString();
     }
