@@ -187,7 +187,7 @@ input[class^="easyui-"] {
 										} catch (e) {
 											window.location.href = "${contextPath}/approve/complete/index.html";
 										}
-				                    }else{
+				                    }else{ 
 					                    var plh = parent.location.href.indexOf('?') > 0 ? parent.location.href.substring(0, parent.location.href.indexOf('?')) : parent.location.href;
 					                    if(plh=='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
 					                        //向任务中心发送消息，参数为要跳转的地址
