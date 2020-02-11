@@ -58,7 +58,7 @@ public interface DemandService extends BaseService<Demand, Long> {
 	 * 
 	 * @return 查询列表
 	 */
-	public EasyuiPageOutput listPageForUser (Demand selectDemand);
+	public EasyuiPageOutput listPageForUser (DemandDto selectDemand);
 
 	/**
 	 * 定时重新设置自增值

@@ -1,17 +1,26 @@
 package com.dili.alm.service.impl;
 
-import com.dili.alm.constant.AlmConstants;
-
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.alibaba.fastjson.JSONObject;
+import com.dili.alm.cache.AlmCache;
 import com.dili.alm.component.BpmcUtil;
 import com.dili.alm.component.NumberGenerator;
+import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.constant.AlmConstants.DemandProcessStatus;
 import com.dili.alm.constant.AlmConstants.DemandStatus;
 import com.dili.alm.constant.BpmConsts;
@@ -25,16 +34,10 @@ import com.dili.alm.domain.Demand;
 import com.dili.alm.domain.DemandProject;
 import com.dili.alm.domain.DemandProjectStatus;
 import com.dili.alm.domain.DemandProjectType;
-import com.dili.alm.domain.FileType;
-import com.dili.alm.domain.Files;
-import com.dili.uap.sdk.domain.Department;
-import com.dili.uap.sdk.domain.Firm;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Sequence;
-import com.dili.alm.domain.SystemDto;
-import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.dto.DemandDto;
 import com.dili.alm.exceptions.DemandExceptions;
 import com.dili.alm.rpc.DepartmentRpc;
@@ -42,11 +45,8 @@ import com.dili.alm.rpc.FirmRpc;
 import com.dili.alm.rpc.SysProjectRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DemandService;
-import com.dili.alm.utils.ColumnUtil;
-import com.dili.alm.utils.DateUtil;
 import com.dili.alm.utils.GetFirstCharUtil;
 import com.dili.alm.utils.WebUtil;
-import com.dili.bpmc.sdk.domain.ActForm;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
 import com.dili.bpmc.sdk.domain.TaskMapping;
 import com.dili.bpmc.sdk.dto.TaskDto;
@@ -54,29 +54,18 @@ import com.dili.bpmc.sdk.rpc.FormRpc;
 import com.dili.bpmc.sdk.rpc.RuntimeRpc;
 import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.ss.base.BaseServiceImpl;
-import com.dili.ss.constant.ResultCode;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.exception.BusinessException;
-import com.dili.ss.exception.ParamErrorException;
 import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.uap.sdk.domain.Department;
+import com.dili.uap.sdk.domain.Firm;
+import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
-import com.dili.uap.sdk.exception.NotLoginException;
 import com.dili.uap.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
 
 import tk.mybatis.mapper.entity.Example;
-
-import java.lang.reflect.InvocationTargetException;
-import java.text.SimpleDateFormat;
-
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-12-23 17:32:14.
@@ -268,81 +257,53 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	}
 
 	@Override
-	public EasyuiPageOutput listPageForUser (Demand selectDemand) {
-		
-		try {
-			DemandDto selectDemandDto =new DemandDto();
-			Map<Object, Object> metadata = new HashMap<>();
+	public EasyuiPageOutput listPageForUser(DemandDto selectDemand) {
 
-			if(selectDemand.getBelongProId()!=null) {
-				selectDemandDto.setBelongProId(selectDemand.getBelongProId());
+		try {
+			if (selectDemand.getSubmitDate() != null) {
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				Calendar c = Calendar.getInstance();
+				c.setTime(selectDemand.getSubmitDate());
+				selectDemand.setStartTime(sdf.parse(sdf.format(selectDemand.getSubmitDate())));
+				c.add(Calendar.DAY_OF_MONTH, 1);
+				selectDemand.setEndTime(sdf.parse(sdf.format(c.getTime())));
+				selectDemand.setSubmitDate(null);
 			}
-			if(!WebUtil.strIsEmpty(selectDemand.getName())) {
-				selectDemandDto.setName(selectDemand.getName());
-				
-			}
-			if(!WebUtil.strIsEmpty(selectDemand.getSerialNumber())) {
-				selectDemandDto.setSerialNumber(selectDemand.getSerialNumber());
-				
-			}
-			if(selectDemand.getType()!=null) {
-				selectDemandDto.setType(selectDemand.getType());
-			}
-			if(selectDemand.getStatus()!=null) {
-				selectDemandDto.setStatus(selectDemand.getStatus());
-			}
-			if(selectDemand.getSubmitDate()!=null) {
-				String selectDate = DateUtil.getDate(selectDemand.getSubmitDate());
-				selectDemandDto.setStartTime(selectDate+" 00:00:00");
-				selectDemandDto.setEndTime(selectDate+" 23:59:59");
-			}
-			if(!WebUtil.strIsEmpty(selectDemand.getSort())) {
-				String columnValue = ColumnUtil.getColumnValue(Demand.class,selectDemand.getSort());
-				selectDemandDto.setSort(columnValue);
-			}
-			if(!WebUtil.strIsEmpty(selectDemand.getOrder())) {
-				selectDemandDto.setOrder(selectDemand.getOrder());
-			}
-			if(selectDemand.getPage()!=null) {
-				selectDemandDto.setPage(selectDemand.getPage());
-			}
-			if(selectDemand.getRows()!=null) {
-				selectDemandDto.setRows(selectDemand.getRows());
-			}
-			List<Demand> dates =this.getActualDao().selectDemandList(selectDemandDto);
-			int total=this.getActualDao().selectDemandListCount(selectDemandDto);
-			DemandDto demandDto =new DemandDto();
-			List<DemandDto> dtoDates = new ArrayList<DemandDto>();
-			//循环塞部门
-			dates.forEach(d -> {
+			selectDemand.setFilterStatus((byte) 5);
+			List<Demand> list = listByExample(selectDemand);
+			long total = list instanceof Page ? ((Page) list).getTotal() : list.size();
+			List<DemandDto> dtos = new ArrayList<>(list.size());
+			// 循环塞部门
+			list.forEach(d -> {
 				try {
-					DemandDto newDemandDto =new DemandDto();
-			    	BeanUtils.copyProperties(newDemandDto, d);
-					BaseOutput<User> userBase = this.userRpc.findUserById(d.getUserId());
-					User user = userBase.getData();
-					if (user!=null) {
-						BaseOutput<Department> departmentBase = this.departmentRpc.get(user.getDepartmentId());
-						if(departmentBase.getData()!=null) {
-							newDemandDto.setDepartmentId(departmentBase.getData().getId());
-							newDemandDto.setDepartmentName(departmentBase.getData().getName());
-							BaseOutput<Department> firstDepartment = this.departmentRpc.getFirstDepartment(departmentBase.getData().getId());
-							if(firstDepartment.getData()!=null) {
-								newDemandDto.setDepartmentFirstName(firstDepartment.getData().getName());
+					DemandDto newDemandDto = new DemandDto();
+					BeanUtils.copyProperties(newDemandDto, d);
+					User user = AlmCache.getInstance().getUserMap().get(d.getUserId());
+					if (user != null) {
+						Department department = AlmCache.getInstance().getDepMap().get(user.getDepartmentId());
+						if (department != null) {
+							newDemandDto.setDepartmentId(department.getId());
+							newDemandDto.setDepartmentName(department.getName());
+							while (department.getParentId() != null) {
+								department = AlmCache.getInstance().getDepMap().get(department.getParentId());
+							}
+							if (department != null) {
+								newDemandDto.setDepartmentFirstName(department.getName());
 							}
 						}
 					}
-					//添加可编辑按钮
+					// 添加可编辑按钮
 					newDemandDto.setProcessFlag(this.isBackEdit(d));
-					dtoDates.add(newDemandDto);
+					dtos.add(newDemandDto);
 				} catch (Exception e) {
 					e.getMessage();
 				}
-				
 
 			});
-			this.bpmcUtil.fitLoggedUserIsCanHandledProcess(dtoDates);
+			this.bpmcUtil.fitLoggedUserIsCanHandledProcess(dtos);
 			JSONObject projectProvider = new JSONObject();
 			projectProvider.put("provider", "projectProvider");
+			Map<Object, Object> metadata = new HashMap<Object, Object>();
 			metadata.put("belongSysId", projectProvider);
 
 			JSONObject memberProvider = new JSONObject();
@@ -356,24 +317,24 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			JSONObject demandTypeProvider = new JSONObject();
 			demandTypeProvider.put("provider", "demandTypeProvider");
 			metadata.put("type", demandTypeProvider);
-			
+
 			JSONObject projectSysProvider = new JSONObject();
 			projectSysProvider.put("provider", "projectSysProvider");
 			metadata.put("belongSysId", projectSysProvider);
-			
+
 			JSONObject datetimeProvider = new JSONObject();
 			datetimeProvider.put("provider", "datetimeProvider");
 			metadata.put("createDate", datetimeProvider);
 			metadata.put("submitDate", datetimeProvider);
 			metadata.put("finishDate", datetimeProvider);
-			demandDto.setMetadata(metadata);
-			List dtoDatesValue = ValueProviderUtils.buildDataByProvider(demandDto, dtoDates);
-            return new EasyuiPageOutput(total, dtoDatesValue);
+			selectDemand.setMetadata(metadata);
+			List dtoDatesValue = ValueProviderUtils.buildDataByProvider(selectDemand, dtos);
+			return new EasyuiPageOutput((int) total, dtoDatesValue);
 		} catch (Exception e) {
 			e.getMessage();
 		}
 		return null;
-		
+
 	}
 
 	@Override
@@ -570,20 +531,22 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 //		selectDemand.setProcessType(DemandProcessStatus.ACCEPT.code);
 //		this.update(selectDemand);
 //		return taskRpc.complete(taskId, variables);
-		
+
 		Map<String, Object> variables = new HashMap<>();
 		variables.put("approved", "true");
 		Demand selectDemand = new Demand();
 		selectDemand = this.getByCode(code);
 		selectDemand.setReciprocateId(userId);
 		selectDemand.setProcessType(DemandProcessStatus.ACCEPT.getCode());
-		///sgq
-/*		BaseOutput<Map<String, Object>>  mapId=taskRpc.getVariables(taskId);
-		String dataId = (String) mapId.getData().get("businessKey");
-		selectDemand.setSerialNumber(dataId);*/
+		/// sgq
+		/*
+		 * BaseOutput<Map<String, Object>> mapId=taskRpc.getVariables(taskId); String
+		 * dataId = (String) mapId.getData().get("businessKey");
+		 * selectDemand.setSerialNumber(dataId);
+		 */
 		this.updateSelective(selectDemand);
-		//sgq
-		
+		// sgq
+
 		return taskRpc.complete(taskId, variables);
 	}
 

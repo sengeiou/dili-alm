@@ -143,7 +143,7 @@ public class DemandController {
 		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = false, dataType = "string")
 	})
     @RequestMapping(value="/listPage", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody String listPage(Demand demand) throws Exception {
+    public @ResponseBody String listPage(DemandDto demand) throws Exception {
     	EasyuiPageOutput listPageForUser = demandService.listPageForUser(demand);
         return listPageForUser.toString();
     }
