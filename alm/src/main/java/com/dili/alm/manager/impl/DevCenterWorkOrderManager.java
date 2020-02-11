@@ -73,6 +73,13 @@ public class DevCenterWorkOrderManager extends BaseWorkOrderManager {
 		
 	   Map<String, Object> map=new HashMap<String, Object>();
 	   map.put("workOrderSource", "2");
+	   
+		if(workOrder.getWorkOrderSource()==2) {
+			map.put("solve", workOrder.getExecutorId().toString());
+		}else {
+			map.put("allocate", workOrder.getAcceptorId().toString());
+		}
+		
 	   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almWorkOrderApplyProcess", workOrder.getId().toString(), workOrder.getApplicantId()+"",map);
        System.out.println(object.getCode()+object.getData()+object.getErrorData());
 	       

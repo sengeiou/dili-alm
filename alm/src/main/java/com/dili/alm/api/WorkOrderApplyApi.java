@@ -60,12 +60,17 @@ public class WorkOrderApplyApi {
 	// 分配数据变
 	@ApiOperation("分配数据变")
 	@RequestMapping("/setAllocateAssigneeName.api")
-	public @ResponseBody BaseOutput<Assignment> setAllocateAssigneeName(HttpServletRequest request) {
-		Map<String, String[]> map = request.getParameterMap();
+	public @ResponseBody BaseOutput<Assignment> setAllocateAssigneeName(TaskMapping taskMapping) {
+		/*Map<String, String[]> map = request.getParameterMap();
 		String[] strs = map.get("processVariables");
 		JSONObject jsonObj = JSON.parseObject(strs[0]);
-		Assignment record =workOrderApply.setAllocateName(jsonObj.getLong("businessKey"));
-		return BaseOutput.success().setData(record);
+		Assignment record =workOrderApply.setAllocateName(jsonObj.getLong("businessKey"));*/
+		
+		String productManagerId = taskMapping.getProcessVariables().get("allocate").toString();
+		Assignment assignment = DTOUtils.newDTO(Assignment.class);
+		assignment.setAssignee("1");
+		return BaseOutput.success().setData(assignment);
+		
 	}
 
 	// 解决人
@@ -81,13 +86,13 @@ public class WorkOrderApplyApi {
 
 	// 解决人
 		@ApiOperation("关闭人")
-		@RequestMapping("/setsetCloseAssigneeName.api")
-		public @ResponseBody BaseOutput<Assignment> setsetCloseAssigneeName(HttpServletRequest request) {
-			Map<String, String[]> map = request.getParameterMap();
-			String[] strs = map.get("processVariables");
-			JSONObject jsonObj = JSON.parseObject(strs[0]);
-			Assignment record =workOrderApply.setCloseName(jsonObj.getLong("businessKey"));
-
+		@RequestMapping("/setCloseAssigneeName.api")
+		public @ResponseBody BaseOutput<Assignment> setsetCloseAssigneeName(TaskMapping taskMapping) {
+			String idid= (String) taskMapping.getProcessVariables().get("close");
+			//Long id=Long.parseLong(idid);
+			Assignment record = DTOUtils.newDTO(Assignment.class);
+			record.setAssignee(idid);
+			//Assignment record =workOrderApply.setCloseName(id);
 			return BaseOutput.success().setData(record);
 
 		}

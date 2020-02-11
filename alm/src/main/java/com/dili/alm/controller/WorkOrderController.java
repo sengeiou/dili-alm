@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,6 +30,7 @@ import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.Demand;
 import com.dili.uap.sdk.domain.Department;
 import com.dili.alm.domain.Files;
+import com.dili.alm.domain.OnlineDataChange;
 import com.dili.alm.domain.OperationResult;
 import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.WorkOrder;
@@ -37,6 +39,9 @@ import com.dili.alm.domain.dto.WorkOrderQueryDto;
 import com.dili.alm.domain.dto.WorkOrderUpdateDto;
 import com.dili.alm.exceptions.WorkOrderException;
 import com.dili.alm.rpc.DepartmentRpc;
+import com.dili.alm.rpc.MyTasksRpc;
+import com.dili.alm.rpc.RuntimeApiRpc;
+import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DemandService;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.WorkOrderService;
@@ -69,6 +74,14 @@ public class WorkOrderController {
 	private DepartmentRpc deptRpc;
 	@Autowired
 	private DemandService demandService;
+	
+    @Autowired
+	private UserRpc userRpc;
+    @Autowired
+   	private   MyTasksRpc  tasksRpc;
+    @Autowired
+  	private   RuntimeApiRpc  runtimeRpc;
+	    
 	@GetMapping("/detail")
 	public String deital(@RequestParam Long id, ModelMap modelMap) {
 		WorkOrder workOrder = this.workOrderService.getDetailViewModel(id);
@@ -302,4 +315,152 @@ public class WorkOrderController {
 			return BaseOutput.failure(e.getMessage());
 		}
 	}
+	
+	@ApiOperation("跳转到detailAllocate页面")
+	@RequestMapping(value = "/detailAllocate", method = RequestMethod.GET)
+	public String detailAllocate(ModelMap modelMap,String  taskId) {
+		String id =getModelmap(modelMap, taskId);
+		WorkOrder workOrder = this.workOrderService.getDetailViewModel(Long.parseLong(id));
+		try {
+			modelMap.addAttribute("opRecords", workOrder.aget("opRecords")).addAttribute("model",
+					WorkOrderService.parseViewModel(workOrder));
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			return null;
+		}
+		return "workOrder/detailAllocate";
+		
+	}
+	@ApiOperation("跳转到detailSolve页面")
+	@RequestMapping(value = "/detailSolve", method = RequestMethod.GET)
+	public String detailSolve(ModelMap modelMap,String  taskId) {
+		String id =getModelmap(modelMap, taskId);
+		WorkOrder workOrder = this.workOrderService.getDetailViewModel(Long.parseLong(id));
+		try {
+			modelMap.addAttribute("opRecords", workOrder.aget("opRecords")).addAttribute("model",
+					WorkOrderService.parseViewModel(workOrder));
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			return null;
+		}
+		return "workOrder/detailSolve";
+		
+	}
+	
+	
+	@ApiOperation("跳转到detailClose页面")
+	@RequestMapping(value = "/detailClose", method = RequestMethod.GET)
+	public String colseSolve(ModelMap modelMap,String  taskId) {
+		String id =getModelmap(modelMap, taskId);
+		WorkOrder workOrder = this.workOrderService.getDetailViewModel(Long.parseLong(id));
+		try {
+			modelMap.addAttribute("opRecords", workOrder.aget("opRecords")).addAttribute("model",
+					WorkOrderService.parseViewModel(workOrder));
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			return null;
+		}
+		return "workOrder/detailClose";
+		
+	}
+	@ApiOperation("跳转到editSolve页面")
+	@RequestMapping(value = "/editWorkOrder", method = RequestMethod.GET)
+	public String editSolve(ModelMap modelMap,String  taskId) {
+		String idStr =getModelmap(modelMap, taskId);
+		Long id=Long.parseLong(idStr);
+		Map<Object, Object> model = this.workOrderService.getViewModel(id);
+		modelMap.addAttribute("model", model);
+		List<Demand> showDemandList = this.demandService.queryDemandListByProjectIdOrVersionIdOrWorkOrderId(id, 3);
+		modelMap.addAttribute("showDemandList", showDemandList);
+		return "workOrder/update";
+	}
+	@ResponseBody
+	@PostMapping("/solveAgree")
+	public BaseOutput<Object> solveAgree(@RequestParam Long id,@RequestParam String taskId,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate, @RequestParam Integer taskHours,
+			@RequestParam(required = false, defaultValue = "0") Integer overtimeHours,
+			@RequestParam String workContent) {
+		if (startDate.compareTo(endDate) > 0) {
+			return BaseOutput.failure("工单开始日期不能大于工单结束日期");
+		}
+		try {
+			this.workOrderService.solve(id, startDate, endDate, taskHours, overtimeHours, workContent);
+			Map<Object, Object> viewModel = this.workOrderService.getViewModel(id);
+			
+			BaseOutput<Map<String, Object>>  mapId=tasksRpc.getVariables(taskId);
+			String dataId = (String) mapId.getData().get("businessKey");
+			Map<String, Object> map=new HashMap<String, Object>();
+			WorkOrder workOrder = workOrderService.get(Long.parseLong(dataId));
+			 map.put("close", workOrder.getApplicantId().toString());
+	    	tasksRpc.complete(taskId,map);
+	    	System.out.println("sss");
+			return BaseOutput.success().setData(viewModel);
+		} catch (Exception e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+
+	
+	@ResponseBody
+	@PostMapping("/closeAgree")
+	public BaseOutput<Object> closeAgree(@RequestParam Long id, @RequestParam Integer result,@RequestParam String taskId,
+			@RequestParam(required = false) String description) {
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		try {
+			this.workOrderService.close(id, user.getId(), OperationResult.valueOf(result), description);
+			Map<Object, Object> viewModel = this.workOrderService.getViewModel(id);
+			
+			tasksRpc.complete(taskId);
+			return BaseOutput.success().setData(viewModel);
+		} catch (WorkOrderException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+	@ResponseBody
+	@PostMapping("/allocateAgree")
+	public BaseOutput<Object> allocateAgree(@RequestParam Long id, @RequestParam Long executorId,@RequestParam String taskId,
+			@RequestParam Integer workOrderType, @RequestParam Integer priority, @RequestParam Integer result,
+			@RequestParam String description) {
+		try {
+			 result=1;
+			this.workOrderService.allocate(id, executorId, workOrderType, priority, OperationResult.valueOf(result),description);
+			
+			Map<String, Object> map=new HashMap<String, Object>();
+			 map.put("result", "1");
+			 map.put("solve", executorId);
+			
+			tasksRpc.complete(taskId,map);
+			return BaseOutput.success().setData(this.workOrderService.getViewModel(id));
+		} catch (WorkOrderException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+	@ResponseBody
+	@PostMapping("/allocateNotAgree")
+	public BaseOutput<Object> allocateNotAgree(@RequestParam Long id, @RequestParam Long executorId,@RequestParam String taskId,
+			@RequestParam Integer workOrderType, @RequestParam Integer priority, @RequestParam Integer result,
+			@RequestParam String description) {
+		try {
+			 result=0;
+			this.workOrderService.allocate(id, executorId, workOrderType, priority, OperationResult.valueOf(result),description);
+			
+			Map<String, Object> map=new HashMap<String, Object>();
+			 map.put("result", "1");
+			tasksRpc.complete(taskId,map);
+			return BaseOutput.success().setData(this.workOrderService.getViewModel(id));
+		} catch (WorkOrderException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+	
+	private String getModelmap(ModelMap modelMap, String taskId) {
+	    BaseOutput<Map<String, Object>>  map=tasksRpc.getVariables(taskId);
+	    String id = (String) map.getData().get("businessKey");
+	    
+	    modelMap.addAttribute("taskId",taskId);
+	    return id;
+	}
+	
+	
 }
