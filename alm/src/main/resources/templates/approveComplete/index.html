@@ -27,7 +27,7 @@
                                 <input class="easyui-numberbox" name="number" id="number" style="width:100%" data-options="label:'项目编号:', validType:'length[0,19]'" />
 
                             </td>
-                        </tr>
+                        </tr> 
                         <tr>
                             <td style="padding:5px;">
                                 <input name="status" id="status" style="width:100%"
@@ -116,48 +116,29 @@
     <!-- ====================================================================================================================== -->
     <script type="text/javascript">
 
-        function formatStatus(value, row) {
+        function formatStatus(value, row,index) {
             var dom = '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/doc/complete/' + row.projectApplyId + '">结项文档下载</a></span>';
             if (row.$_status == 2) {
             	var dom1='<span style="padding:2px;"><a href="javascript:void(0)" onclick="showProgress('+index+')">查看进度</a></span>';
             	if(row.isApprove){
-            		dom1+='<span style="padding:2px;"><a href="javascript:void(0)"  onclick="openForTask('+row.id+')">审批</a></span>';
+            		dom1+='<span style="padding:2px;"><a href="${contextPath!}/approve/completeApproveByAlm.html?id=' +row.id+'">审批</a></span>';
             	}
                 return dom1;
             } else if (row.$_status == 3) {
                 return dom;
+            }else if (row.$_status == 6) {
+                return ;
             }
         }
 
         function formatName(value,row) {
             return '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/complete/' + row.id + '?viewMode=true">' + value + '</a></span>';
         }
-        function openForTask(id){
-    		$("#completeForTaskSrc").attr("src",'${contextPath!}/approve/completeApproveByAlm.html?id=' +id); //设置IFRAME的SRC;
-            $("#completeForTaskDlg").dialog({
-                bgiframe: true,
-                resizable: true, //是否可以重置大小
-                height: 480, //高度
-                width: 900, //宽度
-                draggable: false, //是否可以拖动。
-                title: "审批",
-                modal: true,
-                open: function (e) {  //打开的时候触发的事件
-                  
-                    document.body.style.overflow = "hidden"; //隐藏滚动条
-                },
-                close: function () { //关闭Dialog时候触发的事件
-                    document.body.style.overflow = "visible";  //显示滚动条
-                    Test();
-                }
-            })
-            $('#completeForTaskDlg').dialog('open');
-            $('#completeForTaskDlg').dialog('center');
-        }
         function showProgress(index){
         	var rows = $("#grid").datagrid('getRows');//获得所有行
         	var r = rows[index];//根据index获得其中一行。
             //var selected = $("#grid").datagrid("getSelected");
+        	console.log("sss"+r);
             if (null == r) {
             	console.log(r);
             	return;

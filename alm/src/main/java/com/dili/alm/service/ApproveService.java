@@ -43,4 +43,6 @@ public interface ApproveService extends BaseService<Approve, Long> {
 
     EasyuiPageOutput selectApproveByPage(Approve approve) throws Exception;
 
+	void updateBefore(Approve as) throws ProjectApplyException;
+
 }

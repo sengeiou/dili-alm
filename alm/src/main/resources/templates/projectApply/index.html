@@ -130,7 +130,9 @@
             }else{
                 return '<span style="padding:5px;"><a>重新申请</a></span>';
             }
-        }
+        }else if(row.$_status == 6){ 
+            return '<span style="padding:5px;"><a>编辑</a></span><span style="padding:5px;"><a>删除</a></span>';
+        } 
     }
 
     function formatName(value,row) {

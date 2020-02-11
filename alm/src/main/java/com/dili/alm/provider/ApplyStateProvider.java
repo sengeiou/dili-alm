@@ -24,6 +24,7 @@ public class ApplyStateProvider implements ValueProvider {
         buffer.add(new ValuePairImpl("已提交", "2"));
         buffer.add(new ValuePairImpl("已通过", "3"));
         buffer.add(new ValuePairImpl("未通过", "4"));
+        buffer.add(new ValuePairImpl("已拒绝", "6"));
     }
 
     @Override

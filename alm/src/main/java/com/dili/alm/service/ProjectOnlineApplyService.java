@@ -69,7 +69,7 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 	/**
 	 * 保存并提交
 	 * 
-	 * @param dto 数据模型
+	 * @param dto    数据模型
 	 * @param taskId TODO
 	 * @throws ProjectOnlineApplyException
 	 */
@@ -101,7 +101,7 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 	 * 提交申请进入上线操作流程
 	 * 
 	 * @param applyId 申请id
-	 * @param taskId TODO
+	 * @param taskId  TODO
 	 */
 	void submit(Long applyId, String taskId) throws ProjectOnlineApplyException;
 
@@ -189,5 +189,14 @@ public interface ProjectOnlineApplyService extends BaseService<ProjectOnlineAppl
 	 * @return
 	 */
 	ProjectOnlineApply getBySerialNumber(String serialNumber);
+
+	/**
+	 * 根据申请编号获取编辑数据
+	 * 
+	 * @param serialNumber
+	 * @return
+	 * @throws ProjectOnlineApplyException 
+	 */
+	ProjectOnlineApply getEditViewDataBySerialNumber(String serialNumber) throws ProjectOnlineApplyException;
 
 }

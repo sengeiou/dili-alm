@@ -10,7 +10,7 @@ import javax.persistence.*;
 /**
  * 由MyBatis Generator工具自动生成
  * 
- * This file was generated on 2019-12-24 10:20:34.
+ * This file was generated on 2020-02-07 13:03:04.
  */
 @Table(name = "`demand`")
 public class Demand extends BaseDomain {
@@ -45,9 +45,7 @@ public class Demand extends BaseDomain {
      */
     @Column(name = "`belong_pro_id`")
     private Long belongProId;
-    /**
-     * 所属系统
-     */
+
     @Column(name = "`belong_sys_id`")
     private Long belongSysId;
 
@@ -55,7 +53,7 @@ public class Demand extends BaseDomain {
      * 需求类型（数据字典）
      */
     @Column(name = "`type`")
-    private Byte type;
+    private Integer type;
 
     /**
      * 需求状态（数据字典）
@@ -88,16 +86,46 @@ public class Demand extends BaseDomain {
     private Date submitDate;
 
     /**
-     * 需求内容
+     * 需求处理人
      */
+    @Column(name = "`reciprocate_id`")
+    private Long reciprocateId;
+
+    /**
+     * 反馈文件
+     */
+    @Column(name = "`feedback_file`")
+    private String feedbackFile;
+
+    @Column(name = "`process_instance_id`")
+    private String processInstanceId;
+
+    @Column(name = "`process_definition_id`")
+    private String processDefinitionId;
+
+    @Column(name = "`process_type`")
+    private String processType;
+
+    @Column(name = "`modification_time`")
+    private Date modificationTime;
+
     @Column(name = "`content`")
     private String content;
 
-    /**
-     * 需求背景
-     */
     @Column(name = "`reason`")
     private String reason;
+
+    /**
+     * 审核意见
+     */
+    @Column(name = "`approve_content`")
+    private String approveContent;
+
+    /**
+     * 反馈方案
+     */
+    @Column(name = "`feedback_content`")
+    private String feedbackContent;
 
     /**
      * 获取自增编号
@@ -182,7 +210,7 @@ public class Demand extends BaseDomain {
     /**
      * 获取所属系统
      *
-     * @return belong_pro_id - 所属项目
+     * @return belong_pro_id - 所属系统
      */
     @FieldDef(label="所属系统")
     @EditMode(editor = FieldEditor.Number, required = false)
@@ -193,30 +221,26 @@ public class Demand extends BaseDomain {
     /**
      * 设置所属系统
      *
-     * @param belongProId 所属项目
+     * @param belongProId 所属系统
      */
     public void setBelongProId(Long belongProId) {
         this.belongProId = belongProId;
     }
-    
+
     /**
-     * 获取所属系统
-     *
-     * @return belong_pro_id - 所属项目
+     * @return belong_sys_id
      */
-    @FieldDef(label="所属系统")
-    @EditMode(editor = FieldEditor.Number, required = false)
+    @FieldDef(label="belongSysId")
+    @EditMode(editor = FieldEditor.Number, required = true)
     public Long getBelongSysId() {
         return belongSysId;
     }
 
     /**
-     * 设置所属系统
-     *
-     * @param belongSysId 所属项目
+     * @param belongSysId
      */
     public void setBelongSysId(Long belongSysId) {
-        this.belongSysId =belongSysId;
+        this.belongSysId = belongSysId;
     }
 
     /**
@@ -226,7 +250,7 @@ public class Demand extends BaseDomain {
      */
     @FieldDef(label="需求类型（数据字典）")
     @EditMode(editor = FieldEditor.Text, required = true)
-    public Byte getType() {
+    public Integer getType() {
         return type;
     }
 
@@ -235,7 +259,7 @@ public class Demand extends BaseDomain {
      *
      * @param type 需求类型（数据字典）
      */
-    public void setType(Byte type) {
+    public void setType(Integer type) {
         this.type = type;
     }
 
@@ -325,7 +349,7 @@ public class Demand extends BaseDomain {
      * @return submit_date - 提交时间（开启流程）
      */
     @FieldDef(label="提交时间（开启流程）")
-    @EditMode(editor = FieldEditor.Datetime, required = true)
+    @EditMode(editor = FieldEditor.Datetime, required = false)
     public Date getSubmitDate() {
         return submitDate;
     }
@@ -340,128 +364,178 @@ public class Demand extends BaseDomain {
     }
 
     /**
-     * 获取需求内容
+     * 获取需求处理人
      *
-     * @return content - 需求内容
+     * @return reciprocate_id - 需求处理人
      */
-    @FieldDef(label="需求内容")
-    @EditMode(editor = FieldEditor.Text, required = true)
+    @FieldDef(label="需求处理人")
+    @EditMode(editor = FieldEditor.Text, required = false)
+    public Long getReciprocateId() {
+        return reciprocateId;
+    }
+
+    /**
+     * 设置需求处理人
+     *
+     * @param reciprocateId 需求处理人
+     */
+    public void setReciprocateId(Long reciprocateId) {
+        this.reciprocateId = reciprocateId;
+    }
+
+    /**
+     * 获取反馈文件
+     *
+     * @return feedback_file - 反馈文件
+     */
+    @FieldDef(label="反馈文件", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    public String getFeedbackFile() {
+        return feedbackFile;
+    }
+
+    /**
+     * 设置反馈文件
+     *
+     * @param feedbackFile 反馈文件
+     */
+    public void setFeedbackFile(String feedbackFile) {
+        this.feedbackFile = feedbackFile;
+    }
+
+    /**
+     * @return process_instance_id
+     */
+    @FieldDef(label="processInstanceId", maxLength = 64)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    public String getProcessInstanceId() {
+        return processInstanceId;
+    }
+
+    /**
+     * @param processInstanceId
+     */
+    public void setProcessInstanceId(String processInstanceId) {
+        this.processInstanceId = processInstanceId;
+    }
+
+    /**
+     * @return process_definition_id
+     */
+    @FieldDef(label="processDefinitionId", maxLength = 64)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    public String getProcessDefinitionId() {
+        return processDefinitionId;
+    }
+
+    /**
+     * @param processDefinitionId
+     */
+    public void setProcessDefinitionId(String processDefinitionId) {
+        this.processDefinitionId = processDefinitionId;
+    }
+
+    /**
+     * @return process_type
+     */
+    @FieldDef(label="processType", maxLength = 30)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    public String getProcessType() {
+        return processType;
+    }
+
+    /**
+     * @param processType
+     */
+    public void setProcessType(String processType) {
+        this.processType = processType;
+    }
+
+    /**
+     * @return modification_time
+     */
+    @FieldDef(label="modificationTime")
+    @EditMode(editor = FieldEditor.Datetime, required = false)
+    public Date getModificationTime() {
+        return modificationTime;
+    }
+
+    /**
+     * @param modificationTime
+     */
+    public void setModificationTime(Date modificationTime) {
+        this.modificationTime = modificationTime;
+    }
+
+    /**
+     * @return content
+     */
+    @FieldDef(label="content")
+    @EditMode(editor = FieldEditor.Text, required = false)
     public String getContent() {
         return content;
     }
 
     /**
-     * 设置需求内容
-     *
-     * @param content 需求内容
+     * @param content
      */
     public void setContent(String content) {
         this.content = content;
     }
 
     /**
-     * 获取需求背景
-     *
-     * @return reason - 需求背景
+     * @return reason
      */
-    @FieldDef(label="需求背景")
+    @FieldDef(label="reason")
     @EditMode(editor = FieldEditor.Text, required = false)
     public String getReason() {
         return reason;
     }
 
     /**
-     * 设置需求背景
-     *
-     * @param reason 需求背景
+     * @param reason
      */
     public void setReason(String reason) {
         this.reason = reason;
     }
-    
-    
-    private Long reciprocateId;
 
-    
-    @Column(name = "`reciprocate_id`")
-    @FieldDef(label="指派需求接收人", maxLength = 64)
+    /**
+     * 获取审核意见
+     *
+     * @return approve_content - 审核意见
+     */
+    @FieldDef(label="审核意见")
     @EditMode(editor = FieldEditor.Text, required = false)
-    public Long getReciprocateId() {
-    	return reciprocateId;
-    };
+    public String getApproveContent() {
+        return approveContent;
+    }
 
-    public void setReciprocateId(Long reciprocateId) {
-    	this.reciprocateId=reciprocateId;
-    };
-    
-    
-   private String feedbackFile;
+    /**
+     * 设置审核意见
+     *
+     * @param approveContent 审核意见
+     */
+    public void setApproveContent(String approveContent) {
+        this.approveContent = approveContent;
+    }
 
-    
-    @Column(name = "`feedback_file`")
-    @FieldDef(label="反馈文件", maxLength = 64)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    public String getFeedbackFile() {
-    	return feedbackFile;
-    };
-
-    public void setFeedbackFile(String feedbackFile) {
-    	this.feedbackFile=feedbackFile;
-    };
-    
-   private String feedbackContent;
-
-    
-    @Column(name = "`feedback_content`")
-    @FieldDef(label="反馈内容", maxLength = 64)
+    /**
+     * 获取反馈方案
+     *
+     * @return feedback_content - 反馈方案
+     */
+    @FieldDef(label="反馈方案")
     @EditMode(editor = FieldEditor.Text, required = false)
     public String getFeedbackContent() {
-    	return feedbackContent;
-    };
+        return feedbackContent;
+    }
 
+    /**
+     * 设置反馈方案
+     *
+     * @param feedbackContent 反馈方案
+     */
     public void setFeedbackContent(String feedbackContent) {
-    	this.feedbackContent=feedbackContent;
-    };
-    
-    private String processType;
-
-    
-    @Column(name = "`process_type`")
-    @FieldDef(label="流程状态", maxLength = 30)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    public String getProcessType() {
-    	return processType;
-    };
-
-    public void setProcessType(String processType) {
-    	this.processType=processType;
-    };
-    
-    private String processInstanceId;
-
-    @Column(name = "`process_instance_id`")
-    @FieldDef(label="流程实例id", maxLength = 64)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    public String getProcessInstanceId() {
-    	return processInstanceId;
-    };
-
-    public void setProcessInstanceId(String processInstanceId) {
-    	this.processInstanceId=processInstanceId;
-    };
-
-    
-    private String processDefinitionId;
-
-    
-    @Column(name = "`process_definition_id`")
-    @FieldDef(label="流程定义id", maxLength = 64)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    public String getProcessDefinitionId() {
-    	return processDefinitionId;
-    };
-
-    public void setProcessDefinitionId(String processDefinitionId) {
-    	this.processDefinitionId=processDefinitionId;
-    };
+        this.feedbackContent = feedbackContent;
+    }
 }

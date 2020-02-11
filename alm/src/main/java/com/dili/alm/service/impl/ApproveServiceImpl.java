@@ -180,7 +180,13 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 			}
 		}
 	}
-
+	/**
+	 * alm3.5以前的审批功能
+	 * @param id
+	 * @param opt
+	 * @param notes
+	 * @throws ApproveException
+	 */
 	@Transactional(rollbackFor = ApplicationException.class)
 	@Override
 	public synchronized void applyApprove(Long id, String opt, String notes) throws ApproveException {
@@ -282,25 +288,6 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
 			switch (opt) {
 			case "reject":
-				approve.setStatus(AlmConstants.ApplyState.NOPASS.getCode());
-				if (Objects.equals(approve.getType(), AlmConstants.ApproveType.APPLY.getCode())) {
-					ProjectApply apply = projectApplyService.get(approve.getProjectApplyId());
-					apply.setStatus(AlmConstants.ApplyState.NOPASS.getCode());
-					projectApplyService.updateSelective(apply);
-					sendMail(apply, false);
-					
-				} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.CHANGE.getCode())) {
-					ProjectChange change = projectChangeService.get(approve.getProjectApplyId());
-					change.setStatus(AlmConstants.ApplyState.NOPASS.getCode());
-					projectChangeService.updateSelective(change);
-					sendMail(change, false);
-				} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.COMPLETE.getCode())) {
-					ProjectComplete complete = projectCompleteService.get(approve.getProjectApplyId());
-					complete.setStatus(AlmConstants.ApplyState.NOPASS.getCode());
-					projectCompleteService.updateSelective(complete);
-					sendMail(complete, false);
-				}
-				
 				Map<String, Object> map1=new HashMap<>();
 			
 				BaseOutput<Map<String, Object>> taskVariablesOutput = tasksRpc.getVariables(taskId);
@@ -308,14 +295,34 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		            throw new AppException(taskVariablesOutput.getMessage());
 		        }
 		    	Map<String, Object> variables = taskVariablesOutput.getData();
+		    	//判断流程拒绝次数
+		    	int statusValue = AlmConstants.ApplyState.NOPASS.getCode();
 				if(variables.containsKey("reStatus")) {
 			    	map1.put("reStatus", "1");
+			    	statusValue = AlmConstants.ApplyState.REFUSED.getCode();
 				}else {
 			    	map1.put("reStatus", "0");
+				}	
+				approve.setStatus(statusValue);
+				if (Objects.equals(approve.getType(), AlmConstants.ApproveType.APPLY.getCode())) {
+					ProjectApply apply = projectApplyService.get(approve.getProjectApplyId());
+					apply.setStatus(statusValue);
+					projectApplyService.updateSelective(apply);
+					sendMail(apply, false);
+					
+				} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.CHANGE.getCode())) {
+					ProjectChange change = projectChangeService.get(approve.getProjectApplyId());
+					change.setStatus(statusValue);
+					projectChangeService.updateSelective(change);
+					sendMail(change, false);
+				} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.COMPLETE.getCode())) {
+					ProjectComplete complete = projectCompleteService.get(approve.getProjectApplyId());
+					complete.setStatus(statusValue);
+					projectCompleteService.updateSelective(complete);
+					sendMail(complete, false);
 				}
 		    	map1.put("approved", "false");
-		    	tasksRpc.complete(taskId, map1);
-		    	
+				tasksRpc.complete(taskId, map1);
 				break;
 			case "accept":
 				if (Objects.equals(approve.getType(), AlmConstants.ApproveType.APPLY.getCode()) && approveList.get(1).equals(current)) {
@@ -328,7 +335,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 					this.addProjectAction(project);
 					projectApplyService.updateSelective(apply);
 					sendMail(apply, true);
-				} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.CHANGE.getCode())) {
+				} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.CHANGE.getCode())&& approveList.get(1).equals(current)) {
 					approve.setStatus(AlmConstants.ApplyState.PASS.getCode());
 					ProjectChange change = projectChangeService.get(approve.getProjectApplyId());
 					change.setStatus(AlmConstants.ApplyState.PASS.getCode());
@@ -336,7 +343,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 					updateProjectEndDate(change);
 					insertProjectChangeActionRecord(change);
 					sendMail(change, true);
-				} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.COMPLETE.getCode())) {
+				} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.COMPLETE.getCode())&& approveList.get(1).equals(current)) {
 					approve.setStatus(AlmConstants.ApplyState.PASS.getCode());
 					ProjectComplete complete = projectCompleteService.get(approve.getProjectApplyId());
 					complete.setStatus(AlmConstants.ApplyState.PASS.getCode());
@@ -668,7 +675,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		approve.setRole(listRoleByUserId.getData().stream().map(Role::getRoleName).collect(Collectors.joining(",")));
 		approveList.add(approve);
 
-		if (as.getType().equals(AlmConstants.ApproveType.APPLY.getCode())) {
+//		if (as.getType().equals(AlmConstants.ApproveType.APPLY.getCode())) {
 			superRoleId = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH_SUPER_LEADER)).findFirst().map(DataDictionaryValue::getValue).orElse(null);
 			if (superRoleId == null) {
 				throw new ProjectApplyException("请先指定项目委员会组长");
@@ -684,10 +691,59 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 			BaseOutput<List<Role>> listRoleByUserId1 = roleRpc.listByUser(Long.valueOf(userByRole.get(0).getId()),"");	
 			approve.setRole(listRoleByUserId1.getData().stream().map(Role::getRoleName).collect(Collectors.joining(",")));
 			approveList.add(approve);
-		}
+//		}
 
 		as.setDescription(JSON.toJSONString(approveList));
 		int rows = insertSelective(as);
+		if (rows <= 0) {
+			throw new ProjectApplyException("更新审批记录失败");
+		}
+
+	}
+	@Override
+	public void updateBefore(Approve as) throws ProjectApplyException {
+		DataDictionaryDto code = dataDictionaryService.findByCode(AlmConstants.ROLE_CODE);
+		List<DataDictionaryValueDto> values = code.getValues();
+		String roleId = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH_LEADER)).findFirst().map(DataDictionaryValue::getValue).orElse(null);
+		String superRoleId = null;
+
+		if (roleId == null) {
+			throw new ProjectApplyException("请先指定项目委员会组长");
+		}
+
+		List<ApplyApprove> approveList = Lists.newArrayList();
+
+		List<User> userByRole = userRpc.listUserByRoleId(Long.parseLong(roleId)).getData();
+		if (CollectionUtils.isEmpty(userByRole)) {
+			throw new ProjectApplyException("请先指定项目委员会组长");
+		}
+
+		ApplyApprove approve = new ApplyApprove();
+		approve.setUserId(userByRole.get(0).getId());
+		BaseOutput<List<Role>> listRoleByUserId = roleRpc.listByUser(Long.valueOf(userByRole.get(0).getId()),"");	
+		approve.setRole(listRoleByUserId.getData().stream().map(Role::getRoleName).collect(Collectors.joining(",")));
+		approveList.add(approve);
+
+//		if (as.getType().equals(AlmConstants.ApproveType.APPLY.getCode())) {
+			superRoleId = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH_SUPER_LEADER)).findFirst().map(DataDictionaryValue::getValue).orElse(null);
+			if (superRoleId == null) {
+				throw new ProjectApplyException("请先指定项目委员会组长");
+			}
+
+			userByRole = userRpc.listUserByRoleId(Long.parseLong(superRoleId)).getData();
+			if (CollectionUtils.isEmpty(userByRole)) {
+				throw new ProjectApplyException("请先指定项目委员会组长");
+			}
+
+			approve = new ApplyApprove();
+			approve.setUserId(userByRole.get(0).getId());
+			BaseOutput<List<Role>> listRoleByUserId1 = roleRpc.listByUser(Long.valueOf(userByRole.get(0).getId()),"");	
+			approve.setRole(listRoleByUserId1.getData().stream().map(Role::getRoleName).collect(Collectors.joining(",")));
+			approveList.add(approve);
+//		}
+
+		as.setDescription(JSON.toJSONString(approveList));
+		int rows = updateSelective(as);
 		if (rows <= 0) {
 			throw new ProjectApplyException("更新审批记录失败");
 		}
@@ -839,16 +895,16 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 			return true;
 		}
 
-		if (approve.getType().equals(AlmConstants.ApproveType.APPLY.getCode())) {
-			if (StringUtils.isEmpty(leaderApprove.getResult())) {
-				return false;
-			}
-			// 如果是立项审批，还需要研发中心的集团领导人审批
-			ApplyApprove superLeaderApprove = approveList.get(1);
-			if (superLeaderApprove.getUserId().equals(user.getId()) && StringUtils.isEmpty(superLeaderApprove.getResult())) {
-				return true;
-			}
+		//if (approve.getType().equals(AlmConstants.ApproveType.APPLY.getCode())) {
+		if (StringUtils.isEmpty(leaderApprove.getResult())) {
+			return false;
 		}
+		// 需要研发中心的集团领导人审批
+		ApplyApprove superLeaderApprove = approveList.get(1);
+		if (superLeaderApprove.getUserId().equals(user.getId()) && StringUtils.isEmpty(superLeaderApprove.getResult())) {
+			return true;
+		}
+		//}
 		return false;
 
 	}
@@ -987,7 +1043,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
 	@Override
 	public Approve selectOne(Approve selectApprove) {
-		return this.getDao().selectOneExpand(selectApprove);
+		return this.getDao().selectOne(selectApprove);
 	}
 
 	@Override

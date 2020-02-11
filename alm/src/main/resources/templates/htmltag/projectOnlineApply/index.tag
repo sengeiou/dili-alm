@@ -383,7 +383,7 @@ function closeProgressbar() {
 function showProgressbar() {
 	$.messager.progress({
 				title : "提示",
-				msg : "文件上传中......",
+				msg : "数据处理中......",
 				interval : 0
 			});
 	var bar = $.messager.progress('bar');
