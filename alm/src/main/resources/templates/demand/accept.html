@@ -193,7 +193,9 @@
             }
             formData._finishDate=dateFormat_1(formData._finishDate);
             $('#_form').form('load', formData);
-            
+          	 if(parentIframe!="undefined"){
+            		window.parent.setIframeHeight();
+     	     }
         })
         function loadSystemSelect() {
 			$('#_belongSysId').combobox({
@@ -241,6 +243,11 @@
 	    function downloadFile(id) {
 	    	window.open('${contextPath!}/files/download?id=' + id);
 	    }
+/* 	    $('#fileGrid').datagrid({
+            onLoadSuccess: function (data) {
+            	window.parent.setIframeHeight();
+            }
+        }); */
     </script>
     <script type="text/javascript">
 	<#demand_publicJs />

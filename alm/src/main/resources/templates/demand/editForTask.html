@@ -57,15 +57,15 @@
 		<tr>
 				<td colspan="2" style="padding: 5px;">
 					<table class="easyui-datagrid" title="上传文件列表" id="fileGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"  style="width: 100%;"
-					pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
-					sortName="name" align="center" fit="false" striped="true" toolbar="#fileToolbar" idField="id"
+					pagePosition="both" rownumbers="true"  loadMsg="数据加载中..." singleSelect="true" method="post"  
+					 align="center" fit="false" striped="true" toolbar="#fileToolbar" idField="id"
 					data-options="url:'${contextPath!}/demand/files/list?id=${demand.id!}'">
 							<thead>
 								<tr>
-									<th data-options="field:'name', width:'30%',  sortable:'true', order:'asc', align:'left', resizable:'true', fixed:'false'">文件名</th>
-									<th data-options="field:'type', width:'20%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">文件类型</th>
-									<th data-options="field:'createMemberId', width:'10%',  _provider:'memberProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">创建人</th>
-									<th data-options="field:'created', width:'20%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">创建时间</th>
+									<th data-options="field:'name', width:'30%', align:'left', resizable:'true', fixed:'false'">文件名</th>
+									<th data-options="field:'type', width:'20%', align:'center', resizable:'true', fixed:'false'">文件类型</th>
+									<th data-options="field:'createMemberId', width:'10%',  _provider:'memberProvider',  align:'center', resizable:'true', fixed:'false'">创建人</th>
+									<th data-options="field:'created', width:'20%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">创建时间</th>
 									<th data-options="field:'opt',width:'20%',formatter:fileOptFormatter, align:'center'">操作</th>
 								</tr>
 							</thead>
@@ -168,8 +168,9 @@ $("#fileuploader").uploadFile({
 	extErrorStr : '文件格式错误！允许上传格式：',
 	sizeErrorStr : '文件过大，允许上传文件最大为',// 超过最大文件限制
     dragDropStr:'',
+    showStatusAfterSuccess : false,
     showDone: false,                     //是否显示"Done"(完成)按钮
-    showDelete: true,                  //是否显示"Delete"(删除)按钮                 
+    showDelete: false,                  //是否显示"Delete"(删除)按钮                 
     deleteCallback: function(data,pd)
     {
     	
@@ -191,6 +192,7 @@ $("#fileuploader").uploadFile({
  							fileIds.splice(index_id,1);
  							$("#documentUrl").val();
  						    $("#documentUrl").val(fileIds);
+
 						},
 						error : function() {
 							$.messager.alert('错误', '远程访问失败');
@@ -206,7 +208,21 @@ $("#fileuploader").uploadFile({
         if(data&&data.code===0){
             $('#image').val(data.url);
         }
-    }
+		var row = data.data[0];
+		console.log(row);
+		$("#fileGrid").datagrid('appendRow', row);
+         //加载父元素高度
+		setParentIframeHeight();
+    },
+	onSelect : function(files) {
+		var old = $('#fileGrid').datagrid('getData').rows;
+		for (var i = 0; i < old.length; i++) {
+			if (files[0].name == old[i].name) {
+				$('.ajax-upload-dragdrop').next('div').append('<div class="ajax-file-upload-error">请不要重复上传文件!</div>')
+				return false;
+			}
+		}
+	}
 });
 
 
@@ -222,7 +238,6 @@ function loadSystemSelect() {
 $(function () {
     //所属项目自动加载
     loadSystemSelect();
-    
     //加载数据
     var formData = $.extend({},${modelStr!});
     formData = addKeyStartWith(getOriginalData(formData),"_");
@@ -242,7 +257,10 @@ $(function () {
     }
     formData._finishDate=dateFormat_1(formData._finishDate);
     $('#_form').form('load', formData);
-    
+    //加载父元素高度
+ 	 if(parentIframe!="undefined"){
+ 		window.parent.setIframeHeight();
+   }
 })
 function dateFormat_1(longTypeDate) {
     		var dateType = "";
@@ -294,7 +312,6 @@ function dateFormat_1(longTypeDate) {
              if(editor2.txt.html()!="<p>请输入内容...</p><p><br></p>"||editor2.txt.html()!=""){
              	_formData.reason =  editor2.txt.html();
              }
-             console.log(_formData);
              var _url = "${contextPath}/demand/submintForTask.action";
              $.ajax({
                  type: "POST",
@@ -306,8 +323,10 @@ function dateFormat_1(longTypeDate) {
                  success: function (data) {
                 	 console.log(data);
                      if(data.code=="200"){
+                    	 window.parent.setIframeHeight();
                     	 $.messager.alert('提示',data.message);
-                    	 if(typeof(window.opener.ReRender)!="undefined"){
+                    	 var parentIframe = parent.document.getElementById("pageType")
+                    	 if(parentIframe!="undefined"){
                     		 window.parent.CloseEditPage();
                     	 }
                     	
@@ -321,7 +340,43 @@ function dateFormat_1(longTypeDate) {
              });
          }
 </script>
+  <script type="text/javascript">
+	    function fileOptFormatter(value, row, index) {
+	    	var content = '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="delFile('+ index + ');">下载</a>';
+	    	return content;
+	    }
+	    function delFile(id) {
+			var fileIds =new Array($('#documentUrl').val()) ;//取值
+			var index_id=fileIds.indexOf(data.data[0].id);
+			fileIds.splice(index_id,1);
+			$("#documentUrl").val();
+			$("#documentUrl").val(fileIds);
+	    	$('#versionFileGrid').datagrid('deleteRow', index);
+	    }
+/* 	    $('#fileGrid').datagrid({
+            onLoadSuccess: function (data) {
+            	window.parent.setIframeHeight();
+            }
+        }); */
+    </script>
 <script type="text/javascript">
-	<#demand_publicJs />
-</script> 
+function setParentIframeHeight(){
+    try{
+        var parentIframe = parent.document.getElementById("demandForTaskSrc");
+         if(window.attachEvent){
+            window.attachEvent("onload", function(){
+                parentIframe.height = document.documentElement.scrollHeight;
+            });
+            return;
+        }else{
+            window.onload = function(){
+                parentIframe.height = document.body.scrollHeight+80;
+            };
+            return;                 
+        }     
+    }catch(e){
+        throw new Error('setParentIframeHeight Error');
+    }
+}
+</script>
 </#body>

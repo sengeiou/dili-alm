@@ -343,7 +343,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			this.bpmcUtil.fitLoggedUserIsCanHandledProcess(dtoDates);
 			JSONObject projectProvider = new JSONObject();
 			projectProvider.put("provider", "projectProvider");
-			metadata.put("belongProId", projectProvider);
+			metadata.put("belongSysId", projectProvider);
 
 			JSONObject memberProvider = new JSONObject();
 			memberProvider.put("provider", "memberProvider");

@@ -25,8 +25,10 @@ import com.dili.ss.exception.BusinessException;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.alm.utils.WebUtil;
 import com.dili.bpmc.sdk.annotation.BpmTask;
+import com.dili.bpmc.sdk.domain.ActForm;
 import com.dili.bpmc.sdk.domain.TaskMapping;
 import com.dili.bpmc.sdk.dto.TaskDto;
+import com.dili.bpmc.sdk.rpc.BpmcFormRpc;
 import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
@@ -76,6 +78,8 @@ public class DemandController {
     DemandService demandService;
     @Autowired
     FilesService filesService;
+    @Autowired
+    BpmcFormRpc bpmcFormRpc;
     
 	private static final Logger LOGGER = LoggerFactory.getLogger(DemandController.class);
     @ApiOperation("跳转到Demand页面")
@@ -156,6 +160,9 @@ public class DemandController {
     	if (demand.getClass()==null) {
     		return BaseOutput.failure("需求类型不能为空！");
 		}
+    	if(demand.getType()!=1&&demand.getBelongProId()==null) {
+    		return BaseOutput.failure("不是新需求，所属项目必选！");
+    	}
         try {
 			demandService.addNewDemand(demand);
 		} catch (DemandExceptions e) {
@@ -295,25 +302,9 @@ public class DemandController {
     @RequestMapping(value="/files/list", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody List<Map> filesList(Long id) {
 		Demand demand = this.demandService.get(id);
-		//List<Long> ids = JSONArray.parseArray(demand.getDocumentUrl(), Long.class);
-		String urlStr = demand.getDocumentUrl();
-		if (urlStr==null) {
-			return null;
-		}
-		//截取字符串
-		String[] strArr = urlStr.split(",");
-		List<Long> ids = Arrays.stream(strArr)
-		        .map(s ->Long.parseLong(s.trim())).collect(Collectors.toList());
 		
 		List<Files> list=new ArrayList<Files>();
-		if(ids!=null&&ids.size()>0) {
-			Example example = new Example(Files.class);
-			Example.Criteria criteria = example.createCriteria();
-			criteria.andIn("id", ids);
-			list = this.filesService.selectByExample(example);
-		}else {
-			return null;
-		}
+		//List<Long> ids = JSONArray.parseArray(demand.getDocumentUrl(), Long.class);
 		Map<Object, Object> metadata = new HashMap<>();
 
 		JSONObject fileTypeProvider = new JSONObject();
@@ -327,8 +318,24 @@ public class DemandController {
 		JSONObject datetimeProvider = new JSONObject();
 		datetimeProvider.put("provider", "datetimeProvider");
 		metadata.put("created", datetimeProvider);
-
+		
 		try {
+			String urlStr = demand.getDocumentUrl();
+			if (urlStr==null) {
+				return ValueProviderUtils.buildDataByProvider(metadata, list);
+			}
+			//截取字符串
+			String[] strArr = urlStr.split(",");
+			List<Long> ids = Arrays.stream(strArr)
+			        .map(s ->Long.parseLong(s.trim())).collect(Collectors.toList());
+			
+
+			if(ids!=null&&ids.size()>0) {
+				Example example = new Example(Files.class);
+				Example.Criteria criteria = example.createCriteria();
+				criteria.andIn("id", ids);
+				list = this.filesService.selectByExample(example);
+			}
 			return ValueProviderUtils.buildDataByProvider(metadata, list);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -665,7 +672,7 @@ public class DemandController {
         List<TaskMapping> taskMappings = outputList.getData();
         
         String demandJsonStr = JSONObject.toJSONString(selectDemand);
-        modelMap.put("model", selectDemand);
+        modelMap.put("demand", selectDemand);
         modelMap.put("modelStr", demandJsonStr);
     	/** 个人信息 **/
         User userTicket = this.userRpc.findUserById(selectDemand.getUserId()).getData();
@@ -693,4 +700,69 @@ public class DemandController {
         return BaseOutput.success("提交成功");
     }
 
+    @ApiOperation("页面流程审批")
+    @RequestMapping(value = "/submitApproveByAlm.html", method = RequestMethod.GET)
+	public String submitApproveByAlm(@RequestParam Long id, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
+    	Demand selectDemand = new Demand();
+    	selectDemand=demandService.get(id);
+    	String valProcess = selectDemand.getSerialNumber();
+    	
+        //根据业务号查询任务
+        TaskDto taskDto = DTOUtils.newInstance(TaskDto.class);
+        taskDto.setProcessInstanceBusinessKey(valProcess);
+        BaseOutput<List<TaskMapping>> outputList = taskRpc.list(taskDto);
+        if(!outputList.isSuccess()){
+        	return "用户错误！"+outputList.getMessage(); 
+        }
+        
+        List<TaskMapping> taskMappings = outputList.getData();
+        //获取formKey
+        TaskMapping selected = taskMappings.get(0);
+        //通过bpmc的form表单，跳转到相应的提交页面
+        ActForm selectActFrom  = bpmcFormRpc.getByKey(selected.getFormKey()).getData();
+        String url = selectActFrom.getActionUrl();
+        
+        String demandJsonStr = JSONObject.toJSONString(selectDemand);
+        modelMap.put("model", selectDemand);
+        modelMap.put("modelStr", demandJsonStr);
+    	/** 个人信息 **/
+        User userTicket = this.userRpc.findUserById(selectDemand.getUserId()).getData();
+        if (userTicket==null) {
+			return "用户错误！";
+		}
+    	BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
+    	modelMap.addAttribute("userInfo", userTicket);
+    		
+    	modelMap.addAttribute("depName",de.getData().getName());
+    	modelMap.put("taskId",selected.getId());
+		return url+"?taskId="+selected.getId();
+	}
+    
+    
+    @ApiOperation("签收任务")
+    @ApiImplicitParams({
+		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = true, dataType = "string")
+	})
+    @RequestMapping(value="/doClaimTask.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody BaseOutput doClaimTask(@RequestParam Long id) {
+    	Demand selectDemand = new Demand();
+    	selectDemand=demandService.get(id);
+    	String valProcess = selectDemand.getSerialNumber();
+    	
+        //根据业务号查询任务
+        TaskDto taskDto = DTOUtils.newInstance(TaskDto.class);
+        taskDto.setProcessInstanceBusinessKey(valProcess);
+        BaseOutput<List<TaskMapping>> outputList = taskRpc.list(taskDto);
+        if(!outputList.isSuccess()){
+        	return  BaseOutput.failure("用户错误！"+outputList.getMessage()); 
+        }
+        List<TaskMapping> taskMappings = outputList.getData();
+        //获取formKey
+        TaskMapping selected = taskMappings.get(0);
+		/** 个人信息 **/
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		BaseOutput<String> claimOut = taskRpc.claim(selected.getId(), userTicket.getId()+"");
+        return BaseOutput.success(claimOut.getMessage());
+    }
+    
 }

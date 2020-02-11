@@ -164,14 +164,18 @@
                 success:function(data){
                     var data = eval('(' + data + ')');
                     if(data.success) {
+                    	window.parent.setIframeHeight();
                         //如果父页面是任务中心
                         if(parent.location.href=='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
                             //向任务中心发送消息，参数为要跳转的地址
                             window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
                         }else{
-   	                   	 if(typeof(window.opener.ReRender)!="undefined"){
-	                		 window.parent.CloseEditPage();
-	                	 }
+
+	    	            	 $.messager.alert('提示',data.message);
+	    	            	 var parentIframe = parent.document.getElementById("pageType")
+	    	            	 if(parentIframe!="undefined"){
+	    	            		 window.parent.CloseEditPage();
+    	            	     }
                         }
 
                     }else{
@@ -196,6 +200,9 @@
             }
             formData._finishDate=dateFormat_1(formData._finishDate);
             $('#_form').form('load', formData);
+          	 if(parentIframe!="undefined"){
+            		window.parent.setIframeHeight();
+     	     }
             
         })
         function loadSystemSelect() {
@@ -244,6 +251,11 @@
 	    function downloadFile(id) {
 	    	window.open('${contextPath!}/files/download?id=' + id);
 	    }
+/* 	    $('#fileGrid').datagrid({
+            onLoadSuccess: function (data) {
+            	window.parent.setIframeHeight();
+            }
+        }); */
     </script>
    <script type="text/javascript">
 	<#demand_publicJs />
