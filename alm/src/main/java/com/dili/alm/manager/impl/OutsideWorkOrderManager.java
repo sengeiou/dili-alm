@@ -2,6 +2,7 @@ package com.dili.alm.manager.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -24,8 +25,13 @@ import com.dili.alm.domain.WorkOrderState;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.exceptions.WorkOrderException;
+import com.dili.alm.rpc.MyTasksRpc;
+import com.dili.alm.rpc.RuntimeApiRpc;
+import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
+import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
 import com.dili.ss.base.BaseService;
+import com.dili.ss.domain.BaseOutput;
 
 @Component
 public class OutsideWorkOrderManager extends BaseWorkOrderManager {
@@ -35,7 +41,15 @@ public class OutsideWorkOrderManager extends BaseWorkOrderManager {
 	private DataDictionaryService ddService;
 	@Autowired
 	private WorkOrderMapper workOrderMapper;
-
+	
+	
+    @Autowired
+	private UserRpc userRpc;
+    @Autowired
+   	private   MyTasksRpc  tasksRpc;
+    @Autowired
+  	private   RuntimeApiRpc  runtimeRpc;
+    
 	@Override
 	public void submit(WorkOrder workOrder) throws WorkOrderException {
 		// 外部工单
@@ -63,6 +77,10 @@ public class OutsideWorkOrderManager extends BaseWorkOrderManager {
 				}
 			});
 		}
+	   Map<String, Object> map=new HashMap<String, Object>();
+	   map.put("workOrderSource", "3");
+	   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almWorkOrderApplyProcess", workOrder.getId().toString(), workOrder.getApplicantId()+"",map);
+       System.out.println(object.getCode()+object.getData()+object.getErrorData());
 		this.sendMail(workOrder, "工单申请", emails);
 	}
 

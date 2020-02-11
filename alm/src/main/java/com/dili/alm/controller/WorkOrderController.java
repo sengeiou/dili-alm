@@ -1,5 +1,6 @@
 package com.dili.alm.controller;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -92,6 +93,8 @@ public class WorkOrderController {
 		if (!output.isSuccess()) {
 			return null;
 		}
+	
+		List<User> userList=new ArrayList<>();
 		return AlmCache
 				.getInstance().getUserMap().values().stream().filter(u -> output.getData().stream()
 						.filter(d -> d.getId().equals(u.getDepartmentId())).findFirst().orElse(null) != null)
