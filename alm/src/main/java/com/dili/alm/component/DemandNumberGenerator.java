@@ -25,7 +25,10 @@ public class DemandNumberGenerator extends AbstractNumberGenerator {
 	private SequenceMapper sequenceMapper;
 	private DateFormat dfTime = new SimpleDateFormat("yyyyMMddHHmm");
 	private AtomicInteger number = new AtomicInteger(0);
-
+public static void main(String[] args) {
+	 DateFormat dfTime1 = new SimpleDateFormat("yyyyMMddHHmm");
+	System.out.println();
+}
 	@Override
 	public void init() {
 		Sequence sequenceQuery = DTOUtils.newDTO(Sequence.class);
@@ -49,7 +52,7 @@ public class DemandNumberGenerator extends AbstractNumberGenerator {
 		if (sequence % AlmConstants.DEMAND_SEQUENCE_NUMBER_STEP_LENGTH == 0) {
 			this.persist();
 		}
-		return this.dfTime.format(new Date()) + df.format(sequence)+df.format(sequence);
+		return this.dfTime.format(new Date())+df.format(sequence);
 	}
 
 	@Override
