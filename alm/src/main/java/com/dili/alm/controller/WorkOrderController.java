@@ -372,7 +372,7 @@ public class WorkOrderController {
 		modelMap.addAttribute("model", model);
 		List<Demand> showDemandList = this.demandService.queryDemandListByProjectIdOrVersionIdOrWorkOrderId(id, 3);
 		modelMap.addAttribute("showDemandList", showDemandList);
-		return "workOrder/update";
+		return "workOrder/detailUpdate";
 	}
 	@ResponseBody
 	@PostMapping("/solveAgree")
@@ -428,7 +428,7 @@ public class WorkOrderController {
 			
 			Map<String, Object> map=new HashMap<String, Object>();
 			 map.put("result", "1");
-			 map.put("solve", executorId);
+			 map.put("solve", "1");
 			
 			tasksRpc.complete(taskId,map);
 			return BaseOutput.success().setData(this.workOrderService.getViewModel(id));
@@ -446,13 +446,47 @@ public class WorkOrderController {
 			this.workOrderService.allocate(id, executorId, workOrderType, priority, OperationResult.valueOf(result),description);
 			
 			Map<String, Object> map=new HashMap<String, Object>();
-			 map.put("result", "1");
+			 map.put("result", "0");
+			WorkOrder workOrder = workOrderService.get(id);
+			if (workOrder == null) {
+				throw new WorkOrderException("工单不存在");
+			}
+			map.put("edit", ""+"1");
+				
 			tasksRpc.complete(taskId,map);
 			return BaseOutput.success().setData(this.workOrderService.getViewModel(id));
 		} catch (WorkOrderException e) {
 			return BaseOutput.failure(e.getMessage());
 		}
 	}
+	
+	
+	
+	@ResponseBody
+	@PostMapping("/saveAndAgainSubmit")
+	public BaseOutput<Object> saveAndAgainSubmit(WorkOrderUpdateDto dto, Long[] copyUserIds, MultipartFile attachment,String[] demandIds) {
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		if (user == null) {
+			return BaseOutput.failure("请先登录");
+		}
+		dto.setApplicantId(user.getId());
+		if (copyUserIds != null && copyUserIds.length > 0) {
+			dto.setCopyUserIds(Arrays.asList(copyUserIds));
+		}
+		if (!attachment.isEmpty()) {
+			this.filesService.delete(dto.getAttachmentFileId());
+			List<Files> files = this.filesService.uploadFile(new MultipartFile[] { attachment });
+			dto.setAttachmentFileId(files.get(0).getId());
+		}
+		try {
+			this.workOrderService.saveAndSubmit(dto,demandIds);
+			Map<Object, Object> viewModel = this.workOrderService.getViewModel(dto.getId());
+			return BaseOutput.success().setData(viewModel);
+		} catch (WorkOrderException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+	
 	
 	private String getModelmap(ModelMap modelMap, String taskId) {
 	    BaseOutput<Map<String, Object>>  map=tasksRpc.getVariables(taskId);

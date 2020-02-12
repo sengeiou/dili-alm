@@ -50,12 +50,16 @@ public class WorkOrderApplyApi {
 	// 编辑
 	@ApiOperation("编辑")
 	@RequestMapping("/setOrderApplyAssigneeName.api")
-	public @ResponseBody BaseOutput<Assignment> setOrderApplyAssigneeName(HttpServletRequest request) {
-		Map<String, String[]> map = request.getParameterMap();
+	public @ResponseBody BaseOutput<Assignment> setOrderApplyAssigneeName(TaskMapping taskMapping) {
+	/*	Map<String, String[]> map = request.getParameterMap();
 		String[] strs = map.get("processVariables");
 		JSONObject jsonObj = JSON.parseObject(strs[0]);
-		Assignment record =workOrderApply.setOrderApplyName(jsonObj.getLong("businessKey"));
-		return BaseOutput.success().setData(record);
+		Assignment record =workOrderApply.setOrderApplyName(jsonObj.getLong("businessKey"));*/
+		
+		String productManagerId = taskMapping.getProcessVariables().get("edit").toString();
+		Assignment assignment = DTOUtils.newDTO(Assignment.class);
+		assignment.setAssignee("1");
+		return BaseOutput.success().setData(assignment);
 	}
 	// 分配数据变
 	@ApiOperation("分配数据变")
