@@ -18,15 +18,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.OnlineDataChange;
+import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.rpc.MyTasksRpc;
 import com.dili.alm.rpc.RuntimeApiRpc;
 //import com.dili.alm.rpc.RuntimeRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.OnlineDataChangeService;
+import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.ProjectVersionService;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
+import com.dili.bpmc.sdk.dto.Assignment;
 import com.dili.alm.domain.TaskDto;
 import com.dili.alm.domain.TaskMapping;
 import com.dili.ss.domain.BaseOutput;
@@ -63,6 +67,10 @@ public class OnlineDataChangeController {
     
     @Autowired
 	ProjectVersionService projectVersionService;
+    
+    @Autowired
+	private ProjectService   projectService;
+    
     
     @ApiOperation("跳转到index页面")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
@@ -171,6 +179,10 @@ public class OnlineDataChangeController {
         try {
     	   Map<String, Object> map=new HashMap<String, Object>();
     	   map.put("dataId", onlineDataChange.getId()+"");
+    	   
+   	 	   Project  pro=	projectService.get(onlineDataChange.getProjectId());
+   	 	   map.put("dept", pro.getProjectManager()+"");
+   	     //  map.put("dept","1");
 		   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almOnlineDataChangeProcess", onlineDataChange.getId().toString(), id+"",map);
 	       System.out.println(object.getCode()+object.getData()+object.getErrorData());
 	       onlineDataChange.setProcessInstanceId(object.getData().getProcessInstanceId()); 
@@ -216,6 +228,9 @@ public class OnlineDataChangeController {
 		   	 try {
 		    	   Map<String, Object> map=new HashMap<String, Object>();
 		    	   map.put("dataId", onlineDataChange.getId()+"");
+		    	   Project  pro=	projectService.get(onlineDataChange.getProjectId());
+		   	 	   map.put("dept", pro.getProjectManager()+"");
+		   	 	   
 				   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almOnlineDataChangeProcess", onlineDataChange.getId().toString(), id+"",map);
 			       System.out.println(object.getCode()+object.getData()+object.getErrorData());
 			     
@@ -302,9 +317,26 @@ public class OnlineDataChangeController {
 		onlineDataChange.setId(Long.parseLong(dataId));
 		onlineDataChange.setDataStatus((byte)3);
 		onlineDataChangeService.updateSelective(onlineDataChange);
-		
+		OnlineDataChange onlineDataChangeTemp=onlineDataChangeService.get(Long.parseLong(dataId));
 		Map<String, Object> map=new HashMap<>();
     	map.put("approved", "true");
+	    Project  pro=	projectService.get(onlineDataChangeTemp.getProjectId());
+	    
+	    User uprojectser = DTOUtils.newDTO(User.class);
+		uprojectser.setId(pro.getTestManager());
+		uprojectser.setFirmCode(AlmConstants.ALM_FIRM_CODE);
+		BaseOutput<List<User>> listUserByExample = userRpc.listByExample(uprojectser);
+	
+		Assignment record = DTOUtils.newDTO(Assignment.class);
+		record.setAssignee(pro.getTestManager().toString());//项目测试人员的ID
+		List<User> listUsernName = listUserByExample.getData();////项目测试人员组的ID
+		if (listUsernName != null && listUsernName.size() > 0) {
+		    record.setAssignee(listUsernName.get(0).getId().toString());
+		    map.put("test",listUsernName.get(0).getId().toString()+"");
+		}
+		
+ 	   
+   	 	   
     	tasksRpc.complete(taskId, map);
     	
     	return BaseOutput.success("执行成功");
@@ -318,9 +350,10 @@ public class OnlineDataChangeController {
 		onlineDataChange.setId(Long.parseLong(dataId));
 		onlineDataChange.setDataStatus((byte)1);
 		onlineDataChangeService.updateSelective(onlineDataChange);
-		
+		OnlineDataChange	onlineDataChangeTemp=onlineDataChangeService.get(Long.parseLong(dataId));
 		Map<String, Object> map=new HashMap<>();
     	map.put("approved", "false");
+     	map.put("submit", ""+onlineDataChangeTemp.getApplyUserId());
     	tasksRpc.complete(taskId, map);
     	
     	
@@ -355,6 +388,9 @@ public class OnlineDataChangeController {
 		onlineDataChangeService.updateSelective(onlineDataChange);
 		Map<String, Object> map=new HashMap<>();
     	map.put("approved", "false");
+    	
+    	OnlineDataChange	onlineDataChangeTemp=onlineDataChangeService.get(Long.parseLong(dataId));
+    	map.put("submit", ""+onlineDataChangeTemp.getApplyUserId());
     	tasksRpc.complete(taskId, map);
     	
         return BaseOutput.success("执行成功");
@@ -388,6 +424,8 @@ public class OnlineDataChangeController {
 		onlineDataChangeService.updateSelective(onlineDataChange);
     	Map<String, Object> map=new HashMap<>();
     	map.put("approved", "false");
+    	OnlineDataChange	onlineDataChangeTemp=onlineDataChangeService.get(Long.parseLong(dataId));
+     	map.put("submit", ""+onlineDataChangeTemp.getApplyUserId());
     	tasksRpc.complete(taskId, map);
         return BaseOutput.success("执行成功");
     }
@@ -420,6 +458,8 @@ public class OnlineDataChangeController {
 		onlineDataChangeService.updateSelective(onlineDataChange);
 		Map<String, Object> map=new HashMap<>();
     	map.put("approved", "true");
+  	    map.put("submit", onlineDataChange.getApplyUserId());
+  	    
     	tasksRpc.complete(taskId, map);
     	
     	return BaseOutput.success("执行成功");
@@ -435,6 +475,8 @@ public class OnlineDataChangeController {
 		onlineDataChangeService.updateSelective(onlineDataChange);
     	Map<String, Object> map=new HashMap<>();
     	map.put("approved", "false");
+    	OnlineDataChange	onlineDataChangeTemp=onlineDataChangeService.get(Long.parseLong(dataId));
+     	map.put("submit", ""+onlineDataChangeTemp.getApplyUserId());
     	tasksRpc.complete(taskId, map);
         return BaseOutput.success("执行成功");
     }
