@@ -123,4 +123,34 @@ public class DevCenterWorkOrderManager extends BaseWorkOrderManager {
 		return WorkOrderSource.DEVELOPMENT_CENTER;
 	}
 
+	@Override
+	public void submitAgain(WorkOrder workOrder, String taskId) throws WorkOrderException {
+		// 外部工单
+				workOrder.setWorkOrderState(WorkOrderState.OPENED.getValue());
+				User mailReceiver = AlmCache.getInstance().getUserMap().get(workOrder.getAcceptorId());
+				Date now = new Date();
+				workOrder.setSubmitTime(now);
+				workOrder.setModifyTime(now);
+				int rows = this.workOrderMapper.updateByPrimaryKeySelective(workOrder);
+				if (rows <= 0) {
+					throw new WorkOrderException("提交工单失败");
+				}
+				if (mailReceiver == null) {
+					throw new WorkOrderException("受理人不存在");
+				}
+				
+			   Map<String, Object> map=new HashMap<String, Object>();
+			   map.put("workOrderSource", "2");
+			   
+				if(workOrder.getWorkOrderSource()==2) {
+					map.put("solve", workOrder.getExecutorId().toString());
+				}else {
+					map.put("allocate", workOrder.getAcceptorId().toString());
+				}
+				
+				tasksRpc.complete(taskId,map);
+			       
+				this.sendMail(workOrder, "工单申请", Sets.newHashSet(mailReceiver.getEmail()));
+	}
+
 }

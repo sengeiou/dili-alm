@@ -93,16 +93,16 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 	   Map<String, Object> map=new HashMap<String, Object>();
 	   map.put("workOrderSource", "1");
 	   
-	
-		//Assignment record = DTOUtils.newDTO(Assignment.class);
 		if(workOrder.getWorkOrderSource()==2) {
 			map.put("solve", workOrder.getExecutorId().toString());
 		}else {
 			map.put("allocate", workOrder.getAcceptorId().toString());
 		}
 		
-	   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almWorkOrderApplyProcess", workOrder.getId().toString(), workOrder.getApplicantId()+"",map);
+
+       BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almWorkOrderApplyProcess", workOrder.getId().toString(), workOrder.getApplicantId()+"",map);
        System.out.println(object.getCode()+object.getData()+object.getErrorData());
+		
 	      
 		this.sendMail(workOrder, "工单申请", Sets.newHashSet(mailReceiver.getEmail()));
 	}
@@ -210,6 +210,34 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 	@Override
 	public WorkOrderSource getType() {
 		return WorkOrderSource.DEPARTMENT;
+	}
+
+	@Override
+	public void submitAgain(WorkOrder workOrder, String taskId) throws WorkOrderException {
+		// 部门工单，直接跳转到工单解决
+				workOrder.setWorkOrderState(WorkOrderState.SOLVING.getValue());
+				User mailReceiver = AlmCache.getInstance().getUserMap().get(workOrder.getExecutorId());
+				workOrder.setSubmitTime(new Date());
+				workOrder.setModifyTime(new Date());
+				int rows = this.workOrderMapper.updateByPrimaryKeySelective(workOrder);
+				if (rows <= 0) {
+					throw new WorkOrderException("提交工单失败");
+				}
+				if (mailReceiver == null) {
+					throw new WorkOrderException("受理人不存在");
+				}
+				
+			   Map<String, Object> map=new HashMap<String, Object>();
+			   map.put("workOrderSource", "1");
+			   
+				if(workOrder.getWorkOrderSource()==2) {
+					map.put("solve", workOrder.getExecutorId().toString());
+				}else {
+					map.put("allocate", workOrder.getAcceptorId().toString());
+				}
+				
+				tasksRpc.complete(taskId,map);
+				this.sendMail(workOrder, "工单申请", Sets.newHashSet(mailReceiver.getEmail()));
 	}
 
 }

@@ -464,7 +464,7 @@ public class WorkOrderController {
 	
 	@ResponseBody
 	@PostMapping("/saveAndAgainSubmit")
-	public BaseOutput<Object> saveAndAgainSubmit(WorkOrderUpdateDto dto, Long[] copyUserIds, MultipartFile attachment,String[] demandIds) {
+	public BaseOutput<Object> saveAndAgainSubmit(WorkOrderUpdateDto dto, Long[] copyUserIds, MultipartFile attachment,String[] demandIds,@RequestParam String taskId) {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		if (user == null) {
 			return BaseOutput.failure("请先登录");
@@ -479,7 +479,7 @@ public class WorkOrderController {
 			dto.setAttachmentFileId(files.get(0).getId());
 		}
 		try {
-			this.workOrderService.saveAndSubmit(dto,demandIds);
+			this.workOrderService.saveAndAgainSubmit(dto,demandIds,taskId);
 			Map<Object, Object> viewModel = this.workOrderService.getViewModel(dto.getId());
 			return BaseOutput.success().setData(viewModel);
 		} catch (WorkOrderException e) {

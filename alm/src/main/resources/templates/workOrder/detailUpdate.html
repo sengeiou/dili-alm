@@ -267,14 +267,14 @@
 									title : '提示',
 									msg : '正在提交，请稍候……',
 									text : ''
-								});
+					   });
 					},
 					success : function(data) {
 						$.messager.progress('close');
 						var obj = $.parseJSON(data);
 						if (obj.code == 200) {
-							updateGridRow(obj.data);
-							$('#win').dialog('close');
+							/* updateGridRow(obj.data);
+							$('#win').dialog('close'); */
 						} else {
 							$.messager.alert('错误', obj.result);
 						}

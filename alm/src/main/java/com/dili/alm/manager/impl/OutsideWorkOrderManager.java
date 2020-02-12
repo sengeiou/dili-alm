@@ -129,4 +129,42 @@ public class OutsideWorkOrderManager extends BaseWorkOrderManager {
 		return WorkOrderSource.OUTSIDE;
 	}
 
+	@Override
+	public void submitAgain(WorkOrder workOrder, String taskId) throws WorkOrderException {
+		// 外部工单
+		workOrder.setWorkOrderState(WorkOrderState.OPENED.getValue());
+		Date now = new Date();
+		workOrder.setSubmitTime(now);
+		workOrder.setModifyTime(now);
+		int rows = this.workOrderMapper.updateByPrimaryKeySelective(workOrder);
+		if (rows <= 0) {
+			throw new WorkOrderException("提交工单失败");
+		}
+
+		Map<Long, User> userMap = AlmCache.getInstance().getUserMap();
+		User receiver = userMap.get(workOrder.getAcceptorId());
+		Set<String> emails = new HashSet<>();
+		if (receiver != null) {
+			emails.add(receiver.getEmail());
+		}
+		if (StringUtils.isNotBlank(workOrder.getCopyUserId())) {
+			List<Long> userIds = JSON.parseArray(workOrder.getCopyUserId(), Long.class);
+			userIds.forEach(uid -> {
+				User user = userMap.get(uid);
+				if (user != null) {
+					emails.add(user.getEmail());
+				}
+			});
+		}
+	   Map<String, Object> map=new HashMap<String, Object>();
+	   map.put("workOrderSource", "3");
+	 /*  BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almWorkOrderApplyProcess", workOrder.getId().toString(), workOrder.getApplicantId()+"",map);
+       System.out.println(object.getCode()+object.getData()+object.getErrorData());*/
+	   
+		tasksRpc.complete(taskId,map);
+		this.sendMail(workOrder, "工单申请", emails);
+		
+		
+	}
+
 }
