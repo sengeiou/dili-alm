@@ -428,8 +428,8 @@ public class WorkOrderController {
 			
 			Map<String, Object> map=new HashMap<String, Object>();
 			 map.put("result", "1");
-			 map.put("solve", "1");
-			
+			// map.put("solve", "1");
+			 map.put("solve", executorId+"");
 			tasksRpc.complete(taskId,map);
 			return BaseOutput.success().setData(this.workOrderService.getViewModel(id));
 		} catch (WorkOrderException e) {
@@ -451,8 +451,8 @@ public class WorkOrderController {
 			if (workOrder == null) {
 				throw new WorkOrderException("工单不存在");
 			}
-			map.put("edit", ""+"1");
-				
+		//	map.put("edit", ""+"1");
+			map.put("edit", ""+workOrder.getApplicantId()+"");
 			tasksRpc.complete(taskId,map);
 			return BaseOutput.success().setData(this.workOrderService.getViewModel(id));
 		} catch (WorkOrderException e) {

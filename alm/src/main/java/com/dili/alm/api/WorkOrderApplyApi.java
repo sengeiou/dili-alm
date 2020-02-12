@@ -56,9 +56,9 @@ public class WorkOrderApplyApi {
 		JSONObject jsonObj = JSON.parseObject(strs[0]);
 		Assignment record =workOrderApply.setOrderApplyName(jsonObj.getLong("businessKey"));*/
 		
-		String productManagerId = taskMapping.getProcessVariables().get("edit").toString();
+		String edit = taskMapping.getProcessVariables().get("edit").toString();
 		Assignment assignment = DTOUtils.newDTO(Assignment.class);
-		assignment.setAssignee("1");
+		assignment.setAssignee(edit);
 		return BaseOutput.success().setData(assignment);
 	}
 	// 分配数据变
@@ -72,7 +72,7 @@ public class WorkOrderApplyApi {
 		
 		String productManagerId = taskMapping.getProcessVariables().get("allocate").toString();
 		Assignment assignment = DTOUtils.newDTO(Assignment.class);
-		assignment.setAssignee("1");
+		assignment.setAssignee(productManagerId);
 		return BaseOutput.success().setData(assignment);
 		
 	}
@@ -83,7 +83,7 @@ public class WorkOrderApplyApi {
 	public @ResponseBody BaseOutput<Assignment> setSolveAssigneeName(TaskMapping taskMapping) {
 		String productManagerId = taskMapping.getProcessVariables().get("solve").toString();
 		Assignment assignment = DTOUtils.newDTO(Assignment.class);
-		assignment.setAssignee("1");
+		assignment.setAssignee(productManagerId);
 		return BaseOutput.success().setData(assignment);
 
 	}

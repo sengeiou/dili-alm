@@ -7,7 +7,7 @@ import com.dili.ss.base.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 
 /**
- * 由MyBatis Generator工具自动生成
+ * MyBatis Generator
  * This file was generated on 2019-12-25 18:22:44.
  */
 @Service
