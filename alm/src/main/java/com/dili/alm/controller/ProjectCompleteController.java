@@ -204,7 +204,6 @@ public class ProjectCompleteController {
 	@ResponseBody
 	public Object loadQuestion(Long id) {
 		ProjectComplete projectComplete = projectCompleteService.get(id);
-
 		return projectComplete.getQuestion();
 	}
 
@@ -220,7 +219,6 @@ public class ProjectCompleteController {
 	@ResponseBody
 	public Object loadHardWare(Long id) {
 		ProjectComplete projectComplete = projectCompleteService.get(id);
-
 		return projectComplete.getHardware();
 	}
 
