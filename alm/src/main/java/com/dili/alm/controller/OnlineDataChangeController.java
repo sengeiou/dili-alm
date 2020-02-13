@@ -51,7 +51,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * ��MyBatis Generator�����Զ�����
+ *由MyBatis Generator工具自动生成
  * This file was generated on 2019-12-25 18:22:44.
  */
 @Api("/onlineDataChange")
@@ -63,9 +63,7 @@ public class OnlineDataChangeController {
     @Autowired
 	private UserRpc userRpc;
     
-    @Autowired
-	private BpmcUtil bpmcUtil;
-    
+  
     @Autowired
    	private   MyTasksRpc  tasksRpc;
     
@@ -137,43 +135,10 @@ public class OnlineDataChangeController {
     @RequestMapping(value="/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String listPage(@ModelAttribute OnlineDataChange onlineDataChange,   @RequestParam(value="projectIdcc", required = false) String projectIdcc) throws Exception {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
-    	onlineDataChange.setApplyUserId(id);
-   	    if(NumberUtils.isNumber(projectIdcc)) {
-   	 	   onlineDataChange.setProjectId(Long.parseLong(projectIdcc));
-	    }
-   	 
-    	List<OnlineDataChange> list = onlineDataChangeService.list(onlineDataChange);
-    	 // Page<OnlineDataChange> page =  (Page<OnlineDataChange>) list;
-		Map<Object, Object> metadata = null == onlineDataChange.getMetadata() ? new HashMap<>() : onlineDataChange.getMetadata();
-		JSONObject projectProvider = new JSONObject();
-		projectProvider.put("provider", "projectProvider");
-		metadata.put("projectId", projectProvider);
-		JSONObject projectVersionProvider = new JSONObject();
-		projectVersionProvider.put("provider", "projectVersionProvider");
-		metadata.put("versionId", projectVersionProvider);
-		
-		JSONObject memberProvider = new JSONObject();
-		memberProvider.put("provider", "memberProvider");
-		metadata.put("applyUserId", memberProvider);
-		
-		JSONObject dateProvider = new JSONObject();
-		dateProvider.put("provider", "dateProvider");
-		metadata.put("applyDate", dateProvider);
-		metadata.put("updateDate", dateProvider);
-		
-		try {
-		/*	 List<OnlineDataChangeBpmcDtoDto> targetList = BeanConver.copeList(list, OnlineDataChangeBpmcDtoDto.class);
-			   bpmcUtil.fitLoggedUserIsCanHandledProcess(targetList);*/
-			   List onlineDataChangeList = ValueProviderUtils.buildDataByProvider(metadata,list);
-			  
-			  EasyuiPageOutput taskEasyuiPageOutput = new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(list.size()))), onlineDataChangeList);
-			  return taskEasyuiPageOutput.toString();
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
+    	return onlineDataChangeService. listPageOnlineData(onlineDataChange, projectIdcc, id);
        // return onlineDataChangeService.listEasyuiPageByExample(onlineDataChange, true).toString();
     }
+	
 
     @ApiOperation("保存OnlineDataChange")
     @ApiImplicitParams({
@@ -182,27 +147,7 @@ public class OnlineDataChangeController {
     @RequestMapping(value="/insert.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput insert(@ModelAttribute OnlineDataChange onlineDataChange) {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
-    	onlineDataChange.setApplyUserId(id);
-    	onlineDataChange.setIsSubmit((byte)1);
-    	onlineDataChange.setDataStatus((byte)2);
-        onlineDataChangeService.insertSelective(onlineDataChange);
-        try {
-    	   Map<String, Object> map=new HashMap<String, Object>();
-    	   map.put("dataId", onlineDataChange.getId()+"");
-    	   
-   	 	   Project  pro=	projectService.get(onlineDataChange.getProjectId());
-   	 	   map.put("dept", pro.getProjectManager()+"");
-   	     //  map.put("dept","1");
-		   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almOnlineDataChangeProcess", onlineDataChange.getId().toString(), id+"",map);
-	       System.out.println(object.getCode()+object.getData()+object.getErrorData());
-	       onlineDataChange.setProcessInstanceId(object.getData().getProcessInstanceId()); 
-	       onlineDataChange.setId(onlineDataChange.getId());
-	       
-	       onlineDataChangeService.update(onlineDataChange);
-        } catch (Exception e) {
-		   e.printStackTrace();
-		   System.out.println(e);
-	    }
+    	onlineDataChangeService.insertOnLineData(onlineDataChange, id);
         return BaseOutput.success("提交申请成功");    
     }
     @RequestMapping(value="/insertSave.action", method = {RequestMethod.GET, RequestMethod.POST})
@@ -231,47 +176,11 @@ public class OnlineDataChangeController {
     @RequestMapping(value="/update.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput update(@ModelAttribute OnlineDataChange onlineDataChange, 
             HttpServletRequest reques) {
-    	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
-         OnlineDataChange  odc=	onlineDataChangeService.get(onlineDataChange.getId());
-        if(odc.getProcessInstanceId()==null) {
-        	
-		   	 try {
-		    	   Map<String, Object> map=new HashMap<String, Object>();
-		    	   map.put("dataId", onlineDataChange.getId()+"");
-		    	   Project  pro=	projectService.get(onlineDataChange.getProjectId());
-		   	 	   map.put("dept", pro.getProjectManager()+"");
-		   	 	   
-				   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almOnlineDataChangeProcess", onlineDataChange.getId().toString(), id+"",map);
-			       System.out.println(object.getCode()+object.getData()+object.getErrorData());
-			     
-			       OnlineDataChange onlineData=new OnlineDataChange();
-			       onlineData.setProcessInstanceId(object.getData().getProcessInstanceId());
-			       onlineData.setId(onlineDataChange.getId());
-			       onlineData.setDataStatus((byte)2);
-			       onlineData.setIsSubmit((byte)1);
-			       onlineDataChangeService.updateSelective(onlineData);
-		        } catch (Exception e) {
-				   e.printStackTrace();
-				   System.out.println(e);
-			    }
-        } else {
-        	ArrayList list=new ArrayList<String>();
-        	list.add(odc.getProcessInstanceId());
-        	TaskDto tdo=DTOUtils.newDTO(TaskDto.class);
-        	tdo.setProcessInstanceIds(list);
-        	BaseOutput<List<TaskMapping>>  task=tasksRpc.listTaskMapping(tdo);
-        	String  taskId=task.getData().get(0).getId();
-    		onlineDataChange.setDataStatus((byte)2);
-    		onlineDataChange.setIsSubmit((byte)1);
-    		onlineDataChangeService.updateSelective(onlineDataChange);
-    		Map<String, Object> map=new HashMap<>();
-        	map.put("approved", "true");
-        	tasksRpc.complete(taskId);
-	    	   
-    	   
-       }
+    	  Long  id=SessionContext.getSessionContext().getUserTicket().getId();
+    	  onlineDataChangeService. updateOnlineDate(onlineDataChange, id);
         return BaseOutput.success("修改成功");
     }
+
     @RequestMapping(value="/updateSvae.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput updateSvae(@ModelAttribute OnlineDataChange onlineDataChange,
             HttpServletRequest reques) {
@@ -319,175 +228,62 @@ public class OnlineDataChangeController {
     @RequestMapping(value="/agreeDeptOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput agreeDeptOnlineData(  @RequestParam(value="taskId", required = false) String taskId) {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
-    	
-    	
-    	BaseOutput<Map<String, Object>>  mapId=tasksRpc.getVariables(taskId);
-		String dataId = (String) mapId.getData().get("businessKey");
-		OnlineDataChange onlineDataChange=new  OnlineDataChange();
-		onlineDataChange.setId(Long.parseLong(dataId));
-		onlineDataChange.setDataStatus((byte)3);
-		onlineDataChangeService.updateSelective(onlineDataChange);
-		OnlineDataChange onlineDataChangeTemp=onlineDataChangeService.get(Long.parseLong(dataId));
-		Map<String, Object> map=new HashMap<>();
-    	map.put("approved", "true");
-	    Project  pro=	projectService.get(onlineDataChangeTemp.getProjectId());
-	    
-	    User uprojectser = DTOUtils.newDTO(User.class);
-		uprojectser.setId(pro.getTestManager());
-		uprojectser.setFirmCode(AlmConstants.ALM_FIRM_CODE);
-		BaseOutput<List<User>> listUserByExample = userRpc.listByExample(uprojectser);
-	
-		Assignment record = DTOUtils.newDTO(Assignment.class);
-		record.setAssignee(pro.getTestManager().toString());//项目测试人员的ID
-		List<User> listUsernName = listUserByExample.getData();////项目测试人员组的ID
-		if (listUsernName != null && listUsernName.size() > 0) {
-		    record.setAssignee(listUsernName.get(0).getId().toString());
-		    map.put("test",listUsernName.get(0).getId().toString()+"");
-		}
-		
- 	   
-   	 	   
-    	tasksRpc.complete(taskId, map);
-    	
+    	onlineDataChangeService.agreeDeptOnlineDataChange(taskId);
     	return BaseOutput.success("执行成功");
     }
+
     @RequestMapping(value="/notAgreeDeptOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput notAgreeDeptOnlineData(  @RequestParam(value="taskId", required = false) String taskId ) {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
-    	BaseOutput<Map<String, Object>>  mapId=tasksRpc.getVariables(taskId);
-		String dataId = (String) mapId.getData().get("businessKey");
-		OnlineDataChange onlineDataChange=new  OnlineDataChange();
-		onlineDataChange.setId(Long.parseLong(dataId));
-		onlineDataChange.setDataStatus((byte)1);
-		onlineDataChangeService.updateSelective(onlineDataChange);
-		OnlineDataChange	onlineDataChangeTemp=onlineDataChangeService.get(Long.parseLong(dataId));
-		Map<String, Object> map=new HashMap<>();
-    	map.put("approved", "false");
-     	map.put("submit", ""+onlineDataChangeTemp.getApplyUserId());
-    	tasksRpc.complete(taskId, map);
-    	
-    	
+    	onlineDataChangeService.notAgreeDeptOnlineDataChange(taskId);
         return BaseOutput.success("执行成功");
     }
+	
     @RequestMapping(value="/agreeTestOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput agreeTestOnlineData(  @RequestParam(value="taskId", required = false) String taskId) {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
-
-    	
-    	BaseOutput<Map<String, Object>>  mapId=tasksRpc.getVariables(taskId);
-		String dataId = (String) mapId.getData().get("businessKey");
-		OnlineDataChange onlineDataChange=new  OnlineDataChange();
-		onlineDataChange.setId(Long.parseLong(dataId));
-		onlineDataChange.setDataStatus((byte)4);
-		onlineDataChangeService.updateSelective(onlineDataChange);
-    	Map<String, Object> map=new HashMap<>();
-    	map.put("approved", "true");
-    	tasksRpc.complete(taskId, map);
-    	
+    	onlineDataChangeService.agreeTestOnlineDataChange(taskId);
     	return BaseOutput.success("执行成功");
     }
+
     @RequestMapping(value="/notAgreeTestOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput notAgreeTestOnlineData(  @RequestParam(value="taskId", required = false) String taskId ) {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
     	
-    	BaseOutput<Map<String, Object>>  mapId=tasksRpc.getVariables(taskId);
-		String dataId = (String) mapId.getData().get("businessKey");
-		OnlineDataChange onlineDataChange=new  OnlineDataChange();
-		onlineDataChange.setId(Long.parseLong(dataId));
-		onlineDataChange.setDataStatus((byte)1);
-		onlineDataChangeService.updateSelective(onlineDataChange);
-		Map<String, Object> map=new HashMap<>();
-    	map.put("approved", "false");
-    	
-    	OnlineDataChange	onlineDataChangeTemp=onlineDataChangeService.get(Long.parseLong(dataId));
-    	map.put("submit", ""+onlineDataChangeTemp.getApplyUserId());
-    	tasksRpc.complete(taskId, map);
-    	
+    	onlineDataChangeService.notAgreeTestOnlineDataChange(taskId);
         return BaseOutput.success("执行成功");
     }
+
     
     @RequestMapping(value="/agreeDBAOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput agreeDBAOnlineData(  @RequestParam(value="taskId", required = false) String taskId) {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
-    	
-    	
-    	BaseOutput<Map<String, Object>>  mapId=tasksRpc.getVariables(taskId);
-		String dataId = (String) mapId.getData().get("businessKey");
-		OnlineDataChange onlineDataChange=new  OnlineDataChange();
-		onlineDataChange.setId(Long.parseLong(dataId));
-		onlineDataChange.setDataStatus((byte)5);
-		onlineDataChangeService.updateSelective(onlineDataChange);
-		Map<String, Object> map=new HashMap<>();
-    	map.put("approved", "true");
-    	tasksRpc.complete(taskId, map);
-    	
+    	onlineDataChangeService.agreeDBAOnlineDataChange(taskId);
     	return BaseOutput.success("执行成功");
     }
     @RequestMapping(value="/notAgreeDBAOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput notAgreeDBAOnlineData(  @RequestParam(value="taskId", required = false) String taskId ) {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
-    	BaseOutput<Map<String, Object>>  mapId=tasksRpc.getVariables(taskId);
-		String dataId = (String) mapId.getData().get("businessKey");
-		OnlineDataChange onlineDataChange=new  OnlineDataChange();
-		onlineDataChange.setId(Long.parseLong(dataId));
-		onlineDataChange.setDataStatus((byte)1);
-		onlineDataChangeService.updateSelective(onlineDataChange);
-    	Map<String, Object> map=new HashMap<>();
-    	map.put("approved", "false");
-    	OnlineDataChange	onlineDataChangeTemp=onlineDataChangeService.get(Long.parseLong(dataId));
-     	map.put("submit", ""+onlineDataChangeTemp.getApplyUserId());
-    	tasksRpc.complete(taskId, map);
+    	onlineDataChangeService.notAgreeTestOnlineDataChange(taskId);
         return BaseOutput.success("执行成功");
     }
     @RequestMapping(value="/indexOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput indexOnlineData(  @RequestParam(value="taskId", required = false) String taskId) {
-    
-    	BaseOutput<Map<String, Object>>  mapId=tasksRpc.getVariables(taskId);
-		String dataId = (String) mapId.getData().get("businessKey");
-		OnlineDataChange onlineDataChange=new  OnlineDataChange();
-		onlineDataChange.setId(Long.parseLong(dataId));
-		onlineDataChange.setDataStatus((byte)2);
-		onlineDataChangeService.updateSelective(onlineDataChange);
-		Map<String, Object> map=new HashMap<>();
-    	map.put("approved", "true");
-    	tasksRpc.complete(taskId);
+    	onlineDataChangeService.indexOnlineDataChange(taskId);
     	return BaseOutput.success("执行成功");
     }
-    
     
     @RequestMapping(value="/agreeOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput agreeOnlineData(  @RequestParam(value="taskId", required = false) String taskId) {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
-    	
-    	
-    	BaseOutput<Map<String, Object>>  mapId=tasksRpc.getVariables(taskId);
-		String dataId = (String) mapId.getData().get("businessKey");
-		OnlineDataChange onlineDataChange=new  OnlineDataChange();
-		onlineDataChange.setId(Long.parseLong(dataId));
-		onlineDataChange.setDataStatus((byte)6);
-		onlineDataChangeService.updateSelective(onlineDataChange);
-		Map<String, Object> map=new HashMap<>();
-    	map.put("approved", "true");
-  	    map.put("submit", onlineDataChange.getApplyUserId());
-  	    
-    	tasksRpc.complete(taskId, map);
-    	
+    	onlineDataChangeService.agreeOnlineDataChange(taskId);
     	return BaseOutput.success("执行成功");
     }
+	
     @RequestMapping(value="/notAgreeOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput notAgreeOnlineData(  @RequestParam(value="taskId", required = false) String taskId ) {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
-    	BaseOutput<Map<String, Object>>  mapId=tasksRpc.getVariables(taskId);
-		String dataId = (String) mapId.getData().get("businessKey");
-		OnlineDataChange onlineDataChange=new  OnlineDataChange();
-		onlineDataChange.setId(Long.parseLong(dataId));
-		onlineDataChange.setDataStatus((byte)1);
-		onlineDataChangeService.updateSelective(onlineDataChange);
-    	Map<String, Object> map=new HashMap<>();
-    	map.put("approved", "false");
-    	OnlineDataChange	onlineDataChangeTemp=onlineDataChangeService.get(Long.parseLong(dataId));
-     	map.put("submit", ""+onlineDataChangeTemp.getApplyUserId());
-    	tasksRpc.complete(taskId, map);
+    	onlineDataChangeService.notAgreeTestOnlineDataChange(taskId);
         return BaseOutput.success("执行成功");
     }
     
