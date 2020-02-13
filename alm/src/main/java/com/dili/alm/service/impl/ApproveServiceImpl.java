@@ -894,7 +894,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		if (leaderApprove.getUserId().equals(user.getId()) && StringUtils.isEmpty(leaderApprove.getResult())) {
 			return true;
 		}
-
+		// 当前登录用户总经理，且没有审批过，则可以审批
 		//if (approve.getType().equals(AlmConstants.ApproveType.APPLY.getCode())) {
 		if (StringUtils.isEmpty(leaderApprove.getResult())) {
 			return false;
