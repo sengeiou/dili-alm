@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
- * ÓÉMyBatis Generator¹¤¾ß×Ô¶¯Éú³É
+ *  ç”±MyBatis Generatorå·¥å…·è‡ªåŠ¨ç”Ÿæˆ This file was generated on  2019-12-27 16:48:24.
  * This file was generated on 2019-12-27 16:48:24.
  */
 @Api("/moveLogTable")
@@ -27,57 +27,57 @@ public class MoveLogTableController {
     @Autowired
     MoveLogTableService moveLogTableService;
 
-    @ApiOperation("Ìø×ªµ½MoveLogTableÒ³Ãæ")
+    @ApiOperation("è·³è½¬åˆ°MoveLogTableé¡µé¢")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
         return "moveLogTable/index";
     }
 
-    @ApiOperation(value="²éÑ¯MoveLogTable", notes = "²éÑ¯MoveLogTable£¬·µ»ØÁĞ±íĞÅÏ¢")
+    @ApiOperation(value="æŸ¥è¯¢MoveLogTable", notes = "æŸ¥è¯¢MoveLogTableè¿”å›åˆ—è¡¨ä¿¡æ¯")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="MoveLogTable", paramType="form", value = "MoveLogTableµÄformĞÅÏ¢", required = false, dataType = "string")
+		@ApiImplicitParam(name="MoveLogTable", paramType="form", value = "MoveLogTableçš„formä¿¡æ¯", required = false, dataType = "string")
 	})
     @RequestMapping(value="/list.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody List<MoveLogTable> list(@ModelAttribute MoveLogTable moveLogTable) {
         return moveLogTableService.list(moveLogTable);
     }
 
-    @ApiOperation(value="·ÖÒ³²éÑ¯MoveLogTable", notes = "·ÖÒ³²éÑ¯MoveLogTable£¬·µ»Øeasyui·ÖÒ³ĞÅÏ¢")
+    @ApiOperation(value="åˆ†é¡µæŸ¥è¯¢MoveLogTable", notes = "åˆ†é¡µæŸ¥è¯¢MoveLogTableè¿”å›easyuiåˆ†é¡µä¿¡æ¯")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="MoveLogTable", paramType="form", value = "MoveLogTableµÄformĞÅÏ¢", required = false, dataType = "string")
+		@ApiImplicitParam(name="MoveLogTable", paramType="form", value = "MoveLogTableçš„formä¿¡æ¯", required = false, dataType = "string")
 	})
     @RequestMapping(value="/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String listPage(@ModelAttribute MoveLogTable moveLogTable) throws Exception {
         return moveLogTableService.listEasyuiPageByExample(moveLogTable, true).toString();
     }
 
-    @ApiOperation("ĞÂÔöMoveLogTable")
+    @ApiOperation("æ–°å¢MoveLogTable")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="MoveLogTable", paramType="form", value = "MoveLogTableµÄformĞÅÏ¢", required = true, dataType = "string")
+		@ApiImplicitParam(name="MoveLogTable", paramType="form", value = "MoveLogTableçš„formä¿¡æ¯", required = true, dataType = "string")
 	})
     @RequestMapping(value="/insert.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput insert(@ModelAttribute MoveLogTable moveLogTable) {
         moveLogTableService.insertSelective(moveLogTable);
-        return BaseOutput.success("ĞÂÔö³É¹¦");
+        return BaseOutput.success("æ–°å¢æˆåŠŸ");
     }
 
-    @ApiOperation("ĞŞ¸ÄMoveLogTable")
+    @ApiOperation("ä¿®æ”¹MoveLogTable")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="MoveLogTable", paramType="form", value = "MoveLogTableµÄformĞÅÏ¢", required = true, dataType = "string")
+		@ApiImplicitParam(name="MoveLogTable", paramType="form", value = "MoveLogTableçš„formä¿¡æ¯", required = true, dataType = "string")
 	})
     @RequestMapping(value="/update.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput update(@ModelAttribute MoveLogTable moveLogTable) {
         moveLogTableService.updateSelective(moveLogTable);
-        return BaseOutput.success("ĞŞ¸Ä³É¹¦");
+        return BaseOutput.success("ä¿®æ”¹æˆåŠŸ");
     }
 
-    @ApiOperation("É¾³ıMoveLogTable")
+    @ApiOperation("åˆ é™¤MoveLogTable")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="id", paramType="form", value = "MoveLogTableµÄÖ÷¼ü", required = true, dataType = "long")
+		@ApiImplicitParam(name="id", paramType="form", value = "MoveLogTableçš„ä¸»é”®", required = true, dataType = "long")
 	})
     @RequestMapping(value="/delete.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput delete(Long id) {
         moveLogTableService.delete(id);
-        return BaseOutput.success("É¾³ı³É¹¦");
+        return BaseOutput.success("åˆ é™¤æˆåŠŸ");
     }
 }
