@@ -162,9 +162,9 @@ public class OnlineDataChangeController {
 		metadata.put("updateDate", dateProvider);
 		
 		try {
-			 List<OnlineDataChangeBpmcDtoDto> targetList = BeanConver.copeList(list, OnlineDataChangeBpmcDtoDto.class);
-			   bpmcUtil.fitLoggedUserIsCanHandledProcess(targetList);
-			   List onlineDataChangeList = ValueProviderUtils.buildDataByProvider(metadata,targetList);
+		/*	 List<OnlineDataChangeBpmcDtoDto> targetList = BeanConver.copeList(list, OnlineDataChangeBpmcDtoDto.class);
+			   bpmcUtil.fitLoggedUserIsCanHandledProcess(targetList);*/
+			   List onlineDataChangeList = ValueProviderUtils.buildDataByProvider(metadata,list);
 			  
 			  EasyuiPageOutput taskEasyuiPageOutput = new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(list.size()))), onlineDataChangeList);
 			  return taskEasyuiPageOutput.toString();
