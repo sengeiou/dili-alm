@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dili.alm.component.BpmcUtil;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.OnlineDataChange;
 import com.dili.alm.domain.Project;
@@ -33,10 +34,13 @@ import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
 import com.dili.bpmc.sdk.dto.Assignment;
 import com.dili.alm.domain.TaskDto;
 import com.dili.alm.domain.TaskMapping;
+import com.dili.alm.domain.dto.OnlineDataChangeBpmcDtoDto;
+import com.dili.alm.domain.dto.WorkOrderDto;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.ss.util.BeanConver;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
@@ -58,6 +62,9 @@ public class OnlineDataChangeController {
     OnlineDataChangeService onlineDataChangeService;
     @Autowired
 	private UserRpc userRpc;
+    
+    @Autowired
+	private BpmcUtil bpmcUtil;
     
     @Autowired
    	private   MyTasksRpc  tasksRpc;
@@ -155,7 +162,10 @@ public class OnlineDataChangeController {
 		metadata.put("updateDate", dateProvider);
 		
 		try {
-			  List onlineDataChangeList = ValueProviderUtils.buildDataByProvider(metadata, list);
+			 List<OnlineDataChangeBpmcDtoDto> targetList = BeanConver.copeList(list, OnlineDataChangeBpmcDtoDto.class);
+			   bpmcUtil.fitLoggedUserIsCanHandledProcess(targetList);
+			   List onlineDataChangeList = ValueProviderUtils.buildDataByProvider(metadata,targetList);
+			  
 			  EasyuiPageOutput taskEasyuiPageOutput = new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(list.size()))), onlineDataChangeList);
 			  return taskEasyuiPageOutput.toString();
 		} catch (Exception e) {
