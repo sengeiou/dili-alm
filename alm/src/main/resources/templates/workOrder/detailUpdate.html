@@ -34,6 +34,7 @@
 <div class="easyui-panel" style="box-sizing: border-box; width: 100%;">
 	<form id="editForm" action="" method="post" enctype="multipart/form-data" style="box-sizing: border-box; display: block; width: 100%">
 		<input type="hidden" name="id" value="${model.id!}">
+		 <input type="hidden" name="isNeedClaim" value="${isNeedClaim!}">
 		<%if(showDemandList!null != null){for(item in showDemandList){%>
 			<input type="hidden" id="demandId${item.id!}" name="demandIds" value="${item.id!}">
 		<%} }%>

@@ -237,7 +237,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 	}
 
 	@Override
-	public void saveAndAgainSubmit(WorkOrderUpdateDto dto, String[] demandIds,String taskId) throws WorkOrderException {
+	public void saveAndAgainSubmit(WorkOrderUpdateDto dto, String[] demandIds,String taskId,Boolean isNeedClaim) throws WorkOrderException {
 		dto.setCreationTime(new Date());
 		this.saveOrUpdate(dto,demandIds);
 		this.submitAgain(dto.getId(),taskId);
