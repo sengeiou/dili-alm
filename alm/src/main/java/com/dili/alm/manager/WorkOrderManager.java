@@ -32,5 +32,7 @@ public interface WorkOrderManager {
 	List<User> getReceivers();
 
 	void systemClose(WorkOrder workOrder) throws WorkOrderException;
+	
+	void submitAgain(WorkOrder workOrder,String taskId) throws WorkOrderException;
 
 }

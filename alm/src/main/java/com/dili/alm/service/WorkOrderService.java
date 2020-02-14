@@ -131,4 +131,7 @@ public interface WorkOrderService extends BaseService<WorkOrder, Long> {
 
 
 	void saveAndSubmit(WorkOrderUpdateDto dto, String[] demandIds) throws WorkOrderException;
+	
+	void saveAndAgainSubmit(WorkOrderUpdateDto dto, String[] demandIds,String taskId,Boolean isNeedClaim) throws WorkOrderException;
+	
 }

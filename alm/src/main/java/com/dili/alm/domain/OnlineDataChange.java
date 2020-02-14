@@ -14,7 +14,12 @@ import javax.persistence.*;
  */
 @Table(name = "`online_data_change`")
 public class OnlineDataChange extends BaseDomain {
-    @Id
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Id
     @Column(name = "`id`")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

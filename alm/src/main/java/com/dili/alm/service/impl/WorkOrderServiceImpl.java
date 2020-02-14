@@ -186,6 +186,11 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 		WorkOrderManager workOrderManager = this.workOrderManagerMap.get(workOrder.getWorkOrderSource());
 		workOrderManager.submit(workOrder);
 	}
+	private void submitAgain(Long id,String taskId) throws WorkOrderException {
+		WorkOrder workOrder = this.getActualDao().selectByPrimaryKey(id);
+		WorkOrderManager workOrderManager = this.workOrderManagerMap.get(workOrder.getWorkOrderSource());
+		workOrderManager.submitAgain(workOrder,taskId);
+	}
 
 	private void updateWorkOrder(WorkOrderUpdateDto dto) throws WorkOrderException {
 		if (CollectionUtils.isNotEmpty(dto.getCopyUserIds())) {
@@ -229,5 +234,12 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 		List<WorkOrderExecutionRecord> woerList = this.woerMapper.select(woerQuery);
 		workOrder.aset("executionRecords", woerList);
 		return workOrder;
+	}
+
+	@Override
+	public void saveAndAgainSubmit(WorkOrderUpdateDto dto, String[] demandIds,String taskId,Boolean isNeedClaim) throws WorkOrderException {
+		dto.setCreationTime(new Date());
+		this.saveOrUpdate(dto,demandIds);
+		this.submitAgain(dto.getId(),taskId);
 	}
 }
