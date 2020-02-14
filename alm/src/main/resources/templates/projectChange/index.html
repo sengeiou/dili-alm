@@ -79,7 +79,7 @@
 		</table>
 		<!-- datagrid工具栏 -->
 		<div id="toolbar" style="padding: 2px 5px;">
-			<a href="${contextPath}/projectChange/add" class="easyui-linkbutton" iconCls="icon-add" plain="true"></a>
+			<a href="${contextPath}/projectChange/add.html" class="easyui-linkbutton" iconCls="icon-add" plain="true"></a>
 		</div>
 	</div>
 </div>
@@ -90,7 +90,7 @@
 	function formatStatus(value, row) {
 		if (row.$_status == 1) {
 			if (row.$_createMemberId == userid) {
-				return '<span class="opt" style="padding:5px;"><a href="${contextPath}/projectChange/edit?id='
+				return '<span class="opt" style="padding:5px;"><a href="${contextPath}/projectChange/edit.html?id='
 						+ row.id
 						+ '">编辑</a></span><span class="opt" style="padding:5px;"><a href="javascript:void(0)" onclick="del('
 						+ row.id + ')">删除</a></span>';
@@ -105,7 +105,9 @@
 			} else {
 				return '<span class="opt" style="padding:5px;"><a>重新申请</a></span>';
 			}
-		}
+		}else if(row.$_status == 6){
+            return '<span class="opt" style="padding:5px;"><a>编辑</a></span><span class="opt" style="padding:5px;"><a>删除</a></span>';
+        } 
 	}
 
 	function formatName(value, row) {
@@ -163,7 +165,6 @@
 		}
 		$("#grid").datagrid("load", bindGridMeta2Form('grid', 'form'));
 	}
-
 	//清空表单
 	function clearForm() {
 		$('#form').form('clear');

@@ -1,0 +1,201 @@
+<#body>
+<style>
+td {
+	padding-left: 60px;
+}
+
+.datebox-button td {
+	padding-left: 0;
+}
+
+input[class^="easyui-"] {
+	width: 300px;
+}
+
+.title-first, .title-second {
+	margin-top: 20px;
+	background: #f7f7f7;
+}
+
+.title-first {
+	padding-left: 0;
+}
+
+.title-second {
+	padding-left: 30px;
+}
+
+.textbox-label {
+	width: 100px;
+}
+
+.panel-tool {
+	top: 10px;
+	height: 24px;
+}
+</style>
+
+<div class="easyui-layout" title="项目变更审批" data-options="fit:true">
+	<div height="auto" align="center" data-options="region:'center'">
+		<form id="ff" method="post" action="">
+			<input type="hidden" name="taskId"  value="${taskId}">
+			<input type="hidden" name="opt" id="opt" value="">
+			<table cellpadding="5" id="tb" style="width: 100%">
+				<tr>
+					<td>项目编号</td>
+					<td>${change.number}</td>
+					<td>项目审批状态</td>
+					<td>${approve.status}</td>
+				</tr>
+				<tr>
+					<td>申请人</td>
+					<td>${approve.createMemberId}</td>
+					<td>创建日期</td>
+					<td>${approve.created}</td>
+				</tr>
+				<tr>
+					<td class="title-first" colspan="4">1项目内容及资源</td>
+				</tr>
+				<tr>
+					<td colspan="2"><input class="easyui-textbox" readonly="readonly" type="text" name="name" value="${change.name}"
+						data-options="label:'变更名称:'"></td>
+					<td colspan="2"><input class="easyui-textbox" readonly="readonly" value="${project1.numberAndName!}" type="text" name="projectId" id="projectId"
+						data-options="label:'项目编号:'"></td>
+				</tr>
+				<tr>
+					<td colspan="2"><input class="easyui-textbox" readonly="readonly" value="${change.projectName!}" type="text" name="projectName"
+						id="projectName" data-options="label:'项目名称:'"></td>
+					<td colspan="2"><input class="easyui-textbox" readonly="readonly" type="text" value="${project1.type!}" name="projectType"
+						id="projectType" data-options="label:'项目类型:'"></td>
+				</tr>
+				<tr>
+					<td colspan="2"><input class="easyui-textbox" type="text" name="type" id="type" value="${change.type!}"
+						data-options="label:'变更类型:'"> <#comboProvider _id="type" _provider='changeTypeProvider' /></td>
+					<td colspan="2"><input class="easyui-numberbox" type="text" name="workingHours" value="${change.workingHours}" readonly="readonly"
+						data-options="label:'变更工作量预估:'"></td>
+				</tr>
+				<tr>
+					<td colspan="2"><input id="affectsOnline" value="<%if(change.affectsOnline==1){%>是<%}else{%>否<%}%>" class="easyui-textbox"
+						name="affectsOnline" style="width: 305px;" readonly="readonly" data-options="editable:false,label:'是否影响上线'" required="true"></td>
+					<td colspan="2"><input class="easyui-textbox" type="text" readonly="readonly" name="name" value="${change.submitDate!,'yyyy-MM-dd'}"
+						data-options="label:'提交日期:'"></td>
+				</tr>
+				<tr>
+					<td colspan="2"><input class="easyui-textbox" readonly="readonly" type="text"
+						value='${change.estimateLaunchDate,dateFormat ="yyyy-MM-dd"}' id="estimateLaunchDate" name="estimateLaunchDate"
+						data-options="required:true,label:'变更后上线日期:'"></td>
+					<td colspan="2"><input class="easyui-textbox" readonly="readonly" type="text" id="endDate" name="endDate"
+						value="${change.endDate!,dateFormat ='yyyy-MM-dd'}" data-options="editable:false,required:true,label:'变更后结束日期:',validType:'md'"></td>
+				</tr>
+				<tr>
+					<td class="title-first" colspan="4">2.变更描述</td>
+				</tr>
+				<tr>
+					<td colspan="4" style="padding: 20px;">简述项目目的、范围、方法概要</td>
+				</tr>
+				<tr>
+					<td class="title-second" colspan="4">变更内容及原因</td>
+				</tr>
+				<tr>
+					<td colspan="4"><input class="easyui-textbox" readonly="readonly" id="content" name="content" value="${change.content}"
+						data-options="multiline:true" style="width: 100%; height: 120px" /></td>
+				</tr>
+				<tr>
+					<td class="title-second" colspan="4">变更方案及影响风险</td>
+				</tr>
+				<tr>
+					<td colspan="4"><input class="easyui-textbox" readonly="readonly" name="effects" id="effects" value="${change.effects}"
+						data-options="multiline:true" style="width: 100%; height: 120px" /></td>
+				</tr>
+				<tr>
+					<td class="title-first" colspan="4">立项评审&审批</td>
+				</tr>
+				<tr>
+					<td class="" colspan="4">
+						<table id="dg" class="easyui-datagrid" style="height: auto; width: 100%"
+							data-options="singleSelect: true,  url: '${contextPath}/approve/loadDesc?id=${approve.id}'">
+							<thead>
+								<tr>
+									<th data-options="field:'approveDate',_provider:'dateProvider',width:'20%',align:'center'">审批时间</th>
+									<th data-options="field:'userId',width:'15%',align:'center'">用户</th>
+									<th data-options="field:'role',width:'25%',align:'center'">职务</th>
+									<th data-options="field:'result',width:'15%',align:'center',formatter:format">审批结果</th>
+									<th data-options="field:'notes',width:'25%',align:'center'">审批意见</th>
+								</tr>
+							</thead>
+						</table>
+					</td>
+				</tr>
+			</table>
+			<% if(canOpt){ %>
+			<table style="width: 100%">
+				<tr>
+					<td colspan="4" style="padding-left: 0"><input id="notes" class="easyui-textbox" name="notes"
+						data-options="label:'审批意见',multiline:true,prompt:'限制输入200个字符串',validType:['length[0,200]']" style="width: 100%; height: 120px" /></td>
+				</tr>
+			</table>
+			<%}%>
+		</form>
+		<div style="text-align: center; padding: 5px; margin-top: 50px;">
+			<!--<a href="${contextPath}/approve/change/index.html" class="easyui-linkbutton" data-options="width:'80px'"-->
+			<!--&gt;返回</a>-->
+			<% if(!viewMode){ %> <% if(canOpt){ %> <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
+				onclick="submitForm('reject',this)">拒绝</a> <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
+				onclick="submitForm('accept',this)">同意</a> <% } %> <% } %>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	function format(value) {
+		if (value != undefined) {
+			return value == "accept" ? "通过" : "未通过";
+		}
+		return value;
+	}
+
+	function submitForm(opt, obj) {
+		$('#ff')
+				.form(
+						'submit',
+						{
+							url : "${contextPath}/approve/changeWyhManagerApprove",
+							onSubmit : function() {
+								if ($("#ff").form('validate')) {
+									$(obj).linkbutton('disable');
+								}
+								$("#opt").val(opt);
+								return $("#ff").form('validate');
+							},
+							success : function(data) {
+								var data = eval('(' + data + ')');
+				                if(data.success) {
+				                	document.domain="diligrp.com";
+									//如果父页面是任务中心
+				                    var plh1= window.location.href.indexOf('?') > 0 ? window.location.href.substring(0, window.location.href.indexOf('?')) : window.location.href;
+									if(plh1=='http://almweb.diligrp.com/approve/changeApproveByAlm.html'){
+				                    	try {
+											LogUtils.saveLog(LOG_MODULE_OPS.PROJECT_COMPLETE_APPROVE,"变更审批:${approve.id}:${approve.name}:成功",function() {
+											      window.location.href = "${contextPath}/approve/change/index.html";
+											});
+										} catch (e) {
+											window.location.href = "${contextPath}/approve/change/index.html";
+										}
+				                    }else{
+					                    var plh = parent.location.href.indexOf('?') > 0 ? parent.location.href.substring(0, parent.location.href.indexOf('?')) : parent.location.href;
+					                    if(plh=='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
+					                        //向任务中心发送消息，参数为要跳转的地址
+					                        window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
+					                    }
+				                    }
+				            	}
+							} else {
+								$.messager.alert('错误', obj.result);
+							}
+						});
+	}
+
+	$(function() {
+		$('#notes').textbox("enable");
+	});
+</script> </#body>

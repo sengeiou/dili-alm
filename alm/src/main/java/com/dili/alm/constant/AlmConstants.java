@@ -110,7 +110,7 @@ public class AlmConstants {
 	}
 
 	public enum ApplyState {
-		APPLY(1), APPROVE(2), PASS(3), NOPASS(4);
+		APPLY(1), APPROVE(2), PASS(3), NOPASS(4),REFUSED(6);
 
 		private int code;
 
@@ -132,7 +132,7 @@ public class AlmConstants {
 	}
 
 	public enum ChangeState {
-		APPLY(1), APPROVE(2), PASS(3), NOPASS(4), VRIFY(5);
+		APPLY(1), APPROVE(2), PASS(3), NOPASS(4), VRIFY(5),REFUSED(6);
 
 		private int code;
 

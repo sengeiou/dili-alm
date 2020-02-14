@@ -21,6 +21,8 @@
     <result column="apply_state" jdbcType="INTEGER" property="applyState" />
     <result column="apply_date" jdbcType="TIMESTAMP" property="applyDate" />
     <result column="executors" jdbcType="VARCHAR" property="executors" />
+	<result column="process_instance_id" jdbcType="VARCHAR" property="processInstanceId" />
+	<result column="process_definition_id" jdbcType="VARCHAR" property="processDefinitionId" />    
   </resultMap>
   <sql id="Base_Column_List">
     <!--
@@ -28,7 +30,7 @@
     -->
     id, serial_number, project_id, project_name, project_serial_number, project_manager_id, 
     application_department_id, applicant_id, submit_time, service_environment, apply_reason, 
-    other_description, created, apply_state, apply_date, executors
+    other_description, created, apply_state, apply_date, executors,process_instance_id,process_definition_id
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -90,6 +92,12 @@
       <if test="executors != null">
         executors = #{executors,jdbcType=VARCHAR},
       </if>
+      <if test="processInstanceId != null">
+		process_instance_id = #{processInstanceId,jdbcType=VARCHAR},
+	  </if>
+	 <if test="processDefinitionId != null">
+		process_definition_id = #{processDefinitionId,jdbcType=VARCHAR},
+	 </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>

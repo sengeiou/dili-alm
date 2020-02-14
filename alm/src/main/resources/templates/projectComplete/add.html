@@ -124,11 +124,11 @@ input[class^="easyui-"] {
 														"新增结项申请:" + data.data
 																+ ":成功",
 														function() {
-															window.location.href = "${contextPath}/projectComplete/toStep/2/"
+															window.location.href = "${contextPath}/projectComplete/toStep/2/index.html?id="
 																	+ data.result;
 														});
 									} catch (e) {
-										window.location.href = "${contextPath}/projectComplete/toStep/2/"
+										window.location.href = "${contextPath}/projectComplete/toStep/2/index.html?id="
 												+ data.result;
 									}
 								} else {
@@ -141,8 +141,7 @@ input[class^="easyui-"] {
 						});
 	}
 
-	$('#projectId')
-			.combobox(
+	$('#projectId').combobox(
 					{
 						url : '${contextPath}/project/getProjectList?dataAuth=true',
 						valueField : 'id',

@@ -69,7 +69,7 @@
 </div>
 <script type="text/javascript">
     function backForm() {
-        window.location.href = "${contextPath}/projectApply/toStep/3/${apply.id}";
+        window.location.href = "${contextPath}/projectApply/toStep/3/index.html?id="+${apply.id};
     }
     var editIndex = undefined;
 
@@ -117,7 +117,7 @@
                 var data = eval('(' + data + ')');
                 if (data.success == true) {
                     if (data.success == true) {
-                        window.location.href = "${contextPath}/projectApply/toStep/5/" + data.result;
+                        window.location.href = "${contextPath}/projectApply/toStep/5/index.html?id=" + data.result;
                     }
                 }
             }

@@ -60,12 +60,12 @@ public class ProjectChangeController {
 		return "projectChange/index";
 	}
 
-	@RequestMapping(value = "/add", method = RequestMethod.GET)
+	@RequestMapping(value = "/add.html", method = RequestMethod.GET)
 	public String add(ModelMap modelMap) {
 		return "projectChange/add";
 	}
 
-	@RequestMapping(value = "/edit", method = RequestMethod.GET)
+	@RequestMapping(value = "/edit.html", method = RequestMethod.GET)
 	public String edit(ModelMap modelMap, Long id) {
 		ProjectChange change = projectChangeService.get(id);
 		if (change == null) {
@@ -142,7 +142,7 @@ public class ProjectChangeController {
 	@RequestMapping(value = "/reChange/{id}", method = RequestMethod.GET)
 	public String reChange(@PathVariable("id") Long id) {
 		Long reApplyId = projectChangeService.reChange(id);
-		return reApplyId == -1 ? "redirect:/projectChange/index.html" : "redirect:/projectChange/edit?id=" + reApplyId;
+		return reApplyId == -1 ? "redirect:/projectChange/index.html" : "redirect:/projectChange/edit.html?id=" + reApplyId;
 	}
 
 	@ApiOperation(value = "查询ProjectChange", notes = "查询ProjectChange，返回列表信息")

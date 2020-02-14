@@ -18,15 +18,36 @@ public interface AssignmentService {
 	Assignment   setOnlineConfirm(Long onlineDataChangeId);
 	/**
 	 * 需求处理候选人
-	 * @param onlineDataChangeId
+	 * @param setReciprocate
 	 * @return
 	 */
 	Assignment setReciprocate(String queryUserId);
 	/**
 	 * 返回给需求申请人
-	 * @param onlineDataChangeId
+	 * @param setDemandAppId
 	 * @return
 	 */
 	Assignment setDemandAppId(String busCode);
+	/***LJ add begin***/
+	/**
+	 * 添加配置申请it资源 项目经理
+	 * @param setOpdratpr
+	 * @return
+	 */
+	Assignment setProjectManager(String applyId);
 
+	/**
+	 * 添加配置申请it资源 运维操作员
+	 * @param setOpdratpr
+	 * @return
+	 */
+	Assignment setOpdrator(String applyId);
+	
+	/**
+	 * 添加配置申请it资源 返还编辑者
+	 * @param setOpdratpr
+	 * @return
+	 */
+	Assignment setHardwareResourceApplyApply(String applyId);
+	/***LJ add end***/
 }

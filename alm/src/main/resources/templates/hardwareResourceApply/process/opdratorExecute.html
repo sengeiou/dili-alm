@@ -1,0 +1,82 @@
+ <#body>
+  <!-- 项目经理审核确定 -->
+ <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" id="hardwareResourceApplyDetail"  scrolling="no"  width="100%" height="100%"></iframe>
+  <div class="easyui-panel" id="submitDiv" style="width:100%;" align="center">
+    <form id="form" class="easyui-form" method="post" fit="true">
+        <input name="taskId" id="taskId" value="${taskId}" type="hidden">
+        <input name="applyId" id="applyId" value="${apply.id}" type="hidden">
+        <table width="60%" style="alignment: center">
+        	<tr>
+				<td><input class="easyui-textbox" name="description" id="description" style="width: 100%; height: 50px;"
+					data-options="label:'描述', validType:'length[0,255]',multiline:true" /></td>
+			</tr>
+            <tr>
+                <td align="center" style="padding:5px;">
+                <a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="submitBtn"
+                   onclick="save()">实施</a>
+            </td>
+        </table>
+    </form>
+ </div>
+    <!-- ====================================================================================================================== -->
+    <!-- style & script 分隔线 -->
+    <!-- ====================================================================================================================== -->
+    <script type="text/javascript">
+	//详情页面展示
+    $("#hardwareResourceApplyDetail").attr("src",'${contextPath!}/hardwareResourceApply/detailForTask?id=${apply.id}'); //添加详情引入;
+          function save(){
+            if(!$('#form').form("validate")){
+                return;
+            }
+            disableBtn();
+            $('#form').form('submit', {
+                url : "${contextPath}/hardwareResourceApply/opdratorExecute.action",
+                dataType : "json",
+                queryParams : {
+    				isApproved:true
+    			},
+                success:function(data){
+                    var data = eval('(' + data + ')');
+                    if(data.success) {
+                        //如果父页面是任务中心
+                        if(parent.location.href=='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
+                            //向任务中心发送消息，参数为要跳转的地址
+                            window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
+                        }else{
+                         	 if(typeof(window.opener.ReRender)!="undefined"){
+                        		 window.parent.CloseEditPage();
+                        	 }
+                        }
+                    }else{
+                    	$.messager.alert('警告',"错误:"+data.message);
+                    }
+
+                }
+            });
+
+
+        }
+        function disableBtn(){
+       	 $("#submitBtn").linkbutton("disable");
+       	 $("#cancelBtn").linkbutton("disable");
+       }
+        function setIframeHeight(){
+        	try{
+	        	var iframe = document.getElementById("hardwareResourceApplyDetail");
+	        	if(iframe.attachEvent){
+			        	iframe.attachEvent("onload", function(){
+			        	iframe.height = iframe.contentWindow.document.documentElement.scrollHeight+80;
+		        	});
+	        		return;
+	        	}else{
+		        	iframe.onload = function(){
+			        	iframe.height = iframe.contentDocument.body.scrollHeight+80;
+		        	};
+		        	return;
+	        	}
+	        	}catch(e){
+	        	throw new Error('setIframeHeight Error');
+        	}
+    	}
+    </script> 
+</#body>

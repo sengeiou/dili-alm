@@ -199,13 +199,12 @@ function openUpdate(index) {
 	if (selected.$_applyState != 1) {
 		return false;
 	}
-
+	console.log(selected);
 	$('#win').dialog({
 		title : '资源申请详情',
 		width : 830,
 		height : 500,
-		href : '${contextPath!}/hardwareResourceApply/toUpdate?id='
-				+ selected.id,
+		href : '${contextPath!}/hardwareResourceApply/toUpdate?id='+ selected.id,
 		modal : true,
 		buttons : [{
 					text : '保存',
@@ -218,11 +217,16 @@ function openUpdate(index) {
 				}, {
 					text : '提交',
 					handler : function() {
+					   
+					    if(jQuery.isEmptyObject($("#submitBtn"))){
+					    $("#submitBtn").linkbutton("disable");
+					    }
 						$.post('${contextPath!}/hardwareResourceApply/submit',
 								{
 									id : selected.id
 								}, function(res) {
 									if (res.success) {
+									   $.messager.alert('提示', res.result);
 										$('#grid').datagrid('reload');
 										$('#win').dialog('close');
 									} else {

@@ -1,0 +1,190 @@
+<script>
+    document.domain="diligrp.com";
+</script>
+<#body>
+<style>
+.table-box {
+	width: 100%;
+	text-align: center;
+	margin-bottom: 10px;
+}
+
+.table-box, .table-box tr td {
+	border: 1px solid #ddd;
+	border-collapse: collapse;
+}
+
+.table-box tr td {
+	/*display: block;*/
+	box-sizing: border-box;
+	/*width: 16.6% !important;*/
+	padding: 5px;
+}
+
+.table-box .table-title {
+	background-color: #f5f5f5;
+	font-weight: bold;
+}
+
+.table-combo .textbox, .table-combo .filebox {
+	border: none;
+	border-radius: 0;
+}
+</style>
+<div class="easyui-panel" style="box-sizing: border-box; width: 100%;">
+	<form id="editForm" action="" method="post" enctype="multipart/form-data" style="box-sizing: border-box; display: block; width: 100%">
+		<input type="hidden" name="id" value="${model.id!}">
+		<input type="hidden" name="isNeedClaim" value="${isNeedClaim!}">
+		<div style="box-sizing: border-box;; width: 100%; padding: 10px 0px 10px 10px;">
+			<div class="easyui-layout" style="box-sizing: border-box; width: 100%;">
+				<table class="table-box" width="100%">
+					<tr>
+						<td class="table-title" width="16.6%">工单编号</td>
+						<td class="" width="16.6%">${model.serialNumber!}</td>
+						<td class="table-title" width="16.6%">工单名称</td>
+						<td width="16.6%">${model.workOrderName!}</td>
+						<td width="16.6%" class="table-title">工单类型</td>
+						<td width="16.6%">${model.workOrderType!}</td>
+					</tr>
+					<tr>
+						<td class="table-title">工单优先级</td>
+						<td>${model.priority!}</td>
+						<td class="table-title">工单来源</td>
+						<td>${model.workOrderSource!}</td>
+						<td class="table-title">受理人</td>
+						<td>${model.acceptorId!}</td>
+					</tr>
+					<tr>
+						<td class="table-title">抄送</td>
+						<td>${model.copyUsers!}</td>
+						<td class="table-title">实施人</td>
+						<td>${model.executorId!}</td>
+						<td class="table-title">申请人</td>
+						<td class="table-combo">${model.applicantId!}</td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6">描述</td>
+					</tr>
+					<tr>
+						<td class="table-combo" colspan="6">${model.description!}</td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6">执行操作记录</td>
+					</tr>
+					<%for(item in opRecords){%>
+					<tr>
+						<td colspan="6">
+							<table class="table-box" style="width: 100%; padding: 0; margin: 0;">
+								<tr>
+									<td class="table-title">${item.operationName!}</td>
+									<td class="table-combo" style="padding: 0">${item.operatorId!}</td>
+									<td class="table-title">操作结果</td>
+									<td class="table-combo" style="padding: 0">${item.operationResult!}</td>
+									<td class="table-title">描述</td>
+									<td class="table-combo" style="padding: 0; width: 20%">${item.description!}</td>
+									<td class="table-title" style="width: 10%">时间</td>
+									<td class="table-combo" style="padding: 0; width: 20%">${item.operationTime!}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<%}%>
+					<tr>
+						<td class="table-title" colspan="6">任务工时</td>
+					</tr>
+					<%for(item in model.executionRecords){%>
+					<tr>
+						<td colspan="6"><table class="table-box" style="padding:0px 0px;margin:0px 0px;" width="100%">
+								<tr>
+									<td class="table-title">开始日期</td>
+									<td class="table-combo">${item.startDate!,'yyyy-MM-dd'}</td>
+									<td class="table-title">结束日期</td>
+									<td class="table-combo">${item.endDate!,'yyyy-MM-dd'}</td>
+									<td class="table-title">常规工时</td>
+									<td class="table-combo">${item.taskHours!}</td>
+									<td class="table-title">加班工时</td>
+									<td class="table-combo">${item.overtimeHours!}</td>
+								</tr>
+							</table></td>
+					</tr>
+					<%}%>
+					<tr>
+						<td class="table-title" colspan="2">是否满意</td>
+						<td colspan="4"><select class="easyui-combobox" name="result" data-options="editable:false,required:true,panelHeight:'auto'"
+							style="width: 92%">
+								<option value="1">满意</option>
+								<option value="0">不满意</option>
+						</select></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="2">描述</td>
+						<td colspan="4"><input class="easyui-textbox" name="description" data-options="multiline:true" style="width: 92%">
+					</tr>
+				</table>
+				<table class="table-box" width="100%">
+					<tr>
+						<td class="table-title" colspan="2">创建时间</td>
+						<td class="table-combo" colspan="4">${model.creationTime!}</td>
+						
+					</tr>
+					
+			      
+				</table>
+				
+				<table class="table-box" width="100%">
+				     <tr>
+			     	    <td class="table-title" colspan="2"><input type="hidden" name="taskId" value="${taskId}" /></td>
+						<td class="table-combo" colspan="4"><a id="btn" href="#" class="easyui-linkbutton" data-options="onClick:sssssssst">执行</a></td>
+					</tr>	
+				   
+				 </table>
+			</div>
+		</div>
+
+	</form>
+</div>
+<script type="text/javascript">
+	<#members_index/>
+	<#workOrder_index />
+	
+	
+	
+	function sssssssst(){
+		
+ 
+		 $('#editForm').form('submit', {
+				url : '${contextPath!}/workOrder/closeAgree',
+				success : function(data) {
+					var obj = $.parseJSON(data);
+					if (obj.code == 200) {
+						
+						alert("执行成功");
+		             	
+		                //如果父页面是任务中心
+		                if(parent.location.href='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
+		                    //向任务中心发送消息，参数为要跳转的地址
+		                   //   	alert("111");
+		                   ///  alert("跳转");
+		                    window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
+		                }else{
+		                	//alert("222");
+		                	  // alert("三生三世成功");
+		                    location.href = "${contextPath}/onlineDataChange/index.html";
+		                 
+		                }
+					} else {
+						$.messager.alert('错误', obj.result);
+					}
+				}
+		});
+
+  
+  
+	    
+}
+  
+	
+	
+	
+	</script>	
+</#body>

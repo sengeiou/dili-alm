@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.units.qual.s;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ import com.alibaba.fastjson.JSON;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.component.NumberGenerator;
 import com.dili.alm.constant.AlmConstants;
+import com.dili.alm.constant.BpmConsts;
+import com.dili.alm.constant.AlmConstants.DemandStatus;
 import com.dili.alm.dao.DemandProjectMapper;
 import com.dili.alm.dao.ProjectApplyMapper;
 import com.dili.alm.dao.ProjectCostMapper;
@@ -42,7 +45,6 @@ import com.dili.alm.domain.ProjectEarning;
 import com.dili.alm.domain.Roi;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
-import com.dili.alm.domain.dto.ProjectApplyDto;
 import com.dili.alm.domain.dto.RoiUpdateDto;
 import com.dili.alm.domain.dto.apply.ApplyFiles;
 import com.dili.alm.domain.dto.apply.ApplyImpact;
@@ -50,14 +52,21 @@ import com.dili.alm.domain.dto.apply.ApplyMajorResource;
 import com.dili.alm.domain.dto.apply.ApplyPlan;
 import com.dili.alm.domain.dto.apply.ApplyRisk;
 import com.dili.alm.exceptions.ApplicationException;
+import com.dili.alm.exceptions.DemandExceptions;
 import com.dili.alm.exceptions.ProjectApplyException;
+import com.dili.alm.rpc.MyTasksRpc;
 import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.ProjectApplyService;
+import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
+import com.dili.alm.domain.TaskMapping;
+import com.dili.alm.domain.TaskDto;
+import com.dili.bpmc.sdk.rpc.RuntimeRpc;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.exception.AppException;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.util.SystemConfigUtils;
 import com.dili.uap.sdk.session.SessionContext;
@@ -92,9 +101,13 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 	private ProjectCostMapper projectCostMapper;
 	@Autowired
 	private RoiMapper roiMapper;
-	
+	@Autowired
+	private RuntimeRpc runtimeRpc;
 	@Autowired
 	private DemandProjectMapper demandProjectMapper;
+	@Autowired
+	private MyTasksRpc tasksRpc;
+	
 
 	public ProjectApplyMapper getActualDao() {
 		return (ProjectApplyMapper) getDao();
@@ -144,7 +157,7 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 
 	@Transactional(rollbackFor = ApplicationException.class)
 	@Override
-	public void submit(ProjectApply projectApply, ApplyFiles files) throws ProjectApplyException {
+	public void submit(ProjectApply projectApply, ApplyFiles files) throws Exception {
 		if (StringUtils.isNotBlank(files.getDels())) {
 			List<Files> filesFromJson = JSON.parseArray(files.getDels(), Files.class);
 			filesFromJson.forEach(file -> filesService.delete(file.getId()));
@@ -161,26 +174,72 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 		 * 处理生成审批单
 		 */
 		if (projectApply.getStatus() == AlmConstants.ApplyState.APPROVE.getCode()) {
-			Approve as = DTOUtils.as(this.get(projectApply.getId()), Approve.class);
-			as.setId(null);
-			as.setCreatedStart(null);
-			as.setCreated(new Date());
-			as.setProjectApplyId(projectApply.getId());
-			as.setStatus(AlmConstants.ApplyState.APPROVE.getCode());
-			as.setProjectLeader(as.getProjectLeader());
-			as.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
-			as.setProjectType(as.getType());
-			as.setExtend(as.getDescription());
-			as.setType(AlmConstants.ApproveType.APPLY.getCode());
-
-			approveService.insertBefore(as);
-			sendMail(this.get(projectApply.getId()));
+			ProjectApply selectProjectApply=this.get(projectApply.getId());
+			Approve newApprove = DTOUtils.newInstance(Approve.class);
+			newApprove.setProjectApplyId(projectApply.getId());
+			newApprove.setType(AlmConstants.ApproveType.APPLY.getCode());
+			Approve selectOne = approveService.selectOne(newApprove);
+			Approve as = DTOUtils.as(selectProjectApply, Approve.class);
+			if(selectOne==null) {
+				as.setId(null);
+				as.setCreatedStart(null);
+				as.setCreated(new Date());
+				as.setProjectApplyId(projectApply.getId());
+				as.setStatus(AlmConstants.ApplyState.APPROVE.getCode());
+				as.setProjectLeader(as.getProjectLeader());
+				as.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
+				as.setProjectType(as.getType());
+				as.setExtend(as.getDescription());
+				as.setType(AlmConstants.ApproveType.APPLY.getCode());
+				approveService.insertBefore(as);
+				//开启引擎流程
+				Long  userId=SessionContext.getSessionContext().getUserTicket().getId();
+				Map<String, Object> map=new HashMap<String, Object>();
+		    	map.put("dataId", as.getId().toString());
+				BaseOutput<ProcessInstanceMapping>  processInstanceOutput= runtimeRpc.startProcessInstanceByKey(BpmConsts.PROJECT_APPLY_PROCESS,  as.getId().toString(), userId+"",map);
+				if (!processInstanceOutput.isSuccess()) {
+					throw new ProjectApplyException(processInstanceOutput.getMessage());
+				}
+//				 回调，写入相关流程任务数据
+				ProcessInstanceMapping processInstance = processInstanceOutput.getData();
+				Approve selectApprove=DTOUtils.newDTO(Approve.class);
+				selectApprove.setId(as.getId());
+				selectApprove.setProcessInstanceId(processInstance.getProcessInstanceId());
+				selectApprove.setProcessDefinitionId(processInstance.getProcessDefinitionId());
+				// 修改需求状态，记录流程实例id和流程定义id
+				int update = approveService.updateSelective(selectApprove);
+				if (update <= 0) {
+					throw new ProjectApplyException("提交立项引擎流程失败");
+				}
+			}else {
+				selectOne.setProjectApplyId(projectApply.getId());
+				selectOne.setStatus(AlmConstants.ApplyState.APPROVE.getCode());
+				selectOne.setProjectLeader(as.getProjectLeader());
+				selectOne.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
+				selectOne.setProjectType(as.getType());
+				selectOne.setExtend(as.getDescription());
+				selectOne.setType(AlmConstants.ApproveType.APPLY.getCode());
+				approveService.updateBefore(selectOne);
+		        TaskDto taskDto = DTOUtils.newInstance(TaskDto.class);
+		        taskDto.setProcessInstanceBusinessKey(selectOne.getId().toString());
+		        BaseOutput<List<TaskMapping>> outputList = tasksRpc.list(taskDto);
+		        if(!outputList.isSuccess()){
+		        	throw new AppException("用户错误！"+outputList.getMessage()); 
+		        }
+		        //获取formKey
+		        TaskMapping task  = outputList.getData().get(0);
+		    	tasksRpc.complete(task.getId(),SessionContext.getSessionContext().getUserTicket().getId().toString());
+			}
+			sendMail(selectProjectApply);
+			
+			
 		}
-
 		int rows = this.updateSelective(projectApply);
 		if (rows <= 0) {
 			throw new ProjectApplyException("提交立项申请失败");
 		}
+		
+	   
 	}
 
 	public void sendMail(ProjectApply projectApply) {
@@ -210,16 +269,23 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 		if (!apply.getCreateMemberId().equals(SessionContext.getSessionContext().getUserTicket().getId())) {
 			return -1L;
 		}
+//		apply.setRestatus(0);
+//		updateSelective(apply);
+//		apply.setId(null);
+//		apply.setStatus(AlmConstants.ApplyState.APPLY.getCode());
+//		apply.setCreated(new Date());
+//		apply.setModified(null);
+//		apply.setNumber(getProjectNumber(apply));
+//		apply.setRestatus(null);
+//		insertSelective(apply);
+//		buildFiles(id, apply.getId());
+		
+		
+		
+		apply.setStatus(AlmConstants.ApplyState.APPLY.getCode());
+		apply.setModified(new Date());
 		apply.setRestatus(0);
 		updateSelective(apply);
-		apply.setId(null);
-		apply.setStatus(AlmConstants.ApplyState.APPLY.getCode());
-		apply.setCreated(new Date());
-		apply.setModified(null);
-		apply.setNumber(getProjectNumber(apply));
-		apply.setRestatus(null);
-		insertSelective(apply);
-		buildFiles(id, apply.getId());
 		return apply.getId();
 	}
 

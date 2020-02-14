@@ -24,6 +24,7 @@ public class ChangeStateProvider implements ValueProvider {
         buffer.add(new ValuePairImpl("已通过", "3"));
         buffer.add(new ValuePairImpl("未通过", "4"));
         buffer.add(new ValuePairImpl("已验证", "5"));
+        buffer.add(new ValuePairImpl("已拒绝", "6"));
     }
 
     @Override

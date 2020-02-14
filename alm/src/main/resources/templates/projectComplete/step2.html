@@ -306,7 +306,7 @@
     }
 
     function backForm() {
-        window.location.href = "${contextPath}/projectComplete/toStep/1/${apply.id}";
+        window.location.href = "${contextPath}/projectComplete/toStep/1/index.html?id="+${apply.id};
     }
 
     function submitForm() {
@@ -323,7 +323,7 @@
                 var data = eval('(' + data + ')');
                 if (data.success == true) {
                     if (data.success == true) {
-                        window.location.href = "${contextPath}/projectComplete/toStep/3/" + data.result;
+                        window.location.href = "${contextPath}/projectComplete/toStep/3/index.html?id=" + data.result;
                     }
                 }
             }

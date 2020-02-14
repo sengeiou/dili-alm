@@ -1,6 +1,5 @@
 package alm;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -9,14 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.alibaba.fastjson.JSON;
 import com.dili.AlmApplication;
-import com.dili.bpmc.sdk.domain.TaskMapping;
-import com.dili.bpmc.sdk.dto.TaskDto;
+import com.dili.alm.domain.OnlineDataChange;
+import com.dili.alm.domain.ProjectOnlineApply;
+import com.dili.alm.domain.dto.OnlineDataChangeBpmcDtoDto;
+import com.dili.alm.service.OnlineDataChangeService;
+import com.dili.alm.service.ProjectOnlineApplyService;
 import com.dili.bpmc.sdk.rpc.FormRpc;
 import com.dili.bpmc.sdk.rpc.TaskRpc;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.util.BeanConver;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = AlmApplication.class)
@@ -26,13 +26,16 @@ public class MyTest {
 	private FormRpc formRpc;
 	@Autowired
 	private TaskRpc taskRpc;
+	@Autowired
+	private ProjectOnlineApplyService projectOnlineApplyService;
+	@Autowired
+	private OnlineDataChangeService onlineDataChangeService;
 
 	@Test
 	public void test() {
-		TaskDto taskDto = DTOUtils.newDTO(TaskDto.class);
-		taskDto.setProcessInstanceIds(Arrays.asList("202001161650246520000000"));
-		BaseOutput<List<TaskMapping>> output = this.taskRpc.listTaskMapping(taskDto);
-		System.out.println(JSON.toJSONString(output));
+		List<OnlineDataChange> list = this.onlineDataChangeService.list(new OnlineDataChange());
+		List<OnlineDataChangeBpmcDtoDto> targetList = BeanConver.copyList(list, OnlineDataChangeBpmcDtoDto.class);
+		System.out.println(targetList);
 	}
 
 }

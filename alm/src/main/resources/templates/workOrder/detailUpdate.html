@@ -1,0 +1,303 @@
+<script>
+    document.domain="diligrp.com";
+</script>
+<#body>
+<style>
+.table-box {
+	width: 100%;
+	text-align: center;
+	margin-bottom: 10px;
+}
+
+.table-box, .table-box tr td {
+	border: 1px solid #ddd;
+	border-collapse: collapse;
+}
+
+.table-box tr td {
+	/*display: block;*/
+	box-sizing: border-box;
+	/*width: 16.6% !important;*/
+	padding: 5px;
+}
+
+.table-box .table-title {
+	background-color: #f5f5f5;
+	font-weight: bold;
+}
+
+.table-combo .textbox, .table-combo .filebox {
+	border: none;
+	border-radius: 0;
+}
+</style>
+<div class="easyui-panel" style="box-sizing: border-box; width: 100%;">
+	<form id="editForm" action="" method="post" enctype="multipart/form-data" style="box-sizing: border-box; display: block; width: 100%">
+		<input type="hidden" name="id" value="${model.id!}">
+		 <input type="hidden" name="isNeedClaim" value="${isNeedClaim!}">
+		<%if(showDemandList!null != null){for(item in showDemandList){%>
+			<input type="hidden" id="demandId${item.id!}" name="demandIds" value="${item.id!}">
+		<%} }%>
+		<div style="box-sizing: border-box;; width: 100%; padding: 10px 0px 10px 10px;">
+			<div class="easyui-layout" style="box-sizing: border-box; width: 100%;">
+				<table class="table-box" width="100%">
+					<tr>
+						<td class="table-title" width="16.6%">工单编号</td>
+						<td class="" width="16.6%"><input class="easyui-textbox" id="serialNumber" name="serialNumber" value="${model.serialNumber!}"
+							style="width: 87%; text-align: center;" data-options="editable:false"></td>
+						<td class="table-title" width="16.6%">工单名称</td>
+						<td width="16.6%"><input class="easyui-textbox" style="width: 87%; text-align: center;" id="workOrderName" name="workOrderName"
+							value="${model.workOrderName!}" data-options="validType:['length[0,50]'],required:true"></td>
+						<td width="16.6%" class="table-title">工单类型</td>
+						<td width="16.6%"><input class="easyui-textbox" name="workOrderType" id="workOrderType" style="width: 87%; text-align: center;"
+							data-options="editable:false,required:true" /> <#comboProvider _id="workOrderType" _provider='workOrderTypeProvider' /></td>
+					</tr>
+					<tr>
+						<td class="table-title">工单优先级</td>
+						<td><input class="easyui-textbox" name="priority" id="priority" style="width: 87%; text-align: center;"
+							data-options="editable:false,required:true" /> <#comboProvider _id="priority" _provider='workOrderPriorityProvider' /></td>
+						<td class="table-title">工单来源</td>
+						<td><input class="easyui-combobox" style="width: 87%; text-align: center;" id="workOrderSource" name="workOrderSource"
+							data-options="editable:false,
+							required:true,
+ 							onChange:onWorkOrderSourceChange" /> <#comboProvider
+								_id="workOrderSource" _provider='workOrderSourceProvider' /></td>
+						<td class="table-title">受理人</td>
+						<td><input class="easyui-combobox" style="width: 87%; text-align: center;" id="acceptorId" name="acceptorId"
+							data-options="editable:true,
+							<%if(model.$_workOrderSource==2){%>
+							disabled:true,
+							<%}%>
+							valueField:'id', 
+							textField:'realName',
+							loadFilter:removeAdminUserFilter,
+							required:true,
+							url:'${contextPath!}/workOrder/receivers?type=${model.$_workOrderSource!}'"></td>
+					</tr>
+					<tr>
+						<td class="table-title">抄送</td>
+						<td><input class="easyui-combotree" style="width: 93%; text-align: center;" id="copyUserIds" name="copyUserIds"
+							data-options="
+							editable:true,
+							multiple:true,
+							loadFilter:treeLoadFilter, 
+							_idField:'id', 
+							_textField:'realName',
+							url:'${contextPath!}/member/members',
+							onLoadSuccess:checkSelectedUsers">
+						</td>
+						<td class="table-title">渠道</td>
+						<td><input class="easyui-textbox" name="channel" id="channel" style="width: 90%; text-align: center;"
+							data-options="editable:false,onChange:_changeTextboxShowClear" /> <#comboProvider _id="channel" _provider='workOrderChannelProvider' /></td>
+						<td class="table-title">执行人</td>
+						<td><input class="easyui-combobox" style="width: 87%; text-align: center;" id="executorId" name="executorId"
+							data-options="editable:true,
+							<%if(model.$_workOrderSource==1||model.$_workOrderSource==3){%>
+							disabled:true,
+							<%}%>
+							url:'${contextPath!}/workOrder/currentUserDepartmentUsers',
+							valueField:'id', 
+							textField:'realName',
+							required:true"></td>
+
+					</tr>
+					<tr>
+						<td class="table-title">申请人</td>
+						<td class="table-combo">${model.applicantId!}</td>
+					</tr>
+					<tr>
+						<td colspan="6"  style="padding: 5px;" >
+							<div id="tb1" style="height:auto">
+						                <a class="easyui-linkbutton"
+						                   data-options="iconCls:'icon-add',plain:true" onclick='saveDemandToProject()'>添加</a>
+						     </div>										
+							  <table class="easyui-datagrid" title="需求列表" id="demandGrid" style="width: 100%"
+									   fitColumns="true" pagination="false" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" align="center" fit="false" striped="true" idField="id" data-options="toolbar: '#tb1',<%if(has(model) && model.id != null){%>url:'${contextPath!}/demand/queryDemandListByApplyIdOrVersionIdOrWorkOrderId.action?id=${model.id!}&type=3'<%}%>">
+									<thead>
+											<tr>
+												<th data-options="field:'id',hidden:'true'">
+												<th data-options="field:'serialNumber', width:'20%', align:'center', resizable:'true', fixed:'false'">需求编号</th>
+												<th data-options="field:'name', width:'20%', align:'center', resizable:'true', fixed:'false'">需求名称</th>
+												<th data-options="field:'finishDate', width:'40%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">需求期待时间日期</th>
+												<th data-options="field:'opt', width:'10%', align:'center', resizable:'true', fixed:'false',formatter:demandOptFormatter">操作</th>
+											</tr>
+									</thead>
+								</table>
+							</td>
+						</td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6">描述</td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6"><input class="easyui-textbox" name="description"
+							data-options="multiline:true,validType:['length[0,500]'],required:true" style="width: 92%; height: 60px"
+							value="${model.description!}"></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="2">附件</td>
+						<td class="table-combo" colspan="4" style="padding: 0"><input class="easyui-filebox" name="attachment"
+							value="${model.attachmentFileId!}" data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 87%"><input type="hidden"
+							name="attachmentFileId" value="${model.$_attachmentFileId!}"></td>
+					</tr>
+				</table>
+				<table class="table-box" width="100%">
+					<tr>
+						<td class="table-title" colspan="2">创建时间</td>
+						<td class="table-combo" colspan="4">${model.creationTime!}</td>
+					</tr>
+				</table>
+				<table class="table-box" width="100%">
+				     <tr>
+			     	    <td class="table-title" colspan="2"><input type="hidden" name="taskId" value="${taskId}" /></td>
+						<td class="table-combo" colspan="2"><a id="btn" href="#" class="easyui-linkbutton" data-options="onClick:agree">再次提交</a></td>
+						
+					</tr>	
+				   
+				 </table>
+			</div>
+		</div>
+
+	</form>
+</div>
+<div id="demandListDlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false"
+         title="需求添加列表" style="padding: 20px; height: 400px; width: 600px"align-content
+         border="thin" closed="true" data-options="
+         			modal:true,
+                  	inline:true, 
+					buttons: [{
+						text:'确定',
+						handler:function(){addDemandList();}
+						},{
+						text:'取消',
+						handler:function(){$('#demandListDlg').dialog('close');}
+					}]
+					
+				">
+        <table class="easyui-datagrid" id="demandListGrid" rownumbers="false" remoteSort="false" loadMsg="数据加载中..."
+               singleSelect="false" method="post" multiSort="true" data-options="url:'${contextPath}/demand/queryDemandListToProject.action'">
+               <thead>
+		          	<tr>
+		            	<th data-options="field:'id', checkbox:true ">需求ID</th>
+		                <th data-options="field:'serialNumber', width:'30%', align:'center', resizable:'true', fixed:'false'">需求编号</th>
+						<th data-options="field:'name', width:'30%', align:'center', resizable:'true', fixed:'false'">需求名称</th>
+						<th data-options="field:'finishDate', width:'30%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">需求期待时间日期</th>
+						
+		            </tr>
+	            </thead>
+        </table>
+
+</div>
+<script type="text/javascript">
+	<#members_index/>
+	<#workOrder_index />
+	var copyUserIds=${model.copyUserId!'[]'};
+	function checkSelectedUsers(node, data){
+		var me = $(this);
+		removeTreeAdminUser.call(me,node,data);
+		$(copyUserIds).each(function(index,item){
+			var node = $('#copyUserIds').combotree('tree').tree('find',item);
+			$('#copyUserIds').combotree('tree').tree('check', node.target);
+		}); 
+	}
+	
+	$(function() {
+		$('#channel').textbox('addClearBtn', 'icon-clear');
+		$('#workOrderType').combobox('initValue',${model.$_workOrderType!});
+		$('#workOrderType').combobox('setText','${model.workOrderType!}');
+		
+		$('#priority').combobox('initValue',${model.$_priority!});
+		$('#priority').combobox('setText','${model.priority!}');
+		
+		$('#workOrderSource').combobox('initValue','${model.$_workOrderSource!}');
+		$('#workOrderSource').combobox('setText','${model.workOrderSource!}');
+		
+		$('#channel').combobox('initValue','${model.$_channel!}');
+		$('#channel').combobox('setText','${model.channel!}');
+		
+		$('#acceptorId').combobox('initValue',${model.$_acceptorId!});
+		$('#acceptorId').combobox('setText','${model.acceptorId!}');
+		
+		$('#executorId').combobox('initValue',${model.$_executorId!});
+		$('#executorId').combobox('setText','${model.executorId!}');
+	});
+	function demandOptFormatter(value, row, index) {
+		return '<a href="javascript:void(0);" onclick="delDemand(' + row.id
+				+ ');">删除</a>';
+	}
+	function saveDemandToProject() {
+		$('#demandListGrid').datagrid('uncheckAll'); 
+		$('#demandListDlg').dialog('open');
+	}
+	function addDemandList(){
+		$('#demandListDlg').dialog('close');
+		var selRows = $('#demandListGrid').datagrid('getChecked');
+        var rows = $('#demandListGrid').datagrid('getRows');
+		for(var i=0;i<selRows.length;i++){
+            $('#editForm').append('<input  id="demandId'+ selRows[i].id + '" name="demandIds" value="' + selRows[i].id + '">');
+            $('#demandGrid').datagrid('appendRow', selRows[i]); 
+            for(var g=0;g<rows.length;g++){
+				if(rows[g].id==selRows[i].id ){
+					$('#demandListGrid').datagrid('deleteRow', g); 
+				}
+			}
+		}	
+	}
+	function delDemand(id){
+		 var rows = $('#demandGrid').datagrid('getRows');
+		 for(var i=0;i<rows.length;i++){
+			 if(rows[i].id==id){
+				 $('#demandListGrid').datagrid('appendRow', rows[i]); 
+				 $('#demandGrid').datagrid('deleteRow', i); 
+				 $("#demandId" + id + "").remove();
+			 }	 
+		 }
+		
+	}
+	
+	
+	
+	
+	function agree(){
+		
+		var data = $("#editForm").serializeArray();
+		 $('#editForm').form('submit', {
+					url : '${contextPath!}/workOrder/saveAndAgainSubmit',
+					onSubmit : function() {
+						if (!validateForm()) {
+							return false;
+						}
+						$.messager.progress({
+									title : '提示',
+									msg : '正在提交，请稍候……',
+									text : ''
+					   });
+					},
+					success : function(data) {
+						$.messager.progress('close');
+						var obj = $.parseJSON(data);
+						if (obj.code == 200) {
+							alert("执行成功");
+			             	
+			                //如果父页面是任务中心
+			                if(parent.location.href='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
+			                    //向任务中心发送消息，参数为要跳转的地址
+			                   //   	alert("111");
+			                   ///  alert("跳转");
+			                    window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
+			                }else{
+			                	//alert("222");
+			                	  // alert("三生三世成功");
+			                    location.href = "${contextPath}/onlineDataChange/index.html";
+			                 
+			                }
+						} else {
+							$.messager.alert('错误', obj.result);
+						}
+					}
+		 });
+	}
+	
+</script>
+
+</#body>

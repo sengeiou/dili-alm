@@ -2,6 +2,7 @@ package com.dili.alm.manager.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,13 @@ import com.dili.alm.domain.WorkOrderState;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.exceptions.WorkOrderException;
+import com.dili.alm.rpc.MyTasksRpc;
+import com.dili.alm.rpc.RuntimeApiRpc;
+import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
+import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
+import com.dili.bpmc.sdk.dto.Assignment;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
 import com.google.common.collect.Sets;
@@ -46,13 +53,25 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 	@Autowired
 	private WorkOrderExecutionRecordMapper woerMapper;
 
+	
+    @Autowired
+	private UserRpc userRpc;
+    
+    @Autowired
+   	private   MyTasksRpc  tasksRpc;
+    
+    @Autowired
+  	private   RuntimeApiRpc  runtimeRpc;
+    
+    
+    
 	@Override
 	public void update(WorkOrder workOrder) throws WorkOrderException {
 		workOrder.setAcceptorId(null);
 		this.updateExactSimple(workOrder);
 		int rows = this.updateExactSimple(workOrder);
 		if (rows <= 0) {
-			throw new WorkOrderException("新增工单失败");
+			throw new WorkOrderException("修改工单失败");
 		}
 	}
 
@@ -70,6 +89,21 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 		if (mailReceiver == null) {
 			throw new WorkOrderException("受理人不存在");
 		}
+		
+	   Map<String, Object> map=new HashMap<String, Object>();
+	   map.put("workOrderSource", "1");
+	   
+		if(workOrder.getWorkOrderSource()==2) {
+			map.put("solve", workOrder.getExecutorId().toString());
+		}else {
+			map.put("allocate", workOrder.getAcceptorId().toString());
+		}
+		
+
+       BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almWorkOrderApplyProcess", workOrder.getId().toString(), workOrder.getApplicantId()+"",map);
+       System.out.println(object.getCode()+object.getData()+object.getErrorData());
+		
+	      
 		this.sendMail(workOrder, "工单申请", Sets.newHashSet(mailReceiver.getEmail()));
 	}
 
@@ -98,7 +132,7 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 			String workContent) throws WorkOrderException {
 		// 检查状态
 		if (!workOrder.getWorkOrderState().equals(WorkOrderState.SOLVING.getValue())) {
-			throw new WorkOrderException("当前状态不能执行分配操作");
+			throw new WorkOrderException("当前状态不能执行解决操作");
 		}
 
 		// 判断工时
@@ -176,6 +210,34 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 	@Override
 	public WorkOrderSource getType() {
 		return WorkOrderSource.DEPARTMENT;
+	}
+
+	@Override
+	public void submitAgain(WorkOrder workOrder, String taskId) throws WorkOrderException {
+		// 部门工单，直接跳转到工单解决
+				workOrder.setWorkOrderState(WorkOrderState.SOLVING.getValue());
+				User mailReceiver = AlmCache.getInstance().getUserMap().get(workOrder.getExecutorId());
+				workOrder.setSubmitTime(new Date());
+				workOrder.setModifyTime(new Date());
+				int rows = this.workOrderMapper.updateByPrimaryKeySelective(workOrder);
+				if (rows <= 0) {
+					throw new WorkOrderException("提交工单失败");
+				}
+				if (mailReceiver == null) {
+					throw new WorkOrderException("受理人不存在");
+				}
+				
+			   Map<String, Object> map=new HashMap<String, Object>();
+			   map.put("workOrderSource", "1");
+			   
+				if(workOrder.getWorkOrderSource()==2) {
+					map.put("solve", workOrder.getExecutorId().toString());
+				}else {
+					map.put("allocate", workOrder.getAcceptorId().toString());
+				}
+				
+				tasksRpc.complete(taskId,map);
+				this.sendMail(workOrder, "工单申请", Sets.newHashSet(mailReceiver.getEmail()));
 	}
 
 }

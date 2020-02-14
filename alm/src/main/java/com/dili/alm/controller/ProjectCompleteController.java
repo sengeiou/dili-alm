@@ -61,8 +61,8 @@ public class ProjectCompleteController {
 		return "projectComplete/add";
 	}
 
-	@RequestMapping(value = "/toStep/{step}/{id}", method = RequestMethod.GET)
-	public String toStep(ModelMap modelMap, @PathVariable("id") Long id, @PathVariable("step") int step) throws Exception {
+	@RequestMapping(value = "/toStep/{step}/index.html", method = RequestMethod.GET)
+	public String toStep(ModelMap modelMap,  Long id, @PathVariable("step") int step) throws Exception {
 		ProjectComplete projectComplete = DTOUtils.newDTO(ProjectComplete.class);
 		projectComplete.setId(id);
 
@@ -167,7 +167,7 @@ public class ProjectCompleteController {
 	@RequestMapping(value = "/reComplete/{id}", method = RequestMethod.GET)
 	public String reComplete(@PathVariable("id") Long id) {
 		Long newId = projectCompleteService.reComplete(id);
-		return newId == -1 ? "redirect:/projectComplete/index.html" : "redirect:/projectComplete/toStep/1/" + newId;
+		return newId == -1 ? "redirect:/projectComplete/index.html" : "redirect:/projectComplete/toStep/1/index.html?id=" + newId;
 	}
 
 	@ApiOperation("修改ProjectComplete")
@@ -204,7 +204,6 @@ public class ProjectCompleteController {
 	@ResponseBody
 	public Object loadQuestion(Long id) {
 		ProjectComplete projectComplete = projectCompleteService.get(id);
-
 		return projectComplete.getQuestion();
 	}
 
@@ -220,7 +219,6 @@ public class ProjectCompleteController {
 	@ResponseBody
 	public Object loadHardWare(Long id) {
 		ProjectComplete projectComplete = projectCompleteService.get(id);
-
 		return projectComplete.getHardware();
 	}
 

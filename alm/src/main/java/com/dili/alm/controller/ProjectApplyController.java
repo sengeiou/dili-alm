@@ -23,7 +23,6 @@ import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.ProjectApplyQueryDto;
-import com.dili.alm.domain.dto.ProjectApplyDto;
 import com.dili.alm.domain.dto.RoiDto;
 import com.dili.alm.domain.dto.RoiUpdateDto;
 import com.dili.alm.domain.dto.apply.ApplyDescription;
@@ -87,11 +86,10 @@ public class ProjectApplyController {
 		return "projectApply/add";
 	}
 
-	@RequestMapping(value = "/toStep/{step}/{id}", method = RequestMethod.GET)
-	public String toStep(ModelMap modelMap, @PathVariable("id") Long id, @PathVariable("step") int step) throws Exception {
+	@RequestMapping(value = "/toStep/{step}/index.html", method = RequestMethod.GET)
+	public String toStep(ModelMap modelMap, Long id, @PathVariable("step") int step) throws Exception {
 		ProjectApply projectApply = DTOUtils.newDTO(ProjectApply.class);
 		projectApply.setId(id);
-
 		Map<Object, Object> metadata = new HashMap<>(2);
 
 		JSONObject projectTypeProvider = new JSONObject();
@@ -127,7 +125,7 @@ public class ProjectApplyController {
 	@RequestMapping(value = "/reApply/{id}", method = RequestMethod.GET)
 	public String reApply(@PathVariable("id") Long id) {
 		Long reApplyId = projectApplyService.reApply(id);
-		return reApplyId == -1 ? "redirect:/projectApply/index.html" : "redirect:/projectApply/toStep/1/" + reApplyId;
+		return reApplyId == -1 ? "redirect:/projectApply/index.html" : "redirect:/projectApply/toStep/1/index.html?id=" + reApplyId;
 	}
 
 	@RequestMapping(value = "/toDetails/{id}", method = RequestMethod.GET)
@@ -184,7 +182,7 @@ public class ProjectApplyController {
 	@ApiOperation("新增ProjectApply")
 	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectApply", paramType = "form", value = "ProjectApply的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput insert(ProjectApply projectApply,String[] demandIds) {
+	public @ResponseBody BaseOutput insert(String[] demandIds,ProjectApply projectApply) {
 		return projectApplyService.insertApply(projectApply,demandIds);
 		 
 	}
@@ -236,7 +234,7 @@ public class ProjectApplyController {
 		try {
 			projectApplyService.submit(projectApply, files);
 			return BaseOutput.success(String.valueOf(projectApply.getId())).setData(projectApply.getId() + ":" + projectApply.getName());
-		} catch (ProjectApplyException e) {
+		} catch (Exception e) {
 			return BaseOutput.failure(e.getMessage());
 		}
 	}

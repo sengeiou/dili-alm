@@ -42,7 +42,6 @@ import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Task;
 import com.dili.alm.domain.Team;
 import com.dili.alm.domain.TeamRole;
-import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.ProjectCostStatisticDto;
@@ -51,20 +50,18 @@ import com.dili.alm.domain.dto.UploadProjectFileDto;
 import com.dili.alm.domain.dto.UserDataDto;
 import com.dili.alm.exceptions.ProjectException;
 import com.dili.alm.provider.ProjectProvider;
-import com.dili.alm.rpc.DataAuthRpc;
-import com.dili.alm.rpc.DataDictionaryRpc;
 import com.dili.alm.rpc.UserDataAuthRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.TeamService;
-import com.dili.alm.utils.WebUtil;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.util.SystemConfigUtils;
+import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
@@ -99,6 +96,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	private ProjectActionRecordMapper parMapper;
 	@Autowired
 	private UserDataAuthRpc userDataAuthRpc;
+
 	public ProjectMapper getActualDao() {
 		return (ProjectMapper) getDao();
 	}
@@ -109,12 +107,13 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		if (StringUtils.isNotBlank(condtion.getName())) {
 			AlmCache.getInstance().getProjectMap().get(condtion.getId()).setName(condtion.getName());
 		}
-		
-/*		BaseOutput<DataDictionaryDto> output = dataAuthRpc.updateDataAuth(condtion.getId().toString(),
-				AlmConstants.DATA_AUTH_TYPE_PROJECT, condtion.getName());
-		if (!output.isSuccess()) {
-			throw new RuntimeException(output.getResult());
-		}*/
+
+		/*
+		 * BaseOutput<DataDictionaryDto> output =
+		 * dataAuthRpc.updateDataAuth(condtion.getId().toString(),
+		 * AlmConstants.DATA_AUTH_TYPE_PROJECT, condtion.getName()); if
+		 * (!output.isSuccess()) { throw new RuntimeException(output.getResult()); }
+		 */
 		return super.update(condtion);
 	}
 
@@ -124,12 +123,13 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		// 同步更新缓存
 		AlmCache.getInstance().getProjectMap().put(project.getId(), project);
 		// 向权限系统中添加项目数据权限
-		/*String parentId = project.getParentId() == null ? null : project.getParentId().toString();
-		BaseOutput<DataDictionaryDto> output = dataAuthRpc.addDataAuth(project.getId().toString(),
-				AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName(), parentId);
-		if (!output.isSuccess()) {
-			throw new RuntimeException(output.getResult());
-		}*/
+		/*
+		 * String parentId = project.getParentId() == null ? null :
+		 * project.getParentId().toString(); BaseOutput<DataDictionaryDto> output =
+		 * dataAuthRpc.addDataAuth(project.getId().toString(),
+		 * AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName(), parentId); if
+		 * (!output.isSuccess()) { throw new RuntimeException(output.getResult()); }
+		 */
 		return i;
 	}
 
@@ -139,23 +139,25 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		// 同步更新缓存
 		AlmCache.getInstance().getProjectMap().put(project.getId(), project);
 		// 向权限系统中添加项目数据权限
-		/*	String parentId = project.getParentId() == null ? null : project.getParentId().toString();
-		BaseOutput<DataDictionaryDto> output = dataAuthRpc.addDataAuth(project.getId().toString(),
-				AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName(), parentId);
-		if (!output.isSuccess()) {
-			throw new RuntimeException(output.getResult());
-		}*/
+		/*
+		 * String parentId = project.getParentId() == null ? null :
+		 * project.getParentId().toString(); BaseOutput<DataDictionaryDto> output =
+		 * dataAuthRpc.addDataAuth(project.getId().toString(),
+		 * AlmConstants.DATA_AUTH_TYPE_PROJECT, project.getName(), parentId); if
+		 * (!output.isSuccess()) { throw new RuntimeException(output.getResult()); }
+		 */
 		return i;
 	}
 
 	@Override
 	public int delete(Long id) {
 		AlmCache.getInstance().getProjectMap().remove(id);
-		/*BaseOutput<DataDictionaryDto> output = dataAuthRpc.deleteDataAuth(id.toString(),
-				AlmConstants.DATA_AUTH_TYPE_PROJECT);
-		if (!output.isSuccess()) {
-			throw new RuntimeException(output.getResult());
-		}*/
+		/*
+		 * BaseOutput<DataDictionaryDto> output =
+		 * dataAuthRpc.deleteDataAuth(id.toString(),
+		 * AlmConstants.DATA_AUTH_TYPE_PROJECT); if (!output.isSuccess()) { throw new
+		 * RuntimeException(output.getResult()); }
+		 */
 		return super.delete(id);
 	}
 
@@ -163,13 +165,14 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	public int delete(List<Long> ids) {
 		ids.forEach(id -> {
 			AlmCache.getInstance().getProjectMap().remove(id);
-/*			BaseOutput<DataDictionaryDto> output = dataAuthRpc.deleteDataAuth(id.toString(),
-					AlmConstants.DATA_AUTH_TYPE_PROJECT);
-			if (!output.isSuccess()) {
-				throw new RuntimeException(output.getResult());
-			}*/
+			/*
+			 * BaseOutput<DataDictionaryDto> output =
+			 * dataAuthRpc.deleteDataAuth(id.toString(),
+			 * AlmConstants.DATA_AUTH_TYPE_PROJECT); if (!output.isSuccess()) { throw new
+			 * RuntimeException(output.getResult()); }
+			 */
 		});
-		if(ids!=null&&ids.size()>0){
+		if (ids != null && ids.size() > 0) {
 			throw new RuntimeException("参数为空");
 		}
 		return super.delete(ids);
@@ -347,8 +350,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 				projectDto.setSerialNumber(project1.getSerialNumber());
 				projectDto.setName(project1.getName());
 				projectDto.setType(project1.getType());
-				projectDto
-						.setStartToEndDate(sdf.format(project1.getCreated()) + "至" + sdf.format(project1.getEndDate()));
+				projectDto.setStartToEndDate(sdf.format(project1.getCreated()) + "至" + sdf.format(project1.getEndDate()));
 				projectDto.setActualStartDate(project1.getActualStartDate());
 				projectDto.setProjectState(project1.getProjectState());
 				projectDto.setTaskCount(project1.getTaskCount());
@@ -428,8 +430,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 
 	@Transactional
 	@Override
-	public BaseOutput<Object> uploadFileAndSendMail(UploadProjectFileDto dto)
-			throws MessagingException, InterruptedException {
+	public BaseOutput<Object> uploadFileAndSendMail(UploadProjectFileDto dto) throws MessagingException, InterruptedException {
 		List<Files> target = new ArrayList<>(dto.getFileIds().size());
 		dto.getFileIds().forEach(fid -> {
 			Files files = this.fileMapper.selectByPrimaryKey(fid);
@@ -452,8 +453,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		return BaseOutput.success().setData(listModel);
 	}
 
-	private void sendMail(UploadProjectFileDto dto, List<Files> attachments)
-			throws MessagingException, InterruptedException {
+	private void sendMail(UploadProjectFileDto dto, List<Files> attachments) throws MessagingException, InterruptedException {
 		String from = SystemConfigUtils.getProperty("spring.mail.username");
 		Project project = this.getActualDao().selectByPrimaryKey(dto.getProjectId());
 		String[] userIds = dto.getReceiver().split(",");
@@ -667,4 +667,5 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		}
 		return selectUserDatas;
 	}
+
 }

@@ -1,0 +1,244 @@
+<#body>
+<style>
+.table-box {
+	width: 100%;
+	text-align: center;
+	margin-bottom: 10px;
+}
+
+.table-box, .table-box tr td {
+	border: 1px solid #ddd;
+	border-collapse: collapse;
+}
+
+.table-box tr td {
+	/*display: block;*/
+	box-sizing: border-box;
+	/*width: 16.6% !important;*/
+	padding: 5px;
+}
+
+.table-box .table-title {
+	background-color: #f5f5f5;
+	font-weight: bold;
+}
+
+.table-combo .textbox, .table-combo .filebox {
+	border: none;
+	border-radius: 0;
+}
+</style>
+<div class="easyui-panel" style="width: 100%;">
+	<form id="editForm" action="" method="post" enctype="multipart/form-data">
+		<input type="hidden" name="id" value="${apply.id!}"> 
+		<input type="hidden" name="taskId" value="${taskId!}">
+		<div style="box-sizing: border-box; width: 100%; padding: 10px 0px 10px 10px;">
+			<div class="easyui-layout" style="box-sizing: border-box; width: 100%;">
+				<table class="table-box">
+					<tr>
+						<td width="16.6%" class="table-title">项目名称</td>
+						<td width="16.6%" class="table-combo" style="padding: 0"><select class="easyui-combobox" id="projectId" name="projectId" style="width: 87%; text-align: center;"
+							data-options="editable:false,onChange:loadVersion"> <%for(item in projects){%>
+								<option value="${item.id!}"<%if(apply.projectId == item.id){%>selected="selected"<%}%>>${item.name!}</option> <%}%>
+						</select></td>
+						<td width="16.6%" class="table-title">项目编号</td>
+						<td width="16.6%"><input class="easyui-textbox" style="width: 87%; text-align: center;" id="serialNumber" name="serialNumber" value="${apply.projectSerialNumber!}"
+							data-options="editable:false"></td>
+						<td width="16.6%" class="table-title">版本</td>
+						<td width="16.6%"><input class="easyui-combobox" id="versionId" name="versionId" style="width: 87%; text-align: center;"
+							data-options="textField:'version',valueField:'id',editable:false,required:true"></td>
+					</tr>
+					<tr>
+						<td class="table-title">项目经理</td>
+						<td><input class="easyui-textbox" style="width: 87%; text-align: center;" id="projectManager" value="${apply.projectManagerId!}" data-options="editable:false"></td>
+						<td class="table-title">产品经理</td>
+						<td><input class="easyui-textbox" style="width: 87%; text-align: center;" id="productManager" value="${apply.productManagerId!}" data-options="editable:false"></td>
+						<td class="table-title">业务负责人</td>
+						<td><input class="easyui-textbox" style="width: 87%; text-align: center;" id="businessOwner" value="${apply.businessOwnerId!}" data-options="editable:false"></td>
+					</tr>
+					<tr>
+						<td class="table-title">测试经理</td>
+						<td><input class="easyui-textbox" style="width: 87%; text-align: center;" id="testManager" value="${apply.testManagerId!}" data-options="editable:false"></td>
+						<td class="table-title">研发经理</td>
+						<td><input class="easyui-textbox" style="width: 87%; text-align: center;" id="developManager" value="${apply.developmentManagerId!}" data-options="editable:false"></td>
+						<td class="table-title">申请上线日期</td>
+						<td style="padding: 0" class="table-combo"><input class="easyui-datebox" name="onlineDate" value="${apply.onlineDate!}" style="width: 87%; border: none; text-align: center;"
+							data-options="editable:false,required:true"></td>
+					</tr>
+					<tr>
+						<td class="table-title">是否分市场上线</td>
+						<td><select class="easyui-combobox" style="width: 87%; text-align: center;" id="marketVersion" name="marketVersion" data-options="editable:false,onChange:checkMarketComboState">
+								<option value="1"<%if(apply.marketVersion){%>selected="selected"<%}%>>是</option>
+								<option value="0"<%if(!apply.marketVersion){%>selected="selected"<%}%>>否</option>
+						</select></td>
+						<td class="table-title">市场</td>
+						<td><input class="easyui-combotree" id="market" name="market" style="width: 87%; text-align: center;"
+							data-options="multiple:true,loadFilter:treeLoadFilter, _idField:'value', _textField:'code', _parentIdField:'parentId',editable:false<%if(!apply.marketVersion){%>,disabled:true<%}%>"></td>
+						<td class="table-title">申请人</td>
+						<td>${apply.applicantId!}</td>
+					</tr>
+					<tr>
+						<td class="table-title">创建时间</td>
+						<td>${apply.created!}</td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6">上线版本及功能描述</td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6"><input class="easyui-textbox" name="dependencyDescription" value="${apply.dependencyDescription!}"
+							data-options="multiline:true,validType:['length[0,500]']" style="width: 92%; height: 60px"></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6">上线影响范围描述</td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="6"><input class="easyui-textbox" name="scopeDescription" value="${apply.scopeDescription!}" data-options="multiline:true,validType:['length[0,500]']"
+							style="width: 92%; height: 60px"></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="2">上线系统详情</td>
+						<td colspan="2"><a id="btn" style="width: 44%;" href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-add',onClick:appendSubsystem">新增</a></td>
+						<td colspan="2"><a id="btn" style="width: 44%;" href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-remove',onClick:removeSubsystem">删除</a></td>
+					</tr>
+					<%for(item in apply.subsystems){%>
+					<tr class="subsystem">
+						<td colspan="2" class="table-title">系统名称</td>
+						<td colspan="2" class="table-combo" style="padding: 0"><%if(item.projectId != null){%> <select class="easyui-combobox" name="subProjectName[${itemLP.index-1}]"
+							style="width: 92%; text-align: center;" data-options="textField:'name',valueField:'id',required:true"> <%for(pitem in plist){%>
+								<option value="${pitem.id!}"<%if(pitem.id == item.projectId){%>selected="selected"<%}%>>${pitem.name!}</option> <%}%>
+						</select> <%}else{%> <input class="easyui-combobox" name="subProjectName[${itemLP.index-1}]" value="${item.projectName!}" style="width: 92%; text-align: center;"
+							data-options="url:'${contextPath!}/project/list.json',textField:'name',valueField:'id',required:true"> <%}%>
+						</td>
+						<td class="table-title">负责人</td>
+						<td class="table-combo" colspan="1" style="padding: 0"><%if(item.managerId != null){%> <select class="easyui-combobox" name="managerId[${itemLP.index-1}]"
+							data-options="textField:'realName',valueField:'id',required:true" style="width: 93%; text-align: center;"> <%for(uitem in ulist){%>
+								<option value="${uitem.id!}"<%if(uitem.id == item.managerId){%>selected="selected"<%}%>>${uitem.realName!}</option> <%}%>
+						</select> <%}else{%> <input class="easyui-combobox" name="managerId[${itemLP.index-1}]" value="${item.managerName!}"
+							data-options="url:'${contextPath!}/member/members',textField:'realName',valueField:'id',required:true" style="width: 85%; text-align: center;"> <%}%>
+						</td>
+					</tr>
+					<%}%>
+					<tr>
+						<td class="table-title" colspan="2">git地址</td>
+						<td colspan="4"><input class="easyui-textbox" style="width: 87%;" name="git" value="${apply.git!}" data-options="required:true,validType:['length[0,2083]']"></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="2">分支</td>
+						<td colspan="4"><input class="easyui-textbox" style="width: 87%;" name="branch" value="${apply.branch!}" data-options="required:true,validType:['length[0,50]']"></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="2">SQL脚本</td>
+						<td class="table-combo" colspan="4" style="padding: 0"><input class="easyui-textbox" name="sqlScript" value="${apply.sqlScript!}" data-options="validType:['length[0,50]']"
+							style="width: 44%"> <input class="easyui-filebox" name="sqlFile" value="${apply.sqlFileId!}" data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 44%"> <input
+							type="hidden" name="sqlFileId" value="${apply.$_sqlFileId!}"></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="2">系统启动脚本</td>
+						<td class="table-combo" colspan="4" style="padding: 0"><input class="easyui-textbox" name="startupScript" value="${apply.startupScript!}" data-options="validType:['length[0,50]']"
+							style="width: 44%"> <input class="easyui-filebox" name="startupScriptFile" value="${apply.startupScriptFileId!}" data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 44%">
+							<input type="hidden" name="startupScriptFileId" value="${apply.$_startupScriptFileId!}"></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="2">依赖系统</td>
+						<td class="table-combo" colspan="4" style="padding: 0"><input class="easyui-textbox" name="dependencySystem" value="${apply.dependencySystem!}" data-options="validType:['length[0,50]']"
+							style="width: 44%"> <input class="easyui-filebox" name="dependencySystemFile" value="${apply.dependencySystemFileId!}" data-options="prompt:'添加附件...',	buttonText:'选择'"
+							style="width: 44%"> <input type="hidden" name="dependencySystemFileId" value="${apply.$_dependencySystemFileId!}"></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="2">其他说明</td>
+						<td colspan="4"><input class="easyui-textbox" name="otherDescription" value="${apply.otherDescription!}" data-options="validType:['length[0,50]']" style="width: 92%"></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="2">邮件发送列表</td>
+						<td colspan="4"><input class="easyui-textbox" name="emailAddress" value="<%for(item in apply.emails){if(itemLP.last){%>${item.emailAddress!}<%}else{%>${item.emailAddress!};<%}}%>"
+							data-options="multiline:true" style="width: 92%"></td>
+					</tr>
+					<tr>
+						<td class="table-title" colspan="2">操作</td>
+						<td class="table-title" colspan="4"><span style="margin: 0px 10px"> <a id="btn" href="javascript:void(0);" class="easyui-linkbutton" data-options="onClick:save">保存</a>
+						</span> <span style="margin: 0px 10px"> <a id="btn" href="javascript:void(0);" class="easyui-linkbutton" data-options="onClick:saveAndSubmit">提交</a>
+						</span></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+
+	</form>
+</div>
+<script type="text/javascript">
+	<#members_index/>
+	<#projectOnlineApply_index />
+	var selectedMarkets = undefined;
+	<%if(isNotEmpty(apply.selectedMarkets)){%>
+	selectedMarkets = '${@com.alibaba.fastjson.JSON.toJSONString(apply.selectedMarkets)}';
+	selectedMarkets = $.parseJSON(selectedMarkets);
+	<%}%>
+	var markets = '${@com.alibaba.fastjson.JSON.toJSONString(markets)}';
+	markets = $.parseJSON(markets);
+	<#projectOnlineApply_update />
+	function save() {
+		var data = $("#editForm").serializeArray();
+		$('#editForm').form('submit', {
+			url : '${contextPath!}/projectOnlineApply/update',
+			onSubmit : function() {
+				if (!validateForm()) {
+					return false;
+				}
+				showProgressbar();
+			},
+			success : function(data) {
+				var obj = $.parseJSON(data);
+				if (obj.code == 200) {
+					document.domain="diligrp.com";
+					//如果父页面是任务中心
+                    var plh = parent.location.href.indexOf('?') > 0 ? parent.location.href.substring(0, parent.location.href.indexOf('?')) : parent.location.href;
+                    if(plh=='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
+                        //向任务中心发送消息，参数为要跳转的地址
+                        window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
+                    }else{
+                    	window.location.href='${contextPath!}/projectOnlineApply/index.html';
+                    }
+				} else {
+					$.messager.alert('错误', obj.result);
+					closeProgressbar();
+				}
+			}
+		});
+	}
+
+	function saveAndSubmit() {
+		var data = $("#editForm").serializeArray();
+		$('#editForm').form('submit', {
+			url : '${contextPath!}/projectOnlineApply/saveAndSubmit',
+			onSubmit : function() {
+				if (!validateForm()) {
+					return false;
+				}
+				showProgressbar();
+			},
+			success : function(data) {
+				var obj = $.parseJSON(data);
+				if (obj.code == 200) {
+					try{
+						document.domain="diligrp.com";
+						//如果父页面是任务中心
+                        var plh = parent.location.href.indexOf('?') > 0 ? parent.location.href.substring(0, parent.location.href.indexOf('?')) : parent.location.href;
+                        if(plh=='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
+                            //向任务中心发送消息，参数为要跳转的地址
+                            window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
+                        }else{
+                        	window.location.href='${contextPath!}/projectOnlineApply/index.html';
+                        }
+                    }catch(ex){
+                    	console.log(ex);
+                    	window.location.href='${contextPath!}/projectOnlineApply/index.html';
+                    }
+				} else {
+					$.messager.alert('错误', obj.result);
+					closeProgressbar();
+				}
+			}
+		});
+	}
+	
+</script> </#body>

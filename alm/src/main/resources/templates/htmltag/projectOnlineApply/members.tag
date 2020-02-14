@@ -10,15 +10,8 @@ function selectMember(callback, args) {
 // 确认选择事件
 function confirmMembersBtn(id) {
 	var selected = $('#smGridList').datagrid('getSelected');
-	var value = $('#' + id).textbox('getValue');
-	var text = $('#' + id).textbox('getText');
-	if (text) {
-		$('#' + id).textbox('initValue', value + ',' + selected.id);
-		$('#' + id).textbox('setText', text + ',' + selected.realName);
-	} else {
-		$('#' + id).textbox('initValue', selected.id);
-		$('#' + id).textbox('setText', selected.realName);
-	}
+	$('#' + id).textbox('initValue', selected.id);
+	$('#' + id).textbox('setText', selected.realName);
 	var icon = $('#' + id).textbox('getIcon',0);
 	icon.css('visibility','visible');
 	$('#smDialog').dialog('close');
