@@ -147,7 +147,39 @@ public class AssignmentApi {
 		Assignment record = assignmentService.setDemandAppId(jsonObj.get("businessKey").toString());
 		return BaseOutput.success().setData(record);
 	}
-
+	/**LJ add begin**/
+	// 资源申请，设置项目经理
+	@ApiOperation("项目id,设置项目经理")
+	@RequestMapping("/setHardwareApplyProjectManager.api")
+	public @ResponseBody BaseOutput<String> setHardwareApplyProjectManager(HttpServletRequest request) {
+		Map<String, String[]> map = request.getParameterMap();
+		String[] strs = map.get("processVariables");
+		JSONObject jsonObj = JSON.parseObject(strs[0]);
+		Assignment record = assignmentService.setProjectManager(jsonObj.get("businessKey").toString());
+		return BaseOutput.success().setData(record);
+	}
+	
+	// 资源申请，设置部署运维人员
+	@ApiOperation("根据页面保存的运维操作人员")
+	@RequestMapping("/setHardwareApplyOpdrator.api")
+	public @ResponseBody BaseOutput<String> setHardwareApplyOpdrator(HttpServletRequest request) {
+		Map<String, String[]> map = request.getParameterMap();
+		String[] strs = map.get("processVariables");
+		JSONObject jsonObj = JSON.parseObject(strs[0]);
+		Assignment record = assignmentService.setOpdrator(jsonObj.get("businessKey").toString());
+		return BaseOutput.success().setData(record);
+	}
+	// 资源申请，设置返回编辑
+	@ApiOperation("根据页面保存的运维操作人员")
+	@RequestMapping("/setHardwareApplyApplicant.api")
+	public @ResponseBody BaseOutput<String> setHardwareApplyApplicant(HttpServletRequest request) {
+		Map<String, String[]> map = request.getParameterMap();
+		String[] strs = map.get("processVariables");
+		JSONObject jsonObj = JSON.parseObject(strs[0]);
+		Assignment record = assignmentService.setOpdrator(jsonObj.get("businessKey").toString());
+		return BaseOutput.success().setData(record);
+	}
+	/**LJ add end**/
 	@ResponseBody
 	@RequestMapping(value = "/getProjectOnlineApplyProjectManager.api")
 	public BaseOutput<Assignment> getProjectManager(TaskMapping taskMapping) {

@@ -44,9 +44,15 @@ import com.dili.alm.service.HardwareResourceApplyService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.impl.HardwareResourceApplyServiceImpl;
 import com.dili.alm.utils.DateUtil;
+import com.dili.bpmc.sdk.domain.ActForm;
+import com.dili.bpmc.sdk.domain.TaskMapping;
+import com.dili.bpmc.sdk.dto.TaskDto;
+import com.dili.bpmc.sdk.rpc.BpmcFormRpc;
+import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.exception.AppException;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 
@@ -73,6 +79,10 @@ public class HardwareResourceApplyController {
 	private DepartmentRpc deptRpc;
 	@Autowired
 	private DataDictionaryValueService ddvService;
+    @Autowired
+    TaskRpc taskRpc;
+    @Autowired
+    BpmcFormRpc bpmcFormRpc;
 
 	private static final String DEPARTMENT_MAINTENANCE_CODE = "maintenance";
 	private static final String DATA_AUTH_TYPE = "project";
@@ -86,6 +96,17 @@ public class HardwareResourceApplyController {
 
 	@GetMapping("/detail")
 	public String detail(@RequestParam Long id, ModelMap modelMap) {
+		HardwareResourceApply apply = this.hardwareResourceApplyService.getDetailViewModel(id);
+		modelMap.addAttribute("serviceEnvironmentText", apply.aget("serviceEnvironmentText"))
+				.addAttribute("requirementList", apply.aget("requirementList"))
+				.addAttribute("opRecords", apply.aget("opRecords"));
+		Map<Object, Object> viewModel = HardwareResourceApplyServiceImpl.buildApplyViewModel(apply);
+		modelMap.addAttribute("model", viewModel);
+		return "hardwareResourceApply/detail";
+	}
+	
+	@GetMapping("/detailForTask")
+	public String detailForTask(@RequestParam Long id, ModelMap modelMap) {
 		HardwareResourceApply apply = this.hardwareResourceApplyService.getDetailViewModel(id);
 		modelMap.addAttribute("serviceEnvironmentText", apply.aget("serviceEnvironmentText"))
 				.addAttribute("requirementList", apply.aget("requirementList"))
@@ -184,6 +205,7 @@ public class HardwareResourceApplyController {
 		modelMap.addAttribute("se2", envList);
 		modelMap.addAttribute("submit", DateUtil.getDate(dto.getApplyDate()));// 转化时间
 		modelMap.addAttribute("cread", DateUtil.getDate(dto.getCreated()));// 转化时间
+		modelMap.put("taskId", null);
 
 		/** 配置需求列表 ***/
 		List<HardwareResourceRequirement> requirementList = hardwareResourceApplyService.listRequirement(dto.getId());
@@ -279,7 +301,7 @@ public class HardwareResourceApplyController {
 			@ApiImplicitParam(name = "HardwareResourceApply", paramType = "form", value = "HardwareResourceApply的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput update(HardwareResourceApplyUpdateDto hardwareResourceApply,
-			String[] serviceEnvironmentChk, String configurationRequirementJsonStr) {
+			String[] serviceEnvironmentChk, String configurationRequirementJsonStr,String source,String taskId) {
 		Set<Long> serviceEnvironments = new HashSet<Long>();
 		for (int i = 0; i < serviceEnvironmentChk.length; i++) {
 			serviceEnvironments.add(Long.parseLong(serviceEnvironmentChk[i]));
@@ -290,6 +312,9 @@ public class HardwareResourceApplyController {
 		hardwareResourceApply.setConfigurationRequirement(parseArray);
 		try {
 			hardwareResourceApplyService.saveOrUpdate(hardwareResourceApply);
+			if (source.equals("task")) {
+				hardwareResourceApplyService.submitApprove(hardwareResourceApply.getId(), taskId);
+			}
 		} catch (HardwareResourceApplyException e) {
 			return BaseOutput.failure(e.getMessage());
 		}
@@ -378,9 +403,6 @@ public class HardwareResourceApplyController {
 		modelMap.addAttribute("cread", DateUtil.getDate(dto.getCreated()));// 转化时间
 
 		/** 个人信息 **/
-		/*
-		 * UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		 */
 		User u = userRpc.findUserById(dto.getApplicantId()).getData();
 		modelMap.addAttribute("userInfo", u);
 
@@ -393,6 +415,20 @@ public class HardwareResourceApplyController {
 		});
 		modelMap.addAttribute("requirementList", JSONObject.toJSONString(requirementList));
 
+    	String valProcess = dto.getId()+"";
+    	
+        //根据业务号查询任务
+        TaskDto taskDto = DTOUtils.newInstance(TaskDto.class);
+        taskDto.setProcessInstanceBusinessKey(valProcess);
+        BaseOutput<List<TaskMapping>> outputList = taskRpc.list(taskDto);
+        if(!outputList.isSuccess()){
+        	return "用户错误！"+outputList.getMessage(); 
+        }
+        
+        List<TaskMapping> taskMappings = outputList.getData();
+        //获取formKey
+        TaskMapping selected = taskMappings.get(0);
+        modelMap.put("taskId",selected.getId());
 		return "hardwareResourceApply/agreePage";
 	}
 
@@ -459,4 +495,205 @@ public class HardwareResourceApplyController {
 		List<User> operUsers = userRpc.listByExample(user).getData();
 		return operUsers;
 	}
+	
+	/***
+	 * 新增流程相关
+	 */
+	@ApiOperation("跳转页面项目经理同意")
+	@RequestMapping(value = "/projectManagerApprove.html", method = { RequestMethod.GET, RequestMethod.POST })
+	public  String projectManagerApprove(@RequestParam String taskId, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
+        BaseOutput<TaskMapping> output = taskRpc.getById(taskId);
+        if(!output.isSuccess()){
+            throw new AppException(output.getMessage());
+        }
+        BaseOutput<Map<String, Object>> taskVariablesOutput = taskRpc.getVariables(taskId);
+        if(!taskVariablesOutput.isSuccess()){
+            throw new AppException(taskVariablesOutput.getMessage());
+        }
+        String codeDates = taskVariablesOutput.getData().get("businessKey").toString();
+        HardwareResourceApply apply = DTOUtils.newInstance(HardwareResourceApply.class);
+        apply = hardwareResourceApplyService.get(Long.parseLong(codeDates));
+        
+        modelMap.put("apply", apply);
+
+    	modelMap.put("taskId", taskId);
+        modelMap.put("cover", cover == null ? output.getData().getAssignee() == null : cover);
+        return "hardwareResourceApply/process/projectManagerApprove";
+	}
+	
+	@ApiOperation("操作项目经理同意")
+	@RequestMapping(value = "/projectManagerApprove.action", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody BaseOutput doProjectManagerApproveForTask(@RequestParam String taskId,Long applyId, Boolean isApproved, String description)
+			throws HardwareResourceApplyException {
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		if (isApproved) {
+			hardwareResourceApplyService.submitApprove(applyId,taskId);
+			hardwareResourceApplyService.projectManagerApproveForTask(applyId,user.getId(),ApproveResult.APPROVED,description);
+		}else {
+			hardwareResourceApplyService.rejectApprove(applyId, taskId);
+		}
+		return BaseOutput.success("提交成功");
+	}
+	
+	@ApiOperation("跳转页面运维经理同意")
+	@RequestMapping(value = "/oprationManagerApprove.html", method = { RequestMethod.GET, RequestMethod.POST })
+	public   String oprationManagerApproveForTask(@RequestParam String taskId, @RequestParam(required = false) Boolean cover, ModelMap modelMap)
+			throws HardwareResourceApplyException {
+		BaseOutput<TaskMapping> output = taskRpc.getById(taskId);
+        if(!output.isSuccess()){
+            throw new AppException(output.getMessage());
+        }
+        BaseOutput<Map<String, Object>> taskVariablesOutput = taskRpc.getVariables(taskId);
+        if(!taskVariablesOutput.isSuccess()){
+            throw new AppException(taskVariablesOutput.getMessage());
+        }
+        String codeDates = taskVariablesOutput.getData().get("businessKey").toString();
+        HardwareResourceApply apply = DTOUtils.newInstance(HardwareResourceApply.class);
+        apply = hardwareResourceApplyService.get(Long.parseLong(codeDates));
+        
+        String applyJsonStr = JSONObject.toJSONString(apply);
+        modelMap.put("apply", apply);
+        modelMap.put("modelStr", applyJsonStr);
+    	/** 个人信息 **/
+        User userTicket = this.userRpc.findUserById(apply.getApplicantId()).getData();
+        if (userTicket==null) {
+			return "用户错误！";
+		}
+    	BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
+    	modelMap.addAttribute("userInfo", userTicket);
+    		
+    	modelMap.addAttribute("depName",de.getData().getName());
+    	modelMap.put("taskId", taskId);
+        modelMap.put("cover", cover == null ? output.getData().getAssignee() == null : cover);
+        return "hardwareResourceApply/process/oprationManagerApprove";
+	}
+	
+	@ApiOperation("操作运维经理同意")
+	@RequestMapping(value = "/oprationManagerApprove.action", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody BaseOutput doOprationManagerApproveForTask(@RequestParam String taskId,Long applyId, Boolean isApproved,String description,
+			String[] operDepartmentUsers )
+			throws HardwareResourceApplyException {
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		Set<Long> executors = new HashSet<Long>();
+		for (int i = 0; i < operDepartmentUsers.length; i++) {
+			executors.add(Long.parseLong(operDepartmentUsers[i]));
+		}
+		if (isApproved) {
+			hardwareResourceApplyService.operationManagerApproveForTask(applyId, user.getId(), executors, description);
+			hardwareResourceApplyService.submitApprove(applyId,taskId);
+		}else {
+			hardwareResourceApplyService.rejectApprove(applyId, taskId);
+		}
+
+		return BaseOutput.success("提交成功");
+	}
+	@ApiOperation("跳转页面运维操作")
+	@RequestMapping(value = "/opdratorExecute.html", method = { RequestMethod.GET, RequestMethod.POST })
+	public   String opdratorExecuteForTask(@RequestParam String taskId, @RequestParam(required = false) Boolean cover, ModelMap modelMap)
+			throws HardwareResourceApplyException {
+		BaseOutput<TaskMapping> output = taskRpc.getById(taskId);
+        if(!output.isSuccess()){
+            throw new AppException(output.getMessage());
+        }
+        BaseOutput<Map<String, Object>> taskVariablesOutput = taskRpc.getVariables(taskId);
+        if(!taskVariablesOutput.isSuccess()){
+            throw new AppException(taskVariablesOutput.getMessage());
+        }
+        String codeDates = taskVariablesOutput.getData().get("businessKey").toString();
+        HardwareResourceApply apply = DTOUtils.newInstance(HardwareResourceApply.class);
+        apply = hardwareResourceApplyService.get(Long.parseLong(codeDates));
+
+        modelMap.put("apply", apply);
+
+    	modelMap.put("taskId", taskId);
+        modelMap.put("cover", cover == null ? output.getData().getAssignee() == null : cover);
+        return "hardwareResourceApply/process/opdratorExecute";
+	}
+	
+	@ApiOperation("运维执行操作")
+	@RequestMapping(value = "/opdratorExecute.action", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody BaseOutput doOpdratprExecuteForTask(@RequestParam String taskId,Long applyId, String description)
+			throws HardwareResourceApplyException {
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		hardwareResourceApplyService.submitApprove(applyId,taskId);
+		hardwareResourceApplyService.operatorExecuteForTask(applyId, user.getId(), description);
+		return BaseOutput.success("提交成功");
+	}
+	@ApiOperation("跳转页面重新编辑")
+	@RequestMapping(value = "/editHardwareResourceApply.html", method = { RequestMethod.GET, RequestMethod.POST })
+	public  String editHardwareResourceApply(@RequestParam String taskId, @RequestParam(required = false) Boolean cover, ModelMap modelMap) throws HardwareResourceApplyException {
+        BaseOutput<TaskMapping> output = taskRpc.getById(taskId);
+        if(!output.isSuccess()){
+            throw new AppException(output.getMessage());
+        }
+        BaseOutput<Map<String, Object>> taskVariablesOutput = taskRpc.getVariables(taskId);
+        if(!taskVariablesOutput.isSuccess()){
+            throw new AppException(taskVariablesOutput.getMessage());
+        }
+        String codeDates = taskVariablesOutput.getData().get("businessKey").toString();
+        
+		@SuppressWarnings("rawtypes")
+		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
+		if (CollectionUtils.isEmpty(dataAuths)) {
+			return null;
+		}
+		List<Long> projectIds = new ArrayList<>();
+		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("value").toString())));
+		Example example = new Example(Project.class);
+		Example.Criteria criteria = example.createCriteria();
+		criteria.andIn("id", projectIds).andNotEqualTo("projectState", ProjectState.CLOSED.getValue());
+		List<Project> projects = this.projectService.selectByExample(example);
+		modelMap.addAttribute("projects", projects);
+		List<Project> plist = this.projectService.list(null);
+		modelMap.addAttribute("plist", plist).addAttribute("ulist", AlmCache.getInstance().getUserMap().values());
+
+		/** 查询 所有部门 ***/
+		Department newDepartment = DTOUtils.newDTO(Department.class);
+		newDepartment.setFirmCode(AlmConstants.ALM_FIRM_CODE);
+		List<Department> departments = this.deptRpc.listByDepartment(newDepartment).getData();
+		modelMap.addAttribute("departments", departments);
+
+		/** 个人信息 **/
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		modelMap.addAttribute("userInfo", userTicket);
+
+		/*** 环境 **/
+		List<DataDictionaryValueDto> ddValue = ddvService.listDataDictionaryValueByCode(AlmConstants.ALM_ENVIRONMENT);
+		modelMap.addAttribute("ddValue", ddValue);
+
+		/*** 运维部门下的所有人员查询 begin **/
+		Department deptQuery =DTOUtils.newDTO(Department.class);
+		deptQuery.setCode(AlmConstants.OPERATION_DEPARTMENT_CODE);
+		deptQuery.setFirmCode(AlmConstants.ALM_FIRM_CODE);
+		BaseOutput<List<Department>> deptOutput = this.deptRpc.listByDepartment(deptQuery);
+		HardwareResourceApply dto = this.hardwareResourceApplyService.get(Long.parseLong(codeDates));
+		modelMap.addAttribute("apply", dto);
+		List<String> envList = (List<String>) JSONObject.parseObject(dto.getServiceEnvironment(),
+				new TypeReference<List<String>>() {
+				});
+		modelMap.addAttribute("se2", envList);
+		modelMap.addAttribute("submit", DateUtil.getDate(dto.getApplyDate()));// 转化时间
+		modelMap.addAttribute("cread", DateUtil.getDate(dto.getCreated()));// 转化时间
+
+		/** 配置需求列表 ***/
+		List<HardwareResourceRequirement> requirementList = hardwareResourceApplyService.listRequirement(dto.getId());
+		List<HardwareResourceRequirementDto> requirementDtoList = new ArrayList<HardwareResourceRequirementDto>(
+				requirementList.size());
+		requirementList.forEach(c -> {
+			requirementDtoList.add(DTOUtils.toEntity(c, HardwareResourceRequirementDto.class, true));
+		});
+
+		modelMap.addAttribute("requirementList", JSONObject.toJSONString(requirementList));
+        
+        HardwareResourceApply apply = DTOUtils.newInstance(HardwareResourceApply.class);
+        apply = hardwareResourceApplyService.get(Long.parseLong(codeDates));
+        
+        modelMap.put("apply", apply);
+
+    	modelMap.put("taskId", taskId);
+        modelMap.put("cover", cover == null ? output.getData().getAssignee() == null : cover);
+        return "hardwareResourceApply/process/editForTask";
+	}
+	
+	
 }

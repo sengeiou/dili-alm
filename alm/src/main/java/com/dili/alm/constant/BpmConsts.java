@@ -1,12 +1,26 @@
 package com.dili.alm.constant;
 
 public class BpmConsts {
+	
+	public enum HardwareApplyConstant {
+		HARDWARE_APPLY_CODE("HardwareApplyId"), 
+		PROCESS_DEFINITION_KEY("HardwareResourceApplyProcess");
+
+		private String name;
+
+		private HardwareApplyConstant(String name) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return name;
+		}
+	}
 
 	/**
 	 * 流程变量中的需求单号
 	 */
 	public static final String DEMAND_CODE = "demandCode";
-
 	/**
 	 * 流程标识，用于启动流程
 	 */

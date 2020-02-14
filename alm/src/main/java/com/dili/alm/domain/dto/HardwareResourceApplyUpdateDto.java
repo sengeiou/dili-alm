@@ -209,4 +209,29 @@ public class HardwareResourceApplyUpdateDto extends BaseDomain implements Hardwa
 		this.submitTime = submitTime;
 	}
 
+	String processInstanceId;
+	@Override
+	public String getProcessInstanceId() {
+		return processInstanceId;
+	}
+
+	@Override
+	public void setProcessInstanceId(String processInstanceId) {
+		this.processInstanceId = processInstanceId;
+		
+	}
+	
+	String processDefinitionId;
+
+	@Override
+	public String getProcessDefinitionId() {
+		return processDefinitionId;
+	}
+
+	@Override
+	public void setProcessDefinitionId(String processDefinitionId) {
+		this.processDefinitionId = processDefinitionId;
+		
+	}
+
 }

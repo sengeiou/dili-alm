@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.Demand;
+import com.dili.alm.domain.HardwareResourceApply;
 import com.dili.alm.domain.OnlineDataChange;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.dto.UserDepartmentRoleQuery;
@@ -15,6 +16,7 @@ import com.dili.uap.sdk.domain.User;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.AssignmentService;
 import com.dili.alm.service.DemandService;
+import com.dili.alm.service.HardwareResourceApplyService;
 import com.dili.alm.service.OnlineDataChangeService;
 import com.dili.alm.service.ProjectService;
 import com.dili.bpmc.sdk.dto.Assignment;
@@ -22,7 +24,9 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 @Service
 public class AssignmentServiceImpl implements AssignmentService {
-
+	/**LJ ADD**/
+	@Autowired
+	HardwareResourceApplyService hardwareResourceApplyService;
 	@Autowired
 	private OnlineDataChangeService onlineDataChangeService;
 	@Autowired
@@ -146,6 +150,30 @@ public class AssignmentServiceImpl implements AssignmentService {
 		record.setAssignee(demand.getUserId().toString()); 
 		return record;
 	}
-	
+	/**LJ ADD begin**/
+	@Override
+	public Assignment setOpdrator(String busCode) {
+		Assignment record = DTOUtils.newDTO(Assignment.class);
+		HardwareResourceApply apply = hardwareResourceApplyService.get(Long.parseLong(busCode));
+		record.setAssignee(apply.getExecutors()); 
+		return record;
+	}
 
+
+	@Override
+	public Assignment setProjectManager(String applyId) {
+		Assignment record = DTOUtils.newDTO(Assignment.class);
+		HardwareResourceApply apply = hardwareResourceApplyService.get(Long.parseLong(applyId));
+		record.setAssignee(apply.getProjectManagerId().toString()); 
+		return record;
+	}
+	/**LJ ADD end**/
+
+	@Override
+	public Assignment setHardwareResourceApplyApply(String applyId) {
+		Assignment record = DTOUtils.newDTO(Assignment.class);
+		HardwareResourceApply apply = hardwareResourceApplyService.get(Long.parseLong(applyId));
+		record.setAssignee(apply.getApplicantId().toString()); 
+		return record;
+	}
 }

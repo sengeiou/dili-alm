@@ -33,9 +33,12 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.dili.alm.cache.AlmCache;
+import com.dili.alm.component.BpmcUtil;
 import com.dili.alm.component.MailManager;
 import com.dili.alm.component.NumberGenerator;
 import com.dili.alm.constant.AlmConstants;
+import com.dili.alm.constant.BpmConsts;
+import com.dili.alm.constant.BpmConsts.HardwareApplyConstant;
 import com.dili.alm.dao.HardwareApplyOperationRecordMapper;
 import com.dili.alm.dao.HardwareResourceApplyMapper;
 import com.dili.alm.dao.HardwareResourceRequirementMapper;
@@ -47,19 +50,26 @@ import com.dili.alm.domain.HardwareApplyState;
 import com.dili.alm.domain.HardwareResourceApply;
 import com.dili.alm.domain.HardwareResourceRequirement;
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.ProjectOnlineApply;
 import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
+import com.dili.alm.domain.dto.HardwareResourceApplyProcessDto;
 import com.dili.alm.domain.dto.HardwareResourceApplyUpdateDto;
 import com.dili.alm.domain.dto.HardwareResourceRequirementDto;
+import com.dili.alm.domain.dto.ProjectOnlineApplyProcessDto;
 import com.dili.alm.domain.dto.UserDepartmentRole;
 import com.dili.alm.domain.dto.UserDepartmentRoleQuery;
 import com.dili.alm.exceptions.ApplicationException;
+import com.dili.alm.exceptions.DemandExceptions;
 import com.dili.alm.exceptions.HardwareResourceApplyException;
 import com.dili.alm.provider.EnvironmentProvider;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.HardwareResourceApplyService;
+import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
+import com.dili.bpmc.sdk.rpc.RuntimeRpc;
+import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
@@ -101,6 +111,12 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 	private ProjectMapper projectMapper;
 	@Autowired
 	private UserRpc userRpc;
+	@Autowired
+	RuntimeRpc runtimeRpc;
+	@Autowired
+	TaskRpc taskRpc;
+	@Autowired
+	private BpmcUtil bpmcUtil;
 
 	@SuppressWarnings("unchecked")
 	public static Map<Object, Object> buildApplyViewModel(HardwareResourceApply apply) {
@@ -234,7 +250,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		}
 		return apply;
 	}
-
+ 
 	@Transactional(readOnly = true)
 	@Override
 	public EasyuiPageOutput listEasyuiPageByExample(HardwareResourceApply domain, boolean useProvider) throws Exception {
@@ -246,8 +262,11 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 			Object dd = h.getMetadata("submitTime");
 			this.setOperationColumn(h);
 		});
+		//流程参数设置
+		List<HardwareResourceApplyProcessDto> targetList = DTOUtils.as(list, HardwareResourceApplyProcessDto.class);
+		this.bpmcUtil.fitLoggedUserIsCanHandledProcess(targetList);
 		long total = list instanceof Page ? ((Page) list).getTotal() : list.size();
-		List results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, list) : list;
+		List results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, targetList) : targetList;
 		return new EasyuiPageOutput(Integer.parseInt(String.valueOf(total)), results);
 	}
 
@@ -278,7 +297,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 			throw new HardwareResourceApplyException("当前状态运维部经理不能审批");
 		}
 
-		// 检查实施人是否是运维部员工
+		// 检查实施人是否是运维部员工  ss
 		if (CollectionUtils.isEmpty(executors)) {
 			throw new HardwareResourceApplyException("执行人不能为空");
 		}
@@ -463,6 +482,33 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 
 		apply.setSubmitTime(new Date());
 		apply.setApplyState(HardwareApplyState.PROJECT_MANAGER_APPROVING.getValue());
+		/***
+		 * 
+		 * 启动流程相关begin
+		 * 
+		 */
+		/** 个人信息 **/
+		//TODO:启动流程
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		// 流程启动参数设置
+		Map<String, Object> variables = new HashMap<>(1);
+		variables.put(HardwareApplyConstant.HARDWARE_APPLY_CODE.getName(), apply.getId()+"");
+		String aa = HardwareApplyConstant.PROCESS_DEFINITION_KEY.getName();
+		// 启动流程
+		BaseOutput<ProcessInstanceMapping> processInstanceOutput = runtimeRpc.startProcessInstanceByKey(HardwareApplyConstant.PROCESS_DEFINITION_KEY.getName(),apply.getId()+"", userTicket.getId().toString(),
+				variables);
+		if (!processInstanceOutput.isSuccess()) {
+			throw new HardwareResourceApplyException("开启审批错误"+processInstanceOutput.getMessage());
+		}
+		// 回调，写入相关流程任务数据
+		ProcessInstanceMapping processInstance = processInstanceOutput.getData();
+		apply.setProcessDefinitionId(processInstance.getProcessDefinitionId());
+		apply.setProcessInstanceId(processInstance.getProcessInstanceId());
+		/***
+		 * 
+		 * 启动流程相关end
+		 * 
+		 */
 		int rows = this.getActualDao().updateByPrimaryKeySelective(apply);
 		if (rows <= 0) {
 			throw new HardwareResourceApplyException("更新申请状态失败");
@@ -724,5 +770,136 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 			throw new HardwareResourceApplyException("插入配置要求失败");
 		}
 	}
+
+	@Override
+	public BaseOutput submitApprove(Long id, String taskId) {
+		Map<String, Object> variables = new HashMap<>();
+		variables.put("approved", "true");
+		return taskRpc.complete(taskId, variables);
+	}
+
+	@Override
+	public BaseOutput rejectApprove(Long id, String taskId) {
+		Map<String, Object> variables = new HashMap<>();
+		// 判断记录是否存在
+		HardwareResourceApply apply = this.getActualDao().selectByPrimaryKey(id);
+		// 未通过审批退回到编辑状态让用户重新编辑
+		apply.setSubmitTime(null);
+		apply.setApplyState(HardwareApplyState.APPLING.getValue());
+		this.update(apply);
+		variables.put("approved", "false");
+		return taskRpc.complete(taskId, variables);
+	}
+
+	@Override
+	public void projectManagerApproveForTask(Long applyId, Long projectManagerId, ApproveResult result,
+			String description) throws HardwareResourceApplyException {
+		// 判断记录是否存在
+		HardwareResourceApply apply = this.getActualDao().selectByPrimaryKey(applyId);
+		if (apply == null) {
+			throw new HardwareResourceApplyException("记录不存在");
+		}
+		// 审批通过流转到运维部经理审批
+		apply.setApplyState(HardwareApplyState.OPERATION_MANAGER_APPROVING.getValue());
+		// 插入申请操作记录
+		HardwareApplyOperationRecord record = DTOUtils.newDTO(HardwareApplyOperationRecord.class);
+		record.setApplyId(applyId);
+		record.setDescription(description);
+		record.setOperationName(HardwareApplyOperationType.PROJECT_MANAGER.getName());
+		record.setOperationType(HardwareApplyOperationType.PROJECT_MANAGER.getValue());
+		record.setOperatorId(projectManagerId);
+		record.setOpertateResult(result.getValue());
+		int rows = this.haorMapper.insertSelective(record);
+		if (rows <= 0) {
+			throw new HardwareResourceApplyException("插入操作记录失败");
+		}
+		// 发邮件给研发中心总经理
+		// 查询数据字典配置
+		DataDictionaryDto ddDto = this.ddService.findByCode(AlmConstants.DEPARTMENT_MANAGER_ROLE_CONFIG_CODE);
+		if (ddDto == null) {
+			throw new HardwareResourceApplyException("请先配置部门经理数据字典");
+		}
+		User user = this.queryOperationManager();
+		this.sendMail(apply, "IT资源申请", Arrays.asList(user.getEmail()));
+		
+	}
+
+	@Override
+	public void operationManagerApproveForTask(Long applyId, Long operationManagerId, Set<Long> executors,
+			String description) throws HardwareResourceApplyException {
+		// 判断记录是否存在
+		HardwareResourceApply apply = this.getActualDao().selectByPrimaryKey(applyId);
+		if (apply == null) {
+			throw new HardwareResourceApplyException("记录不存在");
+		}
+		// 检查实施人是否是运维部员工
+		if (CollectionUtils.isEmpty(executors)) {
+			throw new HardwareResourceApplyException("执行人不能为空");
+		}
+		if (executors.size() > 2) {
+			throw new HardwareResourceApplyException("最多只能分配2个执行人");
+		}
+		
+		apply.setExecutors(JSONObject.toJSONString(executors));
+		// 更新状态
+		apply.setApplyState(HardwareApplyState.IMPLEMENTING.getValue());
+		int rows = this.getActualDao().updateByPrimaryKeySelective(apply);
+		if (rows <= 0) {
+			throw new HardwareResourceApplyException("更新申请状态失败");
+		}
+
+		// 插入申请操作记录
+		HardwareApplyOperationRecord record = DTOUtils.newDTO(HardwareApplyOperationRecord.class);
+		record.setApplyId(applyId);
+		record.setDescription(description);
+		record.setOperationName(HardwareApplyOperationType.OPERATION_MANAGER.getName());
+		record.setOperationType(HardwareApplyOperationType.OPERATION_MANAGER.getValue());
+		record.setOperatorId(operationManagerId);
+		record.setOpertateResult(ApproveResult.APPROVED.getValue());
+		rows = this.haorMapper.insertSelective(record);
+		if (rows <= 0) {
+			throw new HardwareResourceApplyException("插入操作记录失败");
+		}
+		// 发邮件给执行人
+		Set<String> emails = new HashSet<>(executors.size());
+		executors.forEach(e -> emails.add(AlmCache.getInstance().getUserMap().get(e).getEmail()));
+		this.sendMail(apply, "IT资源申请", emails);
+		
+	}
+
+	@Override
+	public void operatorExecuteForTask(Long applyId, Long executorId, String description)
+			throws HardwareResourceApplyException {
+		// 判断记录是否存在
+		HardwareResourceApply apply = this.getActualDao().selectByPrimaryKey(applyId);
+		// 更新状态
+		apply.setApplyState(HardwareApplyState.COMPLETED.getValue());
+		int rows = this.getActualDao().updateByPrimaryKeySelective(apply);
+		if (rows <= 0) {
+			throw new HardwareResourceApplyException("更新申请状态失败");
+		}
+
+		// 插入申请操作记录
+		HardwareApplyOperationRecord record = DTOUtils.newDTO(HardwareApplyOperationRecord.class);
+		record.setApplyId(applyId);
+		record.setDescription(description);
+		record.setOperationName(HardwareApplyOperationType.EXECUTOR.getName());
+		record.setOperationType(HardwareApplyOperationType.EXECUTOR.getValue());
+		record.setOperatorId(executorId);
+		record.setOpertateResult(ApproveResult.APPROVED.getValue());
+		rows = this.haorMapper.insertSelective(record);
+		if (rows <= 0) {
+			throw new HardwareResourceApplyException("插入操作记录失败");
+		}
+		// 发邮件给申请人
+		// 查询数据字典配置
+		User user = AlmCache.getInstance().getUserMap().get(apply.getApplicantId());
+		if (user == null) {
+			throw new HardwareResourceApplyException("申请人不存在");
+		}
+		this.sendMail(apply, "IT资源申请", Arrays.asList(user.getEmail()));
+		
+	}
+
 
 }
