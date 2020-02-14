@@ -36,6 +36,9 @@ import com.dili.alm.domain.TaskDto;
 import com.dili.alm.domain.TaskMapping;
 import com.dili.alm.domain.dto.OnlineDataChangeBpmcDtoDto;
 import com.dili.alm.domain.dto.WorkOrderDto;
+import com.dili.alm.exceptions.ApplicationException;
+import com.dili.alm.exceptions.OnlineDataChangeException;
+import com.dili.alm.exceptions.ProjectOnlineApplyException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -84,36 +87,36 @@ public class OnlineDataChangeController {
     }
 	@ApiOperation("跳转到dataChange页面")
 	@RequestMapping(value = "/dataChange1.html", method = RequestMethod.GET)
-	public String dataChange1(ModelMap modelMap,String  taskId) {
-		getModelmap(modelMap, taskId);
+	public String dataChange1(ModelMap modelMap,String  taskId, @RequestParam(defaultValue = "false") Boolean isNeedClaim) {
+		getModelmap(modelMap, taskId,isNeedClaim);
 		return "onlineDataChange/dataChange1";
 		
 	}
 	
 	@ApiOperation("跳转到dataChange页面")
 	@RequestMapping(value = "/dataChange2.html", method = RequestMethod.GET)
-	public String dataChange2(ModelMap modelMap,String  taskId) {
-		getModelmap(modelMap, taskId);
+	public String dataChange2(ModelMap modelMap,String  taskId, @RequestParam(defaultValue = "false") Boolean isNeedClaim) {
+		getModelmap(modelMap, taskId,isNeedClaim);
 		return "onlineDataChange/dataChange2";
 	}
 	
 	@ApiOperation("跳转到dataChange页面")
 	@RequestMapping(value = "/dataChange3.html", method = RequestMethod.GET)
-	public String projectOverview(ModelMap modelMap,String  taskId) {
-		getModelmap(modelMap, taskId);
+	public String projectOverview(ModelMap modelMap,String  taskId, @RequestParam(defaultValue = "false") Boolean isNeedClaim) {
+		getModelmap(modelMap, taskId,isNeedClaim);
 		return "onlineDataChange/dataChange3";
 	}
 	
 	@ApiOperation("跳转到dataChange页面")
 	@RequestMapping(value = "/indexDataChange.html", method = RequestMethod.GET)
-	public String dbaDataChange(ModelMap modelMap,String  taskId) {
-		getModelmap(modelMap, taskId);
+	public String dbaDataChange(ModelMap modelMap,String  taskId ,@RequestParam(defaultValue = "false") Boolean isNeedClaim) {
+		getModelmap(modelMap, taskId,isNeedClaim);
 		return "onlineDataChange/indexDataChange";
 	}
 	@ApiOperation("OnlineDbaDataChange.html")
 	@RequestMapping(value = "/OnlineDbaDataChange.html", method = RequestMethod.GET)
-	public String OnlineDbaDataChange(ModelMap modelMap,String  taskId) {
-		getModelmap(modelMap, taskId);
+	public String OnlineDbaDataChange(ModelMap modelMap,String  taskId, @RequestParam(defaultValue = "false") Boolean isNeedClaim) {
+		getModelmap(modelMap, taskId,isNeedClaim);
 		return "onlineDataChange/OnlineDbaDataChange";
 	}
 	
@@ -171,7 +174,7 @@ public class OnlineDataChangeController {
 
     @ApiOperation("修改OnlineDataChange")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "OnlineDataChange��form��Ϣ", required = true, dataType = "string")
+		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "OnlineDataChange的form信息", required = true, dataType = "string")
 	})
     @RequestMapping(value="/update.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput update(@ModelAttribute OnlineDataChange onlineDataChange, 
@@ -192,7 +195,7 @@ public class OnlineDataChangeController {
 
     @ApiOperation("删除OnlineDataChange")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="id", paramType="form", value = "OnlineDataChange������", required = true, dataType = "long")
+		@ApiImplicitParam(name="id", paramType="form", value = "OnlineDataChange根据id删除", required = true, dataType = "long")
 	})
     @RequestMapping(value="/delete.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput delete(Long id) {
@@ -226,45 +229,45 @@ public class OnlineDataChangeController {
     }*/
     
     @RequestMapping(value="/agreeDeptOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput agreeDeptOnlineData(  @RequestParam(value="taskId", required = false) String taskId) {
+    public @ResponseBody BaseOutput agreeDeptOnlineData(  @RequestParam(value="taskId", required = false) String taskId,@RequestParam(defaultValue = "false") Boolean isNeedClaim) throws OnlineDataChangeException, ApplicationException {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
-    	onlineDataChangeService.agreeDeptOnlineDataChange(taskId);
+    	onlineDataChangeService.agreeDeptOnlineDataChange(taskId,isNeedClaim);
     	return BaseOutput.success("执行成功");
     }
 
     @RequestMapping(value="/notAgreeDeptOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput notAgreeDeptOnlineData(  @RequestParam(value="taskId", required = false) String taskId ) {
+    public @ResponseBody BaseOutput notAgreeDeptOnlineData(  @RequestParam(value="taskId", required = false) String taskId,@RequestParam(defaultValue = "false") Boolean isNeedClaim) throws OnlineDataChangeException, ApplicationException {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
-    	onlineDataChangeService.notAgreeDeptOnlineDataChange(taskId);
+    	onlineDataChangeService.notAgreeDeptOnlineDataChange(taskId,isNeedClaim);
         return BaseOutput.success("执行成功");
     }
 	
     @RequestMapping(value="/agreeTestOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput agreeTestOnlineData(  @RequestParam(value="taskId", required = false) String taskId) {
+    public @ResponseBody BaseOutput agreeTestOnlineData(  @RequestParam(value="taskId", required = false) String taskId,@RequestParam(defaultValue = "false") Boolean isNeedClaim) throws OnlineDataChangeException, ApplicationException {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
-    	onlineDataChangeService.agreeTestOnlineDataChange(taskId);
+    	onlineDataChangeService.agreeTestOnlineDataChange(taskId,isNeedClaim);
     	return BaseOutput.success("执行成功");
     }
 
     @RequestMapping(value="/notAgreeTestOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput notAgreeTestOnlineData(  @RequestParam(value="taskId", required = false) String taskId ) {
+    public @ResponseBody BaseOutput notAgreeTestOnlineData(  @RequestParam(value="taskId", required = false) String taskId,@RequestParam(defaultValue = "false") Boolean isNeedClaim) throws OnlineDataChangeException, ApplicationException {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
     	
-    	onlineDataChangeService.notAgreeTestOnlineDataChange(taskId);
+    	onlineDataChangeService.notAgreeTestOnlineDataChange(taskId,isNeedClaim);
         return BaseOutput.success("执行成功");
     }
 
     
     @RequestMapping(value="/agreeDBAOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput agreeDBAOnlineData(  @RequestParam(value="taskId", required = false) String taskId) {
+    public @ResponseBody BaseOutput agreeDBAOnlineData(  @RequestParam(value="taskId", required = false) String taskId,@RequestParam(defaultValue = "false") Boolean isNeedClaim) throws OnlineDataChangeException, ApplicationException {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
-    	onlineDataChangeService.agreeDBAOnlineDataChange(taskId);
+    	onlineDataChangeService.agreeDBAOnlineDataChange(taskId,isNeedClaim);
     	return BaseOutput.success("执行成功");
     }
     @RequestMapping(value="/notAgreeDBAOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput notAgreeDBAOnlineData(  @RequestParam(value="taskId", required = false) String taskId ) {
+    public @ResponseBody BaseOutput notAgreeDBAOnlineData(  @RequestParam(value="taskId", required = false) String taskId ,@RequestParam(defaultValue = "false") Boolean isNeedClaim) throws OnlineDataChangeException, ApplicationException {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
-    	onlineDataChangeService.notAgreeTestOnlineDataChange(taskId);
+    	onlineDataChangeService.notAgreeTestOnlineDataChange(taskId,isNeedClaim);
         return BaseOutput.success("执行成功");
     }
     @RequestMapping(value="/indexOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
@@ -274,21 +277,21 @@ public class OnlineDataChangeController {
     }
     
     @RequestMapping(value="/agreeOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput agreeOnlineData(  @RequestParam(value="taskId", required = false) String taskId) {
+    public @ResponseBody BaseOutput agreeOnlineData(  @RequestParam(value="taskId", required = false) String taskId, @RequestParam(defaultValue = "false") Boolean isNeedClaim) throws OnlineDataChangeException, ApplicationException {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
-    	onlineDataChangeService.agreeOnlineDataChange(taskId);
+    	onlineDataChangeService.agreeOnlineDataChange(taskId,isNeedClaim);
     	return BaseOutput.success("执行成功");
     }
 	
     @RequestMapping(value="/notAgreeOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput notAgreeOnlineData(  @RequestParam(value="taskId", required = false) String taskId ) {
+    public @ResponseBody BaseOutput notAgreeOnlineData(  @RequestParam(value="taskId", required = false) String taskId ,@RequestParam(defaultValue = "false") Boolean isNeedClaim) throws OnlineDataChangeException, ApplicationException {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
-    	onlineDataChangeService.notAgreeTestOnlineDataChange(taskId);
+    	onlineDataChangeService.notAgreeTestOnlineDataChange(taskId,isNeedClaim);
         return BaseOutput.success("执行成功");
     }
     
     
-    private void getModelmap(ModelMap modelMap, String taskId) {
+    private void getModelmap(ModelMap modelMap, String taskId,Boolean isNeedClaim) {
 		BaseOutput<Map<String, Object>>  map=tasksRpc.getVariables(taskId);
 		String id = (String) map.getData().get("businessKey");
 	    OnlineDataChange  odc=  onlineDataChangeService.get(Long.parseLong(id));
@@ -308,6 +311,7 @@ public class OnlineDataChangeController {
 			}
 		}
 	    modelMap.addAttribute("taskId",taskId);
+	    modelMap.addAttribute("isNeedClaim",isNeedClaim);
 	}
     
 }

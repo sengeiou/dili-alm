@@ -18,6 +18,8 @@ import com.dili.alm.domain.Project;
 import com.dili.alm.domain.TaskDto;
 import com.dili.alm.domain.TaskMapping;
 import com.dili.alm.domain.dto.OnlineDataChangeBpmcDtoDto;
+import com.dili.alm.exceptions.OnlineDataChangeException;
+import com.dili.alm.exceptions.ProjectOnlineApplyException;
 import com.dili.alm.rpc.MyTasksRpc;
 import com.dili.alm.rpc.RuntimeApiRpc;
 import com.dili.alm.rpc.UserRpc;
@@ -122,7 +124,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		
 	}
 	@Override
-	public void agreeDeptOnlineDataChange(String taskId) {
+	public void agreeDeptOnlineDataChange(String taskId,Boolean isNeedClaim) throws OnlineDataChangeException {
 		BaseOutput<Map<String, Object>>  mapId=tasksRpc.getVariables(taskId);
 		String dataId = (String) mapId.getData().get("businessKey");
 		OnlineDataChange onlineDataChange=new  OnlineDataChange();
@@ -146,11 +148,17 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		    record.setAssignee(listUsernName.get(0).getId().toString());
 		    map.put("test",listUsernName.get(0).getId().toString()+"");
 		}
-   	 	   
+		if (isNeedClaim) {
+			BaseOutput<String> output =tasksRpc.claim(taskId,listUsernName.get(0).getId().toString()+"");
+			if (!output.isSuccess()) {
+				LOGGER.error(output.getMessage());
+				throw new OnlineDataChangeException("任务签收失败");
+			}
+		}
     	tasksRpc.complete(taskId, map);
 	}
 	@Override
-	public void notAgreeDeptOnlineDataChange(String taskId) {
+	public void notAgreeDeptOnlineDataChange(String taskId,Boolean isNeedClaim) throws OnlineDataChangeException {
 		BaseOutput<Map<String, Object>>  mapId=tasksRpc.getVariables(taskId);
 		String dataId = (String) mapId.getData().get("businessKey");
 		OnlineDataChange onlineDataChange=new  OnlineDataChange();
@@ -161,10 +169,18 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		Map<String, Object> map=new HashMap<>();
     	map.put("approved", "false");
      	map.put("submit", ""+onlineDataChangeTemp.getApplyUserId());
+     	if (isNeedClaim) {
+			BaseOutput<String> output =tasksRpc.claim(taskId,onlineDataChangeTemp.getApplyUserId()+"");
+			if (!output.isSuccess()) {
+				LOGGER.error(output.getMessage());
+				throw new OnlineDataChangeException("任务签收失败");
+			}
+		}
+     	
     	tasksRpc.complete(taskId, map);
 	}
 	@Override
-	public void agreeTestOnlineDataChange(String taskId) {
+	public void agreeTestOnlineDataChange(String taskId,Boolean isNeedClaim) throws OnlineDataChangeException {
 		BaseOutput<Map<String, Object>>  mapId=tasksRpc.getVariables(taskId);
 		String dataId = (String) mapId.getData().get("businessKey");
 		OnlineDataChange onlineDataChange=new  OnlineDataChange();
@@ -177,7 +193,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		
 	}
 	@Override
-	public void notAgreeTestOnlineDataChange(String taskId) {
+	public void notAgreeTestOnlineDataChange(String taskId,Boolean isNeedClaim) throws OnlineDataChangeException {
 		BaseOutput<Map<String, Object>>  mapId=tasksRpc.getVariables(taskId);
 		String dataId = (String) mapId.getData().get("businessKey");
 		OnlineDataChange onlineDataChange=new  OnlineDataChange();
@@ -189,10 +205,17 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
     	
     	OnlineDataChange	onlineDataChangeTemp=this.get(Long.parseLong(dataId));
     	map.put("submit", ""+onlineDataChangeTemp.getApplyUserId());
+    	if (isNeedClaim) {
+			BaseOutput<String> output =tasksRpc.claim(taskId,onlineDataChangeTemp.getApplyUserId()+"");
+			if (!output.isSuccess()) {
+				LOGGER.error(output.getMessage());
+				throw new OnlineDataChangeException("任务签收失败");
+			}
+		}
     	tasksRpc.complete(taskId, map);
 	}
 	@Override
-	public void agreeDBAOnlineDataChange(String taskId) {
+	public void agreeDBAOnlineDataChange(String taskId,Boolean isNeedClaim) throws OnlineDataChangeException {
 		BaseOutput<Map<String, Object>>  mapId=tasksRpc.getVariables(taskId);
 		String dataId = (String) mapId.getData().get("businessKey");
 		OnlineDataChange onlineDataChange=new  OnlineDataChange();
@@ -201,10 +224,19 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		this.updateSelective(onlineDataChange);
 		Map<String, Object> map=new HashMap<>();
     	map.put("approved", "true");
+    	
+    	// 签收任务
+	/*	if (isNeedClaim) {
+			BaseOutput<String> output = tasksRpc.claim(taskId, executorId.toString());
+			if (!output.isSuccess()) {
+				LOGGER.error(output.getMessage());
+				throw new ProjectOnlineApplyException("任务签收失败");
+			}
+		}*/
     	tasksRpc.complete(taskId, map);
 	}
 	@Override
-	public void agreeOnlineDataChange(String taskId) {
+	public void agreeOnlineDataChange(String taskId,Boolean isNeedClaim) throws OnlineDataChangeException {
 		BaseOutput<Map<String, Object>>  mapId=tasksRpc.getVariables(taskId);
 		String dataId = (String) mapId.getData().get("businessKey");
 		OnlineDataChange onlineDataChange=new  OnlineDataChange();
@@ -214,7 +246,13 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		Map<String, Object> map=new HashMap<>();
     	map.put("approved", "true");
   	    map.put("submit", onlineDataChange.getApplyUserId());
-  	    
+  		if (isNeedClaim) {
+			BaseOutput<String> output =tasksRpc.claim(taskId,onlineDataChange.getApplyUserId()+"");
+			if (!output.isSuccess()) {
+				LOGGER.error(output.getMessage());
+				throw new OnlineDataChangeException("任务签收失败");
+			}
+		}
     	tasksRpc.complete(taskId, map);
 		
 	}
