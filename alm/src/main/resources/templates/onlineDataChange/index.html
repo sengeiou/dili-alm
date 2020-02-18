@@ -236,6 +236,11 @@
     </form>
 
     </div>
+    
+
+        
+        
+        
     <!-- ====================================================================================================================== -->
     <!-- style & script 分隔线 -->
     <!-- ====================================================================================================================== -->
@@ -249,16 +254,73 @@
     <script type="text/javascript">
     
        function formatprojectName(val,row,index){  
+    	   var  userId=${userId};
+    	   
     	   if(row.dataStatus==1){
-           	    return "<font color='red'>驳回中</font>";
+           	    if(userId==row.applyUserId){
+           	     var  dom= '<a href="javascript:void(0);" onclick="handleProcess(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">继续提交</a>';
+		    	  return dom;
+           	    }else{
+           	      return "<font color='red'>驳回中</font>";
+           	    }
     	   }else if(row.dataStatus==2){
-             	return "<font color='orange'>项目经理确认中</font>";
+    		   alert(userId+''+row.projectManager)
+    		    if(userId==row.projectManager){
+    		    	  var  dom= '<a href="javascript:void(0);" onclick="handleProcess(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">项目经理确认中</a>';
+    		    	  return dom;
+    		    }else{
+    		    	return "<font color='orange'>项目经理确认中</font>";
+    		    }
+             	
            }else if(row.dataStatus==3){
-           	   return "<font color='green'>测试人员确认中</font>";
+        	   
+        	   if(userId==row.testManager){
+        		   var  dom= '<a href="javascript:void(0);" onclick="handleProcess(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">测试人员确认中</a>';
+ 		    	  return dom;
+   		       }else{
+   		          return "<font color='green'>测试人员确认中</font>";
+   		       }
+           	  
            }else if(row.dataStatus==4){
-              	return "<font color='blue'>dba确认中</font>";
+        	   
+        	   var   dbaList=row.dbaManager;
+        	   var  temp=0;
+        	// alert(dbaList);
+        	   for (i = 0; i < dbaList.length; i++) { 
+        		     if(userId==dbaList[i]) {
+        		    	 temp=1;
+        		    	 break;
+        		     }
+        	    }
+        	   
+                if(temp==1){
+                	  var  dom= '<a href="javascript:void(0);" onclick="handleProcess(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">请dba人员确认中</a>';
+     		    	  return dom;
+   		       }else{
+   		    	  return "<font color='blue'>dba确认中</font>";
+   		       } 
+              
            }else if(row.dataStatus==5){
-              	return "<font color='blue'>线上验证中</font>";
+              
+               var   dbaList=row.onlineManager;
+               
+          	// alert(dbaList);
+         	   var  temp=0;
+         	   for (i = 0; i < dbaList.length; i++) { 
+         		     if(userId==dbaList[i]) {
+         		    	 temp=1;
+         		    	 break;
+         		     }
+         	   }
+         	   
+               if(temp==1){
+            	   var  dom= '<a href="javascript:void(0);" onclick="handleProcess(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">线上验证中</a>';
+  		    	  return dom;
+    		    }else{
+    		       return "<font color='blue'>线上验证中</font>";
+    		   } 
+              	
+              	
            }else if(row.dataStatus==6){
               	return "<font color='gray'>归档</font>";
            }else if(row.dataStatus==0){
@@ -677,7 +739,30 @@
         })
         
     
-        
-        
+        function handleProcess(taskId, formKey, isNeedClaim) {
+	       $.ajax({
+				type : "POST",
+				url : '${contextPath!}/process/getTaskUrl',
+				data : {
+					taskId : taskId,
+					formKey : formKey,
+					isNeedClaim : isNeedClaim
+				},
+				processData : true,
+				dataType : "json",
+				async : true,
+				success : function(data) {
+					if (data.success) {
+						alert(data.data.taskUrl+""+ taskId+isNeedClaim);
+						window.location.href = data.data.taskUrl + '?taskId=' + taskId + '&isNeedClaim=' + false;
+					} else {
+						$.messager.alert('错误', data.result);
+					}
+				},
+				error : function() {
+					$.messager.alert('错误', '远程访问失败');
+				}
+			});
+}
     </script>
 </#body>

@@ -93,7 +93,7 @@
 					<th
 						data-options="field:'closeTime',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
 						关闭时间</th>
-					<!-- <th data-options="field:'operation',  width:'10%', align:'center', resizable:'true', fixed:'false',formatter:operationFormatter">操作</th> -->
+					 <th data-options="field:'operation',  width:'10%', align:'center', resizable:'true', fixed:'false',formatter:operationFormatterPage">操作</th>
 				</tr>
 			</thead>
 		</table>
@@ -119,4 +119,41 @@
 	type="text/javascript">
 	<#members_index/>
 	<#workOrder_index />
+	
+	
+	
+	var userId = '${user.id!}';
+	userId = parseInt(userId);
+	
+	function operationFormatterPage(value, row, index) {
+		var content = '';
+		if (row.$_workOrderState == 1) {
+			if (row.$_applicantId == userId) {
+				content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="openUpdate(' + index + ');">编辑</a>';
+				content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="del(' + index + ');">删除</a>';
+			} else {
+				content += '<span style="padding:0px 2px;">编辑</a>';
+				content += '<span style="padding:0px 2px;">删除</a>';
+			}
+		} else if (row.$_workOrderState == 2) {
+			if (row.$_acceptorId == userId) {
+				content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="allocate(' + row.id + ');">分配</a>';
+			} else {
+				content += '<span style="padding:0px 2px;">分配</a>';
+			}
+		} else if (row.$_workOrderState == 3) {
+			if (row.$_executorId == userId) {
+				content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="solve(' + row.id + ');">完成</a>';
+			} else {
+				content += '<span style="padding:0px 2px;">完成</a>';
+			}
+		} else if (row.$_workOrderState == 4) {
+			if (row.$_applicantId == userId) {
+				content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="closeWorkOrder(' + row.id + ');">关闭</a>';
+			} else {
+				content += '<span style="padding:0px 2px;">关闭</a>';
+			}
+		}
+		return content;
+	}
 </script> </#body>

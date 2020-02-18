@@ -70,10 +70,12 @@ public class OnlineDataChange extends BaseDomain {
     @Column(name = "data_status")
     private Byte dataStatus;
     
+    @Column(name = "`process_definition_id`")
+    private String processDefinitionId;
+    
+    
     @Column(name = "`process_instance_id`")
     private String processInstanceId;
-    
-    
     /**
      * @return id
      */
@@ -301,6 +303,27 @@ public class OnlineDataChange extends BaseDomain {
      */
     @FieldDef(label="���ݿ���", maxLength = 80)
     @EditMode(editor = FieldEditor.Text, required = false)
+    public String getProcessDefinitionId() {
+        return processDefinitionId;
+    }
+
+    /**
+     * �������ݿ���
+     *
+     * @param processDefinitionId ���ݿ���
+     */
+    public void setProcessDefinitionId(String processDefinitionId) {
+        this.processDefinitionId = processDefinitionId;
+    }
+
+    
+    /**
+     * ��ȡ���ݿ���
+     *
+     * @return processInstanceId - ���ݿ���
+     */
+    @FieldDef(label="���ݿ���", maxLength = 80)
+    @EditMode(editor = FieldEditor.Text, required = false)
     public String getProcessInstanceId() {
         return processInstanceId;
     }
@@ -313,7 +336,7 @@ public class OnlineDataChange extends BaseDomain {
     public void setProcessInstanceId(String processInstanceId) {
         this.processInstanceId = processInstanceId;
     }
-
+    
     
     
     

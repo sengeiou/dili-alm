@@ -83,11 +83,20 @@ public class OnlineDataChangeController {
     @ApiOperation("跳转到index页面")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
+    	
+    	UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		modelMap.addAttribute("userId", user.getId());
+		
         return "onlineDataChange/index";
     }
 	@ApiOperation("跳转到dataChange页面")
 	@RequestMapping(value = "/dataChange1.html", method = RequestMethod.GET)
-	public String dataChange1(ModelMap modelMap,String  taskId, @RequestParam(defaultValue = "false") Boolean isNeedClaim) {
+	public String dataChange1(ModelMap modelMap,@RequestParam String  taskId, @RequestParam(defaultValue = "false") Boolean isNeedClaim) {
+		
+		 TaskDto taskDto = DTOUtils.newInstance(TaskDto.class);
+         //taskDto.setProcessInstanceBusinessKey(approve.getId().toString());
+         BaseOutput<List<TaskMapping>> outputList = tasksRpc.listTaskMapping(taskDto);
+         
 		getModelmap(modelMap, taskId,isNeedClaim);
 		return "onlineDataChange/dataChange1";
 		
@@ -157,6 +166,7 @@ public class OnlineDataChangeController {
     public @ResponseBody BaseOutput insertSave(@ModelAttribute OnlineDataChange onlineDataChange) {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
     	onlineDataChange.setApplyUserId(id);
+    	onlineDataChange.setDataStatus((byte)0);
         onlineDataChangeService.insertSelective(onlineDataChange);
 
         return BaseOutput.success("保存成功");    
@@ -292,6 +302,11 @@ public class OnlineDataChangeController {
     
     
     private void getModelmap(ModelMap modelMap, String taskId,Boolean isNeedClaim) {
+    	
+    	
+    	
+    	
+         
 		BaseOutput<Map<String, Object>>  map=tasksRpc.getVariables(taskId);
 		String id = (String) map.getData().get("businessKey");
 	    OnlineDataChange  odc=  onlineDataChangeService.get(Long.parseLong(id));
