@@ -144,9 +144,9 @@ public class DataMigrateImpl implements DataMigrateService {
 		try {
 			BaseOutput<User>  uapUser=userRpc.findUserById(uapUserId);
 			String  phone=uapUser.getData().getCellphone();
-			String  realName=uapUser.getData().getRealName();
+			String  realName=uapUser.getData().getUserName();
 			AlmUser  localUser= new AlmUser();
-			localUser.setRealName(realName);
+			localUser.setUserName(realName);
 			//localUser.setCellphone(phone);
 			BaseOutput<List<AlmUser>> lolcalUserList=localUserRpc.list(localUser);
 			
