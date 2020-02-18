@@ -617,7 +617,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 			      	userDataDto.setName(project.getName());
 			      	selectUserDatas.add(userDataDto);
 				}
-		}
+		} 
 		return selectUserDatas;
 	}
 
