@@ -1,9 +1,16 @@
 package com.dili.alm.domain.dto;
 
 import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Column;
 
 import com.dili.alm.component.ProcessHandleInfoDto;
 import com.dili.alm.domain.OnlineDataChange;
+import com.dili.alm.domain.Project;
+import com.dili.ss.metadata.FieldEditor;
+import com.dili.ss.metadata.annotation.EditMode;
+import com.dili.ss.metadata.annotation.FieldDef;
 
 public    class OnlineDataChangeBpmcDtoDto extends  OnlineDataChange implements  ProcessHandleInfoDto{
 
@@ -12,35 +19,7 @@ public    class OnlineDataChangeBpmcDtoDto extends  OnlineDataChange implements 
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-    private Long id;
-
-    private Long applyUserId;
-    
-    private Byte isSynchronization;
-    
-    private Byte isSubmit;
-   
-    private String applyMarketId;
-
-    private Long projectId;
-
-    private Long versionId;
-
-    private Date applyDate;
-
-    private Date updateDate;
-
-    private String dbaName;
-
-    private String sqlScript;
-
-    private String sqlFileId;
-    
-    private Byte dataStatus;
 	
-    private String processInstanceId;
-    
     private   Boolean handleProcess;
     
     private  String formKey;
@@ -49,17 +28,14 @@ public    class OnlineDataChangeBpmcDtoDto extends  OnlineDataChange implements 
     
     private  Boolean isNeedClaim;
     
-	@Override
-	public String getProcessDefinitionId() {
-		return processInstanceId;
-	}
+    private Long projectManager;
+    
+    private Long testManager;
+  
+    private List<Long> dbaManager;	
 
-	@Override
-	public void setProcessDefinitionId(String processDefinitionId) {
-		this.processInstanceId=processDefinitionId;
-		
-	}
-
+    private List<Long> onlineManager;	
+    
 	@Override
 	public Boolean getIsHandleProcess() {
 
@@ -106,118 +82,6 @@ public    class OnlineDataChangeBpmcDtoDto extends  OnlineDataChange implements 
 		
 	}
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public Long getApplyUserId() {
-		return applyUserId;
-	}
-
-	public void setApplyUserId(Long applyUserId) {
-		this.applyUserId = applyUserId;
-	}
-
-	public Byte getIsSynchronization() {
-		return isSynchronization;
-	}
-
-	public void setIsSynchronization(Byte isSynchronization) {
-		this.isSynchronization = isSynchronization;
-	}
-
-	public Byte getIsSubmit() {
-		return isSubmit;
-	}
-
-	public void setIsSubmit(Byte isSubmit) {
-		this.isSubmit = isSubmit;
-	}
-
-	public String getApplyMarketId() {
-		return applyMarketId;
-	}
-
-	public void setApplyMarketId(String applyMarketId) {
-		this.applyMarketId = applyMarketId;
-	}
-
-	public Long getProjectId() {
-		return projectId;
-	}
-
-	public void setProjectId(Long projectId) {
-		this.projectId = projectId;
-	}
-
-	public Long getVersionId() {
-		return versionId;
-	}
-
-	public void setVersionId(Long versionId) {
-		this.versionId = versionId;
-	}
-
-	public Date getApplyDate() {
-		return applyDate;
-	}
-
-	public void setApplyDate(Date applyDate) {
-		this.applyDate = applyDate;
-	}
-
-	public Date getUpdateDate() {
-		return updateDate;
-	}
-
-	public void setUpdateDate(Date updateDate) {
-		this.updateDate = updateDate;
-	}
-
-	public String getDbaName() {
-		return dbaName;
-	}
-
-	public void setDbaName(String dbaName) {
-		this.dbaName = dbaName;
-	}
-
-	public String getSqlScript() {
-		return sqlScript;
-	}
-
-	public void setSqlScript(String sqlScript) {
-		this.sqlScript = sqlScript;
-	}
-
-	public String getSqlFileId() {
-		return sqlFileId;
-	}
-
-	public void setSqlFileId(String sqlFileId) {
-		this.sqlFileId = sqlFileId;
-	}
-
-	public Byte getDataStatus() {
-		return dataStatus;
-	}
-
-	public void setDataStatus(Byte dataStatus) {
-		this.dataStatus = dataStatus;
-	}
-
-	public String getProcessInstanceId() {
-		return processInstanceId;
-	}
-
-	public void setProcessInstanceId(String processInstanceId) {
-		this.processInstanceId = processInstanceId;
-	}
-
 	public Boolean getHandleProcess() {
 		return handleProcess;
 	}
@@ -225,6 +89,41 @@ public    class OnlineDataChangeBpmcDtoDto extends  OnlineDataChange implements 
 	public void setHandleProcess(Boolean handleProcess) {
 		this.handleProcess = handleProcess;
 	}
+
+	public Long getProjectManager() {
+		return projectManager;
+	}
+
+	public void setProjectManager(Long projectManager) {
+		this.projectManager = projectManager;
+	}
+
+	
+
+	public Long getTestManager() {
+		return testManager;
+	}
+
+	public void setTestManager(Long testManager) {
+		this.testManager = testManager;
+	}
+
+	public List<Long> getDbaManager() {
+		return dbaManager;
+	}
+
+	public void setDbaManager(List<Long> dbaManager) {
+		this.dbaManager = dbaManager;
+	}
+
+	public List<Long> getOnlineManager() {
+		return onlineManager;
+	}
+
+	public void setOnlineManager(List<Long> onlineManager) {
+		this.onlineManager = onlineManager;
+	}
+
 
 	
 }

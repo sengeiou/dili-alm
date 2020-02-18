@@ -2,8 +2,10 @@ package com.dili.alm.service.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import com.dili.alm.domain.dto.OnlineDataChangeBpmcDtoDto;
 import com.dili.alm.exceptions.OnlineDataChangeException;
 import com.dili.alm.exceptions.ProjectOnlineApplyException;
 import com.dili.alm.rpc.MyTasksRpc;
+import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.rpc.RuntimeApiRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.OnlineDataChangeService;
@@ -34,6 +37,7 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.util.BeanConver;
 import com.dili.uap.sdk.domain.User;
+import com.dili.uap.sdk.domain.dto.RoleUserDto;
 
 /**
  * MyBatis Generator
@@ -42,22 +46,26 @@ import com.dili.uap.sdk.domain.User;
 @Service
 public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChange, Long> implements OnlineDataChangeService {
 
-	 @Autowired
-	   	private   MyTasksRpc  tasksRpc;
-	    
-	    @Autowired
-	  	private   RuntimeApiRpc  runtimeRpc;
-	    @Autowired
-		private BpmcUtil bpmcUtil;
-	    
-	    @Autowired
-		private UserRpc userRpc;
-	    
-    public OnlineDataChangeMapper getActualDao() {
-        return (OnlineDataChangeMapper)getDao();
-    }
+    @Autowired
+   	private   MyTasksRpc  tasksRpc;
+    
+    @Autowired
+  	private   RuntimeApiRpc  runtimeRpc;
+    @Autowired
+	private BpmcUtil bpmcUtil;
+    
+    @Autowired
+	private UserRpc userRpc;
+    
+    @Autowired
+	private	    RoleRpc  roleRpc;
     @Autowired
 	private ProjectService   projectService;
+    
+public OnlineDataChangeMapper getActualDao() {
+        return (OnlineDataChangeMapper)getDao();
+    }
+   
 	@Override
 	public void insertOnLineData(OnlineDataChange onlineDataChange, Long id) {
 		onlineDataChange.setApplyUserId(id);
@@ -74,6 +82,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almOnlineDataChangeProcess", onlineDataChange.getId().toString(), id+"",map);
 	       System.out.println(object.getCode()+object.getData()+object.getErrorData());
 	       onlineDataChange.setProcessInstanceId(object.getData().getProcessInstanceId()); 
+	       onlineDataChange.setProcessDefinitionId(object.getData().getProcessDefinitionId());
 	       onlineDataChange.setId(onlineDataChange.getId());
 	       
 	       this.update(onlineDataChange);
@@ -97,7 +106,8 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			       System.out.println(object.getCode()+object.getData()+object.getErrorData());
 			     
 			       OnlineDataChange onlineData=new OnlineDataChange();
-			       onlineData.setProcessInstanceId(object.getData().getProcessInstanceId());
+			       onlineDataChange.setProcessInstanceId(object.getData().getProcessInstanceId()); 
+			       onlineDataChange.setProcessDefinitionId(object.getData().getProcessDefinitionId());
 			       onlineData.setId(onlineDataChange.getId());
 			       onlineData.setDataStatus((byte)2);
 			       onlineData.setIsSubmit((byte)1);
@@ -271,7 +281,9 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 	}
 	@Override
 	public String listPageOnlineData(OnlineDataChange onlineDataChange, String projectIdcc, Long id) {
-		onlineDataChange.setApplyUserId(id);
+		onlineDataChange.setSort("apply_date");
+		onlineDataChange.setOrder("desc");
+		//onlineDataChange.setApplyUserId(id);
    	    if(NumberUtils.isNumber(projectIdcc)) {
    	 	   onlineDataChange.setProjectId(Long.parseLong(projectIdcc));
 	    }
@@ -296,8 +308,42 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		metadata.put("updateDate", dateProvider);
 		
 		try {
-			 List<OnlineDataChangeBpmcDtoDto> targetList = BeanConver.copyList(list, OnlineDataChangeBpmcDtoDto.class);
+			   List<OnlineDataChangeBpmcDtoDto> targetList = BeanConver.copyList(list, OnlineDataChangeBpmcDtoDto.class);
+			   
 			   bpmcUtil.fitLoggedUserIsCanHandledProcess(targetList);
+			   
+				Set<Long> dbaRoleIds = new HashSet<>();
+				dbaRoleIds.add(Long.parseLong("74"));
+				Set<Long> onlingRoleIds = new HashSet<>();
+				onlingRoleIds.add(Long.parseLong("44"));
+				
+			   Project  pro;
+			   List<Long>  dbaList;
+			   List<Long>  onLingList;
+		      for (OnlineDataChangeBpmcDtoDto odcData : targetList) {
+		    		pro=null;
+		    		pro=projectService.get(odcData.getProjectId());
+		    		if(pro!=null) {
+		    		    odcData.setTestManager(pro.getTestManager());//"test负责人
+		    		   odcData.setProjectManager(pro.getProjectManager());//"项目负责人
+		    		}
+		    		
+		    		
+		    		dbaList=new ArrayList<Long>();
+		    		List<RoleUserDto>  dbaDto=roleRpc.listRoleUserByRoleIds(dbaRoleIds).getData();
+		    		for (RoleUserDto roleUserDto : dbaDto) {
+		    			dbaList.add(roleUserDto.getId());
+					}
+		    		List<RoleUserDto>  onlingRoleIdDto=roleRpc.listRoleUserByRoleIds(onlingRoleIds).getData();
+		    	
+		    		onLingList=new ArrayList<Long>();
+		    		for (RoleUserDto roleUserDto : onlingRoleIdDto) {
+		    			onLingList.add(roleUserDto.getId());
+					}
+		    		odcData.setDbaManager(dbaList);
+		    		odcData.setOnlineManager(onLingList);
+				}
+		    	
 			   List onlineDataChangeList = ValueProviderUtils.buildDataByProvider(metadata,targetList);
 			  EasyuiPageOutput taskEasyuiPageOutput = new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(list.size()))), onlineDataChangeList);
 			  return taskEasyuiPageOutput.toString();

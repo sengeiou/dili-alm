@@ -8,7 +8,7 @@ import java.util.Date;
 import javax.persistence.*;
 
 /**
- * ��MyBatis Generator�����Զ�����
+ * 由MyBatis Generator工具自动生成
  * 
  * This file was generated on 2019-12-25 18:22:44.
  */
@@ -56,7 +56,7 @@ public class OnlineDataChange extends BaseDomain {
     private Date updateDate;
 
     /**
-     * ���ݿ���
+     *
      */
     @Column(name = "`dba_name`")
     private String dbaName;
@@ -70,10 +70,12 @@ public class OnlineDataChange extends BaseDomain {
     @Column(name = "data_status")
     private Byte dataStatus;
     
+    @Column(name = "`process_definition_id`")
+    private String processDefinitionId;
+    
+    
     @Column(name = "`process_instance_id`")
     private String processInstanceId;
-    
-    
     /**
      * @return id
      */
@@ -107,7 +109,7 @@ public class OnlineDataChange extends BaseDomain {
     }
 
     /**
-     * ��ȡ�г�id
+     * 市场id
      *
      * @return apply_market_id - �г�id
      */
@@ -118,7 +120,7 @@ public class OnlineDataChange extends BaseDomain {
     }
 
     /**
-     * �����г�id
+     * 市场id
      *
      * @param applyMarketId �г�id
      */
@@ -127,7 +129,7 @@ public class OnlineDataChange extends BaseDomain {
     }
 
     /**
-     * ��ȡ��Ŀid
+     * 项目id
      *
      * @return project_id - ��Ŀid
      */
@@ -138,7 +140,7 @@ public class OnlineDataChange extends BaseDomain {
     }
 
     /**
-     * ������Ŀid
+     * 项目id
      *
      * @param projectId ��Ŀid
      */
@@ -195,9 +197,9 @@ public class OnlineDataChange extends BaseDomain {
     }
 
     /**
-     * ��ȡ���ݿ���
+     * 数据库名字
      *
-     * @return dba_name - ���ݿ���
+     * @return dba_name - 数据库名字
      */
     @FieldDef(label="���ݿ���", maxLength = 50)
     @EditMode(editor = FieldEditor.Text, required = false)
@@ -206,9 +208,9 @@ public class OnlineDataChange extends BaseDomain {
     }
 
     /**
-     * �������ݿ���
+     * 数据库名字
      *
-     * @param dbaName ���ݿ���
+     * @param dbaName数据库名字
      */
     public void setDbaName(String dbaName) {
         this.dbaName = dbaName;
@@ -295,25 +297,41 @@ public class OnlineDataChange extends BaseDomain {
 
     
     /**
-     * ��ȡ���ݿ���
+     * 
      *
-     * @return process_definition_id - ���ݿ���
+     *
      */
-    @FieldDef(label="���ݿ���", maxLength = 80)
+    @FieldDef(label="流程定义id", maxLength = 80)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    public String getProcessDefinitionId() {
+        return processDefinitionId;
+    }
+
+    /**
+     *
+     */
+    public void setProcessDefinitionId(String processDefinitionId) {
+        this.processDefinitionId = processDefinitionId;
+    }
+
+    
+    /**
+     * 
+     * @return processInstanceId 
+     */
+    @FieldDef(label="流程实例id", maxLength = 80)
     @EditMode(editor = FieldEditor.Text, required = false)
     public String getProcessInstanceId() {
         return processInstanceId;
     }
 
     /**
-     * �������ݿ���
-     *
-     * @param processDefinitionId ���ݿ���
+ 
      */
     public void setProcessInstanceId(String processInstanceId) {
         this.processInstanceId = processInstanceId;
     }
-
+    
     
     
     
