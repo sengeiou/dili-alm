@@ -65,7 +65,7 @@ public class BpmcUtil {
 			for (TaskIdentityDto taskIdentity : tiOutput.getData()) {
 				if (taskIdentity.getProcessInstanceId().equals(d.getProcessInstanceId())) {
 					d.setFormKey(taskIdentity.getFormKey());
-					d.setTaskId(taskIdentity.getTaskId());
+					d.setTaskId(taskIdentity.getTaskId().toString());
 					if (StringUtils.isNotBlank(taskIdentity.getAssignee()) && Long.valueOf(taskIdentity.getAssignee()).equals(userId)) {
 						d.setIsHandleProcess(true);
 						d.setIsNeedClaim(false);

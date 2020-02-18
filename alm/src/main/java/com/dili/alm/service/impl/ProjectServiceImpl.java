@@ -615,6 +615,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 			          	userDataDto.setParentId(AlmConstants.ALM_PROJECT_PREFIX+0);
 			      	}
 			      	userDataDto.setName(project.getName());
+			      	userDataDto.setChecked(false);
 			      	selectUserDatas.add(userDataDto);
 				}
 		} 
@@ -623,13 +624,9 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 
 	@Override
 	public List<UserDataDto> listUserDataAuth() {
-
 		List<Project> selectAll = this.getDao().selectAll();
 		List<UserDataDto> selectUserDatas =new ArrayList<UserDataDto>();
 		if(selectAll!=null&&selectAll.size()>0) {
-		      List<String> selectUserDataAuthValue = userDataAuthRpc.listUserDataAuthValue(SessionContext.getSessionContext().getUserTicket().getId()).getData();
-		      //添加根目录
-		      boolean isRootChecked=false;
 				for (Project project : selectAll) {
 		      	UserDataDto userDataDto=DTOUtils.newInstance(UserDataDto.class);
 		      	userDataDto.setTreeId(AlmConstants.ALM_PROJECT_PREFIX+project.getId());
@@ -639,18 +636,9 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		          	userDataDto.setParentId(AlmConstants.ALM_PROJECT_PREFIX+0);
 		      	}
 		      	userDataDto.setName(project.getName());
-		      	boolean isChecked = selectUserDataAuthValue.contains(project.getId().toString());
-		      	if(!isRootChecked&&isChecked) {
-		      		isRootChecked=true;
-		      	}
-		      	userDataDto.setChecked(isChecked);
+		      	userDataDto.setChecked(false);
 		      	selectUserDatas.add(userDataDto);
 				}
-				UserDataDto almDataDto=DTOUtils.newInstance(UserDataDto.class);
-			  	almDataDto.setTreeId(AlmConstants.ALM_PROJECT_PREFIX+0);
-			  	almDataDto.setName("项目生命周期管理");
-			  	almDataDto.setChecked(isRootChecked);
-			  	selectUserDatas.add(almDataDto);
 		}
 		return selectUserDatas;
 	}
