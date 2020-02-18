@@ -606,30 +606,17 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		List<Project> selectAll = this.getActualDao().selectByExample(example);
 		List<UserDataDto> selectUserDatas =new ArrayList<UserDataDto>();
 		if(selectAll!=null&&selectAll.size()>0) {
-		      List<String> selectUserDataAuthValue = userDataAuthRpc.listUserDataAuthValue(SessionContext.getSessionContext().getUserTicket().getId()).getData();
-		      //添加根目录
-		      boolean isRootChecked=false;
 				for (Project project : selectAll) {
-		      	UserDataDto userDataDto=DTOUtils.newInstance(UserDataDto.class);
-		      	userDataDto.setTreeId(AlmConstants.ALM_PROJECT_PREFIX+project.getId());
-		      	if(project.getParentId()!=null) {
-		          	userDataDto.setParentId(AlmConstants.ALM_PROJECT_PREFIX+project.getParentId());
-		      	}else {
-		          	userDataDto.setParentId(AlmConstants.ALM_PROJECT_PREFIX+0);
-		      	}
-		      	userDataDto.setName(project.getName());
-		      	boolean isChecked = selectUserDataAuthValue.contains(project.getId().toString());
-		      	if(!isRootChecked&&isChecked) {
-		      		isRootChecked=true;
-		      	}
-		      	userDataDto.setChecked(isChecked);
-		      	selectUserDatas.add(userDataDto);
+			      	UserDataDto userDataDto=DTOUtils.newInstance(UserDataDto.class);
+			      	userDataDto.setTreeId(AlmConstants.ALM_PROJECT_PREFIX+project.getId());
+			      	if(project.getParentId()!=null) {
+			          	userDataDto.setParentId(AlmConstants.ALM_PROJECT_PREFIX+project.getParentId());
+			      	}else {
+			          	userDataDto.setParentId(AlmConstants.ALM_PROJECT_PREFIX+0);
+			      	}
+			      	userDataDto.setName(project.getName());
+			      	selectUserDatas.add(userDataDto);
 				}
-				UserDataDto almDataDto=DTOUtils.newInstance(UserDataDto.class);
-			  	almDataDto.setTreeId(AlmConstants.ALM_PROJECT_PREFIX+0);
-			  	almDataDto.setName("项目生命周期管理");
-			  	almDataDto.setChecked(isRootChecked);
-			  	selectUserDatas.add(almDataDto);
 		}
 		return selectUserDatas;
 	}
