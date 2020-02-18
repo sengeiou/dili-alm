@@ -129,7 +129,7 @@
 		var content = '';
 		if (row.$_workOrderState == 1) {
 			if (row.$_applicantId == userId) {
-				content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="openUpdate(' + index + ');">编辑</a>';
+				content += '<a href="javascript:void(0);" onclick="handleProcess(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">请你编辑</a>';
 				content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="del(' + index + ');">删除</a>';
 			} else {
 				content += '<span style="padding:0px 2px;">编辑</a>';
@@ -137,23 +137,51 @@
 			}
 		} else if (row.$_workOrderState == 2) {
 			if (row.$_acceptorId == userId) {
-				content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="allocate(' + row.id + ');">分配</a>';
+				content += '<a href="javascript:void(0);" onclick="handleProcess(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">请你分配</a>';
 			} else {
 				content += '<span style="padding:0px 2px;">分配</a>';
 			}
 		} else if (row.$_workOrderState == 3) {
 			if (row.$_executorId == userId) {
-				content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="solve(' + row.id + ');">完成</a>';
+				content +='<a href="javascript:void(0);" onclick="handleProcess(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">请你完成</a>';
 			} else {
 				content += '<span style="padding:0px 2px;">完成</a>';
 			}
 		} else if (row.$_workOrderState == 4) {
 			if (row.$_applicantId == userId) {
-				content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="closeWorkOrder(' + row.id + ');">关闭</a>';
+				content += '<a href="javascript:void(0);" onclick="handleProcess(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">请你关闭</a>';
 			} else {
 				content += '<span style="padding:0px 2px;">关闭</a>';
 			}
 		}
 		return content;
 	}
+	
+	
+    function handleProcess(taskId, formKey, isNeedClaim) {
+	       $.ajax({
+				type : "POST",
+				url : '${contextPath!}/process/getTaskUrl',
+				data : {
+					taskId : taskId,
+					formKey : formKey,
+					isNeedClaim : isNeedClaim
+				},
+				processData : true,
+				dataType : "json",
+				async : true,
+				success : function(data) {
+					if (data.success) {
+					//	alert(data.data.taskUrl+""+ taskId+isNeedClaim);
+						window.location.href = data.data.taskUrl + '?taskId=' + taskId + '&isNeedClaim=' + false;
+					} else {
+						$.messager.alert('错误', data.result);
+					}
+				},
+				error : function() {
+					$.messager.alert('错误', '远程访问失败');
+				}
+			});
+   }
+    
 </script> </#body>

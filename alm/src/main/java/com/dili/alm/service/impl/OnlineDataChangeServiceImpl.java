@@ -85,7 +85,7 @@ public OnlineDataChangeMapper getActualDao() {
 	       onlineDataChange.setProcessDefinitionId(object.getData().getProcessDefinitionId());
 	       onlineDataChange.setId(onlineDataChange.getId());
 	       
-	       this.update(onlineDataChange);
+	       update(onlineDataChange);
         } catch (Exception e) {
 		   e.printStackTrace();
 		   System.out.println(e);

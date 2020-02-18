@@ -83,6 +83,8 @@ public class DataMigrateController {
 		    return BaseOutput.success("迁移失败");
 		if(num==2)
 		    return BaseOutput.success("alm用户不存在");
+		if(num==8)
+		    return BaseOutput.success("远程almuser调用失败");
 		return BaseOutput.success("修改成功");
 	}
 	@ApiOperation(value = "uap用戶遷移", notes = "查询uap用戶返回列表信息")

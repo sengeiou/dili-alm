@@ -23,8 +23,8 @@
     <result column="applicant_id" jdbcType="BIGINT" property="applicantId" />
     <result column="executor_id" jdbcType="BIGINT" property="executorId" />
     <result column="work_order_source" jdbcType="INTEGER" property="workOrderSource" />
-      <result column="process_instance_id" jdbcType="VARCHAR" property="processInstanceId" />
-	<result column="process_definition_id" jdbcType="VARCHAR" property="processDefinitionId" />
+     <result column="process_instance_id" jdbcType="VARCHAR" property="processInstanceId" />
+	<result column="process_definition_id" jdbcType="VARCHAR" property="processDefinitionId" /> 
   </resultMap>
   <sql id="Base_Column_List">
     <!--
@@ -32,7 +32,7 @@
     -->
     id, serial_number, work_order_name, work_order_type, priority, channel, acceptor_id, 
     copy_user_id, description, attachment_file_id, work_order_state, submit_time, close_time, 
-    creation_time, modify_time, applicant_id, executor_id, work_order_source,process_instance_id,process_definition_id
+    creation_time, modify_time, applicant_id, executor_id, work_order_source ,process_instance_id,process_definition_id
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -100,7 +100,7 @@
       <if test="workOrderSource != null">
         work_order_source = #{workOrderSource,jdbcType=INTEGER},
       </if>
-      <if test="processInstanceId != null">
+     <if test="processInstanceId != null">
 		process_instance_id = #{processInstanceId,jdbcType=VARCHAR},
 	  </if>
 	  <if test="processDefinitionId != null">

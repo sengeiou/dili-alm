@@ -82,7 +82,10 @@ public class DevCenterWorkOrderManager extends BaseWorkOrderManager {
 		
 	   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almWorkOrderApplyProcess", workOrder.getId().toString(), workOrder.getApplicantId()+"",map);
        System.out.println(object.getCode()+object.getData()+object.getErrorData());
-	       
+       workOrder.setProcessInstanceId(object.getData().getProcessInstanceId()); 
+       // workOrder.setProcessDefinitionId(object.getData().getProcessDefinitionId());
+        workOrder.setId(workOrder.getId());
+        workOrderMapper.updateByPrimaryKey(workOrder);
 		this.sendMail(workOrder, "工单申请", Sets.newHashSet(mailReceiver.getEmail()));
 	}
 

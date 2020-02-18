@@ -753,7 +753,7 @@
 				async : true,
 				success : function(data) {
 					if (data.success) {
-						alert(data.data.taskUrl+""+ taskId+isNeedClaim);
+					//	alert(data.data.taskUrl+""+ taskId+isNeedClaim);
 						window.location.href = data.data.taskUrl + '?taskId=' + taskId + '&isNeedClaim=' + false;
 					} else {
 						$.messager.alert('错误', data.result);

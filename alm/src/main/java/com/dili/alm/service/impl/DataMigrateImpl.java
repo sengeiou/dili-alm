@@ -150,6 +150,9 @@ public class DataMigrateImpl implements DataMigrateService {
 			//localUser.setCellphone(phone);
 			BaseOutput<List<AlmUser>> lolcalUserList=localUserRpc.list(localUser);
 			
+			if(lolcalUserList.getCode().endsWith("5000")) {
+				return 8;	
+			}
 			if(lolcalUserList.getData()!=null&&lolcalUserList.getData().size()>0) {
 				 userId=lolcalUserList.getData().get(0).getId();
 			}else {

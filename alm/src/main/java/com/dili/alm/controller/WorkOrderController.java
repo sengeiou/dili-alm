@@ -37,6 +37,7 @@ import com.dili.alm.domain.ProjectOnlineApply;
 import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.WorkOrder;
 import com.dili.alm.domain.WorkOrderSource;
+import com.dili.alm.domain.dto.OnlineDataChangeBpmcDtoDto;
 import com.dili.alm.domain.dto.ProjectOnlineApplyProcessDto;
 import com.dili.alm.domain.dto.WorkOrderDto;
 import com.dili.alm.domain.dto.WorkOrderQueryDto;
@@ -54,6 +55,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.ss.util.BeanConver;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
@@ -313,8 +315,12 @@ public class WorkOrderController {
 	
 //		return workOrderService.listEasyuiPageByExample(query, true).toString();
 	   List<WorkOrder>  outTemp=workOrderService.listByExample( query);
+	 //  List<WorkOrderDto> targetList = DTOUtils.as(outTemp, WorkOrderDto.class);
+	  // List<WorkOrderDto> targetList = BeanConver.copyList(outTemp, WorkOrderDto.class);
+	   
+	   
 	   List<WorkOrderDto> targetList = DTOUtils.as(outTemp, WorkOrderDto.class);
-	   this.bpmcUtil.fitLoggedUserIsCanHandledProcess(targetList);
+	   bpmcUtil.fitLoggedUserIsCanHandledProcess(targetList);
 	   @SuppressWarnings("rawtypes")
 		long total = targetList instanceof Page ? ((Page) targetList).getTotal() : targetList.size();
 		return new EasyuiPageOutput(Long.valueOf(total).intValue(), ValueProviderUtils.buildDataByProvider(query, targetList)).toString();
@@ -392,7 +398,7 @@ public class WorkOrderController {
 		return "workOrder/detailUpdate";
 	}
 	@ResponseBody
-	@PostMapping("/solveAgree")
+	 @RequestMapping(value="/solveAgree", method = {RequestMethod.GET, RequestMethod.POST})
 	public BaseOutput<Object> solveAgree(@RequestParam Long id,@RequestParam String taskId, @RequestParam(defaultValue = "false") Boolean isNeedClaim,
 			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
 			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate, @RequestParam Integer taskHours,

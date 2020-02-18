@@ -81,6 +81,11 @@ public class OutsideWorkOrderManager extends BaseWorkOrderManager {
 	   map.put("workOrderSource", "3");
 	   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almWorkOrderApplyProcess", workOrder.getId().toString(), workOrder.getApplicantId()+"",map);
        System.out.println(object.getCode()+object.getData()+object.getErrorData());
+       
+       workOrder.setProcessInstanceId(object.getData().getProcessInstanceId()); 
+       // workOrder.setProcessDefinitionId(object.getData().getProcessDefinitionId());
+        workOrder.setId(workOrder.getId());
+        workOrderMapper.updateByPrimaryKey(workOrder);
 		this.sendMail(workOrder, "工单申请", emails);
 	}
 
