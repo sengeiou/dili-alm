@@ -153,6 +153,14 @@
 			} else {
 				content += '<span style="padding:0px 2px;">关闭</a>';
 			}
+		}else if (row.$_workOrderState ==5) {
+		
+				content += '<span style="padding:0px 2px;">归档</a>';
+		
+		}else {
+			
+			content += '<span style="padding:0px 2px;">其他</a>';
+		
 		}
 		return content;
 	}

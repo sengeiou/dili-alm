@@ -261,7 +261,7 @@
            	     var  dom= '<a href="javascript:void(0);" onclick="handleProcess(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">继续提交</a>';
 		    	  return dom;
            	    }else{
-           	      return "<font color='red'>驳回中</font>";
+           	      return "<font color='gray'>驳回中</font>";
            	    }
     	   }else if(row.dataStatus==2){
     		   alert(userId+''+row.projectManager)
@@ -269,7 +269,7 @@
     		    	  var  dom= '<a href="javascript:void(0);" onclick="handleProcess(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">项目经理确认中</a>';
     		    	  return dom;
     		    }else{
-    		    	return "<font color='orange'>项目经理确认中</font>";
+    		    	return "<font color='gray'>项目经理确认中</font>";
     		    }
              	
            }else if(row.dataStatus==3){
@@ -278,7 +278,7 @@
         		   var  dom= '<a href="javascript:void(0);" onclick="handleProcess(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">测试人员确认中</a>';
  		    	  return dom;
    		       }else{
-   		          return "<font color='green'>测试人员确认中</font>";
+   		          return "<font color='gray'>测试人员确认中</font>";
    		       }
            	  
            }else if(row.dataStatus==4){
@@ -297,7 +297,7 @@
                 	  var  dom= '<a href="javascript:void(0);" onclick="handleProcess(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">请dba人员确认中</a>';
      		    	  return dom;
    		       }else{
-   		    	  return "<font color='blue'>dba确认中</font>";
+   		    	  return "<font color='gray'>dba确认中</font>";
    		       } 
               
            }else if(row.dataStatus==5){
@@ -317,7 +317,7 @@
             	   var  dom= '<a href="javascript:void(0);" onclick="handleProcess(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">线上验证中</a>';
   		    	  return dom;
     		    }else{
-    		       return "<font color='blue'>线上验证中</font>";
+    		       return "<font color='gray'>线上验证中</font>";
     		   } 
               	
               	
