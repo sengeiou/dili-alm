@@ -309,7 +309,7 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 		WorkDay workDayNowDate = this.getActualDao().getWorkDayNowDate(DateUtil.getDate(new Date()));
 		WorkDayRoleDto workDayRoleDto = new WorkDayRoleDto();
 		List<String> data = resourceRpc.listResourceCodeByUserId(userId).getData();
-		if (data.contains(SET_WORK_DAY)) {
+		if (data!=null&&data.size()>0&&data.contains(SET_WORK_DAY)) {
 			workDayRoleDto.setIsRole(1);
 		} else {
 			workDayRoleDto.setIsRole(0);
