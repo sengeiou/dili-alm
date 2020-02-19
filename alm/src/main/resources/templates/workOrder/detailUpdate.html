@@ -150,7 +150,7 @@
 				<table class="table-box" width="100%">
 				     <tr>
 			     	    <td class="table-title" colspan="2"><input type="hidden" name="taskId" value="${taskId}" /></td>
-						<td class="table-combo" colspan="2"><a id="btn" href="#" class="easyui-linkbutton" data-options="onClick:agree">再次提交</a></td>
+						<td class="table-combo" colspan="2"><a id="btn" href="#" class="easyui-linkbutton" data-options="onClick:agreeAgain">再次提交</a></td>
 						
 					</tr>	
 				   
@@ -258,7 +258,7 @@
 	
 	
 	
-	function agree(){
+	function agreeAgain(){
 		
 		var data = $("#editForm").serializeArray();
 		 $('#editForm').form('submit', {

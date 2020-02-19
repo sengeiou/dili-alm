@@ -143,6 +143,56 @@
 
 
 <script type="text/javascript">
+
+function solveft(){
+	// alert("sss");
+	// alert( $('#taskId').val());//获取到了
+
+   $('#editForm').form('submit', {
+	url : '${contextPath!}/workOrder/solveAgree',
+	onSubmit : function() {
+		var startDate = $('#startDate').datebox('getValue');
+		var endDate = $('#endDate').datebox('getValue');
+		if (startDate > endDate) {
+			$.messager.alert('提示', '工单开始日期不能大于工单结束日期!');
+			return false;
+		}
+		if (!$(this).form('validate')) {
+			return false;
+		}
+	},
+	success : function(data) {
+		/* var obj = $.parseJSON(data);
+		if (obj.code == 200) { */
+			alert("执行成功");
+			try{
+				document.domain="diligrp.com";
+				//如果父页面是任务中心
+               var plh = parent.location.href.indexOf('?') > 0 ? parent.location.href.substring(0, parent.location.href.indexOf('?')) : parent.location.href;
+               if(plh=='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
+                   //向任务中心发送消息，参数为要跳转的地址
+                   window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
+               }else{
+               	window.location.href='${contextPath!}/workOrder/index.html';
+               }
+           }catch(ex){
+           	console.log(ex);
+           	window.location.href='${contextPath!}/workOrder/index.html';
+           }
+         	 
+        
+/* 		} else {
+			$.messager.alert('错误', obj.result);
+		} */
+	}
+});
+
+
+   
+}
+
+
+
 	<#members_index/>
 	<#workOrder_index />
 	$(function() {
@@ -158,62 +208,14 @@
 		$('#acceptorId').combobox('initValue',${model.$_acceptorId!});
 		$('#acceptorId').combobox('setText','${model.acceptorId!}');
 		
-		var copyUserIds='${model.copyUserId!}';
+		/* var copyUserIds='${model.copyUserId!}';
 		$(copyUserIds).each(function(index,item){
 			var node = $('#copyUserIds').combotree('tree').tree('find',item);
 			$('#copyUserIds').combotree('tree').tree('check', node.target);
-		});
+		}); */
 	});
 	
 	
-   function solveft(){
-			 alert("sss");
-			// alert( $('#taskId').val());//获取到了
-	  
-	 $('#editForm').form('submit', {
-			url : '${contextPath!}/workOrder/solveAgree',
-			onSubmit : function() {
-				var startDate = $('#startDate').datebox('getValue');
-				var endDate = $('#endDate').datebox('getValue');
-				if (startDate > endDate) {
-					$.messager.alert('提示', '工单开始日期不能大于工单结束日期!');
-					return false;
-				}
-				if (!$(this).form('validate')) {
-					return false;
-				}
-			},
-			success : function(data) {
-				var obj = $.parseJSON(data);
-				if (obj.code == 200) {
-					alert("执行成功");
-					try{
-	 					document.domain="diligrp.com";
-	 					//如果父页面是任务中心
-	                    var plh = parent.location.href.indexOf('?') > 0 ? parent.location.href.substring(0, parent.location.href.indexOf('?')) : parent.location.href;
-	                    if(plh=='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
-	                        //向任务中心发送消息，参数为要跳转的地址
-	                        window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
-	                    }else{
-	                    	window.location.href='${contextPath!}/workOrder/index.html';
-	                    }
-	                }catch(ex){
-	                	console.log(ex);
-	                	window.location.href='${contextPath!}/workOrder/index.html';
-	                }
-	              	 
-	             
-				} else {
-					$.messager.alert('错误', obj.result);
-				}
-			}
-		});
-	   
-	   
-		    
-	}
-	   
-	   
 	   
 </script>
 

@@ -609,4 +609,4 @@ $(function() {
 			$('#acceptorId1').textbox('addClearBtn', 'icon-clear');
 			$('#executorId').textbox('addClearBtn', 'icon-clear');
 			queryGrid();
-		})
+		});
