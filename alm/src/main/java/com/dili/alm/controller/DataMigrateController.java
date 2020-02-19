@@ -77,6 +77,7 @@ public class DataMigrateController {
 		
 		//数据更新，用户相关表
 		int  num=moveService.updateData(null,id);
+		System.out.println(num);
 		if(num==1)
 			return BaseOutput.success("已经迁移");
 		if(num==-1)
@@ -85,7 +86,9 @@ public class DataMigrateController {
 		    return BaseOutput.success("alm用户不存在");
 		if(num==8)
 		    return BaseOutput.success("远程almuser调用失败");
-		return BaseOutput.success("修改成功");
+		if(num==0)
+		    return BaseOutput.success("迁移成功");
+		return BaseOutput.success("成功");
 	}
 	@ApiOperation(value = "uap用戶遷移", notes = "查询uap用戶返回列表信息")
 	@RequestMapping(value = "/updateDataList", method = { RequestMethod.GET, RequestMethod.POST })
