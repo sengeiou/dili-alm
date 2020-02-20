@@ -203,7 +203,7 @@ public class DataMigrateImpl implements DataMigrateService {
 			//	moveLogTableMapper.insertSelective(dto);
 				
 				approve.setModifyMemberId(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				    approveMapper.updateByPrimaryKeySelective(approve);
 				}
@@ -223,7 +223,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setTableName("files");// 设为常量
 			//	moveLogTableMapper.insertSelective(dto);
 				approve.setCreateMemberId(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				    filesMapper.updateByPrimaryKeySelective(approve);
 				}
@@ -243,7 +243,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				file.setModifyMemberId(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				    filesMapper.updateByPrimaryKeySelective(file);
 				}
@@ -265,7 +265,7 @@ public class DataMigrateImpl implements DataMigrateService {
 			//	moveLogTableMapper.insertSelective(dto);
 				
 				object.setOperatorId(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				    hardwareApplyOperationRecordMapper.updateByPrimaryKeySelective(object);
 				}
@@ -285,7 +285,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setMaintenanceOwner(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				   hardwareResourceMapper.updateByPrimaryKeySelective(object);
 				}
@@ -304,7 +304,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setOperatorId(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				    logMapper.updateByPrimaryKeySelective(object);
 				}
@@ -324,7 +324,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setProjectManager(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				    projectMapper.updateByPrimaryKeySelective(object);
 				}
@@ -344,7 +344,7 @@ public class DataMigrateImpl implements DataMigrateService {
 			//	moveLogTableMapper.insertSelective(dto);
 				
 				object.setDevelopManager(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				   projectMapper.updateByPrimaryKeySelective(object);
 				}
@@ -364,7 +364,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setTestManager(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				  projectMapper.updateByPrimaryKeySelective(object);
 				}
@@ -384,7 +384,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				
 
 				object.setProductManager(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				    projectMapper.updateByPrimaryKeySelective(object);
 				}
@@ -403,7 +403,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setOriginator(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				    projectMapper.updateByPrimaryKeySelective(object);
 				}
@@ -423,7 +423,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setDep(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				   projectMapper.updateByPrimaryKeySelective(object);
 				}
@@ -442,7 +442,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setBusinessOwner(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				    projectMapper.updateByPrimaryKeySelective(object);
 				}
@@ -462,7 +462,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setProjectLeader(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				   projectApplyMapper.updateByPrimaryKeySelective(object);
 				}
@@ -482,7 +482,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				object.setProductManager(uapUserId);
 				
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				   projectApplyMapper.updateByPrimaryKeySelective(object);
 				}
@@ -501,7 +501,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setDevelopmentManager(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				    projectApplyMapper.updateByPrimaryKeySelective(object);
 				}
@@ -519,7 +519,7 @@ public class DataMigrateImpl implements DataMigrateService {
 			//	moveLogTableMapper.insertSelective(dto);
 				
 				object.setTestManager(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				   projectApplyMapper.updateByPrimaryKeySelective(object);
 				}
@@ -538,7 +538,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				
 				object.setBusinessOwner(uapUserId);
 				
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				    projectApplyMapper.updateByPrimaryKeySelective(object);
 				}
@@ -559,7 +559,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				
 				object.setCreateMemberId(uapUserId);
 				
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				    projectChangeMapper.updateByPrimaryKeySelective(object);
 				}
@@ -578,7 +578,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setModifyMemberId(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				   projectChangeMapper.updateByPrimaryKeySelective(object);
 				 }
@@ -598,7 +598,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setTableName("project_complete");// 设为常量
 				//moveLogTableMapper.insertSelective(dto);
 				object.setCreateMemberId(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				    projectCompleteMapper.updateByPrimaryKeySelective(object);
 				}
@@ -619,7 +619,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setModifyMemberId(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				   projectCompleteMapper.updateByPrimaryKeySelective(object);
 				}
@@ -641,7 +641,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setBusinessOwnerId(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				    projectOnlineApplyMapper.updateByPrimaryKeySelective(object);
 				}
@@ -661,7 +661,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setProductManagerId(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				   projectOnlineApplyMapper.updateByPrimaryKeySelective(object);
 				}
@@ -681,7 +681,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				moveLogTableMapper.insertSelective(dto);
 				
 				object.setTestManagerId(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				    projectOnlineApplyMapper.updateByPrimaryKeySelective(object);
 				}
@@ -701,7 +701,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setDevelopmentManagerId(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				  projectOnlineApplyMapper.updateByPrimaryKeySelective(object);
 				}
@@ -720,7 +720,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setApplicantId(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				projectOnlineApplyMapper.updateByPrimaryKeySelective(object);
 				}
@@ -748,7 +748,7 @@ public class DataMigrateImpl implements DataMigrateService {
 					object.setExecutorId(strList.toString());//带处理
 					
 				}
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				    projectOnlineApplyMapper.updateByPrimaryKeySelective(object);
 				}
@@ -768,7 +768,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setOperatorId(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				   projectOnlineOperationRecordMapper.updateByPrimaryKeySelective(object);
 				}
@@ -789,7 +789,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setManagerId(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				    projectOnlineSubsystemMapper.updateByPrimaryKeySelective(object);
 				}
@@ -822,7 +822,7 @@ public class DataMigrateImpl implements DataMigrateService {
 					
 				}
 				//object.setManagerName(object.getManagerName().replace(object.getManagerName(), userTempManagerId.getData().getRealName()));
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				    projectOnlineSubsystemMapper.updateByPrimaryKeySelective(object);
 				}
@@ -843,7 +843,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setCreatorId(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				    projectVersionMapper.updateByPrimaryKeySelective(object);
 				}
@@ -861,7 +861,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setModifierId(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				   projectVersionMapper.updateByPrimaryKeySelective(object);
 				}
@@ -881,7 +881,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setOwner(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				taskMapper.updateByPrimaryKeySelective(object);
 				}
@@ -899,7 +899,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				object.setCreateMemberId(uapUserId);
 				
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 					
 				taskMapper.updateByPrimaryKeySelective(object);
@@ -919,7 +919,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				
 				object.setModifyMemberId(uapUserId);
 				
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				taskMapper.updateByPrimaryKeySelective(object);
 				}
@@ -939,7 +939,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setCreateMemberId(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				taskDetailsMapper.updateByPrimaryKeySelective(object);
 				}
@@ -957,7 +957,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setModifyMemberId(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				   taskDetailsMapper.updateByPrimaryKeySelective(object);
 				}
@@ -978,7 +978,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setMemberId(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				    teamMapper.updateByPrimaryKeySelective(object);
 				}
@@ -996,7 +996,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setApplicantId(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				    travelCostApplyMapper.updateByPrimaryKeySelective(object);
 				}
@@ -1017,7 +1017,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setTableName("travel_cost_apply");// 设为常量
 				//moveLogTableMapper.insertSelective(dto);
 				object.setDepartmentId(userTemp.getData().getDepartmentId());
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				  travelCostApplyMapper.updateByPrimaryKeySelective(object);
 				}
@@ -1036,7 +1036,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setDepartmentId(userTemp.getData().getDepartmentId());
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				   travelCostApplyMapper.updateByPrimaryKeySelective(object);
 				}
@@ -1057,7 +1057,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				
 				object.setApproveId(uapUserId);
 				
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				  verifyApprovalMapper.updateByPrimaryKeySelective(object);
 				}
@@ -1077,7 +1077,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				
 				object.setCreateMemberId(uapUserId);
 				
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				   verifyApprovalMapper.updateByPrimaryKeySelective(object);
 				}
@@ -1096,7 +1096,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setModifyMemberId(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				    verifyApprovalMapper.updateByPrimaryKeySelective(object);
 				}
@@ -1116,7 +1116,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				
 				object.setCreateMemberId(uapUserId);
 				
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				weeklyMapper.updateByPrimaryKeySelective(object);
 				}
@@ -1134,7 +1134,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setModifyMemberId(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				weeklyMapper.updateByPrimaryKeySelective(object);
 				}
@@ -1153,7 +1153,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setAcceptorId(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				workOrderMapper.updateByPrimaryKeySelective(object);
 				}
@@ -1186,7 +1186,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				}
 				//object.setCopyUserId(str.replace(userId+"", uapUserId+""));
 				
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				workOrderMapper.updateByPrimaryKeySelective(object);
 				}
@@ -1205,7 +1205,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setApplicantId(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				workOrderMapper.updateByPrimaryKeySelective(object);
 				}
@@ -1223,7 +1223,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setExecutorId(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				workOrderMapper.updateByPrimaryKeySelective(object);
 				}
@@ -1245,7 +1245,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				//moveLogTableMapper.insertSelective(dto);
 				
 				object.setOperatorId(uapUserId);
-				if(moveLogTableMapper.select(dto)==null) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				workOrderOperationRecordMapper.updateByPrimaryKeySelective(object);
 				}
