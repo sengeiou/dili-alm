@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>alm</artifactId>
@@ -238,14 +237,13 @@
 		</dependency>
 
 		<!-- 内部包 -->
-		<!-- <dependency> <groupId>com.dili</groupId> <artifactId>almadmin-sdk</artifactId> 
-			<version>${project.parent.version}</version> <exclusions> <exclusion> <groupId>com.sun.mail</groupId> 
-			<artifactId>javax.mail</artifactId> </exclusion> </exclusions> </dependency> -->
+		<!-- <dependency> <groupId>com.dili</groupId> <artifactId>almadmin-sdk</artifactId> <version>${project.parent.version}</version> <exclusions> <exclusion> <groupId>com.sun.mail</groupId> <artifactId>javax.mail</artifactId> 
+			</exclusion> </exclusions> </dependency> -->
 
 		<dependency>
 			<artifactId>uap-sdk</artifactId>
 			<groupId>com.dili</groupId>
-			<version>2.6.1-SNAPSHOT</version>
+			<version>2.6.2-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
 					<groupId>com.sun.mail</groupId>
@@ -253,25 +251,26 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
- 	    <dependency>
-			  <groupId>com.dili</groupId>
-            <artifactId>bpmc-sdk</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-		</dependency>
-		
-		<!--  <dependency>  
-          <groupId>com.sun</groupId>  
-          <artifactId>tools</artifactId>  
-          <version>1.8.0_161</version>  
-          <scope>system</scope>         
-          <systemPath>C:/Program Files/Java/jdk1.8.0_161/lib/tools.jar</systemPath>  
-      </dependency> -->
-			<!-- 中文转 英文 jar -->
+
 		<dependency>
-		    <groupId>com.belerweb</groupId>
-		    <artifactId>pinyin4j</artifactId>
-		    <version>2.5.0</version>
+			<groupId>com.dili</groupId>
+			<artifactId>bpmc-sdk</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>uap-sdk</artifactId>
+					<groupId>com.dili</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- <dependency> <groupId>com.sun</groupId> <artifactId>tools</artifactId> <version>1.8.0_161</version> <scope>system</scope> <systemPath>C:/Program Files/Java/jdk1.8.0_161/lib/tools.jar</systemPath> 
+			</dependency> -->
+		<!-- 中文转 英文 jar -->
+		<dependency>
+			<groupId>com.belerweb</groupId>
+			<artifactId>pinyin4j</artifactId>
+			<version>2.5.0</version>
 		</dependency>
 	</dependencies>
 
