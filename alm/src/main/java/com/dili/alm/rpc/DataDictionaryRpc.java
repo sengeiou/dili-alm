@@ -24,7 +24,7 @@ public interface DataDictionaryRpc {
 	BaseOutput<UapDataDictionaryDto> findByCode(@VOField("code") String code,@VOField("systemCode") String systemCode);
 	
 	
-	@POST("/dataDictionaryApi/listDataDictionaryValue.api") 
+	@POST("/dataDictionaryApi/list.api") 
 	BaseOutput<List<DataDictionaryValue>> listDataDictionaryValue(@VOBody DataDictionaryValue dataDictionaryValue);
 	
 	@POST("/dataDictionaryApi/listDataDictionary.api") 
