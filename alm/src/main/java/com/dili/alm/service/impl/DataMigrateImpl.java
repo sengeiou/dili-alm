@@ -197,7 +197,7 @@ public class DataMigrateImpl implements DataMigrateService {
 			
 			
 			MoveLogTable dto =new MoveLogTable();
-			/*// approve
+			// approve
 			Approve record = DTOUtils.newDTO(Approve.class);
 				    record.setCreateMemberId(userId);
 			List<Approve> listCreateMember = approveMapper.select(record);
@@ -550,10 +550,10 @@ public class DataMigrateImpl implements DataMigrateService {
 				}
 				
 			}
-			*/
+		
 			// project_apply:立项申请表
 			ProjectApply projectApply = DTOUtils.newDTO(ProjectApply.class);
-/*			projectApply.setProjectLeader(userId);
+			projectApply.setProjectLeader(userId);
 			List<ProjectApply> listProjectApply = projectApplyMapper.select(projectApply);
 			for (ProjectApply object : listProjectApply) {
 
@@ -689,7 +689,7 @@ public class DataMigrateImpl implements DataMigrateService {
 					moveLogTableMapper.insertSelective(dto);
 				    projectApplyMapper.updateByPrimaryKeySelective(object);
 				}
-			}*/
+			}
 			
 			
 			projectApply.setModifyMemberId(null);
@@ -713,6 +713,7 @@ public class DataMigrateImpl implements DataMigrateService {
 						}
 						resourceRequire.setRelatedResources(list);
 					}
+					object.setResourceRequire(JSON.toJSONString(resourceRequire));
 					projectApplyMapper.updateByPrimaryKeySelective(object);
 				}
 			
@@ -2427,7 +2428,7 @@ public class DataMigrateImpl implements DataMigrateService {
 			}
 		}
 
-*/
+
 		/*
 		 * /// project_apply:立项申请表
 		 * 
@@ -2635,26 +2636,31 @@ public class DataMigrateImpl implements DataMigrateService {
 		for (WorkOrder object : listWeeklyCopyUserId) {
 		
 			String str=object.getCopyUserId();
-			object.setCopyUserId(str.replace("--",""));
-			workOrderMapper.updateByPrimaryKeySelective(object);
+			if(object.getCopyUserId()!=null) {
+			  object.setCopyUserId(str.replace("--",""));
+			  workOrderMapper.updateByPrimaryKeySelective(object);
+			}
 		}
 		
 	
 		List<ProjectOnlineSubsystem> listprojectManagerName = projectOnlineSubsystemMapper.selectAll();
 		for (ProjectOnlineSubsystem object : listprojectManagerName) {
-			object.setManagerName(object.getManagerName().replace("--", ""));
-			projectOnlineSubsystemMapper.updateByPrimaryKeySelective(object);
+			if(object.getManagerName()!=null) {
+			  object.setManagerName(object.getManagerName().replace("--", ""));
+			  projectOnlineSubsystemMapper.updateByPrimaryKeySelective(object);
+			}
 		}
 		List<ProjectApply> listProjectAll = projectApplyMapper.selectAll();
 		ProjectApply projectApply;
 		for (ProjectApply object : listProjectAll) {
 			String str=object.getResourceRequire();
 			//object.setResourceRequire(str.replace("--",""));
-			
-			projectApply = DTOUtils.newDTO(ProjectApply.class);
-			projectApply.setId(object.getId());
-			projectApply.setResourceRequire(str.replace("--",""));
-			projectApplyMapper.updateByPrimaryKeySelective(projectApply);
+			if(str!=null) {
+				projectApply = DTOUtils.newDTO(ProjectApply.class);
+				projectApply.setId(object.getId());
+				projectApply.setResourceRequire(str.replace("--",""));
+				projectApplyMapper.updateByPrimaryKeySelective(projectApply);
+			}
 		}
 		
 		
