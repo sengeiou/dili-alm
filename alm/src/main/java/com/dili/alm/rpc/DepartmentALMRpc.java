@@ -1,6 +1,7 @@
 package com.dili.alm.rpc;
 
 import com.dili.uap.sdk.domain.Department;
+import com.dili.alm.domain.DepartmentALM;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.retrofitful.annotation.POST;
 import com.dili.ss.retrofitful.annotation.Restful;
@@ -24,7 +25,7 @@ public interface DepartmentALMRpc {
 	BaseOutput<List<Department>> findByUserId(@VOBody Long userId);
 	
 	@POST("/api/department/list")
-	BaseOutput<List<Department>> list(@VOBody Department department );
+	BaseOutput<List<DepartmentALM>> list(@VOBody DepartmentALM department );
 	
 	
 	

@@ -36,6 +36,7 @@ import com.dili.alm.dao.WorkOrderMapper;
 import com.dili.alm.dao.WorkOrderOperationRecordMapper;
 import com.dili.alm.domain.AlmUser;
 import com.dili.alm.domain.Approve;
+import com.dili.alm.domain.DepartmentALM;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.HardwareApplyOperationRecord;
 import com.dili.alm.domain.HardwareResource;
@@ -268,8 +269,8 @@ public class DataMigrateImpl implements DataMigrateService {
 			Department depRPC= DTOUtils.newDTO(Department.class);
 			depRPC.setFirmCode("szpt");
 			
-			Department localDept= DTOUtils.newDTO(Department.class);
-			List<Department>  listAlmRpc=departmentALMRpc.list(localDept).getData();
+			DepartmentALM localDept= new DepartmentALM();
+			List<DepartmentALM>  listAlmRpc=departmentALMRpc.list(localDept).getData();
 			List<Department>  listUapRpc=  departmentUapRpc.listByDepartment(depRPC).getData();
 			
 			
@@ -282,10 +283,12 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileField("dep");// 设为常量
 				dto.setTableName("approve");// 设为常量
 				  if(moveLogTableMapper.select(dto).size()==0) {
+					  if(approve.getDep()!=null) {
 					    Long  uapDeId=getUapDept(listAlmRpc, listUapRpc, approve.getDep().toString());
 						approve.setDep(uapDeId);
 					    moveLogTableMapper.insertSelective(dto);
 				        approveMapper.updateByPrimaryKeySelective(approve);
+					  }
 					
 				  }
 			
@@ -1495,8 +1498,8 @@ public class DataMigrateImpl implements DataMigrateService {
 	
 	}
 
-	private Long getUapDept(List<Department> listAlmRpc, List<Department> listUapRpc, String object) {
-		for (Department department : listAlmRpc) {
+	private Long getUapDept(List<DepartmentALM> listAlmRpc, List<Department> listUapRpc, String object) {
+		for (DepartmentALM department : listAlmRpc) {
 			if(department.getId().toString().equals(object)) {
 				for (Department uapDep : listUapRpc) {
 					if(department.getCode().equals(uapDep.getCode())) {
