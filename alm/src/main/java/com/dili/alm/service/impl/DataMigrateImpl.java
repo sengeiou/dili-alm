@@ -267,7 +267,9 @@ public class DataMigrateImpl implements DataMigrateService {
 			List<Department>  uapUserIdDept=departmentUapRpc.findByUserId(uapUserId).getData();*/
 			Department depRPC= DTOUtils.newDTO(Department.class);
 			depRPC.setFirmCode("szpt");
-			List<Department>  listAlmRpc=departmentALMRpc.list(null).getData();
+			
+			Department localDept= DTOUtils.newDTO(Department.class);
+			List<Department>  listAlmRpc=departmentALMRpc.list(localDept).getData();
 			List<Department>  listUapRpc=  departmentUapRpc.listByDepartment(depRPC).getData();
 			
 			
@@ -308,7 +310,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				}
 				
 			}
-			
+			/*
 			// files
 
 		   Files files = DTOUtils.newDTO(Files.class);
@@ -1330,10 +1332,10 @@ public class DataMigrateImpl implements DataMigrateService {
 					workOrderMapper.updateByPrimaryKeySelective(object);
 				}
 			  
-			/*	if(moveLogTableMapper.select(dto).size()==0) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				
-				}*/
+				}
 				
 			}
 
@@ -1393,7 +1395,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				    workOrderOperationRecordMapper.updateByPrimaryKeySelective(object);
 				}
 			}
-
+*/
 			/*
 			 * approve:审批表，包含立项审批，变更审批，结项审批的数据 project_leader->用户 business_owner->用户
 			 * 
