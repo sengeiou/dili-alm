@@ -20,10 +20,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Restful("http://alm.diligrp.com")
 public interface DepartmentALMRpc {
 	
-	@POST("/departmentApi/findByUserId.api")
+	@POST("/api/departmentApi/findByUserId.api")
 	BaseOutput<List<Department>> findByUserId(@VOBody Long userId);
 	
-	@POST("/departmentApi/list.api")
+	@POST("/api/departmentApi/list.api")
 	BaseOutput<List<Department>> list(@VOBody Department department );
 	
 	
