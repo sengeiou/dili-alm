@@ -23,8 +23,8 @@ public interface DepartmentRpc {
 	@POST("/departmentApi/getOne.api")
 	BaseOutput<Department> getOne(@VOBody(required = false) Department department);
 
-/*	@POST("/api/departmentApi/listByExample.api")
-	BaseOutput<Department> listByExample(@VOBody(required = false) Long memberId);*/
+	@POST("/api/departmentApi/listByExample.api")
+	BaseOutput<Department> listByExample(@VOBody(required = false) Long memberId);
 	
 /*	@POST("/api/departmentApi/findByUserId")
 	BaseOutput<Department> findByUserId(@VOBody(required = false) Long memberId);

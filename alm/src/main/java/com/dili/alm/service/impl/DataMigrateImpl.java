@@ -59,6 +59,9 @@ import com.dili.alm.domain.WorkOrder;
 import com.dili.alm.domain.WorkOrderOperationRecord;
 import com.dili.alm.domain.dto.apply.ApplyApprove;
 import com.dili.alm.domain.dto.apply.ApplyApproveMove;
+import com.dili.alm.domain.dto.apply.ApplyMajorResource;
+import com.dili.alm.domain.dto.apply.ApplyMajorResourceMove;
+import com.dili.alm.domain.dto.apply.ApplyRelatedResource;
 import com.dili.alm.rpc.AlmUserRpc;
 import com.dili.alm.rpc.DepartmentALMRpc;
 import com.dili.alm.rpc.DepartmentRpc;
@@ -677,7 +680,27 @@ public class DataMigrateImpl implements DataMigrateService {
 			}
 			
 			
-
+			projectApply.setModifyMemberId(null);
+			List<ProjectApply> listProjectAll = projectApplyMapper.selectAll();
+			for (ProjectApply object : listProjectAll) {
+    
+				if(object.getResourceRequire()!=null) {
+					ApplyMajorResourceMove resourceRequire = JSON.parseObject(object.getResourceRequire(), ApplyMajorResourceMove.class);
+					if(resourceRequire.getMainUser().equals(userId.toString())) {
+						resourceRequire.setMainUser(uapUserId+"--");
+					}
+					List<ApplyRelatedResource> list=resourceRequire.getRelatedResources();
+					for (ApplyRelatedResource applyRelatedResource : list) {
+						
+						if(applyRelatedResource.getRelatedUser().equals(userId.toString())) {
+							applyRelatedResource.setRelatedUser(uapUserId+"--");
+						}
+					}
+					resourceRequire.setRelatedResources(list);
+					
+				}
+			
+			}
 			
 			///////// project_change
 
@@ -1116,12 +1139,19 @@ public class DataMigrateImpl implements DataMigrateService {
 				    travelCostApplyMapper.updateByPrimaryKeySelective(object);
 				}
 			}
-			/*
+			
 			// 需要重新写
 			/// 需要重新写
 			//List<Department>  userIdDept=departmentALMRpc.findByUserId(userId).getData();
 			//List<Department>  uapUserIdDept=departmentUapRpc.findByUserId(uapUserId).getData();
-			/*travelCostApply.setRootDepartemntId(userIdDept.get(0).getParentId());
+			
+			Department depRPC= DTOUtils.newDTO(Department.class);
+			depRPC.setFirmCode("szpt");
+			List<Department>  listAlmRpc=departmentALMRpc.list(null).getData();
+			List<Department>  listUapRpc=  departmentUapRpc.listByDepartment(depRPC).getData();
+			
+			
+			travelCostApply.setRootDepartemntId(userIdDept.get(0).getParentId());
 			List<TravelCostApply> listtraveRootDepartemntId = travelCostApplyMapper.select(travelCostApply);
 			for (TravelCostApply object : listtraveRootDepartemntId) {
 
@@ -1129,29 +1159,59 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("root_departemnt_id");// 设为常量
 				dto.setTableName("travel_cost_apply");// 设为常量
+				
 				if(moveLogTableMapper.select(dto).size()==0) {
-					object.setDepartmentId(uapUserIdDept.get(0).getParentId());
+					if(object.getRootDepartemntId()!=null) {
+						for (Department department : listAlmRpc) {
+							if(department.getId().toString().equals(object.getRootDepartemntId().toString())) {
+								
+								for (Department uapDep : listUapRpc) {
+									if(department.getCode().equals(uapDep.getCode())) {
+										object.setRootDepartemntId(uapDep.getId());
+									}
+									
+								}
+							}
+						}
+						
+					}
 					moveLogTableMapper.insertSelective(dto);
 				    travelCostApplyMapper.updateByPrimaryKeySelective(object);
 				}
-			}*/
+			}
   
 		
 			travelCostApply.setRootDepartemntId(null);
 			if(userIdDept!=null&&userIdDept.size()!=0) {
 				travelCostApply.setDepartmentId(userIdDept.get(0).getId());
-				List<TravelCostApply> travelCostApplyRootDepartemntId = travelCostApplyMapper.select(travelCostApply);
-				for (TravelCostApply object : travelCostApplyRootDepartemntId) {
+				List<TravelCostApply> travelCostApplyDepartemntId = travelCostApplyMapper.select(travelCostApply);
+				for (TravelCostApply object : travelCostApplyDepartemntId) {
 	
 					dto =new MoveLogTable();
 					dto.setFileId(object.getId());
 					dto.setFileField("department_id");// 设为常量
 					dto.setTableName("travel_cost_apply");// 设为常量
 					
-					object.setDepartmentId(uapUserIdDept.get(0).getId());
 					if(moveLogTableMapper.select(dto).size()==0) {
+						
+						if(object.getDepartmentId()!=null) {
+							for (Department department : listAlmRpc) {
+								if(department.getId().toString().equals(object.getRootDepartemntId().toString())) {
+									
+									for (Department uapDep : listUapRpc) {
+										if(department.getCode().equals(uapDep.getCode())) {
+											object.setDepartmentId(uapDep.getId());
+										}
+										
+									}
+								}
+							}
+							
+						}
+						
+						
 						moveLogTableMapper.insertSelective(dto);
-					   travelCostApplyMapper.updateByPrimaryKeySelective(object);
+					    travelCostApplyMapper.updateByPrimaryKeySelective(object);
 					}
 				}
 			}
@@ -1284,7 +1344,7 @@ public class DataMigrateImpl implements DataMigrateService {
 					}
 					com.alibaba.fastjson.JSONArray  studentJsonArray = JSON.parseArray(JSONObject.toJSONString(list));
 					object.setCopyUserId(studentJsonArray.toString());//带处理
-					  workOrderMapper.updateByPrimaryKeySelective(object);
+					workOrderMapper.updateByPrimaryKeySelective(object);
 				}
 			  
 			/*	if(moveLogTableMapper.select(dto).size()==0) {
@@ -2568,7 +2628,12 @@ public class DataMigrateImpl implements DataMigrateService {
 			object.setManagerName(object.getManagerName().replace("--", ""));
 			projectOnlineSubsystemMapper.updateByPrimaryKeySelective(object);
 		}
-		
+		List<ProjectApply> listProjectAll = projectApplyMapper.selectAll();
+		for (ProjectApply object : listProjectAll) {
+			String str=object.getResourceRequire();
+			object.setResourceRequire(str.replace("--",""));
+			projectApplyMapper.updateByPrimaryKeySelective(object);
+		}
 		
 		
 		return 1;
