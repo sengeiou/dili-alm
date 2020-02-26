@@ -78,8 +78,8 @@ public class DataMigrateController {
 		//数据更新，用户相关表
 		int  num=moveService.updateData(null,id);
 		System.out.println(num);
-		if(num==1)
-			return BaseOutput.success("已经迁移");
+		//if(num==1)
+		//	return BaseOutput.success("已经迁移");
 		if(num==-1)
 		    return BaseOutput.success("迁移失败");
 		if(num==2)

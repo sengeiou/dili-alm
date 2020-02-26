@@ -114,12 +114,12 @@
   
    <select id="selectWorkOrdeByCopyUserId" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
-    <include refid="Base_Column_List" />
-    from work_order
-    where copy_user_id REGEXP #{uapUserId,jdbcType=BIGINT};
+     <include refid="Base_Column_List" />
+      from work_order
+       where copy_user_id REGEXP #{uapUserId,jdbcType=BIGINT} 
   </select>
   
-  
+ <!-- and copy_user_id  NOT  REGEXP '[abc]' --> 
   
   
 </mapper>

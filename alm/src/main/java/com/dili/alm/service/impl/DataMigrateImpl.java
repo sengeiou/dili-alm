@@ -1,7 +1,10 @@
 package com.dili.alm.service.impl;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,13 +57,19 @@ import com.dili.alm.domain.VerifyApproval;
 import com.dili.alm.domain.Weekly;
 import com.dili.alm.domain.WorkOrder;
 import com.dili.alm.domain.WorkOrderOperationRecord;
+import com.dili.alm.domain.dto.apply.ApplyApprove;
+import com.dili.alm.domain.dto.apply.ApplyApproveMove;
 import com.dili.alm.rpc.AlmUserRpc;
+import com.dili.alm.rpc.DepartmentALMRpc;
+import com.dili.alm.rpc.DepartmentRpc;
 import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataMigrateService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.PageOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.uap.sdk.domain.Department;
 import com.dili.uap.sdk.domain.User;
+import com.dili.uap.sdk.session.SessionContext;
 
 @Service
 public class DataMigrateImpl implements DataMigrateService {
@@ -136,13 +145,18 @@ public class DataMigrateImpl implements DataMigrateService {
 	
 	@Autowired
 	private  UserRpc  userRpc ;
-
+	
+    @Autowired
+	private DepartmentRpc  departmentUapRpc;
+    @Autowired
+	private  DepartmentALMRpc  departmentALMRpc;
 	@Override
 	@Transactional
 	public int updateData(Long userId, Long uapUserId) {// userId 本地userId, uapUserId
 		
 		try {
 			BaseOutput<User>  uapUser=userRpc.findUserById(uapUserId);
+		//	uapUser.getData().set
 			String  phone=uapUser.getData().getCellphone();
 			String  realName=uapUser.getData().getUserName();
 			AlmUser  localUser= new AlmUser();
@@ -161,17 +175,17 @@ public class DataMigrateImpl implements DataMigrateService {
    
 			//uapUserId 和本地userId转换 在页面
 			
-			int  num=getDataIsExistence(uapUserId);//再次查询，使用uapUserId 查询，看看是否迁移过的
+			/*int  num=getDataIsExistence(uapUserId);//再次查询，使用uapUserId 查询，看看是否迁移过的
 			if(num==1) {//已经迁移过
 				return 1;
-			}
+			}*/
 			//
 
 			
 			MoveLogTable dto =new MoveLogTable();
 			// approve
 			Approve record = DTOUtils.newDTO(Approve.class);
-			record.setCreateMemberId(userId);
+		    record.setCreateMemberId(userId);
 			List<Approve> listCreateMember = approveMapper.select(record);
 			for (Approve approve : listCreateMember) {
 
@@ -179,19 +193,16 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(approve.getId());
 				dto.setFileField("create_member_id");// 设为常量
 				dto.setTableName("approve");// 设为常量
-				
-				approve.setCreateMemberId(uapUserId);
-				
-				
 				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
+					approve.setCreateMemberId(uapUserId);
 					approveMapper.updateByPrimaryKeySelective(approve);
 				}
 				
 			}
 
 			record.setCreateMemberId(null);
-			record.setModifyMemberId(uapUserId);
+			record.setModifyMemberId(userId);
 			List<Approve> listModifyMember = approveMapper.select(record);
 
 			for (Approve approve : listModifyMember) {
@@ -200,7 +211,6 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(approve.getId());
 				dto.setFileField("modify_member_id");// 设为常量
 				dto.setTableName("approve");// 设为常量
-			//	moveLogTableMapper.insertSelective(dto);
 				
 				approve.setModifyMemberId(uapUserId);
 				if(moveLogTableMapper.select(dto).size()==0) {
@@ -210,9 +220,88 @@ public class DataMigrateImpl implements DataMigrateService {
 				
 			
 			}
+			record.setModifyMemberId(null);
+			record.setBusinessOwner(userId);
+			List<Approve> lisbusiness_owner = approveMapper.select(record);
+			for (Approve approve : lisbusiness_owner) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(approve.getId());
+				dto.setFileField("business_owner");// 设为常量
+				dto.setTableName("approve");// 设为常量
+				
+				approve.setBusinessOwner(uapUserId);
+				if(moveLogTableMapper.select(dto).size()==0) {
+					moveLogTableMapper.insertSelective(dto);
+				    approveMapper.updateByPrimaryKeySelective(approve);
+				}
+				
+			
+			}
+			
+			record.setBusinessOwner(null);
+			record.setProjectLeader(userId);
+			List<Approve> project_leader = approveMapper.select(record);
+			for (Approve approve : project_leader) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(approve.getId());
+				dto.setFileField("project_leader");// 设为常量
+				dto.setTableName("approve");// 设为常量
+				
+				approve.setProjectLeader(uapUserId);
+				if(moveLogTableMapper.select(dto).size()==0) {
+					moveLogTableMapper.insertSelective(dto);
+				    approveMapper.updateByPrimaryKeySelective(approve);
+				}
+				
+			
+			}
+			
+			record.setProjectLeader(null);
+			
+			List<Department>  userIdDept=departmentALMRpc.findByUserId(userId).getData();
+			List<Department>  uapUserIdDept=departmentUapRpc.findByUserId(uapUserId).getData();
+			if(userIdDept!=null&&userIdDept.size()>0) {
+				record.setDep(userIdDept.get(0).getId());
+				List<Approve> projectDept = approveMapper.select(record);
+				for (Approve approve : projectDept) {
+
+					dto =new MoveLogTable();
+					dto.setFileId(approve.getId());
+					dto.setFileField("dep");// 设为常量
+					dto.setTableName("approve");// 设为常量
+					if(moveLogTableMapper.select(dto).size()==0) {
+						if(uapUserIdDept!=null&&uapUserIdDept.size()>0) {
+							approve.setProjectLeader(uapUserIdDept.get(0).getId());
+						    moveLogTableMapper.insertSelective(dto);
+					        approveMapper.updateByPrimaryKeySelective(approve);
+						}
+					}
+					
+				
+				}	
+			}
+			//sgq
+			record.setDep(null);
+			List<Approve> approveDescription = approveMapper.selectAll();
+			for (Approve approve : approveDescription) {
+				if (StringUtils.isNotBlank(approve.getDescription())) {
+					List<ApplyApproveMove> approveList = JSON.parseArray(approve.getDescription(), ApplyApproveMove.class);
+					for (ApplyApproveMove applyApprove : approveList) {
+						 if(applyApprove.getUserId().equals(userId.toString())) {
+							 applyApprove.setUserId(uapUserId+"--"); 
+						 }
+					}
+					approve.setDescription(JSON.toJSONString(approveList));
+					approveMapper.updateByPrimaryKeySelective(approve);
+				}
+				
+			}
+			
 			// files
 
-			Files files = DTOUtils.newDTO(Files.class);
+		   Files files = DTOUtils.newDTO(Files.class);
 			files.setCreateMemberId(userId);
 			List<Files> listFilesCreateMember = filesMapper.select(files);
 			for (Files approve : listFilesCreateMember) {
@@ -221,9 +310,8 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(approve.getId());
 				dto.setFileField("create_member_id");// 设为常量
 				dto.setTableName("files");// 设为常量
-			//	moveLogTableMapper.insertSelective(dto);
-				approve.setCreateMemberId(uapUserId);
 				if(moveLogTableMapper.select(dto).size()==0) {
+					approve.setCreateMemberId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
 				    filesMapper.updateByPrimaryKeySelective(approve);
 				}
@@ -240,10 +328,10 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(file.getId());
 				dto.setFileField("modify_member_id");// 设为常量
 				dto.setTableName("files");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
 				
-				file.setModifyMemberId(uapUserId);
+				
 				if(moveLogTableMapper.select(dto).size()==0) {
+					file.setModifyMemberId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
 				    filesMapper.updateByPrimaryKeySelective(file);
 				}
@@ -251,19 +339,16 @@ public class DataMigrateImpl implements DataMigrateService {
 			}
 
 			///// hardware_apply_operation_record
-
+				
 			HardwareApplyOperationRecord hardwareApplyOperationRecord = DTOUtils.newDTO(HardwareApplyOperationRecord.class);
 			hardwareApplyOperationRecord.setOperatorId(userId);
-			List<HardwareApplyOperationRecord> lisHardwareApplyOperationRecordCreateMember = hardwareApplyOperationRecordMapper
-					.select(hardwareApplyOperationRecord);
+			List<HardwareApplyOperationRecord> lisHardwareApplyOperationRecordCreateMember = hardwareApplyOperationRecordMapper.select(hardwareApplyOperationRecord);
 			for (HardwareApplyOperationRecord object : lisHardwareApplyOperationRecordCreateMember) {
 
 				dto =new MoveLogTable();
 				dto.setFileId(object.getId());
 				dto.setFileField("operator_id");// 设为常量
 				dto.setTableName("hardware_apply_operation_record");// 设为常量
-			//	moveLogTableMapper.insertSelective(dto);
-				
 				object.setOperatorId(uapUserId);
 				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
@@ -282,16 +367,15 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("maintenance_owner");// 设为常量
 				dto.setTableName("hardware_resource");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
-				
 				object.setMaintenanceOwner(uapUserId);
 				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				   hardwareResourceMapper.updateByPrimaryKeySelective(object);
 				}
 			}
-
+			
 			// log
+			
 			Log log = DTOUtils.newDTO(Log.class);
 			log.setOperatorId(userId);
 			List<Log> listLog = logMapper.select(log);
@@ -301,15 +385,14 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("operator_id");// 设为常量
 				dto.setTableName("log");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
 				
-				object.setOperatorId(uapUserId);
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setOperatorId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
 				    logMapper.updateByPrimaryKeySelective(object);
 				}
 			}
-
+			
 			//
 			// Project
 			Project project = DTOUtils.newDTO(Project.class);
@@ -321,10 +404,9 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("project_manager");// 设为常量
 				dto.setTableName("project");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
-				
-				object.setProjectManager(uapUserId);
+			
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setProjectManager(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
 				    projectMapper.updateByPrimaryKeySelective(object);
 				}
@@ -341,12 +423,10 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("develop_manager");// 设为常量
 				dto.setTableName("project");// 设为常量
-			//	moveLogTableMapper.insertSelective(dto);
-				
-				object.setDevelopManager(uapUserId);
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setDevelopManager(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
-				   projectMapper.updateByPrimaryKeySelective(object);
+				    projectMapper.updateByPrimaryKeySelective(object);
 				}
 				
 				
@@ -361,12 +441,11 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("test_manager");// 设为常量
 				dto.setTableName("project");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
 				
-				object.setTestManager(uapUserId);
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setTestManager(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
-				  projectMapper.updateByPrimaryKeySelective(object);
+				    projectMapper.updateByPrimaryKeySelective(object);
 				}
 				
 			}
@@ -380,11 +459,10 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("product_manager");// 设为常量
 				dto.setTableName("project");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
-				
 
-				object.setProductManager(uapUserId);
+				
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setProductManager(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
 				    projectMapper.updateByPrimaryKeySelective(object);
 				}
@@ -400,10 +478,9 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("originator");// 设为常量
 				dto.setTableName("project");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
 				
-				object.setOriginator(uapUserId);
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setOriginator(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
 				    projectMapper.updateByPrimaryKeySelective(object);
 				}
@@ -412,25 +489,36 @@ public class DataMigrateImpl implements DataMigrateService {
 			}
 
 			project.setOriginator(null);
-			project.setDep(userId);
-			List<Project> listDep = projectMapper.select(project);
-			for (Project object : listDep) {
-
-				dto =new MoveLogTable();
-				dto.setFileId(object.getId());
-				dto.setFileField("dep");// 设为常量
-				dto.setTableName("project");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
-				
-				object.setDep(uapUserId);
-				if(moveLogTableMapper.select(dto).size()==0) {
-					moveLogTableMapper.insertSelective(dto);
-				   projectMapper.updateByPrimaryKeySelective(object);
+			
+		
+			
+			//List<Department>  userIdDept=departmentALMRpc.findByUserId(userId).getData();
+			//List<Department>  uapUserIdDept=departmentUapRpc.findByUserId(uapUserId).getData();
+		
+			if(userIdDept!=null&&userIdDept.size()!=0) {
+				project.setDep(userIdDept.get(0).getId());
+				List<Project> listDep = projectMapper.select(project);
+				for (Project object : listDep) {
+	
+					dto =new MoveLogTable();
+					dto.setFileId(object.getId());
+					dto.setFileField("dep");// 设为常量
+					dto.setTableName("project");// 设为常量
+					
+					if(moveLogTableMapper.select(dto).size()==0) {
+						if(uapUserIdDept!=null&&uapUserIdDept.size()!=0) {
+						   object.setDep(userIdDept.get(0).getId());
+						   moveLogTableMapper.insertSelective(dto);
+					       projectMapper.updateByPrimaryKeySelective(object);
+						}
+					}
+					
 				}
-				
 			}
-
-			project.setDep(null);
+			
+			
+			
+		   project.setDep(null);
 			project.setBusinessOwner(userId);
 			List<Project> listBusinessOwner = projectMapper.select(project);
 			for (Project object : listBusinessOwner) {
@@ -439,16 +527,16 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("business_owner");// 设为常量
 				dto.setTableName("project");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
 				
-				object.setBusinessOwner(uapUserId);
+				
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setBusinessOwner(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
 				    projectMapper.updateByPrimaryKeySelective(object);
 				}
 				
 			}
-
+			
 			// project_apply:立项申请表
 			ProjectApply projectApply = DTOUtils.newDTO(ProjectApply.class);
 			projectApply.setProjectLeader(userId);
@@ -459,12 +547,10 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("project_leader");// 设为常量
 				dto.setTableName("project_apply");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
-				
-				object.setProjectLeader(uapUserId);
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setProjectLeader(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
-				   projectApplyMapper.updateByPrimaryKeySelective(object);
+				    projectApplyMapper.updateByPrimaryKeySelective(object);
 				}
 				
 				
@@ -479,10 +565,8 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("product_manager");// 设为常量
 				dto.setTableName("project_apply");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
-				object.setProductManager(uapUserId);
-				
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setProductManager(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
 				   projectApplyMapper.updateByPrimaryKeySelective(object);
 				}
@@ -498,10 +582,8 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("development_manager");// 设为常量
 				dto.setTableName("project_apply");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
-				
-				object.setDevelopmentManager(uapUserId);
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setDevelopmentManager(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
 				    projectApplyMapper.updateByPrimaryKeySelective(object);
 				}
@@ -516,12 +598,10 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("test_manager");// 设为常量
 				dto.setTableName("project_apply");// 设为常量
-			//	moveLogTableMapper.insertSelective(dto);
-				
-				object.setTestManager(uapUserId);
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setTestManager(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
-				   projectApplyMapper.updateByPrimaryKeySelective(object);
+				    projectApplyMapper.updateByPrimaryKeySelective(object);
 				}
 			}
 
@@ -534,16 +614,71 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("business_owner");// 设为常量
 				dto.setTableName("project_apply");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
-				
-				object.setBusinessOwner(uapUserId);
-				
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setBusinessOwner(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
 				    projectApplyMapper.updateByPrimaryKeySelective(object);
 				}
 			}
 
+			
+			projectApply.setBusinessOwner(null);
+			if(userIdDept!=null&&userIdDept.size()!=0) {
+				projectApply.setDep(userIdDept.get(0).getId());
+				List<ProjectApply> listDep = projectApplyMapper.select(projectApply);
+				for (ProjectApply object : listDep) {
+	
+					dto =new MoveLogTable();
+					dto.setFileId(object.getId());
+					dto.setFileField("dep");// 设为常量
+					dto.setTableName("project");// 设为常量
+					
+					if(moveLogTableMapper.select(dto).size()==0) {
+						if(uapUserIdDept!=null&&uapUserIdDept.size()!=0) {
+						   object.setDep(userIdDept.get(0).getId());
+						   moveLogTableMapper.insertSelective(dto);
+						   projectApplyMapper.updateByPrimaryKeySelective(object);
+						}
+					}
+					
+				}
+			}
+			projectApply.setDep(null);
+			projectApply.setCreateMemberId(userId);
+			List<ProjectApply> listProjectCreateMemberId = projectApplyMapper.select(projectApply);
+			for (ProjectApply object : listProjectCreateMemberId) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("create_member_id");// 设为常量
+				dto.setTableName("project_apply");// 设为常量
+				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setCreateMemberId(uapUserId);
+					moveLogTableMapper.insertSelective(dto);
+				    projectApplyMapper.updateByPrimaryKeySelective(object);
+				}
+			}
+			
+			
+			projectApply.setCreateMemberId(null);
+			projectApply.setModifyMemberId(userId);
+			List<ProjectApply> listProjectModifyMemberId = projectApplyMapper.select(projectApply);
+			for (ProjectApply object : listProjectModifyMemberId) {
+
+				dto =new MoveLogTable();
+				dto.setFileId(object.getId());
+				dto.setFileField("modify_member_id");// 设为常量
+				dto.setTableName("project_apply");// 设为常量
+				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setModifyMemberId(uapUserId);
+					moveLogTableMapper.insertSelective(dto);
+				    projectApplyMapper.updateByPrimaryKeySelective(object);
+				}
+			}
+			
+			
+
+			
 			///////// project_change
 
 			ProjectChange projectChange = DTOUtils.newDTO(ProjectChange.class);
@@ -555,11 +690,9 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("create_member_id");// 设为常量
 				dto.setTableName("project_change");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
-				
-				object.setCreateMemberId(uapUserId);
 				
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setCreateMemberId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
 				    projectChangeMapper.updateByPrimaryKeySelective(object);
 				}
@@ -575,10 +708,9 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("modify_member_id");// 设为常量
 				dto.setTableName("project_change");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
 				
-				object.setModifyMemberId(uapUserId);
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setModifyMemberId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
 				   projectChangeMapper.updateByPrimaryKeySelective(object);
 				 }
@@ -596,9 +728,8 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("create_member_id");// 设为常量
 				dto.setTableName("project_complete");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
-				object.setCreateMemberId(uapUserId);
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setCreateMemberId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
 				    projectCompleteMapper.updateByPrimaryKeySelective(object);
 				}
@@ -616,12 +747,10 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("modify_member_id");// 设为常量
 				dto.setTableName("project_complete");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
-				
-				object.setModifyMemberId(uapUserId);
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setModifyMemberId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
-				   projectCompleteMapper.updateByPrimaryKeySelective(object);
+				    projectCompleteMapper.updateByPrimaryKeySelective(object);
 				}
 			}
 
@@ -629,8 +758,7 @@ public class DataMigrateImpl implements DataMigrateService {
 
 			ProjectOnlineApply projectOnlineApply = DTOUtils.newDTO(ProjectOnlineApply.class);
 			projectOnlineApply.setBusinessOwnerId(userId);
-			List<ProjectOnlineApply> listProjectOnlineApplyProjectOnlineApply = projectOnlineApplyMapper
-					.select(projectOnlineApply);
+			List<ProjectOnlineApply> listProjectOnlineApplyProjectOnlineApply = projectOnlineApplyMapper.select(projectOnlineApply);
 
 			for (ProjectOnlineApply object : listProjectOnlineApplyProjectOnlineApply) {
 
@@ -638,10 +766,9 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("business_owner_id");// 设为常量
 				dto.setTableName("project_online_apply");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
 				
-				object.setBusinessOwnerId(uapUserId);
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setBusinessOwnerId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
 				    projectOnlineApplyMapper.updateByPrimaryKeySelective(object);
 				}
@@ -658,12 +785,11 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("product_manager_id");// 设为常量
 				dto.setTableName("project_online_apply");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
 				
-				object.setProductManagerId(uapUserId);
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setProductManagerId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
-				   projectOnlineApplyMapper.updateByPrimaryKeySelective(object);
+				    projectOnlineApplyMapper.updateByPrimaryKeySelective(object);
 				}
 				
 			}
@@ -680,8 +806,9 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setTableName("project_online_apply");// 设为常量
 				moveLogTableMapper.insertSelective(dto);
 				
-				object.setTestManagerId(uapUserId);
+				
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setTestManagerId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
 				    projectOnlineApplyMapper.updateByPrimaryKeySelective(object);
 				}
@@ -698,10 +825,10 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("development_manager_id");// 设为常量
 				dto.setTableName("project_online_apply");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
 				
-				object.setDevelopmentManagerId(uapUserId);
+				
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setDevelopmentManagerId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
 				  projectOnlineApplyMapper.updateByPrimaryKeySelective(object);
 				}
@@ -709,23 +836,21 @@ public class DataMigrateImpl implements DataMigrateService {
 
 			projectOnlineApply.setDevelopmentManagerId(null);
 			projectOnlineApply.setApplicantId(userId);
-			List<ProjectOnlineApply> listProjectOnlineApplyApplicantId = projectOnlineApplyMapper
-					.select(projectOnlineApply);
+			List<ProjectOnlineApply> listProjectOnlineApplyApplicantId = projectOnlineApplyMapper.select(projectOnlineApply);
 			for (ProjectOnlineApply object : listProjectOnlineApplyApplicantId) {
 
 				dto =new MoveLogTable();
 				dto.setFileId(object.getId());
 				dto.setFileField("applicant_id");// 设为常量
 				dto.setTableName("project_online_apply");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
 				
-				object.setApplicantId(uapUserId);
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setApplicantId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
 				projectOnlineApplyMapper.updateByPrimaryKeySelective(object);
 				}
 			}
-			/////// 需要重新写
+			/////// 
 
 			projectOnlineApply.setApplicantId(null);
 
@@ -736,19 +861,20 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("executor_id");// 设为常量
 				dto.setTableName("project_online_apply");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
 				
-				if(object.getExecutorId()!=null) {
-					String[] strList=object.getExecutorId().split(",");
-					for (int i = 0; i < strList.length; i++) {
-						 if(strList[i].equals(userId+"")) {
-							 strList[i]= uapUserId+"--";
-						 }
-					}
-					object.setExecutorId(strList.toString());//带处理
-					
-				}
 				if(moveLogTableMapper.select(dto).size()==0) {
+					
+					if(object.getExecutorId()!=null) {
+						String[] strList=object.getExecutorId().split(",");
+						for (int i = 0; i < strList.length; i++) {
+							 if(strList[i].equals(userId+"")) {
+								 strList[i]= uapUserId+"--";
+							 }
+						}
+						object.setExecutorId(strList.toString());//带处理
+						
+					}
+					
 					moveLogTableMapper.insertSelective(dto);
 				    projectOnlineApplyMapper.updateByPrimaryKeySelective(object);
 				}
@@ -757,8 +883,7 @@ public class DataMigrateImpl implements DataMigrateService {
 			////// project_online_operation_record
 			ProjectOnlineOperationRecord projectOnlineOperationRecord = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
 			projectOnlineOperationRecord.setOperatorId(userId);
-			List<ProjectOnlineOperationRecord> listprojectOnlineOperationRecord = projectOnlineOperationRecordMapper
-					.select(projectOnlineOperationRecord);
+			List<ProjectOnlineOperationRecord> listprojectOnlineOperationRecord = projectOnlineOperationRecordMapper.select(projectOnlineOperationRecord);
 			for (ProjectOnlineOperationRecord object : listprojectOnlineOperationRecord) {
 
 				dto =new MoveLogTable();
@@ -767,10 +892,11 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setTableName("project_online_operation_record");// 设为常量
 				//moveLogTableMapper.insertSelective(dto);
 				
-				object.setOperatorId(uapUserId);
+				
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setOperatorId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
-				   projectOnlineOperationRecordMapper.updateByPrimaryKeySelective(object);
+				    projectOnlineOperationRecordMapper.updateByPrimaryKeySelective(object);
 				}
 			}
 
@@ -786,17 +912,16 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("manager_id");// 设为常量
 				dto.setTableName("project_online_subsystem");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
-				
-				object.setManagerId(uapUserId);
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setManagerId(uapUserId);
+					object.setManagerName(uapUser.getData().getRealName());
 					moveLogTableMapper.insertSelective(dto);
 				    projectOnlineSubsystemMapper.updateByPrimaryKeySelective(object);
 				}
 			}
 
 			///// manager_name
-			/////// 需要重新写
+			/////// sgq
 			projectOnlineSubsystem.setManagerId(null);
 			BaseOutput<AlmUser> userTempManagerIdLocal = localUserRpc.findByUserId(userId);
 			projectOnlineSubsystem.setManagerName(userTempManagerIdLocal.getData().getRealName());
@@ -809,20 +934,21 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("manager_name");// 设为常量
 				dto.setTableName("project_online_subsystem");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
 				
-				if(object.getManagerName()!=null) {
-					String[] strList=object.getManagerName().split(",");
-					for (int i = 0; i < strList.length; i++) {
-						 if(strList[i].equals(userTempManagerIdLocal.getData().getRealName())) {
-							 strList[i]= userTempManagerIdUapRpc.getData().getRealName()+"--";
-						 }
-					}
-					object.setManagerName(strList.toString());//带处理
-					
-				}
 				//object.setManagerName(object.getManagerName().replace(object.getManagerName(), userTempManagerId.getData().getRealName()));
 				if(moveLogTableMapper.select(dto).size()==0) {
+					
+					if(object.getManagerName()!=null) {
+						String[] strList=object.getManagerName().split(",");
+						for (int i = 0; i < strList.length; i++) {
+							 if(strList[i].equals(userTempManagerIdLocal.getData().getRealName())) {
+								 strList[i]= userTempManagerIdUapRpc.getData().getRealName()+"--";
+							 }
+						}
+						object.setManagerName(strList.toString());//带处理
+						
+					}
+					
 					moveLogTableMapper.insertSelective(dto);
 				    projectOnlineSubsystemMapper.updateByPrimaryKeySelective(object);
 				}
@@ -840,10 +966,10 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("creator_id");// 设为常量
 				dto.setTableName("project_version");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
 				
-				object.setCreatorId(uapUserId);
+				
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setCreatorId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
 				    projectVersionMapper.updateByPrimaryKeySelective(object);
 				}
@@ -858,10 +984,9 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("modifier_id");// 设为常量
 				dto.setTableName("project_version");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
 				
-				object.setModifierId(uapUserId);
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setModifierId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
 				   projectVersionMapper.updateByPrimaryKeySelective(object);
 				}
@@ -880,10 +1005,11 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setTableName("task");// 设为常量
 				//moveLogTableMapper.insertSelective(dto);
 				
-				object.setOwner(uapUserId);
+				
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setOwner(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
-				taskMapper.updateByPrimaryKeySelective(object);
+				   taskMapper.updateByPrimaryKeySelective(object);
 				}
 			}
 
@@ -897,12 +1023,10 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileField("create_member_id");// 设为常量
 				dto.setTableName("task");// 设为常量
 				//moveLogTableMapper.insertSelective(dto);
-				object.setCreateMemberId(uapUserId);
-				
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setCreateMemberId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
-					
-				taskMapper.updateByPrimaryKeySelective(object);
+				    taskMapper.updateByPrimaryKeySelective(object);
 				}
 			}
 
@@ -915,13 +1039,11 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("modify_member_id");// 设为常量
 				dto.setTableName("task");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
-				
-				object.setModifyMemberId(uapUserId);
 				
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setModifyMemberId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
-				taskMapper.updateByPrimaryKeySelective(object);
+				    taskMapper.updateByPrimaryKeySelective(object);
 				}
 				
 			}
@@ -936,12 +1058,11 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("create_member_id");// 设为常量
 				dto.setTableName("task_details");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
 				
-				object.setCreateMemberId(uapUserId);
 				if(moveLogTableMapper.select(dto).size()==0) {
-					moveLogTableMapper.insertSelective(dto);
-				taskDetailsMapper.updateByPrimaryKeySelective(object);
+					 object.setCreateMemberId(uapUserId);
+					 moveLogTableMapper.insertSelective(dto);
+				     taskDetailsMapper.updateByPrimaryKeySelective(object);
 				}
 			}
 
@@ -954,10 +1075,8 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("modify_member_id");// 设为常量
 				dto.setTableName("task_details");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
-				
-				object.setModifyMemberId(uapUserId);
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setModifyMemberId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
 				   taskDetailsMapper.updateByPrimaryKeySelective(object);
 				}
@@ -975,10 +1094,8 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("member_id");// 设为常量
 				dto.setTableName("team");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
-				
-				object.setMemberId(uapUserId);
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setMemberId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
 				    teamMapper.updateByPrimaryKeySelective(object);
 				}
@@ -993,21 +1110,18 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("applicant_id");// 设为常量
 				dto.setTableName("travel_cost_apply");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
-				
-				object.setApplicantId(uapUserId);
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setApplicantId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
 				    travelCostApplyMapper.updateByPrimaryKeySelective(object);
 				}
 			}
-
+			/*
 			// 需要重新写
-
-			BaseOutput<User> userTemp = userRpc.findUserById(uapUserId);
-
-			travelCostApply.setApplicantId(userId);
-			travelCostApply.setRootDepartemntId(userTemp.getData().getDepartmentId());
+			/// 需要重新写
+			//List<Department>  userIdDept=departmentALMRpc.findByUserId(userId).getData();
+			//List<Department>  uapUserIdDept=departmentUapRpc.findByUserId(uapUserId).getData();
+			/*travelCostApply.setRootDepartemntId(userIdDept.get(0).getParentId());
 			List<TravelCostApply> listtraveRootDepartemntId = travelCostApplyMapper.select(travelCostApply);
 			for (TravelCostApply object : listtraveRootDepartemntId) {
 
@@ -1015,30 +1129,30 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("root_departemnt_id");// 设为常量
 				dto.setTableName("travel_cost_apply");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
-				object.setDepartmentId(userTemp.getData().getDepartmentId());
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setDepartmentId(uapUserIdDept.get(0).getParentId());
 					moveLogTableMapper.insertSelective(dto);
-				  travelCostApplyMapper.updateByPrimaryKeySelective(object);
+				    travelCostApplyMapper.updateByPrimaryKeySelective(object);
 				}
-			}
-
-			/// 需要重新写
+			}*/
+  
+		
 			travelCostApply.setRootDepartemntId(null);
-			travelCostApply.setDepartmentId(userTemp.getData().getDepartmentId());
-			List<TravelCostApply> travelCostApplyRootDepartemntId = travelCostApplyMapper.select(travelCostApply);
-			for (TravelCostApply object : travelCostApplyRootDepartemntId) {
-
-				dto =new MoveLogTable();
-				dto.setFileId(object.getId());
-				dto.setFileField("department_id");// 设为常量
-				dto.setTableName("travel_cost_apply");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
-				
-				object.setDepartmentId(userTemp.getData().getDepartmentId());
-				if(moveLogTableMapper.select(dto).size()==0) {
-					moveLogTableMapper.insertSelective(dto);
-				   travelCostApplyMapper.updateByPrimaryKeySelective(object);
+			if(userIdDept!=null&&userIdDept.size()!=0) {
+				travelCostApply.setDepartmentId(userIdDept.get(0).getId());
+				List<TravelCostApply> travelCostApplyRootDepartemntId = travelCostApplyMapper.select(travelCostApply);
+				for (TravelCostApply object : travelCostApplyRootDepartemntId) {
+	
+					dto =new MoveLogTable();
+					dto.setFileId(object.getId());
+					dto.setFileField("department_id");// 设为常量
+					dto.setTableName("travel_cost_apply");// 设为常量
+					
+					object.setDepartmentId(uapUserIdDept.get(0).getId());
+					if(moveLogTableMapper.select(dto).size()==0) {
+						moveLogTableMapper.insertSelective(dto);
+					   travelCostApplyMapper.updateByPrimaryKeySelective(object);
+					}
 				}
 			}
 
@@ -1051,13 +1165,10 @@ public class DataMigrateImpl implements DataMigrateService {
 
 				dto =new MoveLogTable();
 				dto.setFileId(object.getId());
-				dto.setFileField("approve_id");// 设为常量
+				dto.setFileField("approver");// 设为常量
 				dto.setTableName("verify_approval");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
-				
-				object.setApproveId(uapUserId);
-				
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setApproveId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
 				  verifyApprovalMapper.updateByPrimaryKeySelective(object);
 				}
@@ -1073,11 +1184,9 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("create_member_id");// 设为常量
 				dto.setTableName("verify_approval");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
-				
-				object.setCreateMemberId(uapUserId);
 				
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setCreateMemberId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
 				   verifyApprovalMapper.updateByPrimaryKeySelective(object);
 				}
@@ -1093,15 +1202,14 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("modify_member_id");// 设为常量
 				dto.setTableName("verify_approval");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
 				
-				object.setModifyMemberId(uapUserId);
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setModifyMemberId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
 				    verifyApprovalMapper.updateByPrimaryKeySelective(object);
 				}
 			}
-
+			
 			////// weekly
 			Weekly weekly = DTOUtils.newDTO(Weekly.class);
 			weekly.setCreateMemberId(userId);
@@ -1112,13 +1220,11 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("create_member_id");// 设为常量
 				dto.setTableName("weekly");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
-				
-				object.setCreateMemberId(uapUserId);
 				
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setCreateMemberId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
-				weeklyMapper.updateByPrimaryKeySelective(object);
+				    weeklyMapper.updateByPrimaryKeySelective(object);
 				}
 			}
 
@@ -1131,12 +1237,11 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("modify_member_id");// 设为常量
 				dto.setTableName("weekly");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
 				
-				object.setModifyMemberId(uapUserId);
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setModifyMemberId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
-				weeklyMapper.updateByPrimaryKeySelective(object);
+			  	    weeklyMapper.updateByPrimaryKeySelective(object);
 				}
 			}
 			/////// work_order
@@ -1150,16 +1255,15 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("acceptor_id");// 设为常量
 				dto.setTableName("work_order");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
 				
-				object.setAcceptorId(uapUserId);
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setAcceptorId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
-				workOrderMapper.updateByPrimaryKeySelective(object);
+				    workOrderMapper.updateByPrimaryKeySelective(object);
 				}
 			}
 
-			/// 需要重新写 完成
+			/// sgq需要重新写 
 			weeklyOrder.setAcceptorId(null);
 			weeklyOrder.setCopyUserId(userId + "");
 			List<WorkOrder> listWeeklyCopyUserId = workOrderMapper.selectWorkOrdeByCopyUserId(userId);
@@ -1169,7 +1273,6 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("copy_user_id");// 设为常量
 				dto.setTableName("work_order");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
 				String str=object.getCopyUserId();
 				if(object.getCopyUserId()!=null) {
 					List<String> list = JSONObject.parseArray(str,String.class);
@@ -1179,16 +1282,13 @@ public class DataMigrateImpl implements DataMigrateService {
 							list.set(j, uapUserId+"--");
 						}
 					}
-					
 					com.alibaba.fastjson.JSONArray  studentJsonArray = JSON.parseArray(JSONObject.toJSONString(list));
 					object.setCopyUserId(studentJsonArray.toString());//带处理
 					
 				}
-				//object.setCopyUserId(str.replace(userId+"", uapUserId+""));
-				
 				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
-				workOrderMapper.updateByPrimaryKeySelective(object);
+				    workOrderMapper.updateByPrimaryKeySelective(object);
 				}
 				
 			}
@@ -1204,10 +1304,11 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setTableName("work_order");// 设为常量AcceptorId
 				//moveLogTableMapper.insertSelective(dto);
 				
-				object.setApplicantId(uapUserId);
+				
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setApplicantId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
-				workOrderMapper.updateByPrimaryKeySelective(object);
+				    workOrderMapper.updateByPrimaryKeySelective(object);
 				}
 			}
 
@@ -1220,12 +1321,11 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileId(object.getId());
 				dto.setFileField("executor_id");// 设为常量
 				dto.setTableName("work_order");// 设为常量AcceptorId
-				//moveLogTableMapper.insertSelective(dto);
 				
-				object.setExecutorId(uapUserId);
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setExecutorId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
-				workOrderMapper.updateByPrimaryKeySelective(object);
+				    workOrderMapper.updateByPrimaryKeySelective(object);
 				}
 			}
 
@@ -1234,20 +1334,19 @@ public class DataMigrateImpl implements DataMigrateService {
 			WorkOrderOperationRecord workOrderOperationRecord = DTOUtils.newDTO(WorkOrderOperationRecord.class);
 			workOrderOperationRecord.setOperatorId(userId);
 
-			List<WorkOrderOperationRecord> listworkOrderOperationRecord = workOrderOperationRecordMapper
-					.select(workOrderOperationRecord);
+			List<WorkOrderOperationRecord> listworkOrderOperationRecord = workOrderOperationRecordMapper.select(workOrderOperationRecord);
 			for (WorkOrderOperationRecord object : listworkOrderOperationRecord) {
 
 				dto =new MoveLogTable();
 				dto.setFileId(object.getId());
 				dto.setFileField("operator_id");// 设为常量
 				dto.setTableName("work_order_operation_record");// 设为常量
-				//moveLogTableMapper.insertSelective(dto);
 				
-				object.setOperatorId(uapUserId);
+				
 				if(moveLogTableMapper.select(dto).size()==0) {
+					object.setOperatorId(uapUserId);
 					moveLogTableMapper.insertSelective(dto);
-				workOrderOperationRecordMapper.updateByPrimaryKeySelective(object);
+				    workOrderOperationRecordMapper.updateByPrimaryKeySelective(object);
 				}
 			}
 
@@ -1352,7 +1451,7 @@ public class DataMigrateImpl implements DataMigrateService {
 
 	@Override
 	public int getDataIsExistence(Long uapUserId) {
-		//这个时候应收uapUserId ，因为它不变
+		/*//这个时候应收uapUserId ，因为它不变
 		MoveLogTable dto = new MoveLogTable();
 		List<MoveLogTable> approveList = null;
 
@@ -2257,7 +2356,7 @@ public class DataMigrateImpl implements DataMigrateService {
 			}
 		}
 
-
+*/
 		/*
 		 * /// project_apply:立项申请表
 		 * 
@@ -2428,6 +2527,16 @@ public class DataMigrateImpl implements DataMigrateService {
 	@Override
 	public int updateUserIdStrData() {
 		
+		
+		
+		List<Approve> listApprove = approveMapper.select(null);
+		for (Approve object : listApprove) {
+			if(object.getDescription()!=null) {
+				String strList=object.getDescription().replace("--", "");
+				object.setDescription(strList.toString());//带处理
+			}
+			approveMapper.updateByPrimaryKeySelective(object);
+		}
 		
 		List<ProjectOnlineApply> listProjectOnlinetExecutorId = projectOnlineApplyMapper.select(null);
 		for (ProjectOnlineApply object : listProjectOnlinetExecutorId) {
