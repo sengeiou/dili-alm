@@ -313,7 +313,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				}
 				
 			}
-			/*
+	
 			// files
 
 		   Files files = DTOUtils.newDTO(Files.class);
@@ -520,10 +520,12 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setTableName("project");// 设为常量
 				
 				if(moveLogTableMapper.select(dto).size()==0) {
+					if(object.getDep()!=null) {
 				        Long  uapDeId=getUapDept(listAlmRpc, listUapRpc, object.getDep().toString());
 				        object.setDep(uapDeId);
 					   moveLogTableMapper.insertSelective(dto);
 				       projectMapper.updateByPrimaryKeySelective(object);
+					}
 				}
 			}
 				
@@ -646,10 +648,12 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setTableName("project");// 设为常量
 				
 				if(moveLogTableMapper.select(dto).size()==0) {
-				     Long  uapDeId=getUapDept(listAlmRpc, listUapRpc, object.getDep().toString());
+					if(object.getDep()!=null) {
+				        Long  uapDeId=getUapDept(listAlmRpc, listUapRpc, object.getDep().toString());
 				        object.setDep(uapDeId);
 					   moveLogTableMapper.insertSelective(dto);
 					   projectApplyMapper.updateByPrimaryKeySelective(object);
+					}
 					
 				}
 				
@@ -1171,8 +1175,10 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setTableName("travel_cost_apply");// 设为常量
 				if(moveLogTableMapper.select(dto).size()==0) {
 					if(object.getRootDepartemntId()!=null) {
-						Long  uapDeId=getUapDept(listAlmRpc, listUapRpc, object.getRootDepartemntId().toString());
-						object.setRootDepartemntId(uapDeId);
+						if(object.getRootDepartemntId()!=null) {
+						  Long  uapDeId=getUapDept(listAlmRpc, listUapRpc, object.getRootDepartemntId().toString());
+						   object.setRootDepartemntId(uapDeId);
+						}
 					}
 					moveLogTableMapper.insertSelective(dto);
 				    travelCostApplyMapper.updateByPrimaryKeySelective(object);
@@ -1194,8 +1200,10 @@ public class DataMigrateImpl implements DataMigrateService {
 				if(moveLogTableMapper.select(dto).size()==0) {
 					
 					if(object.getDepartmentId()!=null) {
-						Long  uapDeId=getUapDept(listAlmRpc, listUapRpc, object.getDepartmentId().toString());
-						object.setDepartmentId(uapDeId);
+						if(object.getDepartmentId()!=null) {
+						  Long  uapDeId=getUapDept(listAlmRpc, listUapRpc, object.getDepartmentId().toString());
+						   object.setDepartmentId(uapDeId);
+						}
 						
 					}
 					moveLogTableMapper.insertSelective(dto);
@@ -1398,7 +1406,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				    workOrderOperationRecordMapper.updateByPrimaryKeySelective(object);
 				}
 			}
-*/
+
 			/*
 			 * approve:审批表，包含立项审批，变更审批，结项审批的数据 project_leader->用户 business_owner->用户
 			 * 
