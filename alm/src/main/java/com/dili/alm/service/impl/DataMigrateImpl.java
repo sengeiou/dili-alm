@@ -1196,7 +1196,7 @@ public class DataMigrateImpl implements DataMigrateService {
 						
 						if(object.getDepartmentId()!=null) {
 							for (Department department : listAlmRpc) {
-								if(department.getId().toString().equals(object.getRootDepartemntId().toString())) {
+								if(department.getId().toString().equals(object.getDepartmentId().toString())) {
 									
 									for (Department uapDep : listUapRpc) {
 										if(department.getCode().equals(uapDep.getCode())) {
