@@ -719,7 +719,7 @@ public class DataMigrateImpl implements DataMigrateService {
 			
 			}
 			
-			/*///////// project_change
+			///////// project_change
 
 			ProjectChange projectChange = DTOUtils.newDTO(ProjectChange.class);
 			projectChange.setCreateMemberId(userId);
@@ -954,15 +954,15 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setTableName("project_online_subsystem");// 设为常量
 				if(moveLogTableMapper.select(dto).size()==0) {
 					object.setManagerId(uapUserId);
-					object.setManagerName(uapUser.getData().getRealName());
+				//	object.setManagerName(uapUser.getData().getRealName());
 					moveLogTableMapper.insertSelective(dto);
 				    projectOnlineSubsystemMapper.updateByPrimaryKeySelective(object);
 				}
 			}
 
-			///// manager_name
-			/////// sgq
-			projectOnlineSubsystem.setManagerId(null);
+			///// manager_name 作废
+			/////// sgq 
+	/*		projectOnlineSubsystem.setManagerId(null);
 			BaseOutput<AlmUser> userTempManagerIdLocal = localUserRpc.findByUserId(userId);
 			projectOnlineSubsystem.setManagerName(userTempManagerIdLocal.getData().getRealName());
 			
@@ -992,7 +992,7 @@ public class DataMigrateImpl implements DataMigrateService {
 					moveLogTableMapper.insertSelective(dto);
 				    projectOnlineSubsystemMapper.updateByPrimaryKeySelective(object);
 				}
-			}
+			}*/
 
 			/////// project_version:项目版本
 
@@ -1156,12 +1156,6 @@ public class DataMigrateImpl implements DataMigrateService {
 				    travelCostApplyMapper.updateByPrimaryKeySelective(object);
 				}
 			}
-			
-			// 需要重新写
-			/// 需要重新写
-			//List<Department>  userIdDept=departmentALMRpc.findByUserId(userId).getData();
-			//List<Department>  uapUserIdDept=departmentUapRpc.findByUserId(uapUserId).getData();
-			
 			
 		
 			
@@ -1406,7 +1400,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				    workOrderOperationRecordMapper.updateByPrimaryKeySelective(object);
 				}
 			}
-*/
+
 			/*
 			 * approve:审批表，包含立项审批，变更审批，结项审批的数据 project_leader->用户 business_owner->用户
 			 * 
