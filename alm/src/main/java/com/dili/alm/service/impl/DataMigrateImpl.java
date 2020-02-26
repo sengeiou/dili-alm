@@ -1284,12 +1284,13 @@ public class DataMigrateImpl implements DataMigrateService {
 					}
 					com.alibaba.fastjson.JSONArray  studentJsonArray = JSON.parseArray(JSONObject.toJSONString(list));
 					object.setCopyUserId(studentJsonArray.toString());//带处理
-					
+					  workOrderMapper.updateByPrimaryKeySelective(object);
 				}
-				if(moveLogTableMapper.select(dto).size()==0) {
+			  
+			/*	if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
-				    workOrderMapper.updateByPrimaryKeySelective(object);
-				}
+				
+				}*/
 				
 			}
 
@@ -2529,7 +2530,9 @@ public class DataMigrateImpl implements DataMigrateService {
 		
 		
 		
-		List<Approve> listApprove = approveMapper.select(null);
+		
+		
+		List<Approve> listApprove = approveMapper.selectAll();
 		for (Approve object : listApprove) {
 			if(object.getDescription()!=null) {
 				String strList=object.getDescription().replace("--", "");
@@ -2538,7 +2541,7 @@ public class DataMigrateImpl implements DataMigrateService {
 			approveMapper.updateByPrimaryKeySelective(object);
 		}
 		
-		List<ProjectOnlineApply> listProjectOnlinetExecutorId = projectOnlineApplyMapper.select(null);
+		List<ProjectOnlineApply> listProjectOnlinetExecutorId = projectOnlineApplyMapper.selectAll();
 		for (ProjectOnlineApply object : listProjectOnlinetExecutorId) {
 			
 			
@@ -2560,7 +2563,7 @@ public class DataMigrateImpl implements DataMigrateService {
 		}
 		
 	
-		List<ProjectOnlineSubsystem> listprojectManagerName = projectOnlineSubsystemMapper.select(null);
+		List<ProjectOnlineSubsystem> listprojectManagerName = projectOnlineSubsystemMapper.selectAll();
 		for (ProjectOnlineSubsystem object : listprojectManagerName) {
 			object.setManagerName(object.getManagerName().replace("--", ""));
 			projectOnlineSubsystemMapper.updateByPrimaryKeySelective(object);
