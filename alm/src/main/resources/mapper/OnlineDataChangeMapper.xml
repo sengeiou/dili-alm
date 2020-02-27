@@ -27,7 +27,7 @@
       WARNING - @mbg.generated
     -->
     id, apply_user_id, apply_market_id, project_id, version_id, apply_date, update_date, 
-    dba_name, sql_script, sql_file_id,,is_synchronization,is_submit,data_status,process_instance_id,process_definition_id
+    dba_name, sql_script, sql_file_id,is_synchronization,is_submit,data_status,process_instance_id,process_definition_id
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -91,4 +91,67 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
+  
+  <select id="selectList" parameterType="com.dili.alm.domain.OnlineDataChange" resultType="com.dili.alm.domain.OnlineDataChange">
+  
+      select 
+     <include refid="Base_Column_List" />
+     from online_data_change
+    <where>
+        1=1
+      <if test="applyUserId != null">
+      and    apply_user_id = #{applyUserId,jdbcType=BIGINT}
+      </if>
+      <if test="applyMarketId != null">
+       and   apply_market_id = #{applyMarketId,jdbcType=VARCHAR}
+      </if>
+      <if test="projectId != null">
+        and  project_id = #{projectId,jdbcType=BIGINT}
+      </if>
+      <if test="versionId != null">
+       and   version_id = #{versionId,jdbcType=BIGINT}
+      </if>
+      <if test="applyDate != null">
+         <![CDATA[
+           and DATE_FORMAT(apply_date, '%Y-%m-%d') =  DATE_FORMAT(#{applyDate}, '%Y-%m-%d')
+         ]]>
+      </if>
+      <if test="updateDate != null">
+      
+        <![CDATA[
+           and DATE_FORMAT(update_date, '%Y-%m-%d') =  DATE_FORMAT(#{updateDate}, '%Y-%m-%d')
+        ]]>
+
+
+      </if>
+      <if test="dbaName != null">
+         and dba_name = #{dbaName,jdbcType=VARCHAR}
+      </if>
+      <if test="sqlFileId != null">
+         and sql_file_id = #{sqlFileId,jdbcType=VARCHAR}
+      </if>
+      <if test="isSynchronization != null">
+         and is_synchronization = #{isSynchronization,jdbcType=TINYINT}
+      </if>
+      <if test="isSubmit != null">
+        and  is_submit = #{isSubmit,jdbcType=TINYINT}
+      </if>
+      <if test="dataStatus != null">
+        data_status = #{dataStatus,jdbcType=TINYINT}
+      </if>
+      <if test="processInstanceId != null">
+		process_instance_id = #{processInstanceId,jdbcType=VARCHAR}
+	  </if>
+	  <if test="processDefinitionId != null">
+	 	process_definition_id = #{processDefinitionId,jdbcType=VARCHAR},
+	 </if>
+      
+      
+    </where>
+   
+  </select>
+  
+  
+  
+  
 </mapper>
