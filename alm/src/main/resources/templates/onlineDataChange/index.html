@@ -264,7 +264,7 @@
            	      return "<font color='gray'>驳回中</font>";
            	    }
     	   }else if(row.dataStatus==2){
-    		   alert(userId+''+row.projectManager)
+    		 //  alert(userId+''+row.projectManager)
     		    if(userId==row.projectManager){
     		    	  var  dom= '<a href="javascript:void(0);" onclick="handleProcess(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">项目经理确认中</a>';
     		    	  return dom;
@@ -285,7 +285,7 @@
         	   
         	   var   dbaList=row.dbaManager;
         	   var  temp=0;
-        	// alert(dbaList);
+        	  // alert(dbaList+"sss");
         	   for (i = 0; i < dbaList.length; i++) { 
         		     if(userId==dbaList[i]) {
         		    	 temp=1;
@@ -303,7 +303,7 @@
            }else if(row.dataStatus==5){
               
                var   dbaList=row.onlineManager;
-               
+            //   alert(dbaList+"onlineManager");
           	// alert(dbaList);
          	   var  temp=0;
          	   for (i = 0; i < dbaList.length; i++) { 
@@ -324,7 +324,7 @@
            }else if(row.dataStatus==6){
               	return "<font color='gray'>归档</font>";
            }else if(row.dataStatus==0){
-              	return "<font color='gray'>保存中</font>";
+              	return "<font color='green'>保存中</font>";
            }else{
            	   return "<font color='orange'>其他</font>";
            }
@@ -377,11 +377,23 @@
         }
         //打开修改窗口
         function openUpdate(){
+        	
             var selected = $("#grid").datagrid("getSelected");
             if (null == selected) {
                 $.messager.alert('警告','请选中一条数据');
                 return;
             }
+            var  userId=${userId};
+      	   
+    	    
+           	if(userId!=selected.applyUserId){
+           		
+           		//alert(userId);
+           	   //  $.messager.alert('警告','不可修改');
+           	   //return;
+           	}
+           
+    	     
            /*  if (1 == selected.isSubmit) {
                 $.messager.alert('警告','不可修改数据');
                 return;
@@ -449,6 +461,7 @@
             if(!$('#_form').form("validate")){
                 return;
             }
+          
             var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
             var _url = null;
             //没有id就新增

@@ -36,6 +36,7 @@ import com.dili.alm.dao.WorkOrderMapper;
 import com.dili.alm.dao.WorkOrderOperationRecordMapper;
 import com.dili.alm.domain.AlmUser;
 import com.dili.alm.domain.Approve;
+import com.dili.alm.domain.DepartmentALM;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.HardwareApplyOperationRecord;
 import com.dili.alm.domain.HardwareResource;
@@ -185,10 +186,20 @@ public class DataMigrateImpl implements DataMigrateService {
 			//
 
 			
+			//List<Department>  userIdDept=departmentALMRpc.findByUserId(userId).getData();
+			//List<Department>  uapUserIdDept=departmentUapRpc.findByUserId(uapUserId).getData();
+			Department depRPC= DTOUtils.newDTO(Department.class);
+			depRPC.setFirmCode("szpt");
+			
+			DepartmentALM localDept= new DepartmentALM();
+			List<DepartmentALM>  listAlmRpc=departmentALMRpc.list(localDept).getData();
+			List<Department>  listUapRpc=  departmentUapRpc.listByDepartment(depRPC).getData();
+			
+			
 			MoveLogTable dto =new MoveLogTable();
 			// approve
 			Approve record = DTOUtils.newDTO(Approve.class);
-		    record.setCreateMemberId(userId);
+				    record.setCreateMemberId(userId);
 			List<Approve> listCreateMember = approveMapper.select(record);
 			for (Approve approve : listCreateMember) {
 
@@ -263,15 +274,10 @@ public class DataMigrateImpl implements DataMigrateService {
 			
 			record.setProjectLeader(null);
 			
-			/*List<Department>  userIdDept=departmentALMRpc.findByUserId(userId).getData();
-			List<Department>  uapUserIdDept=departmentUapRpc.findByUserId(uapUserId).getData();*/
-			Department depRPC= DTOUtils.newDTO(Department.class);
-			depRPC.setFirmCode("szpt");
-			List<Department>  listAlmRpc=departmentALMRpc.list(null).getData();
-			List<Department>  listUapRpc=  departmentUapRpc.listByDepartment(depRPC).getData();
+		
 			
 			
-		/*	record.setDep(userIdDept.get(0).getId());*/
+			//record.setDep(userIdDept.get(0).getId());
 			List<Approve> projectDept = approveMapper.selectAll();
 			for (Approve approve : projectDept) {
 
@@ -280,15 +286,17 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setFileField("dep");// 设为常量
 				dto.setTableName("approve");// 设为常量
 				  if(moveLogTableMapper.select(dto).size()==0) {
+					  if(approve.getDep()!=null) {
 					    Long  uapDeId=getUapDept(listAlmRpc, listUapRpc, approve.getDep().toString());
 						approve.setDep(uapDeId);
 					    moveLogTableMapper.insertSelective(dto);
 				        approveMapper.updateByPrimaryKeySelective(approve);
+					  }
 					
 				  }
 			
 			}	
-			
+		
 			
 			
 			
@@ -308,7 +316,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				}
 				
 			}
-			
+	
 			// files
 
 		   Files files = DTOUtils.newDTO(Files.class);
@@ -347,6 +355,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				}
 				
 			}
+			
 
 			///// hardware_apply_operation_record
 				
@@ -403,7 +412,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				}
 			}
 			
-			//
+			
 			// Project
 			Project project = DTOUtils.newDTO(Project.class);
 			project.setProjectManager(userId);
@@ -500,11 +509,6 @@ public class DataMigrateImpl implements DataMigrateService {
 
 			project.setOriginator(null);
 			
-		
-			
-			//List<Department>  userIdDept=departmentALMRpc.findByUserId(userId).getData();
-			//List<Department>  uapUserIdDept=departmentUapRpc.findByUserId(uapUserId).getData();
-		
 
 			List<Project> listDep = projectMapper.selectAll();
 			for (Project object : listDep) {
@@ -515,10 +519,12 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setTableName("project");// 设为常量
 				
 				if(moveLogTableMapper.select(dto).size()==0) {
+					if(object.getDep()!=null) {
 				        Long  uapDeId=getUapDept(listAlmRpc, listUapRpc, object.getDep().toString());
 				        object.setDep(uapDeId);
 					   moveLogTableMapper.insertSelective(dto);
 				       projectMapper.updateByPrimaryKeySelective(object);
+					}
 				}
 			}
 				
@@ -526,7 +532,7 @@ public class DataMigrateImpl implements DataMigrateService {
 			
 			
 			
-		   project.setDep(null);
+		    project.setDep(null);
 			project.setBusinessOwner(userId);
 			List<Project> listBusinessOwner = projectMapper.select(project);
 			for (Project object : listBusinessOwner) {
@@ -544,7 +550,7 @@ public class DataMigrateImpl implements DataMigrateService {
 				}
 				
 			}
-			
+		
 			// project_apply:立项申请表
 			ProjectApply projectApply = DTOUtils.newDTO(ProjectApply.class);
 			projectApply.setProjectLeader(userId);
@@ -641,10 +647,12 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setTableName("project");// 设为常量
 				
 				if(moveLogTableMapper.select(dto).size()==0) {
-				     Long  uapDeId=getUapDept(listAlmRpc, listUapRpc, object.getDep().toString());
+					if(object.getDep()!=null) {
+				        Long  uapDeId=getUapDept(listAlmRpc, listUapRpc, object.getDep().toString());
 				        object.setDep(uapDeId);
 					   moveLogTableMapper.insertSelective(dto);
 					   projectApplyMapper.updateByPrimaryKeySelective(object);
+					}
 					
 				}
 				
@@ -698,14 +706,15 @@ public class DataMigrateImpl implements DataMigrateService {
 						if(list!=null&&list.size()>0) {
 						   for (ApplyRelatedResource applyRelatedResource : list) {
 							
-							if(applyRelatedResource.getRelatedUser().equals(userId.toString())) {
+							if(null!=applyRelatedResource.getRelatedUser()&&applyRelatedResource.getRelatedUser().equals(userId.toString())) {
 								applyRelatedResource.setRelatedUser(uapUserId+"--");
 						  	}
 						  }
 						}
 						resourceRequire.setRelatedResources(list);
 					}
-					
+					object.setResourceRequire(JSON.toJSONString(resourceRequire));
+					projectApplyMapper.updateByPrimaryKeySelective(object);
 				}
 			
 			}
@@ -898,7 +907,7 @@ public class DataMigrateImpl implements DataMigrateService {
 					if(object.getExecutorId()!=null) {
 						String[] strList=object.getExecutorId().split(",");
 						for (int i = 0; i < strList.length; i++) {
-							 if(strList[i].equals(userId+"")) {
+							 if(strList[i].equals(userId.toString())) {
 								 strList[i]= uapUserId+"--";
 							 }
 						}
@@ -945,15 +954,15 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setTableName("project_online_subsystem");// 设为常量
 				if(moveLogTableMapper.select(dto).size()==0) {
 					object.setManagerId(uapUserId);
-					object.setManagerName(uapUser.getData().getRealName());
+				//	object.setManagerName(uapUser.getData().getRealName());
 					moveLogTableMapper.insertSelective(dto);
 				    projectOnlineSubsystemMapper.updateByPrimaryKeySelective(object);
 				}
 			}
 
-			///// manager_name
-			/////// sgq
-			projectOnlineSubsystem.setManagerId(null);
+			///// manager_name 作废
+			/////// sgq 
+	/*		projectOnlineSubsystem.setManagerId(null);
 			BaseOutput<AlmUser> userTempManagerIdLocal = localUserRpc.findByUserId(userId);
 			projectOnlineSubsystem.setManagerName(userTempManagerIdLocal.getData().getRealName());
 			
@@ -983,7 +992,7 @@ public class DataMigrateImpl implements DataMigrateService {
 					moveLogTableMapper.insertSelective(dto);
 				    projectOnlineSubsystemMapper.updateByPrimaryKeySelective(object);
 				}
-			}
+			}*/
 
 			/////// project_version:项目版本
 
@@ -1148,12 +1157,6 @@ public class DataMigrateImpl implements DataMigrateService {
 				}
 			}
 			
-			// 需要重新写
-			/// 需要重新写
-			//List<Department>  userIdDept=departmentALMRpc.findByUserId(userId).getData();
-			//List<Department>  uapUserIdDept=departmentUapRpc.findByUserId(uapUserId).getData();
-			
-			
 		
 			
 		//	travelCostApply.setRootDepartemntId(userIdDept.get(0).getParentId());
@@ -1166,8 +1169,10 @@ public class DataMigrateImpl implements DataMigrateService {
 				dto.setTableName("travel_cost_apply");// 设为常量
 				if(moveLogTableMapper.select(dto).size()==0) {
 					if(object.getRootDepartemntId()!=null) {
-						Long  uapDeId=getUapDept(listAlmRpc, listUapRpc, object.getRootDepartemntId().toString());
-						object.setRootDepartemntId(uapDeId);
+						if(object.getRootDepartemntId()!=null) {
+						  Long  uapDeId=getUapDept(listAlmRpc, listUapRpc, object.getRootDepartemntId().toString());
+						   object.setRootDepartemntId(uapDeId);
+						}
 					}
 					moveLogTableMapper.insertSelective(dto);
 				    travelCostApplyMapper.updateByPrimaryKeySelective(object);
@@ -1189,8 +1194,10 @@ public class DataMigrateImpl implements DataMigrateService {
 				if(moveLogTableMapper.select(dto).size()==0) {
 					
 					if(object.getDepartmentId()!=null) {
-						Long  uapDeId=getUapDept(listAlmRpc, listUapRpc, object.getDepartmentId().toString());
-						object.setDepartmentId(uapDeId);
+						if(object.getDepartmentId()!=null) {
+						  Long  uapDeId=getUapDept(listAlmRpc, listUapRpc, object.getDepartmentId().toString());
+						   object.setDepartmentId(uapDeId);
+						}
 						
 					}
 					moveLogTableMapper.insertSelective(dto);
@@ -1321,7 +1328,7 @@ public class DataMigrateImpl implements DataMigrateService {
 					List<String> list = JSONObject.parseArray(str,String.class);
 					
 					for (int j = 0; j < list.size(); j++) {
-						if(list.get(j).equals(userId+"")) {
+						if(list.get(j).equals(userId.toString())) {
 							list.set(j, uapUserId+"--");
 						}
 					}
@@ -1330,10 +1337,10 @@ public class DataMigrateImpl implements DataMigrateService {
 					workOrderMapper.updateByPrimaryKeySelective(object);
 				}
 			  
-			/*	if(moveLogTableMapper.select(dto).size()==0) {
+				if(moveLogTableMapper.select(dto).size()==0) {
 					moveLogTableMapper.insertSelective(dto);
 				
-				}*/
+				}
 				
 			}
 
@@ -1493,8 +1500,8 @@ public class DataMigrateImpl implements DataMigrateService {
 	
 	}
 
-	private Long getUapDept(List<Department> listAlmRpc, List<Department> listUapRpc, String object) {
-		for (Department department : listAlmRpc) {
+	private Long getUapDept(List<DepartmentALM> listAlmRpc, List<Department> listUapRpc, String object) {
+		for (DepartmentALM department : listAlmRpc) {
 			if(department.getId().toString().equals(object)) {
 				for (Department uapDep : listUapRpc) {
 					if(department.getCode().equals(uapDep.getCode())) {
@@ -2415,7 +2422,7 @@ public class DataMigrateImpl implements DataMigrateService {
 			}
 		}
 
-*/
+
 		/*
 		 * /// project_apply:立项申请表
 		 * 
@@ -2586,51 +2593,68 @@ public class DataMigrateImpl implements DataMigrateService {
 	@Override
 	public int updateUserIdStrData() {
 		
-		
-		
-		
-		
 		List<Approve> listApprove = approveMapper.selectAll();
+		Approve approve ;
 		for (Approve object : listApprove) {
 			if(object.getDescription()!=null) {
 				String strList=object.getDescription().replace("--", "");
-				object.setDescription(strList.toString());//带处理
+				//object.setDescription(strList.toString());//带处理
+				approve = DTOUtils.newDTO(Approve.class);
+				approve.setId(object.getId());
+				approve.setDescription(strList.toString());//带处理
+				approveMapper.updateByPrimaryKeySelective(approve);
+				
 			}
-			approveMapper.updateByPrimaryKeySelective(object);
+		
 		}
 		
 		List<ProjectOnlineApply> listProjectOnlinetExecutorId = projectOnlineApplyMapper.selectAll();
+		ProjectOnlineApply   projectOnlineApply;
 		for (ProjectOnlineApply object : listProjectOnlinetExecutorId) {
 			
 			
 			if(object.getExecutorId()!=null) {
 				String strList=object.getExecutorId().replace("--", "");
-				object.setExecutorId(strList.toString());//带处理
+				//object.setExecutorId(strList.toString());//带处理
+				
+				projectOnlineApply = DTOUtils.newDTO(ProjectOnlineApply.class);
+				projectOnlineApply.setId(object.getId());
+				projectOnlineApply.setExecutorId(strList.toString());//带处理
+				projectOnlineApplyMapper.updateByPrimaryKeySelective(projectOnlineApply);
 			}
 		
-			projectOnlineApplyMapper.updateByPrimaryKeySelective(object);
+			
 		}
 		
 		List<WorkOrder> listWeeklyCopyUserId = workOrderMapper.select(null);
 		for (WorkOrder object : listWeeklyCopyUserId) {
 		
 			String str=object.getCopyUserId();
-			object.setCopyUserId(str.replace("--",""));
-			workOrderMapper.updateByPrimaryKeySelective(object);
-			
+			if(object.getCopyUserId()!=null) {
+			  object.setCopyUserId(str.replace("--",""));
+			  workOrderMapper.updateByPrimaryKeySelective(object);
+			}
 		}
 		
 	
 		List<ProjectOnlineSubsystem> listprojectManagerName = projectOnlineSubsystemMapper.selectAll();
 		for (ProjectOnlineSubsystem object : listprojectManagerName) {
-			object.setManagerName(object.getManagerName().replace("--", ""));
-			projectOnlineSubsystemMapper.updateByPrimaryKeySelective(object);
+			if(object.getManagerName()!=null) {
+			  object.setManagerName(object.getManagerName().replace("--", ""));
+			  projectOnlineSubsystemMapper.updateByPrimaryKeySelective(object);
+			}
 		}
 		List<ProjectApply> listProjectAll = projectApplyMapper.selectAll();
+		ProjectApply projectApply;
 		for (ProjectApply object : listProjectAll) {
 			String str=object.getResourceRequire();
-			object.setResourceRequire(str.replace("--",""));
-			projectApplyMapper.updateByPrimaryKeySelective(object);
+			//object.setResourceRequire(str.replace("--",""));
+			if(str!=null) {
+				projectApply = DTOUtils.newDTO(ProjectApply.class);
+				projectApply.setId(object.getId());
+				projectApply.setResourceRequire(str.replace("--",""));
+				projectApplyMapper.updateByPrimaryKeySelective(projectApply);
+			}
 		}
 		
 		
