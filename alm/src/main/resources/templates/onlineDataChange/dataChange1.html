@@ -58,8 +58,7 @@ button:hover {
 					   </td>
 					<td style="padding: 5px;">
 					     
-					     <input name="_versionIdName"    value="${version}"  class="easyui-textbox" style="width: 100%;" editable="false"
-					    >
+					     <input   class="easyui-textbox"  value="${versionTask}"  style="width: 100%;" editable="false">
 					
 					</td>
 
@@ -144,7 +143,8 @@ button:hover {
 <!-- ====================================================================================================================== --> <!-- style & script 分隔线 --> <!-- ====================================================================================================================== -->
 <script type="text/javascript">
 	
-
+  var  tet=${version};
+   alert(tet);
    $('#agree').bind('click', function(){
 	 
 	   var taskIdd=$('#taskId').val();

@@ -312,17 +312,18 @@ public class OnlineDataChangeController {
 	    OnlineDataChange  odc=  onlineDataChangeService.get(Long.parseLong(id));
 	    modelMap.addAttribute("odc",odc);
 	    if(odc!=null&&userRpc.findUserById(odc.getApplyUserId())!=null) {
-	        modelMap.addAttribute("applyUserIdName",userRpc.findUserById(odc.getApplyUserId()).getData().getUserName());
+	        modelMap.addAttribute("applyUserIdName",userRpc.findUserById(odc.getApplyUserId()).getData().getRealName());
 	    }
 	    ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
-		//projectVersion.setProjectId(odc.getProjectId());
+		projectVersion.setProjectId(odc.getProjectId());
 		List<ProjectVersion> list = projectVersionService.list(projectVersion);
+		
 		if(list!=null&&list.size()>0) {
 			for (ProjectVersion projectVersion2 : list) {
-				 if(projectVersion2.getVersion().equals(odc.getVersionId())) {
-					 modelMap.addAttribute("version",projectVersion2.getVersion());
+				// if(projectVersion2.getVersion().equals(odc.getVersionId())) {
+					 modelMap.addAttribute("versionTask",projectVersion2.getVersion());
 					 break;
-				 }
+				// }
 			}
 		}
 	    modelMap.addAttribute("taskId",taskId);
