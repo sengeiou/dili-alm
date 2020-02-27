@@ -38,6 +38,7 @@ import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.util.BeanConver;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.dto.RoleUserDto;
+import com.dili.uap.sdk.session.SessionContext;
 
 /**
  * MyBatis Generator
@@ -197,6 +198,7 @@ public OnlineDataChangeMapper getActualDao() {
 		onlineDataChange.setId(Long.parseLong(dataId));
 		onlineDataChange.setDataStatus((byte)4);
 		this.updateSelective(onlineDataChange);
+		
     	Map<String, Object> map=new HashMap<>();
     	map.put("approved", "true");
     	tasksRpc.complete(taskId, map);
@@ -234,15 +236,15 @@ public OnlineDataChangeMapper getActualDao() {
 		this.updateSelective(onlineDataChange);
 		Map<String, Object> map=new HashMap<>();
     	map.put("approved", "true");
-    	
+    	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
     	// 签收任务
-	/*	if (isNeedClaim) {
-			BaseOutput<String> output = tasksRpc.claim(taskId, executorId.toString());
+		if (isNeedClaim) {
+			BaseOutput<String> output = tasksRpc.claim(taskId, id.toString());
 			if (!output.isSuccess()) {
 				LOGGER.error(output.getMessage());
-				throw new ProjectOnlineApplyException("任务签收失败");
+				throw new OnlineDataChangeException("任务签收失败");
 			}
-		}*/
+		}
     	tasksRpc.complete(taskId, map);
 	}
 	@Override
@@ -332,13 +334,21 @@ public OnlineDataChangeMapper getActualDao() {
 		    		dbaList=new ArrayList<Long>();
 		    		List<RoleUserDto>  dbaDto=roleRpc.listRoleUserByRoleIds(dbaRoleIds).getData();
 		    		for (RoleUserDto roleUserDto : dbaDto) {
-		    			dbaList.add(roleUserDto.getId());
+		    			 List<User>  lsitUser=roleUserDto.getUsers();
+		    			 for (User object : lsitUser) {
+		    					dbaList.add(object.getId());
+						}
+		    			
 					}
 		    		List<RoleUserDto>  onlingRoleIdDto=roleRpc.listRoleUserByRoleIds(onlingRoleIds).getData();
 		    	
 		    		onLingList=new ArrayList<Long>();
 		    		for (RoleUserDto roleUserDto : onlingRoleIdDto) {
-		    			onLingList.add(roleUserDto.getId());
+		    			
+		    			 List<User>  lsitUser=roleUserDto.getUsers();
+		    			 for (User object : lsitUser) {
+		    			    onLingList.add(object.getId());
+		    			 }
 					}
 		    		odcData.setDbaManager(dbaList);
 		    		odcData.setOnlineManager(onLingList);
