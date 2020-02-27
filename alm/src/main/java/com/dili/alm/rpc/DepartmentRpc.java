@@ -24,7 +24,7 @@ public interface DepartmentRpc {
 	BaseOutput<Department> getOne(@VOBody(required = false) Department department);
 
 	@POST("/api/departmentApi/listByExample.api")
-	BaseOutput<Department> listByExample(@VOBody(required = false) Long memberId);
+	BaseOutput<Department> listByExample(@VOBody(required = false) Department department);
 	
 /*	@POST("/api/departmentApi/findByUserId")
 	BaseOutput<Department> findByUserId(@VOBody(required = false) Long memberId);

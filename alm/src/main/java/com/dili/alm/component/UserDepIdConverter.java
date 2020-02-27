@@ -1,8 +1,10 @@
 package com.dili.alm.component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +45,10 @@ import com.dili.alm.rpc.AlmUserRpc;
 import com.dili.alm.rpc.DepartmentALMRpc;
 import com.dili.alm.rpc.DepartmentRpc;
 import com.dili.alm.rpc.UserRpc;
+import com.dili.alm.rpc.dto.AlmDepartmentDto;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.uap.sdk.domain.Department;
 import com.dili.uap.sdk.domain.User;
 
 @Component
@@ -148,6 +152,22 @@ public class UserDepIdConverter implements InitializingBean {
 		}
 		List<AlmUser> almUsers = almOutput.getData();
 
+		Department uapDepQuery = DTOUtils.newDTO(Department.class);
+		uapDepQuery.setFirmCode("szpt");
+		BaseOutput<List<Department>> uapDepOutput = this.departmentUapRpc.listByDepartment(uapDepQuery);
+		if (!uapDepOutput.isSuccess()) {
+			LOGGER.error(uapDepOutput.getMessage());
+			return;
+		}
+		List<Department> uapDepartments = uapDepOutput.getData();
+
+		BaseOutput<List<AlmDepartmentDto>> almDepOutput = this.departmentALMRpc.list(new AlmDepartmentDto());
+		if (!almDepOutput.isSuccess()) {
+			LOGGER.error(almDepOutput.getMessage());
+			return;
+		}
+		List<AlmDepartmentDto> almDepartments = almDepOutput.getData();
+
 		// approve表
 		this.approveMapper.selectAll().forEach(a -> {
 
@@ -218,6 +238,23 @@ public class UserDepIdConverter implements InitializingBean {
 				});
 				a.setDescription(JSON.toJSONString(approveList));
 			}
+
+			// dep
+			final Long almDepId = a.getDep();
+			if (almDepId != null) {
+				AlmDepartmentDto almDep = almDepartments.stream().filter(d -> d.getId().equals(almDepId)).findFirst().orElse(null);
+				if (almDep == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm部门", almDepId));
+					return;
+				}
+				Department uapDep = uapDepartments.stream().filter(d -> d.getCode().equals(almDep.getCode())).findFirst().orElse(null);
+				if (uapDep == null) {
+					LOGGER.warn(String.format("未找到code为%s的uap部门", almDep.getCode()));
+					return;
+				}
+				a.setDep(uapDep.getId());
+			}
+
 			this.approveMapper.updateByPrimaryKey(a);
 		});
 
@@ -296,7 +333,7 @@ public class UserDepIdConverter implements InitializingBean {
 						LOGGER.warn(String.format("未找到username为%s的uap用户", executor.getUserName()));
 						return;
 					}
-					target.add(executor.getId());
+					target.add(uapUser.getId());
 				});
 				h.setExecutors(JSON.toJSONString(target));
 			}
@@ -343,7 +380,124 @@ public class UserDepIdConverter implements InitializingBean {
 			this.logMapper.updateByPrimaryKey(l);
 		});
 
-		// log表
+		// project表
+		this.projectMapper.selectAll().forEach(p -> {
+			// businessOwnerId
+			final Long almBusinessOwnerId = p.getBusinessOwner();
+			if (almBusinessOwnerId != null) {
+				final AlmUser almBusinessOwner = almUsers.stream().filter(u -> u.getId().equals(almBusinessOwnerId)).findFirst().orElse(null);
+				if (almBusinessOwner == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm用户", almBusinessOwnerId));
+					return;
+				}
+				User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almBusinessOwner.getUserName())).findFirst().orElse(null);
+				if (uapUser == null) {
+					LOGGER.warn(String.format("未找到username为%s的uap用户", almBusinessOwner.getUserName()));
+					return;
+				}
+				p.setBusinessOwner(uapUser.getId());
+			}
+
+			// developmentManager
+			final Long almDevelopmentManagerId = p.getDevelopManager();
+			if (almDevelopmentManagerId != null) {
+				final AlmUser almDevelopmentManager = almUsers.stream().filter(u -> u.getId().equals(almDevelopmentManagerId)).findFirst().orElse(null);
+				if (almDevelopmentManager == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm用户", almDevelopmentManagerId));
+					return;
+				}
+				User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almDevelopmentManager.getUserName())).findFirst().orElse(null);
+				if (uapUser == null) {
+					LOGGER.warn(String.format("未找到username为%s的uap用户", almDevelopmentManager.getUserName()));
+					return;
+				}
+				p.setDevelopManager(uapUser.getId());
+			}
+
+			// productManager
+			final Long almgProductManagerId = p.getProductManager();
+			if (almgProductManagerId != null) {
+				final AlmUser almProductManager = almUsers.stream().filter(u -> u.getId().equals(almgProductManagerId)).findFirst().orElse(null);
+				if (almProductManager == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm用户", almgProductManagerId));
+					return;
+				}
+				User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almProductManager.getUserName())).findFirst().orElse(null);
+				if (uapUser == null) {
+					LOGGER.warn(String.format("未找到username为%s的uap用户", almProductManager.getUserName()));
+					return;
+				}
+				p.setProductManager(uapUser.getId());
+			}
+
+			// projectManager
+			final Long almProjectManagerId = p.getProjectManager();
+			if (almProjectManagerId != null) {
+				final AlmUser almProjectManager = almUsers.stream().filter(u -> u.getId().equals(almProjectManagerId)).findFirst().orElse(null);
+				if (almProjectManager == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm用户", almProjectManagerId));
+					return;
+				}
+				User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almProjectManager.getUserName())).findFirst().orElse(null);
+				if (uapUser == null) {
+					LOGGER.warn(String.format("未找到username为%s的uap用户", almProjectManager.getUserName()));
+					return;
+				}
+				p.setProjectManager(uapUser.getId());
+			}
+
+			// testManager
+			final Long almTestManagerId = p.getTestManager();
+			if (almTestManagerId != null) {
+				final AlmUser almTestManager = almUsers.stream().filter(u -> u.getId().equals(almTestManagerId)).findFirst().orElse(null);
+				if (almTestManager == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm用户", almTestManagerId));
+					return;
+				}
+				User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almTestManager.getUserName())).findFirst().orElse(null);
+				if (uapUser == null) {
+					LOGGER.warn(String.format("未找到username为%s的uap用户", almTestManager.getUserName()));
+					return;
+				}
+				p.setTestManager(uapUser.getId());
+			}
+
+			// testManager
+			final Long almOriginatorId = p.getOriginator();
+			if (almOriginatorId != null) {
+				final AlmUser almOriginator = almUsers.stream().filter(u -> u.getId().equals(almOriginatorId)).findFirst().orElse(null);
+				if (almOriginator == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm用户", almOriginatorId));
+					return;
+				}
+				User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almOriginator.getUserName())).findFirst().orElse(null);
+				if (uapUser == null) {
+					LOGGER.warn(String.format("未找到username为%s的uap用户", almOriginator.getUserName()));
+					return;
+				}
+				p.setOriginator(uapUser.getId());
+			}
+
+			// dep
+			final Long almDepId = p.getDep();
+			if (almDepId != null) {
+				AlmDepartmentDto almDep = almDepartments.stream().filter(d -> d.getId().equals(almDepId)).findFirst().orElse(null);
+				if (almDep == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm部门", almDepId));
+					return;
+				}
+				Department uapDep = uapDepartments.stream().filter(d -> d.getCode().equals(almDep.getCode())).findFirst().orElse(null);
+				if (uapDep == null) {
+					LOGGER.warn(String.format("未找到code为%s的uap部门", almDep.getCode()));
+					return;
+				}
+				p.setDep(uapDep.getId());
+			}
+
+			this.projectMapper.updateByPrimaryKey(p);
+		});
+
+		// projectApply表
 		this.projectApplyMapper.selectAll().forEach(a -> {
 			// businessOwnerId
 			final Long almBusinessOwnerId = a.getBusinessOwner();
@@ -458,23 +612,45 @@ public class UserDepIdConverter implements InitializingBean {
 					}
 					resourceRequire.setMainUser(uapUser.getId());
 				}
-				resourceRequire.getRelatedResources().forEach(r -> {
-					final Long almUserId = Long.valueOf(r.getRelatedUser());
-					if (almUserId != null) {
-						final AlmUser almUser = almUsers.stream().filter(u -> u.getId().equals(almUserId)).findFirst().orElse(null);
-						if (almUser == null) {
-							LOGGER.warn(String.format("未找到id为%d的alm用户", almUserId));
+				if (CollectionUtils.isNotEmpty(resourceRequire.getRelatedResources())) {
+					resourceRequire.getRelatedResources().forEach(r -> {
+						if (r.getRelatedUser() == null) {
+							LOGGER.warn(String.format("资源关联部门用户为空：%s", JSON.toJSONString(r)));
 							return;
 						}
-						User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almUser.getUserName())).findFirst().orElse(null);
-						if (uapUser == null) {
-							LOGGER.warn(String.format("未找到username为%s的uap用户", almUser.getUserName()));
-							return;
+						final Long almUserId = Long.valueOf(r.getRelatedUser());
+						if (almUserId != null) {
+							final AlmUser almUser = almUsers.stream().filter(u -> u.getId().equals(almUserId)).findFirst().orElse(null);
+							if (almUser == null) {
+								LOGGER.warn(String.format("未找到id为%d的alm用户", almUserId));
+								return;
+							}
+							User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almUser.getUserName())).findFirst().orElse(null);
+							if (uapUser == null) {
+								LOGGER.warn(String.format("未找到username为%s的uap用户", almUser.getUserName()));
+								return;
+							}
+							r.setRelatedUser(uapUser.getId().toString());
 						}
-						r.setRelatedUser(uapUser.getId().toString());
-					}
-				});
+					});
+				}
 				a.setResourceRequire(JSON.toJSONString(resourceRequire));
+			}
+
+			// dep
+			final Long almDepId = a.getDep();
+			if (almDepId != null) {
+				AlmDepartmentDto almDep = almDepartments.stream().filter(d -> d.getId().equals(almDepId)).findFirst().orElse(null);
+				if (almDep == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm部门", almDepId));
+					return;
+				}
+				Department uapDep = uapDepartments.stream().filter(d -> d.getCode().equals(almDep.getCode())).findFirst().orElse(null);
+				if (uapDep == null) {
+					LOGGER.warn(String.format("未找到code为%s的uap部门", almDep.getCode()));
+					return;
+				}
+				a.setDep(uapDep.getId());
 			}
 
 			this.projectApplyMapper.updateByPrimaryKey(a);
@@ -606,8 +782,440 @@ public class UserDepIdConverter implements InitializingBean {
 				p.setProductManagerId(uapUser.getId());
 			}
 
+			// testManagerId
+			final Long almTestManagerId = p.getTestManagerId();
+			if (almTestManagerId != null) {
+				final AlmUser almTestManager = almUsers.stream().filter(u -> u.getId().equals(almTestManagerId)).findFirst().orElse(null);
+				if (almTestManager == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm用户", almTestManagerId));
+					return;
+				}
+				User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almTestManager.getUserName())).findFirst().orElse(null);
+				if (uapUser == null) {
+					LOGGER.warn(String.format("未找到username为%s的uap用户", almTestManager.getUserName()));
+					return;
+				}
+				p.setTestManagerId(uapUser.getId());
+			}
+
+			// executors
+			if (StringUtils.isNotBlank(p.getExecutorId())) {
+				List<String> executors = Arrays.asList(p.getExecutorId().split(","));
+				StringBuilder sb = new StringBuilder();
+				executors.forEach(e -> {
+					final AlmUser executor = almUsers.stream().filter(u -> u.getId().equals(Long.valueOf(e))).findFirst().orElse(null);
+					if (executor == null) {
+						LOGGER.warn(String.format("未找到id为%s的alm用户", e));
+						return;
+					}
+					User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(executor.getUserName())).findFirst().orElse(null);
+					if (uapUser == null) {
+						LOGGER.warn(String.format("未找到username为%s的uap用户", executor.getUserName()));
+						return;
+					}
+					sb.append(executor.getId()).append(",");
+				});
+				p.setExecutorId(sb.substring(0, sb.length() - 1));
+			}
+
 			this.projectOnlineApplyMapper.updateByPrimaryKey(p);
 		});
+
+		// projectOnlineOperationRecord表
+		this.projectOnlineOperationRecordMapper.selectAll().forEach(p -> {
+			// operatorId
+			final Long almOperatorId = p.getOperatorId();
+			if (almOperatorId != null) {
+				final AlmUser almOperator = almUsers.stream().filter(u -> u.getId().equals(almOperatorId)).findFirst().orElse(null);
+				if (almOperator == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm用户", almOperatorId));
+					return;
+				}
+				User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almOperator.getUserName())).findFirst().orElse(null);
+				if (uapUser == null) {
+					LOGGER.warn(String.format("未找到username为%s的uap用户", almOperator.getUserName()));
+					return;
+				}
+				p.setOperatorId(uapUser.getId());
+			}
+
+			this.projectOnlineOperationRecordMapper.updateByPrimaryKey(p);
+		});
+
+		// projectOnlineSubsystem表
+		this.projectOnlineSubsystemMapper.selectAll().forEach(p -> {
+			// managerId
+			final Long almManagerId = p.getManagerId();
+			if (almManagerId != null) {
+				final AlmUser almManager = almUsers.stream().filter(u -> u.getId().equals(almManagerId)).findFirst().orElse(null);
+				if (almManager == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm用户", almManagerId));
+					return;
+				}
+				User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almManager.getUserName())).findFirst().orElse(null);
+				if (uapUser == null) {
+					LOGGER.warn(String.format("未找到username为%s的uap用户", almManager.getUserName()));
+					return;
+				}
+				p.setManagerId(uapUser.getId());
+			}
+
+			this.projectOnlineSubsystemMapper.updateByPrimaryKey(p);
+		});
+
+		// projectVersion表
+		this.projectVersionMapper.selectAll().forEach(p -> {
+			// managerId
+			final Long almCreatorId = p.getCreatorId();
+			if (almCreatorId != null) {
+				final AlmUser almCreator = almUsers.stream().filter(u -> u.getId().equals(almCreatorId)).findFirst().orElse(null);
+				if (almCreator == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm用户", almCreatorId));
+					return;
+				}
+				User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almCreator.getUserName())).findFirst().orElse(null);
+				if (uapUser == null) {
+					LOGGER.warn(String.format("未找到username为%s的uap用户", almCreator.getUserName()));
+					return;
+				}
+				p.setCreatorId(uapUser.getId());
+			}
+
+			this.projectVersionMapper.updateByPrimaryKey(p);
+		});
+
+		// task表
+		this.taskMapper.selectAll().forEach(t -> {
+			// createMemberId
+			final Long almCreateMemberId = t.getCreateMemberId();
+			if (almCreateMemberId != null) {
+				final AlmUser almCreateMember = almUsers.stream().filter(u -> u.getId().equals(almCreateMemberId)).findFirst().orElse(null);
+				if (almCreateMember == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm用户", almCreateMemberId));
+					return;
+				}
+				User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almCreateMember.getUserName())).findFirst().orElse(null);
+				if (uapUser == null) {
+					LOGGER.warn(String.format("未找到username为%s的uap用户", almCreateMember.getUserName()));
+					return;
+				}
+				t.setCreateMemberId(uapUser.getId());
+			}
+
+			// modifyMemberId
+			final Long almModifyMemberId = t.getModifyMemberId();
+			if (almModifyMemberId != null) {
+				final AlmUser almModifyMember = almUsers.stream().filter(u -> u.getId().equals(almModifyMemberId)).findFirst().orElse(null);
+				if (almModifyMember == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm用户", almModifyMemberId));
+					return;
+				}
+				User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almModifyMember.getUserName())).findFirst().orElse(null);
+				if (uapUser == null) {
+					LOGGER.warn(String.format("未找到username为%s的uap用户", almModifyMember.getUserName()));
+					return;
+				}
+				t.setModifyMemberId(uapUser.getId());
+			}
+
+			// owner
+			final Long almOwnerId = t.getOwner();
+			if (almOwnerId != null) {
+				final AlmUser almOwner = almUsers.stream().filter(u -> u.getId().equals(almOwnerId)).findFirst().orElse(null);
+				if (almOwner == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm用户", almOwnerId));
+					return;
+				}
+				User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almOwner.getUserName())).findFirst().orElse(null);
+				if (uapUser == null) {
+					LOGGER.warn(String.format("未找到username为%s的uap用户", almOwner.getUserName()));
+					return;
+				}
+				t.setModifyMemberId(uapUser.getId());
+			}
+
+			this.taskMapper.updateByPrimaryKey(t);
+		});
+
+		// task表
+		this.taskDetailsMapper.selectAll().forEach(t -> {
+			// createMemberId
+			final Long almCreateMemberId = t.getCreateMemberId();
+			if (almCreateMemberId != null) {
+				final AlmUser almCreateMember = almUsers.stream().filter(u -> u.getId().equals(almCreateMemberId)).findFirst().orElse(null);
+				if (almCreateMember == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm用户", almCreateMemberId));
+					return;
+				}
+				User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almCreateMember.getUserName())).findFirst().orElse(null);
+				if (uapUser == null) {
+					LOGGER.warn(String.format("未找到username为%s的uap用户", almCreateMember.getUserName()));
+					return;
+				}
+				t.setCreateMemberId(uapUser.getId());
+			}
+
+			// modifyMemberId
+			final Long almModifyMemberId = t.getModifyMemberId();
+			if (almModifyMemberId != null) {
+				final AlmUser almModifyMember = almUsers.stream().filter(u -> u.getId().equals(almModifyMemberId)).findFirst().orElse(null);
+				if (almModifyMember == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm用户", almModifyMemberId));
+					return;
+				}
+				User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almModifyMember.getUserName())).findFirst().orElse(null);
+				if (uapUser == null) {
+					LOGGER.warn(String.format("未找到username为%s的uap用户", almModifyMember.getUserName()));
+					return;
+				}
+				t.setModifyMemberId(uapUser.getId());
+			}
+
+			this.taskDetailsMapper.updateByPrimaryKey(t);
+		});
+
+		// team表
+		this.teamMapper.selectAll().forEach(t -> {
+			// memberId
+			final Long almMemberId = t.getMemberId();
+			if (almMemberId != null) {
+				final AlmUser almMember = almUsers.stream().filter(u -> u.getId().equals(almMemberId)).findFirst().orElse(null);
+				if (almMember == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm用户", almMemberId));
+					return;
+				}
+				User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almMember.getUserName())).findFirst().orElse(null);
+				if (uapUser == null) {
+					LOGGER.warn(String.format("未找到username为%s的uap用户", almMember.getUserName()));
+					return;
+				}
+				t.setMemberId(uapUser.getId());
+			}
+
+			this.teamMapper.updateByPrimaryKey(t);
+		});
+
+		// travelCostApply表
+		this.travelCostApplyMapper.selectAll().forEach(t -> {
+			// applicantId
+			final Long almApplicantId = t.getApplicantId();
+			if (almApplicantId != null) {
+				final AlmUser almApplicant = almUsers.stream().filter(u -> u.getId().equals(almApplicantId)).findFirst().orElse(null);
+				if (almApplicant == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm用户", almApplicantId));
+					return;
+				}
+				User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almApplicant.getUserName())).findFirst().orElse(null);
+				if (uapUser == null) {
+					LOGGER.warn(String.format("未找到username为%s的uap用户", almApplicant.getUserName()));
+					return;
+				}
+				t.setApplicantId(uapUser.getId());
+			}
+
+			// departmentId
+			final Long almDepId = t.getDepartmentId();
+			if (almDepId != null) {
+				AlmDepartmentDto almDep = almDepartments.stream().filter(d -> d.getId().equals(almDepId)).findFirst().orElse(null);
+				if (almDep == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm部门", almDepId));
+					return;
+				}
+				Department uapDep = uapDepartments.stream().filter(d -> d.getCode().equals(almDep.getCode())).findFirst().orElse(null);
+				if (uapDep == null) {
+					LOGGER.warn(String.format("未找到code为%s的uap部门", almDep.getCode()));
+					return;
+				}
+				t.setDepartmentId(uapDep.getId());
+			}
+
+			// departmentId
+			final Long almRootDepId = t.getRootDepartemntId();
+			if (almRootDepId != null) {
+				AlmDepartmentDto almDep = almDepartments.stream().filter(d -> d.getId().equals(almRootDepId)).findFirst().orElse(null);
+				if (almDep == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm部门", almRootDepId));
+					return;
+				}
+				Department uapDep = uapDepartments.stream().filter(d -> d.getCode().equals(almDep.getCode())).findFirst().orElse(null);
+				if (uapDep == null) {
+					LOGGER.warn(String.format("未找到code为%s的uap部门", almDep.getCode()));
+					return;
+				}
+				t.setRootDepartemntId(uapDep.getId());
+			}
+
+			this.travelCostApplyMapper.updateByPrimaryKey(t);
+		});
+
+		// verifyApproval表
+		this.verifyApprovalMapper.selectAll().forEach(v -> {
+			// approver
+			final Long almApproverId = v.getApprover();
+			if (almApproverId != null) {
+				final AlmUser almApprover = almUsers.stream().filter(u -> u.getId().equals(almApproverId)).findFirst().orElse(null);
+				if (almApprover == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm用户", almApproverId));
+					return;
+				}
+				User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almApprover.getUserName())).findFirst().orElse(null);
+				if (uapUser == null) {
+					LOGGER.warn(String.format("未找到username为%s的uap用户", almApprover.getUserName()));
+					return;
+				}
+				v.setApprover(uapUser.getId());
+			}
+
+			// createMemberId
+			final Long almCreateMemberId = v.getCreateMemberId();
+			if (almCreateMemberId != null) {
+				final AlmUser almCreateMember = almUsers.stream().filter(u -> u.getId().equals(almCreateMemberId)).findFirst().orElse(null);
+				if (almCreateMember == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm用户", almCreateMemberId));
+					return;
+				}
+				User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almCreateMember.getUserName())).findFirst().orElse(null);
+				if (uapUser == null) {
+					LOGGER.warn(String.format("未找到username为%s的uap用户", almCreateMember.getUserName()));
+					return;
+				}
+				v.setCreateMemberId(uapUser.getId());
+			}
+
+			this.verifyApprovalMapper.updateByPrimaryKey(v);
+		});
+
+		// weekly表
+		this.weeklyMapper.selectAll().forEach(w -> {
+			// createMemberId
+			final Long almCreateMemberId = w.getCreateMemberId();
+			if (almCreateMemberId != null) {
+				final AlmUser almCreateMember = almUsers.stream().filter(u -> u.getId().equals(almCreateMemberId)).findFirst().orElse(null);
+				if (almCreateMember == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm用户", almCreateMemberId));
+					return;
+				}
+				User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almCreateMember.getUserName())).findFirst().orElse(null);
+				if (uapUser == null) {
+					LOGGER.warn(String.format("未找到username为%s的uap用户", almCreateMember.getUserName()));
+					return;
+				}
+				w.setCreateMemberId(uapUser.getId());
+			}
+
+			// modifyMemberId
+			final Long almModifyMemberId = w.getModifyMemberId();
+			if (almModifyMemberId != null) {
+				final AlmUser almModifyMember = almUsers.stream().filter(u -> u.getId().equals(almModifyMemberId)).findFirst().orElse(null);
+				if (almModifyMember == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm用户", almModifyMemberId));
+					return;
+				}
+				User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almModifyMember.getUserName())).findFirst().orElse(null);
+				if (uapUser == null) {
+					LOGGER.warn(String.format("未找到username为%s的uap用户", almModifyMember.getUserName()));
+					return;
+				}
+				w.setModifyMemberId(uapUser.getId());
+			}
+
+			this.weeklyMapper.updateByPrimaryKey(w);
+		});
+
+		// workOrder表
+		this.workOrderMapper.selectAll().forEach(w -> {
+			// acceptorId
+			final Long almAcceptorId = w.getAcceptorId();
+			if (almAcceptorId != null) {
+				final AlmUser almAcceptor = almUsers.stream().filter(u -> u.getId().equals(almAcceptorId)).findFirst().orElse(null);
+				if (almAcceptor == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm用户", almAcceptorId));
+					return;
+				}
+				User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almAcceptor.getUserName())).findFirst().orElse(null);
+				if (uapUser == null) {
+					LOGGER.warn(String.format("未找到username为%s的uap用户", almAcceptor.getUserName()));
+					return;
+				}
+				w.setAcceptorId(uapUser.getId());
+			}
+
+			// applicantId
+			final Long almApplicantId = w.getApplicantId();
+			if (almApplicantId != null) {
+				final AlmUser almApplicant = almUsers.stream().filter(u -> u.getId().equals(almApplicantId)).findFirst().orElse(null);
+				if (almApplicant == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm用户", almApplicantId));
+					return;
+				}
+				User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almApplicant.getUserName())).findFirst().orElse(null);
+				if (uapUser == null) {
+					LOGGER.warn(String.format("未找到username为%s的uap用户", almApplicant.getUserName()));
+					return;
+				}
+				w.setApplicantId(uapUser.getId());
+			}
+
+			// executorId
+			final Long almExecutorId = w.getExecutorId();
+			if (almExecutorId != null) {
+				final AlmUser almExecutor = almUsers.stream().filter(u -> u.getId().equals(almExecutorId)).findFirst().orElse(null);
+				if (almExecutor == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm用户", almExecutorId));
+					return;
+				}
+				User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almExecutor.getUserName())).findFirst().orElse(null);
+				if (uapUser == null) {
+					LOGGER.warn(String.format("未找到username为%s的uap用户", almExecutor.getUserName()));
+					return;
+				}
+				w.setExecutorId(uapUser.getId());
+			}
+
+			// projectLeader
+			if (StringUtils.isNotBlank(w.getCopyUserId())) {
+				List<Long> copyUserIds = JSON.parseObject(w.getCopyUserId(), new TypeReference<List<Long>>() {
+				});
+				List<Long> target = new ArrayList<>(copyUserIds.size());
+				copyUserIds.forEach(cp -> {
+					final AlmUser almUser = almUsers.stream().filter(u -> u.getId().equals(cp)).findFirst().orElse(null);
+					if (almUser == null) {
+						LOGGER.warn(String.format("未找到id为%d的alm用户", cp));
+						return;
+					}
+					User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almUser.getUserName())).findFirst().orElse(null);
+					if (uapUser == null) {
+						LOGGER.warn(String.format("未找到username为%s的uap用户", almUser.getUserName()));
+						return;
+					}
+					target.add(uapUser.getId());
+				});
+				w.setCopyUserId(JSON.toJSONString(target));
+			}
+			this.workOrderMapper.updateByPrimaryKey(w);
+		});
+
+		// workOrderOperationRecord表
+		this.workOrderOperationRecordMapper.selectAll().forEach(w -> {
+			// operatorId
+			final Long almOperatorId = w.getOperatorId();
+			if (almOperatorId != null) {
+				final AlmUser almOperator = almUsers.stream().filter(u -> u.getId().equals(almOperatorId)).findFirst().orElse(null);
+				if (almOperator == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm用户", almOperatorId));
+					return;
+				}
+				User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almOperator.getUserName())).findFirst().orElse(null);
+				if (uapUser == null) {
+					LOGGER.warn(String.format("未找到username为%s的uap用户", almOperator.getUserName()));
+					return;
+				}
+				w.setOperatorId(uapUser.getId());
+			}
+
+			this.workOrderOperationRecordMapper.updateByPrimaryKey(w);
+		});
+
 		LOGGER.info("数据迁移完毕........");
 	}
 
