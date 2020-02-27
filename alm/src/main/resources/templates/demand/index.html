@@ -468,7 +468,7 @@
         	
         	//签收isNeedClaim  审批isHandleProcess  驳回编辑processFlag
         	if(row.$_status==3&&!row.isHandleProcess){//审批中的显示进度
-        		content+='<span style="padding:2px;"><a href="javascript:void(0)" onclick="showProgress('+index+')">查看进度</a></span>';
+        		content+='';//<span style="padding:2px;"><a href="javascript:void(0)" onclick="showProgress('+index+')">查看进度</a></span>
         	}else if(row.isHandleProcess&&row.isNeedClaim){
         		content+='<span style="padding:2px;"><a href="javascript:void(0)" style="color:red;" onclick="doClaim('+row.id+')">签收</a></span>';
         	}else if(row.isHandleProcess&&!row.isNeedClaim&&row.processFlag==1){

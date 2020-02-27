@@ -68,15 +68,20 @@ import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.HardwareResourceApplyService;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
+import com.dili.bpmc.sdk.domain.TaskMapping;
+import com.dili.bpmc.sdk.dto.TaskDto;
 import com.dili.bpmc.sdk.rpc.RuntimeRpc;
 import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.constant.ResultCode;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.exception.BusinessException;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
+import com.fasterxml.jackson.databind.deser.Deserializers.Base;
 import com.github.pagehelper.Page;
 
 /**
@@ -412,14 +417,42 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		if (!apply.getProjectManagerId().equals(projectManagerId)) {
 			throw new HardwareResourceApplyException("当前用户没有权限执行该操作");
 		}
-
+		//获取taskId，完成流程操作
+		String processDefinitionId = apply.getProcessDefinitionId();
+        //根据业务号查询任务
+        TaskDto taskDto = DTOUtils.newInstance(TaskDto.class);
+        taskDto.setProcessInstanceBusinessKey(applyId+"");
+        BaseOutput<List<TaskMapping>> output = taskRpc.list(taskDto);
+        if(!output.isSuccess()){
+            throw new BusinessException(ResultCode.DATA_ERROR, output.getMessage());
+        }
+        List<TaskMapping> taskMappings = output.getData();
+        //没有进行中的任务或任务已结束
+        if(CollectionUtils.isEmpty(taskMappings)){
+            throw new BusinessException(ResultCode.DATA_ERROR, "未找到进行中的任务");
+        }
+        //默认没有并发流程，所以取第一个任务
+        //如果有并发流程，需使用TaskDefKey来确认流程节点
+        TaskMapping taskMapping = taskMappings.get(0);
+        String taskId = taskMapping.getId();
+		//获取任务
 		if (ApproveResult.APPROVED.equals(result)) {
+			//完成流程操作
+			BaseOutput outPut = this.submitApprove(apply.getId(),taskId);
+			if(!outPut.getCode().equals("200")) {
+				throw new HardwareResourceApplyException(outPut.getMessage());
+			};
 			// 审批通过流转到运维部经理审批
 			apply.setApplyState(HardwareApplyState.OPERATION_MANAGER_APPROVING.getValue());
 		} else if (ApproveResult.FAILED.equals(result)) {
+			//完成流程操作
+			BaseOutput outPut = this.rejectApprove(apply.getId(), taskId);
+			if(!outPut.getCode().equals("200")) {
+				throw new HardwareResourceApplyException("信息不全，流程无法启动");
+			};
 			// 未通过审批退回到编辑状态让用户重新编辑
-			apply.setSubmitTime(null);
-			apply.setApplyState(HardwareApplyState.APPLING.getValue());
+/*			apply.setSubmitTime(null);
+			apply.setApplyState(HardwareApplyState.APPLING.getValue());*/
 		} else {
 			throw new IllegalArgumentException("未知的审批结果");
 		}
@@ -775,6 +808,8 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 	public BaseOutput submitApprove(Long id, String taskId) {
 		Map<String, Object> variables = new HashMap<>();
 		variables.put("approved", "true");
+		TaskMapping taskMapping = taskRpc.getById(taskId).getData();
+		  //candidate
 		return taskRpc.complete(taskId, variables);
 	}
 

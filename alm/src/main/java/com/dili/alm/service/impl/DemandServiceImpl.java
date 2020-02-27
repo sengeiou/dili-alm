@@ -554,7 +554,6 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	public BaseOutput submitApprove(String code, String taskId, Byte status, String processType) {
 		Demand condition = new Demand();
 		condition.setSerialNumber(code);
-		;
 		List<Demand> list = listByExample(condition);
 		if (status != null) {
 			Demand selectDemand = list.get(0);
