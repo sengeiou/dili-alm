@@ -14,7 +14,7 @@ public interface DepartmentALMRpc {
 	@POST("/departmentApi/findByUserId.api")
 	BaseOutput<List<AlmDepartmentDto>> findByUserId(@VOBody Long userId);
 
-	@POST("/departmentApi/list.api")
+	@POST("/api/department/list")
 	BaseOutput<List<AlmDepartmentDto>> list(@VOBody AlmDepartmentDto department);
 
 }
