@@ -182,13 +182,12 @@ button:hover {
 		 
 	
 	   var taskIdd=$('#taskId').val();
+	   alert(taskIdd);
 	    $.ajax({
 	       type: "POST",
 	       url: "${contextPath!}/onlineDataChange/notAgreeOnlineData.action",
-	       data: {"taskId":taskIdd},       
-	       processData: false,
-	        contentType: false,
-	        dataType:"json",
+	       data: {"taskId":taskIdd}, 
+	        async : true,
            success:function(data){
       	  
         	   alert("执行成功");
