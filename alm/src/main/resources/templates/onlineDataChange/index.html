@@ -410,17 +410,18 @@
   	         }
             
          
-            $('#_versionIdName').combobox('clear');
+          /*   $('#_versionIdName').combobox('clear');
             $('#_versionIdName').combobox({
-					url : "${contextPath!}/task/listTreeVersionByProject.json?id=" +"-1",
+					url : "${contextPath!}/task/listTreeVersionByProject.json?id=" +selected.,
 					valueField : 'id',
 					textField : 'version',
 					editable : false,
-					onLoadSuccess : function() {
-						$("#_versionIdName").combobox("select",selected.versionId);
-					}
-			 });
-            
+					onLoadSuccess : function() { */ 
+						
+					
+			/* 		}
+			 }); */
+             
         
             $('#dlg').dialog('open');
             $('#dlg').dialog('center');
@@ -429,6 +430,7 @@
             formData = addKeyStartWith(getOriginalData(formData),"_");
             $('#_form').form('load', formData);
             $('#_applyUserIdName').textbox('setText', '');
+        	$("#_versionIdName").combobox("setValue",selected.versionId);
             
        		$.ajax({
                 type: "get",
