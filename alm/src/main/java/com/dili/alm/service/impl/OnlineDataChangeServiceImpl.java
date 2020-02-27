@@ -62,8 +62,9 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 	private	    RoleRpc  roleRpc;
     @Autowired
 	private ProjectService   projectService;
-    
-public OnlineDataChangeMapper getActualDao() {
+    @Autowired
+   	private  OnlineDataChangeMapper  onlineDataChangeMapper;
+      public OnlineDataChangeMapper getActualDao() {
         return (OnlineDataChangeMapper)getDao();
     }
    
@@ -290,7 +291,7 @@ public OnlineDataChangeMapper getActualDao() {
    	 	   onlineDataChange.setProjectId(Long.parseLong(projectIdcc));
 	    }
    	 
-    	List<OnlineDataChange> list = this.list(onlineDataChange);
+    	List<OnlineDataChange> list = onlineDataChangeMapper.selectList(onlineDataChange);
     	 // Page<OnlineDataChange> page =  (Page<OnlineDataChange>) list;
 		Map<Object, Object> metadata = null == onlineDataChange.getMetadata() ? new HashMap<>() : onlineDataChange.getMetadata();
 		JSONObject projectProvider = new JSONObject();
