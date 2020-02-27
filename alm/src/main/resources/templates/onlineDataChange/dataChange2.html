@@ -185,7 +185,7 @@ button:hover {
 
    $('#notAgree').bind('click', function(){
 	   var taskIdd=$('#taskId').val();
-	   alert(taskIdd);
+	  // alert(taskIdd);
 	   $.ajax({
            type: "post",
            url: "${contextPath!}/onlineDataChange/notAgreeTestOnlineData.action",

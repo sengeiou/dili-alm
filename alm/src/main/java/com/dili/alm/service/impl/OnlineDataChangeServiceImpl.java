@@ -212,7 +212,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		OnlineDataChange onlineDataChange=new  OnlineDataChange();
 		onlineDataChange.setId(Long.parseLong(dataId));
 		onlineDataChange.setDataStatus((byte)1);
-		this.updateSelective(onlineDataChange);
+		onlineDataChangeMapper.updateByPrimaryKeySelective(onlineDataChange);
 		Map<String, Object> map=new HashMap<>();
     	map.put("approved", "false");
     	
