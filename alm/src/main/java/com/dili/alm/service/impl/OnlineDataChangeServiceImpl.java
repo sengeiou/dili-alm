@@ -108,9 +108,9 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			       System.out.println(object.getCode()+object.getData()+object.getErrorData());
 			     
 			       OnlineDataChange onlineData=new OnlineDataChange();
-			       onlineDataChange.setProcessInstanceId(object.getData().getProcessInstanceId()); 
-			       onlineDataChange.setProcessDefinitionId(object.getData().getProcessDefinitionId());
-			       onlineData.setId(onlineDataChange.getId());
+			       onlineData.setProcessInstanceId(object.getData().getProcessInstanceId()); 
+			       onlineData.setProcessDefinitionId(object.getData().getProcessDefinitionId());
+			     //  onlineData.setId(onlineDataChange.getId());
 			       onlineData.setDataStatus((byte)2);
 			       onlineData.setIsSubmit((byte)1);
 			       this.updateSelective(onlineData);
