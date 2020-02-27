@@ -97,24 +97,6 @@
        	 $("#submitBtn").linkbutton("disable");
        	 $("#cancelBtn").linkbutton("disable");
        }
-        function setIframeHeight(){
-        	try{
-	        	var iframe = document.getElementById("hardwareResourceApplyDetail");
-	        	if(iframe.attachEvent){
-			        	iframe.attachEvent("onload", function(){
-			        	iframe.height = iframe.contentWindow.document.documentElement.scrollHeight+80;
-		        	});
-	        		return;
-	        	}else{
-		        	iframe.onload = function(){
-			        	iframe.height = iframe.contentDocument.body.scrollHeight+80;
-		        	};
-		        	return;
-	        	}
-	        	}catch(e){
-	        	throw new Error('setIframeHeight Error');
-        	}
-    	}
         function checkExecutorAmount(nval, oval) {
         	var me = $(this);
         	if (nval.length > 2) {

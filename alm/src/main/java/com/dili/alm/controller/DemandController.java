@@ -153,9 +153,7 @@ public class DemandController {
     	if (demand.getType()==null) {
     		return BaseOutput.failure("需求类型不能为空！");
 		}
-    	if (demand.getClass()==null) {
-    		return BaseOutput.failure("需求类型不能为空！");
-		}
+
     	if(demand.getType()!=1&&demand.getBelongProId()==null) {
     		return BaseOutput.failure("不是新需求，所属项目必选！");
     	}
@@ -176,6 +174,9 @@ public class DemandController {
     	if (demand.getType()==null) {
     		return BaseOutput.failure("需求类型不能为空！");
 		}
+    	if(demand.getType()!=1&&demand.getBelongProId()==null) {
+    		return BaseOutput.failure("不是新需求，所属项目必选！");
+    	}
         try {
 			demandService.submint(demand);
 		} catch (DemandExceptions e) {

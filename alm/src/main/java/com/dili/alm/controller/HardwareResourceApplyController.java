@@ -113,7 +113,7 @@ public class HardwareResourceApplyController {
 				.addAttribute("opRecords", apply.aget("opRecords"));
 		Map<Object, Object> viewModel = HardwareResourceApplyServiceImpl.buildApplyViewModel(apply);
 		modelMap.addAttribute("model", viewModel);
-		return "hardwareResourceApply/detail";
+		return "hardwareResourceApply/process/detailForTask";
 	}
 
 	@RequestMapping(value = "/add", method = RequestMethod.GET)
@@ -433,16 +433,17 @@ public class HardwareResourceApplyController {
 	}
 
 	@RequestMapping(value = "/managerApprove", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput managerApprove(Long id, Boolean isApproved, String description)
-			throws HardwareResourceApplyException {
-		UserTicket user = SessionContext.getSessionContext().getUserTicket();
-		if (isApproved) {
-
-			hardwareResourceApplyService.projectManagerApprove(id, user.getId(), ApproveResult.APPROVED, description);
-		} else {
-			hardwareResourceApplyService.projectManagerApprove(id, user.getId(), ApproveResult.FAILED, description);
+	public @ResponseBody BaseOutput managerApprove(Long id, Boolean isApproved, String description){
+		try {
+			UserTicket user = SessionContext.getSessionContext().getUserTicket();
+			if (isApproved) {
+				hardwareResourceApplyService.projectManagerApprove(id, user.getId(), ApproveResult.APPROVED, description);
+			} else {
+				hardwareResourceApplyService.projectManagerApprove(id, user.getId(), ApproveResult.FAILED, description);
+			}
+		} catch (Exception e) {
+			return BaseOutput.failure(e.getMessage());
 		}
-
 		return BaseOutput.success("提交成功");
 	}
 
