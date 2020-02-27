@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +22,6 @@ import com.dili.alm.dao.HardwareApplyOperationRecordMapper;
 import com.dili.alm.dao.HardwareResourceApplyMapper;
 import com.dili.alm.dao.HardwareResourceMapper;
 import com.dili.alm.dao.LogMapper;
-import com.dili.alm.dao.MoveLogTableMapper;
 import com.dili.alm.dao.ProjectApplyMapper;
 import com.dili.alm.dao.ProjectChangeMapper;
 import com.dili.alm.dao.ProjectCompleteMapper;
@@ -122,9 +122,6 @@ public class UserDepIdConverter implements InitializingBean {
 	private WorkOrderOperationRecordMapper workOrderOperationRecordMapper;
 
 	@Autowired
-	private MoveLogTableMapper moveLogTableMapper;
-
-	@Autowired
 	private AlmUserRpc localUserRpc;
 
 	@Autowired
@@ -135,9 +132,15 @@ public class UserDepIdConverter implements InitializingBean {
 	@Autowired
 	private DepartmentALMRpc departmentALMRpc;
 
+	@Value("${com.dili.alm.userDataConvertSwitch:false}")
+	private Boolean userDataConvertSwitch;
+
 	@Transactional
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		if (!this.userDataConvertSwitch) {
+			return;
+		}
 		LOGGER.info("开始数据迁移........");
 		BaseOutput<List<User>> uapOutput = this.userRpc.listByExample(DTOUtils.newDTO(User.class));
 		if (!uapOutput.isSuccess()) {
@@ -168,6 +171,7 @@ public class UserDepIdConverter implements InitializingBean {
 		}
 		List<AlmDepartmentDto> almDepartments = almDepOutput.getData();
 
+		LOGGER.info("正在迁移approve表.......");
 		// approve表
 		this.approveMapper.selectAll().forEach(a -> {
 
@@ -258,6 +262,7 @@ public class UserDepIdConverter implements InitializingBean {
 			this.approveMapper.updateByPrimaryKey(a);
 		});
 
+		LOGGER.info("正在迁移files表.......");
 		// files表
 		this.filesMapper.selectAll().forEach(f -> {
 			// createMemberId
@@ -278,6 +283,7 @@ public class UserDepIdConverter implements InitializingBean {
 			this.filesMapper.updateByPrimaryKey(f);
 		});
 
+		LOGGER.info("正在迁移hardwareApplyOerationRecord表.......");
 		// hardwareApplyOerationRecord表
 		this.hardwareApplyOperationRecordMapper.selectAll().forEach(h -> {
 			// createMemberId
@@ -298,6 +304,7 @@ public class UserDepIdConverter implements InitializingBean {
 			this.hardwareApplyOperationRecordMapper.updateByPrimaryKey(h);
 		});
 
+		LOGGER.info("正在迁移hardwareResourceApply表.......");
 		// hardwareResourceApply表
 		this.hardwareResourceApplyMapper.selectAll().forEach(h -> {
 			// applicantId
@@ -340,6 +347,7 @@ public class UserDepIdConverter implements InitializingBean {
 			this.hardwareResourceApplyMapper.updateByPrimaryKey(h);
 		});
 
+		LOGGER.info("正在迁移hardwareResource表.......");
 		// hardwareResource表
 		this.hardwareResourceMapper.selectAll().forEach(h -> {
 			// maintenanceOwnerId
@@ -360,6 +368,7 @@ public class UserDepIdConverter implements InitializingBean {
 			this.hardwareResourceMapper.updateByPrimaryKey(h);
 		});
 
+		LOGGER.info("正在迁移log表.......");
 		// log表
 		this.logMapper.selectAll().forEach(l -> {
 			// operatorId
@@ -380,6 +389,7 @@ public class UserDepIdConverter implements InitializingBean {
 			this.logMapper.updateByPrimaryKey(l);
 		});
 
+		LOGGER.info("正在迁移project表.......");
 		// project表
 		this.projectMapper.selectAll().forEach(p -> {
 			// businessOwnerId
@@ -497,6 +507,7 @@ public class UserDepIdConverter implements InitializingBean {
 			this.projectMapper.updateByPrimaryKey(p);
 		});
 
+		LOGGER.info("正在迁移projectApply表.......");
 		// projectApply表
 		this.projectApplyMapper.selectAll().forEach(a -> {
 			// businessOwnerId
@@ -656,6 +667,7 @@ public class UserDepIdConverter implements InitializingBean {
 			this.projectApplyMapper.updateByPrimaryKey(a);
 		});
 
+		LOGGER.info("正在迁移projectChange表.......");
 		// projectChange表
 		this.projectChangeMapper.selectAll().forEach(c -> {
 			// createMemberId
@@ -677,6 +689,7 @@ public class UserDepIdConverter implements InitializingBean {
 			this.projectChangeMapper.updateByPrimaryKey(c);
 		});
 
+		LOGGER.info("正在迁移projectComplete表.......");
 		// projectComplete表
 		this.projectCompleteMapper.selectAll().forEach(c -> {
 			// createMemberId
@@ -698,8 +711,16 @@ public class UserDepIdConverter implements InitializingBean {
 			this.projectCompleteMapper.updateByPrimaryKey(c);
 		});
 
+		LOGGER.info("正在迁移projectOnlineApply表.......");
 		// projectOnlineApply表
 		this.projectOnlineApplyMapper.selectAll().forEach(p -> {
+
+			// bugfix
+			User executor = uapUsers.stream().filter(u -> u.getUserName().equals("limaoran")).findFirst().orElse(null);
+			if (executor != null) {
+				p.setExecutorId(executor.getId().toString());
+			}
+
 			// applicantId
 			final Long almApplicantId = p.getApplicantId();
 			if (almApplicantId != null) {
@@ -803,17 +824,17 @@ public class UserDepIdConverter implements InitializingBean {
 				List<String> executors = Arrays.asList(p.getExecutorId().split(","));
 				StringBuilder sb = new StringBuilder();
 				executors.forEach(e -> {
-					final AlmUser executor = almUsers.stream().filter(u -> u.getId().equals(Long.valueOf(e))).findFirst().orElse(null);
-					if (executor == null) {
+					final AlmUser almExecutor = almUsers.stream().filter(u -> u.getId().equals(Long.valueOf(e))).findFirst().orElse(null);
+					if (almExecutor == null) {
 						LOGGER.warn(String.format("未找到id为%s的alm用户", e));
 						return;
 					}
-					User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(executor.getUserName())).findFirst().orElse(null);
+					User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almExecutor.getUserName())).findFirst().orElse(null);
 					if (uapUser == null) {
-						LOGGER.warn(String.format("未找到username为%s的uap用户", executor.getUserName()));
+						LOGGER.warn(String.format("未找到username为%s的uap用户", almExecutor.getUserName()));
 						return;
 					}
-					sb.append(executor.getId()).append(",");
+					sb.append(uapUser.getId()).append(",");
 				});
 				p.setExecutorId(sb.substring(0, sb.length() - 1));
 			}
@@ -821,6 +842,7 @@ public class UserDepIdConverter implements InitializingBean {
 			this.projectOnlineApplyMapper.updateByPrimaryKey(p);
 		});
 
+		LOGGER.info("正在迁移projectOnlineOperationRecord表.......");
 		// projectOnlineOperationRecord表
 		this.projectOnlineOperationRecordMapper.selectAll().forEach(p -> {
 			// operatorId
@@ -842,6 +864,7 @@ public class UserDepIdConverter implements InitializingBean {
 			this.projectOnlineOperationRecordMapper.updateByPrimaryKey(p);
 		});
 
+		LOGGER.info("正在迁移projectOnlineSubsystem表.......");
 		// projectOnlineSubsystem表
 		this.projectOnlineSubsystemMapper.selectAll().forEach(p -> {
 			// managerId
@@ -863,6 +886,7 @@ public class UserDepIdConverter implements InitializingBean {
 			this.projectOnlineSubsystemMapper.updateByPrimaryKey(p);
 		});
 
+		LOGGER.info("正在迁移projectVersion表.......");
 		// projectVersion表
 		this.projectVersionMapper.selectAll().forEach(p -> {
 			// managerId
@@ -884,6 +908,7 @@ public class UserDepIdConverter implements InitializingBean {
 			this.projectVersionMapper.updateByPrimaryKey(p);
 		});
 
+		LOGGER.info("正在迁移task表.......");
 		// task表
 		this.taskMapper.selectAll().forEach(t -> {
 			// createMemberId
@@ -937,7 +962,8 @@ public class UserDepIdConverter implements InitializingBean {
 			this.taskMapper.updateByPrimaryKey(t);
 		});
 
-		// task表
+		LOGGER.info("正在迁移taskDetails表.......");
+		// taskDetails表
 		this.taskDetailsMapper.selectAll().forEach(t -> {
 			// createMemberId
 			final Long almCreateMemberId = t.getCreateMemberId();
@@ -974,6 +1000,7 @@ public class UserDepIdConverter implements InitializingBean {
 			this.taskDetailsMapper.updateByPrimaryKey(t);
 		});
 
+		LOGGER.info("正在迁移team表.......");
 		// team表
 		this.teamMapper.selectAll().forEach(t -> {
 			// memberId
@@ -995,6 +1022,7 @@ public class UserDepIdConverter implements InitializingBean {
 			this.teamMapper.updateByPrimaryKey(t);
 		});
 
+		LOGGER.info("正在迁移travelCostApply表.......");
 		// travelCostApply表
 		this.travelCostApplyMapper.selectAll().forEach(t -> {
 			// applicantId
@@ -1048,6 +1076,7 @@ public class UserDepIdConverter implements InitializingBean {
 			this.travelCostApplyMapper.updateByPrimaryKey(t);
 		});
 
+		LOGGER.info("正在迁移verifyApproval表.......");
 		// verifyApproval表
 		this.verifyApprovalMapper.selectAll().forEach(v -> {
 			// approver
@@ -1085,6 +1114,7 @@ public class UserDepIdConverter implements InitializingBean {
 			this.verifyApprovalMapper.updateByPrimaryKey(v);
 		});
 
+		LOGGER.info("正在迁移weekly表.......");
 		// weekly表
 		this.weeklyMapper.selectAll().forEach(w -> {
 			// createMemberId
@@ -1122,6 +1152,7 @@ public class UserDepIdConverter implements InitializingBean {
 			this.weeklyMapper.updateByPrimaryKey(w);
 		});
 
+		LOGGER.info("正在迁移workOrder表.......");
 		// workOrder表
 		this.workOrderMapper.selectAll().forEach(w -> {
 			// acceptorId
@@ -1195,6 +1226,7 @@ public class UserDepIdConverter implements InitializingBean {
 			this.workOrderMapper.updateByPrimaryKey(w);
 		});
 
+		LOGGER.info("正在迁移workOrderOperationRecord表.......");
 		// workOrderOperationRecord表
 		this.workOrderOperationRecordMapper.selectAll().forEach(w -> {
 			// operatorId
