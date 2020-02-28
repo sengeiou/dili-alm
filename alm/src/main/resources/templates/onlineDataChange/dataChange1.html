@@ -99,8 +99,11 @@ button:hover {
 							data-options="validType:['length[0,50]']" style="width: 39%">
 							
 						<!-- 	 <input  class="easyui-linkbutton" name="_sqlFileId"   style="width: 39%"  value="${odc.sqlFileId}"   id="_sqlFileId"> -->
-					   
-						 	<a id="xiazai  " href="${contextPath}/files/download?id=${odc.sqlFileId}" class="easyui-linkbutton"  data-options="iconCls:'icon-download'">下载sql文件</a>   	
+					        
+					         <a  href="#"  onclick="downMyFile(${odc.sqlFileId})"
+					            data-options="iconCls:'icon-download'">下载sql文件</a>   	
+						 	
+						 	<!-- <a id="xiazai  " href="${contextPath}/files/download?id=${odc.sqlFileId}" class="easyui-linkbutton"  data-options="iconCls:'icon-download'">下载sql文件</a>   	 -->
 					  </td>
 				</tr>
 				
@@ -142,9 +145,22 @@ button:hover {
 
 <!-- ====================================================================================================================== --> <!-- style & script 分隔线 --> <!-- ====================================================================================================================== -->
 <script type="text/javascript">
+    function downMyFile(id){
+			
+		      if(id!=null)
+		       	window.open('${contextPath!}/files/download?id=' + id);
+			  else
+				alert("没有文件");   
+		 }
+</script >
+<script type="text/javascript">
 	
+	
+
+ 
+ 
   var  tet=${version};
-   alert(tet);
+    
    $('#agree').bind('click', function(){
 	 
 	   var taskIdd=$('#taskId').val();
@@ -225,13 +241,12 @@ button:hover {
 
 
 	     $(function () {
-	           
 	    	   
-	    	  //     $('#_projectId').combobox('initValue', ${odc.projectId}');
-	    		//	$('#_projectId').combobox('setText', '${project.name!}');
-	     })
+	    	   
+	    	
+	     });
 	     
-	
+	 
 </script>
 <style type="text/css">
 td {

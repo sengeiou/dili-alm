@@ -101,7 +101,7 @@ button:hover {
 							
 						<!-- 	 <input  class="easyui-linkbutton" name="_sqlFileId"   style="width: 39%"  value="${odc.sqlFileId}"   id="_sqlFileId"> -->
 					   
-						 	<a id="xiazai  " href="${contextPath}/files/download?id=${odc.sqlFileId}" class="easyui-linkbutton"  data-options="iconCls:'icon-download'">下载sql文件</a>   	
+						 		<a id="xiazai" href="#" onclick="downMyFile(${odc.sqlFileId})" class="easyui-linkbutton"  data-options="iconCls:'icon-download'">下载sql文件</a>   	
 					  </td>
 				</tr>
 				
@@ -142,7 +142,17 @@ button:hover {
 
 <!-- ====================================================================================================================== --> <!-- style & script 分隔线 --> <!-- ====================================================================================================================== -->
 <script type="text/javascript">
-	
+    function downMyFile(id){
+			
+		      if(id!=null)
+		       	window.open('${contextPath!}/files/download?id=' + id);
+			  else
+				alert("没有文件");   
+		 }
+</script >
+
+<script type="text/javascript">
+
 
    $('#agree').bind('click', function(){
 	 
