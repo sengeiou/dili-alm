@@ -380,10 +380,6 @@
            
             var  userId=${userId};
     		var  applyUserIdTemp;
-    		
-    	  
-          
-    	     
       
             if( selected.dataStatus==2|
            		selected.dataStatus==3|selected.dataStatus==4|
@@ -400,37 +396,43 @@
   	                async : true,
   	                success: function (data) {
   	                	applyUserIdTemp=data;
-
-  	                  
-  	                 	
+  	                	alert(applyUserIdTemp);
+  	                	
+  	                	if(userId!=applyUserIdTemp){
+  	                		 $.messager.alert('警告','不是本人申请不可修改');
+  	                		 return;
+  	                	}
+  	              	$('#dlg').dialog('open');
+  	  	            $('#dlg').dialog('center');
+  	  	            formFocus("_form", "_applyUserId");
+  	  	            var formData = $.extend({},selected);
+  	  	            formData = addKeyStartWith(getOriginalData(formData),"_");
+  	  	            $('#_form').form('load', formData);
+  	  	          //  $('#_applyUserIdName').textbox('setText', '');
+  	  	        	$("#_versionIdName").combobox("setValue",selected.versionId);
+  	  	             $('#_applyUserIdName').combobox('setText', selected.applyUserId);
+  	  	       		/* $.ajax({
+  	  	                url: "${contextPath}/onlineDataChange/getUserName.action?id+"+applyUserIdTemp,
+  	  	                type: "get",
+  	  	                data: {},
+  	  	                async : true,
+  	  	                success: function (data) {
+  	  	                	alert(data+"sssss");
+  	  	                	$('#_applyUserIdName').combobox('setText', data);
+  	  	                },
+  	  	                error: function(){
+  	  	                    $.messager.alert('错误','远程访问失败');
+  	  	                }
+  	  	            });
+ */
+  	  	       		
   	                },
   	                error: function(){
   	                    $.messager.alert('错误','远程访问失败');
   	                }
   	            });
   	    		 
-  	        	$('#dlg').dialog('open');
-  	            $('#dlg').dialog('center');
-  	            formFocus("_form", "_applyUserId");
-  	            var formData = $.extend({},selected);
-  	            formData = addKeyStartWith(getOriginalData(formData),"_");
-  	            $('#_form').form('load', formData);
-  	            $('#_applyUserIdName').textbox('setText', '');
-  	        	$("#_versionIdName").combobox("setValue",selected.versionId);
-  	            
-  	       		$.ajax({
-  	                url: "${contextPath}/onlineDataChange/getUserName.action?id+"+applyUserIdTemp,
-  	                type: "get",
-  	                data: {},
-  	                async : true,
-  	                success: function (data) {
-  	                	$('#_applyUserIdName').combobox('setText', data);
-  	                },
-  	                error: function(){
-  	                    $.messager.alert('错误','远程访问失败');
-  	                }
-  	            });
-
+  	    
   	       		
   	       		var  idTemp=selected.id;
   	       		$.ajax({
