@@ -377,79 +377,83 @@
                 $.messager.alert('警告','请选中一条数据');
                 return;
             }
-            var  userId=${userId};
-      	   
-    	    
-           	if(userId!=selected.applyUserId){
-           		
-           		//alert(userId);
-           	   //  $.messager.alert('警告','不可修改');
-           	   //return;
-           	}
            
-    	     
-           /*  if (1 == selected.isSubmit) {
-                $.messager.alert('警告','不可修改数据');
-                return;
-            } */
+            var  userId=${userId};
+    		var  applyUserIdTemp;
+      
             if( selected.dataStatus==2|
            		selected.dataStatus==3|selected.dataStatus==4|
-           		selected.dataStatus==5 ){
-            	  $.messager.alert('警告','流程执行中不可修改');
+           		selected.dataStatus==5|selected.dataStatus==6 ){
+            	  $.messager.alert('警告','流程执行中或者归档不可修改');
                 return;
+  	         }else{
+  	        	$.ajax({
+  	                type: "POST",
+  	                url: "${contextPath}/onlineDataChange/getOnlineDataChangeById.action",
+  	                data: {id:selected.id},
+  	                processData:true,
+  	                dataType: "json",
+  	                async : true,
+  	                success: function (data) {
+  	                	applyUserIdTemp=data;
+  	                	//alert(applyUserIdTemp);
+  	                	
+  	                	if(userId!=applyUserIdTemp){
+  	                		 $.messager.alert('警告','不是本人申请不可修改');
+  	                		 return;
+  	                	}
+  	              	$('#dlg').dialog('open');
+  	  	            $('#dlg').dialog('center');
+  	  	            formFocus("_form", "_applyUserId");
+  	  	            var formData = $.extend({},selected);
+  	  	            formData = addKeyStartWith(getOriginalData(formData),"_");
+  	  	            $('#_form').form('load', formData);
+  	  	          //  $('#_applyUserIdName').textbox('setText', '');
+  	  	        	$("#_versionIdName").combobox("setValue",selected.versionId);
+  	  	             $('#_applyUserIdName').combobox('setText', selected.applyUserId);
+  	  	       		/* $.ajax({
+  	  	                url: "${contextPath}/onlineDataChange/getUserName.action?id+"+applyUserIdTemp,
+  	  	                type: "get",
+  	  	                data: {},
+  	  	                async : true,
+  	  	                success: function (data) {
+  	  	                	alert(data+"sssss");
+  	  	                	$('#_applyUserIdName').combobox('setText', data);
+  	  	                },
+  	  	                error: function(){
+  	  	                    $.messager.alert('错误','远程访问失败');
+  	  	                }
+  	  	            });
+ */
+  	  	       		
+  	                },
+  	                error: function(){
+  	                    $.messager.alert('错误','远程访问失败');
+  	                }
+  	            });
+  	    		 
+  	    
+  	       		
+  	       		var  idTemp=selected.id;
+  	       		$.ajax({
+  	                type: "post",
+  	                url: "${contextPath}/onlineDataChange/getOnlineDataChange.action",
+  	                data: {id:idTemp},
+  	                async : true,
+  	                success: function (data) {
+  	                	  $('#_versionId').val(data);
+  	                },
+  	                error: function(){
+  	                    $.messager.alert('错误','远程访问失败');
+  	                }
+  	            });
+  	       		 
   	         }
-            
-         
-          /*   $('#_versionIdName').combobox('clear');
-            $('#_versionIdName').combobox({
-					url : "${contextPath!}/task/listTreeVersionByProject.json?id=" +selected.,
-					valueField : 'id',
-					textField : 'version',
-					editable : false,
-					onLoadSuccess : function() { */ 
-						
-					
-			/* 		}
-			 }); */
-             
         
-            $('#dlg').dialog('open');
-            $('#dlg').dialog('center');
-            formFocus("_form", "_applyUserId");
-            var formData = $.extend({},selected);
-            formData = addKeyStartWith(getOriginalData(formData),"_");
-            $('#_form').form('load', formData);
-            $('#_applyUserIdName').textbox('setText', '');
-        	$("#_versionIdName").combobox("setValue",selected.versionId);
             
-       		$.ajax({
-                type: "get",
-                url: "${contextPath}/onlineDataChange/getUserName.action?id+"+selected.applyUserId,
-                data: {},
-                async : true,
-                success: function (data) {
-                	$('#_applyUserIdName').combobox('setText', data);
-                },
-                error: function(){
-                    $.messager.alert('错误','远程访问失败');
-                }
-            });
 
-       		
-       		var  idTemp=selected.id;
-       		$.ajax({
-                type: "post",
-                url: "${contextPath}/onlineDataChange/getOnlineDataChange.action",
-                data: {id:idTemp},
-                async : true,
-                success: function (data) {
-                	  $('#_versionId').val(data);
-                },
-                error: function(){
-                    $.messager.alert('错误','远程访问失败');
-                }
-            });
-       		
+        
+            
        	
         }
 

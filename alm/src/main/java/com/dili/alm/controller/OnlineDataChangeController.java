@@ -214,6 +214,12 @@ public class OnlineDataChangeController {
         onlineDataChangeService.delete(id);
         return BaseOutput.success("删除成功");
     }
+
+    @RequestMapping(value="/getOnlineDataChangeById.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody String getOnlineDataChangeById(Long id) {
+       OnlineDataChange obj=  onlineDataChangeService.get(id);
+        return obj.getApplyUserId().toString();
+    }
     
  
     @ApiOperation("返回当前登录者的信息")
