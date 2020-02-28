@@ -2,6 +2,7 @@
     document.domain="diligrp.com";
 </script>
  <#body>
+    <div id="win" style="display: none;"></div>
     <div class="easyui-layout" fit="true">
         <!-- ====================================================================================================================== -->
         <!-- 上方布局 -->
@@ -59,7 +60,7 @@
                    align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
                 <thead>
                     <tr>
-                        <th data-options="field:'applyUserId',  _provider:'memberProvider', width:'10%',    sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'applyUserId',  _provider:'memberProvider', formatter: openView, width:'10%',    sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                      申请人
                         </th>
                         <th data-options="field:'applyMarketId' ,width:'10%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -156,12 +157,7 @@
 					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">版本号  
 					    <input name="_versionId" id="_versionId"  type="hidden"></td>
 					<td style="padding: 5px;">
-					     
-					<!--      <input  id="_versionIdName" class="easyui-combobox" style="width: 100%;" editable="false"
-					      data-options="required:true,validType:'isIds',prompt:'--选择所属版本--'" 、>  -->
-					
-					
-					    <input class="easyui-combobox"  id="_versionIdName" style="width:100%" data-options="validType:'length[0,28]',prompt:'--选择所属版本--'" />
+					    <input class="easyui-combobox"  id="_versionIdName" style="width:100%" data-options="required:true,validType:'length[0,28]',prompt:'--选择所属版本--'" />
 					
 					
 					</td>
@@ -183,13 +179,13 @@
 				<tr>
 					<td  colspan="2"   style="padding: 5px; background-color: #f5f5f5; font-weight: bold">数据库名</td>
 					<td  colspan="2"  style="padding: 5px;"><input class="easyui-textbox" name="_dbaName"  id="_dbaName" value=""
-							data-options="validType:['length[0,30]']" style="width: 70%"/></td>
+							data-options="validType:['length[0,30]'],required:true" style="width: 70%"/></td>
 				</tr>
 				
 				<tr>
 				   <td  colspan="2"   style="padding: 5px; background-color: #f5f5f5; font-weight: bold">生产环境名称（市场）</td>
 					<td  colspan="2"  style="padding: 5px;">
-					<input class="easyui-textbox" id="_applyMarketId" name="_applyMarketId" value="" data-options="validType:['length[0,30]']" style="width: 70%"/>
+					<input class="easyui-textbox" id="_applyMarketId" name="_applyMarketId" value="" data-options="validType:['length[0,30]'],required:true" style="width: 70%"/>
 					
 					
 					</td>
@@ -210,27 +206,6 @@
 				</tr>
 				
 				
-				<!-- <tr>
-				   <td  colspan="2"   style="padding: 5px; background-color: #f5f5f5; font-weight: bold">项目经理确认</td>
-					<td  colspan="2"  style="padding: 5px;">项目经理确认</td>
-				</tr>
-				
-				<tr>
-				   <td  colspan="2"   style="padding: 5px; background-color: #f5f5f5; font-weight: bold">测试负责人确认</td>
-					<td  colspan="2"  style="padding: 5px;">测试负责人确认</td>
-				</tr>
-				<tr>
-				   <td  colspan="2"   style="padding: 5px; background-color: #f5f5f5; font-weight: bold">DBA执行</td>
-					<td  colspan="2"  style="padding: 5px;">DBA执行</td>
-				</tr>
-				<tr>
-				   <td  colspan="2"   style="padding: 5px; background-color: #f5f5f5; font-weight: bold">申请人确认</td>
-					<td  colspan="2"  style="padding: 5px;"> 
-					            申请提交
-					     
-					</td>
-				</tr> -->
-				
 				
 			</tbody>
 
@@ -242,8 +217,18 @@
     </div>
     
 
+     <div id="demandForTaskDlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="true"  style="padding:20px" modal="true" border="thin" closed="true"
+             data-options="
+				iconCls: 'icon-save',
+				width: 680,
+				height: 500
+			">
+			<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" id="demandForTaskSrc"  scrolling="no"  width="100%" height="100%"></iframe>
+     </div>    
         
         
+        
+    
         
     <!-- ====================================================================================================================== -->
     <!-- style & script 分隔线 -->
@@ -256,7 +241,12 @@
 
 
     <script type="text/javascript">
-    
+       function openView(val,row,index){  
+    	
+    	  var content='<span style="padding:2px;color:red;"><a style="color:green;" href="javascript:void(0)" onclick="openForTask('+row.id+')"> '+row.applyUserId+'</a></span>';
+       
+    	   return content;
+       }
        function formatprojectName(val,row,index){  
     	   var  userId=${userId};
     	   
@@ -781,7 +771,35 @@
 				error : function() {
 					$.messager.alert('错误', '远程访问失败');
 				}
-			});
-}
+		});
+	       
+	       
+	       
+      }
+        
+        
+        function setIframeHeight(){
+        	 var iframe = document.getElementById("demandForTaskSrc");
+	         iframe.height = iframe.contentWindow.document.documentElement.scrollHeight+80;
+	    }
+       
+         
+         function openForTask(id) {
+        		
+        		$('#win').dialog({
+        					title : '查看',
+        					width : 800,
+        					height : 540,
+        					href : '${contextPath!}/onlineDataChange/openView?id=' + id,
+        					modal : true,
+        					buttons : [ {
+        								text : '取消',
+        								handler : function() {
+        									$('#win').dialog('close');
+        								}
+        					} ]
+        	    });
+        	}
+        
     </script>
 </#body>

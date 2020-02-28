@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.component.BpmcUtil;
 import com.dili.alm.constant.AlmConstants;
+import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.domain.OnlineDataChange;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectVersion;
@@ -78,7 +79,8 @@ public class OnlineDataChangeController {
     
     @Autowired
 	private ProjectService   projectService;
-    
+    @Autowired
+   	private   ProjectMapper  projectMapper;
     
     @ApiOperation("跳转到index页面")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
@@ -300,7 +302,33 @@ public class OnlineDataChangeController {
         return BaseOutput.success("执行成功");
     }
     
-    
+	@ApiOperation("跳转到dataChange页面")
+	@RequestMapping(value = "/openView", method = RequestMethod.GET)
+	public String openView(ModelMap modelMap,Long id) {
+		
+	    OnlineDataChange  odc=  onlineDataChangeService.get(id);
+	    modelMap.addAttribute("odc",odc);
+	    if(odc!=null&&userRpc.findUserById(odc.getApplyUserId())!=null) {
+	        modelMap.addAttribute("applyUserIdName",userRpc.findUserById(odc.getApplyUserId()).getData().getRealName());
+	    }
+	   Project  proId=  projectMapper.selectByPrimaryKey(odc.getProjectId());
+	    ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
+		projectVersion.setProjectId(odc.getProjectId());
+		List<ProjectVersion> list = projectVersionService.list(projectVersion);
+		
+		if(list!=null&&list.size()>0) {
+			for (ProjectVersion projectVersion2 : list) {
+				// if(projectVersion2.getVersion().equals(odc.getVersionId())) {
+					 modelMap.addAttribute("versionTask",projectVersion2.getVersion());
+					 break;
+				// }
+			}
+		}
+		if(proId!=null)
+		  modelMap.addAttribute("proName",proId.getName());
+		return "onlineDataChange/view";
+		
+	}
     private void getModelmap(ModelMap modelMap, String taskId,Boolean isNeedClaim) {
     	
     	
@@ -314,6 +342,7 @@ public class OnlineDataChangeController {
 	    if(odc!=null&&userRpc.findUserById(odc.getApplyUserId())!=null) {
 	        modelMap.addAttribute("applyUserIdName",userRpc.findUserById(odc.getApplyUserId()).getData().getRealName());
 	    }
+	   Project  proId=  projectMapper.selectByPrimaryKey(odc.getProjectId());
 	    ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
 		projectVersion.setProjectId(odc.getProjectId());
 		List<ProjectVersion> list = projectVersionService.list(projectVersion);
@@ -326,7 +355,10 @@ public class OnlineDataChangeController {
 				// }
 			}
 		}
-	    modelMap.addAttribute("taskId",taskId);
+		if(proId!=null)
+		  modelMap.addAttribute("proName",proId.getName());
+	   
+		modelMap.addAttribute("taskId",taskId);
 	    modelMap.addAttribute("isNeedClaim",isNeedClaim);
 	}
     
