@@ -715,12 +715,6 @@ public class UserDepIdConverter implements InitializingBean {
 		// projectOnlineApply表
 		this.projectOnlineApplyMapper.selectAll().forEach(p -> {
 
-			// bugfix
-			User executor = uapUsers.stream().filter(u -> u.getUserName().equals("limaoran")).findFirst().orElse(null);
-			if (executor != null) {
-				p.setExecutorId(executor.getId().toString());
-			}
-
 			// applicantId
 			final Long almApplicantId = p.getApplicantId();
 			if (almApplicantId != null) {
