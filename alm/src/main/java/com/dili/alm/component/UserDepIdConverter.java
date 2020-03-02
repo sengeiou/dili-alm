@@ -763,8 +763,6 @@ public class UserDepIdConverter implements InitializingBean {
 				p.setDevelopmentManagerId(uapUser.getId());
 			}
 
-			this.projectOnlineApplyMapper.updateByPrimaryKey(p);
-
 			// productManagerId
 			final Long almProductManagerId = p.getProductManagerId();
 			if (almProductManagerId != null) {
@@ -794,7 +792,7 @@ public class UserDepIdConverter implements InitializingBean {
 					LOGGER.warn(String.format("未找到username为%s的uap用户", almProjectManager.getUserName()));
 					return;
 				}
-				p.setProductManagerId(uapUser.getId());
+				p.setProjectManagerId(uapUser.getId());
 			}
 
 			// testManagerId
@@ -883,7 +881,7 @@ public class UserDepIdConverter implements InitializingBean {
 		LOGGER.info("正在迁移projectVersion表.......");
 		// projectVersion表
 		this.projectVersionMapper.selectAll().forEach(p -> {
-			// managerId
+			// creatorId
 			final Long almCreatorId = p.getCreatorId();
 			if (almCreatorId != null) {
 				final AlmUser almCreator = almUsers.stream().filter(u -> u.getId().equals(almCreatorId)).findFirst().orElse(null);
@@ -897,6 +895,22 @@ public class UserDepIdConverter implements InitializingBean {
 					return;
 				}
 				p.setCreatorId(uapUser.getId());
+			}
+
+			// creatorId
+			final Long almModifierId = p.getModifierId();
+			if (almModifierId != null) {
+				final AlmUser almModifier = almUsers.stream().filter(u -> u.getId().equals(almModifierId)).findFirst().orElse(null);
+				if (almModifier == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm用户", almModifierId));
+					return;
+				}
+				User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almModifier.getUserName())).findFirst().orElse(null);
+				if (uapUser == null) {
+					LOGGER.warn(String.format("未找到username为%s的uap用户", almModifier.getUserName()));
+					return;
+				}
+				p.setModifierId(uapUser.getId());
 			}
 
 			this.projectVersionMapper.updateByPrimaryKey(p);
@@ -950,7 +964,7 @@ public class UserDepIdConverter implements InitializingBean {
 					LOGGER.warn(String.format("未找到username为%s的uap用户", almOwner.getUserName()));
 					return;
 				}
-				t.setModifyMemberId(uapUser.getId());
+				t.setOwner(uapUser.getId());
 			}
 
 			this.taskMapper.updateByPrimaryKey(t);
