@@ -101,7 +101,7 @@ button:hover {
 					          <input  value="${odc.sqlFileId}"  name="_sqlFileId" id="_sqlFileId" type="hidden">
 					          <input type="file" id="sqlFile" name="sqlFile"  data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 39%">
 							  <a id="btnShangChuan" href="#" class="easyui-linkbutton"   data-options="iconCls:'icon-save'">上传后保存</a>
-						 	 <a id="xiazai" href="#" onclick="downMyFile(${odc.sqlFileId})" class="easyui-linkbutton"  data-options="iconCls:'icon-download'">下载sql文件</a>   	
+						 		<a id="xiazai" href="#" onclick="downMyFile(${odc.sqlFileId})" class="easyui-linkbutton"  data-options="iconCls:'icon-download'">下载sql文件</a>   	
 					  </td>
 				</tr>
 				
@@ -202,10 +202,15 @@ $('#btnShangChuan').bind('click', function(){
 		        dataType:"json",
 
 	           success:function(data){
-	        	   var rowd = data.data[0];
-	        	    alert("上传成功");
-	        	    alert( rowd.id);
-	        	   $('#_sqlFileId').val( rowd.id); 
+	        	   if(data.code==200){
+	        		   var rowd = data.data[0];
+		        	    alert("上传成功");
+		        	  //  alert( rowd.id);
+		        	   $('#_sqlFileId').val( rowd.id); 
+	        	   }else{
+	        		    alert("失败上传");
+	        	   }
+	        	 
 	        	  
 	           }
 	           
