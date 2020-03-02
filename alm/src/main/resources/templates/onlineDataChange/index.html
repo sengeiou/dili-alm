@@ -60,9 +60,13 @@
                    align="center" fit="true" striped="true" toolbar="#toolbar" idField="id" data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
                 <thead>
                     <tr>
-                        <th data-options="field:'applyUserId',  _provider:'memberProvider', formatter: openView, width:'10%',    sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'applyUserId',  _provider:'memberProvider', formatter: openView, width:'8%',    sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                      申请人
                         </th>
+                      
+                          <th data-options="field:'dataStatus', width:'8%',  formatter: formatStatus, sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                                                                                         进度状态 
+                        </th> 
                         <th data-options="field:'applyMarketId' ,width:'10%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                         市场名称                   
                         </th>
@@ -72,21 +76,23 @@
                         <th data-options="field:'versionId',_provider:'projectVersionProvider' ,width:'10%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                     版本
                         </th>
-                        <th data-options="field:'applyDate',  _provider:'dateProvider', width:'10%',sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'applyDate',  _provider:'dateProvider', width:'8%',sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                      申请时间
                         </th>
-                        <th data-options="field:'updateDate',  _provider:'dateProvider',width:'10%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'updateDate',  _provider:'dateProvider',width:'8%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                    申请更新时间
                         </th>
-                        <th data-options="field:'dbaName',width:'10%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'dbaName',width:'8%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                     数据库名
                         </th>
                         <th data-options="field:'sqlScript', width:'15%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                             sql脚本内容
                         </th>
-                          <th data-options="field:'dataStatus', width:'10%',  formatter: formatprojectName,   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
-                                                                                                     进度状态
+                          <th data-options="field:'opt', width:'10%',  formatter: formatprojectName,   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                                                                                       操作        <!--       进度状态 -->
                         </th> 
+                        
+                       
                        
                     </tr>
                 </thead>
@@ -104,7 +110,7 @@
                     <option value="lines-right">右边框</option>
                     <option value="lines-bottom">下边框</option>
                 </select>
-                行条纹:<input type="checkbox" checked="checked" onclick="$('#grid').datagrid({striped:$(this).is(':checked')})">
+                                    行条纹:<input type="checkbox" checked="checked" onclick="$('#grid').datagrid({striped:$(this).is(':checked')})">
                 </div>
             </div>
         </div>
@@ -325,7 +331,28 @@
     	   
        }
     
-    
+       function formatStatus(val,row,index){  
+    	   var  userId=${userId};
+    	   
+    	   if(row.dataStatus==1){
+           	      return "<font color='gray'>驳回</font>";
+    	   }else if(row.dataStatus==2){
+    		    	return "<font color='gray'>项目经理确认</font>";
+           }else if(row.dataStatus==3){
+   		          return "<font color='gray'>测试人员确认</font>";
+           }else if(row.dataStatus==4){
+   		    	return "<font color='gray'>dba确认</font>";
+           }else if(row.dataStatus==5){
+    		   return "<font color='gray'>线上验证</font>";
+           }else if(row.dataStatus==6){
+              	return "<font color='gray'>归档</font>";
+           }else if(row.dataStatus==0){
+              	return "<font color='green'>保存</font>";
+           }else{
+           	   return "<font color='orange'>其他</font>";
+           }
+    	   
+       }
         //打开新增窗口
         function openInsert(){
         	
