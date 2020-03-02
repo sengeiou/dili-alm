@@ -119,10 +119,10 @@ button:hover {
 				 	</td>
 				</tr>
 				<tr>
-	          	   <td  colspan="4"  style="padding: 5px;">
+	          	  
 	                  <input type="hidden" id="taskId" value="${taskId}" />
 	                 <input type="hidden" name="isNeedClaim" value="${isNeedClaim!}">
-	                 </td>
+	            
 	           </tr>
 				
 			</tbody>
@@ -158,7 +158,9 @@ button:hover {
    $('#agree').bind('click', function(){
 	 
 	   var taskIdd=$('#taskId').val();
-	
+	   if(taskIdd==null){
+	      alert("执行失败");
+	   }
 	   $.ajax({
            type: "post",
            url: "${contextPath}/onlineDataChange/agreeDBAOnlineData.action",
@@ -199,6 +201,12 @@ button:hover {
 		 
 	
 	   var taskIdd=$('#taskId').val();
+	   
+	   if(taskIdd==null){
+		   alert("执行失败");
+       	 
+		   
+	   }
 	    $.ajax({
 	       type: "POST",
 	       url: "${contextPath!}/onlineDataChange/notAgreeDBAOnlineData.action",

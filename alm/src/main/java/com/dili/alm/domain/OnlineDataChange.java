@@ -35,13 +35,13 @@ public class OnlineDataChange extends BaseDomain {
     
 
     /**
-     * �г�id
+     * 市场id
      */
     @Column(name = "`apply_market_id`")
     private String applyMarketId;
 
     /**
-     * ��Ŀid
+     * 项目id
      */
     @Column(name = "`project_id`")
     private Long projectId;
@@ -76,6 +76,11 @@ public class OnlineDataChange extends BaseDomain {
     
     @Column(name = "`process_instance_id`")
     private String processInstanceId;
+    
+    @Column(name = "`create_date`")
+    private Date createDate;
+    
+    
     /**
      * @return id
      */
@@ -122,7 +127,7 @@ public class OnlineDataChange extends BaseDomain {
     /**
      * 市场id
      *
-     * @param applyMarketId �г�id
+     * @param applyMarketId 市场id
      */
     public void setApplyMarketId(String applyMarketId) {
         this.applyMarketId = applyMarketId;
@@ -131,9 +136,9 @@ public class OnlineDataChange extends BaseDomain {
     /**
      * 项目id
      *
-     * @return project_id - ��Ŀid
+     * @return project_id -项目Ŀid
      */
-    @FieldDef(label="��Ŀid")
+    @FieldDef(label="项目id")
     @EditMode(editor = FieldEditor.Number, required = false)
     public Long getProjectId() {
         return projectId;
@@ -142,7 +147,7 @@ public class OnlineDataChange extends BaseDomain {
     /**
      * 项目id
      *
-     * @param projectId ��Ŀid
+     * @param projectId 项目id
      */
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
@@ -201,7 +206,7 @@ public class OnlineDataChange extends BaseDomain {
      *
      * @return dba_name - 数据库名字
      */
-    @FieldDef(label="���ݿ���", maxLength = 50)
+    @FieldDef(label="数据库名字", maxLength = 50)
     @EditMode(editor = FieldEditor.Text, required = false)
     public String getDbaName() {
         return dbaName;
@@ -333,7 +338,21 @@ public class OnlineDataChange extends BaseDomain {
     }
     
     
-    
+    /**
+     * @return createDate
+     */
+    @FieldDef(label="createDate")
+    @EditMode(editor = FieldEditor.Datetime, required = false)
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    /**
+     * @param createDate
+     */
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
     
     
     

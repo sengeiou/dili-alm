@@ -27,7 +27,7 @@ public interface OnlineDataChangeService extends BaseService<OnlineDataChange, L
 	 
 	 void agreeOnlineDataChange(String taskId,Boolean isNeedClaim) throws OnlineDataChangeException;
 	 
-	 void indexOnlineDataChange(String taskId) ;
+	 void indexOnlineDataChange(String taskId,OnlineDataChange onlineDataChange) ;
 	 String listPageOnlineData(OnlineDataChange onlineDataChange, String projectIdcc, Long id) ;
 	 
 	 
