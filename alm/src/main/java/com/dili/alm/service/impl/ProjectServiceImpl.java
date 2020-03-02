@@ -397,7 +397,8 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 			List list = ValueProviderUtils.buildDataByProvider(project, projectDtoList);
 			return new EasyuiPageOutput(total, list);
 		} catch (Exception e) {
-			return null;
+			e.getMessage();
+			return new EasyuiPageOutput(0, new ArrayList<>(0));
 		}
 	}
 

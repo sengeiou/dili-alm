@@ -1116,7 +1116,9 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 			List list = ValueProviderUtils.buildDataByProvider(approve, listDto);
 			return new EasyuiPageOutput(total, list);
 		} catch (Exception e) {
-			return null;
+			e.getMessage();
 		}
+		return new EasyuiPageOutput(0, new ArrayList<>(0));
+
 	}
 }

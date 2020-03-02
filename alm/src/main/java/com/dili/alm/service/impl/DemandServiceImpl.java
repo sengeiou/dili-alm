@@ -270,7 +270,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 				selectDemand.setSubmitDate(null);
 			}
 			selectDemand.setFilterStatus((byte) 5);
-			List<Demand> list = listByExample(selectDemand);
+			List<Demand> list = this.listByExample(selectDemand);
 			long total = list instanceof Page ? ((Page) list).getTotal() : list.size();
 			List<DemandDto> dtos = new ArrayList<>(list.size());
 			// 循环塞部门
@@ -333,7 +333,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		} catch (Exception e) {
 			e.getMessage();
 		}
-		return null;
+		return new EasyuiPageOutput(0, new ArrayList<>(0));
 
 	}
 

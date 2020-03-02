@@ -48,16 +48,16 @@ button:hover {
 
 					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">项目名称</td>
 					<td style="padding: 5px;">	<input class="easyui-textbox"
-						name="_projectId" id="_projectId"  value="${odc.projectId}" style="width: 100%" />
+						name="_projectId" id="_projectId"  style="width: 100%" />
 						<#comboProvider _id="_projectId" _provider='projectProvider' />
 				
 					 </td>
 					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">版本号  
-					   </td>
+					       <input name="_versionId" id="_versionId" value="${odc.versionId}" type="hidden"> </td>
 					<td style="padding: 5px;">
 					     
-					     <input name="_versionIdName"     value="${versionTask}" class="easyui-textbox" style="width: 100%;" editable="false"
-					    >
+					       <input class="easyui-combobox"  id="_versionIdName" style="width:100%" data-options="required:true,validType:'length[0,28]',prompt:'--选择所属版本--'" />
+					
 					
 					</td>
 
@@ -98,7 +98,9 @@ button:hover {
 							data-options="validType:['length[0,50]']" style="width: 39%">
 							
 						<!-- 	 <input  class="easyui-linkbutton" name="_sqlFileId"   style="width: 39%"  value="${odc.sqlFileId}"   id="_sqlFileId"> -->
-					   
+					          <input  value="${odc.sqlFileId}"  name="_sqlFileId" id="_sqlFileId" type="hidden">
+					          <input type="file" id="sqlFile" name="sqlFile"  data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 39%">
+							  <a id="btnShangChuan" href="#" class="easyui-linkbutton"   data-options="iconCls:'icon-save'">上传后保存</a>
 						 		<a id="xiazai" href="#" onclick="downMyFile(${odc.sqlFileId})" class="easyui-linkbutton"  data-options="iconCls:'icon-download'">下载sql文件</a>   	
 					  </td>
 				</tr>
@@ -139,9 +141,92 @@ button:hover {
 <!-- ====================================================================================================================== --> <!-- style & script 分隔线 --> <!-- ====================================================================================================================== -->
 
 <script type="text/javascript">
+
+	 
+$("#_projectId").combobox({  
+
+	   onChange: function () {
+		   var curValue=$('#_projectId').combobox('getValue');
+		   $('#_versionIdName').combobox('clear');
+		   if(curValue!=null){
+			  // alert("sssss"+${versionTask});
+		       reloadVisionSelect(curValue);
+	        }
+	　　  }  
+
+});
+$("#_versionIdName").combobox({  
+
+	   onChange: function () {
+		   var curValue=$('#_versionIdName').combobox('getValue');
+		   $('#_versionId').val( curValue);
+	　　  }  
+
+});
+
+function reloadVisionSelect(id) {
+		
+    $('#_versionIdName').combobox({
+			url : "${contextPath!}/task/listTreeVersionByProject.json?id=" + id,
+			valueField : 'id',
+			textField : 'version',
+			editable : false
+		});
+
+}
+
+ 
+ $(function () {
+	 
+	  $("#_projectId").combobox("select",${odc.projectId});
+	  $("#_versionIdName").combobox("select",${odc.versionId});
+	 
+});
+ 
+$('#btnShangChuan').bind('click', function(){
+		 
+		 var input = document.getElementById('sqlFile');
+		
+		    var formdata = new FormData();
+		    var curValue=$('#_projectId').combobox('getValue');
+		   // alert(curValue);
+		    formdata.append('file', input.files[0]);
+		    formdata.append('projectId',curValue);
+		    
+		    $.ajax({
+		       type: "POST",
+		       url: "${contextPath!}/files/filesUpload",
+		       data: formdata,
+		       processData: false,
+		        contentType: false,
+		        dataType:"json",
+
+	           success:function(data){
+	        	   if(data.code==200){
+	        		   var rowd = data.data[0];
+		        	    alert("上传成功");
+		        	  //  alert( rowd.id);
+		        	   $('#_sqlFileId').val( rowd.id); 
+	        	   }else{
+	        		    alert("失败上传");
+	        	   }
+	        	 
+	        	  
+	           }
+	           
+	       
+	    });
+		    
+		    
+	 });
+	 
     function downMyFile(id){
-			
-		      if(id!=null)
+    	      var temp= $('#_sqlFileId').val();
+    	      alert(temp);
+    	      if(temp!=null){
+    	    	 id=temp;
+    	      }
+		      if(id!=null&&temp!=null)
 		       	window.open('${contextPath!}/files/download?id=' + id);
 			  else
 				alert("没有文件");   
@@ -188,11 +273,9 @@ button:hover {
        });
 	    
 	    
-});
-   
+     });
 
-	   
-	
+   	
 </script>
 <style type="text/css">
 td {
