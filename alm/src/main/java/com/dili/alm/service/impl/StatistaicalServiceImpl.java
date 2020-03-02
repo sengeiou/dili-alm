@@ -132,7 +132,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 			}
 			return new EasyuiPageOutput(ddvdList.size(), list);
 		}
-		return null;
+		return new EasyuiPageOutput(0, new ArrayList<>(0));
 
 	}
 
@@ -683,7 +683,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 			List list = ValueProviderUtils.buildDataByProvider(project, projectProgressList);
 			return new EasyuiPageOutput(projectProgressListCount, list);
 		} catch (Exception e) {
-			return null;
+			return new EasyuiPageOutput(0, new ArrayList<>(0));
 		}
 	}
 

@@ -522,7 +522,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			return new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(page.getTotal()))), taskList);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return null;
+			return new EasyuiPageOutput(0, new ArrayList<>(0));
 		}
 	}
 
