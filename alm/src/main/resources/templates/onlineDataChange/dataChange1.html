@@ -58,7 +58,7 @@ button:hover {
 					   </td>
 					<td style="padding: 5px;">
 					     
-					     <input name="_versionIdName"    value="${version}"  class="easyui-textbox" style="width: 100%;" editable="false"
+					     <input    value="${versionTask}"  class="easyui-textbox" style="width: 100%;" editable="false"
 					    >
 					
 					</td>
@@ -100,8 +100,8 @@ button:hover {
 							data-options="validType:['length[0,50]']" style="width: 39%">
 							
 						<!-- 	 <input  class="easyui-linkbutton" name="_sqlFileId"   style="width: 39%"  value="${odc.sqlFileId}"   id="_sqlFileId"> -->
-					   
-						 	<a id="xiazai  " href="${contextPath}/files/download?id=${odc.sqlFileId}" class="easyui-linkbutton"  data-options="iconCls:'icon-download'">下载sql文件</a>   	
+					   	<a id="xiazai" href="#" onclick="downMyFile(${odc.sqlFileId})" class="easyui-linkbutton"  data-options="iconCls:'icon-download'">下载sql文件</a>   	
+						 <!-- 	<a id="xiazai  " href="${contextPath}/files/download?id=${odc.sqlFileId}" class="easyui-linkbutton"  data-options="iconCls:'icon-download'">下载sql文件</a>   	 -->
 					  </td>
 				</tr>
 				
@@ -239,4 +239,14 @@ td {
 	vertical-align: middle; /*设置垂直居中*/
 }
 </style>
+
+<script type="text/javascript">
+    function downMyFile(id){
+			
+		      if(id!=null)
+		       	window.open('${contextPath!}/files/download?id=' + id);
+			  else
+				alert("没有文件");   
+		 }
+</script >
 </#body>

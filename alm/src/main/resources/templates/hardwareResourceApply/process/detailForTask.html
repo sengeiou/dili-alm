@@ -129,13 +129,21 @@
 		updateHardwareResourceApply : <%if(hasResource('updateHardwareResourceApply')){%>true<%}else{%>false<%}%>,
 		deleteHardwareResourceApply : <%if(hasResource('deleteHardwareResourceApply')){%>true<%}else{%>false<%}%>
 	};
-	<#members_index />
-	<#hardwareResourceApply_index />
 	$(function () {
-	    //加载父元素高度
-	 	 if(parentIframe!="undefined"){
-	 		window.parent.setIframeHeight();
-	   }
+		//加载iframe父元素高度
+    	try{
+        	var iframe = parent.document.getElementById("hardwareResourceApplyDetail");
+        	if(iframe.attachEvent){
+        		iframe.height=0;
+		        iframe.height =  iframe.contentWindow.document.documentElement.scrollHeight+80;
+        		return;
+        	}else{
+		        iframe.height = iframe.contentDocument.body.scrollHeight+80;
+	        	return;
+        	}
+        	}catch(e){
+        	throw new Error('setIframeHeight Error');
+    	}
 	})
 	</script>
 </#body>

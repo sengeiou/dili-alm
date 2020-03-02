@@ -288,8 +288,11 @@ $(function () {
 						// showError : false,
 						extErrorStr : '文件格式错误！允许上传格式：',
 						sizeErrorStr : '文件过大，允许上传文件最大为',// 超过最大文件限制
+					    deleteStr: '删除',
+					    abortStr: '上传中',
 						showStatusAfterSuccess : false,
 						maxFileSize : 10485760, // 上传文件个数（多个时修改此处
+					    dragDropStr:'',
 						onError : function(files, status, errMsg, pd) {
 							$.messager.alert('错误', '上传失败！');
 						},

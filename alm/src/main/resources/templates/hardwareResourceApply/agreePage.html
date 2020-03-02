@@ -277,6 +277,7 @@ function approve(){
 										},
 										success : function(data) {
 											var data = $.parseJSON(data);
+											console.log(data);
 											if (data.code == 200) {
 												$("#grid").datagrid("reload");
 												$('#win').dialog('close');
@@ -324,13 +325,13 @@ function submitUrl(){
 	var state = $("#applyAppovState").val();
 	var url = "";
 	if(state==2){
-		url = "${contextPath}/hardwareResourceApply/projectManagerApprove.action";
+		url = "${contextPath}/hardwareResourceApply/managerApprove";
 	}else if(state==3){
 		url = "${contextPath}/hardwareResourceApply/generalManagerApprove";
 	}else if(state==4){
-		url = "${contextPath}/hardwareResourceApply/oprationManagerApprove.action";
+		url = "${contextPath}/hardwareResourceApply/operManagerApprove";
 	}else if(state==5){
-		url = "${contextPath}/hardwareResourceApply/opdratorExecute.action";
+		url = "${contextPath}/hardwareResourceApply/implementing";
 	}
 	return url;
 }

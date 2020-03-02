@@ -153,7 +153,7 @@ function openInsert() {
 					handler : function() {
 						$('#win').dialog('close');
 					}
-				}, {
+				}/**, {
 					text : '提交',
 					handler : function() {
 						var data = $("#editForm").serializeArray();
@@ -176,7 +176,7 @@ function openInsert() {
 							}
 						});
 					}
-				}]
+				}**/]
 	});
 
 }

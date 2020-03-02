@@ -468,7 +468,7 @@
         	
         	//签收isNeedClaim  审批isHandleProcess  驳回编辑processFlag
         	if(row.$_status==3&&!row.isHandleProcess){//审批中的显示进度
-        		content+='<span style="padding:2px;"><a href="javascript:void(0)" onclick="showProgress('+index+')">查看进度</a></span>';
+        		content+='';//<span style="padding:2px;"><a href="javascript:void(0)" onclick="showProgress('+index+')">查看进度</a></span>
         	}else if(row.isHandleProcess&&row.isNeedClaim){
         		content+='<span style="padding:2px;"><a href="javascript:void(0)" style="color:red;" onclick="doClaim('+row.id+')">签收</a></span>';
         	}else if(row.isHandleProcess&&!row.isNeedClaim&&row.processFlag==1){
@@ -641,23 +641,8 @@
         }
         
         function setIframeHeight(){
-	        	try{
 		        	var iframe = document.getElementById("demandForTaskSrc");
-		        	iframe.height=0;
-		        	if(iframe.attachEvent){
-				        	iframe.attachEvent("onload", function(){
-				        	iframe.height = iframe.contentWindow.document.documentElement.scrollHeight+80;
-			        	});
-		        		return;
-		        	}else{
-			        	iframe.onload = function(){
-				        	iframe.height = iframe.contentDocument.body.scrollHeight+80;
-			        	};
-			        	return;
-		        	}
-		        	}catch(e){
-		        	throw new Error('setIframeHeight Error');
-	        	}
+			     iframe.height = iframe.contentWindow.document.documentElement.scrollHeight+80;
         	}
     </script>
 </#body>

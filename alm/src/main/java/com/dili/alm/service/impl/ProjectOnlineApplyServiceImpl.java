@@ -656,7 +656,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		}
 		StringBuilder sb = new StringBuilder();
 		executors.forEach(e -> sb.append(e).append(","));
-		apply.setExecutorId(sb.substring(0, sb.length() - 1));
+		apply.setExecutorId(sb.substring(0, sb.length() - 1).toString());
 		int rows = this.getActualDao().updateByPrimaryKey(apply);
 		if (rows <= 0) {
 			throw new ProjectOnlineApplyException("更新数据失败");
