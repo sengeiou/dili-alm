@@ -704,7 +704,7 @@ public class DemandController {
     }
 
     @ApiOperation("页面流程审批")
-    @RequestMapping(value = "/submitApproveByAlm.html", method = RequestMethod.GET)
+    @RequestMapping(value = "/submitApproveByAlm", method = RequestMethod.GET)
 	public String submitApproveByAlm(@RequestParam Long id, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
     	Demand selectDemand = new Demand();
     	selectDemand=demandService.get(id);
