@@ -950,7 +950,7 @@ public class UserDepIdConverter implements InitializingBean {
 					LOGGER.warn(String.format("未找到username为%s的uap用户", almOwner.getUserName()));
 					return;
 				}
-				t.setModifyMemberId(uapUser.getId());
+				t.setOwner(uapUser.getId());
 			}
 
 			this.taskMapper.updateByPrimaryKey(t);
