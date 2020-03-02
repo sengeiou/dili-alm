@@ -63,8 +63,7 @@
                         <th data-options="field:'applyUserId',  _provider:'memberProvider', formatter: openView, width:'8%',    sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                      申请人
                         </th>
-                      
-                          <th data-options="field:'dataStatus', width:'8%',  formatter: formatStatus, sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'dataStatus', width:'8%',  formatter: formatStatus, sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                          进度状态 
                         </th> 
                         <th data-options="field:'applyMarketId' ,width:'10%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -257,7 +256,8 @@
     	   var  userId=${userId};
     	   
     	   if(row.dataStatus==1){
-           	    if(userId==row.applyUserId){
+    		  //  alert(userId+"ss"+row.$_applyUserId);
+           	    if(userId==row.$_applyUserId){
            	     var  dom= '<a href="javascript:void(0);" onclick="handleProcess(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">继续提交</a>';
 		    	  return dom;
            	    }else{
@@ -414,15 +414,8 @@
             	  $.messager.alert('警告','流程执行中或者归档不可修改');
                 return;
   	         }else{
-  	        	$.ajax({
-  	                type: "POST",
-  	                url: "${contextPath}/onlineDataChange/getOnlineDataChangeById.action",
-  	                data: {id:selected.id},
-  	                processData:true,
-  	                dataType: "json",
-  	                async : true,
-  	                success: function (data) {
-  	                	applyUserIdTemp=data;
+  	                      
+  	                	applyUserIdTemp=selected.$_applyUserId;
   	                	//alert(applyUserIdTemp);
   	                	
   	                	if(userId!=applyUserIdTemp){
@@ -438,30 +431,12 @@
   	  	          //  $('#_applyUserIdName').textbox('setText', '');
   	  	        	$("#_versionIdName").combobox("setValue",selected.versionId);
   	  	             $('#_applyUserIdName').combobox('setText', selected.applyUserId);
-  	  	       		/* $.ajax({
-  	  	                url: "${contextPath}/onlineDataChange/getUserName.action?id+"+applyUserIdTemp,
-  	  	                type: "get",
-  	  	                data: {},
-  	  	                async : true,
-  	  	                success: function (data) {
-  	  	                	alert(data+"sssss");
-  	  	                	$('#_applyUserIdName').combobox('setText', data);
-  	  	                },
-  	  	                error: function(){
-  	  	                    $.messager.alert('错误','远程访问失败');
-  	  	                }
-  	  	            });
- */
-  	  	       		
-  	                },
-  	                error: function(){
-  	                    $.messager.alert('错误','远程访问失败');
-  	                }
-  	            });
+
+  	  	         $('#_versionId').val(selected.versionId);
   	    		 
   	    
   	       		
-  	       		var  idTemp=selected.id;
+  	       		/* var  idTemp=selected.id;
   	       		$.ajax({
   	                type: "post",
   	                url: "${contextPath}/onlineDataChange/getOnlineDataChange.action",
@@ -473,7 +448,7 @@
   	                error: function(){
   	                    $.messager.alert('错误','远程访问失败');
   	                }
-  	            });
+  	            }); */
   	       		 
   	         }
         

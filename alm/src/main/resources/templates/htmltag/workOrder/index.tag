@@ -208,7 +208,7 @@ function openInsert() {
 	}
 	$('#win').dialog({
 				title : '新增工单',
-				width : 1800,
+				width : 1450,
 				height : 840,
 				href : '${contextPath!}/workOrder/add',
 				modal : true,
