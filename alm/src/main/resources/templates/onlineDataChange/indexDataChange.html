@@ -98,10 +98,10 @@ button:hover {
 							data-options="validType:['length[0,50]']" style="width: 39%">
 							
 						<!-- 	 <input  class="easyui-linkbutton" name="_sqlFileId"   style="width: 39%"  value="${odc.sqlFileId}"   id="_sqlFileId"> -->
-					          <input   name="_sqlFileId" id="_sqlFileId" type="hidden">
+					          <input  value="${odc.sqlFileId}"  name="_sqlFileId" id="_sqlFileId" type="hidden">
 					          <input type="file" id="sqlFile" name="sqlFile"  data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 39%">
 							  <a id="btnShangChuan" href="#" class="easyui-linkbutton"   data-options="iconCls:'icon-save'">上传后保存</a>
-						 		<a id="xiazai" href="#" onclick="downMyFile(${odc.sqlFileId})" class="easyui-linkbutton"  data-options="iconCls:'icon-download'">下载sql文件</a>   	
+						 	 <a id="xiazai" href="#" onclick="downMyFile(${odc.sqlFileId})" class="easyui-linkbutton"  data-options="iconCls:'icon-download'">下载sql文件</a>   	
 					  </td>
 				</tr>
 				
@@ -189,7 +189,7 @@ $('#btnShangChuan').bind('click', function(){
 		
 		    var formdata = new FormData();
 		    var curValue=$('#_projectId').combobox('getValue');
-		    alert(curValue);
+		   // alert(curValue);
 		    formdata.append('file', input.files[0]);
 		    formdata.append('projectId',curValue);
 		    
@@ -202,10 +202,10 @@ $('#btnShangChuan').bind('click', function(){
 		        dataType:"json",
 
 	           success:function(data){
-	        	   var row = data.data[0];
+	        	   var rowd = data.data[0];
 	        	    alert("上传成功");
-	        	//   $('#_sqlFileId').textbox('setText', row.id); 
-	        	   $('#_sqlFileId').val( row.id); 
+	        	    alert( rowd.id);
+	        	   $('#_sqlFileId').val( rowd.id); 
 	        	  
 	           }
 	           
@@ -216,8 +216,12 @@ $('#btnShangChuan').bind('click', function(){
 	 });
 	 
     function downMyFile(id){
-			
-		      if(id!=null)
+    	      var temp= $('#_sqlFileId').val();
+    	      alert(temp);
+    	      if(temp!=null){
+    	    	 id=temp;
+    	      }
+		      if(id!=null&&temp!=null)
 		       	window.open('${contextPath!}/files/download?id=' + id);
 			  else
 				alert("没有文件");   
