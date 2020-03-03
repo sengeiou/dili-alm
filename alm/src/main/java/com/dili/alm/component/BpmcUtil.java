@@ -65,8 +65,7 @@ public class BpmcUtil {
 			for (TaskIdentityDto taskIdentity : tiOutput.getData()) {
 				if (taskIdentity.getProcessInstanceId().equals(d.getProcessInstanceId())) {
 					d.setFormKey(taskIdentity.getFormKey());
-					if(null!=taskIdentity.getTaskId())
-					   d.setTaskId(taskIdentity.getTaskId().toString());
+					d.setTaskId(taskIdentity.getTaskId());
 					if (StringUtils.isNotBlank(taskIdentity.getAssignee()) && Long.valueOf(taskIdentity.getAssignee()).equals(userId)) {
 						d.setIsHandleProcess(true);
 						d.setIsNeedClaim(false);
@@ -82,7 +81,7 @@ public class BpmcUtil {
 							return false;
 						}).findFirst().orElse(null);
 						d.setIsHandleProcess(groupUser != null);
-						d.setIsNeedClaim(groupUser != null ? true : null);
+						d.setIsNeedClaim(groupUser != null);
 					}
 				}
 
