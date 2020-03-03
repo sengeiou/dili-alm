@@ -123,7 +123,7 @@ button:hover {
 				<tr>
 	          	  
 	                  <input type="hidden" id="taskId" value="${taskId}" />
-	                   <input type="hidden" name="isNeedClaim" value="${isNeedClaim!}">
+	                   <input type="hidden" id="isNeedClaim" name="isNeedClaim" value="${isNeedClaim!}">
 	            
 	           </tr>
 				
@@ -160,13 +160,16 @@ button:hover {
    $('#agree').bind('click', function(){
 	 
 	   var taskIdd=$('#taskId').val();
+	   var isNeedClaim=$('#isNeedClaim').val();
 	   if(taskIdd==null){
 	      alert("执行失败");
 	   }
 	   $.ajax({
            type: "post",
            url: "${contextPath}/onlineDataChange/agreeDBAOnlineData.action",
-           data: {"taskId":taskIdd},
+           data: {"taskId":taskIdd,
+        	       "isNeedClaim":isNeedClaim
+                 },
            async : true,
            success: function (data) {
            	
@@ -201,7 +204,7 @@ button:hover {
    
    $('#notAgree').bind('click', function(){
 		 
-	
+	   var isNeedClaim=$('#isNeedClaim').val();
 	   var taskIdd=$('#taskId').val();
 	  
 	   if(taskIdd==null){
@@ -210,7 +213,9 @@ button:hover {
 	    $.ajax({
 	       type: "post",
 	       url: "${contextPath!}/onlineDataChange/notAgreeDBAOnlineData.action",
-	       data: {"taskId":taskIdd},
+	       data: {"taskId":taskIdd,
+    	          "isNeedClaim":isNeedClaim
+           },
            async : true,
            success: function (data) {
       	  
