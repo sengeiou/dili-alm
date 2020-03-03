@@ -257,6 +257,7 @@ $(function () {
     }
     formData._finishDate=dateFormat_1(formData._finishDate);
     $('#_form').form('load', formData);
+    var parentIframe = parent.document.getElementById("pageType")
     //加载父元素高度
  	 if(parentIframe!="undefined"){
  		window.parent.setIframeHeight();
