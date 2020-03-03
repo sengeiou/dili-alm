@@ -277,10 +277,10 @@ function delVersionFile(id) {
 $(function () {
     //需求加载
 	$("#fileuploader").uploadFile({
+						language: 'zh', //设置语言
 						url : "${contextPath!}/files/filesUpload", // 文件上传url
 						fileName : "file", // 提交到服务器的文件名
 						uploadStr : '上传',
-						maxFileCount : 10, // 上传文件个数（多个时修改此处
 						returnType : 'json', // 服务返回数据
 					    allowedTypes: 'docx,doc,xls,ppt,pdf,txt,dwg,exb,dps,wps,et,rar,zip,xmind,JPG,GIF,png,bmp',  //允许上传的文件式
 						showDone : false, // 是否显示"Done"(完成)按钮
@@ -309,13 +309,24 @@ $(function () {
 							$('#demandFileGrid').datagrid('appendRow', row);
 						},
 						onSelect : function(files) {
-							var old = $('#demandFileGrid').datagrid('getData').rows;
-							for (var i = 0; i < old.length; i++) {
-								if (files[0].name == old[i].name) {
-									$('.ajax-upload-dragdrop').next('div').append('<div class="ajax-file-upload-error">请不要重复上传文件!</div>')
+							if(files.length>10){
+								$('.ajax-upload-dragdrop').next('div').append('<div class="ajax-file-upload-error">同时上传文件数量为10个!</div>')
+								return false;
+							}else{
+								var old = $('#demandFileGrid').datagrid('getData').rows;
+								if(old.length+files.length<=10){
+									for (var i = 0; i < old.length; i++) {
+										if (files[0].name == old[i].name) {
+											$('.ajax-upload-dragdrop').next('div').append('<div class="ajax-file-upload-error">请不要重复上传文件!</div>')
+											return false;
+										}
+									}
+								}else{
+									$('.ajax-upload-dragdrop').next('div').append('<div class="ajax-file-upload-error">文件数量最大为10个!</div>')
 									return false;
 								}
 							}
+							
 						}
 	});
     
