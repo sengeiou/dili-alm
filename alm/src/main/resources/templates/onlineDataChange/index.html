@@ -3,6 +3,12 @@
 </script>
  <#body>
     <div id="win" style="display: none;"></div>
+    <div id="dataChangeManager" style="display: none;"></div>
+    <div id="dataChangeTest" style="display: none;"></div>
+    <div id="dataChangeDba" style="display: none;"></div>
+    <div id="indexDataChange" style="display: none;"></div>
+    <div id="onlineDbaDataChange" style="display: none;"></div>
+  
     <div class="easyui-layout" fit="true">
         <!-- ====================================================================================================================== -->
         <!-- 上方布局 -->
@@ -87,7 +93,7 @@
                         <th data-options="field:'sqlScript', width:'15%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                             sql脚本内容
                         </th>
-                          <th data-options="field:'opt', width:'10%',  formatter: formatprojectName,   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                          <th data-options="field:'opt', width:'10%',  formatter: formatprojectName,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                        操作        <!--       进度状态 -->
                         </th> 
                         
@@ -109,7 +115,7 @@
                     <option value="lines-right">右边框</option>
                     <option value="lines-bottom">下边框</option>
                 </select>
-                                    行条纹:<input type="checkbox" checked="checked" onclick="$('#grid').datagrid({striped:$(this).is(':checked')})">
+                              <!--       行条纹:<input type="checkbox" checked="checked" onclick="$('#grid').datagrid({striped:$(this).is(':checked')})"> -->
                 </div>
             </div>
         </div>
@@ -249,7 +255,6 @@
        function openView(val,row,index){  
     	
     	  var content='<span style="padding:2px;color:red;"><a style="color:green;" href="javascript:void(0)" onclick="openForTask('+row.id+')"> '+row.applyUserId+'</a></span>';
-       
     	   return content;
        }
        function formatprojectName(val,row,index){  
@@ -330,6 +335,8 @@
            }
     	   
        }
+       
+
     
        function formatStatus(val,row,index){  
     	   var  userId=${userId};
@@ -758,7 +765,7 @@
 	       		
             
         })
-        
+ 
     
         function handleProcess(taskId, formKey, isNeedClaim) {
 	       $.ajax({
@@ -812,6 +819,172 @@
         					} ]
         	    });
         	}
+        
+         
+         
+         
+         
+         
+         
+         function formatProjectNameOpt(val,row,index){  
+         	
+             var  userId=${userId};
+   	   
+   	   if(row.dataStatus==1){
+          	    if(userId==row.$_applyUserId){
+          	     var  dom= '<a href="javascript:void(0);" onclick="indexDataChange(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">继续提交</a>';
+		    	  return dom;
+          	    }else{
+          	      return "<font color='gray'>驳回中</font>";
+          	    }
+   	   }else if(row.dataStatus==2){
+   		    if(userId==row.projectManager){
+   		    	  var  dom= '<a href="javascript:void(0);" onclick="dataChangeManager(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">项目经理确认中</a>';
+   		    	  return dom;
+   		    }else{
+   		    	return "<font color='gray'>项目经理确认中</font>";
+   		    }
+            	
+          }else if(row.dataStatus==3){
+       	   if(userId==row.testManager){
+       		   var  dom= '<a href="javascript:void(0);" onclick="dataChangeTest(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">测试人员确认中</a>';
+		    	  return dom;
+  		       }else{
+  		          return "<font color='gray'>测试人员确认中</font>";
+  		       }
+          	  
+          }else if(row.dataStatus==4){
+       	   
+       	   var   dbaList=row.dbaManager;
+       	   var  temp=0;
+       	   for (i = 0; i < dbaList.length; i++) { 
+       		     if(userId==dbaList[i]) {
+       		    	 temp=1;
+       		    	 break;
+       		     }
+       	    }
+       	   
+               if(temp==1){
+               	  var  dom= '<a href="javascript:void(0);" onclick="dataChangeDba(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">请dba人员确认中</a>';
+    		    	  return dom;
+  		       }else{
+  		    	  return "<font color='gray'>dba确认中</font>";
+  		       } 
+             
+          }else if(row.dataStatus==5){
+             
+              var   dbaList=row.onlineManager;
+        	   var  temp=0;
+        	   for (i = 0; i < dbaList.length; i++) { 
+        		     if(userId==dbaList[i]) {
+        		    	 temp=1;
+        		    	 break;
+        		     }
+        	   }
+        	   
+              if(temp==1){
+           	   alert(row.isNeedClaim);
+           	   var  dom= '<a href="javascript:void(0);" onclick="onlineDbaDataChange(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">线上验证中</a>';
+           	   return dom;
+   		    }else{
+   		       return "<font color='gray'>线上验证中</font>";
+   		   } 
+             	
+             	
+          }else if(row.dataStatus==6){
+             	return "<font color='gray'>归档</font>";
+          }else if(row.dataStatus==0){
+             	return "<font color='green'>保存中</font>";
+          }else{
+          	   return "<font color='orange'>其他</font>";
+          }
+      }
+      
+         
+         
+         function dataChangeManager(taskId, formKey, isNeedClaim) {
+        	
+         	$('#dataChangeManager').dialog({
+ 				title : '项目经理审批',
+ 				width : 800,
+ 				height : 540,
+ 				href : '${contextPath!}/onlineDataChange/dataChangeManager.html?taskId='+ taskId+'&isNeedClaim='+isNeedClaim,
+ 				modal : true,
+ 				buttons : [ {
+ 							text : '取消',
+ 							handler : function() {
+ 								$('#dataChangeManager').dialog('close');
+ 							}
+ 				} ]
+            });
+         }
+         function dataChangeTest(taskId, formKey, isNeedClaim) {
+        	
+         	$('#dataChangeTest').dialog({
+ 				title : '测试人员审批',
+ 				width : 800,
+ 				height : 540,
+ 				href : '${contextPath!}/onlineDataChange/dataChangeTest.html?taskId='+ taskId+'&isNeedClaim='+isNeedClaim,
+ 				modal : true,
+ 				buttons : [ {
+ 							text : '取消',
+ 							handler : function() {
+ 								$('#dataChangeTest').dialog('close');
+ 							}
+ 				} ]
+            });
+         }
+         function dataChangeDba(taskId, formKey, isNeedClaim) {
+        	
+         	$('#dataChangeDba').dialog({
+ 				title : 'dba人员审批',
+ 				width : 800,
+ 				height : 540,
+ 				href : '${contextPath!}/onlineDataChange/dataChangeDba.html?taskId='+ taskId+'&isNeedClaim='+isNeedClaim,
+ 				modal : true,
+ 				buttons : [ {
+ 							text : '取消',
+ 							handler : function() {
+ 								$('#dataChangeDba').dialog('close');
+ 							}
+ 				} ]
+            });
+         }
+         function indexDataChange(taskId, formKey, isNeedClaim) {
+        	
+         	$('#indexDataChange').dialog({
+ 				title : '驳回',
+ 				width : 800,
+ 				height : 540,
+ 				href : '${contextPath!}/onlineDataChange/indexDataChange.html?taskId='+ taskId+'&isNeedClaim='+isNeedClaim,
+ 				modal : true,
+ 				buttons : [ {
+ 							text : '取消',
+ 							handler : function() {
+ 								$('#indexDataChange').dialog('close');
+ 							}
+ 				} ]
+            });
+         }
+         function onlineDbaDataChange(taskId, formKey, isNeedClaim) {
+         	
+         	$('#onlineDbaDataChange').dialog({
+ 				title : '线上验证',
+ 				width : 800,
+ 				height : 540,
+ 				href : '${contextPath!}/onlineDataChange/OnlineDbaDataChange.html?taskId='+ taskId+'&isNeedClaim='+isNeedClaim,
+ 				modal : true,
+ 				buttons : [ {
+ 							text : '取消',
+ 							handler : function() {
+ 								$('#onlineDbaDataChange').dialog('close');
+ 							}
+ 				} ]
+            });
+         }
+        
+   
+         
         
     </script>
 </#body>

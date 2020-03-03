@@ -127,9 +127,9 @@ public class OnlineDataChangeController {
 	}
 	@ApiOperation("OnlineDbaDataChange.html")
 	@RequestMapping(value = "/OnlineDbaDataChange.html", method = RequestMethod.GET)
-	public String OnlineDbaDataChange(ModelMap modelMap,String  taskId, @RequestParam(defaultValue = "false") Boolean isNeedClaim) {
+	public String onlineDbaDataChange(ModelMap modelMap,String  taskId ,@RequestParam(defaultValue = "false") Boolean isNeedClaim) {
 		getModelmap(modelMap, taskId,isNeedClaim);
-		return "onlineDataChange/OnlineDbaDataChange";
+		return "onlineDataChange/onlineDbaDataChange";
 	}
 	
     @ApiOperation(value="分页查询OnlineDataChange", notes = "查询OnlineDataChange，返回列表信息")
@@ -281,6 +281,8 @@ public class OnlineDataChangeController {
     @RequestMapping(value="/agreeDBAOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput agreeDBAOnlineData(  @RequestParam(value="taskId", required = false) String taskId,@RequestParam(defaultValue = "false") Boolean isNeedClaim) throws OnlineDataChangeException, ApplicationException {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
+    	
+    	
     	onlineDataChangeService.agreeDBAOnlineDataChange(taskId,isNeedClaim);
     	return BaseOutput.success("执行成功");
     }
@@ -339,10 +341,6 @@ public class OnlineDataChangeController {
 	}
     private void getModelmap(ModelMap modelMap, String taskId,Boolean isNeedClaim) {
     	
-    	
-    	
-    	
-         
 		BaseOutput<Map<String, Object>>  map=tasksRpc.getVariables(taskId);
 		String id = (String) map.getData().get("businessKey");
 	    OnlineDataChange  odc=  onlineDataChangeService.get(Long.parseLong(id));
