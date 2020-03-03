@@ -77,7 +77,7 @@ button:hover {
 				
 				<tr>
 					<td  colspan="2"   style="padding: 5px; background-color: #f5f5f5; font-weight: bold">数据库名</td>
-					<td  colspan="2"  style="padding: 5px;"><input class="easyui-textbox"   value="${odc.dbaName}" id="_dbaName" value=""
+					<td  colspan="2"  style="padding: 5px;"><input class="easyui-textbox"   value="${odc.dbaName}" id="_dbaName" name="_dbaName" 
 							data-options="validType:['length[0,30]']" style="width: 70%"/></td>
 				</tr>
 				
@@ -98,7 +98,7 @@ button:hover {
 							data-options="validType:['length[0,50]']" style="width: 39%">
 							
 						<!-- 	 <input  class="easyui-linkbutton" name="_sqlFileId"   style="width: 39%"  value="${odc.sqlFileId}"   id="_sqlFileId"> -->
-					          <input  value="${odc.sqlFileId}"  name="_sqlFileId" id="_sqlFileId" type="hidden">
+					          <input  value="${odc.sqlFileId}"  name="_sqlFileId" id="_sqlFileId"  type="hidden" />
 					          <input type="file" id="sqlFile" name="sqlFile"  data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 39%">
 							  <a id="btnShangChuan" href="#" class="easyui-linkbutton"   data-options="iconCls:'icon-save'">上传后保存</a>
 						 		<a id="xiazai" href="#" onclick="downMyFile(${odc.sqlFileId})" class="easyui-linkbutton"  data-options="iconCls:'icon-download'">下载sql文件</a>   	
@@ -117,8 +117,8 @@ button:hover {
 					
 				</tr>
 				<tr>
-	                <input type="hidden" name="isNeedClaim" value="${isNeedClaim!}">
-	                  <input type="hidden" id="taskId" value="${taskId}" />
+	                <input type="hidden" name="_isNeedClaim" value="${isNeedClaim!}">
+	                  <input type="hidden"  name="_taskId"  id="_taskId" value="${taskId}" />
 	                
 	           </tr>
 				
@@ -207,6 +207,7 @@ $('#btnShangChuan').bind('click', function(){
 		        	    alert("上传成功");
 		        	  //  alert( rowd.id);
 		        	   $('#_sqlFileId').val( rowd.id); 
+		        	  // alert( $('#_sqlFileId').val());
 	        	   }else{
 	        		    alert("失败上传");
 	        	   }
@@ -222,11 +223,11 @@ $('#btnShangChuan').bind('click', function(){
 	 
     function downMyFile(id){
     	      var temp= $('#_sqlFileId').val();
-    	      alert(temp);
+    	     // alert(temp);
     	      if(temp!=null){
     	    	 id=temp;
     	      }
-		      if(id!=null&&temp!=null)
+		      if(id!=null&&id!='')
 		       	window.open('${contextPath!}/files/download?id=' + id);
 			  else
 				alert("没有文件");   
@@ -238,11 +239,16 @@ $('#btnShangChuan').bind('click', function(){
    $('#agree').bind('click', function(){
 	 
 	   var taskIdd=$('#taskId').val();
-	
+	   if(!$('#_form').form("validate")){
+           return;
+       }
+     
+       var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
 	   $.ajax({
            type: "post",
            url: "${contextPath}/onlineDataChange/indexOnlineData.action",
-           data: {"taskId":taskIdd},
+          // data: {"taskId":taskIdd},
+           data: _formData,
            async : true,
            success: function (data) {
            	

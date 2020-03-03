@@ -224,7 +224,7 @@
         }
         //打开审批
         function openForTask(id){
-    		$("#demandForTaskSrc").attr("src",'${contextPath!}/demand/submitApproveByAlm.html?id=' +id); //设置IFRAME的SRC;
+    		$("#demandForTaskSrc").attr("src",'${contextPath!}/demand/submitApproveByAlm?id=' +id); //设置IFRAME的SRC;
             $("#demandForTaskDlg").dialog({
                 bgiframe: true,
                 resizable: true, //是否可以重置大小

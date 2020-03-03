@@ -114,14 +114,15 @@ button:hover {
 				   <td  colspan="2"   style="padding: 5px; background-color: #f5f5f5; font-weight: bold">  	<a id="agree" href="#" class="easyui-linkbutton" 
 					   	  data-options="iconCls:'icon-save'">dba同意</a></td>
 					<td  colspan="2"  style="padding: 5px;">
-					   	<a id="notAgree " href="#" class="easyui-linkbutton" 
+					   	<a id="notAgree" href="#" class="easyui-linkbutton" 
 					   	  data-options="iconCls:'icon-save'">dba不同意</a>   
 				 	</td>
 				</tr>
 				<tr>
-	          
+	          	  
 	                  <input type="hidden" id="taskId" value="${taskId}" />
 	                 <input type="hidden" name="isNeedClaim" value="${isNeedClaim!}">
+	            
 	           </tr>
 				
 			</tbody>
@@ -157,7 +158,9 @@ button:hover {
    $('#agree').bind('click', function(){
 	 
 	   var taskIdd=$('#taskId').val();
-	
+	   if(taskIdd==null){
+	      alert("执行失败");
+	   }
 	   $.ajax({
            type: "post",
            url: "${contextPath}/onlineDataChange/agreeDBAOnlineData.action",
@@ -198,6 +201,12 @@ button:hover {
 		 
 	
 	   var taskIdd=$('#taskId').val();
+	   
+	   if(taskIdd==null){
+		   alert("执行失败");
+       	 
+		   
+	   }
 	    $.ajax({
 	       type: "POST",
 	       url: "${contextPath!}/onlineDataChange/notAgreeDBAOnlineData.action",

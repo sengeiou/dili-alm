@@ -20,6 +20,7 @@
     <result column="data_status" jdbcType="TINYINT" property="dataStatus" />
     <result column="process_instance_id" jdbcType="VARCHAR" property="processInstanceId" />
 	<result column="process_definition_id" jdbcType="VARCHAR" property="processDefinitionId" />
+	<result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
     
   </resultMap>
   <sql id="Base_Column_List">
@@ -27,7 +28,7 @@
       WARNING - @mbg.generated
     -->
     id, apply_user_id, apply_market_id, project_id, version_id, apply_date, update_date, 
-    dba_name, sql_script, sql_file_id,is_synchronization,is_submit,data_status,process_instance_id,process_definition_id
+    dba_name, sql_script, sql_file_id,is_synchronization,is_submit,data_status,process_instance_id,process_definition_id,create_date
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -86,6 +87,10 @@
 	 <if test="processDefinitionId != null">
 	 	process_definition_id = #{processDefinitionId,jdbcType=VARCHAR},
 	 </if>
+	  <if test="createDate != null">
+         create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+	 
       
       
     </set>

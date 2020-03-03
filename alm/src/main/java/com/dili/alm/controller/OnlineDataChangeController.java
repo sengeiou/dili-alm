@@ -1,6 +1,7 @@
 package com.dili.alm.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -169,6 +170,7 @@ public class OnlineDataChangeController {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
     	onlineDataChange.setApplyUserId(id);
     	onlineDataChange.setDataStatus((byte)0);
+    	 onlineDataChange.setCreateDate(new Date());
         onlineDataChangeService.insertSelective(onlineDataChange);
 
         return BaseOutput.success("保存成功");    
@@ -289,8 +291,8 @@ public class OnlineDataChangeController {
         return BaseOutput.success("执行成功");
     }
     @RequestMapping(value="/indexOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput indexOnlineData(  @RequestParam(value="taskId", required = false) String taskId) {
-    	onlineDataChangeService.indexOnlineDataChange(taskId);
+    public @ResponseBody BaseOutput indexOnlineData(@ModelAttribute OnlineDataChange onlineDataChange  ,@RequestParam(value="taskId", required = false) String taskId) {
+    	onlineDataChangeService.indexOnlineDataChange(taskId,onlineDataChange);
     	return BaseOutput.success("执行成功");
     }
     

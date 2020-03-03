@@ -1,6 +1,7 @@
 package com.dili.alm.service.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -73,7 +74,9 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		onlineDataChange.setApplyUserId(id);
     	onlineDataChange.setIsSubmit((byte)1);
     	onlineDataChange.setDataStatus((byte)2);
+    	 onlineDataChange.setCreateDate(new Date());
         this.insertSelective(onlineDataChange);
+       
         try {
     	   Map<String, Object> map=new HashMap<String, Object>();
     	   map.put("dataId", onlineDataChange.getId()+"");
@@ -270,10 +273,10 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		
 	}
 	@Override
-	public void indexOnlineDataChange(String taskId) {
+	public void indexOnlineDataChange(String taskId,OnlineDataChange onlineDataChange) {
 		BaseOutput<Map<String, Object>>  mapId=tasksRpc.getVariables(taskId);
 		String dataId = (String) mapId.getData().get("businessKey");
-		OnlineDataChange onlineDataChange=new  OnlineDataChange();
+	//	OnlineDataChange onlineDataChange=new  OnlineDataChange();
 		onlineDataChange.setId(Long.parseLong(dataId));
 		onlineDataChange.setDataStatus((byte)2);
 		this.updateSelective(onlineDataChange);
@@ -284,7 +287,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 	}
 	@Override
 	public String listPageOnlineData(OnlineDataChange onlineDataChange, String projectIdcc, Long id) {
-		onlineDataChange.setSort("apply_date");
+		onlineDataChange.setSort("create_date");
 		onlineDataChange.setOrder("desc");
 		//onlineDataChange.setApplyUserId(id);
    	    if(NumberUtils.isNumber(projectIdcc)) {
