@@ -9,7 +9,6 @@ function serialNumberFormatter(value, row, index) {
 }
 
 function detail(id) {
-	alert('asfsafasfd');
 	$('#win').dialog({
 				title : '上线申请详情',
 				width : 800,
