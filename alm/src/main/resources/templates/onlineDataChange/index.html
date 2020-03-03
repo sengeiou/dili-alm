@@ -299,6 +299,7 @@
         	    }
         	   
                 if(temp==1){
+                	 alert("row.isNeedClaim"+row.isNeedClaim);
                 	  var  dom= '<a href="javascript:void(0);" onclick="handleProcess(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">请dba人员确认中</a>';
      		    	  return dom;
    		       }else{
@@ -781,8 +782,8 @@
 				async : true,
 				success : function(data) {
 					if (data.success) {
-					//	alert(data.data.taskUrl+""+ taskId+isNeedClaim);
-						window.location.href = data.data.taskUrl + '?taskId=' + taskId + '&isNeedClaim=' + false;
+						alert(data.data.taskUrl+"s"+ taskId+"ssss"+isNeedClaim);
+						window.location.href = data.data.taskUrl + '?taskId=' + taskId + '&isNeedClaim=' + isNeedClaim;
 					} else {
 						$.messager.alert('错误', data.result);
 					}

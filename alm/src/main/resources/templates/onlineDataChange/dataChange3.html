@@ -123,7 +123,7 @@ button:hover {
 				<tr>
 	          	  
 	                  <input type="hidden" id="taskId" value="${taskId}" />
-	                   <input type="hidden" id="isNeedClaim" name="isNeedClaim" value="${isNeedClaim!}">
+	                   <input type="text" id="isNeedClaim" name="isNeedClaim" value="${isNeedClaim!}">
 	            
 	           </tr>
 				
@@ -161,6 +161,8 @@ button:hover {
 	 
 	   var taskIdd=$('#taskId').val();
 	   var isNeedClaim=$('#isNeedClaim').val();
+	   
+	  // alert("isNeedClaim失败"+isNeedClaim);
 	   if(taskIdd==null){
 	      alert("执行失败");
 	   }
