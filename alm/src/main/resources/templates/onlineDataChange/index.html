@@ -219,10 +219,8 @@
 					  <td colspan="3"  style="padding: 5px; background-color: #f5f5f5; font-weight: bold">
 					       <input class="easyui-textbox"  id="_sqlScript" name="_sqlScript" value=""
 							data-options="validType:['length[0,50]']" style="width: 39%">
-							
-							 <input   name="_sqlFileId" id="_sqlFileId" type="hidden" />
-					        <input type="file" id="sqlFile" name="sqlFile" 
-							data-options="prompt:'添加附件...',buttonText:'选择'" style="width: 39%">
+						    <input   name="_sqlFileId" id="_sqlFileId" type="hidden" />
+					        <input type="file" id="sqlFile" name="sqlFile"  accept=".txt,.sql" style="width: 39%">
 							<a id="btnShangChuan" href="#" class="easyui-linkbutton"   data-options="iconCls:'icon-save'">上传后保存</a>
 					  </td>
 				</tr>
@@ -367,7 +365,7 @@
               	return "<font color='gray'>归档</font>";
            }else if(row.$_dataStatus==0){
         	   
-              	return "<font color='green'>保存</font>";
+              	return "<font color='gray'>保存</font>";
            }else{
            	   return "<font color='orange'>其他</font>";
            }
@@ -428,21 +426,21 @@
             var  userId=${userId};
     		var  applyUserIdTemp;
       
-            if( selected.dataStatus==2|
-           		selected.dataStatus==3|selected.dataStatus==4|
-           		selected.dataStatus==5|selected.dataStatus==6 ){
+            if( selected.$_dataStatus==2|
+           		selected.$_dataStatus==3|selected.$_dataStatus==4|
+           		selected.$_dataStatus==5|selected.$_dataStatus==6 ){
             	  $.messager.alert('警告','流程执行中或者归档不可修改');
                 return;
   	         }else{
   	                      
-  	                	applyUserIdTemp=selected.$_applyUserId;
+  	               applyUserIdTemp=selected.$_applyUserId;
   	                	//alert(applyUserIdTemp);
   	                	
   	               if(userId!=applyUserIdTemp){
 	                		 $.messager.alert('警告','不是本人申请不可修改');
 	                		 return;
   	                }
-  	                if(selected.dataStatus==1){
+  	                if(selected.$_dataStatus==1){
   	                	 $.messager.alert('警告','请继续提交');
                 		 return;
   	                }
@@ -454,10 +452,10 @@
   	  	            formData = addKeyStartWith(getOriginalData(formData),"_");
   	  	            $('#_form').form('load', formData);
   	  	          //  $('#_applyUserIdName').textbox('setText', '');
-  	  	        	$("#_versionIdName").combobox("setValue",selected.versionId);
+  	  	        	$("#_versionIdName").combobox("setValue",selected.$_versionId);
   	  	             $('#_applyUserIdName').combobox('setText', selected.applyUserId);
 
-  	  	         $('#_versionId').val(selected.versionId);
+  	  	             $('#_versionId').val(selected.$_versionId);
   	    		 
   	    
   	       		
@@ -733,6 +731,12 @@
 
 	       $('#btnShangChuan').bind('click', function(){
 				 
+	    	   
+	    	   if ($("#sqlFile").val() == "" ) {
+	               alert("请选择文件上传");
+	               return;
+	           }
+	    	   
 				 var input = document.getElementById('sqlFile');
 				
 				    var formdata = new FormData();
