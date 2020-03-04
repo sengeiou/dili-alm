@@ -159,7 +159,7 @@ button:hover {
    $('#agree').bind('click', function(){
 	   var isNeedClaim=$('#isNeedClaim').val();
 	   var taskIdd=$('#taskId').val();
-	 alert("isNeedClaim"+isNeedClaim);
+	// alert("isNeedClaim"+isNeedClaim);
 	   $.ajax({
            type: "post",
            url: "${contextPath}/onlineDataChange/agreeOnlineData.action",
