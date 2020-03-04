@@ -1,6 +1,14 @@
  <script>
     document.domain="diligrp.com";
 </script>
+ <style type="text/css">     
+     .mask {       
+            position: absolute; top: 0px; filter: alpha(opacity=60); background-color: #777;     
+            z-index: 15000; left: 0px;     
+            opacity:0.5; -moz-opacity:0.5;     
+        }     
+</style> 
+
  <#body>
     <div id="win" style="display: none;"></div>
     <div id="dataChangeManager" style="display: none;"></div>
@@ -8,7 +16,7 @@
     <div id="dataChangeDba" style="display: none;"></div>
     <div id="indexDataChange" style="display: none;"></div>
     <div id="onlineDbaDataChange" style="display: none;"></div>
-  
+    <div id="mask" class="mask"></div>  
     <div class="easyui-layout" fit="true">
         <!-- ====================================================================================================================== -->
         <!-- 上方布局 -->
@@ -429,10 +437,15 @@
   	                	applyUserIdTemp=selected.$_applyUserId;
   	                	//alert(applyUserIdTemp);
   	                	
-  	                	if(userId!=applyUserIdTemp){
-  	                		 $.messager.alert('警告','不是本人申请不可修改');
-  	                		 return;
-  	                	}
+  	               if(userId!=applyUserIdTemp){
+	                		 $.messager.alert('警告','不是本人申请不可修改');
+	                		 return;
+  	                }
+  	                if(selected.dataStatus==1){
+  	                	 $.messager.alert('警告','请继续提交');
+                		 return;
+  	                }
+  	               
   	              	$('#dlg').dialog('open');
   	  	            $('#dlg').dialog('center');
   	  	            formFocus("_form", "_applyUserId");
@@ -495,6 +508,12 @@
 			                processData:true,
 			                dataType: "json",
 			                async : true,
+			                beforeSend: function () {
+	                             load();
+	                          },
+	                          complete: function () {
+	                            disLoad();
+	                          },
 			                success: function (data) {
 			                     if(data.code=="200"){
 			                        $("#grid").datagrid("reload");
@@ -534,6 +553,13 @@
 			                processData:true,
 			                dataType: "json",
 			                async : true,
+			                beforeSend: function () {
+	                             load();
+	                          },
+	                          complete: function () {
+	                            disLoad();
+	                          },
+	                          
 			                success: function (data) {
 			                     if(data.code=="200"){
 			                        $("#grid").datagrid("reload");
@@ -798,7 +824,7 @@
 	       
 	       
 	       
-      }
+       }
         
         
         function setIframeHeight(){
@@ -826,7 +852,16 @@
         
          
          
-         
+         function load() {
+         	$("#mask").css("height",$(document).height());     
+             $("#mask").css("width",$(document).width());     
+             $("#mask").show();     
+           }
+         //取消加载层
+         function disLoad() {
+         	 $("#mask").hide();     
+       
+         }
          
          
          
