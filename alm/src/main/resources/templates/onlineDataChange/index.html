@@ -77,7 +77,7 @@
                         <th data-options="field:'applyUserId',  _provider:'memberProvider', formatter: openView, width:'8%',    sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                      申请人
                         </th>
-                        <th data-options="field:'dataStatus', width:'8%',  formatter: formatStatus, sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'dataStatus', width:'8%',  _provider:'onlineDataApplyStateProvider',   formatter: formatStatus, sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                          进度状态 
                         </th> 
                         <th data-options="field:'applyMarketId' ,width:'10%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -271,7 +271,7 @@
        function formatprojectName(val,row,index){  
     	   var  userId=${userId};
     	   
-    	   if(row.dataStatus==1){
+    	   if(row.$_dataStatus==1){
     		  //  alert(userId+"ss"+row.$_applyUserId);
            	    if(userId==row.$_applyUserId){
            	     var  dom= '<a href="javascript:void(0);" onclick="handleProcess(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">继续提交</a>';
@@ -279,7 +279,7 @@
            	    }else{
            	      return "<font color='gray'>驳回中</font>";
            	    }
-    	   }else if(row.dataStatus==2){
+    	   }else if(row.$_dataStatus==2){
     		 //  alert(userId+''+row.projectManager)
     		    if(userId==row.projectManager){
     		    	  var  dom= '<a href="javascript:void(0);" onclick="handleProcess(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">项目经理确认中</a>';
@@ -288,7 +288,7 @@
     		    	return "<font color='gray'>项目经理确认中</font>";
     		    }
              	
-           }else if(row.dataStatus==3){
+           }else if(row.$_dataStatus==3){
         	   
         	   if(userId==row.testManager){
         		   var  dom= '<a href="javascript:void(0);" onclick="handleProcess(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">测试人员确认中</a>';
@@ -297,7 +297,7 @@
    		          return "<font color='gray'>测试人员确认中</font>";
    		       }
            	  
-           }else if(row.dataStatus==4){
+           }else if(row.$_dataStatus==4){
         	   
         	   var   dbaList=row.dbaManager;
         	   var  temp=0;
@@ -317,7 +317,7 @@
    		    	  return "<font color='gray'>dba确认中</font>";
    		       } 
               
-           }else if(row.dataStatus==5){
+           }else if(row.$_dataStatus==5){
               
                var   dbaList=row.onlineManager;
             //   alert(dbaList+"onlineManager");
@@ -338,9 +338,9 @@
     		   } 
               	
               	
-           }else if(row.dataStatus==6){
+           }else if(row.$_dataStatus==6){
               	return "<font color='gray'>归档</font>";
-           }else if(row.dataStatus==0){
+           }else if(row.$_dataStatus==0){
               	return "<font color='green'>保存中</font>";
            }else{
            	   return "<font color='orange'>其他</font>";
@@ -353,19 +353,20 @@
        function formatStatus(val,row,index){  
     	   var  userId=${userId};
     	   
-    	   if(row.dataStatus==1){
+    	   if(row.$_dataStatus==1){
            	      return "<font color='gray'>驳回</font>";
-    	   }else if(row.dataStatus==2){
+    	   }else if(row.$_dataStatus==2){
     		    	return "<font color='gray'>项目经理确认</font>";
-           }else if(row.dataStatus==3){
+           }else if(row.$_dataStatus==3){
    		          return "<font color='gray'>测试人员确认</font>";
-           }else if(row.dataStatus==4){
+           }else if(row.$_dataStatus==4){
    		    	return "<font color='gray'>dba确认</font>";
-           }else if(row.dataStatus==5){
+           }else if(row.$_dataStatus==5){
     		   return "<font color='gray'>线上验证</font>";
-           }else if(row.dataStatus==6){
+           }else if(row.$_dataStatus==6){
               	return "<font color='gray'>归档</font>";
-           }else if(row.dataStatus==0){
+           }else if(row.$_dataStatus==0){
+        	   
               	return "<font color='green'>保存</font>";
            }else{
            	   return "<font color='orange'>其他</font>";
