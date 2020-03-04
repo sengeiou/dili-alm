@@ -27,9 +27,14 @@ button {
 button:hover {
 	background: #ecf2ef;
 }
+.mask {       
+        position: absolute; top: 0px; filter: alpha(opacity=60); background-color: #777;     
+        z-index: 15000; left: 0px;     
+        opacity:0.5; -moz-opacity:0.5;     
+ } 
 </style>
 <div class="easyui-layout" data-options="fit:true">
-
+   <div id="mask" class="mask"></div> 
 	<div height="auto" align="center" data-options="region:'center'">
 	   <form id="_form"  enctype="multipart/form-data" class="easyui-form" method="post" fit="true">
 	     <table id="tt" cellspacing="0" border="1" class="easyui-datagrid" style="width:90%; height: 135px; border: 1px solid #ddd; border-collapse: collapse;"
@@ -152,6 +157,17 @@ button:hover {
 			  else
 				alert("没有文件");   
 		 }
+    
+    function load() {
+    	$("#mask").css("height",$(document).height());     
+        $("#mask").css("width",$(document).width());     
+        $("#mask").show();     
+      }
+    //取消加载层
+    function disLoad() {
+    	 $("#mask").hide();     
+  
+    }
 </script >
 
 <script type="text/javascript">
@@ -173,6 +189,12 @@ button:hover {
         	       "isNeedClaim":isNeedClaim
                  },
            async : true,
+           beforeSend: function () {
+               load();
+            },
+            complete: function () {
+              disLoad();
+            },
            success: function (data) {
            	
              	alert("执行成功");
@@ -218,6 +240,12 @@ button:hover {
 	       data: {"taskId":taskIdd,
     	          "isNeedClaim":isNeedClaim
            },
+           beforeSend: function () {
+               load();
+            },
+            complete: function () {
+              disLoad();
+            },
            async : true,
            success: function (data) {
       	  
