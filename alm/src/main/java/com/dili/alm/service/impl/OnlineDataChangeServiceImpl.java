@@ -262,14 +262,15 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		Map<String, Object> map=new HashMap<>();
     	map.put("approved", "true");
   	    map.put("submit", onlineDataChange.getApplyUserId());
+  	  Long  id=SessionContext.getSessionContext().getUserTicket().getId();
   		if (isNeedClaim) {
-			BaseOutput<String> output =tasksRpc.claim(taskId,onlineDataChange.getApplyUserId()+"");
+			BaseOutput<String> output =tasksRpc.claim(taskId,id.toString()+"");
 			if (!output.isSuccess()) {
 				LOGGER.error(output.getMessage());
 				throw new OnlineDataChangeException("任务签收失败");
 			}
 		}
-    	tasksRpc.complete(taskId, map);
+    	tasksRpc.complete(taskId);
 		
 	}
 	@Override
