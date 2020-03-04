@@ -75,11 +75,14 @@
                         <th data-options="field:'applyMarketId' ,width:'10%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                         市场名称                   
                         </th>
-                        <th data-options="field:'projectId',_provider:'projectProvider',width:'15%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'projectId',_provider:'projectProvider',width:'10%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                          项目名称
                         </th>
-                        <th data-options="field:'versionId',_provider:'projectVersionProvider' ,width:'10%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th data-options="field:'versionId',_provider:'projectVersionProvider' ,width:'8%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                     版本
+                        </th>
+                         <th data-options="field:'createDate',  _provider:'datetimeProvider', width:'10%',sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                                                                                     创建时间
                         </th>
                         <th data-options="field:'applyDate',  _provider:'dateProvider', width:'8%',sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                      申请时间
@@ -93,7 +96,7 @@
                         <th data-options="field:'sqlScript', width:'15%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                             sql脚本内容
                         </th>
-                          <th data-options="field:'opt', width:'10%',  formatter: formatprojectName,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
+                          <th data-options="field:'opt', width:'8%',  formatter: formatprojectName,  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
                                                                                        操作        <!--       进度状态 -->
                         </th> 
                         
@@ -299,7 +302,7 @@
         	    }
         	   
                 if(temp==1){
-                	 alert("row.isNeedClaim"+row.isNeedClaim);
+                	// alert("row.isNeedClaim"+row.isNeedClaim);
                 	  var  dom= '<a href="javascript:void(0);" onclick="handleProcess(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">请dba人员确认中</a>';
      		    	  return dom;
    		       }else{
@@ -884,7 +887,7 @@
         	   }
         	   
               if(temp==1){
-           	   alert(row.isNeedClaim);
+           	  // alert(row.isNeedClaim);
            	   var  dom= '<a href="javascript:void(0);" onclick="onlineDbaDataChange(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">线上验证中</a>';
            	   return dom;
    		    }else{
