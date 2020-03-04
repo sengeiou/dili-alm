@@ -98,7 +98,7 @@ public class OnlineDataChangeController {
 		
 		 TaskDto taskDto = DTOUtils.newInstance(TaskDto.class);
          //taskDto.setProcessInstanceBusinessKey(approve.getId().toString());
-         BaseOutput<List<TaskMapping>> outputList = tasksRpc.listTaskMapping(taskDto);
+    //     BaseOutput<List<TaskMapping>> outputList = tasksRpc.listTaskMapping(taskDto);
          
 		getModelmap(modelMap, taskId,isNeedClaim);
 		return "onlineDataChange/dataChange1";
@@ -289,7 +289,7 @@ public class OnlineDataChangeController {
     @RequestMapping(value="/notAgreeDBAOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput notAgreeDBAOnlineData(  @RequestParam(value="taskId", required = false) String taskId ,@RequestParam(defaultValue = "false") Boolean isNeedClaim) throws OnlineDataChangeException, ApplicationException {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
-    	onlineDataChangeService.notAgreeTestOnlineDataChange(taskId,isNeedClaim);
+    	onlineDataChangeService.notAgreeDBAOnlineDataChange(taskId, isNeedClaim);
         return BaseOutput.success("执行成功");
     }
     @RequestMapping(value="/indexOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
@@ -308,7 +308,7 @@ public class OnlineDataChangeController {
     @RequestMapping(value="/notAgreeOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput notAgreeOnlineData(  @RequestParam(value="taskId", required = false) String taskId ,@RequestParam(defaultValue = "false") Boolean isNeedClaim) throws OnlineDataChangeException, ApplicationException {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
-    	onlineDataChangeService.notAgreeTestOnlineDataChange(taskId,isNeedClaim);
+    	onlineDataChangeService.notAgreeOnlineDataChange(taskId,isNeedClaim);
         return BaseOutput.success("执行成功");
     }
     

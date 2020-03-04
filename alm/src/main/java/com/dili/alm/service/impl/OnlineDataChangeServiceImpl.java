@@ -18,8 +18,8 @@ import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.OnlineDataChangeMapper;
 import com.dili.alm.domain.OnlineDataChange;
 import com.dili.alm.domain.Project;
-import com.dili.alm.domain.TaskDto;
-import com.dili.alm.domain.TaskMapping;
+/*import com.dili.alm.domain.TaskDto;*/
+/*import com.dili.alm.domain.TaskMapping;*/
 import com.dili.alm.domain.dto.OnlineDataChangeBpmcDtoDto;
 import com.dili.alm.exceptions.OnlineDataChangeException;
 import com.dili.alm.exceptions.ProjectOnlineApplyException;
@@ -30,7 +30,10 @@ import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.OnlineDataChangeService;
 import com.dili.alm.service.ProjectService;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
+import com.dili.bpmc.sdk.domain.TaskMapping;
 import com.dili.bpmc.sdk.dto.Assignment;
+import com.dili.bpmc.sdk.dto.TaskDto;
+import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
@@ -49,7 +52,7 @@ import com.dili.uap.sdk.session.SessionContext;
 public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChange, Long> implements OnlineDataChangeService {
 
     @Autowired
-   	private   MyTasksRpc  tasksRpc;
+   	private    TaskRpc tasksRpc;
     
     @Autowired
   	private   RuntimeApiRpc  runtimeRpc;
@@ -262,7 +265,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		Map<String, Object> map=new HashMap<>();
     	map.put("approved", "true");
   	    map.put("submit", onlineDataChange.getApplyUserId());
-  	  Long  id=SessionContext.getSessionContext().getUserTicket().getId();
+  	    Long  id=SessionContext.getSessionContext().getUserTicket().getId();
   		if (isNeedClaim) {
 			BaseOutput<String> output =tasksRpc.claim(taskId,id.toString()+"");
 			if (!output.isSuccess()) {
@@ -366,6 +369,58 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	@Override
+	public void notAgreeDBAOnlineDataChange(String taskId, Boolean isNeedClaim) throws OnlineDataChangeException {
+		// TODO Auto-generated method stub
+		BaseOutput<Map<String, Object>>  mapId=tasksRpc.getVariables(taskId);
+		String dataId = (String) mapId.getData().get("businessKey");
+		OnlineDataChange onlineDataChange=new  OnlineDataChange();
+		onlineDataChange.setId(Long.parseLong(dataId));
+		onlineDataChange.setDataStatus((byte)1);
+		onlineDataChangeMapper.updateByPrimaryKeySelective(onlineDataChange);
+		Map<String, Object> map=new HashMap<>();
+    	map.put("approved", "false");
+    	
+    	OnlineDataChange	onlineDataChangeTemp=this.get(Long.parseLong(dataId));
+    	
+    	Project   pro=projectService.get(onlineDataChangeTemp.getProjectId());
+    	map.put("test", ""+pro.getTestManager());
+    	if (isNeedClaim) {
+			BaseOutput<String> output =tasksRpc.claim(taskId,onlineDataChangeTemp.getApplyUserId()+"");
+			if (!output.isSuccess()) {
+				LOGGER.error(output.getMessage());
+				throw new OnlineDataChangeException("任务签收失败");
+			}
+		}
+    	tasksRpc.complete(taskId, map);
+		
+	}
+
+	@Override
+	public void notAgreeOnlineDataChange(String taskId, Boolean isNeedClaim) throws OnlineDataChangeException {
+		BaseOutput<Map<String, Object>>  mapId=tasksRpc.getVariables(taskId);
+		String dataId = (String) mapId.getData().get("businessKey");
+		OnlineDataChange onlineDataChange=new  OnlineDataChange();
+		onlineDataChange.setId(Long.parseLong(dataId));
+		onlineDataChange.setDataStatus((byte)4);
+		onlineDataChangeMapper.updateByPrimaryKeySelective(onlineDataChange);
+		Map<String, Object> map=new HashMap<>();
+    	map.put("approved", "false");
+    	
+    	OnlineDataChange	onlineDataChangeTemp=this.get(Long.parseLong(dataId));
+    	//map.put("submit", ""+onlineDataChangeTemp.getApplyUserId());
+       if (isNeedClaim) {
+    	   Long  id=SessionContext.getSessionContext().getUserTicket().getId();
+			BaseOutput<String> output =tasksRpc.claim(taskId,id.toString());
+			if (!output.isSuccess()) {
+				LOGGER.error(output.getMessage());
+				throw new OnlineDataChangeException("任务签收失败");
+			}
+		}
+    	tasksRpc.complete(taskId, map);
+		
 	}
 
 

@@ -25,7 +25,12 @@ public interface OnlineDataChangeService extends BaseService<OnlineDataChange, L
 	 
 	 void agreeDBAOnlineDataChange(String taskId,Boolean isNeedClaim) throws OnlineDataChangeException;
 	 
+	 void notAgreeDBAOnlineDataChange(String taskId,Boolean isNeedClaim) throws OnlineDataChangeException;
+	 
 	 void agreeOnlineDataChange(String taskId,Boolean isNeedClaim) throws OnlineDataChangeException;
+	 
+	 void notAgreeOnlineDataChange(String taskId,Boolean isNeedClaim) throws OnlineDataChangeException;
+	 
 	 
 	 void indexOnlineDataChange(String taskId,OnlineDataChange onlineDataChange) ;
 	 String listPageOnlineData(OnlineDataChange onlineDataChange, String projectIdcc, Long id) ;
