@@ -289,7 +289,7 @@ public class OnlineDataChangeController {
     @RequestMapping(value="/notAgreeDBAOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput notAgreeDBAOnlineData(  @RequestParam(value="taskId", required = false) String taskId ,@RequestParam(defaultValue = "false") Boolean isNeedClaim) throws OnlineDataChangeException, ApplicationException {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
-    	onlineDataChangeService.notAgreeDBAOnlineDataChange(taskId, isNeedClaim);
+    	//onlineDataChangeService.notAgreeDBAOnlineDataChange(taskId, isNeedClaim);
         return BaseOutput.success("执行成功");
     }
     @RequestMapping(value="/indexOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})

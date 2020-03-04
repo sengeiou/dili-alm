@@ -370,7 +370,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			return null;
 		}
 	}
-
+/*
 	@Override
 	public void notAgreeDBAOnlineDataChange(String taskId, Boolean isNeedClaim) throws OnlineDataChangeException {
 		// TODO Auto-generated method stub
@@ -396,7 +396,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		}
     	tasksRpc.complete(taskId, map);
 		
-	}
+	}*/
 
 	@Override
 	public void notAgreeOnlineDataChange(String taskId, Boolean isNeedClaim) throws OnlineDataChangeException {
