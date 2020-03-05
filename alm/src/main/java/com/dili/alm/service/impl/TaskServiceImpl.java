@@ -458,7 +458,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		metadata.put("projectId", projectProvider);
 
 		JSONObject projectVersionProvider = new JSONObject();
-		projectVersionProvider.put("projectVersion", "projectVersionProvider");
+		projectVersionProvider.put("provider", "projectVersionProvider");
 		metadata.put("versionId", projectVersionProvider);
 
 		JSONObject memberProvider = new JSONObject();
