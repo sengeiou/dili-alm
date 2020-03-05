@@ -118,7 +118,7 @@
           
             if (row.$_status == 2) {
             	var dom1='<span style="padding:2px;"><a href="javascript:void(0)" onclick="showProgress('+index+')">查看进度</a></span>';
-            	if(row.isApprove){
+            	if(row.isHandleProcess){
             		dom1+='<span style="padding:2px;"><a href="${contextPath!}/approve/applyApproveByAlm.html?id=' +row.id+'">审批</a></span>';
             	}
             	//dom1+='<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/apply/' + row.id + '">审批</a></span>';

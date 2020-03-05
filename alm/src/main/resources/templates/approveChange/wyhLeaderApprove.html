@@ -107,27 +107,9 @@ input[class^="easyui-"] {
 					<td colspan="4"><input class="easyui-textbox" readonly="readonly" name="effects" id="effects" value="${change.effects}"
 						data-options="multiline:true" style="width: 100%; height: 120px" /></td>
 				</tr>
-				<tr>
-					<td class="title-first" colspan="4">立项评审&审批</td>
-				</tr>
-				<tr>
-					<td class="" colspan="4">
-						<table id="dg" class="easyui-datagrid" style="height: auto; width: 100%"
-							data-options="singleSelect: true,  url: '${contextPath}/approve/loadDesc?id=${approve.id}'">
-							<thead>
-								<tr>
-									<th data-options="field:'approveDate',_provider:'dateProvider',width:'20%',align:'center'">审批时间</th>
-									<th data-options="field:'userId',width:'15%',align:'center'">用户</th>
-									<th data-options="field:'role',width:'25%',align:'center'">职务</th>
-									<th data-options="field:'result',width:'15%',align:'center',formatter:format">审批结果</th>
-									<th data-options="field:'notes',width:'25%',align:'center'">审批意见</th>
-								</tr>
-							</thead>
-						</table>
-					</td>
-				</tr>
+				
 			</table>
-			<% if(canOpt){ %>
+			<% if(!viewMode){ %>
 			<table style="width: 100%">
 				<tr>
 					<td colspan="4" style="padding-left: 0"><input id="notes" class="easyui-textbox" name="notes"
@@ -139,9 +121,9 @@ input[class^="easyui-"] {
 		<div style="text-align: center; padding: 5px; margin-top: 50px;">
 			<!--<a href="${contextPath}/approve/change/index.html" class="easyui-linkbutton" data-options="width:'80px'"-->
 			<!--&gt;返回</a>-->
-			<% if(!viewMode){ %> <% if(canOpt){ %> <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
+			<% if(!viewMode){ %> <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
 				onclick="submitForm('reject',this)">拒绝</a> <a href="javascript:void(0)" class="easyui-linkbutton" data-options="width:'80px'"
-				onclick="submitForm('accept',this)">同意</a> <% } %> <% } %>
+				onclick="submitForm('accept',this)">同意</a> <% } %>
 		</div>
 	</div>
 </div>

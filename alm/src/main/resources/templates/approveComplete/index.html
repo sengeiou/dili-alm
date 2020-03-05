@@ -120,7 +120,7 @@
             var dom = '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/doc/complete/' + row.projectApplyId + '">结项文档下载</a></span>';
             if (row.$_status == 2) {
             	var dom1='<span style="padding:2px;"><a href="javascript:void(0)" onclick="showProgress('+index+')">查看进度</a></span>';
-            	if(row.isApprove){
+            	if(row.isHandleProcess){
             		dom1+='<span style="padding:2px;"><a href="${contextPath!}/approve/completeApproveByAlm.html?id=' +row.id+'">审批</a></span>';
             	}
                 return dom1;

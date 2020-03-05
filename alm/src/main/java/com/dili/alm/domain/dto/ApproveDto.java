@@ -1,16 +1,12 @@
 package com.dili.alm.domain.dto;
 
-import java.util.List;
-
-import org.springframework.util.CollectionUtils;
-
+import com.dili.alm.component.ProcessHandleInfoDto;
 import com.dili.alm.domain.Approve;
-import com.dili.alm.domain.DataDictionary;
 
-public interface ApproveDto extends Approve {
+public interface ApproveDto extends Approve,ProcessHandleInfoDto {
 
-	public boolean getIsApprove();
+	public Boolean getIsHandleProcess();
 
-	public void setIsApprove(boolean isApprove);
+	public void setIsHandleProcess(Boolean isHandleProcess);
 
 }

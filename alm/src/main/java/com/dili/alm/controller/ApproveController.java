@@ -126,7 +126,7 @@ public class ApproveController {
 	@ResponseBody
 	public BaseOutput<Object> applyWyhLeaderApprove(String taskId, String opt, String notes) {
 		try {
-			approveService.bpmcApprove(taskId, opt, notes);
+			approveService.bpmcApprove(taskId, opt, notes,false);
 			return BaseOutput.success();
 		} catch (ApproveException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -137,7 +137,7 @@ public class ApproveController {
 	@ResponseBody
 	public BaseOutput<Object> applyWyhManagerApprove(String taskId,  String opt, String notes) {
 		try {
-			approveService.bpmcApprove(taskId, opt, notes);
+			approveService.bpmcApprove(taskId, opt, notes,true);
 			return BaseOutput.success();
 		} catch (ApproveException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -220,7 +220,7 @@ public class ApproveController {
 	@ResponseBody
 	public BaseOutput<Object> changeWyhManagerApprove(String taskId,  String opt, String notes) {
 		try {
-			approveService.bpmcApprove(taskId, opt, notes);
+			approveService.bpmcApprove(taskId, opt, notes,true);
 			return BaseOutput.success();
 		} catch (ApproveException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -231,7 +231,7 @@ public class ApproveController {
 	@ResponseBody
 	public BaseOutput<Object> changeWyhLeaderApprove(String taskId, String opt, String notes) {
 		try {
-			approveService.bpmcApprove(taskId, opt, notes);
+			approveService.bpmcApprove(taskId, opt, notes,false);
 			return BaseOutput.success();
 		} catch (ApproveException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -362,7 +362,7 @@ public class ApproveController {
 	@ResponseBody
 	public BaseOutput<Object> completeWyhManagerApprove(String taskId,  String opt, String notes) {
 		try {
-			approveService.bpmcApprove(taskId, opt, notes);
+			approveService.bpmcApprove(taskId, opt, notes,true);
 			return BaseOutput.success();
 		} catch (ApproveException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -373,7 +373,7 @@ public class ApproveController {
 	@ResponseBody
 	public BaseOutput<Object> completeWyhLeaderApprove(String taskId, String opt, String notes) {
 		try {
-			approveService.bpmcApprove(taskId, opt, notes);
+			approveService.bpmcApprove(taskId, opt, notes,false);
 			return BaseOutput.success();
 		} catch (ApproveException e) {
 			return BaseOutput.failure(e.getMessage());

@@ -95,8 +95,8 @@ public class ProjectApplyController {
 		JSONObject projectTypeProvider = new JSONObject();
 		projectTypeProvider.put("provider", "projectTypeProvider");
 		metadata.put("type", projectTypeProvider);
-
-		List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, projectApplyService.listByExample(projectApply));
+		List<ProjectApply> listByExample = projectApplyService.listByExample(projectApply);
+		List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata,listByExample );
 
 		if (CollectionUtils.isEmpty(maps)) {
 			return "redirect:/projectApply/index.html";

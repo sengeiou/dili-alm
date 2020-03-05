@@ -39,10 +39,10 @@ public interface ApproveService extends BaseService<Approve, Long> {
 
 	void getModel(ModelMap modelMap, String taskId);
 
-    void bpmcApprove(String taskId, String opt, String notes) throws ApproveException;
-
     EasyuiPageOutput selectApproveByPage(Approve approve) throws Exception;
 
 	void updateBefore(Approve as) throws ProjectApplyException;
+
+	void bpmcApprove(String taskId, String opt, String notes, Boolean isManager) throws ApproveException;
 
 }

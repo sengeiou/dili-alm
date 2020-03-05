@@ -308,7 +308,8 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 	@Override
 	public void buildStepOne(Map modelMap, Map applyDTO) throws Exception {
 		Map<Object, Object> metadata = new HashMap<>();
-		ApplyMajorResource resourceRequire = JSON.parseObject(Optional.ofNullable(applyDTO.get("resourceRequire")).map(Object::toString).orElse("{}"), ApplyMajorResource.class);
+		String orElse = Optional.ofNullable(applyDTO.get("resourceRequire")).map(Object::toString).orElse("{}");
+		ApplyMajorResource resourceRequire = JSON.parseObject(orElse, ApplyMajorResource.class);
 		metadata.clear();
 		metadata.put("mainUser", JSON.parse("{provider:'memberProvider'}"));
 		List<Map> majorMap = ValueProviderUtils.buildDataByProvider(metadata, Lists.newArrayList(resourceRequire));
@@ -468,7 +469,7 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 		Roi roiQuery = DTOUtils.newDTO(Roi.class);
 		roiQuery.setApplyId(id);
 		this.roiMapper.delete(roiQuery);
-
+    	
 		int rows = this.getActualDao().deleteByPrimaryKey(id);
 		if (rows <= 0) {
 			throw new ProjectApplyException("删除失败");
