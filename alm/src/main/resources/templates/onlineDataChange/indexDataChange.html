@@ -6,7 +6,10 @@
 .panel-body {
 	color: #555;
 }
-
+td {
+	text-align: center; /*设置水平居中*/
+	vertical-align: middle; /*设置垂直居中*/
+}
 input {
 	box-sizing: border-box;
 	width: 100%;
@@ -321,12 +324,10 @@ $('#btnShangChuan').bind('click', function(){
 
    	
 </script>
-<style type="text/css">
-td {
-	text-align: center; /*设置水平居中*/
-	vertical-align: middle; /*设置垂直居中*/
-}
-</style>
+
+<link href="${contextPath!}/resources/css/uploadfile.css" rel="stylesheet">
+<script type="text/javascript" src="${contextPath!}/resources/js/jquery.uploadfile.min.js"></script>
+
 <script>
     document.domain="diligrp.com";
     
