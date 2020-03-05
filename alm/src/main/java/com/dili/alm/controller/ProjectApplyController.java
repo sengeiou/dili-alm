@@ -196,7 +196,7 @@ public class ProjectApplyController {
 	}
 
 	@RequestMapping(value = "/insertStep2", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput insertStep2(ProjectApply projectApply, ApplyDescription description) {
+	public @ResponseBody BaseOutput insertStep2(ApplyDescription description,ProjectApply projectApply ) {
 		projectApply.setDescription(JSON.toJSONString(description));
 		projectApplyService.updateSelective(projectApply);
 		ProjectApply projectApply2 = projectApplyService.get(projectApply.getId());
@@ -204,7 +204,7 @@ public class ProjectApplyController {
 	}
 
 	@RequestMapping(value = "/insertStep3", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput insertStep3(ProjectApply projectApply, ApplyGoalsFunctions goalsFunctions) {
+	public @ResponseBody BaseOutput insertStep3(ApplyGoalsFunctions goalsFunctions,ProjectApply projectApply) {
 		projectApply.setGoalsFunctions(JSON.toJSONString(goalsFunctions));
 		projectApplyService.updateSelective(projectApply);
 		ProjectApply projectApply2 = projectApplyService.get(projectApply.getId());
