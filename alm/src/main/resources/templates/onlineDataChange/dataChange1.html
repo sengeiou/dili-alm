@@ -29,7 +29,7 @@ button:hover {
 }
 </style>
 <div class="easyui-layout" data-options="fit:true">
-
+   <div id="mask" class="mask"></div>  
 	<div height="auto" align="center" data-options="region:'center'">
 	   <form id="_form"  enctype="multipart/form-data" class="easyui-form" method="post" fit="true">
 	     <table id="tt" cellspacing="0" border="1" class="easyui-datagrid" style="width:90%; height: 135px; border: 1px solid #ddd; border-collapse: collapse;"
@@ -49,10 +49,11 @@ button:hover {
 				<tr>
 
 					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">项目名称</td>
-					<td style="padding: 5px;">	<input class="easyui-textbox"
+					<td style="padding: 5px;">	<!-- <input class="easyui-textbox"
 						name="_projectId" id="_projectId"  value="${odc.projectId}" style="width: 100%" />
-						<#comboProvider _id="_projectId" value="${odc.projectId}" _provider='projectProvider' />
-				
+						<#comboProvider _id="_projectId" value="${odc.projectId}" _provider='projectProvider' /> -->
+				     <input    value="${proName}" class="easyui-textbox" style="width: 100%;" editable="false"
+					   />
 					 </td>
 					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">版本号  
 					   </td>
@@ -121,7 +122,7 @@ button:hover {
 				<tr>
 	          
 	                  <input type="hidden" id="taskId" value="${taskId}" />
-	                   <input type="hidden" name="isNeedClaim" value="${isNeedClaim!}">
+	                   <input type="hidden" id="isNeedClaim" value="${isNeedClaim!}">
 	                
 	           </tr>
 				
@@ -146,13 +147,21 @@ button:hover {
 	
 
    $('#agree').bind('click', function(){
-	 
+	   var isNeedClaim=$('#isNeedClaim').val();
 	   var taskIdd=$('#taskId').val();
 //	 alert("ss");
 	   $.ajax({
            type: "post",
            url: "${contextPath}/onlineDataChange/agreeDeptOnlineData.action",
-           data: {"taskId":taskIdd},
+           data: {"taskId":taskIdd,
+    	          "isNeedClaim":isNeedClaim
+           },
+           beforeSend: function () {
+               load();
+            },
+            complete: function () {
+              disLoad();
+            },
            async : true,
            success: function (data) {
            	
@@ -184,11 +193,19 @@ button:hover {
    
    $('#notAgree').bind('click', function(){
 	   var taskIdd=$('#taskId').val();
-	  
+	   var isNeedClaim=$('#isNeedClaim').val();
 	   $.ajax({
            type: "post",
            url: "${contextPath}/onlineDataChange/notAgreeDeptOnlineData.action",
-           data: {"taskId":taskIdd},
+           data: {"taskId":taskIdd,
+    	          "isNeedClaim":isNeedClaim
+           },
+           beforeSend: function () {
+               load();
+            },
+            complete: function () {
+              disLoad();
+            },
            async : true,
            success: function (data) {
            	
@@ -238,6 +255,11 @@ td {
 	text-align: center; /*设置水平居中*/
 	vertical-align: middle; /*设置垂直居中*/
 }
+.mask {       
+       position: absolute; top: 0px; filter: alpha(opacity=60); background-color: #777;     
+       z-index: 15000; left: 0px;     
+       opacity:0.5; -moz-opacity:0.5;     
+   } 
 </style>
 
 <script type="text/javascript">
@@ -248,5 +270,17 @@ td {
 			  else
 				alert("没有文件");   
 		 }
+    
+    
+    function load() {
+    	$("#mask").css("height",$(document).height());     
+        $("#mask").css("width",$(document).width());     
+        $("#mask").show();     
+      }
+    //取消加载层
+    function disLoad() {
+    	 $("#mask").hide();     
+  
+    }
 </script >
 </#body>

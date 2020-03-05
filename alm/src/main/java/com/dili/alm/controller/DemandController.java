@@ -310,7 +310,7 @@ public class DemandController {
 		//List<Long> ids = JSONArray.parseArray(demand.getDocumentUrl(), Long.class);
 		Map<Object, Object> metadata = new HashMap<>();
 
-		JSONObject fileTypeProvider = new JSONObject();
+    	JSONObject fileTypeProvider = new JSONObject();
 		fileTypeProvider.put("provider", "fileTypeProvider");
 		metadata.put("type", fileTypeProvider);
 
