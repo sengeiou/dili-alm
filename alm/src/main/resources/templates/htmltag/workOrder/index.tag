@@ -163,6 +163,20 @@ function validateForm() {
 	if (!$('#editForm').form('validate')) {
 		return false;
 	}
+	
+	var workOrderType = $('#workOrderType').combobox('getValue');
+	//alert(workOrderType);
+	if ( workOrderType==null|workOrderType=='') {
+	    $.messager.alert('错误', '选择工单类型');
+	    return false;
+	}
+	var priority = $('#priority').combobox('getValue');
+	//alert(workOrderType);
+	if ( priority==null|priority=='') {
+	    $.messager.alert('错误', '选择工单优先级');
+	    return false;
+	}
+	
 	var sourceValue = $('#workOrderSource').combobox('getValue');
 	var value = $('#acceptorId').combobox('getValue');
 	if (sourceValue == 1 && isNaN(value)) {
@@ -239,6 +253,7 @@ function openInsert() {
 																	row : obj.data
 																});
 														$('#grid').datagrid('acceptChanges');
+															$("#grid").datagrid("reload");
 														$('#win').dialog('close');
 													} else {
 														$.messager.alert('错误', obj.result);
@@ -282,6 +297,9 @@ function openInsert() {
 																});
 														$('#grid').datagrid('acceptChanges');
 														$('#win').dialog('close');
+														
+														$("#grid").datagrid("reload");
+										          
 													} else {
 														$.messager.alert('错误', obj.result);
 													}
@@ -315,10 +333,16 @@ function openUpdate(index) {
 		$.messager.alert('警告', '只有申请人才能修改工单！');
 		return;
 	}
+	if (selected.taskId != null) {
+		$.messager.alert('警告', '请点击继续提交！');
+		return;
+	}
+	openUpdate
+	
 	$('#win').dialog({
 				title : '工单编辑',
 				width : 800,
-				height : 540,
+				height : 550,
 				href : '${contextPath!}/workOrder/update?id=' + selected.id,
 				modal : true,
 				buttons : [{

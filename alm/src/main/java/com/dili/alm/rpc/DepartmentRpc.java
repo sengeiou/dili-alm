@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.retrofitful.annotation.POST;
+import com.dili.ss.retrofitful.annotation.ReqParam;
 import com.dili.ss.retrofitful.annotation.Restful;
 import com.dili.ss.retrofitful.annotation.VOBody;
 import com.dili.uap.sdk.domain.Department;
@@ -34,4 +35,8 @@ public interface DepartmentRpc {
 	
 	@POST("/departmentApi/getFirstDepartment.api")
 	BaseOutput<Department> getFirstDepartment(@VOBody Long id);
+	
+	@POST("/departmentApi/getChildDepartments.api")
+	BaseOutput<List<Department>> getChildDepartments(@ReqParam(required = true, value = "parentId") Long parentId );
+
 }

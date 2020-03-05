@@ -78,12 +78,20 @@ public class OutsideWorkOrderManager extends BaseWorkOrderManager {
 			});
 		}
 	   Map<String, Object> map=new HashMap<String, Object>();
-	   map.put("workOrderSource", "3");
-	   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almWorkOrderApplyProcess", workOrder.getId().toString(), workOrder.getApplicantId()+"",map);
+	   map.put("workOrderSource", WorkOrderSource.OUTSIDE.getValue().toString());
+	   if(workOrder.getWorkOrderSource()==WorkOrderSource.DEPARTMENT.getValue()) {
+			map.put("solve", workOrder.getExecutorId().toString());
+		}else {
+			map.put("allocate", workOrder.getAcceptorId().toString());
+		}
+	   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almWorkOrderApplyProcess", workOrder.getId().toString(), workOrder.getAcceptorId()+"",map);
        System.out.println(object.getCode()+object.getData()+object.getErrorData());
        
-       workOrder.setProcessInstanceId(object.getData().getProcessInstanceId()); 
-       // workOrder.setProcessDefinitionId(object.getData().getProcessDefinitionId());
+       if(object.getCode().equals("5000")) {
+    		throw new WorkOrderException("新增工单失败流控中心调不通");
+       }
+        workOrder.setProcessInstanceId(object.getData().getProcessInstanceId()); 
+        workOrder.setProcessDefinitionId(object.getData().getProcessDefinitionId());
         workOrder.setId(workOrder.getId());
         workOrderMapper.updateByPrimaryKey(workOrder);
 		this.sendMail(workOrder, "工单申请", emails);
@@ -162,7 +170,14 @@ public class OutsideWorkOrderManager extends BaseWorkOrderManager {
 			});
 		}
 	   Map<String, Object> map=new HashMap<String, Object>();
-	   map.put("workOrderSource", "3");
+	 //  map.put("workOrderSource", "3");
+	   map.put("workOrderSource", WorkOrderSource.OUTSIDE.getValue().toString());
+	   
+	   if(workOrder.getWorkOrderSource()==WorkOrderSource.DEPARTMENT.getValue()) {
+			map.put("solve", workOrder.getExecutorId().toString());
+		}else {
+			map.put("allocate", workOrder.getAcceptorId().toString());
+		}
 	 /*  BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almWorkOrderApplyProcess", workOrder.getId().toString(), workOrder.getApplicantId()+"",map);
        System.out.println(object.getCode()+object.getData()+object.getErrorData());*/
 	   
