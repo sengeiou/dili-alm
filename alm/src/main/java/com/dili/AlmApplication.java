@@ -24,6 +24,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.manager.WorkOrderManager;
+import com.dili.ss.dto.DTOScan;
 import com.dili.ss.retrofitful.annotation.RestfulScan;
 
 import tk.mybatis.spring.annotation.MapperScan;
@@ -35,6 +36,7 @@ import tk.mybatis.spring.annotation.MapperScan;
 @SpringBootApplication
 @EnableTransactionManagement
 @ComponentScan(basePackages = { "com.dili.ss", "com.dili.alm", "com.dili.uap.sdk" })
+@DTOScan(value={"com.dili.ss", "com.dili.uap.sdk", "com.dili.alm"})
 @RestfulScan({ "com.dili.alm.rpc", "com.dili.uap.sdk.rpc","com.dili.bpmc.sdk.rpc" })
 @MapperScan(basePackages = { "com.dili.alm.dao", "com.dili.ss.dao", "com.dili.ss.quartz.dao" })
 @EnableAsync
