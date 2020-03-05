@@ -288,7 +288,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		 */
 		String approveDescription = approve.getDescription();
 		List<ApplyApprove> approveList=new ArrayList<ApplyApprove>();
-		if (WebUtil.strIsEmpty(approveDescription)) {
+		if (!WebUtil.strIsEmpty(approveDescription)) {
 			 approveList = JSON.parseArray(approveDescription, ApplyApprove.class);
 		}
 		ApplyApprove current = new ApplyApprove();
