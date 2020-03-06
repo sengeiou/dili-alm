@@ -26,7 +26,7 @@
 		<version>4.0.2-SNAPSHOT</version>
 	</parent>
 
-	
+
 
 	<build>
 		<finalName>alm</finalName>
@@ -220,12 +220,16 @@
 		<dependency>
 			<artifactId>uap-sdk</artifactId>
 			<groupId>com.dili</groupId>
-			<version>2.6.2-SNAPSHOT</version>
+			<version>2.7.0-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
 					<groupId>com.sun.mail</groupId>
 					<artifactId>javax.mail</artifactId>
 				</exclusion>
+				<!-- <exclusion>
+					<artifactId>ss-core</artifactId>
+					<groupId>com.dili</groupId>
+				</exclusion> -->
 			</exclusions>
 		</dependency>
 
