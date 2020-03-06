@@ -30,10 +30,13 @@ import com.dili.alm.dao.ProjectApplyMapper;
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.SequenceMapper;
+import com.dili.alm.domain.ApproveResult;
 import com.dili.alm.domain.Demand;
 import com.dili.alm.domain.DemandProject;
 import com.dili.alm.domain.DemandProjectStatus;
 import com.dili.alm.domain.DemandProjectType;
+import com.dili.alm.domain.HardwareApplyOperationRecord;
+import com.dili.alm.domain.HardwareApplyOperationType;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.ProjectVersion;
@@ -522,30 +525,20 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	}
 
 	@Override
-	public BaseOutput submitApproveAndAccept(String code, String taskId, Long userId) {
-//		Map<String, Object> variables = new HashMap<>();
-//		variables.put("approved", "true");
-//		Demand selectDemand = new Demand();
-//		selectDemand = this.getByCode(code);
-//		selectDemand.setReciprocateId(userId);
-//		selectDemand.setProcessType(DemandProcessStatus.ACCEPT.code);
-//		this.update(selectDemand);
-//		return taskRpc.complete(taskId, variables);
-
+	public BaseOutput submitApproveAndAccept(String code, String taskId,String status, Long userId) {
 		Map<String, Object> variables = new HashMap<>();
 		variables.put("approved", "true");
 		Demand selectDemand = new Demand();
 		selectDemand = this.getByCode(code);
-		selectDemand.setReciprocateId(userId);
-		selectDemand.setProcessType(DemandProcessStatus.ACCEPT.getCode());
-		/// sgq
-		/*
-		 * BaseOutput<Map<String, Object>> mapId=taskRpc.getVariables(taskId); String
-		 * dataId = (String) mapId.getData().get("businessKey");
-		 * selectDemand.setSerialNumber(dataId);
-		 */
+		
+		if (status.equals(DemandProcessStatus.ASSIGN.code)) {
+			selectDemand.setReciprocateId(userId);
+		}
+		if (status.equals(DemandProcessStatus.FEEDBACK.code)) {
+			selectDemand.setFeedbackId(userId);
+		}
+		selectDemand.setProcessType(status);
 		this.updateSelective(selectDemand);
-		// sgq
 
 		return taskRpc.complete(taskId, variables);
 	}
@@ -613,5 +606,13 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 
 		return 0;
 	}
-
+/*	// 插入申请操作记录
+	HardwareApplyOperationRecord record = DTOUtils.newDTO(HardwareApplyOperationRecord.class);
+	record.setApplyId(applyId);
+	record.setDescription(description);
+	record.setOperationName(HardwareApplyOperationType.OPERATION_MANAGER.getName());
+	record.setOperationType(HardwareApplyOperationType.OPERATION_MANAGER.getValue());
+	record.setOperatorId(operationManagerId);
+	record.setOpertateResult(ApproveResult.APPROVED.getValue());
+	rows = this.haorMapper.insertSelective(record);*/
 }

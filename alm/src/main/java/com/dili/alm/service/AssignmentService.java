@@ -23,6 +23,12 @@ public interface AssignmentService {
 	 */
 	Assignment setReciprocate(String queryUserId);
 	/**
+	 * 需求处理反馈候选人
+	 * @param setFeedback
+	 * @return
+	 */
+	Assignment setFeedback(String queryUserId);
+	/**
 	 * 返回给需求申请人
 	 * @param setDemandAppId
 	 * @return

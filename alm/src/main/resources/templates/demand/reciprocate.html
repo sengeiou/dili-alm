@@ -90,9 +90,12 @@
         <input name="taskId" id="taskId" value="${taskId}" type="hidden">
          <input name="code" id="code" value="${demand.serialNumber}" type="hidden">
         <table width="60%" style="alignment: center">
-           <tr>
-
-            </td>
+            <tr>
+            	<td align="center">
+	           		 <input name="acceptId" id="acceptId" class="easyui-combobox" style="width: 100%;"required="true" 
+									data-options="label:'指派反馈人:',editable:true,url:'${contextPath!}/member/members',textField:'realName',valueField:'id'">
+	            </td>
+            </tr>
             <tr>
                 <td align="center" style="padding:5px;">
                 <a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="submitBtn"

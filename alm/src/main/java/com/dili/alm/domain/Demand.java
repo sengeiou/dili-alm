@@ -90,7 +90,11 @@ public class Demand extends BaseDomain {
      */
     @Column(name = "`reciprocate_id`")
     private Long reciprocateId;
-
+    /**
+     * 需求处理人
+     */
+    @Column(name = "`feedback_id`")
+    private Long feedbackId;
     /**
      * 反馈文件
      */
@@ -383,6 +387,26 @@ public class Demand extends BaseDomain {
         this.reciprocateId = reciprocateId;
     }
 
+    
+    /**
+     * 获取需求处理人
+     *
+     * @return reciprocate_id - 需求处理人
+     */
+    @FieldDef(label="需求处理人")
+    @EditMode(editor = FieldEditor.Text, required = false)
+    public Long getFeedbackId() {
+        return feedbackId;
+    }
+
+    /**
+     * 设置需求处理人
+     *
+     * @param reciprocateId 需求处理人
+     */
+    public void setFeedbackId(Long feedbackId) {
+        this.feedbackId = feedbackId;
+    }
     /**
      * 获取反馈文件
      *

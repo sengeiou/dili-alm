@@ -176,4 +176,12 @@ public class AssignmentServiceImpl implements AssignmentService {
 		record.setAssignee(apply.getApplicantId().toString()); 
 		return record;
 	}
+
+	@Override
+	public Assignment setFeedback(String queryUserId) {
+		Assignment record = DTOUtils.newDTO(Assignment.class);
+		Demand demand = demandService.getByCode(queryUserId);
+		record.setAssignee(demand.getReciprocateId().toString()); 
+		return record;
+	}
 }

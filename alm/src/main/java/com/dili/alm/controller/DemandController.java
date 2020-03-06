@@ -429,18 +429,60 @@ public class DemandController {
     	return "demand/accept";
     }
     /**
-     * 同意申请，并制定对接人
+     * 接受需求
      * @param code  需求编号
      * @param taskId 任务id
      * @return
      */
     @RequestMapping(value="/accept.action", method = RequestMethod.POST)
     @ResponseBody
-    public BaseOutput<String> accept(@RequestParam String code, @RequestParam String taskId,@RequestParam Long acceptId) {
-    	return demandService.submitApproveAndAccept(code, taskId,acceptId);
+    public BaseOutput<String> accept(@RequestParam String code, @RequestParam String taskId) {
+    	return demandService.submitApprove(code, taskId,null,DemandProcessStatus.ASSIGN.getCode());
     }
  
-    
+    @ApiOperation("指定需求对接人")
+    @RequestMapping(value="/assignPrincipal.html", method = RequestMethod.GET)
+    public String assignPrincipal(@RequestParam String taskId, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
+        BaseOutput<TaskMapping> output = taskRpc.getById(taskId);
+        if(!output.isSuccess()){
+            throw new AppException(output.getMessage());
+        }
+        BaseOutput<Map<String, Object>> taskVariablesOutput = taskRpc.getVariables(taskId);
+        if(!taskVariablesOutput.isSuccess()){
+            throw new AppException(taskVariablesOutput.getMessage());
+        }
+        String codeDates = taskVariablesOutput.getData().get("businessKey").toString();
+        Demand demand = new Demand();
+        demand = demandService.getByCode(codeDates);
+        
+        String demandJsonStr = JSONObject.toJSONString(demand);
+        modelMap.put("demand", demand);
+        modelMap.put("modelStr", demandJsonStr);
+    	/** 个人信息 **/
+        User userTicket = this.userRpc.findUserById(demand.getUserId()).getData();
+        if (userTicket==null) {
+			return "用户错误！";
+		}
+    	BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
+    	modelMap.addAttribute("userInfo", userTicket);
+    		
+    	modelMap.addAttribute("depName",de.getData().getName());
+    	modelMap.put("taskId", taskId);
+        modelMap.put("cover", cover == null ? output.getData().getAssignee() == null : cover);
+    	return "demand/assignPrincipal";
+    }
+    /**assignPrincipal
+     * 指定定对接人
+     * @param code  需求编号
+     * @param taskId 任务id
+     * @return
+     */
+    @RequestMapping(value="/assignPrincipal.action", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseOutput<String> doAssignPrincipal(@RequestParam String code, @RequestParam String taskId,@RequestParam Long acceptId) {
+    	return demandService.submitApproveAndAccept(code, taskId,DemandProcessStatus.ASSIGN.getCode(),acceptId);
+    }
+ 
     @ApiOperation("跳转到接受需求对接人")
     @RequestMapping(value="/reciprocate.html", method = RequestMethod.GET)
     public String reciprocate(@RequestParam String taskId, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
@@ -480,8 +522,8 @@ public class DemandController {
      */
     @RequestMapping(value="/reciprocate.action", method = RequestMethod.POST)
     @ResponseBody
-    public BaseOutput<String> reciprocate(@RequestParam String code, @RequestParam String taskId) {
-    	return demandService.submitApprove(code, taskId,null,DemandProcessStatus.FEEDBACK.getCode());
+    public BaseOutput<String> reciprocate(@RequestParam String code, @RequestParam String taskId,@RequestParam Long acceptId) {
+    	return demandService.submitApproveAndAccept(code, taskId,DemandProcessStatus.FEEDBACK.getCode(),acceptId);
     }
     
     

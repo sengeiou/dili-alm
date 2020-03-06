@@ -90,11 +90,15 @@
          <input name="code" id="code" value="${demand.serialNumber}" type="hidden">
         <table width="60%" style="alignment: center">
             <tr>
+            	<td align="center">
+	           		 <input name="acceptId" id="acceptId" class="easyui-combobox" style="width: 100%;"required="true" 
+									data-options="label:'指派责任人:',editable:true,url:'${contextPath!}/member/members',textField:'realName',valueField:'id'">
+	            </td>
+            </tr>
+            <tr>
                 <td align="center" style="padding:5px;">
                 <a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="submitBtn"
-                   onclick="save()">接受</a>
-                <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" id="cancelBtn"
-                   onclick="cancel()">不接受</a>
+                   onclick="save()">指派</a>
             </td>
             <tr style="height:200px">
              <td align="center" style="padding:5px;">
@@ -144,7 +148,7 @@
         	//禁用按钮
         	disableBtn();
             $('#form').form('submit', {
-                url : "${contextPath}/demand/accept.action",
+                url : "${contextPath}/demand/assignPrincipal.action",
                 dataType : "json",
                 onSubmit : function(){
 

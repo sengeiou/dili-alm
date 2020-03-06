@@ -223,8 +223,18 @@
             $('#demandForTaskDlg').dialog('center');
         }
         //打开审批
-        function openForTask(id){
-    		$("#demandForTaskSrc").attr("src",'${contextPath!}/demand/submitApproveByAlm?id=' +id); //设置IFRAME的SRC;
+        function openForTask(id,flag){
+        	if(flag==1){
+        		doClaim(id)
+        		openFrom(id);
+        	}else{
+        		openFrom(id);
+        	}
+    		
+        }
+        
+        function openFrom(id){
+        	$("#demandForTaskSrc").attr("src",'${contextPath!}/demand/submitApproveByAlm?id=' +id); //设置IFRAME的SRC;
             $("#demandForTaskDlg").dialog({
                 bgiframe: true,
                 resizable: true, //是否可以重置大小
@@ -470,11 +480,11 @@
         	if(row.$_status==3&&!row.isHandleProcess){//审批中的显示进度
         		content+='';//<span style="padding:2px;"><a href="javascript:void(0)" onclick="showProgress('+index+')">查看进度</a></span>
         	}else if(row.isHandleProcess&&row.isNeedClaim){
-        		content+='<span style="padding:2px;"><a href="javascript:void(0)" style="color:red;" onclick="doClaim('+row.id+')">签收</a></span>';
+        		content+='<span style="padding:2px;"><a href="javascript:void(0)" style="color:red;" onclick="openForTask('+row.id+',1)">审批</a></span>';
         	}else if(row.isHandleProcess&&!row.isNeedClaim&&row.processFlag==1){
         		content+='<span style="padding:2px;color:red;"><a style="color:red;" href="javascript:void(0)" onclick="openUpdateForTask('+row.id+')">驳回修改</a></span>';
         	}else if(row.isHandleProcess&&!row.isNeedClaim){
-        		content+='<span style="padding:2px;color:red;"><a style="color:red;" href="javascript:void(0)" onclick="openForTask('+row.id+')">审批</a></span>';
+        		content+='<span style="padding:2px;color:red;"><a style="color:red;" href="javascript:void(0)" onclick="openForTask('+row.id+',0)">审批</a></span>';
         	}
         	
         	content+='<span style="padding:2px;"><a href="javascript:void(0)" onclick="showDemandDetail('+row.id+')">查看详情</a></span>';
@@ -629,13 +639,11 @@
                 async : true,
                 success: function (data) {
                     if(data.code=="200"){
-                        $("#grid").datagrid("reload");
-                    }else{
-                        $.messager.alert('错误',data.result);
+                        return true;
                     }
                 },
                 error: function(){
-                    $.messager.alert('错误','远程访问失败');
+                	return false;
                 }
             });
         }

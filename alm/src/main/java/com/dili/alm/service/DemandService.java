@@ -117,7 +117,7 @@ public interface DemandService extends BaseService<Demand, Long> {
      * @param codesubmitApproveAndAccept
      * @return
      */
-    BaseOutput submitApproveAndAccept(String code, String taskId,Long userId);
+    BaseOutput submitApproveAndAccept(String code, String taskId,String processType,Long userId);
     
     /**
      * 驳回需求申请

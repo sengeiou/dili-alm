@@ -119,8 +119,18 @@ public class AssignmentApi {
 		return BaseOutput.success().setData(assignment);
 	}
 
-	// 根据变更ID，返回测试审批人
-	@ApiOperation("根据变更ID,項目申請人")
+	@ApiOperation("根据需求ID,需求反馈人")
+	@RequestMapping("/setFeedback.api")
+	public @ResponseBody BaseOutput<String> setFeedback(HttpServletRequest request) {
+		Map<String, String[]> map = request.getParameterMap();
+		String[] strs = map.get("processVariables");
+		JSONObject jsonObj = JSON.parseObject(strs[0]);
+		Assignment record = assignmentService.setFeedback(jsonObj.get("businessKey").toString());
+		return BaseOutput.success().setData(record);
+	}
+
+	
+	@ApiOperation("根据变更ID,需求处理人")
 	@RequestMapping("/setReciprocate.api")
 	public @ResponseBody BaseOutput<String> setReciprocate(HttpServletRequest request) {
 		Map<String, String[]> map = request.getParameterMap();
