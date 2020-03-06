@@ -278,7 +278,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		/*
 		 * 处理立项申请单和立项审批单状态
 		 */
-		String approveDescription = approve.getDescription();
+/*		String approveDescription = approve.getDescription();
 		List<ApplyApprove> approveList=new ArrayList<ApplyApprove>();
 		if (!WebUtil.strIsEmpty(approveDescription)) {
 			 approveList = JSON.parseArray(approveDescription, ApplyApprove.class);
@@ -289,7 +289,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		current.setResult(opt);
 		current.setNotes(notes);
 		approveList.add(current);
-		approve.setDescription(JSON.toJSONString(approveList));
+		approve.setDescription(JSON.toJSONString(approveList));*/
 		switch (opt) {
 		case "reject":
 			Map<String, Object> map1=new HashMap<>();
