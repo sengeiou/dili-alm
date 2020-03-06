@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dili.alm.cache.AlmCache;
 import com.dili.alm.domain.OperationResult;
 import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.WorkOrder;
 import com.dili.alm.domain.WorkOrderSource;
+import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.WorkOrderUpdateDto;
 import com.dili.alm.exceptions.WorkOrderException;
 import com.dili.ss.base.BaseService;
@@ -124,7 +126,9 @@ public interface WorkOrderService extends BaseService<WorkOrder, Long> {
 	List<User> getReceivers(WorkOrderSource type);
 
 	void deleteWorkOrder(Long id) throws WorkOrderException;
-
+	
+	Map<String, String> getDataDictionaryDto();	
+	
 	WorkOrder getDetailViewModel(Long id);
 
 	void saveOrUpdate(WorkOrderUpdateDto dto, String[] demandIds) throws WorkOrderException;

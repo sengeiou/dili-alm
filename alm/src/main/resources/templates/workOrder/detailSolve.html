@@ -1,6 +1,4 @@
-<script>
-    document.domain="diligrp.com";
-</script>
+
 <#body>
 <style>
 .table-box {
@@ -160,11 +158,18 @@ function solveft(){
 		if (!$(this).form('validate')) {
 			return false;
 		}
+		 $.messager.progress({
+				title : '提示',
+				msg : '正在提交，请稍候……',
+				text : ''
+       });
 	},
 	success : function(data) {
 		/* var obj = $.parseJSON(data);
 		if (obj.code == 200) { */
-			alert("执行成功");
+			/* alert("执行成功"); */
+			
+		  $.messager.progress('close');
 			try{
 				document.domain="diligrp.com";
 				//如果父页面是任务中心

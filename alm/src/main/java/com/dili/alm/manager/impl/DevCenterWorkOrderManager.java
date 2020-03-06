@@ -72,18 +72,21 @@ public class DevCenterWorkOrderManager extends BaseWorkOrderManager {
 		}
 		
 	   Map<String, Object> map=new HashMap<String, Object>();
-	   map.put("workOrderSource", "2");
+	   map.put("workOrderSource", WorkOrderSource.DEVELOPMENT_CENTER.getValue().toString());
 	   
-		if(workOrder.getWorkOrderSource()==2) {
+		if(workOrder.getWorkOrderSource()==WorkOrderSource.DEPARTMENT.getValue()) {
 			map.put("solve", workOrder.getExecutorId().toString());
 		}else {
 			map.put("allocate", workOrder.getAcceptorId().toString());
 		}
 		
-	   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almWorkOrderApplyProcess", workOrder.getId().toString(), workOrder.getApplicantId()+"",map);
+	   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almWorkOrderApplyProcess", workOrder.getId().toString(), workOrder.getAcceptorId()+"",map);
        System.out.println(object.getCode()+object.getData()+object.getErrorData());
+       if(object.getCode().equals("5000")) {
+   		throw new WorkOrderException("新增工单失败流控中心调不通");
+      }
        workOrder.setProcessInstanceId(object.getData().getProcessInstanceId()); 
-       // workOrder.setProcessDefinitionId(object.getData().getProcessDefinitionId());
+       workOrder.setProcessDefinitionId(object.getData().getProcessDefinitionId());
         workOrder.setId(workOrder.getId());
         workOrderMapper.updateByPrimaryKey(workOrder);
 		this.sendMail(workOrder, "工单申请", Sets.newHashSet(mailReceiver.getEmail()));
@@ -141,16 +144,24 @@ public class DevCenterWorkOrderManager extends BaseWorkOrderManager {
 				if (mailReceiver == null) {
 					throw new WorkOrderException("受理人不存在");
 				}
-				
-			   Map<String, Object> map=new HashMap<String, Object>();
-			   map.put("workOrderSource", "2");
-			   
+				 Map<String, Object> map=new HashMap<String, Object>();
+			   /* 
+			     map.put("workOrderSource", "2");
 				if(workOrder.getWorkOrderSource()==2) {
 					map.put("solve", workOrder.getExecutorId().toString());
 				}else {
 					map.put("allocate", workOrder.getAcceptorId().toString());
-				}
+				}*/
 				
+				map.put("workOrderSource", WorkOrderSource.DEVELOPMENT_CENTER.getValue().toString());
+				   
+				if(workOrder.getWorkOrderSource()==WorkOrderSource.DEPARTMENT.getValue()) {
+					map.put("solve", workOrder.getExecutorId().toString());
+				}else {
+					map.put("allocate", workOrder.getAcceptorId().toString());
+				}
+					
+					
 				tasksRpc.complete(taskId,map);
 			       
 				this.sendMail(workOrder, "工单申请", Sets.newHashSet(mailReceiver.getEmail()));

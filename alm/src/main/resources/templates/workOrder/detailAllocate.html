@@ -1,6 +1,3 @@
-<script>
-    document.domain="diligrp.com";
-</script>
 <#body>
 <style>
 .table-box {
@@ -149,7 +146,7 @@
 	
 	
 	function agree(){
-		alert("执行中agree");
+	//	alert("执行中agree");
 		 var result=1;
 		$('#editForm').form('submit', {
 			url : '${contextPath!}/workOrder/allocateAgree',
@@ -161,15 +158,27 @@
 					return false;
 				}
 				var executorId = $('#executorId').combobox('getValue');
+				if(executorId==null|''==executorId){
+					$.messager.alert('提示', '执行人为空！', null, function() {
+						$('#executorId').combobox('clear');
+					});
+				}
+				
 				if (isNaN(executorId)) {
 					$.messager.alert('提示', '执行人不存在，请重新选择！', null, function() {
 								$('#executorId').combobox('clear');
 							});
 				}
+				 $.messager.progress({
+						title : '提示',
+						msg : '正在提交，请稍候……',
+						text : ''
+		       });
+				 
 			},
 			success : function(data) {
-                      alert("执行成功");
-             	
+                  //    alert("执行成功");
+                      $.messager.progress('close');
                       try{
 		 					document.domain="diligrp.com";
 		 					//如果父页面是任务中心
@@ -189,26 +198,36 @@
 	 }
     function notAgree(){
 			 var result=0;
-			 alert("执行中noagree");
+			 
+			 var acceptorId=${model.$_acceptorId!}
+		//	 alert("执行中noagree");
 			$('#editForm').form('submit', {
 				url : '${contextPath!}/workOrder/allocateNotAgree',
 				queryParams : {
-					result : 0
+					result : 0,
+					acceptorId:acceptorId
+					
 				},
 				onSubmit : function() {
 					if (result == 0 && !$(this).form('validate')) {
 						return false;
 					}
-					var executorId = $('#executorId').combobox('getValue');
-					if (isNaN(executorId)) {
-						$.messager.alert('提示', '执行人不存在，请重新选择！', null, function() {
-									$('#executorId').combobox('clear');
-								});
-					}
+				/* 	var acceptorId = $('#acceptorId').combobox('getValue');
+					if(acceptorId==null|''==acceptorId){
+						$.messager.alert('提示', '执行人为空请重新选择！', null, function() {
+							$('#acceptorId').combobox('clear');
+						});
+					} */
+					$.messager.progress({
+						title : '提示',
+						msg : '正在提交，请稍候……',
+						text : ''
+		            });
+				
 				},
 				success : function(data) {
-					alert("执行成功");
-	             	
+				/* 	alert("执行成功"); */
+					$.messager.progress('close');
 					 try{
 		 					document.domain="diligrp.com";
 		 					//如果父页面是任务中心

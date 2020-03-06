@@ -129,8 +129,13 @@
 		var content = '';
 		if (row.$_workOrderState == 1) {
 			if (row.$_applicantId == userId) {
-				content += '<a href="javascript:void(0);" onclick="handleProcess(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">请你编辑</a>';
-				content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="del(' + index + ');">删除</a>';
+				if( row.taskId!=null){
+				   content += '<a href="javascript:void(0);" onclick="handleProcess(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">请你编辑</a>';
+				   content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="del(' + index + ');">删除</a>';
+				}else{
+					 content += '<a style="padding:0px 2px;" href="javascript:void(0);">请双击提交申请</a>';
+					 content += '<a style="padding:0px 2px;" href="javascript:void(0);" onclick="del(' + index + ');">删除</a>';
+				}
 			} else {
 				content += '<span style="padding:0px 2px;">编辑</a>';
 				content += '<span style="padding:0px 2px;">删除</a>';
@@ -180,7 +185,7 @@
 				async : true,
 				success : function(data) {
 					if (data.success) {
-					//	alert(data.data.taskUrl+""+ taskId+isNeedClaim);
+						//alert(data.data.taskUrl+""+ taskId+"sss"+isNeedClaim);
 						window.location.href = data.data.taskUrl + '?taskId=' + taskId + '&isNeedClaim=' + false;
 					} else {
 						$.messager.alert('错误', data.result);

@@ -155,5 +155,12 @@ public interface WorkOrder extends IBaseDomain {
 
     void setProcessInstanceId(String processInstanceId);
     
- 
+    @Column(name = "`process_definition_id`")
+    @FieldDef(label="流程定义id", maxLength = 80)
+    @EditMode(editor = FieldEditor.Text, required = false)
+     String getProcessDefinitionId();
+   
+    void setProcessDefinitionId(String processDefinitionId);
+  
+    
 }

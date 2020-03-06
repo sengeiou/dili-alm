@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
+import com.dili.alm.cache.AlmCache;
 import com.dili.alm.component.NumberGenerator;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.DemandProjectMapper;
@@ -241,5 +242,11 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 		dto.setCreationTime(new Date());
 		this.saveOrUpdate(dto,demandIds);
 		this.submitAgain(dto.getId(),taskId);
+	}
+
+	@Override
+	public Map<String, String> getDataDictionaryDto() {
+		
+		return  AlmCache.getInstance().getWorkOrderTypeMap() ;
 	}
 }

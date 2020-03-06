@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.component.BpmcUtil;
 import com.dili.alm.component.NumberGenerator;
@@ -113,7 +114,7 @@ public class WorkOrderController {
 		Department department = DTOUtils.newDTO(Department.class);
 		department.setParentId(user.getDepartmentId());
 		department.setFirmCode(AlmConstants.ALM_FIRM_CODE);
-		BaseOutput<List<Department>> output = this.deptRpc.listByDepartment(department);
+		BaseOutput<List<Department>> output = this.deptRpc.getChildDepartments(user.getDepartmentId());
 		if (!output.isSuccess()) {
 			return null;
 		}
@@ -545,6 +546,16 @@ public class WorkOrderController {
 	    modelMap.addAttribute("isNeedClaim",isNeedClaim);
 	    return id;
 	}
+	@ResponseBody
+	@RequestMapping(value = "/getDataDictionaryDto",  method = {RequestMethod.GET, RequestMethod.POST})
+	public String getDataDictionaryDto() {
+		Map<String, String> map = this.workOrderService.getDataDictionaryDto();
+		String jsonObject = JSONObject.toJSONString(map);
+
+		String result = jsonObject.toString();
+		return result;
+	}
+
 	
 	
 }

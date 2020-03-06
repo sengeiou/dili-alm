@@ -147,11 +147,16 @@
 	
 	
 	function exect(){
-		  alert("执行中");
-     
+		 // alert("执行中");
+		  $.messager.progress({
+				title : '提示',
+				msg : '正在提交，请稍候……',
+				text : ''
+          });
 		 $('#editForm').form('submit', {
 				url : '${contextPath!}/workOrder/closeAgree',
 				success : function(data) {
+					$.messager.progress('close');
 					var obj = $.parseJSON(data);
 					if (obj.code == 200) {
 			         	   try{
