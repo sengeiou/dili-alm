@@ -1,8 +1,7 @@
 package com.dili.alm.controller;
 
-import com.dili.uap.sdk.domain.Department;
-import com.dili.alm.rpc.DepartmentRpc;
-import com.dili.ss.domain.BaseOutput;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -12,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.List;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.uap.sdk.domain.Department;
+import com.dili.uap.sdk.rpc.DepartmentRpc;
 
 @Controller
 @RequestMapping("/department")

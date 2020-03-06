@@ -8,34 +8,28 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.HardwareResourceMapper;
 import com.dili.alm.dao.ProjectApplyMapper;
 import com.dili.alm.dao.ProjectMapper;
-import com.dili.uap.sdk.domain.Department;
 import com.dili.alm.domain.HardwareResource;
 import com.dili.alm.domain.Project;
-import com.dili.alm.domain.ProjectApply;
-import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.exceptions.HardwareResourceException;
-import com.dili.alm.rpc.DepartmentRpc;
-import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.HardwareResourceService;
-import com.dili.alm.utils.WebUtil;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.uap.sdk.domain.Department;
+import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.rpc.DepartmentRpc;
+import com.dili.uap.sdk.rpc.UserRpc;
 import com.dili.uap.sdk.session.SessionContext;
 
 /**

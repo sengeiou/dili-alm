@@ -11,9 +11,6 @@ import com.dili.alm.domain.Demand;
 import com.dili.alm.domain.HardwareResourceApply;
 import com.dili.alm.domain.OnlineDataChange;
 import com.dili.alm.domain.Project;
-import com.dili.alm.domain.dto.UserDepartmentRoleQuery;
-import com.dili.uap.sdk.domain.User;
-import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.AssignmentService;
 import com.dili.alm.service.DemandService;
 import com.dili.alm.service.HardwareResourceApplyService;
@@ -22,6 +19,8 @@ import com.dili.alm.service.ProjectService;
 import com.dili.bpmc.sdk.dto.Assignment;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.uap.sdk.domain.User;
+import com.dili.uap.sdk.rpc.UserRpc;
 @Service
 public class AssignmentServiceImpl implements AssignmentService {
 	/**LJ ADD**/

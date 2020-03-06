@@ -51,7 +51,6 @@ import com.dili.alm.domain.dto.UserDataDto;
 import com.dili.alm.exceptions.ProjectException;
 import com.dili.alm.provider.ProjectProvider;
 import com.dili.alm.rpc.UserDataAuthRpc;
-import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.TeamService;
@@ -63,6 +62,7 @@ import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.util.SystemConfigUtils;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.rpc.UserRpc;
 import com.dili.uap.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
 

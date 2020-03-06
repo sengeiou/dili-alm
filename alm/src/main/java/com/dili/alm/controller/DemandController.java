@@ -25,9 +25,7 @@ import com.dili.alm.domain.Files;
 import com.dili.alm.domain.SystemDto;
 import com.dili.alm.domain.dto.DemandDto;
 import com.dili.alm.exceptions.DemandExceptions;
-import com.dili.alm.rpc.DepartmentRpc;
 import com.dili.alm.rpc.SysProjectRpc;
-import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DemandService;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.impl.DemandServiceImpl;
@@ -46,6 +44,8 @@ import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.uap.sdk.domain.Department;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.rpc.DepartmentRpc;
+import com.dili.uap.sdk.rpc.UserRpc;
 import com.dili.uap.sdk.session.SessionContext;
 
 import io.swagger.annotations.Api;

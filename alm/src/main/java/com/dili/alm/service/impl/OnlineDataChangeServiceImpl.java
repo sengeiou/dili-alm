@@ -22,11 +22,8 @@ import com.dili.alm.domain.Project;
 /*import com.dili.alm.domain.TaskMapping;*/
 import com.dili.alm.domain.dto.OnlineDataChangeBpmcDtoDto;
 import com.dili.alm.exceptions.OnlineDataChangeException;
-import com.dili.alm.exceptions.ProjectOnlineApplyException;
-import com.dili.alm.rpc.MyTasksRpc;
 import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.rpc.RuntimeApiRpc;
-import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.OnlineDataChangeService;
 import com.dili.alm.service.ProjectService;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
@@ -42,6 +39,7 @@ import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.util.BeanConver;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.dto.RoleUserDto;
+import com.dili.uap.sdk.rpc.UserRpc;
 import com.dili.uap.sdk.session.SessionContext;
 
 /**

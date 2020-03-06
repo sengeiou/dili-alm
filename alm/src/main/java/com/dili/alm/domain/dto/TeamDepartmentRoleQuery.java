@@ -1,5 +1,7 @@
 package com.dili.alm.domain.dto;
 
+import com.dili.uap.sdk.domain.dto.UserDepartmentRoleQuery;
+
 public class TeamDepartmentRoleQuery extends UserDepartmentRoleQuery {
 
 	/**

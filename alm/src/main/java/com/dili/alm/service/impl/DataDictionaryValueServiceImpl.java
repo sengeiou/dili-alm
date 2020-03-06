@@ -1,26 +1,26 @@
 package com.dili.alm.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.DataDictionaryMapper;
 import com.dili.alm.dao.DataDictionaryValueMapper;
 import com.dili.alm.domain.DataDictionary;
 import com.dili.alm.domain.DataDictionaryValue;
-import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.DataDictionaryValueTreeView;
-import com.dili.alm.domain.dto.UapDataDictionaryDto;
-import com.dili.alm.rpc.DataDictionaryRpc;
 import com.dili.alm.service.DataDictionaryValueService;
 import com.dili.alm.utils.WebUtil;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.dili.uap.sdk.domain.dto.UapDataDictionaryDto;
+import com.dili.uap.sdk.rpc.DataDictionaryRpc;
 
 /**
  * ��MyBatis Generator�����Զ����� This file was generated on 2017-07-12

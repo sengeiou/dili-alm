@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.WorkOrderMapper;
-import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.WorkOrder;
 import com.dili.alm.domain.WorkOrderSource;
 import com.dili.alm.domain.WorkOrderState;
@@ -22,10 +21,11 @@ import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.exceptions.WorkOrderException;
 import com.dili.alm.rpc.MyTasksRpc;
 import com.dili.alm.rpc.RuntimeApiRpc;
-import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.uap.sdk.domain.User;
+import com.dili.uap.sdk.rpc.UserRpc;
 import com.google.common.collect.Sets;
 
 @Component

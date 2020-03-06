@@ -27,9 +27,7 @@ import com.dili.alm.domain.SystemDto;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.RoiDto;
-import com.dili.alm.rpc.DepartmentRpc;
 import com.dili.alm.rpc.SysProjectRpc;
-import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.HardwareResourceService;
 import com.dili.alm.service.LogService;
@@ -41,6 +39,8 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.uap.sdk.domain.Department;
 import com.dili.uap.sdk.domain.User;
+import com.dili.uap.sdk.rpc.DepartmentRpc;
+import com.dili.uap.sdk.rpc.UserRpc;
 
 /**
  * Created by asiamaster on 2017/10/19 0019.

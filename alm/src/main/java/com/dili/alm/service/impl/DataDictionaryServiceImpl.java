@@ -14,14 +14,14 @@ import com.dili.alm.domain.DataDictionary;
 import com.dili.alm.domain.DataDictionaryValue;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
-import com.dili.alm.domain.dto.UapDataDictionaryDto;
-import com.dili.alm.rpc.DataDictionaryRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.utils.WebUtil;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.constant.ResultCode;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.uap.sdk.domain.dto.UapDataDictionaryDto;
+import com.dili.uap.sdk.rpc.DataDictionaryRpc;
 
 /**
  *

@@ -43,13 +43,13 @@ import com.dili.alm.domain.dto.apply.ApplyApprove;
 import com.dili.alm.domain.dto.apply.ApplyMajorResource;
 import com.dili.alm.rpc.AlmUserRpc;
 import com.dili.alm.rpc.DepartmentALMRpc;
-import com.dili.alm.rpc.DepartmentRpc;
-import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.rpc.dto.AlmDepartmentDto;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.uap.sdk.domain.Department;
 import com.dili.uap.sdk.domain.User;
+import com.dili.uap.sdk.rpc.DepartmentRpc;
+import com.dili.uap.sdk.rpc.UserRpc;
 
 @Component
 public class UserDepIdConverter implements InitializingBean {

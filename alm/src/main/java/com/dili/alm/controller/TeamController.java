@@ -23,20 +23,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
-import com.dili.uap.sdk.domain.Department;
 import com.dili.alm.domain.Team;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.TeamDepartmentRoleQuery;
-import com.dili.alm.domain.dto.UserDepartmentRole;
-import com.dili.alm.domain.dto.UserDepartmentRoleQuery;
-import com.dili.alm.rpc.DepartmentRpc;
-import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.TeamService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.uap.sdk.domain.Department;
 import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.domain.dto.UserDepartmentRole;
+import com.dili.uap.sdk.domain.dto.UserDepartmentRoleQuery;
+import com.dili.uap.sdk.rpc.DepartmentRpc;
+import com.dili.uap.sdk.rpc.UserRpc;
 import com.dili.uap.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
 

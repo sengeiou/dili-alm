@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.alm.cache.AlmCache;
-import com.dili.uap.sdk.domain.User;
-import com.dili.alm.domain.dto.UserDepartmentRole;
-import com.dili.alm.domain.dto.UserDepartmentRoleQuery;
-import com.dili.alm.rpc.UserRpc;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.uap.sdk.domain.User;
+import com.dili.uap.sdk.domain.dto.UserDepartmentRole;
+import com.dili.uap.sdk.domain.dto.UserDepartmentRoleQuery;
+import com.dili.uap.sdk.rpc.UserRpc;
 
 @RequestMapping("/member")
 @Controller

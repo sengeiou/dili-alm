@@ -20,16 +20,16 @@ import com.dili.alm.domain.TeamRole;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.domain.dto.TeamDepartmentRoleQuery;
-import com.dili.alm.domain.dto.UserDepartmentRole;
-import com.dili.alm.domain.dto.UserDepartmentRoleQuery;
-import com.dili.alm.rpc.DataAuthRpc;
-import com.dili.alm.rpc.UserRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.TeamService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.uap.sdk.domain.dto.UserDepartmentRole;
+import com.dili.uap.sdk.domain.dto.UserDepartmentRoleQuery;
+import com.dili.uap.sdk.rpc.DataAuthRpc;
+import com.dili.uap.sdk.rpc.UserRpc;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-10-24 14:31:10.
