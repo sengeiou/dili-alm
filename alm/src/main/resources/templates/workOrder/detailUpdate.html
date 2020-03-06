@@ -275,7 +275,7 @@
 		var selRows = $('#demandListGrid').datagrid('getChecked');
         var rows = $('#demandListGrid').datagrid('getRows');
 		for(var i=0;i<selRows.length;i++){
-            $('#editForm').append('<input  id="demandId'+ selRows[i].id + '" name="demandIds" value="' + selRows[i].id + '">');
+            $('#editForm').append('<input  type="hidden"  id="demandId'+ selRows[i].id + '" name="demandIds" value="' + selRows[i].id + '">');
             $('#demandGrid').datagrid('appendRow', selRows[i]); 
             for(var g=0;g<rows.length;g++){
 				if(rows[g].id==selRows[i].id ){
