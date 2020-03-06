@@ -58,7 +58,7 @@
 						<td><input class="easyui-combobox" style="width: 87%; text-align: center;" id="workOrderSource" name="workOrderSource"
 							data-options="editable:false,
 							required:true,
- 							onChange:onWorkOrderSourceChange" /> <#comboProvider
+ 							onChange:onWorkOrderSourceChangeUpdate" /> <#comboProvider
 								_id="workOrderSource" _provider='workOrderSourceProvider' /></td>
 						<td class="table-title">受理人</td>
 						<td><input class="easyui-combobox" style="width: 87%; text-align: center;" id="acceptorId" name="acceptorId"
@@ -199,6 +199,41 @@
 			$('#copyUserIds').combotree('tree').tree('check', node.target);
 		}); 
 	}
+	
+	
+	function onWorkOrderSourceChangeUpdate(n, o) {
+		  // alert(n+","+o);
+			  if(n==1){
+					 //alert(n+"1"+o);
+					$('#acceptorId').combobox('reload', '${contextPath!}/workOrder/receivers?type=1');
+					$('#acceptorId').combobox('enable');
+					$('#executorId').combobox('disable');
+					$('#channel').combobox({
+								required : true,
+								width : '100%'
+							});
+			  }else if(n==2){
+					// alert(n+"2"+o);
+						$('#acceptorId').combobox('reload', '${contextPath!}/workOrder/receivers?type=2');
+						$('#acceptorId').combobox('disable');
+						$('#executorId').combobox('enable');
+						$('#channel').combobox({
+									required : false,
+									width : '100%'
+								});
+			  }else if(n==3){
+					// alert(n+"3"+o);
+					$('#acceptorId').combobox('reload', '${contextPath!}/workOrder/receivers?type=3');
+					$('#acceptorId').combobox('enable');
+					$('#executorId').combobox('disable');
+					$('#channel').combobox({
+								required : false,
+								width : '100%'
+				   });
+					
+			}
+	}
+	
 	
 	$(function() {
 	 
