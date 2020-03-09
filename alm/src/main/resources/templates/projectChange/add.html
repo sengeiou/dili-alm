@@ -60,7 +60,7 @@ table {
 				</tr>
 				<tr>
 					<td><input class="easyui-textbox" type="text" name="type" id="type"
-						data-options="editable:false,required:true,validType:'length[1,10]',label:'变更类型:'"> <#comboProvider _id="type"
+						data-options="editable:false,required:true,validType:'length[1,10]',label:'变更类型:'"> <#comboProvider _id="type" _queryParams="{required:true}"
 							_provider='changeTypeProvider' /></td>
 					<td><input class="easyui-numberbox" type="text" name="workingHours"
 						data-options="required:true,min:0,max:99999999,label:'变更工作量预估:'">H</td>
