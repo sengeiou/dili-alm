@@ -8,10 +8,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -80,6 +84,8 @@ import com.dili.alm.service.TeamService;
 import com.dili.alm.service.VerifyApprovalService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.alm.utils.WebUtil;
+import com.dili.bpmc.sdk.dto.TaskIdentityDto;
+import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
@@ -87,6 +93,7 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.exception.AppException;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.util.SystemConfigUtils;
+import com.dili.uap.sdk.domain.Role;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.rpc.UserRpc;
 import com.dili.uap.sdk.session.SessionContext;
@@ -156,8 +163,8 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	@Autowired
 	private ProjectVersionMapper projectVersionMapper;
   
-    @Autowired
-   	private   MyTasksRpc  tasksRpc;
+	@Autowired
+	private TaskRpc taskRpc;
     
     @Autowired
    	private   BpmcUtil  bpmcUtil;
@@ -269,7 +276,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	@Transactional(rollbackFor = ApplicationException.class)
 	@Override
 	public synchronized void bpmcApprove(String taskId, String opt, String notes,Boolean isManager) throws ApproveException {
-		BaseOutput<Map<String, Object>>  map=tasksRpc.getVariables(taskId);
+		BaseOutput<Map<String, Object>>  map=taskRpc.getVariables(taskId);
 		Long id = Long.valueOf(map.getData().get("businessKey").toString());
 		Approve approve = this.get(id);
 		if (approve.getStatus() != AlmConstants.ApplyState.APPROVE.getCode()) {
@@ -278,23 +285,27 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		/*
 		 * 处理立项申请单和立项审批单状态
 		 */
-/*		String approveDescription = approve.getDescription();
+		String approveDescription = approve.getDescription();
 		List<ApplyApprove> approveList=new ArrayList<ApplyApprove>();
 		if (!WebUtil.strIsEmpty(approveDescription)) {
 			 approveList = JSON.parseArray(approveDescription, ApplyApprove.class);
 		}
 		ApplyApprove current = new ApplyApprove();
-		current.setUserId(SessionContext.getSessionContext().getUserTicket().getId());
+		Long userId = SessionContext.getSessionContext().getUserTicket().getId();
+		current.setUserId(userId);
+		BaseOutput<List<Role>> listRoleByUserId = roleRpc.listByUser(Long.valueOf(userId),"");	
+		current.setRole(listRoleByUserId.getData().stream().map(Role::getRoleName).collect(Collectors.joining(",")));
 		current.setApproveDate(new Date());
 		current.setResult(opt);
 		current.setNotes(notes);
 		approveList.add(current);
-		approve.setDescription(JSON.toJSONString(approveList));*/
+		approve.setDescription(JSON.toJSONString(approveList));
+		
 		switch (opt) {
 		case "reject":
 			Map<String, Object> map1=new HashMap<>();
 		
-			BaseOutput<Map<String, Object>> taskVariablesOutput = tasksRpc.getVariables(taskId);
+			BaseOutput<Map<String, Object>> taskVariablesOutput = taskRpc.getVariables(taskId);
 	        if(!taskVariablesOutput.isSuccess()){
 	            throw new AppException(taskVariablesOutput.getMessage());
 	        }
@@ -339,7 +350,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 				sendMail(complete, false);
 			}
 	    	map1.put("approved", "false");
-			tasksRpc.complete(taskId, map1);
+	    	taskRpc.complete(taskId, map1);
 			break;
 		case "accept":
 			if (Objects.equals(approve.getType(), AlmConstants.ApproveType.APPLY.getCode()) && isManager) {
@@ -371,7 +382,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 			}
 			Map<String, Object> map2=new HashMap<>();
 	    	map2.put("approved", "true");
-	    	tasksRpc.complete(taskId, map2);
+	    	taskRpc.complete(taskId, map2);
 			break;
 		default:
 			break;
@@ -706,6 +717,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 //		}
 
 		as.setDescription(JSON.toJSONString(approveList));*/
+		as.setDescription(null);
 		int rows = insertSelective(as);
 		if (rows <= 0) {
 			throw new ProjectApplyException("更新审批记录失败");
@@ -761,7 +773,6 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		}
 
 	}
-
 	@Override
 	public BaseOutput verity(Long id, String opt, String notes) {
 		VerifyApproval verifyApproval = DTOUtils.newDTO(VerifyApproval.class);
@@ -774,6 +785,29 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		Approve approve = get(id);
 		approve.setStatus(Objects.equals(opt, "accept") ? AlmConstants.ChangeState.VRIFY.getCode() : approve.getStatus());
 		updateSelective(approve);
+		return BaseOutput.success();
+	}
+	@Override
+	public BaseOutput changeVerity(Long id, String opt, String notes,String taskId) {
+		VerifyApproval verifyApproval = DTOUtils.newDTO(VerifyApproval.class);
+		verifyApproval.setApproveId(id);
+		verifyApproval.setApprover(SessionContext.getSessionContext().getUserTicket().getId());
+		verifyApproval.setCreated(new Date());
+		verifyApproval.setResult(opt);
+		verifyApproval.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
+		verifyApprovalService.insert(verifyApproval);
+		Approve approve = get(id);
+		Map<String, Object> map2=new HashMap<>();
+    	
+		if(Objects.equals(opt, "accept")) {
+			approve.setStatus(AlmConstants.ChangeState.VRIFY.getCode() );
+			updateSelective(approve);
+			map2.put("approved", "true");
+			taskRpc.complete(taskId, map2);
+		}else {
+			map2.put("approved", "false");
+			taskRpc.complete(taskId, map2);
+		}
 		return BaseOutput.success();
 	}
 
@@ -1020,7 +1054,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
 	@Override
 	public void getModel(ModelMap modelMap, String taskId) {
-		BaseOutput<Map<String, Object>>  map=tasksRpc.getVariables(taskId);
+		BaseOutput<Map<String, Object>>  map=taskRpc.getVariables(taskId);
 		String id = (String) map.getData().get("businessKey");
 	    Approve approve = this.getDao().selectByPrimaryKey(Long.parseLong(id));   
 		// 构建Provider
@@ -1055,9 +1089,11 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	public EasyuiPageOutput selectApproveByPage(Approve approve) {
 		List<Approve> selectByExample = this.listByExample(approve);
 		int total = this.getDao().selectCount(approve);
-		List<ApproveDto> listDto = DTOUtils.as(selectByExample, ApproveDto.class);
-		bpmcUtil.fitLoggedUserIsCanHandledProcess(listDto);
+		List<ApproveDto> listByExample = DTOUtils.as(selectByExample, ApproveDto.class);
+		bpmcUtil.fitLoggedUserIsCanHandledProcess(listByExample);
+		List<ApproveDto> listDto = getIsSameAssignee(listByExample);
 		
+
 		@SuppressWarnings("unchecked")
 		Map<Object, Object> metadata = null == approve.getMetadata() ? new HashMap<>() : approve.getMetadata();
 
@@ -1087,5 +1123,45 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		}
 		return new EasyuiPageOutput(0, new ArrayList<>(0));
 
+	}
+	
+	/**
+	 * 获取任务接收人是否与当前用户相同
+	 *
+	 * @return userId
+	 */
+	private List<ApproveDto> getIsSameAssignee(List<ApproveDto> listDto) {
+		// 根据流程实例批量查询任务
+		if(!CollectionUtils.isEmpty(listDto)) {
+			Set<String> processInstanceIds = new HashSet<>();
+			listDto.forEach(d -> {
+				if (StringUtils.isNotBlank(d.getProcessInstanceId())) {
+					processInstanceIds.add(d.getProcessInstanceId());
+				}
+			});
+			if (!CollectionUtils.isEmpty(processInstanceIds)) {
+				BaseOutput<List<TaskIdentityDto>> tiOutput = this.taskRpc.listTaskIdentityByProcessInstanceIds(new ArrayList<String>(processInstanceIds));
+				if (tiOutput.isSuccess()&&!CollectionUtils.isEmpty(tiOutput.getData())) {
+					Long userId = SessionContext.getSessionContext().getUserTicket().getId();
+					listDto.forEach(d -> {
+						for (TaskIdentityDto taskIdentity : tiOutput.getData()) {
+							if (taskIdentity.getProcessInstanceId().equals(d.getProcessInstanceId())) {
+								if(StringUtils.isNotBlank(taskIdentity.getAssignee())){
+									if(Long.valueOf(taskIdentity.getAssignee()).equals(userId)) {
+										d.setIsSameAssignee(1);
+									}else {
+										d.setIsSameAssignee(2);
+									}
+								}else {
+									d.setIsSameAssignee(-1);
+								}
+							}
+		
+						}
+					});
+				}
+			}
+		}
+		return listDto;
 	}
 }

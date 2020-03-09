@@ -291,6 +291,20 @@ public class ApproveController {
 		}
 		return "approveChange/verify";
 	}
+	@RequestMapping(value = "/change/verify.html", method = RequestMethod.GET)
+	public String verify(ModelMap modelMap,String  taskId, String viewMode){
+		BaseOutput<Map<String, Object>>  map=bpmcTaskRpc.getVariables(taskId);
+		String id = (String) map.getData().get("businessKey");
+		approveService.buildChangeApprove(modelMap, Long.valueOf(id));
+		if (StringUtils.isNotBlank(viewMode)) {
+			modelMap.put("viewMode", true);
+		} else {
+			modelMap.put("viewMode", false);
+		}
+		modelMap.put("taskId",taskId);
+		
+		return "approveChange/verify";
+	}
 	@ApiOperation("跳转到/complete/wyhLeaderApprove页面")
 	@RequestMapping(value = "/complete/wyhLeaderApprove.html", method = RequestMethod.GET)
 	public String wyhLeaderCompleteApprove(ModelMap modelMap,String  taskId, String viewMode) throws Exception {
@@ -487,8 +501,8 @@ public class ApproveController {
 
 	@RequestMapping("/verityApprove")
 	@ResponseBody
-	public BaseOutput verityApprove(Long id, String opt, String notes) {
-		return approveService.verity(id, opt, notes);
+	public BaseOutput verityApprove(Long id, String opt, String notes,String taskId) {
+		return approveService.changeVerity(id, opt, notes,taskId);
 	}
 
 	@ApiOperation(value = "查询Approve", notes = "查询Approve，返回列表信息")

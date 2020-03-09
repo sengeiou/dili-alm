@@ -107,8 +107,13 @@
         	}
             return dom1;
 		} else if (row.$_status == 3) {
-			if (verify) {
-				dom += '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/verify/' + row.id + '">验证</a></span>';
+			dom+='<span style="padding:2px;"><a href="javascript:void(0)" onclick="showProgress('+index+')">查看进度</a></span>';
+			if(row.isHandleProcess){
+				if(row.isNeedClaim&&row.isSameAssignee!=2){
+					dom += '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/changeApproveByAlm.html?id=' + row.id + '">验证</a></span>';
+				}else if(!row.isNeedClaim&&row.isSameAssignee==1){
+					dom += '<span class="opt" style="padding:5px;"><a href="${contextPath}/approve/changeApproveByAlm.html?id=' + row.id + '">验证</a></span>';
+				}	
 			}
 			return dom;
 		} else if (row.$_status == 5) {
