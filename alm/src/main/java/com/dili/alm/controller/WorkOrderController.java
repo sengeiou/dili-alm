@@ -144,7 +144,7 @@ public class WorkOrderController {
 	public String updateView(@RequestParam Long id, ModelMap modelMap) {
 		Map<Object, Object> model = this.workOrderService.getViewModel(id);
 		modelMap.addAttribute("model", model);
-		List<Demand> showDemandList = this.demandService.queryDemandListByProjectIdOrVersionIdOrWorkOrderId(id, 3);
+		List<Demand> showDemandList = this.demandService.queryDemandListByProjectIdOrVersionIdOrWorkOrderId(id, AlmConstants.DemandType.WORKORDER.getCode());
 		modelMap.addAttribute("showDemandList", showDemandList);
 		return "workOrder/update";
 	}
@@ -388,7 +388,7 @@ public class WorkOrderController {
 		Long id=Long.parseLong(idStr);
 		Map<Object, Object> model = this.workOrderService.getViewModel(id);
 		modelMap.addAttribute("model", model);
-		List<Demand> showDemandList = this.demandService.queryDemandListByProjectIdOrVersionIdOrWorkOrderId(id, 3);
+		List<Demand> showDemandList = this.demandService.queryDemandListByProjectIdOrVersionIdOrWorkOrderId(id,  AlmConstants.DemandType.WORKORDER.getCode());
 		modelMap.addAttribute("showDemandList", showDemandList);
 		return "workOrder/detailUpdate";
 	}

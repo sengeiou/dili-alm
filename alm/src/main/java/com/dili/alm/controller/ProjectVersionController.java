@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.dili.alm.cache.AlmCache;
+import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.Demand;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.Project;
@@ -166,7 +168,7 @@ public class ProjectVersionController {
 		record.setVersionId(id);
 		List<Files> files = this.filesService.list(record);
 		map.addAttribute("files", files);
-		List<Demand> showDemandList = this.demandService.queryDemandListByProjectIdOrVersionIdOrWorkOrderId(version.getId(), 2);
+		List<Demand> showDemandList = this.demandService.queryDemandListByProjectIdOrVersionIdOrWorkOrderId(version.getId(), AlmConstants.DemandType.PROJECTVERSION.getCode());
 		map.addAttribute("showDemandList", showDemandList);
 		ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
 		projectVersion.setProjectId(version.getProjectId());
