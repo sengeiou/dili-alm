@@ -76,6 +76,7 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.ss.util.BeanConver;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.rpc.UserRpc;
@@ -451,7 +452,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		// 查询出来
 		Page<Task> list = (Page<Task>) this.listByExample(task);
 		@SuppressWarnings("unchecked")
-		Map<Object, Object> metadata = null == task.getMetadata() ? new HashMap<>() : task.getMetadata();
+		Map<String, Object> metadata = null == task.getMetadata() ? new HashMap<>() : task.getMetadata();
 
 		JSONObject projectProvider = new JSONObject();
 		projectProvider.put("provider", "projectProvider");
@@ -473,7 +474,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		taskTypeProvider.put("provider", "taskTypeProvider");
 		metadata.put("type", taskTypeProvider);
 
-		task.setMetadata(metadata);
+		task.mset(metadata);
 		try {
 			List<TaskEntity> results = this.TaskParseTaskSelectDto(list, false);// 转化为查询的DTO
 			List taskList = ValueProviderUtils.buildDataByProvider(task, results);
@@ -1057,7 +1058,8 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	private List<TaskEntity> TaskParseTaskSelectDto(List<Task> results, boolean isUpdateDetail) {
 		List<TaskEntity> target = new ArrayList<>(results.size());
 		for (Task task : results) {
-			TaskEntity dto = new TaskEntity(task);
+//			TaskEntity dto = new TaskEntity(task);
+			TaskEntity dto = BeanConver.copyBean(task, TaskEntity.class);
 			// 项目和版本是否在进行中
 			Project project = AlmCache.getInstance().getProjectMap().get(task.getProjectId());
 			dto.setProjectManagerId(project.getProjectManager());
