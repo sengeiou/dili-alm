@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -25,15 +26,19 @@ import com.dili.alm.constant.AlmConstants.DemandProcessStatus;
 import com.dili.alm.constant.AlmConstants.DemandStatus;
 import com.dili.alm.constant.BpmConsts;
 import com.dili.alm.dao.DemandMapper;
+import com.dili.alm.dao.DemandOperationRecordMapper;
 import com.dili.alm.dao.DemandProjectMapper;
 import com.dili.alm.dao.ProjectApplyMapper;
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.dao.ProjectVersionMapper;
 import com.dili.alm.dao.SequenceMapper;
+import com.dili.alm.domain.ApproveResult;
 import com.dili.alm.domain.Demand;
+import com.dili.alm.domain.DemandOperationRecord;
 import com.dili.alm.domain.DemandProject;
 import com.dili.alm.domain.DemandProjectStatus;
 import com.dili.alm.domain.DemandProjectType;
+import com.dili.alm.domain.HardwareApplyOperationRecord;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.ProjectVersion;
@@ -84,7 +89,8 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	TaskRpc taskRpc;
 	@Autowired
 	private SequenceMapper sequenceMapper;
-
+	@Autowired
+	private DemandOperationRecordMapper operationRecordMapper;
 	public DemandMapper getActualDao() {
 		return (DemandMapper) getDao();
 	}
@@ -603,13 +609,53 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 
 		return 0;
 	}
-/*	// 插入申请操作记录
-	HardwareApplyOperationRecord record = DTOUtils.newDTO(HardwareApplyOperationRecord.class);
-	record.setApplyId(applyId);
-	record.setDescription(description);
-	record.setOperationName(HardwareApplyOperationType.OPERATION_MANAGER.getName());
-	record.setOperationType(HardwareApplyOperationType.OPERATION_MANAGER.getValue());
-	record.setOperatorId(operationManagerId);
-	record.setOpertateResult(ApproveResult.APPROVED.getValue());
-	rows = this.haorMapper.insertSelective(record);*/
+	
+	@Override
+	public void saveOprationRecord(String demandCode,String description,int operationValue,String operationName,ApproveResult result) throws DemandExceptions {
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		// 插入申请操作记录
+		DemandOperationRecord record = new DemandOperationRecord();
+		record.setDemandCode(demandCode);
+		record.setDescription(description);
+		record.setOperationName(operationName);
+		record.setOperationType(operationValue);
+		record.setOpertateResult(result.getValue());
+		record.setOperatorId(userTicket.getId());
+		record.setOperateTime(new Date());
+		int rows = this.operationRecordMapper.insertSelective(record);
+		if (rows <= 0) {
+			throw new DemandExceptions("插入操作记录失败");
+		}
+		
+	}
+	
+	@Override
+	public EasyuiPageOutput getOprationRecordList(String demandCode) {
+		
+    	DemandOperationRecord operationRecord = new DemandOperationRecord();
+    	operationRecord.setDemandCode(demandCode);
+    	
+		List<DemandOperationRecord> opRecords = this.operationRecordMapper.select(operationRecord);
+		Map<Object, Object> metadata = new HashMap<>();
+
+		JSONObject memberProvider = new JSONObject();
+		memberProvider.put("provider", "memberProvider");
+		metadata.put("operatorId", memberProvider);
+
+		JSONObject datetimeProvider = new JSONObject();
+		datetimeProvider.put("provider", "datetimeProvider");
+		metadata.put("operateTime", datetimeProvider);
+
+		metadata.put("opertateResult", "operationResultProvider");
+		List<Map> recordList;
+		try {
+		   recordList = ValueProviderUtils.buildDataByProvider(metadata, opRecords);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		
+		
+		
+		return new EasyuiPageOutput((int) recordList.size(), recordList);
+	}
 }

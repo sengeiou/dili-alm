@@ -3,10 +3,14 @@ package com.dili.alm.controller;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +24,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.constant.AlmConstants.DemandProcessStatus;
 import com.dili.alm.constant.AlmConstants.DemandStatus;
+import com.dili.alm.domain.ApproveResult;
 import com.dili.alm.domain.Demand;
+import com.dili.alm.domain.DemandOperationRecord;
+import com.dili.alm.domain.DemandOperationType;
 import com.dili.alm.domain.Files;
+import com.dili.alm.domain.HardwareApplyOperationRecord;
 import com.dili.alm.domain.SystemDto;
 import com.dili.alm.domain.dto.DemandDto;
 import com.dili.alm.exceptions.DemandExceptions;
@@ -393,7 +401,12 @@ public class DemandController {
      */
     @RequestMapping(value="/demandDepartmentApprove.action", method = RequestMethod.POST)
     @ResponseBody
-    public BaseOutput<String> doSubmit(@RequestParam String code, @RequestParam String taskId) {
+    public BaseOutput<String> doSubmit(@RequestParam String code, @RequestParam String taskId,String description) {
+      try {
+				demandService.saveOprationRecord(code, description, DemandOperationType.DEMAND_MANAGER.getValue(), DemandOperationType.DEMAND_MANAGER.getName(), ApproveResult.APPROVED);
+			} catch (DemandExceptions e) {
+				e.printStackTrace();
+			}
     	return demandService.submitApprove(code, taskId,null,DemandProcessStatus.ACCEPT.getCode());
     }
     
@@ -436,7 +449,12 @@ public class DemandController {
      */
     @RequestMapping(value="/accept.action", method = RequestMethod.POST)
     @ResponseBody
-    public BaseOutput<String> accept(@RequestParam String code, @RequestParam String taskId) {
+    public BaseOutput<String> accept(@RequestParam String code, @RequestParam String taskId,String description) {
+        try {
+  			 demandService.saveOprationRecord(code, description, DemandOperationType.ACCEPT.getValue(), DemandOperationType.ACCEPT.getName(), ApproveResult.APPROVED);
+  			} catch (DemandExceptions e) {
+  				e.printStackTrace();
+  			}
     	return demandService.submitApprove(code, taskId,null,DemandProcessStatus.ASSIGN.getCode());
     }
  
@@ -479,7 +497,20 @@ public class DemandController {
      */
     @RequestMapping(value="/assignPrincipal.action", method = RequestMethod.POST)
     @ResponseBody
-    public BaseOutput<String> doAssignPrincipal(@RequestParam String code, @RequestParam String taskId,@RequestParam Long acceptId) {
+    public BaseOutput<String> doAssignPrincipal(@RequestParam String code, @RequestParam String taskId, 
+			Long acceptId,String description) {
+/*		if (operDepartmentUsers == null) {
+			return BaseOutput.failure("还未分配");
+		}
+		Set<Long> executors = new HashSet<Long>();
+		for (int i = 0; i < operDepartmentUsers.length; i++) {
+			executors.add(Long.parseLong(operDepartmentUsers[i]));
+		}*/
+        try {
+  				demandService.saveOprationRecord(code, description, DemandOperationType.ASSIGN.getValue(), DemandOperationType.ASSIGN.getName(), ApproveResult.APPROVED);
+  			} catch (DemandExceptions e) {
+  				e.printStackTrace();
+  			}
     	return demandService.submitApproveAndAccept(code, taskId,DemandProcessStatus.ASSIGN.getCode(),acceptId);
     }
  
@@ -522,7 +553,19 @@ public class DemandController {
      */
     @RequestMapping(value="/reciprocate.action", method = RequestMethod.POST)
     @ResponseBody
-    public BaseOutput<String> reciprocate(@RequestParam String code, @RequestParam String taskId,@RequestParam Long acceptId) {
+    public BaseOutput<String> reciprocate(@RequestParam String code, @RequestParam String taskId,@RequestParam Long acceptId,String description) {
+		if (acceptId == null) {
+			return BaseOutput.failure("还未分配");
+		}
+/*		Set<Long> executors = new HashSet<Long>();
+		for (int i = 0; i < operDepartmentUsers.length; i++) {
+			executors.add(Long.parseLong(operDepartmentUsers[i]));
+		}*/
+        try {
+  				demandService.saveOprationRecord(code, description, DemandOperationType.RECIPROCATE.getValue(), DemandOperationType.RECIPROCATE.getName(), ApproveResult.APPROVED);
+  			} catch (DemandExceptions e) {
+  				e.printStackTrace();
+  			}
     	return demandService.submitApproveAndAccept(code, taskId,DemandProcessStatus.FEEDBACK.getCode(),acceptId);
     }
     
@@ -567,11 +610,16 @@ public class DemandController {
      */
     @RequestMapping(value="/feedback.action", method = RequestMethod.POST)
     @ResponseBody
-    public BaseOutput<String> feedback(@RequestParam String code, @RequestParam String taskId, @RequestParam String content, @RequestParam String documentUrl) {
+    public BaseOutput<String> feedback(@RequestParam String code, @RequestParam String taskId, @RequestParam String content, @RequestParam String documentUrl,String description) {
     	Demand demand = demandService.getByCode(code);
     	demand.setFeedbackContent(content);
     	demand.setFeedbackFile(documentUrl);
     	demandService.saveOrUpdate(demand);
+        try {
+  				demandService.saveOprationRecord(code, description, DemandOperationType.FEEDBACK.getValue(), DemandOperationType.FEEDBACK.getName(), ApproveResult.APPROVED);
+  			} catch (DemandExceptions e) {
+  				e.printStackTrace();
+  			}
     	return demandService.submitApprove(code, taskId,null,DemandProcessStatus.DEMANDMANAGER.getCode());
     }
     @ApiOperation("需求管理员同意")
@@ -599,7 +647,8 @@ public class DemandController {
 		}
     	BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
     	modelMap.addAttribute("userInfo", userTicket);
-    		
+    	
+
     	modelMap.addAttribute("depName",de.getData().getName());
     	modelMap.put("taskId", taskId);
         modelMap.put("cover", cover == null ? output.getData().getAssignee() == null : cover);
@@ -613,7 +662,12 @@ public class DemandController {
      */
     @RequestMapping(value="/demandManagerApprove.action", method = RequestMethod.POST)
     @ResponseBody
-    public BaseOutput<String> demandManagerApprove(@RequestParam String code, @RequestParam String taskId) {
+    public BaseOutput<String> demandManagerApprove(@RequestParam String code, @RequestParam String taskId,String description) {
+        try {
+  			 demandService.saveOprationRecord(code, description, DemandOperationType.DEMAND_ADMIN.getValue(), DemandOperationType.DEMAND_ADMIN.getName(), ApproveResult.APPROVED);
+  			} catch (DemandExceptions e) {
+  				e.printStackTrace();
+  			}
     	return demandService.submitApprove(code, taskId, (byte) DemandStatus.COMPLETE.getCode(),DemandProcessStatus.FINISH.getCode());
     }
     
@@ -625,7 +679,12 @@ public class DemandController {
      */
     @RequestMapping(value="/rejectDemand.action", method = RequestMethod.POST)
     @ResponseBody
-    public BaseOutput<String> rejectDemand(@RequestParam String code, @RequestParam String taskId) {
+    public BaseOutput<String> rejectDemand(@RequestParam String code, @RequestParam String taskId,String description) {
+        try {
+  			  demandService.saveOprationRecord(code, description, DemandOperationType.REJECT.getValue(), DemandOperationType.REJECT.getName(), ApproveResult.FAILED);
+  			} catch (DemandExceptions e) {
+  				e.printStackTrace();
+  			}
     	return demandService.rejectApprove(code, taskId);
     }
 
@@ -738,6 +797,7 @@ public class DemandController {
     @RequestMapping(value="/submintForTask.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput submintForTask(@RequestParam String taskId, Demand demand) {
         try {
+        	demandService.saveOprationRecord(demand.getSerialNumber(),"需求重新提交", DemandOperationType.RESUBMIT.getValue(), DemandOperationType.RESUBMIT.getName(), ApproveResult.APPROVED);
 			demandService.reSubmint(demand, taskId);
 		} catch (DemandExceptions e) {
 			return BaseOutput.failure(e.getMessage());
@@ -810,4 +870,14 @@ public class DemandController {
         return BaseOutput.success(claimOut.getMessage());
     }
     
+    
+    
+    @ApiOperation("获取操作记录")
+    @ApiImplicitParams({
+		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = true, dataType = "string")
+	})
+    @RequestMapping(value="getRecordList", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody String getRecordList(String code) {
+        return this.demandService.getOprationRecordList(code).toString();
+    }
 }

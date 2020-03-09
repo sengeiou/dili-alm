@@ -12,7 +12,7 @@ import javax.persistence.Id;
  * 
  * This file was generated on 2018-04-09 17:19:52.
  */
-@Table(name = "`hardware_apply_operation_record`")
+@Table(name = "`demand_operation_record`")
 public class DemandOperationRecord {
     @Id
     @Column(name = "`id`")
@@ -35,8 +35,8 @@ public class DemandOperationRecord {
     Integer opertateResult;
 
 
-    @Column(name = "`apply_id`")
-    Long applyId;
+    @Column(name = "`demand_code`")
+    String demandCode;
 
 
     @Column(name = "`operation_type`")
@@ -97,13 +97,13 @@ public class DemandOperationRecord {
 	}
 
 
-	public Long getApplyId() {
-		return applyId;
+	public String getDemandCode() {
+		return demandCode;
 	}
 
 
-	public void setApplyId(Long applyId) {
-		this.applyId = applyId;
+	public void setDemandCode(String demandCode) {
+		this.demandCode = demandCode;
 	}
 
 

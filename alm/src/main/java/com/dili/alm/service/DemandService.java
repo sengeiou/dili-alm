@@ -4,8 +4,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dili.alm.domain.ApproveResult;
 import com.dili.alm.domain.Demand;
 import com.dili.alm.domain.dto.DemandDto;
 import com.dili.alm.exceptions.DemandExceptions;
@@ -131,4 +133,16 @@ public interface DemandService extends BaseService<Demand, Long> {
      * @return
      */
     int isBackEdit(Demand demand);
+    /**
+     * 记录流程操作日志
+     * @param code
+     * @return
+     */
+	void saveOprationRecord(String demandCode,String description,int operationValue,String operationName,ApproveResult result) throws DemandExceptions;
+    /**
+     * 流程操作日志列表
+     * @param code
+     * @return
+     */
+	EasyuiPageOutput getOprationRecordList(String demandCode);
 }
