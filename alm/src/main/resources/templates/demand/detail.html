@@ -110,6 +110,23 @@
 					</table>
 				</td>
             </tr>
+           <tr>
+				<td colspan="2" style="padding: 5px;">
+					<table class="easyui-datagrid" title="操作列表" id="fileGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"  style="width: 100%;"
+					pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
+					 align="center" fit="false" striped="true" toolbar="#fileToolbar" idField="id"
+					data-options="url:'${contextPath!}/demand/getRecordList?code=${demand.serialNumber!}'">
+							<thead>
+								<tr>
+									<th data-options="field:'operationName', width:'30%',  sortable:'true', order:'asc', align:'left', resizable:'true', fixed:'false'">操作内容</th>
+									<th data-options="field:'operatorId', width:'15%',  _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作人</th>
+									<th data-options="field:'operateTime', width:'15%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作时间</th>
+									<th data-options="field:'opertateResult', width:'15%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作结果</th>
+								</tr>
+							</thead>
+					</table>
+				</td>
+            </tr>
            </table>   
     </form>
 </div>
