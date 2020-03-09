@@ -17,7 +17,9 @@ function setParentIframeHeight(){
     }
 }
 
-$(function () {
-    //加载父元素高度
-    setParentIframeHeight();
-})
+function checkExecutorAmount(nval, oval) {
+	var me = $(this);
+	if (nval.length > 2) {
+		me.combobox('unselect', nval[nval.length - 1]);
+	}
+}

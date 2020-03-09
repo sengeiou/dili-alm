@@ -209,6 +209,8 @@
 					
 				},
 				onSubmit : function() {
+					
+					 $('#executorId').combobox('setValue',${model.$_applicantId});
 					if (result == 0 && !$(this).form('validate')) {
 						return false;
 					}

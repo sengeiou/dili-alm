@@ -10,7 +10,7 @@
     <result column="description" jdbcType="VARCHAR" property="description" />
     <result column="operate_time" jdbcType="TIMESTAMP" property="operateTime" />
     <result column="opertate_result" jdbcType="INTEGER" property="opertateResult" />
-    <result column="apply_id" jdbcType="BIGINT" property="applyId" />
+    <result column="demand_code" jdbcType="BIGINT" property="demandCode" />
     <result column="operation_type" jdbcType="INTEGER" property="operationType" />
     <result column="operator_id" jdbcType="BIGINT" property="operatorId" />
   </resultMap>
@@ -18,7 +18,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    id, operation_name, description, operate_time, opertate_result, apply_id, operation_type, 
+    id, operation_name, description, operate_time, opertate_result, demand_code, operation_type, 
     operator_id
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
@@ -49,7 +49,7 @@
         opertate_result = #{opertateResult,jdbcType=INTEGER},
       </if>
       <if test="applyId != null">
-        apply_id = #{applyId,jdbcType=BIGINT},
+        demand_code = #{demandCode,jdbcType=BIGINT},
       </if>
       <if test="operationType != null">
         operation_type = #{operationType,jdbcType=INTEGER},

@@ -1,4 +1,5 @@
  <#body>
+ <!-- 接收需求 -->
   <div class="easyui-panel" id="submitDiv" style="width:100%;" align="center">
  <form id="_form" class="easyui-form" method="post"
 	enctype="multipart/form-data">
@@ -85,16 +86,31 @@
 	</table>
 	<input type="hidden" id="documentUrl" name="documentUrl" value="" />
 </form>
+					<table class="easyui-datagrid" title="操作 " id="fileGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"  style="width: 100%;"
+					pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
+					 align="center" fit="false" striped="true" toolbar="#fileToolbar" idField="id"
+					data-options="url:'${contextPath!}/demand/getRecordList?code=${demand.serialNumber!}'">
+							<thead>
+								<tr>
+									<th data-options="field:'operationName', width:'30%',  sortable:'true', order:'asc', align:'left', resizable:'true', fixed:'false'">操作内容</th>
+									<th data-options="field:'operatorId', width:'15%',  _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作人</th>
+									<th data-options="field:'operateTime', width:'15%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作时间</th>
+									<th data-options="field:'opertateResult', width:'15%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作结果</th>
+									<th data-options="field:'description', align:'center'">操作描述</th>
+								</tr>
+							</thead>
+					</table>
     <form id="form" class="easyui-form" method="post" fit="true">
         <input name="taskId" id="taskId" value="${taskId}" type="hidden">
          <input name="code" id="code" value="${demand.serialNumber}" type="hidden">
+         <input name="rejectType" id="rejectType" value="accept" type="hidden"/>
         <table width="60%" style="alignment: center">
             <tr>
                 <td align="center" style="padding:5px;">
                 <a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="submitBtn"
-                   onclick="save()">接受</a>
+                   onclick="save()">接收</a>
                 <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" id="cancelBtn"
-                   onclick="cancel()">不接受</a>
+                   onclick="cancel()">不接收</a>
             </td>
             <tr style="height:200px">
              <td align="center" style="padding:5px;">
