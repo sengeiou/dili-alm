@@ -408,12 +408,14 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		for (DemandProject selectDemandProject : selectByExample) {
 			ids.add(selectDemandProject.getDemandId());
 		}
+		if(ids==null||ids.size()<=0) {
+			return null;
+		}
 		Example example = new Example(Demand.class);
 		Example.Criteria criteria = example.createCriteria();
 		criteria.andIn("id", ids);
 		List<Demand> selectByExampleExpand = this.getActualDao().selectByExample(example);
 		return selectByExampleExpand;
-
 	}
 
 	@Override

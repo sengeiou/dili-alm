@@ -229,9 +229,6 @@ function openInsert() {
 				buttons : [{
 							text : '保存',
 							handler : function() {
-								if($($("input[name$='demandIds']")[0]).val()==null||$($("input[name$='demandIds']")[0]).val()==""){
-									$.messager.alert('警告', '请选择至少一个需求');
-								}else{
 									$('#editForm').form('submit', {
 												url : '${contextPath!}/workOrder/saveOrUpdate',
 												onSubmit : function() {
@@ -260,7 +257,6 @@ function openInsert() {
 													}
 												}
 											});
-								}
 							}
 						}, {
 							text : '取消',
@@ -271,9 +267,6 @@ function openInsert() {
 						}, {
 							text : '提交',
 							handler : function() {
-								if($($("input[name$='demandIds']")[0]).val()==null||$($("input[name$='demandIds']")[0]).val()==""){
-									$.messager.alert('警告', '请选择至少一个需求');
-								}else{
 									var data = $("#editForm").serializeArray();
 									$('#editForm').form('submit', {
 												url : '${contextPath!}/workOrder/saveAndSubmit',
@@ -305,7 +298,6 @@ function openInsert() {
 													}
 												}
 											});
-								}
 							}
 						}]
 			});
@@ -337,7 +329,6 @@ function openUpdate(index) {
 		$.messager.alert('警告', '请点击继续提交！');
 		return;
 	}
-	openUpdate
 	
 	$('#win').dialog({
 				title : '工单编辑',

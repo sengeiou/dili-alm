@@ -139,8 +139,8 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 				demandProject.setWorkOrderId(dto.getId());
 				demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
 				List<DemandProject> select = this.demandProjectMapper.select(demandProject);
-				int delete = this.demandProjectMapper.delete(demandProject);
 				if(select!=null&&select.size()>0) {
+					int delete = this.demandProjectMapper.delete(demandProject);
 					if(delete!=select.size()) {
 						throw new WorkOrderException("刪除关联失败");
 					}
@@ -218,8 +218,8 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 		demandProject.setWorkOrderId(id);
 		demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
 		List<DemandProject> select = this.demandProjectMapper.select(demandProject);
-		int delete = this.demandProjectMapper.delete(demandProject);
 		if(select!=null&&select.size()>0) {
+			int delete = this.demandProjectMapper.delete(demandProject);
 			if(delete!=select.size()) {
 				throw new WorkOrderException("刪除关联失败");
 			}
