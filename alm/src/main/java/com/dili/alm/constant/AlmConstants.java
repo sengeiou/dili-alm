@@ -246,4 +246,20 @@ public class AlmConstants {
 			return code;
 		}
 	}
+	
+	// 需求类型
+	public enum DemandType {
+
+		PROJECTAPPLY(1), PROJECTVERSION(2), WORKORDER(3);
+
+		public int code;
+
+		DemandType(int code) {
+			this.code = code;
+		}
+
+		public int getCode() {
+			return code;
+		}
+	}
 }
