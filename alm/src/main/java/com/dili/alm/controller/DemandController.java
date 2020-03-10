@@ -407,7 +407,7 @@ public class DemandController {
 			} catch (DemandExceptions e) {
 				e.printStackTrace();
 			}
-    	return demandService.submitApprove(code, taskId,null,DemandProcessStatus.ACCEPT.getCode());
+    	return demandService.submitApprove(code, taskId,null,DemandProcessStatus.DEPARTMENTMANAGER.getCode());
     }
     
     @ApiOperation("跳转到接受需求页面")
@@ -455,7 +455,7 @@ public class DemandController {
   			} catch (DemandExceptions e) {
   				e.printStackTrace();
   			}
-    	return demandService.submitApprove(code, taskId,null,DemandProcessStatus.ASSIGN.getCode());
+    	return demandService.submitApprove(code, taskId,null,DemandProcessStatus.ACCEPT.getCode());
     }
  
     @ApiOperation("指定需求对接人")
@@ -566,7 +566,7 @@ public class DemandController {
   			} catch (DemandExceptions e) {
   				e.printStackTrace();
   			}
-    	return demandService.submitApproveAndAccept(code, taskId,DemandProcessStatus.FEEDBACK.getCode(),acceptId);
+    	return demandService.submitApproveAndAccept(code, taskId,DemandProcessStatus.RECIPROCATE.getCode(),acceptId);
     }
     
     
@@ -620,7 +620,7 @@ public class DemandController {
   			} catch (DemandExceptions e) {
   				e.printStackTrace();
   			}
-    	return demandService.submitApprove(code, taskId,null,DemandProcessStatus.DEMANDMANAGER.getCode());
+    	return demandService.submitApprove(code, taskId,null,DemandProcessStatus.FEEDBACK.getCode());
     }
     @ApiOperation("需求管理员同意")
     @RequestMapping(value="/demandManagerApprove.html", method = RequestMethod.GET)
@@ -668,7 +668,7 @@ public class DemandController {
   			} catch (DemandExceptions e) {
   				e.printStackTrace();
   			}
-    	return demandService.submitApprove(code, taskId, (byte) DemandStatus.COMPLETE.getCode(),DemandProcessStatus.FINISH.getCode());
+    	return demandService.submitApprove(code, taskId, (byte) DemandStatus.COMPLETE.getCode(),DemandProcessStatus.DEMANDMANAGER.getCode());
     }
     
     /**
@@ -679,13 +679,14 @@ public class DemandController {
      */
     @RequestMapping(value="/rejectDemand.action", method = RequestMethod.POST)
     @ResponseBody
-    public BaseOutput<String> rejectDemand(@RequestParam String code, @RequestParam String taskId,String description) {
+    public BaseOutput<String> rejectDemand(@RequestParam String code, @RequestParam String taskId,String description,String rejectType) {
+    	
         try {
   			  demandService.saveOprationRecord(code, description, DemandOperationType.REJECT.getValue(), DemandOperationType.REJECT.getName(), ApproveResult.FAILED);
   			} catch (DemandExceptions e) {
   				e.printStackTrace();
   			}
-    	return demandService.rejectApprove(code, taskId);
+    	return demandService.rejectApprove(code, taskId,rejectType);
     }
 
     /**

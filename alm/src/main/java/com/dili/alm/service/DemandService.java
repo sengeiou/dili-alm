@@ -126,7 +126,7 @@ public interface DemandService extends BaseService<Demand, Long> {
      * @param code
      * @return
      */
-    BaseOutput rejectApprove(String code, String taskId);
+    BaseOutput rejectApprove(String code, String taskId,String rejectType);
     /**
      * 是否是流程驳回可编辑的
      * @param code

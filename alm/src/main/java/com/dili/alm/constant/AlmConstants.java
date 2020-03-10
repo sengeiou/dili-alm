@@ -234,8 +234,8 @@ public class AlmConstants {
 	// 流程状态 部门经理同意 接受需求 指派人 反馈方案 需求管理员同意 驳回编辑
 	public enum DemandProcessStatus {
 
-		DEPARTMENTMANAGER("departmentManager"), ACCEPT("accept"), ASSIGN("assign"),RECIPROCATE("reciprocate"), FEEDBACK("feedback"),DEMANDMANAGER("demandManager"),BACKANDEDIT("backAndEdit"),FINISH("finish");
-
+		CREATE("create"), SUBMIT("submit"),DEPARTMENTMANAGER("departmentManager"), ACCEPT("accept"), ASSIGN("assign"),RECIPROCATE("reciprocate"), FEEDBACK("feedback"),DEMANDMANAGER("demandManager"),BACKANDEDIT_MANAGER("backAndEditManager"),BACKANDEDIT_ACCPET("backAndEditAccpet"),BACKANDEDIT("backAndEdit"),FINISH("finish");
+		
 		public String code;
 
 		DemandProcessStatus(String code) {

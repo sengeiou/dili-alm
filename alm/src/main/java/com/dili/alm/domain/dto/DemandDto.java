@@ -42,6 +42,8 @@ public class DemandDto extends Demand implements ProcessHandleInfoDto {
 	@Transient
 	int processFlag;// 流程编辑标识 1是可编辑，空为不可编辑
 	@Transient
+	int processBtnFlag;// 流程编辑标识 1是处理，2位审批
+	@Transient
 	@Column(name = "`content`")
 	private String content;
 	/**
@@ -195,6 +197,14 @@ public class DemandDto extends Demand implements ProcessHandleInfoDto {
 
 	public void setFilterStatus(Byte filterStatus) {
 		this.filterStatus = filterStatus;
+	}
+
+	public int getProcessBtnFlag() {
+		return processBtnFlag;
+	}
+
+	public void setProcessBtnFlag(int processBtnFlag) {
+		this.processBtnFlag = processBtnFlag;
 	}
 
 }
