@@ -170,9 +170,7 @@ input[class^="easyui-"] {
 
 	$(function() {
 
-		$('#projectId')
-				.combobox(
-						{
+		$('#projectId').combobox({
 							url : '${contextPath}/project/getProjectList?queryAll=false&dataAuth=true',
 							valueField : 'id',
 							textField : 'serialNumber',
@@ -184,21 +182,18 @@ input[class^="easyui-"] {
 							onLoadSuccess : function() {
 								$("#projectId").combobox("setValue",
 										'${obj.projectId}');
+								$("#projectId").combobox("setText",'${obj.number!}(${obj.projectName})');
 							},
 							onChange : function(projectValue) {
 								var datas = $("#projectId").combobox('getData');
 								for (var i = 0; i < datas.length; i++) {
 									var data = datas[i];
 									if (data.id == projectValue) {
-										$("#projectName").textbox("setText",
-												data.name);
-										$("#projectType").textbox("setText",
-												data.type);
+										$("#projectName").textbox("setValue",data.name);
+										$("#projectType").textbox("setValue",data.type);
 										$("#number").val(data.serialNumber);
 										if (add == true) {
-											$("#estimateLaunchDate").datebox(
-													'setValue',
-													data.estimateLaunchDate);
+											$("#estimateLaunchDate").datebox('setValue',data.estimateLaunchDate);
 										}
 										add = true;
 									}

@@ -45,4 +45,6 @@ public interface ApproveService extends BaseService<Approve, Long> {
 
 	void bpmcApprove(String taskId, String opt, String notes, Boolean isManager) throws ApproveException;
 
+	BaseOutput changeVerity(Long id, String opt, String notes, String taskId);
+
 }
