@@ -210,10 +210,11 @@
 				},
 				onSubmit : function() {
 					
-					 $('#executorId').combobox('setValue',${model.$_applicantId});
+					 $('#executorId').combobox('setValue',${model.$_acceptorId});
 					if (result == 0 && !$(this).form('validate')) {
 						return false;
 					}
+					 $('#executorId').combobox('setValue','');
 				/* 	var acceptorId = $('#acceptorId').combobox('getValue');
 					if(acceptorId==null|''==acceptorId){
 						$.messager.alert('提示', '执行人为空请重新选择！', null, function() {
