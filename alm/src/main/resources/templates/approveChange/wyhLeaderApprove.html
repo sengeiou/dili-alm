@@ -108,32 +108,24 @@ input[class^="easyui-"] {
 						data-options="multiline:true" style="width: 100%; height: 120px" /></td>
 				</tr>
 				<tr>
-                    <td class="title-first" colspan="4">立项评审&审批</td>
-                </tr>
-                <tr>
-                    <td class="" colspan="4">
-                        <table id="dg" class="easyui-datagrid" style="height:auto;width: 100%"
-                               data-options="singleSelect: true,  url: '${contextPath}/approve/loadDesc?id=${apply.id}'">
-                            <thead>
-                            <tr>
-                                <th data-options="field:'approveDate',_provider:'dateProvider',width:'20%',align:'center'">
-                                    审批时间
-                                </th>
-                                <th data-options="field:'userId',width:'15%',align:'center'">
-                                    用户
-                                </th>
-                                <th data-options="field:'role',width:'25%',align:'center'">
-                                    职务
-                                </th>
-                                <th data-options="field:'result',width:'15%',align:'center',formatter:format">
-                                    审批结果
-                                </th>
-                                <th data-options="field:'notes',width:'25%',align:'center'">审批意见</th>
-                            </tr>
-                            </thead>
-                        </table>
-                    </td>
-                </tr>
+					<td class="title-first" colspan="4">立项评审&审批</td>
+				</tr>
+				<tr>
+					<td class="" colspan="4">
+						<table id="dg" class="easyui-datagrid" style="height: auto; width: 100%"
+							data-options="singleSelect: true,  url: '${contextPath}/approve/loadDesc?id=${approve.id}'">
+							<thead>
+								<tr>
+									<th data-options="field:'approveDate',_provider:'dateProvider',width:'20%',align:'center'">审批时间</th>
+									<th data-options="field:'userId',width:'15%',align:'center'">用户</th>
+									<th data-options="field:'role',width:'25%',align:'center'">职务</th>
+									<th data-options="field:'result',width:'15%',align:'center',formatter:format">审批结果</th>
+									<th data-options="field:'notes',width:'25%',align:'center'">审批意见</th>
+								</tr>
+							</thead>
+						</table>
+					</td>
+				</tr>
 			</table>
 			<% if(!viewMode){ %>
 			<table style="width: 100%">
