@@ -23,3 +23,32 @@ function checkExecutorAmount(nval, oval) {
 		me.combobox('unselect', nval[nval.length - 1]);
 	}
 }
+//加载操作记录
+function queryRecordGrid(code) {
+       var opts = $("#recordGrid").datagrid("options");
+       if (null == opts.url || "" == opts.url) {
+           opts.url = "${contextPath!}/demand/getRecordList?code="+code;
+       }
+       $("#recordGrid").datagrid("load");
+       $('#recordGrid').datagrid({
+
+	      onLoadSuccess: function (data) { 
+		       var parentIframe = parent.document.getElementById("pageType")
+		       if(parentIframe!="undefined"){
+		         window.parent.setIframeHeight();
+		      }
+	        }
+       });
+ }
+ 
+ //加载文件列表
+function queryFileGrid() {
+       $('#fileGrid').datagrid({
+	      onLoadSuccess: function (data) { 
+		       var parentIframe = parent.document.getElementById("pageType")
+		       if(parentIframe!="undefined"){
+		         window.parent.setIframeHeight();
+		      }
+	        }
+       });
+ }

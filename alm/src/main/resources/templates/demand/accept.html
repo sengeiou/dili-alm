@@ -86,10 +86,9 @@
 	</table>
 	<input type="hidden" id="documentUrl" name="documentUrl" value="" />
 </form>
-					<table class="easyui-datagrid" title="操作 " id="fileGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"  style="width: 100%;"
+					<table class="easyui-datagrid" title="操作记录" id="recordGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"  style="width: 100%;"
 					pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
-					 align="center" fit="false" striped="true" toolbar="#fileToolbar" idField="id"
-					data-options="url:'${contextPath!}/demand/getRecordList?code=${demand.serialNumber!}'">
+					 align="center" fit="false" striped="true" toolbar="#fileToolbar" idField="id">
 							<thead>
 								<tr>
 									<th data-options="field:'operationName', width:'30%',  sortable:'true', order:'asc', align:'left', resizable:'true', fixed:'false'">操作内容</th>
@@ -102,7 +101,7 @@
     <form id="form" class="easyui-form" method="post" fit="true">
         <input name="taskId" id="taskId" value="${taskId}" type="hidden">
          <input name="code" id="code" value="${demand.serialNumber}" type="hidden">
-         <input name="rejectType" id="rejectType" value="accept" type="hidden"/>
+         <input name="rejectType" id="rejectType" value="backAndEditAccpet" type="hidden"/>
         <table width="60%" style="alignment: center">
             <tr>
                 <td align="center" style="padding:5px;">
@@ -197,7 +196,11 @@
         $(function () {
             //所属项目自动加载
             loadSystemSelect();
-            
+            //加载操作记录
+            var code = "${demand.serialNumber!}";
+            queryRecordGrid(code);
+            //加载文件列表
+            queryFileGrid()
             
             //加载数据
             var formData = $.extend({},${modelStr!});

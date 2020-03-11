@@ -94,9 +94,8 @@
 	</table>
 	<input type="hidden" id="documentUrl" name="documentUrl" value="" />
 </form>
-					<table class="easyui-datagrid" title="操作列表" id="fileGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"  style="width: 100%;"
-					pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." 
-					data-options="url:'${contextPath!}/demand/getRecordList?code=${demand.serialNumber!}'">
+					<table class="easyui-datagrid" title="操作记录" id="recordGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"  style="width: 100%;"
+					pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." >
 							<thead>
 								<tr>
 									<th data-options="field:'operationName', width:'30%',  sortable:'true', order:'asc', align:'left', resizable:'true', fixed:'false'">操作内容</th>
@@ -109,7 +108,7 @@
     <form id="form" class="easyui-form" method="post" fit="true">
         <input name="taskId" id="taskId" value="${taskId}" type="hidden">
          <input name="code" id="code" value="${demand.serialNumber}" type="hidden">
-        <input name="rejectType" id="rejectType" value="demandManager" type="hidden"/>
+        <input name="rejectType" id="rejectType" value="backAndEdit" type="hidden"/>
         <table width="60%" style="alignment: center">
             <tr>
                 <td align="center" style="padding:5px;">
@@ -137,24 +136,26 @@
             },
             success:function(data){
                 var data = eval('(' + data + ')');
-                if(data.success) {
-                    //如果父页面是任务中心
-                    if(parent.location.href='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
-                        //向任务中心发送消息，参数为要跳转的地址
-                        window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
-                    }else{
-                       	 var parentIframe = parent.document.getElementById("pageType")
-                    	 if(parentIframe!="undefined"){
-                    		 window.parent.CloseEditPage();
-                    	 }
-                    }
-                }else{
-                	$.messager.alert('警告',"错误:"+data.message);
-                }
+	           	 console.log(data);
+	             if(data.code=="200"){
+                     //如果父页面是任务中心
+                     if(parent.location.href=='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
+                         //向任务中心发送消息，参数为要跳转的地址
+                         window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
+                     }else{
+	    	            	 $.messager.alert('提示',data.message);
+	    	            	 var parentIframe = parent.document.getElementById("pageType")
+	    	            	 if(parentIframe!="undefined"){
+	    	            		 window.parent.CloseEditPage();
+ 	            	     }
+                     }
+	            	
+	             }else{
+	                 $.messager.alert('错误',data.result);
+	             }
             }
         });
     }
-
         function save(){
             if(!$('#form').form("validate")){
                 return;
@@ -165,8 +166,7 @@
                 dataType : "json",
                 onSubmit : function(){
 
-                },
-                success:function(data){
+                },success:function(data){
                     var data = eval('(' + data + ')');
                     if(data.success) {
                         //如果父页面是任务中心
@@ -197,8 +197,11 @@
         $(function () {
             //所属项目自动加载
             loadSystemSelect();
-            
-            
+            //加载操作记录
+            var code = "${demand.serialNumber!}";
+            queryRecordGrid(code);
+            //加载文件列表
+            queryFileGrid()
             //加载数据
             var formData = $.extend({},${modelStr!});
             formData = addKeyStartWith(getOriginalData(formData),"_");
@@ -208,10 +211,6 @@
             }
             formData._finishDate=dateFormat_1(formData._finishDate);
             $('#_form').form('load', formData);
-            var parentIframe = parent.document.getElementById("pageType")
-          	 if(parentIframe!="undefined"){
-            		window.parent.setIframeHeight();
-     	     }
         })
         function loadSystemSelect() {
 			$('#_belongSysId').combobox({

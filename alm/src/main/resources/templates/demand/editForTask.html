@@ -63,10 +63,10 @@
 					data-options="url:'${contextPath!}/demand/files/list?id=${demand.id!}'">
 							<thead>
 								<tr>
-									<th data-options="field:'name', width:'30%', align:'left', resizable:'true', fixed:'false'">文件名</th>
-									<th data-options="field:'suffix', width:'20%', align:'center', resizable:'true', fixed:'false'">文件类型</th>
-									<th data-options="field:'createMemberId', width:'10%',  _provider:'memberProvider',  align:'center', resizable:'true', fixed:'false'">创建人</th>
-									<th data-options="field:'created', width:'20%',  _provider:'datetimeProvider', align:'center', resizable:'true', fixed:'false'">创建时间</th>
+									<th data-options="field:'name', width:'30%',  sortable:'true', order:'asc', align:'left', resizable:'true', fixed:'false'">文件名</th>
+									<th data-options="field:'suffix', width:'20%',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">文件类型</th>
+									<th data-options="field:'createMemberId', width:'10%',  _provider:'memberProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">创建人</th>
+									<th data-options="field:'created', width:'20%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">创建时间</th>
 									<th data-options="field:'opt',width:'20%',formatter:fileOptFormatter, align:'center'">操作</th>
 								</tr>
 							</thead>
@@ -90,10 +90,9 @@
 		</tr>
 		<tr>
 		<td colspan="2">
-					<table class="easyui-datagrid" title="操作列表" id="fileGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"  style="width: 100%;"
+					<table class="easyui-datagrid" title="操作记录" id="recordGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"  style="width: 100%;"
 					pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
-					 align="center" fit="false" striped="true" toolbar="#fileToolbar" idField="id"
-					data-options="url:'${contextPath!}/demand/getRecordList?code=${demand.serialNumber!}'">
+					 align="center" fit="false" striped="true" toolbar="#fileToolbar" idField="id" >
 							<thead>
 								<tr>
 									<th data-options="field:'operationName', width:'30%',  sortable:'true', order:'asc', align:'left', resizable:'true', fixed:'false'">操作内容</th>
@@ -256,6 +255,11 @@ function loadSystemSelect() {
 $(function () {
     //所属项目自动加载
     loadSystemSelect();
+    //加载操作记录
+    var code = "${demand.serialNumber!}";
+    queryRecordGrid(code);
+    //加载文件列表
+    queryFileGrid()
     //加载数据
     var formData = $.extend({},${modelStr!});
     formData = addKeyStartWith(getOriginalData(formData),"_");
@@ -378,4 +382,7 @@ function dateFormat_1(longTypeDate) {
             }
         }); */
     </script>
+    <script type="text/javascript">
+	<#demand_publicJs />
+    </script> 
 </#body>
