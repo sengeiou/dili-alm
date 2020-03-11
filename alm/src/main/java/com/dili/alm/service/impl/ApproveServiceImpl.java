@@ -1096,14 +1096,21 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
 		@SuppressWarnings("unchecked")
 		Map<Object, Object> metadata = null == approve.getMetadata() ? new HashMap<>() : approve.getMetadata();
-
-		JSONObject projectStatusProvider = new JSONObject();
-		projectStatusProvider.put("provider", "approveStateProvider");
-		metadata.put("status", projectStatusProvider);
-
-		JSONObject projectTypeProvider = new JSONObject();
-		projectTypeProvider.put("provider", "projectTypeProvider");
-		metadata.put("type", projectTypeProvider);
+		if(AlmConstants.ApproveType.CHANGE.getCode()==approve.getType()) {
+			JSONObject changeStateProvider = new JSONObject();
+			changeStateProvider.put("provider", "changeStateProvider");
+			metadata.put("status", changeStateProvider);
+			JSONObject changeTypeProvider = new JSONObject();
+			changeTypeProvider.put("provider", "changeTypeProvider");
+			metadata.put("type", changeTypeProvider);
+		}else {
+			JSONObject projectStatusProvider = new JSONObject();
+			projectStatusProvider.put("provider", "approveStateProvider");
+			metadata.put("status", projectStatusProvider);
+			JSONObject projectTypeProvider = new JSONObject();
+			projectTypeProvider.put("provider", "projectTypeProvider");
+			metadata.put("type", projectTypeProvider);
+		}
 
 		JSONObject memberProvider = new JSONObject();
 		memberProvider.put("provider", "memberProvider");
