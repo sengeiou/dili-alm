@@ -235,7 +235,8 @@
         
         function openFrom(id){
         	$("#demandForTaskSrc").attr("src",'${contextPath!}/demand/submitApproveByAlm?id=' +id); //设置IFRAME的SRC;
-            $("#demandForTaskDlg").dialog({
+        	setIframeHeight();
+        	$("#demandForTaskDlg").dialog({
                 bgiframe: true,
                 resizable: true, //是否可以重置大小
                 height: 480, //高度
@@ -252,7 +253,6 @@
                     Test();
                 }
             })
-            setIframeHeight();
             $('#demandForTaskDlg').dialog('open');
             $('#demandForTaskDlg').dialog('center');
         }
@@ -652,8 +652,8 @@
         }
         
         function setIframeHeight(){
-		        	var iframe = document.getElementById("demandForTaskSrc");
-			     iframe.height = iframe.contentWindow.document.documentElement.scrollHeight+80;
+		         var iframe = document.getElementById("demandForTaskSrc");
+			     iframe.height = iframe.contentWindow.document.documentElement.scrollHeight+20;
         	}
     </script>
 </#body>

@@ -86,7 +86,7 @@
 	</table>
 	<input type="hidden" id="documentUrl" name="documentUrl" value="" />
 </form>
-					<table class="easyui-datagrid" title="操作 " id="fileGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"  style="width: 100%;"
+					<table class="easyui-datagrid" title="操作记录 " id="recordGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"  style="width: 100%;"
 					pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
 					 align="center" fit="false" striped="true" toolbar="#fileToolbar" idField="id"
 					data-options="url:'${contextPath!}/demand/getRecordList?code=${demand.serialNumber!}'">
@@ -194,7 +194,11 @@
         $(function () {
             //所属项目自动加载
             loadSystemSelect();
-            
+            //加载操作记录
+            var code = "${demand.serialNumber!}";
+            queryRecordGrid(code);
+            //加载文件列表
+            queryFileGrid()
             
             //加载数据
             var formData = $.extend({},${modelStr!});
@@ -258,4 +262,7 @@
 	    	window.open('${contextPath!}/files/download?id=' + id);
 	    } 
     </script>
+    <script type="text/javascript">
+	<#demand_publicJs />
+	</script> 
 </#body>

@@ -745,7 +745,7 @@ public class DemandController {
         demand = demandService.getByCode(codeDates);
         
         String demandJsonStr = JSONObject.toJSONString(demand);
-        modelMap.put("model", demand);
+        modelMap.put("demand", demand);
         modelMap.put("modelStr", demandJsonStr);
     	/** 个人信息 **/
         User userTicket = this.userRpc.findUserById(demand.getUserId()).getData();

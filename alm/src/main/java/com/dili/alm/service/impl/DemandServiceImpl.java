@@ -620,7 +620,12 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		if (demand.getProcessType().equals(DemandProcessStatus.BACKANDEDIT.getCode()) && demand.getUserId().equals(userTicket.getId())) {
 			return 1;
 		}
-
+		if (demand.getProcessType().equals(DemandProcessStatus.BACKANDEDIT_MANAGER.getCode()) && demand.getUserId().equals(userTicket.getId())) {
+			return 1;
+		}
+		if (demand.getProcessType().equals(DemandProcessStatus.BACKANDEDIT_ACCPET.getCode()) && demand.getUserId().equals(userTicket.getId())) {
+			return 1;
+		}
 		return 0;
 	}
 	
