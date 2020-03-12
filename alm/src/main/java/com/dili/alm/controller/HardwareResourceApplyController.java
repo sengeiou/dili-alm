@@ -527,6 +527,7 @@ public class HardwareResourceApplyController {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		if (isApproved) {
 			hardwareResourceApplyService.submitApprove(applyId,taskId);
+			
 			hardwareResourceApplyService.projectManagerApproveForTask(applyId,user.getId(),ApproveResult.APPROVED,description);
 		}else {
 			hardwareResourceApplyService.rejectApprove(applyId, taskId);
