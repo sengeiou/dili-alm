@@ -542,31 +542,52 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		apply.setApplyState(HardwareApplyState.PROJECT_MANAGER_APPROVING.getValue());
 		/***
 		 * 
-		 * 启动流程相关begin
+		 * 启动流程相关begin，没有流程参数启动流程，有流程参数为重新提交
 		 * 
 		 */
-		/** 个人信息 **/
-		//TODO:启动流程
-		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		// 流程启动参数设置
-		Map<String, Object> variables = new HashMap<>(1);
-		variables.put(HardwareApplyConstant.HARDWARE_APPLY_CODE.getName(), apply.getId()+"");
-		String aa = HardwareApplyConstant.PROCESS_DEFINITION_KEY.getName();
-		// 启动流程
-		BaseOutput<ProcessInstanceMapping> processInstanceOutput = runtimeRpc.startProcessInstanceByKey(HardwareApplyConstant.PROCESS_DEFINITION_KEY.getName(),apply.getId()+"", userTicket.getId().toString(),
-				variables);
-		if (!processInstanceOutput.isSuccess()) {
-			throw new HardwareResourceApplyException("开启审批错误"+processInstanceOutput.getMessage());
+		if (apply.getProcessDefinitionId()==null) {
+			/** 个人信息 **/
+			//TODO:启动流程
+			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+			// 流程启动参数设置
+			Map<String, Object> variables = new HashMap<>(1);
+			variables.put(HardwareApplyConstant.HARDWARE_APPLY_CODE.getName(), apply.getId()+"");
+			String aa = HardwareApplyConstant.PROCESS_DEFINITION_KEY.getName();
+			// 启动流程
+			BaseOutput<ProcessInstanceMapping> processInstanceOutput = runtimeRpc.startProcessInstanceByKey(HardwareApplyConstant.PROCESS_DEFINITION_KEY.getName(),apply.getId()+"", userTicket.getId().toString(),
+					variables);
+			if (!processInstanceOutput.isSuccess()) {
+				throw new HardwareResourceApplyException("开启审批错误"+processInstanceOutput.getMessage());
+			}
+			// 回调，写入相关流程任务数据
+			ProcessInstanceMapping processInstance = processInstanceOutput.getData();
+			apply.setProcessDefinitionId(processInstance.getProcessDefinitionId());
+			apply.setProcessInstanceId(processInstance.getProcessInstanceId());
+
+		}else {
+	        //根据业务号查询任务
+	        TaskDto taskDto = DTOUtils.newInstance(TaskDto.class);
+	        taskDto.setProcessInstanceBusinessKey(apply.getId().toString());
+	        BaseOutput<List<TaskMapping>> outputList = taskRpc.list(taskDto);
+	        if(!outputList.isSuccess()){
+	        	throw new HardwareResourceApplyException("用户错误！"+outputList.getMessage());
+	        }
+	        
+	        List<TaskMapping> taskMappings = outputList.getData();
+	        //获取formKey
+	        TaskMapping selected = taskMappings.get(0);
+			
+	        String taskId = selected.getId();
+	        
+			this.submitApprove(apply.getId(), taskId);
 		}
-		// 回调，写入相关流程任务数据
-		ProcessInstanceMapping processInstance = processInstanceOutput.getData();
-		apply.setProcessDefinitionId(processInstance.getProcessDefinitionId());
-		apply.setProcessInstanceId(processInstance.getProcessInstanceId());
+		
 		/***
 		 * 
 		 * 启动流程相关end
 		 * 
 		 */
+		
 		int rows = this.getActualDao().updateByPrimaryKeySelective(apply);
 		if (rows <= 0) {
 			throw new HardwareResourceApplyException("更新申请状态失败");
@@ -775,6 +796,8 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		if (user == null) {
 			throw new IllegalArgumentException("用户未登录");
 		}
+		
+
 		dtos.forEach(apply -> {
 			// 判断界面上用户是否是提交人
 			boolean approving = apply.getApplyState().equals(HardwareApplyState.APPLING.getValue());
@@ -811,6 +834,11 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			List<Long> envList = JSONObject.parseObject(apply.getServiceEnvironment(), new TypeReference<List<Long>>() {
+			});
+			List<String> target = new ArrayList<>(envList.size());
+			envList.forEach(e -> target.add(this.envProvider.getDisplayText(e, null, null)));
+			apply.setEnvList(target);
 		});
 
 

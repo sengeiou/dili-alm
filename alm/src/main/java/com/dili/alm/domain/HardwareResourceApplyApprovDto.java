@@ -1,5 +1,7 @@
 package com.dili.alm.domain;
 
+import java.util.Collection;
+
 /**
  *
  *线上申请设置申请节点
@@ -44,4 +46,10 @@ public interface HardwareResourceApplyApprovDto {
 	Boolean getImplementing();
 
 	void setImplementing(Boolean implementing);
+	/**
+	 * 环境文字转化envList
+	 */
+	Collection<String> getEnvList();
+
+	void setEnvList(Collection<String> envList);
 }
