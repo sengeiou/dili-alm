@@ -521,7 +521,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		List<ProjectOnlineApply> list = listByExample(domain);
 		List<ProjectOnlineApplyProcessDto> targetList = DTOUtils.as(list, ProjectOnlineApplyProcessDto.class);
 		this.bpmcUtil.fitLoggedUserIsCanHandledProcess(targetList);
-		for (ProjectOnlineApply a : list) {
+		for (ProjectOnlineApply a : targetList) {
 			this.setMarkets(a);
 			this.setOperationColumn(a);
 		}

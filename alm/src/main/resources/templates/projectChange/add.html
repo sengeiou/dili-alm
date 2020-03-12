@@ -137,12 +137,7 @@ table {
 	
 
 	function submitForm(type, obj) {
-		$('#ff')
-				.form(
-						'submit',
-						{
-							url : "${contextPath}/projectChange/insert",
-							onSubmit : function() {
+		$('#ff').form('submit',{url : "${contextPath}/projectChange/insert",onSubmit : function() {
 								$("#status").val(type);
 								var data = $("#tagbx").tagbox("getValues");
 								$("#email").val(data.join());
@@ -156,12 +151,9 @@ table {
 									var data = eval('(' + data + ')');
 									if (data.success == true) {
 										try {
-											LogUtils
-													.saveLog(
+											LogUtils.saveLog(
 															LOG_MODULE_OPS.ADD_PROJECT_CHANGE,
-															"新增项目变更:"
-																	+ data.data
-																	+ ":成功",
+															"新增项目变更:" + data.data + ":成功",
 															function() {
 																window.location.href = "${contextPath}/projectChange/index.html";
 															});
@@ -170,11 +162,7 @@ table {
 										}
 									}
 								} catch (ee) {
-									$.messager
-											.alert(
-													'错误',
-													ee,
-													null,
+									$.messager.alert('错误',ee,null,
 													function() {
 														window.location.href = "${contextPath}/projectChange/index.html";
 													});
@@ -183,9 +171,7 @@ table {
 						});
 	}
 
-	$('#projectId')
-			.combobox(
-					{
+	$('#projectId').combobox({
 						url : '${contextPath}/project/getProjectList?queryAll=false&dataAuth=true',
 						valueField : 'id',
 						textField : 'serialNumber',
@@ -200,14 +186,12 @@ table {
 							for (var i = 0; i < datas.length; i++) {
 								var data = datas[i];
 								if (data.id == projectValue) {
-									$("#projectName").textbox("initValue",
+									$("#projectName").textbox("setValue",
 											data.name);
-									$("#projectType").textbox("initValue",
+									$("#projectType").textbox("setValue",
 											data.type);
 									$("#number").val(data.serialNumber);
-									$("#estimateLaunchDate")
-											.datebox('setValue',
-													data.estimateLaunchDate);
+									$("#estimateLaunchDate").datebox('setValue',data.estimateLaunchDate);
 									d = data.estimateLaunchDate;
 								}
 							}

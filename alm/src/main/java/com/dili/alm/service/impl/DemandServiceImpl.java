@@ -188,8 +188,10 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		newDemand.setCreateDate(new Date());
 		if (newDemand.getStatus() != null && newDemand.getStatus() == (byte) DemandStatus.APPROVING.getCode()) {
 			newDemand.setStatus((byte) DemandStatus.APPROVING.getCode());// 直接提交为申请单
+			newDemand.setProcessType(DemandProcessStatus.SUBMIT.getCode());
 		} else {
 			newDemand.setStatus((byte) DemandStatus.NOTSUBMIT.getCode());
+			newDemand.setProcessType(DemandProcessStatus.CREATE.getCode());
 		}
 
 		int rows = this.insertSelective(newDemand);
@@ -217,7 +219,8 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		int rows = 0;
 		if (newDemand.getId() == null) {
 			newDemand.setStatus((byte) DemandStatus.APPROVING.getCode());
-			newDemand.setProcessType(DemandProcessStatus.DEPARTMENTMANAGER.getCode());
+			newDemand.setProcessType(DemandProcessStatus.SUBMIT.getCode());
+			newDemand.setModificationTime(new Date());
 			this.addNewDemand(newDemand);
 			selectDeman = this.list(newDemand).get(0);
 		} else {
@@ -235,7 +238,8 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			selectDeman.setFinishDate(newDemand.getFinishDate());
 			selectDeman.setSubmitDate(new Date());
 			selectDeman.setStatus((byte) DemandStatus.APPROVING.getCode());
-			selectDeman.setProcessType(DemandProcessStatus.DEPARTMENTMANAGER.getCode());
+			selectDeman.setProcessType(DemandProcessStatus.SUBMIT.getCode());
+			selectDeman.setModificationTime(new Date());
 			this.update(selectDeman);
 		}
 
@@ -300,6 +304,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 					}
 					// 添加可编辑按钮
 					newDemandDto.setProcessFlag(this.isBackEdit(d));
+					newDemandDto.setProcessBtnFlag(this.isBtnType(d));
 					dtos.add(newDemandDto);
 				} catch (Exception e) {
 					e.getMessage();
@@ -539,7 +544,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		if (status.equals(DemandProcessStatus.ASSIGN.code)) {
 			selectDemand.setReciprocateId(userId);
 		}
-		if (status.equals(DemandProcessStatus.FEEDBACK.code)) {
+		if (status.equals(DemandProcessStatus.RECIPROCATE.code)) {
 			selectDemand.setFeedbackId(userId);
 		}
 		selectDemand.setProcessType(status);
@@ -569,10 +574,17 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	}
 
 	@Override
-	public BaseOutput rejectApprove(String code, String taskId) {
+	public BaseOutput rejectApprove(String code, String taskId,String rejectType) {
 		Map<String, Object> variables = new HashMap<>();
 		Demand demand = this.getByCode(code);
-		demand.setProcessType(DemandProcessStatus.BACKANDEDIT.getCode());// 被驳回的状态
+		if(rejectType.equals(DemandProcessStatus.BACKANDEDIT_ACCPET.getCode())) {
+			demand.setProcessType(DemandProcessStatus.BACKANDEDIT_ACCPET.getCode());// 被驳回的状态
+		}else if(rejectType.equals(DemandProcessStatus.BACKANDEDIT_MANAGER.getCode())) {
+			demand.setProcessType(DemandProcessStatus.BACKANDEDIT_MANAGER.getCode());// 被驳回的状态
+		}else {
+			demand.setProcessType(DemandProcessStatus.BACKANDEDIT.getCode());// 被驳回的状态
+		}
+		
 		this.update(demand);
 		variables.put("approved", "false");
 		return taskRpc.complete(taskId, variables);
@@ -608,10 +620,26 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		if (demand.getProcessType().equals(DemandProcessStatus.BACKANDEDIT.getCode()) && demand.getUserId().equals(userTicket.getId())) {
 			return 1;
 		}
-
+		if (demand.getProcessType().equals(DemandProcessStatus.BACKANDEDIT_MANAGER.getCode()) && demand.getUserId().equals(userTicket.getId())) {
+			return 1;
+		}
+		if (demand.getProcessType().equals(DemandProcessStatus.BACKANDEDIT_ACCPET.getCode()) && demand.getUserId().equals(userTicket.getId())) {
+			return 1;
+		}
 		return 0;
 	}
 	
+	public int isBtnType(Demand demand) {
+		if (demand.getProcessType() == null) {
+			return 0;
+		}
+		// 满足条件，分配授权，和分配反馈2个页面
+		if (demand.getProcessType().equals(DemandProcessStatus.ASSIGN.code) || demand.getProcessType().equals(DemandProcessStatus.ACCEPT.code)) {
+			return 1;
+		}
+
+		return 0;
+	}
 	@Override
 	public void saveOprationRecord(String demandCode,String description,int operationValue,String operationName,ApproveResult result) throws DemandExceptions {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
@@ -655,8 +683,6 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		
-		
 		
 		return new EasyuiPageOutput((int) recordList.size(), recordList);
 	}

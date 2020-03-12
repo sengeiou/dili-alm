@@ -32,7 +32,7 @@ public class DataDictionaryServiceImpl extends BaseServiceImpl<DataDictionary, L
 
 	@Autowired
 	private DataDictionaryValueMapper valueMapper;
-	
+
 	@Autowired
 	private DataDictionaryRpc dataDictionaryRpc;
 
@@ -47,42 +47,42 @@ public class DataDictionaryServiceImpl extends BaseServiceImpl<DataDictionary, L
 		if (model == null) {
 			return null;
 		}
-		DataDictionaryDto dataDictionaryDto=DTOUtils.newDTO(DataDictionaryDto.class);
+		DataDictionaryDto dataDictionaryDto = DTOUtils.newDTO(DataDictionaryDto.class);
 		dataDictionaryDto.setId(model.getId());
 		dataDictionaryDto.setCode(model.getCode());
 		dataDictionaryDto.setName(model.getName());
-		if(!WebUtil.strIsEmpty(model.getDescription())) {
+		if (!WebUtil.strIsEmpty(model.getDescription())) {
 			dataDictionaryDto.setNotes(model.getDescription());
 		}
-		if(model.getCreated()!=null) {
+		if (model.getCreated() != null) {
 			dataDictionaryDto.setCreated(model.getCreated());
 		}
-		if(model.getModified()!=null) {
+		if (model.getModified() != null) {
 			dataDictionaryDto.setModified(model.getModified());
 		}
-		List<DataDictionaryValueDto> values =new ArrayList<DataDictionaryValueDto>();
+		List<DataDictionaryValueDto> values = new ArrayList<DataDictionaryValueDto>();
 		List<com.dili.uap.sdk.domain.DataDictionaryValue> DataDictionaryValues = model.getDataDictionaryValues();
 		if (CollectionUtils.isNotEmpty(DataDictionaryValues)) {
 			for (com.dili.uap.sdk.domain.DataDictionaryValue dataDictionaryValue : DataDictionaryValues) {
-				DataDictionaryValueDto dataDictionaryValueDto=DTOUtils.newDTO(DataDictionaryValueDto.class);
+				DataDictionaryValueDto dataDictionaryValueDto = DTOUtils.newDTO(DataDictionaryValueDto.class);
 				dataDictionaryValueDto.setId(dataDictionaryValue.getId());
 				dataDictionaryValueDto.setCode(dataDictionaryValue.getCode());
 				dataDictionaryValueDto.setDdId(dataDictionaryDto.getId());
 				dataDictionaryValueDto.setCode(dataDictionaryValue.getName());
 				dataDictionaryValueDto.setValue(dataDictionaryValue.getCode());
-				if(dataDictionaryValue.getParentId()!=null) {
+				if (dataDictionaryValue.getParentId() != null) {
 					dataDictionaryValueDto.setParentId(dataDictionaryValue.getParentId());
 				}
-				if(dataDictionaryValue.getOrderNumber()!=null) {
+				if (dataDictionaryValue.getOrderNumber() != null) {
 					dataDictionaryValueDto.setOrderNumber(dataDictionaryValue.getOrderNumber());
 				}
-				if(!WebUtil.strIsEmpty(dataDictionaryValue.getDescription())) {
+				if (!WebUtil.strIsEmpty(dataDictionaryValue.getDescription())) {
 					dataDictionaryValueDto.setNotes(dataDictionaryValue.getDescription());
 				}
-				if(dataDictionaryValue.getCreated()!=null) {
+				if (dataDictionaryValue.getCreated() != null) {
 					dataDictionaryValueDto.setCreated(dataDictionaryValue.getCreated());
 				}
-				if(dataDictionaryValue.getModified()!=null) {
+				if (dataDictionaryValue.getModified() != null) {
 					dataDictionaryValueDto.setModified(dataDictionaryValue.getModified());
 				}
 				values.add(dataDictionaryValueDto);
@@ -100,49 +100,55 @@ public class DataDictionaryServiceImpl extends BaseServiceImpl<DataDictionary, L
 
 	@Override
 	public int insertSelective(DataDictionary t) {
+		DataDictionary record = DTOUtils.newInstance(DataDictionary.class);
+		record.setCode(t.getCode());
+		int count = this.getActualDao().selectCount(record);
+		if (count > 0) {
+			throw new IllegalArgumentException(String.format("已存在编码为%s的记录", t.getCode()));
+		}
 		t.setYn(1);
 		return super.insertSelective(t);
 	}
 
 	@Override
 	public List<DataDictionary> listDataDictionary(DataDictionary ddit) {
-		com.dili.uap.sdk.domain.DataDictionary uapDate=DTOUtils.newDTO(com.dili.uap.sdk.domain.DataDictionary.class);
-		if(ddit.getId()!=null) {
+		com.dili.uap.sdk.domain.DataDictionary uapDate = DTOUtils.newDTO(com.dili.uap.sdk.domain.DataDictionary.class);
+		if (ddit.getId() != null) {
 			uapDate.setId(ddit.getId());
 		}
-		if(!WebUtil.strIsEmpty(ddit.getCode())) {
+		if (!WebUtil.strIsEmpty(ddit.getCode())) {
 			uapDate.setCode(ddit.getCode());
 		}
-		if(!WebUtil.strIsEmpty(ddit.getName())) {
+		if (!WebUtil.strIsEmpty(ddit.getName())) {
 			uapDate.setName(ddit.getName());
 		}
-		if(!WebUtil.strIsEmpty(ddit.getNotes())) {
+		if (!WebUtil.strIsEmpty(ddit.getNotes())) {
 			uapDate.setDescription(ddit.getNotes());
 		}
 
 		uapDate.setSystemCode(AlmConstants.ALM_SYSTEM_CODE);
 
-		if(ddit.getCreated()!=null) {
+		if (ddit.getCreated() != null) {
 			uapDate.setCreated(ddit.getCreated());
 		}
-		if(ddit.getModified()!=null) {
+		if (ddit.getModified() != null) {
 			uapDate.setModified(ddit.getModified());
 		}
-		
+
 		List<com.dili.uap.sdk.domain.DataDictionary> data = this.dataDictionaryRpc.listDataDictionary(uapDate).getData();
-		List<DataDictionary> dataDictionaryList=new ArrayList<DataDictionary>();
+		List<DataDictionary> dataDictionaryList = new ArrayList<DataDictionary>();
 		for (com.dili.uap.sdk.domain.DataDictionary dataDictionary : data) {
-			DataDictionary newDataDictionary=DTOUtils.newDTO(DataDictionary.class);
+			DataDictionary newDataDictionary = DTOUtils.newDTO(DataDictionary.class);
 			newDataDictionary.setId(dataDictionary.getId());
 			newDataDictionary.setCode(dataDictionary.getCode());
 			newDataDictionary.setName(dataDictionary.getName());
-			if(!WebUtil.strIsEmpty(dataDictionary.getDescription())) {
+			if (!WebUtil.strIsEmpty(dataDictionary.getDescription())) {
 				newDataDictionary.setNotes(dataDictionary.getDescription());
 			}
-			if(dataDictionary.getCreated()!=null) {
+			if (dataDictionary.getCreated() != null) {
 				newDataDictionary.setCreated(dataDictionary.getCreated());
 			}
-			if(dataDictionary.getModified()!=null) {
+			if (dataDictionary.getModified() != null) {
 				newDataDictionary.setModified(dataDictionary.getModified());
 			}
 			dataDictionaryList.add(newDataDictionary);
@@ -154,55 +160,55 @@ public class DataDictionaryServiceImpl extends BaseServiceImpl<DataDictionary, L
 	public void updateUapDataDictionaryList() {
 		List<DataDictionary> selectAll = this.getActualDao().selectAll();
 		for (DataDictionary dataDictionary : selectAll) {
-			UapDataDictionaryDto uapDataDictionaryDto=DTOUtils.newDTO(UapDataDictionaryDto.class);
+			UapDataDictionaryDto uapDataDictionaryDto = DTOUtils.newDTO(UapDataDictionaryDto.class);
 			uapDataDictionaryDto.setCode(dataDictionary.getCode());
 			uapDataDictionaryDto.setName(dataDictionary.getName());
 			uapDataDictionaryDto.setSystemCode(AlmConstants.ALM_SYSTEM_CODE);
-			if(!WebUtil.strIsEmpty(dataDictionary.getNotes())) {
+			if (!WebUtil.strIsEmpty(dataDictionary.getNotes())) {
 				uapDataDictionaryDto.setDescription(dataDictionary.getNotes());
 			}
-			if(dataDictionary.getCreated()!=null) {
+			if (dataDictionary.getCreated() != null) {
 				uapDataDictionaryDto.setCreated(dataDictionary.getCreated());
 			}
-			if(dataDictionary.getModified()!=null) {
+			if (dataDictionary.getModified() != null) {
 				uapDataDictionaryDto.setModified(dataDictionary.getModified());
 			}
-			DataDictionaryValue queryValue=DTOUtils.newDTO(DataDictionaryValue.class);
+			DataDictionaryValue queryValue = DTOUtils.newDTO(DataDictionaryValue.class);
 			queryValue.setDdId(dataDictionary.getId());
 			List<DataDictionaryValue> list = this.valueMapper.select(queryValue);
-			List<com.dili.uap.sdk.domain.DataDictionaryValue> uapValues=new ArrayList<com.dili.uap.sdk.domain.DataDictionaryValue>();
+			List<com.dili.uap.sdk.domain.DataDictionaryValue> uapValues = new ArrayList<com.dili.uap.sdk.domain.DataDictionaryValue>();
 			for (DataDictionaryValue dataDictionaryValue : list) {
-				com.dili.uap.sdk.domain.DataDictionaryValue uapDataValue=DTOUtils.newDTO(com.dili.uap.sdk.domain.DataDictionaryValue.class);
+				com.dili.uap.sdk.domain.DataDictionaryValue uapDataValue = DTOUtils.newDTO(com.dili.uap.sdk.domain.DataDictionaryValue.class);
 				uapDataValue.setId(dataDictionaryValue.getId());
 				uapDataValue.setCode(dataDictionaryValue.getCode());
 				uapDataValue.setDdCode(dataDictionary.getCode());
 				uapDataValue.setCode(dataDictionaryValue.getValue());
 				uapDataValue.setName(dataDictionaryValue.getCode());
-				
-				if(dataDictionaryValue.getParentId()!=null) {
+
+				if (dataDictionaryValue.getParentId() != null) {
 					uapDataValue.setParentId(dataDictionaryValue.getParentId());
 				}
-				if(dataDictionaryValue.getOrderNumber()!=null) {
+				if (dataDictionaryValue.getOrderNumber() != null) {
 					uapDataValue.setOrderNumber(dataDictionaryValue.getOrderNumber());
 				}
-				if(!WebUtil.strIsEmpty(dataDictionaryValue.getNotes())) {
+				if (!WebUtil.strIsEmpty(dataDictionaryValue.getNotes())) {
 					uapDataValue.setDescription(dataDictionaryValue.getNotes());
 				}
-				if(dataDictionaryValue.getCreated()!=null) {
+				if (dataDictionaryValue.getCreated() != null) {
 					uapDataValue.setCreated(dataDictionaryValue.getCreated());
 				}
-				if(dataDictionaryValue.getModified()!=null) {
+				if (dataDictionaryValue.getModified() != null) {
 					uapDataValue.setModified(dataDictionaryValue.getModified());
 				}
 				uapValues.add(uapDataValue);
 			}
 			uapDataDictionaryDto.setDataDictionaryValues(uapValues);
 			BaseOutput<Object> insertDataDictionaryDto = this.dataDictionaryRpc.insertDataDictionaryDto(uapDataDictionaryDto);
-			if(insertDataDictionaryDto.getCode()!=ResultCode.OK) {
-				throw new RuntimeException("添加失败，code:"+uapDataDictionaryDto.getCode()+",name:"+uapDataDictionaryDto.getName()+",不能找到唯一的数据权限");
+			if (insertDataDictionaryDto.getCode() != ResultCode.OK) {
+				throw new RuntimeException("添加失败，code:" + uapDataDictionaryDto.getCode() + ",name:" + uapDataDictionaryDto.getName() + ",不能找到唯一的数据权限");
 			}
 		}
-		
+
 	}
 
 }

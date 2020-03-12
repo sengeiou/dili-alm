@@ -53,7 +53,7 @@ input[class^="easyui-"] {
 				</tr>
 				<tr>
 					<td><input class="easyui-textbox" type="text" name="name" value="${obj.name}" data-options="required:true,validType:'length[1,20]',label:'变更名称:'"></td>
-					<td><input class="easyui-combobox" type="text" value="${obj.name!}" data-options="required:true,label:'项目编号:'"></td>
+					<td><input class="easyui-textbox" type="text" value="${obj.number!}" readonly="readonly" data-options="required:true,label:'项目编号:'"></td>
 				</tr>
 				<tr>
 					<td><input class="easyui-textbox" type="text" readonly name="projectName" id="projectName" value="${obj.projectName!}" data-options="required:true,validType:'length[1,20]',label:'项目名称:'"></td>
