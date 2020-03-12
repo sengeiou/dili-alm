@@ -142,4 +142,17 @@ public interface HardwareResourceApplyService extends BaseService<HardwareResour
 	 *            描述
 	 */
 	void operatorExecuteForTask(Long applyId, Long executorId, String description) throws HardwareResourceApplyException;
+	/**
+	 * 运维经理操作，同意
+	 * 
+	 * @param apply
+	 *            
+	 *   */
+	void operatorManagerTask(Long applyId)throws HardwareResourceApplyException;
+	/**
+	 * 运维日志操作	 * 
+	 * @param apply
+	 *            
+	 *   */
+	void operatorManagerLog(Long applyId, Long operationManagerId, Set<Long> executors, String description)throws HardwareResourceApplyException;
 }

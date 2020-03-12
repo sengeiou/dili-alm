@@ -59,9 +59,9 @@ function opptFormatter(value, row, index) {
 	}
 
 	if (row.operactionManagerAppov) {
-		returnStr = '<span><a href="javascr:void(0);" onclick="openApove('
+		returnStr = '<span><a href="javascr:void(0);" onclick="openApoveForOp('
 				+ row.id + ',\'' + approveType.operationManagerApprove
-				+ '\');">审批</a></span>';
+				+ '\');">分配实施 </a></span>';
 	} else if (row.$_applyState == "4") {
 		returnStr = "<span> 分配实施  </span>";
 	}
@@ -290,6 +290,51 @@ function openApove(id, type) {
 
 }
 
+// 分配发布
+function openApoveForOp(id, type) {
+	var selected = $("#grid").datagrid("getSelected");
+	if (id == null) {
+		if (null == selected) {
+			$.messager.alert('警告', '请选中一条数据');
+			return;
+		} else {
+			id = selected.id;
+
+		}
+	}
+	var rows = $("#grid").datagrid('getRows');
+
+	var length = rows.length;
+	var rowindex;
+	for (var i = 0; i < length; i++) {
+		if (rows[i]['id'] == id) {
+			rowindex = i;
+			selected = rows[rowindex];// 根据index获得其中一行。
+			break;
+		}
+	}
+
+	$('#win').dialog({
+		title : '资源申请详情',
+		width : 830,
+		height : 500,
+		href : '${contextPath!}/hardwareResourceApply/goApprove?id='
+				+ selected.id,
+		modal : true,
+		buttons : [{
+					text : '分配',
+					handler : function() {
+						approve();
+					}
+				}, {
+					text : '关闭',
+					handler : function() {
+						$('#win').dialog('close');
+					}
+				}]
+	});
+
+}
 function checkExecutorAmount(nval, oval) {
 	var me = $(this);
 	if (nval.length > 2) {
