@@ -1,4 +1,7 @@
  <#body>
+ <script>
+    document.domain="diligrp.com";
+ </script>
   <!-- 项目经理审核确定 -->
  <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" id="hardwareResourceApplyDetail"  scrolling="no"  width="100%" height="100%"></iframe>
   <div class="easyui-panel" id="submitDiv" style="width:100%;" align="center">
@@ -25,7 +28,7 @@
     function cancel() {
     	disableBtn();
     	$('#form').form('submit', {
-            url : "${contextPath}/hardwareResourceApply/rejectHardwareResourceApply.action",
+            url : "${contextPath}/hardwareResourceApply/projectManagerApprove.action",
             dataType : "json",
             onSubmit : function(){
 
