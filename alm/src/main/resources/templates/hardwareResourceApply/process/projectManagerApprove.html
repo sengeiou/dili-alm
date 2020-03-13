@@ -65,6 +65,7 @@
 				},
                 success:function(data){
                     var data = eval('(' + data + ')');
+                	$.messager.alert('提示',"操作完成！");
                     if(data.success) {
                         //如果父页面是任务中心
                         if(parent.location.href=='<#config name="bpmc.server.address"/>/task/taskCenter.html') {

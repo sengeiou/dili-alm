@@ -963,6 +963,10 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		}
 		// 审批通过流转到运维部经理审批
 		apply.setApplyState(HardwareApplyState.OPERATION_MANAGER_APPROVING.getValue());
+		int rows = this.getActualDao().updateByPrimaryKey(apply);
+		if (rows <= 0) {
+			throw new HardwareResourceApplyException("更新申请状态失败");
+		}
 		// 插入申请操作记录
 		HardwareApplyOperationRecord record = DTOUtils.newDTO(HardwareApplyOperationRecord.class);
 		record.setApplyId(applyId);
@@ -971,7 +975,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		record.setOperationType(HardwareApplyOperationType.PROJECT_MANAGER.getValue());
 		record.setOperatorId(projectManagerId);
 		record.setOpertateResult(result.getValue());
-		int rows = this.haorMapper.insertSelective(record);
+		rows = this.haorMapper.insertSelective(record);
 		if (rows <= 0) {
 			throw new HardwareResourceApplyException("插入操作记录失败");
 		}
