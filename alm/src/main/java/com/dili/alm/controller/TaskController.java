@@ -118,8 +118,8 @@ public class TaskController {
 		TaskQueryInProjectId query = DTOUtils.as(task, TaskQueryInProjectId.class);
 		query.setInProjectIds(projectIds);
 		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("value").toString())));
-		task.setSort("created");
-		task.setOrder("desc");
+		query.setSort("created");
+		query.setOrder("desc");
 		EasyuiPageOutput listByTeam = taskService.listByTeam(query);
 		return listByTeam.toString();
 	}
