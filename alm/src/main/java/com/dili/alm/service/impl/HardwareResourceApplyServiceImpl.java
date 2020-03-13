@@ -65,11 +65,9 @@ import com.dili.bpmc.sdk.dto.TaskDto;
 import com.dili.bpmc.sdk.rpc.RuntimeRpc;
 import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.ss.base.BaseServiceImpl;
-import com.dili.ss.constant.ResultCode;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.exception.BusinessException;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
@@ -265,6 +263,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		//流程参数设置
 		List<HardwareResourceApplyProcessDto> targetList = DTOUtils.as(list, HardwareResourceApplyProcessDto.class);
 		this.bpmcUtil.fitLoggedUserIsCanHandledProcess(targetList);
+		this.setOperationColumnList(targetList);
 		long total = list instanceof Page ? ((Page) list).getTotal() : list.size();
 		List results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, targetList) : targetList;
 		return new EasyuiPageOutput(Integer.parseInt(String.valueOf(total)), results);
@@ -297,7 +296,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 			throw new HardwareResourceApplyException("当前状态运维部经理不能审批");
 		}
 
-		// 检查实施人是否是运维部员工  ss
+		// 检查实施人是否是运维部员工  
 		if (CollectionUtils.isEmpty(executors)) {
 			throw new HardwareResourceApplyException("执行人不能为空");
 		}
@@ -343,7 +342,48 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		executors.forEach(e -> emails.add(AlmCache.getInstance().getUserMap().get(e).getEmail()));
 		this.sendMail(apply, "IT资源申请", emails);
 	}
-
+	
+	public void operatorManagerTask(Long applyId) throws HardwareResourceApplyException {
+		
+		HardwareResourceApply apply = this.getActualDao().selectByPrimaryKey(applyId);
+		
+		String valProcess = apply.getId().toString();
+        //根据业务号查询任务
+        TaskDto taskDto = DTOUtils.newInstance(TaskDto.class);
+        //taskDto.setProcessInstanceBusinessKey(valProcess);
+        taskDto.setProcessDefinitionId(apply.getProcessDefinitionId());
+        taskDto.setProcessInstanceId(apply.getProcessInstanceId());
+        BaseOutput<List<TaskMapping>> outputList = taskRpc.list(taskDto);
+        if(!outputList.isSuccess()){
+        	throw new HardwareResourceApplyException("用户错误！"+outputList.getMessage());
+        }
+        
+        List<TaskMapping> taskMappings = outputList.getData();
+        //获取formKey
+        TaskMapping selected = taskMappings.get(0);
+		/** 个人信息 **/
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		//先签收
+		BaseOutput out = taskRpc.claim(selected.getId(), userTicket.getId()+"");
+        if(!out.isSuccess()){
+        	throw new HardwareResourceApplyException("用户错误！"+out.getMessage());
+        }
+        
+		out = this.submitApprove(apply.getId(),selected.getId());
+        if(!out.isSuccess()){
+        	throw new HardwareResourceApplyException("用户错误！"+out.getMessage());
+        }
+	}
+	@Override
+	public void operatorManagerLog(Long applyId, Long operationManagerId, Set<Long> executors, String description)
+			throws HardwareResourceApplyException {
+		//保存信息操作
+		this.operationManagerApprove(applyId,operationManagerId,executors,description);
+		HardwareResourceApply apply = this.getActualDao().selectByPrimaryKey(applyId);
+		//流程里的操作
+		this.operatorManagerTask(applyId);
+		
+	}
 	@Override
 	public void operatorExecute(Long applyId, Long executorId, String description) throws HardwareResourceApplyException {
 		// 判断记录是否存在
@@ -373,7 +413,26 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		if (rows <= 0) {
 			throw new HardwareResourceApplyException("更新申请状态失败");
 		}
-
+    	String valProcess = apply.getId().toString();
+    	
+        //根据业务号查询任务
+        TaskDto taskDto = DTOUtils.newInstance(TaskDto.class);
+        //taskDto.setProcessInstanceBusinessKey(valProcess);
+        taskDto.setProcessDefinitionId(apply.getProcessDefinitionId());
+        taskDto.setProcessInstanceId(apply.getProcessInstanceId());
+        BaseOutput<List<TaskMapping>> outputList = taskRpc.list(taskDto);
+        if(!outputList.isSuccess()){
+        	throw new HardwareResourceApplyException("用户错误！"+outputList.getMessage());
+        }
+        
+        List<TaskMapping> taskMappings = outputList.getData();
+        //获取formKey
+        TaskMapping selected = taskMappings.get(0);
+		
+		BaseOutput out = this.submitApprove(applyId,selected.getId());
+        if(!out.isSuccess()){
+        	throw new HardwareResourceApplyException("用户错误！"+out.getMessage());
+        }
 		// 插入申请操作记录
 		HardwareApplyOperationRecord record = DTOUtils.newDTO(HardwareApplyOperationRecord.class);
 		record.setApplyId(applyId);
@@ -411,25 +470,24 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		// 检查是否是项目经理
 		if (!apply.getProjectManagerId().equals(projectManagerId)) {
 			throw new HardwareResourceApplyException("当前用户没有权限执行该操作");
-		}
-		//获取taskId，完成流程操作
-		String processDefinitionId = apply.getProcessDefinitionId();
+		}    	
+		String valProcess = apply.getId().toString();
+    	
         //根据业务号查询任务
         TaskDto taskDto = DTOUtils.newInstance(TaskDto.class);
-        taskDto.setProcessInstanceBusinessKey(applyId+"");
-        BaseOutput<List<TaskMapping>> output = taskRpc.list(taskDto);
-        if(!output.isSuccess()){
-            throw new BusinessException(ResultCode.DATA_ERROR, output.getMessage());
+        //taskDto.setProcessInstanceBusinessKey(valProcess);
+        taskDto.setProcessDefinitionId(apply.getProcessDefinitionId());
+        taskDto.setProcessInstanceId(apply.getProcessInstanceId());
+        BaseOutput<List<TaskMapping>> outputList = taskRpc.list(taskDto);
+        if(!outputList.isSuccess()){
+        	throw new HardwareResourceApplyException("用户错误！"+outputList.getMessage());
         }
-        List<TaskMapping> taskMappings = output.getData();
-        //没有进行中的任务或任务已结束
-        if(CollectionUtils.isEmpty(taskMappings)){
-            throw new BusinessException(ResultCode.DATA_ERROR, "未找到进行中的任务");
-        }
-        //默认没有并发流程，所以取第一个任务
-        //如果有并发流程，需使用TaskDefKey来确认流程节点
-        TaskMapping taskMapping = taskMappings.get(0);
-        String taskId = taskMapping.getId();
+        
+        List<TaskMapping> taskMappings = outputList.getData();
+        //获取formKey
+        TaskMapping selected = taskMappings.get(0);
+		
+        String taskId = selected.getId();
 		//获取任务
 		if (ApproveResult.APPROVED.equals(result)) {
 			//完成流程操作
@@ -512,31 +570,54 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		apply.setApplyState(HardwareApplyState.PROJECT_MANAGER_APPROVING.getValue());
 		/***
 		 * 
-		 * 启动流程相关begin
+		 * 启动流程相关begin，没有流程参数启动流程，有流程参数为重新提交
 		 * 
 		 */
-		/** 个人信息 **/
-		//TODO:启动流程
-		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		// 流程启动参数设置
-		Map<String, Object> variables = new HashMap<>(1);
-		variables.put(HardwareApplyConstant.HARDWARE_APPLY_CODE.getName(), apply.getId()+"");
-		String aa = HardwareApplyConstant.PROCESS_DEFINITION_KEY.getName();
-		// 启动流程
-		BaseOutput<ProcessInstanceMapping> processInstanceOutput = runtimeRpc.startProcessInstanceByKey(HardwareApplyConstant.PROCESS_DEFINITION_KEY.getName(),apply.getId()+"", userTicket.getId().toString(),
-				variables);
-		if (!processInstanceOutput.isSuccess()) {
-			throw new HardwareResourceApplyException("开启审批错误"+processInstanceOutput.getMessage());
+		if (apply.getProcessDefinitionId()==null) {
+			/** 个人信息 **/
+			//TODO:启动流程
+			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+			// 流程启动参数设置
+			Map<String, Object> variables = new HashMap<>(1);
+			variables.put(HardwareApplyConstant.HARDWARE_APPLY_CODE.getName(), apply.getId().toString());
+			String aa = HardwareApplyConstant.PROCESS_DEFINITION_KEY.getName();
+			// 启动流程
+			BaseOutput<ProcessInstanceMapping> processInstanceOutput = runtimeRpc.startProcessInstanceByKey(HardwareApplyConstant.PROCESS_DEFINITION_KEY.getName(),apply.getId()+"", userTicket.getId().toString(),
+					variables);
+			if (!processInstanceOutput.isSuccess()) {
+				throw new HardwareResourceApplyException("开启审批错误"+processInstanceOutput.getMessage());
+			}
+			// 回调，写入相关流程任务数据
+			ProcessInstanceMapping processInstance = processInstanceOutput.getData();
+			apply.setProcessDefinitionId(processInstance.getProcessDefinitionId());
+			apply.setProcessInstanceId(processInstance.getProcessInstanceId());
+
+		}else {
+	        //根据业务号查询任务
+	        TaskDto taskDto = DTOUtils.newInstance(TaskDto.class);
+	        // taskDto.setProcessInstanceBusinessKey(apply.getId().toString());
+	        taskDto.setProcessDefinitionId(apply.getProcessDefinitionId());
+	        taskDto.setProcessInstanceId(apply.getProcessInstanceId());
+	        BaseOutput<List<TaskMapping>> outputList = taskRpc.list(taskDto);
+	        if(!outputList.isSuccess()){
+	        	throw new HardwareResourceApplyException("用户错误！"+outputList.getMessage());
+	        }
+	        
+	        List<TaskMapping> taskMappings = outputList.getData();
+	        //获取formKey
+	        TaskMapping selected = taskMappings.get(0);
+			
+	        String taskId = selected.getId();
+	        
+			this.submitApprove(apply.getId(), taskId);
 		}
-		// 回调，写入相关流程任务数据
-		ProcessInstanceMapping processInstance = processInstanceOutput.getData();
-		apply.setProcessDefinitionId(processInstance.getProcessDefinitionId());
-		apply.setProcessInstanceId(processInstance.getProcessInstanceId());
+		
 		/***
 		 * 
 		 * 启动流程相关end
 		 * 
 		 */
+		
 		int rows = this.getActualDao().updateByPrimaryKeySelective(apply);
 		if (rows <= 0) {
 			throw new HardwareResourceApplyException("更新申请状态失败");
@@ -739,7 +820,59 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 			e.printStackTrace();
 		}
 	}
+	//判断每个节点
+	private void setOperationColumnList(List<HardwareResourceApplyProcessDto> dtos) {
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		if (user == null) {
+			throw new IllegalArgumentException("用户未登录");
+		}
+		
 
+		dtos.forEach(apply -> {
+			// 判断界面上用户是否是提交人
+			boolean approving = apply.getApplyState().equals(HardwareApplyState.APPLING.getValue());
+			// 判断当前登录用户是否是项目经理
+			approving = !approving ? approving : user.getId().equals(apply.getApplicantId());
+			apply.setApproving(approving);
+
+			// 判断界面上用户是否可以点击项目经理确认按钮
+			// 判断申请状态是否是项目经理确认状态
+			boolean projectManagerApprov = apply.getApplyState().equals(HardwareApplyState.PROJECT_MANAGER_APPROVING.getValue());
+			// 判断当前登录用户是否是项目经理
+			projectManagerApprov = !projectManagerApprov ? projectManagerApprov : user.getId().equals(apply.getProjectManagerId());
+			apply.setProjectManagerApprov(projectManagerApprov);
+
+			try {
+
+				// 判断界面上运维部经理审批
+				boolean operactionManagerAppov = apply.getApplyState().equals(HardwareApplyState.OPERATION_MANAGER_APPROVING.getValue());
+				User operactionManagerU = this.queryOperationManager();
+				// 判断当前登录用户是否是部总经理
+				operactionManagerAppov = !operactionManagerAppov ? operactionManagerAppov : operactionManagerU.getId().equals(user.getId());
+				apply.setOperactionManagerAppov(operactionManagerAppov);
+				// 实施
+				boolean implementing = apply.getApplyState().equals(HardwareApplyState.IMPLEMENTING.getValue());
+
+				if (implementing) {
+					List<Long> executors = JSONObject.parseObject(apply.getExecutors(), new TypeReference<List<Long>>() {
+					});
+					implementing = executors.contains(user.getId());
+				}
+				apply.setImplementing(implementing);
+				
+			} catch (HardwareResourceApplyException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			List<Long> envList = JSONObject.parseObject(apply.getServiceEnvironment(), new TypeReference<List<Long>>() {
+			});
+			List<String> target = new ArrayList<>(envList.size());
+			envList.forEach(e -> target.add(this.envProvider.getDisplayText(e, null, null)));
+			apply.setEnvList(target);
+		});
+
+
+	}
 	private void updateHardwareApply(HardwareResourceApplyUpdateDto dto) throws HardwareResourceApplyException {
 		// 判断申请日期
 		if (dto.getApplyDate() == null) {
@@ -803,7 +936,6 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 	public BaseOutput submitApprove(Long id, String taskId) {
 		Map<String, Object> variables = new HashMap<>();
 		variables.put("approved", "true");
-		TaskMapping taskMapping = taskRpc.getById(taskId).getData();
 		  //candidate
 		return taskRpc.complete(taskId, variables);
 	}

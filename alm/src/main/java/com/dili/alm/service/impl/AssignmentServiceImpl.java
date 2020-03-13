@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSONArray;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.Demand;
 import com.dili.alm.domain.HardwareResourceApply;
@@ -154,7 +155,8 @@ public class AssignmentServiceImpl implements AssignmentService {
 	public Assignment setOpdrator(String busCode) {
 		Assignment record = DTOUtils.newDTO(Assignment.class);
 		HardwareResourceApply apply = hardwareResourceApplyService.get(Long.parseLong(busCode));
-		record.setAssignee(apply.getExecutors()); 
+		List<Long> ids = JSONArray.parseArray(apply.getExecutors(), Long.class);
+		record.setAssignee(ids.get(0).toString()); 
 		return record;
 	}
 

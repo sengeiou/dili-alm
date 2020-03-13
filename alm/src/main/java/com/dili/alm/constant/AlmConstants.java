@@ -19,7 +19,7 @@ public class AlmConstants {
 
 	// 运维部门编码
 	public static final String OPERATION_DEPARTMENT_CODE = "maintenance";
-	public static final String MARKET_CODE = "market";
+	public static final String MARKET_CODE = "alm_market";
 	public static final String ENVIRONMENT_CODE = "environment";
 	public static final String REGIONAL_CODE = "regional";
 

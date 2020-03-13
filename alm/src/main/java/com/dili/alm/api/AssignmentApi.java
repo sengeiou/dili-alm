@@ -174,13 +174,13 @@ public class AssignmentApi {
 		return BaseOutput.success().setData(record);
 	}
 	// 资源申请，设置返回编辑
-	@ApiOperation("根据页面保存的运维操作人员")
+	@ApiOperation("返回编辑者")
 	@RequestMapping("/setHardwareApplyApplicant.api")
 	public @ResponseBody BaseOutput<String> setHardwareApplyApplicant(HttpServletRequest request) {
 		Map<String, String[]> map = request.getParameterMap();
 		String[] strs = map.get("processVariables");
 		JSONObject jsonObj = JSON.parseObject(strs[0]);
-		Assignment record = assignmentService.setOpdrator(jsonObj.get("businessKey").toString());
+		Assignment record = assignmentService.setHardwareResourceApplyApply(jsonObj.get("businessKey").toString());
 		return BaseOutput.success().setData(record);
 	}
 	/**LJ add end**/

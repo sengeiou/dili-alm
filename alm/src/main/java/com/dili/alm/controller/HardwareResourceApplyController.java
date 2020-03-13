@@ -40,7 +40,6 @@ import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.impl.HardwareResourceApplyServiceImpl;
 import com.dili.alm.utils.DateUtil;
 import com.dili.bpmc.sdk.domain.TaskMapping;
-import com.dili.bpmc.sdk.dto.TaskDto;
 import com.dili.bpmc.sdk.rpc.BpmcFormRpc;
 import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.ss.domain.BaseOutput;
@@ -310,9 +309,6 @@ public class HardwareResourceApplyController {
 		hardwareResourceApply.setConfigurationRequirement(parseArray);
 		try {
 			hardwareResourceApplyService.saveOrUpdate(hardwareResourceApply);
-			if (source.equals("task")) {
-				hardwareResourceApplyService.submitApprove(hardwareResourceApply.getId(), taskId);
-			}
 		} catch (HardwareResourceApplyException e) {
 			return BaseOutput.failure(e.getMessage());
 		}
@@ -412,7 +408,7 @@ public class HardwareResourceApplyController {
 			requirementDtoList.add(DTOUtils.toEntity(c, HardwareResourceRequirementDto.class, true));
 		});
 		modelMap.addAttribute("requirementList", JSONObject.toJSONString(requirementList));
-
+/*
     	String valProcess = dto.getId()+"";
     	
         //根据业务号查询任务
@@ -426,10 +422,10 @@ public class HardwareResourceApplyController {
         List<TaskMapping> taskMappings = outputList.getData();
         //获取formKey
         TaskMapping selected = taskMappings.get(0);
-        modelMap.put("taskId",selected.getId());
+        modelMap.put("taskId",selected.getId());*/
 		return "hardwareResourceApply/agreePage";
 	}
-
+	@ApiOperation("操作项目经理同意")
 	@RequestMapping(value = "/managerApprove", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput managerApprove(Long id, Boolean isApproved, String description){
 		try {
@@ -450,7 +446,7 @@ public class HardwareResourceApplyController {
 			@ApiImplicitParam(name = "id", paramType = "form", value = "HardwareResourceApply的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/operManagerApprove", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput operManagerApprove(Long id, boolean isApproved, String description,
-			String[] operDepartmentUsers) throws HardwareResourceApplyException {
+			String[] operDepartmentUsers)  {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		if (operDepartmentUsers == null) {
 			return BaseOutput.failure("还未分配");
@@ -459,7 +455,14 @@ public class HardwareResourceApplyController {
 		for (int i = 0; i < operDepartmentUsers.length; i++) {
 			executors.add(Long.parseLong(operDepartmentUsers[i]));
 		}
-		hardwareResourceApplyService.operationManagerApprove(id, user.getId(), executors, description);
+		try {
+			hardwareResourceApplyService.operationManagerApprove(id, user.getId(), executors, description);
+			
+			hardwareResourceApplyService.operatorManagerTask(id);
+		} catch (Exception e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+		
 		return BaseOutput.success("提交成功");
 	}
 
@@ -527,6 +530,7 @@ public class HardwareResourceApplyController {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		if (isApproved) {
 			hardwareResourceApplyService.submitApprove(applyId,taskId);
+			
 			hardwareResourceApplyService.projectManagerApproveForTask(applyId,user.getId(),ApproveResult.APPROVED,description);
 		}else {
 			hardwareResourceApplyService.rejectApprove(applyId, taskId);
