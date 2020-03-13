@@ -207,11 +207,11 @@
 			<optional>true</optional>
 		</dependency>
 
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.dili</groupId>
 			<artifactId>ss-scheduler</artifactId>
 			<version>${sharp-sword.version}</version>
-		</dependency>
+		</dependency> -->
 
 		<!-- 内部包 -->
 		<!-- <dependency> <groupId>com.dili</groupId> <artifactId>almadmin-sdk</artifactId> <version>${project.parent.version}</version> <exclusions> <exclusion> <groupId>com.sun.mail</groupId> <artifactId>javax.mail</artifactId> 
