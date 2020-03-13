@@ -309,6 +309,10 @@ $(function () {
 							$('#demandFileGrid').datagrid('appendRow', row);
 						},
 						onSelect : function(files) {
+							if($('.ajax-file-upload-container').html()!=null&&$('.ajax-file-upload-container').html()!=''){
+								$('.ajax-upload-dragdrop').next('div').append('<div class="ajax-file-upload-error">已有文件上传中，请稍后!</div>')
+								return false;
+							}
 							if(files.length>10){
 								$('.ajax-upload-dragdrop').next('div').append('<div class="ajax-file-upload-error">同时上传文件数量为10个!</div>')
 								return false;

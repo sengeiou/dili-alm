@@ -179,7 +179,7 @@ $("#fileuploader").uploadFile({
     uploadStr: '上传附件',
     deleteStr: '删除',
     abortStr: '上传中',
-    maxFileCount: 10,                //上传文件个数（多个时修改此处
+    //maxFileCount: 10,                //上传文件个数（多个时修改此处
     returnType: 'json',              //服务返回数据
     allowedTypes: 'docx,doc,xls,ppt,pdf,txt,dwg,exb,dps,wps,et,rar,zip,xmind,JPG,GIF,png,bmp',  //允许上传的文件式
 	extErrorStr : '文件格式错误！允许上传格式：',
@@ -229,13 +229,34 @@ $("#fileuploader").uploadFile({
 		console.log(row);
 		$("#fileGrid").datagrid('appendRow', row);
          //加载父元素高度
-		setParentIframeHeight();
+	    var parentIframe = parent.document.getElementById("pageType")
+	    //加载父元素高度
+	 	 if(parentIframe!="undefined"){
+	 		window.parent.setIframeHeight();
+	   }
     },
 	onSelect : function(files) {
 		var old = $('#fileGrid').datagrid('getData').rows;
 		for (var i = 0; i < old.length; i++) {
 			if (files[0].name == old[i].name) {
 				$('.ajax-upload-dragdrop').next('div').append('<div class="ajax-file-upload-error">请不要重复上传文件!</div>')
+				return false;
+			}
+		}
+		if(files.length>10){
+			$('.ajax-upload-dragdrop').next('div').append('<div class="ajax-file-upload-error">同时上传文件数量为10个!</div>')
+			return false;
+		}else{
+			var old = $('#fileGrid').datagrid('getData').rows;
+			if(old.length+files.length<=10){
+				for (var i = 0; i < old.length; i++) {
+					if (files[0].name == old[i].name) {
+						$('.ajax-upload-dragdrop').next('div').append('<div class="ajax-file-upload-error">请不要重复上传文件!</div>')
+						return false;
+					}
+				}
+			}else{
+				$('.ajax-upload-dragdrop').next('div').append('<div class="ajax-file-upload-error">文件数量最大为10个!</div>')
 				return false;
 			}
 		}
@@ -365,22 +386,68 @@ function dateFormat_1(longTypeDate) {
 </script>
   <script type="text/javascript">
 	    function fileOptFormatter(value, row, index) {
-	    	var content = '<a style="padding:0px 5px;" href="javascript:void(0);" onclick="delFile('+ index + ');">下载</a>';
+	    	var content = '<a style="padding:0px 5px;" href="javascript:void(0);"  onclick="delVersionFile(' + row.id
+			+ ');">删除</a>';
 	    	return content;
 	    }
-	    function delFile(id) {
-			var fileIds =new Array($('#documentUrl').val()) ;//取值
-			var index_id=fileIds.indexOf(data.data[0].id);
-			fileIds.splice(index_id,1);
-			$("#documentUrl").val();
-			$("#documentUrl").val(fileIds);
-	    	$('#versionFileGrid').datagrid('deleteRow', index);
+	    var myfiles = new Array();
+	    function delVersionFile(id) {
+	    	
+	    	  if(confirm('确定要删除吗')==true){
+
+	    		  $.ajax({
+  					type : "POST",
+  					url : '${contextPath!}/files/delete',
+  					data : {
+  						id : id
+  					},
+  					success : function(data) {
+  						if (data.code == 200) {
+  							var fileIds =$('#documentUrl').val().split(",");
+  					        for(var i=0; i<fileIds.length;i++){
+  					        	if(fileIds[i]==id){
+  					        		fileIds.splice(i,1);
+  		 							$("#documentUrl").val();
+  		 						    $("#documentUrl").val(fileIds);
+  					        	}
+  					        }
+
+   						    
+  							var selected = $('#fileGrid')
+  									.datagrid('getSelected');
+  							var index = $('#fileGrid').datagrid(
+  									'getRowIndex', selected);
+  							$('#fileGrid').datagrid('deleteRow', index);
+  							$($('#fileGrid').datagrid('getRows')).each(
+  									function(i, item) {
+  										if (item.id == selected.id) {
+  											var rowIndex = $('#fileGrid')
+  													.datagrid('getRowIndex',
+  															item);
+  											$('#fileGrid').datagrid(
+  													'deleteRow', rowIndex);
+  											$('#fileGrid')
+  													.datagrid('acceptChanges');
+  											return false;
+  										}
+  							});
+  							
+  						} else {
+  							$.messager.alert('错误', data.result);
+  						}
+  					},
+  					error : function() {
+  						$.messager.alert('错误', '远程访问失败');
+  					}
+  				});
+
+	    	    }else{
+
+	    	       return false;
+
+	    	    }
 	    }
-/* 	    $('#fileGrid').datagrid({
-            onLoadSuccess: function (data) {
-            	window.parent.setIframeHeight();
-            }
-        }); */
+
     </script>
     <script type="text/javascript">
 	<#demand_publicJs />
