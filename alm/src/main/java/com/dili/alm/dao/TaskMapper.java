@@ -1,5 +1,6 @@
 package com.dili.alm.dao;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import com.dili.alm.domain.dto.TaskHoursByProjectDto;
 import com.dili.alm.domain.dto.TaskStateCountDto;
 import com.dili.alm.domain.dto.UserWorkHourDetailDto;
 import com.dili.ss.base.MyMapper;
+import com.dili.uap.sdk.domain.User;
 
 public interface TaskMapper extends MyMapper<Task> {
 
@@ -46,15 +48,15 @@ public interface TaskMapper extends MyMapper<Task> {
 
 	/***
 	 * 数据统计相关 begin
-	 * 
 	 * @param order
 	 *            TODO
+	 * @param users TODO
 	 * @param srot
 	 *            TODO
 	 ***/
 	List<TaskByUsersDto> selectTaskHourByUser(@Param("beginTime") String beginTime, @Param("endTime") String endTime,
 			@Param("departmentIds") List<Long> dids, @Param("uIds") List<Long> uids, @Param("order") String order,
-			@Param("sort") String sort);
+			@Param("sort") String sort,@Param("users") Collection<User> users);
 
 	List<TaskHoursByProjectDto> selectProjectHours(@Param("beginTime") String beginTime,
 			@Param("endTime") String endTime, @Param("pids") List<Long> projectId);

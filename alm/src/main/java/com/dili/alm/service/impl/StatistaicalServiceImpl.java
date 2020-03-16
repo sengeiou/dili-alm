@@ -104,8 +104,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 				ptc.setType(dataDictionaryValueDto.getCode());
 				List<ProjectStatusCountDto> statusCount;
 				try {
-					statusCount = projectMapper.getTpyeByProjectCount(dataDictionaryValueDto.getValue(), startDate,
-							endDate, df.parse(df.format(new Date())));
+					statusCount = projectMapper.getTpyeByProjectCount(dataDictionaryValueDto.getValue(), startDate, endDate, df.parse(df.format(new Date())));
 				} catch (ParseException e) {
 					throw new RuntimeException(e);
 				}
@@ -172,8 +171,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	/*** 查询工时相关services****by******JING***BEGIN ****/
 
 	@Override
-	public List<TaskByUsersDto> listTaskHoursByUser(String startTime, String endTime, List<Long> uids, List<Long> dids,
-			String order, String sort) {
+	public List<TaskByUsersDto> listTaskHoursByUser(String startTime, String endTime, List<Long> uids, List<Long> dids, String order, String sort) {
 		if (startTime == null) {
 			startTime = SELECT_HOURS_BY_USER_START_DATE;
 		} else {
@@ -185,7 +183,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 			endTime += "";
 		}
 
-		List<TaskByUsersDto> list = taskMapper.selectTaskHourByUser(startTime, endTime, dids, uids, order, sort);
+		List<TaskByUsersDto> list = taskMapper.selectTaskHourByUser(startTime, endTime, dids, uids, order, sort, AlmCache.getInstance().getUserMap().values());
 		list.add(this.getTotal(list));
 		return list;
 	}
@@ -222,8 +220,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	 * 查询时间段内工作的人员，数据填充内容
 	 */
 	@Override
-	public List<SelectTaskHoursByUserDto> listUserHours(String startTime, String endTime, List<Long> projectIds)
-			throws ParseException {
+	public List<SelectTaskHoursByUserDto> listUserHours(String startTime, String endTime, List<Long> projectIds) throws ParseException {
 		if (startTime == null || startTime.equals("")) {
 			startTime = DateUtil.getPastDate(7);
 		} else {
@@ -251,14 +248,12 @@ public class StatistaicalServiceImpl implements StatisticalService {
 
 		// 查询项目组成员
 		Example example = new Example(Team.class);
-		example.createCriteria().andIn("projectId",
-				CollectionUtils.isEmpty(projectIds) ? selectProjectIds : projectIds);
+		example.createCriteria().andIn("projectId", CollectionUtils.isEmpty(projectIds) ? selectProjectIds : projectIds);
 		List<Team> teams = this.teamMapper.selectByExample(example);
 		Set<Long> userIds = new HashSet<>();
 		teams.forEach(t -> userIds.add(t.getMemberId()));
 
-		List<Map<Object, Object>> listMap = taskMapper.sumUserProjectTaskHour(selectProjectIds, userIds,
-				df.parse(startTime), df.parse(endTime));
+		List<Map<Object, Object>> listMap = taskMapper.sumUserProjectTaskHour(selectProjectIds, userIds, df.parse(startTime), df.parse(endTime));
 
 		List<SelectTaskHoursByUserDto> list = new ArrayList<SelectTaskHoursByUserDto>(listMap.size());
 		listMap.forEach(lm -> {
@@ -272,10 +267,8 @@ public class StatistaicalServiceImpl implements StatisticalService {
 			// excel专用
 			for (TaskHoursByProjectDto projectHours : taskHoursForPoject) {
 				Long projectId = projectHours.getProjectId();
-				hoursMap.put("project" + projectId + "sumUPTaskHours",
-						lm.get(projectId + "_total_task_hour").toString());// excel专用key
-				hoursMap.put("project" + projectId + "sumUPOverHours",
-						lm.get(projectId + "_total_over_hour").toString());
+				hoursMap.put("project" + projectId + "sumUPTaskHours", lm.get(projectId + "_total_task_hour").toString());// excel专用key
+				hoursMap.put("project" + projectId + "sumUPOverHours", lm.get(projectId + "_total_over_hour").toString());
 			}
 			entity.setProjectHours(hoursMap);
 			list.add(entity);
@@ -289,8 +282,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 				projectTotalHoursSelectList.add(p.getProjectId());
 			});
 		}
-		SelectTaskHoursByUserDto totalTaskandOverHour = this.selectTotalTaskAndOverHours(projectTotalHoursSelectList,
-				df.parse(startTime), df.parse(endTime));
+		SelectTaskHoursByUserDto totalTaskandOverHour = this.selectTotalTaskAndOverHours(projectTotalHoursSelectList, df.parse(startTime), df.parse(endTime));
 		list.add(totalTaskandOverHour);
 
 		return list;
@@ -299,8 +291,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	@Override
 	public SelectTaskHoursByUserDto selectTotalTaskAndOverHours(List<Long> projectIds, Date startDate, Date endDate) {
 
-		List<SelectTaskHoursByUserProjectDto> listProjectTaskOverHours = taskMapper.selectUsersProjectHours(null,
-				projectIds, startDate, endDate);
+		List<SelectTaskHoursByUserProjectDto> listProjectTaskOverHours = taskMapper.selectUsersProjectHours(null, projectIds, startDate, endDate);
 		SelectTaskHoursByUserDto totalTaskandOverHour = new SelectTaskHoursByUserDto();
 		totalTaskandOverHour.setUserName("合计");
 		totalTaskandOverHour.setUserNo((long) 0);
@@ -331,8 +322,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	 * 项目工时sheet导出
 	 */
 	@Override
-	public HSSFWorkbook downloadProjectHours(OutputStream os, String startTime, String endTime, List<Long> projectIds)
-			throws Exception {
+	public HSSFWorkbook downloadProjectHours(OutputStream os, String startTime, String endTime, List<Long> projectIds) throws Exception {
 
 		List<TaskHoursByProjectDto> projects = listProjectHours(startTime, endTime, projectIds);
 		List<SelectTaskHoursByUserDto> objs = listUserHours(startTime, endTime, projectIds);
@@ -344,10 +334,8 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		entityList.add(new ExcelExportEntity("员工&项目", "name", 25));
 		if (projects != null || projects.size() > 0) {
 			for (TaskHoursByProjectDto dto : projects) {
-				entityList.add(
-						new ExcelExportEntity(dto.getProjectName() + "-常规工时", "project_to_" + dto.getProjectId(), 25));
-				entityList.add(
-						new ExcelExportEntity(dto.getProjectName() + "-加班工时", "project_oo_" + dto.getProjectId(), 25));
+				entityList.add(new ExcelExportEntity(dto.getProjectName() + "-常规工时", "project_to_" + dto.getProjectId(), 25));
+				entityList.add(new ExcelExportEntity(dto.getProjectName() + "-加班工时", "project_oo_" + dto.getProjectId(), 25));
 			}
 		}
 
@@ -361,10 +349,8 @@ public class StatistaicalServiceImpl implements StatisticalService {
 				map.put("name", dto2.getUserName());
 
 				for (TaskHoursByProjectDto dto : projects) {
-					map.put("project_to_" + dto.getProjectId(),
-							dto2.getProjectHours().get("project" + dto.getProjectId() + "sumUPTaskHours"));
-					map.put("project_oo_" + dto.getProjectId(),
-							dto2.getProjectHours().get("project" + dto.getProjectId() + "sumUPOverHours"));
+					map.put("project_to_" + dto.getProjectId(), dto2.getProjectHours().get("project" + dto.getProjectId() + "sumUPTaskHours"));
+					map.put("project_oo_" + dto.getProjectId(), dto2.getProjectHours().get("project" + dto.getProjectId() + "sumUPOverHours"));
 				}
 
 				map.put("sumhours", dto2.getSumTaskHours());
@@ -374,8 +360,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 			}
 		}
 
-		HSSFWorkbook excel = (HSSFWorkbook) ExcelExportUtil.exportExcel(
-				new ExportParams("项目工时总览", "项目工时总览" + DateUtil.getDate(new Date())), entityList, dataResult);
+		HSSFWorkbook excel = (HSSFWorkbook) ExcelExportUtil.exportExcel(new ExportParams("项目工时总览", "项目工时总览" + DateUtil.getDate(new Date())), entityList, dataResult);
 
 		return excel;
 
@@ -567,8 +552,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	}
 
 	@Override
-	public ProjectYearCoverForAllDto getProjectYearsCoverForAll(String year, String month, boolean isFullYear,
-			String weekNum) {
+	public ProjectYearCoverForAllDto getProjectYearsCoverForAll(String year, String month, boolean isFullYear, String weekNum) {
 		String start = null;
 		String end = null;
 		if (isFullYear) {
@@ -600,8 +584,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	 * 项目工时显示图表
 	 */
 	@Override
-	public List<SelectTaskHoursByUserProjectDto> selectTotalTaskAndOverHoursForEchars(List<Long> projectIds,
-			Date startDate, Date endDate) {
+	public List<SelectTaskHoursByUserProjectDto> selectTotalTaskAndOverHoursForEchars(List<Long> projectIds, Date startDate, Date endDate) {
 		if (startDate == null) {
 			Calendar calendar = Calendar.getInstance();
 			calendar.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) - 7);
@@ -610,8 +593,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		if (endDate == null) {// 没有默认为至今
 			endDate = new Date();
 		}
-		List<SelectTaskHoursByUserProjectDto> listProjectTaskOverHours = taskMapper.selectUsersProjectHours(null,
-				projectIds, startDate, endDate);
+		List<SelectTaskHoursByUserProjectDto> listProjectTaskOverHours = taskMapper.selectUsersProjectHours(null, projectIds, startDate, endDate);
 
 		return listProjectTaskOverHours;
 	}
@@ -646,12 +628,10 @@ public class StatistaicalServiceImpl implements StatisticalService {
 				projectProgressDto.setDateProgress(0 + "%");
 				break;
 			case 1:
-				projectProgressDto.setDateProgress(
-						getDateProgress(projectProgressDto.getStartDate(), projectProgressDto.getEndDate()) + "%");
+				projectProgressDto.setDateProgress(getDateProgress(projectProgressDto.getStartDate(), projectProgressDto.getEndDate()) + "%");
 				break;
 			case 3:
-				projectProgressDto.setDateProgress(
-						getDateProgress(projectProgressDto.getStartDate(), projectProgressDto.getEndDate()) + "%");
+				projectProgressDto.setDateProgress(getDateProgress(projectProgressDto.getStartDate(), projectProgressDto.getEndDate()) + "%");
 				break;
 			case 4:
 				projectProgressDto.setCompletedProgress(null);
@@ -723,8 +703,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 				pts.setType(dataDictionaryValueDto.getCode());
 				List<ProjectStatusCountDto> statusCount;
 				try {
-					statusCount = projectMapper.getTpyeByProjectCount(dataDictionaryValueDto.getValue(), startDate,
-							endDate, df.parse(df.format(now)));
+					statusCount = projectMapper.getTpyeByProjectCount(dataDictionaryValueDto.getValue(), startDate, endDate, df.parse(df.format(now)));
 				} catch (ParseException e) {
 					throw new RuntimeException(e);
 				}
@@ -739,8 +718,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 			}
 			BigDecimal ptotal = new BigDecimal(projectTotal);
 			for (ProjectTypeCountDto pts : list) {
-				pts.setProjectTypeProgress(new BigDecimal(pts.getTypeCount()).divide(ptotal, 2, RoundingMode.HALF_UP)
-						.multiply(new BigDecimal("100")).setScale(0) + "%");
+				pts.setProjectTypeProgress(new BigDecimal(pts.getTypeCount()).divide(ptotal, 2, RoundingMode.HALF_UP).multiply(new BigDecimal("100")).setScale(0) + "%");
 			}
 			return list;
 		}
@@ -768,8 +746,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 			for (DataDictionaryValueDto dataDictionaryValueDto : ddvdList) {
 				ProjectTypeCountDto ptc = new ProjectTypeCountDto();
 				ptc.setType(dataDictionaryValueDto.getCode());
-				List<ProjectStatusCountDto> statusCount = projectMapper.getTpyeByProjectCount(
-						dataDictionaryValueDto.getValue(), startDate, endDate, df.parse(df.format(new Date())));
+				List<ProjectStatusCountDto> statusCount = projectMapper.getTpyeByProjectCount(dataDictionaryValueDto.getValue(), startDate, endDate, df.parse(df.format(new Date())));
 				int total = 0;
 				for (ProjectStatusCountDto projectStatusCountDto : statusCount) {
 					total = total + projectStatusCountDto.getStateCount();
@@ -836,8 +813,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		List<ProjectStatusCountDto> projectCount = projectMapper.getStateByProjectCount(userId, projectId);
 		for (ProjectStatusCountDto projectStatusCountDto : projectCount) {
 			Map<String, Object> map = new HashMap<String, Object>();
-			String string = AlmCache.getInstance().getProjectStateMap()
-					.get(projectStatusCountDto.getProjectState().toString());
+			String string = AlmCache.getInstance().getProjectStateMap().get(projectStatusCountDto.getProjectState().toString());
 			map.put("name", string);
 			map.put("value", projectStatusCountDto.getStateCount());
 			list.add(map);
