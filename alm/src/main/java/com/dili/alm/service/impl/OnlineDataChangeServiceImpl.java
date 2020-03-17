@@ -23,6 +23,7 @@ import com.dili.alm.domain.Project;
 /*import com.dili.alm.domain.TaskMapping;*/
 import com.dili.alm.domain.dto.OnlineDataChangeBpmcDtoDto;
 import com.dili.alm.exceptions.OnlineDataChangeException;
+import com.dili.alm.exceptions.WorkOrderException;
 import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.rpc.RuntimeApiRpc;
 import com.dili.alm.service.OnlineDataChangeService;
@@ -87,7 +88,12 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
    	 	   map.put("dept", pro.getProjectManager()+"");
    	     //  map.put("dept","1");
 		   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almOnlineDataChangeProcess", onlineDataChange.getId().toString(), id+"",map);
-	       onlineDataChange.setProcessInstanceId(object.getData().getProcessInstanceId()); 
+		   if(object.getCode().equals("5000")) {
+			   throw new OnlineDataChangeException("失败");
+	       }
+
+		   
+		   onlineDataChange.setProcessInstanceId(object.getData().getProcessInstanceId()); 
 	       onlineDataChange.setProcessDefinitionId(object.getData().getProcessDefinitionId());
 	       onlineDataChange.setId(onlineDataChange.getId());
 	       
@@ -110,7 +116,10 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		   	 	   
 				   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almOnlineDataChangeProcess", onlineDataChange.getId().toString(), id+"",map);
 			    //   System.out.println(object.getCode()+object.getData()+object.getErrorData());
-			     
+				   if(object.getCode().equals("5000")) {
+					   throw new OnlineDataChangeException("失败");
+			       }
+
 			       OnlineDataChange onlineData=new OnlineDataChange();
 			       onlineData.setProcessInstanceId(object.getData().getProcessInstanceId()); 
 			       onlineData.setProcessDefinitionId(object.getData().getProcessDefinitionId());
@@ -137,8 +146,8 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
         	  try {
            	   tasksRpc.complete(taskId);
        	    } catch (Exception e) {
-       	    	 LOGGER.error("任务签收失败");
-       		    throw new OnlineDataChangeException("任务签收失败");
+       	    	
+       		    throw new OnlineDataChangeException("失败");
        	    }
            	
     	   
