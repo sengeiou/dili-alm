@@ -71,6 +71,7 @@ import com.dili.alm.domain.dto.apply.ApplyApprove;
 import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.ApproveException;
 import com.dili.alm.exceptions.ProjectApplyException;
+import com.dili.alm.exceptions.ProjectOnlineApplyException;
 import com.dili.alm.provider.ProjectTypeProvider;
 import com.dili.alm.rpc.MyTasksRpc;
 import com.dili.alm.rpc.RoleRpc;
@@ -350,7 +351,11 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 				sendMail(complete, false);
 			}
 	    	map1.put("approved", "false");
-	    	taskRpc.complete(taskId, map1);
+	    	BaseOutput<String> output = taskRpc.complete(taskId, map1);
+	    	if (!output.isSuccess()) {
+				LOGGER.error(output.getMessage());
+				throw new ApproveException("执行任务失败");
+			}
 			break;
 		case "accept":
 			if (Objects.equals(approve.getType(), AlmConstants.ApproveType.APPLY.getCode()) && isManager) {
@@ -382,7 +387,11 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 			}
 			Map<String, Object> map2=new HashMap<>();
 	    	map2.put("approved", "true");
-	    	taskRpc.complete(taskId, map2);
+	    	BaseOutput<String> output2 = taskRpc.complete(taskId, map2);
+	    	if (!output2.isSuccess()) {
+				LOGGER.error(output2.getMessage());
+				throw new ApproveException("执行任务失败");
+			}
 			break;
 		default:
 			break;
@@ -788,6 +797,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		return BaseOutput.success();
 	}
 	@Override
+	@Transactional(rollbackFor = ApplicationException.class)
 	public BaseOutput changeVerity(Long id, String opt, String notes,String taskId) {
 		VerifyApproval verifyApproval = DTOUtils.newDTO(VerifyApproval.class);
 		verifyApproval.setApproveId(id);
@@ -795,19 +805,33 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		verifyApproval.setCreated(new Date());
 		verifyApproval.setResult(opt);
 		verifyApproval.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
-		verifyApprovalService.insert(verifyApproval);
-		Approve approve = get(id);
-		Map<String, Object> map2=new HashMap<>();
-    	
-		if(Objects.equals(opt, "accept")) {
-			approve.setStatus(AlmConstants.ChangeState.VRIFY.getCode() );
-			updateSelective(approve);
-			map2.put("approved", "true");
-			taskRpc.complete(taskId, map2);
-		}else {
-			map2.put("approved", "false");
-			taskRpc.complete(taskId, map2);
+		try {
+			Approve approve = get(id);
+			Map<String, Object> map2=new HashMap<>();
+			verifyApprovalService.insert(verifyApproval);
+			if(Objects.equals(opt, "accept")) {
+				approve.setStatus(AlmConstants.ChangeState.VRIFY.getCode() );
+				updateSelective(approve);
+				map2.put("approved", "true");
+				BaseOutput<String> output2 = taskRpc.complete(taskId, map2);
+				if (!output2.isSuccess()) {
+					LOGGER.error(output2.getMessage());
+					throw new ApproveException("执行任务失败");
+				}
+			}else {
+				map2.put("approved", "false");
+				BaseOutput<String> output2 = taskRpc.complete(taskId, map2);
+				if (!output2.isSuccess()) {
+					LOGGER.error(output2.getMessage());
+					throw new ApproveException("执行任务失败");
+				}
+			}
+		} catch (ApproveException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return BaseOutput.failure(e.getMessage());
 		}
+
 		return BaseOutput.success();
 	}
 
