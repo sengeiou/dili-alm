@@ -465,7 +465,10 @@
 		wo.executor_id
 		) t2 ON u.id = t2.executor_id
 		LEFT JOIN
-		department d ON
+		(SELECT <foreach collection="depts" item="dept" separator="UNION ALL SELECT">
+			#{dept.id} AS id,
+			#{dept.name} as `name`			
+		</foreach>) d ON
 		u.department_id = d.id
 		WHERE
 		u.user_name NOT LIKE '%admin%'

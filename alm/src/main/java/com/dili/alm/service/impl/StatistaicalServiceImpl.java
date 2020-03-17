@@ -183,7 +183,8 @@ public class StatistaicalServiceImpl implements StatisticalService {
 			endTime += "";
 		}
 
-		List<TaskByUsersDto> list = taskMapper.selectTaskHourByUser(startTime, endTime, dids, uids, order, sort, AlmCache.getInstance().getUserMap().values());
+		List<TaskByUsersDto> list = taskMapper.selectTaskHourByUser(startTime, endTime, dids, uids, order, sort, AlmCache.getInstance().getUserMap().values(),
+				AlmCache.getInstance().getDepMap().values());
 		list.add(this.getTotal(list));
 		return list;
 	}
