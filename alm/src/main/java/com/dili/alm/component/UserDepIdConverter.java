@@ -322,6 +322,39 @@ public class UserDepIdConverter implements InitializingBean {
 				}
 				h.setApplicantId(uapUser.getId());
 			}
+
+			// projectManagerId
+			final Long almProjectManagerId = h.getProjectManagerId();
+			if (almProjectManagerId != null) {
+				final AlmUser almApplicant = almUsers.stream().filter(u -> u.getId().equals(almProjectManagerId)).findFirst().orElse(null);
+				if (almApplicant == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm用户", almProjectManagerId));
+					return;
+				}
+				User uapUser = uapUsers.stream().filter(u -> u.getUserName().equals(almApplicant.getUserName())).findFirst().orElse(null);
+				if (uapUser == null) {
+					LOGGER.warn(String.format("未找到username为%s的uap用户", almApplicant.getUserName()));
+					return;
+				}
+				h.setProjectManagerId(uapUser.getId());
+			}
+
+			// dep
+			final Long almDepId = h.getApplicationDepartmentId();
+			if (almDepId != null) {
+				AlmDepartmentDto almDep = almDepartments.stream().filter(d -> d.getId().equals(almDepId)).findFirst().orElse(null);
+				if (almDep == null) {
+					LOGGER.warn(String.format("未找到id为%d的alm部门", almDepId));
+					return;
+				}
+				Department uapDep = uapDepartments.stream().filter(d -> d.getCode().equals(almDep.getCode())).findFirst().orElse(null);
+				if (uapDep == null) {
+					LOGGER.warn(String.format("未找到code为%s的uap部门", almDep.getCode()));
+					return;
+				}
+				h.setApplicationDepartmentId(uapDep.getId());
+			}
+
 			this.hardwareResourceApplyMapper.updateByPrimaryKey(h);
 
 			// executors

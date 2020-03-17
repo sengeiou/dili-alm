@@ -253,7 +253,6 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 	@Override
 	public EasyuiPageOutput listEasyuiPageByExample(HardwareResourceApply domain, boolean useProvider) throws Exception {
 
-		HardwareResourceApply aa = DTOUtils.newDTO(HardwareResourceApply.class);
 		List<HardwareResourceApply> list = listByExample(domain);
 		list.forEach(h -> {
 			h.aset("envList", this.parseEnvToString(h.getServiceEnvironment()));

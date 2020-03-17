@@ -1058,8 +1058,8 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	private List<TaskEntity> TaskParseTaskSelectDto(List<Task> results, boolean isUpdateDetail) {
 		List<TaskEntity> target = new ArrayList<>(results.size());
 		for (Task task : results) {
-//			TaskEntity dto = new TaskEntity(task);
-			TaskEntity dto = BeanConver.copyBean(task, TaskEntity.class);
+			TaskEntity dto = new TaskEntity(task);
+//			TaskEntity dto = BeanConver.copyBean(task, TaskEntity.class);
 			// 项目和版本是否在进行中
 			Project project = AlmCache.getInstance().getProjectMap().get(task.getProjectId());
 			dto.setProjectManagerId(project.getProjectManager());
