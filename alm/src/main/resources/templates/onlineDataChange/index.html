@@ -278,7 +278,7 @@
            	      return "<font color='gray'>驳回中</font>";
            	    }
     	   }else if(row.$_dataStatus==2){
-    		 //  alert(userId+''+row.projectManager)
+    		   alert(userId+''+row.projectManager)
     		    if(userId==row.projectManager){
     		    	  var  dom= '<a href="javascript:void(0);" onclick="handleProcess(\'' + row.taskId + '\',\'' + row.formKey + '\',' + row.isNeedClaim + ');">项目经理确认中</a>';
     		    	  return dom;

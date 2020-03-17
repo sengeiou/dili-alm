@@ -383,9 +383,9 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 				onlingRoleIds.add(Long.parseLong("44"));
 				*/
 			   Project  pro;
-			 /*  List<Long>  dbaList;
+		/*	   List<Long>  dbaList;
 			   List<Long>  onLingList;*/
-		     /* for (OnlineDataChangeBpmcDtoDto odcData : targetList) {
+		      for (OnlineDataChangeBpmcDtoDto odcData : targetList) {
 		    		pro=null;
 		    		pro=projectService.get(odcData.getProjectId());
 		    		if(pro!=null) {
@@ -394,7 +394,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		    		}
 		    		
 		    		
-		    		dbaList=new ArrayList<Long>();
+		    /*		dbaList=new ArrayList<Long>();
 		    		List<RoleUserDto>  dbaDto=roleRpc.listRoleUserByRoleIds(dbaRoleIds).getData();
 		    		for (RoleUserDto roleUserDto : dbaDto) {
 		    			 List<User>  lsitUser=roleUserDto.getUsers();
@@ -402,8 +402,8 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		    					dbaList.add(object.getId());
 						}
 		    			
-					}
-		    		List<RoleUserDto>  onlingRoleIdDto=roleRpc.listRoleUserByRoleIds(onlingRoleIds).getData();
+					}*/
+		    		/*List<RoleUserDto>  onlingRoleIdDto=roleRpc.listRoleUserByRoleIds(onlingRoleIds).getData();
 		    	
 		    		onLingList=new ArrayList<Long>();
 		    		for (RoleUserDto roleUserDto : onlingRoleIdDto) {
@@ -414,8 +414,8 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		    			 }
 					}
 		    		odcData.setDbaManager(dbaList);
-		    		odcData.setOnlineManager(onLingList);
-				}*/
+		    		odcData.setOnlineManager(onLingList);*/
+				}
 		    	
 			   List onlineDataChangeList = ValueProviderUtils.buildDataByProvider(metadata,targetList);
 			  EasyuiPageOutput taskEasyuiPageOutput = new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(list.size()))), onlineDataChangeList);
