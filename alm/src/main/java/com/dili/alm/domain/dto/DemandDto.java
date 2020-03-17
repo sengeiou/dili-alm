@@ -43,9 +43,16 @@ public class DemandDto extends Demand implements ProcessHandleInfoDto {
 	int processFlag;// 流程编辑标识 1是可编辑，空为不可编辑
 	@Transient
 	int processBtnFlag;// 流程编辑标识 1是处理，2位审批
+	/**大内容块忽略8**/
+	@Transient
+    @Column(name = "`reason`")
+    private String reason;
 	@Transient
 	@Column(name = "`content`")
 	private String content;
+	@Transient
+	@Column(name = "`feedback_content`")
+	private String feedbackContent;
 	/**
 	 * 当前登录人是否可以处理流程
 	 */

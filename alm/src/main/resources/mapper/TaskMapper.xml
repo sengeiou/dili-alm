@@ -407,7 +407,12 @@
 		IFNULL(
 		t2.workOrderTaskHours, 0 ) AS workOrderTaskHours
 		FROM
-		`user` u
+		(SELECT <foreach collection="users" item="user" separator="UNION ALL SELECT">
+			#{user.id} AS id,
+			#{user.userName} as user_name,
+			#{user.realName} AS real_name,
+			#{user.departmentId} AS department_id
+		</foreach>) u
 		LEFT JOIN (
 		SELECT
 		t.`owner`,
@@ -460,10 +465,13 @@
 		wo.executor_id
 		) t2 ON u.id = t2.executor_id
 		LEFT JOIN
-		department d ON
+		(SELECT <foreach collection="depts" item="dept" separator="UNION ALL SELECT">
+			#{dept.id} AS id,
+			#{dept.name} as `name`			
+		</foreach>) d ON
 		u.department_id = d.id
 		WHERE
-		u.id != 1
+		u.user_name NOT LIKE '%admin%'
 		<if test="uIds != null and uIds.size>0">
 			AND u.id in
 			<foreach item="item" index="index" collection="uIds" open="(" separator="," close=")">

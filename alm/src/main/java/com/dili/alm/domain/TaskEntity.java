@@ -73,28 +73,28 @@ public class TaskEntity extends BaseDomain implements Task {
 
 	private Long projectManagerId;
 
-//	public TaskEntity(Task task) {
-//		this.id = task.getId();
-//		this.beforeTask = task.getBeforeTask();
-//		this.changeId = task.getChangeId();
-//		this.created = task.getCreated();
-//		this.modifyMemberId = task.getModifyMemberId();
-//		this.describe = task.getDescribe();
-//		this.flow = task.getFlow();
-//		this.modified = task.getModified();
-//		this.createMemberId = task.getCreateMemberId();
-//		this.versionId = task.getVersionId();
-//		this.owner = task.getOwner();
-//		this.planTime = task.getPlanTime();
-//		this.name = task.getName();
-//		this.type = task.getType();
-//		this.status = task.getStatus();
-//		this.startDate = task.getStartDate();
-//		this.endDate = task.getEndDate();
-//		this.projectId = task.getProjectId();
-//		this.factBeginDate = task.getFactBeginDate();
-//		this.factEndDate = task.getFactBeginDate();
-//	}
+	public TaskEntity(Task task) {
+		this.id = task.getId();
+		this.beforeTask = task.getBeforeTask();
+		this.changeId = task.getChangeId();
+		this.created = task.getCreated();
+		this.modifyMemberId = task.getModifyMemberId();
+		this.describe = task.getDescribe();
+		this.flow = task.getFlow();
+		this.modified = task.getModified();
+		this.createMemberId = task.getCreateMemberId();
+		this.versionId = task.getVersionId();
+		this.owner = task.getOwner();
+		this.planTime = task.getPlanTime();
+		this.name = task.getName();
+		this.type = task.getType();
+		this.status = task.getStatus();
+		this.startDate = task.getStartDate();
+		this.endDate = task.getEndDate();
+		this.projectId = task.getProjectId();
+		this.factBeginDate = task.getFactBeginDate();
+		this.factEndDate = task.getFactBeginDate();
+	}
 
 	@Override
 	public Long getBeforeTask() {
