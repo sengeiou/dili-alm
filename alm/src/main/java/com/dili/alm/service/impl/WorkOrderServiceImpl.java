@@ -1,6 +1,7 @@
 package com.dili.alm.service.impl;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,8 +32,10 @@ import com.dili.alm.domain.dto.WorkOrderUpdateDto;
 import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.WorkOrderException;
 import com.dili.alm.manager.WorkOrderManager;
+import com.dili.alm.rpc.MyTasksRpc;
 import com.dili.alm.service.WorkOrderService;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 
 /**
@@ -59,6 +62,9 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 	private WorkOrderExecutionRecordMapper woerMapper;
 	@Autowired
 	private DemandProjectMapper demandProjectMapper;
+	
+	@Autowired
+	private   MyTasksRpc  tasksRpc;
 	@Override
 	public void allocate(Long id, Long executorId, Integer workOrderType, Integer priority, OperationResult result,
 			String description) throws WorkOrderException {
@@ -248,5 +254,86 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 	public Map<String, String> getDataDictionaryDto() {
 		
 		return  AlmCache.getInstance().getWorkOrderTypeMap() ;
+	}
+
+	@Override
+	public void solveAgree(String taskId, Boolean isNeedClaim) throws WorkOrderException {
+		BaseOutput<Map<String, Object>>  mapId=tasksRpc.getVariables(taskId);
+		String dataId = (String) mapId.getData().get("businessKey");
+		Map<String, Object> map=new HashMap<String, Object>();
+		WorkOrder workOrder = this.get(Long.parseLong(dataId));
+		
+		map.put("close", workOrder.getApplicantId().toString());
+		
+		if (isNeedClaim) {
+			BaseOutput<String> output =tasksRpc.claim(taskId,  workOrder.getApplicantId().toString());
+			if (!output.isSuccess()) {
+				LOGGER.error(output.getMessage());
+				throw new WorkOrderException("任务签收失败");
+			}
+		}
+		try{
+			 tasksRpc.complete(taskId,map);
+		} catch (Exception e) {
+			//LOGGER.error(output.getMessage());
+			throw new WorkOrderException("任务签收失败");
+		}
+		
+		
+	}
+
+	@Override
+	public void closeAgree(String taskId, Boolean isNeedClaim) throws WorkOrderException {
+		try{
+			 tasksRpc.complete(taskId);
+		} catch (Exception e) {
+			throw new WorkOrderException("任务签收失败");
+		}
+		
+	}
+
+	@Override
+	public void allocateAgree(Long executorId, String taskId, Boolean isNeedClaim) throws WorkOrderException {
+		Map<String, Object> map=new HashMap<String, Object>();
+		 map.put("result", "1");
+		 map.put("solve", executorId+"");
+		 if (isNeedClaim) {
+				BaseOutput<String> output =tasksRpc.claim(taskId,  executorId+"");
+				if (!output.isSuccess()) {
+					LOGGER.error(output.getMessage());
+					throw new WorkOrderException("任务签收失败");
+				}
+			}
+		 
+		 try{
+		   tasksRpc.complete(taskId,map);
+		 } catch (Exception e) {
+				throw new WorkOrderException("任务签收失败");
+	    }
+	}
+
+	@Override
+	public void allocateNotAgree(Long id, Long executorId, String taskId, Boolean isNeedClaim)
+			throws WorkOrderException {
+		Map<String, Object> map=new HashMap<String, Object>();
+		 map.put("result", "0");
+		WorkOrder workOrder = this.get(id);
+		if (workOrder == null) {
+			throw new WorkOrderException("工单不存在");
+		}
+
+		map.put("edit", ""+workOrder.getApplicantId()+"");
+		  if (isNeedClaim) {
+				BaseOutput<String> output =tasksRpc.claim(taskId,  executorId+"");
+				if (!output.isSuccess()) {
+					LOGGER.error(output.getMessage());
+					throw new WorkOrderException("任务签收失败");
+				}
+			}
+	    try{ 
+		    tasksRpc.complete(taskId,map);
+		  } catch (Exception e) {
+				throw new WorkOrderException("任务签收失败");
+	    }
 	}
 }

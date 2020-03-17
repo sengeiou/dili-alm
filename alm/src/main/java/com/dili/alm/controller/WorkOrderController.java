@@ -405,24 +405,7 @@ public class WorkOrderController {
 		try {
 			this.workOrderService.solve(id, startDate, endDate, taskHours, overtimeHours, workContent);
 			Map<Object, Object> viewModel = this.workOrderService.getViewModel(id);
-			
-			BaseOutput<Map<String, Object>>  mapId=tasksRpc.getVariables(taskId);
-			String dataId = (String) mapId.getData().get("businessKey");
-			Map<String, Object> map=new HashMap<String, Object>();
-			WorkOrder workOrder = workOrderService.get(Long.parseLong(dataId));
-			
-			map.put("close", workOrder.getApplicantId().toString());
-			
-			if (isNeedClaim) {
-				BaseOutput<String> output =tasksRpc.claim(taskId,  workOrder.getApplicantId().toString());
-				if (!output.isSuccess()) {
-					LOGGER.error(output.getMessage());
-					throw new WorkOrderException("任务签收失败");
-				}
-			}
-			
-	    	tasksRpc.complete(taskId,map);
-	    	System.out.println("sss");
+			workOrderService.solveAgree(taskId, isNeedClaim);
 			return BaseOutput.success().setData(viewModel);
 		} catch (Exception e) {
 			return BaseOutput.failure(e.getMessage());
@@ -438,13 +421,15 @@ public class WorkOrderController {
 		try {
 			this.workOrderService.close(id, user.getId(), OperationResult.valueOf(result), description);
 			Map<Object, Object> viewModel = this.workOrderService.getViewModel(id);
-			
-			tasksRpc.complete(taskId);
+		
+			workOrderService.closeAgree(taskId,null);
 			return BaseOutput.success().setData(viewModel);
 		} catch (WorkOrderException e) {
 			return BaseOutput.failure(e.getMessage());
 		}
 	}
+
+	
 	@ResponseBody
 	@PostMapping("/allocateAgree")
 	public BaseOutput<Object> allocateAgree(@RequestParam Long id, @RequestParam Long executorId,@RequestParam String taskId, @RequestParam(defaultValue = "false") Boolean isNeedClaim,
@@ -454,24 +439,14 @@ public class WorkOrderController {
 			 result=1;
 			this.workOrderService.allocate(id, executorId, workOrderType, priority, OperationResult.valueOf(result),description);
 			
-			Map<String, Object> map=new HashMap<String, Object>();
-			 map.put("result", "1");
-			 map.put("solve", executorId+"");
-			 if (isNeedClaim) {
-					BaseOutput<String> output =tasksRpc.claim(taskId,  executorId+"");
-					if (!output.isSuccess()) {
-						LOGGER.error(output.getMessage());
-						throw new WorkOrderException("任务签收失败");
-					}
-				}
-			 
-			 
-			tasksRpc.complete(taskId,map);
+			workOrderService.allocateAgree(executorId, taskId, isNeedClaim);
 			return BaseOutput.success().setData(this.workOrderService.getViewModel(id));
 		} catch (WorkOrderException e) {
 			return BaseOutput.failure(e.getMessage());
 		}
 	}
+
+	
 	@ResponseBody
 	@PostMapping("/allocateNotAgree")
 	public BaseOutput<Object> allocateNotAgree(@RequestParam Long id, @RequestParam Long executorId,@RequestParam String taskId, @RequestParam(defaultValue = "false") Boolean isNeedClaim,
@@ -481,28 +456,13 @@ public class WorkOrderController {
 			 result=0;
 			this.workOrderService.allocate(id, executorId, workOrderType, priority, OperationResult.valueOf(result),description);
 			
-			Map<String, Object> map=new HashMap<String, Object>();
-			 map.put("result", "0");
-			WorkOrder workOrder = workOrderService.get(id);
-			if (workOrder == null) {
-				throw new WorkOrderException("工单不存在");
-			}
-	
-			map.put("edit", ""+workOrder.getApplicantId()+"");
-			 if (isNeedClaim) {
-					BaseOutput<String> output =tasksRpc.claim(taskId,  executorId+"");
-					if (!output.isSuccess()) {
-						LOGGER.error(output.getMessage());
-						throw new WorkOrderException("任务签收失败");
-					}
-				}
-			 
-			tasksRpc.complete(taskId,map);
+			workOrderService.allocateNotAgree(id, executorId, taskId, isNeedClaim);
 			return BaseOutput.success().setData(this.workOrderService.getViewModel(id));
 		} catch (WorkOrderException e) {
 			return BaseOutput.failure(e.getMessage());
 		}
 	}
+
 	
 	
 	

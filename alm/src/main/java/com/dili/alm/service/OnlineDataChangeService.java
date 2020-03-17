@@ -13,7 +13,7 @@ public interface OnlineDataChangeService extends BaseService<OnlineDataChange, L
 	
 	 void insertOnLineData(OnlineDataChange onlineDataChange, Long id) ;
 	 
-	 void	 updateOnlineDate(OnlineDataChange onlineDataChange, Long id) ;
+	 void	 updateOnlineDate(OnlineDataChange onlineDataChange, Long id)throws OnlineDataChangeException ;
 	 
 	 void agreeDeptOnlineDataChange(String taskId,Boolean isNeedClaim) throws OnlineDataChangeException;
 	 
@@ -32,8 +32,10 @@ public interface OnlineDataChangeService extends BaseService<OnlineDataChange, L
 	 void notAgreeOnlineDataChange(String taskId,Boolean isNeedClaim) throws OnlineDataChangeException;
 	 
 	 
-	 void indexOnlineDataChange(String taskId,OnlineDataChange onlineDataChange) ;
+	 void indexOnlineDataChange(String taskId,OnlineDataChange onlineDataChange)  throws OnlineDataChangeException;
 	 String listPageOnlineData(OnlineDataChange onlineDataChange, String projectIdcc, Long id) ;
+	 
+	 
 	 
 	 
 }

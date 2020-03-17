@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
@@ -86,7 +87,6 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
    	 	   map.put("dept", pro.getProjectManager()+"");
    	     //  map.put("dept","1");
 		   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almOnlineDataChangeProcess", onlineDataChange.getId().toString(), id+"",map);
-	       System.out.println(object.getCode()+object.getData()+object.getErrorData());
 	       onlineDataChange.setProcessInstanceId(object.getData().getProcessInstanceId()); 
 	       onlineDataChange.setProcessDefinitionId(object.getData().getProcessDefinitionId());
 	       onlineDataChange.setId(onlineDataChange.getId());
@@ -98,7 +98,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 	    }
 	}
 	@Override
-	public void updateOnlineDate(OnlineDataChange onlineDataChange, Long id) {
+	public void updateOnlineDate(OnlineDataChange onlineDataChange, Long id) throws OnlineDataChangeException {
 		OnlineDataChange  odc=	this.get(onlineDataChange.getId());
         if(odc.getProcessInstanceId()==null) {
         	
@@ -109,7 +109,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		   	 	   map.put("dept", pro.getProjectManager()+"");
 		   	 	   
 				   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almOnlineDataChangeProcess", onlineDataChange.getId().toString(), id+"",map);
-			       System.out.println(object.getCode()+object.getData()+object.getErrorData());
+			    //   System.out.println(object.getCode()+object.getData()+object.getErrorData());
 			     
 			       OnlineDataChange onlineData=new OnlineDataChange();
 			       onlineData.setProcessInstanceId(object.getData().getProcessInstanceId()); 
@@ -134,7 +134,13 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
     		this.updateSelective(onlineDataChange);
     		Map<String, Object> map=new HashMap<>();
         	map.put("approved", "true");
-        	tasksRpc.complete(taskId);
+        	  try {
+           	   tasksRpc.complete(taskId);
+       	    } catch (Exception e) {
+       	    	 LOGGER.error("任务签收失败");
+       		    throw new OnlineDataChangeException("任务签收失败");
+       	    }
+           	
     	   
        }
 		
@@ -171,7 +177,13 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 				throw new OnlineDataChangeException("任务签收失败");
 			}
 		}
-    	tasksRpc.complete(taskId, map);
+	    try {
+    	   tasksRpc.complete(taskId, map);
+	    } catch (Exception e) {
+	    	 LOGGER.error("任务签收失败");
+		    throw new OnlineDataChangeException("任务签收失败");
+	    }
+	    	
 	}
 	@Override
 	public void notAgreeDeptOnlineDataChange(String taskId,Boolean isNeedClaim) throws OnlineDataChangeException {
@@ -193,7 +205,13 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			}
 		}
      	
-    	tasksRpc.complete(taskId, map);
+       try {
+       	   tasksRpc.complete(taskId, map);
+   	    } catch (Exception e) {
+   	    	 LOGGER.error("任务签收失败");
+   		    throw new OnlineDataChangeException("任务签收失败");
+   	    }
+       	
 	}
 	@Override
 	public void agreeTestOnlineDataChange(String taskId,Boolean isNeedClaim) throws OnlineDataChangeException {
@@ -206,7 +224,13 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		
     	Map<String, Object> map=new HashMap<>();
     	map.put("approved", "true");
-    	tasksRpc.complete(taskId, map);
+    	try {
+       	   tasksRpc.complete(taskId, map);
+   	    } catch (Exception e) {
+   	    	 LOGGER.error("任务签收失败");
+   		    throw new OnlineDataChangeException("任务签收失败");
+   	    }
+       	
 		
 	}
 	@Override
@@ -229,7 +253,13 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 				throw new OnlineDataChangeException("任务签收失败");
 			}
 		}
-    	tasksRpc.complete(taskId, map);
+    	  try {
+       	   tasksRpc.complete(taskId, map);
+   	    } catch (Exception e) {
+   	    	 LOGGER.error("任务签收失败");
+   		    throw new OnlineDataChangeException("任务签收失败");
+   	    }
+       	
 	}
 	@Override
 	public void agreeDBAOnlineDataChange(String taskId,Boolean isNeedClaim) throws OnlineDataChangeException {
@@ -250,7 +280,13 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 				throw new OnlineDataChangeException("任务签收失败");
 			}
 		}
-    	tasksRpc.complete(taskId, map);
+	    try {
+    	   tasksRpc.complete(taskId, map);
+	    } catch (Exception e) {
+	    	 LOGGER.error("任务签收失败");
+		    throw new OnlineDataChangeException("任务签收失败");
+	    }
+	    	
 	}
 	@Override
 	public void agreeOnlineDataChange(String taskId,Boolean isNeedClaim) throws OnlineDataChangeException {
@@ -271,11 +307,17 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 				throw new OnlineDataChangeException("任务签收失败");
 			}
 		}
-    	tasksRpc.complete(taskId);
+  	  try {
+   	   tasksRpc.complete(taskId);
+	    } catch (Exception e) {
+	    	 LOGGER.error("任务签收失败");
+		    throw new OnlineDataChangeException("任务签收失败");
+	    }
+   	
 		
 	}
 	@Override
-	public void indexOnlineDataChange(String taskId,OnlineDataChange onlineDataChange) {
+	public void indexOnlineDataChange(String taskId,OnlineDataChange onlineDataChange) throws OnlineDataChangeException {
 		BaseOutput<Map<String, Object>>  mapId=tasksRpc.getVariables(taskId);
 		String dataId = (String) mapId.getData().get("businessKey");
 	//	OnlineDataChange onlineDataChange=new  OnlineDataChange();
@@ -284,8 +326,13 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		this.updateSelective(onlineDataChange);
 		Map<String, Object> map=new HashMap<>();
     	map.put("approved", "true");
-    	tasksRpc.complete(taskId);
-		
+    	  try {
+       	   tasksRpc.complete(taskId);
+   	    } catch (Exception e) {
+   	    	 LOGGER.error("任务签收失败");
+   		    throw new OnlineDataChangeException("任务签收失败");
+   	    }
+       	
 	}
 	@Override
 	public String listPageOnlineData(OnlineDataChange onlineDataChange, String projectIdcc, Long id) {
@@ -320,15 +367,16 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			   
 			   bpmcUtil.fitLoggedUserIsCanHandledProcess(targetList);
 			   
-				Set<Long> dbaRoleIds = new HashSet<>();
-				dbaRoleIds.add(Long.parseLong("74"));
+			/*	Set<Long> dbaRoleIds = new HashSet<>();
+				dbaRoleIds.add(Long.parseLong("75"));
+				
 				Set<Long> onlingRoleIds = new HashSet<>();
 				onlingRoleIds.add(Long.parseLong("44"));
-				
+				*/
 			   Project  pro;
-			   List<Long>  dbaList;
-			   List<Long>  onLingList;
-		      for (OnlineDataChangeBpmcDtoDto odcData : targetList) {
+			 /*  List<Long>  dbaList;
+			   List<Long>  onLingList;*/
+		     /* for (OnlineDataChangeBpmcDtoDto odcData : targetList) {
 		    		pro=null;
 		    		pro=projectService.get(odcData.getProjectId());
 		    		if(pro!=null) {
@@ -358,7 +406,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 					}
 		    		odcData.setDbaManager(dbaList);
 		    		odcData.setOnlineManager(onLingList);
-				}
+				}*/
 		    	
 			   List onlineDataChangeList = ValueProviderUtils.buildDataByProvider(metadata,targetList);
 			  EasyuiPageOutput taskEasyuiPageOutput = new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(list.size()))), onlineDataChangeList);
@@ -417,7 +465,13 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 				throw new OnlineDataChangeException("任务签收失败");
 			}
 		}
-    	tasksRpc.complete(taskId, map);
+       try {
+    	   tasksRpc.complete(taskId, map);
+	    } catch (Exception e) {
+	    	 LOGGER.error("任务签收失败");
+		    throw new OnlineDataChangeException("任务签收失败");
+	    }
+    	
 		
 	}
 

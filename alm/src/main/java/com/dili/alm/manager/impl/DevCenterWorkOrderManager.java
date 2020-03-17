@@ -81,7 +81,7 @@ public class DevCenterWorkOrderManager extends BaseWorkOrderManager {
 		}
 		
 	   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almWorkOrderApplyProcess", workOrder.getId().toString(), workOrder.getAcceptorId()+"",map);
-       System.out.println(object.getCode()+object.getData()+object.getErrorData());
+     
        if(object.getCode().equals("5000")) {
    		throw new WorkOrderException("新增工单失败流控中心调不通");
       }
@@ -161,8 +161,12 @@ public class DevCenterWorkOrderManager extends BaseWorkOrderManager {
 					map.put("allocate", workOrder.getAcceptorId().toString());
 				}
 					
-					
-				tasksRpc.complete(taskId,map);
+				try {
+					tasksRpc.complete(taskId,map);
+				} catch (Exception e) {
+					throw new WorkOrderException("研发工单失败");
+				}
+				//tasksRpc.complete(taskId,map);
 			       
 				this.sendMail(workOrder, "工单申请", Sets.newHashSet(mailReceiver.getEmail()));
 	}

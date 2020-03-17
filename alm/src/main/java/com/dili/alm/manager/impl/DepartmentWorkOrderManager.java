@@ -93,7 +93,6 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 	   map.put("workOrderSource", WorkOrderSource.DEPARTMENT.getValue().toString());
 	   map.put("solve", workOrder.getExecutorId().toString());
        BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almWorkOrderApplyProcess", workOrder.getId().toString(), workOrder.getExecutorId()+"",map);
-       System.out.println(object.getCode()+object.getData()+object.getErrorData());
        if(object.getCode().equals("5000")) {
    		   throw new WorkOrderException("新增工单失败流控中心调不通");
        }
@@ -234,8 +233,14 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 				}else {
 					map.put("allocate", workOrder.getAcceptorId().toString());
 				}*/
+				try {
+					tasksRpc.complete(taskId,map);
+				} catch (Exception e) {
+					throw new WorkOrderException("部门工单失败");
+				}
 				
-				tasksRpc.complete(taskId,map);
+				
+			
 				this.sendMail(workOrder, "工单申请", Sets.newHashSet(mailReceiver.getEmail()));
 	}
 

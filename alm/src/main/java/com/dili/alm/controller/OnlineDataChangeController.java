@@ -176,7 +176,7 @@ public class OnlineDataChangeController {
 	})
     @RequestMapping(value="/update.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput update(@ModelAttribute OnlineDataChange onlineDataChange, 
-            HttpServletRequest reques) {
+            HttpServletRequest reques) throws OnlineDataChangeException {
     	  Long  id=SessionContext.getSessionContext().getUserTicket().getId();
     	  onlineDataChangeService. updateOnlineDate(onlineDataChange, id);
         return BaseOutput.success("修改成功");
@@ -277,7 +277,7 @@ public class OnlineDataChangeController {
         return BaseOutput.success("执行成功");
     }
     @RequestMapping(value="/indexOnlineData.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput indexOnlineData(@ModelAttribute OnlineDataChange onlineDataChange  ,@RequestParam(value="taskId", required = false) String taskId) {
+    public @ResponseBody BaseOutput indexOnlineData(@ModelAttribute OnlineDataChange onlineDataChange  ,@RequestParam(value="taskId", required = false) String taskId) throws OnlineDataChangeException {
     	onlineDataChangeService.indexOnlineDataChange(taskId,onlineDataChange);
     	return BaseOutput.success("执行成功");
     }
