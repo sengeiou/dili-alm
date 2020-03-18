@@ -43,7 +43,7 @@ import com.dili.uap.sdk.session.SessionContext;
 /**
  * MyBatis Generator This file was generated on 2019-12-25 18:22:44.
  */
-@Transactional(rollbackFor = Exception.class)
+//@Transactional(rollbackFor = Exception.class)
 @Service
 public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChange, Long> implements OnlineDataChangeService {
 
