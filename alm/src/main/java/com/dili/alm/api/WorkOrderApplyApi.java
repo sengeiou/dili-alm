@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -28,7 +29,7 @@ public class WorkOrderApplyApi {
 	// 编辑
 	@ApiOperation("编辑")
 	@RequestMapping("/setOrderApplyAssigneeName.api")
-	public @ResponseBody BaseOutput<Assignment> setOrderApplyAssigneeName(TaskMapping taskMapping) {
+	public @ResponseBody BaseOutput<Assignment> setOrderApplyAssigneeName(@RequestBody TaskMapping taskMapping) {
 	/*	Map<String, String[]> map = request.getParameterMap();
 		String[] strs = map.get("processVariables");
 		JSONObject jsonObj = JSON.parseObject(strs[0]);
@@ -42,7 +43,7 @@ public class WorkOrderApplyApi {
 	// 分配数据变
 	@ApiOperation("分配数据变")
 	@RequestMapping("/setAllocateAssigneeName.api")
-	public @ResponseBody BaseOutput<Assignment> setAllocateAssigneeName(TaskMapping taskMapping) {
+	public @ResponseBody BaseOutput<Assignment> setAllocateAssigneeName(@RequestBody TaskMapping taskMapping) {
 		/*Map<String, String[]> map = request.getParameterMap();
 		String[] strs = map.get("processVariables");
 		JSONObject jsonObj = JSON.parseObject(strs[0]);
@@ -58,7 +59,7 @@ public class WorkOrderApplyApi {
 	// 解决人
 	@ApiOperation("解决人")
 	@RequestMapping("/setSolveAssigneeName.api")
-	public @ResponseBody BaseOutput<Assignment> setSolveAssigneeName(TaskMapping taskMapping) {
+	public @ResponseBody BaseOutput<Assignment> setSolveAssigneeName(@RequestBody TaskMapping taskMapping) {
 		String productManagerId = taskMapping.getProcessVariables().get("solve").toString();
 		Assignment assignment = DTOUtils.newDTO(Assignment.class);
 		assignment.setAssignee(productManagerId);
@@ -67,19 +68,27 @@ public class WorkOrderApplyApi {
 	}
 
 	// 解决人
-		@ApiOperation("关闭人")
-		@RequestMapping("/setCloseAssigneeName.api")
-		public @ResponseBody BaseOutput<Assignment> setsetCloseAssigneeName(TaskMapping taskMapping) {
-			String idid= (String) taskMapping.getProcessVariables().get("close");
-			//Long id=Long.parseLong(idid);
-			Assignment record = DTOUtils.newDTO(Assignment.class);
-			record.setAssignee(idid);
-			//Assignment record =workOrderApply.setCloseName(id);
-			return BaseOutput.success().setData(record);
+	@ApiOperation("关闭人")
+	@RequestMapping("/setCloseAssigneeName.api")
+	public @ResponseBody BaseOutput<Assignment> setsetCloseAssigneeName(@RequestBody TaskMapping taskMapping) {
+		String idid= (String) taskMapping.getProcessVariables().get("close");
+		//Long id=Long.parseLong(idid);
+		Assignment record = DTOUtils.newDTO(Assignment.class);
+		record.setAssignee(idid);
+		//Assignment record =workOrderApply.setCloseName(id);
+		return BaseOutput.success().setData(record);
 
-		}
+	}
 
-	
+	//
+/*	public @ResponseBody BaseOutput<Assignment> setDeptOnlineDataChangeAssigneeName(@RequestBody TaskMapping taskMapping) {
+		String dept = taskMapping.getProcessVariables().get("dept").toString();
+		Assignment assignment = DTOUtils.newDTO(Assignment.class);
+		assignment.setAssignee(dept);
+		return BaseOutput.success().setData(assignment);
+
+	}
+*/
 
 
 
