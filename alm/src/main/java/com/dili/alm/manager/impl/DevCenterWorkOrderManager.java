@@ -74,11 +74,13 @@ public class DevCenterWorkOrderManager extends BaseWorkOrderManager {
 		
 	   Map<String, Object> map=new HashMap<String, Object>();
 	   map.put("workOrderSource", WorkOrderSource.DEVELOPMENT_CENTER.getValue().toString());
-	   
+	
 		if(workOrder.getWorkOrderSource()==WorkOrderSource.DEPARTMENT.getValue()) {
-			map.put("solve", workOrder.getExecutorId().toString());
+			//map.put("solve", workOrder.getExecutorId().toString());
+			map.put(BpmConsts.WorkOrderApply.SOLVE.getName(), workOrder.getExecutorId().toString());
 		}else {
-			map.put("allocate", workOrder.getAcceptorId().toString());
+			//map.put("allocate", workOrder.getAcceptorId().toString());
+			map.put(BpmConsts.WorkOrderApply.ALLOCATE.getName(), workOrder.getAcceptorId().toString());
 		}
 		
 		try {
@@ -161,9 +163,11 @@ public class DevCenterWorkOrderManager extends BaseWorkOrderManager {
 				map.put("workOrderSource", WorkOrderSource.DEVELOPMENT_CENTER.getValue().toString());
 				   
 				if(workOrder.getWorkOrderSource()==WorkOrderSource.DEPARTMENT.getValue()) {
-					map.put("solve", workOrder.getExecutorId().toString());
+					//map.put("solve", workOrder.getExecutorId().toString());
+					map.put(BpmConsts.WorkOrderApply.SOLVE.getName(), workOrder.getExecutorId().toString());
 				}else {
-					map.put("allocate", workOrder.getAcceptorId().toString());
+					//map.put("allocate", workOrder.getAcceptorId().toString());
+					map.put(BpmConsts.WorkOrderApply.ALLOCATE.getName(), workOrder.getAcceptorId().toString());
 				}
 					
 				try {

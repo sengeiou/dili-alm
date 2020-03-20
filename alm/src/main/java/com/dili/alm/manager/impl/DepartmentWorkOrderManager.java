@@ -92,7 +92,8 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 		
 	   Map<String, Object> map=new HashMap<String, Object>();
 	   map.put("workOrderSource", WorkOrderSource.DEPARTMENT.getValue().toString());
-	   map.put("solve", workOrder.getExecutorId().toString());
+	 //  map.put("solve", workOrder.getExecutorId().toString());
+	   map.put(BpmConsts.WorkOrderApply.SOLVE.getName(), workOrder.getExecutorId().toString());
 	  
 	   try {
 		   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey( BpmConsts.WorkOrderApply_PROCESS, workOrder.getId().toString(), workOrder.getExecutorId()+"",map);
@@ -233,7 +234,8 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 			    Map<String, Object> map=new HashMap<String, Object>();
 			    map.put("workOrderSource", WorkOrderSource.DEPARTMENT.getValue().toString());
 			   
-			    map.put("solve", workOrder.getExecutorId().toString());
+			  //  map.put("solve", workOrder.getExecutorId().toString());
+			     map.put(BpmConsts.WorkOrderApply.SOLVE.getName(), workOrder.getExecutorId().toString());
 				/*if(workOrder.getWorkOrderSource()==2) {
 					map.put("solve", workOrder.getExecutorId().toString());
 				}else {

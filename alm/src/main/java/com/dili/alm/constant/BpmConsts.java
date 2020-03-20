@@ -81,6 +81,22 @@ public class BpmConsts {
 			return name;
 		}
 	}
+	public enum WorkOrderApply {
+		EDIT("edit"), 
+		ALLOCATE("allocate"), 
+		SOLVE("solve"), 
+		CLOSE("close");
+
+		private String name;
+
+		private WorkOrderApply(String name) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return name;
+		}
+	}
 	
 	
 }

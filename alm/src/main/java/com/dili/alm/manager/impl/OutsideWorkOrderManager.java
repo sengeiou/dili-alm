@@ -79,9 +79,11 @@ public class OutsideWorkOrderManager extends BaseWorkOrderManager {
 	   Map<String, Object> map=new HashMap<String, Object>();
 	   map.put("workOrderSource", WorkOrderSource.OUTSIDE.getValue().toString());
 	   if(workOrder.getWorkOrderSource()==WorkOrderSource.DEPARTMENT.getValue()) {
-			map.put("solve", workOrder.getExecutorId().toString());
+			//map.put("solve", workOrder.getExecutorId().toString());
+		     map.put(BpmConsts.WorkOrderApply.SOLVE.getName(), workOrder.getExecutorId().toString());
 		}else {
-			map.put("allocate", workOrder.getAcceptorId().toString());
+			//map.put("allocate", workOrder.getAcceptorId().toString());
+			map.put(BpmConsts.WorkOrderApply.ALLOCATE.getName(), workOrder.getAcceptorId().toString());
 		}
 	    try {
 		   
@@ -179,9 +181,11 @@ public class OutsideWorkOrderManager extends BaseWorkOrderManager {
 	   map.put("workOrderSource", WorkOrderSource.OUTSIDE.getValue().toString());
 	   
 	   if(workOrder.getWorkOrderSource()==WorkOrderSource.DEPARTMENT.getValue()) {
-			map.put("solve", workOrder.getExecutorId().toString());
+			//map.put("solve", workOrder.getExecutorId().toString());
+		     map.put(BpmConsts.WorkOrderApply.SOLVE.getName(), workOrder.getExecutorId().toString());
 		}else {
-			map.put("allocate", workOrder.getAcceptorId().toString());
+		//	map.put("allocate", workOrder.getAcceptorId().toString());
+			map.put(BpmConsts.WorkOrderApply.ALLOCATE.getName(), workOrder.getAcceptorId().toString());
 		}
 	 /*  BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey( BpmConsts.WorkOrderApply_PROCESS, workOrder.getId().toString(), workOrder.getApplicantId()+"",map);
        System.out.println(object.getCode()+object.getData()+object.getErrorData());*/
