@@ -44,6 +44,7 @@ import com.dili.uap.sdk.session.SessionContext;
  * MyBatis Generator This file was generated on 2019-12-25 18:22:44.
  */
 //@Transactional(rollbackFor = Exception.class)
+@Transactional(rollbackFor = OnlineDataChangeException.class)
 @Service
 public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChange, Long> implements OnlineDataChangeService {
 
@@ -70,7 +71,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 	}
 
 	@Override
-	public void insertOnLineData(OnlineDataChange onlineDataChange, Long id) {
+	public void insertOnLineData(OnlineDataChange onlineDataChange, Long id) throws OnlineDataChangeException {
 		onlineDataChange.setApplyUserId(id);
 		onlineDataChange.setIsSubmit((byte) 1);
 		onlineDataChange.setDataStatus((byte) 2);
@@ -96,7 +97,8 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			update(onlineDataChange);
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println(e);
+			//System.out.println(e);
+			  throw new OnlineDataChangeException("失败");
 		}
 	}
 
@@ -126,21 +128,23 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 				this.updateSelective(onlineData);
 			} catch (Exception e) {
 				e.printStackTrace();
-				System.out.println(e);
+				throw new OnlineDataChangeException("失败");
+				//System.out.println(e);
 			}
 		} else {
-			ArrayList list = new ArrayList<String>();
-			list.add(odc.getProcessInstanceId());
-			TaskDto tdo = DTOUtils.newDTO(TaskDto.class);
-			tdo.setProcessInstanceIds(list);
-			BaseOutput<List<TaskMapping>> task = tasksRpc.listTaskMapping(tdo);
-			String taskId = task.getData().get(0).getId();
-			onlineDataChange.setDataStatus((byte) 2);
-			onlineDataChange.setIsSubmit((byte) 1);
-			this.updateSelective(onlineDataChange);
-			Map<String, Object> map = new HashMap<>();
-			map.put("approved", "true");
 			try {
+				ArrayList list = new ArrayList<String>();
+				list.add(odc.getProcessInstanceId());
+				TaskDto tdo = DTOUtils.newDTO(TaskDto.class);
+				tdo.setProcessInstanceIds(list);
+				BaseOutput<List<TaskMapping>> task = tasksRpc.listTaskMapping(tdo);
+				String taskId = task.getData().get(0).getId();
+				onlineDataChange.setDataStatus((byte) 2);
+				onlineDataChange.setIsSubmit((byte) 1);
+				this.updateSelective(onlineDataChange);
+				Map<String, Object> map = new HashMap<>();
+				map.put("approved", "true");
+			
 				tasksRpc.complete(taskId);
 			} catch (Exception e) {
 

@@ -144,7 +144,7 @@ public class OnlineDataChangeController {
 		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "OnlineDataChange的form信息", required = true, dataType = "string")
 	})
     @RequestMapping(value="/insert.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput insert(@ModelAttribute OnlineDataChange onlineDataChange) {
+    public @ResponseBody BaseOutput insert(@ModelAttribute OnlineDataChange onlineDataChange) throws ApplicationException {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
     	onlineDataChangeService.insertOnLineData(onlineDataChange, id);
         return BaseOutput.success("提交申请成功");    
