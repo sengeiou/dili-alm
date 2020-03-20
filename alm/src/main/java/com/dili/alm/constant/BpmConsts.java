@@ -42,6 +42,9 @@ public class BpmConsts {
 	
 	public static final String ONLINEDATACHANGE_PROCESS = "almOnlineDataChangeProcess";
 	
+	public static final String WorkOrderApply_PROCESS = "almWorkOrderApplyProcess";
+	
+	
 	
 	public enum ProjectOnlineApplyConstant {
 		PROCESS_KEY("almProjectOnlineApplyProcess"), 

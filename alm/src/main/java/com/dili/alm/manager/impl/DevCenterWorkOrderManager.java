@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants;
+import com.dili.alm.constant.BpmConsts;
 import com.dili.alm.dao.WorkOrderMapper;
 import com.dili.alm.domain.WorkOrder;
 import com.dili.alm.domain.WorkOrderSource;
@@ -80,15 +81,19 @@ public class DevCenterWorkOrderManager extends BaseWorkOrderManager {
 			map.put("allocate", workOrder.getAcceptorId().toString());
 		}
 		
-	   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey("almWorkOrderApplyProcess", workOrder.getId().toString(), workOrder.getAcceptorId()+"",map);
-     
-       if(object.getCode().equals("5000")) {
-   		throw new WorkOrderException("新增工单失败流控中心调不通");
-      }
-       workOrder.setProcessInstanceId(object.getData().getProcessInstanceId()); 
-       workOrder.setProcessDefinitionId(object.getData().getProcessDefinitionId());
-        workOrder.setId(workOrder.getId());
-        workOrderMapper.updateByPrimaryKey(workOrder);
+		try {
+		    BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey( BpmConsts.WorkOrderApply_PROCESS, workOrder.getId().toString(), workOrder.getAcceptorId()+"",map);
+	        if(object.getCode().equals("5000")) {
+	   		  throw new WorkOrderException("新增工单失败流控中心调不通");
+	        }
+	       workOrder.setProcessInstanceId(object.getData().getProcessInstanceId()); 
+	       workOrder.setProcessDefinitionId(object.getData().getProcessDefinitionId());
+	        workOrder.setId(workOrder.getId());
+	        workOrderMapper.updateByPrimaryKey(workOrder);
+		} catch (Exception e) {
+			throw new WorkOrderException("新增工单失败流控中心调不通");
+		}
+	  
 		this.sendMail(workOrder, "工单申请", Sets.newHashSet(mailReceiver.getEmail()));
 	}
 
