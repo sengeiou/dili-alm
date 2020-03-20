@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.component.BpmcUtil;
 import com.dili.alm.constant.AlmConstants;
+import com.dili.alm.constant.BpmConsts;
 import com.dili.alm.dao.OnlineDataChangeMapper;
 import com.dili.alm.domain.OnlineDataChange;
 import com.dili.alm.domain.Project;
@@ -83,9 +84,11 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			map.put("dataId", onlineDataChange.getId() + "");
 
 			Project pro = projectService.get(onlineDataChange.getProjectId());
-			map.put("dept", pro.getProjectManager() + "");
+		//	map.put("dept", pro.getProjectManager() + "");
+			map.put(BpmConsts.OnlineDataChangeProcessConstant.dept.getName(), pro.getProjectManager() + "");
 			// map.put("dept","1");
-			BaseOutput<ProcessInstanceMapping> object = runtimeRpc.startProcessInstanceByKey("almOnlineDataChangeProcess", onlineDataChange.getId().toString(), id + "", map);
+			
+			BaseOutput<ProcessInstanceMapping> object = runtimeRpc.startProcessInstanceByKey(BpmConsts.ONLINEDATACHANGE_PROCESS, onlineDataChange.getId().toString(), id + "", map);
 			if (object.getCode().equals("5000")) {
 				throw new OnlineDataChangeException("runtimeRpc失败");
 			}
@@ -111,9 +114,9 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 				Map<String, Object> map = new HashMap<String, Object>();
 				map.put("dataId", onlineDataChange.getId() + "");
 				Project pro = projectService.get(onlineDataChange.getProjectId());
-				map.put("dept", pro.getProjectManager() + "");
-
-				BaseOutput<ProcessInstanceMapping> object = runtimeRpc.startProcessInstanceByKey("almOnlineDataChangeProcess", onlineDataChange.getId().toString(), id + "", map);
+				//map.put("dept", pro.getProjectManager() + "");
+				map.put(BpmConsts.OnlineDataChangeProcessConstant.dept.getName(), pro.getProjectManager() + "");
+				BaseOutput<ProcessInstanceMapping> object = runtimeRpc.startProcessInstanceByKey(BpmConsts.ONLINEDATACHANGE_PROCESS, onlineDataChange.getId().toString(), id + "", map);
 				// System.out.println(object.getCode()+object.getData()+object.getErrorData());
 				if (object.getCode().equals("5000")) {
 					throw new OnlineDataChangeException("失败");
@@ -178,7 +181,8 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		List<User> listUsernName = listUserByExample.getData();//// 项目测试人员组的ID
 		if (listUsernName != null && listUsernName.size() > 0) {
 			record.setAssignee(listUsernName.get(0).getId().toString());
-			map.put("test", listUsernName.get(0).getId().toString() + "");
+			//map.put("test", listUsernName.get(0).getId().toString() + "");
+		    map.put(BpmConsts.OnlineDataChangeProcessConstant.test.getName(), listUsernName.get(0).getId().toString() + "");
 		}
 		if (isNeedClaim) {
 			BaseOutput<String> output = tasksRpc.claim(taskId, listUsernName.get(0).getId().toString() + "");
@@ -207,7 +211,9 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		OnlineDataChange onlineDataChangeTemp = this.get(Long.parseLong(dataId));
 		Map<String, Object> map = new HashMap<>();
 		map.put("approved", "false");
-		map.put("submit", "" + onlineDataChangeTemp.getApplyUserId());
+	//	map.put("submit", "" + onlineDataChangeTemp.getApplyUserId());
+		map.put(BpmConsts.OnlineDataChangeProcessConstant.submit.getName(), "" + onlineDataChangeTemp.getApplyUserId());
+		
 		if (isNeedClaim) {
 			BaseOutput<String> output = tasksRpc.claim(taskId, onlineDataChangeTemp.getApplyUserId() + "");
 			if (!output.isSuccess()) {
@@ -257,7 +263,9 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		map.put("approved", "false");
 
 		OnlineDataChange onlineDataChangeTemp = this.get(Long.parseLong(dataId));
-		map.put("submit", "" + onlineDataChangeTemp.getApplyUserId());
+	//	map.put("submit", "" + onlineDataChangeTemp.getApplyUserId());
+		map.put(BpmConsts.OnlineDataChangeProcessConstant.submit.getName(), "" + onlineDataChangeTemp.getApplyUserId());
+		
 		if (isNeedClaim) {
 			BaseOutput<String> output = tasksRpc.claim(taskId, onlineDataChangeTemp.getApplyUserId() + "");
 			if (!output.isSuccess()) {
@@ -312,7 +320,8 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		this.updateSelective(onlineDataChange);
 		Map<String, Object> map = new HashMap<>();
 		map.put("approved", "true");
-		map.put("submit", onlineDataChange.getApplyUserId());
+		//map.put("submit", onlineDataChange.getApplyUserId());
+		map.put(BpmConsts.OnlineDataChangeProcessConstant.submit.getName(), onlineDataChange.getApplyUserId());
 		Long id = SessionContext.getSessionContext().getUserTicket().getId();
 		if (isNeedClaim) {
 			BaseOutput<String> output = tasksRpc.claim(taskId, id.toString() + "");

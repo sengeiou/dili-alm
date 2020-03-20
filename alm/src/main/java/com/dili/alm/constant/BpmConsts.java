@@ -39,6 +39,10 @@ public class BpmConsts {
 	 */
 	public static final String PROJECT_COMPLETE_PROCESS = "almProjectCompleteProcess";
 
+	
+	public static final String ONLINEDATACHANGE_PROCESS = "almOnlineDataChangeProcess";
+	
+	
 	public enum ProjectOnlineApplyConstant {
 		PROCESS_KEY("almProjectOnlineApplyProcess"), 
 		BUSINESS_KEY("serialNumber"), 
@@ -57,4 +61,23 @@ public class BpmConsts {
 			return name;
 		}
 	}
+	
+	public enum OnlineDataChangeProcessConstant {
+		dept("dept"), 
+		submit("submit"), 
+		test("test"), 
+		apply("apply");
+
+		private String name;
+
+		private OnlineDataChangeProcessConstant(String name) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return name;
+		}
+	}
+	
+	
 }

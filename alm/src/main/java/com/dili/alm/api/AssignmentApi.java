@@ -42,7 +42,7 @@ public class AssignmentApi {
 	@ApiOperation("申请数据变")
 	@RequestMapping("/setSubmitOnlineDataChangeAssigneeName.api")
 	public @ResponseBody BaseOutput<Assignment> setsubmitOnlineDataChangeAssigneeName(@RequestBody TaskMapping taskMapping) {
-		String dept = taskMapping.getProcessVariables().get("submit").toString();
+		String dept = taskMapping.getProcessVariables().get(BpmConsts.OnlineDataChangeProcessConstant.submit.getName()).toString();
 		Assignment assignment = DTOUtils.newDTO(Assignment.class);
 		assignment.setAssignee(dept);
 		return BaseOutput.success().setData(assignment);
@@ -52,7 +52,7 @@ public class AssignmentApi {
 	@ApiOperation("根据变更ID，返回部门审批人")
 	@RequestMapping("/setDeptOnlineDataChangeAssigneeName.api")
 	public @ResponseBody BaseOutput<Assignment> setDeptOnlineDataChangeAssigneeName(@RequestBody TaskMapping taskMapping) {
-		String dept = taskMapping.getProcessVariables().get("dept").toString();
+		String dept = taskMapping.getProcessVariables().get(BpmConsts.OnlineDataChangeProcessConstant.dept.getName()).toString();
 		Assignment assignment = DTOUtils.newDTO(Assignment.class);
 		assignment.setAssignee(dept);
 		return BaseOutput.success().setData(assignment);
@@ -63,7 +63,7 @@ public class AssignmentApi {
 	@ApiOperation("根据变更ID，返回测试审批人")
 	@RequestMapping("/setTestOnlineDataChangeAssigneeName.api")
 	public @ResponseBody BaseOutput<Assignment> setTestOnlineDataChangeAssigneeName(@RequestBody TaskMapping taskMapping) {
-		String dept = taskMapping.getProcessVariables().get("test").toString();
+		String dept = taskMapping.getProcessVariables().get(BpmConsts.OnlineDataChangeProcessConstant.test.getName()).toString();
 		Assignment assignment = DTOUtils.newDTO(Assignment.class);
 		assignment.setAssignee(dept);
 		return BaseOutput.success().setData(assignment);
