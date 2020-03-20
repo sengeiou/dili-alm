@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.dili.alm.constant.BpmConsts;
 import com.dili.alm.service.WorkOrderApplyService;
 import com.dili.bpmc.sdk.domain.TaskMapping;
 import com.dili.bpmc.sdk.dto.Assignment;
@@ -35,7 +36,8 @@ public class WorkOrderApplyApi {
 		JSONObject jsonObj = JSON.parseObject(strs[0]);
 		Assignment record =workOrderApply.setOrderApplyName(jsonObj.getLong("businessKey"));*/
 		
-		String edit = taskMapping.getProcessVariables().get("edit").toString();
+	//	String edit = taskMapping.getProcessVariables().get("edit").toString();
+		String edit = taskMapping.getProcessVariables().get(BpmConsts.WorkOrderApply.EDIT.getName()).toString();
 		Assignment assignment = DTOUtils.newDTO(Assignment.class);
 		assignment.setAssignee(edit);
 		return BaseOutput.success().setData(assignment);
@@ -49,7 +51,8 @@ public class WorkOrderApplyApi {
 		JSONObject jsonObj = JSON.parseObject(strs[0]);
 		Assignment record =workOrderApply.setAllocateName(jsonObj.getLong("businessKey"));*/
 		
-		String productManagerId = taskMapping.getProcessVariables().get("allocate").toString();
+		//String productManagerId = taskMapping.getProcessVariables().get("allocate").toString();
+		String productManagerId = taskMapping.getProcessVariables().get(BpmConsts.WorkOrderApply.ALLOCATE.getName()).toString();
 		Assignment assignment = DTOUtils.newDTO(Assignment.class);
 		assignment.setAssignee(productManagerId);
 		return BaseOutput.success().setData(assignment);
@@ -60,7 +63,8 @@ public class WorkOrderApplyApi {
 	@ApiOperation("解决人")
 	@RequestMapping("/setSolveAssigneeName.api")
 	public @ResponseBody BaseOutput<Assignment> setSolveAssigneeName(@RequestBody TaskMapping taskMapping) {
-		String productManagerId = taskMapping.getProcessVariables().get("solve").toString();
+	//	String productManagerId = taskMapping.getProcessVariables().get("solve").toString();
+		String productManagerId = taskMapping.getProcessVariables().get(BpmConsts.WorkOrderApply.SOLVE.getName()).toString();
 		Assignment assignment = DTOUtils.newDTO(Assignment.class);
 		assignment.setAssignee(productManagerId);
 		return BaseOutput.success().setData(assignment);
@@ -71,7 +75,8 @@ public class WorkOrderApplyApi {
 	@ApiOperation("关闭人")
 	@RequestMapping("/setCloseAssigneeName.api")
 	public @ResponseBody BaseOutput<Assignment> setsetCloseAssigneeName(@RequestBody TaskMapping taskMapping) {
-		String idid= (String) taskMapping.getProcessVariables().get("close");
+	//	String idid= (String) taskMapping.getProcessVariables().get("close");
+		String idid= (String) taskMapping.getProcessVariables().get(BpmConsts.WorkOrderApply.CLOSE.getName());
 		//Long id=Long.parseLong(idid);
 		Assignment record = DTOUtils.newDTO(Assignment.class);
 		record.setAssignee(idid);

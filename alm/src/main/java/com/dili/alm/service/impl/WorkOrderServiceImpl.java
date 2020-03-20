@@ -17,6 +17,7 @@ import com.alibaba.fastjson.JSON;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.component.NumberGenerator;
 import com.dili.alm.constant.AlmConstants;
+import com.dili.alm.constant.BpmConsts;
 import com.dili.alm.dao.DemandProjectMapper;
 import com.dili.alm.dao.WorkOrderExecutionRecordMapper;
 import com.dili.alm.dao.WorkOrderMapper;
@@ -263,7 +264,8 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 		Map<String, Object> map=new HashMap<String, Object>();
 		WorkOrder workOrder = this.get(Long.parseLong(dataId));
 		
-		map.put("close", workOrder.getApplicantId().toString());
+		//map.put("close", workOrder.getApplicantId().toString());
+	    map.put(BpmConsts.WorkOrderApply.CLOSE.getName(),  workOrder.getApplicantId().toString());
 		
 		if (isNeedClaim) {
 			BaseOutput<String> output =tasksRpc.claim(taskId,  workOrder.getApplicantId().toString());
@@ -296,7 +298,8 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 	public void allocateAgree(Long executorId, String taskId, Boolean isNeedClaim) throws WorkOrderException {
 		Map<String, Object> map=new HashMap<String, Object>();
 		 map.put("result", "1");
-		 map.put("solve", executorId+"");
+		// map.put("solve", executorId+"");
+	     map.put(BpmConsts.WorkOrderApply.SOLVE.getName(), executorId+"");
 		 if (isNeedClaim) {
 				BaseOutput<String> output =tasksRpc.claim(taskId,  executorId+"");
 				if (!output.isSuccess()) {
@@ -322,7 +325,8 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 			throw new WorkOrderException("工单不存在");
 		}
 
-		map.put("edit", ""+workOrder.getApplicantId()+"");
+		//map.put("edit", ""+workOrder.getApplicantId()+"");
+		map.put(BpmConsts.WorkOrderApply.EDIT.getName(), ""+workOrder.getApplicantId()+"");
 		  if (isNeedClaim) {
 				BaseOutput<String> output =tasksRpc.claim(taskId,  executorId+"");
 				if (!output.isSuccess()) {
