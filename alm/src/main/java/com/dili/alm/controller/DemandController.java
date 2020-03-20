@@ -403,7 +403,7 @@ public class DemandController {
     @ResponseBody
     public BaseOutput<String> doSubmit(@RequestParam String code, @RequestParam String taskId,String description) {
       try {
-				demandService.saveOprationRecord(code, description, DemandOperationType.DEMAND_MANAGER.getValue(), DemandOperationType.DEMAND_MANAGER.getName(), ApproveResult.APPROVED);
+			  demandService.saveOprationRecord(code, description, DemandOperationType.DEMAND_MANAGER.getValue(), DemandOperationType.DEMAND_MANAGER.getName(), ApproveResult.APPROVED);
 			} catch (DemandExceptions e) {
 				e.printStackTrace();
 			}
@@ -511,7 +511,7 @@ public class DemandController {
   			} catch (DemandExceptions e) {
   				e.printStackTrace();
   			}
-    	return demandService.submitApproveAndAccept(code, taskId,DemandProcessStatus.ASSIGN.getCode(),acceptId);
+    	return demandService.submitApproveForAssign(acceptId, taskId);
     }
  
     @ApiOperation("跳转到接受需求对接人")
@@ -566,7 +566,7 @@ public class DemandController {
   			} catch (DemandExceptions e) {
   				e.printStackTrace();
   			}
-    	return demandService.submitApproveAndAccept(code, taskId,DemandProcessStatus.RECIPROCATE.getCode(),acceptId);
+    	return demandService.submitApproveAndAccept(acceptId, taskId);
     }
     
     

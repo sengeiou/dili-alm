@@ -44,6 +44,7 @@ import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Sequence;
 import com.dili.alm.domain.dto.DemandDto;
+import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.DemandExceptions;
 import com.dili.alm.rpc.SysProjectRpc;
 import com.dili.alm.service.DemandService;
@@ -75,6 +76,7 @@ import tk.mybatis.mapper.entity.Example;
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-12-23 17:32:14.
  */
+@Transactional(rollbackFor = ApplicationException.class)
 @Service
 public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements DemandService {
 
@@ -218,9 +220,6 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		// 判断是否是直接提交
 		int rows = 0;
 		if (newDemand.getId() == null) {
-			newDemand.setStatus((byte) DemandStatus.APPROVING.getCode());
-			newDemand.setProcessType(DemandProcessStatus.SUBMIT.getCode());
-			newDemand.setModificationTime(new Date());
 			this.addNewDemand(newDemand);
 			selectDeman = this.list(newDemand).get(0);
 		} else {
@@ -237,27 +236,27 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			selectDeman.setType(newDemand.getType());
 			selectDeman.setFinishDate(newDemand.getFinishDate());
 			selectDeman.setSubmitDate(new Date());
-			selectDeman.setStatus((byte) DemandStatus.APPROVING.getCode());
-			selectDeman.setProcessType(DemandProcessStatus.SUBMIT.getCode());
-			selectDeman.setModificationTime(new Date());
 			this.update(selectDeman);
 		}
 
 		// 流程启动参数设置
 		Map<String, Object> variables = new HashMap<>(1);
 		variables.put(BpmConsts.DEMAND_CODE, selectDeman.getSerialNumber());
+		variables.put("departmentManagerId", "121" );
+		Long departmentManagerId = this.departmentManagerId(selectDeman.getUserId());
 		// 启动流程
 		BaseOutput<ProcessInstanceMapping> processInstanceOutput = runtimeRpc.startProcessInstanceByKey(BpmConsts.PROCESS_DEFINITION_KEY, selectDeman.getSerialNumber(), userTicket.getId().toString(),
 				variables);
 		if (!processInstanceOutput.isSuccess()) {
 			throw new DemandExceptions(processInstanceOutput.getMessage());
 		}
-		// 回调，写入相关流程任务数据
+		// 修改需求状态，记录流程实例id和流程定义id
 		ProcessInstanceMapping processInstance = processInstanceOutput.getData();
 		selectDeman.setProcessDefinitionId(processInstance.getProcessDefinitionId());
 		selectDeman.setProcessInstanceId(processInstance.getProcessInstanceId());
 		selectDeman.setStatus((byte) DemandStatus.APPROVING.getCode());
-		// 修改需求状态，记录流程实例id和流程定义id
+		selectDeman.setProcessType(DemandProcessStatus.SUBMIT.getCode());
+		selectDeman.setModificationTime(new Date());
 		rows = this.demandMapper.updateByPrimaryKey(selectDeman);
 
 		if (rows <= 0) {
@@ -535,24 +534,28 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	}
 
 	@Override
-	public BaseOutput submitApproveAndAccept(String code, String taskId,String status, Long userId) {
-		Map<String, Object> variables = new HashMap<>();
-		variables.put("approved", "true");
-		Demand selectDemand = new Demand();
-		selectDemand = this.getByCode(code);
+	public BaseOutput submitApproveAndAccept(Long executorId, String taskId) {
+		// 完成任务
+		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
+			{
+				put("AssignExecutorId", executorId.toString());
+			}
+		});
 		
-		if (status.equals(DemandProcessStatus.ASSIGN.code)) {
-			selectDemand.setReciprocateId(userId);
-		}
-		if (status.equals(DemandProcessStatus.RECIPROCATE.code)) {
-			selectDemand.setFeedbackId(userId);
-		}
-		selectDemand.setProcessType(status);
-		this.updateSelective(selectDemand);
-
-		return taskRpc.complete(taskId, variables);
+		return output;
 	}
-
+	@Override
+	public BaseOutput submitApproveForAssign(Long executorId, String taskId) {
+		
+		// 完成任务
+		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
+			{
+				put("AssignExecutorId", executorId.toString());
+			}
+		});
+		
+		return output;
+	}
 	@Override
 	public BaseOutput submitApprove(String code, String taskId, Byte status, String processType) {
 		Demand condition = new Demand();
@@ -606,9 +609,18 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		selectDeman.setFinishDate(newDemand.getFinishDate());
 		selectDeman.setProcessType(DemandProcessStatus.DEPARTMENTMANAGER.getCode());
 		this.update(selectDeman);
-		Map<String, Object> variables = new HashMap<>();
-		variables.put("approved", "false");
-		return taskRpc.complete(taskId, variables);
+		//TODO:
+		Long departmentManagerId = this.departmentManagerId(selectDeman.getUserId());
+		// 完成任务
+		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
+			{
+				put("departmentManagerId", "121");
+			}
+		});
+		
+
+	
+		return output;
 	}
 
 	public int isBackEdit(Demand demand) {
@@ -686,4 +698,28 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		
 		return new EasyuiPageOutput((int) recordList.size(), recordList);
 	}
+
+	@Override
+	public Long departmentManagerId(Long applyId)  throws DemandExceptions {
+		
+		BaseOutput<User> userOut= userRpc.get(applyId);
+		if (!userOut.isSuccess()) {
+			throw new DemandExceptions("查询用户信息失败："+userOut.getMessage());
+		}
+		User u = userOut.getData();
+		BaseOutput<List<User>> firmUsersOut  = userRpc.findCurrentFirmUsersByResourceCode(u.getFirmCode(),"departmentApprove");//TODO:departmentApprove设置成静态变量
+		if (!firmUsersOut.isSuccess()) {
+			throw new DemandExceptions("查询部门负责人信息失败："+firmUsersOut.getMessage());
+		}
+		User departmentManager = DTOUtils.newInstance(User.class);
+		if (firmUsersOut.getData().size()<=0) {
+			throw new DemandExceptions("请确认当前市场有需求部门确认人角色！");
+		}else {
+			departmentManager = firmUsersOut.getData().get(0);
+		}
+		
+		return departmentManager.getId();
+	}
+
+
 }

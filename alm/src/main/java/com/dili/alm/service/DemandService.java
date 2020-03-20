@@ -119,7 +119,7 @@ public interface DemandService extends BaseService<Demand, Long> {
      * @param codesubmitApproveAndAccept
      * @return
      */
-    BaseOutput submitApproveAndAccept(String code, String taskId,String processType,Long userId);
+    BaseOutput submitApproveAndAccept(Long executorId, String taskId);
     
     /**
      * 驳回需求申请
@@ -145,4 +145,17 @@ public interface DemandService extends BaseService<Demand, Long> {
      * @return
      */
 	EasyuiPageOutput getOprationRecordList(String demandCode);
+	
+    /**
+     * 添加分配人
+     * @param codesubmitApproveAndAccept
+     * @return
+     */
+    BaseOutput submitApproveForAssign(Long executorId, String taskId);
+    /**
+     * 获取部门经理ID
+     * @param 申请人ID
+     * @return
+     */
+    Long departmentManagerId(Long applyId)throws DemandExceptions;
 }

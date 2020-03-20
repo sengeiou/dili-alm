@@ -108,21 +108,38 @@ public class AssignmentApi {
 		return BaseOutput.success().setData(assignment);
 	}
 
+    /****需求管理 begin*****/
+	@ApiOperation("获取需求部门经理审批人")
+	@RequestMapping("/setDepartmentManagerId.api")
+	public @ResponseBody BaseOutput<String> setDepartmentManagerId(TaskMapping taskMapping) {
+		String executorId = taskMapping.getProcessVariables().get("departmentManagerId").toString();
+		Assignment assignment = DTOUtils.newDTO(Assignment.class);
+		assignment.setAssignee(executorId);
+		return BaseOutput.success().setData(assignment);
+	}
 	@ApiOperation("根据需求ID,需求反馈人")
 	@RequestMapping("/setFeedback.api")
 	public @ResponseBody BaseOutput<String> setFeedback(@RequestBody TaskMapping taskMapping) {
-		Map<String, Object> map = taskMapping.getProcessVariables();
+/*		Map<String, Object> map = taskMapping.getProcessVariables();
 		Assignment record = assignmentService.setFeedback(map.get("businessKey").toString());
-		return BaseOutput.success().setData(record);
+		return BaseOutput.success().setData(record);*/
+		String executorId = taskMapping.getProcessVariables().get("AssignExecutorId").toString();
+		Assignment assignment = DTOUtils.newDTO(Assignment.class);
+		assignment.setAssignee(executorId);
+		return BaseOutput.success().setData(assignment);
 	}
 
 	
 	@ApiOperation("根据变更ID,需求处理人")
 	@RequestMapping("/setReciprocate.api")
 	public @ResponseBody BaseOutput<String> setReciprocate(@RequestBody TaskMapping taskMapping) {
-		Map<String, Object> map = taskMapping.getProcessVariables();
+/*		Map<String, Object> map = taskMapping.getProcessVariables();
 		Assignment record = assignmentService.setReciprocate(map.get("businessKey").toString());
-		return BaseOutput.success().setData(record);
+		return BaseOutput.success().setData(record);*/
+		String executorId = taskMapping.getProcessVariables().get("AssignExecutorId").toString();
+		Assignment assignment = DTOUtils.newDTO(Assignment.class);
+		assignment.setAssignee(executorId);
+		return BaseOutput.success().setData(assignment);
 
 	}
 
@@ -134,6 +151,7 @@ public class AssignmentApi {
 		Assignment record = assignmentService.setDemandAppId(map.get("businessKey").toString());
 		return BaseOutput.success().setData(record);
 	}
+	 /****需求管理 end*****/
 	/**LJ add begin**/
 	// 资源申请，设置项目经理
 	@ApiOperation("项目id,设置项目经理")
