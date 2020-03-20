@@ -87,7 +87,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			// map.put("dept","1");
 			BaseOutput<ProcessInstanceMapping> object = runtimeRpc.startProcessInstanceByKey("almOnlineDataChangeProcess", onlineDataChange.getId().toString(), id + "", map);
 			if (object.getCode().equals("5000")) {
-				throw new OnlineDataChangeException("失败");
+				throw new OnlineDataChangeException("runtimeRpc失败");
 			}
 
 			onlineDataChange.setProcessInstanceId(object.getData().getProcessInstanceId());
