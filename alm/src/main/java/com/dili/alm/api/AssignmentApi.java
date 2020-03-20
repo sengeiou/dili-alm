@@ -111,7 +111,7 @@ public class AssignmentApi {
     /****需求管理 begin*****/
 	@ApiOperation("获取需求部门经理审批人")
 	@RequestMapping("/setDepartmentManagerId.api")
-	public @ResponseBody BaseOutput<String> setDepartmentManagerId(TaskMapping taskMapping) {
+	public @ResponseBody BaseOutput<String> setDepartmentManagerId(@RequestBody TaskMapping taskMapping) {
 		String executorId = taskMapping.getProcessVariables().get("departmentManagerId").toString();
 		Assignment assignment = DTOUtils.newDTO(Assignment.class);
 		assignment.setAssignee(executorId);
