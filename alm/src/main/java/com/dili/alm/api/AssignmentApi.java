@@ -147,9 +147,13 @@ public class AssignmentApi {
 	@ApiOperation("根据变更ID,項目申請人")
 	@RequestMapping("/setDemandAppId.api")
 	public @ResponseBody BaseOutput<String> setDemandAppId(@RequestBody TaskMapping taskMapping) {
-		Map<String, Object> map = taskMapping.getProcessVariables();
+/*		Map<String, Object> map = taskMapping.getProcessVariables();
 		Assignment record = assignmentService.setDemandAppId(map.get("businessKey").toString());
-		return BaseOutput.success().setData(record);
+		return BaseOutput.success().setData(record);*/
+		String executorId = taskMapping.getProcessVariables().get("AssignExecutorId").toString();
+		Assignment assignment = DTOUtils.newDTO(Assignment.class);
+		assignment.setAssignee(executorId);
+		return BaseOutput.success().setData(assignment);
 	}
 	 /****需求管理 end*****/
 	/**LJ add begin**/
