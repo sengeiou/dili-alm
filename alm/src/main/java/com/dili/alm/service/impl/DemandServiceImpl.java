@@ -590,7 +590,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		
 		this.update(demand);
 		variables.put("approved", "false");
-		variables.put("AssignExecutorId",demand.getUserId());
+		variables.put("AssignExecutorId",demand.getUserId().toString());
 		return taskRpc.complete(taskId, variables);
 	}
 

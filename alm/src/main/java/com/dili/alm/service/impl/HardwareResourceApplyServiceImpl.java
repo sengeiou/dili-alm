@@ -368,7 +368,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
         	throw new HardwareResourceApplyException("用户错误！"+out.getMessage());
         }
         
-		out = this.submitApprove(apply.getId(),selected.getId());
+		out = this.submitApprove(apply.getId(),selected.getId(),"");
         if(!out.isSuccess()){
         	throw new HardwareResourceApplyException("用户错误！"+out.getMessage());
         }
@@ -428,7 +428,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
         //获取formKey
         TaskMapping selected = taskMappings.get(0);
 		
-		BaseOutput out = this.submitApprove(applyId,selected.getId());
+		BaseOutput out = this.submitApprove(applyId,selected.getId(),executorId.toString());
         if(!out.isSuccess()){
         	throw new HardwareResourceApplyException("用户错误！"+out.getMessage());
         }
@@ -490,7 +490,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		//获取任务
 		if (ApproveResult.APPROVED.equals(result)) {
 			//完成流程操作
-			BaseOutput outPut = this.submitApprove(apply.getId(),taskId);
+			BaseOutput outPut = this.submitApprove(apply.getId(),taskId,"");
 			if(!outPut.getCode().equals("200")) {
 				throw new HardwareResourceApplyException(outPut.getMessage());
 			};
@@ -579,7 +579,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 			// 流程启动参数设置
 			Map<String, Object> variables = new HashMap<>(1);
 			variables.put(HardwareApplyConstant.HARDWARE_APPLY_CODE.getName(), apply.getId().toString());
-			String aa = HardwareApplyConstant.PROCESS_DEFINITION_KEY.getName();
+			variables.put("AssignExecutorId", apply.getProjectManagerId().toString());
 			// 启动流程
 			BaseOutput<ProcessInstanceMapping> processInstanceOutput = runtimeRpc.startProcessInstanceByKey(HardwareApplyConstant.PROCESS_DEFINITION_KEY.getName(),apply.getId()+"", userTicket.getId().toString(),
 					variables);
@@ -608,7 +608,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 			
 	        String taskId = selected.getId();
 	        
-			this.submitApprove(apply.getId(), taskId);
+			this.submitApprove(apply.getId(), taskId, apply.getProjectManagerId().toString());
 		}
 		
 		/***
@@ -932,10 +932,12 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 	}
 
 	@Override
-	public BaseOutput submitApprove(Long id, String taskId) {
+	public BaseOutput submitApprove(Long id, String taskId,String assignExecutorId) {
 		Map<String, Object> variables = new HashMap<>();
 		variables.put("approved", "true");
-		  //candidate
+		if (!assignExecutorId.equals("")) {
+			variables.put("AssignExecutorId", assignExecutorId);
+		}
 		return taskRpc.complete(taskId, variables);
 	}
 
@@ -949,6 +951,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		apply.setApplyState(HardwareApplyState.APPLING.getValue());
 		this.update(apply);
 		variables.put("approved", "false");
+		variables.put("AssignExecutorId",apply.getApplicantId().toString());
 		return taskRpc.complete(taskId, variables);
 	}
 

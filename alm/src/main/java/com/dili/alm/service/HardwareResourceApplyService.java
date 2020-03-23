@@ -93,7 +93,7 @@ public interface HardwareResourceApplyService extends BaseService<HardwareResour
      * @param id 业务编号，任务编号 ，状态
      * @return
      */
-    BaseOutput submitApprove(Long id, String taskId);
+    BaseOutput submitApprove(Long id, String taskId,String assignExecutorId);
     
     /**
      * 驳回需求申请

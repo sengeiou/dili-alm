@@ -529,7 +529,7 @@ public class HardwareResourceApplyController {
 			throws HardwareResourceApplyException {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		if (isApproved) {
-			hardwareResourceApplyService.submitApprove(applyId,taskId);
+			hardwareResourceApplyService.submitApprove(applyId,taskId,"");
 			
 			hardwareResourceApplyService.projectManagerApproveForTask(applyId,user.getId(),ApproveResult.APPROVED,description);
 		}else {
@@ -583,7 +583,7 @@ public class HardwareResourceApplyController {
 		}
 		if (isApproved) {
 			hardwareResourceApplyService.operationManagerApproveForTask(applyId, user.getId(), executors, description);
-			hardwareResourceApplyService.submitApprove(applyId,taskId);
+			hardwareResourceApplyService.submitApprove(applyId,taskId,operDepartmentUsers[0]);
 		}else {
 			hardwareResourceApplyService.rejectApprove(applyId, taskId);
 		}
@@ -618,7 +618,7 @@ public class HardwareResourceApplyController {
 	public @ResponseBody BaseOutput doOpdratprExecuteForTask(@RequestParam String taskId,Long applyId, String description)
 			throws HardwareResourceApplyException {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
-		hardwareResourceApplyService.submitApprove(applyId,taskId);
+		hardwareResourceApplyService.submitApprove(applyId,taskId,"");
 		hardwareResourceApplyService.operatorExecuteForTask(applyId, user.getId(), description);
 		return BaseOutput.success("提交成功");
 	}

@@ -161,26 +161,38 @@ public class AssignmentApi {
 	@ApiOperation("项目id,设置项目经理")
 	@RequestMapping("/setHardwareApplyProjectManager.api")
 	public @ResponseBody BaseOutput<String> setHardwareApplyProjectManager(@RequestBody TaskMapping taskMapping) {
-		Map<String, Object> map = taskMapping.getProcessVariables();
+/*		Map<String, Object> map = taskMapping.getProcessVariables();
 		Assignment record = assignmentService.setProjectManager(map.get("businessKey").toString());
-		return BaseOutput.success().setData(record);
+		return BaseOutput.success().setData(record);*/
+		String executorId = taskMapping.getProcessVariables().get("AssignExecutorId").toString();
+		Assignment assignment = DTOUtils.newDTO(Assignment.class);
+		assignment.setAssignee(executorId);
+		return BaseOutput.success().setData(assignment);
 	}
 	
 	// 资源申请，设置部署运维人员
 	@ApiOperation("根据页面保存的运维操作人员")
 	@RequestMapping("/setHardwareApplyOpdrator.api")
 	public @ResponseBody BaseOutput<String> setHardwareApplyOpdrator(@RequestBody TaskMapping taskMapping) {
-		Map<String, Object> map = taskMapping.getProcessVariables();
+/*		Map<String, Object> map = taskMapping.getProcessVariables();
 		Assignment record = assignmentService.setOpdrator(map.get("businessKey").toString());
-		return BaseOutput.success().setData(record);
+		return BaseOutput.success().setData(record);*/
+		String executorId = taskMapping.getProcessVariables().get("AssignExecutorId").toString();
+		Assignment assignment = DTOUtils.newDTO(Assignment.class);
+		assignment.setAssignee(executorId);
+		return BaseOutput.success().setData(assignment);
 	}
 	// 资源申请，设置返回编辑
 	@ApiOperation("返回编辑者")
 	@RequestMapping("/setHardwareApplyApplicant.api")
 	public @ResponseBody BaseOutput<String> setHardwareApplyApplicant(@RequestBody TaskMapping taskMapping) {
-		Map<String, Object> map = taskMapping.getProcessVariables();
+/*		Map<String, Object> map = taskMapping.getProcessVariables();
 		Assignment record = assignmentService.setHardwareResourceApplyApply(map.get("businessKey").toString());
-		return BaseOutput.success().setData(record);
+		return BaseOutput.success().setData(record);*/
+		String executorId = taskMapping.getProcessVariables().get("AssignExecutorId").toString();
+		Assignment assignment = DTOUtils.newDTO(Assignment.class);
+		assignment.setAssignee(executorId);
+		return BaseOutput.success().setData(assignment);
 	}
 	/**LJ add end**/
 	@ResponseBody
