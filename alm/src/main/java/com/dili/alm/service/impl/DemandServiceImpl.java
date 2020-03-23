@@ -242,7 +242,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		// 流程启动参数设置
 		Map<String, Object> variables = new HashMap<>(1);
 		variables.put(BpmConsts.DEMAND_CODE, selectDeman.getSerialNumber());
-		variables.put("departmentManagerId", departmentManagerId);
+		variables.put("departmentManagerId", departmentManagerId.toString());
 		
 		// 启动流程
 		BaseOutput<ProcessInstanceMapping> processInstanceOutput = runtimeRpc.startProcessInstanceByKey(BpmConsts.PROCESS_DEFINITION_KEY, selectDeman.getSerialNumber(), userTicket.getId().toString(),
@@ -615,7 +615,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		// 完成任务
 		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
 			{
-				put("departmentManagerId", departmentManagerId);
+				put("departmentManagerId", departmentManagerId.toString());
 			}
 		});
 		
