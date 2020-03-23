@@ -176,6 +176,7 @@
                 success:function(data){
                     var data = eval('(' + data + ')');
                     if(data.success) {
+                    	 $.messager.alert('提示',"操作完成！");
                     	window.parent.setIframeHeight();
                         //如果父页面是任务中心
                         if(parent.location.href=='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
@@ -183,7 +184,7 @@
                             window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
                         }else{
 
-	    	            	 $.messager.alert('提示',data.message);
+	    	            	// $.messager.alert('提示',data.message);
 	    	            	 var parentIframe = parent.document.getElementById("pageType")
 	    	            	 if(parentIframe!="undefined"){
 	    	            		 window.parent.CloseEditPage();
