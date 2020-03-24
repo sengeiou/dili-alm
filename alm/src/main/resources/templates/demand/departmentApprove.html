@@ -129,30 +129,31 @@
             onSubmit : function(){
 
             },
-            success:function(data){
-                var data = eval('(' + data + ')');
-	           	 console.log(data);
-	             if(data.code=="200"){
-	            	 $.messager.alert('提示',"操作完成！");
-                     //如果父页面是任务中心
-                     if(parent.location.href=='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
-                         //向任务中心发送消息，参数为要跳转的地址
-                         window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
-                     }else{
-	    	            	 //$.messager.alert('提示',data.message);
-	    	            	 var parentIframe = parent.document.getElementById("pageType")
-	    	            	 if(parentIframe!="undefined"){
-	    	            		 window.parent.CloseEditPage();
- 	            	     }
-                     }
-	            	
-	             }else{
-	                 $.messager.alert('错误',data.result);
-	             }
+            success:function(data){   
+	        	try{
+		            	 var parentIframe = parent.document.getElementById("pageType")
+	            	 if(parentIframe!="undefined"){
+	            		 window.parent.CloseEditPage();
+	      	         }else{
+	      	        	 $.messager.alert('提示',"操作完成！");
+	      	         }
+	              }catch(ex){
+						   document.domain="diligrp.com";
+							//如果父页面是任务中心
+		                   var plh = parent.location.href.indexOf('?') > 0 ? parent.location.href.substring(0, parent.location.href.indexOf('?')) : parent.location.href;
+		                   if(plh=='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
+		                       //向任务中心发送消息，参数为要跳转的地址
+		                       window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
+		                   }else{
+		                   	window.location.href='${contextPath!}/demand/index.html';
+		                   }
+	              }
             }
         });
     }
 
+
+    
         function save(){
             if(!$('#form').form("validate")){
                 return;
@@ -165,26 +166,25 @@
 
                 },
                 success:function(data){
-                    var data = eval('(' + data + ')');
-                    if(data.success) {
-                     $.messager.alert('提示',"操作完成！");
-                        //如果父页面是任务中心
-                        if(parent.location.href=='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
-                            //向任务中心发送消息，参数为要跳转的地址
-                            window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
-                        }else{
-	    	            	 //$.messager.alert('提示',data.message);
-	    	            	 var parentIframe = parent.document.getElementById("pageType")
-	    	            	 if(parentIframe!="undefined"){
-	    	            		 window.parent.CloseEditPage();
-    	            	     }
-                        }
-
-                    }else{
-                    	$.messager.alert('警告',"错误:"+data.message);
-                    }
-
-                }
+	    	        	try{
+		   		            	 var parentIframe = parent.document.getElementById("pageType")
+				            	 if(parentIframe!="undefined"){
+				            		 window.parent.CloseEditPage();
+		    	      	         }else{
+		    	      	        	 $.messager.alert('提示',"操作完成！");
+		    	      	         }
+	    	               }catch(ex){
+		    					   document.domain="diligrp.com";
+		    						//如果父页面是任务中心
+		    	                   var plh = parent.location.href.indexOf('?') > 0 ? parent.location.href.substring(0, parent.location.href.indexOf('?')) : parent.location.href;
+		    	                   if(plh=='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
+		    	                       //向任务中心发送消息，参数为要跳转的地址
+		    	                       window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
+		    	                   }else{
+		    	                   	window.location.href='${contextPath!}/demand/index.html';
+		    	                   }
+	    	               }
+    	            }
             });
 
 
@@ -201,7 +201,7 @@
             queryRecordGrid(code);
             //加载文件列表
             queryFileGrid()
-            
+            console.log(document.domain);
             //加载数据
             var formData = $.extend({},${modelStr!});
             formData = addKeyStartWith(getOriginalData(formData),"_");
@@ -211,11 +211,12 @@
             }
             formData._finishDate=dateFormat_1(formData._finishDate);
             $('#_form').form('load', formData);
+        
        	    var parentIframe = parent.document.getElementById("pageType")
           	 if(parentIframe!="undefined"){
             		window.parent.setIframeHeight();
      	     }
-            
+ 
         })
         function loadSystemSelect() {
 			$('#_belongSysId').combobox({
