@@ -134,15 +134,17 @@
                 success:function(data){
                     var data = eval('(' + data + ')');
                     if(data.success) {
-                    	 $.messager.alert('提示',"操作完成！");
                         //如果父页面是任务中心
                         if(parent.location.href=='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
                             //向任务中心发送消息，参数为要跳转的地址
                             window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
                         }else{
-   	                   	 if(typeof(window.opener.ReRender)!="undefined"){
-	                		 window.parent.CloseEditPage();
-	                	 }
+	    	            	 var parentIframe = parent.document.getElementById("pageType")
+	    	            	 if(parentIframe!="undefined"){
+	    	            		 window.parent.CloseEditPage();
+ 	            	         }else{
+ 	            	        	 $.messager.alert('提示',"操作完成！");
+ 	            	         }
                         }
 
                     }else{
@@ -167,17 +169,18 @@
                 success:function(data){
                     var data = eval('(' + data + ')');
                     if(data.success) {
-                    	 $.messager.alert('提示',"操作完成！");
+                    	console.log(data);
                         //如果父页面是任务中心
                         if(parent.location.href=='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
                             //向任务中心发送消息，参数为要跳转的地址
                             window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
                         }else{
-	    	            	
 	    	            	 var parentIframe = parent.document.getElementById("pageType")
 	    	            	 if(parentIframe!="undefined"){
 	    	            		 window.parent.CloseEditPage();
-    	            	     }
+ 	            	         }else{
+ 	            	        	 $.messager.alert('提示',"操作完成！");
+ 	            	         }
                         }
 
                     }else{
