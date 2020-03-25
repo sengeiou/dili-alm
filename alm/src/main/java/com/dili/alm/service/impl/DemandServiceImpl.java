@@ -76,7 +76,7 @@ import tk.mybatis.mapper.entity.Example;
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-12-23 17:32:14.
  */
-@Transactional(rollbackFor = ApplicationException.class)
+@Transactional(rollbackFor = DemandExceptions.class)
 @Service
 public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements DemandService {
 
