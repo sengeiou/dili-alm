@@ -200,7 +200,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		if (rows <= 0) {
 			throw new DemandExceptions("新增需求失败");
 		}
-		return 1;
+		return rows;
 	}
 
 	@Override
@@ -220,8 +220,13 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		// 判断是否是直接提交
 		int rows = 0;
 		if (newDemand.getId() == null) {
-			this.addNewDemand(newDemand);
-			selectDeman = this.list(newDemand).get(0);
+			int testNum = this.addNewDemand(newDemand);
+			if(testNum>0) {
+				System.out.println(JSONObject.toJSON(newDemand));
+				selectDeman = this.list(newDemand).get(0);
+			}else {
+				throw new DemandExceptions("提交需求失败:查询插入失败");
+			}
 		} else {
 			selectDeman = demandMapper.selectByPrimaryKey(newDemand.getId());
 			if (selectDeman == null) {
@@ -240,7 +245,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		}
 		Long departmentManagerId = this.departmentManagerId(selectDeman.getUserId());
 		// 流程启动参数设置
-		Map<String, Object> variables = new HashMap<>(1);
+		Map<String, Object> variables = new HashMap<>();
 		variables.put(BpmConsts.DEMAND_CODE, selectDeman.getSerialNumber());
 		variables.put("departmentManagerId", departmentManagerId.toString());
 		
