@@ -117,11 +117,13 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 			demandProject.setProjectNumber(selectByPrimaryKey.getSerialNumber());
 			demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
 			List<DemandProject> demandLists = this.demandProjectMapper.select(demandProject);
-			for (DemandProject updateDemandProject : demandLists) {
-				updateDemandProject.setVersionId(dto.getId());
-				int updateByPrimaryKey = this.demandProjectMapper.updateByPrimaryKey(updateDemandProject);
-				if (updateByPrimaryKey == 0) {
-					throw new ProjectVersionException("修改关联失败");
+			if(demandLists!=null&&demandLists.size()>0) {
+				for (DemandProject updateDemandProject : demandLists) {
+					updateDemandProject.setVersionId(dto.getId());
+					int updateByPrimaryKey = this.demandProjectMapper.updateByPrimaryKey(updateDemandProject);
+					if (updateByPrimaryKey == 0) {
+						throw new ProjectVersionException("修改关联失败");
+					}
 				}
 			}
 		}

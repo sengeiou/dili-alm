@@ -263,13 +263,7 @@ function openInsertVersion() {
 		buttons : [{
 			text : '保存',
 			handler : function() {
-				var addnumber=$("#addVersionNumber").val();
-				if(addnumber!=addnumber>0){
-					if($($("input[name$='demandIds']")[0]).val()==null||$($("input[name$='demandIds']")[0]).val()==""){
-						$.messager.alert('警告', '请选择至少一个需求');
-						return;
-					}
-				}
+
 				if (!$('#versionForm').form('validate')) {
 					return;
 				}
@@ -333,13 +327,6 @@ function editVersion(id) {
 		buttons : [{
 			text : '保存',
 			handler : function() {
-				var updatenumber=$("#updateVersionNumber").val();
-				if(updatenumber!=updatenumber>1){
-					if($($("input[name$='demandIds']")[0]).val()==null||$($("input[name$='demandIds']")[0]).val()==""){
-							$.messager.alert('警告', '请选择至少一个需求');
-							return;
-					}
-				}
 				if (!$('#versionForm').form('validate')) {
 					return;
 				}

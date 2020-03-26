@@ -96,9 +96,9 @@
 
 
     function submitForm(obj) {
-    	if($($("input[name$='demandIds']")[0]).val()==null||$($("input[name$='demandIds']")[0]).val()==""){
+/*     	if($($("input[name$='demandIds']")[0]).val()==null||$($("input[name$='demandIds']")[0]).val()==""){
     		$.messager.alert('警告', '请选择至少一个需求');
-    	}else{
+    	}else{ */
     		 $('#ff').form('submit', {
     	            url: "${contextPath}/projectApply/insert",
     	            onSubmit: function() {
@@ -120,7 +120,7 @@
     	                }
     	            }
     	        });
-    	}
+/*     	} */
        
     }
 
