@@ -223,7 +223,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			int testNum = this.addNewDemand(newDemand);
 			if(testNum>0) {
 				System.out.println(JSONObject.toJSON(newDemand));
-				selectDeman = this.list(newDemand).get(0);
+				selectDeman = newDemand; //this.list(newDemand).get(0);
 			}else {
 				throw new DemandExceptions("提交需求失败:查询插入失败");
 			}
