@@ -317,7 +317,7 @@ public class WorkOrderController {
 	   List<WorkOrderDto> targetList = DTOUtils.as(outTemp, WorkOrderDto.class);
 	   bpmcUtil.fitLoggedUserIsCanHandledProcess(targetList);
 	   @SuppressWarnings("rawtypes")
-		long total = targetList instanceof Page ? ((Page) targetList).getTotal() : targetList.size();
+		long total = outTemp instanceof Page ? ((Page) outTemp).getTotal() : outTemp.size();
 		return new EasyuiPageOutput(Long.valueOf(total).intValue(), ValueProviderUtils.buildDataByProvider(query, targetList)).toString();
 		
 	}

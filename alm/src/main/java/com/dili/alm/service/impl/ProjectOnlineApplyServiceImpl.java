@@ -526,7 +526,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			this.setOperationColumn(a);
 		}
 		@SuppressWarnings("rawtypes")
-		long total = targetList instanceof Page ? ((Page) targetList).getTotal() : targetList.size();
+		long total = list instanceof Page ? ((Page) list).getTotal() : list.size();
 		@SuppressWarnings("rawtypes")
 		List results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, targetList) : targetList;
 		return new EasyuiPageOutput(Long.valueOf(total).intValue(), results);
