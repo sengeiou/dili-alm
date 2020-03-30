@@ -72,7 +72,7 @@ public interface TaskMapper extends MyMapper<Task> {
 	List<TaskStateCountDto> getStateByTaskCount(@Param("owner") Long owner, @Param("list") List<Long> list);
 
 	List<Map<Object, Object>> sumUserProjectTaskHour(@Param("projectIds") List<Long> projectIds, @Param("userIds") Set<Long> userIds, @Param("startTime") Date startTime,
-			@Param("endTime") Date endDate);
+			@Param("endTime") Date endDate, @Param("users") Collection<User> users);
 
 	List<UserWorkHourDetailDto> selectUserWorkHourDetail(@Param("userId") Long userId);
 

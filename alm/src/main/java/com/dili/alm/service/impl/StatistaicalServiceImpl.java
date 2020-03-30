@@ -254,7 +254,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		Set<Long> userIds = new HashSet<>();
 		teams.forEach(t -> userIds.add(t.getMemberId()));
 
-		List<Map<Object, Object>> listMap = taskMapper.sumUserProjectTaskHour(selectProjectIds, userIds, df.parse(startTime), df.parse(endTime));
+		List<Map<Object, Object>> listMap = taskMapper.sumUserProjectTaskHour(selectProjectIds, userIds, df.parse(startTime), df.parse(endTime), AlmCache.getInstance().getUserMap().values());
 
 		List<SelectTaskHoursByUserDto> list = new ArrayList<SelectTaskHoursByUserDto>(listMap.size());
 		listMap.forEach(lm -> {

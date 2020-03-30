@@ -748,7 +748,12 @@
 			IFNULL( t#{index}.total_task_hour, 0 ) + IFNULL(
 			t#{index}.total_over_hour, 0 )
 		</foreach>
-		FROM `user` u LEFT JOIN
+		FROM  (SELECT <foreach collection="users" item="user" separator="UNION ALL SELECT">
+			#{user.id} AS id,
+			#{user.userName} as user_name,
+			#{user.realName} AS real_name,
+			#{user.departmentId} AS department_id
+		</foreach>) u LEFT JOIN
 		<foreach collection="projectIds" index="index" item="projectId" separator=" LEFT JOIN " close="">
 			(SELECT DISTINCT
 			t.`owner` AS user_id,

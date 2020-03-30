@@ -131,8 +131,7 @@ public class StatisticalController {
 
 	@ApiOperation(value = "查询项目任务数量", notes = "查询返回List信息")
 	@RequestMapping(value = "/ProjectOverviewTasklist", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody List<TaskStateCountDto> ProjectOverviewTasklist(String startTime, String endTime, Integer flat)
-			throws Exception {
+	public @ResponseBody List<TaskStateCountDto> ProjectOverviewTasklist(String startTime, String endTime, Integer flat) throws Exception {
 		String startTime2 = getStartTime(startTime, endTime, flat);
 		String endTime2 = getEndTime(startTime, endTime, flat);
 		return statisticalService.getProjectToTaskCount(startTime2, endTime2);
@@ -148,8 +147,7 @@ public class StatisticalController {
 
 	@ApiOperation(value = "查询时间段内员工工时", notes = "查询返回easyui信息")
 	@RequestMapping(value = "/taskHoursByUser", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody List<TaskByUsersDto> taskHoursByUser(String startTime, String endTime, String[] userId,
-			String[] departmentId, @RequestParam(required = false) String order,
+	public @ResponseBody List<TaskByUsersDto> taskHoursByUser(String startTime, String endTime, String[] userId, String[] departmentId, @RequestParam(required = false) String order,
 			@RequestParam(required = false) String sort) throws Exception {
 
 		List<Long> userIds = null;
@@ -167,8 +165,7 @@ public class StatisticalController {
 				departmentIds.add(Long.parseLong(long1));
 			}
 		}
-		List<TaskByUsersDto> taskByUserDtoList = statisticalService.listTaskHoursByUser(startTime, endTime, userIds,
-				departmentIds, order, sort);
+		List<TaskByUsersDto> taskByUserDtoList = statisticalService.listTaskHoursByUser(startTime, endTime, userIds, departmentIds, order, sort);
 		// return new EasyuiPageOutput(taskByUserDtoList.size(),
 		// taskByUserDtoList).toString();
 		return taskByUserDtoList;
@@ -177,16 +174,14 @@ public class StatisticalController {
 
 	@ApiOperation(value = "查询年度报表", notes = "查询返回easyui信息")
 	@RequestMapping(value = "/listProjectYearCover", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody List<ProjectYearCoverDto> listProjectYearCover(String year, String month, String aaa,
-			String weekNum) throws Exception {
+	public @ResponseBody List<ProjectYearCoverDto> listProjectYearCover(String year, String month, String aaa, String weekNum) throws Exception {
 		return statisticalService.listProjectYearCover(year, month, weekNum);
 
 	}
 
 	@ApiOperation(value = "报表图显示", notes = "查询返回easyui信息")
 	@RequestMapping(value = "/projectYearCoverForAll", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody ProjectYearCoverForAllDto projectYearCoverForAll(String year, String month, boolean isFullYear,
-			String weekNum) throws Exception {
+	public @ResponseBody ProjectYearCoverForAllDto projectYearCoverForAll(String year, String month, boolean isFullYear, String weekNum) throws Exception {
 		ProjectYearCoverForAllDto all = statisticalService.getProjectYearsCoverForAll(year, month, isFullYear, weekNum);
 		return all;
 	}
@@ -253,8 +248,7 @@ public class StatisticalController {
 
 	@ApiOperation(value = "项目工时图表查询", notes = "查询返回easyui信息")
 	@RequestMapping(value = "/listProjectForEchar", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody List<SelectTaskHoursByUserProjectDto> listProjectForEchar(String[] projectIds, Long userId,
-			Date startDate, Date endDate) throws Exception {
+	public @ResponseBody List<SelectTaskHoursByUserProjectDto> listProjectForEchar(String[] projectIds, Long userId, Date startDate, Date endDate) throws Exception {
 		List<Long> projectIdList = new ArrayList<Long>();
 		if (projectIds != null && projectIds.length > 0) {
 			projectIdList = new ArrayList<Long>(projectIds.length);
@@ -266,21 +260,6 @@ public class StatisticalController {
 		}
 		return statisticalService.selectTotalTaskAndOverHoursForEchars(projectIdList, startDate, endDate);
 
-	}
-
-	/*
-	 * 项目工时部分优化测试，转为list bean传递页面保存
-	 */
-	@ResponseBody
-	@RequestMapping(value = "/test", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public List<UserProjectTaskHourCountDto> test() throws ParseException {
-		List<Long> projectIds = new ArrayList<>();
-		List<Project> projects = this.projectService.list(DTOUtils.newDTO(Project.class));
-		projects.forEach(p -> projectIds.add(p.getId()));
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		List<Map<Object, Object>> listMap = this.taskMapper.sumUserProjectTaskHour(projectIds, null,
-				df.parse("2018-02-01"), df.parse("2018-05-01"));
-		return this.buildUserProjectTaskHourCountDto(listMap);
 	}
 
 	/*
@@ -318,8 +297,7 @@ public class StatisticalController {
 
 	@ApiOperation(value = "项目总工时查询", notes = "查询返回easyui信息")
 	@RequestMapping(value = "/listUserHours", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody List<SelectTaskHoursByUserDto> listUserHours(String startDate, String endDate,
-			String[] project) throws Exception {
+	public @ResponseBody List<SelectTaskHoursByUserDto> listUserHours(String startDate, String endDate, String[] project) throws Exception {
 		List<Long> projectIds = null;
 
 		if (project != null) {
@@ -335,8 +313,7 @@ public class StatisticalController {
 	}
 
 	@RequestMapping(value = "/exportPorjectHours", method = { RequestMethod.POST, RequestMethod.GET })
-	public @ResponseBody BaseOutput export(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap,
-			String startDate, String endDate, String[] project) throws IOException {
+	public @ResponseBody BaseOutput export(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap, String startDate, String endDate, String[] project) throws IOException {
 		try {
 			String rtn = getRtn("项目工时统计.xls", request);
 			response.setContentType("text/html");
@@ -380,8 +357,7 @@ public class StatisticalController {
 
 	@ApiOperation(value = "查询所有类型汇总", notes = "查询返回List信息")
 	@RequestMapping(value = "/projecTypetList", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody List<ProjectTypeCountDto> projecTypetList(String startTime, String endTime, Integer flat)
-			throws Exception {
+	public @ResponseBody List<ProjectTypeCountDto> projecTypetList(String startTime, String endTime, Integer flat) throws Exception {
 		String startTime2 = getStartTime(startTime, endTime, flat);
 		String endTime2 = getEndTime(startTime, endTime, flat);
 		return statisticalService.getProjectToTypeSummary(startTime2, endTime2);
@@ -403,8 +379,7 @@ public class StatisticalController {
 	}
 
 	@RequestMapping(value = "/projecOverViewDownload", method = { RequestMethod.GET, RequestMethod.POST })
-	public void projecOverViewDownload(String startTime, String endTime, HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
+	public void projecOverViewDownload(String startTime, String endTime, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String startTime2 = getStartTime(startTime, endTime, null);
 		String endTime2 = getEndTime(startTime, endTime, null);
 		String fileName = "项目总览.xls";
@@ -527,8 +502,7 @@ public class StatisticalController {
 
 	@ResponseBody
 	@RequestMapping(value = "/exportProjectCost")
-	public void exportProjectCost(@RequestParam(required = false) Long projectId, HttpServletRequest request,
-			HttpServletResponse response) throws IOException {
+	public void exportProjectCost(@RequestParam(required = false) Long projectId, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		InputStream stream = getClass().getClassLoader().getResourceAsStream("excel/projectCostStatisticTemplate.xlsx");
 		File targetFile = new File("projectCostStatisticTemplate.xlsx");
 		if (!targetFile.exists()) {
@@ -543,8 +517,7 @@ public class StatisticalController {
 		OutputStream os = null;
 		try {
 			response.setHeader("Content-Type", "Content-Type: application/vnd.ms-excel;charset=UTF-8");
-			response.setHeader("Content-disposition",
-					"attachment; filename=" + URLEncoder.encode("项目成本统计", "UTF-8") + ".xlsx");
+			response.setHeader("Content-disposition", "attachment; filename=" + URLEncoder.encode("项目成本统计", "UTF-8") + ".xlsx");
 			os = response.getOutputStream();
 			workbook.write(os);
 		} catch (IOException e) {
