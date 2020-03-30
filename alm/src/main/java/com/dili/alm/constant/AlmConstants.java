@@ -262,4 +262,19 @@ public class AlmConstants {
 			return code;
 		}
 	}
+	
+	public enum OnlineDataChangeLogChangeState {
+		DATACHANGEMANAGER("项目经理执行"), DATACHANGETEST("测试执行"),
+		   DATACHANGEDBA("dba执行"),ONLINEDBADATACHANGE("线上验证"), CONTINUE("继续提交");
+
+		public String code;
+
+		OnlineDataChangeLogChangeState(String code) {
+			this.code = code;
+		}
+
+		public String getCode() {
+			return code;
+		}
+	}
 }

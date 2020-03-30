@@ -17,6 +17,7 @@ import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.constant.BpmConsts;
 import com.dili.alm.dao.OnlineDataChangeMapper;
 import com.dili.alm.domain.OnlineDataChange;
+import com.dili.alm.domain.OnlineDataChangeLog;
 import com.dili.alm.domain.Project;
 /*import com.dili.alm.domain.TaskDto;*/
 /*import com.dili.alm.domain.TaskMapping;*/
@@ -24,6 +25,7 @@ import com.dili.alm.domain.dto.OnlineDataChangeBpmcDtoDto;
 import com.dili.alm.exceptions.OnlineDataChangeException;
 import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.rpc.RuntimeApiRpc;
+import com.dili.alm.service.OnlineDataChangeLogService;
 import com.dili.alm.service.OnlineDataChangeService;
 import com.dili.alm.service.ProjectService;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
@@ -66,6 +68,10 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 	private ProjectService projectService;
 	@Autowired
 	private OnlineDataChangeMapper onlineDataChangeMapper;
+	
+	
+	@Autowired
+	private   OnlineDataChangeLogService    onlineDataChangeLogService;
 
 	public OnlineDataChangeMapper getActualDao() {
 		return (OnlineDataChangeMapper) getDao();
@@ -184,22 +190,30 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			//map.put("test", listUsernName.get(0).getId().toString() + "");
 		    map.put(BpmConsts.OnlineDataChangeProcessConstant.test.getName(), listUsernName.get(0).getId().toString() + "");
 		}
-		if (isNeedClaim) {
-			BaseOutput<String> output = tasksRpc.claim(taskId, listUsernName.get(0).getId().toString() + "");
-			if (!output.isSuccess()) {
-				LOGGER.error(output.getMessage());
-				throw new OnlineDataChangeException("任务签收失败");
-			}
-		}
+	
 		try {
+			if (isNeedClaim) {
+				BaseOutput<String> output = tasksRpc.claim(taskId, listUsernName.get(0).getId().toString() + "");
+				if (!output.isSuccess()) {
+					LOGGER.error(output.getMessage());
+					throw new OnlineDataChangeException("任务签收失败");
+				}
+			}
 			tasksRpc.complete(taskId, map);
+			//AlmConstants
+			
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEMANAGER.getCode(), 1);
+		//	insertDataExeLog(dataId);
+			
 		} catch (Exception e) {
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEMANAGER.getCode(), 0);
 			LOGGER.error("任务签收失败");
 			throw new OnlineDataChangeException("任务签收失败");
 		}
 
 	}
 
+	
 	@Override
 	public void notAgreeDeptOnlineDataChange(String taskId, Boolean isNeedClaim) throws OnlineDataChangeException {
 		BaseOutput<Map<String, Object>> mapId = tasksRpc.getVariables(taskId);
@@ -214,18 +228,21 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 	//	map.put("submit", "" + onlineDataChangeTemp.getApplyUserId());
 		map.put(BpmConsts.OnlineDataChangeProcessConstant.submit.getName(), "" + onlineDataChangeTemp.getApplyUserId());
 		
-		if (isNeedClaim) {
-			BaseOutput<String> output = tasksRpc.claim(taskId, onlineDataChangeTemp.getApplyUserId() + "");
-			if (!output.isSuccess()) {
-				LOGGER.error(output.getMessage());
-				throw new OnlineDataChangeException("任务签收失败");
-			}
-		}
-
+		
 		try {
+			if (isNeedClaim) {
+				BaseOutput<String> output = tasksRpc.claim(taskId, onlineDataChangeTemp.getApplyUserId() + "");
+				if (!output.isSuccess()) {
+					LOGGER.error(output.getMessage());
+					throw new OnlineDataChangeException("任务签收失败");
+				}
+			}
+
 			tasksRpc.complete(taskId, map);
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEMANAGER.getCode(), 2);
 		} catch (Exception e) {
 			LOGGER.error("任务签收失败");
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEMANAGER.getCode(), 0);
 			throw new OnlineDataChangeException("任务签收失败");
 		}
 
@@ -244,8 +261,10 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		map.put("approved", "true");
 		try {
 			tasksRpc.complete(taskId, map);
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGETEST.getCode(), 1);
 		} catch (Exception e) {
 			LOGGER.error("任务签收失败");
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGETEST.getCode(), 0);
 			throw new OnlineDataChangeException("任务签收失败");
 		}
 
@@ -266,16 +285,20 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 	//	map.put("submit", "" + onlineDataChangeTemp.getApplyUserId());
 		map.put(BpmConsts.OnlineDataChangeProcessConstant.submit.getName(), "" + onlineDataChangeTemp.getApplyUserId());
 		
-		if (isNeedClaim) {
-			BaseOutput<String> output = tasksRpc.claim(taskId, onlineDataChangeTemp.getApplyUserId() + "");
-			if (!output.isSuccess()) {
-				LOGGER.error(output.getMessage());
-				throw new OnlineDataChangeException("任务签收失败");
-			}
-		}
+		
 		try {
+			if (isNeedClaim) {
+				BaseOutput<String> output = tasksRpc.claim(taskId, onlineDataChangeTemp.getApplyUserId() + "");
+				if (!output.isSuccess()) {
+					LOGGER.error(output.getMessage());
+					throw new OnlineDataChangeException("任务签收失败");
+				}
+			}
 			tasksRpc.complete(taskId, map);
+			
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGETEST.getCode(), 2);
 		} catch (Exception e) {
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGETEST.getCode(), 0);
 			LOGGER.error("任务签收失败");
 			throw new OnlineDataChangeException("任务签收失败");
 		}
@@ -294,16 +317,19 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		map.put("approved", "true");
 		Long id = SessionContext.getSessionContext().getUserTicket().getId();
 		// 签收任务
-		if (isNeedClaim) {
-			BaseOutput<String> output = tasksRpc.claim(taskId, id.toString());
-			if (!output.isSuccess()) {
-				LOGGER.error(output.getMessage());
-				throw new OnlineDataChangeException("任务签收失败");
-			}
-		}
+		
 		try {
+			if (isNeedClaim) {
+				BaseOutput<String> output = tasksRpc.claim(taskId, id.toString());
+				if (!output.isSuccess()) {
+					LOGGER.error(output.getMessage());
+					throw new OnlineDataChangeException("任务签收失败");
+				}
+			}
 			tasksRpc.complete(taskId, map);
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEDBA.getCode(), 1);
 		} catch (Exception e) {
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEDBA.getCode(), 0);
 			LOGGER.error("任务签收失败");
 			throw new OnlineDataChangeException("任务签收失败");
 		}
@@ -323,17 +349,21 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		//map.put("submit", onlineDataChange.getApplyUserId());
 		map.put(BpmConsts.OnlineDataChangeProcessConstant.submit.getName(), onlineDataChange.getApplyUserId());
 		Long id = SessionContext.getSessionContext().getUserTicket().getId();
-		if (isNeedClaim) {
-			BaseOutput<String> output = tasksRpc.claim(taskId, id.toString() + "");
-			if (!output.isSuccess()) {
-				LOGGER.error(output.getMessage());
-				throw new OnlineDataChangeException("任务签收失败");
-			}
-		}
+		
 		try {
+			if (isNeedClaim) {
+				BaseOutput<String> output = tasksRpc.claim(taskId, id.toString() + "");
+				if (!output.isSuccess()) {
+					LOGGER.error(output.getMessage());
+					throw new OnlineDataChangeException("任务签收失败");
+				}
+			}
+			
 			tasksRpc.complete(taskId);
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.ONLINEDBADATACHANGE.getCode(), 1);
 		} catch (Exception e) {
 			LOGGER.error("任务签收失败");
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.ONLINEDBADATACHANGE.getCode(), 0);
 			throw new OnlineDataChangeException("任务签收失败");
 		}
 
@@ -351,6 +381,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		map.put("approved", "true");
 		try {
 			tasksRpc.complete(taskId);
+			
 		} catch (Exception e) {
 			LOGGER.error("任务签收失败");
 			throw new OnlineDataChangeException("任务签收失败");
@@ -474,18 +505,21 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 
 		OnlineDataChange onlineDataChangeTemp = this.get(Long.parseLong(dataId));
 		// map.put("submit", ""+onlineDataChangeTemp.getApplyUserId());
-		if (isNeedClaim) {
-			Long id = SessionContext.getSessionContext().getUserTicket().getId();
-			BaseOutput<String> output = tasksRpc.claim(taskId, id.toString());
-			if (!output.isSuccess()) {
-				LOGGER.error(output.getMessage());
-				throw new OnlineDataChangeException("任务签收失败");
-			}
-		}
+		
 		try {
+			if (isNeedClaim) {
+				Long id = SessionContext.getSessionContext().getUserTicket().getId();
+				BaseOutput<String> output = tasksRpc.claim(taskId, id.toString());
+				if (!output.isSuccess()) {
+					LOGGER.error(output.getMessage());
+					throw new OnlineDataChangeException("任务签收失败");
+				}
+			}
 			tasksRpc.complete(taskId, map);
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.ONLINEDBADATACHANGE.getCode(), 2);
 		} catch (Exception e) {
 			LOGGER.error("任务签收失败");
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.ONLINEDBADATACHANGE.getCode(), 0);
 			throw new OnlineDataChangeException("任务签收失败");
 		}
 

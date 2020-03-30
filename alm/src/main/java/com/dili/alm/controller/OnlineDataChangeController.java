@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.domain.OnlineDataChange;
+import com.dili.alm.domain.OnlineDataChangeLog;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.TaskDto;
@@ -24,6 +25,7 @@ import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.OnlineDataChangeException;
 import com.dili.alm.rpc.MyTasksRpc;
 import com.dili.alm.rpc.RuntimeApiRpc;
+import com.dili.alm.service.OnlineDataChangeLogService;
 import com.dili.alm.service.OnlineDataChangeService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.ProjectVersionService;
@@ -67,6 +69,9 @@ public class OnlineDataChangeController {
     @Autowired
    	private   ProjectMapper  projectMapper;
     
+    @Autowired
+   	private    OnlineDataChangeLogService onlineDataChangeLogService;
+     
     @ApiOperation("跳转到index页面")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {

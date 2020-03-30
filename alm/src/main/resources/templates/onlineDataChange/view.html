@@ -28,8 +28,7 @@ button:hover {
 
 	<div height="auto" align="center" data-options="region:'center'">
 	   <form class="easyui-form" method="post" fit="true">
-	     <table id="tt" cellspacing="0" border="1" class="easyui-datagrid" style="width:90%; height: 135px; border: 1px solid #ddd; border-collapse: collapse;"
-			   data-options="view:scrollview,rownumbers:true,singleSelect:true,autoRowHeight:false,pageSize:50">
+	    <table cellspacing="0" border="1"  style="width:90%; height: 135px; border: 1px solid #ddd; border-collapse: collapse;">
 			<caption style="padding: 5px; font-weight: bold; font-size: 15px; line-height: 35px; color: #333">线上数据变更申请表</caption>
 			<tbody>
 			
@@ -108,6 +107,24 @@ button:hover {
 		</table>
 		</form>
 
+		 <form  enctype="multipart/form-data" class="easyui-form" method="post" fit="true">
+	
+
+	     	 <table class="easyui-datagrid"  title="操作记录 " id="recordGrid"   cellspacing="0" border="1"  style="width:90%; border: 1px solid #ddd; border-collapse: collapse;"  fitColumns="true" pagination="false" pageSize="30" pageNumber="1"  style="width: 100%;"
+					pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
+					 align="center" fit="false" striped="true" idField="id">
+							<thead>
+								<tr>
+								   
+									<th data-options="field:'operationName', width:'25%',  sortable:'true', order:'asc', align:'left', resizable:'true', fixed:'false'">操作内容</th>
+									<th data-options="field:'operatorId', width:'25%',  _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作人</th>
+									<th data-options="field:'operateTime', width:'25%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作时间</th>
+									<th data-options="field:'opertateResult', width:'25%', formatter: formatStatus,     sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作结果</th>
+								</tr>
+							</thead>
+	        </table>
+	
+		</form>
 		
 
 
@@ -125,6 +142,35 @@ function down(id){
 	else
 		alert("没有文件"); 
   }
+function downRecordGrid(onDataid){
+	   var opts = $("#recordGrid").datagrid("options");
+	  console.log(opts);
+    if (null == opts.url || "" == opts.url) {
+  	   opts.url = "${contextPath}/onlineDataChangeLog/listPage.action?onlineDateId="+onDataid;
+    }
+    $("#recordGrid").datagrid("load");
+
+}
+
+
+  $(function () {
+ 	var  onDataid=${odc.id};
+ 	 downRecordGrid(onDataid);
+ 
+  });
+  function formatStatus(val,row,index){  
+	   if(row.opertateResult==0){
+      	      return "<font color='gray'>执行失败</font>";
+	   }else if(row.opertateResult==1){
+		    	return "<font color='gray'>执行成功</font>";
+      }else if(row.opertateResult==2){
+		          return "<font color='gray'>驳回</font>";
+      }else{
+        return "<font color='orange'>其他</font>";
+      }
+	   
+  }   
+  
 </script>
 <style type="text/css">
 td {
