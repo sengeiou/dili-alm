@@ -125,17 +125,19 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 			if(insertSelective==0) {
 				throw new ProjectApplyException("插入关联失败");
 			}
-		
-			for (String demandId : demandIds) {
-				DemandProject demandProject= new DemandProject();
-				demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
-				demandProject.setProjectNumber(applyDto.getNumber());	
-				demandProject.setDemandId(Long.valueOf(demandId));
-				int insertExact = this.demandProjectMapper.insert(demandProject);
-				if(insertExact==0) {
-					throw new ProjectApplyException("插入关联失败");
+			if(demandIds!=null&&demandIds.length>0) {
+				for (String demandId : demandIds) {
+					DemandProject demandProject= new DemandProject();
+					demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
+					demandProject.setProjectNumber(applyDto.getNumber());	
+					demandProject.setDemandId(Long.valueOf(demandId));
+					int insertExact = this.demandProjectMapper.insert(demandProject);
+					if(insertExact==0) {
+						throw new ProjectApplyException("插入关联失败");
+					}
 				}
 			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
