@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.alm.cache.AlmCache;
+import com.dili.alm.constant.AlmConstants;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.dto.UserDepartmentRole;
@@ -55,6 +56,18 @@ public class MemberController {
 		return null;
 	}
 
+	@ResponseBody
+	@RequestMapping(value = "/demandMembers", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public List<User> membersJsonForDemand(User user) {
+		user.setState(1);//正常状态
+		user.setFirmCode(AlmConstants.ALM_FIRM_CODE);//数字平台布
+		BaseOutput<List<User>> output = this.userRPC.listByExample(user);
+		if (output.isSuccess()) {
+			return output.getData();
+		}
+		return null;
+	}
 	@ResponseBody
 	@RequestMapping("/loadUsersByDepartment")
 	public List<User> loadUsersByDepartment(@RequestParam(required = false) List<Long> departmentId) {
