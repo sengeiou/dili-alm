@@ -52,3 +52,27 @@ function queryFileGrid() {
 	        }
        });
  }
+ 
+ 
+ 
+ $.extend($.fn.validatebox.defaults.rules, {
+ 
+    number: {
+        validator: function (value, param) {
+            return /^\d+$/.test(value);
+        },
+        message: '请输入数字'
+    },comboBoxEditvalid: {
+        validator: function (value, param) {
+            var $combobox = $("#" + param[0]);
+            if (value) {
+                if ($combobox.combobox('getValue') == $combobox.combobox('getText'))
+                    return false;
+                return true;
+            }
+            return false;
+            
+        },
+        message: '请选择下拉框选项，不要直接使用输入内容'
+    }
+});

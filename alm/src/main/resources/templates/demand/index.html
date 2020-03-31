@@ -226,14 +226,15 @@
         function openForTask(id,flag){
         	if(flag==1){
         		doClaim(id)
-        		openFrom(id);
+        		openFrom(id,"审批");
         	}else{
-        		openFrom(id);
+        		openFrom(id,"处理");
+        		
         	}
     		
         }
         
-        function openFrom(id){
+        function openFrom(id,title1){
         	$("#demandForTaskSrc").attr("src",'${contextPath!}/demand/submitApproveByAlm?id=' +id); //设置IFRAME的SRC;
         	setIframeHeight();
         	$("#demandForTaskDlg").dialog({
@@ -242,7 +243,7 @@
                 height: 480, //高度
                 width: 626, //宽度
                 draggable: false, //是否可以拖动。
-                title: "审批",
+                title: title1,
                 modal: true,
                 open: function (e) {  //打开的时候触发的事件
                   
@@ -253,6 +254,7 @@
                     Test();
                 }
             })
+            
             $('#demandForTaskDlg').dialog('open');
             $('#demandForTaskDlg').dialog('center');
         }

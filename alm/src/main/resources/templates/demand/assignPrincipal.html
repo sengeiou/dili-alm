@@ -105,12 +105,20 @@
             <tr>
             	<td align="center">
 				  <input class="easyui-combobox" style="width: 100%" id="acceptId" name="acceptId"
-					data-options="editable:false,label:'指派责任人:',valueField: 'id',
+					data-options="editable:true,validType:'comboBoxEditvalid[\'acceptId\']',label:'指派责任人:',valueField: 'id',
 					textField: 'realName',
 					url: '${contextPath!}/member/members',
 					required:true,
 					multiple:false,
-					onChange:checkExecutorAmount" />
+					onChange:checkExecutorAmount,
+					filter: function(q, row){
+				        var opts = $('#acceptId').combobox('options');
+				        return row[opts.textField].indexOf(q) == 0;
+				    },
+				     formatter:function(row){ 
+				        var opts = $('#acceptId').combobox('options');
+				        return row[opts.textField]; 
+				    }" />
 	            </td>
             </tr>
             <tr>
