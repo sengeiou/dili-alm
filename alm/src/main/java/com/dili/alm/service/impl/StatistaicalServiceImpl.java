@@ -21,6 +21,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +35,7 @@ import com.dili.alm.domain.Project;
 import com.dili.alm.domain.Team;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
+import com.dili.alm.domain.dto.ProjectHoursStatisticsDto;
 import com.dili.alm.domain.dto.ProjectProgressDto;
 import com.dili.alm.domain.dto.ProjectStatusCountDto;
 import com.dili.alm.domain.dto.ProjectTypeCountDto;
@@ -45,16 +47,19 @@ import com.dili.alm.domain.dto.SelectYearsDto;
 import com.dili.alm.domain.dto.TaskByUsersDto;
 import com.dili.alm.domain.dto.TaskHoursByProjectDto;
 import com.dili.alm.domain.dto.TaskStateCountDto;
+import com.dili.alm.domain.dto.UserProjectHoursStatisticsDto;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.StatisticalService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.ss.util.ExcelUtils;
 
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
+import cn.afterturn.easypoi.handler.inter.IExcelDictHandler;
 import tk.mybatis.mapper.entity.Example;
 
 @Service
@@ -839,6 +844,11 @@ public class StatistaicalServiceImpl implements StatisticalService {
 	@Override
 	public Long getUserTotalTaskHour(Long userId) {
 		return this.taskMapper.selectTotalTaskHourByUserId(userId);
+	}
+
+	@Override
+	public List<UserProjectHoursStatisticsDto> userProjectHoursStatistics(Long userId, Long departmentId, Date startDate, Date endDate) {
+		return this.taskMapper.selectUserProjectStatistics(userId, departmentId, startDate, endDate, AlmCache.getInstance().getUserMap().values());
 	}
 
 }

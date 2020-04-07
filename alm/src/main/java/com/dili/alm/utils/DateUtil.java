@@ -260,12 +260,9 @@ public class DateUtil {
 	 * 获取某月份第N周开始日期(即星期一)
 	 * </pre>
 	 * 
-	 * @param year
-	 *            年
-	 * @param month
-	 *            月
-	 * @param weekOrder
-	 *            周次
+	 * @param year      年
+	 * @param month     月
+	 * @param weekOrder 周次
 	 * @return Date 某月份第N周开始日期,即周一(包含跨月),比如2014年1月的第一周的第一天为2013-12-30,也就是说,2014
 	 *         年1月的第一周也就是2013年12月的最后一周
 	 */
@@ -299,12 +296,9 @@ public class DateUtil {
 	 * 获取某月份第N周结束日期(即星期日)
 	 * </pre>
 	 * 
-	 * @param year
-	 *            年
-	 * @param month
-	 *            月
-	 * @param weekOrder
-	 *            周次
+	 * @param year      年
+	 * @param month     月
+	 * @param weekOrder 周次
 	 * @return Date 某月份第N周结束日期,即周日(包含跨月),比如2013年11月的第五周的最后一天为2013-12-01,也就是说,2013
 	 *         年11月第五周也就是2013年12月的第一周
 	 */
@@ -387,28 +381,6 @@ public class DateUtil {
 		return weekDateMap;
 	}
 
-	/*
-	 * // 获得本周星期五的日期 public static Date getThisFriDay() { int mondayPlus =
-	 * DateUtil.getMondayPlus(new Date()); Date as = new Date(new
-	 * Date().getTime()-24*60*60*1000*Math.abs(mondayPlus)); Date as1 = new
-	 * Date(as.getTime()+24*60*60*1000*4); return as1;
-	 * 
-	 * } // 获得本周星期一的日期 public static Date getThisMonDay() { int mondayPlus =
-	 * DateUtil.getMondayPlus(new Date()); Date as = new Date(new
-	 * Date().getTime()-24*60*60*1000*Math.abs(mondayPlus)); return as;
-	 * 
-	 * } // 获得下周星期五的日期 public static Date getNextFriDay() { int mondayPlus =
-	 * DateUtil.getMondayPlus(new Date()); Date as = new Date(new
-	 * Date().getTime()-24*60*60*1000*Math.abs(mondayPlus)); Date as1 = new
-	 * Date(as.getTime()+24*60*60*1000*11); return as1;
-	 * 
-	 * } // 获得下周星期一的日期 public static Date getNextMonDay() { int mondayPlus =
-	 * DateUtil.getMondayPlus(new Date()); Date as = new Date(new
-	 * Date().getTime()-24*60*60*1000*Math.abs(mondayPlus)); Date as1 = new
-	 * Date(as.getTime()+24*60*60*1000*7); return as1;
-	 * 
-	 * }
-	 */
 	public static int getCompareDate(Date s1, Date s2) {
 		java.util.Calendar c1 = java.util.Calendar.getInstance();
 		java.util.Calendar c2 = java.util.Calendar.getInstance();
@@ -426,6 +398,60 @@ public class DateUtil {
 		c.setTime(dateCellValue);
 		int i = c.get(Calendar.YEAR);
 		return String.valueOf(i);
+	}
+
+	/**
+	 * 获取当年的第一天
+	 * 
+	 * @param year
+	 * @return
+	 */
+	public static Date getCurrYearFirst() {
+		Calendar currCal = Calendar.getInstance();
+		int currentYear = currCal.get(Calendar.YEAR);
+		return getYearFirst(currentYear);
+	}
+
+	/**
+	 * 获取当年的最后一天
+	 * 
+	 * @param year
+	 * @return
+	 */
+	public static Date getCurrYearLast() {
+		Calendar currCal = Calendar.getInstance();
+		int currentYear = currCal.get(Calendar.YEAR);
+		return getYearLast(currentYear);
+	}
+
+	/**
+	 * 获取某年第一天日期
+	 * 
+	 * @param year 年份
+	 * @return Date
+	 */
+	public static Date getYearFirst(int year) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.clear();
+		calendar.set(Calendar.YEAR, year);
+		Date currYearFirst = calendar.getTime();
+		return currYearFirst;
+	}
+
+	/**
+	 * 获取某年最后一天日期
+	 * 
+	 * @param year 年份
+	 * @return Date
+	 */
+	public static Date getYearLast(int year) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.clear();
+		calendar.set(Calendar.YEAR, year);
+		calendar.roll(Calendar.DAY_OF_YEAR, -1);
+		Date currYearLast = calendar.getTime();
+
+		return currYearLast;
 	}
 
 }

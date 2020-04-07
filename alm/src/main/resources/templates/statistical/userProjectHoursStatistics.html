@@ -1,0 +1,147 @@
+<#body>
+<style>
+.textbox-label {
+	width: 60px;
+}
+
+.datagrid-cell-c1-opt span a {
+	color: #999;
+}
+
+.pdiv div {
+	font-size: 15px;
+	height: 28px;
+	line-height: 28px;
+}
+</style>
+<script type="text/javascript">
+	function loadUsers(nval, oval) {
+		var url = '${contextPath!}/member/loadUsersByDepartment';
+		if (nval) {
+			$(nval).each(function(index, item) {
+				if (index == 0) {
+					url += '?' + 'departmentId=' + item;
+				} else {
+					url += '&' + 'departmentId=' + item;
+				}
+			});
+		}
+		$.post(url, {}, function(res) {
+			var userId = $('#userId').combobox('getValue');
+			if (userId) {
+				var clearFlag = true;
+				$(res).each(function(index, item) {
+					if (userId == item.id) {
+						clearFlag = false;
+						return false;
+					}
+				});
+				if (clearFlag) {
+					$('#userId').combobox('initValue', '');
+					$('#userId').combobox('setText', '');
+				}
+			}
+			$('#userId').combobox('loadData', res);
+		});
+	}
+
+	function renderRowStyle(index, row) {
+		if (index == $('#grid').datagrid('getRows').length - 1) {
+			return 'background-color: #d3ecde;';
+		}
+	}
+</script>
+<div class="easyui-layout" fit="true">
+	<!-- ====================================================================================================================== -->
+	<!-- 上方布局 -->
+	<!-- ====================================================================================================================== -->
+	<div region="north" height="auto" align="center">
+		<!-- =========================================================表单========================================================= -->
+		<div class="easyui-panel" style="width: 100%;" align="left">
+			<form id="form" class="easyui-form" method="post" fit="true">
+				<table style="padding: 10px;">
+					<tr>
+						<td style="padding: 5px;"><input class="easyui-datebox" name="startTime" id="startDate" style="width: 100%" data-options="editable:false,label:'起止日期:',prompt:'今年第一天'" /></td>
+						<td style="padding: 5px;"><input class="easyui-datebox" name="endTime" id="endDate" style="width: 100%" data-options="editable:false,label:'至:',prompt:'今日'" /></td>
+						<td style="padding: 5px;"><input class="easyui-combobox" name="userId" id="userId" style="width: 100%"
+							data-options="
+								editable:true,
+								label:'人员:',
+								prompt:'--全部--', 
+								textField:'realName',
+								valueField:'id',
+								url:'${contextPath!}/member/loadUsersByDepartment'" /></td>
+					</tr>
+					<tr>
+						<td style="padding: 5px;"><input class="easyui-combotree" style="width: 100%" id="departmentId" name="departmentId"
+							data-options="
+							loadFilter:treeLoadFilter, 
+							_idField:'id', 
+							_textField:'name', 
+							_parentIdField:'parentId',
+							multiple:true,
+							url:'${contextPath!}/department/departments',
+							queryParams:{
+								firmCode:'szpt'
+							},
+							editable:true,
+							label:'部门:',
+							prompt:'-所有部门-',
+							onChange:loadUsers" /></td>
+					</tr>
+					<tr>
+						<td><a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn" onclick="queryGrid()">查询</a> <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload"
+							onclick="clearForm()">重置</a></td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>
+	<!-- ====================================================================================================================== -->
+	<!-- 中央布局 -->
+	<!-- ====================================================================================================================== -->
+	<!-- 表格 -->
+	<div region="center" style="width: 100%;" height="auto" id="dy">
+		<!-- =========================================================表格========================================================= -->
+		<!-- datagrid工具栏 -->
+		<div id="infoToolbar" style="float: left; line-height: 28px; height: 28px;">
+			<table class="easyui-form" method="post" fit="true">
+				<tr>
+					<td><a href="javascript:exportUserProjectHoursStatistics();" class="easyui-linkbutton"
+						style="width: 80px; height: 24px; margin-right: 3px; text-align: center; text-decoration: none; color: #000; border: 1px solid #ccc; border-radius: 3px; background: #ecf2ef" plain="true">
+							导出EXCEL </a></td>
+				</tr>
+			</table>
+		</div>
+		<div>
+			<table id="grid" class="easyui-datagrid" style="width: 100%; height: 'auto'" title="数据列表"
+				data-options="
+                rownumbers: true,
+                singleSelect: true,
+                url: '${contextPath}/statistical/userProjectHoursStatistics',
+                method: 'post',
+                onLoadSuccess: onLoadSuccess,
+                tools:'#infoToolbar',
+                idField:'userNo',
+                headerCls:'pdiv',
+                rowStyler:renderRowStyle">
+				<thead>
+					<tr>
+						<th data-options="field:'realName',align:'center',width:'10%'">姓名</th>
+						<th data-options="field:'projectName',width:'30%',align:'center'">项目名称</th>
+						<th data-options="field:'projectTypeName', sortable:true, width:'15%',align:'center'">项目类型</th>
+						<th data-options="field:'workHours', sortable:true, width:'10%',align:'center'">项目常规工时(H)</th>
+						<th data-options="field:'overtimeHours', sortable:true, width:'10%',align:'center'">项目加班工时(H)</th>
+						<th data-options="field:'totalHours', sortable:true, width:'15%',align:'center'">项目总工时(H)</th>
+						<th data-options="field:'totalWorkHours', sortable:true, width:'15%',align:'center'">人员总工时(H)</th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+	</div>
+</div>
+<div id="smDialog" style="display: none;"></div>
+<!-- ====================================================================================================================== --> <!-- style & script 分隔线 --> <!-- ====================================================================================================================== -->
+<script src="${contextPath}/resources/js/jquery.jqprint-0.3.js"></script> <script src="${contextPath}/resources/js/jquery-migrate-1.1.0.js"></script> <script type="text/javascript">
+	<#statistical_userProjectHoursStatistics />
+</script> </#body>

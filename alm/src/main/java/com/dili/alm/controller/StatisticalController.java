@@ -11,10 +11,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,7 +29,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,6 +42,7 @@ import com.dili.alm.cache.AlmCache;
 import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.dto.ProjectCostStatisticDto;
+import com.dili.alm.domain.dto.ProjectHoursStatisticsDto;
 import com.dili.alm.domain.dto.ProjectTaskHourCountDto;
 import com.dili.alm.domain.dto.ProjectTypeCountDto;
 import com.dili.alm.domain.dto.ProjectYearCoverDto;
@@ -51,18 +53,23 @@ import com.dili.alm.domain.dto.SelectYearsDto;
 import com.dili.alm.domain.dto.TaskByUsersDto;
 import com.dili.alm.domain.dto.TaskHoursByProjectDto;
 import com.dili.alm.domain.dto.TaskStateCountDto;
+import com.dili.alm.domain.dto.UserProjectHoursStatisticsDto;
 import com.dili.alm.domain.dto.UserProjectTaskHourCountDto;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.service.StatisticalService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.alm.utils.WebUtil;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.util.DateUtils;
+import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.TemplateExportParams;
+import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
+import cn.afterturn.easypoi.handler.inter.IExcelDictHandler;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -530,6 +537,90 @@ public class StatisticalController {
 					LOGGER.error(e.getMessage(), e);
 				}
 			}
+		}
+	}
+
+	@GetMapping("/userProjectHoursStatistics.html")
+	public String userProjectHoursStatistics() {
+		return "statistical/userProjectHoursStatistics";
+	}
+
+	@ResponseBody
+	@RequestMapping("/userProjectHoursStatistics")
+	public List<UserProjectHoursStatisticsDto> userProjectHoursStatistics(@RequestParam(required = false) Long userId, @RequestParam(required = false) Long departmentId,
+			@RequestParam(required = false) String startTime, @RequestParam(required = false) String endTime) throws ParseException {
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Date startDate = StringUtils.isBlank(startTime) ? DateUtil.getCurrYearFirst() : df.parse(startTime);
+		if (StringUtils.isBlank(endTime)) {
+			endTime = df.format(new Date());
+		}
+		Date endDate = StringUtils.isBlank(endTime) ? new Date() : df.parse(endTime);
+		return this.statisticalService.userProjectHoursStatistics(userId, departmentId, startDate, endDate);
+	}
+
+	@ResponseBody
+	@RequestMapping("/exportUserProjectHoursStatistics")
+	public void exportUserProjectHoursStatistics(@RequestParam(required = false) Long userId, @RequestParam(required = false) Long departmentId, @RequestParam(required = false) String startTime,
+			@RequestParam(required = false) String endTime, HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException, ParseException {
+
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Date startDate = StringUtils.isBlank(startTime) ? DateUtil.getCurrYearFirst() : df.parse(startTime);
+		if (StringUtils.isBlank(endTime)) {
+			endTime = df.format(new Date());
+		}
+		Date endDate = StringUtils.isBlank(endTime) ? new Date() : df.parse(endTime);
+		List<UserProjectHoursStatisticsDto> list = this.statisticalService.userProjectHoursStatistics(userId, departmentId, startDate, endDate);
+		list.forEach(up -> {
+			if (CollectionUtils.isEmpty(up.getProjectStatistics())) {
+				up.setProjectStatistics(new ArrayList<ProjectHoursStatisticsDto>() {
+					{
+						add(new ProjectHoursStatisticsDto());
+					}
+				});
+			}
+		});
+		final ExportParams exportParams = new ExportParams("人员项目工时", "人员项目工时", ExcelType.XSSF);
+		exportParams.setDictHandler(new IExcelDictHandler() {
+			@Override
+			public String toName(String dict, Object obj, String name, Object value) {
+				if ("projectType".equals(dict)) {
+					return ((ProjectHoursStatisticsDto) obj).getProjectTypeName();
+				}
+				return null;
+			}
+
+			@Override
+			public String toValue(String dict, Object obj, String name, Object value) {
+				return null;
+			}
+		});
+		Workbook workbook = ExcelExportUtil.exportExcel(exportParams, UserProjectHoursStatisticsDto.class, list);
+
+		if (workbook == null) {
+			return;
+		}
+
+		String rtn = getRtn("人员项目工时统计.xlsx", request);
+		response.setContentType("text/html");
+		response.setHeader("Content-Disposition", "attachment;" + rtn);
+		OutputStream os = null;
+		try {
+			os = response.getOutputStream();
+			workbook.write(os);
+			os.flush();
+		} catch (IOException e) {
+			LOGGER.error(e.getMessage(), e);
+		} finally {
+//			ExcelExportUtil.closeExportBigExcel();
+			if (os != null) {
+				try {
+					os.close();
+					workbook.close();
+				} catch (IOException e) {
+					LOGGER.error(e.getMessage(), e);
+				}
+			}
+
 		}
 	}
 

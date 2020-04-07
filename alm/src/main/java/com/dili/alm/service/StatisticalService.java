@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
 
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.dto.ProjectTypeCountDto;
@@ -18,6 +19,7 @@ import com.dili.alm.domain.dto.SelectYearsDto;
 import com.dili.alm.domain.dto.TaskByUsersDto;
 import com.dili.alm.domain.dto.TaskHoursByProjectDto;
 import com.dili.alm.domain.dto.TaskStateCountDto;
+import com.dili.alm.domain.dto.UserProjectHoursStatisticsDto;
 import com.dili.ss.domain.EasyuiPageOutput;
 
 public interface StatisticalService {
@@ -32,14 +34,11 @@ public interface StatisticalService {
 	 * @param endTime
 	 * @param userId
 	 * @param departmentId
-	 * @param order
-	 *            TODO
-	 * @param sort
-	 *            TODO
+	 * @param order        TODO
+	 * @param sort         TODO
 	 * @return
 	 */
-	List<TaskByUsersDto> listTaskHoursByUser(String startTime, String endTime, List<Long> userId,
-			List<Long> departmentId, String order, String sort);
+	List<TaskByUsersDto> listTaskHoursByUser(String startTime, String endTime, List<Long> userId, List<Long> departmentId, String order, String sort);
 
 	/**
 	 * 项目工时-查询项目以及总工时，既项目工时表头
@@ -60,8 +59,7 @@ public interface StatisticalService {
 	 * @return
 	 * @throws ParseException
 	 */
-	List<SelectTaskHoursByUserDto> listUserHours(String startTime, String endTime, List<Long> projectIds)
-			throws ParseException;
+	List<SelectTaskHoursByUserDto> listUserHours(String startTime, String endTime, List<Long> projectIds) throws ParseException;
 
 	/**
 	 * 年度报表-项目数据展示
@@ -93,14 +91,11 @@ public interface StatisticalService {
 	 * 项目工时查询 ，echar数据显示
 	 * 
 	 * @param projectIds
-	 * @param startDate
-	 *            TODO
-	 * @param endDate
-	 *            TODO
+	 * @param startDate  TODO
+	 * @param endDate    TODO
 	 * @return
 	 */
-	List<SelectTaskHoursByUserProjectDto> selectTotalTaskAndOverHoursForEchars(List<Long> projectIds, Date startDate,
-			Date endDate);
+	List<SelectTaskHoursByUserProjectDto> selectTotalTaskAndOverHoursForEchars(List<Long> projectIds, Date startDate, Date endDate);
 
 	/**
 	 * 年度报表，echar显示数据
@@ -121,8 +116,7 @@ public interface StatisticalService {
 	 * @return
 	 * @throws Exception
 	 */
-	HSSFWorkbook downloadProjectHours(OutputStream os, String startTime, String endTime, List<Long> projectIds)
-			throws Exception;
+	HSSFWorkbook downloadProjectHours(OutputStream os, String startTime, String endTime, List<Long> projectIds) throws Exception;
 
 	/**
 	 * 年度报表-查询系统中的工作年份，用于年度表查询条件
@@ -153,5 +147,15 @@ public interface StatisticalService {
 	List<Map<String, Object>> getHomeProjectTask(Long userId, List<Long> projectId);
 
 	Long getUserTotalTaskHour(Long userId);
+
+	/**
+	 * 查询人员项目工时
+	 * @param userId TODO
+	 * @param departmentId TODO
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
+	List<UserProjectHoursStatisticsDto> userProjectHoursStatistics(Long userId, Long departmentId, Date startDate, Date endDate);
 
 }

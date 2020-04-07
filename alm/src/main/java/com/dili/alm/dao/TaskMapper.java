@@ -20,6 +20,7 @@ import com.dili.alm.domain.dto.SelectTaskHoursByUserProjectDto;
 import com.dili.alm.domain.dto.TaskByUsersDto;
 import com.dili.alm.domain.dto.TaskHoursByProjectDto;
 import com.dili.alm.domain.dto.TaskStateCountDto;
+import com.dili.alm.domain.dto.UserProjectHoursStatisticsDto;
 import com.dili.alm.domain.dto.UserWorkHourDetailDto;
 import com.dili.ss.base.MyMapper;
 import com.dili.uap.sdk.domain.Department;
@@ -79,4 +80,7 @@ public interface TaskMapper extends MyMapper<Task> {
 	Long selectTotalTaskHourByUserId(@Param("userId") Long userId);
 
 	Long sumPlanTimeByVersion(Long versionId);
+
+	List<UserProjectHoursStatisticsDto> selectUserProjectStatistics(@Param("userId") Long userId, @Param("departmentId") Long departmentId, @Param("startDate") Date startDate,
+			@Param("endDate") Date endDate, @Param("users") Collection<User> users);
 }

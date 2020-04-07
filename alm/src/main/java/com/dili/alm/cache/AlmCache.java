@@ -100,16 +100,15 @@ public class AlmCache {
 	// 立项申请roi缓存
 	private static final Map<Long, RoiDto> ROI_MAP = new ConcurrentHashMap<>();
 
-	
-	//需求状态缓存
+	// 需求状态缓存
 	private static final Map<String, String> DAMAND_STATUS_MAP = new ConcurrentHashMap<>();
-	//需求类型缓存
+	// 需求类型缓存
 	private static final Map<String, String> DAMAND_TYPE_MAP = new ConcurrentHashMap<>();
-	//系统缓存
+	// 系统缓存
 	private static final Map<Long, SystemDto> PROJECT_SYS_MAP = new ConcurrentHashMap<>();
-	//需求流程状态
+	// 需求流程状态
 	private static final Map<String, String> DAMAND_PROCESS_STATUS_MAP = new ConcurrentHashMap<>();
-	
+
 	@Autowired
 	private UserRpc userRpc;
 	@Autowired
@@ -179,6 +178,7 @@ public class AlmCache {
 		// 应用启动时初始化userMap
 		if (AlmCache.USER_MAP.isEmpty()) {
 			User newDTO = DTOUtils.newDTO(User.class);
+			newDTO.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 			BaseOutput<List<User>> output = userRpc.listByExample(newDTO);
 			if (output.isSuccess()) {
 				output.getData().forEach(user -> {
@@ -313,6 +313,7 @@ public class AlmCache {
 	public Map<Long, Department> getDepMap() {
 		if (AlmCache.DEP_MAP.isEmpty()) {
 			Department newDTO = DTOUtils.newDTO(Department.class);
+			newDTO.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 			BaseOutput<List<Department>> output = this.departmentRpc.listByDepartment(newDTO);
 			if (output.isSuccess()) {
 				output.getData().forEach(dep -> {
@@ -438,7 +439,7 @@ public class AlmCache {
 		}
 		return ROI_MAP;
 	}
-	
+
 	public Map<String, String> getDemandStetusMap() {
 		if (AlmCache.DAMAND_STATUS_MAP.isEmpty()) {
 			DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.DEMAND_STATUS);
@@ -460,7 +461,7 @@ public class AlmCache {
 		}
 		return DAMAND_TYPE_MAP;
 	}
-	
+
 	public Map<Long, SystemDto> getProjectSysMap() {
 		// 应用启动时初始化userMap
 		if (AlmCache.PROJECT_SYS_MAP.isEmpty()) {
@@ -473,11 +474,13 @@ public class AlmCache {
 		}
 		return PROJECT_SYS_MAP;
 	}
+
 	/**
 	 * 流程类型缓存
+	 * 
 	 * @return
 	 */
-	public Map<String, String> getDemandProcessStetusMap(){
+	public Map<String, String> getDemandProcessStetusMap() {
 		if (AlmCache.DAMAND_PROCESS_STATUS_MAP.isEmpty()) {
 			DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.DEMAND_PROCESS_TYPE);
 			if (CollectionUtils.isEmpty(dd.getValues())) {

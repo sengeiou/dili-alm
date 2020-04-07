@@ -32,6 +32,18 @@
 		<result column="work_content" property="workContent" />
 	</resultMap>
 
+	<resultMap type="com.dili.alm.domain.dto.UserProjectHoursStatisticsDto" id="UserProjectStatisticsRM">
+		<result column="user_id" jdbcType="VARCHAR" property="userId" />
+		<result column="real_name" jdbcType="VARCHAR" property="realName" />
+		<collection property="projectStatistics" javaType="java.util.List" ofType="com.dili.alm.domain.dto.ProjectHoursStatisticsDto">
+			<result column="project_id" property="projectId" />
+			<result column="project_name" property="projectName" />
+			<result column="project_type" property="projectType" />
+			<result column="work_hours" property="workHours" />
+			<result column="overtime_hours" property="overtimeHours" />
+		</collection>
+	</resultMap>
+
 	<sql id="Base_Column_List">
 		<!-- WARNING - @mbg.generated -->
 		id, name, project_id, version_id, start_date, end_date,
@@ -407,12 +419,14 @@
 		IFNULL(
 		t2.workOrderTaskHours, 0 ) AS workOrderTaskHours
 		FROM
-		(SELECT <foreach collection="users" item="user" separator="UNION ALL SELECT">
+		(SELECT
+		<foreach collection="users" item="user" separator="UNION ALL SELECT">
 			#{user.id} AS id,
 			#{user.userName} as user_name,
 			#{user.realName} AS real_name,
 			#{user.departmentId} AS department_id
-		</foreach>) u
+		</foreach>)
+		u
 		LEFT JOIN (
 		SELECT
 		t.`owner`,
@@ -465,10 +479,12 @@
 		wo.executor_id
 		) t2 ON u.id = t2.executor_id
 		LEFT JOIN
-		(SELECT <foreach collection="depts" item="dept" separator="UNION ALL SELECT">
+		(SELECT
+		<foreach collection="depts" item="dept" separator="UNION ALL SELECT">
 			#{dept.id} AS id,
-			#{dept.name} as `name`			
-		</foreach>) d ON
+			#{dept.name} as `name`
+		</foreach>
+		) d ON
 		u.department_id = d.id
 		WHERE
 		u.user_name NOT LIKE '%admin%'
@@ -748,12 +764,14 @@
 			IFNULL( t#{index}.total_task_hour, 0 ) + IFNULL(
 			t#{index}.total_over_hour, 0 )
 		</foreach>
-		FROM  (SELECT <foreach collection="users" item="user" separator="UNION ALL SELECT">
+		FROM (SELECT
+		<foreach collection="users" item="user" separator="UNION ALL SELECT">
 			#{user.id} AS id,
 			#{user.userName} as user_name,
 			#{user.realName} AS real_name,
 			#{user.departmentId} AS department_id
-		</foreach>) u LEFT JOIN
+		</foreach>
+		) u LEFT JOIN
 		<foreach collection="projectIds" index="index" item="projectId" separator=" LEFT JOIN " close="">
 			(SELECT DISTINCT
 			t.`owner` AS user_id,
@@ -827,4 +845,53 @@
 		version_id = #{versionId}
 	</select>
 
+	<select id="selectUserProjectStatistics" resultMap="UserProjectStatisticsRM">
+		SELECT
+		u.real_name,
+		u.id AS user_id,
+		t1.project_id,
+		t1.project_name,
+		t1.project_type,
+		t1.work_hours,
+		t1.overtime_hours
+		FROM
+		(
+		<foreach collection="users" item="user" separator=" UNION ALL ">
+			SELECT
+			#{user.id} AS id,
+			#{user.realName} AS real_name,
+			#{user.departmentId} AS department_id
+		</foreach>
+		) u
+		LEFT JOIN (
+		SELECT
+		t.`owner` AS user_id,
+		t.project_id,
+		p.`name` AS project_name,
+		p.type AS project_type,
+		SUM( td.task_hour ) AS work_hours,
+		SUM( td.over_hour ) AS
+		overtime_hours
+		FROM
+		task t
+		INNER JOIN
+		task_details td ON t.id = td.task_id
+		INNER JOIN project p ON t.project_id = p.id
+		WHERE
+		1 = 1 AND td.modified
+		BETWEEN
+		CONCAT(#{startDate,jdbcType=VARCHAR},' 00:00:00') AND
+		CONCAT(#{endDate,jdbcType=VARCHAR},' 23:59:59')
+		GROUP BY
+		t.project_id,
+		t.`owner`
+		) t1 ON u.id = t1.user_id
+		WHERE 1 = 1
+		<if test="userId != null">
+			AND u.id = #{userId}
+		</if>
+		<if test="departmentId != null">
+			AND u.department_id = #{departmentId}
+		</if>
+	</select>
 </mapper>
