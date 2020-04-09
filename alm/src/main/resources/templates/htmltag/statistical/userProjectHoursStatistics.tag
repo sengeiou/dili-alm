@@ -10,7 +10,7 @@ function onLoadSuccess(data) {
 			rows : []
 		};
 		$(data.rows).each(function(i, ups) {
-					if (ups.projectStatistics) {
+					if (ups.projectStatistics.length > 0) {
 						$(ups.projectStatistics).each(function(i, ps) {
 									var obj = {};
 									if (i <= 0) {
@@ -37,7 +37,8 @@ function onLoadSuccess(data) {
 	if (gridLoadStep) {
 		var idx = 0;
 		$(originalData.rows).each(function(i, item) {
-					if (item.projectStatistics) {
+					debugger;
+					if (item.projectStatistics.length > 0) {
 						grid.datagrid('mergeCells', {
 									index : idx,
 									field : 'realName',
@@ -49,6 +50,8 @@ function onLoadSuccess(data) {
 									rowspan : item.projectStatistics.length
 								});
 						idx += item.projectStatistics.length;
+					} else {
+						idx++;
 					}
 				});
 		gridLoadStep = false;
