@@ -37,7 +37,6 @@ function onLoadSuccess(data) {
 	if (gridLoadStep) {
 		var idx = 0;
 		$(originalData.rows).each(function(i, item) {
-					debugger;
 					if (item.projectStatistics.length > 0) {
 						grid.datagrid('mergeCells', {
 									index : idx,
