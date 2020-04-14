@@ -1132,11 +1132,12 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		poor.setApplyId(apply.getId());
 		List<ProjectOnlineOperationRecord> list = this.poorMapper.select(poor);
 		template.binding("opRecords", this.buildOperationRecordViewModel(list));
+		String content = template.render();
 
 		// 发送
 		emails.forEach(s -> {
 			try {
-				this.mailManager.sendMail(this.mailFrom, s, template.render(), true, subject, null);
+				this.mailManager.sendMail(this.mailFrom, s, content, true, subject, null);
 			} catch (Exception e) {
 				LOGGER.error(e.getMessage(), e);
 			}

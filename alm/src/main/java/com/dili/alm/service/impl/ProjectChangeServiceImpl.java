@@ -195,11 +195,12 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 		Template template = this.groupTemplate.getTemplate(this.projectChangeMailTemplate);
 		viewModel.put("projectType", this.projectTypeProvider.getDisplayText(project.getType(), null, null));
 		template.binding("model", viewModel);
+		String content = template.render();
 
 		// 发送
 		for (String addr : change.getEmail().split(",")) {
 			try {
-				this.mailManager.sendMail(this.mailFrom, addr, template.render(), true, "变更申请", null);
+				this.mailManager.sendMail(this.mailFrom, addr, content, true, "变更申请", null);
 			} catch (Exception e) {
 				LOGGER.error(e.getMessage(), e);
 			}

@@ -120,8 +120,7 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 	}
 
 	@Override
-	public void allocate(WorkOrder workOrder, Long executorId, Integer workOrderType, Integer priority,
-			OperationResult result, String description) throws WorkOrderException {
+	public void allocate(WorkOrder workOrder, Long executorId, Integer workOrderType, Integer priority, OperationResult result, String description) throws WorkOrderException {
 		// 生成操作记录
 		WorkOrderOperationRecord woor = DTOUtils.newDTO(WorkOrderOperationRecord.class);
 		woor.setOperatorId(workOrder.getAcceptorId());
@@ -162,8 +161,7 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 	}
 
 	@Override
-	public void close(WorkOrder workOrder, Long operatorId, OperationResult result, String description)
-			throws WorkOrderException {
+	public void close(WorkOrder workOrder, Long operatorId, OperationResult result, String description) throws WorkOrderException {
 		// 检查状态
 		if (!workOrder.getWorkOrderState().equals(WorkOrderState.SOLVED.getValue())) {
 			throw new WorkOrderException("当前状态不能执行分配操作");
@@ -207,8 +205,7 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 		}
 		List<User> target = new ArrayList<>(dd.getValues().size());
 		dd.getValues().forEach(v -> {
-			Map.Entry<Long, User> entry = AlmCache.getInstance().getUserMap().entrySet().stream()
-					.filter(e -> e.getValue().getUserName().equals(v.getValue())).findFirst().orElse(null);
+			Map.Entry<Long, User> entry = AlmCache.getInstance().getUserMap().entrySet().stream().filter(e -> e.getValue().getUserName().equals(v.getValue())).findFirst().orElse(null);
 			if (entry != null) {
 				target.add(entry.getValue());
 			}
@@ -217,8 +214,7 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 	}
 
 	@Override
-	public void solve(WorkOrder workOrder, Date startDate, Date endDate, Integer taskHours, Integer overtimeHours,
-			String workContent) throws WorkOrderException {
+	public void solve(WorkOrder workOrder, Date startDate, Date endDate, Integer taskHours, Integer overtimeHours, String workContent) throws WorkOrderException {
 		// 检查状态
 		if (!workOrder.getWorkOrderState().equals(WorkOrderState.SOLVING.getValue())) {
 			throw new WorkOrderException("当前状态不能执行工单解决操作");
@@ -283,10 +279,8 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 	/**
 	 * 构建精确更新实体,仅支持DTO
 	 * 
-	 * @param domain
-	 *            DTO接口
-	 * @param fieldName
-	 *            setForceParams或insertForceParams
+	 * @param domain    DTO接口
+	 * @param fieldName setForceParams或insertForceParams
 	 */
 	private void buildExactDomain(WorkOrder domain, String fieldName) throws Exception {
 		// 如果不是DTO接口，不构建
@@ -312,8 +306,7 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 						continue;
 					}
 					Column column = dtoMethod.getAnnotation(Column.class);
-					String columnName = column == null ? POJOUtils.humpToLine(POJOUtils.getBeanField(dtoMethod))
-							: column.name();
+					String columnName = column == null ? POJOUtils.humpToLine(POJOUtils.getBeanField(dtoMethod)) : column.name();
 					params.put(columnName, null);
 				}
 			}
@@ -352,12 +345,12 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 			return;
 		}
 		template.binding("opRecords", workOrder.aget("opRecords"));
+		String content = template.render();
 
 		// 发送
 		for (String to : emails) {
 			try {
-				this.mailManager.sendRemoteAttachementMail(this.mailFrom, to, cc, template.render(), true, subject,
-						attachements);
+				this.mailManager.sendRemoteAttachementMail(this.mailFrom, to, cc, content, true, subject, attachements);
 			} catch (Exception e) {
 				LOGGER.error(e.getMessage(), e);
 			}

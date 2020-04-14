@@ -359,11 +359,12 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 		Template template = this.groupTemplate.getTemplate(this.contentTemplate);
 		template.binding("apply", buildApplyViewModel(apply));
 		template.binding("costItems", AlmCache.getInstance().getTravelCostItemMap());
+		String content = template.render();
 
 		// 发送
 		emails.forEach(s -> {
 			try {
-				this.mailManager.sendMail(this.mailFrom, s, template.render(), true, subject, null);
+				this.mailManager.sendMail(this.mailFrom, s, content, true, subject, null);
 			} catch (Exception e) {
 				LOGGER.error(e.getMessage(), e);
 			}
