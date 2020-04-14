@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
+import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.dao.TaskMapper;
 import com.dili.alm.dao.TeamMapper;
@@ -189,7 +191,7 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		}
 
 		List<TaskByUsersDto> list = taskMapper.selectTaskHourByUser(startTime, endTime, dids, uids, order, sort, AlmCache.getInstance().getUserMap().values(),
-				AlmCache.getInstance().getDepMap().values());
+				AlmCache.getInstance().getDepMap().values().stream().filter(d -> d.getFirmCode().equals(AlmConstants.ALM_FIRM_CODE)).collect(Collectors.toList()));
 		list.add(this.getTotal(list));
 		return list;
 	}

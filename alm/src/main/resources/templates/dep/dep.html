@@ -18,7 +18,7 @@
 	}
 	function search() {
 		var opts = $("#smGridList").datagrid("options");
-		opts.url = '${contextPath!}/department/departments';
+		opts.url = '${contextPath!}/department/departments?firmCode=szpt';
 		var param = $('#searchTextbox').textbox('getText');
 		$('#smGridList').datagrid('load', {
 			name : param
