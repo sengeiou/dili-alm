@@ -13,7 +13,7 @@ import com.dili.uap.sdk.domain.User;
 /**
  * Created by asiamaster on 2017/10/19 0019.
  */
-@Restful("https://alm.diligrp.com")
+@Restful("${alm.contextPath:http://alm.diligrp.com}")
 public interface  AlmUserRpc {
 	
 	@POST("/userApi/list")

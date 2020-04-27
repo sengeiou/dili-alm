@@ -17,7 +17,7 @@ import com.dili.uap.sdk.domain.dto.UserRoleIdDto;
 /**
  * Created by asiamaster on 2017/10/19 0019.
  */
-@Restful("http://uap.diligrp.com")
+@Restful("${uap.contextPath:http://uap.diligrp.com}")
 public interface RoleRpc {
 
 	@POST("/roleApi/listByUser.api")
