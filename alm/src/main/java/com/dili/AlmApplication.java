@@ -12,15 +12,18 @@ import org.beetl.core.GroupTemplate;
 import org.beetl.core.resource.StringTemplateResourceLoader;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.core.Ordered;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.manager.WorkOrderManager;
@@ -36,8 +39,8 @@ import tk.mybatis.spring.annotation.MapperScan;
 @SpringBootApplication
 @EnableTransactionManagement
 @ComponentScan(basePackages = { "com.dili.ss", "com.dili.alm", "com.dili.uap.sdk" })
-@DTOScan(value={"com.dili.ss", "com.dili.uap.sdk", "com.dili.alm"})
-@RestfulScan({ "com.dili.alm.rpc", "com.dili.uap.sdk.rpc","com.dili.bpmc.sdk.rpc" })
+@DTOScan(value = { "com.dili.ss", "com.dili.uap.sdk", "com.dili.alm" })
+@RestfulScan({ "com.dili.alm.rpc", "com.dili.uap.sdk.rpc", "com.dili.bpmc.sdk.rpc" })
 @MapperScan(basePackages = { "com.dili.alm.dao", "com.dili.ss.dao", "com.dili.ss.quartz.dao" })
 @EnableAsync
 /**
@@ -45,11 +48,20 @@ import tk.mybatis.spring.annotation.MapperScan;
  * 以Maven为例，首先需要将<packaging>从jar改成war，然后取消spring-boot-maven-plugin，然后修改Application.java
  * 继承SpringBootServletInitializer
  */
-public class AlmApplication extends SpringBootServletInitializer implements WebMvcConfigurer {
+public class AlmApplication extends SpringBootServletInitializer {
 
-	@Override
-	public void addCorsMappings(CorsRegistry registry) {
-		registry.addMapping("/**").allowedOrigins("https://alm.diligrp.com").allowCredentials(true).allowedHeaders("Origin", "X-Requested-With", "Content-Type", "Accept");
+	@Bean
+	public FilterRegistrationBean corsFilter() {
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		CorsConfiguration config = new CorsConfiguration();
+		config.setAllowCredentials(true);
+		config.addAllowedOrigin(CorsConfiguration.ALL);
+		config.addAllowedHeader(CorsConfiguration.ALL);
+		config.addAllowedMethod(CorsConfiguration.ALL);
+		source.registerCorsConfiguration("/**", config);
+		FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
+		bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+		return bean;
 	}
 
 	@Bean
