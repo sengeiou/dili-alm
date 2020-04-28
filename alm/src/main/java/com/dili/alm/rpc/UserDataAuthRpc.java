@@ -10,7 +10,7 @@ import com.dili.ss.retrofitful.annotation.VOBody;
 /**
  * Created by asiamaster on 2017/10/19 0019.
  */
-@Restful("${uap.contextPath:http://uap.diligrp.com}")
+@Restful("${uap.contextPath}")
 public interface UserDataAuthRpc {
 	
 	

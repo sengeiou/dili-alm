@@ -8,7 +8,7 @@ import com.dili.ss.retrofitful.annotation.POST;
 import com.dili.ss.retrofitful.annotation.Restful;
 import com.dili.ss.retrofitful.annotation.VOBody;
 
-@Restful("${alm.contextPath:http://alm.diligrp.com}")
+@Restful("${alm.contextPath}")
 public interface DepartmentALMRpc {
 
 	@POST("/departmentApi/findByUserId.api")
