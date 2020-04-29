@@ -165,7 +165,7 @@ input[class^="easyui-"] {
 					//如果父页面是任务中心
                    	try {
 	                    var plh1= window.location.href.indexOf('?') > 0 ? window.location.href.substring(0, window.location.href.indexOf('?')) : window.location.href;
-						if(plh1=='http://almweb.diligrp.com/approve/applyApproveByAlm.html'){
+						if(plh1=='<#config name="alm.contextPath"/>/approve/applyApproveByAlm.html'){
 	                    		  LogUtils.saveLog(LOG_MODULE_OPS.PROJECT_APPROVE,"立项审批:${apply.id}:${apply.name}:成功", function () {
 								  		window.location.href = "${contextPath}/approve/apply/index.html";
 								  });
