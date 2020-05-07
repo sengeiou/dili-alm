@@ -379,11 +379,6 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 				this.addProjectAction(project);
 				projectApplyService.updateSelective(apply);
 				sendMail(apply, true);
-				BaseOutput<String> output2 = taskRpc.complete(taskId, map2);
-				if (!output2.isSuccess()) {
-					LOGGER.error(output2.getMessage());
-					throw new ApproveException("执行任务失败");
-				}
 			} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.CHANGE.getCode()) && isManager) {
 				approve.setStatus(AlmConstants.ApplyState.PASS.getCode());
 				ProjectChange change = projectChangeService.get(approve.getProjectApplyId());
@@ -392,11 +387,6 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 				updateProjectEndDate(change);
 				insertProjectChangeActionRecord(change);
 				sendMail(change, true);
-				BaseOutput<String> output2 = taskRpc.complete(taskId, map2);
-				if (!output2.isSuccess()) {
-					LOGGER.error(output2.getMessage());
-					throw new ApproveException("执行任务失败");
-				}
 			} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.COMPLETE.getCode()) && isManager) {
 				approve.setStatus(AlmConstants.ApplyState.PASS.getCode());
 				ProjectComplete complete = projectCompleteService.get(approve.getProjectApplyId());
@@ -405,13 +395,12 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 				insertProjectCompleteActionRecord(complete);
 				projectCompleteService.updateSelective(complete);
 				sendMail(complete, true);
-				BaseOutput<String> output2 = taskRpc.complete(taskId, map2);
-				if (!output2.isSuccess()) {
-					LOGGER.error(output2.getMessage());
-					throw new ApproveException("执行任务失败");
-				}
 			}
-			
+			BaseOutput<String> output2 = taskRpc.complete(taskId, map2);
+			if (!output2.isSuccess()) {
+				LOGGER.error(output2.getMessage());
+				throw new ApproveException("执行任务失败");
+			}
 			break;
 		default:
 			break;
