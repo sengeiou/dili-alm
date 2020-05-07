@@ -7,7 +7,7 @@ import com.dili.ss.retrofitful.annotation.POST;
 import com.dili.ss.retrofitful.annotation.Restful;
 import com.dili.ss.retrofitful.annotation.VOBody;
 
-@Restful("http://uap.diligrp.com")
+@Restful("${uap.contextPath}")
 public interface ResourceRpc {
 	@POST("/resourceApi/listResourceCodeByUserId")
 	BaseOutput<List<String>> listResourceCodeByUserId(@VOBody Long id);

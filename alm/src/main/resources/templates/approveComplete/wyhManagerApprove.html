@@ -179,7 +179,7 @@ input[class^="easyui-"] {
 				                	document.domain="diligrp.com";
 									//如果父页面是任务中心
 				                    var plh1= window.location.href.indexOf('?') > 0 ? window.location.href.substring(0, window.location.href.indexOf('?')) : window.location.href;
-									if(plh1=='http://almweb.diligrp.com/approve/completeApproveByAlm.html'){
+									if(plh1=='<#config name="alm.contextPath"/>/approve/completeApproveByAlm.html'){
 										try {
 											LogUtils.saveLog(LOG_MODULE_OPS.PROJECT_COMPLETE_APPROVE,"结项审批:${approve.id}:${approve.name}:成功",function() {
 											        window.location.href = "${contextPath}/approve/complete/index.html";

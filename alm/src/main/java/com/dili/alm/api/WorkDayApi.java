@@ -36,7 +36,7 @@ public class WorkDayApi {
 	 */
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "WorkDay", paramType = "form", value = "WorkDay的form信息", required = true, dataType = "string") })
-	@CrossOrigin(origins = { "http://alm.diligrp.com", "null" })
+	@CrossOrigin(origins = { "https://alm.diligrp.com", "null" })
 	@RequestMapping(value = "/uploadWordDayDate", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput uploadWordDayDate(@RequestParam("file") MultipartFile file, String year) {
 		return workDayService.upload(file, year);
@@ -49,7 +49,7 @@ public class WorkDayApi {
 	 */
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "WorkDay", paramType = "form", value = "WorkDay的form信息", required = true, dataType = "string") })
-	@CrossOrigin(origins = { "http://alm.diligrp.com", "null" })
+	@CrossOrigin(origins = { "https://alm.diligrp.com", "null" })
 	@RequestMapping(value = "/selectWorkDayYear", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<String> selectWorkDayYear() {
 		return workDayService.getWorkDayYaers();
@@ -62,7 +62,7 @@ public class WorkDayApi {
 	 */
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "WorkDay", paramType = "form", value = "WorkDay的form信息", required = true, dataType = "string") })
-	@CrossOrigin(origins = { "http://alm.diligrp.com", "null" })
+	@CrossOrigin(origins = { "https://alm.diligrp.com", "null" })
 	@RequestMapping(value = "/getWorkDay", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<WorkDayRoleDto> getWorkDay(String userId) {
 		if (WebUtil.strIsEmpty(userId)) {
@@ -84,7 +84,7 @@ public class WorkDayApi {
 	 */
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "WorkDay", paramType = "form", value = "WorkDay的form信息", required = true, dataType = "string") })
-	@CrossOrigin(origins = { "http://alm.diligrp.com", "null" })
+	@CrossOrigin(origins = { "https://alm.diligrp.com", "null" })
 	@RequestMapping(value = "/isHasWorkDayYear", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody boolean isHasWorkDayYear(String year) {
 		List<String> workDayYaers = workDayService.getWorkDayYaers();

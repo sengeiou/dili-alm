@@ -144,7 +144,7 @@
     editor.customConfig.uploadImgHooks = {
            customInsert: function (insertImg, result, editor) {
                  var id = result.data[0].id;
-                 insertImg("http://almweb.diligrp.com/files/images?id="+id);
+                 insertImg("<#config name="alm.contextPath"/>/files/images?id="+id);
             }
         }
     editor.customConfig.uploadImgParamsWithUrl = true

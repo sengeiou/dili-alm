@@ -8,7 +8,7 @@ import com.dili.ss.retrofitful.annotation.VOBody;
 
 import java.util.List;
 
-@Restful("http://uap.diligrp.com")
+@Restful("${uap.contextPath}")
 public interface SysProjectRpc {
 
 	@POST("/systemApi/list.api")

@@ -2,8 +2,6 @@ package com.dili.alm.rpc;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.RequestBody;
-
 import com.dili.alm.domain.AlmUser;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.PageOutput;
@@ -15,7 +13,7 @@ import com.dili.uap.sdk.domain.User;
 /**
  * Created by asiamaster on 2017/10/19 0019.
  */
-@Restful("http://alm.diligrp.com")
+@Restful("${alm.contextPath}")
 public interface  AlmUserRpc {
 	
 	@POST("/userApi/list")

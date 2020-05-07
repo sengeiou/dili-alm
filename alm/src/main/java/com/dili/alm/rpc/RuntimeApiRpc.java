@@ -2,14 +2,9 @@ package com.dili.alm.rpc;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.web.bind.annotation.RequestParam;
-
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.retrofitful.annotation.GET;
-import com.dili.ss.retrofitful.annotation.POST;
 import com.dili.ss.retrofitful.annotation.ReqParam;
 import com.dili.ss.retrofitful.annotation.Restful;
 

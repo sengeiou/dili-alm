@@ -300,8 +300,16 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		current.setApproveDate(new Date());
 		current.setResult(opt);
 		current.setNotes(notes);
+		//审批判断
+		if(approveList!=null&&approveList.size()>0) {
+			ApplyApprove applyApprove = approveList.get(approveList.size()-1);
+			if(applyApprove.getUserId().longValue()==current.getUserId().longValue()&&applyApprove.getRole().equals(current.getRole())&&applyApprove.getResult().equals(current.getResult())) {
+				throw new ApproveException("该项目已完成审批操作");
+			}
+		}
 		approveList.add(current);
 		approve.setDescription(JSON.toJSONString(approveList));
+
 
 		switch (opt) {
 		case "reject":
@@ -359,6 +367,8 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 			}
 			break;
 		case "accept":
+			Map<String, Object> map2 = new HashMap<>();
+			map2.put("approved", "true");
 			if (Objects.equals(approve.getType(), AlmConstants.ApproveType.APPLY.getCode()) && isManager) {
 				approve.setStatus(AlmConstants.ApplyState.PASS.getCode());
 				ProjectApply apply = projectApplyService.get(approve.getProjectApplyId());
@@ -369,6 +379,11 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 				this.addProjectAction(project);
 				projectApplyService.updateSelective(apply);
 				sendMail(apply, true);
+				BaseOutput<String> output2 = taskRpc.complete(taskId, map2);
+				if (!output2.isSuccess()) {
+					LOGGER.error(output2.getMessage());
+					throw new ApproveException("执行任务失败");
+				}
 			} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.CHANGE.getCode()) && isManager) {
 				approve.setStatus(AlmConstants.ApplyState.PASS.getCode());
 				ProjectChange change = projectChangeService.get(approve.getProjectApplyId());
@@ -377,6 +392,11 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 				updateProjectEndDate(change);
 				insertProjectChangeActionRecord(change);
 				sendMail(change, true);
+				BaseOutput<String> output2 = taskRpc.complete(taskId, map2);
+				if (!output2.isSuccess()) {
+					LOGGER.error(output2.getMessage());
+					throw new ApproveException("执行任务失败");
+				}
 			} else if (Objects.equals(approve.getType(), AlmConstants.ApproveType.COMPLETE.getCode()) && isManager) {
 				approve.setStatus(AlmConstants.ApplyState.PASS.getCode());
 				ProjectComplete complete = projectCompleteService.get(approve.getProjectApplyId());
@@ -385,14 +405,13 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 				insertProjectCompleteActionRecord(complete);
 				projectCompleteService.updateSelective(complete);
 				sendMail(complete, true);
+				BaseOutput<String> output2 = taskRpc.complete(taskId, map2);
+				if (!output2.isSuccess()) {
+					LOGGER.error(output2.getMessage());
+					throw new ApproveException("执行任务失败");
+				}
 			}
-			Map<String, Object> map2 = new HashMap<>();
-			map2.put("approved", "true");
-			BaseOutput<String> output2 = taskRpc.complete(taskId, map2);
-			if (!output2.isSuccess()) {
-				LOGGER.error(output2.getMessage());
-				throw new ApproveException("执行任务失败");
-			}
+			
 			break;
 		default:
 			break;

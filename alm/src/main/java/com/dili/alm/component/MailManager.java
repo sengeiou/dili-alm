@@ -11,6 +11,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -19,6 +20,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.dili.alm.domain.Files;
+import com.dili.ss.retrofitful.annotation.Restful;
 
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
@@ -32,17 +34,17 @@ public class MailManager {
 
 	@Autowired
 	private JavaMailSender mailSender;
+	@Value("${alm.contextPath:http://alm.diligrp.com}")
+	private String almContextPath;
 
 	@Async
-	public void sendMail(String from, String to, String content, String subject, Collection<File> attachments)
-			throws MessagingException {
+	public void sendMail(String from, String to, String content, String subject, Collection<File> attachments) throws MessagingException {
 		this.sendMail(from, to, content, false, subject, attachments);
 
 	}
 
 	@Async
-	public void sendMail(String from, String to, String content, boolean html, String subject,
-			Collection<File> attachments) throws MessagingException {
+	public void sendMail(String from, String to, String content, boolean html, String subject, Collection<File> attachments) throws MessagingException {
 		MimeMessage mimeMessage = this.mailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 		helper.setFrom(from);
@@ -58,8 +60,7 @@ public class MailManager {
 	}
 
 	@Async
-	public void sendRemoteAttachementMail(String from, String to, String[] cc, String content, boolean html,
-			String subject, Collection<Files> attachments) throws MessagingException {
+	public void sendRemoteAttachementMail(String from, String to, String[] cc, String content, boolean html, String subject, Collection<Files> attachments) throws MessagingException {
 		MimeMessage mimeMessage = this.mailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 		helper.setFrom(from);
@@ -80,7 +81,7 @@ public class MailManager {
 	}
 
 	private byte[] requestAttachement(Long id) {
-		String url = "http://alm.diligrp.com/files/download?id=" + id;
+		String url = this.almContextPath + "/files/download?id=" + id;
 		OkHttpClient okHttpClient = new OkHttpClient();
 		Request request = new Request.Builder().url(url).build();
 		Call call = okHttpClient.newCall(request);
