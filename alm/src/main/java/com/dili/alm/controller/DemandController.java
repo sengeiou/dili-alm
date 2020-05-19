@@ -449,13 +449,13 @@ public class DemandController {
      */
     @RequestMapping(value="/accept.action", method = RequestMethod.POST)
     @ResponseBody
-    public BaseOutput<String> accept(@RequestParam String code, @RequestParam String taskId,String description) {
+    public BaseOutput<String> accept(@RequestParam String code, @RequestParam String taskId,String description,String isForword) {
         try {
   			 demandService.saveOprationRecord(code, description, DemandOperationType.ACCEPT.getValue(), DemandOperationType.ACCEPT.getName(), ApproveResult.APPROVED);
   			} catch (DemandExceptions e) {
   				e.printStackTrace();
   			}
-    	return demandService.submitApprove(code, taskId,null,DemandProcessStatus.ACCEPT.getCode());
+    	return demandService.submitApproveForAccept(taskId,isForword);
     }
  
     @ApiOperation("指定需求对接人")
@@ -499,6 +499,7 @@ public class DemandController {
     @ResponseBody
     public BaseOutput<String> doAssignPrincipal(@RequestParam String code, @RequestParam String taskId, 
 			Long acceptId,String description) {
+    	BaseOutput<String> out = new BaseOutput<String>();
 /*		if (operDepartmentUsers == null) {
 			return BaseOutput.failure("还未分配");
 		}
@@ -511,7 +512,9 @@ public class DemandController {
   			} catch (DemandExceptions e) {
   				e.printStackTrace();
   			}
-    	return demandService.submitApproveForAssign(acceptId, taskId);
+        out = demandService.submitApproveForAssign(acceptId, taskId);
+        return out;
+    	
     }
  
     @ApiOperation("跳转到接受需求对接人")
@@ -616,7 +619,7 @@ public class DemandController {
     	demand.setFeedbackFile(documentUrl);
     	demandService.saveOrUpdate(demand);
         try {
-  				demandService.saveOprationRecord(code, description, DemandOperationType.FEEDBACK.getValue(), DemandOperationType.FEEDBACK.getName(), ApproveResult.APPROVED);
+  				demandService.saveOprationRecord(code,"已经反馈方案", DemandOperationType.FEEDBACK.getValue(), DemandOperationType.FEEDBACK.getName(), ApproveResult.APPROVED);
   			} catch (DemandExceptions e) {
   				e.printStackTrace();
   			}

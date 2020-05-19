@@ -148,14 +148,21 @@ public interface DemandService extends BaseService<Demand, Long> {
 	
     /**
      * 添加分配人
-     * @param codesubmitApproveAndAccept
+     * @param  executorId  taskId
      * @return
      */
     BaseOutput submitApproveForAssign(Long executorId, String taskId);
+    /**
+     * 数字平台,接收并判定是否需要转发
+     * @param taskId
+     * @return
+     */
+    BaseOutput submitApproveForAccept(String taskId,String forword);
     /**
      * 获取部门经理ID
      * @param 申请人ID
      * @return
      */
     Long departmentManagerId(Long applyId)throws DemandExceptions;
+	
 }

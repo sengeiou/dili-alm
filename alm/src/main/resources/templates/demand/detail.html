@@ -83,15 +83,24 @@
                 	<%}%>
                 </td>
             </tr>
-            <tr>
-                <td style="padding:5px;" colspan="2">
-                	<span>需求背景:</span>
-                	<%if(model.reason!=null){%>
-                		<div style="width:710px;border:1px solid #D4D4D4;" id="reason">${model.reason!}</div>
-                	<%}%>
-                	
-                </td>
-            </tr>
+			<tr>
+				<td style="padding: 5px;" colspan="2">
+					<p>需求背景:</p>
+					<div id="editor_reason" style="width: 100%">
+					 ${model.reason!}
+					</div>
+				</td>
+			</tr>
+           <% if(model.feedbackContent!=null){%>
+			<tr>
+					<td colspan="2" style="padding: 5px;">
+				   <h4>反馈方案:</h4>
+					<div id="editor_reason" style="width: 100%">
+					 ${model.feedbackContent!}
+					</div>
+					</td>
+			</tr>
+		<%}%>
             <tr>
 				<td colspan="2" style="padding: 5px;">
 					<table class="easyui-datagrid" title="上传文件列表" id="fileGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"  style="width: 95%;"
@@ -122,6 +131,7 @@
 									<th data-options="field:'operatorId', width:'15%',  _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作人</th>
 									<th data-options="field:'operateTime', width:'15%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作时间</th>
 									<th data-options="field:'opertateResult', width:'15%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作结果</th>
+									<th data-options="field:'description', width:'15%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作意见</th>
 								</tr>
 							</thead>
 					</table>

@@ -56,14 +56,14 @@
 				 ${demand.content!}
 				</div>
 		</tr>
-		<tr>
-			<td style="padding: 5px;" colspan="2">
-				<p>需求背景:</p>
-				<div id="editor_reason" style="width: 100%">
-				 ${demand.reason!}
-				</div>
-			</td>
-		</tr>
+			<tr>
+				<td style="padding: 5px;" colspan="2">
+					<p>需求背景:</p>
+					<div id="editor_reason" style="width: 100%">
+					 ${demand.reason!}
+					</div>
+				</td>
+			</tr>
 		<% if(demand.documentUrl!=null){%>
 		<tr>
 				<td colspan="2" style="padding: 5px;">
@@ -78,6 +78,7 @@
 									<th data-options="field:'createMemberId', width:'10%',  _provider:'memberProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">创建人</th>
 									<th data-options="field:'created', width:'20%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">创建时间</th>
 									<th data-options="field:'opt',width:'20%',formatter:fileOptFormatter, align:'center'">操作</th>
+									<th data-options="field:'description', width:'15%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作意见</th>
 								</tr>
 							</thead>
 					</table>
@@ -96,6 +97,7 @@
 									<th data-options="field:'operatorId', width:'15%',  _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作人</th>
 									<th data-options="field:'operateTime', width:'15%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作时间</th>
 									<th data-options="field:'opertateResult', width:'15%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作结果</th>
+									<th data-options="field:'description', width:'15%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作意见</th>
 								</tr>
 							</thead>
 					</table>

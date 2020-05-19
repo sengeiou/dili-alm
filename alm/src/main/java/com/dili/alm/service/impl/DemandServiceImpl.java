@@ -549,6 +549,35 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		
 		return output;
 	}
+	
+	@Override
+	public BaseOutput submitApproveForAccept(String taskId,String forward) {
+		
+		BaseOutput<String> output ;
+		if (forward.endsWith("forword")) {
+			output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
+				{
+					put("approved","true");
+					put("forward", "true");
+				}
+			});
+		}else {
+			//获取当前用户userId
+			//没有任务人员直接跳转到反馈界面
+			Long userId = SessionContext.getSessionContext().getUserTicket().getId();
+			output =this.taskRpc.complete(taskId, new HashMap<String, Object>() {
+				{
+					put("AssignExecutorId", userId.toString());
+					put("approved", "true");
+					put("forward", "false");
+				}
+			});
+		}
+
+		
+		return output;
+	}
+	
 	@Override
 	public BaseOutput submitApproveForAssign(Long executorId, String taskId) {
 		
@@ -561,6 +590,8 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		
 		return output;
 	}
+	
+
 	@Override
 	public BaseOutput submitApprove(String code, String taskId, Byte status, String processType) {
 		Demand condition = new Demand();
@@ -578,7 +609,8 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		}
 		Map<String, Object> variables = new HashMap<>();
 		variables.put("approved", "true");
-		return taskRpc.complete(taskId, variables);
+		BaseOutput  out = taskRpc.complete(taskId, variables);
+		return out;
 	}
 
 	@Override
@@ -615,7 +647,6 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		selectDeman.setFinishDate(newDemand.getFinishDate());
 		selectDeman.setProcessType(DemandProcessStatus.DEPARTMENTMANAGER.getCode());
 		this.update(selectDeman);
-		//TODO:
 		Long departmentManagerId = this.departmentManagerId(selectDeman.getUserId());
 		// 完成任务
 		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {

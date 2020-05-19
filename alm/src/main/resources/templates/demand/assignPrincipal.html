@@ -95,6 +95,7 @@
 									<th data-options="field:'operatorId', width:'15%',  _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作人</th>
 									<th data-options="field:'operateTime', width:'15%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作时间</th>
 									<th data-options="field:'opertateResult', width:'15%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作结果</th>
+								    <th data-options="field:'description', width:'15%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作意见</th>
 								</tr>
 							</thead>
 					</table>
@@ -102,13 +103,20 @@
         <input name="taskId" id="taskId" value="${taskId}" type="hidden">
          <input name="code" id="code" value="${demand.serialNumber}" type="hidden">
         <table width="60%" style="alignment: center">
+           <tr>
+                <td style="padding:5px;">
+                <h4>操作意见</h4>
+                <br/>
+               <textarea cols="50" rows="5" name="description" ></textarea>
+            </td>
+           </tr>
             <tr>
             	<td align="center">
 				  <input class="easyui-combobox" style="width: 100%" id="acceptId" name="acceptId"
 					data-options="editable:true,validType:'comboBoxEditvalid[\'acceptId\']',label:'指派责任人:',valueField: 'id',
 					textField: 'realName',
 					url: '${contextPath!}/member/demandMembers',
-					required:true,
+					required:false,
 					multiple:false,
 					onChange:checkExecutorAmount,
 					filter: function(q, row){
