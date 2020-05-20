@@ -91,6 +91,11 @@
 				</div>
 			</td>
 		</tr>
+		 <tr>
+            <td id="filePath" style="padding:20px 0;">
+
+            </td>
+         </tr>
 	</table>
 	<input type="hidden" id="documentUrl" name="documentUrl" value="" />
 </form>
@@ -269,11 +274,14 @@
 	    	window.open('${contextPath!}/files/download?id=' + id);
 	    }
 	    
-/* 	    $('#fileGrid').datagrid({
-            onLoadSuccess: function (data) {
-            	window.parent.setIframeHeight();
-            }
-        }); */
+        $(function () {
+        	<% if(model.feedbackFile!=null){%>
+	            //添加反馈文件显示
+	             showFDFile(${model.feedbackFile!});
+             <%}%>
+        })
+	    <#demand_fileuploadForFeedback />
+        
     </script>
     <script type="text/javascript">
 	<#demand_publicJs />

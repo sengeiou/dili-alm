@@ -93,7 +93,7 @@
 			</tr>
            <% if(model.feedbackContent!=null){%>
 			<tr>
-					<td colspan="2" style="padding: 5px;">
+					<td colspan="2" >
 				   <h4>反馈方案:</h4>
 					<div id="editor_reason" style="width: 100%">
 					 ${model.feedbackContent!}
@@ -101,6 +101,12 @@
 					</td>
 			</tr>
 		<%}%>
+		    </tr>
+            <tr>
+            <td id="filePath" style="padding:20px 0;">
+
+            </td>
+            </tr>
             <tr>
 				<td colspan="2" style="padding: 5px;">
 					<table class="easyui-datagrid" title="上传文件列表" id="fileGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"  style="width: 95%;"
@@ -151,5 +157,15 @@
 	    function downloadFile(id) {
 	    	window.open('${contextPath!}/files/download?id=' + id);
 	    }
+	    
+        $(function () {
+        	<% if(model.feedbackFile!=null){%>
+	            //添加反馈文件显示
+	             showFDFile(${model.feedbackFile!});
+             <%}%>
+        })
+	    <#demand_fileuploadForFeedback />
     </script>
+    
+    	
 </#body>

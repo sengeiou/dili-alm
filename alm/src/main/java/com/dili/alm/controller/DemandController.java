@@ -353,6 +353,27 @@ public class DemandController {
 			return null;
 		}
     }
+    
+    /**
+     * 查询反馈文档
+     * @param id
+     * @return
+     */
+    @ApiOperation(value="根据Id获取附件", notes = "查询File返回列表信息")
+    @ApiImplicitParams({
+		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = false, dataType = "string")
+	})
+    @RequestMapping(value="/files/fdFile", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody Files fdFile(Long id) {
+		
+		try {
+			Files files = this.filesService.get(id);
+			return files;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+    }
 	//查询系统
 	@ResponseBody
 	@RequestMapping(value = "/listTree.json", method = { RequestMethod.GET, RequestMethod.POST })

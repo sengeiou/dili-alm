@@ -78,7 +78,6 @@
 									<th data-options="field:'createMemberId', width:'10%',  _provider:'memberProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">创建人</th>
 									<th data-options="field:'created', width:'20%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">创建时间</th>
 									<th data-options="field:'opt',width:'20%',formatter:fileOptFormatter, align:'center'">操作</th>
-									<th data-options="field:'description', width:'15%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作意见</th>
 								</tr>
 							</thead>
 					</table>
@@ -104,13 +103,24 @@
     <form id="form" class="easyui-form" method="post" fit="true">
         <input name="taskId" id="taskId" value="${taskId}" type="hidden">
          <input name="code" id="code" value="${demand.serialNumber}" type="hidden">
-        <table width="100%" style="alignment: center">
+        <table width="100%" style="alignment: center" >
            <tr>
             <td>
             	<p>解决方案描述:</p>
 				<div id="editor_content_rt" style="width: 100%"></div>
             </td>
-            </tr> 
+            </tr>
+            <tr>
+            <td>
+            	<p>解决方案附件:</p>
+				<div id="fileuploaderForFD"style="margin-left: 40px;" >选择文件</div>
+            </td>
+            </tr>
+            <tr>
+            <td id="filePath">
+
+            </td>
+            </tr>    
             <tr>
               <td align="center" style="padding:15px;">
                 <a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="submitBtn"
@@ -118,7 +128,6 @@
             </td>
             </tr>
         </table>
-        	<input type="hidden" id="documentUrl" name="documentUrl" value="" />
         	<input type="hidden" id="content" name="content" value="" />
     </form>
  </div>
@@ -207,7 +216,8 @@
             queryRecordGrid(code);
             //加载文件列表
             queryFileGrid()
-            
+            //加载上传附件插件
+            loadUploadFile()
             //加载数据
             var formData = $.extend({},${modelStr!});
             formData = addKeyStartWith(getOriginalData(formData),"_");
@@ -269,13 +279,9 @@
 	    function downloadFile(id) {
 	    	window.open('${contextPath!}/files/download?id=' + id);
 	    }
-/* 	    $('#fileGrid').datagrid({
-            onLoadSuccess: function (data) {
-            	window.parent.setIframeHeight();
-            }
-        }); */
     </script>
    <script type="text/javascript">
 	<#demand_publicJs />
+	<#demand_fileuploadForFeedback />
     </script> 
 </#body>
