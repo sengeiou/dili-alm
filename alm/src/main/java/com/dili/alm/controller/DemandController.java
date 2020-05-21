@@ -50,9 +50,11 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.exception.AppException;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.uap.sdk.domain.Department;
+import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.rpc.DepartmentRpc;
+import com.dili.uap.sdk.rpc.FirmRpc;
 import com.dili.uap.sdk.rpc.UserRpc;
 import com.dili.uap.sdk.session.SessionContext;
 
@@ -70,6 +72,8 @@ import tk.mybatis.mapper.entity.Example;
 @Controller
 @RequestMapping("/demand")
 public class DemandController {
+	@Autowired
+	private FirmRpc firmRpc;
 	@Autowired
 	private DepartmentRpc deptRpc;
     @Autowired
@@ -106,10 +110,10 @@ public class DemandController {
 		
 		modelMap.addAttribute("userInfo", userTicket);
 		if (userTicket.getDepartmentId()!=null) {
-			BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
-			modelMap.addAttribute("depName",de.getData().getName());
+			BaseOutput<Firm> firm = firmRpc.getByCode(userTicket.getFirmCode());
+			modelMap.addAttribute("firmName",firm.getData().getName());
 		}else {
-			modelMap.addAttribute("depName","");
+			modelMap.addAttribute("firmName","");
 		}
 		return "demand/add";
 	}
@@ -634,7 +638,7 @@ public class DemandController {
      */
     @RequestMapping(value="/feedback.action", method = RequestMethod.POST)
     @ResponseBody
-    public BaseOutput<String> feedback(@RequestParam String code, @RequestParam String taskId, @RequestParam String content, @RequestParam String documentUrl,String description) {
+    public BaseOutput<String> feedback(@RequestParam String code, @RequestParam String taskId, @RequestParam String content,String documentUrl,String description) {
     	Demand demand = demandService.getByCode(code);
     	demand.setFeedbackContent(content);
     	demand.setFeedbackFile(documentUrl);

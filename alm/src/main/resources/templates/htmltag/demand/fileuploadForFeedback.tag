@@ -7,7 +7,7 @@ function loadUploadFile(){
 	    uploadStr: '上传附件',
 	    maxFileCount: 1,                //上传文件个数（多个时修改此处
 	    returnType: 'json',              //服务返回数据
-	    allowedTypes: 'doc,xls,ppt,pdf,txt,dwg,exb,dps,wps,et,rar,zip,xmind,JPG,GIF,png,bmp',  //允许上传的文件式
+	    allowedTypes: 'docx,doc,xls,ppt,pdf,txt,dwg,exb,dps,wps,et,rar,zip,xmind,JPG,GIF,png,bmp',  //允许上传的文件式
 	    extErrorStr : '文件格式错误！允许上传格式：',
 	    dragDropStr:'',
 	    showDone: false,                     //是否显示"Done"(完成)按钮
