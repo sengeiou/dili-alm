@@ -21,6 +21,11 @@ function loadUploadFile(){
 			$('#form').append('<input type="hidden"  name="documentUrl" value="' + data.data[0].id + '">');
 			$('#filePath').append('<p><b>已上传方案附件:</b></p>');
 			$('#filePath').append('<span style="margin: 40px;font-size: 14px; padding-top:20px;">' +data.data[0].name+'<a href="javascript:delFile(' + data.data[0].id + ')" style="margin-left: 40px;">删除</a><a href="delFile(id)" style="margin-left: 10px;">查看</a></span>');
+	    	 //上传成功重新接在页面高度
+	    	 var parentIframe = parent.document.getElementById("pageType")
+          	 if(parentIframe!="undefined"){
+            		window.parent.setIframeHeight();
+     	     }
 	    }
 	}); 
 }
