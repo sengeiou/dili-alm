@@ -300,6 +300,7 @@ $(function () {
     	formData._belongProId="";
     }
     formData._finishDate=dateFormat_1(formData._finishDate);
+    formData.documentUrl= formData._documentUrl;
     $('#_form').form('load', formData);
     var parentIframe = parent.document.getElementById("pageType")
     //加载父元素高度
