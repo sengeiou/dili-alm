@@ -80,8 +80,10 @@ function showFDFile(id){
 						},
 						success : function(dataresult) {
 						    console.log(dataresult);
-							$('#filePath').append('<p><b>已上传方案附件:</b></p>');
+						    if(dataresult!=""){
+						    								$('#filePath').append('<p><b>已上传方案附件:</b></p>');
  							$('#filePath').append('<span style="margin: 40px;font-size: 14px; padding-top:20px;">' +dataresult.name+'<a href="javascript:downloadFile('+dataresult.id+')" style="margin-left: 10px;">下载</a></span>');
+						    }
 
 						},
 						error : function() {

@@ -219,8 +219,8 @@ $("#fileuploader").uploadFile({
     },
     onSuccess: function(files,data,xhr,pd)
     {
+    	$("#documentUrl").val("");
         //组织文件ID上传
-         $("#documentUrl").val();
         myfiles.push(data.data[0].id);
         $("#documentUrl").val(myfiles);
         if(data&&data.code===0){
@@ -237,6 +237,16 @@ $("#fileuploader").uploadFile({
 	   }
     },
 	onSelect : function(files) {
+		
+		myfiles.splice(0,myfiles.length);
+	    if($("#documentUrl").val()!=null&&$("#documentUrl").val()!=""){
+	    	var fileIds =$("#documentUrl").val().split(",");
+		      for(var i=0; i<fileIds.length;i++){
+		    	  myfiles.push(fileIds[i]);
+		    	}
+			  console.log(myfiles.length);
+			  console.log(myfiles);
+	    }
 		var old = $('#fileGrid').datagrid('getData').rows;
 		for (var i = 0; i < old.length; i++) {
 			if (files[0].name == old[i].name) {
@@ -301,6 +311,7 @@ $(function () {
     }
     formData._finishDate=dateFormat_1(formData._finishDate);
     formData.documentUrl= formData._documentUrl;
+
     $('#_form').form('load', formData);
     var parentIframe = parent.document.getElementById("pageType")
     //加载父元素高度
@@ -398,7 +409,6 @@ function dateFormat_1(longTypeDate) {
 			+ ');">删除</a>';
 	    	return content;
 	    }
-	    var myfiles = new Array();
 	    function delVersionFile(id) {
 	    	
 	    	  if(confirm('确定要删除吗')==true){
@@ -411,16 +421,24 @@ function dateFormat_1(longTypeDate) {
   					},
   					success : function(data) {
   						if (data.code == 200) {
+  							myfiles.splice(0,myfiles.length);
   							var fileIds =$('#documentUrl').val().split(",");
   					        for(var i=0; i<fileIds.length;i++){
   					        	if(fileIds[i]==id){
   					        		fileIds.splice(i,1);
   		 							$("#documentUrl").val();
   		 						    $("#documentUrl").val(fileIds);
+  		 						 
   					        	}
+  					        	myfiles.push(fileIds);
   					        }
 
-   						    
+/*   					    	var fileIds =$("#documentUrl").val().split(",");
+  						      for(var i=0; i<fileIds.length;i++){
+  						    	  myfiles.push(fileIds[i]);
+  						    	}
+  							  console.log(myfiles.length);
+  							  console.log(myfiles); */
   							var selected = $('#fileGrid')
   									.datagrid('getSelected');
   							var index = $('#fileGrid').datagrid(
