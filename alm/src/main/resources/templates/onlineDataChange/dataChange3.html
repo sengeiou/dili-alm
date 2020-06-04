@@ -107,7 +107,7 @@ button:hover {
 							
 						<!-- 	 <input  class="easyui-linkbutton" name="_sqlFileId"   style="width: 39%"  value="${odc.sqlFileId}"   id="_sqlFileId"> -->
 					   
-						 		<a id="xiazai" href="#" onclick="downMyFile(${odc.sqlFileId})" class="easyui-linkbutton"  data-options="iconCls:'icon-download'">下载sql文件</a>   	
+						 		<a id="xiazai" href="#" onclick="downMyFile(${odc.sqlFileId})" class="easyui-linkbutton"  data-options="iconCls:'icon-download'">  ${fileName}</a>   	
 					  </td>
 				</tr>
 				
@@ -147,10 +147,12 @@ button:hover {
 							<thead>
 								<tr>
 								   
+								   
 									<th data-options="field:'operationName', width:'25%',  sortable:'true', order:'asc', align:'left', resizable:'true', fixed:'false'">操作内容</th>
-									<th data-options="field:'operatorId', width:'25%',  _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作人</th>
-									<th data-options="field:'operateTime', width:'25%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作时间</th>
-									<th data-options="field:'opertateResult', width:'25%', formatter: formatStatus,   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作结果</th>
+									<th data-options="field:'operatorId', width:'20%',  _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作人</th>
+									<th data-options="field:'operateTime', width:'15%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作时间</th>
+									<th data-options="field:'opertateResult', width:'15%', formatter: formatStatus,   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作结果</th>
+									<th data-options="field:'description', width:'25%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">执行意见</th>
 								</tr>
 							</thead>
 	        </table>
@@ -194,7 +196,7 @@ button:hover {
 	   var taskIdd=$('#taskId').val();
 	   var isNeedClaim=$('#isNeedClaim').val();
 	   
-	  // alert("isNeedClaim失败"+isNeedClaim);
+	   var description=$('#description').val();
 	   if(taskIdd==null){
 	      alert("执行失败");
 	   }
@@ -202,7 +204,8 @@ button:hover {
            type: "post",
            url: "${contextPath}/onlineDataChange/agreeDBAOnlineData.action",
            data: {"taskId":taskIdd,
-        	       "isNeedClaim":isNeedClaim
+        	       "isNeedClaim":isNeedClaim,
+     	          "description":description
                  },
            async : true,
            beforeSend: function () {
@@ -246,7 +249,7 @@ button:hover {
 		 
 	   var isNeedClaim=$('#isNeedClaim').val();
 	   var taskIdd=$('#taskId').val();
-	  
+	   var description=$('#description').val();
 	   if(taskIdd==null){
 		   alert("执行失败");
 	   }
@@ -307,6 +310,15 @@ button:hover {
      $(function () {
     	var  onDataid=${odc.id};
     	 downRecordGrid(onDataid);
+    	 
+    	  var tempFileName = '${fileName!}';
+       	 if(null==tempFileName|tempFileName==''){
+       		
+       		 $("#xiazai").hide();
+       	 } 
+       
+       	 
+       	 
     
      });
      function formatStatus(val,row,index){  

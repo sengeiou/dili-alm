@@ -106,7 +106,7 @@ button:hover {
 							
 						<!-- 	 <input  class="easyui-linkbutton" name="_sqlFileId"   style="width: 39%"  value="${odc.sqlFileId}"   id="_sqlFileId"> -->
 					   
-						 		<a id="xiazai" href="#" onclick="downMyFile(${odc.sqlFileId})" class="easyui-linkbutton"  data-options="iconCls:'icon-download'">下载sql文件</a>   	
+						 		<a id="xiazai" href="#" onclick="downMyFile(${odc.sqlFileId})" class="easyui-linkbutton"  data-options="iconCls:'icon-download'">  ${fileName}</a>   	
 					  </td>
 				</tr>
 				
@@ -116,9 +116,15 @@ button:hover {
 	            
 				  
 				<tr>
-				   <td  colspan="2"   style="padding: 5px; background-color: #f5f5f5; font-weight: bold">  	<a id="agree" href="#" class="easyui-linkbutton" 
-					   	  data-options="iconCls:'icon-save'">线上验证同意</a></td>
+				   <td  colspan="2"   style="padding: 5px; background-color: #f5f5f5; font-weight: bold">  
+				       审批意见    <input class="easyui-textbox"    name="description" id="description" value=""
+							data-options="validType:['length[0,100]']" style="width: 90%"/>
+				   
+				      </td>
 					<td  colspan="2"  style="padding: 5px;">
+						<a id="agree" href="#" class="easyui-linkbutton" 
+					   	  data-options="iconCls:'icon-save'">线上验证同意</a>
+					   	  
 					   	<a id="notAgree" href="#" class="easyui-linkbutton" 
 					   	  data-options="iconCls:'icon-save'">线上验证不同意</a>   
 				 	</td>
@@ -146,10 +152,12 @@ button:hover {
 							<thead>
 								<tr>
 								   
-									<th data-options="field:'operationName', width:'25%',  sortable:'true', order:'asc', align:'left', resizable:'true', fixed:'false'">操作内容</th>
-									<th data-options="field:'operatorId', width:'25%',  _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作人</th>
-									<th data-options="field:'operateTime', width:'25%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作时间</th>
-									<th data-options="field:'opertateResult', width:'25%', formatter: formatStatus,   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作结果</th>
+								<th data-options="field:'operationName', width:'25%',  sortable:'true', order:'asc', align:'left', resizable:'true', fixed:'false'">操作内容</th>
+									<th data-options="field:'operatorId', width:'20%',  _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作人</th>
+									<th data-options="field:'operateTime', width:'15%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作时间</th>
+									<th data-options="field:'opertateResult', width:'15%', formatter: formatStatus,   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作结果</th>
+									<th data-options="field:'description', width:'25%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">执行意见</th>
+									
 								</tr>
 							</thead>
 	        </table>
@@ -191,12 +199,13 @@ button:hover {
    $('#agree').bind('click', function(){
 	   var isNeedClaim=$('#isNeedClaim').val();
 	   var taskIdd=$('#taskId').val();
-	// alert("isNeedClaim"+isNeedClaim);
+	   var description=$('#description').val();
 	   $.ajax({
            type: "post",
            url: "${contextPath}/onlineDataChange/agreeOnlineData.action",
            data:  {"taskId":taskIdd,
-    	          "isNeedClaim":isNeedClaim
+    	          "isNeedClaim":isNeedClaim,
+    	          "description":description
            },
            beforeSend: function () {
                load();
@@ -236,12 +245,13 @@ button:hover {
 		 
 	   var isNeedClaim=$('#isNeedClaim').val();
 	   var taskIdd=$('#taskId').val();
-	 //  alert(taskIdd);
+	   var description=$('#description').val();
 	    $.ajax({
 	       type: "POST",
 	       url: "${contextPath!}/onlineDataChange/notAgreeOnlineData.action",
 	       data:  {"taskId":taskIdd,
-    	          "isNeedClaim":isNeedClaim
+    	          "isNeedClaim":isNeedClaim,
+    	          "description":description
            },
            beforeSend: function () {
                load();
@@ -296,6 +306,12 @@ button:hover {
      $(function () {
     	var  onDataid=${odc.id};
     	 downRecordGrid(onDataid);
+          var tempFileName = '${fileName!}';
+       	 if(null==tempFileName|tempFileName==''){
+       		
+       		 $("#xiazai").hide();
+       	 } 
+       
     
      });
      function formatStatus(val,row,index){  

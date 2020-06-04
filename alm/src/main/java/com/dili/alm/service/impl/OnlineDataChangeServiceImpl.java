@@ -165,7 +165,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 	}
 
 	@Override
-	public void agreeDeptOnlineDataChange(String taskId, Boolean isNeedClaim) throws OnlineDataChangeException {
+	public void agreeDeptOnlineDataChange(String taskId, Boolean isNeedClaim,String description) throws OnlineDataChangeException {
 		BaseOutput<Map<String, Object>> mapId = tasksRpc.getVariables(taskId);
 		String dataId = (String) mapId.getData().get("businessKey");
 		OnlineDataChange onlineDataChange = new OnlineDataChange();
@@ -202,11 +202,11 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			tasksRpc.complete(taskId, map);
 			//AlmConstants
 			
-			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEMANAGER.getCode(), 1);
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEMANAGER.getCode(), 1,description);
 		//	insertDataExeLog(dataId);
 			
 		} catch (Exception e) {
-			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEMANAGER.getCode(), 0);
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEMANAGER.getCode(), 0,description);
 			LOGGER.error("任务签收失败");
 			throw new OnlineDataChangeException("任务签收失败");
 		}
@@ -215,7 +215,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 
 	
 	@Override
-	public void notAgreeDeptOnlineDataChange(String taskId, Boolean isNeedClaim) throws OnlineDataChangeException {
+	public void notAgreeDeptOnlineDataChange(String taskId, Boolean isNeedClaim,String description) throws OnlineDataChangeException {
 		BaseOutput<Map<String, Object>> mapId = tasksRpc.getVariables(taskId);
 		String dataId = (String) mapId.getData().get("businessKey");
 		OnlineDataChange onlineDataChange = new OnlineDataChange();
@@ -239,17 +239,17 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			}
 
 			tasksRpc.complete(taskId, map);
-			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEMANAGER.getCode(), 2);
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEMANAGER.getCode(), 2,description);
 		} catch (Exception e) {
 			LOGGER.error("任务签收失败");
-			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEMANAGER.getCode(), 0);
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEMANAGER.getCode(), 0,description);
 			throw new OnlineDataChangeException("任务签收失败");
 		}
 
 	}
 
 	@Override
-	public void agreeTestOnlineDataChange(String taskId, Boolean isNeedClaim) throws OnlineDataChangeException {
+	public void agreeTestOnlineDataChange(String taskId, Boolean isNeedClaim,String description) throws OnlineDataChangeException {
 		BaseOutput<Map<String, Object>> mapId = tasksRpc.getVariables(taskId);
 		String dataId = (String) mapId.getData().get("businessKey");
 		OnlineDataChange onlineDataChange = new OnlineDataChange();
@@ -261,17 +261,17 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		map.put("approved", "true");
 		try {
 			tasksRpc.complete(taskId, map);
-			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGETEST.getCode(), 1);
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGETEST.getCode(), 1,description);
 		} catch (Exception e) {
 			LOGGER.error("任务签收失败");
-			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGETEST.getCode(), 0);
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGETEST.getCode(), 0,description);
 			throw new OnlineDataChangeException("任务签收失败");
 		}
 
 	}
 
 	@Override
-	public void notAgreeTestOnlineDataChange(String taskId, Boolean isNeedClaim) throws OnlineDataChangeException {
+	public void notAgreeTestOnlineDataChange(String taskId, Boolean isNeedClaim,String description) throws OnlineDataChangeException {
 		BaseOutput<Map<String, Object>> mapId = tasksRpc.getVariables(taskId);
 		String dataId = (String) mapId.getData().get("businessKey");
 		OnlineDataChange onlineDataChange = new OnlineDataChange();
@@ -296,9 +296,9 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			}
 			tasksRpc.complete(taskId, map);
 			
-			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGETEST.getCode(), 2);
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGETEST.getCode(), 2,description);
 		} catch (Exception e) {
-			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGETEST.getCode(), 0);
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGETEST.getCode(), 0,description);
 			LOGGER.error("任务签收失败");
 			throw new OnlineDataChangeException("任务签收失败");
 		}
@@ -306,7 +306,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 	}
 
 	@Override
-	public void agreeDBAOnlineDataChange(String taskId, Boolean isNeedClaim) throws OnlineDataChangeException {
+	public void agreeDBAOnlineDataChange(String taskId, Boolean isNeedClaim,String description) throws OnlineDataChangeException {
 		BaseOutput<Map<String, Object>> mapId = tasksRpc.getVariables(taskId);
 		String dataId = (String) mapId.getData().get("businessKey");
 		OnlineDataChange onlineDataChange = new OnlineDataChange();
@@ -327,9 +327,9 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 				}
 			}
 			tasksRpc.complete(taskId, map);
-			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEDBA.getCode(), 1);
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEDBA.getCode(), 1,description);
 		} catch (Exception e) {
-			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEDBA.getCode(), 0);
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEDBA.getCode(), 0,description);
 			LOGGER.error("任务签收失败");
 			throw new OnlineDataChangeException("任务签收失败");
 		}
@@ -337,7 +337,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 	}
 
 	@Override
-	public void agreeOnlineDataChange(String taskId, Boolean isNeedClaim) throws OnlineDataChangeException {
+	public void agreeOnlineDataChange(String taskId, Boolean isNeedClaim,String description) throws OnlineDataChangeException {
 		BaseOutput<Map<String, Object>> mapId = tasksRpc.getVariables(taskId);
 		String dataId = (String) mapId.getData().get("businessKey");
 		OnlineDataChange onlineDataChange = new OnlineDataChange();
@@ -360,10 +360,10 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			}
 			
 			tasksRpc.complete(taskId);
-			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.ONLINEDBADATACHANGE.getCode(), 1);
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.ONLINEDBADATACHANGE.getCode(), 1,description);
 		} catch (Exception e) {
 			LOGGER.error("任务签收失败");
-			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.ONLINEDBADATACHANGE.getCode(), 0);
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.ONLINEDBADATACHANGE.getCode(), 0,description);
 			throw new OnlineDataChangeException("任务签收失败");
 		}
 
@@ -493,7 +493,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 	 */
 
 	@Override
-	public void notAgreeOnlineDataChange(String taskId, Boolean isNeedClaim) throws OnlineDataChangeException {
+	public void notAgreeOnlineDataChange(String taskId, Boolean isNeedClaim,String description) throws OnlineDataChangeException {
 		BaseOutput<Map<String, Object>> mapId = tasksRpc.getVariables(taskId);
 		String dataId = (String) mapId.getData().get("businessKey");
 		OnlineDataChange onlineDataChange = new OnlineDataChange();
@@ -516,10 +516,10 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 				}
 			}
 			tasksRpc.complete(taskId, map);
-			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.ONLINEDBADATACHANGE.getCode(), 2);
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.ONLINEDBADATACHANGE.getCode(), 2,description);
 		} catch (Exception e) {
 			LOGGER.error("任务签收失败");
-			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.ONLINEDBADATACHANGE.getCode(), 0);
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.ONLINEDBADATACHANGE.getCode(), 0,description);
 			throw new OnlineDataChangeException("任务签收失败");
 		}
 

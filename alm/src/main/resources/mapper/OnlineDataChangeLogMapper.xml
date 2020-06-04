@@ -11,12 +11,13 @@
     <result column="opertate_result" jdbcType="INTEGER" property="opertateResult" />
     <result column="operator_id" jdbcType="BIGINT" property="operatorId" />
     <result column="online_date_id" jdbcType="BIGINT" property="onlineDateId" />
+     <result column="description" jdbcType="VARCHAR" property="description" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
       WARNING - @mbg.generated
     -->
-    id, operation_name, operate_time, opertate_result, operator_id,online_date_id
+    id, operation_name, description,operate_time, opertate_result, operator_id,online_date_id
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -40,6 +41,10 @@
       <if test="operateTime != null">
         operate_time = #{operateTime,jdbcType=TIMESTAMP},
       </if>
+       <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      
       <if test="opertateResult != null">
         opertate_result = #{opertateResult,jdbcType=INTEGER},
       </if>
