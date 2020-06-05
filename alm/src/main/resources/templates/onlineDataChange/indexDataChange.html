@@ -238,7 +238,7 @@ $('#btnShangChuan').bind('click', function(){
 		  
 		    formdata.append('file', input.files[0]);
 		    formdata.append('projectId',curValue);
-		    alert(curValue);
+		   //  alert(curValue);
 		    $.ajax({
 		       type: "POST",
 		       url: "${contextPath!}/files/filesUpload",
