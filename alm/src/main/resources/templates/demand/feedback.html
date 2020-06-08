@@ -56,14 +56,14 @@
 				 ${demand.content!}
 				</div>
 		</tr>
-		<tr>
-			<td style="padding: 5px;" colspan="2">
-				<p>需求背景:</p>
-				<div id="editor_reason" style="width: 100%">
-				 ${demand.reason!}
-				</div>
-			</td>
-		</tr>
+			<tr>
+				<td style="padding: 5px;" colspan="2">
+					<p>需求背景:</p>
+					<div id="editor_reason" style="width: 100%">
+					 ${demand.reason!}
+					</div>
+				</td>
+			</tr>
 		<% if(demand.documentUrl!=null){%>
 		<tr>
 				<td colspan="2" style="padding: 5px;">
@@ -96,27 +96,70 @@
 									<th data-options="field:'operatorId', width:'15%',  _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作人</th>
 									<th data-options="field:'operateTime', width:'15%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作时间</th>
 									<th data-options="field:'opertateResult', width:'15%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作结果</th>
+									<th data-options="field:'description', width:'15%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作意见</th>
 								</tr>
 							</thead>
 					</table>
+		 <table width="100%" style="alignment: center" id="showTable">
+            <tr>
+              <td align="center" style="padding:15px;">
+                <a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="submitBtn"
+                   onclick="showSelectTable()">转发</a>
+                <a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="submitBtn"
+                   onclick="showFeedbackTable()">反馈方案</a>
+            </td>
+            </tr>
+          </table>
     <form id="form" class="easyui-form" method="post" fit="true">
         <input name="taskId" id="taskId" value="${taskId}" type="hidden">
          <input name="code" id="code" value="${demand.serialNumber}" type="hidden">
-        <table width="100%" style="alignment: center">
+        <table width="100%" style="alignment: center" id="feedbackTable">
            <tr>
             <td>
             	<p>解决方案描述:</p>
 				<div id="editor_content_rt" style="width: 100%"></div>
             </td>
-            </tr> 
+            </tr>
+            <tr>
+            <td>
+            	<p>解决方案附件:</p>
+				<div id="fileuploaderForFD"style="margin-left: 40px;" >选择文件</div>
+            </td>
+            </tr>
+            <tr>
+            <td id="filePath">
+
+            </td>
+            </tr>    
             <tr>
               <td align="center" style="padding:15px;">
                 <a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="submitBtn"
                    onclick="save()">提交</a>
             </td>
             </tr>
-        </table>
-        	<input type="hidden" id="documentUrl" name="documentUrl" value="" />
+          </table>
+        	<input type="hidden" id="content" name="content" value="" />
+     </form>
+     <form id="form_back" class="easyui-form" method="post" fit="true">
+        <input name="taskId" id="taskId" value="${taskId}" type="hidden">
+         <input name="code" id="code" value="${demand.serialNumber}" type="hidden">
+        <table width="100%" style="alignment: center;padding-top:30px; " id="selectMemberTable" >
+            <tr>
+            	<td align="center">
+				  <input class="easyui-combobox" style="width: 80%" id="acceptId" name="acceptId"
+					data-options="editable:true,label:'指派反馈人:',valueField: 'id',
+					textField: 'realName',
+					validType:'comboBoxEditvalid[\'acceptId\']',
+					url: '${contextPath!}/member/demandMembers'" />
+	            </td>
+            </tr>  
+            <tr>
+              <td align="center" style="padding:15px;">
+                <a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="submitBtn"
+                   onclick="cancel()">提交</a>
+            </td>
+            </tr>
+          </table>
         	<input type="hidden" id="content" name="content" value="" />
     </form>
  </div>
@@ -127,6 +170,7 @@
 	src="${contextPath!}/resources/js/jquery.uploadfile.min.js"></script>
 <script type="text/javascript"
 	src="${contextPath!}/resources/js/wangEditor.min.js"></script>
+	
 	<script type="text/javascript">
 	var E = window.wangEditor
 	var editor = new E('#editor_content_rt')
@@ -149,16 +193,69 @@
         }
     editor.customConfig.uploadImgParamsWithUrl = true
 	editor.create(); 
-	
-</script>
-
+   </script>
+   <script type="text/javascript">
+    //显示选择人员框
+    function showSelectTable(){
+     	 $('#selectMemberTable').show();
+    	 $('#feedbackTable').hide();
+    	 $('#showTable').hide();
+	       var parentIframe = parent.document.getElementById("pageType")
+	       if(parentIframe!="undefined"){
+	         window.parent.setIframeHeight();
+	      }
+    }
+    
+    //直接反馈方案
+   function showFeedbackTable(){
+  	 $('#selectMemberTable').hide();
+	 $('#feedbackTable').show();
+	 $('#showTable').hide();
+     var parentIframe = parent.document.getElementById("pageType")
+     if(parentIframe!="undefined"){
+       window.parent.setIframeHeight();
+    }
+    }
+    
+    function hiddenTable(){
+    	 $('#selectMemberTable').hide();
+    	 $('#feedbackTable').hide();
+    	 $('#showTable').show();
+    }
+   </script>
     <script type="text/javascript">
+    /***
+    **驳回需求
+    **/
+    function cancel() {
+    	$('#form_back').form('submit', {
+            url : "${contextPath}/demand/rejectDemandForFeedback.action",
+            dataType : "json",
+            onSubmit : function(){
 
-        function cancel() {
-            //向任务中心发送消息，参数为要跳转的地址
-            window.parent.postMessage('<#config name="bpmn.server.address"/>/demand/index.html', '<#config name="bpmc.server.address"/>');
-            location.href = "${contextPath}/demand/index.html";
-        }
+            },
+            success:function(data){
+	        	try{
+		            	 var parentIframe = parent.document.getElementById("pageType")
+	            	 if(parentIframe!="undefined"){
+	            		 window.parent.CloseEditPage();
+	      	         }else{
+	      	        	 $.messager.alert('提示',"操作完成！");
+	      	         }
+		              }catch(ex){
+							   document.domain="diligrp.com";
+								//如果父页面是任务中心
+			                   var plh = parent.location.href.indexOf('?') > 0 ? parent.location.href.substring(0, parent.location.href.indexOf('?')) : parent.location.href;
+			                   if(plh=='<#config name="bpmc.server.address"/>/task/taskCenter.html') {
+			                       //向任务中心发送消息，参数为要跳转的地址
+			                       window.parent.postMessage('<#config name="bpmc.server.address"/>/task/taskCenter.html', '<#config name="bpmc.server.address"/>');
+			                   }else{
+			                   	window.location.href='${contextPath!}/demand/index.html';
+			                   }
+		              }
+            }
+        });
+    }
         
 
         function save(){
@@ -174,6 +271,7 @@
 
                 },
                 success:function(data){
+                	
     	        	try{
   		            	 var parentIframe = parent.document.getElementById("pageType")
 		            	 if(parentIframe!="undefined"){
@@ -198,6 +296,8 @@
 
         }
         $(function () {
+        	//隐藏项目
+        	hiddenTable();
             //所属项目自动加载
             loadSystemSelect();
             //加载操作记录
@@ -205,7 +305,8 @@
             queryRecordGrid(code);
             //加载文件列表
             queryFileGrid()
-            
+            //加载上传附件插件
+            loadUploadFile()
             //加载数据
             var formData = $.extend({},${modelStr!});
             formData = addKeyStartWith(getOriginalData(formData),"_");
@@ -267,13 +368,9 @@
 	    function downloadFile(id) {
 	    	window.open('${contextPath!}/files/download?id=' + id);
 	    }
-/* 	    $('#fileGrid').datagrid({
-            onLoadSuccess: function (data) {
-            	window.parent.setIframeHeight();
-            }
-        }); */
     </script>
    <script type="text/javascript">
 	<#demand_publicJs />
+	<#demand_fileuploadForFeedback />
     </script> 
 </#body>

@@ -57,7 +57,7 @@
 		</tr>
 		<tr>
 			<td style="padding: 5px;" colspan="2">
-				<h4>需求背景:</h4>
+				<p>需求背景:</p>
 				<div id="editor_reason" style="width: 100%">
 				 ${demand.reason!}
 				</div>
@@ -91,6 +91,11 @@
 				</div>
 			</td>
 		</tr>
+		 <tr>
+            <td id="filePath" style="padding:20px 0;">
+
+            </td>
+         </tr>
 	</table>
 	<input type="hidden" id="documentUrl" name="documentUrl" value="" />
 </form>
@@ -102,6 +107,7 @@
 									<th data-options="field:'operatorId', width:'15%',  _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作人</th>
 									<th data-options="field:'operateTime', width:'15%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作时间</th>
 									<th data-options="field:'opertateResult', width:'15%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作结果</th>
+									<th data-options="field:'description', width:'15%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作意见</th>
 								</tr>
 							</thead>
 					</table>
@@ -110,6 +116,13 @@
          <input name="code" id="code" value="${demand.serialNumber}" type="hidden">
         <input name="rejectType" id="rejectType" value="backAndEdit" type="hidden"/>
         <table width="60%" style="alignment: center">
+            <tr>
+                <td style="padding:5px;">
+                <h4>操作意见</h4>
+                <br/>
+               <textarea cols="50" rows="5" name="description" ></textarea>
+            </td>
+           </tr>
             <tr>
                 <td align="center" style="padding:5px;">
                 <a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="submitBtn"
@@ -261,11 +274,14 @@
 	    	window.open('${contextPath!}/files/download?id=' + id);
 	    }
 	    
-/* 	    $('#fileGrid').datagrid({
-            onLoadSuccess: function (data) {
-            	window.parent.setIframeHeight();
-            }
-        }); */
+        $(function () {
+        	<% if(model.feedbackFile!=null||model.feedbackFile!=""){%>
+	            //添加反馈文件显示
+	             showFDFile(${model.feedbackFile!});
+             <%}%>
+        })
+	    <#demand_fileuploadForFeedback />
+        
     </script>
     <script type="text/javascript">
 	<#demand_publicJs />

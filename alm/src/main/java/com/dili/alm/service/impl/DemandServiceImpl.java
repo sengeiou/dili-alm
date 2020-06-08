@@ -93,6 +93,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	private SequenceMapper sequenceMapper;
 	@Autowired
 	private DemandOperationRecordMapper operationRecordMapper;
+
 	public DemandMapper getActualDao() {
 		return (DemandMapper) getDao();
 	}
@@ -294,7 +295,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 					BeanUtils.copyProperties(newDemandDto, d);
 					User user = AlmCache.getInstance().getUserMap().get(d.getUserId());
 					if (user != null) {
-						Department department = AlmCache.getInstance().getDepMap().get(user.getDepartmentId());
+/*						Department department = AlmCache.getInstance().getDepMap().get(user.getDepartmentId());
 						if (department != null) {
 							newDemandDto.setDepartmentId(department.getId());
 							newDemandDto.setDepartmentName(department.getName());
@@ -303,6 +304,19 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 							}
 							if (department != null) {
 								newDemandDto.setDepartmentFirstName(department.getName());
+							}
+						}*/
+						//部门换成了市场
+						Firm firm = AlmCache.getInstance().getFirmMap().get(user.getFirmCode());
+						if (firm != null) {
+							newDemandDto.setDepartmentId(firm.getId());
+							newDemandDto.setDepartmentName(firm.getName());
+							while ( firm.getParentId()!= null) {
+								firm = firmRpc.getById(firm.getParentId()).getData();
+								firm = AlmCache.getInstance().getFirmMap().get(firm.getCode());
+							}
+							if (firm != null) {
+								newDemandDto.setDepartmentFirstName(firm.getName());
 							}
 						}
 					}
@@ -453,7 +467,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			User user = userBase.getData();
 			demandDto.setUserPhone(user.getCellphone());
 			demandDto.setUserName(user.getRealName());
-			BaseOutput<Department> departmentBase = this.departmentRpc.get(user.getDepartmentId());
+/*			BaseOutput<Department> departmentBase = this.departmentRpc.get(user.getDepartmentId());
 			if (departmentBase.getData() != null) {
 				demandDto.setDepartmentId(departmentBase.getData().getId());
 				demandDto.setDepartmentName(departmentBase.getData().getName());
@@ -461,10 +475,24 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 				if (firstDepartment.getData() != null) {
 					demandDto.setDepartmentFirstName(firstDepartment.getData().getName());
 				}
+			}*/
+			
+			//部门换成了市场
+			Firm firm = AlmCache.getInstance().getFirmMap().get(user.getFirmCode());
+			if (firm != null) {
+				demandDto.setDepartmentId(firm.getId());
+				demandDto.setDepartmentName(firm.getName());
+				while ( firm.getParentId()!= null) {
+					firm = firmRpc.getById(firm.getParentId()).getData();
+					firm = AlmCache.getInstance().getFirmMap().get(firm.getCode());
+				}
+				if (firm != null) {
+					demandDto.setDepartmentFirstName(firm.getName());
+				}
 			}
-			BaseOutput<Firm> firm = this.firmRpc.getByCode(user.getFirmCode());
-			if (firm.getData() != null) {
-				demandDto.setFirmName(firm.getData().getName());
+			BaseOutput<Firm> firm2 = this.firmRpc.getByCode(user.getFirmCode());
+			if (firm2.getData() != null) {
+				demandDto.setFirmName(firm2.getData().getName());
 			}
 		}
 		// 判断是否可修改需求内容
@@ -549,6 +577,20 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		
 		return output;
 	}
+	
+	@Override
+	public BaseOutput submitApproveForAccept(String taskId,Long executorId) {
+		
+		BaseOutput<String> output ;
+			output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
+				{
+					put("AssignExecutorId",executorId.toString());
+					put("approved","true");
+				}
+			});
+		return output;
+	}
+	
 	@Override
 	public BaseOutput submitApproveForAssign(Long executorId, String taskId) {
 		
@@ -561,6 +603,8 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		
 		return output;
 	}
+	
+
 	@Override
 	public BaseOutput submitApprove(String code, String taskId, Byte status, String processType) {
 		Demand condition = new Demand();
@@ -578,7 +622,8 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		}
 		Map<String, Object> variables = new HashMap<>();
 		variables.put("approved", "true");
-		return taskRpc.complete(taskId, variables);
+		BaseOutput  out = taskRpc.complete(taskId, variables);
+		return out;
 	}
 
 	@Override
@@ -598,6 +643,17 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		variables.put("AssignExecutorId",demand.getUserId().toString());
 		return taskRpc.complete(taskId, variables);
 	}
+	@Override
+	public BaseOutput rejectApproveForFeedback(String code, String taskId, String rejectType, Long executorId) {
+		// 完成任务
+		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
+			{
+				put("AssignExecutorId", executorId.toString());
+				put("approved", "false");
+			}
+		});
+		return output;
+	}
 
 	@Override
 	public BaseOutput reSubmint(Demand newDemand, String taskId) throws DemandExceptions {
@@ -615,7 +671,6 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		selectDeman.setFinishDate(newDemand.getFinishDate());
 		selectDeman.setProcessType(DemandProcessStatus.DEPARTMENTMANAGER.getCode());
 		this.update(selectDeman);
-		//TODO:
 		Long departmentManagerId = this.departmentManagerId(selectDeman.getUserId());
 		// 完成任务
 		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
@@ -726,6 +781,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		
 		return departmentManager.getId();
 	}
+
 
 
 }

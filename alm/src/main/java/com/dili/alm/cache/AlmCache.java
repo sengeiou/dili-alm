@@ -38,8 +38,11 @@ import com.dili.alm.service.TeamService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.uap.sdk.domain.Department;
+import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.User;
+import com.dili.uap.sdk.domain.dto.FirmDto;
 import com.dili.uap.sdk.rpc.DepartmentRpc;
+import com.dili.uap.sdk.rpc.FirmRpc;
 import com.dili.uap.sdk.rpc.UserRpc;
 
 /**
@@ -108,8 +111,12 @@ public class AlmCache {
 	private static final Map<Long, SystemDto> PROJECT_SYS_MAP = new ConcurrentHashMap<>();
 	// 需求流程状态
 	private static final Map<String, String> DAMAND_PROCESS_STATUS_MAP = new ConcurrentHashMap<>();
-
-	@Autowired
+	
+	
+	// 市场信息firm
+    private static final Map<String, Firm> FIRM_MAP = new ConcurrentHashMap<>();
+	
+    @Autowired
 	private UserRpc userRpc;
 	@Autowired
 	private SysProjectRpc sysProjectRpc;
@@ -141,6 +148,8 @@ public class AlmCache {
 	private ProjectCostMapper projectCostMapper;
 	@Autowired
 	private RoiMapper roiMapper;
+	@Autowired
+	private FirmRpc firmRpc;
 
 	public static AlmCache getInstance() {
 		return INSTANCE;
@@ -487,5 +496,22 @@ public class AlmCache {
 			dd.getValues().forEach(v -> DAMAND_PROCESS_STATUS_MAP.put(v.getValue(), v.getCode()));
 		}
 		return DAMAND_PROCESS_STATUS_MAP;
+	}
+	
+	/**
+	 * 市场缓存
+	 * 
+	 * @return
+	 */
+	public Map<String, Firm> getFirmMap() {
+		if (AlmCache.FIRM_MAP.isEmpty()) {
+			BaseOutput<List<Firm>> output = this.firmRpc.listByExample(DTOUtils.newInstance(FirmDto.class));
+			if (output.isSuccess()) {
+				output.getData().forEach(f -> {
+					AlmCache.FIRM_MAP.put(f.getCode(), f);
+				});
+			}
+		}
+		return FIRM_MAP;
 	}
 }

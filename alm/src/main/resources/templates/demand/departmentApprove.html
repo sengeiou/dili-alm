@@ -1,5 +1,5 @@
  <#body>
- <!-- 需求申请员确认做需求 -->
+ <!-- 部门领导确认需求 -->
   <div class="easyui-panel" id="submitDiv" style="width:100%;" align="center">
  <form id="_form" class="easyui-form" method="post"
 	enctype="multipart/form-data">
@@ -96,6 +96,7 @@
 									<th data-options="field:'operatorId', width:'15%',  _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作人</th>
 									<th data-options="field:'operateTime', width:'15%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作时间</th>
 									<th data-options="field:'opertateResult', width:'15%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作结果</th>
+									<th data-options="field:'description', width:'15%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作意见</th>
 								</tr>
 							</thead>
 					</table>
@@ -105,6 +106,13 @@
          <input name="code" id="code" value="${demand.serialNumber}" type="hidden"/>
           <input name="rejectType" id="rejectType" value="backAndEditManager"  type="hidden"/>
         <table width="60%" style="alignment: center">
+               <tr>
+                <td align="center" style="padding:5px;">
+              <h4>操作意见</h4>
+              
+               <textarea cols="50" rows="5" name="description" ></textarea>
+            </td>
+           </tr>
             <tr>
                 <td align="center" style="padding:5px;">
                 <a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="submitBtn"
@@ -112,6 +120,7 @@
                 <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" id="cancelBtn"
                    onclick="cancel()">不同意</a>
             </td>
+           </tr>
         </table>
     </form>
  </div>

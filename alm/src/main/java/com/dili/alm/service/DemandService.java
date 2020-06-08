@@ -128,6 +128,12 @@ public interface DemandService extends BaseService<Demand, Long> {
      */
     BaseOutput rejectApprove(String code, String taskId,String rejectType);
     /**
+     * 驳回需求申请,带有设置参数的驳回
+     * @param code
+     * @return
+     */
+    BaseOutput rejectApproveForFeedback(String code, String taskId,String rejectType,Long executorId);
+    /**
      * 是否是流程驳回可编辑的
      * @param code
      * @return
@@ -148,14 +154,21 @@ public interface DemandService extends BaseService<Demand, Long> {
 	
     /**
      * 添加分配人
-     * @param codesubmitApproveAndAccept
+     * @param  executorId  taskId
      * @return
      */
     BaseOutput submitApproveForAssign(Long executorId, String taskId);
+    /**
+     * 数字平台,接收并判定是否需要转发
+     * @param taskId
+     * @return
+     */
+    BaseOutput submitApproveForAccept(String taskId,Long executorId);
     /**
      * 获取部门经理ID
      * @param 申请人ID
      * @return
      */
     Long departmentManagerId(Long applyId)throws DemandExceptions;
+	
 }

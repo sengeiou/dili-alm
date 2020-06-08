@@ -21,13 +21,14 @@ import com.dili.uap.sdk.session.SessionContext;
 public class OnlineDataChangeLogServiceImpl  extends BaseServiceImpl<OnlineDataChangeLog, Long> implements OnlineDataChangeLogService {
 	
 	@Override
-	public void insertDataExeLog(String dataId, String operationName, int opertateResult) {
+	public void insertDataExeLog(String dataId, String operationName, int opertateResult,String description) {
 		OnlineDataChangeLog  log=DTOUtils.newDTO(OnlineDataChangeLog.class);
 		Long  userOperatorId=SessionContext.getSessionContext().getUserTicket().getId();
 		log.setOperatorId(userOperatorId);
 		log.setOperateTime(new Date());
 		
 		log.setOperationName(operationName);
+		log.setDescription(description);
 		log.setOpertateResult(opertateResult);
 		log.setOnlineDateId(Long.parseLong(dataId));
 		this.insertSelective(log);

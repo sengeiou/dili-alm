@@ -15,21 +15,21 @@ public interface OnlineDataChangeService extends BaseService<OnlineDataChange, L
 	 
 	 void	 updateOnlineDate(OnlineDataChange onlineDataChange, Long id)throws OnlineDataChangeException ;
 	 
-	 void agreeDeptOnlineDataChange(String taskId,Boolean isNeedClaim) throws OnlineDataChangeException;
+	 void agreeDeptOnlineDataChange(String taskId,Boolean isNeedClaim,String description) throws OnlineDataChangeException;
 	 
-	 void notAgreeDeptOnlineDataChange(String taskId,Boolean isNeedClaim) throws OnlineDataChangeException;
+	 void notAgreeDeptOnlineDataChange(String taskId,Boolean isNeedClaim,String description) throws OnlineDataChangeException;
 	 
-	 void agreeTestOnlineDataChange(String taskId,Boolean isNeedClaim) throws OnlineDataChangeException;
+	 void agreeTestOnlineDataChange(String taskId,Boolean isNeedClaim,String description) throws OnlineDataChangeException;
 	 
-	 void notAgreeTestOnlineDataChange(String taskId,Boolean isNeedClaim) throws OnlineDataChangeException;
+	 void notAgreeTestOnlineDataChange(String taskId,Boolean isNeedClaim,String description) throws OnlineDataChangeException;
 	 
-	 void agreeDBAOnlineDataChange(String taskId,Boolean isNeedClaim) throws OnlineDataChangeException;
+	 void agreeDBAOnlineDataChange(String taskId,Boolean isNeedClaim,String description) throws OnlineDataChangeException;
 	 
 /*	 void notAgreeDBAOnlineDataChange(String taskId,Boolean isNeedClaim) throws OnlineDataChangeException;*/
 	 
-	 void agreeOnlineDataChange(String taskId,Boolean isNeedClaim) throws OnlineDataChangeException;
+	 void agreeOnlineDataChange(String taskId,Boolean isNeedClaim,String description) throws OnlineDataChangeException;
 	 
-	 void notAgreeOnlineDataChange(String taskId,Boolean isNeedClaim) throws OnlineDataChangeException;
+	 void notAgreeOnlineDataChange(String taskId,Boolean isNeedClaim,String description) throws OnlineDataChangeException;
 	 
 	 
 	 void indexOnlineDataChange(String taskId,OnlineDataChange onlineDataChange)  throws OnlineDataChangeException;
