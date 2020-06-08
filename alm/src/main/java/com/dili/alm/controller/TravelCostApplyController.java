@@ -30,15 +30,10 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2018-04-24 16:43:13.
  */
-@Api("/travelCostApply")
 @Controller
 @RequestMapping("/travelCostApply")
 public class TravelCostApplyController {
@@ -105,7 +100,6 @@ public class TravelCostApplyController {
 		}
 	}
 
-	@ApiOperation("跳转到TravelCostApply页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
@@ -113,17 +107,13 @@ public class TravelCostApplyController {
 		return "travelCostApply/index";
 	}
 
-	@ApiOperation(value = "查询TravelCostApply", notes = "查询TravelCostApply，返回列表信息")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "TravelCostApply", paramType = "form", value = "TravelCostApply的form信息", required = false, dataType = "string") })
+
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<TravelCostApply> list(TravelCostApply travelCostApply) {
 		return travelCostApplyService.list(travelCostApply);
 	}
 
-	@ApiOperation(value = "分页查询TravelCostApply", notes = "分页查询TravelCostApply，返回easyui分页信息")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "TravelCostApply", paramType = "form", value = "TravelCostApply的form信息", required = false, dataType = "string") })
+
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(TravelCostApplyQueryDto apply) throws Exception {
 		apply.setSort("creationTime");
@@ -148,9 +138,7 @@ public class TravelCostApplyController {
 		return "travelCostApply/add";
 	}
 
-	@ApiOperation("新增TravelCostApply")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "TravelCostApply", paramType = "form", value = "TravelCostApply的form信息", required = true, dataType = "string") })
+	
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput insert(@RequestBody TravelCostApplyUpdateDto apply) {
 		try {
@@ -185,9 +173,7 @@ public class TravelCostApplyController {
 		return "travelCostApply/update";
 	}
 
-	@ApiOperation("修改TravelCostApply")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "TravelCostApply", paramType = "form", value = "TravelCostApply的form信息", required = true, dataType = "string") })
+	
 	@RequestMapping(value = "/update", method = { RequestMethod.POST })
 	public @ResponseBody BaseOutput update(@RequestBody TravelCostApplyUpdateDto apply) {
 		try {
@@ -198,9 +184,7 @@ public class TravelCostApplyController {
 		}
 	}
 
-	@ApiOperation("删除TravelCostApply")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "id", paramType = "form", value = "TravelCostApply的主键", required = true, dataType = "long") })
+	
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput delete(Long id) {
 		try {

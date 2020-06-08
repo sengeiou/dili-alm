@@ -47,17 +47,14 @@ import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+
 import tk.mybatis.mapper.entity.Example;
 import tk.mybatis.mapper.entity.Example.Criteria;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-11-23 10:23:05.
  */
-@Api("/task")
+
 @Controller
 @RequestMapping("/task")
 public class TaskController {
@@ -76,7 +73,7 @@ public class TaskController {
 	@Autowired
 	TaskDetailsService taskDetailsService;
 
-	@ApiOperation("跳转到Task页面")
+
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(@RequestParam(required = false) Long projectId, @RequestParam(required = false) String backUrl, ModelMap modelMap) throws UnsupportedEncodingException {
 		modelMap.put("user", SessionContext.getSessionContext().getUserTicket());
@@ -89,24 +86,17 @@ public class TaskController {
 		}
 		return "task/index";
 	}
-
-	@ApiOperation(value = "查询Task", notes = "查询Task，返回列表信息")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<Task> list(Task task) {
 
 		return taskService.list(task);
 	}
 
-	@ApiOperation(value = "分页查询Task", notes = "按群组查询首页信息")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(Task task) throws Exception {
 		return taskService.listByTeam(task).toString();
 	}
 
-	@ApiOperation(value = "分页查询Task", notes = "按照群组进行分页查询")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listTeamPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listTeamPage(Task task) throws Exception {
 		@SuppressWarnings({ "rawtypes" })
@@ -124,8 +114,6 @@ public class TaskController {
 		return listByTeam.toString();
 	}
 
-	@ApiOperation(value = "分页查询Task,首页显示", notes = "分页查询Task，返回easyui分页信息")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listTaskPageTab", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listTaskPageTab(Task task) throws Exception {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
@@ -135,8 +123,6 @@ public class TaskController {
 		return taskService.listByTeam(task).toString();
 	}
 
-	@ApiOperation("新增Task")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput insert(Task task, String planTimeStr, String startDateShow, String endDateShow, String flowSt) throws ParseException {
 
@@ -155,8 +141,6 @@ public class TaskController {
 		return BaseOutput.success("新增成功").setData(String.valueOf(task.getId() + ":" + task.getName()));
 	}
 
-	@ApiOperation("修改Task")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput update(Task task, String planTimeStr, String startDateShow, String endDateShow, String flowSt) {
 		DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
@@ -176,8 +160,6 @@ public class TaskController {
 		return BaseOutput.success("修改成功").setData(String.valueOf(task.getId() + ":" + task.getName()));
 	}
 
-	@ApiOperation("删除Task")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "id", paramType = "form", value = "Task的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput delete(Long id) {
 		Task task = this.taskService.get(id);
@@ -302,8 +284,6 @@ public class TaskController {
 	}
 
 	// 更新任务信息
-	@ApiOperation("填写任务工时")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "updateTaskDetails", paramType = "form", value = "TaskDetails的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/updateTaskDetails", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput updateTaskDetails(TaskDetails taskDetails, String planTimeStr, String overHourStr, String taskHourStr) {
 
@@ -340,8 +320,6 @@ public class TaskController {
 	}
 
 	// 开始执行任务
-	@ApiOperation("开始执行任务")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "updateTaskStatus", paramType = "form", value = "TaskDetails的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/updateTaskStatus", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> updateTaskDetails(Long id) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
@@ -358,8 +336,6 @@ public class TaskController {
 	}
 
 	// 暂停任务
-	@ApiOperation("暂停执行任务")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "pauseTaskStatus", paramType = "form", value = "TaskDetails的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/pauseTaskStatus", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput pauseTask(Long id) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
@@ -375,8 +351,6 @@ public class TaskController {
 	}
 
 	// 完成任务
-	@ApiOperation("完成任务")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "complateTask", paramType = "form", value = "TaskDetails的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/complateTask", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> complateTask(Long id) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
@@ -432,8 +406,6 @@ public class TaskController {
 
 	}
 
-	@ApiOperation(value = "查询TaskDetails", notes = "查询TaskDetails，返回列表信息")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "TaskDetails", paramType = "form", value = "TaskDetails的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listTaskDetails", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<Map> list(TaskDetails taskDetails) {
 		Map<Object, Object> metadata = new HashMap<>();
@@ -452,14 +424,12 @@ public class TaskController {
 		}
 	}
 
-	@ApiOperation("跳转到Task页面")
 	@RequestMapping(value = "/task/{id}", method = RequestMethod.GET)
 	public String task(@PathVariable("id") Long id, ModelMap modelMap) throws UnsupportedEncodingException {
 		modelMap.put("sessionID", SessionContext.getSessionContext().getUserTicket().getId());
 		modelMap.put("taskId", id);
 		return "task/index";
 	}
-	@ApiOperation("项目版本查询")
 	@ResponseBody
 	@RequestMapping(value = "/listTreeVersionByProject.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public List<ProjectVersion> listTreeVersionByProject(Long id) {

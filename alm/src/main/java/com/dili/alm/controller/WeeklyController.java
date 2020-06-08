@@ -34,15 +34,12 @@ import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.uap.sdk.session.SessionContext;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-11-30 12:37:17.
  */
-@Api("/weekly")
+
 @Controller
 @RequestMapping("/weekly")
 public class WeeklyController {
@@ -55,23 +52,19 @@ public class WeeklyController {
 	@Autowired
 	WeeklyDetailsService weeklyDetailsService;
 
-	@ApiOperation("跳转到Weekly页面")
+
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
 		return "weekly/index";
 	}
 
-	@ApiOperation(value = "查询Weekly", notes = "查询Weekly，返回列表信息")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Weekly", paramType = "form", value = "Weekly的form信息", required = false, dataType = "string") })
+
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<Weekly> list(Weekly weekly) {
 		return weeklyService.list(weekly);
 	}
 
-	@ApiOperation(value = "分页查询Weekly", notes = "分页查询Weekly，返回easyui分页信息")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Weekly", paramType = "form", value = "Weekly的form信息", required = false, dataType = "string") })
+
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(WeeklyPara weeklyPara) throws Exception {
 		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
@@ -95,9 +88,7 @@ public class WeeklyController {
 		return weeklyService.getUser();
 	}
 
-	@ApiOperation("新增Weekly")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Weekly", paramType = "form", value = "Weekly的form信息", required = true, dataType = "string") })
+
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput insert(Weekly weekly) {
 		weeklyService.insertSelective(weekly);
@@ -161,18 +152,13 @@ public class WeeklyController {
 		return BaseOutput.success("重要风险保存成功");
 	}
 
-	@ApiOperation("修改Weekly")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Weekly", paramType = "form", value = "Weekly的form信息", required = true, dataType = "string") })
+
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput update(Weekly weekly) {
 		weeklyService.updateSelective(weekly);
 		return BaseOutput.success("修改成功");
 	}
 
-	@ApiOperation("删除Weekly")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "id", paramType = "form", value = "Weekly的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput delete(Long id) {
 		weeklyService.delete(id);
@@ -187,7 +173,7 @@ public class WeeklyController {
 		return BaseOutput.success("删除成功");
 	}
 
-	@ApiOperation("跳转到getDescById页面")
+
 	@RequestMapping(value = "/getDescById", method = RequestMethod.GET)
 	public ModelAndView getDescById(String id) {
 
@@ -226,7 +212,7 @@ public class WeeklyController {
 		return new ResponseEntity<byte[]>(FileUtils.readFileToByteArray(file), headers, HttpStatus.CREATED);
 	}
 
-	@ApiOperation("跳转到AddWeekD页面")
+
 	@RequestMapping(value = "/getDescAddByProjectId", method = RequestMethod.GET)
 	public ModelAndView getDescAddByProjectId(String projectId) {
 

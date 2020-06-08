@@ -21,26 +21,21 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
 
-@Api("/workDay")
+
+
 @Controller
 @RequestMapping("/workDay")
 public class WorkDayController {
 	@Autowired
 	private WorkDayService workDayService;
 
-    @ApiOperation("跳转到workDay页面")
+
     @RequestMapping(value="/setWorkDay", method = RequestMethod.GET)
     public String workDay(ModelMap modelMap) {
         return "workDay/index";
     }
-    @ApiImplicitParams({
-		@ApiImplicitParam(name="WorkDay", paramType="form", value = "WorkDay的form信息", required = true, dataType = "string")
-	})
+
     /**
      * 判断是不是最后一天
      * @return
@@ -76,8 +71,6 @@ public class WorkDayController {
 	 * @param year
 	 * @return
 	 */
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "WorkDay", paramType = "form", value = "WorkDay的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/uploadWordDayDate", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput uploadWordDayDate(@RequestParam("file") MultipartFile file, String year) {
 		return workDayService.upload(file, year);
@@ -88,8 +81,6 @@ public class WorkDayController {
 	 * 
 	 * @return
 	 */
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "WorkDay", paramType = "form", value = "WorkDay的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/selectWorkDayYear", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<String> selectWorkDayYear() {
 		return workDayService.getWorkDayYaers();
@@ -100,8 +91,6 @@ public class WorkDayController {
 	 * 
 	 * @return
 	 */
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "WorkDay", paramType = "form", value = "WorkDay的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/getWorkDay", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<WorkDayRoleDto> getWorkDay(String userId) {
 		if (WebUtil.strIsEmpty(userId)) {
@@ -121,8 +110,6 @@ public class WorkDayController {
 	 * 
 	 * @return
 	 */
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "WorkDay", paramType = "form", value = "WorkDay的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/isHasWorkDayYear", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody boolean isHasWorkDayYear(String year) {
 		List<String> workDayYaers = workDayService.getWorkDayYaers();

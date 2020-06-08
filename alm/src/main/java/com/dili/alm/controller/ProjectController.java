@@ -40,17 +40,13 @@ import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+
 import tk.mybatis.mapper.entity.Example;
 import tk.mybatis.mapper.entity.Example.Criteria;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-10-18 17:22:54.
  */
-@Api("/project")
 @Controller
 @RequestMapping("/project")
 public class ProjectController {
@@ -88,7 +84,6 @@ public class ProjectController {
 		}
 	}
 
-	@ApiOperation("跳转到Project页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
@@ -97,8 +92,6 @@ public class ProjectController {
 	}
 
 	@SuppressWarnings("rawtypes")
-	@ApiOperation(value = "查询Project", notes = "查询Project，返回列表信息")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "Project", paramType = "form", value = "Project的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<Map> list(ProjectQueryDto project) {
 		try {
@@ -177,8 +170,6 @@ public class ProjectController {
 		}
 	}
 
-	@ApiOperation(value = "分页查询Project", notes = "分页查询Project，返回easyui分页信息")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "Project", paramType = "form", value = "Project的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(ProjectQueryDto project) throws Exception {
 		try {
@@ -212,8 +203,6 @@ public class ProjectController {
 		return projectService.listEasyuiPageByExample(project, true).toString();
 	}
 
-	@ApiOperation("新增Project")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "Project", paramType = "form", value = "Project的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> insert(Project project) {
 		try {
@@ -223,15 +212,11 @@ public class ProjectController {
 		}
 	}
 
-	@ApiOperation("修改Project")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "Project", paramType = "form", value = "Project的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput update(Project project) {
 		return projectService.updateAfterCheck(project);
 	}
 
-	@ApiOperation("删除Project")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "id", paramType = "form", value = "Project的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> delete(Long id) {
 		return projectService.deleteBeforeCheck(id);

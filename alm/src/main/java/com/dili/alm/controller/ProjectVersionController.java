@@ -33,15 +33,10 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-10-20 11:02:17.
  */
-@Api("/milestones")
 @Controller
 @RequestMapping("/project/version")
 public class ProjectVersionController {
@@ -55,28 +50,22 @@ public class ProjectVersionController {
 	@Autowired
 	private DemandService demandService;
 
-	@ApiOperation("跳转到Milestones页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
 		return "milestones/index";
 	}
 
-	@ApiOperation("跳转到Files页面")
 	@RequestMapping(value = "/files.html", method = RequestMethod.GET)
 	public String files(Files files, ModelMap modelMap, HttpServletRequest request) {
 		// request.setAttribute("milestonesId", files.getMilestonesId());
 		return "milestones/files";
 	}
 
-	@ApiOperation(value = "查询Milestones", notes = "查询Milestones，返回列表信息")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "Milestones", paramType = "form", value = "Milestones的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<ProjectVersion> list(ProjectVersion projectVersion) {
 		return projectVersionService.list(projectVersion);
 	}
 
-	@ApiOperation(value = "分页查询Milestones", notes = "分页查询Milestones，返回easyui分页信息")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "Milestones", paramType = "form", value = "Milestones的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<Map> listPage(ProjectVersion projectVersion) {
 		List<ProjectVersion> list = this.projectVersionService.listByExample(projectVersion);
