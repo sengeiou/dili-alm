@@ -58,17 +58,18 @@ import com.dili.uap.sdk.rpc.FirmRpc;
 import com.dili.uap.sdk.rpc.UserRpc;
 import com.dili.uap.sdk.session.SessionContext;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+/*import io.swagger.annotations.Api;*/
+/*import io.swagger.annotations.ApiImplicitParam;*/
+/*import io.swagger.annotations.ApiImplicitParams;*/
+/*import io.swagger.annotations.ApiOperation;*/
 import tk.mybatis.mapper.entity.Example;
 
 /**
  * 由MyBatis Generator工具自动生成
  * This file was generated on 2019-12-23 17:32:14.
  */
-@Api("/demand")
+/*@Api("/demand")
+*/
 @Controller
 @RequestMapping("/demand")
 public class DemandController {
@@ -90,7 +91,7 @@ public class DemandController {
     BpmcFormRpc bpmcFormRpc;
     
 	private static final Logger LOGGER = LoggerFactory.getLogger(DemandController.class);
-    @ApiOperation("跳转到Demand页面")
+    /*@ApiOperation("跳转到Demand页面")*/
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
         return "demand/index";
@@ -138,18 +139,18 @@ public class DemandController {
 		return "demand/detail";
 	}
 	
-	@ApiOperation(value = "查询Task", notes = "查询Task，返回列表信息")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = false, dataType = "string") })
+/*	@ApiOperation(value = "查询Task", notes = "查询Task，返回列表信息")
+	@ApiImplicitParams({ @ApiImplicitParam(name = "Task", paramType = "form", value = "Task的form信息", required = false, dataType = "string") })*/
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<Demand> list(Demand task) {
 
 		return demandService.list(task);
 	}
 
-    @ApiOperation(value="分页查询Demand", notes = "分页查询Demand，返回easyui分页信息")
+/*    @ApiOperation(value="分页查询Demand", notes = "分页查询Demand，返回easyui分页信息")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = false, dataType = "string")
-	})
+	})*/
     @RequestMapping(value="/listPage", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String listPage(DemandDto demand)  {
     	EasyuiPageOutput listPageForUser = null;
@@ -162,10 +163,10 @@ public class DemandController {
         return listPageForUser.toString();
     }
 
-    @ApiOperation("新增Demand")
+/*    @ApiOperation("新增Demand")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = true, dataType = "string")
-	})
+	})*/
     @RequestMapping(value="/insert", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput insert(Demand demand) {
     	if (demand.getType()==null) {
@@ -183,10 +184,10 @@ public class DemandController {
         return BaseOutput.success("新增成功");
     }
 
-    @ApiOperation("提交Demand")
+/*    @ApiOperation("提交Demand")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = true, dataType = "string")
-	})
+	})*/
     @RequestMapping(value="/submint", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput submint(Demand demand) {
     	if (demand.getType()==null) {
@@ -211,20 +212,20 @@ public class DemandController {
         demand = demandService.get(id);
 		return demand;
 	}
-    @ApiOperation("修改Demand")
+/*    @ApiOperation("修改Demand")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = true, dataType = "string")
-	})
+	})*/
     @RequestMapping(value="/update", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput update(Demand demand) {
         demandService.updateSelective(demand);
         return BaseOutput.success("修改成功");
     }
     
-    @ApiOperation("需求修改状态")
+/*    @ApiOperation("需求修改状态")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = true, dataType = "string")
-	})
+	})*/
     @RequestMapping(value="/editFlag.json", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput isEdit(Long id) {
     	Demand demand = demandService.get(id);
@@ -235,10 +236,10 @@ public class DemandController {
         return BaseOutput.success().setCode("1");
     }
     
-    @ApiOperation("删除Demand")
+/*    @ApiOperation("删除Demand")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="id", paramType="form", value = "Demand的主键", required = true, dataType = "long")
-	})
+	})*/
     @RequestMapping(value="/delete", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput delete(Long id) {
     	try {
@@ -248,10 +249,10 @@ public class DemandController {
 		}
         return BaseOutput.success("删除成功");
     }
-    @ApiOperation("页面测试重置索引值")
+/*    @ApiOperation("页面测试重置索引值")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = true, dataType = "string")
-	})
+	})*/
     @RequestMapping(value="/sendseq.json", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput sendseq(Demand demand) {
 		demandService.setDailyBegin();
@@ -263,10 +264,10 @@ public class DemandController {
      * @param projectId可以为空，只查询未立项;不为空，查询未立项以及对应project的需求的并集
      * @return
      */
-    @ApiOperation(value="查询Demand未立项", notes = "查询Demand，返回列表信息")
+/*    @ApiOperation(value="查询Demand未立项", notes = "查询Demand，返回列表信息")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = false, dataType = "string")
-	})
+	})*/
     @RequestMapping(value="/queryDemandListToProject.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody List<Demand> queryDemandListToProject(Long projectId) {
         return demandService.queryDemandListToProject(projectId);
@@ -276,10 +277,10 @@ public class DemandController {
      * @param ids
      * @return
      */
-    @ApiOperation(value="查询Demand根据id集合", notes = "查询Demand，返回列表信息")
+/*    @ApiOperation(value="查询Demand根据id集合", notes = "查询Demand，返回列表信息")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = false, dataType = "string")
-	})
+	})*/
     @RequestMapping(value="/queryDemandListByIds.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody List<Demand> queryDemandListByIds(String ids) {
     	if(WebUtil.strIsEmpty(ids)) {
@@ -294,10 +295,10 @@ public class DemandController {
      * @return
      */
     
-    @ApiOperation(value="查询已关联Demand", notes = "查询Demand，返回列表信息")
+/*    @ApiOperation(value="查询已关联Demand", notes = "查询Demand，返回列表信息")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = false, dataType = "string")
-	})
+	})*/
     @RequestMapping(value="/queryDemandListByApplyIdOrVersionIdOrWorkOrderId.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody List<Demand> queryDemandListByProjectIdOrVersionIdOrWorkOrderId(Long id,Integer type) {
     	if(id==null||type==null) {
@@ -310,10 +311,10 @@ public class DemandController {
      * @param id
      * @return
      */
-    @ApiOperation(value="根据Id获取附件", notes = "查询File返回列表信息")
+/*    @ApiOperation(value="根据Id获取附件", notes = "查询File返回列表信息")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = false, dataType = "string")
-	})
+	})*/
     @RequestMapping(value="/files/list", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody List<Map> filesList(Long id) {
 		Demand demand = this.demandService.get(id);
@@ -363,10 +364,10 @@ public class DemandController {
      * @param id
      * @return
      */
-    @ApiOperation(value="根据Id获取附件", notes = "查询File返回列表信息")
+/*    @ApiOperation(value="根据Id获取附件", notes = "查询File返回列表信息")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = false, dataType = "string")
-	})
+	})*/
     @RequestMapping(value="/files/fdFile", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody Files fdFile(Long id) {
 		
@@ -387,7 +388,7 @@ public class DemandController {
     /**departmentApprove
      * 流程控制
      */
-    @ApiOperation("跳转到权限页面")
+   /* @ApiOperation("跳转到权限页面")*/
     @RequestMapping(value="/departmentApprove.html", method = RequestMethod.GET)
     public String departmentApprove(@RequestParam String taskId, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
     	BaseOutput<TaskMapping> output = taskRpc.getById(taskId);
@@ -435,7 +436,7 @@ public class DemandController {
     	return demandService.submitApprove(code, taskId,null,DemandProcessStatus.DEPARTMENTMANAGER.getCode());
     }
     
-    @ApiOperation("跳转到接受需求页面")
+   /* @ApiOperation("跳转到接受需求页面")*/
     @RequestMapping(value="/accept.html", method = RequestMethod.GET)
     public String accept(@RequestParam String taskId, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
         BaseOutput<TaskMapping> output = taskRpc.getById(taskId);
@@ -483,7 +484,7 @@ public class DemandController {
     	return demandService.submitApproveForAccept(taskId,acceptId);
     }
  
-    @ApiOperation("指定需求对接人")
+    /*@ApiOperation("指定需求对接人")*/
     @RequestMapping(value="/assignPrincipal.html", method = RequestMethod.GET)
     public String assignPrincipal(@RequestParam String taskId, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
         BaseOutput<TaskMapping> output = taskRpc.getById(taskId);
@@ -542,7 +543,7 @@ public class DemandController {
     	
     }
  
-    @ApiOperation("跳转到接受需求对接人")
+   /* @ApiOperation("跳转到接受需求对接人")*/
     @RequestMapping(value="/reciprocate.html", method = RequestMethod.GET)
     public String reciprocate(@RequestParam String taskId, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
         BaseOutput<TaskMapping> output = taskRpc.getById(taskId);
@@ -599,7 +600,7 @@ public class DemandController {
     
     
     
-    @ApiOperation("反馈方案")
+   /* @ApiOperation("反馈方案")*/
     @RequestMapping(value="/feedback.html", method = RequestMethod.GET)
     public String feedback(@RequestParam String taskId, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
         BaseOutput<TaskMapping> output = taskRpc.getById(taskId);
@@ -650,7 +651,7 @@ public class DemandController {
   			}
     	return demandService.submitApprove(code, taskId,null,DemandProcessStatus.FEEDBACK.getCode());
     }
-    @ApiOperation("需求管理员同意")
+    /*@ApiOperation("需求管理员同意")*/
     @RequestMapping(value="/demandManagerApprove.html", method = RequestMethod.GET)
     public String demandManagerApprove(@RequestParam String taskId, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
         BaseOutput<TaskMapping> output = taskRpc.getById(taskId);
@@ -803,7 +804,7 @@ public class DemandController {
     	modelMap.put("taskId", taskId);
 		return "demand/editForTask";
 	}
-    @ApiOperation("需求列表编辑用户信息")
+    /*@ApiOperation("需求列表编辑用户信息")*/
     @RequestMapping(value = "/editForTaskByAlm.html", method = RequestMethod.GET)
 	public String editForDemandList(@RequestParam Long id, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
     	Demand selectDemand = new Demand();
@@ -835,10 +836,10 @@ public class DemandController {
     	modelMap.put("taskId", taskMappings.get(0).getId());
 		return "demand/editForTask";
 	}
-    @ApiOperation("重新提交Demand")
+/*    @ApiOperation("重新提交Demand")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = true, dataType = "string")
-	})
+	})*/
     @RequestMapping(value="/submintForTask.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput submintForTask(@RequestParam String taskId, Demand demand) {
         try {
@@ -850,7 +851,7 @@ public class DemandController {
         return BaseOutput.success("提交成功");
     }
 
-    @ApiOperation("页面流程审批")
+   /* @ApiOperation("页面流程审批")*/
     @RequestMapping(value = "/submitApproveByAlm", method = RequestMethod.GET)
 	public String submitApproveByAlm(@RequestParam Long id, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
     	Demand selectDemand = new Demand();
@@ -889,10 +890,10 @@ public class DemandController {
 	}
     
     
-    @ApiOperation("签收任务")
+/*    @ApiOperation("签收任务")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = true, dataType = "string")
-	})
+	})*/
     @RequestMapping(value="/doClaimTask.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput doClaimTask(@RequestParam Long id) {
     	Demand selectDemand = new Demand();
@@ -917,10 +918,10 @@ public class DemandController {
     
     
     
-    @ApiOperation("获取操作记录")
+/*    @ApiOperation("获取操作记录")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="Demand", paramType="form", value = "Demand的form信息", required = true, dataType = "string")
-	})
+	})*/
     @RequestMapping(value="getRecordList", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String getRecordList(String code) {
         return this.demandService.getOprationRecordList(code).toString();
