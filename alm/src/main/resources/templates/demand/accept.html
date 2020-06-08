@@ -104,30 +104,41 @@
          <input name="code" id="code" value="${demand.serialNumber}" type="hidden">
          <input name="rejectType" id="rejectType" value="backAndEditAccpet" type="hidden"/>
         <table width="60%" style="alignment: center">
+
               <tr>
                 <td  style="padding:5px;">
                 <h4>操作意见</h4>
                <textarea cols="50" rows="5" name="description" ></textarea>
             </td>
            </tr>
-           <tr>
-              <td>
-				<select id="cc" class="easyui-combobox" data-options="label:'是否转发:'" name="isForword" style="width:200px;" required="true"  editable="false">
-				    <option value="forword">转发</option>
-				    <option value="noForword">不转发</option>
-				</select>
-              </td>
-           </tr>
+               <tr>
+            	<td align="center"  style="padding:5px;">
+				  <input class="easyui-combobox" style="width: 100%" id="acceptId" name="acceptId"
+					data-options="editable:true,validType:'comboBoxEditvalid[\'acceptId\']',label:'指派责任人:',valueField: 'id',
+					textField: 'realName',
+					url: '${contextPath!}/member/demandMembers',
+					required:true,
+					multiple:false,
+					onChange:checkExecutorAmount,
+					filter: function(q, row){
+				        var opts = $('#acceptId').combobox('options');
+				        return row[opts.textField].indexOf(q) == 0;
+				    },
+				     formatter:function(row){ 
+				        var opts = $('#acceptId').combobox('options');
+				        return row[opts.textField]; 
+				    }" />
+	            </td>
+            </tr>
             <tr>
                 <td align="center" style="padding:5px;">
                 <a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="submitBtn"
                    onclick="save()">接收</a>
                 <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" id="cancelBtn"
                    onclick="cancel()">不接收</a>
-            </td>
-            <tr style="height:200px">
-             <td align="center" style="padding:5px;">
-            </td>
+                </td>
+            </tr>
+
         </table>
     </form>
  </div>

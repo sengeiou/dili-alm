@@ -579,30 +579,15 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	}
 	
 	@Override
-	public BaseOutput submitApproveForAccept(String taskId,String forward) {
+	public BaseOutput submitApproveForAccept(String taskId,Long executorId) {
 		
 		BaseOutput<String> output ;
-		if (forward.endsWith("forword")) {
 			output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
 				{
+					put("AssignExecutorId",executorId.toString());
 					put("approved","true");
-					put("forward", "true");
 				}
 			});
-		}else {
-			//获取当前用户userId
-			//没有任务人员直接跳转到反馈界面
-			Long userId = SessionContext.getSessionContext().getUserTicket().getId();
-			output =this.taskRpc.complete(taskId, new HashMap<String, Object>() {
-				{
-					put("AssignExecutorId", userId.toString());
-					put("approved", "true");
-					put("forward", "false");
-				}
-			});
-		}
-
-		
 		return output;
 	}
 	
@@ -657,6 +642,17 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		variables.put("approved", "false");
 		variables.put("AssignExecutorId",demand.getUserId().toString());
 		return taskRpc.complete(taskId, variables);
+	}
+	@Override
+	public BaseOutput rejectApproveForFeedback(String code, String taskId, String rejectType, Long executorId) {
+		// 完成任务
+		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
+			{
+				put("AssignExecutorId", executorId.toString());
+				put("approved", "false");
+			}
+		});
+		return output;
 	}
 
 	@Override
@@ -785,6 +781,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		
 		return departmentManager.getId();
 	}
+
 
 
 }

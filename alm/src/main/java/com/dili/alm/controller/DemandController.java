@@ -474,13 +474,13 @@ public class DemandController {
      */
     @RequestMapping(value="/accept.action", method = RequestMethod.POST)
     @ResponseBody
-    public BaseOutput<String> accept(@RequestParam String code, @RequestParam String taskId,String description,String isForword) {
+    public BaseOutput<String> accept(@RequestParam String code, @RequestParam String taskId,String description,Long acceptId,String isForword) {
         try {
   			 demandService.saveOprationRecord(code, description, DemandOperationType.ACCEPT.getValue(), DemandOperationType.ACCEPT.getName(), ApproveResult.APPROVED);
   			} catch (DemandExceptions e) {
   				e.printStackTrace();
   			}
-    	return demandService.submitApproveForAccept(taskId,isForword);
+    	return demandService.submitApproveForAccept(taskId,acceptId);
     }
  
     @ApiOperation("指定需求对接人")
@@ -716,7 +716,23 @@ public class DemandController {
   			}
     	return demandService.rejectApprove(code, taskId,rejectType);
     }
-
+    /**
+     * 驳回请求，添加接收人，反馈需求需要
+     * @param code  需求编号
+     * @param taskId 任务id
+     * @return
+     */
+    @RequestMapping(value="/rejectDemandForFeedback.action", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseOutput<String> rejectDemandForFeedback(@RequestParam String code, @RequestParam String taskId,@RequestParam Long acceptId,String description,String rejectType) {
+    	
+        try {
+  			  demandService.saveOprationRecord(code, "驳回转发", DemandOperationType.REJECT.getValue(), DemandOperationType.REJECT.getName(), ApproveResult.FAILED);
+  			} catch (DemandExceptions e) {
+  				e.printStackTrace();
+  			}
+    	return demandService.rejectApproveForFeedback(code, taskId, rejectType, acceptId);
+    }
     /**
      * 提交申请同意表单页面
      * @param modelMap
