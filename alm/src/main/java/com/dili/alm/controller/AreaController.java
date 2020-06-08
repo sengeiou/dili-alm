@@ -12,15 +12,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.dili.alm.domain.Area;
 import com.dili.alm.service.AreaService;
 
-import io.swagger.annotations.Api;
+/*import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperation;*/
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2018-04-27 09:27:25.
  */
-@Api("/area")
+/*@Api("/area")*/
 @Controller
 @RequestMapping("/area")
 public class AreaController {
@@ -32,9 +32,9 @@ public class AreaController {
 		return "area/select";
 	}
 
-	@ApiOperation(value = "查询Area", notes = "查询Area，返回列表信息")
+/*	@ApiOperation(value = "查询Area", notes = "查询Area，返回列表信息")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Area", paramType = "form", value = "Area的form信息", required = false, dataType = "string") })
+			@ApiImplicitParam(name = "Area", paramType = "form", value = "Area的form信息", required = false, dataType = "string") })*/
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<Area> list(Area area) {
 		return areaService.list(area);

@@ -26,15 +26,15 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 
-import io.swagger.annotations.Api;
+/*import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperation;*/
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2018-03-20 17:22:08.
  */
-@Api("/hardwareResource")
+/*@Api("/hardwareResource")*/
 @Controller
 @RequestMapping("/hardwareResource")
 public class HardwareResourceController {
@@ -43,7 +43,7 @@ public class HardwareResourceController {
 
 	private static final String DATA_AUTH_TYPE = "project";
 
-	@ApiOperation("跳转到HardwareResource页面")
+	/*@ApiOperation("跳转到HardwareResource页面")*/
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
 		modelMap.addAttribute("user", SessionContext.getSessionContext().getUserTicket());
@@ -59,17 +59,19 @@ public class HardwareResourceController {
 		return "hardwareResource/index";
 	}
 
-	@ApiOperation(value = "查询HardwareResource", notes = "查询HardwareResource，返回列表信息")
+/*	@ApiOperation(value = "查询HardwareResource", notes = "查询HardwareResource，返回列表信息")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "HardwareResource", paramType = "form", value = "HardwareResource的form信息", required = false, dataType = "string") })
+	*/
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String list(HardwareResource hardwareResource) throws Exception {
 		return hardwareResourceService.listEasyuiPageByExample(hardwareResource, true).toString();
 	}
 
-	@ApiOperation(value = "分页查询HardwareResource", notes = "分页查询HardwareResource，返回easyui分页信息")
+/*	@ApiOperation(value = "分页查询HardwareResource", notes = "分页查询HardwareResource，返回easyui分页信息")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "HardwareResource", paramType = "form", value = "HardwareResource的form信息", required = false, dataType = "string") })
+	*/
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(HardwareResourceQueryDto query) throws Exception {
 		@SuppressWarnings("rawtypes")
@@ -83,9 +85,10 @@ public class HardwareResourceController {
 		return hardwareResourceService.listEasyuiPageByExample(query, true).toString();
 	}
 
-	@ApiOperation("新增HardwareResource")
+/*	@ApiOperation("新增HardwareResource")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "HardwareResource", paramType = "form", value = "HardwareResource的form信息", required = true, dataType = "string") })
+	*/
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput insert(HardwareResource hardwareResource) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
@@ -101,9 +104,10 @@ public class HardwareResourceController {
 		}
 	}
 
-	@ApiOperation("修改HardwareResource")
+/*	@ApiOperation("修改HardwareResource")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "HardwareResource", paramType = "form", value = "HardwareResource的form信息", required = true, dataType = "string") })
+	*/
 	@PostMapping("/update")
 	public @ResponseBody BaseOutput update(HardwareResource hardwareResource) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
@@ -119,9 +123,10 @@ public class HardwareResourceController {
 		}
 	}
 
-	@ApiOperation("删除HardwareResource")
+/*	@ApiOperation("删除HardwareResource")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "id", paramType = "form", value = "HardwareResource的主键", required = true, dataType = "long") })
+	*/
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput delete(Long id) {
 		hardwareResourceService.delete(id);
@@ -149,9 +154,10 @@ public class HardwareResourceController {
 		return hardwareResourceService.projectNumById(id);
 	}
 
-	@ApiOperation(value = "查询HardwareResource", notes = "查询HardwareResource，返回列表信息")
+/*	@ApiOperation(value = "查询HardwareResource", notes = "查询HardwareResource，返回列表信息")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "HardwareResource", paramType = "form", value = "HardwareResource的form信息", required = false, dataType = "string") })
+	*/
 	@RequestMapping(value = "/listByProjectId", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<HardwareResource> listByProjectId(Long projectId) {
 		HardwareResource hardwareResource = DTOUtils.newDTO(HardwareResource.class);

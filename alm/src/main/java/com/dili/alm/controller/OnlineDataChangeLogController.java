@@ -1,34 +1,27 @@
 package com.dili.alm.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dili.alm.domain.HardwareResource;
-import com.dili.alm.domain.OnlineDataChange;
 import com.dili.alm.domain.OnlineDataChangeLog;
-import com.dili.alm.domain.dto.HardwareResourceQueryDto;
 import com.dili.alm.service.OnlineDataChangeLogService;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
-import com.dili.uap.sdk.session.SessionContext;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+//import io.swagger.annotations.Api;
+//import io.swagger.annotations.ApiImplicitParam;
+//import io.swagger.annotations.ApiImplicitParams;
+//import io.swagger.annotations.ApiOperation;
 
-@Api("/onlineDataChangeLog")
+//@Api("/onlineDataChangeLog")
 @Controller
 @RequestMapping("/onlineDataChangeLog")
 public class OnlineDataChangeLogController {
@@ -47,18 +40,18 @@ public class OnlineDataChangeLogController {
     }*/
     
     
-    @ApiOperation(value = "查询OnlineDataChangeLog", notes = "查询OnlineDataChangeLog，返回列表信息")
+/*    @ApiOperation(value = "查询OnlineDataChangeLog", notes = "查询OnlineDataChangeLog，返回列表信息")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "OnlineDataChangeLog", paramType = "form", value = "OnlineDataChangeLog的form信息", required = false, dataType = "string") })
-	@RequestMapping(value = "/list.action", method = { RequestMethod.GET, RequestMethod.POST })
+	*/@RequestMapping(value = "/list.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String list(OnlineDataChangeLog hardwareResource) throws Exception {
 		return onlineDataChangeLogService.listEasyuiPageByExample(hardwareResource, true).toString();
 	}
 
-	@ApiOperation(value = "分页查询HardwareResource", notes = "分页查询OnlineDataChangeLog，返回easyui分页信息")
+/*	@ApiOperation(value = "分页查询HardwareResource", notes = "分页查询OnlineDataChangeLog，返回easyui分页信息")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "OnlineDataChangeLog", paramType = "form", value = "OnlineDataChangeLog的form信息", required = false, dataType = "string") })
-	@RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
+	*/@RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(OnlineDataChangeLog query) throws Exception {
 		List<OnlineDataChangeLog> list = onlineDataChangeLogService.list(query);
 		Map<Object, Object> metadata = null == query.getMetadata() ? new HashMap<>() : query.getMetadata();

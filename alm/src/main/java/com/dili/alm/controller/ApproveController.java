@@ -20,16 +20,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.domain.Approve;
-import com.dili.alm.domain.Demand;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectComplete;
 import com.dili.alm.domain.dto.apply.ApplyApprove;
 import com.dili.alm.exceptions.ApproveException;
-import com.dili.alm.rpc.MyTasksRpc;
-import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.utils.DateUtil;
@@ -40,22 +36,19 @@ import com.dili.bpmc.sdk.dto.TaskDto;
 import com.dili.bpmc.sdk.rpc.BpmcFormRpc;
 import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
-import com.dili.uap.sdk.domain.Department;
-import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.session.SessionContext;
 
-import io.swagger.annotations.Api;
+/*import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperation;*/
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-12-04 17:39:37.
  */
-@Api("/approve")
+/*@Api("/approve")*/
 @Controller
 @RequestMapping("/approve")
 public class ApproveController {
@@ -63,29 +56,27 @@ public class ApproveController {
 	private ApproveService approveService;
 
 	@Autowired
-	private RoleRpc roleRpc;
-	@Autowired
 	private ProjectService projectService;
 	
     @Autowired
     BpmcFormRpc bpmcFormRpc;
     @Autowired
     TaskRpc bpmcTaskRpc;
-	@ApiOperation("跳转到Approve页面")
+/*	@ApiOperation("跳转到Approve页面")*/
 	@RequestMapping(value = "/apply/index.html", method = RequestMethod.GET)
 	public String applyIndex(ModelMap modelMap) {
 		modelMap.put("sessionID", SessionContext.getSessionContext().getUserTicket().getId());
 		return "approveApply/index";
 	}
 
-	@ApiOperation("跳转到Approve页面")
+/*	@ApiOperation("跳转到Approve页面")*/
 	@RequestMapping(value = "/change/index.html", method = RequestMethod.GET)
 	public String changeIndex(ModelMap modelMap) {
 		modelMap.put("sessionID", SessionContext.getSessionContext().getUserTicket().getId());
 		return "approveChange/index";
 	}
 
-	@ApiOperation("跳转到Approve页面")
+/*	@ApiOperation("跳转到Approve页面")*/
 	@RequestMapping(value = "/complete/index.html", method = RequestMethod.GET)
 	public String completeIndex(ModelMap modelMap) {
 		modelMap.put("sessionID", SessionContext.getSessionContext().getUserTicket().getId());
@@ -93,7 +84,7 @@ public class ApproveController {
 	}
 	
 	
-	@ApiOperation("跳转到/apply/wyhLeaderApprove页面")
+/*	@ApiOperation("跳转到/apply/wyhLeaderApprove页面")*/
 	@RequestMapping(value = "/apply/wyhLeaderApprove.html", method = RequestMethod.GET)
 	public String wyhLeaderApplyApprove(ModelMap modelMap,String  taskId, String viewMode) {
 		approveService.getModel(modelMap, taskId);
@@ -107,7 +98,7 @@ public class ApproveController {
 	}
 	
 	
-	@ApiOperation("跳转到/apply/wyhManagerApprove页面")
+/*	@ApiOperation("跳转到/apply/wyhManagerApprove页面")*/
 	@RequestMapping(value = "/apply/wyhManagerApprove.html", method = RequestMethod.GET)
 	public String wyhManagerApplyApprove(ModelMap modelMap,String  taskId, String viewMode) {
 		
@@ -144,7 +135,7 @@ public class ApproveController {
 		}
 	}
 	
-	@ApiOperation("立项页面流程审批")
+/*	@ApiOperation("立项页面流程审批")*/
     @RequestMapping(value = "/applyApproveByAlm.html", method = RequestMethod.GET)
 	public String applyApproveByAlm(@RequestParam Long id, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
 		Approve approve = approveService.get(id);
@@ -185,7 +176,7 @@ public class ApproveController {
 		}
 		return "approveApply/approve";
 	}
-	@ApiOperation("跳转到/change/wyhLeaderApprove页面")
+/*	@ApiOperation("跳转到/change/wyhLeaderApprove页面")*/
 	@RequestMapping(value = "/change/wyhLeaderApprove.html", method = RequestMethod.GET)
 	public String wyhLeaderChangeApprove(ModelMap modelMap,String  taskId, String viewMode) {
 		BaseOutput<Map<String, Object>>  map=bpmcTaskRpc.getVariables(taskId);
@@ -201,7 +192,7 @@ public class ApproveController {
 		
 	}
 	
-	@ApiOperation("跳转到/change/wyhManagerApprove页面")
+/*	@ApiOperation("跳转到/change/wyhManagerApprove页面")*/
 	@RequestMapping(value = "/change/wyhManagerApprove.html", method = RequestMethod.GET)
 	public String wyhManagerChangeApprove(ModelMap modelMap,String  taskId, String viewMode) {
 		BaseOutput<Map<String, Object>>  map=bpmcTaskRpc.getVariables(taskId);
@@ -237,7 +228,7 @@ public class ApproveController {
 			return BaseOutput.failure(e.getMessage());
 		}
 	}
-	@ApiOperation("变更页面流程审批")
+/*	@ApiOperation("变更页面流程审批")*/
     @RequestMapping(value = "/changeApproveByAlm.html", method = RequestMethod.GET)
 	public String changeApproveByAlm(@RequestParam Long id, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
 		Approve approve = approveService.get(id);
@@ -305,7 +296,7 @@ public class ApproveController {
 		
 		return "approveChange/verify";
 	}
-	@ApiOperation("跳转到/complete/wyhLeaderApprove页面")
+//	@ApiOperation("跳转到/complete/wyhLeaderApprove页面")
 	@RequestMapping(value = "/complete/wyhLeaderApprove.html", method = RequestMethod.GET)
 	public String wyhLeaderCompleteApprove(ModelMap modelMap,String  taskId, String viewMode) throws Exception {
 		BaseOutput<Map<String, Object>>  map=bpmcTaskRpc.getVariables(taskId);
@@ -339,7 +330,7 @@ public class ApproveController {
 		
 	}
 	
-	@ApiOperation("跳转到/complete/wyhManagerApprove页面")
+/*	@ApiOperation("跳转到/complete/wyhManagerApprove页面")*/
 	@RequestMapping(value = "/complete/wyhManagerApprove.html", method = RequestMethod.GET)
 	public String wyhManagerCompleteApprove(ModelMap modelMap,String  taskId, String viewMode) throws Exception {
 		BaseOutput<Map<String, Object>>  map=bpmcTaskRpc.getVariables(taskId);
@@ -393,7 +384,7 @@ public class ApproveController {
 			return BaseOutput.failure(e.getMessage());
 		}
 	}
-	@ApiOperation("结项页面流程审批")
+/*	@ApiOperation("结项页面流程审批")*/
     @RequestMapping(value = "/completeApproveByAlm.html", method = RequestMethod.GET)
 	public String completeApproveByAlm(@RequestParam Long id, @RequestParam(required = false) Boolean cover, ModelMap modelMap) throws Exception {
 		Approve approve = approveService.get(id);
@@ -505,17 +496,17 @@ public class ApproveController {
 		return approveService.changeVerity(id, opt, notes,taskId);
 	}
 
-	@ApiOperation(value = "查询Approve", notes = "查询Approve，返回列表信息")
+/*	@ApiOperation(value = "查询Approve", notes = "查询Approve，返回列表信息")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Approve", paramType = "form", value = "Approve的form信息", required = false, dataType = "string") })
+			@ApiImplicitParam(name = "Approve", paramType = "form", value = "Approve的form信息", required = false, dataType = "string") })*/
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<Approve> list(Approve approve) {
 		return approveService.list(approve);
 	}
 
-	@ApiOperation(value = "分页查询Approve", notes = "分页查询Approve，返回easyui分页信息")
+/*	@ApiOperation(value = "分页查询Approve", notes = "分页查询Approve，返回easyui分页信息")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Approve", paramType = "form", value = "Approve的form信息", required = false, dataType = "string") })
+			@ApiImplicitParam(name = "Approve", paramType = "form", value = "Approve的form信息", required = false, dataType = "string") })*/
 	@RequestMapping(value = "/apply/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(Approve approve) throws Exception {
 		approve.setType(AlmConstants.ApproveType.APPLY.getCode());
@@ -550,27 +541,27 @@ public class ApproveController {
 		return approveService.selectApproveByPage(approve).toString();
 	}
 
-	@ApiOperation("新增Approve")
+/*	@ApiOperation("新增Approve")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Approve", paramType = "form", value = "Approve的form信息", required = true, dataType = "string") })
+			@ApiImplicitParam(name = "Approve", paramType = "form", value = "Approve的form信息", required = true, dataType = "string") })*/
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput insert(Approve approve) {
 		approveService.insertSelective(approve);
 		return BaseOutput.success("新增成功");
 	}
 
-	@ApiOperation("修改Approve")
+/*	@ApiOperation("修改Approve")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Approve", paramType = "form", value = "Approve的form信息", required = true, dataType = "string") })
+			@ApiImplicitParam(name = "Approve", paramType = "form", value = "Approve的form信息", required = true, dataType = "string") })*/
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput update(Approve approve) {
 		approveService.updateSelective(approve);
 		return BaseOutput.success("修改成功");
 	}
 
-	@ApiOperation("删除Approve")
+/*	@ApiOperation("删除Approve")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "id", paramType = "form", value = "Approve的主键", required = true, dataType = "long") })
+			@ApiImplicitParam(name = "id", paramType = "form", value = "Approve的主键", required = true, dataType = "long") })*/
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput delete(Long id) {
 		approveService.delete(id);

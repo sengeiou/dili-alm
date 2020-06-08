@@ -6,7 +6,7 @@ import com.dili.alm.service.DataDictionaryService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.google.common.collect.Lists;
-import io.swagger.annotations.Api;
+/*import io.swagger.annotations.Api;*/
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Api("/dataDictionary")
+/*@Api("/dataDictionary")*/
 @Controller
 @RequestMapping("/dataDictionary")
 public class DataDictionaryController {

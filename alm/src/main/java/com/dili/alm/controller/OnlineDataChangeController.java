@@ -39,16 +39,16 @@ import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.rpc.UserRpc;
 import com.dili.uap.sdk.session.SessionContext;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+//import io.swagger.annotations.Api;
+//import io.swagger.annotations.ApiImplicitParam;
+//import io.swagger.annotations.ApiImplicitParams;
+//import io.swagger.annotations.ApiOperation;
 
 /**
  *由MyBatis Generator工具自动生成
  * This file was generated on 2019-12-25 18:22:44.
  */
-@Api("/onlineDataChange")
+//@Api("/onlineDataChange")
 @Controller
 @RequestMapping("/onlineDataChange")
 public class OnlineDataChangeController {
@@ -78,7 +78,7 @@ public class OnlineDataChangeController {
     @Autowired
    	private    OnlineDataChangeLogService onlineDataChangeLogService;
      
-    @ApiOperation("跳转到index页面")
+//    @ApiOperation("跳转到index页面")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
     	
@@ -87,7 +87,7 @@ public class OnlineDataChangeController {
 		
         return "onlineDataChange/index";
     }
-	@ApiOperation("跳转到dataChange页面")
+//	@ApiOperation("跳转到dataChange页面")
 	@RequestMapping(value = "/dataChangeManager.html", method = RequestMethod.GET)
 	public String dataChange1(ModelMap modelMap,@RequestParam String  taskId, @RequestParam(defaultValue = "false") Boolean isNeedClaim) {
 		
@@ -100,37 +100,37 @@ public class OnlineDataChangeController {
 		
 	}
 	
-	@ApiOperation("跳转到dataChange页面")
+//	@ApiOperation("跳转到dataChange页面")
 	@RequestMapping(value = "/dataChangeTest.html", method = RequestMethod.GET)
 	public String dataChange2(ModelMap modelMap,String  taskId, @RequestParam(defaultValue = "false") Boolean isNeedClaim) {
 		getModelmap(modelMap, taskId,isNeedClaim);
 		return "onlineDataChange/dataChange2";
 	}
 	
-	@ApiOperation("跳转到dataChange页面")
+//	@ApiOperation("跳转到dataChange页面")
 	@RequestMapping(value = "/dataChangeDba.html", method = RequestMethod.GET)
 	public String projectOverview(ModelMap modelMap,String  taskId, @RequestParam(defaultValue = "false") Boolean isNeedClaim) {
 		getModelmap(modelMap, taskId,isNeedClaim);
 		return "onlineDataChange/dataChange3";
 	}
 	
-	@ApiOperation("跳转到dataChange页面")
+//	@ApiOperation("跳转到dataChange页面")
 	@RequestMapping(value = "/indexDataChange.html", method = RequestMethod.GET)
 	public String dbaDataChange(ModelMap modelMap,String  taskId ,@RequestParam(defaultValue = "false") Boolean isNeedClaim) {
 		getModelmap(modelMap, taskId,isNeedClaim);
 		return "onlineDataChange/indexDataChange";
 	}
-	@ApiOperation("OnlineDbaDataChange.html")
+//	@ApiOperation("OnlineDbaDataChange.html")
 	@RequestMapping(value = "/OnlineDbaDataChange.html", method = RequestMethod.GET)
 	public String onlineDbaDataChange(ModelMap modelMap,String  taskId ,@RequestParam(defaultValue = "false") Boolean isNeedClaim) {
 		getModelmap(modelMap, taskId,isNeedClaim);
 		return "onlineDataChange/onlineDbaDataChange";
 	}
 	
-    @ApiOperation(value="分页查询OnlineDataChange", notes = "查询OnlineDataChange，返回列表信息")
-    @ApiImplicitParams({
-		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "查询OnlineDataChange，返回列表信息", required = false, dataType = "string")
-	})
+//    @ApiOperation(value="分页查询OnlineDataChange", notes = "查询OnlineDataChange，返回列表信息")
+//    @ApiImplicitParams({
+//		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "查询OnlineDataChange，返回列表信息", required = false, dataType = "string")
+//	})
     @RequestMapping(value="/list.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody List<OnlineDataChange> list(@ModelAttribute OnlineDataChange onlineDataChange) {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
@@ -138,10 +138,10 @@ public class OnlineDataChangeController {
         return onlineDataChangeService.list(onlineDataChange);
     }
 
-    @ApiOperation(value="分页查询OnlineDataChange", notes = "分页查询HardwareResourceApply，返回easyui分页信息")
-    @ApiImplicitParams({
-		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "分页查询HardwareResourceApply，返回easyui分页信息", required = false, dataType = "string")
-	})
+//    @ApiOperation(value="分页查询OnlineDataChange", notes = "分页查询HardwareResourceApply，返回easyui分页信息")
+//    @ApiImplicitParams({
+//		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "分页查询HardwareResourceApply，返回easyui分页信息", required = false, dataType = "string")
+//	})
     @RequestMapping(value="/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String listPage(@ModelAttribute OnlineDataChange onlineDataChange,   @RequestParam(value="projectIdcc", required = false) String projectIdcc) throws Exception {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
@@ -150,10 +150,10 @@ public class OnlineDataChangeController {
     }
 	
 
-    @ApiOperation("保存OnlineDataChange")
-    @ApiImplicitParams({
-		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "OnlineDataChange的form信息", required = true, dataType = "string")
-	})
+//    @ApiOperation("保存OnlineDataChange")
+//    @ApiImplicitParams({
+//		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "OnlineDataChange的form信息", required = true, dataType = "string")
+//	})
     @RequestMapping(value="/insert.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput insert(@ModelAttribute OnlineDataChange onlineDataChange) throws ApplicationException {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
@@ -171,7 +171,7 @@ public class OnlineDataChangeController {
         return BaseOutput.success("保存成功");    
     }
     
-    @ApiOperation("返回版本id的信息")
+//    @ApiOperation("返回版本id的信息")
     @RequestMapping(value="/getOnlineDataChange.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String getOnlineDataChange(Long id ) {
         OnlineDataChange  object=	onlineDataChangeService.get(id);
@@ -181,10 +181,10 @@ public class OnlineDataChangeController {
     
     
 
-    @ApiOperation("修改OnlineDataChange")
-    @ApiImplicitParams({
-		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "OnlineDataChange的form信息", required = true, dataType = "string")
-	})
+//    @ApiOperation("修改OnlineDataChange")
+//    @ApiImplicitParams({
+//		@ApiImplicitParam(name="OnlineDataChange", paramType="form", value = "OnlineDataChange的form信息", required = true, dataType = "string")
+//	})
     @RequestMapping(value="/update.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput update(@ModelAttribute OnlineDataChange onlineDataChange, 
             HttpServletRequest reques) throws OnlineDataChangeException {
@@ -202,10 +202,10 @@ public class OnlineDataChangeController {
     
     
 
-    @ApiOperation("删除OnlineDataChange")
-    @ApiImplicitParams({
-		@ApiImplicitParam(name="id", paramType="form", value = "OnlineDataChange根据id删除", required = true, dataType = "long")
-	})
+//    @ApiOperation("删除OnlineDataChange")
+//    @ApiImplicitParams({
+//		@ApiImplicitParam(name="id", paramType="form", value = "OnlineDataChange根据id删除", required = true, dataType = "long")
+//	})
     @RequestMapping(value="/delete.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput delete(Long id) {
         onlineDataChangeService.delete(id);
@@ -219,7 +219,7 @@ public class OnlineDataChangeController {
     }
     
  
-    @ApiOperation("返回当前登录者的信息")
+//    @ApiOperation("返回当前登录者的信息")
     @RequestMapping(value="/getUserName.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String getUserName(Long id ) {
     	if(id==null) {
@@ -307,7 +307,7 @@ public class OnlineDataChangeController {
         return BaseOutput.success("执行成功");
     }
     
-	@ApiOperation("跳转到dataChange页面")
+//	@ApiOperation("跳转到dataChange页面")
 	@RequestMapping(value = "/openView", method = RequestMethod.GET)
 	public String openView(ModelMap modelMap,Long id) {
 		

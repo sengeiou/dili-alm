@@ -1,6 +1,5 @@
 package com.dili.alm.controller;
 
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,12 +16,12 @@ import com.dili.alm.service.AlarmConfigService;
 import com.dili.alm.service.ProjectService;
 import com.dili.ss.domain.BaseOutput;
 
-import io.swagger.annotations.Api;
+/*import io.swagger.annotations.Api;*/
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-12-09 15:41:26.
  */
-@Api("/alarmConfig")
+/*@Api("/alarmConfig")*/
 @Controller
 @RequestMapping("/alarmConfig")
 public class AlarmConfigController {

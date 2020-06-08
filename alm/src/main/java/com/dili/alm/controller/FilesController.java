@@ -28,30 +28,31 @@ import com.dili.alm.service.FilesService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
 
-import io.swagger.annotations.Api;
+/*import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperation;*/
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-10-20 14:47:50.
  */
-@Api("/files")
+/*@Api("/files")*/
 @Controller
 @RequestMapping("/files")
 public class FilesController {
 	@Autowired
 	FilesService filesService;
 
-	@ApiOperation("跳转到Files页面")
+	/*@ApiOperation("跳转到Files页面")*/
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
 		return "files/index";
 	}
 
-	@ApiOperation(value = "查询Files", notes = "查询Files，返回列表信息")
+/*	@ApiOperation(value = "查询Files", notes = "查询Files，返回列表信息")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Files", paramType = "form", value = "Files的form信息", required = false, dataType = "string") })
+			@ApiImplicitParam(name = "Files", paramType = "form", value = "Files的form信息", required = false, dataType = "string")
+			})*/
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<Map> list(Files files) {
 		List<Files> list = filesService.list(files);
@@ -81,35 +82,39 @@ public class FilesController {
 		}
 	}
 
-	@ApiOperation(value = "分页查询Files", notes = "分页查询Files，返回easyui分页信息")
+/*	@ApiOperation(value = "分页查询Files", notes = "分页查询Files，返回easyui分页信息")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Files", paramType = "form", value = "Files的form信息", required = false, dataType = "string") })
+			@ApiImplicitParam(name = "Files", paramType = "form", value = "Files的form信息", required = false, dataType = "string") 
+			})*/
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(Files files) throws Exception {
 		return filesService.listEasyuiPageByExample(files, true).toString();
 	}
 
-	@ApiOperation("新增Files")
+/*	@ApiOperation("新增Files")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Files", paramType = "form", value = "Files的form信息", required = true, dataType = "string") })
+			@ApiImplicitParam(name = "Files", paramType = "form", value = "Files的form信息", required = true, dataType = "string") 
+			})*/
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput insert(Files files) {
 		filesService.insertSelective(files);
 		return BaseOutput.success("新增成功");
 	}
 
-	@ApiOperation("修改Files")
+/*	@ApiOperation("修改Files")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Files", paramType = "form", value = "Files的form信息", required = true, dataType = "string") })
+			@ApiImplicitParam(name = "Files", paramType = "form", value = "Files的form信息", required = true, dataType = "string") 
+			})*/
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput update(Files files) {
 		filesService.updateSelective(files);
 		return BaseOutput.success("修改成功");
 	}
 
-	@ApiOperation("删除Files")
+/*	@ApiOperation("删除Files")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "id", paramType = "form", value = "Files的主键", required = true, dataType = "long") })
+			@ApiImplicitParam(name = "id", paramType = "form", value = "Files的主键", required = true, dataType = "long") 
+			})*/
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput delete(Long id) {
 		Files files = this.filesService.get(id);

@@ -53,16 +53,16 @@ import com.dili.uap.sdk.rpc.DepartmentRpc;
 import com.dili.uap.sdk.rpc.UserRpc;
 import com.dili.uap.sdk.session.SessionContext;
 
-import io.swagger.annotations.Api;
+/*import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperation;*/
 import tk.mybatis.mapper.entity.Example;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2018-03-20 17:22:08.
  */
-@Api("/hardwareResourceApply")
+/*@Api("/hardwareResourceApply")*/
 @Controller
 @RequestMapping("/hardwareResourceApply")
 public class HardwareResourceApplyController {
@@ -84,7 +84,7 @@ public class HardwareResourceApplyController {
 	private static final String DEPARTMENT_MAINTENANCE_CODE = "maintenance";
 	private static final String DATA_AUTH_TYPE = "project";
 
-	@ApiOperation("跳转到HardwareResourceApply页面")
+	/*@ApiOperation("跳转到HardwareResourceApply页面")*/
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
 		modelMap.addAttribute("user", SessionContext.getSessionContext().getUserTicket());
@@ -217,9 +217,10 @@ public class HardwareResourceApplyController {
 		return "hardwareResourceApply/edit";
 	}
 
-	@ApiOperation(value = "查询HardwareResourceApply", notes = "查询HardwareResourceApply，返回列表信息")
+/*	@ApiOperation(value = "查询HardwareResourceApply", notes = "查询HardwareResourceApply，返回列表信息")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "HardwareResourceApply", paramType = "form", value = "HardwareResourceApply的form信息", required = false, dataType = "string") })
+			@ApiImplicitParam(name = "HardwareResourceApply", paramType = "form", value = "HardwareResourceApply的form信息", required = false, dataType = "string") 
+			})*/
 	@RequestMapping(value = "/listRequirement", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<HardwareResourceRequirement> listRequirement(Long applyId) {
 		List<HardwareResourceRequirement> list = null;
@@ -231,9 +232,10 @@ public class HardwareResourceApplyController {
 		return list;
 	}
 
-	@ApiOperation(value = "分页查询HardwareResourceApply", notes = "分页查询HardwareResourceApply，返回easyui分页信息")
+/*	@ApiOperation(value = "分页查询HardwareResourceApply", notes = "分页查询HardwareResourceApply，返回easyui分页信息")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "HardwareResourceApply", paramType = "form", value = "HardwareResourceApply的form信息", required = false, dataType = "string") })
+			@ApiImplicitParam(name = "HardwareResourceApply", paramType = "form", value = "HardwareResourceApply的form信息", required = false, dataType = "string")
+			})*/
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(HardwareResourceApplyListPageQueryDto query,
 			@RequestParam(required = false) String applyStateShow) throws Exception {
@@ -265,9 +267,10 @@ public class HardwareResourceApplyController {
 		return hardwareResourceApplyService.listEasyuiPageByExample(query, true).toString();
 	}
 
-	@ApiOperation("新增HardwareResourceApply")
+/*	@ApiOperation("新增HardwareResourceApply")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "HardwareResourceApply", paramType = "form", value = "HardwareResourceApply的form信息", required = true, dataType = "string") })
+			@ApiImplicitParam(name = "HardwareResourceApply", paramType = "form", value = "HardwareResourceApply的form信息", required = true, dataType = "string") 
+			})*/
 	@RequestMapping(value = "/save", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput insert(HardwareResourceApplyUpdateDto hardwareResourceApply,
 			String[] serviceEnvironmentChk, String configurationRequirementJsonStr) {
@@ -293,9 +296,10 @@ public class HardwareResourceApplyController {
 		return BaseOutput.success("新增成功");
 	}
 
-	@ApiOperation("修改HardwareResourceApply")
+/*	@ApiOperation("修改HardwareResourceApply")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "HardwareResourceApply", paramType = "form", value = "HardwareResourceApply的form信息", required = true, dataType = "string") })
+			@ApiImplicitParam(name = "HardwareResourceApply", paramType = "form", value = "HardwareResourceApply的form信息", required = true, dataType = "string") 
+			})*/
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput update(HardwareResourceApplyUpdateDto hardwareResourceApply,
 			String[] serviceEnvironmentChk, String configurationRequirementJsonStr,String source,String taskId) {
@@ -315,18 +319,20 @@ public class HardwareResourceApplyController {
 		return BaseOutput.success("修改成功");
 	}
 
-	@ApiOperation("删除HardwareResourceApply")
+/*	@ApiOperation("删除HardwareResourceApply")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "id", paramType = "form", value = "HardwareResourceApply的主键", required = true, dataType = "long") })
+			@ApiImplicitParam(name = "id", paramType = "form", value = "HardwareResourceApply的主键", required = true, dataType = "long") 
+			})*/
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput delete(Long id) {
 		hardwareResourceApplyService.delete(id);
 		return BaseOutput.success("删除成功");
 	}
 
-	@ApiOperation("提交申请")
+/*	@ApiOperation("提交申请")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "id", paramType = "form", value = "HardwareResourceApply的主键", required = true, dataType = "long") })
+			@ApiImplicitParam(name = "id", paramType = "form", value = "HardwareResourceApply的主键", required = true, dataType = "long") 
+			})*/
 	@RequestMapping(value = "/submit", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput submit(Long id) {
 		try {
@@ -362,9 +368,10 @@ public class HardwareResourceApplyController {
 		}
 	}
 
-	@ApiOperation("进入审批申请")
+/*	@ApiOperation("进入审批申请")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "id", paramType = "form", value = "HardwareResourceApply的主键", required = true, dataType = "long") })
+			@ApiImplicitParam(name = "id", paramType = "form", value = "HardwareResourceApply的主键", required = true, dataType = "long") 
+			})*/
 	@RequestMapping(value = "/goApprove", method = { RequestMethod.GET })
 	public String goApprove(@RequestParam Long id, ModelMap modelMap) throws HardwareResourceApplyException {
 
@@ -425,7 +432,8 @@ public class HardwareResourceApplyController {
         modelMap.put("taskId",selected.getId());*/
 		return "hardwareResourceApply/agreePage";
 	}
-	@ApiOperation("操作项目经理同意")
+	
+	/*@ApiOperation("操作项目经理同意")*/
 	@RequestMapping(value = "/managerApprove", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput managerApprove(Long id, Boolean isApproved, String description){
 		try {
@@ -441,9 +449,10 @@ public class HardwareResourceApplyController {
 		return BaseOutput.success("提交成功");
 	}
 
-	@ApiOperation("运维经理审批")
+/*	@ApiOperation("运维经理审批")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "id", paramType = "form", value = "HardwareResourceApply的主键", required = true, dataType = "long") })
+			@ApiImplicitParam(name = "id", paramType = "form", value = "HardwareResourceApply的主键", required = true, dataType = "long") 
+			})*/
 	@RequestMapping(value = "/operManagerApprove", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput operManagerApprove(Long id, boolean isApproved, String description,
 			String[] operDepartmentUsers)  {
@@ -466,9 +475,10 @@ public class HardwareResourceApplyController {
 		return BaseOutput.success("提交成功");
 	}
 
-	@ApiOperation("运维实施")
+/*	@ApiOperation("运维实施")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "id", paramType = "form", value = "HardwareResourceApply的主键", required = true, dataType = "long") })
+			@ApiImplicitParam(name = "id", paramType = "form", value = "HardwareResourceApply的主键", required = true, dataType = "long") 
+			})*/
 	@RequestMapping(value = "/implementing", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput implementing(Long id, String description) {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
@@ -482,9 +492,10 @@ public class HardwareResourceApplyController {
 		return BaseOutput.success("提交成功");
 	}
 
-	@ApiOperation("实施人List")
+/*	@ApiOperation("实施人List")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "id", paramType = "form", value = "HardwareResourceApply的主键", required = true, dataType = "long") })
+			@ApiImplicitParam(name = "id", paramType = "form", value = "HardwareResourceApply的主键", required = true, dataType = "long") 
+			})*/
 	@RequestMapping(value = "/operMemers.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<User> operMemers() throws HardwareResourceApplyException {
 		Department department=DTOUtils.newDTO(Department.class);
@@ -501,7 +512,7 @@ public class HardwareResourceApplyController {
 	/***
 	 * 新增流程相关
 	 */
-	@ApiOperation("跳转页面项目经理同意")
+	/*@ApiOperation("跳转页面项目经理同意")*/
 	@RequestMapping(value = "/projectManagerApprove.html", method = { RequestMethod.GET, RequestMethod.POST })
 	public  String projectManagerApprove(@RequestParam String taskId, @RequestParam(required = false) Boolean cover, ModelMap modelMap) {
         BaseOutput<TaskMapping> output = taskRpc.getById(taskId);
@@ -523,7 +534,7 @@ public class HardwareResourceApplyController {
         return "hardwareResourceApply/process/projectManagerApprove";
 	}
 	
-	@ApiOperation("操作项目经理同意")
+	/*@ApiOperation("操作项目经理同意")*/
 	@RequestMapping(value = "/projectManagerApprove.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput doProjectManagerApproveForTask(@RequestParam String taskId,Long applyId, Boolean isApproved, String description)
 			throws HardwareResourceApplyException {
@@ -538,7 +549,7 @@ public class HardwareResourceApplyController {
 		return BaseOutput.success("提交成功");
 	}
 	
-	@ApiOperation("跳转页面运维经理同意")
+	/*@ApiOperation("跳转页面运维经理同意")*/
 	@RequestMapping(value = "/oprationManagerApprove.html", method = { RequestMethod.GET, RequestMethod.POST })
 	public   String oprationManagerApproveForTask(@RequestParam String taskId, @RequestParam(required = false) Boolean cover, ModelMap modelMap)
 			throws HardwareResourceApplyException {
@@ -571,7 +582,7 @@ public class HardwareResourceApplyController {
         return "hardwareResourceApply/process/oprationManagerApprove";
 	}
 	
-	@ApiOperation("操作运维经理同意")
+	/*@ApiOperation("操作运维经理同意")*/
 	@RequestMapping(value = "/oprationManagerApprove.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput doOprationManagerApproveForTask(@RequestParam String taskId,Long applyId, Boolean isApproved,String description,
 			String[] operDepartmentUsers )
@@ -590,7 +601,7 @@ public class HardwareResourceApplyController {
 
 		return BaseOutput.success("提交成功");
 	}
-	@ApiOperation("跳转页面运维操作")
+	/*@ApiOperation("跳转页面运维操作")*/
 	@RequestMapping(value = "/opdratorExecute.html", method = { RequestMethod.GET, RequestMethod.POST })
 	public   String opdratorExecuteForTask(@RequestParam String taskId, @RequestParam(required = false) Boolean cover, ModelMap modelMap)
 			throws HardwareResourceApplyException {
@@ -613,7 +624,7 @@ public class HardwareResourceApplyController {
         return "hardwareResourceApply/process/opdratorExecute";
 	}
 	
-	@ApiOperation("运维执行操作")
+	/*@ApiOperation("运维执行操作")*/
 	@RequestMapping(value = "/opdratorExecute.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput doOpdratprExecuteForTask(@RequestParam String taskId,Long applyId, String description)
 			throws HardwareResourceApplyException {
@@ -622,7 +633,7 @@ public class HardwareResourceApplyController {
 		hardwareResourceApplyService.operatorExecuteForTask(applyId, user.getId(), description);
 		return BaseOutput.success("提交成功");
 	}
-	@ApiOperation("跳转页面重新编辑")
+	/*@ApiOperation("跳转页面重新编辑")*/
 	@RequestMapping(value = "/editHardwareResourceApply.html", method = { RequestMethod.GET, RequestMethod.POST })
 	public  String editHardwareResourceApply(@RequestParam String taskId, @RequestParam(required = false) Boolean cover, ModelMap modelMap) throws HardwareResourceApplyException {
         BaseOutput<TaskMapping> output = taskRpc.getById(taskId);

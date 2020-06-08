@@ -45,13 +45,13 @@ import com.dili.uap.sdk.session.SessionContext;
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+/*import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;*/
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2018-06-21 12:00:46.
  */
-@Api("/projectActionRecord")
+/*@Api("/projectActionRecord")*/
 @Controller
 @RequestMapping("/projectActionRecord")
 public class ProjectActionRecordController {
@@ -68,7 +68,7 @@ public class ProjectActionRecordController {
 	@Autowired
 	private ProjectActionProvider actionProvider;
 
-	@ApiOperation("跳转到ProjectActionRecord页面")
+/*	@ApiOperation("跳转到ProjectActionRecord页面")*/
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
 		@SuppressWarnings({ "rawtypes" })
