@@ -8,6 +8,6 @@ import com.dili.ss.base.BaseService;
  */
 public interface OnlineDataChangeLogService extends BaseService<OnlineDataChangeLog, Long> {
 	
-	void insertDataExeLog(String dataId,String operationName,int opertateResult ) ;
+	void insertDataExeLog(String dataId,String operationName,int opertateResult,String description ) ;
 
 }

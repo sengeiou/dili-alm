@@ -107,23 +107,21 @@ button:hover {
 				      
 				      </td>
 						 
-					  <td colspan="1"  style="padding: 5px; background-color: #f5f5f5; font-weight: bold">
+					 <!--  <td colspan="1"  style="padding: 5px; background-color: #f5f5f5; font-weight: bold">
 					    
 							<div id="fileuploader" >选择文件</div>
-						<!-- 	 <input  class="easyui-linkbutton" name="_sqlFileId"   style="width: 39%"  value="${odc.sqlFileId}"   id="_sqlFileId"> -->
+							 <input  class="easyui-linkbutton" name="_sqlFileId"   style="width: 39%"  value="${odc.sqlFileId}"   id="_sqlFileId">
 					          <input  value="${odc.sqlFileId}"  name="_sqlFileId" id="_sqlFileId"  type="hidden" />
-					      <!--     <input type="file" id="sqlFile" name="sqlFile"   accept=".txt,.sql" style="width: 39%"> -->
-							 <!--  <a id="btnShangChuan" href="#" class="easyui-linkbutton"   data-options="iconCls:'icon-save'">上传后保存</a> -->
-						 		<!-- <a id="xiazai" href="#" onclick="downMyFile(${odc.sqlFileId})" class="easyui-linkbutton"  data-options="iconCls:'icon-download'">下载sql文件</a>   	 -->
-					  </td>
-					  <td colspan="1"  style="padding: 5px; background-color: #f5f5f5; font-weight: bold">
-					    
-							<!-- <div id="fileuploader" >选择文件</div> -->
-						<!-- 	 <input  class="easyui-linkbutton" name="_sqlFileId"   style="width: 39%"  value="${odc.sqlFileId}"   id="_sqlFileId"> -->
-					    <!--       <input  value="${odc.sqlFileId}"  name="_sqlFileId" id="_sqlFileId"  type="hidden" /> -->
-					      <!--     <input type="file" id="sqlFile" name="sqlFile"   accept=".txt,.sql" style="width: 39%"> -->
-							 <!--  <a id="btnShangChuan" href="#" class="easyui-linkbutton"   data-options="iconCls:'icon-save'">上传后保存</a> -->
+					          <input type="file" id="sqlFile" name="sqlFile"   accept=".txt,.sql" style="width: 39%">
+							  <a id="btnShangChuan" href="#" class="easyui-linkbutton"   data-options="iconCls:'icon-save'">上传后保存</a>
 						 		<a id="xiazai" href="#" onclick="downMyFile(${odc.sqlFileId})" class="easyui-linkbutton"  data-options="iconCls:'icon-download'">下载sql文件</a>   	
+					  </td> -->
+					  <td colspan="2"  style="padding: 5px; background-color: #f5f5f5; font-weight: bold">
+					    
+						       <input   name="_sqlFileId" id="_sqlFileId"  value="${odc.sqlFileId}"  type="hidden" />
+					           <input type="file" id="sqlFile" name="sqlFile"  accept=".txt,.sql,application/zip" style="width: 39%">
+							   <a id="btnShangChuan" href="#" class="easyui-linkbutton"   data-options="iconCls:'icon-save'">上传后保存</a>
+						 		<a id="xiazai" href="#" onclick="downMyFile(${odc.sqlFileId})" class="easyui-linkbutton"  data-options="iconCls:'icon-download'"> ${fileName}</a>   	
 					  </td>
 				</tr>
 				
@@ -158,11 +156,11 @@ button:hover {
 					 align="center" fit="false" striped="true" idField="id">
 							<thead>
 								<tr>
-								   
-									<th data-options="field:'operationName', width:'25%',  sortable:'true', order:'asc', align:'left', resizable:'true', fixed:'false'">操作内容</th>
-									<th data-options="field:'operatorId', width:'25%',  _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作人</th>
-									<th data-options="field:'operateTime', width:'25%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作时间</th>
-									<th data-options="field:'opertateResult', width:'25%', formatter: formatStatus,     sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作结果</th>
+								   <th data-options="field:'operationName', width:'25%',  sortable:'true', order:'asc', align:'left', resizable:'true', fixed:'false'">操作内容</th>
+									<th data-options="field:'operatorId', width:'20%',  _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作人</th>
+									<th data-options="field:'operateTime', width:'15%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作时间</th>
+									<th data-options="field:'opertateResult', width:'15%', formatter: formatStatus,   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作结果</th>
+									<th data-options="field:'description', width:'25%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">执行意见</th>
 								</tr>
 							</thead>
 	        </table>
@@ -181,7 +179,13 @@ button:hover {
 
 <script type="text/javascript">
 
-	 
+function downMyFile(id){
+	
+    if(id!=null)
+     	window.open('${contextPath!}/files/download?id=' + id);
+	  else
+		alert("没有文件");   
+}
 $("#_projectId").combobox({  
 
 	   onChange: function () {
@@ -224,14 +228,17 @@ function reloadVisionSelect(id) {
  
 $('#btnShangChuan').bind('click', function(){
 		 
-		 var input = document.getElementById('sqlFile');
-		
+		   var input = document.getElementById('sqlFile');
+		   if ($("#sqlFile").val() == "" ) {
+               alert("请选择文件上传");
+               return;
+           }
 		    var formdata = new FormData();
 		    var curValue=$('#_projectId').combobox('getValue');
-		   // alert(curValue);
+		  
 		    formdata.append('file', input.files[0]);
 		    formdata.append('projectId',curValue);
-		    
+		   //  alert(curValue);
 		    $.ajax({
 		       type: "POST",
 		       url: "${contextPath!}/files/filesUpload",
@@ -246,6 +253,8 @@ $('#btnShangChuan').bind('click', function(){
 		        	    alert("上传成功");
 		        	  //  alert( rowd.id);
 		        	   $('#_sqlFileId').val( rowd.id); 
+		        	   
+		        	   $("#xiazai").text(input.files[0].name);
 		        	  // alert( $('#_sqlFileId').val());
 	        	   }else{
 	        		    alert("失败上传");
@@ -297,6 +306,12 @@ $('#btnShangChuan').bind('click', function(){
    $(function () {
   	var  onDataid=${odc.id};
   	 downRecordGrid(onDataid);
+  	 
+  	  var tempFileName = '${fileName!}';
+ 	 if(null==tempFileName|tempFileName==''){
+ 		
+ 		 $("#xiazai").hide();
+ 	 } 
   
    });
    function formatStatus(val,row,index){  

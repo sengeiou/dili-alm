@@ -58,8 +58,7 @@ button:hover {
 					   </td>
 					<td style="padding: 5px;">
 					     
-					     <input    value="${versionTask}"  class="easyui-textbox" style="width: 100%;" editable="false"
-					    >
+					     <input    value="${versionTask}"  class="easyui-textbox" style="width: 100%;" editable="false" >
 					
 					</td>
 
@@ -93,15 +92,16 @@ button:hover {
 				</tr>
 				
 				<tr>
-				      <td     style="padding: 5px; background-color: #f5f5f5; font-weight: bold">SQL脚本（可附件）</td>
+				      <td     style="padding: 5px; background-color: #f5f5f5; font-weight: bold">SQL脚本（可附件）  
+				      </td>
 							
 					  <td colspan="3"  style="padding: 5px; background-color: #f5f5f5; font-weight: bold">
 					       <input class="easyui-textbox"  id="_sqlScript" name="_sqlScript" value="${odc.sqlScript}"
-							data-options="validType:['length[0,50]']" style="width: 39%">
-							
-						<!-- 	 <input  class="easyui-linkbutton" name="_sqlFileId"   style="width: 39%"  value="${odc.sqlFileId}"   id="_sqlFileId"> -->
-					   	<a id="xiazai" href="#" onclick="downMyFile(${odc.sqlFileId})" class="easyui-linkbutton"  data-options="iconCls:'icon-download'">下载sql文件</a>   	
-						 <!-- 	<a id="xiazai  " href="${contextPath}/files/download?id=${odc.sqlFileId}" class="easyui-linkbutton"  data-options="iconCls:'icon-download'">下载sql文件</a>   	 -->
+							data-options="validType:['length[0,50]']" style="width: 80%">
+					      	<a id="xiazai" href="#" onclick="downMyFile(${odc.sqlFileId})" class="easyui-linkbutton" 
+					      	     data-options="iconCls:'icon-download'">
+					      	   ${fileName}
+					      	</a>   	
 					  </td>
 				</tr>
 				
@@ -111,9 +111,14 @@ button:hover {
 	            
 				  
 				<tr>
-				   <td  colspan="2"   style="padding: 5px; background-color: #f5f5f5; font-weight: bold">  	<a id="agree" href="#" class="easyui-linkbutton" 
-					   	  data-options="iconCls:'icon-save'">项目经理同意</a></td>
+				   <td  colspan="2"   style="padding: 5px; background-color: #f5f5f5; font-weight: bold">  
+				           审批意见    <input class="easyui-textbox"    name="description" id="description" value=""
+							data-options="validType:['length[0,100]']" style="width: 90%"/>
+				   </td>
 					<td  colspan="2"  style="padding: 5px;">
+					   <a id="agree" href="#" class="easyui-linkbutton" 
+					   	  data-options="iconCls:'icon-save'">项目经理同意</a>
+					   	  
 					   	<a id="notAgree" href="#" class="easyui-linkbutton" 
 					   	  data-options="iconCls:'icon-save'">项目经理不同意</a>   
 				 	</td>
@@ -140,10 +145,12 @@ button:hover {
 							<thead>
 								<tr>
 								   
+								   
 									<th data-options="field:'operationName', width:'25%',  sortable:'true', order:'asc', align:'left', resizable:'true', fixed:'false'">操作内容</th>
-									<th data-options="field:'operatorId', width:'25%',  _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作人</th>
-									<th data-options="field:'operateTime', width:'25%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作时间</th>
-									<th data-options="field:'opertateResult', width:'25%', formatter: formatStatus,     sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作结果</th>
+									<th data-options="field:'operatorId', width:'20%',  _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作人</th>
+									<th data-options="field:'operateTime', width:'15%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作时间</th>
+									<th data-options="field:'opertateResult', width:'15%', formatter: formatStatus,   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作结果</th>
+									<th data-options="field:'description', width:'25%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">执行意见</th>
 								</tr>
 							</thead>
 	        </table>
@@ -165,13 +172,15 @@ button:hover {
 
    $('#agree').bind('click', function(){
 	   var isNeedClaim=$('#isNeedClaim').val();
+	   var description=$('#description').val();
 	   var taskIdd=$('#taskId').val();
 //	 alert("ss");
 	   $.ajax({
            type: "post",
            url: "${contextPath}/onlineDataChange/agreeDeptOnlineData.action",
            data: {"taskId":taskIdd,
-    	          "isNeedClaim":isNeedClaim
+    	          "isNeedClaim":isNeedClaim,
+    	          "description":description
            },
            beforeSend: function () {
                load();
@@ -211,11 +220,13 @@ button:hover {
    $('#notAgree').bind('click', function(){
 	   var taskIdd=$('#taskId').val();
 	   var isNeedClaim=$('#isNeedClaim').val();
+	   var description=$('#description').val();
 	   $.ajax({
            type: "post",
            url: "${contextPath}/onlineDataChange/notAgreeDeptOnlineData.action",
            data: {"taskId":taskIdd,
-    	          "isNeedClaim":isNeedClaim
+    	          "isNeedClaim":isNeedClaim,
+    	          "description":description
            },
            beforeSend: function () {
                load();
@@ -265,8 +276,16 @@ button:hover {
 
 
      $(function () {
+    	
+    	// var tempFileName=${fileName};
+    	//  alert("sss");
     	var  onDataid=${odc.id};
     	 downRecordGrid(onDataid);
+         var tempFileName = '${fileName!}';
+    	 if(null==tempFileName|tempFileName==''){
+    		
+    		 $("#xiazai").hide();
+    	 } 
     
      });
      function formatStatus(val,row,index){  

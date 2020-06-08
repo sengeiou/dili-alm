@@ -64,5 +64,13 @@ public interface OnlineDataChangeLog extends IBaseDomain {
 
     void setOperatorId(Long operatorId);
     
+    @Column(name = "`description`")
+    @FieldDef(label="描述", maxLength = 255)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getDescription();
+
+    void setDescription(String description);
+    
+    
 
 }
