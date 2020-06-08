@@ -55,15 +55,9 @@ import com.dili.uap.sdk.rpc.UserRpc;
 import com.dili.uap.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2018-05-23 11:51:37.
  */
-@Api("/workOrder")
 @Controller
 @RequestMapping("/workOrder")
 public class WorkOrderController {
@@ -126,7 +120,6 @@ public class WorkOrderController {
 		return this.workOrderService.getReceivers(WorkOrderSource.intValueOf(type));
 	}
 
-	@ApiOperation("跳转到WorkOrder页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
 		modelMap.addAttribute("user", SessionContext.getSessionContext().getUserTicket());
@@ -285,17 +278,13 @@ public class WorkOrderController {
 		}
 	}
 
-	@ApiOperation(value = "查询WorkOrder", notes = "查询WorkOrder，返回列表信息")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "WorkOrder", paramType = "form", value = "WorkOrder的form信息", required = false, dataType = "string") })
+
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<WorkOrder> list(WorkOrder workOrder) {
 		return workOrderService.list(workOrder);
 	}
 
-	@ApiOperation(value = "分页查询WorkOrder", notes = "分页查询WorkOrder，返回easyui分页信息")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "WorkOrder", paramType = "form", value = "WorkOrder的form信息", required = false, dataType = "string") })
+
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(WorkOrderQueryDto query) throws Exception {
 		query.setSort("modifyTime");
@@ -322,9 +311,7 @@ public class WorkOrderController {
 		
 	}
 
-	@ApiOperation("删除WorkOrder")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "id", paramType = "form", value = "WorkOrder的主键", required = true, dataType = "long") })
+
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput delete(Long id) {
 		try {
@@ -335,7 +322,7 @@ public class WorkOrderController {
 		}
 	}
 	
-	@ApiOperation("跳转到detailAllocate页面")
+
 	@RequestMapping(value = "/detailAllocate", method = RequestMethod.GET)
 	public String detailAllocate(ModelMap modelMap,String  taskId, @RequestParam(defaultValue = "false") Boolean isNeedClaim) {
 		String id =getModelmap(modelMap, taskId, isNeedClaim);
@@ -349,7 +336,7 @@ public class WorkOrderController {
 		return "workOrder/detailAllocate";
 		
 	}
-	@ApiOperation("跳转到detailSolve页面")
+
 	@RequestMapping(value = "/detailSolve", method = RequestMethod.GET)
 	public String detailSolve(ModelMap modelMap,String  taskId, @RequestParam(defaultValue = "false") Boolean isNeedClaim) {
 		String id =getModelmap(modelMap, taskId, isNeedClaim);
@@ -365,8 +352,7 @@ public class WorkOrderController {
 		
 	}
 	
-	
-	@ApiOperation("跳转到detailClose页面")
+
 	@RequestMapping(value = "/detailClose", method = RequestMethod.GET)
 	public String colseSolve(ModelMap modelMap,String  taskId, @RequestParam(defaultValue = "false") Boolean isNeedClaim) {
 		String id =getModelmap(modelMap, taskId, isNeedClaim);
@@ -381,7 +367,7 @@ public class WorkOrderController {
 		return "workOrder/detailClose";
 		
 	}
-	@ApiOperation("跳转到editSolve页面")
+
 	@RequestMapping(value = "/editWorkOrder", method = RequestMethod.GET)
 	public String editSolve(ModelMap modelMap,String  taskId, @RequestParam(defaultValue = "false") Boolean isNeedClaim) {
 		String idStr =getModelmap(modelMap, taskId, isNeedClaim);

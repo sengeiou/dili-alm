@@ -53,16 +53,12 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+
 import tk.mybatis.mapper.entity.Example;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2018-03-13 15:31:10.
  */
-@Api("/projectOnlineApply")
 @Controller
 @RequestMapping("/projectOnlineApply")
 public class ProjectOnlineApplyController {
@@ -285,7 +281,6 @@ public class ProjectOnlineApplyController {
 		}
 	}
 
-	@ApiOperation("跳转到ProjectOnlineApply页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
@@ -390,15 +385,11 @@ public class ProjectOnlineApplyController {
 		}
 	}
 
-	@ApiOperation(value = "查询ProjectOnlineApply", notes = "查询ProjectOnlineApply，返回列表信息")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectOnlineApply", paramType = "form", value = "ProjectOnlineApply的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<ProjectOnlineApply> list(ProjectOnlineApply projectOnlineApply) {
 		return projectOnlineApplyService.list(projectOnlineApply);
 	}
 
-	@ApiOperation(value = "分页查询ProjectOnlineApply", notes = "分页查询ProjectOnlineApply，返回easyui分页信息")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectOnlineApply", paramType = "form", value = "ProjectOnlineApply的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(ProjectOnlineApplyListQueryDto projectOnlineApply) throws Exception {
 		projectOnlineApply.setSort("created");
@@ -407,8 +398,6 @@ public class ProjectOnlineApplyController {
 	}
 
 	@SuppressWarnings("unchecked")
-	@ApiOperation("新增ProjectOnlineApply")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectOnlineApply", paramType = "form", value = "ProjectOnlineApply的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/add", method = { RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> insert(@Valid ProjectOnlineApplyAddDto apply, BindingResult br) {
 		if (br.hasErrors()) {
@@ -428,8 +417,6 @@ public class ProjectOnlineApplyController {
 		}
 	}
 
-	@ApiOperation("修改ProjectOnlineApply")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectOnlineApply", paramType = "form", value = "ProjectOnlineApply的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> update(@Valid ProjectOnlineApplyAddDto apply, BindingResult br) {
 		if (br.hasErrors()) {
@@ -449,8 +436,6 @@ public class ProjectOnlineApplyController {
 		}
 	}
 
-	@ApiOperation("删除ProjectOnlineApply")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "id", paramType = "form", value = "ProjectOnlineApply的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput delete(Long id) {
 		try {

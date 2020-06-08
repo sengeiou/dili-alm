@@ -32,15 +32,11 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.uap.sdk.session.SessionContext;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2017-12-08 11:29:47.
  */
-@Api("/projectComplete")
 @Controller
 @RequestMapping("/projectComplete")
 public class ProjectCompleteController {
@@ -49,7 +45,6 @@ public class ProjectCompleteController {
 	@Autowired
 	private ProjectService projectService;
 
-	@ApiOperation("跳转到ProjectComplete页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
 		modelMap.put("sessionID", SessionContext.getSessionContext().getUserTicket().getId());
@@ -90,8 +85,6 @@ public class ProjectCompleteController {
 		return "projectComplete/step" + step;
 	}
 
-	@ApiOperation(value = "查询ProjectComplete", notes = "查询ProjectComplete，返回列表信息")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectComplete", paramType = "form", value = "ProjectComplete的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<ProjectComplete> list(ProjectComplete projectComplete) {
 		return projectCompleteService.list(projectComplete);
@@ -135,8 +128,6 @@ public class ProjectCompleteController {
 		return "projectComplete/details";
 	}
 
-	@ApiOperation(value = "分页查询ProjectComplete", notes = "分页查询ProjectComplete，返回easyui分页信息")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectComplete", paramType = "form", value = "ProjectComplete的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(ProjectCompleteQueryDto projectComplete) throws Exception {
 		if (projectComplete.getCreated() != null) {
@@ -147,8 +138,6 @@ public class ProjectCompleteController {
 		return projectCompleteService.listEasyuiPageByExample(projectComplete, true).toString();
 	}
 
-	@ApiOperation("新增ProjectComplete")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectComplete", paramType = "form", value = "ProjectComplete的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput insert(ProjectComplete projectComplete, String reasonText) {
 		if (projectComplete.getReason().equalsIgnoreCase("2")) {
@@ -170,8 +159,6 @@ public class ProjectCompleteController {
 		return newId == -1 ? "redirect:/projectComplete/index.html" : "redirect:/projectComplete/toStep/1/index.html?id=" + newId;
 	}
 
-	@ApiOperation("修改ProjectComplete")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "ProjectComplete", paramType = "form", value = "ProjectComplete的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Object> update(ProjectComplete projectComplete, String reasonText) {
 		if (StringUtils.isNotEmpty(projectComplete.getReason())) {
@@ -188,8 +175,6 @@ public class ProjectCompleteController {
 		}
 	}
 
-	@ApiOperation("删除ProjectComplete")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "id", paramType = "form", value = "ProjectComplete的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput delete(Long id) {
 		ProjectComplete complete = projectCompleteService.get(id);
