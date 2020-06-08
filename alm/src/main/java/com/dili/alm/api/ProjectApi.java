@@ -1,15 +1,11 @@
 package com.dili.alm.api;
 
-import com.dili.alm.domain.Demand;
-import com.dili.alm.domain.Project;
+
 import com.dili.alm.domain.dto.UserDataDto;
 import com.dili.alm.service.ProjectService;
 import com.dili.alm.utils.WebUtil;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.dto.DTOUtils;
 
-import io.swagger.annotations.Api;
-import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-@Api("/projectApi")
+/*@Api("/projectApi")*/
 @Controller
 @RequestMapping("/projectApi")
 public class ProjectApi {

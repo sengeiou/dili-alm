@@ -15,10 +15,10 @@ import com.dili.bpmc.sdk.dto.Assignment;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+/*import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;*/
 
-@Api("/workOrderApplyApi")
+/*@Api("/workOrderApplyApi")*/
 @Controller
 @RequestMapping("/workOrderApplyApi")
 public class WorkOrderApplyApi {
@@ -28,7 +28,7 @@ public class WorkOrderApplyApi {
 
 	
 	// 编辑
-	@ApiOperation("编辑")
+/*	@ApiOperation("编辑")*/
 	@RequestMapping("/setOrderApplyAssigneeName.api")
 	public @ResponseBody BaseOutput<Assignment> setOrderApplyAssigneeName(@RequestBody TaskMapping taskMapping) {
 	/*	Map<String, String[]> map = request.getParameterMap();
@@ -43,7 +43,7 @@ public class WorkOrderApplyApi {
 		return BaseOutput.success().setData(assignment);
 	}
 	// 分配数据变
-	@ApiOperation("分配数据变")
+/*	@ApiOperation("分配数据变")*/
 	@RequestMapping("/setAllocateAssigneeName.api")
 	public @ResponseBody BaseOutput<Assignment> setAllocateAssigneeName(@RequestBody TaskMapping taskMapping) {
 		/*Map<String, String[]> map = request.getParameterMap();
@@ -60,7 +60,7 @@ public class WorkOrderApplyApi {
 	}
 
 	// 解决人
-	@ApiOperation("解决人")
+/*	@ApiOperation("解决人")*/
 	@RequestMapping("/setSolveAssigneeName.api")
 	public @ResponseBody BaseOutput<Assignment> setSolveAssigneeName(@RequestBody TaskMapping taskMapping) {
 	//	String productManagerId = taskMapping.getProcessVariables().get("solve").toString();
@@ -72,7 +72,7 @@ public class WorkOrderApplyApi {
 	}
 
 	// 解决人
-	@ApiOperation("关闭人")
+/*	@ApiOperation("关闭人")*/
 	@RequestMapping("/setCloseAssigneeName.api")
 	public @ResponseBody BaseOutput<Assignment> setsetCloseAssigneeName(@RequestBody TaskMapping taskMapping) {
 	//	String idid= (String) taskMapping.getProcessVariables().get("close");
