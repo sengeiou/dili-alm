@@ -135,6 +135,8 @@ public class OnlineDataChangeController {
     public @ResponseBody List<OnlineDataChange> list(@ModelAttribute OnlineDataChange onlineDataChange) {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
     	onlineDataChange.setApplyUserId(id);
+    	onlineDataChange.setSort("create_date");
+		onlineDataChange.setOrder("asc");
         return onlineDataChangeService.list(onlineDataChange);
     }
 
