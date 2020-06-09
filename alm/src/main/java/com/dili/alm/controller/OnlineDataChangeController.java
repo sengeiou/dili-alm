@@ -136,7 +136,7 @@ public class OnlineDataChangeController {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
     	onlineDataChange.setApplyUserId(id);
     	onlineDataChange.setSort("create_date");
-		onlineDataChange.setOrder("asc");
+		onlineDataChange.setOrder("desc");
         return onlineDataChangeService.list(onlineDataChange);
     }
 
