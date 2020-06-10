@@ -412,11 +412,15 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		memberProvider.put("provider", "memberProvider");
 		metadata.put("applyUserId", memberProvider);
 
+		JSONObject datetimeProvider = new JSONObject();
+		datetimeProvider.put("provider", "datetimeProvider");
+		metadata.put("createDate", datetimeProvider);
+		
 		JSONObject dateProvider = new JSONObject();
 		dateProvider.put("provider", "dateProvider");
 		metadata.put("applyDate", dateProvider);
 		metadata.put("updateDate", dateProvider);
-
+		
 		try {
 			List<OnlineDataChangeBpmcDtoDto> targetList = BeanConver.copyList(list, OnlineDataChangeBpmcDtoDto.class);
 
