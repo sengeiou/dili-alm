@@ -293,7 +293,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 				try {
 					DemandDto newDemandDto = new DemandDto();
 					BeanUtils.copyProperties(newDemandDto, d);
-					User user = AlmCache.getInstance().getUserMap().get(d.getUserId());
+					User user = AlmCache.getInstance().getAllUserMap().get(d.getUserId());
 					if (user != null) {
 /*						Department department = AlmCache.getInstance().getDepMap().get(user.getDepartmentId());
 						if (department != null) {

@@ -52,6 +52,8 @@ public class AlmCache {
 
 	// 缓存用户，key为主键id
 	private static final Map<Long, User> USER_MAP = new ConcurrentHashMap<>();
+	// 缓存所有用户，key为主键id
+	private static final Map<Long, User> USER_ALL_MAP = new ConcurrentHashMap<>();
 	// 缓存项目，key为主键id
 	private static final Map<Long, Project> PROJECT_MAP = new ConcurrentHashMap<>();
 	// 缓存项目类型
@@ -198,6 +200,19 @@ public class AlmCache {
 		return USER_MAP;
 	}
 
+	public Map<Long, User> getAllUserMap() {
+		// 应用启动时初始化userMap
+		if (AlmCache.USER_ALL_MAP.isEmpty()) {
+			User newDTO = DTOUtils.newDTO(User.class);
+			BaseOutput<List<User>> output = userRpc.listByExample(newDTO);
+			if (output.isSuccess()) {
+				output.getData().forEach(user -> {
+					AlmCache.USER_ALL_MAP.put(user.getId(), user);
+				});
+			}
+		}
+		return USER_ALL_MAP;
+	}
 	public Map<String, String> getTravelCostItemMap() {
 		if (TRAVEL_COST_ITEM_MAP.isEmpty()) {
 			DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.TRAVEL_COST_DETAIL_CONFIG_CODE);

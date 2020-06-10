@@ -110,7 +110,7 @@ public class DemandController {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		
 		modelMap.addAttribute("userInfo", userTicket);
-		if (userTicket.getDepartmentId()!=null) {
+		if (userTicket.getFirmCode()!=null) {
 			BaseOutput<Firm> firm = firmRpc.getByCode(userTicket.getFirmCode());
 			modelMap.addAttribute("firmName",firm.getData().getName());
 		}else {
