@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -300,16 +302,15 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		current.setApproveDate(new Date());
 		current.setResult(opt);
 		current.setNotes(notes);
-		//审批判断
-		if(approveList!=null&&approveList.size()>0) {
-			ApplyApprove applyApprove = approveList.get(approveList.size()-1);
-			if(applyApprove.getUserId().longValue()==current.getUserId().longValue()&&applyApprove.getRole().equals(current.getRole())&&applyApprove.getResult().equals(current.getResult())) {
+		// 审批判断
+		if (approveList != null && approveList.size() > 0) {
+			ApplyApprove applyApprove = approveList.get(approveList.size() - 1);
+			if (applyApprove.getUserId().longValue() == current.getUserId().longValue() && applyApprove.getRole().equals(current.getRole()) && applyApprove.getResult().equals(current.getResult())) {
 				throw new ApproveException("该项目已完成审批操作");
 			}
 		}
 		approveList.add(current);
 		approve.setDescription(JSON.toJSONString(approveList));
-
 
 		switch (opt) {
 		case "reject":
@@ -603,7 +604,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 				metadata.put("startDate", JSON.parse("{provider:'dateProvider'}"));
 				metadata.put("endDate", JSON.parse("{provider:'dateProvider'}"));
 				metadata.put("type", JSON.parse("{provider:'projectTypeProvider'}"));
-				List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, projectApplyService.listByExample(apply));
+				List<Map> maps = ValueProviderUtils.buildDataByProvider(metadata, Arrays.asList(apply));
 				Map applyDTO = maps.get(0);
 				map.put("apply", applyDTO);
 
@@ -611,7 +612,6 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
 				map.put("planDto", projectApplyService.loadPlan(id));
 
-				// map.put("roi", JSON.parseObject(apply.getRoi(), Map.class));
 				RoiDto roi = new RoiDto();
 				ProjectEarning peQuery = DTOUtils.newDTO(ProjectEarning.class);
 				peQuery.setApplyId(id);
@@ -622,6 +622,24 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 				pcQuery.setApplyId(id);
 				List<ProjectCost> costs = this.projectCostMapper.select(pcQuery);
 				roi.setCosts(costs);
+				List<ProjectEarning> businessIndicators = roi.getBusinessIndicators();
+				DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+				for (int i = 0; i < businessIndicators.size(); i++) {
+					map.put("indicatorName" + i, businessIndicators.get(i).getIndicatorName());
+					map.put("indicatorCurrentStatus" + i, businessIndicators.get(i).getIndicatorCurrentStatus());
+					map.put("projectObjective" + i, businessIndicators.get(i).getProjectObjective());
+					Date date = businessIndicators.get(i).getImplemetionDate();
+					map.put("implemetionDate" + i, date);
+				}
+				List<ProjectEarning> efficiencyAndPerformanceIndicators = roi.getEfficiencyAndPerformanceIndicators();
+				int size = businessIndicators.size();
+				for (int i = 0; i < efficiencyAndPerformanceIndicators.size(); i++) {
+					map.put("indicatorName" + (i + size), efficiencyAndPerformanceIndicators.get(i).getIndicatorName());
+					map.put("indicatorCurrentStatus" + (i + size), efficiencyAndPerformanceIndicators.get(i).getIndicatorCurrentStatus());
+					map.put("projectObjective" + (i + size), efficiencyAndPerformanceIndicators.get(i).getProjectObjective());
+					Date date = efficiencyAndPerformanceIndicators.get(i).getImplemetionDate();
+					map.put("implemetionDate" + (i + size), date);
+				}
 				map.put("roi", roi);
 
 				map.put("loadImpact", projectApplyService.loadImpact(id));

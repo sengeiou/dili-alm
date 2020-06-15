@@ -144,6 +144,8 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	private TaskRpc taskRpc;
 	@Autowired
 	private RuntimeRpc runtimeRpc;
+	@Value("${uap.contextPath:http://uap.diligrp.com}")
+	private String uapContextPath;
 
 	@SuppressWarnings("unchecked")
 	public static Map<Object, Object> buildApplyViewModel(ProjectOnlineApply apply) {
@@ -1123,7 +1125,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		return emailStrs;
 	}
 
-	private void sendMail(ProjectOnlineApply apply, String subject, Set<String> emails) {
+	public void sendMail(ProjectOnlineApply apply, String subject, Set<String> emails) {
 
 		// 构建邮件内容
 		Template template = this.groupTemplate.getTemplate(this.contentTemplate);
@@ -1132,6 +1134,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		poor.setApplyId(apply.getId());
 		List<ProjectOnlineOperationRecord> list = this.poorMapper.select(poor);
 		template.binding("opRecords", this.buildOperationRecordViewModel(list));
+		template.binding("uapContextPath", this.uapContextPath);
 		String content = template.render();
 
 		// 发送
