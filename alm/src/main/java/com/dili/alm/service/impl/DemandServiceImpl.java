@@ -311,7 +311,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 						if (firm != null) {
 							newDemandDto.setDepartmentId(firm.getId());
 							newDemandDto.setDepartmentName(firm.getName());
-							while ( firm.getParentId()!= null) {
+							while ( firm.getParentId()!= null&&!firm.getParentId().equals("0")) {
 								firm = firmRpc.getById(firm.getParentId()).getData();
 								firm = AlmCache.getInstance().getFirmMap().get(firm.getCode());
 							}
@@ -482,7 +482,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			if (firm != null) {
 				demandDto.setDepartmentId(firm.getId());
 				demandDto.setDepartmentName(firm.getName());
-				while ( firm.getParentId()!= null) {
+				while ( firm.getParentId()!= null&&!firm.getParentId().equals("0")) {
 					firm = firmRpc.getById(firm.getParentId()).getData();
 					firm = AlmCache.getInstance().getFirmMap().get(firm.getCode());
 				}
