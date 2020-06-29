@@ -306,18 +306,19 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 								newDemandDto.setDepartmentFirstName(department.getName());
 							}
 						}*/
-						//部门换成了市场
+						//部门换成了市场，只取当前市场名称
 						Firm firm = AlmCache.getInstance().getFirmMap().get(user.getFirmCode());
 						if (firm != null) {
 							newDemandDto.setDepartmentId(firm.getId());
 							newDemandDto.setDepartmentName(firm.getName());
-							while ( firm.getParentId()!= null&&!firm.getParentId().equals("0")) {
+							newDemandDto.setDepartmentFirstName(firm.getName());
+/*							while ( firm.getParentId()!= null&&!firm.getParentId().equals("0")) {
 								firm = firmRpc.getById(firm.getParentId()).getData();
 								firm = AlmCache.getInstance().getFirmMap().get(firm.getCode());
 							}
 							if (firm != null) {
 								newDemandDto.setDepartmentFirstName(firm.getName());
-							}
+							}*/
 						}
 					}
 					// 添加可编辑按钮
