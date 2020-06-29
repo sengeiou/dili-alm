@@ -4,6 +4,20 @@ var editId = undefined;
 var userId = '${user.id!}';
 userId = parseInt(userId);
 
+function timeProgressFormatter(val, row, index) {
+	var startDate = new Date(row.startDate + ' 00:00:00');
+	var endDate = new Date(row.endDate + ' 00:00:00');
+	var now = new Date();
+	now.setHours(0);
+	now.setMinutes(0);
+	now.setSeconds(0);
+	var rate = (now.getTime() - startDate.getTime()) / (endDate.getTime() - startDate.getTime()) * 100;
+	var progress = rate > 100 ? 100 : rate;
+	var htmlstr = '<div style="width: 100px; height:20px;border: 1px solid #299a58;"><div style="width:' + progress + 'px; height:20px; background-color: #299a58;"><span>' + Math.round(rate)
+			+ '%</span></div></div>';
+	return htmlstr;
+}
+
 function addClearIcon() {
 	$(this).combobox({
 				icons : [{
@@ -20,7 +34,7 @@ function progressFormatter(value, rowData, rowIndex) {
 	if (value > 100) {
 		progress = 100;
 	}
-	var htmlstr = '<div style="width: 100px; height:20px;border: 1px solid #299a58;"><div style="width:' + progress + 'px; height:20px; background-color: #299a58;"><span>' + value
+	var htmlstr = '<div style="width: 100px; height:20px;border: 1px solid #299a58;"><div style="width:' + progress + 'px; height:20px; background-color: #0099FF;"><span>' + value
 			+ '%</span></div></div>';
 	return htmlstr;
 }

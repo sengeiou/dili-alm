@@ -92,7 +92,8 @@
 					<th data-options="field:'projectState',width:'5%',  _provider:'projectStateProvider', align:'center'">项目状态</th>
 					<th data-options="field:'taskCount',width:'5%', align:'center',formatter:taskFormatter">任务数</th>
 					<th data-options="field:'memberCount',width:'5%', align:'center',formatter:memberFormatter">成员数</th>
-					<th data-options="field:'completedProgress',width:'110', align:'center',formatter:progressFormatter">完成进度</th>
+					<th data-options="field:'timeProgress',align:'center',width:'10%',formatter:timeProgressFormatter">工期进度</th>
+					<th data-options="field:'completedProgress',width:'10%', align:'center',formatter:progressFormatter">工量进度</th>
 					<th data-options="field:'originator', width:'6%',_provider:'memberProvider', align:'center'">项目发起人</th>
 					<th data-options="field:'opt',align:'center',width:'10%',formatter:optFormatter">操作</th>
 				</tr>
@@ -110,7 +111,8 @@
 </div>
 <!-- 隐藏编辑框 --> <!-- ====================================================================================================================== -->
 <!-- style & script 分隔线 --> <!-- ====================================================================================================================== -->
-<script type="text/javascript" src="${contextPath!}/resources/js/dateFormat.js"></script> <script type="text/javascript">
+<script type="text/javascript" src="${contextPath!}/resources/js/dateFormat.js"></script> 
+<script type="text/javascript">	
 	var dataAuth = {
 		addProject : <%if(hasResource('addProject')){%>true<%}else{%>false<%}%>,
 		updateProject : <%if(hasResource('updateProject')){%>true<%}else{%>false<%}%>,
