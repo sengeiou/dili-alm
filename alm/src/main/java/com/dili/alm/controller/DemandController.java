@@ -420,7 +420,7 @@ public class DemandController {
     	return "demand/departmentApprove";
     }
     /**
-     * 部门经理同意申请
+     * 部门经理同意申请（运维同意）
      * @param code  需求编号
      * @param taskId 任务id
      * @return
