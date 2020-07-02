@@ -244,7 +244,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			selectDeman.setSubmitDate(new Date());
 			this.update(selectDeman);
 		}
-		Long departmentManagerId = this.departmentManagerId(selectDeman.getUserId());
+		//Long departmentManagerId = this.departmentManagerId(selectDeman.getUserId());
 		// 流程启动参数设置
 		Map<String, Object> variables = new HashMap<>();
 		variables.put(BpmConsts.DEMAND_CODE, selectDeman.getSerialNumber());
@@ -672,16 +672,14 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		selectDeman.setFinishDate(newDemand.getFinishDate());
 		selectDeman.setProcessType(DemandProcessStatus.DEPARTMENTMANAGER.getCode());
 		this.update(selectDeman);
-		Long departmentManagerId = this.departmentManagerId(selectDeman.getUserId());
+		//Long departmentManagerId = this.departmentManagerId(selectDeman.getUserId());
 		// 完成任务
-		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
+/*		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
 			{
 				put("departmentManagerId", departmentManagerId.toString());
 			}
-		});
-		
-
-	
+		});*/
+		BaseOutput<String> output = this.taskRpc.complete(taskId);
 		return output;
 	}
 
