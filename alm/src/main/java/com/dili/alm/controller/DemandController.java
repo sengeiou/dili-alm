@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dili.alm.cache.AlmCache;
 import com.dili.alm.constant.AlmConstants.DemandProcessStatus;
 import com.dili.alm.constant.AlmConstants.DemandStatus;
 import com.dili.alm.domain.ApproveResult;
@@ -411,10 +412,16 @@ public class DemandController {
         if (userTicket==null) {
 			return "用户错误！";
 		}
-    	BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
+    	//BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
     	modelMap.addAttribute("userInfo", userTicket);
-    		
-    	modelMap.addAttribute("depName",de.getData().getName());
+
+		//部门换成了市场
+		Firm firm = AlmCache.getInstance().getFirmMap().get(userTicket.getFirmCode());
+		if (firm!=null) {
+			modelMap.addAttribute("depName",firm.getName());
+		}else {
+			modelMap.addAttribute("depName","");
+		}
     	modelMap.put("taskId", taskId);
         modelMap.put("cover", cover == null ? output.getData().getAssignee() == null : cover);
     	return "demand/departmentApprove";
@@ -459,10 +466,16 @@ public class DemandController {
         if (userTicket==null) {
 			return "用户错误！";
 		}
-    	BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
+    	//BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
     	modelMap.addAttribute("userInfo", userTicket);
-    		
-    	modelMap.addAttribute("depName",de.getData().getName());
+
+		//部门换成了市场
+		Firm firm = AlmCache.getInstance().getFirmMap().get(userTicket.getFirmCode());
+		if (firm!=null) {
+			modelMap.addAttribute("depName",firm.getName());
+		}else {
+			modelMap.addAttribute("depName","");
+		}
     	modelMap.put("taskId", taskId);
         modelMap.put("cover", cover == null ? output.getData().getAssignee() == null : cover);
     	return "demand/accept";
@@ -507,10 +520,16 @@ public class DemandController {
         if (userTicket==null) {
 			return "用户错误！";
 		}
-    	BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
+    	//BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
     	modelMap.addAttribute("userInfo", userTicket);
-    		
-    	modelMap.addAttribute("depName",de.getData().getName());
+
+		//部门换成了市场
+		Firm firm = AlmCache.getInstance().getFirmMap().get(userTicket.getFirmCode());
+		if (firm!=null) {
+			modelMap.addAttribute("depName",firm.getName());
+		}else {
+			modelMap.addAttribute("depName","");
+		}
     	modelMap.put("taskId", taskId);
         modelMap.put("cover", cover == null ? output.getData().getAssignee() == null : cover);
     	return "demand/assignPrincipal";
@@ -566,10 +585,16 @@ public class DemandController {
         if (userTicket==null) {
 			return "用户错误！";
 		}
-    	BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
+    	//BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
     	modelMap.addAttribute("userInfo", userTicket);
-    		
-    	modelMap.addAttribute("depName",de.getData().getName());
+
+		//部门换成了市场
+		Firm firm = AlmCache.getInstance().getFirmMap().get(userTicket.getFirmCode());
+		if (firm!=null) {
+			modelMap.addAttribute("depName",firm.getName());
+		}else {
+			modelMap.addAttribute("depName","");
+		}
     	modelMap.put("taskId", taskId);
         modelMap.put("cover", cover == null ? output.getData().getAssignee() == null : cover);
     	return "demand/reciprocate";
@@ -623,10 +648,16 @@ public class DemandController {
         if (userTicket==null) {
 			return "用户错误！";
 		}
-    	BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
+    	//BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
     	modelMap.addAttribute("userInfo", userTicket);
-    		
-    	modelMap.addAttribute("depName",de.getData().getName());
+
+		//部门换成了市场
+		Firm firm = AlmCache.getInstance().getFirmMap().get(userTicket.getFirmCode());
+		if (firm!=null) {
+			modelMap.addAttribute("depName",firm.getName());
+		}else {
+			modelMap.addAttribute("depName","");
+		}
     	modelMap.put("taskId", taskId);
         modelMap.put("cover", cover == null ? output.getData().getAssignee() == null : cover);
     	return "demand/feedback";
@@ -674,11 +705,16 @@ public class DemandController {
         if (userTicket==null) {
 			return "用户错误！";
 		}
-    	BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
+    	//BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
     	modelMap.addAttribute("userInfo", userTicket);
-    	
 
-    	modelMap.addAttribute("depName",de.getData().getName());
+		//部门换成了市场
+		Firm firm = AlmCache.getInstance().getFirmMap().get(userTicket.getFirmCode());
+		if (firm!=null) {
+			modelMap.addAttribute("depName",firm.getName());
+		}else {
+			modelMap.addAttribute("depName","");
+		}
     	modelMap.put("taskId", taskId);
         modelMap.put("cover", cover == null ? output.getData().getAssignee() == null : cover);
     	return "demand/demandManagerApprove";
@@ -763,10 +799,16 @@ public class DemandController {
         if (userTicket==null) {
 			return "用户错误！";
 		}
-    	BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
+    	//BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
     	modelMap.addAttribute("userInfo", userTicket);
-    		
-    	modelMap.addAttribute("depName",de.getData().getName());
+
+		//部门换成了市场
+		Firm firm = AlmCache.getInstance().getFirmMap().get(userTicket.getFirmCode());
+		if (firm!=null) {
+			modelMap.addAttribute("depName",firm.getName());
+		}else {
+			modelMap.addAttribute("depName","");
+		}
     	modelMap.put("taskId", taskId);
         modelMap.put("cover", cover == null ? output.getData().getAssignee() == null : cover);
         return "departmentApprove";
@@ -797,10 +839,16 @@ public class DemandController {
         if (userTicket==null) {
 			return "用户错误！";
 		}
-    	BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
+    	//BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
     	modelMap.addAttribute("userInfo", userTicket);
-    		
-    	modelMap.addAttribute("depName",de.getData().getName());
+
+		//部门换成了市场
+		Firm firm = AlmCache.getInstance().getFirmMap().get(userTicket.getFirmCode());
+		if (firm!=null) {
+			modelMap.addAttribute("depName",firm.getName());
+		}else {
+			modelMap.addAttribute("depName","");
+		}
     	modelMap.put("taskId", taskId);
 		return "demand/editForTask";
 	}
@@ -829,10 +877,16 @@ public class DemandController {
         if (userTicket==null) {
 			return "用户错误！";
 		}
-    	BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
+    	//BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
     	modelMap.addAttribute("userInfo", userTicket);
-    		
-    	modelMap.addAttribute("depName",de.getData().getName());
+
+		//部门换成了市场
+		Firm firm = AlmCache.getInstance().getFirmMap().get(userTicket.getFirmCode());
+		if (firm!=null) {
+			modelMap.addAttribute("depName",firm.getName());
+		}else {
+			modelMap.addAttribute("depName","");
+		}
     	modelMap.put("taskId", taskMappings.get(0).getId());
 		return "demand/editForTask";
 	}
@@ -881,10 +935,17 @@ public class DemandController {
         if (userTicket==null) {
 			return "用户错误！";
 		}
-    	BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
+    	//BaseOutput<Department> de = deptRpc.get(userTicket.getDepartmentId());
     	modelMap.addAttribute("userInfo", userTicket);
-    		
-    	modelMap.addAttribute("depName",de.getData().getName());
+
+		//部门换成了市场
+		Firm firm = AlmCache.getInstance().getFirmMap().get(userTicket.getFirmCode());
+		if (firm!=null) {
+			modelMap.addAttribute("depName",firm.getName());
+		}else {
+			modelMap.addAttribute("depName","");
+		}
+		
     	modelMap.put("taskId",selected.getId());
 		return url+"?taskId="+selected.getId();
 	}
