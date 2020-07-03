@@ -130,7 +130,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		metadata.put("belongProId", projectProvider);
 
 		JSONObject memberProvider = new JSONObject();
-		memberProvider.put("provider", "memberProvider");
+		memberProvider.put("provider", "memberForAllProvider");
 		metadata.put("userId", memberProvider);
 
 		JSONObject demandStateProvider = new JSONObject();
@@ -337,7 +337,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			metadata.put("belongSysId", projectProvider);
 
 			JSONObject memberProvider = new JSONObject();
-			memberProvider.put("provider", "memberProvider");
+			memberProvider.put("provider", "memberForAllProvider");
 			metadata.put("userId", memberProvider);
 
 			JSONObject demandStateProvider = new JSONObject();
@@ -741,7 +741,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		Map<Object, Object> metadata = new HashMap<>();
 
 		JSONObject memberProvider = new JSONObject();
-		memberProvider.put("provider", "memberProvider");
+		memberProvider.put("provider", "memberForAllProvider");
 		metadata.put("operatorId", memberProvider);
 
 		JSONObject datetimeProvider = new JSONObject();

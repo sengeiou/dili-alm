@@ -329,7 +329,7 @@ public class DemandController {
 		metadata.put("type", fileTypeProvider);
 
 		JSONObject memberProvider = new JSONObject();
-		memberProvider.put("provider", "memberProvider");
+		memberProvider.put("provider", "memberForAllProvider");
 		metadata.put("createMemberId", memberProvider);
 
 		JSONObject datetimeProvider = new JSONObject();
