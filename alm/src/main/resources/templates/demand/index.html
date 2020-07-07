@@ -90,6 +90,9 @@
 					<th
 						data-options="field:'createDate',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">
 						申请时间</th>
+				   <th
+						data-options="field:'finishDate',   _provider:'dateProvider', sortable:'false', order:'asc', align:'center', resizable:'true', fixed:'false',formatter:formatOptionsDate">
+						期望完成时间</th>
 					<th
 						data-options="field:'modificationTime',hidden:true,sortable:'true', order:'asc',sortable:'true', order:'desc',">
 						修改时间</th>	
@@ -499,6 +502,13 @@
         	
         	return content;
         }
+        
+        function  formatOptionsDate(value, row, index){
+        	if(value!=null&&value!=""){
+        		value = value.slice(0,11);
+        	}
+        	return value;
+        }
         $.messager.progress({
             title:"提示",
             msg:"加载中,请稍候...",
@@ -548,34 +558,35 @@
           tabsOnSelect();  
         })
 
-       function dateFormat_1(longTypeDate) {
-    		var dateType = "";
-    		var date = new Date();
-    		date.setTime(longTypeDate);
-    		dateType += date.getFullYear(); // 年
-    		dateType += "-" + getMonth(date); // 月
-    		dateType += "-" + getDay(date); // 日
-    		return dateType;
-    	}
-
-    	// 返回 01-12 的月份值
-    	function getMonth(date) {
-    		var month = "";
-    		month = date.getMonth() + 1; // getMonth()得到的月份是0-11
-    		if (month < 10) {
-    			month = "0" + month;
-    		}
-    		return month;
-    	}
-    	// 返回01-30的日期
-    	function getDay(date) {
-    		var day = "";
-    		day = date.getDate();
-    		if (day < 10) {
-    			day = "0" + day;
-    		}
-    		return day;
-    	}
+        	 function dateFormat_1(value) {
+        		　　//解决invalid date
+        		    value = value.replace(new RegExp(/-/gm) ,"/");
+        		    var date = new Date(value);
+        		    console.log(date);
+        		    Y = date.getFullYear(),
+        		        m = date.getMonth() + 1,
+        		        d = date.getDate(),
+        		        H = date.getHours(),
+        		        i = date.getMinutes(),
+        		        s = date.getSeconds();
+        		    if(m < 10) {
+        		        m = '0' + m;
+        		    }
+        		    if(d < 10) {
+        		        d = '0' + d;
+        		    }
+        		    if(H < 10) {
+        		        H = '0' + H;
+        		    }
+        		    if(i < 10) {
+        		        i = '0' + i;
+        		    }
+        		    if(s < 10) {
+        		        s = '0' + s;
+        		    }
+        		    var t = Y + '-' + m + '-' + d ;
+        		    return t;
+        		}
     	
         /**
          * 显示流程图,查看进度图片
