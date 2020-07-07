@@ -2,7 +2,7 @@ package com.dili.alm.domain;
 
 public enum ApproveResult {
 
-	APPROVED(1, "审核通过"), FAILED(0, "审核不通过");
+	APPROVED(1, "审核通过"), FAILED(0, "审核不通过"), FORWORD(2, "转发");
 
 	private Integer value;
 	private String name;

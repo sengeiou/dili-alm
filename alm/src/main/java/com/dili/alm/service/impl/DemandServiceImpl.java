@@ -130,7 +130,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		metadata.put("belongProId", projectProvider);
 
 		JSONObject memberProvider = new JSONObject();
-		memberProvider.put("provider", "memberProvider");
+		memberProvider.put("provider", "memberForAllProvider");
 		metadata.put("userId", memberProvider);
 
 		JSONObject demandStateProvider = new JSONObject();
@@ -171,10 +171,10 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		/** 个人信息 **/
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		BaseOutput<List<Department>> de = departmentRpc.findByUserId(userTicket.getId());
-		String depStr = "";
-		/*
+/*		String depStr = "";
+		
 		 * if (de.getData()==null) {//正确的部门校验 throw new DemandExceptions("所属部门为空！"); }
-		 */
+		 
 		if (de.getData() == null) {
 			depStr = "cp";
 		} else if (de.getData().size() > 0) {
@@ -185,9 +185,9 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 				depStr = depStr.substring(0, depStr.length() - 1);
 			}
 			depStr = GetFirstCharUtil.getFirstSpell(depStr).toUpperCase();
-		}
+		}*/
 
-		newDemand.setSerialNumber(depStr + this.numberGenerator.get());// 加部门全拼获取自增
+		newDemand.setSerialNumber(this.numberGenerator.get());// 加部门全拼获取自增/*20200703更正是有数字编号**/
 		newDemand.setCreateDate(new Date());
 		if (newDemand.getStatus() != null && newDemand.getStatus() == (byte) DemandStatus.APPROVING.getCode()) {
 			newDemand.setStatus((byte) DemandStatus.APPROVING.getCode());// 直接提交为申请单
@@ -337,7 +337,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			metadata.put("belongSysId", projectProvider);
 
 			JSONObject memberProvider = new JSONObject();
-			memberProvider.put("provider", "memberProvider");
+			memberProvider.put("provider", "memberForAllProvider");
 			metadata.put("userId", memberProvider);
 
 			JSONObject demandStateProvider = new JSONObject();
@@ -741,7 +741,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		Map<Object, Object> metadata = new HashMap<>();
 
 		JSONObject memberProvider = new JSONObject();
-		memberProvider.put("provider", "memberProvider");
+		memberProvider.put("provider", "memberForAllProvider");
 		metadata.put("operatorId", memberProvider);
 
 		JSONObject datetimeProvider = new JSONObject();
