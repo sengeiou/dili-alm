@@ -329,7 +329,7 @@ public class DemandController {
 		metadata.put("type", fileTypeProvider);
 
 		JSONObject memberProvider = new JSONObject();
-		memberProvider.put("provider", "memberProvider");
+		memberProvider.put("provider", "memberForAllProvider");
 		metadata.put("createMemberId", memberProvider);
 
 		JSONObject datetimeProvider = new JSONObject();
@@ -764,7 +764,7 @@ public class DemandController {
     public BaseOutput<String> rejectDemandForFeedback(@RequestParam String code, @RequestParam String taskId,@RequestParam Long acceptId,String description,String rejectType) {
     	
         try {
-  			  demandService.saveOprationRecord(code, "驳回转发", DemandOperationType.REJECT.getValue(), DemandOperationType.REJECT.getName(), ApproveResult.FAILED);
+  			  demandService.saveOprationRecord(code, "反馈方案记录", DemandOperationType.REJECTFEEDBACK.getValue(), DemandOperationType.REJECTFEEDBACK.getName(), ApproveResult.FORWORD);
   			} catch (DemandExceptions e) {
   				e.printStackTrace();
   			}

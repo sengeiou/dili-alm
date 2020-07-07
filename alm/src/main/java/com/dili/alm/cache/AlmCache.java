@@ -3,9 +3,11 @@ package com.dili.alm.cache;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,12 +115,11 @@ public class AlmCache {
 	private static final Map<Long, SystemDto> PROJECT_SYS_MAP = new ConcurrentHashMap<>();
 	// 需求流程状态
 	private static final Map<String, String> DAMAND_PROCESS_STATUS_MAP = new ConcurrentHashMap<>();
-	
-	
+
 	// 市场信息firm
-    private static final Map<String, Firm> FIRM_MAP = new ConcurrentHashMap<>();
-	
-    @Autowired
+	private static final Map<String, Firm> FIRM_MAP = new ConcurrentHashMap<>();
+
+	@Autowired
 	private UserRpc userRpc;
 	@Autowired
 	private SysProjectRpc sysProjectRpc;
@@ -186,16 +187,22 @@ public class AlmCache {
 	}
 
 	public Map<Long, User> getUserMap() {
+		return getUserMap(false);
+	}
+
+	public Map<Long, User> getUserMap(boolean queryAll) {
 		// 应用启动时初始化userMap
 		if (AlmCache.USER_MAP.isEmpty()) {
 			User newDTO = DTOUtils.newDTO(User.class);
-			newDTO.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 			BaseOutput<List<User>> output = userRpc.listByExample(newDTO);
 			if (output.isSuccess()) {
 				output.getData().forEach(user -> {
 					AlmCache.USER_MAP.put(user.getId(), user);
 				});
 			}
+		}
+		if (!queryAll) {
+			return USER_MAP.entrySet().stream().filter(m -> m.getValue().getFirmCode().equals(AlmConstants.ALM_FIRM_CODE)).collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
 		}
 		return USER_MAP;
 	}
@@ -213,6 +220,7 @@ public class AlmCache {
 		}
 		return USER_ALL_MAP;
 	}
+
 	public Map<String, String> getTravelCostItemMap() {
 		if (TRAVEL_COST_ITEM_MAP.isEmpty()) {
 			DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.TRAVEL_COST_DETAIL_CONFIG_CODE);
@@ -512,7 +520,7 @@ public class AlmCache {
 		}
 		return DAMAND_PROCESS_STATUS_MAP;
 	}
-	
+
 	/**
 	 * 市场缓存
 	 * 
