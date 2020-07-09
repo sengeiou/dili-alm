@@ -100,14 +100,14 @@
 	<input type="hidden" id="documentUrl" name="documentUrl" value="" />
 </form>
 					<table class="easyui-datagrid" title="操作记录" id="recordGrid" fitColumns="true" pagination="false" pageSize="30" pageNumber="1"  style="width: 100%;"
-					pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." >
+					pagePosition="both" rownumbers="false" nowrap="false" remoteSort="false" loadMsg="数据加载中..." >
 							<thead>
 								<tr>
-									<th data-options="field:'operationName', width:'30%',  sortable:'true', order:'asc', align:'left', resizable:'true', fixed:'false'">操作内容</th>
-									<th data-options="field:'memberALlProvider', width:'15%',  _provider:'memberForAllProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作人</th>
-									<th data-options="field:'operateTime', width:'15%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作时间</th>
-									<th data-options="field:'opertateResult', width:'15%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作结果</th>
-									<th data-options="field:'description', width:'15%', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作意见</th>
+									<th data-options="field:'operationName', width:'12%', align:'left', resizable:'true', fixed:'false'">操作内容</th>
+									<th data-options="field:'operatorId', width:'10%',  _provider:'memberForAllProvider', align:'center', resizable:'true', fixed:'false'">操作人</th>
+									<th data-options="field:'operateTime', width:'20%',  _provider:'datetimeProvider',  align:'center', resizable:'true', fixed:'false'">操作时间</th>
+									<th data-options="field:'opertateResult', width:'12%', align:'center', resizable:'true', fixed:'false'">操作结果</th>
+									<th data-options="field:'description', width:'46%',  align:'center', resizable:'true', fixed:'false'">操作意见</th>
 								</tr>
 							</thead>
 					</table>
@@ -120,7 +120,7 @@
                 <td style="padding:5px;">
                 <h4>操作意见</h4>
                 <br/>
-               <textarea cols="50" rows="5" name="description" ></textarea>
+               <textarea cols="50" rows="5" name="description" maxlength="200" ></textarea>
             </td>
            </tr>
             <tr>
