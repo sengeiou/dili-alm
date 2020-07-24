@@ -17,13 +17,11 @@ import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.constant.BpmConsts;
 import com.dili.alm.dao.OnlineDataChangeMapper;
 import com.dili.alm.domain.OnlineDataChange;
-import com.dili.alm.domain.OnlineDataChangeLog;
 import com.dili.alm.domain.Project;
 /*import com.dili.alm.domain.TaskDto;*/
 /*import com.dili.alm.domain.TaskMapping;*/
 import com.dili.alm.domain.dto.OnlineDataChangeBpmcDtoDto;
 import com.dili.alm.exceptions.OnlineDataChangeException;
-import com.dili.alm.rpc.RoleRpc;
 import com.dili.alm.rpc.RuntimeApiRpc;
 import com.dili.alm.service.OnlineDataChangeLogService;
 import com.dili.alm.service.OnlineDataChangeService;
@@ -40,6 +38,7 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.util.BeanConver;
 import com.dili.uap.sdk.domain.User;
+import com.dili.uap.sdk.rpc.RoleRpc;
 import com.dili.uap.sdk.rpc.UserRpc;
 import com.dili.uap.sdk.session.SessionContext;
 

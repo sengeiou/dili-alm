@@ -10,12 +10,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.dili.alm.rpc.RoleRpc;
 import com.dili.bpmc.sdk.dto.GroupUserDto;
 import com.dili.bpmc.sdk.dto.TaskIdentityDto;
 import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.uap.sdk.domain.dto.RoleUserDto;
+import com.dili.uap.sdk.rpc.RoleRpc;
 import com.dili.uap.sdk.session.SessionContext;
 
 @Component
