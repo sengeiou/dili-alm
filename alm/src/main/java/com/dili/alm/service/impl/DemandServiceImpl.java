@@ -525,8 +525,8 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		// 如果有并发流程，需使用TaskDefKey来确认流程节点
 		TaskMapping taskMapping = taskMappings.get(0);
 		// 流程启动参数设置
-		Map<String, Object> variables = new HashMap<>(1);
-		variables.put("approved", approved);
+		Map<String, String> variables = new HashMap<>(1);
+		variables.put("approved", approved+"");
 		if (valProcess != null) {// 完成流程
 			// 发送消息通知流程
 			taskRpc.complete(taskMapping.getId(), variables);
@@ -570,7 +570,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	@Override
 	public BaseOutput submitApproveAndAccept(Long executorId, String taskId) {
 		// 完成任务
-		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
+		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, String>() {
 			{
 				put("AssignExecutorId", executorId.toString());
 			}
@@ -583,7 +583,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	public BaseOutput submitApproveForAccept(String taskId,Long executorId) {
 		
 		BaseOutput<String> output ;
-			output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
+			output = this.taskRpc.complete(taskId, new HashMap<String, String>() {
 				{
 					put("AssignExecutorId",executorId.toString());
 					put("approved","true");
@@ -596,7 +596,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	public BaseOutput submitApproveForAssign(Long executorId, String taskId) {
 		
 		// 完成任务
-		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
+		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, String>() {
 			{
 				put("AssignExecutorId", executorId.toString());
 			}
@@ -621,7 +621,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			selectDemand.setProcessType(processType);
 			this.update(selectDemand);
 		}
-		Map<String, Object> variables = new HashMap<>();
+		Map<String, String> variables = new HashMap<>();
 		variables.put("approved", "true");
 		BaseOutput  out = taskRpc.complete(taskId, variables);
 		return out;
@@ -629,7 +629,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 
 	@Override
 	public BaseOutput rejectApprove(String code, String taskId,String rejectType) {
-		Map<String, Object> variables = new HashMap<>();
+		Map<String, String> variables = new HashMap<>();
 		Demand demand = this.getByCode(code);
 		if(rejectType.equals(DemandProcessStatus.BACKANDEDIT_ACCPET.getCode())) {
 			demand.setProcessType(DemandProcessStatus.BACKANDEDIT_ACCPET.getCode());// 被驳回的状态
@@ -647,7 +647,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	@Override
 	public BaseOutput rejectApproveForFeedback(String code, String taskId, String rejectType, Long executorId) {
 		// 完成任务
-		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
+		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, String>() {
 			{
 				put("AssignExecutorId", executorId.toString());
 				put("approved", "false");
