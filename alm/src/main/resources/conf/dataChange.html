@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<title>线上数据审批</title>
+<style>
+html, body {
+	height: 100%;
+	padding: 0;
+	margin: 0
+}
+
+.table-box {
+	width: 100%;
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+.table-box, .table-box tr td {
+	border: 1px solid #ddd;
+	border-collapse: collapse;
+}
+
+.table-box tr td {
+	width: calc(100%/ 6);
+	padding: 5px;
+}
+
+.table-box .table-title {
+	background-color: #f5f5f5;
+	font-weight: bold;
+}
+
+.table-combo .textbox {
+	border: none;
+	border-radius: 0;
+}
+
+td {
+	text-align: center; /*设置水平居中*/
+	vertical-align: middle; /*设置垂直居中*/
+}
+input {
+	box-sizing: border-box;
+	width: 100%;
+	height: 28px;
+	font-size: 13px;
+	padding-left: 6px;
+	border: 1px solid #ddd;
+	/*border-radius: 3px;*/
+	color: #666;
+}
+</style>
+</head>
+<body>
+
+
+<div class="easyui-layout" data-options="fit:true">
+
+	<div height="auto" align="center" data-options="region:'center'">
+	   <form class="easyui-form" method="post" fit="true">
+	    <table cellspacing="0" border="1"  style="width:90%; height: 135px; border: 1px solid #ddd; border-collapse: collapse;">
+			<caption style="padding: 5px; font-weight: bold; font-size: 15px; line-height: 35px; color: #333">线上数据变更</caption>
+			<tbody>
+			
+				<tr>
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold;width: 15%;">申请人</td>
+					<td style="padding: 5px;width: 30%;" ><input class="easyui-textbox" style="width: 100%" editable="false"     value="${applyUserIdName}"
+							data-options="validType:['length[0,30]']" />   </td>
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold;width: 15%;">申请时间</td>
+					<td style="padding: 5px;width: 30%;"> <input class="easyui-datebox"   value="${odc.applyDate}"  editable="false" style="width: 100%"
+					   data-options="required:false,validType:'isIds',prompt:'申请时间'" /></td>
+				
+				</tr>
+				<tr>
+
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">项目名称</td>
+					<td style="padding: 5px;">	
+						
+				      <input    value="${proName}" class="easyui-textbox" style="width: 100%;" editable="false"
+					    >
+					 </td>
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">版本号  
+					   </td>
+					<td style="padding: 5px;">
+					     
+					     <input    value="${versionTask}" class="easyui-textbox" style="width: 100%;" editable="false"
+					    >
+					
+					</td>
+
+				</tr>
+				<tr>
+
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">申请更新时间</td>
+					<td style="padding: 5px;"><input class="easyui-datebox"    value="${odc.updateDate}" id="_updateDate" editable="false" style="width: 100%"
+					data-options="required:true,validType:'isIds',prompt:'申请更新时间'" /></td>
+					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">灰度是否同步执行</td>
+					<td style="padding: 5px;">
+ 					    <select class="easyui-combobox"  value="${odc.isSynchronization}"   name="_isSynchronization" id="_isSynchronization" style="width: 100%" >
+						    <option value="1">是</option>
+						    <option value="0">否</option>
+						</select></td>
+				</tr>
+				
+				<tr>
+					<td  colspan="2"   style="padding: 5px; background-color: #f5f5f5; font-weight: bold">数据库名</td>
+					<td  colspan="2"  style="padding: 5px;"><input class="easyui-textbox"   value="${odc.dbaName}" id="_dbaName" value=""
+							data-options="validType:['length[0,30]']" style="width: 70%"/></td>
+				</tr>
+				
+				<tr>
+				   <td  colspan="2"   style="padding: 5px; background-color: #f5f5f5; font-weight: bold">生产环境名称（市场）</td>
+					<td  colspan="2"  style="padding: 5px;">
+					<input class="easyui-textbox" id="_applyMarketId" name="_applyMarketId"   value="${odc.applyMarketId}"    data-options="validType:['length[0,30]']" style="width: 70%"/>
+					
+					
+					</td>
+				</tr>
+				
+			
+		
+			</tbody>
+
+			
+
+		</table>
+		</form>
+
+		 <form  enctype="multipart/form-data" class="easyui-form" method="post" fit="true">
+	
+
+	     	 <table class="easyui-datagrid"  title="操作记录 " id="recordGrid"   cellspacing="0" border="1"  style="width:90%; border: 1px solid #ddd; border-collapse: collapse;"  fitColumns="true" pagination="false" pageSize="30" pageNumber="1"  style="width: 100%;"
+					pagePosition="both" rownumbers="true" remoteSort="false" loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false"
+					 align="center" fit="false" striped="true" idField="id">
+							<thead>
+								<tr>
+								  <th data-options="field:'operationName', width:'25%',  sortable:'true', order:'asc', align:'left', resizable:'true', fixed:'false'">操作内容</th>
+									<th data-options="field:'operatorId', width:'20%',  _provider:'memberProvider',  sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作人</th>
+									<th data-options="field:'operateTime', width:'15%',  _provider:'datetimeProvider', sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作时间</th>
+									<th data-options="field:'opertateResult', width:'15%', formatter: formatStatus,   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">操作结果</th>
+									<th data-options="field:'description', width:'25%',   sortable:'true', order:'asc', align:'center', resizable:'true', fixed:'false'">执行意见</th>
+									
+								</tr>
+							</thead>
+	        </table>
+	
+		</form>
+		
+
+          <div>
+					
+					<p>
+						链接地址：<a href="${uapContextPath!}">${uapContextPath!}</a>
+					</p>
+	    </div>
+	
+	</div>
+</div>
+</body>
+
+</html>
+
