@@ -933,7 +933,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 
 	@Override
 	public BaseOutput submitApprove(Long id, String taskId,String assignExecutorId) {
-		Map<String, Object> variables = new HashMap<>();
+		Map<String, String> variables = new HashMap<String, String>();
 		variables.put("approved", "true");
 		if (!assignExecutorId.equals("")) {
 			variables.put("AssignExecutorId", assignExecutorId);
@@ -943,7 +943,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 
 	@Override
 	public BaseOutput rejectApprove(Long id, String taskId) {
-		Map<String, Object> variables = new HashMap<>();
+		Map<String, String> variables = new HashMap<String, String>();
 		// 判断记录是否存在
 		HardwareResourceApply apply = this.getActualDao().selectByPrimaryKey(id);
 		// 未通过审批退回到编辑状态让用户重新编辑
