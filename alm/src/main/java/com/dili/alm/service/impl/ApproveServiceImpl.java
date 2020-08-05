@@ -1036,10 +1036,10 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	 * @return userId
 	 */
 	private Long getApproveSuperLeader() {
+		//获取角色组
 		List<DataDictionaryValueDto> values = dataDictionaryService.findByCode(AlmConstants.ROLE_CODE).getValues();
-
+		//获取角色Id
 		String roleId = values.stream().filter(v -> Objects.equals(v.getCode(), AlmConstants.ROLE_CODE_WYH_SUPER_LEADER)).findFirst().map(DataDictionaryValue::getValue).orElse(null);
-
 		if (roleId != null) {
 			List<User> users = userRpc.listUserByRoleId(Long.valueOf(roleId)).getData();
 			return users.stream().findFirst().map(User::getId).orElse(null);
