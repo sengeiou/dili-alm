@@ -318,7 +318,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			}
 		}
 		// 完成任务
-		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
+		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, String>() {
 			{
 				put("approved", Boolean.valueOf(OperationResult.SUCCESS.equals(result)).toString());
 				put(BpmConsts.ProjectOnlineApplyConstant.PRODUCT_MANAGER_KEY.getName(), apply.getProductManagerId().toString());
@@ -589,7 +589,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			}
 		}
 		// 完成任务
-		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
+		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, String>() {
 			{
 				put("approved", Boolean.valueOf(OperationResult.SUCCESS.equals(result)).toString());
 			}
@@ -684,7 +684,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			}
 		}
 		// 完成任务
-		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
+		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, String>() {
 			{
 				put(BpmConsts.ProjectOnlineApplyConstant.EXECUTOR_KEY.getName(), executors.toArray(new Long[] {})[0].toString());
 			}
@@ -791,7 +791,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			}
 		}
 		// 完成任务
-		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
+		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, String>() {
 			{
 				put("approved", Boolean.valueOf(OperationResult.SUCCESS.equals(result)).toString());
 			}
@@ -992,7 +992,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		}
 
 		// 完成任务
-		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
+		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, String>() {
 			{
 				put("approved", Boolean.valueOf(OperationResult.SUCCESS.equals(result)).toString());
 			}

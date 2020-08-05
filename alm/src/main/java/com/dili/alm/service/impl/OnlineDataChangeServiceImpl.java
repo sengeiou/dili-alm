@@ -7,14 +7,19 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.beetl.core.GroupTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.component.BpmcUtil;
+import com.dili.alm.component.MailManager;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.constant.BpmConsts;
+import com.dili.alm.dao.FilesMapper;
 import com.dili.alm.dao.OnlineDataChangeMapper;
 import com.dili.alm.domain.OnlineDataChange;
 import com.dili.alm.domain.Project;
@@ -67,6 +72,17 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 	private ProjectService projectService;
 	@Autowired
 	private OnlineDataChangeMapper onlineDataChangeMapper;
+	
+	@Qualifier("mailContentTemplate")
+	@Autowired
+	private GroupTemplate groupTemplate;
+	@Value("${spring.mail.username:}")
+	private String mailFrom;
+	@Autowired
+	private MailManager mailManager;
+	
+	
+	
 	
 	
 	@Autowired
@@ -172,7 +188,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		onlineDataChange.setDataStatus((byte) 3);
 		this.updateSelective(onlineDataChange);
 		OnlineDataChange onlineDataChangeTemp = this.get(Long.parseLong(dataId));
-		Map<String, Object> map = new HashMap<>();
+		Map<String, String> map = new HashMap<String,String>();
 		map.put("approved", "true");
 		Project pro = projectService.get(onlineDataChangeTemp.getProjectId());
 
@@ -222,7 +238,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		onlineDataChange.setDataStatus((byte) 1);
 		this.updateSelective(onlineDataChange);
 		OnlineDataChange onlineDataChangeTemp = this.get(Long.parseLong(dataId));
-		Map<String, Object> map = new HashMap<>();
+		Map<String, String> map = new HashMap<String,String>();
 		map.put("approved", "false");
 	//	map.put("submit", "" + onlineDataChangeTemp.getApplyUserId());
 		map.put(BpmConsts.OnlineDataChangeProcessConstant.submit.getName(), "" + onlineDataChangeTemp.getApplyUserId());
@@ -256,7 +272,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		onlineDataChange.setDataStatus((byte) 4);
 		this.updateSelective(onlineDataChange);
 
-		Map<String, Object> map = new HashMap<>();
+		Map<String, String> map = new HashMap<String,String>();
 		map.put("approved", "true");
 		try {
 			tasksRpc.complete(taskId, map);
@@ -277,7 +293,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		onlineDataChange.setId(Long.parseLong(dataId));
 		onlineDataChange.setDataStatus((byte) 1);
 		onlineDataChangeMapper.updateByPrimaryKeySelective(onlineDataChange);
-		Map<String, Object> map = new HashMap<>();
+		Map<String, String> map = new HashMap<String,String>();
 		map.put("approved", "false");
 
 		OnlineDataChange onlineDataChangeTemp = this.get(Long.parseLong(dataId));
@@ -312,7 +328,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		onlineDataChange.setId(Long.parseLong(dataId));
 		onlineDataChange.setDataStatus((byte) 5);
 		this.updateSelective(onlineDataChange);
-		Map<String, Object> map = new HashMap<>();
+		Map<String, String> map = new HashMap<String,String>();
 		map.put("approved", "true");
 		Long id = SessionContext.getSessionContext().getUserTicket().getId();
 		// 签收任务
@@ -503,7 +519,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		onlineDataChange.setId(Long.parseLong(dataId));
 		onlineDataChange.setDataStatus((byte) 4);
 		onlineDataChangeMapper.updateByPrimaryKeySelective(onlineDataChange);
-		Map<String, Object> map = new HashMap<>();
+		Map<String, String> map = new HashMap<>();
 		map.put("approved", "false");
 
 		OnlineDataChange onlineDataChangeTemp = this.get(Long.parseLong(dataId));
