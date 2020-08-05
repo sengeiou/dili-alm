@@ -1,28 +1,47 @@
 package com.dili.alm.service.impl;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.beetl.core.GroupTemplate;
+import org.beetl.core.Template;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dili.alm.cache.AlmCache;
 import com.dili.alm.component.BpmcUtil;
 import com.dili.alm.component.MailManager;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.constant.BpmConsts;
+import com.dili.alm.dao.EmailAddressMapper;
 import com.dili.alm.dao.FilesMapper;
 import com.dili.alm.dao.OnlineDataChangeMapper;
+import com.dili.alm.dao.ProjectMapper;
+import com.dili.alm.dao.TeamMapper;
+import com.dili.alm.domain.EmailAddress;
 import com.dili.alm.domain.OnlineDataChange;
 import com.dili.alm.domain.Project;
+import com.dili.alm.domain.ProjectOnlineApply;
+import com.dili.alm.domain.ProjectOnlineOperationRecord;
+import com.dili.alm.domain.ProjectVersion;
+import com.dili.alm.domain.Team;
 /*import com.dili.alm.domain.TaskDto;*/
 /*import com.dili.alm.domain.TaskMapping;*/
 import com.dili.alm.domain.dto.OnlineDataChangeBpmcDtoDto;
@@ -31,6 +50,7 @@ import com.dili.alm.rpc.RuntimeApiRpc;
 import com.dili.alm.service.OnlineDataChangeLogService;
 import com.dili.alm.service.OnlineDataChangeService;
 import com.dili.alm.service.ProjectService;
+import com.dili.alm.service.ProjectVersionService;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
 import com.dili.bpmc.sdk.domain.TaskMapping;
 import com.dili.bpmc.sdk.dto.Assignment;
@@ -42,7 +62,9 @@ import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.util.BeanConver;
+import com.dili.uap.sdk.domain.Department;
 import com.dili.uap.sdk.domain.User;
+import com.dili.uap.sdk.rpc.DepartmentRpc;
 import com.dili.uap.sdk.rpc.RoleRpc;
 import com.dili.uap.sdk.rpc.UserRpc;
 import com.dili.uap.sdk.session.SessionContext;
@@ -73,6 +95,10 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 	@Autowired
 	private OnlineDataChangeMapper onlineDataChangeMapper;
 	
+
+	
+	private String contentTemplate;
+	
 	@Qualifier("mailContentTemplate")
 	@Autowired
 	private GroupTemplate groupTemplate;
@@ -80,17 +106,136 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 	private String mailFrom;
 	@Autowired
 	private MailManager mailManager;
+	@Value("${uap.contextPath:http://uap.diligrp.com}")
+	private String uapContextPath;
 	
-	
-	
-	
+	@Autowired
+	private TeamMapper teamMapper;
+	@Autowired
+	private DepartmentRpc deptRpc;
+	@Autowired
+	private EmailAddressMapper emailAddressMapper;
+	@Autowired
+	private   ProjectMapper  projectMapper;
 	
 	@Autowired
 	private   OnlineDataChangeLogService    onlineDataChangeLogService;
+	
+    @Autowired
+	ProjectVersionService projectVersionService;
+    
 
 	public OnlineDataChangeMapper getActualDao() {
 		return (OnlineDataChangeMapper) getDao();
 	}
+
+	public OnlineDataChangeServiceImpl() {
+		InputStream in = null;
+		try {
+			Resource res = new ClassPathResource("conf/dataChange.html");
+			in = res.getInputStream();
+			this.contentTemplate = IOUtils.toString(in, "UTF-8");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					LOGGER.error(e.getMessage(), e);
+				}
+			}
+		}
+	}
+	public void sendMail(OnlineDataChange onlineDataChange, String subject, Set<String> emails) {
+		
+	    OnlineDataChange  odc=  this.get(onlineDataChange.getId());
+		// 构建邮件内容
+		Template template = this.groupTemplate.getTemplate(this.contentTemplate);
+		template.binding("odc", buildApplyViewModel( odc));
+  		//template.binding("odc", odc);
+  		template.binding("applyUserIdName",userRpc.findUserById(odc.getApplyUserId()).getData().getRealName());
+  	  
+	    Project  proId=  projectMapper.selectByPrimaryKey(odc.getProjectId());
+	    ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
+		projectVersion.setProjectId(odc.getProjectId());
+		List<ProjectVersion> list = projectVersionService.list(projectVersion);
+		if(list!=null&&list.size()>0) {
+			for (ProjectVersion projectVersion2 : list) {
+				// if(projectVersion2.getVersion().equals(odc.getVersionId())) {
+				     template.binding("versionTask",projectVersion2.getVersion());
+					 break;
+				// }
+			}
+		}
+		if(proId!=null)
+			 template.binding("proName",proId.getName());
+		
+		template.binding("uapContextPath", this.uapContextPath);
+		String content = template.render();
+		// 发送
+		emails.forEach(s -> {
+			try {
+				this.mailManager.sendMail(this.mailFrom, s, content, true, subject, null);
+			} catch (Exception e) {
+				LOGGER.error(e.getMessage(), e);
+			}
+		});
+	}
+	private Set<String> getDefaultEmails(OnlineDataChange onlineDataChange) {
+		// 给运维部发
+		//Set<String> emails = this.getOperationDepartmentUserEmails(onlineDataChange);
+		Set<String> emails =new HashSet<String>();
+		emails.add("sunguangqiang@diligrp.com");
+		
+		return emails;
+	}
+
+
+	/*private Set<String> getOperationDepartmentUserEmails(OnlineDataChange onlineDataChange) {
+		Set<String> emailStrs = new HashSet<>();
+		// 默认邮件发送列表，运维组和项目组成员
+		// 运维部成员
+		Department deptQuery = DTOUtils.newDTO(Department.class);
+		deptQuery.setCode(AlmConstants.OPERATION_DEPARTMENT_CODE);
+		deptQuery.setFirmCode(AlmConstants.ALM_FIRM_CODE);
+		BaseOutput<List<Department>> deptOutput = this.deptRpc.listByDepartment(deptQuery);
+		if (deptOutput.isSuccess() && CollectionUtils.isNotEmpty(deptOutput.getData())) {
+			Long departmentId = deptOutput.getData().get(0).getId();
+			User userQuery = DTOUtils.newDTO(User.class);
+			userQuery.setDepartmentId(departmentId);
+			userQuery.setFirmCode(AlmConstants.ALM_FIRM_CODE);
+			BaseOutput<List<User>> userOutput = this.userRpc.listByExample(userQuery);
+			if (userOutput.isSuccess() && CollectionUtils.isNotEmpty(userOutput.getData())) {
+				userOutput.getData().forEach(u -> emailStrs.add(u.getEmail()));
+			}
+		}
+		
+		return emailStrs;
+	}
+	*/
+	@SuppressWarnings("unchecked")
+	public static Map<Object, Object> buildApplyViewModel(OnlineDataChange onlineDataChange) {
+		Map<Object, Object> metadata = new HashMap<>();
+
+		JSONObject dateProvider = new JSONObject();
+		dateProvider.put("provider", "dateProvider");
+		metadata.put("applyDate", dateProvider);
+		metadata.put("updateDate", dateProvider);
+
+		try {
+			@SuppressWarnings("rawtypes")
+			List<Map> viewModelList = ValueProviderUtils.buildDataByProvider(metadata, Arrays.asList(onlineDataChange));
+			if (CollectionUtils.isEmpty(viewModelList)) {
+				return null;
+			}
+			return viewModelList.get(0);
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			return null;
+		}
+	}
+
 
 	@Override
 	public void insertOnLineData(OnlineDataChange onlineDataChange, Long id) throws OnlineDataChangeException {
@@ -119,6 +264,9 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			onlineDataChange.setId(onlineDataChange.getId());
 
 			update(onlineDataChange);
+			
+			Set<String> emails = this.getDefaultEmails(onlineDataChange);
+			this.sendMail(onlineDataChange, "线上数据申请审批", emails);
 		} catch (Exception e) {
 			e.printStackTrace();
 			//System.out.println(e);
@@ -150,6 +298,9 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 				onlineData.setDataStatus((byte) 2);
 				onlineData.setIsSubmit((byte) 1);
 				this.updateSelective(onlineData);
+				
+				Set<String> emails = this.getDefaultEmails(onlineDataChange);
+				this.sendMail(onlineDataChange, "线上数据申请审批", emails);
 			} catch (Exception e) {
 				e.printStackTrace();
 				throw new OnlineDataChangeException("失败");
@@ -170,6 +321,9 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 				map.put("approved", "true");
 			
 				tasksRpc.complete(taskId);
+				
+				Set<String> emails = this.getDefaultEmails(onlineDataChange);
+				this.sendMail(onlineDataChange, "线上数据申请审批", emails);
 			} catch (Exception e) {
 
 				throw new OnlineDataChangeException("失败");
@@ -219,6 +373,8 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEMANAGER.getCode(), 1,description);
 		//	insertDataExeLog(dataId);
+			
+		
 			
 		} catch (Exception e) {
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEMANAGER.getCode(), 0,description);
@@ -543,5 +699,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		}
 
 	}
+	
+
 
 }
