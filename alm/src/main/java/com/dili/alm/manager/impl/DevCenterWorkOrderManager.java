@@ -72,7 +72,7 @@ public class DevCenterWorkOrderManager extends BaseWorkOrderManager {
 			throw new WorkOrderException("受理人不存在");
 		}
 		
-	   Map<String, Object> map=new HashMap<String, Object>();
+	   Map<String, String> map=new HashMap<String, String>();
 	   map.put("workOrderSource", WorkOrderSource.DEVELOPMENT_CENTER.getValue().toString());
 	
 		if(workOrder.getWorkOrderSource()==WorkOrderSource.DEPARTMENT.getValue()) {
