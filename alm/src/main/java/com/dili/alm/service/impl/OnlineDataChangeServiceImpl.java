@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.beetl.core.GroupTemplate;
 import org.beetl.core.Template;
@@ -55,6 +56,7 @@ import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
 import com.dili.bpmc.sdk.domain.TaskMapping;
 import com.dili.bpmc.sdk.dto.Assignment;
 import com.dili.bpmc.sdk.dto.TaskDto;
+import com.dili.bpmc.sdk.dto.TaskIdentityDto;
 import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
@@ -123,7 +125,8 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 	
     @Autowired
 	ProjectVersionService projectVersionService;
-    
+    @Autowired
+	private TaskRpc taskRpc;
 
 	public OnlineDataChangeMapper getActualDao() {
 		return (OnlineDataChangeMapper) getDao();
@@ -153,7 +156,6 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		// 构建邮件内容
 		Template template = this.groupTemplate.getTemplate(this.contentTemplate);
 		template.binding("odc", buildApplyViewModel( odc));
-  		//template.binding("odc", odc);
   		template.binding("applyUserIdName",userRpc.findUserById(odc.getApplyUserId()).getData().getRealName());
   	  
 	    Project  proId=  projectMapper.selectByPrimaryKey(odc.getProjectId());
@@ -182,12 +184,19 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			}
 		});
 	}
-	private Set<String> getDefaultEmails(OnlineDataChange onlineDataChange) {
+	private Set<String> getEmailsByUserId(Long userId  ) {
+		if(userId==null) {
+			 return null;
+		}
 		// 给运维部发
 		//Set<String> emails = this.getOperationDepartmentUserEmails(onlineDataChange);
 		Set<String> emails =new HashSet<String>();
-		emails.add("sunguangqiang@diligrp.com");
+		BaseOutput<User> userMail=userRpc.get(userId);
 		
+		if(userMail!=null &&userMail.getData()!=null) {
+		    userMail.getData().getEmail();
+		    emails.add("sunguangqiang@diligrp.com");
+		}
 		return emails;
 	}
 
@@ -246,7 +255,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		this.insertSelective(onlineDataChange);
 
 		try {
-			Map<String, Object> map = new HashMap<String, Object>();
+			Map<String, String> map = new HashMap<String, String>();
 			map.put("dataId", onlineDataChange.getId() + "");
 
 			Project pro = projectService.get(onlineDataChange.getProjectId());
@@ -265,8 +274,26 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 
 			update(onlineDataChange);
 			
-			Set<String> emails = this.getDefaultEmails(onlineDataChange);
-			this.sendMail(onlineDataChange, "线上数据申请审批", emails);
+		/*	Set<String> emails = this.getEmailsByUserId(pro.getProjectManager());
+			this.sendMail(onlineDataChange, "线上数据申请审批", emails);*/
+			
+			Set<String> processInstanceIds = new HashSet<>();
+			processInstanceIds.add(onlineDataChange.getProcessInstanceId()+"");
+			BaseOutput<List<TaskIdentityDto>> tiOutput = this.taskRpc.listTaskIdentityByProcessInstanceIds(new ArrayList<String>(processInstanceIds));
+			if (!tiOutput.isSuccess()) {
+				return;
+			}
+			if (CollectionUtils.isEmpty(tiOutput.getData())) {
+				return;
+			}
+			Set<Long> roleIds = new HashSet<>();
+			tiOutput.getData().forEach(ti -> {
+				ti.getGroupUsers().forEach(gu -> {
+					if (StringUtils.isNotBlank(gu.getGroupId())) {
+						roleIds.add(Long.valueOf(gu.getGroupId()));
+					}
+				});
+			});
 		} catch (Exception e) {
 			e.printStackTrace();
 			//System.out.println(e);
@@ -280,7 +307,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		if (odc.getProcessInstanceId() == null) {
 
 			try {
-				Map<String, Object> map = new HashMap<String, Object>();
+				Map<String, String> map = new HashMap<String, String>();
 				map.put("dataId", onlineDataChange.getId() + "");
 				Project pro = projectService.get(onlineDataChange.getProjectId());
 				//map.put("dept", pro.getProjectManager() + "");
@@ -299,7 +326,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 				onlineData.setIsSubmit((byte) 1);
 				this.updateSelective(onlineData);
 				
-				Set<String> emails = this.getDefaultEmails(onlineDataChange);
+				Set<String> emails = this.getEmailsByUserId(pro.getProjectManager());
 				this.sendMail(onlineDataChange, "线上数据申请审批", emails);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -321,8 +348,8 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 				map.put("approved", "true");
 			
 				tasksRpc.complete(taskId);
-				
-				Set<String> emails = this.getDefaultEmails(onlineDataChange);
+				Project pro = projectService.get(onlineDataChange.getProjectId());
+				Set<String> emails = this.getEmailsByUserId(pro.getProjectManager());
 				this.sendMail(onlineDataChange, "线上数据申请审批", emails);
 			} catch (Exception e) {
 
@@ -374,7 +401,8 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEMANAGER.getCode(), 1,description);
 		//	insertDataExeLog(dataId);
 			
-		
+			Set<String> emails = this.getEmailsByUserId(pro.getTestManager());
+			this.sendMail(onlineDataChange, "线上数据申请审批", emails);
 			
 		} catch (Exception e) {
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEMANAGER.getCode(), 0,description);
@@ -411,6 +439,9 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 
 			tasksRpc.complete(taskId, map);
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEMANAGER.getCode(), 2,description);
+		
+			Set<String> emails = this.getEmailsByUserId(onlineDataChangeTemp.getApplyUserId());
+			this.sendMail(onlineDataChange, "线上数据申请审批駁回", emails);
 		} catch (Exception e) {
 			LOGGER.error("任务签收失败");
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEMANAGER.getCode(), 0,description);
@@ -433,6 +464,13 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		try {
 			tasksRpc.complete(taskId, map);
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGETEST.getCode(), 1,description);
+			
+			//dba 組
+			//Set<String> emails = this.getEmailsByUserId(pro.getTestManager());
+			//this.sendMail(onlineDataChange, "线上数据申请审批", emails);
+	
+			
+		
 		} catch (Exception e) {
 			LOGGER.error("任务签收失败");
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGETEST.getCode(), 0,description);
@@ -468,6 +506,9 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			tasksRpc.complete(taskId, map);
 			
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGETEST.getCode(), 2,description);
+		
+			Set<String> emails = this.getEmailsByUserId(onlineDataChangeTemp.getApplyUserId());
+			this.sendMail(onlineDataChange, "线上数据申请审批駁回", emails);
 		} catch (Exception e) {
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGETEST.getCode(), 0,description);
 			LOGGER.error("任务签收失败");
@@ -499,6 +540,11 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			}
 			tasksRpc.complete(taskId, map);
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEDBA.getCode(), 1,description);
+			
+			//測試組
+			//Set<String> emails = this.getEmailsByUserId(pro.getTestManager());
+			//this.sendMail(onlineDataChange, "线上数据申请审批", emails);
+		
 		} catch (Exception e) {
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEDBA.getCode(), 0,description);
 			LOGGER.error("任务签收失败");
@@ -532,6 +578,12 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			
 			tasksRpc.complete(taskId);
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.ONLINEDBADATACHANGE.getCode(), 1,description);
+			
+			//任務完成  發給申請人
+		//	Set<String> emails = this.getEmailsByUserId(pro.getTestManager());
+		//	this.sendMail(onlineDataChange, "线上数据申请审批完畢", emails);
+		
+		
 		} catch (Exception e) {
 			LOGGER.error("任务签收失败");
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.ONLINEDBADATACHANGE.getCode(), 0,description);
@@ -692,6 +744,10 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			}
 			tasksRpc.complete(taskId, map);
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.ONLINEDBADATACHANGE.getCode(), 2,description);
+			//發給
+			//Set<String> emails = this.getEmailsByUserId(pro.getTestManager());
+			//this.sendMail(onlineDataChange, "线上数据申请审批", emails);
+		
 		} catch (Exception e) {
 			LOGGER.error("任务签收失败");
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.ONLINEDBADATACHANGE.getCode(), 0,description);

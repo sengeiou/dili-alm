@@ -57,7 +57,6 @@ public class OnlineDataChangeController {
     @Autowired
 	private UserRpc userRpc;
     
-  
     @Autowired
    	private   MyTasksRpc  tasksRpc;
     

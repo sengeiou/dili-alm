@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -36,33 +37,33 @@ public class AssignmentApi {
 
 	// 申请数据变
 //	@ApiOperation("申请数据变")
-	@RequestMapping("/setSubmitOnlineDataChangeAssigneeName.api")
-	public @ResponseBody BaseOutput<Assignment> setsubmitOnlineDataChangeAssigneeName(@RequestBody TaskMapping taskMapping) {
+	@PostMapping("/setSubmitOnlineDataChangeAssigneeName.api")
+	public  BaseOutput<Assignment> setsubmitOnlineDataChangeAssigneeName( TaskMapping taskMapping) {
 		String dept = taskMapping.getProcessVariables().get(BpmConsts.OnlineDataChangeProcessConstant.submit.getName()).toString();
-		Assignment assignment = DTOUtils.newDTO(Assignment.class);
+		Assignment assignment = DTOUtils.newInstance(Assignment.class);
 		assignment.setAssignee(dept);
-		return BaseOutput.success().setData(assignment);
+		return BaseOutput.successData(assignment);
 	}
 
 	// 根据变更ID，返回部门审批人
 /*	@ApiOperation("根据变更ID，返回部门审批人")*/
-	@RequestMapping("/setDeptOnlineDataChangeAssigneeName.api")
-	public @ResponseBody BaseOutput<Assignment> setDeptOnlineDataChangeAssigneeName(@RequestBody TaskMapping taskMapping) {
+	@PostMapping("/setDeptOnlineDataChangeAssigneeName.api")
+	public  BaseOutput<Assignment> setDeptOnlineDataChangeAssigneeName( TaskMapping taskMapping) {
 		String dept = taskMapping.getProcessVariables().get(BpmConsts.OnlineDataChangeProcessConstant.dept.getName()).toString();
-		Assignment assignment = DTOUtils.newDTO(Assignment.class);
+		Assignment assignment = DTOUtils.newInstance(Assignment.class);
 		assignment.setAssignee(dept);
-		return BaseOutput.success().setData(assignment);
+		return BaseOutput.successData(assignment);
 
 	}
 
 	// 根据变更ID，返回测试审批人
 /*	@ApiOperation("根据变更ID，返回测试审批人")*/
-	@RequestMapping("/setTestOnlineDataChangeAssigneeName.api")
-	public @ResponseBody BaseOutput<Assignment> setTestOnlineDataChangeAssigneeName(@RequestBody TaskMapping taskMapping) {
+	@PostMapping("/setTestOnlineDataChangeAssigneeName.api")
+	public  BaseOutput<Assignment> setTestOnlineDataChangeAssigneeName(@RequestBody TaskMapping taskMapping) {
 		String dept = taskMapping.getProcessVariables().get(BpmConsts.OnlineDataChangeProcessConstant.test.getName()).toString();
-		Assignment assignment = DTOUtils.newDTO(Assignment.class);
+		Assignment assignment = DTOUtils.newInstance(Assignment.class);
 		assignment.setAssignee(dept);
-		return BaseOutput.success().setData(assignment);
+		return BaseOutput.successData(assignment);
 
 	}
 
