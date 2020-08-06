@@ -18,7 +18,7 @@ public interface RuntimeApiRpc {
 	 * @return 流程实例对象封装
 	 */
 	@GET("/api/runtime/startProcessInstanceByKey")
-	BaseOutput<ProcessInstanceMapping> startProcessInstanceByKey(@ReqParam(value = "processDefinitionKey") String processDefinitionKey, @ReqParam(value = "businessKey", required = false) String businessKey, @ReqParam(value = "userId") String userId, @ReqParam(value = "variables") Map<String, Object> variables);
+	BaseOutput<ProcessInstanceMapping> startProcessInstanceByKey(@ReqParam(value = "processDefinitionKey") String processDefinitionKey, @ReqParam(value = "businessKey", required = false) String businessKey, @ReqParam(value = "userId") String userId, @ReqParam(value = "variables") Map<String, String> variables);
 
 	/**
 	 * 根据流程定义id和参数启动流程定义
@@ -28,6 +28,6 @@ public interface RuntimeApiRpc {
 	 * @return 流程实例对象封装
 	 */
 	@GET("/api/runtime/startProcessInstanceById")
-	BaseOutput<ProcessInstanceMapping> startProcessInstanceById(@ReqParam(value = "processDefinitionId") String processDefinitionId, @ReqParam(value = "businessKey", required = false) String businessKey, @ReqParam(value = "userId") String userId, @ReqParam(value = "variables") Map<String, Object> variables);
+	BaseOutput<ProcessInstanceMapping> startProcessInstanceById(@ReqParam(value = "processDefinitionId") String processDefinitionId, @ReqParam(value = "businessKey", required = false) String businessKey, @ReqParam(value = "userId") String userId, @ReqParam(value = "variables") Map<String, String> variables);
     
 }
