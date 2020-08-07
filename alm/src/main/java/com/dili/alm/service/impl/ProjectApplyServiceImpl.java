@@ -54,7 +54,7 @@ import com.dili.alm.domain.dto.apply.ApplyRisk;
 import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.DemandExceptions;
 import com.dili.alm.exceptions.ProjectApplyException;
-import com.dili.alm.rpc.MyTasksRpc;
+import com.dili.alm.rpc.MyTasksRpcCopy;
 import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.FilesService;
@@ -63,6 +63,7 @@ import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
 import com.dili.alm.domain.TaskMapping;
 import com.dili.alm.domain.TaskDto;
 import com.dili.bpmc.sdk.rpc.RuntimeRpc;
+import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -106,7 +107,7 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 	@Autowired
 	private DemandProjectMapper demandProjectMapper;
 	@Autowired
-	private MyTasksRpc tasksRpc;
+	private TaskRpc tasksRpc;
 	
 
 	public ProjectApplyMapper getActualDao() {
