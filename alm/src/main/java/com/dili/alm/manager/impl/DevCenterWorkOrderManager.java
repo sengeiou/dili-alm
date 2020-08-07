@@ -20,10 +20,10 @@ import com.dili.alm.domain.WorkOrderState;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.exceptions.WorkOrderException;
-import com.dili.alm.rpc.MyTasksRpc;
-import com.dili.alm.rpc.RuntimeApiRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
+import com.dili.bpmc.sdk.rpc.RuntimeRpc;
+import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.rpc.UserRpc;
@@ -41,9 +41,9 @@ public class DevCenterWorkOrderManager extends BaseWorkOrderManager {
     @Autowired
 	private UserRpc userRpc;
     @Autowired
-   	private   MyTasksRpc  tasksRpc;
+   	private   TaskRpc  tasksRpc;
     @Autowired
-  	private   RuntimeApiRpc  runtimeRpc;
+  	private   RuntimeRpc  runtimeRpc;
     
 
 	@Override
@@ -72,7 +72,7 @@ public class DevCenterWorkOrderManager extends BaseWorkOrderManager {
 			throw new WorkOrderException("受理人不存在");
 		}
 		
-	   Map<String, String> map=new HashMap<String, String>();
+	   Map<String, Object> map=new HashMap<String, Object>();
 	   map.put("workOrderSource", WorkOrderSource.DEVELOPMENT_CENTER.getValue().toString());
 	
 		if(workOrder.getWorkOrderSource()==WorkOrderSource.DEPARTMENT.getValue()) {
@@ -151,7 +151,7 @@ public class DevCenterWorkOrderManager extends BaseWorkOrderManager {
 				if (mailReceiver == null) {
 					throw new WorkOrderException("受理人不存在");
 				}
-				 Map<String, Object> map=new HashMap<String, Object>();
+				 Map<String, String> map=new HashMap<String, String>();
 			   /* 
 			     map.put("workOrderSource", "2");
 				if(workOrder.getWorkOrderSource()==2) {

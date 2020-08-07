@@ -38,11 +38,10 @@ import com.dili.alm.domain.dto.WorkOrderDto;
 import com.dili.alm.domain.dto.WorkOrderQueryDto;
 import com.dili.alm.domain.dto.WorkOrderUpdateDto;
 import com.dili.alm.exceptions.WorkOrderException;
-import com.dili.alm.rpc.MyTasksRpc;
-import com.dili.alm.rpc.RuntimeApiRpc;
 import com.dili.alm.service.DemandService;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.WorkOrderService;
+import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -77,10 +76,10 @@ public class WorkOrderController {
 	private BpmcUtil bpmcUtil;
     @Autowired
 	private UserRpc userRpc;
-    @Autowired
-   	private   MyTasksRpc  tasksRpc;
-    @Autowired
-  	private   RuntimeApiRpc  runtimeRpc;
+   @Autowired
+   	private   TaskRpc  tasksRpc;
+   /*   @Autowired
+  	private   RuntimeApiRpcCopy  runtimeRpc;*/
 	    
 	@GetMapping("/detail")
 	public String deital(@RequestParam Long id, ModelMap modelMap) {

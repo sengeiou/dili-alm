@@ -47,7 +47,6 @@ import com.dili.alm.domain.Team;
 /*import com.dili.alm.domain.TaskMapping;*/
 import com.dili.alm.domain.dto.OnlineDataChangeBpmcDtoDto;
 import com.dili.alm.exceptions.OnlineDataChangeException;
-import com.dili.alm.rpc.RuntimeApiRpc;
 import com.dili.alm.service.OnlineDataChangeLogService;
 import com.dili.alm.service.OnlineDataChangeService;
 import com.dili.alm.service.ProjectService;
@@ -57,6 +56,7 @@ import com.dili.bpmc.sdk.domain.TaskMapping;
 import com.dili.bpmc.sdk.dto.Assignment;
 import com.dili.bpmc.sdk.dto.TaskDto;
 import com.dili.bpmc.sdk.dto.TaskIdentityDto;
+import com.dili.bpmc.sdk.rpc.RuntimeRpc;
 import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
@@ -83,7 +83,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 	private TaskRpc tasksRpc;
 
 	@Autowired
-	private RuntimeApiRpc runtimeRpc;
+	private RuntimeRpc runtimeRpc;
 	@Autowired
 	private BpmcUtil bpmcUtil;
 
@@ -255,7 +255,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		this.insertSelective(onlineDataChange);
 
 		try {
-			Map<String, String> map = new HashMap<String, String>();
+			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("dataId", onlineDataChange.getId() + "");
 
 			Project pro = projectService.get(onlineDataChange.getProjectId());
@@ -307,7 +307,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		if (odc.getProcessInstanceId() == null) {
 
 			try {
-				Map<String, String> map = new HashMap<String, String>();
+				Map<String, Object> map = new HashMap<String, Object>();
 				map.put("dataId", onlineDataChange.getId() + "");
 				Project pro = projectService.get(onlineDataChange.getProjectId());
 				//map.put("dept", pro.getProjectManager() + "");

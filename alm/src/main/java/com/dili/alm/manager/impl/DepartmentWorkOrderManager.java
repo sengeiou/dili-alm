@@ -28,10 +28,12 @@ import com.dili.alm.domain.WorkOrderState;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.exceptions.WorkOrderException;
-import com.dili.alm.rpc.MyTasksRpc;
-import com.dili.alm.rpc.RuntimeApiRpc;
+/*import com.dili.alm.rpc.MyTasksRpcCopy;
+import com.dili.alm.rpc.RuntimeApiRpcCopy;*/
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
+import com.dili.bpmc.sdk.rpc.RuntimeRpc;
+import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
@@ -57,11 +59,13 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
     @Autowired
 	private UserRpc userRpc;
     
+  
+  
     @Autowired
-   	private   MyTasksRpc  tasksRpc;
+    private  TaskRpc tasksRpc;
     
     @Autowired
-  	private   RuntimeApiRpc  runtimeRpc;
+  	private   RuntimeRpc  runtimeRpc;
     
     
     
@@ -90,7 +94,7 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 			throw new WorkOrderException("受理人不存在");
 		}
 		
-	   Map<String, String> map=new HashMap<String, String>();
+	   Map<String, Object> map=new HashMap<String, Object>();
 	   map.put("workOrderSource", WorkOrderSource.DEPARTMENT.getValue().toString());
 	 //  map.put("solve", workOrder.getExecutorId().toString());
 	   map.put(BpmConsts.WorkOrderApply.SOLVE.getName(), workOrder.getExecutorId().toString());
@@ -231,7 +235,7 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 					throw new WorkOrderException("受理人不存在");
 				}
 				
-			    Map<String, Object> map=new HashMap<String, Object>();
+			    Map<String, String> map=new HashMap<String, String>();
 			    map.put("workOrderSource", WorkOrderSource.DEPARTMENT.getValue().toString());
 			   
 			  //  map.put("solve", workOrder.getExecutorId().toString());
