@@ -54,6 +54,7 @@ import com.dili.alm.service.ProjectVersionService;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
 import com.dili.bpmc.sdk.domain.TaskMapping;
 import com.dili.bpmc.sdk.dto.Assignment;
+import com.dili.bpmc.sdk.dto.GroupUserDto;
 import com.dili.bpmc.sdk.dto.TaskDto;
 import com.dili.bpmc.sdk.dto.TaskIdentityDto;
 import com.dili.bpmc.sdk.rpc.RuntimeRpc;
@@ -66,6 +67,7 @@ import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.util.BeanConver;
 import com.dili.uap.sdk.domain.Department;
 import com.dili.uap.sdk.domain.User;
+import com.dili.uap.sdk.domain.dto.RoleUserDto;
 import com.dili.uap.sdk.rpc.DepartmentRpc;
 import com.dili.uap.sdk.rpc.RoleRpc;
 import com.dili.uap.sdk.rpc.UserRpc;
@@ -194,8 +196,8 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		BaseOutput<User> userMail=userRpc.get(userId);
 		
 		if(userMail!=null &&userMail.getData()!=null) {
-		    userMail.getData().getEmail();
-		    emails.add("sunguangqiang@diligrp.com");
+			emails.add( userMail.getData().getEmail());
+		    //emails.add("sunguangqiang@diligrp.com");
 		}
 		return emails;
 	}
@@ -252,9 +254,11 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		onlineDataChange.setIsSubmit((byte) 1);
 		onlineDataChange.setDataStatus((byte) 2);
 		onlineDataChange.setCreateDate(new Date());
-		this.insertSelective(onlineDataChange);
+		
 
 		try {
+			this.insertSelective(onlineDataChange);
+			
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("dataId", onlineDataChange.getId() + "");
 
@@ -277,23 +281,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		/*	Set<String> emails = this.getEmailsByUserId(pro.getProjectManager());
 			this.sendMail(onlineDataChange, "线上数据申请审批", emails);*/
 			
-			Set<String> processInstanceIds = new HashSet<>();
-			processInstanceIds.add(onlineDataChange.getProcessInstanceId()+"");
-			BaseOutput<List<TaskIdentityDto>> tiOutput = this.taskRpc.listTaskIdentityByProcessInstanceIds(new ArrayList<String>(processInstanceIds));
-			if (!tiOutput.isSuccess()) {
-				return;
-			}
-			if (CollectionUtils.isEmpty(tiOutput.getData())) {
-				return;
-			}
-			Set<Long> roleIds = new HashSet<>();
-			tiOutput.getData().forEach(ti -> {
-				ti.getGroupUsers().forEach(gu -> {
-					if (StringUtils.isNotBlank(gu.getGroupId())) {
-						roleIds.add(Long.valueOf(gu.getGroupId()));
-					}
-				});
-			});
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			//System.out.println(e);
@@ -367,27 +355,31 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		OnlineDataChange onlineDataChange = new OnlineDataChange();
 		onlineDataChange.setId(Long.parseLong(dataId));
 		onlineDataChange.setDataStatus((byte) 3);
-		this.updateSelective(onlineDataChange);
-		OnlineDataChange onlineDataChangeTemp = this.get(Long.parseLong(dataId));
-		Map<String, String> map = new HashMap<String,String>();
-		map.put("approved", "true");
-		Project pro = projectService.get(onlineDataChangeTemp.getProjectId());
 
-		User uprojectser = DTOUtils.newDTO(User.class);
-		uprojectser.setId(pro.getTestManager());
-		uprojectser.setFirmCode(AlmConstants.ALM_FIRM_CODE);
-		BaseOutput<List<User>> listUserByExample = userRpc.listByExample(uprojectser);
-
-		Assignment record = DTOUtils.newDTO(Assignment.class);
-		record.setAssignee(pro.getTestManager().toString());// 项目测试人员的ID
-		List<User> listUsernName = listUserByExample.getData();//// 项目测试人员组的ID
-		if (listUsernName != null && listUsernName.size() > 0) {
-			record.setAssignee(listUsernName.get(0).getId().toString());
-			//map.put("test", listUsernName.get(0).getId().toString() + "");
-		    map.put(BpmConsts.OnlineDataChangeProcessConstant.test.getName(), listUsernName.get(0).getId().toString() + "");
-		}
 	
 		try {
+			
+			this.updateSelective(onlineDataChange);
+			OnlineDataChange onlineDataChangeTemp = this.get(Long.parseLong(dataId));
+			Map<String, String> map = new HashMap<String,String>();
+			map.put("approved", "true");
+			Project pro = projectService.get(onlineDataChangeTemp.getProjectId());
+
+			User uprojectser = DTOUtils.newDTO(User.class);
+			uprojectser.setId(pro.getTestManager());
+			uprojectser.setFirmCode(AlmConstants.ALM_FIRM_CODE);
+			BaseOutput<List<User>> listUserByExample = userRpc.listByExample(uprojectser);
+
+			Assignment record = DTOUtils.newDTO(Assignment.class);
+			record.setAssignee(pro.getTestManager().toString());// 项目测试人员的ID
+			List<User> listUsernName = listUserByExample.getData();//// 项目测试人员组的ID
+			if (listUsernName != null && listUsernName.size() > 0) {
+				record.setAssignee(listUsernName.get(0).getId().toString());
+				//map.put("test", listUsernName.get(0).getId().toString() + "");
+			    map.put(BpmConsts.OnlineDataChangeProcessConstant.test.getName(), listUsernName.get(0).getId().toString() + "");
+			}
+			
+			
 			if (isNeedClaim) {
 				BaseOutput<String> output = tasksRpc.claim(taskId, listUsernName.get(0).getId().toString() + "");
 				if (!output.isSuccess()) {
@@ -420,15 +412,17 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		OnlineDataChange onlineDataChange = new OnlineDataChange();
 		onlineDataChange.setId(Long.parseLong(dataId));
 		onlineDataChange.setDataStatus((byte) 1);
-		this.updateSelective(onlineDataChange);
-		OnlineDataChange onlineDataChangeTemp = this.get(Long.parseLong(dataId));
-		Map<String, String> map = new HashMap<String,String>();
-		map.put("approved", "false");
-	//	map.put("submit", "" + onlineDataChangeTemp.getApplyUserId());
-		map.put(BpmConsts.OnlineDataChangeProcessConstant.submit.getName(), "" + onlineDataChangeTemp.getApplyUserId());
-		
+	
 		
 		try {
+			this.updateSelective(onlineDataChange);
+			OnlineDataChange onlineDataChangeTemp = this.get(Long.parseLong(dataId));
+			Map<String, String> map = new HashMap<String,String>();
+			map.put("approved", "false");
+		//	map.put("submit", "" + onlineDataChangeTemp.getApplyUserId());
+			map.put(BpmConsts.OnlineDataChangeProcessConstant.submit.getName(), "" + onlineDataChangeTemp.getApplyUserId());
+			
+			
 			if (isNeedClaim) {
 				BaseOutput<String> output = tasksRpc.claim(taskId, onlineDataChangeTemp.getApplyUserId() + "");
 				if (!output.isSuccess()) {
@@ -457,19 +451,21 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		OnlineDataChange onlineDataChange = new OnlineDataChange();
 		onlineDataChange.setId(Long.parseLong(dataId));
 		onlineDataChange.setDataStatus((byte) 4);
-		this.updateSelective(onlineDataChange);
-
-		Map<String, String> map = new HashMap<String,String>();
-		map.put("approved", "true");
+	
 		try {
+			
+			this.updateSelective(onlineDataChange);
+			Map<String, String> map = new HashMap<String,String>();
+			map.put("approved", "true");
+			
 			tasksRpc.complete(taskId, map);
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGETEST.getCode(), 1,description);
 			
 			//dba 組
 			//Set<String> emails = this.getEmailsByUserId(pro.getTestManager());
 			//this.sendMail(onlineDataChange, "线上数据申请审批", emails);
-	
-			
+			Set<String> emails = getGroupEmail(dataId);
+			this.sendMail(onlineDataChange, "线上数据申请dba执行", emails);
 		
 		} catch (Exception e) {
 			LOGGER.error("任务签收失败");
@@ -479,6 +475,8 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 
 	}
 
+
+
 	@Override
 	public void notAgreeTestOnlineDataChange(String taskId, Boolean isNeedClaim,String description) throws OnlineDataChangeException {
 		BaseOutput<Map<String, Object>> mapId = tasksRpc.getVariables(taskId);
@@ -486,16 +484,17 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		OnlineDataChange onlineDataChange = new OnlineDataChange();
 		onlineDataChange.setId(Long.parseLong(dataId));
 		onlineDataChange.setDataStatus((byte) 1);
-		onlineDataChangeMapper.updateByPrimaryKeySelective(onlineDataChange);
-		Map<String, String> map = new HashMap<String,String>();
-		map.put("approved", "false");
-
-		OnlineDataChange onlineDataChangeTemp = this.get(Long.parseLong(dataId));
-	//	map.put("submit", "" + onlineDataChangeTemp.getApplyUserId());
-		map.put(BpmConsts.OnlineDataChangeProcessConstant.submit.getName(), "" + onlineDataChangeTemp.getApplyUserId());
-		
 		
 		try {
+			onlineDataChangeMapper.updateByPrimaryKeySelective(onlineDataChange);
+			Map<String, String> map = new HashMap<String,String>();
+			map.put("approved", "false");
+
+			OnlineDataChange onlineDataChangeTemp = this.get(Long.parseLong(dataId));
+		//	map.put("submit", "" + onlineDataChangeTemp.getApplyUserId());
+			map.put(BpmConsts.OnlineDataChangeProcessConstant.submit.getName(), "" + onlineDataChangeTemp.getApplyUserId());
+			
+			
 			if (isNeedClaim) {
 				BaseOutput<String> output = tasksRpc.claim(taskId, onlineDataChangeTemp.getApplyUserId() + "");
 				if (!output.isSuccess()) {
@@ -504,7 +503,6 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 				}
 			}
 			tasksRpc.complete(taskId, map);
-			
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGETEST.getCode(), 2,description);
 		
 			Set<String> emails = this.getEmailsByUserId(onlineDataChangeTemp.getApplyUserId());
@@ -524,13 +522,15 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		OnlineDataChange onlineDataChange = new OnlineDataChange();
 		onlineDataChange.setId(Long.parseLong(dataId));
 		onlineDataChange.setDataStatus((byte) 5);
-		this.updateSelective(onlineDataChange);
-		Map<String, String> map = new HashMap<String,String>();
-		map.put("approved", "true");
-		Long id = SessionContext.getSessionContext().getUserTicket().getId();
+		
 		// 签收任务
 		
 		try {
+			this.updateSelective(onlineDataChange);
+			Map<String, String> map = new HashMap<String,String>();
+			map.put("approved", "true");
+			Long id = SessionContext.getSessionContext().getUserTicket().getId();
+			
 			if (isNeedClaim) {
 				BaseOutput<String> output = tasksRpc.claim(taskId, id.toString());
 				if (!output.isSuccess()) {
@@ -544,6 +544,9 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			//測試組
 			//Set<String> emails = this.getEmailsByUserId(pro.getTestManager());
 			//this.sendMail(onlineDataChange, "线上数据申请审批", emails);
+			Set<String> emails = getGroupEmail(dataId);
+			this.sendMail(onlineDataChange, "线上数据申请测试人员执行", emails);
+			
 		
 		} catch (Exception e) {
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEDBA.getCode(), 0,description);
@@ -560,14 +563,18 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		OnlineDataChange onlineDataChange = new OnlineDataChange();
 		onlineDataChange.setId(Long.parseLong(dataId));
 		onlineDataChange.setDataStatus((byte) 6);
-		this.updateSelective(onlineDataChange);
-		Map<String, Object> map = new HashMap<>();
-		map.put("approved", "true");
-		//map.put("submit", onlineDataChange.getApplyUserId());
-		map.put(BpmConsts.OnlineDataChangeProcessConstant.submit.getName(), onlineDataChange.getApplyUserId());
-		Long id = SessionContext.getSessionContext().getUserTicket().getId();
+	
 		
 		try {
+			
+			this.updateSelective(onlineDataChange);
+			onlineDataChange=this.get(Long.parseLong(dataId));
+			Map<String, Object> map = new HashMap<>();
+			map.put("approved", "true");
+			//map.put("submit", onlineDataChange.getApplyUserId());
+			map.put(BpmConsts.OnlineDataChangeProcessConstant.submit.getName(), onlineDataChange.getApplyUserId());
+			Long id = SessionContext.getSessionContext().getUserTicket().getId();
+			
 			if (isNeedClaim) {
 				BaseOutput<String> output = tasksRpc.claim(taskId, id.toString() + "");
 				if (!output.isSuccess()) {
@@ -580,8 +587,8 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.ONLINEDBADATACHANGE.getCode(), 1,description);
 			
 			//任務完成  發給申請人
-		//	Set<String> emails = this.getEmailsByUserId(pro.getTestManager());
-		//	this.sendMail(onlineDataChange, "线上数据申请审批完畢", emails);
+		 	Set<String> emails = this.getEmailsByUserId(onlineDataChange.getApplyUserId());
+		 	this.sendMail(onlineDataChange, "线上数据申请审批完畢", emails);
 		
 		
 		} catch (Exception e) {
@@ -593,17 +600,60 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 	}
 
 	@Override
+	public void notAgreeOnlineDataChange(String taskId, Boolean isNeedClaim,String description) throws OnlineDataChangeException {
+		BaseOutput<Map<String, Object>> mapId = tasksRpc.getVariables(taskId);
+		String dataId = (String) mapId.getData().get("businessKey");
+		OnlineDataChange onlineDataChange = new OnlineDataChange();
+		onlineDataChange.setId(Long.parseLong(dataId));
+		onlineDataChange.setDataStatus((byte) 4);
+
+		
+		try {
+			
+			onlineDataChangeMapper.updateByPrimaryKeySelective(onlineDataChange);
+			Map<String, String> map = new HashMap<>();
+			map.put("approved", "false");
+
+			 onlineDataChange = this.get(Long.parseLong(dataId));
+			
+			if (isNeedClaim) {
+				Long id = SessionContext.getSessionContext().getUserTicket().getId();
+				BaseOutput<String> output = tasksRpc.claim(taskId, id.toString());
+				if (!output.isSuccess()) {
+					LOGGER.error(output.getMessage());
+					throw new OnlineDataChangeException("任务签收失败");
+				}
+			}
+			tasksRpc.complete(taskId, map);
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.ONLINEDBADATACHANGE.getCode(), 2,description);
+			Set<String> emails = getGroupEmail(dataId);
+			this.sendMail(onlineDataChange, "线上数据申请dba执行", emails);
+		
+		} catch (Exception e) {
+			LOGGER.error("任务签收失败");
+			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.ONLINEDBADATACHANGE.getCode(), 0,description);
+			throw new OnlineDataChangeException("任务签收失败");
+		}
+
+	}
+	@Override
 	public void indexOnlineDataChange(String taskId, OnlineDataChange onlineDataChange) throws OnlineDataChangeException {
 		BaseOutput<Map<String, Object>> mapId = tasksRpc.getVariables(taskId);
 		String dataId = (String) mapId.getData().get("businessKey");
 		// OnlineDataChange onlineDataChange=new OnlineDataChange();
 		onlineDataChange.setId(Long.parseLong(dataId));
 		onlineDataChange.setDataStatus((byte) 2);
-		this.updateSelective(onlineDataChange);
-		Map<String, Object> map = new HashMap<>();
-		map.put("approved", "true");
+	
 		try {
+			this.updateSelective(onlineDataChange);
+			Map<String, Object> map = new HashMap<>();
+			map.put("approved", "true");
+			
 			tasksRpc.complete(taskId);
+			onlineDataChange=this.get(Long.parseLong(dataId));
+			Project pro = projectService.get(onlineDataChange.getProjectId());
+			Set<String> emails = this.getEmailsByUserId(pro.getProjectManager());
+			this.sendMail(onlineDataChange, "线上数据申请审批", emails);
 			
 		} catch (Exception e) {
 			LOGGER.error("任务签收失败");
@@ -666,26 +716,6 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 					odcData.setTestManager(pro.getTestManager());// "test负责人
 					odcData.setProjectManager(pro.getProjectManager());// "项目负责人
 				}
-
-				/*
-				 * dbaList=new ArrayList<Long>(); List<RoleUserDto>
-				 * dbaDto=roleRpc.listRoleUserByRoleIds(dbaRoleIds).getData(); for (RoleUserDto
-				 * roleUserDto : dbaDto) { List<User> lsitUser=roleUserDto.getUsers(); for (User
-				 * object : lsitUser) { dbaList.add(object.getId()); }
-				 * 
-				 * }
-				 */
-				/*
-				 * List<RoleUserDto>
-				 * onlingRoleIdDto=roleRpc.listRoleUserByRoleIds(onlingRoleIds).getData();
-				 * 
-				 * onLingList=new ArrayList<Long>(); for (RoleUserDto roleUserDto :
-				 * onlingRoleIdDto) {
-				 * 
-				 * List<User> lsitUser=roleUserDto.getUsers(); for (User object : lsitUser) {
-				 * onLingList.add(object.getId()); } } odcData.setDbaManager(dbaList);
-				 * odcData.setOnlineManager(onLingList);
-				 */
 			}
 
 			List onlineDataChangeList = ValueProviderUtils.buildDataByProvider(metadata, targetList);
@@ -719,43 +749,33 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 	 * }
 	 */
 
-	@Override
-	public void notAgreeOnlineDataChange(String taskId, Boolean isNeedClaim,String description) throws OnlineDataChangeException {
-		BaseOutput<Map<String, Object>> mapId = tasksRpc.getVariables(taskId);
-		String dataId = (String) mapId.getData().get("businessKey");
-		OnlineDataChange onlineDataChange = new OnlineDataChange();
-		onlineDataChange.setId(Long.parseLong(dataId));
-		onlineDataChange.setDataStatus((byte) 4);
-		onlineDataChangeMapper.updateByPrimaryKeySelective(onlineDataChange);
-		Map<String, String> map = new HashMap<>();
-		map.put("approved", "false");
-
-		OnlineDataChange onlineDataChangeTemp = this.get(Long.parseLong(dataId));
-		// map.put("submit", ""+onlineDataChangeTemp.getApplyUserId());
-		
-		try {
-			if (isNeedClaim) {
-				Long id = SessionContext.getSessionContext().getUserTicket().getId();
-				BaseOutput<String> output = tasksRpc.claim(taskId, id.toString());
-				if (!output.isSuccess()) {
-					LOGGER.error(output.getMessage());
-					throw new OnlineDataChangeException("任务签收失败");
-				}
-			}
-			tasksRpc.complete(taskId, map);
-			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.ONLINEDBADATACHANGE.getCode(), 2,description);
-			//發給
-			//Set<String> emails = this.getEmailsByUserId(pro.getTestManager());
-			//this.sendMail(onlineDataChange, "线上数据申请审批", emails);
-		
-		} catch (Exception e) {
-			LOGGER.error("任务签收失败");
-			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.ONLINEDBADATACHANGE.getCode(), 0,description);
-			throw new OnlineDataChangeException("任务签收失败");
-		}
-
-	}
 	
-
+	private Set<String> getGroupEmail(String dataId) {
+		Set<String> processInstanceIds = new HashSet<>();
+		processInstanceIds.add(this.get(Long.parseLong(dataId)).getProcessInstanceId()+"");
+		BaseOutput<List<TaskIdentityDto>> tiOutput = this.taskRpc.listTaskIdentityByProcessInstanceIds(new ArrayList<String>(processInstanceIds));
+		if (!tiOutput.isSuccess()) {
+			return  null;
+		}
+		if (CollectionUtils.isEmpty(tiOutput.getData())) {
+			return null;
+		}
+		
+		Set<String> emails =new HashSet<String>();
+		GroupUserDto  gu=tiOutput.getData().get(0).getGroupUsers().get(0);
+		List<Long> dbaList;
+		if(StringUtils.isNotBlank(gu.getGroupId())){
+			dbaList=new ArrayList<Long>();
+			  dbaList.add(Long.parseLong(gu.getGroupId()));
+			  List<RoleUserDto>  dbaDto  =roleRpc.listRoleUserByRoleIds(dbaList).getData();
+			  for (RoleUserDto roleUserDto : dbaDto) {
+				  List<User> lsitUser=roleUserDto.getUsers();
+				  for (User  object : lsitUser){ 
+					  emails.add(object.getEmail()+"");
+				  }
+		      }
+		}
+		return emails;
+	}
 
 }
