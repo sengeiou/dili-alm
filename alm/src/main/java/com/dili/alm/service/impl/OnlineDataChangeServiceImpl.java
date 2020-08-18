@@ -413,7 +413,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEMANAGER.getCode(), 2,description);
 		
 			Set<String> emails = this.getEmailsByUserId(onlineDataChangeTemp.getApplyUserId());
-			this.sendMail(onlineDataChange, "线上数据申请审批駁回", emails);
+			this.sendMail(onlineDataChange, "线上数据申请审批驳回", emails);
 		} catch (Exception e) {
 			LOGGER.error("任务签收失败");
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEMANAGER.getCode(), 0,description);
@@ -484,7 +484,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGETEST.getCode(), 2,description);
 		
 			Set<String> emails = this.getEmailsByUserId(onlineDataChangeTemp.getApplyUserId());
-			this.sendMail(onlineDataChange, "线上数据申请审批駁回", emails);
+			this.sendMail(onlineDataChange, "线上数据申请审批驳回", emails);
 		} catch (Exception e) {
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGETEST.getCode(), 0,description);
 			LOGGER.error("任务签收失败");
@@ -566,7 +566,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			
 			//任務完成  發給申請人
 		 	Set<String> emails = this.getEmailsByUserId(onlineDataChange.getApplyUserId());
-		 	this.sendMail(onlineDataChange, "线上数据申请审批完畢", emails);
+		 	this.sendMail(onlineDataChange, "线上数据申请审批完毕", emails);
 		
 		
 		} catch (Exception e) {
