@@ -15,27 +15,26 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.alm.constant.AlmConstants;
-import com.dili.alm.constant.BpmConsts;
 import com.dili.alm.constant.AlmConstants.ApplyState;
+import com.dili.alm.constant.BpmConsts;
 import com.dili.alm.dao.ProjectCompleteMapper;
 import com.dili.alm.dao.ProjectMapper;
 import com.dili.alm.domain.Approve;
 import com.dili.alm.domain.Project;
-import com.dili.alm.domain.ProjectChange;
 import com.dili.alm.domain.ProjectComplete;
-import com.dili.alm.domain.TaskDto;
-import com.dili.alm.domain.TaskMapping;
 import com.dili.alm.domain.Team;
 import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.ProjectApplyException;
 import com.dili.alm.exceptions.ProjectCompleteException;
-import com.dili.alm.rpc.MyTasksRpc;
 import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.ProjectCompleteService;
 import com.dili.alm.service.TeamService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
+import com.dili.bpmc.sdk.domain.TaskMapping;
+import com.dili.bpmc.sdk.dto.TaskDto;
 import com.dili.bpmc.sdk.rpc.RuntimeRpc;
+import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -66,7 +65,7 @@ public class ProjectCompleteServiceImpl extends BaseServiceImpl<ProjectComplete,
 	@Autowired
 	private RuntimeRpc runtimeRpc;
 	@Autowired
-	private MyTasksRpc tasksRpc;
+	private TaskRpc tasksRpc;
 	public ProjectCompleteMapper getActualDao() {
 		return (ProjectCompleteMapper) getDao();
 	}

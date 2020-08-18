@@ -24,10 +24,10 @@ import com.dili.alm.domain.WorkOrderState;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.exceptions.WorkOrderException;
-import com.dili.alm.rpc.MyTasksRpc;
-import com.dili.alm.rpc.RuntimeApiRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
+import com.dili.bpmc.sdk.rpc.RuntimeRpc;
+import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.rpc.UserRpc;
@@ -45,9 +45,9 @@ public class OutsideWorkOrderManager extends BaseWorkOrderManager {
     @Autowired
 	private UserRpc userRpc;
     @Autowired
-   	private   MyTasksRpc  tasksRpc;
+   	private   TaskRpc  tasksRpc;
     @Autowired
-  	private   RuntimeApiRpc  runtimeRpc;
+  	private   RuntimeRpc  runtimeRpc;
     
 	@Override
 	public void submit(WorkOrder workOrder) throws WorkOrderException {
@@ -176,7 +176,7 @@ public class OutsideWorkOrderManager extends BaseWorkOrderManager {
 				}
 			});
 		}
-	   Map<String, Object> map=new HashMap<String, Object>();
+	   Map<String, String> map=new HashMap<String, String>();
 	 //  map.put("workOrderSource", "3");
 	   map.put("workOrderSource", WorkOrderSource.OUTSIDE.getValue().toString());
 	   

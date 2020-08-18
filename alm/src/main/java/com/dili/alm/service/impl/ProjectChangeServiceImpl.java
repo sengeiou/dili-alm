@@ -30,17 +30,17 @@ import com.dili.alm.domain.Approve;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.ProjectChange;
-import com.dili.alm.domain.TaskDto;
-import com.dili.alm.domain.TaskMapping;
 import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.ProjectApplyException;
 import com.dili.alm.provider.ProjectTypeProvider;
-import com.dili.alm.rpc.MyTasksRpc;
 import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.ProjectChangeService;
 import com.dili.alm.service.ProjectService;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
+import com.dili.bpmc.sdk.domain.TaskMapping;
+import com.dili.bpmc.sdk.dto.TaskDto;
 import com.dili.bpmc.sdk.rpc.RuntimeRpc;
+import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -77,7 +77,7 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 	@Autowired
 	private RuntimeRpc runtimeRpc;
 	@Autowired
-	private MyTasksRpc tasksRpc;
+	private TaskRpc tasksRpc;
 
 	public ProjectChangeMapper getActualDao() {
 		return (ProjectChangeMapper) getDao();

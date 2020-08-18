@@ -25,8 +25,7 @@ import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.TaskDto;
 import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.OnlineDataChangeException;
-import com.dili.alm.rpc.MyTasksRpc;
-import com.dili.alm.rpc.RuntimeApiRpc;
+import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.OnlineDataChangeLogService;
 import com.dili.alm.service.OnlineDataChangeService;
@@ -57,12 +56,11 @@ public class OnlineDataChangeController {
     @Autowired
 	private UserRpc userRpc;
     
-  
     @Autowired
-   	private   MyTasksRpc  tasksRpc;
+   	private   TaskRpc  tasksRpc;
     
-    @Autowired
-  	private   RuntimeApiRpc  runtimeRpc;
+    /*   @Autowired
+  	private   RuntimeApiRpcCopy  runtimeRpc;*/
     
     @Autowired
 	ProjectVersionService projectVersionService;

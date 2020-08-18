@@ -54,15 +54,15 @@ import com.dili.alm.domain.dto.apply.ApplyRisk;
 import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.DemandExceptions;
 import com.dili.alm.exceptions.ProjectApplyException;
-import com.dili.alm.rpc.MyTasksRpc;
 import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.ProjectApplyService;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
+import com.dili.bpmc.sdk.dto.TaskDto;
 import com.dili.alm.domain.TaskMapping;
-import com.dili.alm.domain.TaskDto;
 import com.dili.bpmc.sdk.rpc.RuntimeRpc;
+import com.dili.bpmc.sdk.rpc.TaskRpc;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -106,7 +106,7 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 	@Autowired
 	private DemandProjectMapper demandProjectMapper;
 	@Autowired
-	private MyTasksRpc tasksRpc;
+	private TaskRpc tasksRpc;
 	
 
 	public ProjectApplyMapper getActualDao() {
@@ -222,14 +222,14 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 				selectOne.setExtend(as.getDescription());
 				selectOne.setType(AlmConstants.ApproveType.APPLY.getCode());
 				approveService.updateBefore(selectOne);
-		        TaskDto taskDto = DTOUtils.newInstance(TaskDto.class);
+				TaskDto taskDto = DTOUtils.newInstance(TaskDto.class);
 		        taskDto.setProcessInstanceBusinessKey(selectOne.getId().toString());
-		        BaseOutput<List<TaskMapping>> outputList = tasksRpc.list(taskDto);
+		        BaseOutput<List<com.dili.bpmc.sdk.domain.TaskMapping>> outputList = tasksRpc.list(taskDto);
 		        if(!outputList.isSuccess()){
 		        	throw new AppException("用户错误！"+outputList.getMessage()); 
 		        }
 		        //获取formKey
-		        TaskMapping task  = outputList.getData().get(0);
+		        com.dili.bpmc.sdk.domain.TaskMapping task  = outputList.getData().get(0);
 		    	tasksRpc.complete(task.getId(),SessionContext.getSessionContext().getUserTicket().getId().toString());
 			}
 			sendMail(selectProjectApply);

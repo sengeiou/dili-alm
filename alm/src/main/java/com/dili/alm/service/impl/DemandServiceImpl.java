@@ -1,25 +1,38 @@
 package com.dili.alm.service.impl;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.IOUtils;
+import org.beetl.core.GroupTemplate;
+import org.beetl.core.Template;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.component.BpmcUtil;
+import com.dili.alm.component.MailManager;
 import com.dili.alm.component.NumberGenerator;
 import com.dili.alm.constant.AlmConstants;
 import com.dili.alm.constant.AlmConstants.DemandProcessStatus;
@@ -38,17 +51,13 @@ import com.dili.alm.domain.DemandOperationRecord;
 import com.dili.alm.domain.DemandProject;
 import com.dili.alm.domain.DemandProjectStatus;
 import com.dili.alm.domain.DemandProjectType;
-import com.dili.alm.domain.HardwareApplyOperationRecord;
 import com.dili.alm.domain.Project;
 import com.dili.alm.domain.ProjectApply;
 import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Sequence;
 import com.dili.alm.domain.dto.DemandDto;
-import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.DemandExceptions;
-import com.dili.alm.rpc.SysProjectRpc;
 import com.dili.alm.service.DemandService;
-import com.dili.alm.utils.GetFirstCharUtil;
 import com.dili.alm.utils.WebUtil;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
 import com.dili.bpmc.sdk.domain.TaskMapping;
@@ -81,7 +90,18 @@ import tk.mybatis.mapper.entity.Example;
 public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements DemandService {
 
 	private static final String DEMAND_NUMBER_GENERATOR_TYPE = "demandNumberGenerator";
-
+	//需求处理运营组
+	private static final Long DEMAND_OM_GROUP_ID = Long.parseLong("71");
+	//需求处理负责人组
+	private static final Long DEMAND_DEP_ACCPET_GROUP_ID = Long.parseLong("72");
+	//需求管理员组
+	private static final Long DEMAND_MANAGER_GROUP_ID = Long.parseLong("74");
+	
+	//数字平台的市场码
+	private static final String FIRECODE_SZPT = "szpt";
+	//市场运营部的市场码
+	private static final String FIRECODE_JYGL = "szpt";
+	
 	@Qualifier(DEMAND_NUMBER_GENERATOR_TYPE)
 	@Autowired
 	private NumberGenerator numberGenerator;
@@ -93,7 +113,19 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	private SequenceMapper sequenceMapper;
 	@Autowired
 	private DemandOperationRecordMapper operationRecordMapper;
-
+	/**
+	 * 发送邮件
+	 */
+	@Autowired
+	private MailManager mailManager;
+	@Value("${spring.mail.username:}")
+	private String mailFrom;
+	private String contentTemplate;
+	@Value("${uap.contextPath:http://uap.diligrp.com}")
+	private String uapContextPath;
+	/**
+	 * 发送邮件
+	 */
 	public DemandMapper getActualDao() {
 		return (DemandMapper) getDao();
 	}
@@ -111,8 +143,6 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	@Autowired
 	private UserRpc userRpc;
 	@Autowired
-	private SysProjectRpc sysProjectRpc;
-	@Autowired
 	FormRpc formRpc;
 
 	@Autowired
@@ -121,7 +151,10 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	private DemandMapper demandMapper;
 	@Autowired
 	private BpmcUtil bpmcUtil;
-
+	@Qualifier("mailContentTemplate")
+	@Autowired
+	private GroupTemplate groupTemplate;
+	
 	public static Object parseViewModel(DemandDto detailViewData) throws Exception {
 		Map<Object, Object> metadata = new HashMap<>();
 
@@ -264,16 +297,18 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		selectDeman.setProcessType(DemandProcessStatus.SUBMIT.getCode());
 		selectDeman.setModificationTime(new Date());
 		rows = this.demandMapper.updateByPrimaryKey(selectDeman);
-
 		if (rows <= 0) {
 			throw new DemandExceptions("提交需求失败");
 		}
+		//发邮件给运营组
+        this.sendMailByGroup(selectDeman.getSerialNumber(), DEMAND_OM_GROUP_ID,"新的需求等待处理");
+		
 		return 1;
 	}
 
 	@Override
 	public EasyuiPageOutput listPageForUser(DemandDto selectDemand) {
-
+		/** 个人信息 **/
 		try {
 			if (selectDemand.getSubmitDate() != null) {
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -286,14 +321,18 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			}
 			selectDemand.setFilterStatus((byte) 5);
 			List<Demand> list = this.listByExample(selectDemand);
-			long total = list instanceof Page ? ((Page) list).getTotal() : list.size();
 			List<DemandDto> dtos = new ArrayList<>(list.size());
 			// 循环塞部门
 			list.forEach(d -> {
 				try {
+					
+					User user = AlmCache.getInstance().getAllUserMap().get(d.getUserId());
+					if (this.ifShowInList(user.getFirmCode())) {
+						return;
+					}
+
 					DemandDto newDemandDto = new DemandDto();
 					BeanUtils.copyProperties(newDemandDto, d);
-					User user = AlmCache.getInstance().getAllUserMap().get(d.getUserId());
 					if (user != null) {
 /*						Department department = AlmCache.getInstance().getDepMap().get(user.getDepartmentId());
 						if (department != null) {
@@ -359,6 +398,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			metadata.put("finishDate", datetimeProvider);
 			selectDemand.setMetadata(metadata);
 			List dtoDatesValue = ValueProviderUtils.buildDataByProvider(selectDemand, dtos);
+			long total = dtos instanceof Page ? ((Page) dtos).getTotal() : dtos.size();
 			return new EasyuiPageOutput((int) total, dtoDatesValue);
 		} catch (Exception e) {
 			e.getMessage();
@@ -525,8 +565,8 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		// 如果有并发流程，需使用TaskDefKey来确认流程节点
 		TaskMapping taskMapping = taskMappings.get(0);
 		// 流程启动参数设置
-		Map<String, Object> variables = new HashMap<>(1);
-		variables.put("approved", approved);
+		Map<String, String> variables = new HashMap<>(1);
+		variables.put("approved", approved+"");
 		if (valProcess != null) {// 完成流程
 			// 发送消息通知流程
 			taskRpc.complete(taskMapping.getId(), variables);
@@ -570,7 +610,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	@Override
 	public BaseOutput submitApproveAndAccept(Long executorId, String taskId) {
 		// 完成任务
-		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
+		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, String>() {
 			{
 				put("AssignExecutorId", executorId.toString());
 			}
@@ -580,15 +620,27 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	}
 	
 	@Override
-	public BaseOutput submitApproveForAccept(String taskId,Long executorId) {
+	public BaseOutput submitApproveForAccept(String code,String taskId,Long executorId) {
 		
 		BaseOutput<String> output ;
-			output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
+			output = this.taskRpc.complete(taskId, new HashMap<String, String>() {
 				{
 					put("AssignExecutorId",executorId.toString());
 					put("approved","true");
 				}
 			});
+			//发送给需求运营组
+			this.sendMailByGroup(code, DEMAND_OM_GROUP_ID, "需求已经被接收分配");
+			//发送邮件给处理人
+			DemandDto demandDto=null;
+			Set<String> emails = new HashSet<>();
+			try {
+				demandDto = this.getDetailViewData(this.getByCode(code).getId());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			emails.add(AlmCache.getInstance().getUserMap().get(executorId).getEmail());
+			this.sendMail(demandDto, "新需求等待处理", emails);
 		return output;
 	}
 	
@@ -596,7 +648,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	public BaseOutput submitApproveForAssign(Long executorId, String taskId) {
 		
 		// 完成任务
-		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
+		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, String>() {
 			{
 				put("AssignExecutorId", executorId.toString());
 			}
@@ -608,28 +660,46 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 
 	@Override
 	public BaseOutput submitApprove(String code, String taskId, Byte status, String processType) {
-		Demand condition = new Demand();
-		condition.setSerialNumber(code);
-		List<Demand> list = listByExample(condition);
+		Demand selectDemand = null;
 		if (status != null) {
-			Demand selectDemand = list.get(0);
+			selectDemand =this.getByCode(code);
 			selectDemand.setStatus(status);
 			this.update(selectDemand);
 		}
 		if (processType != null) {
-			Demand selectDemand = list.get(0);
+			selectDemand =this.getByCode(code);
 			selectDemand.setProcessType(processType);
 			this.update(selectDemand);
 		}
-		Map<String, Object> variables = new HashMap<>();
+		Map<String, String> variables = new HashMap<>();
 		variables.put("approved", "true");
 		BaseOutput  out = taskRpc.complete(taskId, variables);
+		//数字平台需求接收人发送邮件
+		if (processType.equals(DemandProcessStatus.DEPARTMENTMANAGER.getCode())) {
+	        this.sendMailByGroup(code, DEMAND_DEP_ACCPET_GROUP_ID,"新的需求等待处理");
+		}
+		//数字平台需求管理员，接收需求的人发送邮件
+		if(processType.equals(DemandProcessStatus.FEEDBACK.getCode())) {
+			this.sendMailByGroup(code, DEMAND_MANAGER_GROUP_ID,"新的需求等待处理");
+		}
+		//提需求的人
+		if(processType.equals(DemandProcessStatus.DEMANDMANAGER.getCode())) {
+			DemandDto demandDto=null;
+			Set<String> emails = new HashSet<>();
+			try {
+				demandDto = this.getDetailViewData(selectDemand.getId());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			emails.add(AlmCache.getInstance().getAllUserMap().get(selectDemand.getId()).getEmail());
+			this.sendMail(demandDto, "新需求等待处理", emails);
+		}
 		return out;
 	}
 
 	@Override
 	public BaseOutput rejectApprove(String code, String taskId,String rejectType) {
-		Map<String, Object> variables = new HashMap<>();
+		Map<String, String> variables = new HashMap<>();
 		Demand demand = this.getByCode(code);
 		if(rejectType.equals(DemandProcessStatus.BACKANDEDIT_ACCPET.getCode())) {
 			demand.setProcessType(DemandProcessStatus.BACKANDEDIT_ACCPET.getCode());// 被驳回的状态
@@ -642,17 +712,39 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		this.update(demand);
 		variables.put("approved", "false");
 		variables.put("AssignExecutorId",demand.getUserId().toString());
+		//提需求的人
+		DemandDto demandDto=null;
+		Set<String> emails = new HashSet<>();
+		try {
+			demandDto = this.getDetailViewData(demand.getId());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		emails.add(AlmCache.getInstance().getAllUserMap().get(demand.getUserId()).getEmail());
+		this.sendMail(demandDto, "需求被驳回", emails);
 		return taskRpc.complete(taskId, variables);
 	}
 	@Override
 	public BaseOutput rejectApproveForFeedback(String code, String taskId, String rejectType, Long executorId) {
 		// 完成任务
-		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
+		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, String>() {
 			{
 				put("AssignExecutorId", executorId.toString());
 				put("approved", "false");
 			}
 		});
+		//需求转发
+		Demand selectDemand =this.getByCode(code);
+		DemandDto demandDto=null;
+		Set<String> emails = new HashSet<>();
+		try {
+			demandDto = this.getDetailViewData(selectDemand.getId());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		emails.add(AlmCache.getInstance().getAllUserMap().get(executorId).getEmail());
+		this.sendMail(demandDto, "需求转发", emails);
+		this.sendMailByGroup(code, DEMAND_DEP_ACCPET_GROUP_ID,"需求转发");
 		return output;
 	}
 
@@ -680,6 +772,8 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			}
 		});*/
 		BaseOutput<String> output = this.taskRpc.complete(taskId);
+		//发邮件给运营组
+        this.sendMailByGroup(selectDeman.getSerialNumber(), DEMAND_OM_GROUP_ID,"被驳回的需求重新提交");
 		return output;
 	}
 
@@ -780,7 +874,120 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		
 		return departmentManager.getId();
 	}
+	
+    public DemandServiceImpl() {
+		super();
+		InputStream in = null;
+		try {
+			Resource res = new ClassPathResource("conf/demandMailContentTemplate.html");
+			in = res.getInputStream();
+			this.contentTemplate = IOUtils.toString(in, Charset.defaultCharset().toString());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					LOGGER.error(e.getMessage(), e);
+				}
+			}
+		}
+	}
+    private void sendMailByGroup(String code,Long groupId,String title) {
+		// 发邮件组
+		Set<String> emails = new HashSet<>();
+		
+		BaseOutput<List<User>> userList = userRpc.listUserByRoleId(groupId);
+		List<User> executors = userList.getData();
+		if(userList.getCode().equals("200")){
+			executors.forEach(e -> emails.add(AlmCache.getInstance().getAllUserMap().get(e.getId()).getEmail()));
+		}
+		// 需求内容组织
+		DemandDto demandDto=null;
+		try {
+			demandDto = this.getDetailViewData(this.getByCode(code).getId());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		this.sendMail(demandDto, title, emails);
+    }
+    /**
+     * 发送邮件
+     * @param demand 需求详情
+     * @param subject 需求标题
+     * @param to 接收邮箱
+     */
+	private void sendMail(DemandDto demand, String subject, Collection<String> to){
+		
+		//System.out.println(demand.getSerialNumber()+">>>"+demand.getName()+">>>"+demand.getProcessType());
+		//System.out.println(subject+">>>"+to.toString());
+		String content ;
+		
+		//to.clear();
+		//to.add("lijing@diligrp.com");
+		try {
+			// 构建邮件内容-需求管理
+			Template template = this.groupTemplate.getTemplate(this.contentTemplate);
+			template.binding("model", parseViewModel(demand));
+			// 构建邮件内容-需求操作记录
+			DemandOperationRecord operationRecords = new DemandOperationRecord();
+			operationRecords.setDemandCode(demand.getSerialNumber());
+			List<DemandOperationRecord> list = this.operationRecordMapper.select(operationRecords);
+			template.binding("recordsList", this.buildOperationRecordViewModel(list));
+			
+			template.binding("uapContextPath", this.uapContextPath);
+			
+			content = template.render();
+			//System.out.println(content);
+			//发送组集合
+			to.forEach(t -> {
+				// 发送
+				try {
+					this.mailManager.sendMail(this.mailFrom, t, content, true, subject, null);
+				} catch (Exception e) {
+					LOGGER.error(e.getMessage(), e);
+				}
+			});
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
 
 
+	}
+	@SuppressWarnings("rawtypes")
+	private List<Map> buildOperationRecordViewModel(List<DemandOperationRecord> list) {
+		Map<Object, Object> metadata = new HashMap<>();
+		JSONObject memberProvider = new JSONObject();
+		memberProvider.put("provider", "memberProvider");
+		metadata.put("operatorId", memberProvider);
 
+		JSONObject datetimeProvider = new JSONObject();
+		datetimeProvider.put("provider", "datetimeProvider");
+		metadata.put("operateTime", datetimeProvider);
+
+		metadata.put("opertateResult", "operationResultProvider");
+		try {
+			return ValueProviderUtils.buildDataByProvider(metadata, list);
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			return null;
+		}
+	}
+	
+	private boolean ifShowInList(String fireCode) {
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+		String userFirmCode = userTicket.getFirmCode();
+		
+		if (userFirmCode.equals(fireCode)) {
+			return false;
+		}
+		
+		if(userFirmCode.equals(FIRECODE_SZPT)||userFirmCode.equals(FIRECODE_JYGL)) {
+			return false;
+		}
+		
+		return true;
+	}
 }
