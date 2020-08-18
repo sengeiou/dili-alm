@@ -203,28 +203,6 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 	}
 
 
-	/*private Set<String> getOperationDepartmentUserEmails(OnlineDataChange onlineDataChange) {
-		Set<String> emailStrs = new HashSet<>();
-		// 默认邮件发送列表，运维组和项目组成员
-		// 运维部成员
-		Department deptQuery = DTOUtils.newDTO(Department.class);
-		deptQuery.setCode(AlmConstants.OPERATION_DEPARTMENT_CODE);
-		deptQuery.setFirmCode(AlmConstants.ALM_FIRM_CODE);
-		BaseOutput<List<Department>> deptOutput = this.deptRpc.listByDepartment(deptQuery);
-		if (deptOutput.isSuccess() && CollectionUtils.isNotEmpty(deptOutput.getData())) {
-			Long departmentId = deptOutput.getData().get(0).getId();
-			User userQuery = DTOUtils.newDTO(User.class);
-			userQuery.setDepartmentId(departmentId);
-			userQuery.setFirmCode(AlmConstants.ALM_FIRM_CODE);
-			BaseOutput<List<User>> userOutput = this.userRpc.listByExample(userQuery);
-			if (userOutput.isSuccess() && CollectionUtils.isNotEmpty(userOutput.getData())) {
-				userOutput.getData().forEach(u -> emailStrs.add(u.getEmail()));
-			}
-		}
-		
-		return emailStrs;
-	}
-	*/
 	@SuppressWarnings("unchecked")
 	public static Map<Object, Object> buildApplyViewModel(OnlineDataChange onlineDataChange) {
 		Map<Object, Object> metadata = new HashMap<>();
