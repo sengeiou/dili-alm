@@ -163,7 +163,7 @@ public interface DemandService extends BaseService<Demand, Long> {
      * @param taskId
      * @return
      */
-    BaseOutput submitApproveForAccept(String taskId,Long executorId);
+    BaseOutput submitApproveForAccept(String code,String taskId,Long executorId);
     /**
      * 获取部门经理ID
      * @param 申请人ID

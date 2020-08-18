@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<title>Basic Accordion - jQuery EasyUI Demo</title>
+<style>
+html, body {
+	height: 100%;
+	padding: 0;
+	margin: 0
+}
+
+.table-box {
+	width: 100%;
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+.table-box, .table-box tr td {
+	border: 1px solid #ddd;
+	border-collapse: collapse;
+}
+
+.table-box tr td {
+	width: calc(100%/ 6);
+	padding: 5px;
+}
+
+.table-box .table-title {
+	background-color: #f5f5f5;
+	font-weight: bold;
+}
+
+.table-combo .textbox {
+	border: none;
+	border-radius: 0;
+}
+</style>
+</head>
+
+<body>
+	<div class="easyui-panel" style="width: 100%; height: 100%;" title="需求管理审批">
+		<div style="box-sizing: border-box; height: 100%; width: 100%; padding: 10px;">
+			<div class="easyui-layout" style="box-sizing: border-box; width: 100%; height: 100%;">
+				<table class="table-box">
+					<tr>
+						<td class="table-title">需求编号</td>
+						<td>${model.serialNumber!}</td>
+						<td class="table-title">需求申请人</td>
+						<td>${model.userName!}</td>
+						<td class="table-title">申请人电话</td>
+						<td>${model.userPhone!}</td>
+					</tr>
+					<tr>
+						<td class="table-title">申请人部门</td>
+						<td>${model.departmentName!}</td>
+						<td class="table-title">需求名称</td>
+						<td>${model.name!}</td>
+						<td class="table-title">需求状态</td>
+						<td>${model.type!}</td>
+					</tr>
+					<tr>
+						<td class="table-title">所属项目</td>
+						<td>${model.belongProId!}</td>
+						<td class="table-title">所属系统</td>
+						<td>${model.belongSysId!}</td>
+						<td class="table-title">期望实现时间</td>
+						<td>${model.finishDate!}</td>
+					</tr>
+				</table>
+				<table class="table-box">
+					<tr>
+						<td class="table-title" colspan="6">操作记录</td>
+					</tr>
+					<%for(item in recordsList){%>
+					<tr>
+						<td class="table-title">${item.operationName!}</td>
+						<td>${item.operatorId!}</td>
+						<td class="table-title">描述</td>
+						<td>${item.description!}</td>
+						<td class="table-title">时间</td>
+						<td>${item.operateTime!}</td>
+					</tr>
+					<%}%>
+				</table>
+				<div>
+					<p>状态：${model.processType!}</p>
+					<p>
+						链接地址：<a href="${uapContextPath!}">${uapContextPath!}</a>
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

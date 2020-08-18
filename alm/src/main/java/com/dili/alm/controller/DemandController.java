@@ -427,7 +427,7 @@ public class DemandController {
     	return "demand/departmentApprove";
     }
     /**
-     * 部门经理同意申请（运维同意）
+     * 运营组同意申请
      * @param code  需求编号
      * @param taskId 任务id
      * @return
@@ -481,7 +481,7 @@ public class DemandController {
     	return "demand/accept";
     }
     /**
-     * 接受需求
+     * 数字平台接受需求
      * @param code  需求编号
      * @param taskId 任务id
      * @return
@@ -494,7 +494,7 @@ public class DemandController {
   			} catch (DemandExceptions e) {
   				e.printStackTrace();
   			}
-    	return demandService.submitApproveForAccept(taskId,acceptId);
+    	return demandService.submitApproveForAccept(code,taskId,acceptId);
     }
  
     /*@ApiOperation("指定需求对接人")*/
