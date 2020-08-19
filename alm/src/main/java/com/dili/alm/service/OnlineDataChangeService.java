@@ -11,7 +11,7 @@ import com.dili.ss.base.BaseService;
  */
 public interface OnlineDataChangeService extends BaseService<OnlineDataChange, Long> {
 	
-	 void insertOnLineData(OnlineDataChange onlineDataChange, Long id)throws OnlineDataChangeException ;
+	 int    insertOnLineData(OnlineDataChange onlineDataChange, Long id)throws OnlineDataChangeException ;
 	 
 	 void	 updateOnlineDate(OnlineDataChange onlineDataChange, Long id)throws OnlineDataChangeException ;
 	 

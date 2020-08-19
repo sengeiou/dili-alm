@@ -157,8 +157,11 @@ public class OnlineDataChangeController {
     @RequestMapping(value="/insert.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput insert(@ModelAttribute OnlineDataChange onlineDataChange) throws ApplicationException {
     	Long  id=SessionContext.getSessionContext().getUserTicket().getId();
-    	onlineDataChangeService.insertOnLineData(onlineDataChange, id);
-        return BaseOutput.success("提交申请成功");    
+        int num=	onlineDataChangeService.insertOnLineData(onlineDataChange, id);
+        if(num==1)
+            return BaseOutput.success("提交申请成功");    
+        else
+            return BaseOutput.failure("rpc调用失败");    
     }
     @RequestMapping(value="/insertSave.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput insertSave(@ModelAttribute OnlineDataChange onlineDataChange) {
