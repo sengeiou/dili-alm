@@ -219,7 +219,7 @@
 					  <td colspan="3"  style="padding: 5px; background-color: #f5f5f5; font-weight: bold">
 					       <input class="easyui-textbox"  id="_sqlScript" name="_sqlScript" value=""
 							data-options="validType:['length[0,50]']" style="width: 39%">
-						    <input   name="_sqlFileId" id="_sqlFileId" type="hidden" />
+						    <input    name="_sqlFileId" id="_sqlFileId" type="hidden" />
 					        <input type="file" id="sqlFile" name="sqlFile"  accept=".txt,.sql,application/zip" style="width: 39%">
 							<a id="btnShangChuan" href="#" class="easyui-linkbutton"   data-options="iconCls:'icon-save'">上传后保存</a>
 					  </td>
@@ -371,7 +371,7 @@
                   data: {},
                   async : true,
                   success: function (data) {
-                  	$('#_applyUserIdName').combobox('setText', data);
+                  	$('#_applyUserIdName').textbox('setText', data);
                   },
                   error: function(){
                       $.messager.alert('错误','远程访问失败');
@@ -388,7 +388,7 @@
             $('#_versionIdName').combobox('clear');
             $('#_versionIdName').combobox('clear');
             $('#_sqlFileId').val(""); 
-            $('#sqlFile').textbox(""); 
+            $('#sqlFile').val(""); 
       
             formFocus("_form", "_applyUserIdName");
            
@@ -497,11 +497,13 @@
 			                        $("#grid").datagrid("reload");
 			                        $('#dlg').dialog('close');
 			                    }else{
-			                        $.messager.alert('错误','远程访问失败');
+			                    	//alert(data.errorData);
+			                        $.messager.alert('错误',"rpc"+data.result);
 			                    } 
 			
 			                },
 			                error: function(){
+			                
 			                    $.messager.alert('错误','远程访问失败');
 			                }
 			            });

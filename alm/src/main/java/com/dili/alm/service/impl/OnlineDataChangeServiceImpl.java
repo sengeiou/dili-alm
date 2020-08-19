@@ -226,8 +226,10 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 	}
 
 
+	
 	@Override
-	public void insertOnLineData(OnlineDataChange onlineDataChange, Long id) throws OnlineDataChangeException {
+	
+	public int  insertOnLineData(OnlineDataChange onlineDataChange, Long id) throws OnlineDataChangeException {
 		onlineDataChange.setApplyUserId(id);
 		onlineDataChange.setIsSubmit((byte) 1);
 		onlineDataChange.setDataStatus((byte) 2);
@@ -246,10 +248,14 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			// map.put("dept","1");
 			
 			BaseOutput<ProcessInstanceMapping> object = runtimeRpc.startProcessInstanceByKey(BpmConsts.ONLINEDATACHANGE_PROCESS, onlineDataChange.getId().toString(), id + "", map);
+			
 			if (object.getCode().equals("5000")) {
 				throw new OnlineDataChangeException("runtimeRpc失败");
 			}
-
+			if (object.getCode().equals("5000")) {
+				return 0;
+				
+			}
 			onlineDataChange.setProcessInstanceId(object.getData().getProcessInstanceId());
 			onlineDataChange.setProcessDefinitionId(object.getData().getProcessDefinitionId());
 			onlineDataChange.setId(onlineDataChange.getId());
@@ -265,6 +271,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			//System.out.println(e);
 			  throw new OnlineDataChangeException("失败");
 		}
+		return 1;
 	}
 
 	@Override
