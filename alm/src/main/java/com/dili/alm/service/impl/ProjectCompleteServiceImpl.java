@@ -101,7 +101,7 @@ public class ProjectCompleteServiceImpl extends BaseServiceImpl<ProjectComplete,
 				approveService.insertBefore(as);
 				// 开启引擎流程
 				Long userId = SessionContext.getSessionContext().getUserTicket().getId();
-				Map<String, String> map = new HashMap<String, String>();
+				Map<String, Object> map = new HashMap<String, Object>();
 				map.put("dataId", as.getId().toString());
 				BaseOutput<ProcessInstanceMapping> processInstanceOutput = runtimeRpc.startProcessInstanceByKey(BpmConsts.PROJECT_COMPLETE_PROCESS, as.getId() + "", userId + "", map);
 				if (!processInstanceOutput.isSuccess()) {

@@ -144,7 +144,7 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 
 				// 开启引擎流程
 				Long userId = SessionContext.getSessionContext().getUserTicket().getId();
-				Map<String, String> map = new HashMap<String, String>();
+				Map<String, Object> map = new HashMap<String, Object>();
 				map.put("dataId", as.getId().toString());
 				BaseOutput<ProcessInstanceMapping> processInstanceOutput = runtimeRpc.startProcessInstanceByKey(BpmConsts.PROJECT_CHANGE_PROCESS, as.getId().toString(), userId + "", map);
 				if (!processInstanceOutput.isSuccess()) {

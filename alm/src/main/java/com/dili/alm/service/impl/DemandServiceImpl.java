@@ -282,7 +282,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 
 		// 启动流程
 		BaseOutput<ProcessInstanceMapping> processInstanceOutput = runtimeRpc.startProcessInstanceByKey(BpmConsts.PROCESS_DEFINITION_KEY, selectDeman.getSerialNumber(), userTicket.getId().toString(),
-				variables);
+				new HashMap<>());
 		if (!processInstanceOutput.isSuccess()) {
 			throw new DemandExceptions(processInstanceOutput.getMessage());
 		}

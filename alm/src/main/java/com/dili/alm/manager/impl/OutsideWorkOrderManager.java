@@ -75,7 +75,7 @@ public class OutsideWorkOrderManager extends BaseWorkOrderManager {
 				}
 			});
 		}
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("workOrderSource", WorkOrderSource.OUTSIDE.getValue().toString());
 		if (workOrder.getWorkOrderSource() == WorkOrderSource.DEPARTMENT.getValue()) {
 			// map.put("solve", workOrder.getExecutorId().toString());

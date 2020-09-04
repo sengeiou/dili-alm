@@ -582,7 +582,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 			// TODO:启动流程
 			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 			// 流程启动参数设置
-			Map<String, String> variables = new HashMap<>(1);
+			Map<String, Object> variables = new HashMap<>(2);
 			variables.put(HardwareApplyConstant.HARDWARE_APPLY_CODE.getName(), apply.getId().toString());
 			variables.put("AssignExecutorId", apply.getProjectManagerId().toString());
 			// 启动流程

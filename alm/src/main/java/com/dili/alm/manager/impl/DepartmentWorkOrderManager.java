@@ -89,7 +89,7 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 			throw new WorkOrderException("受理人不存在");
 		}
 
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("workOrderSource", WorkOrderSource.DEPARTMENT.getValue().toString());
 		// map.put("solve", workOrder.getExecutorId().toString());
 		map.put(BpmConsts.WorkOrderApply.SOLVE.getName(), workOrder.getExecutorId().toString());
