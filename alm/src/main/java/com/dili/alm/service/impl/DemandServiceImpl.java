@@ -90,18 +90,18 @@ import tk.mybatis.mapper.entity.Example;
 public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements DemandService {
 
 	private static final String DEMAND_NUMBER_GENERATOR_TYPE = "demandNumberGenerator";
-	//需求处理运营组
+	// 需求处理运营组
 	private static final Long DEMAND_OM_GROUP_ID = Long.parseLong("71");
-	//需求处理负责人组
+	// 需求处理负责人组
 	private static final Long DEMAND_DEP_ACCPET_GROUP_ID = Long.parseLong("72");
-	//需求管理员组
+	// 需求管理员组
 	private static final Long DEMAND_MANAGER_GROUP_ID = Long.parseLong("74");
-	
-	//数字平台的市场码
+
+	// 数字平台的市场码
 	private static final String FIRECODE_SZPT = "szpt";
-	//市场运营部的市场码
+	// 市场运营部的市场码
 	private static final String FIRECODE_JYGL = "szpt";
-	
+
 	@Qualifier(DEMAND_NUMBER_GENERATOR_TYPE)
 	@Autowired
 	private NumberGenerator numberGenerator;
@@ -123,6 +123,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	private String contentTemplate;
 	@Value("${uap.contextPath:http://uap.diligrp.com}")
 	private String uapContextPath;
+
 	/**
 	 * 发送邮件
 	 */
@@ -154,7 +155,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	@Qualifier("mailContentTemplate")
 	@Autowired
 	private GroupTemplate groupTemplate;
-	
+
 	public static Object parseViewModel(DemandDto detailViewData) throws Exception {
 		Map<Object, Object> metadata = new HashMap<>();
 
@@ -204,21 +205,17 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		/** 个人信息 **/
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		BaseOutput<List<Department>> de = departmentRpc.findByUserId(userTicket.getId());
-/*		String depStr = "";
-		
+		/*
+		 * String depStr = "";
+		 * 
 		 * if (de.getData()==null) {//正确的部门校验 throw new DemandExceptions("所属部门为空！"); }
-		 
-		if (de.getData() == null) {
-			depStr = "cp";
-		} else if (de.getData().size() > 0) {
-			depStr = de.getData().get(0).getName();
-			if (depStr.indexOf("市场") > -1) {
-				depStr = depStr.substring(0, depStr.length() - 2);
-			} else if (depStr.indexOf("部") > -1) {
-				depStr = depStr.substring(0, depStr.length() - 1);
-			}
-			depStr = GetFirstCharUtil.getFirstSpell(depStr).toUpperCase();
-		}*/
+		 * 
+		 * if (de.getData() == null) { depStr = "cp"; } else if (de.getData().size() >
+		 * 0) { depStr = de.getData().get(0).getName(); if (depStr.indexOf("市场") > -1) {
+		 * depStr = depStr.substring(0, depStr.length() - 2); } else if
+		 * (depStr.indexOf("部") > -1) { depStr = depStr.substring(0, depStr.length() -
+		 * 1); } depStr = GetFirstCharUtil.getFirstSpell(depStr).toUpperCase(); }
+		 */
 
 		newDemand.setSerialNumber(this.numberGenerator.get());// 加部门全拼获取自增/*20200703更正是有数字编号**/
 		newDemand.setCreateDate(new Date());
@@ -255,10 +252,10 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		int rows = 0;
 		if (newDemand.getId() == null) {
 			int testNum = this.addNewDemand(newDemand);
-			if(testNum>0) {
+			if (testNum > 0) {
 				System.out.println(JSONObject.toJSON(newDemand));
-				selectDeman = newDemand; //this.list(newDemand).get(0);
-			}else {
+				selectDeman = newDemand; // this.list(newDemand).get(0);
+			} else {
 				throw new DemandExceptions("提交需求失败:查询插入失败");
 			}
 		} else {
@@ -277,12 +274,12 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			selectDeman.setSubmitDate(new Date());
 			this.update(selectDeman);
 		}
-		//Long departmentManagerId = this.departmentManagerId(selectDeman.getUserId());
+		// Long departmentManagerId = this.departmentManagerId(selectDeman.getUserId());
 		// 流程启动参数设置
-		Map<String, Object> variables = new HashMap<>();
+		Map<String, String> variables = new HashMap<>();
 		variables.put(BpmConsts.DEMAND_CODE, selectDeman.getSerialNumber());
-		//variables.put("departmentManagerId", departmentManagerId.toString());
-		
+		// variables.put("departmentManagerId", departmentManagerId.toString());
+
 		// 启动流程
 		BaseOutput<ProcessInstanceMapping> processInstanceOutput = runtimeRpc.startProcessInstanceByKey(BpmConsts.PROCESS_DEFINITION_KEY, selectDeman.getSerialNumber(), userTicket.getId().toString(),
 				variables);
@@ -300,9 +297,9 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		if (rows <= 0) {
 			throw new DemandExceptions("提交需求失败");
 		}
-		//发邮件给运营组
-        this.sendMailByGroup(selectDeman.getSerialNumber(), DEMAND_OM_GROUP_ID,"新的需求等待处理");
-		
+		// 发邮件给运营组
+		this.sendMailByGroup(selectDeman.getSerialNumber(), DEMAND_OM_GROUP_ID, "新的需求等待处理");
+
 		return 1;
 	}
 
@@ -325,7 +322,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			// 循环塞部门
 			list.forEach(d -> {
 				try {
-					
+
 					User user = AlmCache.getInstance().getAllUserMap().get(d.getUserId());
 					if (this.ifShowInList(user.getFirmCode())) {
 						return;
@@ -334,30 +331,28 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 					DemandDto newDemandDto = new DemandDto();
 					BeanUtils.copyProperties(newDemandDto, d);
 					if (user != null) {
-/*						Department department = AlmCache.getInstance().getDepMap().get(user.getDepartmentId());
-						if (department != null) {
-							newDemandDto.setDepartmentId(department.getId());
-							newDemandDto.setDepartmentName(department.getName());
-							while (department.getParentId() != null) {
-								department = AlmCache.getInstance().getDepMap().get(department.getParentId());
-							}
-							if (department != null) {
-								newDemandDto.setDepartmentFirstName(department.getName());
-							}
-						}*/
-						//部门换成了市场，只取当前市场名称
+						/*
+						 * Department department =
+						 * AlmCache.getInstance().getDepMap().get(user.getDepartmentId()); if
+						 * (department != null) { newDemandDto.setDepartmentId(department.getId());
+						 * newDemandDto.setDepartmentName(department.getName()); while
+						 * (department.getParentId() != null) { department =
+						 * AlmCache.getInstance().getDepMap().get(department.getParentId()); } if
+						 * (department != null) {
+						 * newDemandDto.setDepartmentFirstName(department.getName()); } }
+						 */
+						// 部门换成了市场，只取当前市场名称
 						Firm firm = AlmCache.getInstance().getFirmMap().get(user.getFirmCode());
 						if (firm != null) {
 							newDemandDto.setDepartmentId(firm.getId());
 							newDemandDto.setDepartmentName(firm.getName());
 							newDemandDto.setDepartmentFirstName(firm.getName());
-/*							while ( firm.getParentId()!= null&&!firm.getParentId().equals("0")) {
-								firm = firmRpc.getById(firm.getParentId()).getData();
-								firm = AlmCache.getInstance().getFirmMap().get(firm.getCode());
-							}
-							if (firm != null) {
-								newDemandDto.setDepartmentFirstName(firm.getName());
-							}*/
+							/*
+							 * while ( firm.getParentId()!= null&&!firm.getParentId().equals("0")) { firm =
+							 * firmRpc.getById(firm.getParentId()).getData(); firm =
+							 * AlmCache.getInstance().getFirmMap().get(firm.getCode()); } if (firm != null)
+							 * { newDemandDto.setDepartmentFirstName(firm.getName()); }
+							 */
 						}
 					}
 					// 添加可编辑按钮
@@ -478,7 +473,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		for (DemandProject selectDemandProject : selectByExample) {
 			ids.add(selectDemandProject.getDemandId());
 		}
-		if(ids==null||ids.size()<=0) {
+		if (ids == null || ids.size() <= 0) {
 			return null;
 		}
 		Example example = new Example(Demand.class);
@@ -508,22 +503,23 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			User user = userBase.getData();
 			demandDto.setUserPhone(user.getCellphone());
 			demandDto.setUserName(user.getRealName());
-/*			BaseOutput<Department> departmentBase = this.departmentRpc.get(user.getDepartmentId());
-			if (departmentBase.getData() != null) {
-				demandDto.setDepartmentId(departmentBase.getData().getId());
-				demandDto.setDepartmentName(departmentBase.getData().getName());
-				BaseOutput<Department> firstDepartment = this.departmentRpc.getFirstDepartment(departmentBase.getData().getId());
-				if (firstDepartment.getData() != null) {
-					demandDto.setDepartmentFirstName(firstDepartment.getData().getName());
-				}
-			}*/
-			
-			//部门换成了市场
+			/*
+			 * BaseOutput<Department> departmentBase =
+			 * this.departmentRpc.get(user.getDepartmentId()); if (departmentBase.getData()
+			 * != null) { demandDto.setDepartmentId(departmentBase.getData().getId());
+			 * demandDto.setDepartmentName(departmentBase.getData().getName());
+			 * BaseOutput<Department> firstDepartment =
+			 * this.departmentRpc.getFirstDepartment(departmentBase.getData().getId()); if
+			 * (firstDepartment.getData() != null) {
+			 * demandDto.setDepartmentFirstName(firstDepartment.getData().getName()); } }
+			 */
+
+			// 部门换成了市场
 			Firm firm = AlmCache.getInstance().getFirmMap().get(user.getFirmCode());
 			if (firm != null) {
 				demandDto.setDepartmentId(firm.getId());
 				demandDto.setDepartmentName(firm.getName());
-				while ( firm.getParentId()!= null&&!firm.getParentId().equals("0")) {
+				while (firm.getParentId() != null && !firm.getParentId().equals("0")) {
 					firm = firmRpc.getById(firm.getParentId()).getData();
 					firm = AlmCache.getInstance().getFirmMap().get(firm.getCode());
 				}
@@ -566,7 +562,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		TaskMapping taskMapping = taskMappings.get(0);
 		// 流程启动参数设置
 		Map<String, String> variables = new HashMap<>(1);
-		variables.put("approved", approved+"");
+		variables.put("approved", approved + "");
 		if (valProcess != null) {// 完成流程
 			// 发送消息通知流程
 			taskRpc.complete(taskMapping.getId(), variables);
@@ -615,76 +611,75 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 				put("AssignExecutorId", executorId.toString());
 			}
 		});
-		
+
 		return output;
 	}
-	
+
 	@Override
-	public BaseOutput submitApproveForAccept(String code,String taskId,Long executorId) {
-		
-		BaseOutput<String> output ;
-			output = this.taskRpc.complete(taskId, new HashMap<String, String>() {
-				{
-					put("AssignExecutorId",executorId.toString());
-					put("approved","true");
-				}
-			});
-			//发送给需求运营组
-			this.sendMailByGroup(code, DEMAND_OM_GROUP_ID, "需求已经被接收分配");
-			//发送邮件给处理人
-			DemandDto demandDto=null;
-			Set<String> emails = new HashSet<>();
-			try {
-				demandDto = this.getDetailViewData(this.getByCode(code).getId());
-			} catch (Exception e) {
-				e.printStackTrace();
+	public BaseOutput submitApproveForAccept(String code, String taskId, Long executorId) {
+
+		BaseOutput<String> output;
+		output = this.taskRpc.complete(taskId, new HashMap<String, String>() {
+			{
+				put("AssignExecutorId", executorId.toString());
+				put("approved", "true");
 			}
-			emails.add(AlmCache.getInstance().getUserMap().get(executorId).getEmail());
-			this.sendMail(demandDto, "新需求等待处理", emails);
+		});
+		// 发送给需求运营组
+		this.sendMailByGroup(code, DEMAND_OM_GROUP_ID, "需求已经被接收分配");
+		// 发送邮件给处理人
+		DemandDto demandDto = null;
+		Set<String> emails = new HashSet<>();
+		try {
+			demandDto = this.getDetailViewData(this.getByCode(code).getId());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		emails.add(AlmCache.getInstance().getUserMap().get(executorId).getEmail());
+		this.sendMail(demandDto, "新需求等待处理", emails);
 		return output;
 	}
-	
+
 	@Override
 	public BaseOutput submitApproveForAssign(Long executorId, String taskId) {
-		
+
 		// 完成任务
 		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, String>() {
 			{
 				put("AssignExecutorId", executorId.toString());
 			}
 		});
-		
+
 		return output;
 	}
-	
 
 	@Override
 	public BaseOutput submitApprove(String code, String taskId, Byte status, String processType) {
 		Demand selectDemand = null;
 		if (status != null) {
-			selectDemand =this.getByCode(code);
+			selectDemand = this.getByCode(code);
 			selectDemand.setStatus(status);
 			this.update(selectDemand);
 		}
 		if (processType != null) {
-			selectDemand =this.getByCode(code);
+			selectDemand = this.getByCode(code);
 			selectDemand.setProcessType(processType);
 			this.update(selectDemand);
 		}
 		Map<String, String> variables = new HashMap<>();
 		variables.put("approved", "true");
-		BaseOutput  out = taskRpc.complete(taskId, variables);
-		//数字平台需求接收人发送邮件
+		BaseOutput out = taskRpc.complete(taskId, variables);
+		// 数字平台需求接收人发送邮件
 		if (processType.equals(DemandProcessStatus.DEPARTMENTMANAGER.getCode())) {
-	        this.sendMailByGroup(code, DEMAND_DEP_ACCPET_GROUP_ID,"新的需求等待处理");
+			this.sendMailByGroup(code, DEMAND_DEP_ACCPET_GROUP_ID, "新的需求等待处理");
 		}
-		//数字平台需求管理员，接收需求的人发送邮件
-		if(processType.equals(DemandProcessStatus.FEEDBACK.getCode())) {
-			this.sendMailByGroup(code, DEMAND_MANAGER_GROUP_ID,"新的需求等待处理");
+		// 数字平台需求管理员，接收需求的人发送邮件
+		if (processType.equals(DemandProcessStatus.FEEDBACK.getCode())) {
+			this.sendMailByGroup(code, DEMAND_MANAGER_GROUP_ID, "新的需求等待处理");
 		}
-		//提需求的人
-		if(processType.equals(DemandProcessStatus.DEMANDMANAGER.getCode())) {
-			DemandDto demandDto=null;
+		// 提需求的人
+		if (processType.equals(DemandProcessStatus.DEMANDMANAGER.getCode())) {
+			DemandDto demandDto = null;
 			Set<String> emails = new HashSet<>();
 			try {
 				demandDto = this.getDetailViewData(selectDemand.getId());
@@ -698,22 +693,22 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	}
 
 	@Override
-	public BaseOutput rejectApprove(String code, String taskId,String rejectType) {
+	public BaseOutput rejectApprove(String code, String taskId, String rejectType) {
 		Map<String, String> variables = new HashMap<>();
 		Demand demand = this.getByCode(code);
-		if(rejectType.equals(DemandProcessStatus.BACKANDEDIT_ACCPET.getCode())) {
+		if (rejectType.equals(DemandProcessStatus.BACKANDEDIT_ACCPET.getCode())) {
 			demand.setProcessType(DemandProcessStatus.BACKANDEDIT_ACCPET.getCode());// 被驳回的状态
-		}else if(rejectType.equals(DemandProcessStatus.BACKANDEDIT_MANAGER.getCode())) {
+		} else if (rejectType.equals(DemandProcessStatus.BACKANDEDIT_MANAGER.getCode())) {
 			demand.setProcessType(DemandProcessStatus.BACKANDEDIT_MANAGER.getCode());// 被驳回的状态
-		}else {
+		} else {
 			demand.setProcessType(DemandProcessStatus.BACKANDEDIT.getCode());// 被驳回的状态
 		}
-		
+
 		this.update(demand);
 		variables.put("approved", "false");
-		variables.put("AssignExecutorId",demand.getUserId().toString());
-		//提需求的人
-		DemandDto demandDto=null;
+		variables.put("AssignExecutorId", demand.getUserId().toString());
+		// 提需求的人
+		DemandDto demandDto = null;
 		Set<String> emails = new HashSet<>();
 		try {
 			demandDto = this.getDetailViewData(demand.getId());
@@ -724,6 +719,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		this.sendMail(demandDto, "需求被驳回", emails);
 		return taskRpc.complete(taskId, variables);
 	}
+
 	@Override
 	public BaseOutput rejectApproveForFeedback(String code, String taskId, String rejectType, Long executorId) {
 		// 完成任务
@@ -733,9 +729,9 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 				put("approved", "false");
 			}
 		});
-		//需求转发
-		Demand selectDemand =this.getByCode(code);
-		DemandDto demandDto=null;
+		// 需求转发
+		Demand selectDemand = this.getByCode(code);
+		DemandDto demandDto = null;
 		Set<String> emails = new HashSet<>();
 		try {
 			demandDto = this.getDetailViewData(selectDemand.getId());
@@ -744,7 +740,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		}
 		emails.add(AlmCache.getInstance().getAllUserMap().get(executorId).getEmail());
 		this.sendMail(demandDto, "需求转发", emails);
-		this.sendMailByGroup(code, DEMAND_DEP_ACCPET_GROUP_ID,"需求转发");
+		this.sendMailByGroup(code, DEMAND_DEP_ACCPET_GROUP_ID, "需求转发");
 		return output;
 	}
 
@@ -764,16 +760,16 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		selectDeman.setFinishDate(newDemand.getFinishDate());
 		selectDeman.setProcessType(DemandProcessStatus.DEPARTMENTMANAGER.getCode());
 		this.update(selectDeman);
-		//Long departmentManagerId = this.departmentManagerId(selectDeman.getUserId());
+		// Long departmentManagerId = this.departmentManagerId(selectDeman.getUserId());
 		// 完成任务
-/*		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, Object>() {
-			{
-				put("departmentManagerId", departmentManagerId.toString());
-			}
-		});*/
+		/*
+		 * BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String,
+		 * Object>() { { put("departmentManagerId", departmentManagerId.toString()); }
+		 * });
+		 */
 		BaseOutput<String> output = this.taskRpc.complete(taskId);
-		//发邮件给运营组
-        this.sendMailByGroup(selectDeman.getSerialNumber(), DEMAND_OM_GROUP_ID,"被驳回的需求重新提交");
+		// 发邮件给运营组
+		this.sendMailByGroup(selectDeman.getSerialNumber(), DEMAND_OM_GROUP_ID, "被驳回的需求重新提交");
 		return output;
 	}
 
@@ -794,7 +790,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		}
 		return 0;
 	}
-	
+
 	public int isBtnType(Demand demand) {
 		if (demand.getProcessType() == null) {
 			return 0;
@@ -806,8 +802,9 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 
 		return 0;
 	}
+
 	@Override
-	public void saveOprationRecord(String demandCode,String description,int operationValue,String operationName,ApproveResult result) throws DemandExceptions {
+	public void saveOprationRecord(String demandCode, String description, int operationValue, String operationName, ApproveResult result) throws DemandExceptions {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		// 插入申请操作记录
 		DemandOperationRecord record = new DemandOperationRecord();
@@ -822,15 +819,15 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		if (rows <= 0) {
 			throw new DemandExceptions("插入操作记录失败");
 		}
-		
+
 	}
-	
+
 	@Override
 	public EasyuiPageOutput getOprationRecordList(String demandCode) {
-		
-    	DemandOperationRecord operationRecord = new DemandOperationRecord();
-    	operationRecord.setDemandCode(demandCode);
-    	
+
+		DemandOperationRecord operationRecord = new DemandOperationRecord();
+		operationRecord.setDemandCode(demandCode);
+
 		List<DemandOperationRecord> opRecords = this.operationRecordMapper.select(operationRecord);
 		Map<Object, Object> metadata = new HashMap<>();
 
@@ -845,37 +842,37 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		metadata.put("opertateResult", "operationResultProvider");
 		List<Map> recordList;
 		try {
-		   recordList = ValueProviderUtils.buildDataByProvider(metadata, opRecords);
+			recordList = ValueProviderUtils.buildDataByProvider(metadata, opRecords);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		
+
 		return new EasyuiPageOutput((int) recordList.size(), recordList);
 	}
 
 	@Override
-	public Long departmentManagerId(Long applyId)  throws DemandExceptions {
-		
-		BaseOutput<User> userOut= userRpc.get(applyId);
+	public Long departmentManagerId(Long applyId) throws DemandExceptions {
+
+		BaseOutput<User> userOut = userRpc.get(applyId);
 		if (!userOut.isSuccess()) {
-			throw new DemandExceptions("查询用户信息失败："+userOut.getMessage());
+			throw new DemandExceptions("查询用户信息失败：" + userOut.getMessage());
 		}
 		User u = userOut.getData();
-		BaseOutput<List<User>> firmUsersOut  = userRpc.findCurrentFirmUsersByResourceCode(u.getFirmCode(),"departmentApprove");//TODO:departmentApprove设置成静态变量
+		BaseOutput<List<User>> firmUsersOut = userRpc.findCurrentFirmUsersByResourceCode(u.getFirmCode(), "departmentApprove");// TODO:departmentApprove设置成静态变量
 		if (!firmUsersOut.isSuccess()) {
-			throw new DemandExceptions("查询部门负责人信息失败："+firmUsersOut.getMessage());
+			throw new DemandExceptions("查询部门负责人信息失败：" + firmUsersOut.getMessage());
 		}
 		User departmentManager = DTOUtils.newInstance(User.class);
-		if (firmUsersOut.getData().size()<=0) {
+		if (firmUsersOut.getData().size() <= 0) {
 			throw new DemandExceptions("请确认当前市场有需求部门确认人角色！");
-		}else {
+		} else {
 			departmentManager = firmUsersOut.getData().get(0);
 		}
-		
+
 		return departmentManager.getId();
 	}
-	
-    public DemandServiceImpl() {
+
+	public DemandServiceImpl() {
 		super();
 		InputStream in = null;
 		try {
@@ -894,17 +891,18 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			}
 		}
 	}
-    private void sendMailByGroup(String code,Long groupId,String title) {
+
+	private void sendMailByGroup(String code, Long groupId, String title) {
 		// 发邮件组
 		Set<String> emails = new HashSet<>();
-		
+
 		BaseOutput<List<User>> userList = userRpc.listUserByRoleId(groupId);
 		List<User> executors = userList.getData();
-		if(userList.getCode().equals("200")){
+		if (userList.getCode().equals("200")) {
 			executors.forEach(e -> emails.add(AlmCache.getInstance().getAllUserMap().get(e.getId()).getEmail()));
 		}
 		// 需求内容组织
-		DemandDto demandDto=null;
+		DemandDto demandDto = null;
 		try {
 			demandDto = this.getDetailViewData(this.getByCode(code).getId());
 		} catch (Exception e) {
@@ -912,21 +910,23 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		}
 
 		this.sendMail(demandDto, title, emails);
-    }
-    /**
-     * 发送邮件
-     * @param demand 需求详情
-     * @param subject 需求标题
-     * @param to 接收邮箱
-     */
-	private void sendMail(DemandDto demand, String subject, Collection<String> to){
-		
-		//System.out.println(demand.getSerialNumber()+">>>"+demand.getName()+">>>"+demand.getProcessType());
-		//System.out.println(subject+">>>"+to.toString());
-		String content ;
-		
-		//to.clear();
-		//to.add("lijing@diligrp.com");
+	}
+
+	/**
+	 * 发送邮件
+	 * 
+	 * @param demand  需求详情
+	 * @param subject 需求标题
+	 * @param to      接收邮箱
+	 */
+	private void sendMail(DemandDto demand, String subject, Collection<String> to) {
+
+		// System.out.println(demand.getSerialNumber()+">>>"+demand.getName()+">>>"+demand.getProcessType());
+		// System.out.println(subject+">>>"+to.toString());
+		String content;
+
+		// to.clear();
+		// to.add("lijing@diligrp.com");
 		try {
 			// 构建邮件内容-需求管理
 			Template template = this.groupTemplate.getTemplate(this.contentTemplate);
@@ -936,12 +936,12 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			operationRecords.setDemandCode(demand.getSerialNumber());
 			List<DemandOperationRecord> list = this.operationRecordMapper.select(operationRecords);
 			template.binding("recordsList", this.buildOperationRecordViewModel(list));
-			
+
 			template.binding("uapContextPath", this.uapContextPath);
-			
+
 			content = template.render();
-			//System.out.println(content);
-			//发送组集合
+			// System.out.println(content);
+			// 发送组集合
 			to.forEach(t -> {
 				// 发送
 				try {
@@ -954,8 +954,8 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			LOGGER.error(e.getMessage(), e);
 		}
 
-
 	}
+
 	@SuppressWarnings("rawtypes")
 	private List<Map> buildOperationRecordViewModel(List<DemandOperationRecord> list) {
 		Map<Object, Object> metadata = new HashMap<>();
@@ -975,19 +975,19 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			return null;
 		}
 	}
-	
+
 	private boolean ifShowInList(String fireCode) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		String userFirmCode = userTicket.getFirmCode();
-		
+
 		if (userFirmCode.equals(fireCode)) {
 			return false;
 		}
-		
-		if(userFirmCode.equals(FIRECODE_SZPT)||userFirmCode.equals(FIRECODE_JYGL)) {
+
+		if (userFirmCode.equals(FIRECODE_SZPT) || userFirmCode.equals(FIRECODE_JYGL)) {
 			return false;
 		}
-		
+
 		return true;
 	}
 }

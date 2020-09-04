@@ -73,7 +73,7 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 	private ProjectTypeProvider projectTypeProvider;
 	@Autowired
 	private ProjectChangeMapper changeMapper;
-	
+
 	@Autowired
 	private RuntimeRpc runtimeRpc;
 	@Autowired
@@ -127,7 +127,7 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 			newApprove.setType(AlmConstants.ApproveType.CHANGE.getCode());
 			Approve selectOne = approveService.selectOne(newApprove);
 			Approve as = DTOUtils.as(projectChange, Approve.class);
-			if(selectOne==null) {
+			if (selectOne == null) {
 				as.setId(null);
 				as.setProjectApplyId(change.getId());
 				as.setName(change.getProjectName());
@@ -139,20 +139,20 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 				Project project = projectService.get(change.getProjectId());
 				as.setProjectType(project.getType());
 				as.setExtend(change.getType());
-	
+
 				approveService.insertBefore(as);
 
-				//开启引擎流程
-				Long  userId=SessionContext.getSessionContext().getUserTicket().getId();
-				Map<String, Object> map=new HashMap<String, Object>();
-		    	map.put("dataId", as.getId().toString());
-				BaseOutput<ProcessInstanceMapping>  processInstanceOutput= runtimeRpc.startProcessInstanceByKey(BpmConsts.PROJECT_CHANGE_PROCESS,  as.getId().toString(), userId+"",map);
+				// 开启引擎流程
+				Long userId = SessionContext.getSessionContext().getUserTicket().getId();
+				Map<String, String> map = new HashMap<String, String>();
+				map.put("dataId", as.getId().toString());
+				BaseOutput<ProcessInstanceMapping> processInstanceOutput = runtimeRpc.startProcessInstanceByKey(BpmConsts.PROJECT_CHANGE_PROCESS, as.getId().toString(), userId + "", map);
 				if (!processInstanceOutput.isSuccess()) {
 					throw new ProjectApplyException(processInstanceOutput.getMessage());
 				}
-	//			 回调，写入相关流程任务数据
+				// 回调，写入相关流程任务数据
 				ProcessInstanceMapping processInstance = processInstanceOutput.getData();
-				Approve selectApprove=DTOUtils.newDTO(Approve.class);
+				Approve selectApprove = DTOUtils.newDTO(Approve.class);
 				selectApprove.setId(as.getId());
 				selectApprove.setProcessInstanceId(processInstance.getProcessInstanceId());
 				selectApprove.setProcessDefinitionId(processInstance.getProcessDefinitionId());
@@ -161,7 +161,7 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 				if (update <= 0) {
 					throw new ProjectApplyException("提交项目变更引擎流程失败");
 				}
-			}else {
+			} else {
 				selectOne.setProjectApplyId(change.getId());
 				selectOne.setName(change.getProjectName());
 				selectOne.setProjectApplyId(change.getId());
@@ -171,21 +171,21 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 				Project project = projectService.get(change.getProjectId());
 				selectOne.setProjectType(project.getType());
 				selectOne.setExtend(change.getType());
-	
+
 				approveService.updateBefore(selectOne);
 				TaskDto taskDto = DTOUtils.newInstance(TaskDto.class);
-		        taskDto.setProcessInstanceBusinessKey(selectOne.getId().toString());
-		        BaseOutput<List<TaskMapping>> outputList = tasksRpc.list(taskDto);
-		        if(!outputList.isSuccess()){
-		        	throw new AppException("用户错误！"+outputList.getMessage()); 
-		        }
-		        //获取formKey
-		        TaskMapping task  = outputList.getData().get(0);
-		    	tasksRpc.complete(task.getId(),SessionContext.getSessionContext().getUserTicket().getId().toString());
+				taskDto.setProcessInstanceBusinessKey(selectOne.getId().toString());
+				BaseOutput<List<TaskMapping>> outputList = tasksRpc.list(taskDto);
+				if (!outputList.isSuccess()) {
+					throw new AppException("用户错误！" + outputList.getMessage());
+				}
+				// 获取formKey
+				TaskMapping task = outputList.getData().get(0);
+				tasksRpc.complete(task.getId(), SessionContext.getSessionContext().getUserTicket().getId().toString());
 			}
 			sendMail(change);
 		}
-		
+
 	}
 
 	public void sendMail(ProjectChange change) {
