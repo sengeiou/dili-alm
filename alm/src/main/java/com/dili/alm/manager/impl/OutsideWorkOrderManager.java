@@ -40,15 +40,14 @@ public class OutsideWorkOrderManager extends BaseWorkOrderManager {
 	private DataDictionaryService ddService;
 	@Autowired
 	private WorkOrderMapper workOrderMapper;
-	
-	
-    @Autowired
+
+	@Autowired
 	private UserRpc userRpc;
-    @Autowired
-   	private   TaskRpc  tasksRpc;
-    @Autowired
-  	private   RuntimeRpc  runtimeRpc;
-    
+	@Autowired
+	private TaskRpc tasksRpc;
+	@Autowired
+	private RuntimeRpc runtimeRpc;
+
 	@Override
 	public void submit(WorkOrder workOrder) throws WorkOrderException {
 		// 外部工单
@@ -76,31 +75,30 @@ public class OutsideWorkOrderManager extends BaseWorkOrderManager {
 				}
 			});
 		}
-	   Map<String, Object> map=new HashMap<String, Object>();
-	   map.put("workOrderSource", WorkOrderSource.OUTSIDE.getValue().toString());
-	   if(workOrder.getWorkOrderSource()==WorkOrderSource.DEPARTMENT.getValue()) {
-			//map.put("solve", workOrder.getExecutorId().toString());
-		     map.put(BpmConsts.WorkOrderApply.SOLVE.getName(), workOrder.getExecutorId().toString());
-		}else {
-			//map.put("allocate", workOrder.getAcceptorId().toString());
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("workOrderSource", WorkOrderSource.OUTSIDE.getValue().toString());
+		if (workOrder.getWorkOrderSource() == WorkOrderSource.DEPARTMENT.getValue()) {
+			// map.put("solve", workOrder.getExecutorId().toString());
+			map.put(BpmConsts.WorkOrderApply.SOLVE.getName(), workOrder.getExecutorId().toString());
+		} else {
+			// map.put("allocate", workOrder.getAcceptorId().toString());
 			map.put(BpmConsts.WorkOrderApply.ALLOCATE.getName(), workOrder.getAcceptorId().toString());
 		}
-	    try {
-		   
-		   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey( BpmConsts.WorkOrderApply_PROCESS, workOrder.getId().toString(), workOrder.getAcceptorId()+"",map);
-	        if(object.getCode().equals("5000")) {
-	    		throw new WorkOrderException("新增工单失败流控中心调不通");
-	        }
-	        workOrder.setProcessInstanceId(object.getData().getProcessInstanceId()); 
-	        workOrder.setProcessDefinitionId(object.getData().getProcessDefinitionId());
-	        workOrder.setId(workOrder.getId());
-	        workOrderMapper.updateByPrimaryKey(workOrder);
-	        
-		
-	     } catch (Exception e) {
-		   throw new WorkOrderException("新增工单失败流控中心调不通");
-	    }
-	 
+		try {
+
+			BaseOutput<ProcessInstanceMapping> object = runtimeRpc.startProcessInstanceByKey(BpmConsts.WorkOrderApply_PROCESS, workOrder.getId().toString(), workOrder.getAcceptorId() + "", map);
+			if (object.getCode().equals("5000")) {
+				throw new WorkOrderException("新增工单失败流控中心调不通");
+			}
+			workOrder.setProcessInstanceId(object.getData().getProcessInstanceId());
+			workOrder.setProcessDefinitionId(object.getData().getProcessDefinitionId());
+			workOrder.setId(workOrder.getId());
+			workOrderMapper.updateByPrimaryKey(workOrder);
+
+		} catch (Exception e) {
+			throw new WorkOrderException("新增工单失败流控中心调不通");
+		}
+
 		this.sendMail(workOrder, "工单申请", emails);
 	}
 
@@ -176,30 +174,33 @@ public class OutsideWorkOrderManager extends BaseWorkOrderManager {
 				}
 			});
 		}
-	   Map<String, String> map=new HashMap<String, String>();
-	 //  map.put("workOrderSource", "3");
-	   map.put("workOrderSource", WorkOrderSource.OUTSIDE.getValue().toString());
-	   
-	   if(workOrder.getWorkOrderSource()==WorkOrderSource.DEPARTMENT.getValue()) {
-			//map.put("solve", workOrder.getExecutorId().toString());
-		     map.put(BpmConsts.WorkOrderApply.SOLVE.getName(), workOrder.getExecutorId().toString());
-		}else {
-		//	map.put("allocate", workOrder.getAcceptorId().toString());
+		Map<String, String> map = new HashMap<String, String>();
+		// map.put("workOrderSource", "3");
+		map.put("workOrderSource", WorkOrderSource.OUTSIDE.getValue().toString());
+
+		if (workOrder.getWorkOrderSource() == WorkOrderSource.DEPARTMENT.getValue()) {
+			// map.put("solve", workOrder.getExecutorId().toString());
+			map.put(BpmConsts.WorkOrderApply.SOLVE.getName(), workOrder.getExecutorId().toString());
+		} else {
+			// map.put("allocate", workOrder.getAcceptorId().toString());
 			map.put(BpmConsts.WorkOrderApply.ALLOCATE.getName(), workOrder.getAcceptorId().toString());
 		}
-	 /*  BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey( BpmConsts.WorkOrderApply_PROCESS, workOrder.getId().toString(), workOrder.getApplicantId()+"",map);
-       System.out.println(object.getCode()+object.getData()+object.getErrorData());*/
-	   
-		//tasksRpc.complete(taskId,map);
-	   
+		/*
+		 * BaseOutput<ProcessInstanceMapping> object=
+		 * runtimeRpc.startProcessInstanceByKey( BpmConsts.WorkOrderApply_PROCESS,
+		 * workOrder.getId().toString(), workOrder.getApplicantId()+"",map);
+		 * System.out.println(object.getCode()+object.getData()+object.getErrorData());
+		 */
+
+		// tasksRpc.complete(taskId,map);
+
 		try {
-			tasksRpc.complete(taskId,map);
+			tasksRpc.complete(taskId, map);
 		} catch (Exception e) {
 			throw new WorkOrderException("部门工单失败");
 		}
 		this.sendMail(workOrder, "工单申请", emails);
-		
-		
+
 	}
 
 }

@@ -715,7 +715,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 
 		if (StringUtils.isBlank(taskId)) {
 			BaseOutput<ProcessInstanceMapping> output = this.runtimeRpc.startProcessInstanceByKey(BpmConsts.ProjectOnlineApplyConstant.PROCESS_KEY.getName(), apply.getSerialNumber(),
-					SessionContext.getSessionContext().getUserTicket().getId().toString(), new HashMap<String, Object>() {
+					SessionContext.getSessionContext().getUserTicket().getId().toString(), new HashMap<String, String>() {
 						{
 							put(BpmConsts.ProjectOnlineApplyConstant.BUSINESS_KEY.getName(), apply.getSerialNumber());
 							put(BpmConsts.ProjectOnlineApplyConstant.PROJECT_MANAGER_KEY.getName(), apply.getProjectManagerId().toString());

@@ -55,20 +55,15 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 	@Autowired
 	private WorkOrderExecutionRecordMapper woerMapper;
 
-	
-    @Autowired
+	@Autowired
 	private UserRpc userRpc;
-    
-  
-  
-    @Autowired
-    private  TaskRpc tasksRpc;
-    
-    @Autowired
-  	private   RuntimeRpc  runtimeRpc;
-    
-    
-    
+
+	@Autowired
+	private TaskRpc tasksRpc;
+
+	@Autowired
+	private RuntimeRpc runtimeRpc;
+
 	@Override
 	public void update(WorkOrder workOrder) throws WorkOrderException {
 		workOrder.setAcceptorId(null);
@@ -93,25 +88,25 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 		if (mailReceiver == null) {
 			throw new WorkOrderException("受理人不存在");
 		}
-		
-	   Map<String, Object> map=new HashMap<String, Object>();
-	   map.put("workOrderSource", WorkOrderSource.DEPARTMENT.getValue().toString());
-	 //  map.put("solve", workOrder.getExecutorId().toString());
-	   map.put(BpmConsts.WorkOrderApply.SOLVE.getName(), workOrder.getExecutorId().toString());
-	  
-	   try {
-		   BaseOutput<ProcessInstanceMapping>  object= runtimeRpc.startProcessInstanceByKey( BpmConsts.WorkOrderApply_PROCESS, workOrder.getId().toString(), workOrder.getExecutorId()+"",map);
-	       if(object.getCode().equals("5000")) {
-	   		   throw new WorkOrderException("新增工单失败流控中心调不通");
-	       }
-	       workOrder.setProcessInstanceId(object.getData().getProcessInstanceId()); 
-	        workOrder.setProcessDefinitionId(object.getData().getProcessDefinitionId());
-	       workOrder.setId(workOrder.getId());
-	       workOrderMapper.updateByPrimaryKey(workOrder);
-	   } catch (Exception e) {
-		   throw new WorkOrderException("新增工单失败流控中心调不通");
-	   }
-    
+
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("workOrderSource", WorkOrderSource.DEPARTMENT.getValue().toString());
+		// map.put("solve", workOrder.getExecutorId().toString());
+		map.put(BpmConsts.WorkOrderApply.SOLVE.getName(), workOrder.getExecutorId().toString());
+
+		try {
+			BaseOutput<ProcessInstanceMapping> object = runtimeRpc.startProcessInstanceByKey(BpmConsts.WorkOrderApply_PROCESS, workOrder.getId().toString(), workOrder.getExecutorId() + "", map);
+			if (object.getCode().equals("5000")) {
+				throw new WorkOrderException("新增工单失败流控中心调不通");
+			}
+			workOrder.setProcessInstanceId(object.getData().getProcessInstanceId());
+			workOrder.setProcessDefinitionId(object.getData().getProcessDefinitionId());
+			workOrder.setId(workOrder.getId());
+			workOrderMapper.updateByPrimaryKey(workOrder);
+		} catch (Exception e) {
+			throw new WorkOrderException("新增工单失败流控中心调不通");
+		}
+
 		this.sendMail(workOrder, "工单申请", Sets.newHashSet(mailReceiver.getEmail()));
 	}
 
@@ -124,8 +119,7 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 		if (CollectionUtils.isEmpty(dd.getValues())) {
 			return null;
 		}
-		DataDictionaryValueDto ddValue = dd.getValues().stream().filter(v -> v.getCode().equals(DEPARTMENT_SWITCH))
-				.findFirst().orElse(null);
+		DataDictionaryValueDto ddValue = dd.getValues().stream().filter(v -> v.getCode().equals(DEPARTMENT_SWITCH)).findFirst().orElse(null);
 		if (ddValue == null) {
 			return null;
 		}
@@ -136,8 +130,7 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 	}
 
 	@Override
-	public void solve(WorkOrder workOrder, Date startDate, Date endDate, Integer taskHours, Integer overtimeHours,
-			String workContent) throws WorkOrderException {
+	public void solve(WorkOrder workOrder, Date startDate, Date endDate, Integer taskHours, Integer overtimeHours, String workContent) throws WorkOrderException {
 		// 检查状态
 		if (!workOrder.getWorkOrderState().equals(WorkOrderState.SOLVING.getValue())) {
 			throw new WorkOrderException("当前状态不能执行解决操作");
@@ -202,8 +195,7 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 			if (!u.getDepartmentId().equals(applicantDeptId)) {
 				return false;
 			}
-			DataDictionaryValueDto value = ddDto.getValues().stream().filter(v -> v.getValue().equals(u.getUserName()))
-					.findFirst().orElse(null);
+			DataDictionaryValueDto value = ddDto.getValues().stream().filter(v -> v.getValue().equals(u.getUserName())).findFirst().orElse(null);
 			if (value == null) {
 				return false;
 			}
@@ -223,37 +215,35 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 	@Override
 	public void submitAgain(WorkOrder workOrder, String taskId) throws WorkOrderException {
 		// 部门工单，直接跳转到工单解决
-				workOrder.setWorkOrderState(WorkOrderState.SOLVING.getValue());
-				User mailReceiver = AlmCache.getInstance().getUserMap().get(workOrder.getExecutorId());
-				workOrder.setSubmitTime(new Date());
-				workOrder.setModifyTime(new Date());
-				int rows = this.workOrderMapper.updateByPrimaryKeySelective(workOrder);
-				if (rows <= 0) {
-					throw new WorkOrderException("提交工单失败");
-				}
-				if (mailReceiver == null) {
-					throw new WorkOrderException("受理人不存在");
-				}
-				
-			    Map<String, String> map=new HashMap<String, String>();
-			    map.put("workOrderSource", WorkOrderSource.DEPARTMENT.getValue().toString());
-			   
-			  //  map.put("solve", workOrder.getExecutorId().toString());
-			     map.put(BpmConsts.WorkOrderApply.SOLVE.getName(), workOrder.getExecutorId().toString());
-				/*if(workOrder.getWorkOrderSource()==2) {
-					map.put("solve", workOrder.getExecutorId().toString());
-				}else {
-					map.put("allocate", workOrder.getAcceptorId().toString());
-				}*/
-				try {
-					tasksRpc.complete(taskId,map);
-				} catch (Exception e) {
-					throw new WorkOrderException("部门工单失败");
-				}
-				
-				
-			
-				this.sendMail(workOrder, "工单申请", Sets.newHashSet(mailReceiver.getEmail()));
+		workOrder.setWorkOrderState(WorkOrderState.SOLVING.getValue());
+		User mailReceiver = AlmCache.getInstance().getUserMap().get(workOrder.getExecutorId());
+		workOrder.setSubmitTime(new Date());
+		workOrder.setModifyTime(new Date());
+		int rows = this.workOrderMapper.updateByPrimaryKeySelective(workOrder);
+		if (rows <= 0) {
+			throw new WorkOrderException("提交工单失败");
+		}
+		if (mailReceiver == null) {
+			throw new WorkOrderException("受理人不存在");
+		}
+
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("workOrderSource", WorkOrderSource.DEPARTMENT.getValue().toString());
+
+		// map.put("solve", workOrder.getExecutorId().toString());
+		map.put(BpmConsts.WorkOrderApply.SOLVE.getName(), workOrder.getExecutorId().toString());
+		/*
+		 * if(workOrder.getWorkOrderSource()==2) { map.put("solve",
+		 * workOrder.getExecutorId().toString()); }else { map.put("allocate",
+		 * workOrder.getAcceptorId().toString()); }
+		 */
+		try {
+			tasksRpc.complete(taskId, map);
+		} catch (Exception e) {
+			throw new WorkOrderException("部门工单失败");
+		}
+
+		this.sendMail(workOrder, "工单申请", Sets.newHashSet(mailReceiver.getEmail()));
 	}
 
 }

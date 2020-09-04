@@ -239,7 +239,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		try {
 			this.insertSelective(onlineDataChange);
 			
-			Map<String, Object> map = new HashMap<String, Object>();
+			Map<String, String> map = new HashMap<String, String>();
 			map.put("dataId", onlineDataChange.getId() + "");
 
 			Project pro = projectService.get(onlineDataChange.getProjectId());
@@ -280,7 +280,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		if (odc.getProcessInstanceId() == null) {
 
 			try {
-				Map<String, Object> map = new HashMap<String, Object>();
+				Map<String, String> map = new HashMap<String, String>();
 				map.put("dataId", onlineDataChange.getId() + "");
 				Project pro = projectService.get(onlineDataChange.getProjectId());
 				//map.put("dept", pro.getProjectManager() + "");

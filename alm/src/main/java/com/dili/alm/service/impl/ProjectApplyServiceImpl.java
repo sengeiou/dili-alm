@@ -107,7 +107,6 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 	private DemandProjectMapper demandProjectMapper;
 	@Autowired
 	private TaskRpc tasksRpc;
-	
 
 	public ProjectApplyMapper getActualDao() {
 		return (ProjectApplyMapper) getDao();
@@ -122,29 +121,29 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 		applyDto.setStatus(AlmConstants.ApplyState.APPLY.getCode());
 		try {
 			int insertSelective = getActualDao().insertSelective(applyDto);
-			if(insertSelective==0) {
+			if (insertSelective == 0) {
 				throw new ProjectApplyException("插入关联失败");
 			}
-			if(demandIds!=null&&demandIds.length>0) {
+			if (demandIds != null && demandIds.length > 0) {
 				for (String demandId : demandIds) {
-					DemandProject demandProject= new DemandProject();
+					DemandProject demandProject = new DemandProject();
 					demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
-					demandProject.setProjectNumber(applyDto.getNumber());	
+					demandProject.setProjectNumber(applyDto.getNumber());
 					demandProject.setDemandId(Long.valueOf(demandId));
 					int insertExact = this.demandProjectMapper.insert(demandProject);
-					if(insertExact==0) {
+					if (insertExact == 0) {
 						throw new ProjectApplyException("插入关联失败");
 					}
 				}
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			return BaseOutput.failure("立项申请失败");
 		}
-		
-		return 	BaseOutput.success(String.valueOf(applyDto.getId())).setData(applyDto.getId() + ":" + applyDto.getName());
+
+		return BaseOutput.success(String.valueOf(applyDto.getId())).setData(applyDto.getId() + ":" + applyDto.getName());
 
 	}
 
@@ -176,13 +175,13 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 		 * 处理生成审批单
 		 */
 		if (projectApply.getStatus() == AlmConstants.ApplyState.APPROVE.getCode()) {
-			ProjectApply selectProjectApply=this.get(projectApply.getId());
+			ProjectApply selectProjectApply = this.get(projectApply.getId());
 			Approve newApprove = DTOUtils.newInstance(Approve.class);
 			newApprove.setProjectApplyId(projectApply.getId());
 			newApprove.setType(AlmConstants.ApproveType.APPLY.getCode());
 			Approve selectOne = approveService.selectOne(newApprove);
 			Approve as = DTOUtils.as(selectProjectApply, Approve.class);
-			if(selectOne==null) {
+			if (selectOne == null) {
 				as.setId(null);
 				as.setCreatedStart(null);
 				as.setCreated(new Date());
@@ -194,17 +193,17 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 				as.setExtend(as.getDescription());
 				as.setType(AlmConstants.ApproveType.APPLY.getCode());
 				approveService.insertBefore(as);
-				//开启引擎流程
-				Long  userId=SessionContext.getSessionContext().getUserTicket().getId();
-				Map<String, Object> map=new HashMap<String, Object>();
-		    	map.put("dataId", as.getId().toString());
-				BaseOutput<ProcessInstanceMapping>  processInstanceOutput= runtimeRpc.startProcessInstanceByKey(BpmConsts.PROJECT_APPLY_PROCESS,  as.getId().toString(), userId+"",map);
+				// 开启引擎流程
+				Long userId = SessionContext.getSessionContext().getUserTicket().getId();
+				Map<String, String> map = new HashMap<String, String>();
+				map.put("dataId", as.getId().toString());
+				BaseOutput<ProcessInstanceMapping> processInstanceOutput = runtimeRpc.startProcessInstanceByKey(BpmConsts.PROJECT_APPLY_PROCESS, as.getId().toString(), userId + "", map);
 				if (!processInstanceOutput.isSuccess()) {
 					throw new ProjectApplyException(processInstanceOutput.getMessage());
 				}
 //				 回调，写入相关流程任务数据
 				ProcessInstanceMapping processInstance = processInstanceOutput.getData();
-				Approve selectApprove=DTOUtils.newDTO(Approve.class);
+				Approve selectApprove = DTOUtils.newDTO(Approve.class);
 				selectApprove.setId(as.getId());
 				selectApprove.setProcessInstanceId(processInstance.getProcessInstanceId());
 				selectApprove.setProcessDefinitionId(processInstance.getProcessDefinitionId());
@@ -213,7 +212,7 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 				if (update <= 0) {
 					throw new ProjectApplyException("提交立项引擎流程失败");
 				}
-			}else {
+			} else {
 				selectOne.setProjectApplyId(projectApply.getId());
 				selectOne.setStatus(AlmConstants.ApplyState.APPROVE.getCode());
 				selectOne.setProjectLeader(as.getProjectLeader());
@@ -223,25 +222,23 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 				selectOne.setType(AlmConstants.ApproveType.APPLY.getCode());
 				approveService.updateBefore(selectOne);
 				TaskDto taskDto = DTOUtils.newInstance(TaskDto.class);
-		        taskDto.setProcessInstanceBusinessKey(selectOne.getId().toString());
-		        BaseOutput<List<com.dili.bpmc.sdk.domain.TaskMapping>> outputList = tasksRpc.list(taskDto);
-		        if(!outputList.isSuccess()){
-		        	throw new AppException("用户错误！"+outputList.getMessage()); 
-		        }
-		        //获取formKey
-		        com.dili.bpmc.sdk.domain.TaskMapping task  = outputList.getData().get(0);
-		    	tasksRpc.complete(task.getId(),SessionContext.getSessionContext().getUserTicket().getId().toString());
+				taskDto.setProcessInstanceBusinessKey(selectOne.getId().toString());
+				BaseOutput<List<com.dili.bpmc.sdk.domain.TaskMapping>> outputList = tasksRpc.list(taskDto);
+				if (!outputList.isSuccess()) {
+					throw new AppException("用户错误！" + outputList.getMessage());
+				}
+				// 获取formKey
+				com.dili.bpmc.sdk.domain.TaskMapping task = outputList.getData().get(0);
+				tasksRpc.complete(task.getId(), SessionContext.getSessionContext().getUserTicket().getId().toString());
 			}
 			sendMail(selectProjectApply);
-			
-			
+
 		}
 		int rows = this.updateSelective(projectApply);
 		if (rows <= 0) {
 			throw new ProjectApplyException("提交立项申请失败");
 		}
-		
-	   
+
 	}
 
 	public void sendMail(ProjectApply projectApply) {
@@ -281,9 +278,7 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 //		apply.setRestatus(null);
 //		insertSelective(apply);
 //		buildFiles(id, apply.getId());
-		
-		
-		
+
 		apply.setStatus(AlmConstants.ApplyState.APPLY.getCode());
 		apply.setModified(new Date());
 		apply.setRestatus(0);
@@ -471,19 +466,19 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 		Roi roiQuery = DTOUtils.newDTO(Roi.class);
 		roiQuery.setApplyId(id);
 		this.roiMapper.delete(roiQuery);
-    	
+
 		int rows = this.getActualDao().deleteByPrimaryKey(id);
 		if (rows <= 0) {
 			throw new ProjectApplyException("删除失败");
 		}
-		//删除关联
-		DemandProject demandProject=new DemandProject();
+		// 删除关联
+		DemandProject demandProject = new DemandProject();
 		demandProject.setProjectNumber(selectByPrimaryKey.getNumber());
 		demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
 		List<DemandProject> select = this.demandProjectMapper.select(demandProject);
-		if(select!=null&&select.size()>0) {
+		if (select != null && select.size() > 0) {
 			int delete = this.demandProjectMapper.delete(demandProject);
-			if(delete!=select.size()) {
+			if (delete != select.size()) {
 				throw new ProjectApplyException("删除失败");
 			}
 		}
