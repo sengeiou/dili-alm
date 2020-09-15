@@ -753,7 +753,6 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 
 		// 构建邮件内容
 		Template template = this.groupTemplate.getTemplate(this.contentTemplate);
-		template.binding("apply", buildApplyViewModel(apply));
 		HardwareApplyOperationRecord poor = DTOUtils.newDTO(HardwareApplyOperationRecord.class);
 		poor.setApplyId(apply.getId());
 		List<HardwareApplyOperationRecord> list = this.haorMapper.select(poor);
@@ -762,6 +761,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		List<HardwareResourceRequirement> hrrList = this.hrrMapper.select(hrrQuery);
 		apply.aset("hrrList", hrrList);
 		apply.aset("envList", this.parseEnvToString(apply.getServiceEnvironment()));
+		template.binding("apply", buildApplyViewModel(apply));
 		String content = template.render();
 
 		try {
