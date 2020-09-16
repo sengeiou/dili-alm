@@ -92,11 +92,11 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 			throw new ProjectVersionException("版本计划上线时间不能小于版本计划技术时间");
 		}
 
-		ProjectVersion query1 = DTOUtils.newDTO(ProjectVersion.class);
+		ProjectVersion query1 = DTOUtils.newInstance(ProjectVersion.class);
 		query1.setProjectId(dto.getProjectId());
 		int versionCount = this.getActualDao().selectCount(query1);
 
-		ProjectVersion query = DTOUtils.newDTO(ProjectVersion.class);
+		ProjectVersion query = DTOUtils.newInstance(ProjectVersion.class);
 		query.setProjectId(dto.getProjectId());
 		query.setVersion(dto.getVersion());
 		int count = this.getActualDao().selectCount(query);
@@ -138,7 +138,7 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 			});
 		}
 		// 插入项目进程记录版本计划
-		ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
+		ProjectActionRecord par = DTOUtils.newInstance(ProjectActionRecord.class);
 		par.setActionCode(ProjectAction.VERSION_PLAN.getCode());
 		par.setActionDateType(ActionDateType.PERIOD.getValue());
 		par.setActionEndDate(dto.getPlannedEndDate());
@@ -192,7 +192,7 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		if (dto.getPlannedEndDate().compareTo(dto.getPlannedOnlineDate()) < 0) {
 			throw new ProjectVersionException("版本计划上线时间不能小于版本计划技术时间");
 		}
-		ProjectVersion query = DTOUtils.newDTO(ProjectVersion.class);
+		ProjectVersion query = DTOUtils.newInstance(ProjectVersion.class);
 		query.setProjectId(dto.getProjectId());
 		query.setVersion(dto.getVersion());
 		ProjectVersion version = this.getActualDao().selectOne(query);
@@ -232,7 +232,7 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 			});
 		}
 		// 更新项目进程记录版本计划
-		ProjectActionRecord parQuery = DTOUtils.newDTO(ProjectActionRecord.class);
+		ProjectActionRecord parQuery = DTOUtils.newInstance(ProjectActionRecord.class);
 		parQuery.setVersionId(version.getId());
 		parQuery.setActionCode(ProjectAction.VERSION_PLAN.getCode());
 		ProjectActionRecord par = this.parMapper.selectOne(parQuery);
@@ -283,13 +283,13 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		if (!project.getProjectState().equals(ProjectState.NOT_START.getValue()) && !project.getProjectState().equals(ProjectState.IN_PROGRESS.getValue())) {
 			throw new ProjectVersionException("项目不在进行中，不能删除");
 		}
-		Task taskQuery = DTOUtils.newDTO(Task.class);
+		Task taskQuery = DTOUtils.newInstance(Task.class);
 		taskQuery.setVersionId(id);
 		int count = this.taskMapper.selectCount(taskQuery);
 		if (count > 0) {
 			throw new ProjectVersionException("该版本下包含任务不能删除");
 		}
-		Files files = DTOUtils.newDTO(Files.class);
+		Files files = DTOUtils.newInstance(Files.class);
 		files.setVersionId(id);
 		List<Files> filesList = filesService.list(files);
 		filesList.forEach(f -> {
@@ -305,7 +305,7 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		demandProject.setStatus(DemandProjectStatus.ASSOCIATED.getValue());
 		List<DemandProject> select = this.demandProjectMapper.select(demandProject);
 		if (select != null && select.size() > 0) {
-			ProjectVersion newProjectVersion = DTOUtils.newDTO(ProjectVersion.class);
+			ProjectVersion newProjectVersion = DTOUtils.newInstance(ProjectVersion.class);
 			newProjectVersion.setProjectId(projectVersion.getProjectId());
 			int selectProjectVesionCount = this.getActualDao().selectCount(newProjectVersion);
 			if (selectProjectVesionCount == 1) {
@@ -331,7 +331,7 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 			throw new ProjectVersionException("删除版本失败");
 		}
 		// 删除项目进程记录
-		ProjectActionRecord parQuery = DTOUtils.newDTO(ProjectActionRecord.class);
+		ProjectActionRecord parQuery = DTOUtils.newInstance(ProjectActionRecord.class);
 		parQuery.setVersionId(id);
 		this.parMapper.delete(parQuery);
 	}
@@ -369,7 +369,7 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		}
 
 		// 插入项目进程记录
-		ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
+		ProjectActionRecord par = DTOUtils.newInstance(ProjectActionRecord.class);
 		par.setActionCode(ProjectAction.VERSION_PAUSE.getCode());
 		par.setActionDate(new Date());
 		par.setActionDateType(ActionDateType.POINT.getValue());
@@ -405,7 +405,7 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 			throw new ProjectVersionException("更新版本状态失败");
 		}
 		// 插入项目进程记录
-		ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
+		ProjectActionRecord par = DTOUtils.newInstance(ProjectActionRecord.class);
 		par.setActionCode(ProjectAction.VERSION_RESUME.getCode());
 		par.setActionDate(new Date());
 		par.setActionDateType(ActionDateType.POINT.getValue());
@@ -444,7 +444,7 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 		}
 
 		// 插入项目进程记录
-		ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
+		ProjectActionRecord par = DTOUtils.newInstance(ProjectActionRecord.class);
 		par.setActionCode(ProjectAction.VERSION_COMPLETE.getCode());
 		par.setActionDate(now);
 		par.setActionDateType(ActionDateType.POINT.getValue());
@@ -475,7 +475,7 @@ public class ProjectVersionServiceImpl extends BaseServiceImpl<ProjectVersion, L
 			}
 
 			// 插入项目版本进程-版本开始
-			ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
+			ProjectActionRecord par = DTOUtils.newInstance(ProjectActionRecord.class);
 			par.setActionCode(ProjectAction.VERSION_START.getCode());
 			par.setActionDateType(ActionDateType.POINT.getValue());
 			par.setActionDate(now);

@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.dili.uap.sdk.rpc.ResourceRpc;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -28,7 +29,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.dili.alm.dao.WorkDayMapper;
 import com.dili.alm.domain.WorkDay;
 import com.dili.alm.domain.dto.WorkDayRoleDto;
-import com.dili.alm.rpc.ResourceRpc;
 import com.dili.alm.service.WorkDayService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.ss.base.BaseServiceImpl;
@@ -56,11 +56,11 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 	public WorkDay getNextWeeklyWorkDays() {
 //			Date as = new Date(new Date().getTime()-24*60*60*1000);
 		WorkDay selectByPrimaryKey = this.getActualDao().getWorkDayNowDate(DateUtil.getDate(new Date()));
-		WorkDay workDay = DTOUtils.newDTO(WorkDay.class);
+		WorkDay workDay = DTOUtils.newInstance(WorkDay.class);
 		workDay.setWorkDayYear(selectByPrimaryKey.getWorkDayYear());
 		workDay.setWordDayWeek(selectByPrimaryKey.getWordDayWeek() + 1);
 		WorkDay maxWeekWorkDay = this.getActualDao().getMaxOrMinWeekWorkDay(1, selectByPrimaryKey.getWorkDayYear());
-		WorkDay nextWork = DTOUtils.newDTO(WorkDay.class);
+		WorkDay nextWork = DTOUtils.newInstance(WorkDay.class);
 		nextWork = this.getActualDao().selectOne(workDay);
 		if (nextWork == null && workDay.getWordDayWeek() >= 50) {
 			workDay.setWordDayWeek(1);
@@ -233,7 +233,7 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 		}
 		// 获得所有数据
 		for (int i = 1; i <= totalRowNum; i++) {
-			WorkDay workDay = DTOUtils.newDTO(WorkDay.class);
+			WorkDay workDay = DTOUtils.newInstance(WorkDay.class);
 			// 获得第i行对象
 			Row row = sheet.getRow(i);
 			try {
@@ -282,11 +282,11 @@ public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implement
 	public WorkDay getNextWorkDay(Date date) {
 //			Date as = new Date(new Date().getTime()-24*60*60*1000);
 		WorkDay selectByPrimaryKey = this.getActualDao().getWorkDayNowDate(DateUtil.getDate(date));
-		WorkDay workDay = DTOUtils.newDTO(WorkDay.class);
+		WorkDay workDay = DTOUtils.newInstance(WorkDay.class);
 		workDay.setWorkDayYear(selectByPrimaryKey.getWorkDayYear());
 		workDay.setWordDayWeek(selectByPrimaryKey.getWordDayWeek() + 1);
 		WorkDay maxWeekWorkDay = this.getActualDao().getMaxOrMinWeekWorkDay(1, selectByPrimaryKey.getWorkDayYear());
-		WorkDay nextWork = DTOUtils.newDTO(WorkDay.class);
+		WorkDay nextWork = DTOUtils.newInstance(WorkDay.class);
 		nextWork = this.getActualDao().selectOne(workDay);
 		if (maxWeekWorkDay.getId() == nextWork.getId()) {
 			String workDayYear = nextWork.getWorkDayYear();

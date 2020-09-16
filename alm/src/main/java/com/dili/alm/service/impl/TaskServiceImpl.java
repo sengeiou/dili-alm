@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.dili.uap.sdk.domain.dto.UserQuery;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.beetl.core.GroupTemplate;
@@ -201,7 +202,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		}
 
 		// 插入任务规划
-		ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
+		ProjectActionRecord par = DTOUtils.newInstance(ProjectActionRecord.class);
 		par.setActionCode(ProjectAction.TASK_PLAN.getCode());
 		par.setActionDateType(ActionDateType.PERIOD.getValue());
 		par.setActionStartDate(task.getStartDate());
@@ -264,7 +265,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		}
 
 		// 删除任务进程记录
-		ProjectActionRecord parQuery = DTOUtils.newDTO(ProjectActionRecord.class);
+		ProjectActionRecord parQuery = DTOUtils.newInstance(ProjectActionRecord.class);
 		parQuery.setTaskId(task.getId());
 		this.parMapper.delete(parQuery);
 
@@ -345,7 +346,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	@Override
 	public boolean isNoTeam() {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		Team team = DTOUtils.newDTO(Team.class);
+		Team team = DTOUtils.newInstance(Team.class);
 		team.setMemberId(userTicket.getId());
 
 		List<Team> teamList = teamMapper.select(team);
@@ -364,7 +365,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		if (userTicket == null) {
 			throw new RuntimeException("未登录");
 		}
-		Team team = DTOUtils.newDTO(Team.class);
+		Team team = DTOUtils.newInstance(Team.class);
 		team.setProjectId(projectId);
 		team.setMemberId(userTicket.getId());
 		List<Team> teamList = teamService.list(team);
@@ -409,7 +410,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		if (userTicket == null) {
 			throw new RuntimeException("未登录");
 		}
-		Team team = DTOUtils.newDTO(Team.class);
+		Team team = DTOUtils.newInstance(Team.class);
 		team.setMemberId(userTicket.getId());
 		team.setProjectId(projectId);
 
@@ -541,7 +542,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		if (userTicket == null) {
 			throw new RuntimeException("未登录");
 		}
-		Task task = DTOUtils.newDTO(Task.class);
+		Task task = DTOUtils.newInstance(Task.class);
 		task.setProjectId(projectId);
 		return taskMapper.selectByTeam(task, userTicket.getId(), null);
 	}
@@ -551,7 +552,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 	 */
 	@Override
 	public List<User> listUserByProjectId(Long projectId) {
-		Team team = DTOUtils.newDTO(Team.class);
+		Team team = DTOUtils.newInstance(Team.class);
 		team.setProjectId(projectId);
 		List<Long> resultIds = teamMapper.selectByProjectId(projectId);
 		List<User> userList = new ArrayList<User>();
@@ -570,7 +571,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		}
 
 		List<User> userList = new ArrayList<User>();
-		User user = DTOUtils.newDTO(User.class);
+		UserQuery user = DTOUtils.newInstance(UserQuery.class);
 		user.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		userList = userRpc.listByExample(user).getData();
 
@@ -648,7 +649,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 
 	@Override
 	public TaskDetails selectDetails(Long taskId) {
-		TaskDetails taskDetails = DTOUtils.newDTO(TaskDetails.class);
+		TaskDetails taskDetails = DTOUtils.newInstance(TaskDetails.class);
 		taskDetails.setTaskId(taskId);
 		List<TaskDetails> list = taskDetailsService.list(taskDetails);
 		short taskHour = 0;
@@ -747,7 +748,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		if (taskHour > 0 && !this.isSetTask(task.getOwner(), taskHour, executeDateStr)) {
 			throw new TaskException("今日工时已填写超过8小时！");
 		}
-		TaskDetails taskDetails = DTOUtils.newDTO(TaskDetails.class);
+		TaskDetails taskDetails = DTOUtils.newInstance(TaskDetails.class);
 		taskDetails.setTaskId(taskId);
 		taskDetails.setTaskHour(taskHour);
 		taskDetails.setOverHour(overHour);
@@ -785,7 +786,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		}
 
 		// 更新任务规划
-		ProjectActionRecord parQuery = DTOUtils.newDTO(ProjectActionRecord.class);
+		ProjectActionRecord parQuery = DTOUtils.newInstance(ProjectActionRecord.class);
 		parQuery.setActionCode(ProjectAction.TASK_PLAN.getCode());
 		parQuery.setActionType(ProjectActionType.TASK.getValue());
 		parQuery.setTaskId(task.getId());
@@ -825,7 +826,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		boolean isComplete = false;
 		// 查询当前要修改的任务工时信息
 
-		TaskDetails condtion = DTOUtils.newDTO(TaskDetails.class);
+		TaskDetails condtion = DTOUtils.newInstance(TaskDetails.class);
 
 		condtion.setTaskId(task.getId());
 
@@ -970,7 +971,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		}
 
 		// 查询项目变更的累加
-		ProjectChange projectChange = DTOUtils.newDTO(ProjectChange.class);
+		ProjectChange projectChange = DTOUtils.newInstance(ProjectChange.class);
 		projectChange.setProjectId(task.getProjectId());
 		List<ProjectChange> projectChangeList = projectChangeService.list(projectChange);
 		if (projectChangeList != null && projectChangeList.size() > 0) {
@@ -1077,7 +1078,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 			String planDays = this.dateToString(task.getStartDate()) + "至" + this.dateToString(task.getEndDate());
 			dto.setPlanDays(planDays);
 
-			TaskDetails taskDetails = DTOUtils.newDTO(TaskDetails.class);
+			TaskDetails taskDetails = DTOUtils.newInstance(TaskDetails.class);
 			taskDetails.setTaskId(task.getId());
 			// 查询出列表
 			List<TaskDetails> taskDetailsList = tdMapper.select(taskDetails);

@@ -162,7 +162,7 @@ public class WeeklyController {
 	@RequestMapping(value = "/delete", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput delete(Long id) {
 		weeklyService.delete(id);
-		WeeklyDetails newDTO = DTOUtils.newDTO(WeeklyDetails.class);
+		WeeklyDetails newDTO = DTOUtils.newInstance(WeeklyDetails.class);
 		newDTO.setWeeklyId(id);
 		List<WeeklyDetails> list = weeklyDetailsService.listByExample(newDTO);
 		List<Long> keys = new ArrayList<Long>();
@@ -220,7 +220,7 @@ public class WeeklyController {
 		mv.addObject("returnProjectId", projectId);
 
 		Map<String, Weekly> wkMap = weeklyService.insertWeeklyByprojectId(projectId);
-		Weekly wk = DTOUtils.newDTO(Weekly.class);
+		Weekly wk = DTOUtils.newInstance(Weekly.class);
 		Map<Object, Object> map = null;
 		if (wkMap.get("one") == null) {
 			map = weeklyService.getDescAddById(wkMap.get("two").getId() + "");

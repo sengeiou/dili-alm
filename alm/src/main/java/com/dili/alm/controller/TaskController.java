@@ -210,7 +210,7 @@ public class TaskController {
 	@ResponseBody
 	@RequestMapping(value = "/listTreeVersion.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public List<ProjectVersion> listVersion(Long id) {
-		ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
+		ProjectVersion projectVersion = DTOUtils.newInstance(ProjectVersion.class);
 		projectVersion.setProjectId(id);
 		List<ProjectVersion> list = projectVersionService.list(projectVersion);
 		return list;
@@ -370,7 +370,7 @@ public class TaskController {
 	@ResponseBody
 	@RequestMapping(value = "/isTask.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public boolean isTask(Long id) {
-		TaskDetails taskDetails = DTOUtils.newDTO(TaskDetails.class);
+		TaskDetails taskDetails = DTOUtils.newInstance(TaskDetails.class);
 		taskDetails.setTaskId(id);
 		List<TaskDetails> list = taskDetailsService.list(taskDetails);
 
@@ -433,7 +433,7 @@ public class TaskController {
 	@ResponseBody
 	@RequestMapping(value = "/listTreeVersionByProject.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public List<ProjectVersion> listTreeVersionByProject(Long id) {
-		ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
+		ProjectVersion projectVersion = DTOUtils.newInstance(ProjectVersion.class);
 		projectVersion.setProjectId(id);
 		List<ProjectVersion> list=new ArrayList<>();
 		if(id!=null)

@@ -101,7 +101,7 @@ public class DemandController {
     @RequestMapping(value = "/add", method = RequestMethod.GET)
 	public String add(ModelMap modelMap) {
 		/** 查询 所有部门 ***/
-/*    	Department department=DTOUtils.newDTO(Department.class);
+/*    	Department department=DTOUtils.newInstance(Department.class);
 		department.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		
 		List<Department> departments = this.deptRpc.listByDepartment(department).getData();
@@ -384,7 +384,7 @@ public class DemandController {
 	@ResponseBody
 	@RequestMapping(value = "/listTree.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public List<SystemDto> listTree(Long projectId) {
-		return sysProjectRpc.list(DTOUtils.newDTO(SystemDto.class)).getData();
+		return sysProjectRpc.list(DTOUtils.newInstance(SystemDto.class)).getData();
 	}
     /**departmentApprove
      * 流程控制

@@ -1,3 +1,4 @@
+<script type="text/javascript">
 // 打开选择用户弹出框
 function selectMember(callback, args) {
 	if (callback) {
@@ -41,3 +42,4 @@ function showMembersDlg(id, dep) {
 						}]
 			});
 }
+</script>

@@ -130,7 +130,7 @@ public class TeamController {
 	@ResponseBody
 	@RequestMapping(value = "/department.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public List<Department> listDepartments() {
-		Department department = DTOUtils.newDTO(Department.class);
+		Department department = DTOUtils.newInstance(Department.class);
 		department.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		BaseOutput<List<Department>> output = this.deptRPC.listByDepartment(department);
 		if (output != null && output.isSuccess()) {
@@ -165,7 +165,7 @@ public class TeamController {
 		if (org.apache.commons.collections.CollectionUtils.isEmpty(udrs)) {
 			return Lists.newArrayList();
 		}
-		Team teamQuery = DTOUtils.newDTO(Team.class);
+		Team teamQuery = DTOUtils.newInstance(Team.class);
 		teamQuery.setProjectId(projectId);
 		List<Team> teams = this.teamService.list(teamQuery);
 		Set<Long> userIds = new HashSet<>();

@@ -8,11 +8,11 @@ import com.dili.alm.domain.DataDictionary;
 
 public interface DataDictionaryDto extends DataDictionary {
 
-	public List<DataDictionaryValueDto> getValues();
+	List<DataDictionaryValueDto> getValues();
 
-	public void setValues(List<DataDictionaryValueDto> values);
+	void setValues(List<DataDictionaryValueDto> values);
 
-	public default DataDictionaryValueDto getValueByCode(String code) {
+	default DataDictionaryValueDto getValueByCode(String code) {
 		if (CollectionUtils.isEmpty(this.getValues())) {
 			return null;
 		}
@@ -23,5 +23,7 @@ public interface DataDictionaryDto extends DataDictionary {
 		}
 		return null;
 	}
+
+	void setValueByCode(DataDictionaryValueDto dataDictionaryValueDto);
 
 }

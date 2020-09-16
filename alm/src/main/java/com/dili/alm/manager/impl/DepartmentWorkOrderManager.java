@@ -143,7 +143,7 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 		}
 
 		// 生成操作记录
-		WorkOrderOperationRecord woor = DTOUtils.newDTO(WorkOrderOperationRecord.class);
+		WorkOrderOperationRecord woor = DTOUtils.newInstance(WorkOrderOperationRecord.class);
 		woor.setOperationType(WorkOrderOperationType.EXECUTOR.getValue());
 		woor.setOperationName(WorkOrderOperationType.EXECUTOR.getName());
 		woor.setOperationResult(OperationResult.SUCCESS.getValue());
@@ -156,7 +156,7 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 		}
 
 		// 插入工单执行记录
-		WorkOrderExecutionRecord woer = DTOUtils.newDTO(WorkOrderExecutionRecord.class);
+		WorkOrderExecutionRecord woer = DTOUtils.newInstance(WorkOrderExecutionRecord.class);
 		woer.setWorkOrderId(workOrder.getId());
 		woer.setStartDate(startDate);
 		woer.setEndDate(endDate);

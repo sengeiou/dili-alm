@@ -27,7 +27,7 @@ public class DemandNumberGenerator extends AbstractNumberGenerator {
 	private AtomicInteger number = new AtomicInteger(0);
 	@Override
 	public void init() {
-		Sequence sequenceQuery = DTOUtils.newDTO(Sequence.class);
+		Sequence sequenceQuery = DTOUtils.newInstance(Sequence.class);
 		sequenceQuery.setType(DEMAND_NUMBER_GENERATOR_TYPE);
 		Sequence sequence = sequenceMapper.selectOne(sequenceQuery);
 		if (sequence == null){
@@ -53,7 +53,7 @@ public class DemandNumberGenerator extends AbstractNumberGenerator {
 
 	@Override
 	public void persist() {
-		Sequence record = DTOUtils.newDTO(Sequence.class);
+		Sequence record = DTOUtils.newInstance(Sequence.class);
 		record.setNumber(this.number.get());
 		Example example = new Example(Sequence.class);
 		example.createCriteria().andEqualTo("type", DEMAND_NUMBER_GENERATOR_TYPE);

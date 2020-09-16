@@ -190,13 +190,13 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	@Transactional
 	@Override
 	public BaseOutput<Object> deleteBeforeCheck(Long projectId) {
-		ProjectVersion record = DTOUtils.newDTO(ProjectVersion.class);
+		ProjectVersion record = DTOUtils.newInstance(ProjectVersion.class);
 		record.setProjectId(projectId);
 		int count = this.projectVersionMapper.selectCount(record);
 		if (count > 0) {
 			return BaseOutput.failure("项目关联了里程碑，不能删除");
 		}
-		Team teamQuery = DTOUtils.newDTO(Team.class);
+		Team teamQuery = DTOUtils.newInstance(Team.class);
 		teamQuery.setProjectId(projectId);
 		List<Team> teams = this.teamMapper.select(teamQuery);
 		if (CollectionUtils.isNotEmpty(teams)) {
@@ -205,7 +205,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 			});
 		}
 
-		Project projectQuery = DTOUtils.newDTO(Project.class);
+		Project projectQuery = DTOUtils.newInstance(Project.class);
 		projectQuery.setParentId(projectId);
 		count = this.getActualDao().selectCount(projectQuery);
 		if (count > 0) {
@@ -247,19 +247,19 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	@Transactional(rollbackFor = ProjectException.class)
 	@Override
 	public BaseOutput<Object> insertAfterCheck(Project project) throws ProjectException {
-		Project record = DTOUtils.newDTO(Project.class);
+		Project record = DTOUtils.newInstance(Project.class);
 		record.setName(project.getName());
 		int count = this.getActualDao().selectCount(record);
 		if (count > 0) {
 			return BaseOutput.failure("已存在项目相同的项目");
 		}
 		int result = this.insertSelective(project);
-		Team t = DTOUtils.newDTO(Team.class);
+		Team t = DTOUtils.newInstance(Team.class);
 		t.setProjectId(project.getId());
 		t.setMemberId(project.getProjectManager());
 		count = this.teamMapper.selectCount(t);
 		if (project.getProjectManager() != null && count <= 0) {
-			Team tt = DTOUtils.newDTO(Team.class);
+			Team tt = DTOUtils.newInstance(Team.class);
 			Date now = new Date();
 			tt.setJoinTime(now);
 			tt.setMemberId(project.getProjectManager());
@@ -272,7 +272,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		t.setMemberId(project.getProductManager());
 		count = this.teamMapper.selectCount(t);
 		if (project.getProductManager() != null && count <= 0) {
-			Team tt = DTOUtils.newDTO(Team.class);
+			Team tt = DTOUtils.newInstance(Team.class);
 			Date now = new Date();
 			tt.setJoinTime(now);
 			tt.setMemberId(project.getProductManager());
@@ -285,7 +285,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		t.setMemberId(project.getTestManager());
 		count = this.teamMapper.selectCount(t);
 		if (project.getTestManager() != null && count <= 0) {
-			Team tt = DTOUtils.newDTO(Team.class);
+			Team tt = DTOUtils.newInstance(Team.class);
 			Date now = new Date();
 			tt.setJoinTime(now);
 			tt.setMemberId(project.getTestManager());
@@ -305,7 +305,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	@Override
 	public BaseOutput<Object> updateAfterCheck(Project project) {
 		int result;
-		Project record = DTOUtils.newDTO(Project.class);
+		Project record = DTOUtils.newInstance(Project.class);
 		record.setName(project.getName());
 		Project oldProject = this.getActualDao().selectOne(record);
 		if (oldProject != null && !oldProject.getId().equals(project.getId())) {
@@ -359,7 +359,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 				projectDto.setCompletedProgress(project1.getCompletedProgress());
 				projectDto.setOriginator(project1.getOriginator());
 
-				Team record = DTOUtils.newDTO(Team.class);
+				Team record = DTOUtils.newInstance(Team.class);
 				record.setProjectId(project1.getId());
 				record.setMemberId(userTicket.getId());
 				record.setRole(TeamRole.PROJECT_MANAGER.getValue());
@@ -415,7 +415,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 	public Map<Object, Object> getDetailViewData(Long id) {
 		Project project = this.getActualDao().selectByPrimaryKey(id);
 		ProjectEntity viewData = DTOUtils.toEntity(project, ProjectEntity.class, true);
-		Task taskQuery = DTOUtils.newDTO(Task.class);
+		Task taskQuery = DTOUtils.newInstance(Task.class);
 		taskQuery.setProjectId(id);
 		Integer taskCount = this.taskMapper.selectCount(taskQuery);
 		viewData.setTaskCount(taskCount);
@@ -579,7 +579,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 			}
 
 			// 插入项目进程记录项目开始
-			ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
+			ProjectActionRecord par = DTOUtils.newInstance(ProjectActionRecord.class);
 			par.setActionCode(ProjectAction.PROJECT_START.getCode());
 			par.setActionDateType(ActionDateType.POINT.getValue());
 			par.setActionDate(now);

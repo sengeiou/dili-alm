@@ -206,7 +206,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		}
 
 		// 删除配置要求
-		HardwareResourceRequirement hrrQuery = DTOUtils.newDTO(HardwareResourceRequirement.class);
+		HardwareResourceRequirement hrrQuery = DTOUtils.newInstance(HardwareResourceRequirement.class);
 		hrrQuery.setApplyId(applyId);
 		this.hrrMapper.delete(hrrQuery);
 	}
@@ -222,11 +222,11 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		StringBuilder sb = new StringBuilder();
 		envList.forEach(v -> sb.append(this.envProvider.getDisplayText(v, null, null)).append(","));
 		apply.aset("serviceEnvironmentText", sb.substring(0, sb.length() - 1));
-		HardwareResourceRequirement dto = DTOUtils.newDTO(HardwareResourceRequirement.class);
+		HardwareResourceRequirement dto = DTOUtils.newInstance(HardwareResourceRequirement.class);
 		dto.setApplyId(id);
 		List<HardwareResourceRequirement> requirementList = this.hrrMapper.select(dto);
 		apply.aset("requirementList", requirementList);
-		HardwareApplyOperationRecord hraQuery = DTOUtils.newDTO(HardwareApplyOperationRecord.class);
+		HardwareApplyOperationRecord hraQuery = DTOUtils.newInstance(HardwareApplyOperationRecord.class);
 		hraQuery.setApplyId(id);
 		List<HardwareApplyOperationRecord> opRecords = this.haorMapper.select(hraQuery);
 		Map<Object, Object> metadata = new HashMap<>();
@@ -270,7 +270,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 
 	@Override
 	public List<HardwareResourceRequirement> listRequirement(Long applyId) throws HardwareResourceApplyException {
-		HardwareResourceRequirement dto = DTOUtils.newDTO(HardwareResourceRequirement.class);
+		HardwareResourceRequirement dto = DTOUtils.newInstance(HardwareResourceRequirement.class);
 		dto.setApplyId(applyId);
 		return this.hrrMapper.select(dto);
 
@@ -325,7 +325,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		}
 
 		// 插入申请操作记录
-		HardwareApplyOperationRecord record = DTOUtils.newDTO(HardwareApplyOperationRecord.class);
+		HardwareApplyOperationRecord record = DTOUtils.newInstance(HardwareApplyOperationRecord.class);
 		record.setApplyId(applyId);
 		record.setDescription(description);
 		record.setOperationName(HardwareApplyOperationType.OPERATION_MANAGER.getName());
@@ -434,7 +434,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 			throw new HardwareResourceApplyException("用户错误！" + out.getMessage());
 		}
 		// 插入申请操作记录
-		HardwareApplyOperationRecord record = DTOUtils.newDTO(HardwareApplyOperationRecord.class);
+		HardwareApplyOperationRecord record = DTOUtils.newInstance(HardwareApplyOperationRecord.class);
 		record.setApplyId(applyId);
 		record.setDescription(description);
 		record.setOperationName(HardwareApplyOperationType.EXECUTOR.getName());
@@ -519,7 +519,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		}
 
 		// 插入申请操作记录
-		HardwareApplyOperationRecord record = DTOUtils.newDTO(HardwareApplyOperationRecord.class);
+		HardwareApplyOperationRecord record = DTOUtils.newInstance(HardwareApplyOperationRecord.class);
 		record.setApplyId(applyId);
 		record.setDescription(description);
 		record.setOperationName(HardwareApplyOperationType.PROJECT_MANAGER.getName());
@@ -753,10 +753,10 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 
 		// 构建邮件内容
 		Template template = this.groupTemplate.getTemplate(this.contentTemplate);
-		HardwareApplyOperationRecord poor = DTOUtils.newDTO(HardwareApplyOperationRecord.class);
+		HardwareApplyOperationRecord poor = DTOUtils.newInstance(HardwareApplyOperationRecord.class);
 		poor.setApplyId(apply.getId());
 		List<HardwareApplyOperationRecord> list = this.haorMapper.select(poor);
-		HardwareResourceRequirement hrrQuery = DTOUtils.newDTO(HardwareResourceRequirement.class);
+		HardwareResourceRequirement hrrQuery = DTOUtils.newInstance(HardwareResourceRequirement.class);
 		hrrQuery.setApplyId(apply.getId());
 		List<HardwareResourceRequirement> hrrList = this.hrrMapper.select(hrrQuery);
 		apply.aset("hrrList", hrrList);
@@ -917,7 +917,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 
 		// 更新配置要求
 		// 先删除
-		HardwareResourceRequirement hrrQuery = DTOUtils.newDTO(HardwareResourceRequirement.class);
+		HardwareResourceRequirement hrrQuery = DTOUtils.newInstance(HardwareResourceRequirement.class);
 		hrrQuery.setApplyId(dto.getId());
 		this.hrrMapper.delete(hrrQuery);
 
@@ -974,7 +974,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 			throw new HardwareResourceApplyException("更新申请状态失败");
 		}
 		// 插入申请操作记录
-		HardwareApplyOperationRecord record = DTOUtils.newDTO(HardwareApplyOperationRecord.class);
+		HardwareApplyOperationRecord record = DTOUtils.newInstance(HardwareApplyOperationRecord.class);
 		record.setApplyId(applyId);
 		record.setDescription(description);
 		record.setOperationName(HardwareApplyOperationType.PROJECT_MANAGER.getName());
@@ -1020,7 +1020,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		}
 
 		// 插入申请操作记录
-		HardwareApplyOperationRecord record = DTOUtils.newDTO(HardwareApplyOperationRecord.class);
+		HardwareApplyOperationRecord record = DTOUtils.newInstance(HardwareApplyOperationRecord.class);
 		record.setApplyId(applyId);
 		record.setDescription(description);
 		record.setOperationName(HardwareApplyOperationType.OPERATION_MANAGER.getName());
@@ -1050,7 +1050,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		}
 
 		// 插入申请操作记录
-		HardwareApplyOperationRecord record = DTOUtils.newDTO(HardwareApplyOperationRecord.class);
+		HardwareApplyOperationRecord record = DTOUtils.newInstance(HardwareApplyOperationRecord.class);
 		record.setApplyId(applyId);
 		record.setDescription(description);
 		record.setOperationName(HardwareApplyOperationType.EXECUTOR.getName());

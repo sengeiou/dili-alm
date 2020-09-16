@@ -39,7 +39,7 @@ public class WorkOrderApplyApi {
 
 		// String edit = taskMapping.getProcessVariables().get("edit").toString();
 		String edit = taskMapping.getProcessVariables().get(BpmConsts.WorkOrderApply.EDIT.getName()).toString();
-		Assignment assignment = DTOUtils.newDTO(Assignment.class);
+		Assignment assignment = DTOUtils.newInstance(Assignment.class);
 		assignment.setAssignee(edit);
 		return BaseOutput.success().setData(assignment);
 	}
@@ -58,7 +58,7 @@ public class WorkOrderApplyApi {
 		// String productManagerId =
 		// taskMapping.getProcessVariables().get("allocate").toString();
 		String productManagerId = taskMapping.getProcessVariables().get(BpmConsts.WorkOrderApply.ALLOCATE.getName()).toString();
-		Assignment assignment = DTOUtils.newDTO(Assignment.class);
+		Assignment assignment = DTOUtils.newInstance(Assignment.class);
 		assignment.setAssignee(productManagerId);
 		return BaseOutput.success().setData(assignment);
 
@@ -71,7 +71,7 @@ public class WorkOrderApplyApi {
 		// String productManagerId =
 		// taskMapping.getProcessVariables().get("solve").toString();
 		String productManagerId = taskMapping.getProcessVariables().get(BpmConsts.WorkOrderApply.SOLVE.getName()).toString();
-		Assignment assignment = DTOUtils.newDTO(Assignment.class);
+		Assignment assignment = DTOUtils.newInstance(Assignment.class);
 		assignment.setAssignee(productManagerId);
 		return BaseOutput.success().setData(assignment);
 
@@ -84,7 +84,7 @@ public class WorkOrderApplyApi {
 		// String idid= (String) taskMapping.getProcessVariables().get("close");
 		String idid = (String) taskMapping.getProcessVariables().get(BpmConsts.WorkOrderApply.CLOSE.getName());
 		// Long id=Long.parseLong(idid);
-		Assignment record = DTOUtils.newDTO(Assignment.class);
+		Assignment record = DTOUtils.newInstance(Assignment.class);
 		record.setAssignee(idid);
 		// Assignment record =workOrderApply.setCloseName(id);
 		return BaseOutput.success().setData(record);
@@ -96,7 +96,7 @@ public class WorkOrderApplyApi {
 	 * public @ResponseBody BaseOutput<Assignment>
 	 * setDeptOnlineDataChangeAssigneeName(@RequestBody TaskMapping taskMapping) {
 	 * String dept = taskMapping.getProcessVariables().get("dept").toString();
-	 * Assignment assignment = DTOUtils.newDTO(Assignment.class);
+	 * Assignment assignment = DTOUtils.newInstance(Assignment.class);
 	 * assignment.setAssignee(dept); return
 	 * BaseOutput.success().setData(assignment);
 	 * 

@@ -44,7 +44,7 @@ public class LogServiceImpl extends BaseServiceImpl<Log, Long> implements LogSer
 		if(userTicket==null){
 			throw new RuntimeException("未登录");
 		}
-		Log record = DTOUtils.newDTO(Log.class);
+		Log record = DTOUtils.newInstance(Log.class);
 		
 		SimpleDateFormat formater = new SimpleDateFormat("yyMMdd");
 		Date date = new Date();
@@ -78,7 +78,7 @@ public class LogServiceImpl extends BaseServiceImpl<Log, Long> implements LogSer
 	@Override
 	public int updateLog(Long logId,String logText) {
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-		Log record = DTOUtils.newDTO(Log.class);
+		Log record = DTOUtils.newInstance(Log.class);
 		record.setId(logId);
 		record.setOperatorId(userTicket.getId());
 		record.setContent(logText);

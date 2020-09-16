@@ -11,7 +11,7 @@
 //
 //	@Override
 //	protected BatchProviderMeta getBatchProviderMeta(Map metaMap) {
-//		BatchProviderMeta batchProviderMeta = DTOUtils.newDTO(BatchProviderMeta.class);
+//		BatchProviderMeta batchProviderMeta = DTOUtils.newInstance(BatchProviderMeta.class);
 //		// 设置主DTO和关联DTO需要转义的字段名
 //		batchProviderMeta.setEscapeFiled("name");
 //		// 忽略大小写关联

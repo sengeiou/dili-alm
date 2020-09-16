@@ -76,7 +76,7 @@ public class FilesServiceImpl extends BaseServiceImpl<Files, Long> implements Fi
 			String fileName = file.getOriginalFilename();
 
 			if (projectId != null) {
-				Files record = DTOUtils.newDTO(Files.class);
+				Files record = DTOUtils.newInstance(Files.class);
 				record.setName(fileName);
 				record.setProjectId(projectId);
 				Files old = this.getActualDao().selectOne(record);
@@ -100,7 +100,7 @@ public class FilesServiceImpl extends BaseServiceImpl<Files, Long> implements Fi
 				buffStream = new BufferedOutputStream(new FileOutputStream(dest));
 				buffStream.write(bytes);
 				UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-				Files tmpFiles = DTOUtils.newDTO(Files.class);
+				Files tmpFiles = DTOUtils.newInstance(Files.class);
 				if (userTicket != null) {
 					tmpFiles.setCreateMemberId(userTicket.getId());
 				}

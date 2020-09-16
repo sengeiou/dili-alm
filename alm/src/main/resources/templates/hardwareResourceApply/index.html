@@ -79,14 +79,12 @@
 		</table>
 		<!-- datagrid工具栏 -->
 		<div id="toolbar" style="padding: 2px 5px;">
-			<%if(user.id!=1){%>
 			<#resource code="addHardwareResourceApply"> <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openInsert()"
 				plain="true"></a></#resource>
 			<#resource code="updateHardwareResourceApply"> <a href="#" class="easyui-linkbutton" iconCls="icon-edit"
 				onclick="openUpdate()" plain="true"></a></#resource>
 			<#resource code="deleteHardwareResourceApply"> <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="del()"
 				plain="true"></a></#resource>
-			<%}%>
 			<div style="float: right">
 				边框显示:<select onchange="changeBorder('grid',this.value)">
 					<option value="lines-both">全边框</option>
@@ -167,12 +165,14 @@
 	</form>
 
 </div>
-<script type="text/javascript">
-	var dataAuth = {
-		addHardwareResourceApply : <%if(hasResource('addHardwareResourceApply')){%>true<%}else{%>false<%}%>,
+
+	<script type="text/javascript">
+		var dataAuth = {
+			addHardwareResourceApply : <%if(hasResource('addHardwareResourceApply')){%>true<%}else{%>false<%}%>,
 		updateHardwareResourceApply : <%if(hasResource('updateHardwareResourceApply')){%>true<%}else{%>false<%}%>,
 		deleteHardwareResourceApply : <%if(hasResource('deleteHardwareResourceApply')){%>true<%}else{%>false<%}%>
-	};
+		};
+	</script>
 	<#members_index />
 	<#hardwareResourceApply_index />
-</script> </#body>
+ </#body>

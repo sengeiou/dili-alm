@@ -2,6 +2,7 @@ package com.dili.alm.controller;
 
 import java.util.List;
 
+import com.dili.uap.sdk.rpc.ResourceRpc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.alm.domain.Log;
-import com.dili.alm.rpc.ResourceRpc;
 import com.dili.alm.service.LogService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.uap.sdk.domain.UserTicket;

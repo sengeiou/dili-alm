@@ -88,7 +88,7 @@ public class ProjectApplyController {
 
 	@RequestMapping(value = "/toStep/{step}/index.html", method = RequestMethod.GET)
 	public String toStep(ModelMap modelMap, Long id, @PathVariable("step") int step) throws Exception {
-		ProjectApply projectApply = DTOUtils.newDTO(ProjectApply.class);
+		ProjectApply projectApply = DTOUtils.newInstance(ProjectApply.class);
 		projectApply.setId(id);
 		Map<Object, Object> metadata = new HashMap<>(2);
 
@@ -130,7 +130,7 @@ public class ProjectApplyController {
 
 	@RequestMapping(value = "/toDetails/{id}", method = RequestMethod.GET)
 	public String toDetails(ModelMap modelMap, @PathVariable("id") Long id) throws Exception {
-		ProjectApply projectApply = DTOUtils.newDTO(ProjectApply.class);
+		ProjectApply projectApply = DTOUtils.newInstance(ProjectApply.class);
 		projectApply.setId(id);
 		Map<Object, Object> metadata = new HashMap<>(1);
 		JSONObject projectTypeProvider = new JSONObject();
@@ -269,7 +269,7 @@ public class ProjectApplyController {
 	@RequestMapping("/loadApply")
 	@ResponseBody
 	public Map loadApply(Long id) throws Exception {
-		ProjectApply projectApply = DTOUtils.newDTO(ProjectApply.class);
+		ProjectApply projectApply = DTOUtils.newInstance(ProjectApply.class);
 		projectApply.setId(id);
 
 		Map<Object, Object> metadata = new HashMap<>();
@@ -315,11 +315,11 @@ public class ProjectApplyController {
 			}
 		}
 		if (StringUtils.isNotBlank(name)) {
-			ProjectApplyQueryDto appExample = DTOUtils.newDTO(ProjectApplyQueryDto.class);
+			ProjectApplyQueryDto appExample = DTOUtils.newInstance(ProjectApplyQueryDto.class);
 			appExample.setName(name);
 			List<ProjectApply> applyList = projectApplyService.listByExample(appExample);
 
-			Project project = DTOUtils.newDTO(Project.class);
+			Project project = DTOUtils.newInstance(Project.class);
 			project.setName(name);
 			List<Project> projectList = projectService.listByExample(project);
 			return CollectionUtils.isEmpty(applyList) && CollectionUtils.isEmpty(projectList);

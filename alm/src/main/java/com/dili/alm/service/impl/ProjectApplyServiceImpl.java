@@ -203,7 +203,7 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 				}
 //				 回调，写入相关流程任务数据
 				ProcessInstanceMapping processInstance = processInstanceOutput.getData();
-				Approve selectApprove = DTOUtils.newDTO(Approve.class);
+				Approve selectApprove = DTOUtils.newInstance(Approve.class);
 				selectApprove.setId(as.getId());
 				selectApprove.setProcessInstanceId(processInstance.getProcessInstanceId());
 				selectApprove.setProcessDefinitionId(processInstance.getProcessDefinitionId());
@@ -386,22 +386,22 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 	@Override
 	public void updateRoi(RoiUpdateDto dto) throws ProjectApplyException {
 		// 先删除roi
-		Roi roiQuery = DTOUtils.newDTO(Roi.class);
+		Roi roiQuery = DTOUtils.newInstance(Roi.class);
 		roiQuery.setApplyId(dto.getApplyId());
 		this.roiMapper.delete(roiQuery);
 
 		// 删除项目收益
-		ProjectEarning peQuery = DTOUtils.newDTO(ProjectEarning.class);
+		ProjectEarning peQuery = DTOUtils.newInstance(ProjectEarning.class);
 		peQuery.setApplyId(dto.getApplyId());
 		this.projectEarningMapper.delete(peQuery);
 
 		// 删除项目成本
-		ProjectCost pcQuery = DTOUtils.newDTO(ProjectCost.class);
+		ProjectCost pcQuery = DTOUtils.newInstance(ProjectCost.class);
 		pcQuery.setApplyId(dto.getApplyId());
 		this.projectCostMapper.delete(pcQuery);
 
 		// 插入roi
-		Roi roi = DTOUtils.newDTO(Roi.class);
+		Roi roi = DTOUtils.newInstance(Roi.class);
 		roi.setApplyId(dto.getApplyId());
 		roi.setTotal(dto.getRoiTotal());
 		int rows = this.roiMapper.insertSelective(roi);
@@ -412,7 +412,7 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		// 插入项目成本和收益
 		for (int i = 0; i < dto.getIndicatorType().size(); i++) {
-			ProjectEarning pe = DTOUtils.newDTO(ProjectEarning.class);
+			ProjectEarning pe = DTOUtils.newInstance(ProjectEarning.class);
 			pe.setApplyId(dto.getApplyId());
 			if (StringUtils.isNotBlank(dto.getImplemetionDate().get(i))) {
 				try {
@@ -433,7 +433,7 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 		}
 
 		for (int i = 0; i < dto.getCostType().size(); i++) {
-			ProjectCost pc = DTOUtils.newDTO(ProjectCost.class);
+			ProjectCost pc = DTOUtils.newInstance(ProjectCost.class);
 			pc.setAmount(dto.getAmount().get(i));
 			pc.setApplyId(dto.getApplyId());
 			pc.setCostType(dto.getCostType().get(i));
@@ -455,15 +455,15 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 	@Override
 	public void deleteProjectApply(Long id) throws ProjectApplyException {
 		ProjectApply selectByPrimaryKey = this.getActualDao().selectByPrimaryKey(id);
-		ProjectEarning peQuery = DTOUtils.newDTO(ProjectEarning.class);
+		ProjectEarning peQuery = DTOUtils.newInstance(ProjectEarning.class);
 		peQuery.setApplyId(id);
 		this.projectEarningMapper.delete(peQuery);
 
-		ProjectCost pcQuery = DTOUtils.newDTO(ProjectCost.class);
+		ProjectCost pcQuery = DTOUtils.newInstance(ProjectCost.class);
 		pcQuery.setApplyId(id);
 		this.projectCostMapper.delete(pcQuery);
 
-		Roi roiQuery = DTOUtils.newDTO(Roi.class);
+		Roi roiQuery = DTOUtils.newInstance(Roi.class);
 		roiQuery.setApplyId(id);
 		this.roiMapper.delete(roiQuery);
 

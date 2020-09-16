@@ -320,7 +320,7 @@ public class OnlineDataChangeController {
 	        modelMap.addAttribute("applyUserIdName",userRpc.findUserById(odc.getApplyUserId()).getData().getRealName());
 	    }
 	   Project  proId=  projectMapper.selectByPrimaryKey(odc.getProjectId());
-	    ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
+	    ProjectVersion projectVersion = DTOUtils.newInstance(ProjectVersion.class);
 		projectVersion.setProjectId(odc.getProjectId());
 		List<ProjectVersion> list = projectVersionService.list(projectVersion);
 		
@@ -354,7 +354,7 @@ public class OnlineDataChangeController {
 	        modelMap.addAttribute("applyUserIdName",userRpc.findUserById(odc.getApplyUserId()).getData().getRealName());
 	    }
 	   Project  proId=  projectMapper.selectByPrimaryKey(odc.getProjectId());
-	    ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
+	    ProjectVersion projectVersion = DTOUtils.newInstance(ProjectVersion.class);
 		projectVersion.setProjectId(odc.getProjectId());
 		List<ProjectVersion> list = projectVersionService.list(projectVersion);
 		

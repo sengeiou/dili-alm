@@ -22,7 +22,7 @@ public class WorkOrderApplyServiceImpl implements WorkOrderApplyService {
 	@Override
 	public  Assignment setAllocateName(Long workOrderId) {
 		WorkOrder  workOrder=workOrderMapper.selectByPrimaryKey(workOrderId);
-		Assignment record = DTOUtils.newDTO(Assignment.class);
+		Assignment record = DTOUtils.newInstance(Assignment.class);
 		if(workOrder.getWorkOrderSource()==2) {
 			record.setAssignee(workOrder.getExecutorId().toString());
 		}else {
@@ -36,7 +36,7 @@ public class WorkOrderApplyServiceImpl implements WorkOrderApplyService {
 	@Override
 	public Assignment setSolveName(Long workOrderId) {
 		WorkOrder  workOrder=workOrderMapper.selectByPrimaryKey(workOrderId);
-		Assignment record = DTOUtils.newDTO(Assignment.class);
+		Assignment record = DTOUtils.newInstance(Assignment.class);
 		if(workOrder.getWorkOrderSource()==2) {
 			record.setAssignee(workOrder.getExecutorId().toString());
 		}else {
@@ -48,7 +48,7 @@ public class WorkOrderApplyServiceImpl implements WorkOrderApplyService {
 	@Override
 	public Assignment setCloseName(Long workOrderId) {
 		WorkOrder  workOrder=workOrderMapper.selectByPrimaryKey(workOrderId);
-		Assignment record = DTOUtils.newDTO(Assignment.class);
+		Assignment record = DTOUtils.newInstance(Assignment.class);
 		record.setAssignee(workOrder.getAcceptorId().toString());
 		return record;
 	}
@@ -58,7 +58,7 @@ public class WorkOrderApplyServiceImpl implements WorkOrderApplyService {
 	@Override
 	public Assignment setOrderApplyName(Long workOrderId) {
 		WorkOrder  workOrder=workOrderMapper.selectByPrimaryKey(workOrderId);
-		Assignment record = DTOUtils.newDTO(Assignment.class);
+		Assignment record = DTOUtils.newInstance(Assignment.class);
 		record.setAssignee(workOrder.getApplicantId().toString());
 		return record;
 	}

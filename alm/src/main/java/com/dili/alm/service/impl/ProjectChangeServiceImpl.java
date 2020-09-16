@@ -152,7 +152,7 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 				}
 				// 回调，写入相关流程任务数据
 				ProcessInstanceMapping processInstance = processInstanceOutput.getData();
-				Approve selectApprove = DTOUtils.newDTO(Approve.class);
+				Approve selectApprove = DTOUtils.newInstance(Approve.class);
 				selectApprove.setId(as.getId());
 				selectApprove.setProcessInstanceId(processInstance.getProcessInstanceId());
 				selectApprove.setProcessDefinitionId(processInstance.getProcessDefinitionId());

@@ -411,7 +411,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	private void insertProjectCompleteActionRecord(ProjectComplete complete) throws ApproveException {
 
 		// 结项申请记录
-		ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
+		ProjectActionRecord par = DTOUtils.newInstance(ProjectActionRecord.class);
 		par.setActionCode(ProjectAction.PROJECT_COMPLETE_APPLY.getCode());
 		par.setActionDate(complete.getCreated());
 		par.setActionDateType(ActionDateType.POINT.getValue());
@@ -425,7 +425,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		Date now = new Date();
 
 		// 结项申请审批记录
-		par = DTOUtils.newDTO(ProjectActionRecord.class);
+		par = DTOUtils.newInstance(ProjectActionRecord.class);
 		par.setActionCode(ProjectAction.PROJECT_COMPLETE_APPROVE.getCode());
 		par.setActionDate(now);
 		par.setActionDateType(ActionDateType.POINT.getValue());
@@ -437,7 +437,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		}
 
 		// 结项记录
-		par = DTOUtils.newDTO(ProjectActionRecord.class);
+		par = DTOUtils.newInstance(ProjectActionRecord.class);
 		par.setActionCode(ProjectAction.PROJECT_COMPLETE.getCode());
 		par.setActionDate(now);
 		par.setActionDateType(ActionDateType.POINT.getValue());
@@ -451,7 +451,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
 	private void insertProjectChangeActionRecord(ProjectChange change) throws ApproveException {
 		// 变更申请提交记录
-		ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
+		ProjectActionRecord par = DTOUtils.newInstance(ProjectActionRecord.class);
 		par.setActionCode(ProjectAction.PROJECT_CHANGE_APPLY.getCode());
 		par.setActionDate(change.getSubmitDate());
 		par.setActionDateType(ActionDateType.POINT.getValue());
@@ -462,7 +462,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 			throw new ApproveException("插入项目进程记录失败");
 		}
 		// 变更申请审批记录
-		par = DTOUtils.newDTO(ProjectActionRecord.class);
+		par = DTOUtils.newInstance(ProjectActionRecord.class);
 		par.setActionCode(ProjectAction.PROJECT_CHANGE_APPROVE.getCode());
 		par.setActionDate(new Date());
 		par.setActionDateType(ActionDateType.POINT.getValue());
@@ -611,12 +611,12 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 				map.put("planDto", projectApplyService.loadPlan(id));
 
 				RoiDto roi = new RoiDto();
-				ProjectEarning peQuery = DTOUtils.newDTO(ProjectEarning.class);
+				ProjectEarning peQuery = DTOUtils.newInstance(ProjectEarning.class);
 				peQuery.setApplyId(id);
 				List<ProjectEarning> earnings = this.projectEarningMapper.select(peQuery);
 				roi.setEarnings(earnings);
 
-				ProjectCost pcQuery = DTOUtils.newDTO(ProjectCost.class);
+				ProjectCost pcQuery = DTOUtils.newInstance(ProjectCost.class);
 				pcQuery.setApplyId(id);
 				List<ProjectCost> costs = this.projectCostMapper.select(pcQuery);
 				roi.setCosts(costs);
@@ -673,7 +673,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 			ProjectComplete complete = projectCompleteService.get(id);
 			try {
 				Map<String, Object> map = new HashMap<>();
-				Project project = DTOUtils.newDTO(Project.class);
+				Project project = DTOUtils.newInstance(Project.class);
 				project.setId(complete.getProjectId());
 				Map<Object, Object> metadata = new HashMap<>();
 				metadata.put("type", JSON.parse("{provider:'projectTypeProvider'}"));
@@ -813,7 +813,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
 	@Override
 	public BaseOutput verity(Long id, String opt, String notes) {
-		VerifyApproval verifyApproval = DTOUtils.newDTO(VerifyApproval.class);
+		VerifyApproval verifyApproval = DTOUtils.newInstance(VerifyApproval.class);
 		verifyApproval.setApproveId(id);
 		verifyApproval.setApprover(SessionContext.getSessionContext().getUserTicket().getId());
 		verifyApproval.setCreated(new Date());
@@ -829,7 +829,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	@Override
 	@Transactional(rollbackFor = ApplicationException.class)
 	public BaseOutput changeVerity(Long id, String opt, String notes, String taskId) {
-		VerifyApproval verifyApproval = DTOUtils.newDTO(VerifyApproval.class);
+		VerifyApproval verifyApproval = DTOUtils.newInstance(VerifyApproval.class);
 		verifyApproval.setApproveId(id);
 		verifyApproval.setApprover(SessionContext.getSessionContext().getUserTicket().getId());
 		verifyApproval.setCreated(new Date());
@@ -871,7 +871,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	 * @throws ProjectApplyException
 	 */
 	private Project buildProject(ProjectApply apply, Approve approve) throws ApproveException {
-		Project project = DTOUtils.newDTO(Project.class);
+		Project project = DTOUtils.newInstance(Project.class);
 		project.setSerialNumber(apply.getNumber());
 		project.setName(apply.getName());
 		project.setType(apply.getType());
@@ -898,7 +898,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 	private void addProjectAction(Project project) throws ApproveException {
 		Date now = new Date();
 		// 插入项目进程记录立项计划
-		ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
+		ProjectActionRecord par = DTOUtils.newInstance(ProjectActionRecord.class);
 		par.setActionCode(ProjectAction.PROJECT_PLAN.getCode());
 		par.setActionDateType(ActionDateType.PERIOD.getValue());
 		par.setActionStartDate(project.getStartDate());
@@ -910,7 +910,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 			throw new ApproveException("插入项目活动记录失败");
 		}
 		// 插入项目进程记录新增立项记录
-		par = DTOUtils.newDTO(ProjectActionRecord.class);
+		par = DTOUtils.newInstance(ProjectActionRecord.class);
 		par.setActionCode(ProjectAction.PROJECT_APPLY.getCode());
 		par.setActionDateType(ActionDateType.POINT.getValue());
 		par.setActionDate(now);
@@ -921,7 +921,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 			throw new ApproveException("插入项目活动记录失败");
 		}
 		// 插入项目进程记录新增立项审批记录
-		par = DTOUtils.newDTO(ProjectActionRecord.class);
+		par = DTOUtils.newInstance(ProjectActionRecord.class);
 		par.setActionCode(ProjectAction.PROJECT_APPLY_APPROVE.getCode());
 		par.setActionDateType(ActionDateType.POINT.getValue());
 		par.setActionDate(now);
@@ -935,7 +935,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
 	private void buildTeam(Project project) throws ApproveException {
 		for (TeamRole teamRole : TeamRole.values()) {
-			Team team = DTOUtils.newDTO(Team.class);
+			Team team = DTOUtils.newInstance(Team.class);
 			team.setProjectId(project.getId());
 			team.setJoinTime(new Date());
 			team.setDeletable(false);

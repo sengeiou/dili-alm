@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import com.dili.uap.sdk.domain.dto.UserQuery;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -365,7 +366,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 
 		// 参数转换 项目类型
 		if (weeklyPara.getProjectType() != null && !weeklyPara.getProjectType().endsWith("-1")) {
-			DataDictionaryValue ddv = DTOUtils.newDTO(DataDictionaryValue.class);
+			DataDictionaryValue ddv = DTOUtils.newInstance(DataDictionaryValue.class);
 			ddv.setId(Long.parseLong(weeklyPara.getProjectType()));// 项目类型
 			weeklyPara.setProjectType(dataDictionaryValueService.listDataDictionaryValue(ddv).get(0).getCode());
 		} else {
@@ -373,7 +374,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		}
 		// 参数转换 项目状态
 		if (weeklyPara.getProjectStatus() != null && !weeklyPara.getProjectStatus().endsWith("-1")) {
-			DataDictionaryValue ddv = DTOUtils.newDTO(DataDictionaryValue.class);
+			DataDictionaryValue ddv = DTOUtils.newInstance(DataDictionaryValue.class);
 			ddv.setId(Long.parseLong(weeklyPara.getProjectStatus()));// 项目类型
 			weeklyPara.setProjectStatus(dataDictionaryValueService.listDataDictionaryValue(ddv).get(0).getCode());
 		} else {
@@ -393,18 +394,18 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		page.setPageSize(weeklyPara.getRows());
 		List<WeeklyPara> list = weeklyMapper.selectListPageByWeeklyPara(weeklyPara, page);
 
-		DataDictionary ddit = DTOUtils.newDTO(DataDictionary.class);
+		DataDictionary ddit = DTOUtils.newInstance(DataDictionary.class);
 		ddit.setName(PROJECTTYPE);
 		ddit.setCode(PROJECTTYPECODE);
 		List<DataDictionary> dditList = dataDictionaryService.listDataDictionary(ddit);
 
 		DataDictionaryValue ddv;
-		User user = null;
+		UserQuery user = null;
 		if (list != null && list.size() > 0) {
 			for (WeeklyPara weeklyPara2 : list) {
 
 				// 项目负责人
-				user = DTOUtils.newDTO(User.class);
+				user = DTOUtils.newInstance(UserQuery.class);
 				user.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 				user.setId(Long.parseLong(weeklyPara2.getUserName()));
 				BaseOutput<List<User>> listByExample = userRpc.listByExample(user);
@@ -415,7 +416,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 
 				weeklyPara2.setDate(weeklyPara2.getStartDate().substring(0, 10) + " 到 " + weeklyPara2.getEndDate().substring(0, 10));
 
-				ddv = DTOUtils.newDTO(DataDictionaryValue.class);
+				ddv = DTOUtils.newInstance(DataDictionaryValue.class);
 				
 				ddv.setValue(weeklyPara2.getProjectType());
 				ddv.setDdId(dditList.get(0).getId());
@@ -437,7 +438,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 
 		pd.setBeginAndEndTime(pd.getStartDate().substring(0, 10) + "到" + pd.getEndDate().substring(0, 10));
 
-		User user = DTOUtils.newDTO(User.class);
+		UserQuery user = DTOUtils.newInstance(UserQuery.class);
 		user.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		user.setId(Long.parseLong(pd.getBusinessParty()));
 		// 业务方
@@ -454,7 +455,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			pd.setUserName(listUsernName.get(0).getRealName());
 
 		// 项目所在部门
-		Department department = DTOUtils.newDTO(Department.class);
+		Department department = DTOUtils.newInstance(Department.class);
 		department.setId(Long.parseLong(pd.getProjectInDept()));
 		department.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		BaseOutput<List<Department>> departmentByExample = departmentRpc.listByDepartment(department);
@@ -463,13 +464,13 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			pd.setProjectInDept(departmentList.get(0).getName());
 
 		// 查询项目类型
-		DataDictionary ddit = DTOUtils.newDTO(DataDictionary.class);
+		DataDictionary ddit = DTOUtils.newInstance(DataDictionary.class);
 		ddit.setName(PROJECTTYPE);
 		ddit.setCode(PROJECTTYPECODE);
 		List<DataDictionary> dditList = dataDictionaryService.listDataDictionary(ddit);
 		// List<DataDictionary> dditList=dictionaryMapper.selectByExample(ddit);//查询出id
 
-		DataDictionaryValue ddv = DTOUtils.newDTO(DataDictionaryValue.class);
+		DataDictionaryValue ddv = DTOUtils.newInstance(DataDictionaryValue.class);
 		ddv.setValue(pd.getProjectType());
 		ddv.setDdId(dditList.get(0).getId());
 		pd.setProjectType(dataDictionaryValueService.listDataDictionaryValue(ddv).get(0).getCode());
@@ -486,7 +487,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 
 		pd.setBeginAndEndTime(pd.getStartDate().substring(0, 10) + "到" + pd.getEndDate().substring(0, 10));
 
-		User user = DTOUtils.newDTO(User.class);
+		UserQuery user = DTOUtils.newInstance(UserQuery.class);
 		user.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		user.setId(Long.parseLong(pd.getBusinessParty()));
 		// 业务方
@@ -503,7 +504,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			pd.setUserName(listUsernName.get(0).getRealName());
 
 		// 项目所在部门
-		Department department = DTOUtils.newDTO(Department.class);
+		Department department = DTOUtils.newInstance(Department.class);
 		department.setId(Long.parseLong(pd.getProjectInDept()));
 		department.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		BaseOutput<List<Department>> departmentByExample = departmentRpc.listByDepartment(department);
@@ -512,12 +513,12 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			pd.setProjectInDept(departmentList.get(0).getName());
 
 		// 查询项目类型
-		DataDictionary ddit = DTOUtils.newDTO(DataDictionary.class);
+		DataDictionary ddit = DTOUtils.newInstance(DataDictionary.class);
 		ddit.setName(PROJECTTYPE);
 		ddit.setCode(PROJECTTYPECODE);
 		List<DataDictionary> dditList = dataDictionaryService.listDataDictionary(ddit);
 
-		DataDictionaryValue ddv = DTOUtils.newDTO(DataDictionaryValue.class);
+		DataDictionaryValue ddv = DTOUtils.newInstance(DataDictionaryValue.class);
 		ddv.setValue(pd.getProjectType());
 		ddv.setDdId(dditList.get(0).getId());
 		pd.setProjectType(dataDictionaryValueService.listDataDictionaryValue(ddv).get(0).getCode());
@@ -550,9 +551,9 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 
 		List<TaskDto> td = weeklyMapper.selectWeeklyProgress(weeklyPara);
 
-		DataDictionary ddit = DTOUtils.newDTO(DataDictionary.class);
+		DataDictionary ddit = DTOUtils.newInstance(DataDictionary.class);
 		ddit.setName(PROJECTSTATUS);
-		User user;
+		UserQuery user;
 		WeeklyPara weekPara;
 		if (td.size() == 0) {
 			return td;
@@ -560,7 +561,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		for (int i = 0; i < td.size(); i++) {
 
 			// 责任人
-			user = DTOUtils.newDTO(User.class);
+			user = DTOUtils.newInstance(UserQuery.class);
 			user.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 			user.setId(Long.parseLong(td.get(i).getOwner()));
 			BaseOutput<List<User>> listByExample = userRpc.listByExample(user);
@@ -637,7 +638,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	@Override
 	public List<NextWeeklyDto> selectNextWeeklyProgress(WeeklyPara weeklyPara) {
 		List<NextWeeklyDto> nwd = weeklyMapper.selectNextWeeklyProgress(weeklyPara);
-		User user;
+		UserQuery user;
 		NextWeeklyDto nd = null;
 		for (NextWeeklyDto nextWeeklyDto : nwd) {
 
@@ -665,7 +666,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			// int
 			// surplus=Integer.parseInt(nextWeeklyDto.getPlanTime())-Integer.parseInt(nd.getTaskHour())-Integer.parseInt(nd.getOverHour());
 			nextWeeklyDto.setSurplus(surplus + "");// 剩余工时
-			user =DTOUtils.newDTO(User.class);// 字典接口
+			user =DTOUtils.newInstance(UserQuery.class);// 字典接口
 			user.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 			user.setId(Long.parseLong(nextWeeklyDto.getOwner()));
 			BaseOutput<List<User>> listByExample = userRpc.listByExample(user);
@@ -776,14 +777,14 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	 */
 	@Override
 	public List<WeeklyPara> getUser() {
-		User user;
+		UserQuery user;
 		WeeklyPara Wp = new WeeklyPara();
 		Wp.setUserName("项目经理选择");
 		Wp.setId(Long.parseLong("-1"));
 		List<WeeklyPara> userList = weeklyMapper.getUser();
 
 		for (int j = 0; j < userList.size(); j++) {
-			user = DTOUtils.newDTO(User.class);
+			user = DTOUtils.newInstance(UserQuery.class);
 			user.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 			user.setId(Long.parseLong(userList.get(j).getUserName()));
 			BaseOutput<List<User>> listByExample = userRpc.listByExample(user);
@@ -803,7 +804,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 
 		Map<String, Weekly> map = new HashMap<String, Weekly>();
 
-		Weekly wk = DTOUtils.newDTO(Weekly.class);
+		Weekly wk = DTOUtils.newInstance(Weekly.class);
 		WeeklyPara weeklyPara = new WeeklyPara();
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		WorkDay workDay = workDayService.getNowWeeklyWorkDay();
@@ -817,14 +818,14 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 
 		wk = weeklyMapper.selecByProjectId(weeklyPara);
 
-		Weekly wkk = DTOUtils.newDTO(Weekly.class);
+		Weekly wkk = DTOUtils.newInstance(Weekly.class);
 		if (wk == null) {
 			insertWeekAndWeekDetail(projectId, userTicket, wkk);
 			map.put("one", wkk);
 
 		} else {
 
-			WeeklyDetails weeklyDetails = DTOUtils.newDTO(WeeklyDetails.class);
+			WeeklyDetails weeklyDetails = DTOUtils.newInstance(WeeklyDetails.class);
 			weeklyDetails.setWeeklyId(wk.getId());
 
 			weeklyDetails = weeklyDetailsMapper.selectOne(weeklyDetails);
@@ -873,7 +874,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		// 下周工作计划
 		List<NextWeeklyDto> wek = selectNextWeeklyProgress(weeklyParaWeek);
 
-		Weekly nextAndcurrentWeek = DTOUtils.newDTO(Weekly.class);
+		Weekly nextAndcurrentWeek = DTOUtils.newInstance(Weekly.class);
 		nextAndcurrentWeek.setId(wkk.getId());
 		nextAndcurrentWeek.setCurrentWeek(JSON.toJSONString(td));
 		nextAndcurrentWeek.setNextWeek(JSON.toJSONString(wek));
@@ -908,7 +909,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		// 下周工作计划
 		List<NextWeeklyDto> wek = selectNextWeeklyProgress(weeklyParaWeek);
 
-		Weekly nextAndcurrentWeek = DTOUtils.newDTO(Weekly.class);
+		Weekly nextAndcurrentWeek = DTOUtils.newInstance(Weekly.class);
 		nextAndcurrentWeek.setId(wkk.getId());
 		nextAndcurrentWeek.setCurrentWeek(JSON.toJSONString(td));
 		nextAndcurrentWeek.setNextWeek(JSON.toJSONString(wek));
@@ -945,13 +946,13 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		String endNextTimeStr = DateUtil.getDate(nextWeeklyWorkDays.getWorkEndTime()) + " 23:59:59";
 		String starNextTimeStr = DateUtil.getDate(nextWeeklyWorkDays.getWorkStartTime()) + " 00:00:00";
 		List<Long> projectIds = projectMapper.selectNotSubmitWeekly(starThisTimeStr, endThisTimeStr);
-		Weekly weekly = DTOUtils.newDTO(Weekly.class);
+		Weekly weekly = DTOUtils.newInstance(Weekly.class);
 		weekly.setStartDate(DateUtil.getStrDate(starThisTimeStr));
 		weekly.setEndDate(DateUtil.getStrDate(endThisTimeStr));
 		List<Weekly> weeklyList = this.weeklyMapper.select(weekly);
 		List<Long> weeklyProjectId = new ArrayList<Long>();
 		for (Weekly weekly2 : weeklyList) {
-			WeeklyDetails weeklyDetails = DTOUtils.newDTO(WeeklyDetails.class);
+			WeeklyDetails weeklyDetails = DTOUtils.newInstance(WeeklyDetails.class);
 			weeklyDetails.setWeeklyId(weekly2.getId());
 			WeeklyDetails selectOne = this.weeklyDetailsMapper.selectOne(weeklyDetails);
 			if (selectOne != null) {
@@ -973,7 +974,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 				// 下周工作计划
 				List<NextWeeklyDto> wek = selectNextWeeklyProgress(weeklyParaWeek);
 
-				Weekly nextAndcurrentWeek = DTOUtils.newDTO(Weekly.class);
+				Weekly nextAndcurrentWeek = DTOUtils.newInstance(Weekly.class);
 				nextAndcurrentWeek.setId(weekly2.getId());
 				nextAndcurrentWeek.setCurrentWeek(JSON.toJSONString(td));
 				nextAndcurrentWeek.setNextWeek(JSON.toJSONString(wek));
@@ -987,8 +988,8 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		}
 		projectIds.removeAll(weeklyProjectId);
 		for (Long projectId : projectIds) {
-			Weekly newWeekly = DTOUtils.newDTO(Weekly.class);
-			WeeklyDetails newWeeklyDetails = DTOUtils.newDTO(WeeklyDetails.class);
+			Weekly newWeekly = DTOUtils.newInstance(Weekly.class);
+			WeeklyDetails newWeeklyDetails = DTOUtils.newInstance(WeeklyDetails.class);
 
 			WeeklyPara weeklyParaWeek = new WeeklyPara();
 			weeklyParaWeek.setId(projectId);
@@ -1013,7 +1014,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			newWeekly.setCreated(new Date());
 			newWeekly.setModified(new Date());
 			// 获取项目经理
-			Team team = DTOUtils.newDTO(Team.class);
+			Team team = DTOUtils.newInstance(Team.class);
 			team.setProjectId(projectId);
 			team.setRole(WEEKLY_SUBIMT_ROLE);
 			Team projectManager = teamMapper.selectOne(team);

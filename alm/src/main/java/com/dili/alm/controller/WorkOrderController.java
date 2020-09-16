@@ -98,7 +98,7 @@ public class WorkOrderController {
 	@RequestMapping("/currentUserDepartmentUsers")
 	public List<User> currentUserDepartmentUsers() {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
-		Department department = DTOUtils.newDTO(Department.class);
+		Department department = DTOUtils.newInstance(Department.class);
 		department.setParentId(user.getDepartmentId());
 		department.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		BaseOutput<List<Department>> output = this.deptRpc.getChildDepartments(user.getDepartmentId());

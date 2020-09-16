@@ -92,7 +92,7 @@ public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements Team
 	@Transactional
 	@Override
 	public BaseOutput<Object> insertAfterCheck(Team team) {
-		Team record = DTOUtils.newDTO(Team.class);
+		Team record = DTOUtils.newInstance(Team.class);
 		record.setProjectId(team.getProjectId());
 		record.setMemberId(team.getMemberId());
 		record.setRole(team.getRole());
@@ -116,7 +116,7 @@ public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements Team
 
 	@Override
 	public BaseOutput<Object> updateAfterCheck(Team team) {
-		Team teamQuery = DTOUtils.newDTO(Team.class);
+		Team teamQuery = DTOUtils.newInstance(Team.class);
 		teamQuery.setProjectId(team.getProjectId());
 		teamQuery.setMemberId(team.getMemberId());
 		teamQuery.setRole(team.getRole());
@@ -148,7 +148,7 @@ public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements Team
 
 	@Override
 	public List<Map<Object, Object>> listContainUserInfo(TeamDepartmentRoleQuery dto) {
-		Team team = DTOUtils.newDTO(Team.class);
+		Team team = DTOUtils.newInstance(Team.class);
 		team.setProjectId(dto.getProjectId());
 		team.setMemberId(dto.getUserId());
 		team.setRole(dto.getRole());
@@ -175,7 +175,7 @@ public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements Team
 
 	@Override
 	public Boolean teamMemberIsProjectManager(Long memberId, Long projectId) {
-		Team teamQuery = DTOUtils.newDTO(Team.class);
+		Team teamQuery = DTOUtils.newInstance(Team.class);
 		teamQuery.setProjectId(projectId);
 		teamQuery.setMemberId(memberId);
 		List<Team> teams = this.getActualDao().select(teamQuery);
@@ -189,7 +189,7 @@ public class TeamServiceImpl extends BaseServiceImpl<Team, Long> implements Team
 
 	@Override
 	public Boolean currentUserIsTeamMember(Long userId, Long projectId) {
-		Team record = DTOUtils.newDTO(Team.class);
+		Team record = DTOUtils.newInstance(Team.class);
 		record.setProjectId(projectId);
 		record.setMemberId(userId);
 		return this.getActualDao().selectCount(record) > 0;

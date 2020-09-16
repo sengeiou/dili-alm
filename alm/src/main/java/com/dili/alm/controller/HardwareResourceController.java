@@ -160,7 +160,7 @@ public class HardwareResourceController {
 	*/
 	@RequestMapping(value = "/listByProjectId", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<HardwareResource> listByProjectId(Long projectId) {
-		HardwareResource hardwareResource = DTOUtils.newDTO(HardwareResource.class);
+		HardwareResource hardwareResource = DTOUtils.newInstance(HardwareResource.class);
 		hardwareResource.setProjectId(projectId);
 		hardwareResource.setSort("last_modify_date");
 		hardwareResource.setOrder("DESC");

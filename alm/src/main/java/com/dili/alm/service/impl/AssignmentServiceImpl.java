@@ -3,6 +3,7 @@ package com.dili.alm.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.dili.uap.sdk.domain.dto.UserQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +40,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 	@Override
 	public Assignment setSubmitOnlineDataChangeAssigneeName(Long onlineDataChangeId) {
 		OnlineDataChange  odc=onlineDataChangeService.get(onlineDataChangeId);
-		Assignment record = DTOUtils.newDTO(Assignment.class);
+		Assignment record = DTOUtils.newInstance(Assignment.class);
 		record.setAssignee(odc.getApplyUserId().toString());
 		return record;
 	}
@@ -50,11 +51,11 @@ public class AssignmentServiceImpl implements AssignmentService {
         
 		Project  pro=	projectService.get(odc.getProjectId());
 		
-		User uprojectser =DTOUtils.newDTO(User.class);
+		UserQuery uprojectser =DTOUtils.newInstance(UserQuery.class);
 		uprojectser.setId(pro.getProjectManager());
 		BaseOutput<List<User>> listUserByExample = userRpc.listByExample(uprojectser);
 		
-		Assignment record = DTOUtils.newDTO(Assignment.class);
+		Assignment record = DTOUtils.newInstance(Assignment.class);
 		
 		List<User> listUsernName = listUserByExample.getData();
 		if (listUsernName != null && listUsernName.size() > 0)
@@ -69,12 +70,12 @@ public class AssignmentServiceImpl implements AssignmentService {
 		
 		Project  pro=	projectService.get(odc.getProjectId());
 		
-		User uprojectser = DTOUtils.newDTO(User.class);
+		UserQuery uprojectser = DTOUtils.newInstance(UserQuery.class);
 		uprojectser.setId(pro.getTestManager());
 		uprojectser.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		BaseOutput<List<User>> listUserByExample = userRpc.listByExample(uprojectser);
 	
-		Assignment record = DTOUtils.newDTO(Assignment.class);
+		Assignment record = DTOUtils.newInstance(Assignment.class);
 		record.setAssignee(pro.getTestManager().toString());//项目测试人员的ID
 		List<User> listUsernName = listUserByExample.getData();////项目测试人员组的ID
 		if (listUsernName != null && listUsernName.size() > 0)
@@ -97,7 +98,7 @@ public class AssignmentServiceImpl implements AssignmentService {
   		Project  pro=	projectService.get(odc.getProjectId());
   		BaseOutput<List<User>> listUserByExample = userRpc.listUserByRoleId(pro.getTestManager());
   		
-  		Assignment record = DTOUtils.newDTO(Assignment.class);
+  		Assignment record = DTOUtils.newInstance(Assignment.class);
   		
   		List<User> listUsernName = listUserByExample.getData();
   		
@@ -120,7 +121,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 	  		
 	  		BaseOutput<List<User>> listUserByExample = userRpc.listUserByRoleId(pro.getTestManager());
 	  		
-	  		Assignment record = DTOUtils.newDTO(Assignment.class);
+	  		Assignment record = DTOUtils.newInstance(Assignment.class);
 	  		
 	  		List<User> listUsernName = listUserByExample.getData();
 	  		
@@ -137,7 +138,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 
 	@Override
 	public Assignment setReciprocate(String busCode){
-		Assignment record = DTOUtils.newDTO(Assignment.class);
+		Assignment record = DTOUtils.newInstance(Assignment.class);
 		Demand demand = demandService.getByCode(busCode);
 		record.setAssignee(demand.getReciprocateId().toString()); 
 		return record;
@@ -145,7 +146,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 	
 	@Override
 	public Assignment setDemandAppId(String busCode){
-		Assignment record = DTOUtils.newDTO(Assignment.class);
+		Assignment record = DTOUtils.newInstance(Assignment.class);
 		Demand demand = demandService.getByCode(busCode);
 		record.setAssignee(demand.getUserId().toString()); 
 		return record;
@@ -153,7 +154,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 	/**LJ ADD begin**/
 	@Override
 	public Assignment setOpdrator(String busCode) {
-		Assignment record = DTOUtils.newDTO(Assignment.class);
+		Assignment record = DTOUtils.newInstance(Assignment.class);
 		HardwareResourceApply apply = hardwareResourceApplyService.get(Long.parseLong(busCode));
 		List<Long> ids = JSONArray.parseArray(apply.getExecutors(), Long.class);
 		record.setAssignee(ids.get(0).toString()); 
@@ -163,7 +164,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 
 	@Override
 	public Assignment setProjectManager(String applyId) {
-		Assignment record = DTOUtils.newDTO(Assignment.class);
+		Assignment record = DTOUtils.newInstance(Assignment.class);
 		HardwareResourceApply apply = hardwareResourceApplyService.get(Long.parseLong(applyId));
 		record.setAssignee(apply.getProjectManagerId().toString()); 
 		return record;
@@ -172,7 +173,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 
 	@Override
 	public Assignment setHardwareResourceApplyApply(String applyId) {
-		Assignment record = DTOUtils.newDTO(Assignment.class);
+		Assignment record = DTOUtils.newInstance(Assignment.class);
 		HardwareResourceApply apply = hardwareResourceApplyService.get(Long.parseLong(applyId));
 		record.setAssignee(apply.getApplicantId().toString()); 
 		return record;
@@ -180,7 +181,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 
 	@Override
 	public Assignment setFeedback(String queryUserId) {
-		Assignment record = DTOUtils.newDTO(Assignment.class);
+		Assignment record = DTOUtils.newInstance(Assignment.class);
 		Demand demand = demandService.getByCode(queryUserId);
 		record.setAssignee(demand.getFeedbackId().toString()); 
 		return record;

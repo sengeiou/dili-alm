@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.dili.uap.sdk.domain.dto.UserQuery;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,7 +129,7 @@ public class HardwareResourceApplyController {
 		}
 
 		/** 查询 所有部门 ***/
-		List<Department> departments = this.deptRpc.listByDepartment(DTOUtils.newDTO(Department.class)).getData();
+		List<Department> departments = this.deptRpc.listByDepartment(DTOUtils.newInstance(Department.class)).getData();
 		modelMap.addAttribute("departments", departments);
 
 		/** 个人信息 **/
@@ -139,13 +140,13 @@ public class HardwareResourceApplyController {
 		List<DataDictionaryValueDto> ddValue = ddvService.listDataDictionaryValueByCode(AlmConstants.ALM_ENVIRONMENT);
 		modelMap.addAttribute("ddValue", ddValue);
 		/*** 运维部门下的所有人员查询 begin **/
-		Department deptQuery = DTOUtils.newDTO(Department.class);
+		Department deptQuery = DTOUtils.newInstance(Department.class);
 		deptQuery.setCode(AlmConstants.OPERATION_DEPARTMENT_CODE);
 		deptQuery.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		BaseOutput<List<Department>> deptOutput = this.deptRpc.listByDepartment(deptQuery);
 		if (deptOutput.isSuccess() && CollectionUtils.isNotEmpty(deptOutput.getData())) {
 			Long departmentId = deptOutput.getData().get(0).getId();
-			User userQuery =  DTOUtils.newDTO(User.class);
+			UserQuery userQuery =  DTOUtils.newInstance(UserQuery.class);
 			userQuery.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 			userQuery.setDepartmentId(departmentId);
 			BaseOutput<List<User>> userOutput = this.userRpc.listByExample(userQuery);
@@ -176,7 +177,7 @@ public class HardwareResourceApplyController {
 		modelMap.addAttribute("plist", plist).addAttribute("ulist", AlmCache.getInstance().getUserMap().values());
 
 		/** 查询 所有部门 ***/
-		Department newDepartment = DTOUtils.newDTO(Department.class);
+		Department newDepartment = DTOUtils.newInstance(Department.class);
 		newDepartment.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		List<Department> departments = this.deptRpc.listByDepartment(newDepartment).getData();
 		modelMap.addAttribute("departments", departments);
@@ -190,7 +191,7 @@ public class HardwareResourceApplyController {
 		modelMap.addAttribute("ddValue", ddValue);
 
 		/*** 运维部门下的所有人员查询 begin **/
-		Department deptQuery =DTOUtils.newDTO(Department.class);
+		Department deptQuery =DTOUtils.newInstance(Department.class);
 		deptQuery.setCode(AlmConstants.OPERATION_DEPARTMENT_CODE);
 		deptQuery.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		BaseOutput<List<Department>> deptOutput = this.deptRpc.listByDepartment(deptQuery);
@@ -381,7 +382,7 @@ public class HardwareResourceApplyController {
 		modelMap.addAttribute("plist", plist).addAttribute("ulist", AlmCache.getInstance().getUserMap().values());
 
 		/** 查询 所有部门 ***/
-		List<Department> departments = this.deptRpc.listByDepartment(DTOUtils.newDTO(Department.class)).getData();
+		List<Department> departments = this.deptRpc.listByDepartment(DTOUtils.newInstance(Department.class)).getData();
 		modelMap.addAttribute("departments", departments);
 
 		/*** 环境 **/
@@ -389,7 +390,7 @@ public class HardwareResourceApplyController {
 		modelMap.addAttribute("ddValue", ddValue);
 
 		/*** 运维部门下的所有人员查询 begin **/
-		Department deptQuery = DTOUtils.newDTO(Department.class);
+		Department deptQuery = DTOUtils.newInstance(Department.class);
 		deptQuery.setCode(AlmConstants.OPERATION_DEPARTMENT_CODE);
 		deptQuery.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		BaseOutput<List<Department>> deptOutput = this.deptRpc.listByDepartment(deptQuery);
@@ -498,11 +499,11 @@ public class HardwareResourceApplyController {
 			})*/
 	@RequestMapping(value = "/operMemers.json", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<User> operMemers() throws HardwareResourceApplyException {
-		Department department=DTOUtils.newDTO(Department.class);
+		Department department=DTOUtils.newInstance(Department.class);
 		department.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		department.setCode(DEPARTMENT_MAINTENANCE_CODE);
 		Department getDepartment = this.deptRpc.getOne(department).getData();
-		User user = DTOUtils.newDTO(User.class);
+		UserQuery user = DTOUtils.newInstance(UserQuery.class);
 		user.setDepartmentId(getDepartment.getId());
 		user.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		List<User> operUsers = userRpc.listByExample(user).getData();
@@ -662,7 +663,7 @@ public class HardwareResourceApplyController {
 		modelMap.addAttribute("plist", plist).addAttribute("ulist", AlmCache.getInstance().getUserMap().values());
 
 		/** 查询 所有部门 ***/
-		Department newDepartment = DTOUtils.newDTO(Department.class);
+		Department newDepartment = DTOUtils.newInstance(Department.class);
 		newDepartment.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		List<Department> departments = this.deptRpc.listByDepartment(newDepartment).getData();
 		modelMap.addAttribute("departments", departments);
@@ -676,7 +677,7 @@ public class HardwareResourceApplyController {
 		modelMap.addAttribute("ddValue", ddValue);
 
 		/*** 运维部门下的所有人员查询 begin **/
-		Department deptQuery =DTOUtils.newDTO(Department.class);
+		Department deptQuery =DTOUtils.newInstance(Department.class);
 		deptQuery.setCode(AlmConstants.OPERATION_DEPARTMENT_CODE);
 		deptQuery.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		BaseOutput<List<Department>> deptOutput = this.deptRpc.listByDepartment(deptQuery);

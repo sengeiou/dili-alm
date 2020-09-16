@@ -56,7 +56,7 @@ public class AlarmConfigServiceImpl extends BaseServiceImpl<AlarmConfig, Long> i
 	@Override
 	public BaseOutput<Object> saveOrUpdateWithOutput(AlarmConfig alarmConfig) {
 		int result = 0;
-		AlarmConfig query = DTOUtils.newDTO(AlarmConfig.class);
+		AlarmConfig query = DTOUtils.newInstance(AlarmConfig.class);
 		query.setProjectId(alarmConfig.getProjectId());
 		query.setType(alarmConfig.getType());
 		AlarmConfig old = this.getActualDao().selectOne(query);

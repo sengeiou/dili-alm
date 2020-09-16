@@ -158,12 +158,12 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 			throw new TravelCostApplyException("当前状态不能进行删除操作");
 		}
 		// 删除费用明细
-		TravelCost tcQuery = DTOUtils.newDTO(TravelCost.class);
+		TravelCost tcQuery = DTOUtils.newInstance(TravelCost.class);
 		tcQuery.setApplyId(applyId);
 		List<TravelCost> costs = this.travelCostMapper.select(tcQuery);
 		if (CollectionUtils.isNotEmpty(costs)) {
 			costs.forEach(c -> {
-				TravelCostDetail tcdQuery = DTOUtils.newDTO(TravelCostDetail.class);
+				TravelCostDetail tcdQuery = DTOUtils.newInstance(TravelCostDetail.class);
 				tcdQuery.setCostId(c.getId());
 				this.travelCostDetailMapper.delete(tcdQuery);
 			});
@@ -194,7 +194,7 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 				? this.projectProvider.getDisplayText(apply.getProjectId(), null, null)
 				: apply.getCustomNote());
 		dto.setRootDepartmentName(this.deptProvider.getDisplayText(dto.getRootDepartemntId(), null, null));
-		TravelCost tcQuery = DTOUtils.newDTO(TravelCost.class);
+		TravelCost tcQuery = DTOUtils.newInstance(TravelCost.class);
 		tcQuery.setApplyId(id);
 		List<TravelCost> costs = this.travelCostMapper.select(tcQuery);
 		if (CollectionUtils.isNotEmpty(costs)) {
@@ -202,7 +202,7 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 			costs.forEach(c -> {
 				TravelCostDtoBean cBean = DTOUtils.toEntity(c, TravelCostDtoBean.class, false);
 				tcBeanList.add(cBean);
-				TravelCostDetail tcdQuery = DTOUtils.newDTO(TravelCostDetail.class);
+				TravelCostDetail tcdQuery = DTOUtils.newInstance(TravelCostDetail.class);
 				tcdQuery.setCostId(c.getId());
 				List<TravelCostDetail> details = this.travelCostDetailMapper.select(tcdQuery);
 				List<TravelCostDetailEntity> tcdBeanList = new ArrayList<>(details.size());
@@ -272,7 +272,7 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 		dto.setProjectName(this.projectProvider.getDisplayText(dto.getProjectId(), null, null));
 		dto.setRootDepartmentName(this.deptProvider.getDisplayText(dto.getRootDepartemntId(), null, null));
 		dto.setApplyStateName(this.stateProvider.getDisplayText(dto.getApplyState(), null, null));
-		TravelCost tcQuery = DTOUtils.newDTO(TravelCost.class);
+		TravelCost tcQuery = DTOUtils.newInstance(TravelCost.class);
 		tcQuery.setApplyId(apply.getId());
 		List<TravelCost> costs = this.travelCostMapper.select(tcQuery);
 		if (CollectionUtils.isNotEmpty(costs)) {
@@ -280,7 +280,7 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 			costs.forEach(c -> {
 				TravelCostDtoBean cBean = DTOUtils.toEntity(c, TravelCostDtoBean.class, false);
 				tcBeanList.add(cBean);
-				TravelCostDetail tcdQuery = DTOUtils.newDTO(TravelCostDetail.class);
+				TravelCostDetail tcdQuery = DTOUtils.newInstance(TravelCostDetail.class);
 				tcdQuery.setCostId(c.getId());
 				List<TravelCostDetail> details = this.travelCostDetailMapper.select(tcdQuery);
 				List<TravelCostDetailEntity> tcdBeanList = new ArrayList<>(details.size());
@@ -401,11 +401,11 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 		}
 		dto.setTravelDayAmount(travelDayAmount);
 		// 删除差旅明细
-		TravelCost tcQuery = DTOUtils.newDTO(TravelCost.class);
+		TravelCost tcQuery = DTOUtils.newInstance(TravelCost.class);
 		tcQuery.setApplyId(dto.getId());
 		List<TravelCost> tcList = this.travelCostMapper.select(tcQuery);
 		tcList.forEach(tc -> {
-			TravelCostDetail tcdQuery = DTOUtils.newDTO(TravelCostDetail.class);
+			TravelCostDetail tcdQuery = DTOUtils.newInstance(TravelCostDetail.class);
 			tcdQuery.setCostId(tc.getId());
 			this.travelCostDetailMapper.delete(tcdQuery);
 		});

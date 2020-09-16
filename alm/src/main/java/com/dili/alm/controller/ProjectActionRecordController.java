@@ -85,7 +85,7 @@ public class ProjectActionRecordController {
 	@GetMapping("/setting.html")
 	public String setting(ModelMap modelMap) throws Exception {
 		List<ProjectActionRecordConfig> list = this.configService
-				.list(DTOUtils.newDTO(ProjectActionRecordConfig.class));
+				.list(DTOUtils.newInstance(ProjectActionRecordConfig.class));
 		Map<Object, Object> metadata = new HashMap<>();
 		metadata.put("actionCode", "projectActionProvider");
 		metadata.put("actionDateType", "actionDateTypeProvider");
@@ -103,7 +103,7 @@ public class ProjectActionRecordController {
 	public BaseOutput<Object> updateSetting(ProjectActionRecordConfigPostData data) {
 		List<ProjectActionRecordConfig> configs = new ArrayList<>(data.getId().size());
 		for (int i = 0; i < data.getId().size(); i++) {
-			ProjectActionRecordConfig config = DTOUtils.newDTO(ProjectActionRecordConfig.class);
+			ProjectActionRecordConfig config = DTOUtils.newInstance(ProjectActionRecordConfig.class);
 			config.setActionCode(data.getActionCode().get(i));
 			config.setActionDateType(data.getActionDateType().get(i));
 			config.setColor(data.getColor().get(i));
@@ -130,7 +130,7 @@ public class ProjectActionRecordController {
 	@ResponseBody
 	@RequestMapping("/actions.json")
 	public List<Map<String, String>> actions() {
-		ProjectActionRecordConfig query = DTOUtils.newDTO(ProjectActionRecordConfig.class);
+		ProjectActionRecordConfig query = DTOUtils.newInstance(ProjectActionRecordConfig.class);
 		query.setShowDate(true);
 		List<ProjectActionRecordConfig> configs = this.configService.list(query);
 		List<Map<String, String>> target = new ArrayList<>(configs.size());

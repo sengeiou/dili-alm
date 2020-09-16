@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.dili.uap.sdk.domain.dto.UserQuery;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -223,12 +224,12 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			throw new ProjectOnlineApplyException("当前状态不能编辑");
 		}
 		// 删除子系统
-		ProjectOnlineSubsystem posQuery = DTOUtils.newDTO(ProjectOnlineSubsystem.class);
+		ProjectOnlineSubsystem posQuery = DTOUtils.newInstance(ProjectOnlineSubsystem.class);
 		posQuery.setApplyId(id);
 		this.posMapper.delete(posQuery);
 
 		// 删除邮件
-		EmailAddress emailQuery = DTOUtils.newDTO(EmailAddress.class);
+		EmailAddress emailQuery = DTOUtils.newInstance(EmailAddress.class);
 		emailQuery.setApplyId(id);
 		this.emailAddressMapper.delete(emailQuery);
 
@@ -297,7 +298,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			throw new ProjectOnlineApplyException("更新状态失败");
 		}
 		// 生成操作记录
-		ProjectOnlineOperationRecord record = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
+		ProjectOnlineOperationRecord record = DTOUtils.newInstance(ProjectOnlineOperationRecord.class);
 		record.setApplyId(applyId);
 		record.setOperatorId(executorId);
 		record.setOperationType(ProjectOnlineApplyOperationType.OPERATION_EXECUTOR.getValue());
@@ -370,15 +371,15 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		if (apply == null) {
 			throw new ProjectOnlineApplyException("申请不存在");
 		}
-		ProjectOnlineSubsystem subsysQuery = DTOUtils.newDTO(ProjectOnlineSubsystem.class);
+		ProjectOnlineSubsystem subsysQuery = DTOUtils.newInstance(ProjectOnlineSubsystem.class);
 		subsysQuery.setApplyId(id);
 		List<ProjectOnlineSubsystem> subsystems = this.posMapper.select(subsysQuery);
 		apply.aset("subsystems", subsystems);
-		EmailAddress emailQuery = DTOUtils.newDTO(EmailAddress.class);
+		EmailAddress emailQuery = DTOUtils.newInstance(EmailAddress.class);
 		emailQuery.setApplyId(id);
 		List<EmailAddress> emails = this.emailAddressMapper.select(emailQuery);
 		apply.aset("emails", emails);
-		ProjectOnlineApplyMarket poamQuery = DTOUtils.newDTO(ProjectOnlineApplyMarket.class);
+		ProjectOnlineApplyMarket poamQuery = DTOUtils.newInstance(ProjectOnlineApplyMarket.class);
 		poamQuery.setApplyId(id);
 		// 判断是否针对市场上线
 		List<ProjectOnlineApplyMarket> poamList = this.applyMarketMapper.select(poamQuery);
@@ -418,7 +419,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			return null;
 		}
 		ProjectOnlineApplyDetailDto dto = DTOUtils.toEntity(apply, ProjectOnlineApplyDetailDto.class, true);
-		ProjectOnlineOperationRecord record = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
+		ProjectOnlineOperationRecord record = DTOUtils.newInstance(ProjectOnlineOperationRecord.class);
 		record.setApplyId(applyId);
 		List<ProjectOnlineOperationRecord> list = this.poorMapper.select(record);
 		if (CollectionUtils.isNotEmpty(list)) {
@@ -489,14 +490,14 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		if (apply.getMarketVersion()) {
 			// 针对市场上线
 			apply.getMarkets().forEach(m -> {
-				ProjectOnlineApplyMarket am = DTOUtils.newDTO(ProjectOnlineApplyMarket.class);
+				ProjectOnlineApplyMarket am = DTOUtils.newInstance(ProjectOnlineApplyMarket.class);
 				am.setApplyId(apply.getId());
 				am.setMarketCode(m);
 				this.applyMarketMapper.insert(am);
 			});
 		} else {
 			// 不针对市场上线
-			ProjectOnlineApplyMarket am = DTOUtils.newDTO(ProjectOnlineApplyMarket.class);
+			ProjectOnlineApplyMarket am = DTOUtils.newInstance(ProjectOnlineApplyMarket.class);
 			am.setApplyId(apply.getId());
 			am.setMarketCode("-1");
 			this.applyMarketMapper.insertSelective(am);
@@ -504,13 +505,13 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 
 		// 更新邮件通知地址，先删除后插入
 		// 先删除
-		EmailAddress eaCondition = DTOUtils.newDTO(EmailAddress.class);
+		EmailAddress eaCondition = DTOUtils.newInstance(EmailAddress.class);
 		eaCondition.setApplyId(apply.getId());
 		this.emailAddressMapper.delete(eaCondition);
 
 		// 插入
 		apply.getEmailAddress().forEach(s -> {
-			EmailAddress ea = DTOUtils.newDTO(EmailAddress.class);
+			EmailAddress ea = DTOUtils.newInstance(EmailAddress.class);
 			ea.setApplyId(apply.getId());
 			ea.setApplyType(ApplyType.ONLINE.getValue());
 			ea.setEmailAddress(s);
@@ -569,7 +570,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			throw new ProjectOnlineApplyException("更新状态失败");
 		}
 		// 生成操作记录
-		ProjectOnlineOperationRecord record = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
+		ProjectOnlineOperationRecord record = DTOUtils.newInstance(ProjectOnlineOperationRecord.class);
 		record.setApplyId(applyId);
 		record.setOperatorId(executorId);
 		record.setOperationType(ProjectOnlineApplyOperationType.PROJECT_MANAGER.getValue());
@@ -663,7 +664,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			throw new ProjectOnlineApplyException("更新数据失败");
 		}
 		// 生成操作记录
-		ProjectOnlineOperationRecord record = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
+		ProjectOnlineOperationRecord record = DTOUtils.newInstance(ProjectOnlineOperationRecord.class);
 		record.setApplyId(applyId);
 		record.setOperatorId(executorId);
 		record.setOperationType(ProjectOnlineApplyOperationType.OPERATION_MANAGER.getValue());
@@ -770,7 +771,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			throw new ProjectOnlineApplyException("更新状态失败");
 		}
 		// 生成操作记录
-		ProjectOnlineOperationRecord record = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
+		ProjectOnlineOperationRecord record = DTOUtils.newInstance(ProjectOnlineOperationRecord.class);
 		record.setApplyId(applyId);
 		record.setOperatorId(executorId);
 		record.setOperationType(ProjectOnlineApplyOperationType.TEST_MANAGER.getValue());
@@ -845,7 +846,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		// 更新子系统，先删除后插入
 		if (CollectionUtils.isNotEmpty(apply.getSubsystem())) {
 			// 先删除
-			ProjectOnlineSubsystem record = DTOUtils.newDTO(ProjectOnlineSubsystem.class);
+			ProjectOnlineSubsystem record = DTOUtils.newInstance(ProjectOnlineSubsystem.class);
 			record.setApplyId(apply.getId());
 			this.posMapper.delete(record);
 
@@ -890,21 +891,21 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 
 		// 更新上线申请和市场关系表
 		// 先删除
-		ProjectOnlineApplyMarket applyMarketQuery = DTOUtils.newDTO(ProjectOnlineApplyMarket.class);
+		ProjectOnlineApplyMarket applyMarketQuery = DTOUtils.newInstance(ProjectOnlineApplyMarket.class);
 		applyMarketQuery.setApplyId(apply.getId());
 		this.applyMarketMapper.delete(applyMarketQuery);
 		// 再插入
 		if (apply.getMarketVersion()) {
 			List<ProjectOnlineApplyMarket> list = new ArrayList<>(apply.getMarkets().size());
 			apply.getMarkets().forEach(m -> {
-				ProjectOnlineApplyMarket am = DTOUtils.newDTO(ProjectOnlineApplyMarket.class);
+				ProjectOnlineApplyMarket am = DTOUtils.newInstance(ProjectOnlineApplyMarket.class);
 				am.setApplyId(apply.getId());
 				am.setMarketCode(m);
 				list.add(am);
 			});
 			this.applyMarketMapper.insertList(list);
 		} else {
-			ProjectOnlineApplyMarket poma = DTOUtils.newDTO(ProjectOnlineApplyMarket.class);
+			ProjectOnlineApplyMarket poma = DTOUtils.newInstance(ProjectOnlineApplyMarket.class);
 			poma.setApplyId(apply.getId());
 			poma.setMarketCode("-1");
 			this.applyMarketMapper.insertSelective(poma);
@@ -912,13 +913,13 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 
 		// 更新邮件通知地址，先删除后插入
 		// 先删除
-		EmailAddress eaCondition = DTOUtils.newDTO(EmailAddress.class);
+		EmailAddress eaCondition = DTOUtils.newInstance(EmailAddress.class);
 		eaCondition.setApplyId(apply.getId());
 		this.emailAddressMapper.delete(eaCondition);
 
 		// 插入
 		apply.getEmailAddress().forEach(s -> {
-			EmailAddress ea = DTOUtils.newDTO(EmailAddress.class);
+			EmailAddress ea = DTOUtils.newInstance(EmailAddress.class);
 			ea.setApplyId(apply.getId());
 			ea.setApplyType(ApplyType.ONLINE.getValue());
 			ea.setEmailAddress(s);
@@ -944,7 +945,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			apply.setApplyState(ProjectOnlineApplyState.COMPLETED.getValue());
 			apply.setActualOnlineDate(new Date());
 			// 插入项目版本上线申请记录
-			ProjectActionRecord par = DTOUtils.newDTO(ProjectActionRecord.class);
+			ProjectActionRecord par = DTOUtils.newInstance(ProjectActionRecord.class);
 			par.setActionCode(ProjectAction.VERSION_ONLINE_APPLY.getCode());
 			par.setActionDate(apply.getSubmitTime());
 			par.setActionDateType(ActionDateType.POINT.getValue());
@@ -955,7 +956,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 				throw new ProjectOnlineApplyException("插入项目进程记录失败");
 			}
 			// 插入项目版本上线记录
-			par = DTOUtils.newDTO(ProjectActionRecord.class);
+			par = DTOUtils.newInstance(ProjectActionRecord.class);
 			par.setActionCode(ProjectAction.VERSION_ONLINE.getCode());
 			par.setActionDate(new Date());
 			par.setActionDateType(ActionDateType.POINT.getValue());
@@ -972,7 +973,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			throw new ProjectOnlineApplyException("更新状态失败");
 		}
 		// 生成操作记录
-		ProjectOnlineOperationRecord record = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
+		ProjectOnlineOperationRecord record = DTOUtils.newInstance(ProjectOnlineOperationRecord.class);
 		record.setApplyId(applyId);
 		record.setOperatorId(verifierId);
 		record.setOperationType(ProjectOnlineApplyOperationType.VERIFIER.getValue());
@@ -1033,7 +1034,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	}
 
 	private Set<String> getApplicantSpecifiedEmails(ProjectOnlineApply apply) {
-		EmailAddress record = DTOUtils.newDTO(EmailAddress.class);
+		EmailAddress record = DTOUtils.newInstance(EmailAddress.class);
 		record.setApplyId(apply.getId());
 		List<EmailAddress> emails = this.emailAddressMapper.select(record);
 		Set<String> emailStrs = new HashSet<>(emails.size());
@@ -1061,12 +1062,12 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			throw new ProjectOnlineApplyException("申请记录不存在");
 		}
 		// 上线子系统
-		ProjectOnlineSubsystem subsysQuery = DTOUtils.newDTO(ProjectOnlineSubsystem.class);
+		ProjectOnlineSubsystem subsysQuery = DTOUtils.newInstance(ProjectOnlineSubsystem.class);
 		subsysQuery.setApplyId(id);
 		List<ProjectOnlineSubsystem> subsystems = this.posMapper.select(subsysQuery);
 		apply.aset("subsystems", subsystems);
 		// 操作记录
-		ProjectOnlineOperationRecord poorQuery = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
+		ProjectOnlineOperationRecord poorQuery = DTOUtils.newInstance(ProjectOnlineOperationRecord.class);
 		poorQuery.setApplyId(id);
 		List<ProjectOnlineOperationRecord> poorList = this.poorMapper.select(poorQuery);
 		apply.aset("opRecords", this.buildOperationRecordViewModel(poorList));
@@ -1080,12 +1081,12 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			throw new ProjectOnlineApplyException("申请记录不存在");
 		}
 		// 上线子系统
-		ProjectOnlineSubsystem subsysQuery = DTOUtils.newDTO(ProjectOnlineSubsystem.class);
+		ProjectOnlineSubsystem subsysQuery = DTOUtils.newInstance(ProjectOnlineSubsystem.class);
 		subsysQuery.setApplyId(apply.getId());
 		List<ProjectOnlineSubsystem> subsystems = this.posMapper.select(subsysQuery);
 		apply.aset("subsystems", subsystems);
 		// 操作记录
-		ProjectOnlineOperationRecord poorQuery = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
+		ProjectOnlineOperationRecord poorQuery = DTOUtils.newInstance(ProjectOnlineOperationRecord.class);
 		poorQuery.setApplyId(apply.getId());
 		List<ProjectOnlineOperationRecord> poorList = this.poorMapper.select(poorQuery);
 		apply.aset("opRecords", this.buildOperationRecordViewModel(poorList));
@@ -1098,13 +1099,13 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		Set<String> emailStrs = new HashSet<>();
 		// 默认邮件发送列表，运维组和项目组成员
 		// 运维部成员
-		Department deptQuery = DTOUtils.newDTO(Department.class);
+		Department deptQuery = DTOUtils.newInstance(Department.class);
 		deptQuery.setCode(AlmConstants.OPERATION_DEPARTMENT_CODE);
 		deptQuery.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		BaseOutput<List<Department>> deptOutput = this.deptRpc.listByDepartment(deptQuery);
 		if (deptOutput.isSuccess() && CollectionUtils.isNotEmpty(deptOutput.getData())) {
 			Long departmentId = deptOutput.getData().get(0).getId();
-			User userQuery = DTOUtils.newDTO(User.class);
+			UserQuery userQuery = DTOUtils.newInstance(UserQuery.class);
 			userQuery.setDepartmentId(departmentId);
 			userQuery.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 			BaseOutput<List<User>> userOutput = this.userRpc.listByExample(userQuery);
@@ -1113,7 +1114,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			}
 		}
 		// 项目组成员
-		Team teamQuery = DTOUtils.newDTO(Team.class);
+		Team teamQuery = DTOUtils.newInstance(Team.class);
 		teamQuery.setProjectId(apply.getProjectId());
 		List<Team> teams = this.teamMapper.select(teamQuery);
 		teams.forEach(t -> {
@@ -1130,7 +1131,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		// 构建邮件内容
 		Template template = this.groupTemplate.getTemplate(this.contentTemplate);
 		template.binding("apply", buildApplyViewModel(apply));
-		ProjectOnlineOperationRecord poor = DTOUtils.newDTO(ProjectOnlineOperationRecord.class);
+		ProjectOnlineOperationRecord poor = DTOUtils.newInstance(ProjectOnlineOperationRecord.class);
 		poor.setApplyId(apply.getId());
 		List<ProjectOnlineOperationRecord> list = this.poorMapper.select(poor);
 		template.binding("opRecords", this.buildOperationRecordViewModel(list));
@@ -1149,7 +1150,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 
 	private void setMarkets(ProjectOnlineApply apply) {
 		DataDictionaryDto dd = this.ddService.findByCode(AlmConstants.MARKET_CODE);
-		ProjectOnlineApplyMarket poamQuery = DTOUtils.newDTO(ProjectOnlineApplyMarket.class);
+		ProjectOnlineApplyMarket poamQuery = DTOUtils.newInstance(ProjectOnlineApplyMarket.class);
 		poamQuery.setApplyId(apply.getId());
 		List<ProjectOnlineApplyMarket> poamList = this.applyMarketMapper.select(poamQuery);
 		if (CollectionUtils.isEmpty(poamList)) {
@@ -1186,7 +1187,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 
 	@Override
 	public ProjectOnlineApply getProjectManagerConfirmViewModel(String serialNumber) throws ProjectOnlineApplyException {
-		ProjectOnlineApply record = DTOUtils.newDTO(ProjectOnlineApply.class);
+		ProjectOnlineApply record = DTOUtils.newInstance(ProjectOnlineApply.class);
 		record.setSerialNumber(serialNumber);
 		ProjectOnlineApply target = this.getActualDao().selectOne(record);
 		return this.getFlowViewData(target);
@@ -1194,7 +1195,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 
 	@Override
 	public ProjectOnlineApply getStartExecuteViewData(String serialNumber) throws ProjectOnlineApplyException {
-		ProjectOnlineApply record = DTOUtils.newDTO(ProjectOnlineApply.class);
+		ProjectOnlineApply record = DTOUtils.newInstance(ProjectOnlineApply.class);
 		record.setSerialNumber(serialNumber);
 		ProjectOnlineApply target = this.getActualDao().selectOne(record);
 		return this.getFlowViewData(target);
@@ -1202,7 +1203,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 
 	@Override
 	public ProjectOnlineApply getTestConfirmViewModel(String serialNumber) throws ProjectOnlineApplyException {
-		ProjectOnlineApply record = DTOUtils.newDTO(ProjectOnlineApply.class);
+		ProjectOnlineApply record = DTOUtils.newInstance(ProjectOnlineApply.class);
 		record.setSerialNumber(serialNumber);
 		ProjectOnlineApply target = this.getActualDao().selectOne(record);
 		return this.getFlowViewData(target);
@@ -1210,7 +1211,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 
 	@Override
 	public ProjectOnlineApply getConfirmExecuteViewModel(String serialNumber) throws ProjectOnlineApplyException {
-		ProjectOnlineApply record = DTOUtils.newDTO(ProjectOnlineApply.class);
+		ProjectOnlineApply record = DTOUtils.newInstance(ProjectOnlineApply.class);
 		record.setSerialNumber(serialNumber);
 		ProjectOnlineApply target = this.getActualDao().selectOne(record);
 		return this.getFlowViewData(target);
@@ -1218,7 +1219,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 
 	@Override
 	public ProjectOnlineApply getVerifyViewData(String serialNumber) throws ProjectOnlineApplyException {
-		ProjectOnlineApply record = DTOUtils.newDTO(ProjectOnlineApply.class);
+		ProjectOnlineApply record = DTOUtils.newInstance(ProjectOnlineApply.class);
 		record.setSerialNumber(serialNumber);
 		ProjectOnlineApply target = this.getActualDao().selectOne(record);
 		return this.getFlowViewData(target);
@@ -1226,7 +1227,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 
 	@Override
 	public ProjectOnlineApply getBySerialNumber(String serialNumber) {
-		ProjectOnlineApply record = DTOUtils.newDTO(ProjectOnlineApply.class);
+		ProjectOnlineApply record = DTOUtils.newInstance(ProjectOnlineApply.class);
 		record.setSerialNumber(serialNumber);
 		ProjectOnlineApply apply = this.getActualDao().selectOne(record);
 		return apply;
@@ -1234,21 +1235,21 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 
 	@Override
 	public ProjectOnlineApply getEditViewDataBySerialNumber(String serialNumber) throws ProjectOnlineApplyException {
-		ProjectOnlineApply record = DTOUtils.newDTO(ProjectOnlineApply.class);
+		ProjectOnlineApply record = DTOUtils.newInstance(ProjectOnlineApply.class);
 		record.setSerialNumber(serialNumber);
 		ProjectOnlineApply apply = this.getActualDao().selectOne(record);
 		if (apply == null) {
 			throw new ProjectOnlineApplyException("申请不存在");
 		}
-		ProjectOnlineSubsystem subsysQuery = DTOUtils.newDTO(ProjectOnlineSubsystem.class);
+		ProjectOnlineSubsystem subsysQuery = DTOUtils.newInstance(ProjectOnlineSubsystem.class);
 		subsysQuery.setApplyId(apply.getId());
 		List<ProjectOnlineSubsystem> subsystems = this.posMapper.select(subsysQuery);
 		apply.aset("subsystems", subsystems);
-		EmailAddress emailQuery = DTOUtils.newDTO(EmailAddress.class);
+		EmailAddress emailQuery = DTOUtils.newInstance(EmailAddress.class);
 		emailQuery.setApplyId(apply.getId());
 		List<EmailAddress> emails = this.emailAddressMapper.select(emailQuery);
 		apply.aset("emails", emails);
-		ProjectOnlineApplyMarket poamQuery = DTOUtils.newDTO(ProjectOnlineApplyMarket.class);
+		ProjectOnlineApplyMarket poamQuery = DTOUtils.newInstance(ProjectOnlineApplyMarket.class);
 		poamQuery.setApplyId(apply.getId());
 		// 判断是否针对市场上线
 		List<ProjectOnlineApplyMarket> poamList = this.applyMarketMapper.select(poamQuery);

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import com.dili.uap.sdk.domain.dto.UserQuery;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -193,7 +194,7 @@ public class AlmCache {
 	public Map<Long, User> getUserMap(boolean queryAll) {
 		// 应用启动时初始化userMap
 		if (AlmCache.USER_MAP.isEmpty()) {
-			User newDTO = DTOUtils.newDTO(User.class);
+			UserQuery newDTO = DTOUtils.newInstance(UserQuery.class);
 			BaseOutput<List<User>> output = userRpc.listByExample(newDTO);
 			if (output.isSuccess()) {
 				output.getData().forEach(user -> {
@@ -210,7 +211,7 @@ public class AlmCache {
 	public Map<Long, User> getAllUserMap() {
 		// 应用启动时初始化userMap
 		if (AlmCache.USER_ALL_MAP.isEmpty()) {
-			User newDTO = DTOUtils.newDTO(User.class);
+			UserQuery newDTO = DTOUtils.newInstance(UserQuery.class);
 			BaseOutput<List<User>> output = userRpc.listByExample(newDTO);
 			if (output.isSuccess()) {
 				output.getData().forEach(user -> {
@@ -233,7 +234,7 @@ public class AlmCache {
 
 	public Map<Long, Project> getProjectMap() {
 		if (AlmCache.PROJECT_MAP.isEmpty()) {
-			List<Project> list = this.projectMapper.select(DTOUtils.newDTO(Project.class));
+			List<Project> list = this.projectMapper.select(DTOUtils.newInstance(Project.class));
 			list.forEach(project -> {
 				AlmCache.PROJECT_MAP.put(project.getId(), project);
 			});
@@ -400,7 +401,7 @@ public class AlmCache {
 
 	public Map<Long, Area> getAreaMap() {
 		if (AlmCache.AREA_MAP.isEmpty()) {
-			List<Area> list = this.areaMapper.select(DTOUtils.newDTO(Area.class));
+			List<Area> list = this.areaMapper.select(DTOUtils.newInstance(Area.class));
 			if (CollectionUtils.isEmpty(list)) {
 				return AREA_MAP;
 			}
@@ -449,18 +450,18 @@ public class AlmCache {
 				return null;
 			}
 			applyList.forEach(a -> {
-				Roi roiQuery = DTOUtils.newDTO(Roi.class);
+				Roi roiQuery = DTOUtils.newInstance(Roi.class);
 				roiQuery.setApplyId(a.getId());
 				Roi roi = this.roiMapper.selectOne(roiQuery);
 				if (roi == null) {
 					return;
 				}
 				RoiDto roiDto = DTOUtils.toEntity(roi, RoiDto.class, false);
-				ProjectEarning peQuery = DTOUtils.newDTO(ProjectEarning.class);
+				ProjectEarning peQuery = DTOUtils.newInstance(ProjectEarning.class);
 				peQuery.setApplyId(a.getId());
 				List<ProjectEarning> earnings = this.projectEarningMapper.select(peQuery);
 				roiDto.setEarnings(earnings);
-				ProjectCost pcQuery = DTOUtils.newDTO(ProjectCost.class);
+				ProjectCost pcQuery = DTOUtils.newInstance(ProjectCost.class);
 				pcQuery.setApplyId(a.getId());
 				List<ProjectCost> costs = this.projectCostMapper.select(pcQuery);
 				roiDto.setCosts(costs);
@@ -495,7 +496,7 @@ public class AlmCache {
 	public Map<Long, SystemDto> getProjectSysMap() {
 		// 应用启动时初始化userMap
 		if (AlmCache.PROJECT_SYS_MAP.isEmpty()) {
-			BaseOutput<List<SystemDto>> output = sysProjectRpc.list(DTOUtils.newDTO(SystemDto.class));
+			BaseOutput<List<SystemDto>> output = sysProjectRpc.list(DTOUtils.newInstance(SystemDto.class));
 			if (output.isSuccess()) {
 				output.getData().forEach(entity -> {
 					AlmCache.PROJECT_SYS_MAP.put(entity.getId(), entity);

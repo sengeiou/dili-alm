@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.dili.uap.sdk.domain.dto.UserQuery;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -142,7 +143,7 @@ public class UserDepIdConverter implements InitializingBean {
 			return;
 		}
 		LOGGER.info("开始数据迁移........");
-		BaseOutput<List<User>> uapOutput = this.userRpc.listByExample(DTOUtils.newDTO(User.class));
+		BaseOutput<List<User>> uapOutput = this.userRpc.listByExample(DTOUtils.newInstance(UserQuery.class));
 		if (!uapOutput.isSuccess()) {
 			LOGGER.error(uapOutput.getMessage());
 			return;
@@ -155,7 +156,7 @@ public class UserDepIdConverter implements InitializingBean {
 		}
 		List<AlmUser> almUsers = almOutput.getData();
 
-		Department uapDepQuery = DTOUtils.newDTO(Department.class);
+		Department uapDepQuery = DTOUtils.newInstance(Department.class);
 		uapDepQuery.setFirmCode("szpt");
 		BaseOutput<List<Department>> uapDepOutput = this.departmentUapRpc.listByDepartment(uapDepQuery);
 		if (!uapDepOutput.isSuccess()) {

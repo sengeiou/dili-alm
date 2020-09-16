@@ -236,7 +236,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 
 	@Override
 	public void setDailyBegin() {
-		Sequence sequenceQuery = DTOUtils.newDTO(Sequence.class);
+		Sequence sequenceQuery = DTOUtils.newInstance(Sequence.class);
 		sequenceQuery.setType(DEMAND_NUMBER_GENERATOR_TYPE);
 		Sequence sequence = sequenceMapper.selectOne(sequenceQuery);
 		sequence.setNumber(1);
@@ -429,10 +429,10 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		if (type == DemandProjectType.APPLY.getValue()) {
 			ProjectApply apply = projectApplyMapper.selectByPrimaryKey(id);
 			if (apply.getStatus() == AlmConstants.ApplyState.PASS.getCode()) {
-				Project project = DTOUtils.newDTO(Project.class);
+				Project project = DTOUtils.newInstance(Project.class);
 				project.setApplyId(apply.getId());
 				Project selectOne = this.projectMapper.selectOne(project);
-				ProjectVersion projectVesion = DTOUtils.newDTO(ProjectVersion.class);
+				ProjectVersion projectVesion = DTOUtils.newInstance(ProjectVersion.class);
 				projectVesion.setProjectId(selectOne.getId());
 				projectVesion.setOrder("asc");
 				projectVesion.setSort("id");
@@ -443,10 +443,10 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 					return null;
 				}
 			} else if (apply.getStatus() == AlmConstants.ApplyState.APPROVE.getCode()) {
-				Project project = DTOUtils.newDTO(Project.class);
+				Project project = DTOUtils.newInstance(Project.class);
 				project.setApplyId(apply.getId());
 				Project selectOne = this.projectMapper.selectOne(project);
-				ProjectVersion projectVesion = DTOUtils.newDTO(ProjectVersion.class);
+				ProjectVersion projectVesion = DTOUtils.newInstance(ProjectVersion.class);
 				projectVesion.setProjectId(selectOne.getId());
 				projectVesion.setOrder("asc");
 				projectVesion.setSort("id");

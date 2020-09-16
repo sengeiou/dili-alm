@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.dili.uap.sdk.domain.dto.UserQuery;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -160,7 +161,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		template.binding("applyUserIdName", userRpc.findUserById(odc.getApplyUserId()).getData().getRealName());
 
 		Project proId = projectMapper.selectByPrimaryKey(odc.getProjectId());
-		ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
+		ProjectVersion projectVersion = DTOUtils.newInstance(ProjectVersion.class);
 		projectVersion.setProjectId(odc.getProjectId());
 		List<ProjectVersion> list = projectVersionService.list(projectVersion);
 		if (list != null && list.size() > 0) {
@@ -307,7 +308,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			try {
 				ArrayList list = new ArrayList<String>();
 				list.add(odc.getProcessInstanceId());
-				TaskDto tdo = DTOUtils.newDTO(TaskDto.class);
+				TaskDto tdo = DTOUtils.newInstance(TaskDto.class);
 				tdo.setProcessInstanceIds(list);
 				BaseOutput<List<TaskMapping>> task = tasksRpc.listTaskMapping(tdo);
 				String taskId = task.getData().get(0).getId();
@@ -346,12 +347,12 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			map.put("approved", "true");
 			Project pro = projectService.get(onlineDataChangeTemp.getProjectId());
 
-			User uprojectser = DTOUtils.newDTO(User.class);
+			UserQuery uprojectser = DTOUtils.newInstance(UserQuery.class);
 			uprojectser.setId(pro.getTestManager());
 			uprojectser.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 			BaseOutput<List<User>> listUserByExample = userRpc.listByExample(uprojectser);
 
-			Assignment record = DTOUtils.newDTO(Assignment.class);
+			Assignment record = DTOUtils.newInstance(Assignment.class);
 			record.setAssignee(pro.getTestManager().toString());// 项目测试人员的ID
 			List<User> listUsernName = listUserByExample.getData();//// 项目测试人员组的ID
 			if (listUsernName != null && listUsernName.size() > 0) {

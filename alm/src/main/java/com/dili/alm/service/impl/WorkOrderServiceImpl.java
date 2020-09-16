@@ -90,7 +90,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 	}
 
 	public void checkTimeToClose() throws WorkOrderException {
-		WorkOrder query = DTOUtils.newDTO(WorkOrder.class);
+		WorkOrder query = DTOUtils.newInstance(WorkOrder.class);
 		query.setWorkOrderState(WorkOrderState.SOLVED.getValue());
 		List<WorkOrder> workOrders = this.getActualDao().select(query);
 		if (CollectionUtils.isEmpty(workOrders)) {
@@ -237,7 +237,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 	@Override
 	public WorkOrder getDetailViewModel(Long id) {
 		WorkOrder workOrder = this.getOperationRecordsViewModel(id);
-		WorkOrderExecutionRecord woerQuery = DTOUtils.newDTO(WorkOrderExecutionRecord.class);
+		WorkOrderExecutionRecord woerQuery = DTOUtils.newInstance(WorkOrderExecutionRecord.class);
 		woerQuery.setWorkOrderId(id);
 		List<WorkOrderExecutionRecord> woerList = this.woerMapper.select(woerQuery);
 		workOrder.aset("executionRecords", woerList);

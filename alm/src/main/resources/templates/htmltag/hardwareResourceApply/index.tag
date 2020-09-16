@@ -1,3 +1,4 @@
+<script type="text/javascript">
 var userId = '${user.id!}';
 userId = parseInt(userId);
 
@@ -199,7 +200,7 @@ function openUpdate(index) {
 	if (selected.$_applyState != 1) {
 		return false;
 	}
-	console.log(selected);
+
 	$('#win').dialog({
 		title : '资源申请详情',
 		width : 830,
@@ -645,3 +646,4 @@ $.extend($.fn.dialog.methods, {
 						});
 			}
 		});
+</script>

@@ -113,7 +113,7 @@ public class ProjectVersionController {
 		map.addAttribute("model", version);
 		Project project = this.projectService.get(version.getProjectId());
 		map.addAttribute("project", project);
-		Files record = DTOUtils.newDTO(Files.class);
+		Files record = DTOUtils.newInstance(Files.class);
 		record.setVersionId(id);
 		List<Files> files = this.filesService.list(record);
 		map.addAttribute("files", files);
@@ -136,7 +136,7 @@ public class ProjectVersionController {
 	public String addView(@RequestParam Long projectId, ModelMap map) {
 		Project project = this.projectService.get(projectId);
 		map.addAttribute("project", project);
-		ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
+		ProjectVersion projectVersion = DTOUtils.newInstance(ProjectVersion.class);
 		projectVersion.setProjectId(projectId);
 		List<ProjectVersion> selectByExample = this.projectVersionService.list(projectVersion);
 		if(selectByExample!=null&&selectByExample.size()>0) {
@@ -153,13 +153,13 @@ public class ProjectVersionController {
 		map.addAttribute("model", version);
 		Project project = this.projectService.get(version.getProjectId());
 		map.addAttribute("project", project);
-		Files record = DTOUtils.newDTO(Files.class);
+		Files record = DTOUtils.newInstance(Files.class);
 		record.setVersionId(id);
 		List<Files> files = this.filesService.list(record);
 		map.addAttribute("files", files);
 		List<Demand> showDemandList = this.demandService.queryDemandListByProjectIdOrVersionIdOrWorkOrderId(version.getId(), AlmConstants.DemandType.PROJECTVERSION.getCode());
 		map.addAttribute("showDemandList", showDemandList);
-		ProjectVersion projectVersion = DTOUtils.newDTO(ProjectVersion.class);
+		ProjectVersion projectVersion = DTOUtils.newInstance(ProjectVersion.class);
 		projectVersion.setProjectId(version.getProjectId());
 		List<ProjectVersion> selectByExample = this.projectVersionService.list(projectVersion);
 		if(selectByExample!=null&&selectByExample.size()>=0) {

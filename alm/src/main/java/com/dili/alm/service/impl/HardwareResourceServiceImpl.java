@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.dili.uap.sdk.domain.dto.UserQuery;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,12 +62,12 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 		if (userTicket == null) {
 			throw new RuntimeException("未登录");
 		}
-		Department newDepartment = DTOUtils.newDTO(Department.class);
+		Department newDepartment = DTOUtils.newInstance(Department.class);
 		newDepartment.setName(DEPARTMENTNAME);
 		newDepartment.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		BaseOutput<Department> findByDepartmentName = departmentRpc.getOne(newDepartment);
 		Department department = findByDepartmentName.getData();
-		User user = DTOUtils.newDTO(User.class);
+		UserQuery user = DTOUtils.newInstance(UserQuery.class);
 		user.setDepartmentId(department.getId());
 		user.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		return userRpc.listByExample(user).getData();
@@ -119,10 +120,10 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 
 	@Override
 	public void submit(Long projectId, Long userId) {
-		HardwareResource hardwareResource = DTOUtils.newDTO(HardwareResource.class);
+		HardwareResource hardwareResource = DTOUtils.newInstance(HardwareResource.class);
 		hardwareResource.setProjectId(projectId);
 		hardwareResource.setMaintenanceOwner(userId);
-		HardwareResource po = DTOUtils.newDTO(HardwareResource.class);
+		HardwareResource po = DTOUtils.newInstance(HardwareResource.class);
 		po.setProjectId(projectId);
 		int count = this.hardwareResourceMapper.selectCount(po);
 		if (count <= 0) {
@@ -160,7 +161,7 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 		Project project = projectMapper.selectByPrimaryKey(Long.parseLong(id));
 		map.put("projectNum", project.getSerialNumber());
 		BigDecimal total = new BigDecimal("0");
-		HardwareResource query = DTOUtils.newDTO(HardwareResource.class);
+		HardwareResource query = DTOUtils.newInstance(HardwareResource.class);
 		query.setProjectId(Long.valueOf(id));
 		List<HardwareResource> list = this.hardwareResourceMapper.select(query);
 		if (CollectionUtils.isNotEmpty(list)) {

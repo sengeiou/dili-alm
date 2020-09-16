@@ -41,7 +41,7 @@ public class TaskDetailsController {
 
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
 	public String index(@RequestParam Long userId, @RequestParam Long totalHour, ModelMap modelMap) {
-		Task taskQuery = DTOUtils.newDTO(Task.class);
+		Task taskQuery = DTOUtils.newInstance(Task.class);
 		taskQuery.setOwner(userId);
 		List<Task> tasks = this.taskService.list(taskQuery);
 		modelMap.addAttribute("user", AlmCache.getInstance().getUserMap().get(userId)).addAttribute("tasks", tasks)

@@ -58,7 +58,7 @@ public class ProjectCompleteController {
 
 	@RequestMapping(value = "/toStep/{step}/index.html", method = RequestMethod.GET)
 	public String toStep(ModelMap modelMap,  Long id, @PathVariable("step") int step) throws Exception {
-		ProjectComplete projectComplete = DTOUtils.newDTO(ProjectComplete.class);
+		ProjectComplete projectComplete = DTOUtils.newInstance(ProjectComplete.class);
 		projectComplete.setId(id);
 
 		Map<Object, Object> metadata = new HashMap<>(2);
@@ -216,7 +216,7 @@ public class ProjectCompleteController {
 	@RequestMapping("/loadComplete")
 	@ResponseBody
 	public Map loadComplete(Long id) throws Exception {
-		ProjectComplete projectComplete = DTOUtils.newDTO(ProjectComplete.class);
+		ProjectComplete projectComplete = DTOUtils.newInstance(ProjectComplete.class);
 		projectComplete.setId(id);
 
 		Map<Object, Object> metadata = new HashMap<>();

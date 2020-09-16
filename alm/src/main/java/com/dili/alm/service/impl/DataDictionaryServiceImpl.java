@@ -64,7 +64,7 @@ public class DataDictionaryServiceImpl extends BaseServiceImpl<DataDictionary, L
 		List<com.dili.uap.sdk.domain.DataDictionaryValue> DataDictionaryValues = model.getDataDictionaryValues();
 		if (CollectionUtils.isNotEmpty(DataDictionaryValues)) {
 			for (com.dili.uap.sdk.domain.DataDictionaryValue dataDictionaryValue : DataDictionaryValues) {
-				DataDictionaryValueDto dataDictionaryValueDto = DTOUtils.newDTO(DataDictionaryValueDto.class);
+				DataDictionaryValueDto dataDictionaryValueDto = DTOUtils.newInstance(DataDictionaryValueDto.class);
 				dataDictionaryValueDto.setId(dataDictionaryValue.getId());
 				dataDictionaryValueDto.setCode(dataDictionaryValue.getCode());
 				dataDictionaryValueDto.setDdId(dataDictionaryDto.getId());
@@ -112,7 +112,7 @@ public class DataDictionaryServiceImpl extends BaseServiceImpl<DataDictionary, L
 
 	@Override
 	public List<DataDictionary> listDataDictionary(DataDictionary ddit) {
-		com.dili.uap.sdk.domain.DataDictionary uapDate = DTOUtils.newDTO(com.dili.uap.sdk.domain.DataDictionary.class);
+		com.dili.uap.sdk.domain.DataDictionary uapDate = DTOUtils.newInstance(com.dili.uap.sdk.domain.DataDictionary.class);
 		if (ddit.getId() != null) {
 			uapDate.setId(ddit.getId());
 		}
@@ -138,7 +138,7 @@ public class DataDictionaryServiceImpl extends BaseServiceImpl<DataDictionary, L
 		List<com.dili.uap.sdk.domain.DataDictionary> data = this.dataDictionaryRpc.listDataDictionary(uapDate).getData();
 		List<DataDictionary> dataDictionaryList = new ArrayList<DataDictionary>();
 		for (com.dili.uap.sdk.domain.DataDictionary dataDictionary : data) {
-			DataDictionary newDataDictionary = DTOUtils.newDTO(DataDictionary.class);
+			DataDictionary newDataDictionary = DTOUtils.newInstance(DataDictionary.class);
 			newDataDictionary.setId(dataDictionary.getId());
 			newDataDictionary.setCode(dataDictionary.getCode());
 			newDataDictionary.setName(dataDictionary.getName());
@@ -160,7 +160,7 @@ public class DataDictionaryServiceImpl extends BaseServiceImpl<DataDictionary, L
 	public void updateUapDataDictionaryList() {
 		List<DataDictionary> selectAll = this.getActualDao().selectAll();
 		for (DataDictionary dataDictionary : selectAll) {
-			UapDataDictionaryDto uapDataDictionaryDto = DTOUtils.newDTO(UapDataDictionaryDto.class);
+			UapDataDictionaryDto uapDataDictionaryDto = DTOUtils.newInstance(UapDataDictionaryDto.class);
 			uapDataDictionaryDto.setCode(dataDictionary.getCode());
 			uapDataDictionaryDto.setName(dataDictionary.getName());
 			uapDataDictionaryDto.setSystemCode(AlmConstants.ALM_SYSTEM_CODE);
@@ -173,12 +173,12 @@ public class DataDictionaryServiceImpl extends BaseServiceImpl<DataDictionary, L
 			if (dataDictionary.getModified() != null) {
 				uapDataDictionaryDto.setModified(dataDictionary.getModified());
 			}
-			DataDictionaryValue queryValue = DTOUtils.newDTO(DataDictionaryValue.class);
+			DataDictionaryValue queryValue = DTOUtils.newInstance(DataDictionaryValue.class);
 			queryValue.setDdId(dataDictionary.getId());
 			List<DataDictionaryValue> list = this.valueMapper.select(queryValue);
 			List<com.dili.uap.sdk.domain.DataDictionaryValue> uapValues = new ArrayList<com.dili.uap.sdk.domain.DataDictionaryValue>();
 			for (DataDictionaryValue dataDictionaryValue : list) {
-				com.dili.uap.sdk.domain.DataDictionaryValue uapDataValue = DTOUtils.newDTO(com.dili.uap.sdk.domain.DataDictionaryValue.class);
+				com.dili.uap.sdk.domain.DataDictionaryValue uapDataValue = DTOUtils.newInstance(com.dili.uap.sdk.domain.DataDictionaryValue.class);
 				uapDataValue.setId(dataDictionaryValue.getId());
 				uapDataValue.setCode(dataDictionaryValue.getCode());
 				uapDataValue.setDdCode(dataDictionary.getCode());

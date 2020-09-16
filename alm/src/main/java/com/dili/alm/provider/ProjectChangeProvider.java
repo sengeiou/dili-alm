@@ -34,7 +34,7 @@ public class ProjectChangeProvider implements ValueProvider {
 	@Override
 	public List<ValuePair<?>> getLookupList(Object obj, Map metaMap, FieldMeta fieldMeta) {
 		List<ValuePair<?>> buffer = new ArrayList<ValuePair<?>>();
-		ProjectChange query = DTOUtils.newDTO(ProjectChange.class);
+		ProjectChange query = DTOUtils.newInstance(ProjectChange.class);
 		List<ProjectChange> list = this.changeMapper.select(query);
 		if (CollectionUtils.isNotEmpty(list)) {
 			list.forEach(p -> {

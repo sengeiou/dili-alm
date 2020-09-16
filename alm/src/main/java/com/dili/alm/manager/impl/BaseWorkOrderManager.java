@@ -122,7 +122,7 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 	@Override
 	public void allocate(WorkOrder workOrder, Long executorId, Integer workOrderType, Integer priority, OperationResult result, String description) throws WorkOrderException {
 		// 生成操作记录
-		WorkOrderOperationRecord woor = DTOUtils.newDTO(WorkOrderOperationRecord.class);
+		WorkOrderOperationRecord woor = DTOUtils.newInstance(WorkOrderOperationRecord.class);
 		woor.setOperatorId(workOrder.getAcceptorId());
 		woor.setOperationName(WorkOrderOperationType.ACCEPTOR.getName());
 		woor.setOperationType(WorkOrderOperationType.ACCEPTOR.getValue());
@@ -184,7 +184,7 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 			throw new WorkOrderException("更新工单状态失败");
 		}
 		// 生成操作记录
-		WorkOrderOperationRecord woor = DTOUtils.newDTO(WorkOrderOperationRecord.class);
+		WorkOrderOperationRecord woor = DTOUtils.newInstance(WorkOrderOperationRecord.class);
 		woor.setOperatorId(workOrder.getApplicantId());
 		woor.setOperationName(WorkOrderOperationType.CONFIRM.getName());
 		woor.setOperationType(WorkOrderOperationType.CONFIRM.getValue());
@@ -227,7 +227,7 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 		}
 
 		// 生成操作记录
-		WorkOrderOperationRecord woor = DTOUtils.newDTO(WorkOrderOperationRecord.class);
+		WorkOrderOperationRecord woor = DTOUtils.newInstance(WorkOrderOperationRecord.class);
 		woor.setOperationType(WorkOrderOperationType.EXECUTOR.getValue());
 		woor.setOperationName(WorkOrderOperationType.EXECUTOR.getName());
 		woor.setOperationResult(OperationResult.SUCCESS.getValue());
@@ -240,7 +240,7 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 		}
 
 		// 插入工单执行记录
-		WorkOrderExecutionRecord woer = DTOUtils.newDTO(WorkOrderExecutionRecord.class);
+		WorkOrderExecutionRecord woer = DTOUtils.newInstance(WorkOrderExecutionRecord.class);
 		woer.setWorkOrderId(workOrder.getId());
 		woer.setStartDate(startDate);
 		woer.setEndDate(endDate);
@@ -365,7 +365,7 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 			copyUserIds.forEach(cid -> sb.append(this.memberProvider.getDisplayText(cid, null, null)).append(","));
 			workOrder.aset("copyUsers", sb.substring(0, sb.length() - 1));
 		}
-		WorkOrderOperationRecord woorQuery = DTOUtils.newDTO(WorkOrderOperationRecord.class);
+		WorkOrderOperationRecord woorQuery = DTOUtils.newInstance(WorkOrderOperationRecord.class);
 		woorQuery.setWorkOrderId(workOrder.getId());
 		List<WorkOrderOperationRecord> opRecords = this.woorMapper.select(woorQuery);
 		try {
@@ -396,7 +396,7 @@ public abstract class BaseWorkOrderManager implements WorkOrderManager {
 	@Override
 	public void systemClose(WorkOrder workOrder) throws WorkOrderException {
 		// 生成操作记录
-		WorkOrderOperationRecord woor = DTOUtils.newDTO(WorkOrderOperationRecord.class);
+		WorkOrderOperationRecord woor = DTOUtils.newInstance(WorkOrderOperationRecord.class);
 		woor.setOperatorId(workOrder.getApplicantId());
 		woor.setOperationName(WorkOrderOperationType.SYSTEM_CLOSE.getName());
 		woor.setOperationType(WorkOrderOperationType.SYSTEM_CLOSE.getValue());

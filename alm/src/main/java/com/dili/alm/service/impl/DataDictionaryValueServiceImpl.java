@@ -60,7 +60,7 @@ public class DataDictionaryValueServiceImpl extends BaseServiceImpl<DataDictiona
 		root.setName(dd.getName());
 		List<DataDictionaryValueTreeView> target = new ArrayList<>();
 		target.add(root);
-		DataDictionaryValue record = DTOUtils.newDTO(DataDictionaryValue.class);
+		DataDictionaryValue record = DTOUtils.newInstance(DataDictionaryValue.class);
 		record.setDdId(ddId);
 		List<DataDictionaryValue> list = this.getActualDao().select(record);
 		if (CollectionUtils.isEmpty(list)) {
@@ -103,7 +103,7 @@ public class DataDictionaryValueServiceImpl extends BaseServiceImpl<DataDictiona
 		List<com.dili.uap.sdk.domain.DataDictionaryValue> DataDictionaryValues = model.getDataDictionaryValues();
 		if (CollectionUtils.isNotEmpty(DataDictionaryValues)) {
 			for (com.dili.uap.sdk.domain.DataDictionaryValue dataDictionaryValue : DataDictionaryValues) {
-				DataDictionaryValueDto dataDictionaryValueDto=DTOUtils.newDTO(DataDictionaryValueDto.class);
+				DataDictionaryValueDto dataDictionaryValueDto=DTOUtils.newInstance(DataDictionaryValueDto.class);
 				dataDictionaryValueDto.setId(dataDictionaryValue.getId());
 				dataDictionaryValueDto.setDdId(model.getId());
 				dataDictionaryValueDto.setParentId(dataDictionaryValue.getParentId());
@@ -121,12 +121,12 @@ public class DataDictionaryValueServiceImpl extends BaseServiceImpl<DataDictiona
 
 	@Override
 	public List<DataDictionaryValueDto> listDataDictionaryValue(DataDictionaryValue ddv) {
-		com.dili.uap.sdk.domain.DataDictionaryValue  uapValueDto=DTOUtils.newDTO(com.dili.uap.sdk.domain.DataDictionaryValue.class);
+		com.dili.uap.sdk.domain.DataDictionaryValue  uapValueDto=DTOUtils.newInstance(com.dili.uap.sdk.domain.DataDictionaryValue.class);
 		if(ddv.getId()!=null) {
 			uapValueDto.setId(ddv.getId());
 		}
 		if(ddv.getDdId()!=null) {
-			com.dili.uap.sdk.domain.DataDictionary uapData=DTOUtils.newDTO(com.dili.uap.sdk.domain.DataDictionary.class);
+			com.dili.uap.sdk.domain.DataDictionary uapData=DTOUtils.newInstance(com.dili.uap.sdk.domain.DataDictionary.class);
 			uapData.setId(ddv.getDdId());
 			List<com.dili.uap.sdk.domain.DataDictionary> listDataDictionary = this.dataDictionaryRpc.listDataDictionary(uapData).getData();
 			if(listDataDictionary!=null&&listDataDictionary.size()>0) {
@@ -159,7 +159,7 @@ public class DataDictionaryValueServiceImpl extends BaseServiceImpl<DataDictiona
 		List<DataDictionaryValueDto> values =new ArrayList<DataDictionaryValueDto>();
 		if (CollectionUtils.isNotEmpty(DataDictionaryValues)) {
 			for (com.dili.uap.sdk.domain.DataDictionaryValue dataDictionaryValue : DataDictionaryValues) {
-				DataDictionaryValueDto dataDictionaryValueDto=DTOUtils.newDTO(DataDictionaryValueDto.class);
+				DataDictionaryValueDto dataDictionaryValueDto=DTOUtils.newInstance(DataDictionaryValueDto.class);
 				dataDictionaryValueDto.setId(dataDictionaryValue.getId());
 				dataDictionaryValueDto.setCode(dataDictionaryValue.getCode());
 				UapDataDictionaryDto model = dataDictionaryRpc.findByCode(dataDictionaryValue.getDdCode(), AlmConstants.ALM_SYSTEM_CODE).getData();

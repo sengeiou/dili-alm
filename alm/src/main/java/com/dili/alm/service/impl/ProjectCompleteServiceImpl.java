@@ -109,7 +109,7 @@ public class ProjectCompleteServiceImpl extends BaseServiceImpl<ProjectComplete,
 				}
 				// 回调，写入相关流程任务数据
 				ProcessInstanceMapping processInstance = processInstanceOutput.getData();
-				Approve selectApprove = DTOUtils.newDTO(Approve.class);
+				Approve selectApprove = DTOUtils.newInstance(Approve.class);
 				selectApprove.setId(as.getId());
 				selectApprove.setProcessInstanceId(processInstance.getProcessInstanceId());
 				selectApprove.setProcessDefinitionId(processInstance.getProcessDefinitionId());
@@ -185,7 +185,7 @@ public class ProjectCompleteServiceImpl extends BaseServiceImpl<ProjectComplete,
 	public Object loadMembers(Long id) throws Exception {
 		ProjectComplete projectComplete = this.get(id);
 		if (StringUtils.isBlank(projectComplete.getMembers())) {
-			Team team = DTOUtils.newDTO(Team.class);
+			Team team = DTOUtils.newInstance(Team.class);
 			team.setProjectId(projectComplete.getProjectId());
 			List<Team> list = teamService.list(team);
 			Map<Object, Object> metadata = new HashMap<>();
@@ -210,7 +210,7 @@ public class ProjectCompleteServiceImpl extends BaseServiceImpl<ProjectComplete,
 		if (project.getCloseTime() != null) {
 			throw new ProjectCompleteException("该项目已结项，不能重复结项");
 		}
-		ProjectComplete pcQuery = DTOUtils.newDTO(ProjectComplete.class);
+		ProjectComplete pcQuery = DTOUtils.newInstance(ProjectComplete.class);
 		pcQuery.setProjectId(projectComplete.getProjectId());
 		List<ProjectComplete> list = this.getActualDao().select(pcQuery);
 		if (CollectionUtils.isNotEmpty(list)) {

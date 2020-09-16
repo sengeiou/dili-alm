@@ -81,12 +81,12 @@ public class ProjectActionRecordServiceImpl extends BaseServiceImpl<ProjectActio
 		if (CollectionUtils.isEmpty(actionCodes)) {
 			return new ArrayList<>(0);
 		}
-		ProjectActionRecord query = DTOUtils.newDTO(ProjectActionRecord.class);
+		ProjectActionRecord query = DTOUtils.newInstance(ProjectActionRecord.class);
 		query.setProjectId(projectId);
-		ProjectVersion versionQuery = DTOUtils.newDTO(ProjectVersion.class);
+		ProjectVersion versionQuery = DTOUtils.newInstance(ProjectVersion.class);
 		versionQuery.setProjectId(projectId);
 		List<ProjectVersion> versions = this.versionMapper.select(versionQuery);
-		Task taskQuery = DTOUtils.newDTO(Task.class);
+		Task taskQuery = DTOUtils.newInstance(Task.class);
 		taskQuery.setProjectId(projectId);
 		List<Task> tasks = this.taskMapper.select(taskQuery);
 		List<Long> versionIds = new ArrayList<>(versions.size());
@@ -118,7 +118,7 @@ public class ProjectActionRecordServiceImpl extends BaseServiceImpl<ProjectActio
 				dto.setDesc(df.format(r.getActionDate()));
 			}
 			// 获取列表展示配置
-			ProjectActionRecordConfig parcQuery = DTOUtils.newDTO(ProjectActionRecordConfig.class);
+			ProjectActionRecordConfig parcQuery = DTOUtils.newInstance(ProjectActionRecordConfig.class);
 			parcQuery.setActionCode(r.getActionCode());
 			ProjectActionRecordConfig conf = this.parcMapper.selectOne(parcQuery);
 			if (conf != null) {
@@ -154,7 +154,7 @@ public class ProjectActionRecordServiceImpl extends BaseServiceImpl<ProjectActio
 		ProjectApply apply = this.projectApplyMapper.selectByPrimaryKey(project.getApplyId());
 		template.binding("apply", apply);
 		// 读取审批记录
-		Approve approveQuery = DTOUtils.newDTO(Approve.class);
+		Approve approveQuery = DTOUtils.newInstance(Approve.class);
 		approveQuery.setType(ApproveType.APPLY.getCode());
 		approveQuery.setProjectApplyId(apply.getId());
 		Approve approve = this.approveMapper.selectByPrimaryKey(approveQuery);
@@ -171,12 +171,12 @@ public class ProjectActionRecordServiceImpl extends BaseServiceImpl<ProjectActio
 		if (CollectionUtils.isEmpty(actionCodes)) {
 			return new ArrayList<>(0);
 		}
-		ProjectActionRecord query = DTOUtils.newDTO(ProjectActionRecord.class);
+		ProjectActionRecord query = DTOUtils.newInstance(ProjectActionRecord.class);
 		query.setProjectId(projectId);
-		ProjectVersion versionQuery = DTOUtils.newDTO(ProjectVersion.class);
+		ProjectVersion versionQuery = DTOUtils.newInstance(ProjectVersion.class);
 		versionQuery.setProjectId(projectId);
 		List<ProjectVersion> versions = this.versionMapper.select(versionQuery);
-		Task taskQuery = DTOUtils.newDTO(Task.class);
+		Task taskQuery = DTOUtils.newInstance(Task.class);
 		taskQuery.setProjectId(projectId);
 		List<Task> tasks = this.taskMapper.select(taskQuery);
 		List<Long> versionIds = new ArrayList<>(versions.size());

@@ -22,7 +22,7 @@ public class OnlineDataChangeLogServiceImpl  extends BaseServiceImpl<OnlineDataC
 	
 	@Override
 	public void insertDataExeLog(String dataId, String operationName, int opertateResult,String description) {
-		OnlineDataChangeLog  log=DTOUtils.newDTO(OnlineDataChangeLog.class);
+		OnlineDataChangeLog  log=DTOUtils.newInstance(OnlineDataChangeLog.class);
 		Long  userOperatorId=SessionContext.getSessionContext().getUserTicket().getId();
 		log.setOperatorId(userOperatorId);
 		log.setOperateTime(new Date());

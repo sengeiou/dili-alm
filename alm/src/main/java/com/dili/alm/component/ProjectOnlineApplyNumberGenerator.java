@@ -29,7 +29,7 @@ public class ProjectOnlineApplyNumberGenerator extends AbstractNumberGenerator {
 
 	@Override
 	public void init() {
-		Sequence sequenceQuery = DTOUtils.newDTO(Sequence.class);
+		Sequence sequenceQuery = DTOUtils.newInstance(Sequence.class);
 		sequenceQuery.setType(PROJECT_ONLINE_APPLY_NUMBER_GENERATOR_TYPE);
 		Sequence sequence = sequenceMapper.selectOne(sequenceQuery);
 		if (sequence == null) {
@@ -44,7 +44,7 @@ public class ProjectOnlineApplyNumberGenerator extends AbstractNumberGenerator {
 
 	@Override
 	public void persist() {
-		Sequence record = DTOUtils.newDTO(Sequence.class);
+		Sequence record = DTOUtils.newInstance(Sequence.class);
 		record.setNumber(this.number.get());
 		Example example = new Example(Sequence.class);
 		example.createCriteria().andEqualTo("type", PROJECT_ONLINE_APPLY_NUMBER_GENERATOR_TYPE);
