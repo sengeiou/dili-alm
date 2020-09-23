@@ -112,7 +112,7 @@ public interface DemandService extends BaseService<Demand, Long> {
      * @param code
      * @return
      */
-    BaseOutput submitApprove(String code, String taskId,Byte status,String processType);
+    BaseOutput submitApprove(String code, String taskId,Byte status,String processTypeString,Integer imperative);
     
     /**
      * 添加指定的接收人

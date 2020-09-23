@@ -440,7 +440,7 @@ public class DemandController {
 			} catch (DemandExceptions e) {
 				e.printStackTrace();
 			}
-    	return demandService.submitApprove(code, taskId,null,DemandProcessStatus.DEPARTMENTMANAGER.getCode());
+    	return demandService.submitApprove(code, taskId,null,DemandProcessStatus.DEPARTMENTMANAGER.getCode(),null);
     }
     
    /* @ApiOperation("跳转到接受需求页面")*/
@@ -680,7 +680,7 @@ public class DemandController {
   			} catch (DemandExceptions e) {
   				e.printStackTrace();
   			}
-    	return demandService.submitApprove(code, taskId,null,DemandProcessStatus.FEEDBACK.getCode());
+    	return demandService.submitApprove(code, taskId,null,DemandProcessStatus.FEEDBACK.getCode(),null);
     }
     /*@ApiOperation("需求管理员同意")*/
     @RequestMapping(value="/demandManagerApprove.html", method = RequestMethod.GET)
@@ -727,13 +727,16 @@ public class DemandController {
      */
     @RequestMapping(value="/demandManagerApprove.action", method = RequestMethod.POST)
     @ResponseBody
-    public BaseOutput<String> demandManagerApprove(@RequestParam String code, @RequestParam String taskId,String description) {
-        try {
+    public BaseOutput<String> demandManagerApprove(@RequestParam String code, @RequestParam String taskId,String description,Integer imperative) {
+    	if(null == imperative) {
+        	return BaseOutput.failure("优先级为空");
+        }
+    	try {
   			 demandService.saveOprationRecord(code, description, DemandOperationType.DEMAND_ADMIN.getValue(), DemandOperationType.DEMAND_ADMIN.getName(), ApproveResult.APPROVED);
   			} catch (DemandExceptions e) {
   				e.printStackTrace();
   			}
-    	return demandService.submitApprove(code, taskId, (byte) DemandStatus.COMPLETE.getCode(),DemandProcessStatus.DEMANDMANAGER.getCode());
+    	return demandService.submitApprove(code, taskId, (byte) DemandStatus.COMPLETE.getCode(),DemandProcessStatus.DEMANDMANAGER.getCode(),imperative);
     }
     
     /**
