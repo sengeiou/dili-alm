@@ -73,8 +73,19 @@
                          value="${model.type!}"/>
                     <#comboProvider _id="type" _provider='demandTypeProvider' />   
                 </td>
+                
+                
             </tr>
-
+			<tr>
+			<td style="padding:5px;" colspan="2">
+                    <input class="easyui-textbox" readonly="readonly"  id="_imperative" style="width:300px" data-options="label:'需求紧急度:'" 
+                         value="${model.imperative!}"/>
+                </td>
+			
+			<#comboProvider _id="_imperative" _value="${model.imperative!}"
+				_provider="dataDictionaryValueProvider"
+				_queryParams='{dd_code:"demand_imperative"}' />
+			</tr>
             <tr>
                 <td style="padding:5px;" colspan="2">
                 	<span>需求内容:</span>

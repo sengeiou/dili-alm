@@ -130,6 +130,9 @@ public class Demand extends BaseDomain {
      */
     @Column(name = "`feedback_content`")
     private String feedbackContent;
+    
+    @Column(name = "`imperative`")
+    private Integer imperative;
 
     /**
      * 获取自增编号
@@ -562,4 +565,14 @@ public class Demand extends BaseDomain {
     public void setFeedbackContent(String feedbackContent) {
         this.feedbackContent = feedbackContent;
     }
+
+	public Integer getImperative() {
+		return imperative;
+	}
+
+	public void setImperative(Integer imperative) {
+		this.imperative = imperative;
+	}
+    
+    
 }

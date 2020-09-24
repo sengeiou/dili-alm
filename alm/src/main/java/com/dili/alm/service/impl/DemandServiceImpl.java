@@ -654,7 +654,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	}
 
 	@Override
-	public BaseOutput submitApprove(String code, String taskId, Byte status, String processType) {
+	public BaseOutput submitApprove(String code, String taskId, Byte status, String processType,Integer imperative) {
 		Demand selectDemand = null;
 		if (status != null) {
 			selectDemand = this.getByCode(code);
@@ -664,6 +664,10 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		if (processType != null) {
 			selectDemand = this.getByCode(code);
 			selectDemand.setProcessType(processType);
+			this.update(selectDemand);
+		}
+		if (null != imperative) {
+			selectDemand.setImperative(imperative);
 			this.update(selectDemand);
 		}
 		Map<String, String> variables = new HashMap<>();

@@ -1,4 +1,12 @@
+
  <#body>
+ 
+ <style>
+#style_imperative .textbox{
+	width: 70%!important;
+} 
+</style>
+ 
   <!-- 需求管理员确定 -->
   <div class="easyui-panel" id="submitDiv" style="width:100%;" align="center">
   <form id="_form" class="easyui-form" method="post"
@@ -48,6 +56,7 @@
 				name="_finishDate" id="_finishDate" style="width: 100%"
 				data-options="label:'期望实现日期:'" required="true"  editable="false"/></td>
 		</tr>
+		
 		<tr>
 			<td style="padding: 5px;" colspan="2">
 				<h4>需求内容:</h4>
@@ -123,6 +132,16 @@
                <textarea cols="50" rows="5" name="description" maxlength="200" ></textarea>
             </td>
            </tr>
+           <tr>
+
+			<td id="style_imperative" style="padding: 5px;"><span style="color:red;"> * </span><input class="easyui-textbox"
+				name="imperative" id="_imperative" style="width: 100%"
+				data-options="label:'需求紧急度:', required:true"
+				editable="false"/> <#comboProvider _id="_imperative"
+				_provider="dataDictionaryValueProvider"
+				_queryParams='{dd_code:"demand_imperative"}' /></td>
+			
+		</tr>
             <tr>
                 <td align="center" style="padding:5px;">
                 <a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="submitBtn"
@@ -173,8 +192,11 @@
             if(!$('#form').form("validate")){
                 return;
             }
+            if($('input[name=imperative]').val()==""){
+            	$.messager.alert('提示',"请选择优先级！");
+            	return;
+            }
             disableBtn();
-           
             $('#form').form('submit', {
                 url : "${contextPath}/demand/demandManagerApprove.action",
                 dataType : "json",
