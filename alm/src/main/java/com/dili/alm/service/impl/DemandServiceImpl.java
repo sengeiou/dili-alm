@@ -100,7 +100,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	// 数字平台的市场码
 	private static final String FIRECODE_SZPT = "szpt";
 	// 市场运营部的市场码
-	private static final String FIRECODE_JYGL = "szpt";
+	private static final String FIRECODE_JYGL = "jygl";
 
 	@Qualifier(DEMAND_NUMBER_GENERATOR_TYPE)
 	@Autowired
