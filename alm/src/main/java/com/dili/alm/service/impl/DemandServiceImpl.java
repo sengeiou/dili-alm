@@ -324,6 +324,10 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 				try {
 
 					User user = AlmCache.getInstance().getAllUserMap().get(d.getUserId());
+					// 临时解决寿光用户被删除导致需求不可见问题
+					if(user == null) {
+						user = AlmCache.getInstance().getAllUserMap().get(618L);
+					}
 					if (this.ifShowInList(user.getFirmCode())) {
 						return;
 					}
