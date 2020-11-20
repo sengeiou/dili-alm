@@ -29,10 +29,12 @@ import com.dili.alm.cache.AlmCache;
 import com.dili.alm.component.BpmcUtil;
 import com.dili.alm.component.NumberGenerator;
 import com.dili.alm.constant.AlmConstants;
+import com.dili.alm.dao.WorkOrderExecutionRecordMapper;
 import com.dili.alm.domain.Demand;
 import com.dili.alm.domain.Files;
 import com.dili.alm.domain.OperationResult;
 import com.dili.alm.domain.WorkOrder;
+import com.dili.alm.domain.WorkOrderExecutionRecord;
 import com.dili.alm.domain.WorkOrderSource;
 import com.dili.alm.domain.dto.WorkOrderDto;
 import com.dili.alm.domain.dto.WorkOrderQueryDto;
@@ -78,6 +80,9 @@ public class WorkOrderController {
 	private UserRpc userRpc;
    @Autowired
    	private   TaskRpc  tasksRpc;
+   
+   @Autowired
+	private WorkOrderExecutionRecordMapper woerMapper;
    /*   @Autowired
   	private   RuntimeApiRpcCopy  runtimeRpc;*/
 	    
@@ -300,9 +305,22 @@ public class WorkOrderController {
 	   List<WorkOrder>  outTemp=workOrderService.listByExample( query);
 	 //  List<WorkOrderDto> targetList = DTOUtils.as(outTemp, WorkOrderDto.class);
 	  // List<WorkOrderDto> targetList = BeanConver.copyList(outTemp, WorkOrderDto.class);
-	   
+	  
 	   
 	   List<WorkOrderDto> targetList = DTOUtils.as(outTemp, WorkOrderDto.class);
+		for (WorkOrderDto workOrderDto : targetList) {
+			WorkOrderExecutionRecord woerQuery = DTOUtils.newDTO(WorkOrderExecutionRecord.class);
+			woerQuery.setWorkOrderId(workOrderDto.getId());
+			List<WorkOrderExecutionRecord> woerList = this.woerMapper.select(woerQuery);
+			Integer taskHours = 0;
+			Integer overtimeHours = 0;
+			for (WorkOrderExecutionRecord ex : woerList) {
+				taskHours += ex.getTaskHours();
+				overtimeHours += ex.getOvertimeHours();
+			}
+			workOrderDto.setTaskHours(taskHours);
+			workOrderDto.setOvertimeHours(overtimeHours);
+		}
 	   bpmcUtil.fitLoggedUserIsCanHandledProcess(targetList);
 	   @SuppressWarnings("rawtypes")
 		long total = outTemp instanceof Page ? ((Page) outTemp).getTotal() : outTemp.size();
