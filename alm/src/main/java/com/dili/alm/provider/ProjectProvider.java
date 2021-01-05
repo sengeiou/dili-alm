@@ -34,8 +34,10 @@ public class ProjectProvider implements ValueProvider {
 	@Override
 	public List<ValuePair<?>> getLookupList(Object o, Map map, FieldMeta fieldMeta) {
 		Object queryParams = map.get(QUERY_PARAMS_KEY);
-        
-        Boolean isAll = JSONObject.parseObject(queryParams.toString()).getBoolean("isAll");
+		Boolean isAll = false;
+        if(queryParams != null) {
+        	isAll = JSONObject.parseObject(queryParams.toString()).getBoolean("isAll");
+        }
 		Map<Long, Project> projectMap = AlmCache.getInstance().getProjectMap();
 		ArrayList<ValuePair<?>> buffer = new ArrayList<>(projectMap.size());
 		// projectMap.forEach((k, v) -> buffer.add(new ValuePairImpl<Long>(v.getName(),
