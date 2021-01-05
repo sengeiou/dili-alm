@@ -20,6 +20,7 @@ import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValuePairImpl;
 import com.dili.ss.metadata.ValueProvider;
 import com.dili.ss.metadata.ValueProviderUtils;
+import com.google.common.collect.Lists;
 
 /**
  * Created by asiamaster on 2017/10/19 0019.
@@ -32,12 +33,21 @@ public class ProjectProvider implements ValueProvider {
 
 	@Override
 	public List<ValuePair<?>> getLookupList(Object o, Map map, FieldMeta fieldMeta) {
+		Object queryParams = map.get(QUERY_PARAMS_KEY);
+        
+        Boolean isAll = JSONObject.parseObject(queryParams.toString()).getBoolean("isAll");
 		Map<Long, Project> projectMap = AlmCache.getInstance().getProjectMap();
 		ArrayList<ValuePair<?>> buffer = new ArrayList<>(projectMap.size());
 		// projectMap.forEach((k, v) -> buffer.add(new ValuePairImpl<Long>(v.getName(),
 		// k)));
-		projectMap.values().stream().filter(p -> !p.getProjectState().equals(ProjectState.CLOSED.getValue()))
-				.collect(Collectors.toList()).forEach(p -> buffer.add(new ValuePairImpl<Long>(p.getName(), p.getId())));
+		if(isAll) {
+			projectMap.values().stream()
+			.collect(Collectors.toList()).forEach(p -> buffer.add(new ValuePairImpl<Long>(p.getName(), p.getId())));
+		}else {
+			projectMap.values().stream().filter(p -> !p.getProjectState().equals(ProjectState.CLOSED.getValue()))
+			.collect(Collectors.toList()).forEach(p -> buffer.add(new ValuePairImpl<Long>(p.getName(), p.getId())));
+		}
+		
 		return buffer;
 	}
 

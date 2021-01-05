@@ -320,7 +320,9 @@ public class ProjectOnlineApplyController {
 			dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("value").toString())));
 			Example example = new Example(Project.class);
 			Example.Criteria criteria = example.createCriteria();
-			criteria.andIn("id", projectIds).andNotEqualTo("projectState", ProjectState.CLOSED.getValue());
+			// 可选择已结项项目
+			//criteria.andIn("id", projectIds).andNotEqualTo("projectState", ProjectState.CLOSED.getValue());
+			criteria.andIn("id", projectIds);
 			List<Project> projects = this.projectService.selectByExample(example);
 			modelMap.addAttribute("projects", projects);
 		}

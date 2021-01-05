@@ -29,7 +29,7 @@
                         <tr>
                          <td style="padding:5px;">
                                   <input class="easyui-textbox" name="projectIdcc" id="projectIdcc"  data-options="label:'项目:'" style="width: 100%" />
-						          <#comboProvider _id="projectIdcc" _provider='projectProvider' />
+						          <#comboProvider _id="projectIdcc" _provider='projectProvider' _queryParams='{isAll:true}' />
                             </td>
                             <td style="padding:5px;">
                                 <input class="easyui-combobox" name="versionId" id="versionId" style="width:100%" data-options="label:'项目版本:', validType:'length[0,19]'" />
@@ -172,9 +172,7 @@
 					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">项目名称</td>
 					<td style="padding: 5px;">	 <input class="easyui-textbox"
 						name="_projectId" id="_projectId" style="width: 100%"  data-options="required:true"   />
-						<#comboProvider _id="_projectId" _provider='projectProvider'  data-options="required:true"   /> 
-
-				
+						<#comboProvider _id="_projectId" _provider='projectProvider' _queryParams='{isAll:true}' /> 
 					 </td>
 					<td style="padding: 5px; background-color: #f5f5f5; font-weight: bold">版本号  
 					    <input name="_versionId" id="_versionId"  type="hidden"></td>
