@@ -40,7 +40,7 @@ public class ProjectProvider implements ValueProvider {
 		ArrayList<ValuePair<?>> buffer = new ArrayList<>(projectMap.size());
 		// projectMap.forEach((k, v) -> buffer.add(new ValuePairImpl<Long>(v.getName(),
 		// k)));
-		if(isAll) {
+		if(isAll != null && isAll) {
 			projectMap.values().stream()
 			.collect(Collectors.toList()).forEach(p -> buffer.add(new ValuePairImpl<Long>(p.getName(), p.getId())));
 		}else {
