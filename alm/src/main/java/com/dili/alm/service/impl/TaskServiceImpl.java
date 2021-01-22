@@ -557,7 +557,9 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		List<User> userList = new ArrayList<User>();
 		for (Long userId : resultIds) {
 			User user = userRpc.findUserById(userId).getData();
-			userList.add(user);
+			if(user != null) {
+				userList.add(user);
+			}
 		}
 		return userList;
 	}
