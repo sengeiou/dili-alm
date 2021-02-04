@@ -3,6 +3,7 @@ package com.dili.alm.service.impl;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -241,7 +242,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		long total = list instanceof Page ? ((Page) list).getTotal() : list.size();
 		List results = null;
 		results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, list) : list;
-		return new EasyuiPageOutput(Integer.parseInt(String.valueOf(total)), results);
+		return new EasyuiPageOutput(total, results);
 	}
 
 	@Transactional(rollbackFor = ProjectException.class)
@@ -395,10 +396,10 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Long> implement
 		project.setMetadata(metadata);
 		try {
 			List list = ValueProviderUtils.buildDataByProvider(project, projectDtoList);
-			return new EasyuiPageOutput(total, list);
+			return new EasyuiPageOutput(Long.valueOf(total), list);
 		} catch (Exception e) {
 			e.getMessage();
-			return new EasyuiPageOutput(0, new ArrayList<>(0));
+			return new EasyuiPageOutput(0L, Collections.emptyList());
 		}
 	}
 

@@ -1,6 +1,7 @@
 package com.dili.alm.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -16,13 +17,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.dili.alm.cache.AlmCache;
 import com.dili.alm.domain.HardwareResource;
 import com.dili.alm.domain.Project;
-import com.dili.uap.sdk.domain.User;
 import com.dili.alm.domain.dto.HardwareResourceQueryDto;
 import com.dili.alm.exceptions.HardwareResourceException;
 import com.dili.alm.service.HardwareResourceService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 
@@ -50,7 +51,7 @@ public class HardwareResourceController {
 		@SuppressWarnings("rawtypes")
 		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
 		if (CollectionUtils.isEmpty(dataAuths)) {
-			return new EasyuiPageOutput(0, new ArrayList<>(0)).toString();
+			return new EasyuiPageOutput(0L, Collections.emptyList()).toString();
 		}
 		List<Project> projects = new ArrayList<>(dataAuths.size());
 		Map<Long, Project> projectMap = AlmCache.getInstance().getProjectMap();
@@ -77,7 +78,7 @@ public class HardwareResourceController {
 		@SuppressWarnings("rawtypes")
 		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
 		if (CollectionUtils.isEmpty(dataAuths)) {
-			return new EasyuiPageOutput(0, new ArrayList<>(0)).toString();
+			return new EasyuiPageOutput(0L, Collections.emptyList()).toString();
 		}
 		List<Long> projectIds = new ArrayList<>();
 		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("value").toString())));

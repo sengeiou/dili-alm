@@ -59,7 +59,7 @@ public class TaskDetailsController {
 	@RequestMapping(value = "/listPage", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(@RequestParam Long userId, BaseDomain query) throws Exception {
 		Page<UserWorkHourDetailDto> page = this.taskDetailsService.listUserWorkHourDetail(userId, query);
-		return new EasyuiPageOutput(Long.valueOf(page.getTotal()).intValue(), page.getResult()).toString();
+		return new EasyuiPageOutput(Long.valueOf(page.getTotal()), page.getResult()).toString();
 	}
 
 	

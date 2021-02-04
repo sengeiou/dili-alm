@@ -3,6 +3,7 @@ package com.dili.alm.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -69,7 +70,7 @@ public class WeeklyController {
 	public @ResponseBody String listPage(WeeklyPara weeklyPara) throws Exception {
 		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
 		if (CollectionUtils.isEmpty(dataAuths)) {
-			return new EasyuiPageOutput(0, new ArrayList<>(0)).toString();
+			new EasyuiPageOutput(0L, Collections.emptyList()).toString();
 		}
 		List<Long> projectIds = new ArrayList<>();
 		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("value").toString())));

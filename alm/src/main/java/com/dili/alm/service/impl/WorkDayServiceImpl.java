@@ -28,12 +28,12 @@ import com.alibaba.fastjson.JSONArray;
 import com.dili.alm.dao.WorkDayMapper;
 import com.dili.alm.domain.WorkDay;
 import com.dili.alm.domain.dto.WorkDayRoleDto;
-import com.dili.alm.rpc.ResourceRpc;
 import com.dili.alm.service.WorkDayService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.uap.sdk.rpc.ResourceRpc;
 
 @Service
 public class WorkDayServiceImpl extends BaseServiceImpl<WorkDay, Long> implements WorkDayService {

@@ -10,6 +10,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -136,9 +137,9 @@ public class StatistaicalServiceImpl implements StatisticalService {
 				ptc.setTypeCount(total);
 				list.add(ptc);
 			}
-			return new EasyuiPageOutput(ddvdList.size(), list);
+			return new EasyuiPageOutput(Long.valueOf(ddvdList.size()), list);
 		}
-		return new EasyuiPageOutput(0, new ArrayList<>(0));
+		return new EasyuiPageOutput(0L, Collections.emptyList());
 
 	}
 
@@ -669,9 +670,9 @@ public class StatistaicalServiceImpl implements StatisticalService {
 		project.setMetadata(metadata);
 		try {
 			List list = ValueProviderUtils.buildDataByProvider(project, projectProgressList);
-			return new EasyuiPageOutput(projectProgressListCount, list);
+			return new EasyuiPageOutput(Long.valueOf(projectProgressListCount), list);
 		} catch (Exception e) {
-			return new EasyuiPageOutput(0, new ArrayList<>(0));
+			return new EasyuiPageOutput(0L, Collections.emptyList());
 		}
 	}
 

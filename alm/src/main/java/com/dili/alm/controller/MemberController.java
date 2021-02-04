@@ -22,6 +22,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.dto.UserDepartmentRole;
 import com.dili.uap.sdk.domain.dto.UserDepartmentRoleQuery;
+import com.dili.uap.sdk.domain.dto.UserQuery;
 import com.dili.uap.sdk.rpc.UserRpc;
 
 @RequestMapping("/member")
@@ -59,7 +60,7 @@ public class MemberController {
 	@ResponseBody
 	@RequestMapping(value = "/demandMembers", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public List<User> membersJsonForDemand(User user) {
+	public List<User> membersJsonForDemand(UserQuery user) {
 		user.setState(1);//正常状态
 		user.setFirmCode(AlmConstants.ALM_FIRM_CODE);//数字平台布
 		BaseOutput<List<User>> output = this.userRPC.listByExample(user);

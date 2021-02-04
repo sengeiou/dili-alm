@@ -6,6 +6,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -102,7 +103,7 @@ public class TaskController {
 		@SuppressWarnings({ "rawtypes" })
 		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
 		if (CollectionUtils.isEmpty(dataAuths)) {
-			return new EasyuiPageOutput(0, new ArrayList<>(0)).toString();
+			new EasyuiPageOutput(0L, Collections.emptyList()).toString();
 		}
 		List<Long> projectIds = new ArrayList<>();
 		TaskQueryInProjectId query = DTOUtils.as(task, TaskQueryInProjectId.class);

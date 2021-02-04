@@ -225,7 +225,7 @@ public class TravelCostApplyServiceImpl extends BaseServiceImpl<TravelCostApply,
 		long total = list instanceof Page ? ((Page) list).getTotal() : list.size();
 		@SuppressWarnings("rawtypes")
 		List results = useProvider ? getTraveCostApplyViewModel(list) : list;
-		return new EasyuiPageOutput(Integer.parseInt(String.valueOf(total)), results);
+		return new EasyuiPageOutput(total, results);
 	}
 
 	@Override

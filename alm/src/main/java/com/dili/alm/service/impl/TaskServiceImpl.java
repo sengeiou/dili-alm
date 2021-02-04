@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -77,6 +78,7 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.domain.dto.UserQuery;
 import com.dili.uap.sdk.rpc.RoleRpc;
 import com.dili.uap.sdk.rpc.UserRpc;
 import com.dili.uap.sdk.session.SessionContext;
@@ -477,7 +479,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		try {
 			List<TaskEntity> results = this.TaskParseTaskSelectDto(list, false);// 转化为查询的DTO
 			List taskList = ValueProviderUtils.buildDataByProvider(task, results);
-			EasyuiPageOutput taskEasyuiPageOutput = new EasyuiPageOutput(Long.valueOf(list.getTotal()).intValue(), taskList);
+			EasyuiPageOutput taskEasyuiPageOutput = new EasyuiPageOutput(Long.valueOf(list.getTotal()), taskList);
 			return taskEasyuiPageOutput;
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
@@ -518,11 +520,11 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		try {
 			List<TaskEntity> results = this.TaskParseTaskSelectDto(list, true);// 转化为查询的DTO
 			List taskList = ValueProviderUtils.buildDataByProvider(task, results);
-			EasyuiPageOutput taskEasyuiPageOutput = new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(page.getTotal()))), taskList);
-			return new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(page.getTotal()))), taskList);
+			EasyuiPageOutput taskEasyuiPageOutput = new EasyuiPageOutput(page.getTotal(), taskList);
+			return new EasyuiPageOutput(page.getTotal(), taskList);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new EasyuiPageOutput(0, new ArrayList<>(0));
+			return new EasyuiPageOutput(0L, Collections.emptyList());
 		}
 	}
 
@@ -572,7 +574,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Task, Long> implements Task
 		}
 
 		List<User> userList = new ArrayList<User>();
-		User user = DTOUtils.newDTO(User.class);
+		UserQuery user = DTOUtils.newDTO(UserQuery.class);
 		user.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		userList = userRpc.listByExample(user).getData();
 

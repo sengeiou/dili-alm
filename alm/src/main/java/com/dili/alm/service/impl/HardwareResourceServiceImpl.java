@@ -28,6 +28,7 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.uap.sdk.domain.Department;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.domain.dto.UserQuery;
 import com.dili.uap.sdk.rpc.DepartmentRpc;
 import com.dili.uap.sdk.rpc.UserRpc;
 import com.dili.uap.sdk.session.SessionContext;
@@ -66,7 +67,7 @@ public class HardwareResourceServiceImpl extends BaseServiceImpl<HardwareResourc
 		newDepartment.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		BaseOutput<Department> findByDepartmentName = departmentRpc.getOne(newDepartment);
 		Department department = findByDepartmentName.getData();
-		User user = DTOUtils.newDTO(User.class);
+		UserQuery user = DTOUtils.newDTO(UserQuery.class);
 		user.setDepartmentId(department.getId());
 		user.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		return userRpc.listByExample(user).getData();

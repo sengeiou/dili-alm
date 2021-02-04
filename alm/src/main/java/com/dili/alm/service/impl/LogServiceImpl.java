@@ -120,7 +120,7 @@ public class LogServiceImpl extends BaseServiceImpl<Log, Long> implements LogSer
 		log.setMetadata(metadata);
 		try {
 			List list = ValueProviderUtils.buildDataByProvider(log, logLikeList);
-			return new EasyuiPageOutput(logLikeListCount, list);
+			return new EasyuiPageOutput(Long.valueOf(logLikeListCount), list);
 		} catch (Exception e) {
 			return null;
 		}

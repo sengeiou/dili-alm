@@ -48,6 +48,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.uap.sdk.domain.Department;
 import com.dili.uap.sdk.domain.User;
+import com.dili.uap.sdk.domain.dto.UserQuery;
 import com.dili.uap.sdk.rpc.DepartmentRpc;
 import com.dili.uap.sdk.rpc.UserRpc;
 
@@ -142,7 +143,7 @@ public class UserDepIdConverter implements InitializingBean {
 			return;
 		}
 		LOGGER.info("开始数据迁移........");
-		BaseOutput<List<User>> uapOutput = this.userRpc.listByExample(DTOUtils.newDTO(User.class));
+		BaseOutput<List<User>> uapOutput = this.userRpc.listByExample(DTOUtils.newDTO(UserQuery.class));
 		if (!uapOutput.isSuccess()) {
 			LOGGER.error(uapOutput.getMessage());
 			return;
