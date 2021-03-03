@@ -324,7 +324,7 @@ public class WorkOrderController {
 	   bpmcUtil.fitLoggedUserIsCanHandledProcess(targetList);
 	   @SuppressWarnings("rawtypes")
 		long total = outTemp instanceof Page ? ((Page) outTemp).getTotal() : outTemp.size();
-		return new EasyuiPageOutput(Long.valueOf(total).intValue(), ValueProviderUtils.buildDataByProvider(query, targetList)).toString();
+		return new EasyuiPageOutput(Long.valueOf(total), ValueProviderUtils.buildDataByProvider(query, targetList)).toString();
 		
 	}
 

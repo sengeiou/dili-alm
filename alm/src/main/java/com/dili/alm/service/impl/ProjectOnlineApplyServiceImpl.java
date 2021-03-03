@@ -85,6 +85,7 @@ import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.domain.dto.UserDepartmentRole;
 import com.dili.uap.sdk.domain.dto.UserDepartmentRoleQuery;
+import com.dili.uap.sdk.domain.dto.UserQuery;
 import com.dili.uap.sdk.rpc.DepartmentRpc;
 import com.dili.uap.sdk.rpc.UserRpc;
 import com.dili.uap.sdk.session.SessionContext;
@@ -531,7 +532,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		long total = list instanceof Page ? ((Page) list).getTotal() : list.size();
 		@SuppressWarnings("rawtypes")
 		List results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, targetList) : targetList;
-		return new EasyuiPageOutput(Long.valueOf(total).intValue(), results);
+		return new EasyuiPageOutput(total, results);
 	}
 
 	/*
@@ -1104,7 +1105,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		BaseOutput<List<Department>> deptOutput = this.deptRpc.listByDepartment(deptQuery);
 		if (deptOutput.isSuccess() && CollectionUtils.isNotEmpty(deptOutput.getData())) {
 			Long departmentId = deptOutput.getData().get(0).getId();
-			User userQuery = DTOUtils.newDTO(User.class);
+			UserQuery userQuery = DTOUtils.newDTO(UserQuery.class);
 			userQuery.setDepartmentId(departmentId);
 			userQuery.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 			BaseOutput<List<User>> userOutput = this.userRpc.listByExample(userQuery);

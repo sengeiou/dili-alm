@@ -51,6 +51,7 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.uap.sdk.domain.Department;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.domain.dto.UserQuery;
 import com.dili.uap.sdk.rpc.DepartmentRpc;
 import com.dili.uap.sdk.rpc.UserRpc;
 import com.dili.uap.sdk.session.SessionContext;
@@ -399,12 +400,12 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		List<DataDictionary> dditList = dataDictionaryService.listDataDictionary(ddit);
 
 		DataDictionaryValue ddv;
-		User user = null;
+		UserQuery user = null;
 		if (list != null && list.size() > 0) {
 			for (WeeklyPara weeklyPara2 : list) {
 
 				// 项目负责人
-				user = DTOUtils.newDTO(User.class);
+				user = DTOUtils.newDTO(UserQuery.class);
 				user.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 				user.setId(Long.parseLong(weeklyPara2.getUserName()));
 				BaseOutput<List<User>> listByExample = userRpc.listByExample(user);
@@ -424,7 +425,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			}
 		}
 
-		EasyuiPageOutput out = new EasyuiPageOutput(total, list);
+		EasyuiPageOutput out = new EasyuiPageOutput(Long.valueOf(total), list);
 		return out;
 	}
 
@@ -437,7 +438,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 
 		pd.setBeginAndEndTime(pd.getStartDate().substring(0, 10) + "到" + pd.getEndDate().substring(0, 10));
 
-		User user = DTOUtils.newDTO(User.class);
+		UserQuery user = DTOUtils.newDTO(UserQuery.class);
 		user.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		user.setId(Long.parseLong(pd.getBusinessParty()));
 		// 业务方
@@ -486,7 +487,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 
 		pd.setBeginAndEndTime(pd.getStartDate().substring(0, 10) + "到" + pd.getEndDate().substring(0, 10));
 
-		User user = DTOUtils.newDTO(User.class);
+		UserQuery user = DTOUtils.newDTO(UserQuery.class);
 		user.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		user.setId(Long.parseLong(pd.getBusinessParty()));
 		// 业务方
@@ -552,7 +553,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 
 		DataDictionary ddit = DTOUtils.newDTO(DataDictionary.class);
 		ddit.setName(PROJECTSTATUS);
-		User user;
+		UserQuery user;
 		WeeklyPara weekPara;
 		if (td.size() == 0) {
 			return td;
@@ -560,7 +561,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 		for (int i = 0; i < td.size(); i++) {
 
 			// 责任人
-			user = DTOUtils.newDTO(User.class);
+			user = DTOUtils.newDTO(UserQuery.class);
 			user.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 			user.setId(Long.parseLong(td.get(i).getOwner()));
 			BaseOutput<List<User>> listByExample = userRpc.listByExample(user);
@@ -637,7 +638,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	@Override
 	public List<NextWeeklyDto> selectNextWeeklyProgress(WeeklyPara weeklyPara) {
 		List<NextWeeklyDto> nwd = weeklyMapper.selectNextWeeklyProgress(weeklyPara);
-		User user;
+		UserQuery user;
 		NextWeeklyDto nd = null;
 		for (NextWeeklyDto nextWeeklyDto : nwd) {
 
@@ -665,7 +666,7 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 			// int
 			// surplus=Integer.parseInt(nextWeeklyDto.getPlanTime())-Integer.parseInt(nd.getTaskHour())-Integer.parseInt(nd.getOverHour());
 			nextWeeklyDto.setSurplus(surplus + "");// 剩余工时
-			user =DTOUtils.newDTO(User.class);// 字典接口
+			user =DTOUtils.newDTO(UserQuery.class);// 字典接口
 			user.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 			user.setId(Long.parseLong(nextWeeklyDto.getOwner()));
 			BaseOutput<List<User>> listByExample = userRpc.listByExample(user);
@@ -776,14 +777,14 @@ public class WeeklyServiceImpl extends BaseServiceImpl<Weekly, Long> implements 
 	 */
 	@Override
 	public List<WeeklyPara> getUser() {
-		User user;
+		UserQuery user;
 		WeeklyPara Wp = new WeeklyPara();
 		Wp.setUserName("项目经理选择");
 		Wp.setId(Long.parseLong("-1"));
 		List<WeeklyPara> userList = weeklyMapper.getUser();
 
 		for (int j = 0; j < userList.size(); j++) {
-			user = DTOUtils.newDTO(User.class);
+			user = DTOUtils.newDTO(UserQuery.class);
 			user.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 			user.setId(Long.parseLong(userList.get(j).getUserName()));
 			BaseOutput<List<User>> listByExample = userRpc.listByExample(user);

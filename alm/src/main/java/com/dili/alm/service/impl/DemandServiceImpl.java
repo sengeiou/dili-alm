@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -398,11 +399,12 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			selectDemand.setMetadata(metadata);
 			List dtoDatesValue = ValueProviderUtils.buildDataByProvider(selectDemand, dtos);
 			long total = dtos instanceof Page ? ((Page) dtos).getTotal() : dtos.size();
-			return new EasyuiPageOutput((int) total, dtoDatesValue);
+			return new EasyuiPageOutput(total, dtoDatesValue);
 		} catch (Exception e) {
 			e.getMessage();
 		}
-		return new EasyuiPageOutput(0, new ArrayList<>(0));
+		return 	new EasyuiPageOutput(0L, Collections.emptyList());
+
 
 	}
 
@@ -855,7 +857,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			throw new RuntimeException(e);
 		}
 
-		return new EasyuiPageOutput((int) recordList.size(), recordList);
+		return new EasyuiPageOutput(Long.valueOf(recordList.size()), recordList);
 	}
 
 	@Override

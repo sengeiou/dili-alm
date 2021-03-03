@@ -68,6 +68,7 @@ import com.dili.ss.util.BeanConver;
 import com.dili.uap.sdk.domain.Department;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.dto.RoleUserDto;
+import com.dili.uap.sdk.domain.dto.UserQuery;
 import com.dili.uap.sdk.rpc.DepartmentRpc;
 import com.dili.uap.sdk.rpc.RoleRpc;
 import com.dili.uap.sdk.rpc.UserRpc;
@@ -346,7 +347,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			map.put("approved", "true");
 			Project pro = projectService.get(onlineDataChangeTemp.getProjectId());
 
-			User uprojectser = DTOUtils.newDTO(User.class);
+			UserQuery uprojectser = DTOUtils.newDTO(UserQuery.class);
 			uprojectser.setId(pro.getTestManager());
 			uprojectser.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 			BaseOutput<List<User>> listUserByExample = userRpc.listByExample(uprojectser);
@@ -690,7 +691,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			}
 
 			List onlineDataChangeList = ValueProviderUtils.buildDataByProvider(metadata, targetList);
-			EasyuiPageOutput taskEasyuiPageOutput = new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(list.size()))), onlineDataChangeList);
+			EasyuiPageOutput taskEasyuiPageOutput = new EasyuiPageOutput(Long.valueOf(list.size()), onlineDataChangeList);
 			return taskEasyuiPageOutput.toString();
 		} catch (Exception e) {
 			e.printStackTrace();

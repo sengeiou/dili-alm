@@ -8,6 +8,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1176,11 +1177,12 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		approve.setMetadata(metadata);
 		try {
 			List list = ValueProviderUtils.buildDataByProvider(approve, listDto);
-			return new EasyuiPageOutput(total, list);
+			return new EasyuiPageOutput(Long.valueOf(total), list);
 		} catch (Exception e) {
 			e.getMessage();
 		}
-		return new EasyuiPageOutput(0, new ArrayList<>(0));
+		return 	new EasyuiPageOutput(0L, Collections.emptyList());
+
 
 	}
 

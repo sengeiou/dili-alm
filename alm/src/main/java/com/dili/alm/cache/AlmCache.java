@@ -43,6 +43,7 @@ import com.dili.uap.sdk.domain.Department;
 import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.dto.FirmDto;
+import com.dili.uap.sdk.domain.dto.UserQuery;
 import com.dili.uap.sdk.rpc.DepartmentRpc;
 import com.dili.uap.sdk.rpc.FirmRpc;
 import com.dili.uap.sdk.rpc.UserRpc;
@@ -193,7 +194,7 @@ public class AlmCache {
 	public Map<Long, User> getUserMap(boolean queryAll) {
 		// 应用启动时初始化userMap
 		if (AlmCache.USER_MAP.isEmpty()) {
-			User newDTO = DTOUtils.newDTO(User.class);
+			UserQuery newDTO = DTOUtils.newDTO(UserQuery.class);
 			BaseOutput<List<User>> output = userRpc.listByExample(newDTO);
 			if (output.isSuccess()) {
 				output.getData().forEach(user -> {
@@ -210,7 +211,7 @@ public class AlmCache {
 	public Map<Long, User> getAllUserMap() {
 		// 应用启动时初始化userMap
 		if (AlmCache.USER_ALL_MAP.isEmpty()) {
-			User newDTO = DTOUtils.newDTO(User.class);
+			UserQuery newDTO = DTOUtils.newDTO(UserQuery.class);
 			BaseOutput<List<User>> output = userRpc.listByExample(newDTO);
 			if (output.isSuccess()) {
 				output.getData().forEach(user -> {

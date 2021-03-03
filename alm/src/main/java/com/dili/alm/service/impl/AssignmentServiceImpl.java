@@ -21,6 +21,7 @@ import com.dili.bpmc.sdk.dto.Assignment;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.uap.sdk.domain.User;
+import com.dili.uap.sdk.domain.dto.UserQuery;
 import com.dili.uap.sdk.rpc.UserRpc;
 @Service
 public class AssignmentServiceImpl implements AssignmentService {
@@ -50,7 +51,7 @@ public class AssignmentServiceImpl implements AssignmentService {
         
 		Project  pro=	projectService.get(odc.getProjectId());
 		
-		User uprojectser =DTOUtils.newDTO(User.class);
+		UserQuery uprojectser =DTOUtils.newDTO(UserQuery.class);
 		uprojectser.setId(pro.getProjectManager());
 		BaseOutput<List<User>> listUserByExample = userRpc.listByExample(uprojectser);
 		
@@ -69,7 +70,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 		
 		Project  pro=	projectService.get(odc.getProjectId());
 		
-		User uprojectser = DTOUtils.newDTO(User.class);
+		UserQuery uprojectser = DTOUtils.newDTO(UserQuery.class);
 		uprojectser.setId(pro.getTestManager());
 		uprojectser.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		BaseOutput<List<User>> listUserByExample = userRpc.listByExample(uprojectser);

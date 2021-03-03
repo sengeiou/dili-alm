@@ -89,7 +89,7 @@ public class TeamController {
 			List<Map<Object, Object>> list = this.teamService.listContainUserInfo(dto);
 			EasyuiPageOutput e = new EasyuiPageOutput();
 			e.setRows(list);
-			e.setTotal(list.size());
+			e.setTotal(Long.valueOf(list.size()));
 			return e.toString();
 		} catch (Exception e) {
 			e.printStackTrace();

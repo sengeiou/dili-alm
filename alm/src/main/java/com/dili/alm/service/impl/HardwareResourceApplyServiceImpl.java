@@ -265,7 +265,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		this.setOperationColumnList(targetList);
 		long total = list instanceof Page ? ((Page) list).getTotal() : list.size();
 		List results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, targetList) : targetList;
-		return new EasyuiPageOutput(Integer.parseInt(String.valueOf(total)), results);
+		return new EasyuiPageOutput(total, results);
 	}
 
 	@Override

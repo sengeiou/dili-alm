@@ -1,9 +1,11 @@
 package com.dili.alm.controller;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,6 +56,9 @@ public class OnlineDataChangeLogController {
 	*/@RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(OnlineDataChangeLog query) throws Exception {
 		List<OnlineDataChangeLog> list = onlineDataChangeLogService.list(query);
+		if(CollectionUtils.isEmpty(list)) {
+			new EasyuiPageOutput(0L, Collections.emptyList()).toString();
+		}
 		Map<Object, Object> metadata = null == query.getMetadata() ? new HashMap<>() : query.getMetadata();
 		JSONObject memberProvider = new JSONObject();
 		memberProvider.put("provider", "memberProvider");
@@ -62,7 +67,7 @@ public class OnlineDataChangeLogController {
 		datetimeProvider.put("provider", "datetimeProvider");
 		metadata.put("operateTime", datetimeProvider);
 		List onlineDataChangeList = ValueProviderUtils.buildDataByProvider(metadata, list);
-		EasyuiPageOutput taskEasyuiPageOutput = new EasyuiPageOutput(Integer.valueOf(Integer.parseInt(String.valueOf(list.size()))), onlineDataChangeList);
+		EasyuiPageOutput taskEasyuiPageOutput = new EasyuiPageOutput(Long.valueOf(list.size()) , onlineDataChangeList);
 		return taskEasyuiPageOutput.toString();
 		//return onlineDataChangeLogService.listEasyuiPageByExample(query, true).toString();
 	}

@@ -2,6 +2,7 @@ package com.dili.alm.controller;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +50,7 @@ import com.dili.ss.exception.AppException;
 import com.dili.uap.sdk.domain.Department;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.domain.dto.UserQuery;
 import com.dili.uap.sdk.rpc.DepartmentRpc;
 import com.dili.uap.sdk.rpc.UserRpc;
 import com.dili.uap.sdk.session.SessionContext;
@@ -145,7 +147,7 @@ public class HardwareResourceApplyController {
 		BaseOutput<List<Department>> deptOutput = this.deptRpc.listByDepartment(deptQuery);
 		if (deptOutput.isSuccess() && CollectionUtils.isNotEmpty(deptOutput.getData())) {
 			Long departmentId = deptOutput.getData().get(0).getId();
-			User userQuery =  DTOUtils.newDTO(User.class);
+			UserQuery userQuery =  DTOUtils.newDTO(UserQuery.class);
 			userQuery.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 			userQuery.setDepartmentId(departmentId);
 			BaseOutput<List<User>> userOutput = this.userRpc.listByExample(userQuery);
@@ -241,7 +243,7 @@ public class HardwareResourceApplyController {
 			@RequestParam(required = false) String applyStateShow) throws Exception {
 		List<Map> dataAuths = SessionContext.getSessionContext().dataAuth(DATA_AUTH_TYPE);
 		if (CollectionUtils.isEmpty(dataAuths)) {
-			return new EasyuiPageOutput(0, new ArrayList<>(0)).toString();
+			return new EasyuiPageOutput(0L, Collections.emptyList()).toString();
 		}
 		List<Long> projectIds = new ArrayList<>();
 		dataAuths.forEach(m -> projectIds.add(Long.valueOf(m.get("value").toString())));
@@ -502,7 +504,7 @@ public class HardwareResourceApplyController {
 		department.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		department.setCode(DEPARTMENT_MAINTENANCE_CODE);
 		Department getDepartment = this.deptRpc.getOne(department).getData();
-		User user = DTOUtils.newDTO(User.class);
+		UserQuery user = DTOUtils.newDTO(UserQuery.class);
 		user.setDepartmentId(getDepartment.getId());
 		user.setFirmCode(AlmConstants.ALM_FIRM_CODE);
 		List<User> operUsers = userRpc.listByExample(user).getData();
