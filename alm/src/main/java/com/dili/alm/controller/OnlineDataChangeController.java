@@ -25,7 +25,7 @@ import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.TaskDto;
 import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.OnlineDataChangeException;
-import com.dili.bpmc.sdk.rpc.TaskRpc;
+import com.dili.bpmc.sdk.rpc.restful.TaskRpc;
 import com.dili.alm.service.FilesService;
 import com.dili.alm.service.OnlineDataChangeLogService;
 import com.dili.alm.service.OnlineDataChangeService;

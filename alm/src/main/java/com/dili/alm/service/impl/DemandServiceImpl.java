@@ -58,14 +58,18 @@ import com.dili.alm.domain.ProjectVersion;
 import com.dili.alm.domain.Sequence;
 import com.dili.alm.domain.dto.DemandDto;
 import com.dili.alm.exceptions.DemandExceptions;
+import com.dili.alm.rpc.resolver.MyRuntimeRpc;
+import com.dili.alm.rpc.resolver.MyTaskRpc;
 import com.dili.alm.service.DemandService;
 import com.dili.alm.utils.WebUtil;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
 import com.dili.bpmc.sdk.domain.TaskMapping;
+import com.dili.bpmc.sdk.dto.EventReceivedDto;
 import com.dili.bpmc.sdk.dto.TaskDto;
-import com.dili.bpmc.sdk.rpc.FormRpc;
-import com.dili.bpmc.sdk.rpc.RuntimeRpc;
-import com.dili.bpmc.sdk.rpc.TaskRpc;
+import com.dili.bpmc.sdk.rpc.restful.EventRpc;
+import com.dili.bpmc.sdk.rpc.restful.FormRpc;
+import com.dili.bpmc.sdk.rpc.restful.RuntimeRpc;
+import com.dili.bpmc.sdk.rpc.restful.TaskRpc;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
@@ -156,6 +160,15 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	@Qualifier("mailContentTemplate")
 	@Autowired
 	private GroupTemplate groupTemplate;
+	
+	@Autowired 
+	private MyRuntimeRpc myRuntimeRpc;
+	
+	@Autowired
+	private MyTaskRpc myTaskRpc;
+	
+	@Autowired
+	private EventRpc eventRpc;
 
 	public static Object parseViewModel(DemandDto detailViewData) throws Exception {
 		Map<Object, Object> metadata = new HashMap<>();
@@ -282,8 +295,8 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		// variables.put("departmentManagerId", departmentManagerId.toString());
 
 		// 启动流程
-		BaseOutput<ProcessInstanceMapping> processInstanceOutput = runtimeRpc.startProcessInstanceByKey(BpmConsts.PROCESS_DEFINITION_KEY, selectDeman.getSerialNumber(), userTicket.getId().toString(),
-				new HashMap<>());
+		BaseOutput<ProcessInstanceMapping> processInstanceOutput = myRuntimeRpc.startProcessInstanceByKey(BpmConsts.PROCESS_DEFINITION_KEY, selectDeman.getSerialNumber(), userTicket.getId().toString(),
+				new HashMap<String,Object>());
 		if (!processInstanceOutput.isSuccess()) {
 			throw new DemandExceptions(processInstanceOutput.getMessage());
 		}
@@ -567,11 +580,11 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		// 如果有并发流程，需使用TaskDefKey来确认流程节点
 		TaskMapping taskMapping = taskMappings.get(0);
 		// 流程启动参数设置
-		Map<String, String> variables = new HashMap<>(1);
+		Map<String, Object> variables = new HashMap<>(1);
 		variables.put("approved", approved + "");
 		if (valProcess != null) {// 完成流程
 			// 发送消息通知流程
-			taskRpc.complete(taskMapping.getId(), variables);
+			myTaskRpc.complete(taskMapping.getId(), variables);
 		}
 
 		selectDemand.setStatus((byte) DemandStatus.COMPLETE.getCode());
@@ -594,7 +607,11 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		BaseOutput<String> outPut = null;
 		if (valProcess != null) {// 已经开启流程的，停止流程
 			// 发送消息通知流程
-			outPut = taskRpc.messageEventReceived("demandDeleteMsg", selectDemand.getProcessInstanceId(), null);
+			EventReceivedDto dto = DTOUtils.newDTO(EventReceivedDto.class);
+			dto.setEventName("demandDeleteMsg");
+			dto.setProcessInstanceId(selectDemand.getProcessInstanceId());
+			outPut = eventRpc.messageEventReceived(dto);
+			//outPut = taskRpc.messageEventReceived("demandDeleteMsg", selectDemand.getProcessInstanceId(), null);
 		}
 		selectDemand.setStatus((byte) DemandStatus.DELETE.getCode());
 		int i = this.update(selectDemand);
@@ -612,7 +629,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	@Override
 	public BaseOutput submitApproveAndAccept(Long executorId, String taskId) {
 		// 完成任务
-		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, String>() {
+		BaseOutput<String> output = this.myTaskRpc.complete(taskId, new HashMap<String, Object>() {
 			{
 				put("AssignExecutorId", executorId.toString());
 			}
@@ -625,7 +642,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	public BaseOutput submitApproveForAccept(String code, String taskId, Long executorId) {
 
 		BaseOutput<String> output;
-		output = this.taskRpc.complete(taskId, new HashMap<String, String>() {
+		output = this.myTaskRpc.complete(taskId, new HashMap<String, Object>() {
 			{
 				put("AssignExecutorId", executorId.toString());
 				put("approved", "true");
@@ -650,7 +667,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 	public BaseOutput submitApproveForAssign(Long executorId, String taskId) {
 
 		// 完成任务
-		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, String>() {
+		BaseOutput<String> output = this.myTaskRpc.complete(taskId, new HashMap<String, Object>() {
 			{
 				put("AssignExecutorId", executorId.toString());
 			}
@@ -676,9 +693,9 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 			selectDemand.setImperative(imperative);
 			this.update(selectDemand);
 		}
-		Map<String, String> variables = new HashMap<>();
+		Map<String, Object> variables = new HashMap<>();
 		variables.put("approved", "true");
-		BaseOutput out = taskRpc.complete(taskId, variables);
+		BaseOutput out = myTaskRpc.complete(taskId, variables);
 		// 数字平台需求接收人发送邮件
 		if (processType.equals(DemandProcessStatus.DEPARTMENTMANAGER.getCode())) {
 			this.sendMailByGroup(code, DEMAND_DEP_ACCPET_GROUP_ID, "新的需求等待处理");
@@ -704,7 +721,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 
 	@Override
 	public BaseOutput rejectApprove(String code, String taskId, String rejectType) {
-		Map<String, String> variables = new HashMap<>();
+		Map<String, Object> variables = new HashMap<>();
 		Demand demand = this.getByCode(code);
 		if (rejectType.equals(DemandProcessStatus.BACKANDEDIT_ACCPET.getCode())) {
 			demand.setProcessType(DemandProcessStatus.BACKANDEDIT_ACCPET.getCode());// 被驳回的状态
@@ -727,13 +744,13 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		}
 		emails.add(AlmCache.getInstance().getAllUserMap().get(demand.getUserId()).getEmail());
 		this.sendMail(demandDto, "需求被驳回", emails);
-		return taskRpc.complete(taskId, variables);
+		return myTaskRpc.complete(taskId, variables);
 	}
 
 	@Override
 	public BaseOutput rejectApproveForFeedback(String code, String taskId, String rejectType, Long executorId) {
 		// 完成任务
-		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, String>() {
+		BaseOutput<String> output = this.myTaskRpc.complete(taskId, new HashMap<String, Object>() {
 			{
 				put("AssignExecutorId", executorId.toString());
 				put("approved", "false");
@@ -773,7 +790,7 @@ public class DemandServiceImpl extends BaseServiceImpl<Demand, Long> implements 
 		// Long departmentManagerId = this.departmentManagerId(selectDeman.getUserId());
 		// 完成任务
 		/*
-		 * BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String,
+		 * BaseOutput<String> output = this.myTaskRpc.complete(taskId, new HashMap<String,
 		 * Object>() { { put("departmentManagerId", departmentManagerId.toString()); }
 		 * });
 		 */

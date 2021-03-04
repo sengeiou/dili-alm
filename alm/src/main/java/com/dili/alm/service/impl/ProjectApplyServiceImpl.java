@@ -54,6 +54,7 @@ import com.dili.alm.domain.dto.apply.ApplyRisk;
 import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.DemandExceptions;
 import com.dili.alm.exceptions.ProjectApplyException;
+import com.dili.alm.rpc.resolver.MyRuntimeRpc;
 import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.FilesService;
@@ -61,8 +62,8 @@ import com.dili.alm.service.ProjectApplyService;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
 import com.dili.bpmc.sdk.dto.TaskDto;
 import com.dili.alm.domain.TaskMapping;
-import com.dili.bpmc.sdk.rpc.RuntimeRpc;
-import com.dili.bpmc.sdk.rpc.TaskRpc;
+import com.dili.bpmc.sdk.rpc.restful.RuntimeRpc;
+import com.dili.bpmc.sdk.rpc.restful.TaskRpc;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -107,6 +108,9 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 	private DemandProjectMapper demandProjectMapper;
 	@Autowired
 	private TaskRpc tasksRpc;
+	
+	@Autowired 
+	private MyRuntimeRpc myRuntimeRpc;
 
 	public ProjectApplyMapper getActualDao() {
 		return (ProjectApplyMapper) getDao();
@@ -197,7 +201,7 @@ public class ProjectApplyServiceImpl extends BaseServiceImpl<ProjectApply, Long>
 				Long userId = SessionContext.getSessionContext().getUserTicket().getId();
 				Map<String, Object> map = new HashMap<String, Object>();
 				map.put("dataId", as.getId().toString());
-				BaseOutput<ProcessInstanceMapping> processInstanceOutput = runtimeRpc.startProcessInstanceByKey(BpmConsts.PROJECT_APPLY_PROCESS, as.getId().toString(), userId + "", map);
+				BaseOutput<ProcessInstanceMapping> processInstanceOutput = myRuntimeRpc.startProcessInstanceByKey(BpmConsts.PROJECT_APPLY_PROCESS, as.getId().toString(), userId + "", map);
 				if (!processInstanceOutput.isSuccess()) {
 					throw new ProjectApplyException(processInstanceOutput.getMessage());
 				}

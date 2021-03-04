@@ -14,8 +14,8 @@ import com.dili.alm.domain.ProjectOnlineApply;
 import com.dili.alm.domain.dto.OnlineDataChangeBpmcDtoDto;
 import com.dili.alm.service.OnlineDataChangeService;
 import com.dili.alm.service.ProjectOnlineApplyService;
-import com.dili.bpmc.sdk.rpc.FormRpc;
-import com.dili.bpmc.sdk.rpc.TaskRpc;
+import com.dili.bpmc.sdk.rpc.restful.FormRpc;
+import com.dili.bpmc.sdk.rpc.restful.TaskRpc;
 import com.dili.ss.util.BeanConver;
 
 @RunWith(SpringJUnit4ClassRunner.class)

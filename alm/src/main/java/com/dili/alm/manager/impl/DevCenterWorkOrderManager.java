@@ -20,10 +20,12 @@ import com.dili.alm.domain.WorkOrderState;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.exceptions.WorkOrderException;
+import com.dili.alm.rpc.resolver.MyRuntimeRpc;
+import com.dili.alm.rpc.resolver.MyTaskRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
-import com.dili.bpmc.sdk.rpc.RuntimeRpc;
-import com.dili.bpmc.sdk.rpc.TaskRpc;
+import com.dili.bpmc.sdk.rpc.restful.RuntimeRpc;
+import com.dili.bpmc.sdk.rpc.restful.TaskRpc;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.rpc.UserRpc;
@@ -44,6 +46,12 @@ public class DevCenterWorkOrderManager extends BaseWorkOrderManager {
 	private TaskRpc tasksRpc;
 	@Autowired
 	private RuntimeRpc runtimeRpc;
+	
+	@Autowired 
+	private MyRuntimeRpc myRuntimeRpc;
+	
+	@Autowired
+	private MyTaskRpc myTaskRpc;
 
 	@Override
 	public void update(WorkOrder workOrder) throws WorkOrderException {
@@ -83,7 +91,7 @@ public class DevCenterWorkOrderManager extends BaseWorkOrderManager {
 		}
 
 		try {
-			BaseOutput<ProcessInstanceMapping> object = runtimeRpc.startProcessInstanceByKey(BpmConsts.WorkOrderApply_PROCESS, workOrder.getId().toString(), workOrder.getAcceptorId() + "", map);
+			BaseOutput<ProcessInstanceMapping> object = myRuntimeRpc.startProcessInstanceByKey(BpmConsts.WorkOrderApply_PROCESS, workOrder.getId().toString(), workOrder.getAcceptorId() + "", map);
 			if (object.getCode().equals("5000")) {
 				throw new WorkOrderException("新增工单失败流控中心调不通");
 			}
@@ -148,7 +156,7 @@ public class DevCenterWorkOrderManager extends BaseWorkOrderManager {
 		if (mailReceiver == null) {
 			throw new WorkOrderException("受理人不存在");
 		}
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, Object> map = new HashMap<String, Object>();
 		/*
 		 * map.put("workOrderSource", "2"); if(workOrder.getWorkOrderSource()==2) {
 		 * map.put("solve", workOrder.getExecutorId().toString()); }else {
@@ -166,7 +174,7 @@ public class DevCenterWorkOrderManager extends BaseWorkOrderManager {
 		}
 
 		try {
-			tasksRpc.complete(taskId, map);
+			myTaskRpc.complete(taskId, map);
 		} catch (Exception e) {
 			throw new WorkOrderException("研发工单失败");
 		}
