@@ -32,8 +32,9 @@ import com.dili.alm.domain.dto.WorkOrderUpdateDto;
 import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.WorkOrderException;
 import com.dili.alm.manager.WorkOrderManager;
+import com.dili.alm.rpc.resolver.MyTaskRpc;
 import com.dili.alm.service.WorkOrderService;
-import com.dili.bpmc.sdk.rpc.TaskRpc;
+import com.dili.bpmc.sdk.rpc.restful.TaskRpc;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -66,6 +67,9 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 	
 	@Autowired
 	private   TaskRpc  tasksRpc;
+	@Autowired
+	private MyTaskRpc myTaskRpc;
+	
 	@Override
 	public void allocate(Long id, Long executorId, Integer workOrderType, Integer priority, OperationResult result,
 			String description) throws WorkOrderException {
@@ -261,7 +265,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 	public void solveAgree(String taskId, Boolean isNeedClaim) throws WorkOrderException {
 		BaseOutput<Map<String, Object>>  mapId=tasksRpc.getVariables(taskId);
 		String dataId = (String) mapId.getData().get("businessKey");
-		Map<String, String> map=new HashMap<String, String>();
+		Map<String, Object> map=new HashMap<String, Object>();
 		WorkOrder workOrder = this.get(Long.parseLong(dataId));
 		
 		//map.put("close", workOrder.getApplicantId().toString());
@@ -275,7 +279,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 			}
 		}
 		try{
-			 tasksRpc.complete(taskId,map);
+			 myTaskRpc.complete(taskId,map);
 		} catch (Exception e) {
 			//LOGGER.error(output.getMessage());
 			throw new WorkOrderException("任务签收失败");
@@ -296,7 +300,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 
 	@Override
 	public void allocateAgree(Long executorId, String taskId, Boolean isNeedClaim) throws WorkOrderException {
-		Map<String, String> map=new HashMap<String, String>();
+		Map<String, Object> map=new HashMap<String, Object>();
 		 map.put("result", "1");
 		// map.put("solve", executorId+"");
 	     map.put(BpmConsts.WorkOrderApply.SOLVE.getName(), executorId+"");
@@ -309,7 +313,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 			}
 		 
 		 try{
-		   tasksRpc.complete(taskId,map);
+		   myTaskRpc.complete(taskId,map);
 		 } catch (Exception e) {
 				throw new WorkOrderException("任务签收失败");
 	    }
@@ -318,7 +322,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 	@Override
 	public void allocateNotAgree(Long id, Long executorId, String taskId, Boolean isNeedClaim)
 			throws WorkOrderException {
-		Map<String, String> map=new HashMap<String, String>();
+		Map<String, Object> map=new HashMap<String, Object>();
 		 map.put("result", "0");
 		WorkOrder workOrder = this.get(id);
 		if (workOrder == null) {
@@ -335,7 +339,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder, Long> imple
 				}
 			}
 	    try{ 
-		    tasksRpc.complete(taskId,map);
+		    myTaskRpc.complete(taskId,map);
 		  } catch (Exception e) {
 				throw new WorkOrderException("任务签收失败");
 	    }

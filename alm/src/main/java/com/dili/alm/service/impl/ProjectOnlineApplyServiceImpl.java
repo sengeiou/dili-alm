@@ -69,12 +69,16 @@ import com.dili.alm.domain.dto.ProjectOnlineOperationRecordDto;
 import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.ProjectOnlineApplyException;
 import com.dili.alm.provider.ProjectVersionProvider;
+import com.dili.alm.rpc.resolver.MyRuntimeRpc;
+import com.dili.alm.rpc.resolver.MyTaskRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.ProjectOnlineApplyDetailDto;
 import com.dili.alm.service.ProjectOnlineApplyService;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
-import com.dili.bpmc.sdk.rpc.RuntimeRpc;
-import com.dili.bpmc.sdk.rpc.TaskRpc;
+import com.dili.bpmc.sdk.dto.EventReceivedDto;
+import com.dili.bpmc.sdk.rpc.restful.EventRpc;
+import com.dili.bpmc.sdk.rpc.restful.RuntimeRpc;
+import com.dili.bpmc.sdk.rpc.restful.TaskRpc;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
@@ -147,7 +151,15 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 	private RuntimeRpc runtimeRpc;
 	@Value("${uap.contextPath:http://uap.diligrp.com}")
 	private String uapContextPath;
-
+	@Autowired 
+	private MyRuntimeRpc myRuntimeRpc;
+	
+	@Autowired
+	private MyTaskRpc myTaskRpc;
+	
+	@Autowired
+	private EventRpc eventRpc;
+	
 	@SuppressWarnings("unchecked")
 	public static Map<Object, Object> buildApplyViewModel(ProjectOnlineApply apply) {
 		Map<Object, Object> metadata = new HashMap<>();
@@ -249,7 +261,10 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			throw new ProjectOnlineApplyException("删除失败");
 		}
 		if (StringUtils.isNotBlank(apply.getProcessInstanceId())) {
-			BaseOutput<String> output = this.taskRpc.messageEventReceived("deleteProjectOnlineApplyMsg", apply.getProcessInstanceId(), null);
+			EventReceivedDto dto = DTOUtils.newDTO(EventReceivedDto.class);
+			dto.setEventName("deleteProjectOnlineApplyMsg");
+			dto.setProcessInstanceId(apply.getProcessInstanceId());
+			BaseOutput<String> output = this.eventRpc.messageEventReceived(dto);
 			if (!output.isSuccess()) {
 				LOGGER.error(output.getMessage());
 				throw new ProjectOnlineApplyException("结束流程实例失败");
@@ -319,7 +334,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			}
 		}
 		// 完成任务
-		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, String>() {
+		BaseOutput<String> output = this.myTaskRpc.complete(taskId, new HashMap<String, Object>() {
 			{
 				put("approved", Boolean.valueOf(OperationResult.SUCCESS.equals(result)).toString());
 				put(BpmConsts.ProjectOnlineApplyConstant.PRODUCT_MANAGER_KEY.getName(), apply.getProductManagerId().toString());
@@ -590,7 +605,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			}
 		}
 		// 完成任务
-		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, String>() {
+		BaseOutput<String> output = this.myTaskRpc.complete(taskId, new HashMap<String, Object>() {
 			{
 				put("approved", Boolean.valueOf(OperationResult.SUCCESS.equals(result)).toString());
 			}
@@ -685,7 +700,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			}
 		}
 		// 完成任务
-		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, String>() {
+		BaseOutput<String> output = this.myTaskRpc.complete(taskId, new HashMap<String, Object>() {
 			{
 				put(BpmConsts.ProjectOnlineApplyConstant.EXECUTOR_KEY.getName(), executors.toArray(new Long[] {})[0].toString());
 			}
@@ -715,7 +730,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		apply.setSubmitTime(new Date());
 
 		if (StringUtils.isBlank(taskId)) {
-			BaseOutput<ProcessInstanceMapping> output = this.runtimeRpc.startProcessInstanceByKey(BpmConsts.ProjectOnlineApplyConstant.PROCESS_KEY.getName(), apply.getSerialNumber(),
+			BaseOutput<ProcessInstanceMapping> output = this.myRuntimeRpc.startProcessInstanceByKey(BpmConsts.ProjectOnlineApplyConstant.PROCESS_KEY.getName(), apply.getSerialNumber(),
 					SessionContext.getSessionContext().getUserTicket().getId().toString(), new HashMap<String, Object>() {
 						{
 							put(BpmConsts.ProjectOnlineApplyConstant.BUSINESS_KEY.getName(), apply.getSerialNumber());
@@ -792,7 +807,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 			}
 		}
 		// 完成任务
-		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, String>() {
+		BaseOutput<String> output = this.myTaskRpc.complete(taskId, new HashMap<String, Object>() {
 			{
 				put("approved", Boolean.valueOf(OperationResult.SUCCESS.equals(result)).toString());
 			}
@@ -993,7 +1008,7 @@ public class ProjectOnlineApplyServiceImpl extends BaseServiceImpl<ProjectOnline
 		}
 
 		// 完成任务
-		BaseOutput<String> output = this.taskRpc.complete(taskId, new HashMap<String, String>() {
+		BaseOutput<String> output = this.myTaskRpc.complete(taskId, new HashMap<String, Object>() {
 			{
 				put("approved", Boolean.valueOf(OperationResult.SUCCESS.equals(result)).toString());
 			}

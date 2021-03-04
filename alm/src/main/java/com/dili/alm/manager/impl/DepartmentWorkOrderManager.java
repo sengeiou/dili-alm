@@ -28,12 +28,14 @@ import com.dili.alm.domain.WorkOrderState;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.exceptions.WorkOrderException;
+import com.dili.alm.rpc.resolver.MyRuntimeRpc;
+import com.dili.alm.rpc.resolver.MyTaskRpc;
 /*import com.dili.alm.rpc.MyTasksRpcCopy;
 import com.dili.alm.rpc.RuntimeApiRpcCopy;*/
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
-import com.dili.bpmc.sdk.rpc.RuntimeRpc;
-import com.dili.bpmc.sdk.rpc.TaskRpc;
+import com.dili.bpmc.sdk.rpc.restful.RuntimeRpc;
+import com.dili.bpmc.sdk.rpc.restful.TaskRpc;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
@@ -63,6 +65,12 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 
 	@Autowired
 	private RuntimeRpc runtimeRpc;
+	
+	@Autowired 
+	private MyRuntimeRpc myRuntimeRpc;
+	
+	@Autowired
+	private MyTaskRpc myTaskRpc;
 
 	@Override
 	public void update(WorkOrder workOrder) throws WorkOrderException {
@@ -95,7 +103,7 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 		map.put(BpmConsts.WorkOrderApply.SOLVE.getName(), workOrder.getExecutorId().toString());
 
 		try {
-			BaseOutput<ProcessInstanceMapping> object = runtimeRpc.startProcessInstanceByKey(BpmConsts.WorkOrderApply_PROCESS, workOrder.getId().toString(), workOrder.getExecutorId() + "", map);
+			BaseOutput<ProcessInstanceMapping> object = myRuntimeRpc.startProcessInstanceByKey(BpmConsts.WorkOrderApply_PROCESS, workOrder.getId().toString(), workOrder.getExecutorId() + "", map);
 			if (object.getCode().equals("5000")) {
 				throw new WorkOrderException("新增工单失败流控中心调不通");
 			}
@@ -227,7 +235,7 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 			throw new WorkOrderException("受理人不存在");
 		}
 
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("workOrderSource", WorkOrderSource.DEPARTMENT.getValue().toString());
 
 		// map.put("solve", workOrder.getExecutorId().toString());
@@ -238,7 +246,7 @@ public class DepartmentWorkOrderManager extends BaseWorkOrderManager {
 		 * workOrder.getAcceptorId().toString()); }
 		 */
 		try {
-			tasksRpc.complete(taskId, map);
+			myTaskRpc.complete(taskId, map);
 		} catch (Exception e) {
 			throw new WorkOrderException("部门工单失败");
 		}

@@ -57,13 +57,15 @@ import com.dili.alm.domain.dto.HardwareResourceRequirementDto;
 import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.HardwareResourceApplyException;
 import com.dili.alm.provider.EnvironmentProvider;
+import com.dili.alm.rpc.resolver.MyRuntimeRpc;
+import com.dili.alm.rpc.resolver.MyTaskRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.HardwareResourceApplyService;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
 import com.dili.bpmc.sdk.domain.TaskMapping;
 import com.dili.bpmc.sdk.dto.TaskDto;
-import com.dili.bpmc.sdk.rpc.RuntimeRpc;
-import com.dili.bpmc.sdk.rpc.TaskRpc;
+import com.dili.bpmc.sdk.rpc.restful.RuntimeRpc;
+import com.dili.bpmc.sdk.rpc.restful.TaskRpc;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
@@ -116,6 +118,12 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 	@Autowired
 	private BpmcUtil bpmcUtil;
 
+	@Autowired 
+	private MyRuntimeRpc myRuntimeRpc;
+	
+	@Autowired
+	private MyTaskRpc myTaskRpc;
+	
 	@SuppressWarnings("unchecked")
 	public static Map<Object, Object> buildApplyViewModel(HardwareResourceApply apply) {
 		Map<Object, Object> metadata = new HashMap<>();
@@ -586,7 +594,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 			variables.put(HardwareApplyConstant.HARDWARE_APPLY_CODE.getName(), apply.getId().toString());
 			variables.put("AssignExecutorId", apply.getProjectManagerId().toString());
 			// 启动流程
-			BaseOutput<ProcessInstanceMapping> processInstanceOutput = runtimeRpc.startProcessInstanceByKey(HardwareApplyConstant.PROCESS_DEFINITION_KEY.getName(), apply.getId() + "",
+			BaseOutput<ProcessInstanceMapping> processInstanceOutput = myRuntimeRpc.startProcessInstanceByKey(HardwareApplyConstant.PROCESS_DEFINITION_KEY.getName(), apply.getId() + "",
 					userTicket.getId().toString(), variables);
 			if (!processInstanceOutput.isSuccess()) {
 				throw new HardwareResourceApplyException("开启审批错误" + processInstanceOutput.getMessage());
@@ -938,17 +946,17 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 
 	@Override
 	public BaseOutput submitApprove(Long id, String taskId, String assignExecutorId) {
-		Map<String, String> variables = new HashMap<>();
+		Map<String, Object> variables = new HashMap<>();
 		variables.put("approved", "true");
 		if (!assignExecutorId.equals("")) {
 			variables.put("AssignExecutorId", assignExecutorId);
 		}
-		return taskRpc.complete(taskId, variables);
+		return myTaskRpc.complete(taskId, variables);
 	}
 
 	@Override
 	public BaseOutput rejectApprove(Long id, String taskId) {
-		Map<String, String> variables = new HashMap<>();
+		Map<String, Object> variables = new HashMap<>();
 		// 判断记录是否存在
 		HardwareResourceApply apply = this.getActualDao().selectByPrimaryKey(id);
 		// 未通过审批退回到编辑状态让用户重新编辑
@@ -957,7 +965,7 @@ public class HardwareResourceApplyServiceImpl extends BaseServiceImpl<HardwareRe
 		this.update(apply);
 		variables.put("approved", "false");
 		variables.put("AssignExecutorId", apply.getApplicantId().toString());
-		return taskRpc.complete(taskId, variables);
+		return myTaskRpc.complete(taskId, variables);
 	}
 
 	@Override

@@ -47,6 +47,8 @@ import com.dili.alm.domain.Team;
 /*import com.dili.alm.domain.TaskMapping;*/
 import com.dili.alm.domain.dto.OnlineDataChangeBpmcDtoDto;
 import com.dili.alm.exceptions.OnlineDataChangeException;
+import com.dili.alm.rpc.resolver.MyRuntimeRpc;
+import com.dili.alm.rpc.resolver.MyTaskRpc;
 import com.dili.alm.service.OnlineDataChangeLogService;
 import com.dili.alm.service.OnlineDataChangeService;
 import com.dili.alm.service.ProjectService;
@@ -57,8 +59,8 @@ import com.dili.bpmc.sdk.dto.Assignment;
 import com.dili.bpmc.sdk.dto.GroupUserDto;
 import com.dili.bpmc.sdk.dto.TaskDto;
 import com.dili.bpmc.sdk.dto.TaskIdentityDto;
-import com.dili.bpmc.sdk.rpc.RuntimeRpc;
-import com.dili.bpmc.sdk.rpc.TaskRpc;
+import com.dili.bpmc.sdk.rpc.restful.RuntimeRpc;
+import com.dili.bpmc.sdk.rpc.restful.TaskRpc;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
@@ -129,6 +131,12 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 	@Autowired
 	private TaskRpc taskRpc;
 
+	@Autowired 
+	private MyRuntimeRpc myRuntimeRpc;
+	
+	@Autowired
+	private MyTaskRpc myTaskRpc;
+	
 	public OnlineDataChangeMapper getActualDao() {
 		return (OnlineDataChangeMapper) getDao();
 	}
@@ -244,7 +252,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 			map.put(BpmConsts.OnlineDataChangeProcessConstant.dept.getName(), pro.getProjectManager() + "");
 			// map.put("dept","1");
 
-			BaseOutput<ProcessInstanceMapping> object = runtimeRpc.startProcessInstanceByKey(BpmConsts.ONLINEDATACHANGE_PROCESS, onlineDataChange.getId().toString(), id + "", map);
+			BaseOutput<ProcessInstanceMapping> object = myRuntimeRpc.startProcessInstanceByKey(BpmConsts.ONLINEDATACHANGE_PROCESS, onlineDataChange.getId().toString(), id + "", map);
 
 			if (object.getCode().equals("5000")) {
 				throw new OnlineDataChangeException("runtimeRpc失败");
@@ -283,7 +291,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 				Project pro = projectService.get(onlineDataChange.getProjectId());
 				// map.put("dept", pro.getProjectManager() + "");
 				map.put(BpmConsts.OnlineDataChangeProcessConstant.dept.getName(), pro.getProjectManager() + "");
-				BaseOutput<ProcessInstanceMapping> object = runtimeRpc.startProcessInstanceByKey(BpmConsts.ONLINEDATACHANGE_PROCESS, onlineDataChange.getId().toString(), id + "", map);
+				BaseOutput<ProcessInstanceMapping> object = myRuntimeRpc.startProcessInstanceByKey(BpmConsts.ONLINEDATACHANGE_PROCESS, onlineDataChange.getId().toString(), id + "", map);
 				// System.out.println(object.getCode()+object.getData()+object.getErrorData());
 				if (object.getCode().equals("5000")) {
 					throw new OnlineDataChangeException("失败");
@@ -343,7 +351,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 
 			this.updateSelective(onlineDataChange);
 			OnlineDataChange onlineDataChangeTemp = this.get(Long.parseLong(dataId));
-			Map<String, String> map = new HashMap<String, String>();
+			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("approved", "true");
 			Project pro = projectService.get(onlineDataChangeTemp.getProjectId());
 
@@ -368,7 +376,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 					throw new OnlineDataChangeException("任务签收失败");
 				}
 			}
-			tasksRpc.complete(taskId, map);
+			myTaskRpc.complete(taskId, map);
 			// AlmConstants
 
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEMANAGER.getCode(), 1, description);
@@ -396,7 +404,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		try {
 			this.updateSelective(onlineDataChange);
 			OnlineDataChange onlineDataChangeTemp = this.get(Long.parseLong(dataId));
-			Map<String, String> map = new HashMap<String, String>();
+			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("approved", "false");
 			// map.put("submit", "" + onlineDataChangeTemp.getApplyUserId());
 			map.put(BpmConsts.OnlineDataChangeProcessConstant.submit.getName(), "" + onlineDataChangeTemp.getApplyUserId());
@@ -409,7 +417,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 				}
 			}
 
-			tasksRpc.complete(taskId, map);
+			myTaskRpc.complete(taskId, map);
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEMANAGER.getCode(), 2, description);
 
 			Set<String> emails = this.getEmailsByUserId(onlineDataChangeTemp.getApplyUserId());
@@ -433,10 +441,10 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		try {
 
 			this.updateSelective(onlineDataChange);
-			Map<String, String> map = new HashMap<String, String>();
+			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("approved", "true");
 
-			tasksRpc.complete(taskId, map);
+			myTaskRpc.complete(taskId, map);
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGETEST.getCode(), 1, description);
 
 			// dba 組
@@ -463,7 +471,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 
 		try {
 			onlineDataChangeMapper.updateByPrimaryKeySelective(onlineDataChange);
-			Map<String, String> map = new HashMap<String, String>();
+			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("approved", "false");
 
 			OnlineDataChange onlineDataChangeTemp = this.get(Long.parseLong(dataId));
@@ -477,7 +485,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 					throw new OnlineDataChangeException("任务签收失败");
 				}
 			}
-			tasksRpc.complete(taskId, map);
+			myTaskRpc.complete(taskId, map);
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGETEST.getCode(), 2, description);
 
 			Set<String> emails = this.getEmailsByUserId(onlineDataChangeTemp.getApplyUserId());
@@ -502,7 +510,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 
 		try {
 			this.updateSelective(onlineDataChange);
-			Map<String, String> map = new HashMap<String, String>();
+			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("approved", "true");
 			Long id = SessionContext.getSessionContext().getUserTicket().getId();
 
@@ -513,7 +521,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 					throw new OnlineDataChangeException("任务签收失败");
 				}
 			}
-			tasksRpc.complete(taskId, map);
+			myTaskRpc.complete(taskId, map);
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.DATACHANGEDBA.getCode(), 1, description);
 
 			// 測試組
@@ -582,7 +590,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 		try {
 
 			onlineDataChangeMapper.updateByPrimaryKeySelective(onlineDataChange);
-			Map<String, String> map = new HashMap<>();
+			Map<String, Object> map = new HashMap<>();
 			map.put("approved", "false");
 
 			onlineDataChange = this.get(Long.parseLong(dataId));
@@ -595,7 +603,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 					throw new OnlineDataChangeException("任务签收失败");
 				}
 			}
-			tasksRpc.complete(taskId, map);
+			myTaskRpc.complete(taskId, map);
 			onlineDataChangeLogService.insertDataExeLog(dataId, AlmConstants.OnlineDataChangeLogChangeState.ONLINEDBADATACHANGE.getCode(), 2, description);
 			Set<String> emails = getGroupEmail(dataId);
 			this.sendMail(onlineDataChange, "线上数据申请dba执行", emails);
@@ -716,7 +724,7 @@ public class OnlineDataChangeServiceImpl extends BaseServiceImpl<OnlineDataChang
 	 * BaseOutput<String> output
 	 * =tasksRpc.claim(taskId,onlineDataChangeTemp.getApplyUserId()+""); if
 	 * (!output.isSuccess()) { LOGGER.error(output.getMessage()); throw new
-	 * OnlineDataChangeException("任务签收失败"); } } tasksRpc.complete(taskId, map);
+	 * OnlineDataChangeException("任务签收失败"); } } myTaskRpc.complete(taskId, map);
 	 * 
 	 * }
 	 */

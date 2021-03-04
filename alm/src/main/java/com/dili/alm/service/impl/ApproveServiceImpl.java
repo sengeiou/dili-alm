@@ -75,6 +75,8 @@ import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.ApproveException;
 import com.dili.alm.exceptions.ProjectApplyException;
 import com.dili.alm.provider.ProjectTypeProvider;
+import com.dili.alm.rpc.resolver.MyRuntimeRpc;
+import com.dili.alm.rpc.resolver.MyTaskRpc;
 import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.alm.service.ProjectApplyService;
@@ -86,7 +88,7 @@ import com.dili.alm.service.VerifyApprovalService;
 import com.dili.alm.utils.DateUtil;
 import com.dili.alm.utils.WebUtil;
 import com.dili.bpmc.sdk.dto.TaskIdentityDto;
-import com.dili.bpmc.sdk.rpc.TaskRpc;
+import com.dili.bpmc.sdk.rpc.restful.TaskRpc;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
@@ -170,6 +172,12 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
 	@Autowired
 	private BpmcUtil bpmcUtil;
+	
+	@Autowired 
+	private MyRuntimeRpc myRuntimeRpc;
+	
+	@Autowired
+	private MyTaskRpc myTaskRpc;
 
 	public ApproveServiceImpl() {
 		super();
@@ -313,7 +321,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 
 		switch (opt) {
 		case "reject":
-			Map<String, String> map1 = new HashMap<String, String>();
+			Map<String, Object> map1 = new HashMap<String, Object>();
 
 			BaseOutput<Map<String, Object>> taskVariablesOutput = taskRpc.getVariables(taskId);
 			if (!taskVariablesOutput.isSuccess()) {
@@ -360,14 +368,14 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 				sendMail(complete, false);
 			}
 			map1.put("approved", "false");
-			BaseOutput<String> output = taskRpc.complete(taskId, map1);
+			BaseOutput<String> output = myTaskRpc.complete(taskId, map1);
 			if (!output.isSuccess()) {
 				LOGGER.error(output.getMessage());
 				throw new ApproveException("执行任务失败");
 			}
 			break;
 		case "accept":
-			Map<String, String> map2 = new HashMap<String, String>();
+			Map<String, Object> map2 = new HashMap<String, Object>();
 			map2.put("approved", "true");
 			if (Objects.equals(approve.getType(), AlmConstants.ApproveType.APPLY.getCode()) && isManager) {
 				approve.setStatus(AlmConstants.ApplyState.PASS.getCode());
@@ -396,7 +404,7 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 				projectCompleteService.updateSelective(complete);
 				sendMail(complete, true);
 			}
-			BaseOutput<String> output2 = taskRpc.complete(taskId, map2);
+			BaseOutput<String> output2 = myTaskRpc.complete(taskId, map2);
 			if (!output2.isSuccess()) {
 				LOGGER.error(output2.getMessage());
 				throw new ApproveException("执行任务失败");
@@ -838,20 +846,20 @@ public class ApproveServiceImpl extends BaseServiceImpl<Approve, Long> implement
 		verifyApproval.setCreateMemberId(SessionContext.getSessionContext().getUserTicket().getId());
 		try {
 			Approve approve = get(id);
-			Map<String, String> map2 = new HashMap<String, String>();
+			Map<String, Object> map2 = new HashMap<String, Object>();
 			verifyApprovalService.insert(verifyApproval);
 			if (Objects.equals(opt, "accept")) {
 				approve.setStatus(AlmConstants.ChangeState.VRIFY.getCode());
 				updateSelective(approve);
 				map2.put("approved", "true");
-				BaseOutput<String> output2 = taskRpc.complete(taskId, map2);
+				BaseOutput<String> output2 = myTaskRpc.complete(taskId, map2);
 				if (!output2.isSuccess()) {
 					LOGGER.error(output2.getMessage());
 					throw new ApproveException("执行任务失败");
 				}
 			} else {
 				map2.put("approved", "false");
-				BaseOutput<String> output2 = taskRpc.complete(taskId, map2);
+				BaseOutput<String> output2 = myTaskRpc.complete(taskId, map2);
 				if (!output2.isSuccess()) {
 					LOGGER.error(output2.getMessage());
 					throw new ApproveException("执行任务失败");

@@ -33,14 +33,15 @@ import com.dili.alm.domain.ProjectChange;
 import com.dili.alm.exceptions.ApplicationException;
 import com.dili.alm.exceptions.ProjectApplyException;
 import com.dili.alm.provider.ProjectTypeProvider;
+import com.dili.alm.rpc.resolver.MyRuntimeRpc;
 import com.dili.alm.service.ApproveService;
 import com.dili.alm.service.ProjectChangeService;
 import com.dili.alm.service.ProjectService;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
 import com.dili.bpmc.sdk.domain.TaskMapping;
 import com.dili.bpmc.sdk.dto.TaskDto;
-import com.dili.bpmc.sdk.rpc.RuntimeRpc;
-import com.dili.bpmc.sdk.rpc.TaskRpc;
+import com.dili.bpmc.sdk.rpc.restful.RuntimeRpc;
+import com.dili.bpmc.sdk.rpc.restful.TaskRpc;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -78,6 +79,9 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 	private RuntimeRpc runtimeRpc;
 	@Autowired
 	private TaskRpc tasksRpc;
+	
+	@Autowired 
+	private MyRuntimeRpc myRuntimeRpc;
 
 	public ProjectChangeMapper getActualDao() {
 		return (ProjectChangeMapper) getDao();
@@ -146,7 +150,7 @@ public class ProjectChangeServiceImpl extends BaseServiceImpl<ProjectChange, Lon
 				Long userId = SessionContext.getSessionContext().getUserTicket().getId();
 				Map<String, Object> map = new HashMap<String, Object>();
 				map.put("dataId", as.getId().toString());
-				BaseOutput<ProcessInstanceMapping> processInstanceOutput = runtimeRpc.startProcessInstanceByKey(BpmConsts.PROJECT_CHANGE_PROCESS, as.getId().toString(), userId + "", map);
+				BaseOutput<ProcessInstanceMapping> processInstanceOutput = myRuntimeRpc.startProcessInstanceByKey(BpmConsts.PROJECT_CHANGE_PROCESS, as.getId().toString(), userId + "", map);
 				if (!processInstanceOutput.isSuccess()) {
 					throw new ProjectApplyException(processInstanceOutput.getMessage());
 				}

@@ -24,10 +24,12 @@ import com.dili.alm.domain.WorkOrderState;
 import com.dili.alm.domain.dto.DataDictionaryDto;
 import com.dili.alm.domain.dto.DataDictionaryValueDto;
 import com.dili.alm.exceptions.WorkOrderException;
+import com.dili.alm.rpc.resolver.MyRuntimeRpc;
+import com.dili.alm.rpc.resolver.MyTaskRpc;
 import com.dili.alm.service.DataDictionaryService;
 import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
-import com.dili.bpmc.sdk.rpc.RuntimeRpc;
-import com.dili.bpmc.sdk.rpc.TaskRpc;
+import com.dili.bpmc.sdk.rpc.restful.RuntimeRpc;
+import com.dili.bpmc.sdk.rpc.restful.TaskRpc;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.rpc.UserRpc;
@@ -48,6 +50,12 @@ public class OutsideWorkOrderManager extends BaseWorkOrderManager {
 	@Autowired
 	private RuntimeRpc runtimeRpc;
 
+	@Autowired 
+	private MyRuntimeRpc myRuntimeRpc;
+	
+	@Autowired
+	private MyTaskRpc myTaskRpc;
+	
 	@Override
 	public void submit(WorkOrder workOrder) throws WorkOrderException {
 		// 外部工单
@@ -86,7 +94,7 @@ public class OutsideWorkOrderManager extends BaseWorkOrderManager {
 		}
 		try {
 
-			BaseOutput<ProcessInstanceMapping> object = runtimeRpc.startProcessInstanceByKey(BpmConsts.WorkOrderApply_PROCESS, workOrder.getId().toString(), workOrder.getAcceptorId() + "", map);
+			BaseOutput<ProcessInstanceMapping> object = myRuntimeRpc.startProcessInstanceByKey(BpmConsts.WorkOrderApply_PROCESS, workOrder.getId().toString(), workOrder.getAcceptorId() + "", map);
 			if (object.getCode().equals("5000")) {
 				throw new WorkOrderException("新增工单失败流控中心调不通");
 			}
@@ -174,7 +182,7 @@ public class OutsideWorkOrderManager extends BaseWorkOrderManager {
 				}
 			});
 		}
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, Object> map = new HashMap<String, Object>();
 		// map.put("workOrderSource", "3");
 		map.put("workOrderSource", WorkOrderSource.OUTSIDE.getValue().toString());
 
@@ -187,7 +195,7 @@ public class OutsideWorkOrderManager extends BaseWorkOrderManager {
 		}
 		/*
 		 * BaseOutput<ProcessInstanceMapping> object=
-		 * runtimeRpc.startProcessInstanceByKey( BpmConsts.WorkOrderApply_PROCESS,
+		 * myRuntimeRpc.startProcessInstanceByKey( BpmConsts.WorkOrderApply_PROCESS,
 		 * workOrder.getId().toString(), workOrder.getApplicantId()+"",map);
 		 * System.out.println(object.getCode()+object.getData()+object.getErrorData());
 		 */
@@ -195,7 +203,7 @@ public class OutsideWorkOrderManager extends BaseWorkOrderManager {
 		// tasksRpc.complete(taskId,map);
 
 		try {
-			tasksRpc.complete(taskId, map);
+			myTaskRpc.complete(taskId, map);
 		} catch (Exception e) {
 			throw new WorkOrderException("部门工单失败");
 		}
