@@ -232,7 +232,7 @@
 		<dependency>
 			<groupId>com.dili</groupId>
 			<artifactId>bpmc-sdk</artifactId>
-			<version>1.4.0-SNAPSHOT</version>
+			<version>1.4.1-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>uap-sdk</artifactId>
