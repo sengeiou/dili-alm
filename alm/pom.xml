@@ -226,6 +226,10 @@
 					<groupId>com.sun.mail</groupId>
 					<artifactId>javax.mail</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>com.dili</groupId>
+					<artifactId>ss-processor</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
