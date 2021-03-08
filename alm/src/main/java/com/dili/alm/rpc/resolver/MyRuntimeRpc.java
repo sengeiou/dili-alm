@@ -33,6 +33,7 @@ public class MyRuntimeRpc {
         startProcessInstanceDto.setProcessDefinitionKey(ProcessDefinitionKey);
         startProcessInstanceDto.setBusinessKey(businessKey);
         startProcessInstanceDto.setUserId(userId);
+        variables.put("businessKey", businessKey);
         startProcessInstanceDto.setVariables(variables);
 		return runtimeRpc.startProcessInstanceByKey(startProcessInstanceDto);
 		
